@@ -264,6 +264,41 @@ test("plan placement uses a roof click and the applied array remains draggable",
 	assert.deepEqual(app.current.arrays[0].origin_uv, [5, 4]);
 });
 
+test("keyboard numeric placement previews a concave roof position without a map or pointer", async (t) => {
+	const initial = structuredClone(flat);
+	initial.arrays = [];
+	initial.roofs[0].boundary_uv = [
+		[0, 0],
+		[10, 0],
+		[10, 2],
+		[2, 2],
+		[2, 10],
+		[0, 10],
+	];
+	const app = await mount(t, { initial, locale: "de-DE" });
+	await click("Add module array");
+	assert.equal(button("Plan").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Map").disabled, true);
+	const positions = document.querySelector(".lp-plan-position");
+	assert.equal(positions.open, false, "coordinate entry stays optional");
+	await act(async () => positions.querySelector("summary").click());
+	const [u, v] = positions.querySelectorAll("input");
+	assert.equal(button("Preview position").disabled, true);
+	await enter(u, "0,5");
+	await enter(v, "3,5");
+	await click("Preview position");
+	await until(() => document.querySelectorAll(".lp-panel-shape").length === 1);
+	assert.equal(app.edits, 0);
+	assert.equal(app.current.arrays.length, 0);
+	await enter(u, "invalid");
+	assert.equal(button("Preview position").disabled, true);
+	await enter(u, "0,75");
+	await click("Preview position");
+	await click("Apply properties");
+	assert.equal(app.edits, 1);
+	assert.deepEqual(app.current.arrays[0].origin_uv, [0.75, 3.5]);
+});
+
 test("measured roof intake preserves decimal locale, explicit source and one command", async (t) => {
 	const app = await mount(t, { locale: "de-DE" });
 	await click("Add roof face");

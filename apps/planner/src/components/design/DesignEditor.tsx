@@ -515,6 +515,7 @@ export function DesignEditor({
 								poses={displayPoses}
 								selected={arrayPreview?.id ?? selected}
 								placement={placement}
+								locale={locale}
 								select={choose}
 								commit={edit}
 								disabled={

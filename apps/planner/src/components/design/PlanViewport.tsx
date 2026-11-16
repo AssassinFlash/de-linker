@@ -13,6 +13,7 @@ import { dot } from "../../domain/coordinates.ts";
 import { requireUvResolution } from "../../domain/geometryNumerics.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { NumberField } from "../NumberField.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 
 interface View {
@@ -44,6 +45,7 @@ export function PlanViewport({
 	disabled,
 	previewOnly = false,
 	placement = null,
+	locale = "en",
 }: {
 	document: GeometryDocument;
 	roof: RoofFace;
@@ -54,6 +56,7 @@ export function PlanViewport({
 	disabled: boolean;
 	previewOnly?: boolean;
 	placement?: ArrayPlacement | null;
+	locale?: string;
 }) {
 	const svg = useRef<SVGSVGElement>(null),
 		gesture = useRef<Gesture | null>(null);
@@ -62,6 +65,10 @@ export function PlanViewport({
 		[preview, setPreview] = useState<{ array: string; delta: Vec2 } | null>(
 			null,
 		);
+	const [positionU, setPositionU] = useState<number | null>(null);
+	const [positionV, setPositionV] = useState<number | null>(null);
+	const [positionUValid, setPositionUValid] = useState(true);
+	const [positionVValid, setPositionVValid] = useState(true);
 	function abort() {
 		const active = gesture.current;
 		gesture.current = null;
@@ -292,6 +299,44 @@ export function PlanViewport({
 					>
 						{__("Review panel layout", "linker-tools")}
 					</button>
+					<details className="lp-plan-position">
+						<summary>{__("Enter panel position", "linker-tools")}</summary>
+						<div className="lp-geometry-fields">
+							<NumberField
+								label={__("Anchor U", "linker-tools")}
+								unit="m"
+								locale={locale}
+								value={positionU}
+								onChange={setPositionU}
+								onValidity={setPositionUValid}
+							/>
+							<NumberField
+								label={__("Anchor V", "linker-tools")}
+								unit="m"
+								locale={locale}
+								value={positionV}
+								onChange={setPositionV}
+								onValidity={setPositionVValid}
+							/>
+						</div>
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={
+								disabled ||
+								positionU === null ||
+								positionV === null ||
+								!positionUValid ||
+								!positionVValid
+							}
+							onClick={() => {
+								if (positionU !== null && positionV !== null)
+									placement.place([positionU, positionV]);
+							}}
+						>
+							{__("Preview position", "linker-tools")}
+						</button>
+					</details>
 				</div>
 			)}
 			{!previewOnly && (
