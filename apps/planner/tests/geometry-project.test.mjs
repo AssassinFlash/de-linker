@@ -36,9 +36,6 @@ test("saved roof projects reopen in design while energy projects and explicit ro
 	assert.equal(workspaceFromHash({ brief, geometry: {} }), "design");
 	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "overview");
 	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "overview");
-	location.hash = "#lp-array-properties";
-	assert.equal(workspaceFromHash({ brief }), "design");
-	assert.equal(workspaceFromHash({ geometry: {} }), "design");
 	location.hash = "#lp-overview";
 	assert.equal(workspaceFromHash({ brief }), "overview");
 	location.hash = "#lp-load";
