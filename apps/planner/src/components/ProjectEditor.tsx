@@ -101,6 +101,7 @@ export function workspaceFromHash(inputs: JsonObject): ProjectWorkspace {
 		return "energy";
 	if (
 		window.location.hash === "#lp-design" ||
+		window.location.hash === "#lp-array-properties" ||
 		(!window.location.hash &&
 			new URL(window.location.href).searchParams.getAll("step").length === 1 &&
 			new URL(window.location.href).searchParams.get("step") === "roof") ||
