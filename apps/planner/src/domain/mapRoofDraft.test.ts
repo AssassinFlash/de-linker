@@ -7,7 +7,7 @@ import {
 	readMapRoofDraft,
 	startMapRoofDraft,
 } from "./mapRoofDraft.ts";
-import { applyGeometryCommand } from "./geometryCommands.ts";
+import { applyGeometryCommand, emptyGeometry } from "./geometryCommands.ts";
 import { beginDraft, editDraft, redoDraft, undoDraft } from "./draft.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { readGeometry } from "./validateGeometry.ts";
@@ -59,6 +59,39 @@ test("one/two/three-point recovery continues the exact prefix and retains invali
 	);
 	assert.equal(draft.phase, "collecting");
 	assert.deepEqual(draft.before, geometry);
+});
+test("the first confirmed map roof establishes its frame at the drawn corner and survives reopen", () => {
+	const before = emptyGeometry();
+	let draft = startMapRoofDraft(imported.project_id, before, "de-DE");
+	for (const point of points)
+		draft = readMapRoofDraft(appendMapRoofVertex(draft, point));
+	assert.deepEqual(draft.before.coordinate_system, before.coordinate_system);
+	const confirmed = {
+		...draft,
+		phase: "staged" as const,
+		fields: { ...staged().fields, height: "0" },
+	};
+	const command = mapRoofDraftCommand(confirmed);
+	const next = applyGeometryCommand(before, command);
+	assert.deepEqual(next.coordinate_system.anchor, {
+		longitude_deg: points[0][0],
+		latitude_deg: points[0][1],
+		datum: "EPSG:4326",
+		source_id: next.sources[0]!.id,
+	});
+	assert.equal(next.coordinate_system.north_reference, "true_north");
+	assert.equal(next.roofs[0]!.origin_enu[2], 0);
+	assert.deepEqual(
+		readMapRoofDraft(
+			JSON.parse(JSON.stringify({ ...confirmed, prepared_geometry: next })),
+		).prepared_geometry,
+		next,
+	);
+	const existing = { ...geometry, coordinate_system: before.coordinate_system };
+	assert.throws(
+		() => startMapRoofDraft(imported.project_id, existing, "de-DE"),
+		/reference_required/,
+	);
 });
 test("a frozen height reference survives reversed or deleted first vertices", () => {
 	const draft = staged();

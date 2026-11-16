@@ -181,7 +181,11 @@ export default function MapViewport({
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
-		if (!view) return;
+		if (!view) {
+			if (latest.current.siteCentre)
+				map.jumpTo({ center: [...latest.current.siteCentre], zoom: 19 });
+			return;
+		}
 		// View padding/max zoom are display policy, never measurement precision.
 		if (view.bounds)
 			map.fitBounds([[...view.bounds[0]], [...view.bounds[1]]], {
@@ -264,7 +268,7 @@ export default function MapViewport({
 				style: external && !hasImagery ? STREET_STYLE : ownStyle,
 				transformRequest: requests.transform,
 				center: saved?.centre ?? [...view.centre],
-				zoom: saved?.zoom ?? 17,
+				zoom: saved?.zoom ?? 19,
 				bearing: saved?.bearing ?? 0,
 				pitch: saved?.pitch ?? 0,
 				attributionControl: false,
@@ -384,8 +388,11 @@ export default function MapViewport({
 				imagerySignature.current = signature;
 			}
 			function updateOverlay() {
-				if (disposed || !latest.current.projection.view) return;
-				const data = latest.current.projection.view.collection;
+				if (disposed) return;
+				const data = latest.current.projection.view?.collection ?? {
+					type: "FeatureCollection" as const,
+					features: [],
+				};
 				if (current.getSource(SOURCE))
 					(current.getSource(SOURCE) as GeoJSONSource).setData(data);
 				else {
@@ -401,7 +408,7 @@ export default function MapViewport({
 								"fill-opacity": [
 									"case",
 									["get", "included"],
-									kind === "roof" ? 0.65 : 0.85,
+									kind === "roof" ? 0.25 : 0.85,
 									0.2,
 								],
 								"fill-outline-color": colours[kind],
@@ -708,9 +715,12 @@ export default function MapViewport({
 	]);
 	useEffect(() => {
 		const map = mapRef.current;
-		if (!map || !map.getSource(SOURCE) || !projection.view) return;
+		if (!map || !map.getSource(SOURCE)) return;
 		(map.getSource(SOURCE) as GeoJSONSource).setData(
-			projection.view.collection,
+			projection.view?.collection ?? {
+				type: "FeatureCollection",
+				features: [],
+			},
 		);
 		map.setFilter(SELECTED, ["==", ["get", "object_id"], selected ?? ""]);
 	}, [projection]);
@@ -891,12 +901,9 @@ export default function MapViewport({
 						</a>
 					)}
 					{!imagery && (
-						// A country with no published mosaic is a real gap, and the
-						// visitor is told which one it is instead of being left to
-						// wonder why the background is a line drawing.
 						<p className="lp-profile-help">
 							{__(
-								"No official aerial imagery is published for this country. Draw the roof outline here, or upload a plan or a photograph of the roof.",
+								"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
 								"linker-tools",
 							)}
 						</p>

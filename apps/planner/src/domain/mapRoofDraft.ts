@@ -1,7 +1,7 @@
 /** An unfinished manual drawing is local working data, never project geometry.
  * Only explicit source/plane confirmation produces one metric project command. */
 import type { GeometryDocument, Vec2 } from "./geometry.ts";
-import type { GeometryCommand } from "./geometryCommands.ts";
+import type { GeometryCommand, GeometryEdit } from "./geometryCommands.ts";
 import { applyGeometryCommand } from "./geometryCommands.ts";
 import { manualSource } from "./geometryEditing.ts";
 import {
@@ -16,6 +16,7 @@ import { parseDecimal } from "./decimal.ts";
 import { sameJson } from "./draft.ts";
 import {
 	appendMapPrefix,
+	canAnchorFirstMapRoof,
 	mapDrawingTextLimit,
 	readMapDrawingBase,
 } from "./mapDrawingBase.ts";
@@ -45,7 +46,7 @@ export function startMapRoofDraft(
 	before: GeometryDocument,
 	locale: string,
 ): MapRoofDraft {
-	drawingBridge(before);
+	if (!canAnchorFirstMapRoof(before)) drawingBridge(before);
 	return readMapRoofDraft({
 		schema_version: 1,
 		key: crypto.randomUUID(),
@@ -205,9 +206,34 @@ export function mapRoofDraftCommand(draft: MapRoofDraft): GeometryCommand {
 				retain: "permitted" as const,
 				export: fields.export,
 			},
-		},
-		withSource = readGeometry(
-			{ ...draft.before, sources: [...draft.before.sources, source] },
+		};
+	const frame = draft.before.coordinate_system;
+	const coordinateEdit: Extract<
+		GeometryEdit,
+		{ type: "set_coordinate_system" }
+	> | null = canAnchorFirstMapRoof(draft.before)
+		? {
+				type: "set_coordinate_system",
+				before: frame,
+				value: {
+					...frame,
+					north_reference: "true_north",
+					north_source_id: source.id,
+					anchor: {
+						longitude_deg: draft.height_reference_position[0],
+						latitude_deg: draft.height_reference_position[1],
+						datum: "EPSG:4326",
+						source_id: source.id,
+					},
+				},
+			}
+		: null;
+	const withSource = readGeometry(
+			{
+				...draft.before,
+				coordinate_system: coordinateEdit?.value ?? frame,
+				sources: [...draft.before.sources, source],
+			},
 			policy,
 		),
 		shape = newMapShapeCommand(
@@ -232,6 +258,7 @@ export function mapRoofDraftCommand(draft: MapRoofDraft): GeometryCommand {
 		before: draft.before,
 		edits: [
 			{ type: "put_source", before: null, value: source },
+			...(coordinateEdit ? [coordinateEdit] : []),
 			...shape.edits,
 		],
 	};

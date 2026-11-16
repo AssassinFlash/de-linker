@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { register } from "node:module";
 import React, { act } from "react";
 import { IDBFactory } from "fake-indexeddb";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,7 +9,38 @@ import { setupDom, until } from "./dom-fixture.mjs";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { geometryImportStore } from "../src/data/GeometryImportStore.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
-import { ProjectEditor } from "../src/components/ProjectEditor.tsx";
+import {
+	ProjectEditor,
+	workspaceFromHash,
+} from "../src/components/ProjectEditor.tsx";
+
+register("./map-library-loader.mjs", import.meta.url);
+
+test("saved roof projects reopen in design while energy projects and explicit routes keep their entry", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const brief = {
+		...emptyBrief(),
+		site: {
+			...emptyBrief().site,
+			country_code: "DE",
+			location_label: "Synthetic address",
+			latitude: 50.94,
+			longitude: 6.96,
+			coordinate_basis: "user_entered",
+		},
+	};
+	assert.equal(workspaceFromHash({ brief }), "design");
+	assert.equal(workspaceFromHash({ brief, geometry: {} }), "design");
+	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "overview");
+	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "overview");
+	location.hash = "#lp-overview";
+	assert.equal(workspaceFromHash({ brief }), "overview");
+	location.hash = "#lp-load";
+	assert.equal(workspaceFromHash({ brief }), "energy");
+});
 
 test("import joins one project history step, guards navigation, and a confirmed save clears its exact original", async (t) => {
 	const dom = setupDom(),

@@ -4,6 +4,7 @@ import type { GeometryDocument, Source, Vec2 } from "../../domain/geometry.ts";
 import type { MapRoofFields } from "../../domain/mapRoofDraft.ts";
 import type { MapFeatureFields } from "../../domain/mapFeatureDraft.ts";
 import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
+import { canAnchorFirstMapRoof } from "../../domain/mapDrawingBase.ts";
 import {
 	editMapDrawingVertex,
 	mapDrawingDraftCommand,
@@ -105,8 +106,8 @@ export function MapDrawingWorkspace({
 		[selectedPlaneId, setSelectedPlaneId] = useState<number>(
 			mapProps.siteOutline?.planes?.[0]?.id ?? 1,
 		),
-		[outlinePitch, setOutlinePitch] = useState("25"),
-		[outlineBearing, setOutlineBearing] = useState("180"),
+		[outlinePitch, setOutlinePitch] = useState(""),
+		[outlineBearing, setOutlineBearing] = useState(""),
 		[adoptError, setAdoptError] = useState<string | null>(null);
 	const flight = useRef<AbortController | null>(null),
 		mounted = useRef(true),
@@ -135,7 +136,8 @@ export function MapDrawingWorkspace({
 		!mapProps.disabled &&
 		!journal.checking &&
 		!journal.storageFailed &&
-		geographicReady;
+		(geographicReady ||
+			(canAnchorFirstMapRoof(geometry) && mapProps.siteCentre != null));
 	useEffect(() => {
 		onActivity(active || busy || (journal.writing && drawing !== null));
 		return () => onActivity(false);
@@ -159,7 +161,35 @@ export function MapDrawingWorkspace({
 		setInvalidField(null);
 		setUnchanged(false);
 		try {
-			journal.begin(input);
+			if (!journal.begin(input)) return;
+			const started = journal.latest.current;
+			if (input.kind === "new_roof" && started?.schema_version === 1) {
+				const imagery = mapProps.imagery;
+				void journal
+					.update({
+						...started,
+						fields: {
+							...started.fields,
+							name: sprintf(
+								__("Roof face %d", "linker-tools"),
+								geometry.roofs.length + 1,
+							),
+							// This is the chosen local origin, not a measured building height.
+							height: canAnchorFirstMapRoof(geometry) ? "0" : "",
+							...(imagery
+								? {
+										source: imagery.credit,
+										rights: `${imagery.licence} (${imagery.licence_url})`,
+										calibration: __(
+											"Manually traced on aerial imagery; pitch and direction entered by the user.",
+											"linker-tools",
+										),
+									}
+								: {}),
+						},
+					})
+					.catch(() => undefined);
+			}
 		} catch {
 			setError(
 				__(
@@ -496,7 +526,7 @@ export function MapDrawingWorkspace({
 			const coord = geometry.coordinate_system;
 			let nextCoord = coord;
 			let coordEdit: GeometryEdit | null = null;
-			if (coord.anchor === null && coord.north_reference === "unreferenced") {
+			if (canAnchorFirstMapRoof(geometry)) {
 				const anchorPoint = cleanRing[0]!;
 				nextCoord = {
 					...coord,
@@ -816,13 +846,13 @@ export function MapDrawingWorkspace({
 						<MapRingSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={!canStartDrawing}
+							disabled={!canStartDrawing || !geographicReady}
 							begin={(target) => begin({ kind: "edit_ring", target })}
 						/>
 						<MapFeatureSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={!canStartDrawing}
+							disabled={!canStartDrawing || !geographicReady}
 							begin={(target) => begin({ kind: "new_feature", target })}
 						/>
 					</>
@@ -1036,6 +1066,7 @@ export function MapDrawingWorkspace({
 				(drawing.schema_version === 1 ? (
 					<MapRoofProperties
 						drawing={drawing}
+						sourceProvided={Boolean(mapProps.imagery)}
 						locale={locale}
 						busy={busy}
 						invalidField={invalidField}

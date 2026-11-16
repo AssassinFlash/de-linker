@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { register } from "node:module";
 import React, { act, useState, useRef } from "react";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
@@ -8,6 +9,8 @@ import {
 	emptyGeometry,
 } from "../src/domain/geometryCommands.ts";
 import { moduleSummary } from "../src/domain/panelPoses.ts";
+
+register("./map-library-loader.mjs", import.meta.url);
 
 function button(text) {
 	const result = [...document.querySelectorAll("button")].find(
@@ -26,6 +29,8 @@ async function mount(
 		initial = emptyGeometry(),
 		geometryImports = { schema_version: 1, selected: {} },
 		locale = "en-GB",
+		siteCentre = null,
+		googleMapsApiKey = null,
 		query = async () => {
 			throw new Error("No request expected");
 		},
@@ -47,6 +52,8 @@ async function mount(
 		return React.createElement(DesignEditor, {
 			geometry,
 			geometryImports,
+			siteCentre,
+			googleMapsApiKey,
 			locale,
 			projectId: "1".repeat(32),
 			session: { query_scope: "2".repeat(64) },
@@ -86,6 +93,16 @@ async function mount(
 		},
 	};
 }
+
+test("an address with a Google key opens the editable aerial map first", async (t) => {
+	await mount(t, {
+		siteCentre: [6.96, 50.94],
+		googleMapsApiKey: "fixture-key",
+	});
+	assert.equal(button("Map").getAttribute("aria-pressed"), "true");
+	assert.equal(button("3D").getAttribute("aria-pressed"), "false");
+	await until(() => document.querySelector("[data-map-status]"));
+});
 
 test("measured roof intake preserves decimal locale, explicit source and one command", async (t) => {
 	const app = await mount(t, { locale: "de-DE" });
@@ -369,6 +386,7 @@ test("a planning tier is chosen even when the product catalog cannot load", asyn
 	// The catalog request fails: no module may depend on it any more.
 	const app = await mount(t, {
 		locale: "de-DE",
+		initial: { ...flat, module_specs: [], arrays: [] },
 		query: async () => {
 			throw new Error("catalog unavailable");
 		},

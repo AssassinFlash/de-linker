@@ -126,19 +126,12 @@ export function DesignEditor({
 			geometry.roofs[0]?.id ?? null,
 		),
 		[view, setView] = useState<"plan" | "map" | "3d">(() =>
-			initialMapView
-				? "map"
-				: canShowGoogle3D
-					? "3d"
-					: canShowMap
-						? "map"
-						: "plan",
+			initialMapView || canShowMap ? "map" : "plan",
 		);
 	useEffect(() => {
 		if (userPickedView.current || view !== "plan") return;
-		if (canShowGoogle3D) setView("3d");
-		else if (canShowMap) setView("map");
-	}, [canShowGoogle3D, canShowMap, view]);
+		if (canShowMap) setView("map");
+	}, [canShowMap, view]);
 	const mapCamera = useRef<MapCamera | null>(null);
 	const sceneCamera = useRef<SceneViewState | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
@@ -253,7 +246,7 @@ export function DesignEditor({
 					<h2 id="lp-design-heading">{__("Roof design", "linker-tools")}</h2>
 					<p>
 						{__(
-							"Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
+							"Draw your roof on the aerial map, then place your panels.",
 							"linker-tools",
 						)}
 					</p>
@@ -261,23 +254,16 @@ export function DesignEditor({
 			</div>
 			<div className="lp-design-toolbar">
 				<div className="lp-inline-actions">
-					<button
-						type="button"
-						className="lp-button"
-						disabled={!!form || importOpen || drawingOpen}
-						onClick={() => open("roof")}
-					>
-						<Icon name="plus" />
-						{__("Add roof face", "linker-tools")}
-					</button>
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={!!form || importOpen || drawingOpen}
-						onClick={() => open("module")}
-					>
-						{__("Add module specification", "linker-tools")}
-					</button>
+					{roof && (
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={!!form || importOpen || drawingOpen}
+							onClick={() => open("module")}
+						>
+							{__("Add module specification", "linker-tools")}
+						</button>
+					)}
 				</div>
 				<div
 					className="lp-view-switch"
@@ -327,35 +313,49 @@ export function DesignEditor({
 					)}
 				</Notice>
 			)}
-			<GeometryIntake
-				geometry={geometry}
-				projectId={projectId}
-				session={session}
-				client={client}
-				locale={locale}
-				recheck={recheck}
-				disabled={!!form || drawingOpen}
-				onActivity={setImportOpen}
-				attach={(before, asset) => {
-					if (!attachImport(before, asset)) return false;
-					const added = asset.geometry.roofs[0]!;
-					setRoofId(added.id);
-					setSelected(added.id);
-					return true;
-				}}
-				currentAssetIds={Object.values(geometryImports.selected)}
-				confirmedAssetIds={confirmedAssetIds}
-				recoveryScopes={recoveryScopes}
-				recoveryChecking={recoveryChecking}
-			/>
-			<ImageCalibrationWorkspace
-				geometry={geometry}
-				roofId={roof?.id ?? null}
-				locale={locale}
-				disabled={!!form || drawingOpen || importOpen}
-				onActivity={setCalibrationOpen}
-				commit={edit}
-			/>
+			<details className="lp-design-imports">
+				<summary>
+					{__("Use measurements or import a roof plan", "linker-tools")}
+				</summary>
+				<button
+					type="button"
+					className="lp-button lp-button-secondary"
+					disabled={!!form || importOpen || drawingOpen}
+					onClick={() => open("roof")}
+				>
+					<Icon name="plus" />
+					{__("Add roof face", "linker-tools")}
+				</button>
+				<GeometryIntake
+					geometry={geometry}
+					projectId={projectId}
+					session={session}
+					client={client}
+					locale={locale}
+					recheck={recheck}
+					disabled={!!form || drawingOpen}
+					onActivity={setImportOpen}
+					attach={(before, asset) => {
+						if (!attachImport(before, asset)) return false;
+						const added = asset.geometry.roofs[0]!;
+						setRoofId(added.id);
+						setSelected(added.id);
+						return true;
+					}}
+					currentAssetIds={Object.values(geometryImports.selected)}
+					confirmedAssetIds={confirmedAssetIds}
+					recoveryScopes={recoveryScopes}
+					recoveryChecking={recoveryChecking}
+				/>
+				<ImageCalibrationWorkspace
+					geometry={geometry}
+					roofId={roof?.id ?? null}
+					locale={locale}
+					disabled={!!form || drawingOpen || importOpen}
+					onActivity={setCalibrationOpen}
+					commit={edit}
+				/>
+			</details>
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">
 					{view === "map" ? (

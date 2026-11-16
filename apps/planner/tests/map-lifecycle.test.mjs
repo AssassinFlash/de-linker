@@ -208,7 +208,13 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 		licence_url: "https://land.copernicus.eu/en/products/european-image-mosaic",
 	});
 	const order = [...live.layers.keys()];
-	assert.deepEqual(order, ["linker-site-imagery", "linker-site-outline"]);
+	assert.deepEqual(order.slice(0, 2), [
+		"linker-site-imagery",
+		"linker-site-outline",
+	]);
+	assert.ok(
+		order.indexOf("linker-map-roof") > order.indexOf("linker-site-outline"),
+	);
 	assert.equal(
 		live.options.transformRequest(
 			"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox=0,0,1,1",
