@@ -523,7 +523,7 @@ export function QuickStart({
 	}, []);
 	useEffect(() => {
 		if (settle.current !== undefined) clearTimeout(settle.current);
-		if (choices.location.trim().length < 4) return;
+		if (choices.location.trim().length < 3) return;
 		const pending = choices.location;
 		const country = choices.country;
 		settle.current = setTimeout(() => {
@@ -536,6 +536,7 @@ export function QuickStart({
 		key: K,
 		value: QuickStartChoices[K],
 	) {
+		if (key === "location" || key === "country") setResolved(null);
 		setChoices((previous) => {
 			if (key === "projectType") {
 				const type = value as QuickStartProjectType;
@@ -560,11 +561,14 @@ export function QuickStart({
 	 * A failure here never blocks the screen: the manual country select remains.
 	 */
 	/** Ask the server where a postcode is, and adopt the answer. */
-	async function askPlace(query: string, country: string) {
+	async function askPlace(
+		query: string,
+		country: string,
+	): Promise<ResolvedPlace | null> {
 		const trimmed = query.trim();
-		if (trimmed.length < 4) {
+		if (trimmed.length < 3) {
 			setResolved(null);
-			return;
+			return null;
 		}
 		const instance = lifetime.current;
 		try {
@@ -582,7 +586,7 @@ export function QuickStart({
 					session.query_scope,
 				),
 			);
-			if (instance !== lifetime.current) return;
+			if (instance !== lifetime.current) return null;
 			setResolved(value);
 			if (
 				value.found &&
@@ -596,8 +600,10 @@ export function QuickStart({
 					location: value.location_label as string,
 				}));
 			}
+			return value;
 		} catch {
 			if (instance === lifetime.current) setResolved(null);
+			return null;
 		}
 	}
 	function resolvePlace(query: string) {
@@ -608,15 +614,31 @@ export function QuickStart({
 		const instance = lifetime.current;
 		setBusy(true);
 		setFailure(null);
+		let activeResolved = resolved;
+		let activeChoices = choices;
 		try {
 			// A visitor who types a postcode and presses the button has not blurred
 			// the field, so the place was never resolved and the project would be
 			// saved without coordinates — measured 2026-11-16, `1010 Wien` stored
 			// `latitude: null` and the roof map then refused to open.
-			if (!resolved) {
+			if (!activeResolved) {
 				const pending = choices.location?.trim() ?? "";
-				if (pending) await askPlace(pending, choices.country);
-				if (instance !== lifetime.current) return;
+				if (pending) {
+					activeResolved = await askPlace(pending, choices.country);
+					if (instance !== lifetime.current) return;
+					if (
+						activeResolved?.found &&
+						activeResolved.country_code &&
+						activeResolved.location_label &&
+						activeResolved.timezone
+					) {
+						activeChoices = {
+							...choices,
+							country: activeResolved.country_code,
+							location: activeResolved.location_label,
+						};
+					}
+				}
 			}
 		} catch (error) {
 			if (instance === lifetime.current) {
@@ -640,8 +662,8 @@ export function QuickStart({
 								expected_revision: existingProject.revision,
 								inputs: mergeQuickStartInputs(
 									existingProject.inputs,
-									choices,
-									resolved,
+									activeChoices,
+									activeResolved,
 								),
 								key: crypto.randomUUID(),
 							},
@@ -660,7 +682,7 @@ export function QuickStart({
 				setProject(value);
 				return;
 			}
-			const inputs = quickStartInputs(choices, resolved);
+			const inputs = quickStartInputs(activeChoices, activeResolved);
 			const value = readProject(
 				await client.send(
 					"projects/create",
@@ -668,7 +690,7 @@ export function QuickStart({
 						{
 							schema_version: 1,
 							input_contract: projectInputContract,
-							title: quickStartTitle(choices),
+							title: quickStartTitle(activeChoices),
 							inputs,
 							key: crypto.randomUUID(),
 						},

@@ -468,7 +468,6 @@ def _outline_with_source(
             ring = nearest(outlines(archive, latitude, longitude), latitude, longitude)
             if ring is not None:
                 return ring, "Microsoft building footprints", LICENCE
-            return None
     osm_ring = _overpass_outline(latitude, longitude)
     if osm_ring is not None:
         return osm_ring, "OpenStreetMap contributors", OSM_LICENCE

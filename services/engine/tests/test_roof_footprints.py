@@ -298,8 +298,9 @@ def test_streaming_disk_lru_and_overpass_fallback(
     assert len(cached) == 10
     assert not (fp_dir / "XX-000000000.geojsonl.gz").exists()
 
-    # 3. When Microsoft has no part, Overpass fallback returns OSM outline.
-    mp.setattr(footprints, "_catalogue", lambda: {})
+    # 3. When Microsoft has a part that misses the position (or no part), Overpass fallback returns OSM outline.
+    for cached_part in fp_dir.glob("SJ-*.geojsonl.gz"):
+        cached_part.unlink()
     osm_json = json.dumps(
         {
             "elements": [
@@ -316,6 +317,21 @@ def test_streaming_disk_lru_and_overpass_fallback(
             ]
         }
     ).encode()
+    miss_part = _part([_box(15.9, 78.9)])
+    mp.setattr(
+        "urllib.request.urlopen",
+        lambda req, timeout=0: FakeResp(
+            miss_part
+            if "example.invalid"
+            in (req.full_url if hasattr(req, "full_url") else str(req))
+            else osm_json
+        ),
+    )
+    miss_then_osm = footprints.outline_payload("SJ", 78.2201, 15.6401)
+    assert miss_then_osm is not None
+    assert miss_then_osm["source"] == "OpenStreetMap contributors"
+
+    mp.setattr(footprints, "_catalogue", lambda: {})
     mp.setattr(
         "urllib.request.urlopen",
         lambda req, timeout=0: FakeResp(osm_json),
