@@ -185,6 +185,7 @@ export function BriefForm({
 									site: {
 										...brief.site,
 										country_code: event.currentTarget.value || null,
+										postal_code: null,
 									},
 								})
 							}
@@ -209,6 +210,7 @@ export function BriefForm({
 									site: {
 										...brief.site,
 										location_label: event.currentTarget.value,
+										postal_code: null,
 									},
 								})
 							}

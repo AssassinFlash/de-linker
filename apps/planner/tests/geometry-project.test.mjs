@@ -5,7 +5,7 @@ import { register } from "node:module";
 import React, { act } from "react";
 import { IDBFactory } from "fake-indexeddb";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { setupDom, until } from "./dom-fixture.mjs";
+import { setupDom, until, enter } from "./dom-fixture.mjs";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { geometryImportStore } from "../src/data/GeometryImportStore.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
@@ -15,6 +15,56 @@ import {
 } from "../src/components/ProjectEditor.tsx";
 
 register("./map-library-loader.mjs", import.meta.url);
+
+test("editing the site address or country drops the old search postcode and retains coordinates", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { BriefForm } = await import("../src/components/BriefForm.tsx");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const brief = {
+		...emptyBrief(),
+		site: {
+			...emptyBrief().site,
+			country_code: "DE",
+			location_label: "80333 München",
+			postal_code: "80333",
+			latitude: 48.145,
+			longitude: 11.566,
+			coordinate_basis: "user_entered",
+		},
+	};
+	const changes = [];
+	await act(async () =>
+		root.render(
+			React.createElement(BriefForm, {
+				brief,
+				config: {
+					locale: "en",
+					countries: { DE: "Germany", NL: "Netherlands" },
+				},
+				onChange: (value) => changes.push(value),
+				onValidity: () => {},
+				workspace: "site",
+			}),
+		),
+	);
+	await enter(
+		document.querySelector('#lp-site input[autocomplete="off"]'),
+		"10115 Berlin",
+	);
+	const country = document.querySelector("#lp-site select[aria-labelledby]");
+	await act(async () => {
+		country.value = "NL";
+		country.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(changes.length, 2);
+	for (const value of changes) {
+		assert.equal(value.site.postal_code, null);
+		assert.equal(value.site.latitude, brief.site.latitude);
+		assert.equal(value.site.longitude, brief.site.longitude);
+	}
+});
 
 test("saved roof projects reopen in design while energy projects and explicit routes keep their entry", async (t) => {
 	const dom = setupDom();
