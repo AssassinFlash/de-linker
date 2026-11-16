@@ -68,6 +68,17 @@
         "location_label": {
           "$ref": "#/$defs/Text"
         },
+        "postal_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "latitude": {
           "anyOf": [
             {

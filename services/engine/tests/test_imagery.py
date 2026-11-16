@@ -108,6 +108,32 @@ def test_for_place_avoids_non_german_region_code_collisions() -> None:
     assert de_bayern is not None and "geoservices.bayern.de" in de_bayern.tiles[0]
 
 
+def test_editing_retains_explicit_open_licences_and_refuses_viewing_or_unknown_terms(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "configured-viewing-key")
+    monkeypatch.setattr(
+        imagery,
+        "_google_satellite",
+        lambda: pytest.fail("editing must not select Google imagery"),
+    )
+    for country, region, host in (
+        ("DE", "DE-BY", "geoservices.bayern.de"),
+        ("NL", "DE-BY", "service.pdok.nl"),
+        ("FR", None, "data.geopf.fr"),
+        ("CH", "FR", "wms.geo.admin.ch"),
+        ("LU", None, "wmts.geoportail.lu"),
+    ):
+        service = imagery.for_editing(country, region)
+        assert service is not None and host in service.tiles[0]
+        assert service.credit and service.licence_url
+
+    # Germany requires a known state; generic "Open data" homepage links do
+    # not establish derivation rights, and the VHR viewing fallback stays out.
+    for country in ("DE", "PL", "IT", "GB", "UA"):
+        assert imagery.for_editing(country) is None
+
+
 def test_session_cache_refreshes_near_expiry_and_keys_by_api_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

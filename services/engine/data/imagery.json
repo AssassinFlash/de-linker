@@ -125,14 +125,14 @@
    "layer": "HR.ORTHOIMAGERY.ORTHOPHOTOS",
    "credit": "IGN / Geoplateforme",
    "licence": "Licence Ouverte 2.0",
-   "licence_url": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
+   "licence_url": "https://www.data.gouv.fr/pages/legal/licences/etalab-2-0"
   },
   "MC": {
    "wms": "https://data.geopf.fr/wms-r",
    "layer": "HR.ORTHOIMAGERY.ORTHOPHOTOS",
    "credit": "IGN / Geoplateforme",
    "licence": "Licence Ouverte 2.0",
-   "licence_url": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
+   "licence_url": "https://www.data.gouv.fr/pages/legal/licences/etalab-2-0"
   },
   "ES": {
    "wms": "https://www.ign.es/wms-inspire/pnoa-ma",

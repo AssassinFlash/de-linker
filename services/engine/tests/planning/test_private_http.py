@@ -127,7 +127,7 @@ def test_address_lookup_keeps_country_imagery_without_inventing_a_position(
         countries.append(country)
         return layer
 
-    monkeypatch.setattr(imagery, "for_country", country_layer)
+    monkeypatch.setattr(imagery, "for_editing", country_layer)
     reply = rig.post(
         "/places/lookup",
         {"query": "A street address outside the postal table", "country": "fr"},
@@ -141,6 +141,32 @@ def test_address_lookup_keeps_country_imagery_without_inventing_a_position(
     assert unknown["found"] is False
     assert unknown.get("imagery") is None
     assert countries == ["FR"]
+
+
+def test_place_lookup_uses_open_editing_layers_even_with_google_configured(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_engine import imagery
+
+    monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "synthetic-google-key")
+    monkeypatch.setattr(
+        imagery,
+        "_google_satellite",
+        lambda: pytest.fail("drawing must not request Google satellite pixels"),
+    )
+    for query, country, host in (
+        ("80333", "DE", "geoservices.bayern.de"),
+        ("9401 AB", "NL", "service.pdok.nl"),
+    ):
+        reply = rig.post("/places/lookup", {"query": query, "country": country})
+        assert reply["found"] is True
+        layer = json_object(reply["imagery"])
+        assert host in str(layer["tiles"])
+        assert layer["licence"] == "CC BY 4.0"
+
+    viewing_only = rig.post("/places/lookup", {"query": "M1 1AE", "country": "GB"})
+    assert viewing_only["found"] is True
+    assert viewing_only["imagery"] is None
 
 
 def test_geometry_import_has_owned_original_receipt_and_separate_project_save(

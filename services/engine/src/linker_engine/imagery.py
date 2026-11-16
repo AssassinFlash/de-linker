@@ -1,10 +1,11 @@
-"""Aerial imagery for every European region and country, for the roof map.
+"""Viewing and editable aerial imagery for European regions and countries.
 
 When ``LINKER_GOOGLE_MAP_TILES_KEY`` is configured, Google 2D Satellite imagery
 is the primary layer across all verified European countries and German states.
 When the key is unset or Google session creation fails, each lookup falls back
 cleanly to the state's or country's open orthophoto service in
 ``data/imagery.json`` or the EU Copernicus VHR mosaic, or ``None``.
+Roof editing uses only catalogue licences that permit derived geometry.
 """
 
 from __future__ import annotations
@@ -35,6 +36,23 @@ GOOGLE_REFRESH_MARGIN_SECONDS = 3600.0
 
 _GOOGLE_LOCK = threading.Lock()
 _GOOGLE_SESSIONS: dict[str, tuple[str, float]] = {}
+
+# These catalogue licences explicitly allow altered/derived data. The provider
+# credit and licence link remain attached to every returned editing layer.
+# CC BY/CC0, DL-DE and Licence Ouverte terms are at these canonical URLs.
+# Representative provider declarations:
+# https://geodatenonline.bayern.de/geodatenonline/seiten/wms_dop20cm
+# https://www.pdok.nl/-/luchtfoto-2025-nu-beschikbaar-bij-pdok
+EDITING_LICENCE_URLS = frozenset(
+    {
+        "https://creativecommons.org/licenses/by/4.0/",
+        "https://creativecommons.org/publicdomain/zero/1.0/",
+        "https://www.govdata.de/dl-de/by-2-0",
+        "https://www.govdata.de/dl-de/zero-2-0",
+        "https://www.data.gouv.fr/pages/legal/licences/etalab-2-0",
+        "https://www.swisstopo.admin.ch/en/terms-of-use-free-geodata-and-geoservices",
+    }
+)
 
 
 @cache
@@ -169,3 +187,17 @@ def for_place(country: str, iso_region: str | None = None) -> Imagery | None:
     if country == "DE" and iso_region and iso_region in _catalogue()["states"]:
         return for_state(iso_region)
     return for_country(country)
+
+
+def for_editing(country: str, iso_region: str | None = None) -> Imagery | None:
+    """Return a catalogue layer whose licence permits deriving roof geometry.
+
+    Google Map Tiles disallow derived content and Copernicus VHR is a viewing
+    service. Neither is an editing fallback, even when a Google key is set.
+    https://developers.google.com/maps/documentation/tile/policies
+    """
+    key = iso_region if country == "DE" and iso_region else country
+    entry = _catalogue()["states"].get(key)
+    if entry is None or entry["licence_url"] not in EDITING_LICENCE_URLS:
+        return None
+    return _build(entry)
