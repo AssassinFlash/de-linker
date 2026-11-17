@@ -405,10 +405,12 @@ export function EnergyDemand({
 			backup.duration_hours !== null &&
 			backup.duration_hours > 0);
 	const solarOnly = brief.system_scope === "pv_only";
+	const needsGridPhase =
+		equipment.grid_phase === null && !retainsUnverifiedInverter(inputs);
 	const canCompare =
 		Boolean(goal) &&
 		(!solarOnly || goal !== "backup") &&
-		(equipment.grid_phase !== null || retainsUnverifiedInverter(inputs)) &&
+		!needsGridPhase &&
 		backupReady &&
 		invalid.size === 0 &&
 		!blocked;
@@ -1037,7 +1039,15 @@ export function EnergyDemand({
 				</details>
 			)}
 			<footer className="sc-footer">
-				{goal && goal !== "backup" && !selected && (
+				{goal && needsGridPhase && (
+					<p className="sc-muted">
+						{__(
+							"Choose a single-phase or three-phase grid connection.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+				{canCompare && goal !== "backup" && !selected && (
 					<p className="sc-muted">
 						{__(
 							"You can compare equipment now. Add a load profile to compare energy use over time.",

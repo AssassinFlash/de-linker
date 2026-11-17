@@ -63,8 +63,18 @@ test("energy demand edits one project and compares without preparation rituals",
 	try {
 		await act(async () => render());
 		assert.equal(energyGoal(inputs), "");
+		await select("Purpose", "self");
+		assert.equal(compare().disabled, true);
+		assert.doesNotMatch(
+			dom.element.textContent,
+			/You can compare equipment now/,
+		);
+		assert.match(
+			dom.element.textContent,
+			/Choose a single-phase or three-phase grid connection/,
+		);
 		await select("Purpose", "backup");
-		assert.equal(edits, 1);
+		assert.equal(edits, 2);
 		assert.deepEqual(inputs.backup_demand, {
 			schema_version: 1,
 			load_kw: null,
