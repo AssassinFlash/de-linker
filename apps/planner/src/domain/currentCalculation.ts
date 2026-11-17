@@ -53,6 +53,10 @@ export function sameEquipmentDemand(
 			"equipment_demand",
 			"pvgis_reference_setup",
 			"pvgis_reference",
+			"geometry",
+			"pv_generation",
+			"pv_preparation",
+			"geometric_pv_preparation",
 		].every((field) => sameJson(a[field] ?? null, b[field] ?? null))
 	);
 }

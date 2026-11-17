@@ -47,11 +47,7 @@ type Query = (
 	signal: AbortSignal,
 ) => Promise<unknown>;
 
-function comparisonInputs(
-	inputs: JsonObject,
-	asset: ProfileAsset,
-	power: number,
-): JsonObject {
+function withComparisonCapacity(inputs: JsonObject, power: number): JsonObject {
 	const scope =
 		inputs.brief === undefined ? null : readBrief(inputs.brief).system_scope;
 	let next = inputs;
@@ -67,6 +63,15 @@ function comparisonInputs(
 			next = changeEquipment(inputs, { pv_dc_kw: power });
 		}
 	}
+	return next;
+}
+
+function comparisonInputs(
+	inputs: JsonObject,
+	asset: ProfileAsset,
+	power: number,
+): JsonObject {
+	const next = withComparisonCapacity(inputs, power);
 	if (next.energy_scenario === undefined || next.backup_demand !== undefined)
 		return next;
 	const scenario = readScenarioDraft(next.energy_scenario);
@@ -135,8 +140,8 @@ export async function prepareKnownPvForComparison({
 	const placed = layout?.arrays.length
 		? moduleSummary(layout.geometry).stc_kwp
 		: null;
-	const selected = readSelections(inputs.profile_selections).selected
-		.pv_available_ac;
+	const profiles = readSelections(inputs.profile_selections).selected;
+	const selected = profiles.pv_available_ac;
 	if (
 		!known &&
 		placed === null &&
@@ -167,6 +172,18 @@ export async function prepareKnownPvForComparison({
 		)
 			throw new ApiError(409, "preparation_source_changed");
 	};
+	if (
+		!known &&
+		placed !== null &&
+		!selected &&
+		!profiles.gross_load &&
+		inputs.brief !== undefined &&
+		readBrief(inputs.brief).system_scope === "pv_only"
+	)
+		return (current) => {
+			unchanged(current);
+			return withComparisonCapacity(current, placed);
+		};
 	const historicalInputs = async (asset: ProfileAsset) => {
 		const revision = asset.metadata.derived_from_revision;
 		const historical = readProject(

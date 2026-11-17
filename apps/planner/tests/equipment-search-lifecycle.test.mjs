@@ -589,7 +589,15 @@ async function equipmentApp(
 			);
 			if (state === "succeeded" && frozenInputs.equipment_plant_setup) {
 				const search = serverRun.result.search;
-				const plan = compilePlantSearch(readPlantDraft(frozenInputs));
+				const draft = readPlantDraft(frozenInputs);
+				const backup = frozenInputs.backup_demand;
+				if (backup) {
+					draft.requirements = {
+						...draft.requirements,
+						operating_mode: "backup",
+					};
+				}
+				const plan = compilePlantSearch(draft);
 				search.coverage = {
 					template: "declared_plant_one_external_assembly_per_converter",
 					gaps: {},
@@ -791,6 +799,90 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Review the proposal").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
+	await app.step("Solar");
+	await act(async () =>
+		document
+			.querySelector(".lp-panel-shape")
+			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
+	);
+	await act(async () => app.button("Remove selected").click());
+	await app.step("System");
+	assert.equal(Boolean(app.button("Selected")), false);
+	assert.equal(app.button("Review the proposal").disabled, true);
+});
+
+test("a manually drawn solar-only roof compares its placed capacity without a load profile", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "6".repeat(32),
+		hash: "#sc-project",
+		inputs: {
+			equipment_setup: { ...savedSetup, pv_dc_kw: null },
+			geometry: {
+				...(await import("../src/domain/geometryCommands.ts")).emptyGeometry(),
+				module_specs:
+					nativePreparation.pvgis_reference_project.inputs.geometry
+						.module_specs,
+			},
+		},
+	});
+	const click = async (label) => {
+		await until(() => app.button(label)?.matches(":enabled"));
+		await act(async () => app.button(label).click());
+	};
+	await untilRun(() => app.fieldSelect("Planned system")?.matches(":enabled"));
+	await app.updateSelect("Planned system", "pv_only");
+	if (app.button("Switch to solar and exclude storage"))
+		await click("Switch to solar and exclude storage");
+	await click("Continue with solar");
+	await click("Place modules on the roof");
+	const module =
+		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
+	await untilRun(() =>
+		app.fieldSelect("PV module")?.querySelector(`option[value="${module.id}"]`),
+	);
+	await app.updateSelect("PV module", module.id);
+	for (const [label, value] of [
+		["Width", "8"],
+		["Depth", "5"],
+		["Pitch", "25"],
+		["Azimuth", "180"],
+		["Relative roof height", "3"],
+		["Origin east / U", "0"],
+		["Origin north / V", "0"],
+		["Drawing source", "Installer site plan"],
+	])
+		await enter(app.fieldInput(label), value);
+	await act(async () => document.querySelector(".sc-check input").click());
+	await click("Add rectangular roof");
+	for (const [label, value] of [
+		["Rows", "1"],
+		["Columns", "2"],
+		["Module gap", "0.05"],
+		["Origin east / U", "1"],
+		["Origin north / V", "1"],
+	])
+		await enter(app.fieldInput(label), value);
+	await click("Place module group");
+	assert.match(
+		document.querySelector(".sc-solar-total").textContent,
+		/2 placed modules · 0.92 kWp/,
+	);
+	await click("Continue with energy use");
+	await chooseGoal(app);
+	await compare(app);
+	await until(
+		() =>
+			app.pending() ||
+			document.querySelector(".sc-configurator > [role=alert]"),
+	);
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["runs/find-equipment"],
+	);
+	const inputs = app.requests[0].body.inputs;
+	assert.equal(inputs.equipment_setup.pv_dc_kw, 0.92);
+	assert.equal(inputs.profile_selections?.selected.pv_available_ac, undefined);
+	assert.equal(inputs.geometry.coordinate_system.anchor, null);
 });
 
 const option = () => document.querySelector(".sc-package");
@@ -1050,20 +1142,34 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	}
 });
 
-for (const multi of [false, true]) {
-	test(`${multi ? "plant" : "single"} selection pins the search candidate to the project report`, async (t) => {
+for (const [multi, selection] of [
+	[false, "none"],
+	[false, "battery"],
+	[true, "none"],
+	[true, "battery"],
+	[true, "backup"],
+]) {
+	test(`${multi ? "plant" : "single"} ${selection} selection pins the search candidate to the project report`, async (t) => {
 		const app = await equipmentApp(t, {
 			projectId: (multi ? "d" : "c").repeat(32),
 			hash: "#sc-project",
 			inputs: {
-				equipment_setup: { ...savedSetup, equipment_use: null },
+				equipment_setup: {
+					...savedSetup,
+					...(selection === "battery" ? { battery_product_id: 201 } : {}),
+					equipment_use: null,
+				},
 				equipment_requirements: savedRequirements,
 			},
 		});
 		await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 		if (multi) await act(async () => app.button("Multiple systems").click());
 		await app.step("Energy use");
-		await chooseGoal(app);
+		await chooseGoal(app, selection === "backup" ? "backup" : "self");
+		if (selection === "backup") {
+			await enter(app.fieldInput("Backup load"), "5");
+			await enter(app.fieldInput("Required duration"), "4");
+		}
 		await compare(app);
 		await untilRun(app.pending);
 		app.setServerRun("succeeded");
@@ -1103,6 +1209,69 @@ for (const multi of [false, true]) {
 			assert.equal(saved.equipment_selection.application, undefined);
 		}
 		assert.equal(app.requests[2].body.expected_revision, 3);
+		const assertModels = (inputs) => {
+			const rows = multi
+				? inputs.equipment_plant_setup.units.map(
+						(u) => u.inputs.equipment_setup,
+					)
+				: [inputs.equipment_setup];
+			rows.forEach((row, index) =>
+				assert.deepEqual(row.comparison_models, {
+					inverter_product_id: null,
+					battery_product_id:
+						selection === "battery" && index === 0 ? 201 : null,
+				}),
+			);
+		};
+		assertModels(saved);
+		if (selection === "backup") {
+			assert.equal(
+				saved.equipment_plant.requirements.required_discharge_ac_kw,
+				100,
+			);
+			assert.equal(saved.backup_demand.load_kw, 5);
+			assert.equal(
+				saved.equipment_plant.units[0].selection.required_discharge_ac_kw,
+				100,
+			);
+		}
+		await app.step("Energy use");
+		await compare(app);
+		await untilRun(
+			() =>
+				app.requests.filter(({ path }) => path === "runs/find-equipment")
+					.length === 2,
+		);
+		const again = app.requests.at(-1).body.inputs;
+		assertModels(again);
+		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
+		if (selection === "none") {
+			await app.step("Project");
+			const declarations = document.querySelector("details");
+			if (!declarations.open)
+				await act(async () => declarations.querySelector("summary").click());
+			await untilRun(() =>
+				app
+					.fieldSelect("Inverter or integrated storage system")
+					?.querySelector('option[value="101"]'),
+			);
+			assert.equal(
+				app.fieldSelect("Inverter or integrated storage system").value,
+				"",
+			);
+			await app.updateSelect("Inverter or integrated storage system", "101");
+			await app.step("Energy use");
+			await compare(app);
+			await untilRun(() => searchRequests(app).length === 3);
+			const edited = searchRequests(app).at(-1).body.inputs;
+			const unit = multi
+				? edited.equipment_plant_setup.units[0].inputs
+				: edited;
+			assert.deepEqual(unit.equipment_setup.comparison_models, {
+				inverter_product_id: 101,
+				battery_product_id: null,
+			});
+		}
 	});
 }
 

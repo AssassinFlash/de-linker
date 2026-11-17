@@ -45,6 +45,7 @@ export interface PlantGroupDraft extends JsonObject {
 	id: string;
 	unit_ids: string[];
 	controller_product_id: number | null;
+	comparison_controller_product_id?: number | null;
 	control_network?: "lan" | "rs485";
 	/** Same procurement semantics as the selection's equipment_use. */
 	controller_use?: PartUse | null;
@@ -247,6 +248,12 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 			id: g.id,
 			unit_ids: g.unit_ids as string[],
 			controller_product_id: g.controller_product_id as number | null,
+			...(g.comparison_controller_product_id === undefined
+				? {}
+				: {
+						comparison_controller_product_id:
+							g.comparison_controller_product_id as number | null,
+					}),
 			...(g.control_network === undefined
 				? {}
 				: { control_network: g.control_network as "lan" | "rs485" }),
@@ -371,17 +378,19 @@ export function compilePlant(
 					products,
 				),
 			})),
-			parallel_groups: draft.parallel_groups.map((g) => {
-				const controller = products.find(
-					(p) => p.id === g.controller_product_id,
-				);
-				if (g.controller_product_id !== null && !controller)
-					throw new ApiError(409, "product_evidence_changed");
-				return {
-					...g,
-					controller_revision: controller?.product_revision ?? null,
-				};
-			}),
+			parallel_groups: draft.parallel_groups.map(
+				({ comparison_controller_product_id: _filter, ...g }) => {
+					const controller = products.find(
+						(p) => p.id === g.controller_product_id,
+					);
+					if (g.controller_product_id !== null && !controller)
+						throw new ApiError(409, "product_evidence_changed");
+					return {
+						...g,
+						controller_revision: controller?.product_revision ?? null,
+					};
+				},
+			),
 		});
 	} catch (error) {
 		if (error instanceof ApiError && error.code === "product_evidence_changed")

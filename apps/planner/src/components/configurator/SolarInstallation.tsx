@@ -220,16 +220,22 @@ export function SolarInstallation({
 			});
 		});
 	}
+	function roofReferenceInputs(
+		current: JsonObject,
+		patch: Partial<PvgisReferenceDraft> = {},
+	) {
+		const { arrays: _known, ...settings } = referenceDraft(current);
+		return referenceInputs(current, {
+			...settings,
+			...patch,
+			model: "pvgis_5_3_roof_ac_reference_v1",
+		});
+	}
 	function referenceChange(patch: Partial<PvgisReferenceDraft>, method = mode) {
 		if (blocked) return;
 		edit((current) => {
+			if (method === "roof") return roofReferenceInputs(current, patch);
 			const { arrays, ...settings } = referenceDraft(current);
-			if (method === "roof")
-				return referenceInputs(current, {
-					...settings,
-					...patch,
-					model: "pvgis_5_3_roof_ac_reference_v1",
-				});
 			return referenceInputs(current, {
 				...settings,
 				...patch,
@@ -278,8 +284,7 @@ export function SolarInstallation({
 				site.coordinate_basis !== "user_entered" ||
 				site.latitude === null ||
 				site.longitude === null ||
-				geometry.coordinate_system.anchor ||
-				geometry.roofs.length
+				geometry.coordinate_system.anchor
 			)
 				return;
 			if (!confirmed || !fields.source.trim())
@@ -1162,7 +1167,6 @@ export function SolarInstallation({
 									)}
 								</label>
 								{!geometry.coordinate_system.anchor &&
-									!geometry.roofs.length &&
 									site.coordinate_basis === "user_entered" &&
 									site.latitude !== null &&
 									site.longitude !== null && (
@@ -1262,7 +1266,7 @@ export function SolarInstallation({
 						)}
 					</p>
 					<div className="sc-fields">
-						{mode === "known" &&
+						{(mode === "known" || !geometry.coordinate_system.anchor) &&
 							(["latitude", "longitude"] as const).map((key) => {
 								const bound = key === "latitude" ? 90 : 180;
 								return (
@@ -1446,13 +1450,16 @@ export function SolarInstallation({
 						attach={(before, asset) => {
 							try {
 								if (
-									!edit((current) =>
-										attachGeometryImport(
+									!edit((current) => {
+										const attached = attachGeometryImport(
 											invalidateEnergyReplay(current),
 											before,
 											asset,
-										),
-									)
+										);
+										return referenceDraft(current).model === KNOWN_PV_MODEL
+											? roofReferenceInputs(attached)
+											: attached;
+									})
 								)
 									return false;
 							} catch {

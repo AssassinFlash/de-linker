@@ -7,6 +7,7 @@ import {
 	equipmentDraft,
 	changeEquipment,
 	checkRetainedEquipment,
+	comparisonModels,
 } from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
 import {
@@ -82,7 +83,17 @@ export function compilePlantSearch(draft: PlantDraft): PlantSearchPlan {
 			}),
 		})),
 		parallel_groups: draft.parallel_groups.map(
-			({ controller_use: _use, ...group }) => group,
+			({
+				controller_use: _use,
+				comparison_controller_product_id,
+				...group
+			}) => ({
+				...group,
+				controller_product_id:
+					comparison_controller_product_id === undefined
+						? group.controller_product_id
+						: comparison_controller_product_id,
+			}),
 		),
 	});
 }
@@ -129,9 +140,12 @@ export function adoptPlantCandidate(
 	value: EquipmentPlant,
 	products: readonly EquipmentProduct[],
 	choice: JsonObject,
+	searched: JsonObject = inputs,
 ): JsonObject {
 	const plant = readEquipmentPlant(value);
 	const authored = readPlantDraft(inputs);
+	const searchedDraft =
+		searched === inputs ? authored : readPlantDraft(searched);
 	const draft = {
 		...authored,
 		requirements: {
@@ -177,6 +191,9 @@ export function adoptPlantCandidate(
 				name: unit.name,
 				inputs: changeEquipment(draft.units[i]!.inputs, {
 					...unit.selection,
+					comparison_models: comparisonModels(
+						equipmentDraft(searchedDraft.units[i]!.inputs),
+					),
 					...(previous.equipment_use === undefined
 						? {}
 						: { equipment_use: previous.equipment_use }),
@@ -192,6 +209,12 @@ export function adoptPlantCandidate(
 				throw new ApiError(409, "retained_equipment_changed");
 			return {
 				...plantGroupDraft(group),
+				comparison_controller_product_id:
+					searchedDraft.parallel_groups[i]!.comparison_controller_product_id ===
+					undefined
+						? searchedDraft.parallel_groups[i]!.controller_product_id
+						: searchedDraft.parallel_groups[i]!
+								.comparison_controller_product_id,
 				...(previous.controller_use === undefined
 					? {}
 					: { controller_use: previous.controller_use }),

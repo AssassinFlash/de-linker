@@ -51,6 +51,7 @@ import { emptyBrief, readBrief } from "../../domain/brief.ts";
 import {
 	changeEquipment,
 	checkRetainedEquipment,
+	comparisonModels,
 	equipmentDraft,
 } from "../../domain/equipment.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
@@ -248,6 +249,13 @@ export default function Configurator({
 		SEARCH_TASK,
 		submittedSearch ?? selectedSearch ?? newest(SEARCH_TASK),
 	);
+	const adoptedSearch = useProjectResult(
+		client,
+		session,
+		project.id,
+		SEARCH_TASK,
+		selectedSearch,
+	);
 	const report = useProjectResult(
 		client,
 		session,
@@ -257,11 +265,12 @@ export default function Configurator({
 	);
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
-	const frozenSearch = searchRun?.result?.search
-		? readObject(searchRun.result.search)
+	const adoptedRun = adoptedSearch.data ?? null;
+	const frozenSearch = adoptedRun?.result?.search
+		? readObject(adoptedRun.result.search)
 		: null;
 	const selectedCandidate =
-		choice && choice.run_id === searchRun?.id
+		choice && choice.run_id === adoptedRun?.id
 			? (frozenSearch?.candidates as EquipmentCandidate[] | undefined)?.find(
 					(item) =>
 						item.id === choice.candidate_id &&
@@ -271,7 +280,7 @@ export default function Configurator({
 	const selectedDetail = useCandidateAssessment(
 		client,
 		session.query_scope,
-		searchRun,
+		adoptedRun,
 		selectedCandidate,
 	);
 	function accepted(run: PlanningRun) {
@@ -462,6 +471,7 @@ export default function Configurator({
 					candidate.plant,
 					products.products,
 					choice,
+					frozen,
 				);
 			else {
 				if (
@@ -477,7 +487,10 @@ export default function Configurator({
 				const { product_revisions: _revisions, ...selection } =
 					candidate.selection;
 				next = {
-					...changeEquipment(snapshot, selection),
+					...changeEquipment(snapshot, {
+						...selection,
+						comparison_models: comparisonModels(equipmentDraft(frozen)),
+					}),
 					equipment_selection: candidate.selection,
 					equipment_candidate: choice,
 				};

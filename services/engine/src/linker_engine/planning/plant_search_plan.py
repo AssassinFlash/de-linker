@@ -14,6 +14,7 @@ from .equipment_plant import (
     EquipmentPlant,
     Identity,
     assert_plant_exclusivity,
+    search_group,
 )
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
@@ -115,12 +116,19 @@ class PlantSearchPlan(Document):
                     "requirements": demand.model_dump(mode="json"),
                 }
             )
+        groups = raw.get("parallel_groups")
+        if not isinstance(groups, list) or not all(
+            isinstance(group, dict) for group in groups
+        ):
+            raise InvalidInput("plant search requires parallel group declarations")
         current = cls.read(
             {
                 "schema_version": raw.get("schema_version"),
                 "requirements": requirements.model_dump(mode="json"),
                 "units": projected,
-                "parallel_groups": raw.get("parallel_groups"),
+                "parallel_groups": [
+                    search_group(cast(Object, group)) for group in groups
+                ],
             }
         )
         if current != prepared:

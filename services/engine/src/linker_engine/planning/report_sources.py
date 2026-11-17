@@ -44,6 +44,7 @@ from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
+from .profile_selections import ProfileSelections
 from .pv_preparation import PvReferenceKernel
 from .pv_profile_preparation import PROFILE_PURPOSE as PVLIB_PURPOSE
 from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_AC_PURPOSE
@@ -465,6 +466,10 @@ def report_sources(
                 "equipment_demand",
                 "pvgis_reference_setup",
                 "pvgis_reference",
+                "geometry",
+                "pv_generation",
+                "pv_preparation",
+                "geometric_pv_preparation",
             )
         ):
             raise ReportInputsChanged(
@@ -501,6 +506,25 @@ def report_sources(
             }
         )
         pinned = _pinned_assets(run)
+        if "pv_available_ac.raw" in pinned:
+            profiles = ProfileSelections.read(
+                project.inputs.get("profile_selections")
+            ).selected
+            asset = Assets(workspace).get(
+                actor, project.id, profiles["pv_available_ac"]
+            )
+            try:
+                bindings = profile_dependencies(
+                    asset, "pv_available_ac", project.inputs, workspace.blobs
+                )
+            except InvalidInput as error:
+                raise ReportInputsChanged(
+                    "report candidate PV source differs from the saved project"
+                ) from error
+            if any(pinned.get(name) != sha for name, sha in bindings.items()):
+                raise ReportInputsChanged(
+                    "report candidate PV source dependencies have changed"
+                )
         bases["equipment"] = pinned["woo.equipment_inputs"]
     elif retained_comparison is not None and options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentSearchKernel.kind, ())

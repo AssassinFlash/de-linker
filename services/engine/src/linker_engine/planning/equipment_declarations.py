@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from .canonical import Json, Object, decode_object, encode
 from .energy_declarations import normalize_authored_inputs, object_value
 from .equipment_inputs import EquipmentSelection, EquipmentUse
-from .equipment_plant import EquipmentPlant, ParallelGroup, PlantUnit
+from .equipment_plant import EquipmentPlant, ParallelGroup, PlantUnit, search_group
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
 from .plant_search_plan import PlantSearchPlan, SearchGroup
@@ -71,6 +71,47 @@ def normalize_discovery_inputs(inputs: Object) -> Object:
     return result
 
 
+def restore_comparison_models(inputs: Object, searched: Object) -> Object:
+    """Earlier adoption copied candidate IDs over the original model choices."""
+    recovered = decode_object(encode(inputs))
+
+    def restore(source: Object, previous: Object) -> None:
+        setup, earlier = source.get("equipment_setup"), previous.get("equipment_setup")
+        if isinstance(setup, dict) and "comparison_models" not in setup:
+            if not isinstance(earlier, dict):
+                earlier = cast(Object, previous.get("equipment_selection", {}))
+            setup["comparison_models"] = earlier.get(
+                "comparison_models",
+                {
+                    key: earlier.get(key)
+                    for key in ("inverter_product_id", "battery_product_id")
+                },
+            )
+
+    plant, prior = (
+        recovered.get("equipment_plant_setup"),
+        searched.get("equipment_plant_setup"),
+    )
+    if isinstance(plant, dict) and isinstance(prior, dict):
+        for member_type in ("units", "parallel_groups"):
+            members = {row["id"]: row for row in cast(list[Object], prior[member_type])}
+            for member in cast(list[Object], plant[member_type]):
+                earlier = members.get(member["id"])
+                if earlier is None:
+                    continue
+                if member_type == "units":
+                    restore(
+                        cast(Object, member["inputs"]), cast(Object, earlier["inputs"])
+                    )
+                elif "comparison_controller_product_id" not in member:
+                    member["comparison_controller_product_id"] = search_group(earlier)[
+                        "controller_product_id"
+                    ]
+    elif not isinstance(plant, dict):
+        restore(recovered, searched)
+    return recovered
+
+
 def compile_discovery_inputs(authored: Object) -> Object:
     inputs = decode_object(encode(authored))
     from .existing_system import unverified_retained_inverter
@@ -125,7 +166,7 @@ def compile_discovery_inputs(authored: Object) -> Object:
                 Object,
                 {
                     key: value
-                    for key, value in group.items()
+                    for key, value in search_group(group).items()
                     if key in SearchGroup.model_fields
                 },
             )
@@ -283,7 +324,11 @@ def compile_equipment_inputs(inputs: Object, source: ProductSources | None) -> O
             groups.append(
                 ParallelGroup.read(
                     {
-                        **group,
+                        **{
+                            key: value
+                            for key, value in group.items()
+                            if key in ParallelGroup.model_fields
+                        },
                         "controller_revision": controller.get("product_revision")
                         if isinstance(controller, dict)
                         else None,

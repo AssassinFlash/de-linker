@@ -3704,6 +3704,185 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
         assert stale_report.json()["error"]["code"] == "report_inputs_changed"
 
 
+@pytest.mark.parametrize("external_pv", [False, True])
+def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    external_pv: bool,
+) -> None:
+    from linker_engine.planning.assets import Assets
+    from linker_engine.planning.profile_import import ProfileImport
+
+    from .test_energy_kernel import PROVENANCE, mapping
+    from .test_private_http import Rig, authored_energy
+    from .test_pvgis_roof_reference import prepared_reference_fixture
+
+    _, source, loaded, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
+    project, pv = prepared_reference_fixture(workspace, owner, source)
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, source, EquipmentSearchLimits(work_budget=1000), max_intervals=10
+        ),
+        max_attempts=1,
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(energy, None, equipment_search=search, reports=reports)
+    worker = Worker(
+        Jobs(workspace),
+        "roof-report",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment_search=search,
+        reports=reports,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app) as client:
+        rig = Rig(workspace, ac, client)
+        authored = {**project.inputs, **authored_energy(rig, project.id)}
+        profiles = ProfileImport(Assets(workspace))
+        load = profiles.csv(
+            owner,
+            project.id,
+            b"time,power\n2020-01-01T00:00:00Z,2\n2020-01-01T01:00:00Z,2\n",
+            mapping("gross_load"),
+            PROVENANCE,
+            key="roof-load",
+        )
+        if external_pv:
+            pv = profiles.csv(
+                owner,
+                project.id,
+                b"time,power\n2020-01-01T00:00:00Z,0\n2020-01-01T01:00:00Z,1\n",
+                mapping("pv_available_ac"),
+                PROVENANCE,
+                key="external-pv",
+            )
+        authored["profile_selections"]["selected"] = {
+            "gross_load": load.id,
+            "pv_available_ac": pv.id,
+        }
+        scenario = authored["energy_scenario"]
+        scenario["controller"] = "self_consumption_with_reserve_v1"
+        scenario["schedule"][0].update(
+            start_utc="2020-01-01T00:00:00Z", end_utc="2020-01-01T02:00:00Z"
+        )
+        authored["equipment_setup"] = {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 9.2,
+            "required_usable_kwh": 15,
+            "required_discharge_ac_kw": 5,
+        }
+        command = {
+            "project_id": project.id,
+            "expected_revision": project.revision,
+            "input_contract": "known_pv_ac_reference_v1",
+        }
+        found = rig.post(
+            "/runs/find-equipment", {**command, "inputs": authored, "key": "find-roof"}
+        )
+        assert worker.run_once()
+        run = rig.post("/runs/read", {"run_id": found["run"]["id"]})
+        assert run["state"] == "succeeded", run
+        assert (
+            run["manifest"]["context"]["assets"]["pv_available_ac.raw"]
+            == pv.content_sha256
+        )
+        candidate = run["result"]["search"]["candidates"][0]
+        adopted = {
+            **found["project"]["inputs"],
+            "equipment_selection": candidate["selection"],
+            "equipment_candidate": {
+                "run_id": run["id"],
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            },
+        }
+        saved = rig.post(
+            "/projects/revise",
+            {
+                **command,
+                "expected_revision": found["project"]["revision"],
+                "inputs": adopted,
+                "key": "adopt-roof",
+            },
+        )
+        report_command = {
+            "project_id": project.id,
+            "options": {
+                "locale": "en",
+                "energy_run_id": None,
+                "pv_run_id": None,
+                "equipment_run_id": None,
+                "logo": None,
+            },
+        }
+        report = rig.post(
+            "/runs/report",
+            {
+                **report_command,
+                "expected_revision": saved["revision"],
+                "key": "roof-report",
+            },
+        )
+        assert worker.run_once()
+        finished = rig.post("/runs/read", {"run_id": report["id"]})
+        assert finished["state"] == "succeeded", finished
+        changed = copy.deepcopy(adopted)
+        changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 12
+        revised = rig.post(
+            "/projects/revise",
+            {
+                **command,
+                "expected_revision": saved["revision"],
+                "inputs": changed,
+                "key": "change-roof-tilt",
+            },
+        )
+        stale = client.post(
+            "/runs/report",
+            json={
+                "schema_version": 1,
+                **report_command,
+                "expected_revision": revised["revision"],
+                "key": "stale-roof-report",
+            },
+            headers=headers(owner),
+        )
+        assert stale.status_code == 422, stale.text
+        assert stale.json()["error"]["code"] == "report_inputs_changed"
+        assert (
+            rig.post("/runs/read", {"run_id": report["id"]})["result"]
+            == finished["result"]
+        )
+        pdf = client.post(
+            "/assets/content",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "asset_id": finished["result"]["prepared_asset"]["id"],
+            },
+            headers=headers(owner),
+        )
+        assert pdf.status_code == 200 and pdf.content.startswith(b"%PDF")
+
+
 def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
     feed: FixtureObject,
     engine: Engine,
@@ -3979,6 +4158,27 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
                 "key": "adopt-current-search",
             },
         )
+        comparison = rig.post(
+            "/runs/find-equipment",
+            {
+                **command,
+                "expected_revision": saved["revision"],
+                "inputs": saved["inputs"],
+                "input_contract": "existing_system_v1",
+                "key": "compare-after-legacy-adoption",
+            },
+        )
+        assert (
+            comparison["project"]["inputs"]["equipment_candidate"]
+            == adoption["equipment_candidate"]
+        )
+        assert worker.run_once()
+        compared = rig.post("/runs/read", {"run_id": comparison["run"]["id"]})
+        assert compared["state"] == "succeeded", compared
+        assert {row["id"] for row in compared["result"]["search"]["candidates"]} == {
+            row["id"] for row in json_object(found.result)["search"]["candidates"]
+        }
+        saved = comparison["project"]
         report = rig.post(
             "/runs/report",
             {

@@ -11,6 +11,7 @@ import {
 import type { JsonObject } from "../../data/protocol.ts";
 import {
 	changeEquipment,
+	comparisonModels,
 	equipmentDraft,
 	factoryEquipment,
 	type EquipmentUse,
@@ -121,7 +122,8 @@ function EquipmentDeclarations({
 		options: readonly EquipmentProduct[],
 	) => {
 		const field = `${part}_product_id`;
-		const selected = setup[field];
+		const selected =
+			use[part] === "retain" ? setup[field] : comparisonModels(setup)[field];
 		const current = options.some((product) => product.id === selected);
 		return (
 			<>

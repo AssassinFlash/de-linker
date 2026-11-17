@@ -129,24 +129,29 @@ test("new solar module details persist known capacity and source without requiri
 test("the solar page records a named map origin only after confirmation", async (t) => {
 	const brief = emptyBrief();
 	const app = await mount(t, {
-		brief: {
-			...brief,
-			site: {
-				...brief.site,
-				latitude: 52.09,
-				longitude: 5.12,
-				coordinate_basis: "user_entered",
-			},
-		},
+		brief,
 	});
 	await click("Place modules on the roof");
 	assert.equal(app.inputs.geometry, undefined);
-	const confirm = button(
-		"Confirm site coordinates as map origin and use true north",
-	);
-	assert.equal(confirm.disabled, true);
 	await enter(input("Drawing source"), "Installer site plan");
 	await act(async () => document.querySelector(".sc-check input").click());
+	for (const [label, value] of [
+		["Width", "8"],
+		["Depth", "5"],
+		["Pitch", "25"],
+		["Azimuth", "180"],
+		["Relative roof height", "3"],
+		["Origin east / U", "0"],
+		["Origin north / V", "0"],
+	])
+		await enter(input(label), value);
+	await click("Add rectangular roof");
+	assert.equal(app.inputs.geometry.roofs.length, 1);
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
+	await enter(input("Latitude"), "52.09");
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
+	await enter(input("Longitude"), "5.12");
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
 	await click("Confirm site coordinates as map origin and use true north");
 	const { anchor, north_reference, north_source_id } =
 		app.inputs.geometry.coordinate_system;
@@ -162,18 +167,6 @@ test("the solar page records a named map origin only after confirmation", async 
 			.note,
 		"Installer site plan",
 	);
-	for (const [label, value] of [
-		["Width", "8"],
-		["Depth", "5"],
-		["Pitch", "25"],
-		["Azimuth", "180"],
-		["Relative roof height", "3"],
-		["Origin east / U", "0"],
-		["Origin north / V", "0"],
-	])
-		await enter(input(label), value);
-	await click("Add rectangular roof");
-	assert.equal(app.inputs.geometry.roofs.length, 1);
 	assert.deepEqual(app.inputs.geometry.coordinate_system.anchor, anchor);
 	await enter(input("Width"), "1");
 	await enter(input("Depth"), "1");

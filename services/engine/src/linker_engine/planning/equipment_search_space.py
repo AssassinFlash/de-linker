@@ -129,10 +129,12 @@ class EquipmentSearchSpace:
         retained_assembly: dict[str, int] = {}
         if no_battery and use is not None and use.battery != "new":
             raise InvalidInput("PV-only scope conflicts with declared battery use")
+        models = source.get("comparison_models") if isinstance(source, dict) else None
         for part in ("inverter", "battery"):
             field = f"{part}_product_id"
-            value = source.get(field) if isinstance(source, dict) else None
             retain = use is not None and getattr(use, part) == "retain"
+            declaration = models if isinstance(models, dict) and not retain else source
+            value = declaration.get(field) if isinstance(declaration, dict) else None
             if retain or (
                 constrain_models
                 and value is not None

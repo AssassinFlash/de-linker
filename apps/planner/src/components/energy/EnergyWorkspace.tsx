@@ -80,6 +80,7 @@ import {
 	equipmentDraft,
 	changeEquipment,
 	checkRetainedEquipment,
+	comparisonModels,
 	compileEquipment,
 } from "../../domain/equipment.ts";
 import {
@@ -777,7 +778,10 @@ export function EnergyWorkspace({
 					] as const
 				).map((key) => [key, candidate.selection[key]]),
 			);
-			next = changeEquipment(snapshot, patch);
+			next = changeEquipment(snapshot, {
+				...patch,
+				comparison_models: comparisonModels(equipmentDraft(snapshot)),
+			});
 			try {
 				const selection = compileEquipment(
 					equipmentDraft(next),
