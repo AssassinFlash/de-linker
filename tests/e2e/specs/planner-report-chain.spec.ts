@@ -860,7 +860,9 @@ for (const lang of ['en', 'de'] as const) {
 		const arrayDetails = stringsDetails
 			.locator('details')
 			.filter({
-				has: page.getByText(words.selectAllAvailableModules, { exact: true }),
+				has: page.getByText(words.selectAllAvailableModules, {
+					exact: true,
+				}),
 			})
 			.first();
 		if ((await arrayDetails.getAttribute('open')) === null) {
@@ -1003,7 +1005,9 @@ for (const lang of ['en', 'de'] as const) {
 			hasText: words.advancedStorageAndOperatingSettings,
 		});
 		await expect(advancedSummary).toBeVisible();
-		if ((await advancedSummary.locator('..').getAttribute('open')) === null) {
+		if (
+			(await advancedSummary.locator('..').getAttribute('open')) === null
+		) {
 			await advancedSummary.evaluate((summary) =>
 				summary.scrollIntoView({ block: 'center', behavior: 'instant' })
 			);

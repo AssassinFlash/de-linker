@@ -9,6 +9,9 @@ test("a deferred close completes across a same-scope revalidation without being 
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { Workspace } = await import("../src/components/Workspace.tsx");
+	// Prepare the lazy editor before timing close/revalidation behavior; module
+	// compilation on concurrent CI workers is part of fixture setup.
+	await import("../src/components/ProjectEditor.tsx");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const session = {

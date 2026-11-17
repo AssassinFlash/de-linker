@@ -223,7 +223,9 @@ for (const lang of ['en', 'de'] as const) {
 			const p = await context.newPage();
 			await p.goto(instance().url + words.configurator);
 			// The first successful index read opens the form for an empty workspace.
-			await expect(p.locator('.lp-index-heading button[aria-label]')).toBeEnabled();
+			await expect(
+				p.locator('.lp-index-heading button[aria-label]')
+			).toBeEnabled();
 			if (!(await p.locator('select[name="system_scope"]').isVisible())) {
 				await p
 					.getByRole('button', { name: words.newProject })
@@ -304,12 +306,19 @@ for (const lang of ['en', 'de'] as const) {
 
 		// The guest plans a project of their own.
 		await page.goto(instance().url + words.configurator);
-		await expect(page.locator('.lp-index-heading button[aria-label]')).toBeEnabled();
+		await expect(
+			page.locator('.lp-index-heading button[aria-label]')
+		).toBeEnabled();
 		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
-			await page.getByRole('button', { name: words.newProject }).first().click();
+			await page
+				.getByRole('button', { name: words.newProject })
+				.first()
+				.click();
 		}
 		await page.locator('select[name="solar_entry"]').selectOption('known');
-		await page.locator('input[name="project_title"]').fill('Guest to claim');
+		await page
+			.locator('input[name="project_title"]')
+			.fill('Guest to claim');
 		await page.getByRole('button', { name: words.create }).click();
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
 		const projectUrl = page.url();
