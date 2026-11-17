@@ -1,8 +1,9 @@
-"""A common AC meter and explicit, separately owned storage unit inputs.
+"""A common AC meter with explicit storage states or declared PV-only operation.
 
-This contract describes separate AC PV generation and battery-only use of
-each declared storage converter. Shared-DC PV must use its actual bridge
-model rather than smuggling pre-converted PV into a battery-only equivalent.
+PV-only plants retain their inverter and electrical evidence without storage
+states. Storage-equipped plants describe separate AC PV generation and
+battery-only use of each declared storage converter. Shared-DC PV uses its
+actual bridge model rather than a pre-converted AC equivalent.
 """
 
 from __future__ import annotations
@@ -54,7 +55,7 @@ class PlantEnergyInputs(Document):
         default=None, exclude_if=lambda value: value is None
     )
     schedule: Annotated[list[ScheduleSegment], Field(min_length=1)]
-    units: Annotated[list[PlantStorageInputs], Field(min_length=1)]
+    units: list[PlantStorageInputs]
     controller: Literal[
         "proportional_available_power_self_consumption_v1",
         "proportional_peak_shaving_v1",
@@ -94,6 +95,18 @@ class PlantEnergyInputs(Document):
                 "joint outage AC PV requires an explicitly documented island bus",
                 constraint_id="joint_outage_ac_pv_topology",
             )
+        brief = inputs.get("brief")
+        if isinstance(brief, dict) and brief.get("system_scope") == "pv_only":
+            if scenario.units or any(
+                unit.selection.battery_product_id is not None
+                or unit.selection.modules_per_stack is not None
+                or unit.selection.parallel_stacks is not None
+                for unit in plant.units
+            ):
+                raise InvalidInput(
+                    "PV-only plant replay cannot contain storage units or selected batteries"
+                )
+            return scenario
         if {u.unit_id for u in scenario.units} != {u.id for u in plant.units}:
             raise InvalidInput(
                 "the energy scenario must reference every prepared plant unit"

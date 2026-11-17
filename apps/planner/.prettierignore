@@ -4,3 +4,4 @@ package-lock.json
 src/contracts
 # Recorded native run: preserve its original numeric tokens and source identities.
 tests/fixtures/dc-plant-energy-run.json
+tests/fixtures/plant-pv-only-energy-run.json

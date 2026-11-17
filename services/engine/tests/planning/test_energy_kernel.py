@@ -84,6 +84,105 @@ def add_profile(
     )
 
 
+def authored_from_execution(
+    inputs: FixtureObject, losses: FixtureObject | None = None
+) -> FixtureObject:
+    """Reuse the established physical fixture as current editor declarations."""
+    result = deepcopy(inputs)
+    joint = "energy_plant" in result
+    scenario = result.pop("energy_plant" if joint else "energy_replay")
+    periods = [
+        {
+            **p,
+            "id": "a" * 32,
+            "import_policy": "unlimited" if p["import_cap_kw"] is None else "limited",
+            "export_policy": "unlimited" if p["export_cap_kw"] is None else "limited",
+        }
+        for p in scenario["schedule"]
+    ]
+    profiles = {
+        role: scenario[field]
+        for role, field in (
+            ("gross_load", "gross_load_asset_id"),
+            ("critical_load", "critical_load_asset_id"),
+            ("pv_available_ac", "pv_available_asset_id"),
+            ("aux_ac", "aux_ac_asset_id"),
+            ("pv_reference", "pv_reference_asset_id"),
+        )
+        if scenario.get(field) is not None
+    }
+    result["profile_selections"] = {"schema_version": 1, "selected": profiles}
+
+    def settings(state: FixtureObject) -> FixtureObject:
+        inventory = {
+            k: v for k, v in state["initial_inventory"].items() if k != "basis"
+        }
+        draft: FixtureObject = {
+            "schema_version": 1,
+            "battery": {
+                k: v
+                for k, v in BATTERY.items()
+                if k not in ("schema_version", "model", "parameter_basis")
+            },
+            "source_note": "Explicit analytic fixture",
+            "initial_inventory": inventory,
+            "schedule": periods,
+            "terminal_policy": "none"
+            if state["terminal_min_kwh"] is None
+            else "minimum",
+            "terminal_min_kwh": state["terminal_min_kwh"],
+        }
+        if losses is not None:
+            draft["dc"] = {
+                "source_note": losses["source_note"],
+                "battery_port_id": losses["battery_port_id"],
+                "pv_converter_id": state.get("pv_converter_id", ""),
+                "aux_dc_kw": state.get("aux_dc_kw", 0),
+                "losses": {
+                    k: v
+                    for k, v in losses.items()
+                    if k.startswith("eta_")
+                    or k in ("internal_aux_kw", "standing_loss_rate_per_hour")
+                },
+                **{
+                    k: losses[k]
+                    for k in ("battery_temperature_c", "capacity_window_basis")
+                    if k in losses
+                },
+            }
+        return draft
+
+    if joint:
+        result["energy_plant_setup"] = {
+            "schema_version": 1,
+            "coupling": scenario["coupling"],
+            "schedule": periods,
+            **(
+                {"controller": scenario["controller"]}
+                if scenario["coupling"] == "plant_ac"
+                else {}
+            ),
+            "ac_pv_converter_ids": scenario.get("ac_pv_converter_ids", []),
+            "units": [
+                {
+                    "unit_id": unit["unit_id"],
+                    "settings": settings(unit),
+                    "reserve_kwh": unit["reserve_kwh"],
+                    "pv_dc_input_unused": unit.get("pv_converter_id") is None,
+                    "allow_ac_charge": unit.get("allow_ac_charge"),
+                }
+                for unit in scenario["units"]
+            ],
+        }
+    else:
+        result["energy_scenario"] = {
+            **settings(scenario),
+            "coupling": scenario.get("coupling", "independent_ac"),
+            "controller": scenario["controller"],
+        }
+    return result
+
+
 def create_scenario(
     workspace: Workspace, owner: Actor, *, outage: bool = False
 ) -> Project:

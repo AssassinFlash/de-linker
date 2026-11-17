@@ -1,3 +1,8 @@
+import {
+	acknowledgeCalculation,
+	authoredCalculationInputs,
+	authoredDiscoveryInputs,
+} from "../src/domain/currentCalculation.ts";
 /** Isolated visual consumer fixture. Not a production build entry or WP proof. */
 import { __ } from "../src/i18n.ts";
 import { useState } from "react";
@@ -192,6 +197,21 @@ function SetupFixture() {
 						} catch {
 							return false;
 						}
+					}}
+					acknowledgeProject={async (accepted, command, path) => {
+						const normalize =
+							path === "runs/calculate"
+								? authoredCalculationInputs
+								: authoredDiscoveryInputs;
+						setDraft((current) =>
+							acknowledgeCalculation(
+								current,
+								Number(command.expected_revision),
+								normalize(command.inputs as JsonObject),
+								accepted,
+								normalize,
+							),
+						);
 					}}
 					flush={async () => true}
 					session={session}

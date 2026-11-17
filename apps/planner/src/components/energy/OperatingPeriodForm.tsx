@@ -10,6 +10,7 @@ export function OperatingPeriodForm({
 	remove,
 	report,
 	perUnitReserve = false,
+	hasStorage = true,
 }: {
 	period: PeriodDraft;
 	index: number;
@@ -18,6 +19,7 @@ export function OperatingPeriodForm({
 	remove: (() => void) | undefined;
 	report: (field: string, valid: boolean) => void;
 	perUnitReserve?: boolean;
+	hasStorage?: boolean;
 }) {
 	const field = "period-" + period.id;
 	function patch(
@@ -82,7 +84,7 @@ export function OperatingPeriodForm({
 						<option value="outage">{__("Grid outage", "linker-tools")}</option>
 					</select>
 				</label>
-				{!perUnitReserve && (
+				{hasStorage && !perUnitReserve && (
 					<ScenarioNumber
 						field={field + "-reserve"}
 						label={__("Reserved stored energy", "linker-tools")}
@@ -111,7 +113,7 @@ export function OperatingPeriodForm({
 						<option value="false">{__("Unavailable", "linker-tools")}</option>
 					</select>
 				</label>
-				{period.mode !== "outage" && (
+				{hasStorage && period.mode !== "outage" && (
 					<label className="lp-field">
 						<span>{__("Grid charging allowed", "linker-tools")}</span>
 						<select

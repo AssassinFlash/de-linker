@@ -4,8 +4,13 @@ import {
 	readReportResult,
 } from "./planningReport.ts";
 import { ApiError } from "./protocol.ts";
-import type { JsonObject } from "./protocol.ts";
-import { readObject } from "./readProtocol.ts";
+import type { JsonObject, Project } from "./protocol.ts";
+import { readObject, readProject } from "./readProtocol.ts";
+import { isProjectInputContract, sameJson } from "../domain/draft.ts";
+import {
+	authoredCalculationInputs,
+	authoredDiscoveryInputs,
+} from "../domain/currentCalculation.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
 import { readEnergyResult, isEnergyTask } from "./readEnergyResult.ts";
 import {
@@ -27,6 +32,9 @@ import { GEOMETRIC_PV_TASK } from "../domain/geometricPv.ts";
 
 export const RUN_OPERATIONS = {
 	"runs/energy": "single_ac_energy_replay_v1",
+	"runs/calculate": "single_ac_energy_replay_v1",
+	"runs/find-equipment": SEARCH_TASK,
+	"runs/check-equipment": EQUIPMENT_TASK,
 	"runs/pv": "prepare_roof_pv_reference_v1",
 	"runs/pvgis-reference": PVGIS_REFERENCE_TASK,
 	"runs/direct-beam": DIRECT_BEAM_TASK,
@@ -130,6 +138,11 @@ export function readPlanningOperation(
 				"expected_revision",
 				"key",
 				...(path === "runs/report" ? ["options"] : []),
+				...(path === "runs/calculate" ||
+				path === "runs/find-equipment" ||
+				path === "runs/check-equipment"
+					? ["inputs", "input_contract"]
+					: []),
 				...(path === "draft/apply"
 					? ["report_run_id", "expected_draft_sha256"]
 					: []),
@@ -138,6 +151,15 @@ export function readPlanningOperation(
 		)
 			throw new ApiError(422, "invalid_energy_intent");
 		if (path === "runs/report") readReportOptions(command.options);
+		if (
+			path === "runs/calculate" ||
+			path === "runs/find-equipment" ||
+			path === "runs/check-equipment"
+		) {
+			readObject(command.inputs);
+			if (!isProjectInputContract(command.input_contract))
+				throw new ApiError(422, "invalid_energy_intent");
+		}
 		if (
 			path === "draft/apply" &&
 			(!hash(command.report_run_id, 32) ||
@@ -363,6 +385,65 @@ export function readRun(
 		if (error instanceof ApiError && error.status === 502) throw error;
 		throw new ApiError(502, "invalid_run_reply");
 	}
+}
+
+export function readCurrentCalculation(
+	value: unknown,
+	command: JsonObject,
+	path:
+		| "runs/calculate"
+		| "runs/find-equipment"
+		| "runs/check-equipment" = "runs/calculate",
+): { readonly project: Project; readonly run: PlanningRun } {
+	const reply = readObject(value);
+	if (
+		reply.schema_version !== 1 ||
+		!exact(reply, ["schema_version", "project", "run"])
+	)
+		throw new ApiError(502, "invalid_calculation_reply");
+	const project = readProject(reply.project);
+	const expected = command.expected_revision;
+	if (!revision(expected)) throw new ApiError(502, "invalid_calculation_reply");
+	if (
+		project.id !== command.project_id ||
+		(project.revision !== expected && project.revision !== expected + 1) ||
+		!sameJson(
+			project.inputs,
+			(path === "runs/calculate"
+				? authoredCalculationInputs
+				: authoredDiscoveryInputs)(readObject(command.inputs)),
+		)
+	)
+		throw new ApiError(502, "invalid_calculation_reply");
+	const run = readRun(reply.run, project.id, undefined, RUN_OPERATIONS[path]);
+	if (
+		run.revision !== project.revision ||
+		run.manifest.input_sha256 !== project.input_sha256
+	)
+		throw new ApiError(502, "invalid_calculation_reply");
+	return { project, run };
+}
+
+export function readRunInputs(
+	value: unknown,
+	run: Pick<PlanningRun, "id" | "project_id" | "manifest_sha256">,
+): JsonObject {
+	const reply = readObject(value);
+	if (
+		!exact(reply, [
+			"schema_version",
+			"project_id",
+			"run_id",
+			"manifest_sha256",
+			"inputs",
+		]) ||
+		reply.schema_version !== 1 ||
+		reply.project_id !== run.project_id ||
+		reply.run_id !== run.id ||
+		reply.manifest_sha256 !== run.manifest_sha256
+	)
+		throw new ApiError(502, "run_source_mismatch");
+	return readObject(reply.inputs);
 }
 
 export function readRunPage(value: unknown, projectId: string): RunPage {

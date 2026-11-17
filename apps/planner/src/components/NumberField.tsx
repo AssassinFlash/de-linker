@@ -47,6 +47,8 @@ export function NumberField({
 	notation = "locale",
 	onChange,
 	onValidity,
+	name,
+	error,
 }: {
 	label: string;
 	value: number | null;
@@ -58,6 +60,8 @@ export function NumberField({
 	notation?: DecimalNotation;
 	onChange: (value: number | null) => void;
 	onValidity: (valid: boolean) => void;
+	name?: string;
+	error?: string | null;
 }) {
 	const id = useId();
 	const [text, setText] = useState(formatDecimal(value, locale));
@@ -106,13 +110,16 @@ export function NumberField({
 			</span>
 			<input
 				id={id}
+				name={name}
 				type="text"
 				inputMode={integer ? "numeric" : "decimal"}
 				autoComplete="off"
 				value={text}
-				aria-invalid={!valid}
+				aria-invalid={!valid || Boolean(error)}
 				aria-labelledby={id + "-label"}
-				aria-describedby={id + "-format" + (!valid ? " " + id + "-error" : "")}
+				aria-describedby={
+					id + "-format" + (!valid || error ? " " + id + "-error" : "")
+				}
 				onChange={(event) => update(event.currentTarget.value)}
 				onKeyDown={(event) => {
 					if (event.key !== "Escape") return;
@@ -133,9 +140,9 @@ export function NumberField({
 							? __("Decimal comma; no thousands separators.", "linker-tools")
 							: __("Decimal point; no thousands separators.", "linker-tools")}
 			</small>
-			{!valid && (
+			{(!valid || error) && (
 				<small className="lp-field-error" id={id + "-error"}>
-					{invalidNumberText(integer, min, max, locale)}
+					{!valid ? invalidNumberText(integer, min, max, locale) : error}
 				</small>
 			)}
 		</label>

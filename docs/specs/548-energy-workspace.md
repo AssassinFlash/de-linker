@@ -13,10 +13,12 @@ it adds no numerical model, equipment release or default manufacturer facts.
   available for residential, commercial and industrial use. Existing roof,
   site, energy intake, undo, server save and scoped draft recovery remain.
 - Editable scenario settings are versioned project input, including unfinished
-  numeric fields, operating periods and source notes. Blank is not zero. A
-  prepared `energy_replay` references the owned battery parameter asset and the
-  selected gross-load, available-PV, separate auxiliary and optional critical
-  profiles. Net import and post-curtailment PV do not substitute for these.
+  numeric fields, operating periods and source notes. Blank is not zero. The
+  server derives `energy_replay` or `energy_plant` for each calculation and pins
+  it to that run, including owned parameter assets and selected profiles.
+  These execution documents are not a second customer-editable authority.
+  Net import and post-curtailment PV do not substitute for gross load and
+  available PV.
 - Storage parameters are explicitly declared scenario values with usable kWh,
   AC charge/discharge kW, separate efficiencies, internal auxiliary demand and
   exponential standing-loss coefficient. Their source note is retained. No
@@ -35,15 +37,27 @@ it adds no numerical model, equipment release or default manufacturer facts.
 
 ## Submission, recovery and tasks
 
-- Preparing the battery asset uses one exact durable intent before dispatch;
-  uncertain acknowledgements retain the original body/key/scope. Its result
-  cannot overwrite settings edited in the meantime. Changes to prepared settings
-  or selected profile identity require explicit re-preparation; the stale replay
-  is not offered as the effective current scenario.
-- Calculation uses a confirmed server revision and a durable original intent.
-  Unsaved/conflicting/recovery-pending edits must be resolved first. Retry uses
-  that same request, not the latest edited revision. Scope transitions check
-  native grants and do not automatically submit an old guest mutation as a user.
+- `runs/calculate` accepts the current edited inputs and expected server revision.
+  The server resolves declarations and atomically admits the authored revision,
+  generated parameter assets, queued run and receipt. Identical authored inputs
+  keep their revision; changed inputs advance once. A refused command leaves no
+  saved revision without its requested run. Customers do not prepare parameter
+  assets or save separately before calculating.
+- `runs/find-equipment` uses the same current-input envelope and returns the
+  admitted project and run. Unknown sizing stays null. Explicit project scope
+  determines storage topology; zero kWh/kW is a lower bound, not a no-storage
+  sentinel. `equipment_setup.application` is the editable search filter at root
+  and per-unit; it is not an equipment fact. Retain/replace intent survives
+  candidate selection, adoption and report quantities.
+- `runs/check-equipment` qualifies the current editable single-system or plant
+  selection, including its PV wiring, without requiring an energy scenario.
+  Reports read the check's frozen equipment and electrical evidence.
+- Each command keeps its exact durable body/key/scope. Calculation, discovery
+  and equipment checks have separate receipt scopes. Retry returns the original snapshot even after
+  later edits. Acknowledgement preserves edits made while the request was running.
+  Conflicting and recovery-pending requests require resolution; ordinary unsaved
+  inputs are accepted directly. Scope transitions check native grants and do not
+  automatically submit an old guest mutation as a user.
 - Query reads and polls actual durable states, with no invented progress or
   automatic mutation retry. Leaving the workspace/browser does not cancel a
   worker. Cancel is an explicit server command followed by acknowledged state;
@@ -68,8 +82,11 @@ it adds no numerical model, equipment release or default manufacturer facts.
   No estimated annual figure is substituted for an interval simulation, and no
   payback, SKU approval, country release or new peak resolution is inferred.
 - Historical revision and unsaved/newer-input status remain visible. Sources,
-  model assumptions, definitions and pinned identities can be inspected. Old
-  results remain readable and never acquire the current inputs' label.
+  model assumptions, definitions and pinned identities can be inspected.
+  `runs/inputs` reads the requested owned run's immutable execution inputs,
+  bound to its project, run and manifest. Historical manifests retain their
+  original inputs. Reports and comparisons consume the same frozen basis;
+  old results never acquire the current inputs' label.
 - The follow-through to detailed windows/charts, scenario comparison, product
   qualification, full BOM and report/PDF remains in the same active full goal;
   this workflow may not mark those unimplemented consumers complete.
@@ -78,8 +95,8 @@ it adds no numerical model, equipment release or default manufacturer facts.
 
 Shared schema positive/negative fixtures; incomplete settings and explicit zero;
 source/mode/coverage refusals; exact request/recovery scope and lost acknowledgement;
-duplicate clicks, unmount and account transition; actual native setup → save →
-enqueue → managed calculation → result/history/reload plus cancellation/failure;
+duplicate clicks, unmount and account transition; actual native edit → calculate
+or find equipment → result/history/reload plus cancellation/failure;
 all relevant input hashes and historical status; independent copy and Spec /
 Standards reviews; EN/DE × 1440/390 native visual/keyboard checks. Preserve the
 existing p548 project v14; use a separately owned synthetic scenario for new input.

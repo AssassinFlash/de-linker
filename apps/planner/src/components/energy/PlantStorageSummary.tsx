@@ -1,3 +1,4 @@
+import { PLANT_NO_STORAGE_BOUNDARY } from "../../data/readPlantEnergyResult.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __ } from "../../i18n.ts";
@@ -10,6 +11,15 @@ export function PlantStorageSummary({
 	result: JsonObject;
 	locale: string;
 }) {
+	if (readObject(result.model).pv_boundary === PLANT_NO_STORAGE_BOUNDARY)
+		return (
+			<p className="lp-profile-help">
+				{__(
+					"This PV-only calculation includes no battery storage.",
+					"linker-tools",
+				)}
+			</p>
+		);
 	const plant = readObject(readObject(result.equipment_binding).plant),
 		units = plant.units as readonly JsonObject[];
 	const metrics = readObject(result.metrics);

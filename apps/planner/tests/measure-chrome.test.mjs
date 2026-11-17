@@ -102,3 +102,17 @@ test("measurePlannerChrome publishes both bar heights as CSS variables", () => {
 	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "81px");
 	assert.equal(root.style.getPropertyValue("--lp-project-bar-height"), "163px");
 });
+
+test("the vertical project sidebar never contributes to top scroll clearance", () => {
+	const { dom, root } = fixture("");
+	const navigation = dom.window.document.createElement("aside");
+	navigation.className = "lp-project-aside";
+	navigation.style.position = "sticky";
+	Object.defineProperty(navigation, "offsetHeight", { value: 640 });
+	root.append(navigation);
+	dom.window.getComputedStyle = (element) => ({
+		position: element.style.position,
+	});
+	measurePlannerChrome(root);
+	assert.equal(root.style.getPropertyValue("--lp-project-nav-height"), "");
+});

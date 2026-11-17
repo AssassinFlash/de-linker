@@ -46,6 +46,8 @@ const WORDS = {
 		useSaved: 'Use saved revision',
 		keptOpen: 'Open changes have been kept alongside the saved revision.',
 		projects: 'Projects',
+		annualConsumption: 'Annual consumption',
+		address: 'Address or location reference',
 	},
 	de: {
 		entry: '/de/fuer-installateur/',
@@ -68,12 +70,27 @@ const WORDS = {
 		keptOpen:
 			'Die offenen Änderungen und die gespeicherte Version sind erhalten geblieben.',
 		projects: 'Projekte',
+		annualConsumption: 'Jahresverbrauch',
+		address: 'Adresse oder Standortbezeichnung',
 	},
 } as const;
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
+
+async function openSection(page: Page, section: 'site' | 'energy') {
+	const mobile = page.locator('.lp-mobile-workspace');
+	if (await mobile.isVisible()) await mobile.selectOption(section);
+	else {
+		const hash = section === 'site' ? 'lp-site' : 'lp-load';
+		await page.locator(`.lp-project-aside a[href="#${hash}"]`).click();
+	}
+	await expect(page.locator('.lp-project')).toHaveAttribute(
+		'data-workspace',
+		section
+	);
+}
 
 /** Stages a brief from the language's installer entry and returns its id from
  * the configurator URL (the URL never carries customer text). */
@@ -175,10 +192,14 @@ for (const lang of ['en', 'de'] as const) {
 		// A free-text note is preserved, not parsed into numeric design inputs.
 		await page.getByRole('button', { name: words.create }).click();
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-		await page.locator('nav[aria-label] a[href="#lp-load"]').click();
-		await expect(page.locator('#lp-load input').first()).toHaveValue('');
-		await page.locator('nav[aria-label] a[href="#lp-site"]').click();
-		await expect(page.locator('#lp-site input').first()).toHaveValue('');
+		await openSection(page, 'energy');
+		await expect(
+			page.locator('#lp-load').getByLabel(words.annualConsumption)
+		).toHaveValue('');
+		await openSection(page, 'site');
+		await expect(
+			page.locator('#lp-site').getByLabel(words.address, { exact: true })
+		).toHaveValue('');
 		await expect(page.locator('#lp-notes textarea')).toHaveValue(
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
 		);
@@ -236,7 +257,7 @@ for (const lang of ['en', 'de'] as const) {
 			await p.locator('input[name="project_title"]').fill(title);
 			await p.getByRole('button', { name: words.create }).click();
 			await expect(p).toHaveURL(/project=/, { timeout: 60_000 });
-			await p.locator('nav[aria-label] a[href="#lp-site"]').click();
+			await openSection(p, 'site');
 			return p;
 		};
 
@@ -250,7 +271,9 @@ for (const lang of ['en', 'de'] as const) {
 		// first.
 		const other = await context.newPage();
 		await other.goto(first.url());
-		const address = other.locator('#lp-site input').nth(0);
+		const address = other
+			.locator('#lp-site')
+			.getByLabel(words.address, { exact: true });
 		await address.fill('Triftstrasse 15');
 		await other.getByRole('button', { name: words.saveProject }).click();
 		await expect(other.locator('.lp-save-state')).toContainText(
@@ -260,7 +283,9 @@ for (const lang of ['en', 'de'] as const) {
 
 		// The stale tab edits the same field and saves into a conflict: the
 		// revision it knew is gone, its change is kept alongside it.
-		const stale = first.locator('#lp-site input').nth(0);
+		const stale = first
+			.locator('#lp-site')
+			.getByLabel(words.address, { exact: true });
 		await stale.fill('Triftstrasse 25');
 		await first.getByRole('button', { name: words.saveProject }).click();
 		await expect(
@@ -329,8 +354,7 @@ for (const lang of ['en', 'de'] as const) {
 		await page.goto(instance().url + '/my-account/');
 		await page.fill('#username', login);
 		await page.fill('#password', password);
-		await page.locator('button[name="login"]').focus();
-		await page.keyboard.press('Enter');
+		await page.locator('button[name="login"]').click();
 		await page.waitForLoadState('load');
 		await expect(page.locator('a[href*="action=logout"]')).not.toHaveCount(
 			0,
@@ -347,9 +371,13 @@ for (const lang of ['en', 'de'] as const) {
 		await page
 			.locator('.lp-project-bar button', { hasText: words.projects })
 			.click();
-		await expect(page.locator('body')).toContainText('Guest to claim', {
-			timeout: 30_000,
-		});
+		await expect(page.locator('.lp-workspace')).toBeVisible();
+		await expect(page.locator('.lp-project-rows')).toContainText(
+			'Guest to claim',
+			{
+				timeout: 30_000,
+			}
+		);
 	});
 }
 

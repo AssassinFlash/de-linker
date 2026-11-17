@@ -50,6 +50,89 @@ function fixture(replies: Response[]) {
 }
 const guest = () => new Response("0", { status: 400 });
 
+test("input refusals retain bounded domain and framework correction paths", async () => {
+	for (const fields of [
+		["equipment_setup.grid_phase"],
+		[
+			{
+				path: ["body", "inputs", "equipment_setup", "grid_phase"],
+				kind: "int_type",
+			},
+		],
+		[
+			{
+				path: [
+					"body",
+					"inputs",
+					"equipment_plant_setup",
+					"units",
+					"0",
+					"inputs",
+					"equipment_setup",
+					"grid_phase",
+				],
+				type: "int_type",
+			},
+		],
+	]) {
+		const { client } = fixture([
+			guest(),
+			json(context),
+			json({ error: { code: "invalid_input", fields } }, 422),
+		]);
+		await client.bootstrap();
+		await assert.rejects(
+			client.query(
+				"products/current",
+				{ schema_version: 1 },
+				context.query_scope,
+			),
+			(error) => {
+				assert.ok(error instanceof ApiError);
+				assert.deepEqual(
+					error.fields,
+					typeof fields[0] === "string" || fields[0]!.path.length === 4
+						? ["equipment_setup.grid_phase"]
+						: [
+								"equipment_plant_setup.units[0].inputs.equipment_setup.grid_phase",
+							],
+				);
+				return true;
+			},
+		);
+	}
+	const { client } = fixture([
+		guest(),
+		json(context),
+		json(
+			{
+				error: {
+					code: "invalid_input",
+					fields: [
+						"private submitted value",
+						{ path: ["body", "inputs", "bad value"], kind: "invalid" },
+						...Array.from({ length: 20 }, () => "equipment_setup.grid_phase"),
+					],
+				},
+			},
+			422,
+		),
+	]);
+	await client.bootstrap();
+	await assert.rejects(
+		client.query(
+			"products/current",
+			{ schema_version: 1 },
+			context.query_scope,
+		),
+		(error) => {
+			assert.ok(error instanceof ApiError);
+			assert.deepEqual(error.fields, ["equipment_setup.grid_phase"]);
+			return true;
+		},
+	);
+});
+
 test("owned report downloads verify both frozen PDF and CSV bytes", async () => {
 	for (const format of ["pdf", "csv"] as const) {
 		const content = new TextEncoder().encode(

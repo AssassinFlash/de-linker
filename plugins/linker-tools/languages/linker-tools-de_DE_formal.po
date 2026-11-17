@@ -26,6 +26,166 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Overview"
+msgstr "Übersicht"
+
+#: ../../apps/planner/src/components/ProjectOverview.tsx build/planner/assets/planner.js:1
+msgid "Choose a workspace to continue planning your system."
+msgstr "Wählen Sie einen Bereich, um Ihre Anlagenplanung fortzusetzen."
+
+#: ../../apps/planner/src/components/ProjectOverview.tsx build/planner/assets/planner.js:1
+msgid "Plan your solar layout"
+msgstr "Planen Sie Ihre Modulbelegung"
+
+#: ../../apps/planner/src/components/ProjectOverview.tsx build/planner/assets/planner.js:1
+msgid "Add roof faces, obstacles and modules, or continue with a known PV size. Roof drawing is optional."
+msgstr "Erfassen Sie Dachflächen, Hindernisse und Module oder planen Sie mit einer bereits bekannten PV-Leistung weiter. Eine Dachzeichnung ist optional."
+
+#: ../../apps/planner/src/components/ProjectOverview.tsx build/planner/assets/planner.js:1
+msgid "Current inputs"
+msgstr "Aktuelle Angaben"
+
+#: ../../apps/planner/src/components/ProjectOverview.tsx build/planner/assets/planner.js:1
+msgid "Edit project information"
+msgstr "Projektangaben bearbeiten"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Workspace"
+msgstr "Arbeitsbereich"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Plan solar and storage systems, then prepare a solution for your inquiry."
+msgstr "Planen Sie PV- und Speichersysteme und stellen Sie eine Lösung für Ihre Anfrage zusammen."
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Last updated"
+msgstr "Zuletzt geändert"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Revision"
+msgstr "Revision"
+
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx build/planner/assets/planner.js:1
+msgid "The selected products supply battery capacity, voltage, current and equipment power limits where documented. Losses and auxiliary consumption remain separate calculation assumptions."
+msgstr "Die dokumentierten Werte der ausgewählten Produkte liefern Batteriekapazität, Spannung, Strom und Leistungsgrenzen. Verluste und Eigenverbrauch bleiben separate Berechnungsannahmen."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Review the equipment plan and storage settings for each unit."
+msgstr "Prüfen Sie die Geräteplanung und die Speichereinstellungen für jedes System."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Calculate using the current project inputs. The result retains its inputs and sources."
+msgstr "Berechnen Sie die Energieflüsse mit den aktuellen Projektangaben. Die verwendeten Angaben und Quellen bleiben mit dem Ergebnis gespeichert."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Calculate energy flows"
+msgstr "Energieflüsse berechnen"
+
+#: ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Select a critical-load profile in Energy use. Set the outage period and declare whether a documented backup PV supply is available. The calculation reports any unmet demand."
+msgstr "Wählen Sie unter Strombedarf ein Lastprofil für kritische Verbraucher. Legen Sie den Ausfallzeitraum fest und geben Sie an, ob eine dokumentierte PV-Versorgung im Ersatzstrombetrieb verfügbar ist. Die Berechnung weist ungedeckten Bedarf aus."
+
+#: ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Starting charge and source"
+msgstr "Anfangsladung und Herkunft"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx build/planner/assets/planner.js:1
+msgid "Application"
+msgstr "Einsatzbereich"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx build/planner/assets/planner.js:1
+msgid "Any application"
+msgstr "Alle Einsatzbereiche"
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx build/planner/assets/planner.js:1
+msgid "Review the equipment requirements below, then try again."
+msgstr "Prüfen Sie die folgenden Geräteanforderungen und versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx ../../apps/planner/src/components/equipment/PlantSetup.tsx build/planner/assets/planner.js:1
+msgid "Check equipment"
+msgstr "Geräte prüfen"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Remove the unavailable additional product or choose one from current product data."
+msgstr "Entfernen Sie das nicht verfügbare Zusatzprodukt oder wählen Sie eines aus den aktuellen Produktdaten."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Choose a single-phase or three-phase grid connection."
+msgstr "Wählen Sie einen einphasigen oder dreiphasigen Netzanschluss."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Choose grid-connected or backup operation."
+msgstr "Wählen Sie Netzbetrieb oder Ersatzstrombetrieb."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Choose an inverter or integrated storage system."
+msgstr "Wählen Sie einen Wechselrichter oder ein integriertes Speichersystem."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Choose the battery used with this inverter."
+msgstr "Wählen Sie die Batterie für diesen Wechselrichter."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Choose residential, commercial, or any application."
+msgstr "Wählen Sie Wohngebäude, Gewerbe oder alle Einsatzbereiche."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Enter the documented battery modules per stack."
+msgstr "Geben Sie die dokumentierte Anzahl der Batteriemodule je Stack ein."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Enter the number of parallel stacks or systems."
+msgstr "Geben Sie die Anzahl der parallelen Stacks oder Systeme ein."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
+msgid "Review this equipment requirement and enter a valid value."
+msgstr "Prüfen Sie diese Geräteanforderung und geben Sie einen gültigen Wert ein."
+
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx build/planner/assets/planner.js:1
+msgid "No battery parameters are used in this PV-only calculation."
+msgstr "Für diese reine PV-Berechnung werden keine Batterieparameter verwendet."
+
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx build/planner/assets/planner.js:1
+msgid "This PV-only calculation includes no battery storage."
+msgstr "Diese reine PV-Berechnung umfasst keinen Batteriespeicher."
+
+#: ../../apps/planner/src/components/energy/RunBasis.tsx build/planner/assets/planner.js:1
+msgid "Available AC PV generation and site demand are evaluated at the common connection without battery storage. Import and export limits apply once at that connection."
+msgstr "Die verfügbare AC-PV-Erzeugung und der Standortbedarf werden ohne Batteriespeicher am gemeinsamen Anschlusspunkt bilanziert. Die Grenzen für Netzbezug und Einspeisung gelten für den gesamten Anschluss."
+
+#: ../../apps/planner/src/components/energy/SolarEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Solar-only energy flows"
+msgstr "Energieflüsse ohne Batteriespeicher"
+
+#: ../../apps/planner/src/components/energy/SolarEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Use available AC PV generation and load at the common metering point. This project has no battery storage."
+msgstr "Verwenden Sie die verfügbare AC-PV-Erzeugung und die Last am gemeinsamen Messpunkt. Dieses Projekt enthält keinen Batteriespeicher."
+
+#: ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Choose equipment"
+msgstr "Geräte auswählen"
+
+#: ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
+msgid "Choose an equipment configuration, or enter parameters for a system you already know."
+msgstr "Wählen Sie eine Gerätekombination oder geben Sie die Werte eines bereits bekannten Systems ein."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx ../../apps/planner/src/components/equipment/PlantSetup.tsx build/planner/assets/planner.js:1
+msgid "Known power and capacity (optional)"
+msgstr "Bekannte Leistung und Kapazität (optional)"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx ../../apps/planner/src/components/equipment/PlantSetup.tsx build/planner/assets/planner.js:1
+msgid "Leave these blank to compare equipment configurations. Add a requirement when your project already specifies it."
+msgstr "Lassen Sie die Felder offen, um Gerätekombinationen zu vergleichen. Tragen Sie Anforderungen ein, die für Ihr Projekt bereits feststehen."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx build/planner/assets/planner.js:1
+msgid "Compare equipment configurations, then choose one for your project. Known requirements narrow the choices."
+msgstr "Vergleichen Sie Gerätekombinationen und wählen Sie eine für Ihr Projekt aus. Bekannte Anforderungen grenzen die Auswahl ein."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx build/planner/assets/planner.js:1
+msgid "Choose the systems in your project. Add known requirements to narrow the equipment combinations."
+msgstr "Legen Sie die Systeme Ihres Projekts an. Bekannte Anforderungen grenzen die Gerätekombinationen ein."
+
 #: ../../apps/planner/src/components/energy/PlanningReportResult.tsx build/planner/assets/planner.js:1
 msgid "This report describes an earlier version of the project."
 msgstr "Dieser Bericht beschreibt einen früheren Projektstand."
@@ -140,7 +300,7 @@ msgstr "Die Speicherberechnung konnte nicht abgeschlossen werden. Ihre Eingaben 
 
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Commercial storage sizing"
-msgstr "Gewerblicher Speicher auslegen"
+msgstr "Gewerbespeicher auslegen"
 
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Sized from your own 15-minute load profile and the peak you want to hold. Without both, the calculation can only give indicative ranges."
@@ -10446,10 +10606,10 @@ msgstr "Berechnungen vergleichen"
 #: build/planner/assets/planner.js
 msgid ""
 "Assign the roof modules to strings and inverter inputs. The equipment check "
-"uses the saved wiring plan and product data."
+"uses the current wiring plan and product data."
 msgstr ""
 "Ordnen Sie die Dachmodule den Strings und Wechselrichtereingängen zu. Die "
-"Geräteprüfung verwendet den gespeicherten Verschaltungsplan und die "
+"Geräteprüfung verwendet den aktuellen Verschaltungsplan und die "
 "Produktdaten."
 
 #: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
@@ -10552,10 +10712,10 @@ msgstr "Verschaltungsplan entfernen"
 #: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
 #: build/planner/assets/planner.js
 msgid ""
-"Save the project, then check the equipment selection. Cold open-circuit "
+"Check equipment to assess this wiring plan. Cold open-circuit "
 "voltage and STC checks are shown separately from outstanding design checks."
 msgstr ""
-"Nach dem Speichern des Projekts kann die Geräteauswahl geprüft werden. "
+"Wählen Sie „Geräte prüfen“, um diesen Verschaltungsplan zu bewerten. "
 "Leerlaufspannung bei Kälte und STC-Prüfungen werden getrennt von den noch "
 "offenen Auslegungsprüfungen angezeigt."
 

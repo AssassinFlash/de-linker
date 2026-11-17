@@ -24,19 +24,16 @@ type GridPhase = Annotated[Literal[1, 3], BeforeValidator(_phase)]
 type Application = Literal["residential", "commercial"]
 
 
-# Declarations the requirements own and a setup cannot carry: the selection
-# schema has no such property, so comparing them would always mismatch.
-_REQUIREMENTS_ONLY = frozenset({"application"})
-
-
 class EquipmentRequirements(Document):
     schema_version: SchemaVersion
     grid_phase: GridPhase
     operating_mode: Literal["grid_connected", "backup"]
     # Installed-array STC nameplate rating, displayed in kWp, not AC demand.
     pv_dc_kw: Nonnegative | None
-    required_usable_kwh: Nonnegative
-    required_discharge_ac_kw: Nonnegative
+    # Sizing values are lower bounds, independent of the project's storage scope.
+    # None leaves the corresponding demand unevaluated; zero is a known bound.
+    required_usable_kwh: Nonnegative | None
+    required_discharge_ac_kw: Nonnegative | None
     # None leaves the search unrestricted. A product whose application is
     # unknown is never excluded; only a contradicting named application is.
     application: Application | None = None
@@ -46,14 +43,10 @@ class EquipmentRequirements(Document):
         prepared = cls.read(inputs.get("equipment_requirements"))
         setup = inputs.get("equipment_setup")
         if isinstance(setup, dict):
-            # A setup cannot restate `application`: it is a declaration about the
-            # project, held by the requirements, and the selection schema has no
-            # such property. Compare only the fields both documents own, and
-            # compare their values rather than two populated models — a model
-            # read from the setup would fill the absent `application` with its
-            # default and differ from every prepared requirement.
+            # Earlier setups omit application; current setups own that filter.
+            # Compare explicit fields without defaulting historical omissions.
             for name in cls.model_fields:
-                if name in _REQUIREMENTS_ONLY or name not in setup:
+                if name not in setup:
                     continue
                 if setup[name] != getattr(prepared, name):
                     raise InvalidInput(

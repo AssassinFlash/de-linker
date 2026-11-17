@@ -1,11 +1,12 @@
+import { SolarEnergySetup } from "./SolarEnergySetup.tsx";
 import {
 	PLANT_ENERGY_TASK,
 	DC_PLANT_ENERGY_TASK,
 	plantEnergyTask,
-	compilePlantEnergy,
 	plantEnergyDraft,
 	plantEnergyInputs,
 	plantEnergyParts,
+	plantEnergyEquipment,
 } from "../../domain/plantEnergy.ts";
 import type { PlantEnergyDraft } from "../../domain/plantEnergy.ts";
 import { PlantEnergyForm } from "./PlantEnergyForm.tsx";
@@ -25,17 +26,17 @@ import { REPORT_TASK } from "../../data/planningReport.ts";
 import type { ReportOptions } from "../../data/planningReport.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Draft } from "../../domain/draft.ts";
-import { isDirty, sameJson } from "../../domain/draft.ts";
+import { isDirty, sameJson, projectInputContract } from "../../domain/draft.ts";
 import {
 	BATTERY_FIELDS,
 	isStorageOnly,
-	compileScenario,
+	isPvOnly,
 	emptyScenario,
+	useEquipmentCapacity,
 	readScenarioDraft,
 	readBatteryParameters,
 	readEnergyInputs,
 	scenarioInputs,
-	scenarioParts,
 } from "../../domain/energyScenario.ts";
 import type { ScenarioDraft } from "../../domain/energyScenario.ts";
 import {
@@ -46,8 +47,8 @@ import {
 import type { ProfileRole } from "../../domain/profiles.ts";
 import { sharedProfileRange } from "../../domain/profileCoverage.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import type { JsonObject, Session } from "../../data/protocol.ts";
-import { ApiError } from "../../data/protocol.ts";
+import type { JsonObject, Project, Session } from "../../data/protocol.ts";
+import { ApiError, clearInputFields } from "../../data/protocol.ts";
 import {
 	initialEnergyView,
 	PLANNER_NAVIGATION,
@@ -69,12 +70,8 @@ import {
 	readEquipmentPlant,
 	equipmentContext,
 	applyEquipmentContext,
-	readPlantDraft,
 } from "../../domain/equipmentPlant.ts";
-import {
-	adoptPlantCandidate,
-	compilePlantSearch,
-} from "../../domain/plantSearch.ts";
+import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import { CertificateEvidence } from "../equipment/CertificateEvidence.tsx";
 import {
@@ -85,9 +82,9 @@ import {
 	compileEquipment,
 } from "../../domain/equipment.ts";
 import {
-	compileEquipmentRequirements,
-	readEquipmentRequirements,
-} from "../../domain/equipmentRequirements.ts";
+	authoredCalculationInputs,
+	authoredDiscoveryInputs,
+} from "../../domain/currentCalculation.ts";
 import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { SEARCH_TASK, isPlantCandidate } from "../../data/equipmentSearch.ts";
 import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
@@ -141,6 +138,7 @@ export function EnergyWorkspace({
 	draft,
 	edit,
 	flush,
+	acknowledgeProject,
 	session,
 	client,
 	recheck,
@@ -160,6 +158,11 @@ export function EnergyWorkspace({
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	flush: () => Promise<boolean>;
+	acknowledgeProject: (
+		project: Project,
+		command: JsonObject,
+		path: "runs/calculate" | "runs/find-equipment" | "runs/check-equipment",
+	) => Promise<void>;
 	session: Session;
 	client: PlannerClient;
 	recheck: () => void;
@@ -177,11 +180,12 @@ export function EnergyWorkspace({
 	sceneModuleUrl?: string | null;
 }) {
 	const storageOnly = isStorageOnly(draft.history.current);
+	const pvOnly = isPvOnly(draft.history.current);
 	const joint = hasPlant(draft.history.current);
 	const jointContext = useMemo(() => {
 		if (!joint) return { value: null, error: null };
 		try {
-			const plant = readEquipmentPlant(draft.history.current.equipment_plant);
+			const plant = plantEnergyEquipment(draft.history.current);
 			return {
 				value: { plant, setup: plantEnergyDraft(draft.history.current, plant) },
 				error: null,
@@ -191,12 +195,15 @@ export function EnergyWorkspace({
 		}
 	}, [
 		joint,
+		draft.history.current.brief,
 		draft.history.current.equipment_plant,
+		draft.history.current.equipment_plant_setup,
 		draft.history.current.energy_plant_setup,
 	]);
-	const jointTask = jointContext.value
-		? plantEnergyTask(jointContext.value.setup)
-		: PLANT_ENERGY_TASK;
+	const jointTask =
+		!pvOnly && jointContext.value
+			? plantEnergyTask(jointContext.value.setup)
+			: PLANT_ENERGY_TASK;
 	const jointAvailable =
 		session.runtime.models[
 			jointTask === DC_PLANT_ENERGY_TASK ? "plant_dc_replay" : "plant_replay"
@@ -234,15 +241,31 @@ export function EnergyWorkspace({
 			return null;
 		}
 	}, [draft.history.current.equipment_selection]);
+	const equipmentForEditing = useMemo(() => {
+		try {
+			const current = equipmentDraft(draft.history.current);
+			return typeof current.inverter_product_id === "number" ? current : null;
+		} catch {
+			return null;
+		}
+	}, [
+		draft.history.current.equipment_setup,
+		draft.history.current.equipment_selection,
+		draft.history.current.equipment_requirements,
+		draft.history.current.brief,
+	]);
 	const setup = parsed.value,
 		currentSetup = joint ? (jointContext.value?.setup ?? null) : setup,
 		selections = readSelections(draft.history.current.profile_selections);
+	const sharedDc =
+		!pvOnly &&
+		(currentSetup?.coupling === "shared_dc" ||
+			currentSetup?.coupling === "plant_shared_dc");
 	const pvInactive =
 		storageOnly ||
 		Boolean(
 			currentSetup &&
-			currentSetup.coupling !== "shared_dc" &&
-			currentSetup.coupling !== "plant_shared_dc" &&
+			!sharedDc &&
 			currentSetup.schedule.length > 0 &&
 			currentSetup.schedule.every((period) => period.pv_enabled === false),
 		);
@@ -340,6 +363,7 @@ export function EnergyWorkspace({
 		recoveryChecking,
 		confirmedBatteryId,
 		confirmedBatteryIds,
+		acknowledgeProject,
 	});
 	const actionError =
 			error ??
@@ -383,39 +407,12 @@ export function EnergyWorkspace({
 		// Changing a selected calculation reveals its heading. Polling the same
 		// calculation never takes focus back from the reader's current control.
 	}, [view, visibleRunId, runs.runId, active, client, session.query_scope]);
-	let prepared = false;
-	try {
-		prepared = joint
-			? jointContext.value !== null &&
-				sameJson(
-					compilePlantEnergy(
-						jointContext.value.setup,
-						selections,
-						jointContext.value.plant,
-						draft.history.current,
-					),
-					draft.history.current.energy_plant,
-				)
-			: setup !== null &&
-				sameJson(
-					compileScenario(
-						setup,
-						selections,
-						equipmentSelection,
-						draft.history.current,
-					),
-					draft.history.current.energy_replay,
-				);
-	} catch {
-		/* Incomplete settings stay editable. */
-	}
 	const unconfirmed = operations.records.filter(
 		(record) => record.resultId === null,
 	);
 	const canCalculate =
-		prepared &&
+		Boolean(currentSetup) &&
 		(!joint || jointAvailable) &&
-		!dirty &&
 		!draft.pending &&
 		!draft.conflict &&
 		!blocked &&
@@ -434,221 +431,6 @@ export function EnergyWorkspace({
 		if (blocked || !client.isCurrentScope(session.query_scope)) return;
 		edit((inputs) => plantEnergyInputs(inputs, next));
 		setError(null);
-	}
-	async function prepareJoint() {
-		if (!jointContext.value || !jointAvailable) return;
-		const { plant, setup: original } = jointContext.value;
-		if (
-			!sameJson(
-				equipmentContext(draft.history.current),
-				equipmentContext(draft.baseline.inputs),
-			)
-		)
-			throw new ApiError(422, "dc_save_required");
-		if (
-			original.coupling === "plant_shared_dc" &&
-			selections.selected.pv_reference
-		) {
-			const groups = [
-				...(original.ac_pv_converter_ids ?? []),
-				...original.units
-					.filter((u) => u.pv_dc_input_unused === false)
-					.map((u) => u.settings.dc?.pv_converter_id ?? ""),
-			];
-			if (
-				new Set(groups).size !== groups.length ||
-				groups.length !== converterIds.length ||
-				groups.some((id) => !converterIds.includes(id))
-			)
-				throw new ApiError(422, "plant_dc_assignment_required");
-		}
-		const parts = plantEnergyParts(
-				original,
-				selections,
-				plant,
-				draft.history.current,
-			),
-			instance = lifetime.current;
-		let bound = original,
-			expectedDocument = setupDocument;
-		for (const unit of original.units) {
-			const parameters = parts.parameters.get(unit.unit_id)!;
-			const selection = plant.units.find(
-				(u) => u.id === unit.unit_id,
-			)!.selection;
-			const binding = unit.settings.battery_binding;
-			if (
-				binding &&
-				sameJson(binding.parameters, parameters) &&
-				sameJson(binding.equipment_selection, selection) &&
-				binding.source_note === parameters.source_note
-			)
-				continue;
-			const reply = await operations.start("battery/scenario", {
-				source_note: parameters.source_note,
-				parameters,
-				equipment_unit_id: unit.unit_id,
-				expected_revision: draft.baseline.revision,
-			});
-			if (
-				!reply ||
-				reply.path !== "battery/scenario" ||
-				instance !== lifetime.current ||
-				!client.isCurrentScope(session.query_scope)
-			)
-				return;
-			const next = {
-				...bound,
-				units: bound.units.map((u) =>
-					u.unit_id === unit.unit_id
-						? {
-								...u,
-								settings: {
-									...u.settings,
-									battery_binding: {
-										asset_id: reply.asset.id,
-										parameters,
-										source_note: parameters.source_note,
-										equipment_selection: selection,
-									},
-								},
-							}
-						: u,
-				),
-			};
-			const expected = expectedDocument;
-			if (
-				!edit((inputs) => {
-					if (
-						!sameJson(inputs.energy_plant_setup, expected) ||
-						!sameJson(inputs.equipment_plant, plant)
-					)
-						throw new ApiError(409, "scenario_changed");
-					return plantEnergyInputs(inputs, next);
-				})
-			)
-				throw new ApiError(409, "scenario_changed");
-			bound = next;
-			expectedDocument = next;
-		}
-		const replay = compilePlantEnergy(
-				bound,
-				selections,
-				plant,
-				draft.history.current,
-			),
-			expected = expectedDocument;
-		if (
-			!edit((inputs) => {
-				if (
-					!sameJson(inputs.energy_plant_setup, expected) ||
-					!sameJson(inputs.equipment_plant, plant) ||
-					!sameJson(readSelections(inputs.profile_selections), selections)
-				)
-					throw new ApiError(409, "scenario_changed");
-				return { ...plantEnergyInputs(inputs, bound), energy_plant: replay };
-			})
-		)
-			throw new ApiError(409, "scenario_changed");
-		await flush();
-	}
-	async function prepare() {
-		if (
-			!currentSetup ||
-			blocked ||
-			!syntaxValid ||
-			operations.busy ||
-			operations.checking ||
-			operations.storageFailed ||
-			unconfirmed.length ||
-			!admitted
-		)
-			return;
-		setError(null);
-		try {
-			if (joint) {
-				await prepareJoint();
-				return;
-			}
-			if (!setup) return;
-			if (setup.coupling === "shared_dc" && dirty)
-				throw new ApiError(422, "dc_save_required");
-			const parts = scenarioParts(
-					setup,
-					selections,
-					equipmentSelection,
-					draft.history.current,
-				),
-				instance = lifetime.current;
-			let bound = setup;
-			try {
-				compileScenario(
-					setup,
-					selections,
-					equipmentSelection,
-					draft.history.current,
-				);
-			} catch (cause) {
-				if (
-					!(cause instanceof ApiError) ||
-					cause.code !== "battery_not_prepared"
-				)
-					throw cause;
-				const reply = await operations.start("battery/scenario", {
-					source_note:
-						parts.parameters.model === DC_MODEL
-							? parts.parameters.source_note
-							: setup.source_note,
-					parameters: parts.parameters,
-					...(!joint && setup?.coupling === "shared_dc"
-						? { expected_revision: draft.baseline.revision }
-						: {}),
-				});
-				if (
-					!reply ||
-					reply.path !== "battery/scenario" ||
-					instance !== lifetime.current ||
-					!client.isCurrentScope(session.query_scope)
-				)
-					return;
-				bound = {
-					...setup,
-					battery_binding: {
-						asset_id: reply.asset.id,
-						parameters: parts.parameters,
-						source_note:
-							parts.parameters.model === DC_MODEL
-								? parts.parameters.source_note
-								: setup.source_note,
-						...(setup.coupling === "shared_dc" && equipmentSelection
-							? { equipment_selection: equipmentSelection }
-							: {}),
-					},
-				};
-			}
-			const replay = compileScenario(
-				bound,
-				selections,
-				equipmentSelection,
-				draft.history.current,
-			);
-			const applied = edit((inputs) => {
-				if (
-					!sameJson(inputs.energy_scenario, setupDocument) ||
-					!sameJson(readSelections(inputs.profile_selections), selections) ||
-					!sameJson(
-						inputs.equipment_selection,
-						draft.history.current.equipment_selection,
-					)
-				)
-					throw new Error("scenario_changed");
-				return { ...scenarioInputs(inputs, bound), energy_replay: replay };
-			});
-			if (!applied) throw new ApiError(409, "scenario_changed");
-			await flush();
-		} catch (cause) {
-			if (client.isCurrentScope(session.query_scope)) setError(cause);
-		}
 	}
 	async function recover(record: PlanningIntent) {
 		if (
@@ -697,7 +479,8 @@ export function EnergyWorkspace({
 					)
 				)
 					throw new ApiError(409, "product_evidence_changed");
-				const { plant, setup: current } = jointContext.value;
+				const { setup: current } = jointContext.value;
+				const plant = readEquipmentPlant(draft.history.current.equipment_plant);
 				const unit = current.units.find(
 						(u) => u.unit_id === command.equipment_unit_id,
 					),
@@ -829,12 +612,15 @@ export function EnergyWorkspace({
 	}
 	async function calculate() {
 		if (!canCalculate) return;
-		const reply = await operations.start("runs/energy", {
+		const reply = await operations.start("runs/calculate", {
 			expected_revision: draft.baseline.revision,
+			input_contract: projectInputContract,
+			inputs: authoredCalculationInputs(draft.history.current),
 		});
-		if (reply?.path === "runs/energy") {
+		if (reply?.path === "runs/calculate") {
 			runs.accepted(reply.run);
 			setView("runs");
+			openResults?.();
 		}
 	}
 	async function applyEquipment(candidate: EquipmentCandidate) {
@@ -909,7 +695,15 @@ export function EnergyWorkspace({
 				next = {
 					...next,
 					equipment_selection: selection,
-					...(sameJson(selection, candidate.selection)
+					// Match the server's typed equality: absent and null both mean
+					// the default procurement intent, while retain/replace remain distinct.
+					...(sameJson(
+						{ ...selection, equipment_use: selection.equipment_use ?? null },
+						{
+							...candidate.selection,
+							equipment_use: candidate.selection.equipment_use ?? null,
+						},
+					)
 						? { equipment_candidate: choice }
 						: {}),
 				};
@@ -921,12 +715,26 @@ export function EnergyWorkspace({
 		const applied = edit((inputs) => {
 			if (!sameJson(equipmentContext(inputs), original))
 				throw new ApiError(409, "equipment_selection_changed");
-			return applyEquipmentContext(inputs, replacement);
+			const updated = applyEquipmentContext(inputs, replacement);
+			if (
+				!isPlantCandidate(candidate) &&
+				typeof candidate.usable_energy_kwh === "number"
+			) {
+				const scenario =
+					updated.energy_scenario === undefined
+						? emptyScenario()
+						: readScenarioDraft(updated.energy_scenario);
+				return scenarioInputs(
+					updated,
+					useEquipmentCapacity(scenario, candidate.usable_energy_kwh),
+				);
+			}
+			return updated;
 		});
 		if (!applied) throw new ApiError(409, "equipment_selection_changed");
 		setError(null);
-		setView("equipment");
-		openEquipment?.();
+		chooseView("scenario");
+		openResults?.();
 	}
 	async function generateReport(options: ReportOptions) {
 		if (
@@ -961,16 +769,44 @@ export function EnergyWorkspace({
 			if (client.isCurrentScope(session.query_scope)) setError(cause);
 		}
 	}
+	async function submitEquipment(
+		path: "runs/find-equipment" | "runs/check-equipment",
+	) {
+		if (
+			blocked ||
+			draft.pending ||
+			draft.conflict ||
+			!syntaxValid ||
+			!admitted ||
+			operations.busy ||
+			operations.checking ||
+			operations.storageFailed ||
+			unconfirmed.length
+		)
+			return;
+		setError(null);
+		try {
+			const reply = await operations.start(path, {
+				expected_revision: draft.baseline.revision,
+				input_contract: projectInputContract,
+				inputs: authoredDiscoveryInputs(draft.history.current),
+			});
+			if (reply?.path === path) {
+				runs.accepted(reply.run);
+				setView("runs");
+				openResults?.();
+			}
+		} catch (cause) {
+			if (client.isCurrentScope(session.query_scope)) setError(cause);
+		}
+	}
 	async function startSolar(
 		path:
 			| "runs/weather"
 			| "runs/pv"
 			| "runs/pvgis-reference"
 			| "runs/direct-beam"
-			| "runs/geometric-pv"
-			| "runs/equipment"
-			| "runs/equipment-search",
-		user = false,
+			| "runs/geometric-pv",
 	) {
 		if (
 			dirty ||
@@ -984,46 +820,17 @@ export function EnergyWorkspace({
 			operations.storageFailed ||
 			unconfirmed.length
 		) {
-			// The pipeline calls silently (skipping is its dedup), but a
-			// visitor clicking an enabled button must never see a silent
-			// no-op (production 2026-11-07: enabled "Check saved equipment
-			// selection" did nothing observable).
-			if (user) setError(new ApiError(409, "inputs_not_ready"));
 			return;
 		}
 		try {
 			const inputs = draft.baseline.inputs;
 			const setup =
-				path.startsWith("runs/equipment") ||
 				path === "runs/pvgis-reference" ||
 				path === "runs/geometric-pv" ||
 				path === "runs/direct-beam"
 					? null
 					: readSolarSetup(inputs);
-			if (path === "runs/equipment-search" && hasPlant(inputs)) {
-				if (
-					!sameJson(
-						compilePlantSearch(readPlantDraft(inputs)),
-						inputs.equipment_plant_requirements,
-					)
-				)
-					return;
-			} else if (path === "runs/equipment-search") {
-				readEquipmentRequirements(inputs.equipment_requirements);
-				if (
-					!sameJson(
-						compileEquipmentRequirements(
-							equipmentDraft(inputs),
-							readObject(inputs.equipment_requirements ?? {}),
-						),
-						inputs.equipment_requirements,
-					)
-				)
-					return;
-			} else if (path === "runs/equipment") {
-				if (hasPlant(inputs)) readEquipmentPlant(inputs.equipment_plant);
-				else readEquipmentSelection(inputs.equipment_selection);
-			} else if (path === "runs/geometric-pv") {
+			if (path === "runs/geometric-pv") {
 				if (
 					session.runtime.models.geometric_pv_generation !== GEOMETRIC_PV_TASK
 				)
@@ -1091,6 +898,19 @@ export function EnergyWorkspace({
 		replacePlannerLocation(url);
 	}
 	function showEquipment() {
+		if (
+			!joint &&
+			setup &&
+			equipmentDraft(draft.history.current).operating_mode === null
+		) {
+			const mode = setup.schedule.some((period) => period.mode === "outage")
+				? "backup"
+				: setup.schedule.some((period) => period.mode === "connected")
+					? "grid_connected"
+					: null;
+			if (mode)
+				edit((inputs) => changeEquipment(inputs, { operating_mode: mode }));
+		}
 		if (openEquipment) openEquipment();
 		else chooseView("equipment");
 	}
@@ -1102,7 +922,7 @@ export function EnergyWorkspace({
 		setRangeBusy(true);
 		setError(null);
 		try {
-			const jointDc = jointContext.value?.setup.coupling === "plant_shared_dc";
+			const jointDc = joint && sharedDc;
 			const pvRoles: ProfileRole[] = pvInactive
 				? []
 				: joint && jointDc
@@ -1227,7 +1047,7 @@ export function EnergyWorkspace({
 				</div>
 			</div>
 			<div
-				className="lp-energy-switch"
+				className="lp-energy-switch lp-work-toolbar"
 				role="group"
 				aria-label={__("Calculation workspace view", "linker-tools")}
 				hidden={equipmentFocus}
@@ -1335,7 +1155,7 @@ export function EnergyWorkspace({
 			)}
 			{operations.records.length > 0 && (
 				<details
-					className="lp-comparison lp-energy-recovery"
+					className="lp-comparison lp-energy-recovery lp-work-panel"
 					open={unconfirmed.length > 0}
 				>
 					<summary>{__("Stored requests", "linker-tools")}</summary>
@@ -1465,7 +1285,7 @@ export function EnergyWorkspace({
 				}
 			>
 				<div
-					className="lp-energy-switch"
+					className="lp-energy-switch lp-work-toolbar"
 					role="group"
 					aria-label={__("PV generation method", "linker-tools")}
 				>
@@ -1584,15 +1404,27 @@ export function EnergyWorkspace({
 					disabled={blocked || operations.busy || !admitted}
 					actionsDisabled={
 						blocked ||
+						Boolean(draft.pending || draft.conflict) ||
 						operations.busy ||
 						operations.checking ||
 						operations.storageFailed ||
 						unconfirmed.length > 0
 					}
 					onValidity={setEquipmentValid}
-					onError={setError}
-					start={() => void startSolar("runs/equipment", true)}
-					search={() => void startSolar("runs/equipment-search", true)}
+					inputErrors={
+						actionError instanceof ApiError ? actionError.fields : []
+					}
+					onError={(cause, changed) => {
+						if (cause !== null) setError(cause);
+						else {
+							setError((previous: unknown) =>
+								clearInputFields(previous, changed),
+							);
+							operations.clearError(changed);
+						}
+					}}
+					search={() => void submitEquipment("runs/find-equipment")}
+					check={() => void submitEquipment("runs/check-equipment")}
 					searchEnabled={
 						hasPlant(draft.history.current)
 							? session.runtime.models.equipment_plant_search ===
@@ -1606,7 +1438,7 @@ export function EnergyWorkspace({
 					<Notice error>
 						{joint
 							? __(
-									"Prepare and save the equipment plan, then review the storage settings for each unit.",
+									"Review the equipment plan and storage settings for each unit.",
 									"linker-tools",
 								)
 							: __(
@@ -1617,161 +1449,198 @@ export function EnergyWorkspace({
 				)}
 				{currentSetup && (
 					<>
-						<div className="lp-scenario-sources">
-							<h3>{__("Interval sources", "linker-tools")}</h3>
-							<ul>
-								{(
-									[
-										"gross_load",
-										...(currentSetup.schedule.some(
-											(period) => period.mode === "outage",
-										)
-											? ["critical_load" as const]
-											: []),
-										jointContext.value?.setup.coupling === "plant_shared_dc"
-											? "pv_reference"
-											: "pv_available_ac",
-										"aux_ac",
-									] as const
-								)
-									.filter(
-										(role) =>
-											(!pvInactive ||
-												(role !== "pv_available_ac" &&
-													role !== "pv_reference")) &&
-											(role !== "aux_ac" || currentSetup.aux_ac_kw == null),
-									)
-									.map((role) => (
-										<li key={role}>
-											<span>
-												{role === "pv_available_ac" &&
-												!joint &&
-												setup?.coupling === "shared_dc"
-													? __("PV generation", "linker-tools")
-													: measurementLabel(role)}
-											</span>
-											<strong>
-												{selections.selected[role]
-													? __("Selected in this draft", "linker-tools")
-													: __("Required", "linker-tools")}
-											</strong>
-										</li>
-									))}
-							</ul>
-							<button
-								type="button"
-								className="lp-text-button"
-								onClick={openProfiles}
-								disabled={!syntaxValid}
-							>
-								{__("Review energy inputs", "linker-tools")}
-							</button>
-						</div>
-						{!joint &&
-							setup &&
-							setup.coupling !== "shared_dc" &&
-							setup.schedule.length === 1 && (
-								<SimpleEnergySetup
-									hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
-									value={setup}
-									storageOnly={storageOnly}
-									locale={locale}
-									disabled={blocked || operations.busy || !admitted}
-									onChange={change}
-									onValidity={setCompactValid}
-									useProfileRange={() => void useRange()}
-									rangeBusy={rangeBusy}
-								/>
-							)}
-						<details
-							className="lp-comparison"
-							open={
-								joint ||
-								setup?.coupling === "shared_dc" ||
-								(setup?.schedule.length ?? 0) > 1
-							}
-						>
-							<summary>
-								{__("Advanced storage and operating settings", "linker-tools")}
-							</summary>
-							<ol className="lp-scenario-steps">
-								{(["storage", "initial", "operation"] as const).map(
-									(step, index) => (
-										<li
-											key={step}
-											aria-current={section === step ? "step" : undefined}
-										>
-											<button
-												type="button"
-												disabled={!syntaxValid}
-												onClick={() => setSection(step)}
-											>
-												<span>{String(index + 1).padStart(2, "0")}</span>
-												{step === "storage"
-													? __("Storage", "linker-tools")
-													: step === "initial"
-														? __("Starting state", "linker-tools")
-														: __("Operation", "linker-tools")}
-											</button>
-										</li>
-									),
-								)}
-							</ol>
-							{joint && jointContext.value ? (
-								<PlantEnergyForm
-									storageOnly={storageOnly}
-									referenceCapacitySupported={
-										session.runtime.models.capacity_reference ===
-										REFERENCE_CAPACITY
-									}
-									value={jointContext.value.setup}
-									plant={jointContext.value.plant}
-									converters={converterIds}
-									section={section}
-									locale={locale}
-									disabled={blocked || operations.busy || !admitted}
-									onChange={changeJoint}
-									onValidity={setScenarioValid}
-									useProfileRange={() => void useRange()}
-									rangeBusy={rangeBusy}
-									openEquipment={() => {
-										setView("equipment");
-										openEquipment?.();
-									}}
-									client={client}
-									scope={session.query_scope}
-									active={active && view === "scenario"}
-								/>
-							) : (
-								setup && (
-									<ScenarioForm
-										storageOnly={storageOnly}
-										referenceCapacitySupported={
-											session.runtime.models.capacity_reference ===
-											REFERENCE_CAPACITY
-										}
-										client={client}
-										scope={session.query_scope}
-										active={active && view === "scenario"}
-										equipmentSelection={equipmentSelection}
-										converters={converterIds}
-										key={setup.coupling ?? "independent_ac"}
-										openEquipment={() => {
-											setView("equipment");
-											openEquipment?.();
-										}}
-										value={setup}
-										section={section}
+						<div className="lp-work-grid">
+							<div className="lp-work-main">
+								{pvOnly ? (
+									<SolarEnergySetup
+										value={currentSetup}
+										hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
 										locale={locale}
 										disabled={blocked || operations.busy || !admitted}
-										onChange={change}
-										onValidity={setScenarioValid}
+										onChange={(changes) => {
+											if (joint && jointContext.value)
+												changeJoint({
+													...jointContext.value.setup,
+													...changes,
+												});
+											else if (setup) change({ ...setup, ...changes });
+										}}
+										onValidity={setCompactValid}
 										useProfileRange={() => void useRange()}
 										rangeBusy={rangeBusy}
 									/>
-								)
-							)}
-						</details>
+								) : (
+									<>
+										{!joint &&
+											setup &&
+											setup.coupling !== "shared_dc" &&
+											setup.schedule.length === 1 && (
+												<SimpleEnergySetup
+													hasAuxiliaryProfile={Boolean(
+														selections.selected.aux_ac,
+													)}
+													hasEquipment={Boolean(equipmentForEditing)}
+													chooseEquipment={showEquipment}
+													value={setup}
+													storageOnly={storageOnly}
+													locale={locale}
+													disabled={blocked || operations.busy || !admitted}
+													onChange={change}
+													onValidity={setCompactValid}
+													useProfileRange={() => void useRange()}
+													rangeBusy={rangeBusy}
+												/>
+											)}
+										<details
+											className="lp-comparison"
+											open={
+												joint ||
+												setup?.coupling === "shared_dc" ||
+												(setup?.schedule.length ?? 0) > 1
+											}
+										>
+											<summary>
+												{__(
+													"Advanced storage and operating settings",
+													"linker-tools",
+												)}
+											</summary>
+											<ol className="lp-scenario-steps">
+												{(["storage", "initial", "operation"] as const).map(
+													(step, index) => (
+														<li
+															key={step}
+															aria-current={
+																section === step ? "step" : undefined
+															}
+														>
+															<button
+																type="button"
+																disabled={!syntaxValid}
+																onClick={() => setSection(step)}
+															>
+																<span>
+																	{String(index + 1).padStart(2, "0")}
+																</span>
+																{step === "storage"
+																	? __("Storage", "linker-tools")
+																	: step === "initial"
+																		? __("Starting state", "linker-tools")
+																		: __("Operation", "linker-tools")}
+															</button>
+														</li>
+													),
+												)}
+											</ol>
+											{joint && jointContext.value ? (
+												<PlantEnergyForm
+													storageOnly={storageOnly}
+													referenceCapacitySupported={
+														session.runtime.models.capacity_reference ===
+														REFERENCE_CAPACITY
+													}
+													value={jointContext.value.setup}
+													plant={jointContext.value.plant}
+													converters={converterIds}
+													section={section}
+													locale={locale}
+													disabled={blocked || operations.busy || !admitted}
+													onChange={changeJoint}
+													onValidity={setScenarioValid}
+													useProfileRange={() => void useRange()}
+													rangeBusy={rangeBusy}
+													openEquipment={() => {
+														setView("equipment");
+														openEquipment?.();
+													}}
+													client={client}
+													scope={session.query_scope}
+													active={active && view === "scenario"}
+												/>
+											) : (
+												setup && (
+													<ScenarioForm
+														storageOnly={storageOnly}
+														referenceCapacitySupported={
+															session.runtime.models.capacity_reference ===
+															REFERENCE_CAPACITY
+														}
+														client={client}
+														scope={session.query_scope}
+														active={active && view === "scenario"}
+														equipmentSelection={equipmentForEditing}
+														converters={converterIds}
+														key={setup.coupling ?? "independent_ac"}
+														openEquipment={() => {
+															setView("equipment");
+															openEquipment?.();
+														}}
+														value={setup}
+														section={section}
+														locale={locale}
+														disabled={blocked || operations.busy || !admitted}
+														onChange={change}
+														onValidity={setScenarioValid}
+														useProfileRange={() => void useRange()}
+														rangeBusy={rangeBusy}
+													/>
+												)
+											)}
+										</details>
+									</>
+								)}
+							</div>
+							<aside className="lp-work-aside">
+								<section className="lp-scenario-sources lp-work-panel">
+									<h3 className="lp-work-panel-heading">
+										{__("Interval sources", "linker-tools")}
+									</h3>
+									<ul>
+										{(
+											[
+												"gross_load",
+												...(currentSetup.schedule.some(
+													(period) => period.mode === "outage",
+												)
+													? ["critical_load" as const]
+													: []),
+												joint && sharedDc ? "pv_reference" : "pv_available_ac",
+												"aux_ac",
+											] as const
+										)
+											.filter(
+												(role) =>
+													(!pvInactive ||
+														(role !== "pv_available_ac" &&
+															role !== "pv_reference")) &&
+													(role !== "aux_ac" || currentSetup.aux_ac_kw == null),
+											)
+											.map((role) => (
+												<li key={role}>
+													<span>
+														{role === "pv_available_ac" && !joint && sharedDc
+															? __("PV generation", "linker-tools")
+															: measurementLabel(role)}
+													</span>
+													<strong>
+														{selections.selected[role]
+															? __("Selected in this draft", "linker-tools")
+															: __("Required", "linker-tools")}
+													</strong>
+												</li>
+											))}
+									</ul>
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={openProfiles}
+										disabled={!syntaxValid}
+									>
+										{__("Review energy inputs", "linker-tools")}
+									</button>
+								</section>
+							</aside>
+						</div>
 						{joint && !jointAvailable && (
 							<Notice>
 								{__(
@@ -1780,53 +1649,22 @@ export function EnergyWorkspace({
 								)}
 							</Notice>
 						)}
-						<div className="lp-energy-submit">
-							<div>
-								<strong>
-									{prepared
-										? __("Scenario prepared in this draft", "linker-tools")
-										: __("Scenario settings need preparation", "linker-tools")}
-								</strong>
-								<p>
-									{dirty || draft.pending
-										? __(
-												"Save project records these inputs before a new calculation can start.",
-												"linker-tools",
-											)
-										: sprintf(
-												__(
-													"A new calculation uses saved input revision %d.",
-													"linker-tools",
-												),
-												draft.baseline.revision,
-											)}
-								</p>
-							</div>
-							<button
-								type="button"
-								className="lp-button lp-button-secondary"
-								disabled={
-									blocked ||
-									(joint && !jointAvailable) ||
-									!syntaxValid ||
-									operations.busy ||
-									operations.checking ||
-									operations.storageFailed ||
-									unconfirmed.length > 0
-								}
-								onClick={() => void prepare()}
-							>
-								{operations.busy
-									? __("Confirming request…", "linker-tools")
-									: __("Prepare scenario settings", "linker-tools")}
-							</button>
+						<div className="lp-energy-submit lp-work-panel lp-work-toolbar">
+							<p>
+								{__(
+									"Calculate using the current project inputs. The result retains its inputs and sources.",
+									"linker-tools",
+								)}
+							</p>
 							<button
 								type="button"
 								className="lp-button"
 								disabled={!canCalculate}
 								onClick={() => void calculate()}
 							>
-								{__("Calculate saved scenario", "linker-tools")}
+								{operations.busy
+									? __("Confirming request…", "linker-tools")
+									: __("Calculate energy flows", "linker-tools")}
 							</button>
 						</div>
 					</>
@@ -1978,177 +1816,165 @@ export function EnergyWorkspace({
 						{__("Reading saved calculations…", "linker-tools")}
 					</p>
 				)}
-				{runs.page.data && (
-					<aside className="lp-run-history">
-						<h3>{__("Calculation history", "linker-tools")}</h3>
-						{!runs.page.data.items.length && (
-							<p>
-								{__(
-									"No saved calculation is available on this page.",
-									"linker-tools",
+				<div className="lp-work-grid">
+					{runs.page.data && (
+						<aside className="lp-run-history lp-work-aside lp-work-panel">
+							<h3 className="lp-work-panel-heading">
+								{__("Calculation history", "linker-tools")}
+							</h3>
+							{!runs.page.data.items.length && (
+								<p>
+									{__(
+										"No saved calculation is available on this page.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+							{runs.page.data.items.map((run) => (
+								<button
+									type="button"
+									key={run.id}
+									aria-pressed={runs.runId === run.id}
+									onClick={() => runs.select(run.id)}
+								>
+									<strong>
+										{sprintf(__("Revision %d", "linker-tools"), run.revision)}
+									</strong>
+									{run.task_kind && <span>{taskLabel(run.task_kind)}</span>}
+									<span>{runStateLabel(run.state, run.task_kind)}</span>
+									<small>
+										{new Intl.DateTimeFormat(locale, {
+											dateStyle: "short",
+											timeStyle: "short",
+										}).format(run.created_at * 1000)}
+									</small>
+								</button>
+							))}
+							<div className="lp-inline-actions">
+								{runs.hasPrevious && (
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={runs.first}
+									>
+										{__("Latest calculations", "linker-tools")}
+									</button>
 								)}
+								{runs.page.data.next && (
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={runs.next}
+									>
+										{__("Earlier calculations", "linker-tools")}
+									</button>
+								)}
+							</div>
+						</aside>
+					)}
+					<div ref={runTarget} className="lp-run-content lp-work-main">
+						{runs.run.error && (
+							<Notice error>
+								<p>
+									{__(
+										"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+										"linker-tools",
+									)}
+								</p>
+								<button
+									type="button"
+									className="lp-text-button"
+									onClick={() => void runs.run.refetch()}
+								>
+									{__("Refresh calculation status", "linker-tools")}
+								</button>
+							</Notice>
+						)}
+						{runs.runId && !runs.run.data && !runs.run.error && (
+							<p role="status">
+								{__("Reading the saved calculation…", "linker-tools")}
 							</p>
 						)}
-						{runs.page.data.items.map((run) => (
-							<button
-								type="button"
-								key={run.id}
-								aria-pressed={runs.runId === run.id}
-								onClick={() => runs.select(run.id)}
-							>
-								<strong>
-									{sprintf(__("Revision %d", "linker-tools"), run.revision)}
-								</strong>
-								{run.task_kind && <span>{taskLabel(run.task_kind)}</span>}
-								<span>{runStateLabel(run.state, run.task_kind)}</span>
-								<small>
-									{new Intl.DateTimeFormat(locale, {
-										dateStyle: "short",
-										timeStyle: "short",
-									}).format(run.created_at * 1000)}
-								</small>
-							</button>
-						))}
-						<div className="lp-inline-actions">
-							{runs.hasPrevious && (
-								<button
-									type="button"
-									className="lp-text-button"
-									onClick={runs.first}
-								>
-									{__("Latest calculations", "linker-tools")}
-								</button>
-							)}
-							{runs.page.data.next && (
-								<button
-									type="button"
-									className="lp-text-button"
-									onClick={runs.next}
-								>
-									{__("Earlier calculations", "linker-tools")}
-								</button>
-							)}
-						</div>
-					</aside>
-				)}
-				<div ref={runTarget} className="lp-run-content">
-					{runs.run.error && (
-						<Notice error>
-							<p>
-								{__(
-									"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
-									"linker-tools",
-								)}
-							</p>
-							<button
-								type="button"
-								className="lp-text-button"
-								onClick={() => void runs.run.refetch()}
-							>
-								{__("Refresh calculation status", "linker-tools")}
-							</button>
-						</Notice>
-					)}
-					{runs.runId && !runs.run.data && !runs.run.error && (
-						<p role="status">
-							{__("Reading the saved calculation…", "linker-tools")}
-						</p>
-					)}
-					{runs.run.data && (
-						<>
-							{runTask(runs.run.data) === DIRECT_BEAM_TASK ? (
-								<DirectBeamResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									session={session}
-									client={client}
-									locale={locale}
-									sceneModuleUrl={sceneModuleUrl}
-								/>
-							) : runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
-								<PvgisReferenceResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									inputs={draft.history.current}
-									edit={edit}
-									session={session}
-									client={client}
-									recheck={recheck}
-									locale={locale}
-									blocked={blocked || !syntaxValid}
-									active={active && view === "runs"}
-								/>
-							) : [WEATHER_TASK, PV_TASK, GEOMETRIC_PV_TASK].includes(
-									runTask(runs.run.data) ?? "",
-							  ) ? (
-								<PreparationResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									inputs={draft.history.current}
-									edit={edit}
-									session={session}
-									client={client}
-									recheck={recheck}
-									locale={locale}
-									blocked={blocked || !syntaxValid}
-									active={active && view === "runs"}
-								/>
-							) : runTask(runs.run.data) === REPORT_TASK ? (
-								<PlanningReportResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									client={client}
-									scope={session.query_scope}
-									recheck={recheck}
-									operations={operations}
-									current={
-										!dirty &&
-										!draft.pending &&
-										runs.run.data.revision === draft.baseline.revision
-									}
-									blocked={blocked}
-									locale={locale}
-								/>
-							) : runTask(runs.run.data) === SEARCH_TASK ? (
-								<EquipmentSearchResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									locale={locale}
-									dirty={dirty || Boolean(draft.pending)}
-									confirmedRevision={draft.baseline.revision}
-									client={client}
-									scope={session.query_scope}
-									disabled={
-										blocked ||
-										!!draft.pending ||
-										!!draft.conflict ||
-										operations.busy ||
-										!syntaxValid
-									}
-									apply={applyEquipment}
-									plantActive={hasPlant(draft.history.current)}
-									projectCandidate={readObject(
-										draft.history.current.equipment_candidate ?? {},
-									)}
-									onError={setError}
-								/>
-							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
-								<EquipmentResult
-									run={runs.run.data}
-									locale={locale}
-									dirty={dirty || Boolean(draft.pending)}
-									confirmedRevision={draft.baseline.revision}
-									certificateSources={
-										<CertificateEvidence
-											client={client}
-											scope={session.query_scope}
-											run={runs.run.data}
-										/>
-									}
-								/>
-							) : (
-								<>
-									<RunResult
+						{runs.run.data && (
+							<>
+								{runTask(runs.run.data) === DIRECT_BEAM_TASK ? (
+									<DirectBeamResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										session={session}
+										client={client}
+										locale={locale}
+										sceneModuleUrl={sceneModuleUrl}
+									/>
+								) : runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
+									<PvgisReferenceResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										inputs={draft.history.current}
+										edit={edit}
+										session={session}
+										client={client}
+										recheck={recheck}
+										locale={locale}
+										blocked={blocked || !syntaxValid}
+										active={active && view === "runs"}
+									/>
+								) : [WEATHER_TASK, PV_TASK, GEOMETRIC_PV_TASK].includes(
+										runTask(runs.run.data) ?? "",
+								  ) ? (
+									<PreparationResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										inputs={draft.history.current}
+										edit={edit}
+										session={session}
+										client={client}
+										recheck={recheck}
+										locale={locale}
+										blocked={blocked || !syntaxValid}
+										active={active && view === "runs"}
+									/>
+								) : runTask(runs.run.data) === REPORT_TASK ? (
+									<PlanningReportResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										client={client}
+										scope={session.query_scope}
+										recheck={recheck}
+										operations={operations}
+										current={
+											!dirty &&
+											!draft.pending &&
+											runs.run.data.revision === draft.baseline.revision
+										}
+										blocked={blocked}
+										locale={locale}
+									/>
+								) : runTask(runs.run.data) === SEARCH_TASK ? (
+									<EquipmentSearchResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										locale={locale}
+										dirty={dirty || Boolean(draft.pending)}
+										confirmedRevision={draft.baseline.revision}
+										client={client}
+										scope={session.query_scope}
+										disabled={
+											blocked ||
+											!!draft.pending ||
+											!!draft.conflict ||
+											operations.busy ||
+											!syntaxValid
+										}
+										apply={applyEquipment}
+										plantActive={hasPlant(draft.history.current)}
+										projectCandidate={readObject(
+											draft.history.current.equipment_candidate ?? {},
+										)}
+										onError={setError}
+									/>
+								) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
+									<EquipmentResult
 										run={runs.run.data}
 										locale={locale}
 										dirty={dirty || Boolean(draft.pending)}
@@ -2161,49 +1987,66 @@ export function EnergyWorkspace({
 											/>
 										}
 									/>
-									{runs.run.data.state === "succeeded" &&
-										typeof runs.run.data.result?.trace_sha256 === "string" && (
-											<TraceExplorer
-												key={runs.run.data.id}
-												run={runs.run.data}
-												client={client}
-												session={session}
-												locale={locale}
-												active={active && view === "runs"}
-											/>
+								) : (
+									<>
+										<RunResult
+											run={runs.run.data}
+											locale={locale}
+											dirty={dirty || Boolean(draft.pending)}
+											confirmedRevision={draft.baseline.revision}
+											certificateSources={
+												<CertificateEvidence
+													client={client}
+													scope={session.query_scope}
+													run={runs.run.data}
+												/>
+											}
+										/>
+										{runs.run.data.state === "succeeded" &&
+											typeof runs.run.data.result?.trace_sha256 ===
+												"string" && (
+												<TraceExplorer
+													key={runs.run.data.id}
+													run={runs.run.data}
+													client={client}
+													session={session}
+													locale={locale}
+													active={active && view === "runs"}
+												/>
+											)}
+										<RunBasis
+											key={runs.run.data.id}
+											run={runs.run.data}
+											session={session}
+											client={client}
+											recheck={recheck}
+											locale={locale}
+										/>
+									</>
+								)}
+								{runPending(runs.run.data.state) && (
+									<button
+										type="button"
+										className="lp-button lp-button-secondary"
+										disabled={runs.cancelPending}
+										onClick={() => void runs.cancel()}
+									>
+										{runs.cancelBusy
+											? __("Confirming cancellation…", "linker-tools")
+											: __("Cancel calculation", "linker-tools")}
+									</button>
+								)}
+								{runs.cancelError && (
+									<Notice error>
+										{__(
+											"Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
+											"linker-tools",
 										)}
-									<RunBasis
-										key={runs.run.data.id}
-										run={runs.run.data}
-										session={session}
-										client={client}
-										recheck={recheck}
-										locale={locale}
-									/>
-								</>
-							)}
-							{runPending(runs.run.data.state) && (
-								<button
-									type="button"
-									className="lp-button lp-button-secondary"
-									disabled={runs.cancelPending}
-									onClick={() => void runs.cancel()}
-								>
-									{runs.cancelBusy
-										? __("Confirming cancellation…", "linker-tools")
-										: __("Cancel calculation", "linker-tools")}
-								</button>
-							)}
-							{runs.cancelError && (
-								<Notice error>
-									{__(
-										"Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
-										"linker-tools",
-									)}
-								</Notice>
-							)}
-						</>
-					)}
+									</Notice>
+								)}
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</section>

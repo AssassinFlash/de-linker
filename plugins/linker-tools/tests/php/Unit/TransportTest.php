@@ -118,6 +118,41 @@ final class TransportTest extends TestCase {
 		$this->assertSame( 0, $writes );
 	}
 
+	/** Current-input retries return their original snapshot without dispatching a new job. */
+	public function test_current_input_commands_replay_their_owned_snapshot(): void {
+		foreach ( array( 'calculate', 'find-equipment', 'check-equipment' ) as $operation ) {
+			$calls     = array();
+			$payload   = array(
+				'schema_version' => 1,
+				'project'        => array( 'revision' => 2 ),
+				'run'            => array( 'id' => str_repeat( 'b', 32 ) ),
+			);
+			$transport = new Transport(
+				static function ( string $url ) use ( &$calls, $operation, $payload ): array {
+					$calls[] = $url;
+					return array(
+						'status' => 200,
+						'type'   => 'application/json',
+						'body'   => wp_json_encode(
+							array(
+								'schema_version' => 1,
+								'status'         => 'replayed',
+								'command_scope'  => $operation . ':' . str_repeat( 'a', 32 ),
+								'command_sha256' => str_repeat( 'c', 64 ),
+								'result'         => $payload,
+							)
+						),
+					);
+				}
+			);
+			$reply     = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:1' ), 'runs/' . $operation, array(), '{}', $transport );
+			$this->assertIsArray( $reply, $operation );
+			$this->assertSame( 200, $reply['status'] );
+			$this->assertSame( $payload, json_decode( $reply['body'], true ) );
+			$this->assertSame( array( 'https://engine.test/operations/replay/runs/' . $operation ), $calls );
+		}
+	}
+
 	/** An unreadable or unexpected body still yields the generic status code. */
 	public function test_unrecognised_bodies_fall_back_per_status(): void {
 		foreach ( array(

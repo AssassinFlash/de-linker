@@ -1,3 +1,4 @@
+import pvOnlyPlantJson from "../../tests/fixtures/plant-pv-only-energy-run.json" with { type: "json" };
 import { readEquipmentAssessment } from "./readEquipmentResult.ts";
 import { readDcParameters } from "../domain/dcEnergy.ts";
 import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
@@ -10,7 +11,16 @@ import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" }
 import constantAcRunJson from "../../tests/fixtures/constant-ac-energy-run.json" with { type: "json" };
 import constantPlantAcRunJson from "../../tests/fixtures/constant-plant-ac-energy-run.json" with { type: "json" };
 import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
-import { readRun, readRunPage } from "./planningProtocol.ts";
+import {
+	readRun,
+	readRunPage,
+	readPlanningOperation,
+	readCurrentCalculation,
+} from "./planningProtocol.ts";
+import scenarioJson from "../../tests/fixtures/energy-scenario.json" with { type: "json" };
+import profilesJson from "../../tests/fixtures/energy-selections.json" with { type: "json" };
+import { authoredCalculationInputs } from "../domain/currentCalculation.ts";
+import { projectInputContract } from "../domain/draft.ts";
 import {
 	readPlanningReport,
 	readReportResult,
@@ -20,11 +30,73 @@ import { readObject as objectDocument } from "./readProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 
+import { readRunInputs } from "./planningProtocol.ts";
+
+test("source input replies belong to the selected immutable run", () => {
+	const inputs = { energy_replay: { battery_parameters_asset_id: "owned" } };
+	const reply = {
+		schema_version: 1,
+		project_id: runJson.project_id,
+		run_id: runJson.id,
+		manifest_sha256: runJson.manifest_sha256,
+		inputs,
+	};
+	assert.equal(readRunInputs(reply, runJson), inputs);
+	for (const patch of [
+		{ project_id: "f".repeat(32) },
+		{ run_id: "f".repeat(32) },
+		{ manifest_sha256: "f".repeat(64) },
+		{ inputs: null },
+		{ schema_version: 2 },
+	])
+		assert.throws(() => readRunInputs({ ...reply, ...patch }, runJson));
+});
+
 type MutableObject = { -readonly [P in keyof JsonObject]: JsonObject[P] };
 const readObject = (value: unknown): MutableObject =>
 	objectDocument(value) as MutableObject;
 const original = () => readObject(structuredClone(runJson));
 const result = (run: JsonObject) => readObject(run.result);
+
+test("calculate current inputs binds the confirmed project and run to its authored request", () => {
+	const command = {
+		schema_version: 1,
+		project_id: runJson.project_id,
+		expected_revision: runJson.revision,
+		input_contract: projectInputContract,
+		key: "37c3a9ef-4d58-49df-b38e-61090c8a19aa",
+		inputs: { energy_scenario: scenarioJson, profile_selections: profilesJson },
+	};
+	assert.deepEqual(
+		readPlanningOperation("runs/calculate", JSON.stringify(command)),
+		command,
+	);
+	const run = original();
+	run.state = "queued";
+	run.result = null;
+	run.result_sha256 = null;
+	const project = {
+		id: runJson.project_id,
+		title: "Current calculation",
+		revision: runJson.revision,
+		input_sha256: runJson.manifest.input_sha256,
+		inputs: authoredCalculationInputs(command.inputs),
+	};
+	const reply = { schema_version: 1, project, run };
+	assert.equal(readCurrentCalculation(reply, command).run.id, runJson.id);
+	assert.throws(() =>
+		readCurrentCalculation(
+			{ ...reply, project: { ...project, inputs: {} } },
+			command,
+		),
+	);
+	assert.throws(() =>
+		readCurrentCalculation(
+			{ ...reply, project: { ...project, input_sha256: "f".repeat(64) } },
+			command,
+		),
+	);
+});
 
 test("a frozen report names its language when it differs from the site", () => {
 	assert.equal(reportLanguageDiffers("en", "de-DE"), true);
@@ -32,6 +104,91 @@ test("a frozen report names its language when it differs from the site", () => {
 	assert.equal(reportLanguageDiffers("en", "en-US"), false);
 	assert.equal(reportLanguageDiffers("de", "de-DE-formal"), false);
 });
+
+test("native PV-only plant result retains two real inverters and an explicit empty storage scope", () => {
+	const run = readRun(
+		pvOnlyPlantJson.run,
+		pvOnlyPlantJson.project.id,
+		undefined,
+		"single_ac_energy_replay_v1",
+	);
+	const result = readObject(run.result);
+	assert.equal(
+		(readObject(readObject(result.equipment_binding).plant).units as unknown[])
+			.length,
+		2,
+	);
+	assert.deepEqual(readObject(result.model).units, []);
+	assert.deepEqual(result.parameter_sources, { units: [], pool: {} });
+	assert.deepEqual(readObject(result.metrics).units, []);
+	assert.equal(readObject(result.metrics).pv_generated_ac_kwh, 2);
+	assert.equal(readObject(result.metrics).solar_load_kwh, 1);
+	assert.equal(readObject(result.metrics).grid_import_kwh, 1);
+	assert.equal(readObject(result.metrics).pv_export_kwh, 1);
+});
+
+test("empty storage metadata requires the native no-storage boundary and never disguises real battery units", () => {
+	for (const markedNoStorage of [false, true]) {
+		const corrupt = readObject(structuredClone(plantAcRunJson.run));
+		const result = readObject(corrupt.result),
+			model = readObject(result.model);
+		result.parameter_sources = { units: [], pool: {} };
+		model.units = [];
+		readObject(result.metrics).units = [];
+		if (markedNoStorage)
+			model.pv_boundary =
+				"available_ac_generation_at_common_connection; no_storage";
+		readObject(result.equipment_binding).scenario_model = model;
+		assert.throws(() => readRun(corrupt, corrupt.project_id as string));
+	}
+	const corrupt = readObject(structuredClone(pvOnlyPlantJson.run));
+	const result = readObject(corrupt.result),
+		model = readObject(result.model);
+	model.pv_boundary =
+		"independent_ac_generation; converter_dc_pv_inputs_unused";
+	readObject(result.equipment_binding).scenario_model = model;
+	assert.throws(() => readRun(corrupt, pvOnlyPlantJson.project.id));
+});
+
+for (const mutation of [
+	"selected_battery",
+	"battery_counts",
+	"parameter_pool",
+	"model_unit",
+	"metric_unit",
+	"battery_pins",
+	"hardware_evidence",
+] as const) {
+	test(`native PV-only marker rejects contradictory ${mutation}`, () => {
+		const corrupt = readObject(structuredClone(pvOnlyPlantJson.run));
+		const result = readObject(corrupt.result),
+			binding = readObject(result.equipment_binding);
+		const units = readObject(binding.plant).units as JsonObject[];
+		if (mutation === "selected_battery")
+			readObject(units[0]).selection =
+				plantAcRunJson.project.inputs.equipment_plant.units[0]!.selection;
+		if (mutation === "battery_counts")
+			readObject(readObject(units[0]).selection).modules_per_stack = 1;
+		if (mutation === "parameter_pool")
+			readObject(readObject(result.parameter_sources).pool)["f".repeat(64)] =
+				{};
+		if (mutation === "model_unit")
+			readObject(result.model).units = [{ unit_id: "a" }];
+		if (mutation === "metric_unit")
+			readObject(result.metrics).units = [{ unit_id: "a" }];
+		if (mutation === "battery_pins") {
+			const pins = {
+				...readObject(result.pinned_assets),
+				"unit:a:battery.raw": "f".repeat(64),
+			};
+			result.pinned_assets = pins;
+			readObject(readObject(corrupt.manifest).context).assets = pins;
+		}
+		if (mutation === "hardware_evidence")
+			readObject(binding.assessment).selected_products = [];
+		assert.throws(() => readRun(corrupt, pvOnlyPlantJson.project.id));
+	});
+}
 
 for (const plantRunJson of [plantAcRunJson, dcPlantRunJson]) {
 	test(`native joint result retains named parameter proofs, unit trace and the shared report consumer: ${plantRunJson.run.result.kind}`, () => {

@@ -1,5 +1,53 @@
 import { __ } from "../../i18n.ts";
 
+export function equipmentFieldMessage(
+	fields: readonly string[],
+	path: string,
+): string | null {
+	if (!fields.includes(path)) return null;
+	if (/accessory_product_ids(?:\[\d+\])?$/.test(path))
+		return __(
+			"Remove the unavailable additional product or choose one from current product data.",
+			"linker-tools",
+		);
+	switch (path.split(".").at(-1)) {
+		case "grid_phase":
+			return __(
+				"Choose a single-phase or three-phase grid connection.",
+				"linker-tools",
+			);
+		case "operating_mode":
+			return __("Choose grid-connected or backup operation.", "linker-tools");
+		case "inverter_product_id":
+			return __(
+				"Choose an inverter or integrated storage system.",
+				"linker-tools",
+			);
+		case "battery_product_id":
+			return __("Choose the battery used with this inverter.", "linker-tools");
+		case "application":
+			return __(
+				"Choose residential, commercial, or any application.",
+				"linker-tools",
+			);
+		case "modules_per_stack":
+			return __(
+				"Enter the documented battery modules per stack.",
+				"linker-tools",
+			);
+		case "parallel_stacks":
+			return __(
+				"Enter the number of parallel stacks or systems.",
+				"linker-tools",
+			);
+		default:
+			return __(
+				"Review this equipment requirement and enter a valid value.",
+				"linker-tools",
+			);
+	}
+}
+
 export function equipmentStatus(status: unknown): string {
 	return status === "satisfied"
 		? __("Checked requirements met", "linker-tools")

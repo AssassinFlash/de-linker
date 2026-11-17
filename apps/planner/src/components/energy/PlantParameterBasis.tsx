@@ -1,3 +1,4 @@
+import { PLANT_NO_STORAGE_BOUNDARY } from "../../data/readPlantEnergyResult.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { DC_LOSS_FIELDS } from "../../domain/dcEnergy.ts";
@@ -12,6 +13,15 @@ export function PlantParameterBasis({
 	result: JsonObject;
 	locale: string;
 }) {
+	if (readObject(result.model).pv_boundary === PLANT_NO_STORAGE_BOUNDARY)
+		return (
+			<p className="lp-profile-help">
+				{__(
+					"No battery parameters are used in this PV-only calculation.",
+					"linker-tools",
+				)}
+			</p>
+		);
 	const plant = readObject(readObject(result.equipment_binding).plant);
 	const sources = readObject(result.parameter_sources),
 		pool = readObject(sources.pool);

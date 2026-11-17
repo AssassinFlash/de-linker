@@ -8,7 +8,7 @@ from pydantic import Field, model_validator
 
 from .canonical import Json, Object
 from .energy_inputs import Document, SchemaVersion
-from .equipment_inputs import Count
+from .equipment_inputs import Count, PartUse
 from .equipment_plant import (
     ControlNetwork,
     EquipmentPlant,
@@ -31,6 +31,9 @@ class SearchGroup(Document):
     # A selected controller constrains the search; null asks the Woo contract.
     controller_product_id: Count | None
     control_network: ControlNetwork | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    controller_use: PartUse | None = Field(
         default=None, exclude_if=lambda value: value is None
     )
 
@@ -126,10 +129,14 @@ class PlantSearchPlan(Document):
                 return False
             demand = EquipmentRequirements.read(
                 {
-                    # A selection carries no application statement; an unset
-                    # project application never constrains the unit demand.
-                    key: getattr(unit.selection, key, None)
-                    for key in EquipmentRequirements.model_fields
+                    **{
+                        key: getattr(unit.selection, key, None)
+                        for key in EquipmentRequirements.model_fields
+                        if key != "application"
+                    },
+                    # Application constrains the frozen search pool; hardware
+                    # selections have no field that can restate that demand.
+                    "application": request.requirements.application,
                 }
             )
             if request.requirements != demand:

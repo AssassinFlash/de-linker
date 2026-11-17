@@ -134,167 +134,187 @@ export function PlanningReportForm({
 			: {}),
 	};
 	return (
-		<section className="lp-scenario-block">
-			<h3>{__("Planning report", "linker-tools")}</h3>
-			<p>
-				{__(
-					"Choose the saved results to include. Save project changes before generating the report.",
-					"linker-tools",
-				)}
-			</p>
-			<div className="lp-scenario-fields">
-				{hasInstallation && (
-					<label className="lp-field">
-						<span>
-							<input
-								type="checkbox"
-								checked={installation}
-								disabled={disabled}
-								onChange={(e) => setInstallation(e.currentTarget.checked)}
-							/>
-							{locale.startsWith("de")
-								? "Installationsangaben aus dem gespeicherten Projekt aufnehmen"
-								: "Include installation details from the saved project"}
-						</span>
-					</label>
-				)}
-				{choose(
-					"single_ac_energy_replay_v1",
-					energy,
-					setEnergy,
-					__("Energy calculation", "linker-tools"),
-				)}
-				{choose(
-					"prepare_roof_pv_reference_v1",
-					pv,
-					setPv,
-					__("PV generation", "linker-tools"),
-				)}
-				{choose(
-					DIRECT_BEAM_TASK,
-					beam,
-					setBeam,
-					__("Geometric direct-beam visibility", "linker-tools"),
-				)}
-				{beam && (
-					<p>
-						{__(
-							"The report retains the selected geometric result separately from PV generation and energy results.",
-							"linker-tools",
-						)}
-					</p>
-				)}
-				{hasCandidate && (
-					<p>
-						{__(
-							"The report includes the equipment combination selected for this project.",
-							"linker-tools",
-						)}
-					</p>
-				)}
-				{canSelectEquipmentCheck &&
-					choose(
-						"qualify_woo_equipment_v1",
-						equipment,
-						setEquipment,
-						__("Equipment checks", "linker-tools"),
-					)}
-				{(hasCandidate || equipment) && (
-					<label className="lp-field">
-						<span>
-							<input
-								type="checkbox"
-								checked={certificates}
-								disabled={disabled}
-								onChange={(e) => setCertificates(e.currentTarget.checked)}
-							/>
-							{__(
-								"Include information from the linked certificate files",
-								"linker-tools",
-							)}
-						</span>
-						<small>
-							{__(
-								"If the selected equipment result contains a device review, the report retains that review. Changed project entries require a new equipment check before they can be included.",
-								"linker-tools",
-							)}{" "}
-							{__(
-								"The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions.",
-								"linker-tools",
-							)}
-						</small>
-					</label>
-				)}
-				<label className="lp-field">
-					<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-					<input
-						type="file"
-						accept="image/png,image/jpeg"
-						disabled={disabled}
-						onChange={(event) => {
-							reader.current?.abort();
-							setLogo(null);
-							setReading(false);
-							setError(false);
-							const file = event.currentTarget.files?.[0];
-							if (!file) return;
-							if (
-								file.size > 500000 ||
-								!["image/png", "image/jpeg"].includes(file.type)
-							) {
-								setError(true);
-								return;
-							}
-							const next = new FileReader();
-							reader.current = next;
-							setReading(true);
-							next.onload = () => {
-								if (
-									reader.current === next &&
-									typeof next.result === "string"
-								) {
-									setLogo(next.result);
-									setReading(false);
-								}
-							};
-							next.onerror = () => {
-								if (reader.current === next) {
-									setError(true);
-									setReading(false);
-								}
-							};
-							next.readAsDataURL(file);
-						}}
-					/>
-					<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
-				</label>
-			</div>
-			{error && (
-				<Notice error>
+		<section className="lp-scenario-block lp-work-main">
+			<div className="lp-work-panel-heading">
+				<h3>{__("Planning report", "linker-tools")}</h3>
+				<p>
 					{__(
-						"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
+						"Choose the saved results to include. Save project changes before generating the report.",
 						"linker-tools",
 					)}
-				</Notice>
-			)}
-			<button
-				type="button"
-				className="lp-button"
-				disabled={
-					disabled ||
-					error ||
-					reading ||
-					(!hasCandidate &&
-						!energy &&
-						!pv &&
-						!beam &&
-						!equipment &&
-						!(installation && hasInstallation))
-				}
-				onClick={() => void generate(options)}
-			>
-				{__("Generate planning report", "linker-tools")}
-			</button>
+				</p>
+			</div>
+			<div className="lp-work-grid">
+				<section className="lp-work-main lp-work-panel">
+					<h4 className="lp-work-panel-heading">
+						{__("Saved calculations", "linker-tools")}
+					</h4>
+					<div className="lp-scenario-fields">
+						{choose(
+							"single_ac_energy_replay_v1",
+							energy,
+							setEnergy,
+							__("Energy calculation", "linker-tools"),
+						)}
+						{choose(
+							"prepare_roof_pv_reference_v1",
+							pv,
+							setPv,
+							__("PV generation", "linker-tools"),
+						)}
+						{choose(
+							DIRECT_BEAM_TASK,
+							beam,
+							setBeam,
+							__("Geometric direct-beam visibility", "linker-tools"),
+						)}
+						{beam && (
+							<p>
+								{__(
+									"The report retains the selected geometric result separately from PV generation and energy results.",
+									"linker-tools",
+								)}
+							</p>
+						)}
+						{hasCandidate && (
+							<p>
+								{__(
+									"The report includes the equipment combination selected for this project.",
+									"linker-tools",
+								)}
+							</p>
+						)}
+						{canSelectEquipmentCheck &&
+							choose(
+								"qualify_woo_equipment_v1",
+								equipment,
+								setEquipment,
+								__("Equipment checks", "linker-tools"),
+							)}
+					</div>
+				</section>
+				<aside className="lp-work-aside lp-work-panel">
+					<h4 className="lp-work-panel-heading">
+						{__("Planning report", "linker-tools")}
+					</h4>
+					<div className="lp-scenario-fields">
+						{hasInstallation && (
+							<label className="lp-field">
+								<span>
+									<input
+										type="checkbox"
+										checked={installation}
+										disabled={disabled}
+										onChange={(e) => setInstallation(e.currentTarget.checked)}
+									/>
+									{locale.startsWith("de")
+										? "Installationsangaben aus dem gespeicherten Projekt aufnehmen"
+										: "Include installation details from the saved project"}
+								</span>
+							</label>
+						)}
+						{(hasCandidate || equipment) && (
+							<label className="lp-field">
+								<span>
+									<input
+										type="checkbox"
+										checked={certificates}
+										disabled={disabled}
+										onChange={(e) => setCertificates(e.currentTarget.checked)}
+									/>
+									{__(
+										"Include information from the linked certificate files",
+										"linker-tools",
+									)}
+								</span>
+								<small>
+									{__(
+										"If the selected equipment result contains a device review, the report retains that review. Changed project entries require a new equipment check before they can be included.",
+										"linker-tools",
+									)}{" "}
+									{__(
+										"The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions.",
+										"linker-tools",
+									)}
+								</small>
+							</label>
+						)}
+						<label className="lp-field">
+							<span>
+								{__("Your logo on the PDF (optional)", "linker-tools")}
+							</span>
+							<input
+								type="file"
+								accept="image/png,image/jpeg"
+								disabled={disabled}
+								onChange={(event) => {
+									reader.current?.abort();
+									setLogo(null);
+									setReading(false);
+									setError(false);
+									const file = event.currentTarget.files?.[0];
+									if (!file) return;
+									if (
+										file.size > 500000 ||
+										!["image/png", "image/jpeg"].includes(file.type)
+									) {
+										setError(true);
+										return;
+									}
+									const next = new FileReader();
+									reader.current = next;
+									setReading(true);
+									next.onload = () => {
+										if (
+											reader.current === next &&
+											typeof next.result === "string"
+										) {
+											setLogo(next.result);
+											setReading(false);
+										}
+									};
+									next.onerror = () => {
+										if (reader.current === next) {
+											setError(true);
+											setReading(false);
+										}
+									};
+									next.readAsDataURL(file);
+								}}
+							/>
+							<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
+						</label>
+					</div>
+				</aside>
+			</div>
+			<div className="lp-work-toolbar">
+				{error && (
+					<Notice error>
+						{__(
+							"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
+							"linker-tools",
+						)}
+					</Notice>
+				)}
+				<button
+					type="button"
+					className="lp-button"
+					disabled={
+						disabled ||
+						error ||
+						reading ||
+						(!hasCandidate &&
+							!energy &&
+							!pv &&
+							!beam &&
+							!equipment &&
+							!(installation && hasInstallation))
+					}
+					onClick={() => void generate(options)}
+				>
+					{__("Generate planning report", "linker-tools")}
+				</button>
+			</div>
 		</section>
 	);
 }

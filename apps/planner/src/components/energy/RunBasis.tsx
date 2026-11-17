@@ -1,3 +1,4 @@
+import { PLANT_NO_STORAGE_BOUNDARY } from "../../data/readPlantEnergyResult.ts";
 import {
 	isPlantEnergyTask,
 	readPlantEnergyInputs,
@@ -9,11 +10,14 @@ import { DcParameterSources } from "./DcParameterSources.tsx";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
-import { readBatteryAsset } from "../../data/planningProtocol.ts";
+import {
+	readBatteryAsset,
+	readRunInputs,
+} from "../../data/planningProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session, JsonObject } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
-import { readObject, readProject } from "../../data/readProtocol.ts";
+import { readObject } from "../../data/readProtocol.ts";
 import {
 	readEnergyInputs,
 	BATTERY_FIELDS,
@@ -54,27 +58,22 @@ export function RunBasis({
 		retry: false,
 		queryFn: async ({ signal }) => {
 			try {
-				const historical = readProject(
+				const frozen = readRunInputs(
 					await client.query(
-						"projects/read",
+						"runs/inputs",
 						{
 							schema_version: 1,
 							project_id: run.project_id,
-							revision: run.revision,
+							run_id: run.id,
 						},
 						session.query_scope,
 						signal,
 					),
+					run,
 				);
-				if (
-					historical.id !== run.project_id ||
-					historical.revision !== run.revision ||
-					historical.input_sha256 !== run.manifest.input_sha256
-				)
-					throw new ApiError(502, "run_source_mismatch");
 				const selected = joint
-						? readPlantEnergyInputs(historical.inputs.energy_plant)
-						: readEnergyInputs(historical.inputs.energy_replay),
+						? readPlantEnergyInputs(frozen.energy_plant)
+						: readEnergyInputs(frozen.energy_replay),
 					pins = readObject(readObject(run.manifest.context).assets);
 				const profiles: [
 					import("../../domain/profiles.ts").ProfileRole | "pv_available_dc",
@@ -163,6 +162,7 @@ export function RunBasis({
 	if (!run.result) return null;
 	const dc = run.result.kind === DC_ENERGY_TASK;
 	const model = readObject(run.result.model),
+		noStorage = joint && model.pv_boundary === PLANT_NO_STORAGE_BOUNDARY,
 		periods = readObject(run.result.profile_interpretation)
 			.operating_periods as readonly JsonObject[];
 	const number = (value: unknown) =>
@@ -173,7 +173,7 @@ export function RunBasis({
 			: "—";
 	return (
 		<details
-			className="lp-comparison lp-run-basis"
+			className="lp-comparison lp-run-basis lp-work-panel"
 			onToggle={(e) => setOpen(e.currentTarget.open)}
 		>
 			<summary>
@@ -313,20 +313,25 @@ export function RunBasis({
 						/>
 					)}
 					<p>
-						{joint
+						{noStorage
 							? __(
-									"Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance.",
+									"Available AC PV generation and site demand are evaluated at the common connection without battery storage. Import and export limits apply once at that connection.",
 									"linker-tools",
 								)
-							: dc
+							: joint
 								? __(
-										"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+										"Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance.",
 										"linker-tools",
 									)
-								: __(
-										"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
-										"linker-tools",
-									)}
+								: dc
+									? __(
+											"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+											"linker-tools",
+										)
+									: __(
+											"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
+											"linker-tools",
+										)}
 					</p>
 					<div className="lp-table-scroll" tabIndex={0}>
 						<table>

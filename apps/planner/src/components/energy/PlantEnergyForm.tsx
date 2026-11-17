@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import type { EquipmentPlant } from "../../domain/equipmentPlant.ts";
+import type { PlantEnergyEquipment } from "../../domain/plantEnergy.ts";
 import type {
 	PlantEnergyDraft,
 	PlantEnergyUnitDraft,
@@ -32,7 +32,7 @@ export function PlantEnergyForm({
 	storageOnly = false,
 }: {
 	value: PlantEnergyDraft;
-	plant: EquipmentPlant;
+	plant: PlantEnergyEquipment;
 	section: "storage" | "initial" | "operation";
 	locale: string;
 	disabled: boolean;
@@ -80,63 +80,70 @@ export function PlantEnergyForm({
 			units: value.units.map((u) => (u.unit_id === next.unit_id ? next : u)),
 		});
 	return (
-		<fieldset className="lp-scenario-fields" disabled={disabled}>
-			{section === "storage" && (
-				<label className="lp-field">
-					<span>{__("PV connection for this plant", "linker-tools")}</span>
-					<select
-						disabled={!numbersValid}
-						value={value.coupling ?? "plant_ac"}
-						onChange={(e) =>
-							onChange({
-								...value,
-								coupling: e.currentTarget.value as
-									"plant_ac" | "plant_shared_dc",
-								...(e.currentTarget.value === "plant_shared_dc"
-									? {
-											controller:
-												"proportional_available_power_self_consumption_v1" as const,
-											aux_ac_kw: null,
-										}
-									: {}),
-							})
-						}
-					>
-						<option value="plant_ac">
-							{__("AC-coupled PV generation", "linker-tools")}
-						</option>
-						<option value="plant_shared_dc" disabled={storageOnly}>
-							{__("DC PV at individual storage converters", "linker-tools")}
-						</option>
-					</select>
-				</label>
-			)}
-			<p className="lp-profile-help">
-				{__(
-					"This calculation uses one shared AC metering point. Stored energy and its origin, power limits and loss assumptions are kept separately for each storage unit.",
-					"linker-tools",
-				)}
-			</p>
-			{!dcPlant &&
-				(plant.requirements.pv_dc_kw !== 0 ||
-					plant.units.some((u) => u.selection.pv_dc_kw !== 0)) && (
-					<Notice>
-						{__(
-							"This calculation includes PV only through a separate AC generation input. In the storage plan, set the total DC PV nameplate rating and each converter's DC PV allocation to zero. Confirm that every storage converter's DC PV inputs are unused.",
-							"linker-tools",
-						)}
-						<button
-							type="button"
-							className="lp-text-button"
-							onClick={openEquipment}
+		<fieldset className="lp-scenario-fields lp-work-main" disabled={disabled}>
+			<section className="lp-work-panel">
+				<h3 className="lp-work-panel-heading">
+					{__("System connection", "linker-tools")}
+				</h3>
+				{section === "storage" && (
+					<label className="lp-field">
+						<span>{__("PV connection for this plant", "linker-tools")}</span>
+						<select
+							disabled={!numbersValid}
+							value={value.coupling ?? "plant_ac"}
+							onChange={(e) =>
+								onChange({
+									...value,
+									coupling: e.currentTarget.value as
+										"plant_ac" | "plant_shared_dc",
+									...(e.currentTarget.value === "plant_shared_dc"
+										? {
+												controller:
+													"proportional_available_power_self_consumption_v1" as const,
+												aux_ac_kw: null,
+											}
+										: {}),
+								})
+							}
 						>
-							{__("Review equipment selection", "linker-tools")}
-						</button>
-					</Notice>
+							<option value="plant_ac">
+								{__("AC-coupled PV generation", "linker-tools")}
+							</option>
+							<option value="plant_shared_dc" disabled={storageOnly}>
+								{__("DC PV at individual storage converters", "linker-tools")}
+							</option>
+						</select>
+					</label>
 				)}
+				<p className="lp-profile-help">
+					{__(
+						"This calculation uses one shared AC metering point. Stored energy and its origin, power limits and loss assumptions are kept separately for each storage unit.",
+						"linker-tools",
+					)}
+				</p>
+				{!dcPlant &&
+					(plant.requirements.pv_dc_kw !== 0 ||
+						plant.units.some((u) => u.selection.pv_dc_kw !== 0)) && (
+						<Notice>
+							{__(
+								"This calculation includes PV only through a separate AC generation input. In the storage plan, set the total DC PV nameplate rating and each converter's DC PV allocation to zero. Confirm that every storage converter's DC PV inputs are unused.",
+								"linker-tools",
+							)}
+							<button
+								type="button"
+								className="lp-text-button"
+								onClick={openEquipment}
+							>
+								{__("Review equipment selection", "linker-tools")}
+							</button>
+						</Notice>
+					)}
+			</section>
 			{section === "storage" && dcPlant && (
-				<section className="lp-scenario-block">
-					<h3>{__("PV groups at the common AC bus", "linker-tools")}</h3>
+				<section className="lp-scenario-block lp-work-panel">
+					<h3 className="lp-work-panel-heading">
+						{__("PV groups at the common AC bus", "linker-tools")}
+					</h3>
 					<p className="lp-profile-help">
 						{__(
 							"Assign each roof PV group once: to one storage converter below or to the common AC bus here. Select the prepared roof PV source for this calculation. Any additional AC generation profile must represent a different source.",
@@ -180,117 +187,127 @@ export function PlantEnergyForm({
 				</section>
 			)}
 			{section !== "operation" && (
-				<label className="lp-field">
-					<span>{__("Storage unit", "linker-tools")}</span>
-					<select
-						disabled={!numbersValid}
-						value={hardware.id}
-						onChange={(e) => select(e.currentTarget.value)}
-					>
-						{plant.units.map((u) => (
-							<option key={u.id} value={u.id}>
-								{u.name}
-							</option>
-						))}
-					</select>
-				</label>
+				<div className="lp-work-panel lp-work-toolbar">
+					<label className="lp-field">
+						<span>{__("Storage unit", "linker-tools")}</span>
+						<select
+							disabled={!numbersValid}
+							value={hardware.id}
+							onChange={(e) => select(e.currentTarget.value)}
+						>
+							{plant.units.map((u) => (
+								<option key={u.id} value={u.id}>
+									{u.name}
+								</option>
+							))}
+						</select>
+					</label>
+				</div>
 			)}
 			{section === "storage" && (
-				<div key={hardware.id}>
-					{dcPlant ? (
-						<>
+				<div key={hardware.id} className="lp-work-main">
+					<section className="lp-work-panel">
+						<h3 className="lp-work-panel-heading">
+							{__("Storage unit", "linker-tools")} · {hardware.name}
+						</h3>
+						{dcPlant ? (
+							<>
+								<label className="lp-field">
+									<span>
+										{__("PV connection on this converter", "linker-tools")}
+									</span>
+									<select
+										value={
+											unit.pv_dc_input_unused === null
+												? ""
+												: unit.pv_dc_input_unused
+													? "unused"
+													: "connected"
+										}
+										onChange={(e) =>
+											change({
+												...unit,
+												pv_dc_input_unused:
+													e.currentTarget.value === ""
+														? null
+														: e.currentTarget.value === "unused",
+											})
+										}
+									>
+										<option value="">
+											{__("Choose an option", "linker-tools")}
+										</option>
+										<option value="connected">
+											{__(
+												"PV group connected to the DC inputs",
+												"linker-tools",
+											)}
+										</option>
+										<option value="unused">
+											{__("DC PV inputs unused", "linker-tools")}
+										</option>
+									</select>
+								</label>
+								<label className="lp-field">
+									<span>
+										{__("Charging from the common AC bus", "linker-tools")}
+									</span>
+									<select
+										value={
+											unit.allow_ac_charge == null
+												? ""
+												: unit.allow_ac_charge
+													? "enabled"
+													: "disabled"
+										}
+										onChange={(e) =>
+											change({
+												...unit,
+												allow_ac_charge:
+													e.currentTarget.value === ""
+														? null
+														: e.currentTarget.value === "enabled",
+											})
+										}
+									>
+										<option value="">
+											{__("Choose an option", "linker-tools")}
+										</option>
+										<option value="disabled">
+											{__("Disabled", "linker-tools")}
+										</option>
+										<option value="enabled">
+											{__(
+												"Enabled (requires documented AC-to-DC charging)",
+												"linker-tools",
+											)}
+										</option>
+									</select>
+								</label>
+							</>
+						) : (
 							<label className="lp-field">
 								<span>
-									{__("PV connection on this converter", "linker-tools")}
-								</span>
-								<select
-									value={
-										unit.pv_dc_input_unused === null
-											? ""
-											: unit.pv_dc_input_unused
-												? "unused"
-												: "connected"
-									}
-									onChange={(e) =>
-										change({
-											...unit,
-											pv_dc_input_unused:
-												e.currentTarget.value === ""
-													? null
-													: e.currentTarget.value === "unused",
-										})
-									}
-								>
-									<option value="">
-										{__("Choose an option", "linker-tools")}
-									</option>
-									<option value="connected">
-										{__("PV group connected to the DC inputs", "linker-tools")}
-									</option>
-									<option value="unused">
-										{__("DC PV inputs unused", "linker-tools")}
-									</option>
-								</select>
-							</label>
-							<label className="lp-field">
-								<span>
-									{__("Charging from the common AC bus", "linker-tools")}
-								</span>
-								<select
-									value={
-										unit.allow_ac_charge == null
-											? ""
-											: unit.allow_ac_charge
-												? "enabled"
-												: "disabled"
-									}
-									onChange={(e) =>
-										change({
-											...unit,
-											allow_ac_charge:
-												e.currentTarget.value === ""
-													? null
-													: e.currentTarget.value === "enabled",
-										})
-									}
-								>
-									<option value="">
-										{__("Choose an option", "linker-tools")}
-									</option>
-									<option value="disabled">
-										{__("Disabled", "linker-tools")}
-									</option>
-									<option value="enabled">
+									<input
+										type="checkbox"
+										checked={unit.pv_dc_input_unused === true}
+										onChange={(e) =>
+											change({
+												...unit,
+												pv_dc_input_unused: e.currentTarget.checked,
+											})
+										}
+									/>
+									<span>
 										{__(
-											"Enabled (requires documented AC-to-DC charging)",
+											"This converter's DC PV inputs are unused",
 											"linker-tools",
 										)}
-									</option>
-								</select>
-							</label>
-						</>
-					) : (
-						<label className="lp-field">
-							<span>
-								<input
-									type="checkbox"
-									checked={unit.pv_dc_input_unused === true}
-									onChange={(e) =>
-										change({
-											...unit,
-											pv_dc_input_unused: e.currentTarget.checked,
-										})
-									}
-								/>
-								<span>
-									{__(
-										"This converter's DC PV inputs are unused",
-										"linker-tools",
-									)}
+									</span>
 								</span>
-							</span>
-						</label>
-					)}
+							</label>
+						)}
+					</section>
 					<DcStorageForm
 						referenceCapacitySupported={referenceCapacitySupported}
 						value={unit.settings}
@@ -303,14 +320,18 @@ export function PlantEnergyForm({
 						client={client}
 						scope={scope}
 						active={active}
-						inverterId={hardware.selection.inverter_product_id}
+						inverterId={
+							typeof hardware.selection.inverter_product_id === "number"
+								? hardware.selection.inverter_product_id
+								: null
+						}
 						storageOnly={!dcPlant}
 						showPvAssignment={unit.pv_dc_input_unused !== true}
 					/>
 				</div>
 			)}
 			{section === "initial" && (
-				<div key={hardware.id}>
+				<div key={hardware.id} className="lp-work-panel">
 					<InitialInventoryForm
 						value={unit.settings.initial_inventory}
 						onChange={(initial_inventory) =>
@@ -379,9 +400,12 @@ export function PlantEnergyForm({
 				</div>
 			)}
 			{section === "operation" && (
-				<section className="lp-scenario-block">
+				<section className="lp-scenario-block lp-work-main">
 					{!dcPlant && (
-						<>
+						<section className="lp-work-panel">
+							<h3 className="lp-work-panel-heading">
+								{__("Operating strategy", "linker-tools")}
+							</h3>
 							<label className="lp-field">
 								<span>{__("Operating strategy", "linker-tools")}</span>
 								<select
@@ -448,7 +472,7 @@ export function PlantEnergyForm({
 									onChange={(aux_ac_kw) => onChange({ ...value, aux_ac_kw })}
 								/>
 							)}
-						</>
+						</section>
 					)}
 					<OperatingPeriodsForm
 						periods={value.schedule}
@@ -459,23 +483,26 @@ export function PlantEnergyForm({
 						rangeBusy={rangeBusy}
 						perUnitReserve
 					/>
-					<p className="lp-profile-help">
-						{dcPlant
-							? __(
-									"In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
-									"linker-tools",
-								)
-							: __(
-									"Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
-									"linker-tools",
-								)}
-					</p>
-					<p className="lp-profile-help">
-						{__(
-							"These results describe the declared scenario. Joint operating capability, continuous equipment performance, backup transfer and country-specific grid compliance are not established by this calculation.",
-							"linker-tools",
-						)}
-					</p>
+					<details className="lp-comparison lp-work-panel">
+						<summary>{__("How storage is operated", "linker-tools")}</summary>
+						<p className="lp-profile-help">
+							{dcPlant
+								? __(
+										"In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+										"linker-tools",
+									)
+								: __(
+										"Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+										"linker-tools",
+									)}
+						</p>
+						<p className="lp-profile-help">
+							{__(
+								"These results describe the declared scenario. Joint operating capability, continuous equipment performance, backup transfer and country-specific grid compliance are not established by this calculation.",
+								"linker-tools",
+							)}
+						</p>
+					</details>
 				</section>
 			)}
 		</fieldset>

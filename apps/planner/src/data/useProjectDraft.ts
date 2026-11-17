@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+	acknowledgeCalculation,
+	authoredCalculationInputs,
+	authoredDiscoveryInputs,
+} from "../domain/currentCalculation.ts";
+import type { JsonObject } from "./protocol.ts";
+import { readObject } from "./readProtocol.ts";
 import type { Draft } from "../domain/draft.ts";
 import {
 	acknowledgeSave,
@@ -232,6 +239,39 @@ export function useProjectDraft(
 			if (active.current) setBusy(false);
 		}
 	}
+	const acknowledgeProject = useCallback(
+		async (
+			accepted: Project,
+			command: JsonObject,
+			path: "runs/calculate" | "runs/find-equipment" | "runs/check-equipment",
+		) => {
+			if (
+				!active.current ||
+				!latest.current ||
+				!client.isCurrentScope(session.query_scope)
+			)
+				return;
+			const normalize =
+				path === "runs/calculate"
+					? authoredCalculationInputs
+					: authoredDiscoveryInputs;
+			const next = acknowledgeCalculation(
+				latest.current,
+				Number(command.expected_revision),
+				normalize(readObject(command.inputs)),
+				accepted,
+				normalize,
+			);
+			latest.current = next;
+			if (active.current) setDraft(next);
+			await persist(next);
+			void cache.invalidateQueries({
+				queryKey: [session.query_scope, "projects"],
+			});
+		},
+		[client, session.query_scope, persist, cache],
+	);
+
 	async function flush(): Promise<boolean> {
 		// Keep editing responsive while storage commits; closing waits for the
 		// latest snapshot, including edits made during an earlier IDB write.
@@ -251,6 +291,7 @@ export function useProjectDraft(
 		update,
 		save,
 		flush,
+		acknowledgeProject,
 		busy,
 		failed,
 		sourceChanged,

@@ -130,90 +130,97 @@ export function EnergyComparison({
 			? __("Not defined", "linker-tools")
 			: `${new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value * (unit === "%" ? 100 : 1))} ${unit}`;
 	return (
-		<section className="lp-scenario-block lp-energy-comparison">
-			<h3>{__("Saved calculation comparison", "linker-tools")}</h3>
-			{!supported && (
-				<Notice>
-					{__(
-						"Saved calculation comparison is not available on this service version.",
-						"linker-tools",
-					)}
-				</Notice>
-			)}
-			<p>
-				{__(
-					"Compare two saved energy calculations from this project using their original inputs and results.",
-					"linker-tools",
-				)}
-			</p>
-			<div className="lp-comparison-variants">
-				{([0, 1] as const).map((index) => (
-					<label className="lp-field" key={index}>
-						<span>
-							{index === 0
-								? __("Baseline calculation", "linker-tools")
-								: __("Comparison calculation", "linker-tools")}
-						</span>
-						<select
-							value={pair[index]}
-							onChange={(e) => choose(index, e.currentTarget.value)}
-						>
-							<option value="">{__("Choose an option", "linker-tools")}</option>
-							{pair[index] && !choices.some((r) => r.id === pair[index]) && (
-								<option value={pair[index]}>
-									{data
-										? label(
-												(index === 0 ? data.baseline : data.candidate).revision,
-											)
-										: __("Selected calculation", "linker-tools")}
-								</option>
-							)}
-							{choices.map((row) => (
-								<option key={row.id} value={row.id}>
-									{label(row.revision)} ·{" "}
-									{new Intl.DateTimeFormat(locale, {
-										dateStyle: "short",
-										timeStyle: "short",
-									}).format(row.created_at * 1000)}
-								</option>
-							))}
-						</select>
-					</label>
-				))}
-			</div>
-			{pair[0] && pair[0] === pair[1] && (
-				<Notice>
-					{__("Choose two different calculations.", "linker-tools")}
-				</Notice>
-			)}
-			{ready && supported && query.isPending && (
-				<p role="status">
-					{__("Reading saved calculation results…", "linker-tools")}
-				</p>
-			)}
-			{query.error && (
-				<Notice error>
-					<p>
+		<section className="lp-scenario-block lp-energy-comparison lp-work-main">
+			<div className="lp-work-panel">
+				<h3 className="lp-work-panel-heading">
+					{__("Saved calculation comparison", "linker-tools")}
+				</h3>
+				{!supported && (
+					<Notice>
 						{__(
-							"The selected results could not be compared. Check that both calculations are available in this project.",
+							"Saved calculation comparison is not available on this service version.",
 							"linker-tools",
 						)}
+					</Notice>
+				)}
+				<p>
+					{__(
+						"Compare two saved energy calculations from this project using their original inputs and results.",
+						"linker-tools",
+					)}
+				</p>
+				<div className="lp-comparison-variants">
+					{([0, 1] as const).map((index) => (
+						<label className="lp-field" key={index}>
+							<span>
+								{index === 0
+									? __("Baseline calculation", "linker-tools")
+									: __("Comparison calculation", "linker-tools")}
+							</span>
+							<select
+								value={pair[index]}
+								onChange={(e) => choose(index, e.currentTarget.value)}
+							>
+								<option value="">
+									{__("Choose an option", "linker-tools")}
+								</option>
+								{pair[index] && !choices.some((r) => r.id === pair[index]) && (
+									<option value={pair[index]}>
+										{data
+											? label(
+													(index === 0 ? data.baseline : data.candidate)
+														.revision,
+												)
+											: __("Selected calculation", "linker-tools")}
+									</option>
+								)}
+								{choices.map((row) => (
+									<option key={row.id} value={row.id}>
+										{label(row.revision)} ·{" "}
+										{new Intl.DateTimeFormat(locale, {
+											dateStyle: "short",
+											timeStyle: "short",
+										}).format(row.created_at * 1000)}
+									</option>
+								))}
+							</select>
+						</label>
+					))}
+				</div>
+				{pair[0] && pair[0] === pair[1] && (
+					<Notice>
+						{__("Choose two different calculations.", "linker-tools")}
+					</Notice>
+				)}
+				{ready && supported && query.isPending && (
+					<p role="status">
+						{__("Reading saved calculation results…", "linker-tools")}
 					</p>
-					<button
-						type="button"
-						className="lp-text-button"
-						onClick={() => void query.refetch()}
-					>
-						{__("Read comparison again", "linker-tools")}
-					</button>
-				</Notice>
-			)}
+				)}
+				{query.error && (
+					<Notice error>
+						<p>
+							{__(
+								"The selected results could not be compared. Check that both calculations are available in this project.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="lp-text-button"
+							onClick={() => void query.refetch()}
+						>
+							{__("Read comparison again", "linker-tools")}
+						</button>
+					</Notice>
+				)}
+			</div>
 			{data && !query.error && (
 				<>
 					<div className="lp-comparison-variants">
 						{([data.baseline, data.candidate] as const).map((ref) => (
-							<div key={ref.run_id}>
-								<h4>{label(ref.revision)}</h4>
+							<section className="lp-work-panel" key={ref.run_id}>
+								<h4 className="lp-work-panel-heading">{label(ref.revision)}</h4>
 								{ref.equipment_models.map((name, i) => (
 									<p key={i}>{name}</p>
 								))}
@@ -270,113 +277,122 @@ export function EnergyComparison({
 								>
 									{__("Open saved calculation", "linker-tools")}
 								</button>
-							</div>
+							</section>
 						))}
 					</div>
-					{!data.conditions_aligned && (
-						<Notice>
+					<section className="lp-work-panel">
+						<h4 className="lp-work-panel-heading">
+							{__("Result", "linker-tools")}
+						</h4>
+						{!data.conditions_aligned && (
+							<Notice>
+								{__(
+									"No differences are shown because the comparison conditions differ or are incomplete.",
+									"linker-tools",
+								)}
+							</Notice>
+						)}
+						<p>
 							{__(
-								"No differences are shown because the comparison conditions differ or are incomplete.",
+								"Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary.",
 								"linker-tools",
 							)}
-						</Notice>
-					)}
-					<p>
-						{__(
-							"Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary.",
-							"linker-tools",
-						)}
-					</p>
-					<div className="lp-table-scroll">
-						<table className="lp-data-table">
-							<thead>
-								<tr>
-									<th>{__("Result", "linker-tools")}</th>
-									<th>{__("Baseline calculation", "linker-tools")}</th>
-									<th>{__("Comparison calculation", "linker-tools")}</th>
-									<th>{__("Difference", "linker-tools")}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{data.metrics.map((row) => (
-									<tr key={row.id}>
-										<th scope="row">{comparisonLabel(row.id)}</th>
-										<td>
-											{format(row.baseline, row.unit)}
-											{row.id === "pv_generation" || row.id === "pv_use"
-												? ` (${row.baseline_boundary.toUpperCase()})`
-												: ""}
-										</td>
-										<td>
-											{format(row.candidate, row.unit)}
-											{row.id === "pv_generation" || row.id === "pv_use"
-												? ` (${row.candidate_boundary.toUpperCase()})`
-												: ""}
-										</td>
-										<td>
-											{row.delta === null
-												? "—"
-												: format(row.delta, row.delta_unit)}
-										</td>
+						</p>
+						<div className="lp-table-scroll">
+							<table className="lp-data-table">
+								<thead>
+									<tr>
+										<th>{__("Result", "linker-tools")}</th>
+										<th>{__("Baseline calculation", "linker-tools")}</th>
+										<th>{__("Comparison calculation", "linker-tools")}</th>
+										<th>{__("Difference", "linker-tools")}</th>
 									</tr>
+								</thead>
+								<tbody>
+									{data.metrics.map((row) => (
+										<tr key={row.id}>
+											<th scope="row">{comparisonLabel(row.id)}</th>
+											<td>
+												{format(row.baseline, row.unit)}
+												{row.id === "pv_generation" || row.id === "pv_use"
+													? ` (${row.baseline_boundary.toUpperCase()})`
+													: ""}
+											</td>
+											<td>
+												{format(row.candidate, row.unit)}
+												{row.id === "pv_generation" || row.id === "pv_use"
+													? ` (${row.candidate_boundary.toUpperCase()})`
+													: ""}
+											</td>
+											<td>
+												{row.delta === null
+													? "—"
+													: format(row.delta, row.delta_unit)}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</section>
+					<div className="lp-comparison-variants">
+						<details className="lp-comparison lp-work-panel">
+							<summary>{__("Comparison basis", "linker-tools")}</summary>
+							<dl className="lp-field-summary">
+								{data.conditions.map((c) => (
+									<div key={c.id}>
+										<dt>{comparisonLabel(c.id)}</dt>
+										<dd>{comparisonLabel(c.status)}</dd>
+									</div>
 								))}
-							</tbody>
-						</table>
+							</dl>
+						</details>
+						<details className="lp-comparison lp-work-panel">
+							<summary>
+								{__("Design and assumption changes", "linker-tools")}
+							</summary>
+							<dl className="lp-field-summary">
+								{data.differences.map((d) => (
+									<div key={d.id}>
+										<dt>{comparisonLabel(d.id)}</dt>
+										<dd>
+											{d.changed
+												? __("Changed", "linker-tools")
+												: __("Unchanged", "linker-tools")}
+										</dd>
+									</div>
+								))}
+							</dl>
+						</details>
 					</div>
-					<details>
-						<summary>{__("Comparison basis", "linker-tools")}</summary>
-						<dl className="lp-field-summary">
-							{data.conditions.map((c) => (
-								<div key={c.id}>
-									<dt>{comparisonLabel(c.id)}</dt>
-									<dd>{comparisonLabel(c.status)}</dd>
-								</div>
-							))}
-						</dl>
-					</details>
-					<details>
-						<summary>
-							{__("Design and assumption changes", "linker-tools")}
-						</summary>
-						<dl className="lp-field-summary">
-							{data.differences.map((d) => (
-								<div key={d.id}>
-									<dt>{comparisonLabel(d.id)}</dt>
-									<dd>
-										{d.changed
-											? __("Changed", "linker-tools")
-											: __("Unchanged", "linker-tools")}
-									</dd>
-								</div>
-							))}
-						</dl>
-					</details>
-					<p>
-						{__(
-							"Matching comparison conditions do not establish manufacturer performance or installation approval.",
-							"linker-tools",
-						)}
-					</p>
-					<button
-						type="button"
-						className="lp-button"
-						disabled={reportDisabled || query.isFetching}
-						onClick={() =>
-							void generateReport({
-								locale: locale.startsWith("de") ? "de" : "en",
-								energy_run_id: null,
-								pv_run_id: null,
-								equipment_run_id: null,
-								logo: null,
-								comparison: {
-									baseline_run_id: data.baseline.run_id,
-									candidate_run_id: data.candidate.run_id,
-								},
-							})
-						}
-					>
-						{__("Save comparison in planning report", "linker-tools")}
-					</button>
+					<div className="lp-work-panel lp-work-toolbar">
+						<p>
+							{__(
+								"Matching comparison conditions do not establish manufacturer performance or installation approval.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="lp-button"
+							disabled={reportDisabled || query.isFetching}
+							onClick={() =>
+								void generateReport({
+									locale: locale.startsWith("de") ? "de" : "en",
+									energy_run_id: null,
+									pv_run_id: null,
+									equipment_run_id: null,
+									logo: null,
+									comparison: {
+										baseline_run_id: data.baseline.run_id,
+										candidate_run_id: data.candidate.run_id,
+									},
+								})
+							}
+						>
+							{__("Save comparison in planning report", "linker-tools")}
+						</button>
+					</div>
 				</>
 			)}
 		</section>

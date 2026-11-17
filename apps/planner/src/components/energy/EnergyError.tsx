@@ -69,6 +69,14 @@ export function energyErrorText(error: unknown): string {
 			? energyConstraintText(error.evidenceIssue?.constraint_id)
 			: null;
 	if (specific) return specific;
+	if (
+		error instanceof ApiError &&
+		error.fields.some((path) => path.startsWith("equipment_"))
+	)
+		return __(
+			"Review the equipment requirements below, then try again.",
+			"linker-tools",
+		);
 	const code =
 		error instanceof ApiError || error instanceof GeometryInputError
 			? error.code

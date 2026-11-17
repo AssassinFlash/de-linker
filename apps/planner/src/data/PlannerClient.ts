@@ -1,5 +1,10 @@
 import { boundedBody } from "./boundedBody.ts";
-import { ApiError, RPC_PATHS, readEvidenceIssue } from "./protocol.ts";
+import {
+	ApiError,
+	RPC_PATHS,
+	readEvidenceIssue,
+	readInputFields,
+} from "./protocol.ts";
 import type { JsonObject, JsonRpcPath, Session } from "./protocol.ts";
 import { readObject, readSession, wire } from "./readProtocol.ts";
 import { readProfileIssue } from "./profileIssue.ts";
@@ -372,6 +377,7 @@ export class PlannerClient {
 					: "request_failed",
 				readProfileIssue(nested?.profile_issue),
 				readEvidenceIssue(nested?.details),
+				readInputFields(nested?.fields),
 			);
 		}
 		if (

@@ -11,7 +11,7 @@ import sqlite3
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import cast
+from typing import Literal, cast
 from uuid import uuid4
 
 from . import commands
@@ -327,6 +327,130 @@ class Workspace:
             )
             return self._project(connection, actor, project_id, number)
 
+    def evaluate_inputs(
+        self,
+        actor: Actor,
+        project_id: str,
+        expected_revision: int,
+        inputs: Object,
+        resolve: Callable[[], Context],
+        *,
+        operation: Literal["calculate", "find-equipment", "check-equipment"],
+        publish: Callable[[sqlite3.Connection], None] | None = None,
+        key: str,
+        max_attempts: int,
+        input_contract: str | None = None,
+    ) -> tuple[Project, Run]:
+        """Admit authored inputs and their resolved task in one operation's scope."""
+        positive_integer(expected_revision, "expected revision")
+        positive_integer(max_attempts, "maximum attempts")
+        command = commands.command_hash(
+            revise_command(expected_revision, inputs, input_contract=input_contract),
+            key,
+        )
+        scope = f"{operation}:{project_id}"
+        with self.database.read() as connection:
+            project = project_row(connection, actor, project_id, write=True)
+            receipt = commands.replay(
+                connection, self.blobs, actor, scope, key, command
+            )
+            if receipt is not None:
+                run = self._run(
+                    connection, actor, commands.receipt_string(receipt, "run_id")
+                )
+                return self._project(connection, actor, project_id, run.revision), run
+            require_accepting(connection)
+            if project["revision"] != expected_revision:
+                raise EvaluationRevisionChanged("project inputs have changed")
+            previous = self._project(connection, actor, project_id)
+            require_input_contract(previous.inputs, inputs, input_contract)
+        validate_new_brief(inputs)
+        validate_grid_connection(inputs)
+        validate_country_rule_inputs(inputs)
+        validate_project_geometry(inputs)
+        validate_installation_project(inputs)
+        validate_condition_inputs(inputs)
+        # Source reads and derivation stage CAS bytes without holding a writer.
+        context = resolve()
+        with self.database.transaction() as connection:
+            project = project_row(connection, actor, project_id, write=True)
+            receipt = commands.replay(
+                connection, self.blobs, actor, scope, key, command
+            )
+            if receipt is not None:
+                run = self._run(
+                    connection, actor, commands.receipt_string(receipt, "run_id")
+                )
+                return self._project(connection, actor, project_id, run.revision), run
+            require_accepting(connection)
+            if project["revision"] != expected_revision:
+                raise EvaluationRevisionChanged("project inputs have changed")
+            if publish is not None:
+                publish(connection)
+            content = self.blobs.put_object(inputs)
+            number = expected_revision
+            if content != previous.input_sha256:
+                number += 1
+                now = self.clock()
+                connection.execute(
+                    "INSERT INTO revisions (project_id, number, input_sha256, created_at) VALUES (?, ?, ?, ?)",
+                    (project_id, number, content, now),
+                )
+                connection.execute(
+                    "UPDATE projects SET revision=?, updated_at=? WHERE id=?",
+                    (number, now, project_id),
+                )
+            snapshot = self._project(connection, actor, project_id, number)
+            run = self._enqueue(connection, actor, snapshot, context, max_attempts)
+            commands.remember(
+                connection,
+                self.blobs,
+                actor,
+                scope,
+                key,
+                command,
+                {"run_id": run.id},
+                self.clock(),
+            )
+            return snapshot, run
+
+    def _enqueue(
+        self,
+        connection: sqlite3.Connection,
+        actor: Actor,
+        project: Project,
+        context: Context,
+        max_attempts: int,
+    ) -> Run:
+        resolved = context.document()
+        for sha256 in context.assets.values():
+            self.blobs.read(sha256)
+        manifest = self.blobs.put_object(
+            {
+                "schema": 1,
+                "project_id": project.id,
+                "revision": project.revision,
+                "input_sha256": project.input_sha256,
+                "context": resolved,
+            }
+        )
+        run_id, job_id, now = uuid4().hex, uuid4().hex, self.clock()
+        request = self.blobs.put_object({"manifest_sha256": manifest})
+        connection.execute(
+            "INSERT INTO runs (id, project_id, revision, manifest_sha256, created_at) VALUES (?, ?, ?, ?, ?)",
+            (run_id, project.id, project.revision, manifest, now),
+        )
+        connection.execute(
+            "INSERT INTO jobs (id, run_id, kind, request_sha256, state, max_attempts, available_at, created_at, updated_at) "
+            "VALUES (?, ?, 'evaluate', ?, 'queued', ?, ?, ?, ?)",
+            (job_id, run_id, request, max_attempts, now, now, now),
+        )
+        connection.execute(
+            "INSERT INTO evaluation_routes (job_id, schema_version, execution_sha256) VALUES (?, 1, ?)",
+            (job_id, execution_key(resolved)),
+        )
+        return self._run(connection, actor, run_id)
+
     def evaluate(
         self,
         actor: Actor,
@@ -370,37 +494,7 @@ class Workspace:
             if project["revision"] != expected_revision:
                 raise EvaluationRevisionChanged("project inputs have changed")
             inputs = self._project(connection, actor, project_id, expected_revision)
-            manifest = self.blobs.put_object(
-                {
-                    "schema": 1,
-                    "project_id": project_id,
-                    "revision": expected_revision,
-                    "input_sha256": inputs.input_sha256,
-                    "context": resolved,
-                }
-            )
-            run_id = uuid4().hex
-            request = self.blobs.put_object({"manifest_sha256": manifest})
-            now = self.clock()
-            job_id = uuid4().hex
-            connection.execute(
-                "INSERT INTO runs "
-                "(id, project_id, revision, manifest_sha256, created_at) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (run_id, project_id, expected_revision, manifest, now),
-            )
-            connection.execute(
-                "INSERT INTO jobs "
-                "(id, run_id, kind, request_sha256, state, max_attempts, "
-                "available_at, created_at, updated_at) "
-                "VALUES (?, ?, 'evaluate', ?, 'queued', ?, ?, ?, ?)",
-                (job_id, run_id, request, max_attempts, now, now, now),
-            )
-            connection.execute(
-                "INSERT INTO evaluation_routes (job_id, schema_version, execution_sha256) "
-                "VALUES (?, 1, ?)",
-                (job_id, execution_key(resolved)),
-            )
+            run = self._enqueue(connection, actor, inputs, context, max_attempts)
             commands.remember(
                 connection,
                 self.blobs,
@@ -408,10 +502,10 @@ class Workspace:
                 scope,
                 key,
                 command,
-                {"run_id": run_id},
-                now,
+                {"run_id": run.id},
+                self.clock(),
             )
-            return self._run(connection, actor, run_id)
+            return run
 
     def _run(self, connection: sqlite3.Connection, actor: Actor, run_id: str) -> Run:
         row = connection.execute(
@@ -508,6 +602,24 @@ class Workspace:
         value = manifest.get("input_sha256")
         if not isinstance(value, str):
             raise VersionUnavailable("input hash absent from manifest")
+        context = manifest.get("context")
+        assets = context.get("assets") if isinstance(context, dict) else None
+        if isinstance(assets, dict) and "resolved_inputs" in assets:
+            sha = assets["resolved_inputs"]
+            if not isinstance(sha, str):
+                raise VersionUnavailable("resolved input hash missing")
+            resolved = self.blobs.object(sha)
+            inputs = resolved.get("inputs")
+            if (
+                type(resolved.get("schema_version")) is not int
+                or resolved["schema_version"] != 1
+                or resolved.get("source_input_sha256") != value
+                or not isinstance(inputs, dict)
+            ):
+                raise VersionUnavailable(
+                    "resolved execution inputs differ from their authored snapshot"
+                )
+            return inputs
         return self.blobs.object(value)
 
     @staticmethod

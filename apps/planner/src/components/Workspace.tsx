@@ -403,16 +403,23 @@ export function Workspace({
 	return (
 		<div className="lp-workspace">
 			<aside className="lp-workspace-rail">
-				<div className="lp-brand-symbol" aria-hidden="true">
-					L<span>·</span>
+				<div className="lp-workspace-brand">
+					<span className="lp-nav-mark" aria-hidden="true">
+						L
+					</span>
+					<strong>{__("Solution Configurator", "linker-tools")}</strong>
 				</div>
 				<span className="lp-rail-caption">
-					{__("Solution Configurator", "linker-tools")}
+					{__("Workspace", "linker-tools")}
 				</span>
 				<span className="lp-rail-current">
 					<Icon name="folder" />
 					{__("Projects", "linker-tools")}
 				</span>
+				<button className="lp-rail-help" type="button" data-linker-genie-open>
+					<Icon name="sparkle" />
+					{__("Ask Genie", "linker-tools")}
+				</button>
 				<div className="lp-rail-session">
 					{session.kind === "guest"
 						? __("Guest workspace", "linker-tools")
@@ -428,69 +435,69 @@ export function Workspace({
 						<h1>{__("Your projects", "linker-tools")}</h1>
 						<p>
 							{__(
-								"Site information, roof layout and system planning belong to the same project.",
+								"Plan solar and storage systems, then prepare a solution for your inquiry.",
 								"linker-tools",
 							)}
 						</p>
 					</div>
+					<div className="lp-workspace-start">
+						{savedSource !== null ? (
+							<SavedSolutionStart
+								solutionId={savedSource}
+								dismiss={() => {
+									const url = new URL(location.href);
+									url.searchParams.delete("saved_solution");
+									replacePlannerLocation(url);
+									setSavedSource(null);
+								}}
+								locale={config.locale}
+								session={session}
+								client={client}
+								store={store}
+								created={created}
+								recheck={recheck}
+								recoveryScopes={recovery.data}
+								recoveryChecking={recovery.isFetching}
+								recoveryDiscoveryFailed={recovery.isError}
+							/>
+						) : briefSource !== null ? (
+							<ProjectBriefStart
+								briefId={briefSource}
+								entryHints={entryHints}
+								dismiss={() => {
+									const url = new URL(location.href);
+									url.searchParams.delete("brief");
+									replacePlannerLocation(url);
+									setBriefSource(null);
+								}}
+								locale={config.locale}
+								session={session}
+								client={client}
+								store={store}
+								created={created}
+								recheck={recheck}
+								recoveryScopes={recovery.data}
+								recoveryChecking={recovery.isFetching}
+								recoveryDiscoveryFailed={recovery.isError}
+							/>
+						) : (
+							<NewProject
+								roofStart={config}
+								openOnLoad={index.isSuccess && !projects.length}
+								entryHints={entryHints}
+								locale={config.locale}
+								session={session}
+								client={client}
+								store={store}
+								created={created}
+								recheck={recheck}
+								recoveryScopes={recovery.data}
+								recoveryChecking={recovery.isFetching}
+								recoveryDiscoveryFailed={recovery.isError}
+							/>
+						)}
+					</div>
 				</header>
-				<div className="lp-workspace-start">
-					{savedSource !== null ? (
-						<SavedSolutionStart
-							solutionId={savedSource}
-							dismiss={() => {
-								const url = new URL(location.href);
-								url.searchParams.delete("saved_solution");
-								replacePlannerLocation(url);
-								setSavedSource(null);
-							}}
-							locale={config.locale}
-							session={session}
-							client={client}
-							store={store}
-							created={created}
-							recheck={recheck}
-							recoveryScopes={recovery.data}
-							recoveryChecking={recovery.isFetching}
-							recoveryDiscoveryFailed={recovery.isError}
-						/>
-					) : briefSource !== null ? (
-						<ProjectBriefStart
-							briefId={briefSource}
-							entryHints={entryHints}
-							dismiss={() => {
-								const url = new URL(location.href);
-								url.searchParams.delete("brief");
-								replacePlannerLocation(url);
-								setBriefSource(null);
-							}}
-							locale={config.locale}
-							session={session}
-							client={client}
-							store={store}
-							created={created}
-							recheck={recheck}
-							recoveryScopes={recovery.data}
-							recoveryChecking={recovery.isFetching}
-							recoveryDiscoveryFailed={recovery.isError}
-						/>
-					) : (
-						<NewProject
-							roofStart={config}
-							openOnLoad={index.isSuccess && !projects.length}
-							entryHints={entryHints}
-							locale={config.locale}
-							session={session}
-							client={client}
-							store={store}
-							created={created}
-							recheck={recheck}
-							recoveryScopes={recovery.data}
-							recoveryChecking={recovery.isFetching}
-							recoveryDiscoveryFailed={recovery.isError}
-						/>
-					)}
-				</div>
 				{recovery.isError && (
 					<Notice error>
 						<p>
@@ -557,30 +564,43 @@ export function Workspace({
 							</p>
 						</div>
 					)}
-					<div className="lp-project-rows">
+					{projects.length > 0 && (
+						<div className="lp-project-columns" aria-hidden="true">
+							<span>{__("Project", "linker-tools")}</span>
+							<span>{__("Last updated", "linker-tools")}</span>
+							<span>{__("Revision", "linker-tools")}</span>
+						</div>
+					)}
+					<div className="lp-project-rows" role="list">
 						{projects.map((item) => (
-							<div className="lp-project-entry" key={item.id}>
+							<div className="lp-project-entry" role="listitem" key={item.id}>
 								<div className="lp-project-entry-row">
 									<button
 										className="lp-project-row"
 										onClick={() => select(item.id)}
 									>
-										<span className="lp-project-row-icon">
-											<Icon name="folder" />
-										</span>
-										<span>
+										<span className="lp-project-row-name">
+											<span className="lp-project-row-icon">
+												<Icon name="folder" />
+											</span>
 											<strong>{item.title}</strong>
-											<small>
-												{sprintf(
-													__("Revision %d", "linker-tools"),
-													item.revision,
-												)}{" "}
-												<span aria-hidden="true">·</span>{" "}
-												{new Intl.DateTimeFormat(config.locale, {
-													dateStyle: "medium",
-												}).format(new Date(item.updated_at * 1000))}
-											</small>
 										</span>
+										<time
+											dateTime={new Date(item.updated_at * 1000).toISOString()}
+										>
+											<span className="lp-row-label">
+												{__("Last updated", "linker-tools")}{" "}
+											</span>
+											{new Intl.DateTimeFormat(config.locale, {
+												dateStyle: "medium",
+											}).format(new Date(item.updated_at * 1000))}
+										</time>
+										<small className="lp-project-revision">
+											{sprintf(
+												__("Revision %d", "linker-tools"),
+												item.revision,
+											)}
+										</small>
 										<Icon name="arrow" />
 									</button>
 									<button

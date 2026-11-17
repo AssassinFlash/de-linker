@@ -228,7 +228,7 @@ export function PvStringSetup({
 			<summary>{__("PV strings and inputs", "linker-tools")}</summary>
 			<p>
 				{__(
-					"Assign the roof modules to strings and inverter inputs. The equipment check uses the saved wiring plan and product data.",
+					"Assign the roof modules to strings and inverter inputs. The equipment check uses the current wiring plan and product data.",
 					"linker-tools",
 				)}
 			</p>
@@ -568,7 +568,7 @@ export function PvStringSetup({
 					</div>
 					<p className="lp-profile-help">
 						{__(
-							"Save the project, then check the equipment selection. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
+							"Check equipment to assess this wiring plan. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
 							"linker-tools",
 						)}
 					</p>

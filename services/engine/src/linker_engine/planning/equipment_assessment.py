@@ -77,6 +77,8 @@ def assess_equipment(
     evidence = evidence or EquipmentEvidence(basis)
     evidence.require_basis(basis)
     selection = EquipmentSelection.read(inputs.get("equipment_selection"))
+    brief = inputs.get("brief")
+    scope = brief.get("system_scope") if isinstance(brief, dict) else None
     raw = cast(list[dict[str, Any]], basis["products"])
     products = selection_products(selection, basis)
     selected = {
@@ -471,6 +473,8 @@ def assess_equipment(
 
     pairing: Json = None
     if selection.battery_product_id is not None:
+        if scope == "pv_only":
+            add("battery_scope", "violated", "battery_conflicts_with_pv_only_scope")
         battery_id = selection.battery_product_id
         pair = pair_result
         assert pair is not None
@@ -920,10 +924,17 @@ def assess_equipment(
                 if path_satisfied and inv_range is not None and operating is not None
                 else [],
             )
+        else:
+            add(
+                "continuous_battery_ac_output",
+                "unresolved",
+                "discharge_requirement_not_declared",
+            )
     else:
-        requirements_known_empty = (
-            selection.required_usable_kwh == 0
-            and selection.required_discharge_ac_kw == 0
+        storage_required = scope in (
+            "new_pv_storage",
+            "storage_addition",
+            "storage_only",
         )
         requirements_positive = any(
             value is not None and value > 0
@@ -934,10 +945,10 @@ def assess_equipment(
         )
         add(
             "battery",
-            "satisfied"
-            if requirements_known_empty
-            else "violated"
-            if requirements_positive
+            "violated"
+            if storage_required or requirements_positive
+            else "satisfied"
+            if scope == "pv_only"
             else "unresolved",
             "no_battery_selected",
         )

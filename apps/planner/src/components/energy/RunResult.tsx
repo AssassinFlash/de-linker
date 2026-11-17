@@ -107,9 +107,9 @@ export function RunResult({
 			: "—";
 	};
 	return (
-		<div className="lp-run-result">
+		<div className="lp-run-result lp-work-panel">
 			<div
-				className="lp-run-heading lp-focus-target"
+				className="lp-run-heading lp-focus-target lp-work-panel-heading"
 				data-action-result-context=""
 			>
 				<div>

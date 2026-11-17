@@ -293,6 +293,149 @@ def test_old_tab_cannot_overwrite_a_newer_revision(
     )
 
 
+def test_legacy_incomplete_plant_draft_needs_no_nullable_prepared_contract(
+    workspace: Workspace, owner: Actor
+) -> None:
+    from linker_engine.planning.http_documents import ProjectCreate
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+    from linker_engine.planning.project_input_floor import check_project_input_contracts
+
+    # beginPlant stores unanswered requirements and both editable system drafts;
+    # these have always been saveable before preparing a searchable plant.
+    draft: Object = {
+        "equipment_plant_setup": {
+            "schema_version": 1,
+            "requirements": {
+                "schema_version": 1,
+                "grid_phase": None,
+                "operating_mode": None,
+                "pv_dc_kw": None,
+                "required_usable_kwh": None,
+                "required_discharge_ac_kw": None,
+            },
+            "units": [
+                {"id": uid, "name": uid, "inputs": {"equipment_setup": {}}}
+                for uid in ("a", "b")
+            ],
+            "parallel_groups": [],
+        }
+    }
+    incoming = ProjectCreate.model_validate(
+        {
+            "schema_version": 1,
+            "title": "Incomplete plant",
+            "inputs": draft,
+            "key": "raw",
+        }
+    )
+    created = workspace.create(owner, incoming.title, incoming.inputs, key=incoming.key)
+    preserved = workspace.revise(
+        owner,
+        created.id,
+        created.revision,
+        draft,
+        key="preserve-raw",
+        input_contract="energy_operating_modes_v1",
+    )
+    assert preserved.inputs == draft
+    cleared = workspace.revise(
+        owner, created.id, preserved.revision, {}, key="clear-raw"
+    )
+    assert cleared.inputs == {}
+    assert workspace.get(owner, created.id, revision=1).inputs == draft
+    prior_contracts = [
+        contract
+        for contract in SUPPORTED_INPUT_CONTRACTS
+        if contract != "nullable_equipment_requirements_v1"
+    ]
+    assert (
+        check_project_input_contracts(workspace.database.path.parent, prior_contracts)[
+            "required_input_contracts"
+        ]
+        == []
+    )
+
+
+@pytest.mark.parametrize(
+    "inputs",
+    [
+        {"equipment_requirements": {"required_usable_kwh": None}},
+        {"equipment_requirements": {"required_discharge_ac_kw": None}},
+        {"equipment_plant": {"requirements": {"required_usable_kwh": None}}},
+        {
+            "equipment_plant_requirements": {
+                "requirements": {"required_usable_kwh": None}
+            }
+        },
+        {
+            "equipment_plant_requirements": {
+                "units": [{"requirements": {"required_discharge_ac_kw": None}}]
+            }
+        },
+    ],
+)
+def test_nullable_prepared_demand_requires_an_aware_writer_and_reader(
+    workspace: Workspace, owner: Actor, inputs: Object
+) -> None:
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+    from linker_engine.planning.project_input_floor import check_project_input_contracts
+
+    contract = "nullable_equipment_requirements_v1"
+    legacy_contracts = SUPPORTED_INPUT_CONTRACTS[
+        : SUPPORTED_INPUT_CONTRACTS.index(contract)
+    ]
+    for prior in (None, *legacy_contracts):
+        with pytest.raises(ProjectInputContractRequired):
+            workspace.create(
+                owner,
+                "Unknown sizing",
+                inputs,
+                key="unaware-create",
+                input_contract=prior,
+            )
+    assert workspace.projects(owner) == []
+    created = workspace.create(
+        owner, "Unknown sizing", inputs, key="aware-create", input_contract=contract
+    )
+    for prior in (None, *legacy_contracts):
+        for incoming in (inputs, {}):
+            with pytest.raises(ProjectInputContractRequired):
+                workspace.revise(
+                    owner,
+                    created.id,
+                    created.revision,
+                    incoming,
+                    key="unaware-revision",
+                    input_contract=prior,
+                )
+    assert workspace.get(owner, created.id) == created
+    with pytest.raises(ValueError, match="does not support retained"):
+        check_project_input_contracts(
+            workspace.database.path.parent, list(legacy_contracts)
+        )
+    assert (
+        contract
+        in check_project_input_contracts(
+            workspace.database.path.parent, list(SUPPORTED_INPUT_CONTRACTS)
+        )["required_input_contracts"]
+    )
+    cleared = workspace.revise(
+        owner,
+        created.id,
+        created.revision,
+        {},
+        key="aware-clear",
+        input_contract=contract,
+    )
+    assert cleared.revision == 2 and cleared.inputs == {}
+    assert workspace.get(owner, created.id, revision=1) == created
+    # Historical inputs still forbid loading a release that cannot read them.
+    with pytest.raises(ValueError, match="does not support retained"):
+        check_project_input_contracts(
+            workspace.database.path.parent, list(legacy_contracts)
+        )
+
+
 def test_new_stale_evaluation_has_a_distinct_premutation_refusal(
     workspace: Workspace, owner: Actor, context: Context
 ) -> None:

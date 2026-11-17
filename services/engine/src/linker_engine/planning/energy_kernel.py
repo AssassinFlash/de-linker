@@ -100,9 +100,16 @@ class EnergyKernel:
     def execution_key(self) -> str:
         return self.execution_keys()[0]
 
-    def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
+    def context(
+        self,
+        actor: Actor,
+        project_id: str,
+        inputs: Object,
+        *,
+        assets: Assets | None = None,
+    ) -> Context:
         scenario = self.scenario(inputs)
-        assets = Assets(self.workspace)
+        assets = assets if assets is not None else Assets(self.workspace)
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
         for role, asset_id in scenario.profiles().items():
             asset = assets.get(actor, project_id, asset_id)

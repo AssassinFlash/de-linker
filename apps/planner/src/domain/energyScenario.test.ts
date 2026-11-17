@@ -6,6 +6,7 @@ import profilesJson from "../../tests/fixtures/energy-selections.json" with { ty
 import inputsJson from "../../tests/fixtures/energy-inputs.json" with { type: "json" };
 import {
 	emptyScenario,
+	useEquipmentCapacity,
 	readScenarioDraft,
 	scenarioParts,
 	compileScenario,
@@ -16,9 +17,14 @@ import {
 } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
 import { ApiError } from "../data/protocol.ts";
+import type { JsonObject } from "../data/protocol.ts";
 import plantAcFixture from "../../tests/fixtures/plant-energy-run.json" with { type: "json" };
 import { readEquipmentPlant } from "./equipmentPlant.ts";
-import { plantEnergyDraft, compilePlantEnergy } from "./plantEnergy.ts";
+import {
+	plantEnergyDraft,
+	compilePlantEnergy,
+	plantEnergyInputs,
+} from "./plantEnergy.ts";
 import dcPlantFixture from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
 import { readObject } from "../data/readProtocol.ts";
 import {
@@ -30,7 +36,110 @@ import {
 } from "./dcEnergy.ts";
 import { DC_LOSS_FIELDS } from "./dcEnergy.ts";
 
+test("authored single and unit settings reopen without execution-owned battery bindings", () => {
+	const { battery_binding: _binding, ...authored } = scenario();
+	const reopened = readScenarioDraft(authored);
+	assert.equal(reopened.battery_binding, null);
+	assert.deepEqual(reopened.battery, authored.battery);
+	const plant = readEquipmentPlant(
+		plantAcFixture.project.inputs.equipment_plant,
+	);
+	const settings = plantEnergyDraft(
+		{
+			energy_plant_setup: {
+				schema_version: 1,
+				coupling: "plant_ac",
+				schedule: authored.schedule,
+				units: plant.units.map((unit) => ({
+					unit_id: unit.id,
+					settings: authored,
+					reserve_kwh: 0,
+					pv_dc_input_unused: true,
+				})),
+			},
+		},
+		plant,
+	);
+	assert.equal(settings.units[0]!.settings.battery_binding, null);
+});
+
+test("a new PV-only plant uses the available AC boundary despite positive DC nameplate demand", () => {
+	const plant = {
+		requirements: { pv_dc_kw: 10 },
+		units: [
+			{ id: "solar", name: "Solar inverter", selection: { pv_dc_kw: 10 } },
+		],
+	};
+	assert.equal(
+		plantEnergyDraft({ brief: { system_scope: "pv_only" } }, plant).coupling,
+		"plant_ac",
+	);
+	assert.equal(plantEnergyDraft({}, plant).coupling, "plant_shared_dc");
+});
+
+for (const joint of [false, true]) {
+	test(`PV-only ${joint ? "plant" : "single"} date edits preserve retained coupling declarations and selected AC source`, () => {
+		const selected = {
+			...profilesJson,
+			selected: { ...profilesJson.selected, pv_reference: "f".repeat(32) },
+		};
+		const plant = readEquipmentPlant(
+			plantAcFixture.project.inputs.equipment_plant,
+		);
+		const settings = {
+			...plantEnergyDraft({}, plant),
+			coupling: "plant_shared_dc" as const,
+			schedule: scenario().schedule,
+		};
+		const single = { ...scenario(), coupling: "shared_dc" as const };
+		const inputs = {
+			brief: { system_scope: "pv_only" },
+			profile_selections: selected,
+			geometric_roof_ac_selection: {
+				schema_version: 1,
+				asset_id: selected.selected.pv_available_ac,
+			},
+			...(joint
+				? { energy_plant_setup: settings }
+				: { energy_scenario: single }),
+		};
+		const updatedSchedule = scenario().schedule.map((period) => ({
+			...period,
+			start_utc: "2024-03-30T22:00:00Z",
+		}));
+		const next = joint
+			? plantEnergyInputs(inputs, { ...settings, schedule: updatedSchedule })
+			: scenarioInputs(inputs, { ...single, schedule: updatedSchedule });
+		assert.deepEqual(next.profile_selections, selected);
+		assert.deepEqual(
+			next.geometric_roof_ac_selection,
+			inputs.geometric_roof_ac_selection,
+		);
+		assert.deepEqual(
+			(next[joint ? "energy_plant_setup" : "energy_scenario"] as JsonObject)
+				.coupling,
+			joint ? "plant_shared_dc" : "shared_dc",
+		);
+	});
+}
+
 const scenario = () => readScenarioDraft(structuredClone(scenarioJson));
+
+test("selected equipment fills unknown usable capacity without inventing power or losses", () => {
+	const empty = emptyScenario();
+	const selected = useEquipmentCapacity(empty, 80);
+	assert.equal(selected.battery.usable_window_kwh, 80);
+	assert.equal(selected.battery.charge_ac_kw, null);
+	assert.equal(selected.battery.discharge_ac_kw, null);
+	assert.equal(selected.battery.eta_charge, null);
+	assert.equal(selected.battery.eta_discharge, null);
+	assert.equal(selected.battery_binding, null);
+	assert.equal(empty.battery.usable_window_kwh, null);
+	const declared = scenario();
+	assert.equal(useEquipmentCapacity(declared, 80), declared);
+	const dc = { ...empty, coupling: "shared_dc" as const };
+	assert.equal(useEquipmentCapacity(dc, 80), dc);
+});
 
 test("DC recovery restores the original capacity choice instead of inheriting the current mode", () => {
 	const pool = dcPlantFixture.run.result.parameter_sources.pool;

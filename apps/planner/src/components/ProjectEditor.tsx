@@ -161,6 +161,7 @@ export function ProjectEditor({
 		update,
 		save,
 		flush,
+		acknowledgeProject,
 		busy,
 		failed,
 		sourceChanged,
@@ -521,42 +522,25 @@ export function ProjectEditor({
 			<header className="lp-project-bar" ref={bar}>
 				<div className="lp-breadcrumb">
 					<button
-						className="lp-text-button"
+						className="lp-text-button lp-back-projects"
 						disabled={closing}
 						onClick={() => {
 							void leave();
 						}}
 					>
+						<Icon name="back" />
 						{__("Projects", "linker-tools")}
 					</button>
-					<span aria-hidden="true">/</span>
-					<span>{project.title}</span>
-					<select
-						className="lp-mobile-workspace"
-						aria-label={__("Project sections", "linker-tools")}
-						value={workspace === "overview" ? "site" : workspace}
-						onChange={(event) =>
-							chooseWorkspace(
-								event.currentTarget.value as ProjectWorkspace,
-								event.currentTarget.value === "calculations",
-							)
-						}
-					>
-						<option value="site">{__("Project", "linker-tools")}</option>
-						{brief.system_scope !== "storage_only" && (
-							<option value="design">{__("Solar", "linker-tools")}</option>
+				</div>
+				<div className="lp-project-identity">
+					<h1>{project.title}</h1>
+					{brief.site.location_label &&
+						brief.site.location_label !== project.title && (
+							<p>
+								<Icon name="location" />
+								{brief.site.location_label}
+							</p>
 						)}
-						<option value="energy">{__("Energy use", "linker-tools")}</option>
-						<option value="equipment">{__("System", "linker-tools")}</option>
-						<option value="calculations">
-							{__("Review & share", "linker-tools")}
-						</option>
-						{workspace === "installation" && (
-							<option value="installation">
-								{__("Installation routing", "linker-tools")}
-							</option>
-						)}
-					</select>
 				</div>
 				<div className="lp-edit-actions">
 					<button
@@ -564,6 +548,7 @@ export function ProjectEditor({
 						type="button"
 						data-linker-genie-open
 					>
+						<Icon name="sparkle" />
 						{__("Ask Genie", "linker-tools")}
 					</button>
 					<span className="lp-save-state" role="status">
@@ -622,6 +607,34 @@ export function ProjectEditor({
 							: __("Save project", "linker-tools")}
 					</button>
 				</div>
+				<label className="lp-mobile-chapters">
+					<span>{__("Project sections", "linker-tools")}</span>
+					<select
+						className="lp-mobile-workspace"
+						aria-label={__("Project sections", "linker-tools")}
+						value={workspace}
+						onChange={(event) =>
+							chooseWorkspace(
+								event.currentTarget.value as ProjectWorkspace,
+								event.currentTarget.value === "calculations",
+							)
+						}
+					>
+						<option value="overview">{__("Overview", "linker-tools")}</option>
+						<option value="site">{__("Project", "linker-tools")}</option>
+						{brief.system_scope !== "storage_only" && (
+							<option value="design">{__("Solar", "linker-tools")}</option>
+						)}
+						<option value="energy">{__("Energy use", "linker-tools")}</option>
+						<option value="equipment">{__("System", "linker-tools")}</option>
+						<option value="calculations">
+							{__("Review & share", "linker-tools")}
+						</option>
+						<option value="installation">
+							{__("Installation routing", "linker-tools")}
+						</option>
+					</select>
+				</label>
 				{((closeBlocked === "invalid" && !valid) ||
 					(closeBlocked === "recovery" &&
 						recoveryFailed &&
@@ -663,12 +676,19 @@ export function ProjectEditor({
 					</span>
 					<nav aria-label={__("Project sections", "linker-tools")}>
 						<a
+							href="#lp-overview"
+							aria-current={workspace === "overview" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("overview");
+							}}
+						>
+							<Icon name="overview" />
+							{__("Overview", "linker-tools")}
+						</a>
+						<a
 							href="#lp-site"
-							aria-current={
-								workspace === "site" || workspace === "overview"
-									? "page"
-									: undefined
-							}
+							aria-current={workspace === "site" ? "page" : undefined}
 							onClick={(event) => {
 								event.preventDefault();
 								chooseWorkspace("site");
@@ -686,7 +706,7 @@ export function ProjectEditor({
 								chooseWorkspace("design");
 							}}
 						>
-							<Icon name="layers" />
+							<Icon name="solar" />
 							{__("Solar", "linker-tools")}
 						</a>
 						<a
@@ -702,17 +722,13 @@ export function ProjectEditor({
 						</a>
 						<a
 							href="#lp-equipment"
-							aria-current={
-								workspace === "equipment" || workspace === "installation"
-									? "page"
-									: undefined
-							}
+							aria-current={workspace === "equipment" ? "page" : undefined}
 							onClick={(event) => {
 								event.preventDefault();
 								chooseWorkspace("equipment");
 							}}
 						>
-							<Icon name="layers" />
+							<Icon name="system" />
 							{__("System", "linker-tools")}
 						</a>
 						<a
@@ -723,22 +739,24 @@ export function ProjectEditor({
 								chooseWorkspace("calculations", true);
 							}}
 						>
-							<Icon name="overview" />
+							<Icon name="report" />
 							{__("Review & share", "linker-tools")}
+						</a>
+						<a
+							className="lp-nav-secondary"
+							href="#lp-installation"
+							aria-current={workspace === "installation" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("installation");
+							}}
+						>
+							<Icon name="route" />
+							{__("Installation routing", "linker-tools")}
 						</a>
 					</nav>
 				</aside>
 				<div className="lp-editor-main lp-editor-with-design">
-					<header className="lp-project-title">
-						<span className="lp-eyebrow">
-							{__("Current project", "linker-tools")}
-						</span>
-						<h1>{project.title}</h1>
-						{brief.site.location_label &&
-							brief.site.location_label !== project.title && (
-								<p>{brief.site.location_label}</p>
-							)}
-					</header>
 					{discoveryFailed && (
 						<Notice error>
 							<p>
@@ -1157,6 +1175,7 @@ export function ProjectEditor({
 								draft={draft}
 								edit={editEnergy}
 								flush={flush}
+								acknowledgeProject={acknowledgeProject}
 								session={session}
 								client={client}
 								recheck={recheck}

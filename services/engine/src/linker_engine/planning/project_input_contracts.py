@@ -30,7 +30,13 @@ type InputContract = Literal[
     "storage_only_brief_v1",
     "equipment_use_v1",
     "energy_operating_modes_v1",
+    "nullable_equipment_requirements_v1",
+    "authored_energy_calculation_v1",
+    "authored_equipment_discovery_v1",
 ]
+AUTHORED_EQUIPMENT_INPUT_CONTRACT: InputContract = "authored_equipment_discovery_v1"
+AUTHORED_ENERGY_INPUT_CONTRACT: InputContract = "authored_energy_calculation_v1"
+NULLABLE_EQUIPMENT_INPUT_CONTRACT: InputContract = "nullable_equipment_requirements_v1"
 ENERGY_MODES_INPUT_CONTRACT: InputContract = "energy_operating_modes_v1"
 EQUIPMENT_USE_INPUT_CONTRACT: InputContract = "equipment_use_v1"
 STORAGE_ONLY_INPUT_CONTRACT: InputContract = "storage_only_brief_v1"
@@ -78,12 +84,68 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     STORAGE_ONLY_INPUT_CONTRACT,
     EQUIPMENT_USE_INPUT_CONTRACT,
     ENERGY_MODES_INPUT_CONTRACT,
+    NULLABLE_EQUIPMENT_INPUT_CONTRACT,
+    AUTHORED_ENERGY_INPUT_CONTRACT,
+    AUTHORED_EQUIPMENT_INPUT_CONTRACT,
 )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    equipment_sources = [inputs]
+    plant_setup = inputs.get("equipment_plant_setup")
+    if isinstance(plant_setup, Mapping):
+        units = plant_setup.get("units")
+        equipment_sources.extend(
+            unit["inputs"]
+            for unit in (units if isinstance(units, list) else [])
+            if isinstance(unit, Mapping) and isinstance(unit.get("inputs"), Mapping)
+        )
+    for source in equipment_sources:
+        setup = source.get("equipment_setup")
+        if isinstance(setup, Mapping) and "application" in setup:
+            required.append(AUTHORED_EQUIPMENT_INPUT_CONTRACT)
+            break
+    scenario = inputs.get("energy_scenario")
+    plant_energy = inputs.get("energy_plant_setup")
+    if (
+        isinstance(scenario, Mapping)
+        and "battery_binding" not in scenario
+        or isinstance(plant_energy, Mapping)
+        and isinstance(plant_energy.get("units"), list)
+        and any(
+            isinstance(unit, Mapping)
+            and isinstance(unit.get("settings"), Mapping)
+            and "battery_binding" not in unit["settings"]
+            for unit in plant_energy["units"]
+        )
+    ):
+        required.append(AUTHORED_ENERGY_INPUT_CONTRACT)
+    requirements = [inputs.get("equipment_requirements")]
+    for key in ("equipment_plant", "equipment_plant_requirements"):
+        plant = inputs.get(key)
+        if not isinstance(plant, Mapping):
+            continue
+        requirements.append(plant.get("requirements"))
+        if key == "equipment_plant_requirements":
+            units = plant.get("units")
+            requirements.extend(
+                unit.get("requirements")
+                for unit in (units if isinstance(units, list) else [])
+                if isinstance(unit, Mapping)
+            )
+    # Editable drafts and selection/setup sizing were already nullable. Only
+    # prepared requirements need a later reader and complete-input writer.
+    if any(
+        isinstance(demand, Mapping)
+        and any(
+            field in demand and demand[field] is None
+            for field in ("required_usable_kwh", "required_discharge_ac_kw")
+        )
+        for demand in requirements
+    ):
+        required.append(NULLABLE_EQUIPMENT_INPUT_CONTRACT)
     for key in (
         "energy_scenario",
         "energy_plant_setup",
