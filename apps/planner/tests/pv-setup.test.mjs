@@ -454,6 +454,7 @@ test("German percentage edits retain exact text and decimal separators while sto
 		0.57,
 	);
 	await click("Scenario settings");
+	await click("01Storage");
 	await enter(control("Charging efficiency"), "57");
 	assert.equal(control("Charging efficiency").value, "57");
 });

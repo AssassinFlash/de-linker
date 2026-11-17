@@ -519,243 +519,255 @@ export function ProjectEditor({
 	}
 	return (
 		<div className="lp-project" data-workspace={workspace}>
-			<header className="lp-project-bar" ref={bar}>
-				<div className="lp-breadcrumb">
-					<button
-						className="lp-text-button lp-back-projects"
-						disabled={closing}
-						onClick={() => {
-							void leave();
-						}}
-					>
-						<Icon name="back" />
-						{__("Projects", "linker-tools")}
-					</button>
-				</div>
-				<div className="lp-project-identity">
-					<h1>{project.title}</h1>
-					{brief.site.location_label &&
-						brief.site.location_label !== project.title && (
-							<p>
-								<Icon name="location" />
-								{brief.site.location_label}
-							</p>
-						)}
-				</div>
-				<div className="lp-edit-actions">
-					<button
-						className="lp-text-button"
-						type="button"
-						data-linker-genie-open
-					>
-						<Icon name="sparkle" />
-						{__("Ask Genie", "linker-tools")}
-					</button>
-					<span className="lp-save-state" role="status">
-						{busy
-							? __("Saving…", "linker-tools")
-							: draft.pending
-								? __("Save not confirmed", "linker-tools")
-								: !gridValid ||
-									  !ruleValid ||
-									  !briefValid ||
-									  !energyValid ||
-									  !installationValid
-									? __("Input needs attention", "linker-tools")
-									: !designValid
-										? __("Roof editing in progress", "linker-tools")
-										: dirty
-											? __("Unsaved changes", "linker-tools")
-											: sprintf(
-													__("Saved · revision %d", "linker-tools"),
-													draft.baseline.revision,
-												)}
-					</span>
-					<button
-						className="lp-icon-button"
-						title={__("Undo", "linker-tools")}
-						aria-label={__("Undo", "linker-tools")}
-						disabled={!valid || !draft.history.past.length}
-						onClick={() => update(undoDraft)}
-					>
-						<Icon name="undo" />
-					</button>
-					<button
-						className="lp-icon-button"
-						title={__("Redo", "linker-tools")}
-						aria-label={__("Redo", "linker-tools")}
-						disabled={!valid || !draft.history.future.length}
-						onClick={() => update(redoDraft)}
-					>
-						<Icon name="redo" />
-					</button>
-					<button
-						className="lp-button"
-						disabled={
-							busy ||
-							!valid ||
-							Boolean(draft.conflict) ||
-							Boolean(recoveries.length) ||
-							(!dirty && !draft.pending)
-						}
-						onClick={() => {
-							void save();
-						}}
-					>
-						{draft.pending && !busy
-							? __("Retry save", "linker-tools")
-							: __("Save project", "linker-tools")}
-					</button>
-				</div>
-				<label className="lp-mobile-chapters">
-					<span>{__("Project sections", "linker-tools")}</span>
-					<select
-						className="lp-mobile-workspace"
-						aria-label={__("Project sections", "linker-tools")}
-						value={workspace}
-						onChange={(event) =>
-							chooseWorkspace(
-								event.currentTarget.value as ProjectWorkspace,
-								event.currentTarget.value === "calculations",
-							)
-						}
-					>
-						<option value="overview">{__("Overview", "linker-tools")}</option>
-						<option value="site">{__("Project", "linker-tools")}</option>
-						{brief.system_scope !== "storage_only" && (
-							<option value="design">{__("Solar", "linker-tools")}</option>
-						)}
-						<option value="energy">{__("Energy use", "linker-tools")}</option>
-						<option value="equipment">{__("System", "linker-tools")}</option>
-						<option value="calculations">
-							{__("Review & share", "linker-tools")}
-						</option>
-						<option value="installation">
-							{__("Installation routing", "linker-tools")}
-						</option>
-					</select>
-				</label>
-				{((closeBlocked === "invalid" && !valid) ||
-					(closeBlocked === "recovery" &&
-						recoveryFailed &&
-						(dirty || draft.pending))) && (
-					<div className="lp-navigation-refusal">
-						<Notice error>
-							{!gridValid ||
-							!ruleValid ||
-							!briefValid ||
-							!energyValid ||
-							!installationValid
-								? __(
-										"Correct the highlighted input before leaving this project.",
-										"linker-tools",
-									)
-								: !designValid
+			<header className="lp-project-bar lp-project-masthead" ref={bar}>
+				<div className="lp-project-masthead-inner">
+					<div className="lp-project-topline">
+						<div className="lp-breadcrumb">
+							<button
+								className="lp-text-button lp-back-projects"
+								disabled={closing}
+								onClick={() => {
+									void leave();
+								}}
+							>
+								<Icon name="back" />
+								{__("Projects", "linker-tools")}
+							</button>
+						</div>
+						<div className="lp-project-nav-title">
+							<span className="lp-nav-mark" aria-hidden="true">
+								L
+							</span>
+							<span>{__("Solution Configurator", "linker-tools")}</span>
+						</div>
+					</div>
+					<div className="lp-project-heading">
+						<div className="lp-project-identity">
+							<h1>{project.title}</h1>
+							{brief.site.location_label &&
+								brief.site.location_label !== project.title && (
+									<p>
+										<Icon name="location" />
+										{brief.site.location_label}
+									</p>
+								)}
+						</div>
+						<div className="lp-edit-actions">
+							<button
+								className="lp-text-button"
+								type="button"
+								data-linker-genie-open
+							>
+								<Icon name="sparkle" />
+								{__("Ask Genie", "linker-tools")}
+							</button>
+							<span className="lp-save-state" role="status">
+								{busy
+									? __("Saving…", "linker-tools")
+									: draft.pending
+										? __("Save not confirmed", "linker-tools")
+										: !gridValid ||
+											  !ruleValid ||
+											  !briefValid ||
+											  !energyValid ||
+											  !installationValid
+											? __("Input needs attention", "linker-tools")
+											: !designValid
+												? __("Roof editing in progress", "linker-tools")
+												: dirty
+													? __("Unsaved changes", "linker-tools")
+													: sprintf(
+															__("Saved · revision %d", "linker-tools"),
+															draft.baseline.revision,
+														)}
+							</span>
+							<button
+								className="lp-icon-button"
+								title={__("Undo", "linker-tools")}
+								aria-label={__("Undo", "linker-tools")}
+								disabled={!valid || !draft.history.past.length}
+								onClick={() => update(undoDraft)}
+							>
+								<Icon name="undo" />
+							</button>
+							<button
+								className="lp-icon-button"
+								title={__("Redo", "linker-tools")}
+								aria-label={__("Redo", "linker-tools")}
+								disabled={!valid || !draft.history.future.length}
+								onClick={() => update(redoDraft)}
+							>
+								<Icon name="redo" />
+							</button>
+							<button
+								className="lp-button"
+								disabled={
+									busy ||
+									!valid ||
+									Boolean(draft.conflict) ||
+									Boolean(recoveries.length) ||
+									(!dirty && !draft.pending)
+								}
+								onClick={() => {
+									void save();
+								}}
+							>
+								{draft.pending && !busy
+									? __("Retry save", "linker-tools")
+									: __("Save project", "linker-tools")}
+							</button>
+						</div>
+					</div>
+					{((closeBlocked === "invalid" && !valid) ||
+						(closeBlocked === "recovery" &&
+							recoveryFailed &&
+							(dirty || draft.pending))) && (
+						<div className="lp-navigation-refusal">
+							<Notice error>
+								{!gridValid ||
+								!ruleValid ||
+								!briefValid ||
+								!energyValid ||
+								!installationValid
 									? __(
-											"Finish or cancel roof editing before leaving this workspace.",
+											"Correct the highlighted input before leaving this project.",
 											"linker-tools",
 										)
-									: __(
-											"Save the project before leaving. Browser recovery could not be stored.",
-											"linker-tools",
-										)}
-						</Notice>
+									: !designValid
+										? __(
+												"Finish or cancel roof editing before leaving this workspace.",
+												"linker-tools",
+											)
+										: __(
+												"Save the project before leaving. Browser recovery could not be stored.",
+												"linker-tools",
+											)}
+							</Notice>
+						</div>
+					)}
+					<div className="lp-project-chapters">
+						<nav
+							className="lp-project-chapter-links"
+							aria-label={__("Project sections", "linker-tools")}
+						>
+							<a
+								href="#lp-overview"
+								aria-current={workspace === "overview" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("overview");
+								}}
+							>
+								<Icon name="overview" />
+								{__("Overview", "linker-tools")}
+							</a>
+							<a
+								href="#lp-site"
+								aria-current={workspace === "site" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("site");
+								}}
+							>
+								<Icon name="location" />
+								{__("Project", "linker-tools")}
+							</a>
+							<a
+								hidden={brief.system_scope === "storage_only"}
+								href="#lp-design"
+								aria-current={workspace === "design" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("design");
+								}}
+							>
+								<Icon name="solar" />
+								{__("Solar", "linker-tools")}
+							</a>
+							<a
+								href="#lp-load"
+								aria-current={workspace === "energy" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("energy");
+								}}
+							>
+								<Icon name="energy" />
+								{__("Energy use", "linker-tools")}
+							</a>
+							<a
+								href="#lp-equipment"
+								aria-current={workspace === "equipment" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("equipment");
+								}}
+							>
+								<Icon name="system" />
+								{__("System", "linker-tools")}
+							</a>
+							<a
+								href="#lp-calculations"
+								aria-current={workspace === "calculations" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("calculations", true);
+								}}
+							>
+								<Icon name="report" />
+								{__("Review & share", "linker-tools")}
+							</a>
+							<a
+								className="lp-nav-secondary"
+								href="#lp-installation"
+								aria-current={workspace === "installation" ? "page" : undefined}
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("installation");
+								}}
+							>
+								<Icon name="route" />
+								{__("Installation routing", "linker-tools")}
+							</a>
+						</nav>
+						<label className="lp-mobile-chapters">
+							<span>{__("Project sections", "linker-tools")}</span>
+							<select
+								className="lp-mobile-workspace"
+								aria-label={__("Project sections", "linker-tools")}
+								value={workspace}
+								onChange={(event) =>
+									chooseWorkspace(
+										event.currentTarget.value as ProjectWorkspace,
+										event.currentTarget.value === "calculations",
+									)
+								}
+							>
+								<option value="overview">
+									{__("Overview", "linker-tools")}
+								</option>
+								<option value="site">{__("Project", "linker-tools")}</option>
+								{brief.system_scope !== "storage_only" && (
+									<option value="design">{__("Solar", "linker-tools")}</option>
+								)}
+								<option value="energy">
+									{__("Energy use", "linker-tools")}
+								</option>
+								<option value="equipment">
+									{__("System", "linker-tools")}
+								</option>
+								<option value="calculations">
+									{__("Review & share", "linker-tools")}
+								</option>
+								<option value="installation">
+									{__("Installation routing", "linker-tools")}
+								</option>
+							</select>
+						</label>
 					</div>
-				)}
+				</div>
 			</header>
 			<div className="lp-project-layout">
-				<aside className="lp-project-aside">
-					<div className="lp-project-nav-title">
-						<span className="lp-nav-mark" aria-hidden="true">
-							L
-						</span>
-						<span>{__("Solution Configurator", "linker-tools")}</span>
-					</div>
-					<span className="lp-eyebrow">
-						{__("Current project", "linker-tools")}
-					</span>
-					<nav aria-label={__("Project sections", "linker-tools")}>
-						<a
-							href="#lp-overview"
-							aria-current={workspace === "overview" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("overview");
-							}}
-						>
-							<Icon name="overview" />
-							{__("Overview", "linker-tools")}
-						</a>
-						<a
-							href="#lp-site"
-							aria-current={workspace === "site" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("site");
-							}}
-						>
-							<Icon name="location" />
-							{__("Project", "linker-tools")}
-						</a>
-						<a
-							hidden={brief.system_scope === "storage_only"}
-							href="#lp-design"
-							aria-current={workspace === "design" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("design");
-							}}
-						>
-							<Icon name="solar" />
-							{__("Solar", "linker-tools")}
-						</a>
-						<a
-							href="#lp-load"
-							aria-current={workspace === "energy" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("energy");
-							}}
-						>
-							<Icon name="energy" />
-							{__("Energy use", "linker-tools")}
-						</a>
-						<a
-							href="#lp-equipment"
-							aria-current={workspace === "equipment" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("equipment");
-							}}
-						>
-							<Icon name="system" />
-							{__("System", "linker-tools")}
-						</a>
-						<a
-							href="#lp-calculations"
-							aria-current={workspace === "calculations" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("calculations", true);
-							}}
-						>
-							<Icon name="report" />
-							{__("Review & share", "linker-tools")}
-						</a>
-						<a
-							className="lp-nav-secondary"
-							href="#lp-installation"
-							aria-current={workspace === "installation" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("installation");
-							}}
-						>
-							<Icon name="route" />
-							{__("Installation routing", "linker-tools")}
-						</a>
-					</nav>
-				</aside>
 				<div className="lp-editor-main lp-editor-with-design">
 					{discoveryFailed && (
 						<Notice error>

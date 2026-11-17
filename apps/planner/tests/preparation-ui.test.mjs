@@ -334,9 +334,7 @@ for (const locale of ["en-GB", "de-DE"]) {
 		window.HTMLAnchorElement.prototype.click = function () {
 			downloads.push(this.download);
 		};
-		const buttons = () => [
-			...document.querySelectorAll(".lp-run-heading button"),
-		];
+		const buttons = () => [...document.querySelectorAll("button")];
 		const ruleLabel = locale.startsWith("de")
 			? "Landesregelprüfung herunterladen (CSV)"
 			: "Download country rule review (CSV)";

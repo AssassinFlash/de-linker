@@ -766,10 +766,16 @@ test("energy intake directs an unknown-size customer to equipment without requir
 		hash: "#lp-load",
 		inputs: { brief: { ...emptyBrief(), system_scope: "storage_only" } },
 	});
-	await untilRun(() => app.fieldInput("Usable stored energy"));
-	const parameters = app.fieldInput("Usable stored energy").closest("details");
-	assert.ok(parameters, "device parameters are not the first demand question");
-	assert.equal(parameters.open, false);
+	await untilRun(() => app.fieldSelect("Operating goal"));
+	assert.ok(!app.fieldSelect("Operating goal").closest("[hidden]"));
+	assert.ok(app.button("Choose equipment"));
+	assert.ok(
+		app.fieldInput("Usable stored energy").closest("[hidden]"),
+		"device parameters are outside the initial Operation chapter",
+	);
+	await act(async () => app.button("01Storage").click());
+	assert.ok(!app.fieldInput("Usable stored energy").closest("[hidden]"));
+	await act(async () => app.button("03Operation").click());
 	await act(async () => {
 		const goal = app.fieldSelect("Operating goal");
 		goal.value = "backup";
@@ -996,9 +1002,11 @@ test("adopting a combination retains its report reference when default procureme
 		new URL(window.location.href).searchParams.get("energy_view"),
 		"scenario",
 	);
-	assert.equal(
-		app.fieldInput("Usable stored energy").closest("[hidden]"),
-		null,
+	assert.ok(app.button("03Operation").getAttribute("aria-current") === "step");
+	await act(async () => app.button("01Storage").click());
+	assert.ok(
+		!app.fieldInput("Usable stored energy").closest("[hidden]"),
+		"adopted storage parameters are in the active chapter",
 	);
 	await act(async () => app.button("Save project").click());
 	await untilRun(() =>

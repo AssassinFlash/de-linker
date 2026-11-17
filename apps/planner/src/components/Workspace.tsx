@@ -402,30 +402,31 @@ export function Workspace({
 
 	return (
 		<div className="lp-workspace">
-			<aside className="lp-workspace-rail">
-				<div className="lp-workspace-brand">
-					<span className="lp-nav-mark" aria-hidden="true">
-						L
-					</span>
-					<strong>{__("Solution Configurator", "linker-tools")}</strong>
+			<header className="lp-workspace-masthead">
+				<div className="lp-workspace-masthead-inner">
+					<div className="lp-workspace-brand">
+						<span className="lp-nav-mark" aria-hidden="true">
+							L
+						</span>
+						<strong>{__("Solution Configurator", "linker-tools")}</strong>
+					</div>
+					<div className="lp-workspace-masthead-actions">
+						<span className="lp-rail-session">
+							{session.kind === "guest"
+								? __("Guest workspace", "linker-tools")
+								: __("Account workspace", "linker-tools")}
+						</span>
+						<button
+							className="lp-rail-help"
+							type="button"
+							data-linker-genie-open
+						>
+							<Icon name="sparkle" />
+							{__("Ask Genie", "linker-tools")}
+						</button>
+					</div>
 				</div>
-				<span className="lp-rail-caption">
-					{__("Workspace", "linker-tools")}
-				</span>
-				<span className="lp-rail-current">
-					<Icon name="folder" />
-					{__("Projects", "linker-tools")}
-				</span>
-				<button className="lp-rail-help" type="button" data-linker-genie-open>
-					<Icon name="sparkle" />
-					{__("Ask Genie", "linker-tools")}
-				</button>
-				<div className="lp-rail-session">
-					{session.kind === "guest"
-						? __("Guest workspace", "linker-tools")
-						: __("Account workspace", "linker-tools")}
-				</div>
-			</aside>
+			</header>
 			<div className="lp-page">
 				<header className="lp-workspace-header">
 					<div>

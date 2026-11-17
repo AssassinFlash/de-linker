@@ -94,7 +94,6 @@ import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
-import { SimpleEnergySetup } from "./SimpleEnergySetup.tsx";
 import { ScenarioForm } from "./ScenarioForm.tsx";
 import { EnergyError } from "./EnergyError.tsx";
 import { RunResult } from "./RunResult.tsx";
@@ -272,8 +271,15 @@ export function EnergyWorkspace({
 	const [selectedView, setView] = useState<EnergyView>(() =>
 			initialEnergyView(new URL(window.location.href)),
 		),
-		[section, setSection] = useState<"storage" | "initial" | "operation">(
-			"storage",
+		[section, setSection] = useState<"storage" | "initial" | "operation">(() =>
+			!joint &&
+			!pvOnly &&
+			!equipmentForEditing &&
+			setup?.coupling !== "shared_dc" &&
+			setup?.schedule.length === 1 &&
+			setup.battery.usable_window_kwh === null
+				? "operation"
+				: "storage",
 		),
 		[scenarioValid, setScenarioValid] = useState(true),
 		[compactValid, setCompactValid] = useState(true),
@@ -1556,153 +1562,52 @@ export function EnergyWorkspace({
 				)}
 				{currentSetup && (
 					<>
-						<div className="lp-work-grid">
-							<div className="lp-work-main">
-								{pvOnly ? (
-									<SolarEnergySetup
-										inputPath={schedulePath}
-										value={currentSetup}
-										hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
-										locale={locale}
-										disabled={blocked || operations.busy || !admitted}
-										onChange={(changes) => {
-											if (joint && jointContext.value)
-												changeJoint({
-													...jointContext.value.setup,
-													...changes,
-												});
-											else if (setup) change({ ...setup, ...changes });
-										}}
-										onValidity={setCompactValid}
-										useProfileRange={() => void useRange()}
-										rangeBusy={rangeBusy}
-										inputErrors={scenarioErrors}
-									/>
-								) : (
-									<>
-										{!joint &&
-											setup &&
-											setup.coupling !== "shared_dc" &&
-											setup.schedule.length === 1 && (
-												<SimpleEnergySetup
-													hasAuxiliaryProfile={Boolean(
-														selections.selected.aux_ac,
-													)}
-													hasEquipment={Boolean(equipmentForEditing)}
-													chooseEquipment={showEquipment}
-													value={setup}
-													storageOnly={storageOnly}
-													locale={locale}
-													disabled={blocked || operations.busy || !admitted}
-													onChange={change}
-													onValidity={setCompactValid}
-													useProfileRange={() => void useRange()}
-													rangeBusy={rangeBusy}
-													inputErrors={scenarioErrors}
-												/>
-											)}
-										<details
-											className="lp-comparison"
-											open={
-												joint ||
-												setup?.coupling === "shared_dc" ||
-												(setup?.schedule.length ?? 0) > 1
-											}
-										>
-											<summary>
-												{__(
-													"Advanced storage and operating settings",
-													"linker-tools",
-												)}
-											</summary>
-											<ol className="lp-scenario-steps">
-												{(["storage", "initial", "operation"] as const).map(
-													(step, index) => (
-														<li
-															key={step}
-															aria-current={
-																section === step ? "step" : undefined
-															}
-														>
-															<button
-																type="button"
-																disabled={!syntaxValid}
-																onClick={() => setSection(step)}
-															>
-																<span>
-																	{String(index + 1).padStart(2, "0")}
-																</span>
-																{step === "storage"
-																	? __("Storage", "linker-tools")
-																	: step === "initial"
-																		? __("Starting state", "linker-tools")
-																		: __("Operation", "linker-tools")}
-															</button>
-														</li>
-													),
-												)}
-											</ol>
-											{joint && jointContext.value ? (
-												<PlantEnergyForm
-													storageOnly={storageOnly}
-													referenceCapacitySupported={
-														session.runtime.models.capacity_reference ===
-														REFERENCE_CAPACITY
+						<div className="lp-setup-layout">
+							<aside className="lp-setup-nav">
+								<nav aria-label={__("Scenario settings", "linker-tools")}>
+									<ol className="lp-scenario-steps">
+										{(pvOnly
+											? (["storage", "operation"] as const)
+											: (["storage", "initial", "operation"] as const)
+										).map((step, index) => (
+											<li
+												key={step}
+												aria-current={
+													section === step ||
+													(pvOnly &&
+														section === "initial" &&
+														step === "storage")
+														? "step"
+														: undefined
+												}
+											>
+												<button
+													type="button"
+													disabled={!syntaxValid}
+													aria-current={
+														section === step ||
+														(pvOnly &&
+															section === "initial" &&
+															step === "storage")
+															? "step"
+															: undefined
 													}
-													value={jointContext.value.setup}
-													plant={jointContext.value.plant}
-													converters={converterIds}
-													section={section}
-													locale={locale}
-													disabled={blocked || operations.busy || !admitted}
-													onChange={changeJoint}
-													onValidity={setScenarioValid}
-													useProfileRange={() => void useRange()}
-													rangeBusy={rangeBusy}
-													inputErrors={scenarioErrors}
-													openEquipment={() => {
-														setView("equipment");
-														openEquipment?.();
-													}}
-													client={client}
-													scope={session.query_scope}
-													active={active && view === "scenario"}
-												/>
-											) : (
-												setup && (
-													<ScenarioForm
-														storageOnly={storageOnly}
-														referenceCapacitySupported={
-															session.runtime.models.capacity_reference ===
-															REFERENCE_CAPACITY
-														}
-														client={client}
-														scope={session.query_scope}
-														active={active && view === "scenario"}
-														equipmentSelection={equipmentForEditing}
-														converters={converterIds}
-														key={setup.coupling ?? "independent_ac"}
-														openEquipment={() => {
-															setView("equipment");
-															openEquipment?.();
-														}}
-														value={setup}
-														section={section}
-														locale={locale}
-														disabled={blocked || operations.busy || !admitted}
-														onChange={change}
-														onValidity={setScenarioValid}
-														useProfileRange={() => void useRange()}
-														rangeBusy={rangeBusy}
-														inputErrors={scenarioErrors}
-													/>
-												)
-											)}
-										</details>
-									</>
-								)}
-							</div>
-							<aside className="lp-work-aside">
+													aria-controls="lp-energy-chapter"
+													onClick={() => setSection(step)}
+												>
+													<span>{String(index + 1).padStart(2, "0")}</span>
+													{step === "storage"
+														? pvOnly
+															? __("Solar-only energy flows", "linker-tools")
+															: __("Storage", "linker-tools")
+														: step === "initial"
+															? __("Starting state", "linker-tools")
+															: __("Operation", "linker-tools")}
+												</button>
+											</li>
+										))}
+									</ol>
+								</nav>
 								<section className="lp-scenario-sources lp-work-panel">
 									<h3 className="lp-work-panel-heading">
 										{__("Interval sources", "linker-tools")}
@@ -1752,32 +1657,112 @@ export function EnergyWorkspace({
 									</button>
 								</section>
 							</aside>
-						</div>
-						{joint && !jointAvailable && (
-							<Notice>
-								{__(
-									"Joint storage calculation is unavailable in this service version. Your equipment plan remains available.",
-									"linker-tools",
-								)}
-							</Notice>
-						)}
-						<div className="lp-energy-submit lp-work-panel lp-work-toolbar">
-							<p>
-								{__(
-									"Calculate using the current project inputs. The result retains its inputs and sources.",
-									"linker-tools",
-								)}
-							</p>
-							<button
-								type="button"
-								className="lp-button"
-								disabled={!canCalculate}
-								onClick={() => void calculate()}
+							<div
+								className="lp-setup-content lp-work-main"
+								id="lp-energy-chapter"
 							>
-								{operations.busy
-									? __("Confirming request…", "linker-tools")
-									: __("Calculate energy flows", "linker-tools")}
-							</button>
+								{pvOnly ? (
+									<SolarEnergySetup
+										section={section === "operation" ? "operation" : "storage"}
+										inputPath={schedulePath}
+										value={currentSetup}
+										hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
+										locale={locale}
+										disabled={blocked || operations.busy || !admitted}
+										onChange={(changes) => {
+											if (joint && jointContext.value)
+												changeJoint({
+													...jointContext.value.setup,
+													...changes,
+												});
+											else if (setup) change({ ...setup, ...changes });
+										}}
+										onValidity={setCompactValid}
+										useProfileRange={() => void useRange()}
+										rangeBusy={rangeBusy}
+										inputErrors={scenarioErrors}
+									/>
+								) : (
+									<>
+										{joint && jointContext.value ? (
+											<PlantEnergyForm
+												storageOnly={storageOnly}
+												referenceCapacitySupported={
+													session.runtime.models.capacity_reference ===
+													REFERENCE_CAPACITY
+												}
+												value={jointContext.value.setup}
+												plant={jointContext.value.plant}
+												converters={converterIds}
+												section={section}
+												locale={locale}
+												disabled={blocked || operations.busy || !admitted}
+												onChange={changeJoint}
+												onValidity={setScenarioValid}
+												useProfileRange={() => void useRange()}
+												rangeBusy={rangeBusy}
+												inputErrors={scenarioErrors}
+												openEquipment={showEquipment}
+												client={client}
+												scope={session.query_scope}
+												active={active && view === "scenario"}
+											/>
+										) : (
+											setup && (
+												<ScenarioForm
+													storageOnly={storageOnly}
+													referenceCapacitySupported={
+														session.runtime.models.capacity_reference ===
+														REFERENCE_CAPACITY
+													}
+													client={client}
+													scope={session.query_scope}
+													active={active && view === "scenario"}
+													equipmentSelection={equipmentForEditing}
+													converters={converterIds}
+													key={setup.coupling ?? "independent_ac"}
+													openEquipment={showEquipment}
+													value={setup}
+													section={section}
+													locale={locale}
+													disabled={blocked || operations.busy || !admitted}
+													onChange={change}
+													onValidity={setScenarioValid}
+													useProfileRange={() => void useRange()}
+													rangeBusy={rangeBusy}
+													inputErrors={scenarioErrors}
+												/>
+											)
+										)}
+									</>
+								)}
+								{joint && !jointAvailable && (
+									<Notice>
+										{__(
+											"Joint storage calculation is unavailable in this service version. Your equipment plan remains available.",
+											"linker-tools",
+										)}
+									</Notice>
+								)}
+								<div className="lp-energy-submit lp-work-panel lp-work-toolbar">
+									<p>
+										{__(
+											"Calculate using the current project inputs. The result retains its inputs and sources.",
+											"linker-tools",
+										)}
+									</p>
+									<button
+										type="button"
+										className="lp-button"
+										disabled={!canCalculate}
+										onClick={() => void calculate()}
+									>
+										{operations.busy
+											? __("Confirming request…", "linker-tools")
+											: __("Calculate energy flows", "linker-tools")}
+									</button>
+								</div>
+							</div>
 						</div>
 					</>
 				)}

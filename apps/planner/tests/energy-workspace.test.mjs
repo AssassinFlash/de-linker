@@ -630,6 +630,46 @@ async function chooseScenario(label, value) {
 }
 
 for (const joint of [false, true]) {
+	test(`${joint ? "plant" : "single"} scenario chapters show one editor and preserve edits across navigation and undo`, async (t) => {
+		const rig = await energyRig(t, { joint });
+		assert.ok(
+			!scenarioField("Start with UTC or offset"),
+			"Operating periods belong to the Operation chapter",
+		);
+		assert.equal(document.querySelectorAll(".lp-scenario-steps").length, 1);
+		assert.equal(
+			document.querySelector(".lp-scenario-steps").closest("details"),
+			null,
+		);
+		await click("03Operation");
+		const periods = [
+			...document.querySelectorAll('input[name$="start_utc"]'),
+		].filter((node) => !node.closest("[hidden]"));
+		assert.equal(periods.length, 1);
+		assert.equal(scenarioField("System connection"), undefined);
+		await enter(
+			scenarioField("Start with UTC or offset"),
+			"2024-03-30T22:00:00Z",
+		);
+		await click("02Starting state");
+		assert.ok(
+			!scenarioField("Start with UTC or offset"),
+			"Operating periods belong to the Operation chapter",
+		);
+		await click("03Operation");
+		assert.equal(
+			scenarioField("Start with UTC or offset").value,
+			"2024-03-30T22:00:00Z",
+		);
+		await click("Undo");
+		assert.equal(
+			scenarioField("Start with UTC or offset").value,
+			rig.draft.baseline.inputs[
+				joint ? "energy_plant_setup" : "energy_scenario"
+			].schedule[0].start_utc,
+		);
+	});
+
 	test(`${joint ? "plant" : "single"} shared profile range preserves reserve and grid cap edits made while previews are pending`, async (t) => {
 		const rig = await energyRig(t, { joint, delayRange: true });
 		const key = joint ? "energy_plant_setup" : "energy_scenario";
@@ -669,6 +709,29 @@ for (const joint of [false, true]) {
 	});
 }
 
+test("single operation keeps goal shortcuts and multiple periods in one editor", async (t) => {
+	const rig = await energyRig(t);
+	await click("03Operation");
+	assert.equal(document.querySelectorAll('input[name$="start_utc"]').length, 1);
+	await chooseScenario("Operating goal", "backup");
+	assert.equal(
+		rig.draft.history.current.energy_scenario.schedule[0].mode,
+		"outage",
+	);
+	await click("Add operating period");
+	assert.equal(document.querySelectorAll('input[name$="start_utc"]').length, 2);
+	assert.ok(!scenarioField("Operating goal"));
+	assert.ok(scenarioField("Operating strategy"));
+	await click("01Storage");
+	assert.ok(!scenarioField("Start with UTC or offset"));
+	await click("03Operation");
+	assert.equal(document.querySelectorAll('input[name$="start_utc"]').length, 2);
+	assert.equal(
+		rig.draft.history.current.energy_scenario.schedule[0].mode,
+		"outage",
+	);
+});
+
 test("an untouched new plant can apply its first shared profile range", async (t) => {
 	const rig = await energyRig(t, {
 		joint: true,
@@ -677,6 +740,7 @@ test("an untouched new plant can apply its first shared profile range", async (t
 		delayRange: true,
 	});
 	assert.equal(rig.draft.history.current.energy_plant_setup, undefined);
+	await click("02Operation");
 	await click("Use the shared profile range");
 	await until(() =>
 		rig.requests.some((row) => row.operation === "profiles/preview"),
@@ -802,6 +866,7 @@ test("a new PV-only plant with positive PV starts at the AC source and its first
 					node.querySelector("span")?.textContent === label,
 			)
 			?.querySelector("input,select");
+	await click("02Operation");
 	await enter(field("Start with UTC or offset"), "2024-03-30T23:00:00Z");
 	assert.equal(
 		rig.draft.history.current.energy_plant_setup.coupling,
@@ -850,6 +915,7 @@ for (const joint of [false, true])
 			assert.match(sources.textContent, /Available PV output · AC/);
 			assert.doesNotMatch(sources.textContent, /Roof PV source/);
 			if (editDates) {
+				await click("02Operation");
 				const start = [...document.querySelectorAll("label")]
 					.find(
 						(node) =>
@@ -923,6 +989,8 @@ for (const joint of [false, true]) {
 		);
 		// The retained fixture has an auxiliary profile; its choice remains owned.
 		assert.equal(aux, undefined);
+		assert.ok(!scenarioField("Start with UTC or offset"));
+		await click("02Operation");
 		const period = [...fieldset.querySelectorAll("label")]
 			.find(
 				(label) =>
