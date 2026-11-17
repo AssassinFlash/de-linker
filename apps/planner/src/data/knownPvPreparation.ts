@@ -17,7 +17,12 @@ import {
 	referenceDraft,
 	referenceSite,
 } from "../domain/pvgisReference.ts";
-import { readRun, runPending, type PlanningRun } from "./planningProtocol.ts";
+import {
+	readRun,
+	runPending,
+	waitForRunPoll,
+	type PlanningRun,
+} from "./planningProtocol.ts";
 import { ApiError, type JsonObject, type Project } from "./protocol.ts";
 import { readObject, readProject } from "./readProtocol.ts";
 
@@ -26,21 +31,6 @@ type Query = (
 	body: JsonObject,
 	signal: AbortSignal,
 ) => Promise<unknown>;
-
-function waitForPoll(signal: AbortSignal): Promise<void> {
-	signal.throwIfAborted();
-	return new Promise((resolve, reject) => {
-		const timer = setTimeout(() => {
-			signal.removeEventListener("abort", abort);
-			resolve();
-		}, 1000);
-		function abort() {
-			clearTimeout(timer);
-			reject(signal.reason);
-		}
-		signal.addEventListener("abort", abort, { once: true });
-	});
-}
 
 function comparisonInputs(inputs: JsonObject, asset: ProfileAsset): JsonObject {
 	const scope = readBrief(inputs.brief).system_scope;
@@ -193,7 +183,7 @@ export async function prepareKnownPvForComparison({
 	let run = await start(saved.revision);
 	if (!run) throw new ApiError(503, "known_pv_preparation_failed");
 	while (runPending(run.state)) {
-		await waitForPoll(signal);
+		await waitForRunPoll(signal);
 		run = readRun(
 			await query("runs/read", { schema_version: 1, run_id: run.id }, signal),
 			projectId,

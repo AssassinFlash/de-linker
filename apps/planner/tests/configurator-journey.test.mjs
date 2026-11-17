@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
-import { setupDom, until } from "./dom-fixture.mjs";
+import { enter, setupDom, until } from "./dom-fixture.mjs";
 
 test("a storage project continues from its location directly to energy use", async () => {
 	const fixture = setupDom();
@@ -124,6 +124,11 @@ for (const scenario of [
 	"changed retained inverter",
 	"matching energy and equipment",
 	"changed energy and equipment",
+	"automatic wiring check",
+	"pending wiring check",
+	"completed wiring check",
+	"missing wiring evidence",
+	"edited peak target with a saved candidate",
 ]) {
 	test(`report generation handles ${scenario}`, async () => {
 		const dom = setupDom();
@@ -152,7 +157,9 @@ for (const scenario of [
 				models: {},
 			},
 		};
-		const project = structuredClone(knownPv.project);
+		const editPeak = scenario === "edited peak target with a saved candidate";
+		if (editPeak) window.location.hash = "sc-energy";
+		let project = structuredClone(knownPv.project);
 		project.revision++;
 		project.input_sha256 = "9".repeat(64);
 		project.inputs.brief.project_note = "Updated project description";
@@ -273,7 +280,8 @@ for (const scenario of [
 				{
 					assessment: {
 						overall_status: "unresolved",
-						equipment_status: "unresolved",
+						equipment_status: "satisfied",
+						country_assessment: { status: "unresolved" },
 						checks: [],
 						provisional_bill_of_materials: [],
 						selected_products: [],
@@ -292,6 +300,81 @@ for (const scenario of [
 				project.inputs.equipment_setup.inverter_product_id = 102;
 			}
 		}
+		let wiringCheck;
+		let queuedCheck;
+		if (scenario.includes("wiring")) {
+			project.inputs.equipment_setup = {
+				schema_version: 1,
+				inverter_product_id: 101,
+				battery_product_id: null,
+				modules_per_stack: null,
+				parallel_stacks: null,
+				accessory_product_ids: [],
+				grid_phase: 3,
+				operating_mode: "grid_connected",
+				pv_dc_kw: 6.4,
+				required_usable_kwh: null,
+				required_discharge_ac_kw: null,
+			};
+			project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			wiringCheck = equipmentRun(
+				"qualify_woo_equipment_v1",
+				project.revision,
+				project.input_sha256,
+				{
+					assessment: {
+						overall_status: "unresolved",
+						equipment_status: "satisfied",
+						country_assessment: { status: "unresolved" },
+						checks: [],
+						provisional_bill_of_materials: [],
+						selected_products: [],
+						...(scenario !== "missing wiring evidence" && {
+							pv_electrical: {
+								schema_version: 1,
+								method: "woo_layout_electrical_v2",
+								strings: [],
+							},
+						}),
+					},
+				},
+			);
+			queuedCheck = {
+				...wiringCheck,
+				state: "queued",
+				result: null,
+				result_sha256: null,
+			};
+			if (scenario === "pending wiring check") runs.unshift(queuedCheck);
+			if (scenario === "completed wiring check") runs.unshift(wiringCheck);
+			desired.equipment_run_id = wiringCheck.id;
+		}
+		if (editPeak) {
+			const { emptyScenario } = await import("../src/domain/energyScenario.ts");
+			const { equipmentDraft } = await import("../src/domain/equipment.ts");
+			const draft = emptyScenario();
+			project.inputs.energy_scenario = {
+				...draft,
+				controller: "peak_shaving_with_reserve_v1",
+				schedule: [
+					{
+						...draft.schedule[0],
+						mode: "connected",
+						import_policy: "limited",
+						import_cap_kw: 10,
+					},
+				],
+			};
+			project.inputs.equipment_setup = {
+				...equipmentDraft({}),
+				inverter_product_id: 101,
+			};
+			project.inputs.equipment_candidate = {
+				run_id: "4".repeat(32),
+				candidate_id: "5".repeat(32),
+				assessment_sha256: "6".repeat(64),
+			};
+		}
 		const requests = [];
 		const client = {
 			isCurrentScope: (s) => s === scope,
@@ -307,11 +390,13 @@ for (const scenario of [
 							state: run.state,
 							is_current: run.revision === project.revision,
 							created_at: 1,
-							task_kind: run.result.kind,
+							task_kind: run.manifest.context.parameters.kind,
 						})),
 						next: null,
 					};
 				const found = runs.find((run) => run.id === body.run_id);
+				if (path === "runs/read" && body.run_id === wiringCheck?.id)
+					return wiringCheck;
 				if (path === "runs/read" && found) return found;
 				if (path === "runs/inputs" && found)
 					return {
@@ -340,6 +425,24 @@ for (const scenario of [
 			send: async (path, raw) => {
 				const command = JSON.parse(raw);
 				requests.push([path, command]);
+				if (path === "projects/revise" && editPeak) {
+					project = {
+						...project,
+						revision: project.revision + 1,
+						inputs: command.inputs,
+						input_sha256: "d".repeat(64),
+					};
+					return project;
+				}
+				if (path === "runs/check-equipment" && wiringCheck) {
+					assert.deepEqual(command.inputs, project.inputs);
+					runs.unshift(wiringCheck);
+					return {
+						schema_version: 1,
+						project,
+						run: queuedCheck,
+					};
+				}
 				return {
 					id: "e".repeat(32),
 					project_id: project.id,
@@ -392,17 +495,60 @@ for (const scenario of [
 					),
 				),
 			);
+			if (editPeak) {
+				const peak = () =>
+					[...dom.element.querySelectorAll("label")]
+						.find((label) =>
+							label.textContent.includes("Target grid import limit"),
+						)
+						?.querySelector("input");
+				const button = (text) =>
+					[...dom.element.querySelectorAll("button")].find(
+						(item) => item.textContent === text,
+					);
+				await until(() => peak()?.value === "10");
+				await enter(peak(), "8");
+				await act(async () => button("Undo").click());
+				await until(() => peak()?.value === "10");
+				await enter(peak(), "9");
+				await act(async () => button("Save snapshot").click());
+				await until(() =>
+					requests.some(([path]) => path === "projects/revise"),
+				);
+				const savedInputs = requests[0][1].inputs;
+				assert.equal(savedInputs.energy_scenario.schedule[0].import_cap_kw, 9);
+				assert.equal(savedInputs.equipment_setup.inverter_product_id, 101);
+				assert.equal(savedInputs.equipment_candidate, undefined);
+				return;
+			}
 			const generate = () =>
 				[...dom.element.querySelectorAll("button")].find(
 					(button) => button.textContent === "Generate project report",
 				);
 			await until(() => generate() && !generate().disabled);
 			await act(async () => generate().click());
-			await until(() => requests.length > 0);
-			assert.equal(requests.length, 1);
-			assert.equal(requests[0][0], "runs/report");
-			assert.equal(requests[0][1].expected_revision, project.revision);
-			assert.deepEqual(requests[0][1].options, desired);
+			if (scenario === "missing wiring evidence") {
+				await until(() =>
+					dom.element.textContent.includes(
+						"The wiring check could not finish.",
+					),
+				);
+				assert.deepEqual(
+					requests.map(([path]) => path),
+					["runs/check-equipment"],
+				);
+				return;
+			}
+			await until(() => requests.some(([path]) => path === "runs/report"));
+			assert.deepEqual(
+				requests.map(([path]) => path),
+				scenario === "automatic wiring check"
+					? ["runs/check-equipment", "runs/report"]
+					: ["runs/report"],
+			);
+			const report = requests.at(-1)[1];
+			assert.equal(report.expected_revision, project.revision);
+			assert.deepEqual(report.options, desired);
 		} finally {
 			await dom.dispose(root);
 			cache.clear();

@@ -500,9 +500,37 @@ def build_report(source: Object) -> Report:
                         ),
                     )
                 )
+            plant_backup = check["id"] == "plant:backup_runtime"
+            if plant_backup:
+                for label, values, field, suffix_unit in (
+                    ("plant_backup_load", check["required"], "load_kw", "kW"),
+                    ("plant_backup_duration", check["required"], "duration_hours", "h"),
+                    (
+                        "plant_backup_load_energy",
+                        check["required"],
+                        "ac_load_energy_kwh",
+                        "kWh",
+                    ),
+                    (
+                        "plant_backup_power_ceiling",
+                        check["actual"],
+                        "discharge_upper_bound_kw",
+                        "kW",
+                    ),
+                    (
+                        "plant_backup_storage",
+                        check["actual"],
+                        "usable_energy_kwh",
+                        "kWh",
+                    ),
+                ):
+                    if (value := values.get(field)) is not None:
+                        rows.append(row(label, number(value, locale, suffix_unit)))
             paragraphs: list[str] = (
                 [text(check["reason"], locale)] if check["reason"] in TEXT else []
             )
+            if plant_backup and check["status"] == "unresolved":
+                paragraphs.append(text("plant_backup_open", locale))
             derivation = check.get("derivation")
             if isinstance(derivation, dict):
                 factors = cast(list[float], derivation["factors"])
@@ -561,7 +589,11 @@ def build_report(source: Object) -> Report:
                         )
                     )
                     seen.add((doc["url"], doc.get("page")))
-            check_title = check_label(semantic_id, locale)
+            check_title = (
+                text("plant_backup_runtime", locale)
+                if plant_backup
+                else check_label(semantic_id, locale)
+            )
             suffix = semantic_id.partition(":")[2]
             if suffix in string_numbers:
                 check_title = f"{text('pv_string', locale)} {string_numbers[suffix]} · {check_title}"
@@ -584,6 +616,8 @@ def build_report(source: Object) -> Report:
                 ReportSection(
                     id=f"check-controller-network-{index}"
                     if semantic_id == "plant_controller_network_count"
+                    else "plant-backup-runtime"
+                    if plant_backup
                     else f"check-{index}",
                     title=check_title,
                     rows=rows,

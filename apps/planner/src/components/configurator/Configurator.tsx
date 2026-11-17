@@ -8,7 +8,10 @@ import {
 	type Project,
 	type Session,
 } from "../../data/protocol.ts";
-import { configuratorReportSources } from "../../data/configuratorReportSources.ts";
+import {
+	configuratorReportSources,
+	hasReportWiring,
+} from "../../data/configuratorReportSources.ts";
 import { prepareKnownPvForComparison } from "../../data/knownPvPreparation.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
@@ -19,6 +22,8 @@ import {
 	readRunPage,
 	runPending,
 	runTask,
+	waitForRunPoll,
+	RUN_OPERATIONS,
 	type PlanningRun,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
@@ -40,7 +45,10 @@ import {
 	sameJson,
 	useRemote,
 } from "../../domain/draft.ts";
-import { authoredDiscoveryInputs } from "../../domain/currentCalculation.ts";
+import {
+	authoredDiscoveryInputs,
+	sameEquipmentDemand,
+} from "../../domain/currentCalculation.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
 import {
 	changeEquipment,
@@ -302,9 +310,19 @@ export default function Configurator({
 				latest.current.conflict
 			)
 				return false;
-			const next = update((previous) =>
-				editDraft(previous, operation(previous.history.current)),
-			);
+			const next = update((previous) => {
+				const before = previous.history.current;
+				const after = operation(before);
+				if (
+					after.equipment_candidate != null &&
+					sameJson(after.equipment_candidate, before.equipment_candidate) &&
+					!sameEquipmentDemand(before, after)
+				) {
+					const { equipment_candidate: _stale, ...inputs } = after;
+					return editDraft(previous, inputs);
+				}
+				return editDraft(previous, after);
+			});
 			latest.current = next;
 			return next !== null;
 		},
@@ -432,18 +450,8 @@ export default function Configurator({
 				return;
 			if (!products.prepared)
 				throw new ApiError(409, "product_evidence_changed");
-			// Selection belongs to the demand which produced it; later edits require a new search.
-			for (const key of [
-				"brief",
-				"backup_demand",
-				"existing_system",
-				"energy_scenario",
-				"profile_selections",
-				"equipment_demand",
-				"pvgis_reference_setup",
-			])
-				if (!sameJson(snapshot[key] ?? null, frozen[key] ?? null))
-					throw new ApiError(409, "equipment_selection_changed");
+			if (!sameEquipmentDemand(snapshot, frozen))
+				throw new ApiError(409, "equipment_selection_changed");
 			const choice = {
 				run_id: run.id,
 				candidate_id: candidate.id,
@@ -502,16 +510,58 @@ export default function Configurator({
 		const current = () =>
 			!request.signal.aborted && client.isCurrentScope(session.query_scope);
 		try {
-			const saved = await controller.save();
+			let saved = await controller.save();
 			if (!saved || !current()) return;
-			const sources = await configuratorReportSources({
-				project: saved,
-				pageSize: session.runtime.limits.max_page_size,
-				query: (path, body, signal) =>
-					client.query(path, body, session.query_scope, signal),
-				signal: request.signal,
-			});
+			const { options: sources, pendingWiringCheck } =
+				await configuratorReportSources({
+					project: saved,
+					pageSize: session.runtime.limits.max_page_size,
+					query: (path, body, signal) =>
+						client.query(path, body, session.query_scope, signal),
+					signal: request.signal,
+				});
 			if (!current()) return;
+			if (hasReportWiring(saved.inputs) && !sources.equipment_run_id) {
+				const readCheck = async (id: string) =>
+					readRun(
+						await client.query(
+							"runs/read",
+							{ schema_version: 1, run_id: id },
+							session.query_scope,
+							request.signal,
+						),
+						project.id,
+						id,
+						RUN_OPERATIONS["runs/check-equipment"],
+					);
+				let run: PlanningRun;
+				if (pendingWiringCheck) {
+					run = await readCheck(pendingWiringCheck);
+				} else {
+					const checked = await operations.start("runs/check-equipment", {
+						expected_revision: saved.revision,
+						input_contract: projectInputContract,
+						inputs: authoredDiscoveryInputs(saved.inputs),
+					});
+					if (!current() || checked?.path !== "runs/check-equipment") return;
+					saved = checked.project;
+					run = checked.run;
+				}
+				while (runPending(run.state)) {
+					await waitForRunPoll(request.signal);
+					run = await readCheck(run.id);
+				}
+				if (!current()) return;
+				if (
+					run.revision !== saved.revision ||
+					run.manifest.input_sha256 !== saved.input_sha256 ||
+					run.state !== "succeeded" ||
+					!run.result ||
+					readObject(run.result.assessment).pv_electrical == null
+				)
+					throw new ApiError(422, "report_wiring_check_failed");
+				sources.equipment_run_id = run.id;
+			}
 			const reply = await operations.start("runs/report", {
 				expected_revision: saved.revision,
 				options: {
@@ -607,6 +657,7 @@ export default function Configurator({
 						className="sc-button"
 						disabled={
 							controller.busy ||
+							preparingReport ||
 							navigationBlocked ||
 							Boolean(draft.pending || draft.conflict) ||
 							!draft.history.past.length
@@ -695,27 +746,33 @@ export default function Configurator({
 									"linker-tools",
 								)
 							: failure instanceof ApiError &&
-								  failure.code === "known_pv_preparation_failed"
+								  failure.code === "report_wiring_check_failed"
 								? __(
-										"PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again.",
+										"The wiring check could not finish. Review the equipment and PV strings, then generate the report again.",
 										"linker-tools",
 									)
 								: failure instanceof ApiError &&
-									  failure.code === "known_pv_no_common_period"
+									  failure.code === "known_pv_preparation_failed"
 									? __(
-											"The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile.",
+											"PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again.",
 											"linker-tools",
 										)
 									: failure instanceof ApiError &&
-										  [
-												"pvgis_reference_incomplete",
-												"pvgis_reference_site_required",
-										  ].includes(failure.code)
+										  failure.code === "known_pv_no_common_period"
 										? __(
-												"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+												"The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile.",
 												"linker-tools",
 											)
-										: energyErrorText(failure)}
+										: failure instanceof ApiError &&
+											  [
+													"pvgis_reference_incomplete",
+													"pvgis_reference_site_required",
+											  ].includes(failure.code)
+											? __(
+													"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+													"linker-tools",
+												)
+											: energyErrorText(failure)}
 					</p>
 				</div>
 			)}
@@ -777,6 +834,8 @@ export default function Configurator({
 								void operations.retry(record).then((reply) => {
 									if (reply?.path === "runs/pvgis-reference") {
 										setRecoveredPvRun(reply.run);
+									} else if (reply?.path === "runs/check-equipment") {
+										navigate("review");
 									} else if (reply && "run" in reply) {
 										accepted(reply.run);
 										navigate(

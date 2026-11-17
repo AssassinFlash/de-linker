@@ -15,6 +15,7 @@ from .dc_plant_kernel import DcPlantEnergyKernel
 from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle
 from .energy_comparison import compare_energy_runs, comparison_side
+from .energy_declarations import normalize_authored_inputs
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
@@ -441,6 +442,30 @@ def report_sources(
         check_equipment_candidate(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
+        run = workspace.run(actor, cast(str, candidate["run_id"]))
+        searched = normalize_authored_inputs(workspace.pinned_inputs(run.manifest))
+        current = normalize_authored_inputs(declared_inputs)
+        previous_brief, current_brief = searched.get("brief"), current.get("brief")
+        if any(
+            (previous_brief.get(field) if isinstance(previous_brief, dict) else None)
+            != (current_brief.get(field) if isinstance(current_brief, dict) else None)
+            for field in ("system_scope", "project_use", "site")
+        ) or any(
+            searched.get(field) != current.get(field)
+            for field in (
+                "backup_demand",
+                "existing_system",
+                "energy_scenario",
+                "energy_plant_setup",
+                "profile_selections",
+                "equipment_demand",
+                "pvgis_reference_setup",
+                "pvgis_reference",
+            )
+        ):
+            raise ReportInputsChanged(
+                "report demand differs from the selected candidate"
+            )
         if options.equipment_run_id not in (None, candidate.get("run_id")):
             if not has_wiring:
                 raise InvalidInput(
@@ -454,12 +479,6 @@ def report_sources(
         assert run.result is not None
         equipment_source_run = run
         equipment_source_inputs = workspace.pinned_inputs(run.manifest)
-        if equipment_source_inputs.get("backup_demand") != project.inputs.get(
-            "backup_demand"
-        ):
-            raise ReportInputsChanged(
-                "report backup demand differs from the selected candidate"
-            )
         detail = EquipmentCandidateStore(workspace).read(
             actor, run.id, cast(str, candidate["candidate_id"])
         )

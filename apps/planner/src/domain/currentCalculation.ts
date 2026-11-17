@@ -31,6 +31,32 @@ export function authoredCalculationInputs(inputs: JsonObject): JsonObject {
 	return authored;
 }
 
+/** Demand evidence stays attached only while the inputs of the comparison agree. */
+export function sameEquipmentDemand(
+	left: JsonObject,
+	right: JsonObject,
+): boolean {
+	const a = authoredCalculationInputs(left),
+		b = authoredCalculationInputs(right);
+	const briefA = isObject(a.brief) ? a.brief : {};
+	const briefB = isObject(b.brief) ? b.brief : {};
+	return (
+		["system_scope", "project_use", "site"].every((field) =>
+			sameJson(briefA[field] ?? null, briefB[field] ?? null),
+		) &&
+		[
+			"backup_demand",
+			"existing_system",
+			"energy_scenario",
+			"energy_plant_setup",
+			"profile_selections",
+			"equipment_demand",
+			"pvgis_reference_setup",
+			"pvgis_reference",
+		].every((field) => sameJson(a[field] ?? null, b[field] ?? null))
+	);
+}
+
 /** Match the server's authored discovery snapshot, retaining demand separately
  * from a candidate's physical selection. Explicit null is an answered filter. */
 export function authoredDiscoveryInputs(inputs: JsonObject): JsonObject {

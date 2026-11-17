@@ -6817,7 +6817,10 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         pid = rig.create("profile-bounds")
 
         def csv_profile(
-            role: Literal["gross_load", "pv_available_ac"], values: tuple[int, ...]
+            role: Literal["gross_load", "pv_available_ac"],
+            values: tuple[int, ...],
+            *,
+            key: str | None = None,
         ) -> str:
             content = "time,power\n" + "".join(
                 f"2026-01-01T{hour:02}:00:00+01:00,{value}\n"
@@ -6844,7 +6847,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                     ),
                     "source_label": "Profile bounds fixture",
                     "rights_note": "created by test",
-                    "key": role,
+                    "key": key or role,
                 },
             )
             return str(asset["id"])
@@ -7094,3 +7097,67 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             == accepted["run"]["id"]
         )
         assert len(workspace.runs(owner, pid)) == 1
+        if not peak or standard:
+            return
+        candidate = next(
+            c for c in result["candidates"] if c["demand"]["status"] == "bounded"
+        )
+        adopted_inputs = {
+            **accepted["project"]["inputs"],
+            "equipment_selection": candidate["selection"],
+            "equipment_candidate": {
+                "run_id": run["id"],
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            },
+        }
+
+        def revise(values: FixtureObject, revision: int, key: str) -> FixtureObject:
+            return rig.post(
+                "/projects/revise",
+                {
+                    **command,
+                    "inputs": values,
+                    "expected_revision": revision,
+                    "key": key,
+                },
+            )
+
+        adopted = revise(adopted_inputs, accepted["project"]["revision"], "adopt-peak")
+        report_command = {
+            "schema_version": 1,
+            "project_id": pid,
+            "expected_revision": adopted["revision"],
+            "key": "report-current-peak",
+            "options": {
+                "locale": "en",
+                "energy_run_id": None,
+                "pv_run_id": None,
+                "equipment_run_id": None,
+                "logo": None,
+            },
+        }
+        report = rig.post("/runs/report", report_command)
+        assert worker.run_once()
+        assert rig.post("/runs/read", {"run_id": report["id"]})["state"] == "succeeded"
+        peak_changed = copy.deepcopy(adopted_inputs)
+        peak_changed["energy_scenario"]["schedule"][0]["import_cap_kw"] = 0.25
+        load_changed = copy.deepcopy(adopted_inputs)
+        load_changed["profile_selections"]["selected"]["gross_load"] = csv_profile(
+            "gross_load", (6, 6, 6, 6), key="updated-load"
+        )
+        revision = adopted["revision"]
+        for key, changed in (("peak", peak_changed), ("load", load_changed)):
+            revised = revise(changed, revision, "change-" + key)
+            revision = revised["revision"]
+            stale = client.post(
+                "/runs/report",
+                json={
+                    **report_command,
+                    "expected_revision": revision,
+                    "key": "report-stale-" + key,
+                },
+                headers=headers(owner),
+            )
+            assert stale.status_code == 422, stale.text
+            assert stale.json()["error"]["code"] == "report_inputs_changed"

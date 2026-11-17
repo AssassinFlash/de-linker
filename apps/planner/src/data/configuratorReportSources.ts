@@ -1,3 +1,4 @@
+import { sameEquipmentDemand } from "../domain/currentCalculation.ts";
 import { sameJson } from "../domain/draft.ts";
 import {
 	GEOMETRIC_PV_MODEL_SERIES,
@@ -14,6 +15,7 @@ import {
 	readRun,
 	readRunInputs,
 	readRunPage,
+	runPending,
 	type RunSummary,
 } from "./planningProtocol.ts";
 import type { ReportOptions } from "./planningReport.ts";
@@ -28,6 +30,10 @@ const equipment = [
 	"equipment_plant_setup",
 	"equipment_plant",
 ];
+export function hasReportWiring(inputs: JsonObject): boolean {
+	return inputs.pv_string_plan != null || inputs.pv_plant_string_plan != null;
+}
+
 const wiring = ["geometry", "pv_string_plan", "pv_plant_string_plan"];
 const equipmentEvidence = [
 	"grid_connection",
@@ -90,16 +96,20 @@ export async function configuratorReportSources({
 		signal: AbortSignal,
 	) => Promise<unknown>;
 	signal: AbortSignal;
-}): Promise<
-	Pick<ReportOptions, "energy_run_id" | "pv_run_id" | "equipment_run_id">
-> {
+}): Promise<{
+	options: Pick<
+		ReportOptions,
+		"energy_run_id" | "pv_run_id" | "equipment_run_id"
+	>;
+	pendingWiringCheck: string | null;
+}> {
 	const inputs = project.inputs;
-	const hasWiring =
-		inputs.pv_string_plan != null || inputs.pv_plant_string_plan != null;
+	const hasWiring = hasReportWiring(inputs);
 	const needsEquipment =
 		(inputs.equipment_candidate == null || hasWiring) &&
 		equipment.some((key) => inputs[key] != null);
 	const canUseRetained =
+		!hasWiring &&
 		readObject(inputs.existing_system ?? {}).keep_inverter === true;
 	const needsEnergy = [
 		"energy_scenario",
@@ -114,6 +124,25 @@ export async function configuratorReportSources({
 			(key) => inputs[key] != null,
 		);
 	const base = { schema_version: 1, project_id: project.id };
+	if (inputs.equipment_candidate != null) {
+		const choice = readObject(inputs.equipment_candidate);
+		const run = readRun(
+			await query(
+				"runs/read",
+				{ schema_version: 1, run_id: choice.run_id! },
+				signal,
+			),
+			project.id,
+			String(choice.run_id),
+			searchEquipment,
+		);
+		const frozen = readRunInputs(
+			await query("runs/inputs", { ...base, run_id: run.id }, signal),
+			run,
+		);
+		if (!sameEquipmentDemand(frozen, inputs))
+			throw new ApiError(409, "equipment_selection_changed");
+	}
 	const revisions = new Map<number, Promise<Project>>();
 	async function authored(row: RunSummary) {
 		if (row.revision === project.revision) return project;
@@ -160,7 +189,8 @@ export async function configuratorReportSources({
 		energyPv: unknown = null,
 		pvRun: string | null = null,
 		pvAsset: unknown = null,
-		equipmentRun: string | null = null;
+		equipmentRun: string | null = null,
+		pendingWiringCheck: string | null = null;
 	let cursor: { before_created_at: number | null; before_id: string | null } = {
 		before_created_at: null,
 		before_id: null,
@@ -179,9 +209,18 @@ export async function configuratorReportSources({
 			project.id,
 		);
 		for (const row of page.items) {
+			const kind = row.task_kind;
+			if (
+				hasWiring &&
+				needsEquipment &&
+				!pendingWiringCheck &&
+				kind === checkEquipment &&
+				row.revision === project.revision &&
+				runPending(row.state)
+			)
+				pendingWiringCheck = row.id;
 			if (row.state !== "succeeded" || row.revision > project.revision)
 				continue;
-			const kind = row.task_kind;
 			if (
 				canUseRetained &&
 				!equipmentRun &&
@@ -244,6 +283,15 @@ export async function configuratorReportSources({
 					execution.equipment_plant == null
 				)
 					continue;
+				if (hasWiring) {
+					const result = await completed(
+						row,
+						checkEquipment,
+						await authored(row),
+					);
+					if (!result || readObject(result.assessment).pv_electrical == null)
+						continue;
+				}
 				equipmentRun = row.id;
 			} else if (
 				needsPv &&
@@ -303,8 +351,11 @@ export async function configuratorReportSources({
 		cursor = page.next;
 	}
 	return {
-		energy_run_id: energyRun,
-		pv_run_id: energyRun && energyPv !== pvAsset ? null : pvRun,
-		equipment_run_id: equipmentRun,
+		options: {
+			energy_run_id: energyRun,
+			pv_run_id: energyRun && energyPv !== pvAsset ? null : pvRun,
+			equipment_run_id: equipmentRun,
+		},
+		pendingWiringCheck,
 	};
 }

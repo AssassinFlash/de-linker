@@ -373,6 +373,21 @@ export function runPending(state: RunState): boolean {
 	return state === "queued" || state === "running" || state === "retry_wait";
 }
 
+export function waitForRunPoll(signal: AbortSignal): Promise<void> {
+	signal.throwIfAborted();
+	return new Promise((resolve, reject) => {
+		const timer = setTimeout(() => {
+			signal.removeEventListener("abort", abort);
+			resolve();
+		}, 1000);
+		function abort() {
+			clearTimeout(timer);
+			reject(signal.reason);
+		}
+		signal.addEventListener("abort", abort, { once: true });
+	});
+}
+
 export function readRun(
 	value: unknown,
 	projectId: string,

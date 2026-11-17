@@ -219,6 +219,17 @@ test("shared plant materials keep one merged quantity and distinguish same-model
 	const rootAssessment = {
 		...assessment(candidate),
 		model: "woo_multi_converter_plant_v1",
+		checks: [
+			{
+				id: "plant:backup_runtime",
+				status: "unresolved",
+				reason:
+					"backup_duration_requires_starting_energy_and_documented_losses",
+				facts: [],
+				actual: { usable_energy_kwh: 45, discharge_upper_bound_kw: 8 },
+				required: { load_kw: 7, duration_hours: 6, ac_load_energy_kwh: 42 },
+			},
+		],
 		provisional_bill_of_materials: [
 			{ product_id: 101, quantity: 2 },
 			{ product_id: 201, quantity: 4 },
@@ -273,6 +284,9 @@ test("shared plant materials keep one merged quantity and distinguish same-model
 		document.querySelectorAll(".sc-equipment")[1].textContent,
 		/Replacement equipment/,
 	);
+	assert.match(document.body.textContent, /Whole-site backup/);
+	assert.match(document.body.textContent, /Backup load7 kW/);
+	assert.match(document.body.textContent, /Backup power upper bound8 kW/);
 });
 
 test("backup comparison shows the closest evidence-supported options first and keeps every candidate reachable", async (t) => {

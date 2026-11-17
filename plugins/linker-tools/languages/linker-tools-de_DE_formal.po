@@ -16358,6 +16358,10 @@ msgid "The project has changed. Compare systems again to update the choices."
 msgstr "Das Projekt wurde geändert. Ein erneuter Systemvergleich aktualisiert die Auswahl."
 
 #: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The wiring check could not finish. Review the equipment and PV strings, then generate the report again."
+msgstr "Die Prüfung der PV-Verschaltung konnte nicht abgeschlossen werden. Prüfen Sie die Geräte und PV-Strings und erstellen Sie den Bericht erneut."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
 msgid "This action could not be completed. Your project inputs are retained."
 msgstr "Der Vorgang konnte nicht abgeschlossen werden. Ihre Projektangaben bleiben erhalten."
 
@@ -16933,3 +16937,15 @@ msgstr "Anpassung übernehmen"
 #: build/planner/assets/planner.js:1
 msgid "Which loads must keep running, and for how long?"
 msgstr "Welche Verbraucher müssen weiterlaufen und für wie lange?"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Whole-site backup"
+msgstr "Ersatzstrom für den gesamten Standort"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Backup power upper bound"
+msgstr "Obergrenze der Ersatzstromleistung"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Confirm shared backup transfer, starting charge and discharge losses."
+msgstr "Prüfen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste."

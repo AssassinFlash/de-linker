@@ -3,6 +3,25 @@
 from __future__ import annotations
 
 TEXT = {
+    "plant_backup_runtime": (
+        "Whole-site backup",
+        "Ersatzstrom für den gesamten Standort",
+    ),
+    "plant_backup_load": ("Backup load", "Ersatzstromlast"),
+    "plant_backup_duration": ("Required duration", "Erforderliche Dauer"),
+    "plant_backup_load_energy": (
+        "Backup load energy before losses",
+        "Energiebedarf für Ersatzstrom vor Verlusten",
+    ),
+    "plant_backup_power_ceiling": (
+        "Backup power upper bound",
+        "Obergrenze der Ersatzstromleistung",
+    ),
+    "plant_backup_storage": ("Usable battery capacity", "Nutzbare Batteriekapazität"),
+    "plant_backup_open": (
+        "Confirm shared backup transfer, starting charge and discharge losses.",
+        "Bestätigen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste.",
+    ),
     "existing_system": ("Existing system", "Bestandsanlage"),
     "existing_inverter_power": (
         "Declared inverter power",

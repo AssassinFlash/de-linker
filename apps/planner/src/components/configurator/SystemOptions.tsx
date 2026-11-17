@@ -425,14 +425,69 @@ export function SystemOptions({
 					fact.source ? [readObject(fact.source)] : [],
 				),
 			];
+			const plantBackup = check.id === "plant:backup_runtime";
+			const actual = plantBackup ? readObject(check.actual) : {};
+			const required = plantBackup ? readObject(check.required) : {};
+			const backupRows = plantBackup
+				? ([
+						[__("Backup load", "linker-tools"), required.load_kw, "kW"],
+						[
+							__("Required duration", "linker-tools"),
+							required.duration_hours,
+							"h",
+						],
+						[
+							__("Backup load energy before losses", "linker-tools"),
+							required.ac_load_energy_kwh,
+							"kWh",
+						],
+						[
+							__("Backup power upper bound", "linker-tools"),
+							actual.discharge_upper_bound_kw,
+							"kW",
+						],
+						[
+							__("Usable battery capacity", "linker-tools"),
+							actual.usable_energy_kwh,
+							"kWh",
+						],
+					] as const)
+				: [];
 			return (
 				<li key={`${key}-${index}`}>
 					<strong>
-						{equipmentCheckLabel(String(check.semantic_id ?? check.id))}
+						{plantBackup
+							? __("Whole-site backup", "linker-tools")
+							: equipmentCheckLabel(String(check.semantic_id ?? check.id))}
 					</strong>
 					{" · "}
 					{equipmentStatus(String(check.status))}
-					<p>{equipmentReason(String(check.reason))}</p>
+					{plantBackup ? (
+						<>
+							<dl className="sc-fields">
+								{backupRows.map(([label, value, unit]) =>
+									typeof value === "number" ? (
+										<div key={label}>
+											<dt>{label}</dt>
+											<dd>
+												{format(value)} {unit}
+											</dd>
+										</div>
+									) : null,
+								)}
+							</dl>
+							{check.status === "unresolved" && (
+								<p>
+									{__(
+										"Confirm shared backup transfer, starting charge and discharge losses.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+						</>
+					) : (
+						<p>{equipmentReason(String(check.reason))}</p>
+					)}
 					{documents.map((source, sourceIndex) => (
 						<a
 							key={sourceIndex}
