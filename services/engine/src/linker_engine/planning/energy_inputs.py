@@ -198,7 +198,10 @@ class EnergyInputs(Document):
         if self.critical_load_asset_id is None and any(
             p.mode == "outage" for p in self.schedule
         ):
-            raise ValueError("outage periods require a critical-load profile")
+            raise InvalidInput(
+                "outage periods require a critical-load profile",
+                fields=("energy_replay.critical_load_asset_id",),
+            )
         if (self.aux_ac_asset_id is None) == (self.aux_ac_kw is None):
             raise ValueError(
                 "select either an auxiliary profile or explicit constant AC auxiliary demand"

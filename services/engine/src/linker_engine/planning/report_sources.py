@@ -436,6 +436,10 @@ def report_sources(
         project.inputs.get(key) is not None
         for key in ("pv_string_plan", "pv_plant_string_plan")
     )
+    if isinstance(candidate, dict) or (
+        options.equipment_run_id is not None and retained_comparison is None
+    ):
+        require_retained_inverter(project.inputs, selection=True)
     if isinstance(candidate, dict):
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
@@ -515,7 +519,7 @@ def report_sources(
                         equipment_basis
                     )
     elif options.equipment_run_id is not None:
-        run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
+        run = owned(options.equipment_run_id, EquipmentKernel.kind, ("backup_demand",))
         previous = workspace.pinned_inputs(run.manifest)
         equipment_source_run = run
         equipment_source_inputs = previous
@@ -905,8 +909,6 @@ def report_sources(
 
     # Both adopted-candidate and direct-run paths must have evaluated the saved
     # wiring. An equipment-only candidate cannot silently omit new PV work.
-    if assessment is not None:
-        require_retained_inverter(project.inputs, selection=True)
     if assessment is not None and equipment_source_inputs is not None:
         has_result = isinstance(assessment.get("pv_electrical"), dict)
         if has_wiring and not has_result:

@@ -270,6 +270,7 @@ export async function configuratorReportSources({
 					!matches(previous, inputs, [
 						...equipment,
 						...equipmentEvidence,
+						"backup_demand",
 						...wiring,
 					]) ||
 					site(previous).country_code !== site(inputs).country_code ||

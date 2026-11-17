@@ -2912,6 +2912,20 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
                 replace(workspace.get(owner, pid), inputs=changed_hardware),
                 options,
             )
+        changed_backup = copy.deepcopy(reply["project"]["inputs"])
+        changed_backup["backup_demand"] = {
+            "schema_version": 1,
+            "load_kw": 3,
+            "duration_hours": 4,
+        }
+        with pytest.raises(ReportInputsChanged):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=changed_backup),
+                options,
+            )
         notes = copy.deepcopy(reply["project"]["inputs"])
         notes["brief"]["project_note"] = "Current customer note after qualification"
         noted = rig.post(
