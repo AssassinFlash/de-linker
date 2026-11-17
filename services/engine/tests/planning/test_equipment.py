@@ -3321,7 +3321,7 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             (12, 47, 10, "unresolved"),
         ):
             first_floor = None if load == 7 else 2
-            authored = {
+            authored: FixtureObject = {
                 "backup_demand": {
                     "schema_version": 1,
                     "load_kw": load,
@@ -3447,12 +3447,12 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
                 completed = rig.post("/runs/read", {"run_id": requested["id"]})
                 assert completed["state"] == "succeeded", completed
                 result = completed["result"]
-                source = json_object(
+                report_source = json_object(
                     workspace.blobs.object(result["pinned_assets"]["report.source"])
                 )
-                assert source["equipment"] == assessment
+                assert report_source["equipment"] == assessment
                 assert result["prepared_asset"]["media_type"] == "application/pdf"
-                report = build_report(source)
+                report = build_report(report_source)
                 section = next(
                     s for s in report.sections if s.id == "plant-backup-runtime"
                 )
