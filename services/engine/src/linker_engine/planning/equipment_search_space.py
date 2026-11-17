@@ -90,7 +90,12 @@ class EquipmentSearchSpace:
         return True
 
     def options(
-        self, requirements: EquipmentRequirements, inputs: Object
+        self,
+        requirements: EquipmentRequirements,
+        inputs: Object,
+        *,
+        plant_backup: bool = False,
+        constrain_models: bool = False,
     ) -> Iterator[tuple[Object, Object]]:
         seen: set[str] = set()
         brief = inputs.get("brief")
@@ -120,21 +125,33 @@ class EquipmentSearchSpace:
         source = inputs.get("equipment_setup", inputs.get("equipment_selection"))
         raw_use = source.get("equipment_use") if isinstance(source, dict) else None
         use = EquipmentUse.read(raw_use) if raw_use is not None else None
-        retained: dict[str, int] = {}
-        if use is not None:
-            if no_battery and use.battery != "new":
-                raise InvalidInput("PV-only scope conflicts with declared battery use")
-            retained_fields = (
-                ["inverter_product_id"] if use.inverter == "retain" else []
-            ) + (
-                ["battery_product_id", "modules_per_stack", "parallel_stacks"]
-                if use.battery == "retain"
-                else []
-            )
-            for field in retained_fields:
-                assert isinstance(source, dict)
+        selected: dict[str, int] = {}
+        retained_assembly: dict[str, int] = {}
+        if no_battery and use is not None and use.battery != "new":
+            raise InvalidInput("PV-only scope conflicts with declared battery use")
+        for part in ("inverter", "battery"):
+            field = f"{part}_product_id"
+            value = source.get(field) if isinstance(source, dict) else None
+            retain = use is not None and getattr(use, part) == "retain"
+            if retain or (
+                constrain_models
+                and value is not None
+                and (part != "battery" or not no_battery)
+            ):
                 try:
-                    retained[field] = TypeAdapter(Count).validate_python(
+                    selected[field] = TypeAdapter(Count).validate_python(value)
+                except ValidationError as error:
+                    raise InvalidInput(
+                        "retained equipment needs its declared product and assembly"
+                        if retain
+                        else "select a valid equipment model",
+                        fields=(field,),
+                    ) from error
+        if use is not None and use.battery == "retain":
+            assert isinstance(source, dict)
+            for field in ("modules_per_stack", "parallel_stacks"):
+                try:
+                    retained_assembly[field] = TypeAdapter(Count).validate_python(
                         source.get(field)
                     )
                 except ValidationError as error:
@@ -142,24 +159,29 @@ class EquipmentSearchSpace:
                         "retained equipment needs its declared product and assembly",
                         fields=(field,),
                     ) from error
-        for field, products in (
-            ("inverter_product_id", self.converters),
-            ("battery_product_id", self.included),
+        for part, products in (
+            ("inverter", self.converters),
+            ("battery", self.included),
         ):
-            if field in retained and not any(
-                row["canonical_product_id"] == retained[field] for row in products
+            field = f"{part}_product_id"
+            if field in selected and not any(
+                row["canonical_product_id"] == selected[field] for row in products
             ):
-                reason = "retained_equipment_not_in_search_domain"
+                reason = (
+                    "retained_equipment_not_in_search_domain"
+                    if use is not None and getattr(use, part) == "retain"
+                    else "selected_equipment_not_in_search_domain"
+                )
                 self.gaps[reason] += 1
                 self.excluded_products.append(
-                    {"product_id": retained[field], "reason": reason}
+                    {"product_id": selected[field], "reason": reason}
                 )
                 return
         for converter in self.converters:
             if self.exhausted:
                 break
             converter_id = converter["canonical_product_id"]
-            if retained.get("inverter_product_id", converter_id) != converter_id:
+            if selected.get("inverter_product_id", converter_id) != converter_id:
                 continue
             if self.evidence.sales_unit(converter_id) == "integrated_system":
                 self.gaps["integrated_topology_not_assessed"] += 1
@@ -186,12 +208,15 @@ class EquipmentSearchSpace:
                 [None]
                 if no_battery
                 else [*self.included]
-                if storage_required or use is not None and use.battery != "new"
+                if storage_required
+                or plant_backup
+                or use is not None
+                and use.battery != "new"
                 else [None, *self.included]
             )
             for battery in options:
                 battery_id = battery["canonical_product_id"] if battery else None
-                if retained.get("battery_product_id", battery_id) != battery_id:
+                if selected.get("battery_product_id", battery_id) != battery_id:
                     continue
                 counts: range | tuple[None] = (None,)
                 pair = (
@@ -205,12 +230,18 @@ class EquipmentSearchSpace:
                     else None
                 )
                 if pair is not None and not pair.released:
-                    if retained:
-                        self.gaps["retained_equipment_pair_not_released"] += 1
+                    if selected:
+                        reason = (
+                            "retained_equipment_pair_not_released"
+                            if use is not None
+                            and "retain" in (use.inverter, use.battery)
+                            else "selected_equipment_pair_not_released"
+                        )
+                        self.gaps[reason] += 1
                         self.excluded_products.append(
                             {
                                 "product_id": battery_id,
-                                "reason": "retained_equipment_pair_not_released",
+                                "reason": reason,
                             }
                         )
                     continue
@@ -265,9 +296,9 @@ class EquipmentSearchSpace:
                     and stacks_max == int(stacks_max)
                     else range(1, 2)
                 )
-                if "battery_product_id" in retained:
-                    retained_count = retained["modules_per_stack"]
-                    retained_stacks = retained["parallel_stacks"]
+                if retained_assembly:
+                    retained_count = retained_assembly["modules_per_stack"]
+                    retained_stacks = retained_assembly["parallel_stacks"]
                     if (
                         retained_count not in counts
                         or retained_stacks not in stacks_domain
@@ -364,7 +395,11 @@ class EquipmentSearchSpace:
                             self.basis,
                             evidence=self.evidence,
                         )
-                        if unknown_sizing or "equipment_demand" in inputs:
+                        if (
+                            unknown_sizing
+                            or plant_backup
+                            or "equipment_demand" in inputs
+                        ):
                             # With no complete demand there is no smallest
                             # sufficient assembly. Keep cited alternatives for
                             # comparison within the same work budget.
@@ -399,7 +434,13 @@ class EquipmentSearchSpace:
         # stack level, then module count) keeps the order total and stable;
         # the candidate digest is the last resort, never the visible order.
         return (
-            0 if record["status"] == "satisfied" else 1,
+            (
+                0
+                if record["status"] == "satisfied"
+                else 2
+                if "plant" in record and record["status"] == "violated"
+                else 1
+            ),
             int(cast(int, record["unresolved_checks"])),
             min(int(cast(int, row["inverter_product_id"])) for row in selections),
             min(int(cast(int, row["parallel_stacks"] or 0)) for row in selections),

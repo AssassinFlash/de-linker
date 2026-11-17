@@ -59,11 +59,9 @@ class DeclaredEquipmentRequirements(Document):
             values["pv_dc_kw"] = 0
         backup = BackupDemand.from_inputs(inputs, complete=True)
         if backup is not None:
-            values.update(
-                schema_version=1,
-                operating_mode="backup",
-                required_discharge_ac_kw=backup.load_kw,
-            )
+            values.update(schema_version=1, operating_mode="backup")
+            if connection is None:
+                values["required_discharge_ac_kw"] = backup.load_kw
         try:
             return cls.model_validate(values)
         except ValidationError as error:

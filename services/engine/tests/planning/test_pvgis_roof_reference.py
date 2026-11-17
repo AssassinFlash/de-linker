@@ -298,7 +298,7 @@ def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_referen
         equipment_search=search,
     )
     with TestClient(app) as admission:
-        create_body = {
+        create_body: FixtureObject = {
             "schema_version": 1,
             "title": "Known PV without drawing",
             "inputs": values,
@@ -552,7 +552,7 @@ def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_referen
         logo=None,
     )
     report_source = report_sources(workspace, products, owner, project, options)
-    note_inputs = copy.deepcopy(project.inputs)
+    note_inputs = json_object(copy.deepcopy(project.inputs))
     note_inputs["brief"]["project_note"] = "Customer updated a project note"
     note_inputs["brief"]["annual_load"]["kwh"] = 12000
     note_project = workspace.revise(

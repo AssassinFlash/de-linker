@@ -157,6 +157,7 @@ class EquipmentSearchKernel(EquipmentKernel):
             self.limits,
             EquipmentCandidateStore(self.workspace),
             control.checkpoint,
+            constrain_models="resolved_inputs" in pinned,
         )
         if "equipment_demand" in inputs:
             assert (

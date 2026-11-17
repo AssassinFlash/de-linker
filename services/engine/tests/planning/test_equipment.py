@@ -3169,6 +3169,180 @@ def test_backup_load_and_hours_find_equipment_without_preparation(
             )
 
 
+def test_plant_backup_and_preselected_models_reach_candidate_rpc(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from .test_private_http import Rig
+
+    inverter = next(row for row in feed["products"] if row["id"] == 4107)
+    inverter["figures"]["backup_ac_active_power_kw"] = {
+        "value": 4,
+        "unit": "kW",
+        "citation": copy.deepcopy(
+            inverter["figures"]["battery_voltage_range_v"]["citation"]
+        ),
+    }
+    battery = next(row for row in feed["products"] if row["id"] == 2090)
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": 2,
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["modules_per_stack_max"]["citation"]
+        ),
+    }
+    _, source, loaded, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace,
+            source,
+            EquipmentSearchLimits(work_budget=1000),
+        ),
+        max_attempts=1,
+    )
+    registry = service_registry(energy, None, equipment_search=search)
+    worker = Worker(
+        Jobs(workspace),
+        "plant-backup-rpc",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment_search=search,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, ac, client)
+
+        def find(label: str, authored: FixtureObject) -> tuple[str, FixtureObject]:
+            pid = rig.create(label)
+            result = rig.post(
+                "/runs/find-equipment",
+                {
+                    "project_id": pid,
+                    "expected_revision": 1,
+                    "inputs": authored,
+                    "input_contract": "backup_demand_v1",
+                    "key": "compare",
+                },
+            )
+            assert worker.run_once()
+            run = rig.post("/runs/read", {"run_id": result["run"]["id"]})
+            assert run["state"] == "succeeded", run
+            return run["id"], run["result"]["search"]
+
+        common = {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": None,
+            "required_discharge_ac_kw": None,
+        }
+        selected = {
+            **common,
+            "inverter_product_id": 4107,
+            "battery_product_id": 2090,
+            "equipment_use": {"inverter": "replace", "battery": "new"},
+        }
+        _, single = find("explicit-models", {"equipment_setup": selected})
+        assert single["candidates"]
+        assert {
+            (
+                row["selection"]["inverter_product_id"],
+                row["selection"]["battery_product_id"],
+            )
+            for row in single["candidates"]
+        } == {(4107, 2090)}
+        assert (
+            len({row["selection"]["modules_per_stack"] for row in single["candidates"]})
+            > 1
+        )
+
+        for n, load, duration, expected in (
+            (2, 7, 6, "unresolved"),
+            (2, 9, 2, "violated"),
+            (6, 23, 3, "unresolved"),
+            (12, 47, 10, "unresolved"),
+        ):
+            authored = {
+                "backup_demand": {
+                    "schema_version": 1,
+                    "load_kw": load,
+                    "duration_hours": duration,
+                },
+                "equipment_plant_setup": {
+                    "schema_version": 1,
+                    "requirements": {**common, "pv_dc_kw": n * 10},
+                    "units": [
+                        {
+                            "id": f"u-{i}",
+                            "name": f"Unit {i}",
+                            "inputs": {
+                                "equipment_setup": {
+                                    **selected,
+                                    "required_discharge_ac_kw": 2 if i == 0 else None,
+                                },
+                            },
+                        }
+                        for i in range(n)
+                    ],
+                    "parallel_groups": [],
+                },
+            }
+            run_id, result = find(f"backup-plant-{n}-{load}", authored)
+            assert result["backup_demand"]["load_kw"] == load
+            candidates = result["candidates"]
+            assert candidates, result["coverage"]
+            candidate = next(
+                (
+                    c
+                    for c in candidates
+                    if c["status"] == expected
+                    and (n != 12 or (c["usable_energy_kwh"] or 0) >= load * duration)
+                ),
+                None,
+            )
+            assert candidate is not None, result["coverage"]
+            selections = [u["selection"] for u in candidate["plant"]["units"]]
+            assert [x["required_discharge_ac_kw"] for x in selections] == [2] + [
+                None
+            ] * (n - 1)
+            assert {x["inverter_product_id"] for x in selections} == {4107}
+            assert {x["battery_product_id"] for x in selections} == {2090}
+            assert all(
+                x["equipment_use"] == selected["equipment_use"] for x in selections
+            )
+            assessment = rig.post(
+                "/equipment/candidates/read",
+                {"run_id": run_id, "candidate_id": candidate["id"]},
+            )["assessment"]
+            checks = {row["id"]: row for row in assessment["checks"]}
+            assert "unit:u-0:backup_runtime" not in checks
+            check = checks["plant:backup_runtime"]
+            assert check["status"] == expected
+            assert check["required"]["ac_load_energy_kwh"] == load * duration
+            assert check["actual"]["discharge_upper_bound_kw"] == n * 4
+            assert (
+                candidate["usable_energy_kwh"] == check["actual"]["usable_energy_kwh"]
+            )
+            if n == 12:
+                assert check["actual"]["usable_energy_kwh"] >= load * duration
+
+
 def test_backup_candidate_reaches_report_and_bom_without_preparation(
     feed: FixtureObject,
     engine: Engine,
@@ -6687,7 +6861,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             selected["pv_available_ac"] = csv_profile(
                 "pv_available_ac", (10, 0) if standard else (8, 8, 0, 0)
             )
-        declarations = {
+        declarations: FixtureObject = {
             "profile_selections": {
                 "schema_version": 1,
                 "selected": selected,

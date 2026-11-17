@@ -17,12 +17,16 @@ def candidate_record(
     key: str, value: Object, assessment: Object, store: EquipmentCandidateStore
 ) -> Object:
     checks = cast(list[Object], assessment["checks"])
+    backup = next(
+        (row["actual"] for row in checks if row["id"] == "plant:backup_runtime"), None
+    )
     return {
         "id": digest(encode(value)),
         key: value,
         "status": assessment["overall_status"],
         "usable_energy_kwh": next(
-            (row["actual"] for row in checks if row["id"] == "usable_energy"), None
+            (row["actual"] for row in checks if row["id"] == "usable_energy"),
+            backup.get("usable_energy_kwh") if isinstance(backup, dict) else None,
         ),
         "assessment_sha256": store.put(assessment),
         "violated_checks": sum(row["status"] == "violated" for row in checks),
@@ -36,12 +40,16 @@ def search_equipment(
     limits: EquipmentSearchLimits,
     store: EquipmentCandidateStore,
     checkpoint: Callable[[], None],
+    *,
+    constrain_models: bool = False,
 ) -> Object:
     space = EquipmentSearchSpace(basis, limits, checkpoint)
     candidates: list[Json] = [
         candidate_record("selection", value, assessment, store)
         for value, assessment in space.options(
-            EquipmentRequirements.from_inputs(inputs), inputs
+            EquipmentRequirements.from_inputs(inputs),
+            inputs,
+            constrain_models=constrain_models,
         )
     ]
     result = space.result(

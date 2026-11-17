@@ -454,8 +454,12 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         inputs: FixtureObject,
         basis: FixtureObject,
         control: Control,
+        *,
+        pinned: FixtureObject,
     ) -> FixtureObject:
-        output = json_object(original_compute(self, inputs, basis, control))
+        output = json_object(
+            original_compute(self, inputs, basis, control, pinned=pinned)
+        )
         for line in output["assessment"]["provisional_bill_of_materials"]:
             for field in ("brand", "model", "sku"):
                 line.pop(field, None)

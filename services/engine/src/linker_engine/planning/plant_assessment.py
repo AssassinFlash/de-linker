@@ -7,6 +7,7 @@ from collections.abc import Callable
 from decimal import Decimal
 from typing import Any, cast
 
+from .backup_demand import BackupDemand
 from .canonical import Object, decode_object, digest, encode
 from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
@@ -383,8 +384,57 @@ def assess_plant(
                 }
             )
 
+    backup = BackupDemand.from_inputs(inputs, complete=True)
+    if backup is not None:
+        summary = backup.summary()
+        unit_metrics = [
+            {check["id"]: check for check in system["assessment"]["checks"]}
+            for system in systems
+        ]
+
+        def ceiling(key: str) -> float | None:
+            values = [
+                0
+                if unit.selection.battery_product_id is None
+                else metrics.get(key, {}).get("actual")
+                for unit, metrics in zip(plant.units, unit_metrics, strict=True)
+            ]
+            if any(value is None for value in values):
+                return None
+            return float(sum((Decimal(str(value)) for value in values), Decimal(0)))
+
+        power = ceiling("continuous_battery_ac_output")
+        energy = ceiling("usable_energy")
+        shortfall = (power is not None and power < cast(float, backup.load_kw)) or (
+            energy is not None and energy < cast(float, summary["ac_load_energy_kwh"])
+        )
+        add(
+            "plant:backup_runtime",
+            "violated" if shortfall else "unresolved",
+            "backup_demand_exceeds_published_upper_bound"
+            if shortfall
+            else "backup_duration_requires_starting_energy_and_documented_losses",
+            semantic_id="backup_runtime",
+            actual={"usable_energy_kwh": energy, "discharge_upper_bound_kw": power},
+            required=summary,
+            facts=[
+                fact
+                for metrics in unit_metrics
+                for key in ("continuous_battery_ac_output", "usable_energy")
+                for fact in metrics.get(key, {}).get("facts", [])
+            ],
+            missing_facts=[
+                "joint_backup_transfer",
+                "starting_usable_energy_kwh",
+                "documented_backup_discharge_losses",
+            ],
+        )
+
     for key in ("pv_dc_kw", "required_usable_kwh", "required_discharge_ac_kw"):
         requested = getattr(plant.requirements, key)
+        if backup is not None and key == "required_discharge_ac_kw":
+            # The site load is assessed against hardware ceilings above.
+            continue
         allocations = [getattr(u.selection, key) for u in plant.units]
         total = (
             sum((Decimal(str(v)) for v in allocations), Decimal(0))
@@ -428,6 +478,8 @@ def assess_plant(
     # connection. A sum of devices does not establish its dispatch/transfer.
     for key in ("required_usable_kwh", "required_discharge_ac_kw"):
         requested = getattr(plant.requirements, key)
+        if backup is not None and key == "required_discharge_ac_kw":
+            continue
         add(
             "plant:" + key,
             "satisfied" if requested == 0 else "unresolved",

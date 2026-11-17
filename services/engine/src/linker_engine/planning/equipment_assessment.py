@@ -786,7 +786,11 @@ def assess_equipment(
             if total is not None
             else None,
         )
-        if selection.required_discharge_ac_kw is not None:
+        if (
+            selection.required_discharge_ac_kw is not None
+            or selection.operating_mode == "backup"
+        ):
+            requested_discharge = selection.required_discharge_ac_kw
             discharge_bounds: list[float] = []
             discharge_refs = []
             inv_discharge_kw = None
@@ -876,23 +880,27 @@ def assess_equipment(
                     "unresolved",
                     "current_cited_limit_missing_or_conditional",
                     discharge_refs,
-                    required=selection.required_discharge_ac_kw,
+                    required=requested_discharge,
+                    actual=discharge_limit,
                 )
             else:
+                shortfall = (
+                    requested_discharge is not None
+                    and requested_discharge > discharge_limit
+                )
                 add(
                     "continuous_battery_ac_output",
                     "violated"
-                    if selection.required_discharge_ac_kw > discharge_limit
+                    if shortfall
                     else "unresolved"
                     if selection.operating_mode == "backup"
                     else "satisfied",
                     "backup_conversion_and_port_limits_not_established"
-                    if selection.operating_mode == "backup"
-                    and selection.required_discharge_ac_kw <= discharge_limit
+                    if selection.operating_mode == "backup" and not shortfall
                     else "published_limit_comparison",
                     discharge_refs,
                     discharge_limit,
-                    selection.required_discharge_ac_kw,
+                    requested_discharge,
                 )
             path_satisfied = (
                 pair.released
