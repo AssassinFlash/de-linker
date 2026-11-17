@@ -1134,7 +1134,7 @@
     .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
     .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
     .sc-configurator .sc-nav { gap: 5px; margin-bottom: 20px; }
-    .sc-configurator .sc-nav button { flex: 1 1 0; overflow-wrap: anywhere; padding: 7px 4px; font-size: 12px; }
+    .sc-configurator .sc-nav button { flex: 1 0 auto; padding: 7px 10px; font-size: 12px; }
     .sc-configurator .sc-step-number { display: none; }
     .sc-configurator .sc-layout { gap: 0; }
     .sc-configurator .sc-card { padding: 20px; }
