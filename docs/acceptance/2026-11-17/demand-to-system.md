@@ -1,6 +1,6 @@
 # 配置器：当前输入操作与工作台重排
 
-目标：[全欧洲系统方案配置器正式落地并接入 Linker 客户链路](https://github.com/AssassinFlash/de-linker/issues/1132)。基线 `a92cda3a8`；主候选经 PR 1134 合并并发布为 `21d9375d5`。生产验收发现的日期失败恢复增量在 `codex/planner-operating-periods`，仍在验证。
+目标：[全欧洲系统方案配置器正式落地并接入 Linker 客户链路](https://github.com/AssassinFlash/de-linker/issues/1132)。基线 `a92cda3a8`；主候选经 PR 1134 合并并发布为 `21d9375d5`。生产验收发现的日期失败恢复增量经 PR 1135 合并并发布为 `4bc3d3b82`，生产更正计算与临时项目回收完成。
 
 ## 本轮裁定与实现
 
@@ -82,6 +82,12 @@
 
 增量评审预算：Spec 与 Standards 各一份只读隔离工作树、不安装依赖、不创建站点；主线提交完整候选后并行评审，收到结果即由工具回收。复用 `/tmp/linker-demand-pr.md` 作为本次后续 PR 正文，发布后删除。发布前沿用既有 Archives/Remote 再取一次当前生产增量恢复点，仍按同源 N=3 轮换；不建立新的备份根目录。恢复点 `/Users/chesterjohn/de-linker-data/planner-production/archive-20261117T134931Z-f1b360b4` 已校验，保留 3 份；操作前后可用空间 1,284,099,723,264／1,284,012,273,664 字节。
 
-日期恢复增量集成后，前端 273 项域／数据测试与 399 项组件测试通过（672 项），TypeScript、Prettier、Vite 及两层产物校验通过。翻译覆盖无缺口、9 份目录校验通过；Planner PHP 入口 3 项／37 断言通过。后端针对性 16 项通过；原独立后端完整受影响集为 182 项通过。候选 `cbebe6d0d` 的 Spec 与 Standards 独立评审均无发现，PR 为 [1135](https://github.com/AssassinFlash/de-linker/pull/1135)。评审站日期错误已在 EN／DE、1440／390 实看：开始日期缺项时聚焦实际字段并显示更正指导；英文桌面可在错误存在时切换报告再返回，德语修改日期后字段错误清除。验收结束用 Undo 恢复 Oslo 保存版本 8。截图等待实际滚动完成后查看，沿用临时工作图，不增加重复归档。生产增量发布待 CI 通过。
+日期恢复增量集成后，前端 273 项域／数据测试与 399 项组件测试通过（672 项），TypeScript、Prettier、Vite 及两层产物校验通过。翻译覆盖无缺口、9 份目录校验通过；Planner PHP 入口 3 项／37 断言通过。后端针对性 16 项通过；原独立后端完整受影响集为 182 项通过。候选 `cbebe6d0d` 的 Spec 与 Standards 独立评审均无发现，PR 为 [1135](https://github.com/AssassinFlash/de-linker/pull/1135)。评审站日期错误已在 EN／DE、1440／390 实看：开始日期缺项时聚焦实际字段并显示更正指导；英文桌面可在错误存在时切换报告再返回，德语修改日期后字段错误清除。验收结束用 Undo 恢复 Oslo 保存版本 8。截图等待实际滚动完成后查看，沿用临时工作图，不增加重复归档。最终提交 `ae3c8fbb9` 的 CI run `44099816089` 全绿；首轮 `cbebe6d0d` 在生命周期夹具首次加载编辑器时超过两秒等待，本地对应文件通过，最终提交 CI 通过，未修改超时。PR 1135 于 14:21:11 UTC 合并为 `4bc3d3b82ad321f16f34f7a1e7e2d56ebebc7571`。
 
 前端隔离树 `agent-ad08ef02046093a37` 的 8 份改动与集成候选逐字节相同，未跟踪文件为空、忽略文件仅可重建 node_modules，无进程占用；已回收，实际可用空间增加 3,823,177,728 字节（1,284,015,484,928 → 1,287,838,662,656）。两份只读评审树已由工具自动回收。review 的 PHP、Planner worker 和 Engine 已停止，保留实例数据及 Utrecht 草稿。13:49 已验证恢复归档包含生产临时项目版本 5，与此次发布前项目状态一致；沿用该恢复点。
+
+增量生产发布完成：Planner release `/opt/linker-planner/releases/c307fb2e74287aa72d3d2aa6049be9979652549ad30a60af8a6c768c775cad35`，runtime `c325bcfb1db5d5778972cee85598e2f2105cc109f3d428fbec34d6a19f7a3aaf`；HTTP PID 51959、worker PID 52063，原生 status 读回身份一致、draining=false、pending=0，保留 current／previous 两版。站点批次 `20261117T142546527553Z-4bc3d3b82` 的 verify／archive 成功，发布恢复记录已清除；数据库快照 `db-20261117T142613Z.sql.gz` 为 8,191,395 字节，快照仍保留 3 份。实际服务的 planner.js（1,370 字节）、ProjectEditor-CvCTPtTi.js（995,252 字节）、planner-core-BO9Dzslw.js（491,698 字节）与合并候选逐字节相同。
+
+生产临时项目清空开始日期后，实际计算入口返回 HTTP 422，字段得到焦点及可读更正提示；Undo 后仍为保存版本 5。重新采用共同时间范围并直接计算，新运行 `5dc79351be424c5eaae0ca5ac4474f5f` 完成，输入版本 5、购电量 4,990.56 kWh。该项目 `40242003c8864b88bc21bb357ff993e9` 随后通过 Projects 的删除确认入口移除，列表只余受保护的 Amsterdam 项目。无生产询盘或发信。
+
+收尾：浏览器空间 14 已关闭；临时截图与 PR 正文已删除，实际释放 110,592 字节。末次磁盘已用 2,707,456,335,872 字节，可用 1,288,872,992,768 字节。主工作树约 6.33 GB 保留源码及当前交付记录；review 数据保留 Utrecht 草稿，服务已停；Planner 三份独立恢复归档与明确基线、站点三份数据库快照及服务 current／previous 按既有保留规则继续保存。
