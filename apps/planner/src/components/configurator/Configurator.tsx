@@ -74,7 +74,7 @@ import {
 	KNOWN_PV_MODEL,
 	PVGIS_REFERENCE_TASK,
 } from "../../domain/pvgisReference.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
 const steps: Step[] = ["project", "solar", "energy", "system", "review"];
@@ -657,6 +657,18 @@ export default function Configurator({
 					<p>{siteLabel}</p>
 				</div>
 				<div className="sc-actions">
+					<span className="sc-muted" role="status">
+						{controller.busy
+							? __("Saving…", "linker-tools")
+							: draft.pending
+								? __("Save not confirmed", "linker-tools")
+								: isDirty(draft)
+									? __("Unsaved changes", "linker-tools")
+									: sprintf(
+											__("Saved · revision %d", "linker-tools"),
+											draft.baseline.revision,
+										)}
+					</span>
 					<button
 						className="sc-button"
 						disabled={
@@ -684,10 +696,17 @@ export default function Configurator({
 					</button>
 					<button
 						className="sc-button"
-						disabled={controller.busy || navigationBlocked}
+						disabled={
+							controller.busy ||
+							navigationBlocked ||
+							Boolean(draft.conflict) ||
+							controller.recoveries.length > 0
+						}
 						onClick={() => void controller.save()}
 					>
-						{__("Save snapshot", "linker-tools")}
+						{draft.pending && !draft.conflict && !controller.busy
+							? __("Retry save", "linker-tools")
+							: __("Save snapshot", "linker-tools")}
 					</button>
 					<button
 						className="sc-button"
