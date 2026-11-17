@@ -7528,6 +7528,11 @@ msgstr "Zeichnung beginnen"
 msgid "Start with UTC or offset"
 msgstr "Beginn (UTC oder Zeitversatz)"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx
+msgid "Enter a date and time with Z or a UTC offset. The end must be after the start."
+msgstr "Geben Sie Datum und Uhrzeit mit Z oder einem UTC-Zeitversatz an. Das Ende muss nach dem Beginn liegen."
+
 #: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:200
 #: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:62

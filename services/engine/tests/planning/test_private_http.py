@@ -1708,6 +1708,73 @@ def test_calculated_report_requires_the_same_system_scope_but_allows_note_edits(
         )
 
 
+@pytest.mark.parametrize("storage_only", [False, True])
+@pytest.mark.parametrize(
+    ("start", "end", "invalid_fields"),
+    [
+        ("", "", ("start_utc", "end_utc")),
+        (None, "2024-03-31T01:00:00Z", ("start_utc",)),
+        ("not-a-date", "2024-03-31T01:00:00Z", ("start_utc",)),
+        ("2024-03-30T23:00:00", "2024-03-31T01:00:00Z", ("start_utc",)),
+        ("2024-03-30T23:00:00Z", "2024-03-31T01:00:00", ("end_utc",)),
+        (
+            "2024-03-31T01:00:00Z",
+            "2024-03-31T01:00:00Z",
+            ("start_utc", "end_utc"),
+        ),
+        (
+            "2024-03-31T02:00:00Z",
+            "2024-03-31T01:00:00Z",
+            ("start_utc", "end_utc"),
+        ),
+    ],
+)
+def test_calculate_rejects_invalid_period_before_saving_or_queuing(
+    rig: Rig,
+    storage_only: bool,
+    start: str | None,
+    end: str,
+    invalid_fields: tuple[str, ...],
+) -> None:
+    project_id = rig.create("invalid-period")
+    inputs = authored_energy(rig, project_id)
+    if storage_only:
+        inputs.update(brief_inputs("Europe/Berlin"))
+        inputs["brief"]["system_scope"] = "storage_only"
+        inputs["energy_scenario"]["schedule"][0]["pv_enabled"] = False
+    period = inputs["energy_scenario"]["schedule"][0]
+    period.update(start_utc=start, end_utc=end)
+    command = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_energy_calculation_v1",
+        "key": "period-calculation",
+    }
+    refused = rig.client.post("/runs/calculate", json=command, headers=headers())
+    assert refused.status_code == 422, refused.text
+    assert refused.json()["error"] == {
+        "code": "invalid_input",
+        "fields": ["energy_scenario.schedule[0]." + field for field in invalid_fields],
+    }
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert rig.workspace.runs(USER, project_id) == []
+    assert (
+        Jobs(rig.workspace).claim(
+            "invalid-period-worker", kinds=("evaluate",), lease_seconds=30
+        )
+        is None
+    )
+    assert rig.replay("/runs/calculate", command)["status"] == "absent"
+    period.update(
+        start_utc="2024-03-31T00:00:00+01:00", end_utc="2024-03-31T03:00:00+02:00"
+    )
+    admitted = rig.post("/runs/calculate", command)
+    assert admitted["project"]["revision"] == 2
+    assert admitted["run"]["state"] == "queued"
+
+
 def test_calculate_failure_never_advances_project_or_admits_partial_run(
     rig: Rig,
 ) -> None:

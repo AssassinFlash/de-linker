@@ -23,6 +23,7 @@ export function PlantEnergyForm({
 	onValidity,
 	useProfileRange,
 	rangeBusy,
+	inputErrors,
 	openEquipment,
 	client,
 	scope,
@@ -40,6 +41,7 @@ export function PlantEnergyForm({
 	onValidity: (valid: boolean) => void;
 	useProfileRange: () => void;
 	rangeBusy: boolean;
+	inputErrors?: readonly string[];
 	openEquipment: () => void;
 	client: PlannerClient;
 	scope: string;
@@ -476,6 +478,8 @@ export function PlantEnergyForm({
 					)}
 					<OperatingPeriodsForm
 						periods={value.schedule}
+						inputErrors={inputErrors}
+						inputPath="energy_plant_setup.schedule"
 						onChange={(schedule) => onChange({ ...value, schedule })}
 						locale={locale}
 						report={report}

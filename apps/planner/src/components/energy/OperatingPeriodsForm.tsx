@@ -10,6 +10,8 @@ export function OperatingPeriodsForm({
 	rangeBusy,
 	perUnitReserve = false,
 	hasStorage = true,
+	inputPath,
+	inputErrors,
 }: {
 	periods: readonly PeriodDraft[];
 	onChange: (next: readonly PeriodDraft[]) => void;
@@ -19,6 +21,8 @@ export function OperatingPeriodsForm({
 	rangeBusy: boolean;
 	perUnitReserve?: boolean;
 	hasStorage?: boolean;
+	inputPath?: string | undefined;
+	inputErrors?: readonly string[] | undefined;
 }) {
 	return (
 		<section className="lp-work-panel">
@@ -45,6 +49,8 @@ export function OperatingPeriodsForm({
 				<OperatingPeriodForm
 					key={period.id}
 					period={period}
+					inputPath={inputPath}
+					inputErrors={inputErrors}
 					perUnitReserve={perUnitReserve}
 					hasStorage={hasStorage}
 					index={index}

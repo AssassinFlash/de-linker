@@ -197,6 +197,40 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         rig = Rig(workspace, single, client)
+        period = authored["energy_plant_setup"]["schedule"][0]
+        start, end = period["start_utc"], period["end_utc"]
+        period.update(start_utc="", end_utc="")
+        invalid_period = {
+            "schema_version": 1,
+            "project_id": project.id,
+            "expected_revision": 1,
+            "inputs": authored,
+            "input_contract": "authored_equipment_discovery_v1",
+            "key": "pv-only-calculation",
+        }
+        refused = client.post(
+            "/runs/calculate", json=invalid_period, headers=headers(owner)
+        )
+        assert refused.status_code == 422, refused.text
+        assert refused.json()["error"] == {
+            "code": "invalid_input",
+            "fields": [
+                "energy_plant_setup.schedule[0].start_utc",
+                "energy_plant_setup.schedule[0].end_utc",
+            ],
+        }
+        assert workspace.get(owner, project.id).revision == 1
+        assert workspace.runs(owner, project.id) == []
+        assert (
+            Jobs(workspace).claim(
+                "invalid-plant-period-worker", kinds=("evaluate",), lease_seconds=30
+            )
+            is None
+        )
+        assert (
+            rig.replay("/runs/calculate", invalid_period, owner)["status"] == "absent"
+        )
+        period.update(start_utc=start, end_utc=end)
         calculated = rig.post(
             "/runs/calculate",
             {
