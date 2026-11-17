@@ -1,4 +1,5 @@
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
+import nativePreparation from "./fixtures/preparation-flow-darwin-arm64.json" with { type: "json" };
 import { authoredDiscoveryInputs } from "../src/domain/currentCalculation.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -232,7 +233,7 @@ async function equipmentApp(
 		selectionGate = null,
 		searchGate = null,
 		findRefusal = null,
-		pvReference = false,
+		pvReference = null,
 		pvFailure = null,
 	},
 ) {
@@ -427,7 +428,7 @@ async function equipmentApp(
 			}
 			if (path === "runs/pvgis-reference" && pvReference) {
 				assert.equal(command.expected_revision, project.revision);
-				pvRun = structuredClone(knownPv.run);
+				pvRun = structuredClone(pvReference);
 				if (++pvAttempts === 1 && pvFailure === "provider") {
 					return {
 						...pvRun,
@@ -640,7 +641,7 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 		const app = await equipmentApp(t, {
 			projectId: knownPv.project.id,
 			hash: "#sc-energy",
-			pvReference: true,
+			pvReference: knownPv.run,
 			pvFailure,
 			inputs: {
 				...knownPv.project.inputs,
@@ -746,6 +747,52 @@ async function chooseGoal(app, goal = "self") {
 	await until(() => app.fieldSelect("Purpose"));
 	await app.updateSelect("Purpose", goal);
 }
+test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
+	const roof = nativePreparation.pvgis_reference_project;
+	const app = await equipmentApp(t, {
+		projectId: roof.id,
+		hash: "#sc-project",
+		pvReference: nativePreparation.pvgis_reference_run,
+		inputs: {
+			...roof.inputs,
+			equipment_setup: { ...savedSetup, pv_dc_kw: null },
+		},
+	});
+	await untilRun(() => app.button("Continue with solar")?.matches(":enabled"));
+	await act(async () => app.button("Continue with solar").click());
+	assert.equal(location.hash, "#sc-solar");
+	assert.equal(app.fieldInput("Calendar year").value, "2020");
+	assert.match(
+		document.querySelector(".sc-solar-total").textContent,
+		/20 placed modules · 9.2 kWp/,
+	);
+	await act(async () => app.button("Continue with energy use").click());
+	assert.equal(location.hash, "#sc-energy");
+	await chooseGoal(app);
+	await compare(app);
+	await untilRun(app.pending);
+	assert.equal(location.hash, "#sc-system");
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["projects/revise", "runs/pvgis-reference", "runs/find-equipment"],
+	);
+	const search = app.requests[2].body;
+	assert.equal(search.inputs.equipment_setup.pv_dc_kw, 9.2);
+	assert.equal(
+		search.inputs.profile_selections.selected.pv_available_ac,
+		nativePreparation.pvgis_reference_run.result.prepared_asset.id,
+	);
+	await act(async () => app.setServerRun("succeeded"));
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Review the proposal")?.matches(":enabled"));
+	await act(async () => app.button("Review the proposal").click());
+	assert.equal(location.hash, "#sc-review");
+	assert.ok(document.querySelector(".sc-review"));
+});
+
 const option = () => document.querySelector(".sc-package");
 const searchRequests = (app) =>
 	app.requests.filter(({ path }) => path === "runs/find-equipment");

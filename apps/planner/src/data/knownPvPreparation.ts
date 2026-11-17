@@ -3,6 +3,18 @@ import { sameJson } from "../domain/draft.ts";
 import { changeEquipment } from "../domain/equipment.ts";
 import { isStorageOnly, readScenarioDraft } from "../domain/energyScenario.ts";
 import { selectPreparation } from "../domain/preparationSelection.ts";
+import { activePvGeometry } from "../domain/solarSetup.ts";
+import { moduleSummary } from "../domain/panelPoses.ts";
+import {
+	GEOMETRIC_PV_MODEL_SERIES,
+	GEOMETRIC_PV_PURPOSE,
+	geometricPvDraft,
+} from "../domain/geometricPv.ts";
+import {
+	hasPlant,
+	plantInputs,
+	readPlantDraft,
+} from "../domain/equipmentPlant.ts";
 import {
 	readAsset,
 	readSelections,
@@ -14,7 +26,10 @@ import {
 	KNOWN_PV_MODEL,
 	KNOWN_PV_PURPOSE,
 	PVGIS_REFERENCE_TASK,
+	PVGIS_REFERENCE_PURPOSE,
+	readPvgisReference,
 	referenceDraft,
+	referenceRoof,
 	referenceSite,
 } from "../domain/pvgisReference.ts";
 import {
@@ -32,21 +47,25 @@ type Query = (
 	signal: AbortSignal,
 ) => Promise<unknown>;
 
-function comparisonInputs(inputs: JsonObject, asset: ProfileAsset): JsonObject {
-	const scope = readBrief(inputs.brief).system_scope;
-	const draft = referenceDraft(inputs);
+function comparisonInputs(
+	inputs: JsonObject,
+	asset: ProfileAsset,
+	power: number,
+): JsonObject {
+	const scope =
+		inputs.brief === undefined ? null : readBrief(inputs.brief).system_scope;
 	let next = inputs;
-	if (
-		(scope === "new_pv_storage" || scope === "pv_only") &&
-		inputs.equipment_plant_setup === undefined &&
-		inputs.equipment_plant === undefined
-	) {
-		const power = draft.arrays!.reduce(
-			(sum, array) => sum + array.peak_power_kwp!,
-			0,
-		);
-		if (readObject(inputs.equipment_setup ?? {}).pv_dc_kw !== power)
+	if (scope === "new_pv_storage" || scope === "pv_only") {
+		if (hasPlant(inputs)) {
+			const plant = readPlantDraft(inputs);
+			if (plant.requirements.pv_dc_kw !== power)
+				next = plantInputs(inputs, {
+					...plant,
+					requirements: { ...plant.requirements, pv_dc_kw: power },
+				});
+		} else if (readObject(inputs.equipment_setup ?? {}).pv_dc_kw !== power) {
 			next = changeEquipment(inputs, { pv_dc_kw: power });
+		}
 	}
 	if (next.energy_scenario === undefined || next.backup_demand !== undefined)
 		return next;
@@ -108,9 +127,24 @@ export async function prepareKnownPvForComparison({
 }): Promise<((current: JsonObject) => JsonObject) | null> {
 	if (isStorageOnly(inputs)) return null;
 	const draft = referenceDraft(inputs);
-	if (draft.model !== KNOWN_PV_MODEL) return null;
+	const known = draft.model === KNOWN_PV_MODEL;
+	const layout =
+		!known && inputs.geometry !== undefined
+			? activePvGeometry(inputs.geometry)
+			: null;
+	const placed = layout?.arrays.length
+		? moduleSummary(layout.geometry).stc_kwp
+		: null;
 	const selected = readSelections(inputs.profile_selections).selected
 		.pv_available_ac;
+	if (
+		!known &&
+		placed === null &&
+		!selected &&
+		inputs.pvgis_reference_setup === undefined &&
+		inputs.pvgis_reference === undefined
+	)
+		return null;
 	const assetRead = async (id: string) => {
 		const value = readAsset(
 			await query(
@@ -123,24 +157,17 @@ export async function prepareKnownPvForComparison({
 		if (value.id !== id) throw new ApiError(502, "preparation_source_mismatch");
 		return value;
 	};
-	const checked = (current: JsonObject) => {
+	const unchanged = (current: JsonObject) => {
 		signal.throwIfAborted();
 		if (
 			isStorageOnly(current) ||
 			readSelections(current.profile_selections).selected.pv_available_ac !==
 				selected ||
-			!sameJson(
-				compilePvgisReference(referenceDraft(current)),
-				compilePvgisReference(draft),
-			) ||
-			!sameJson(referenceSite(current), referenceSite(inputs))
+			(!known && !sameJson(current.geometry, inputs.geometry))
 		)
 			throw new ApiError(409, "preparation_source_changed");
-		assertReferenceAcTopology(current);
 	};
-	if (selected) {
-		const asset = await assetRead(selected);
-		if (asset.purpose !== KNOWN_PV_PURPOSE) return null;
+	const historicalInputs = async (asset: ProfileAsset) => {
 		const revision = asset.metadata.derived_from_revision;
 		const historical = readProject(
 			await query(
@@ -155,29 +182,82 @@ export async function prepareKnownPvForComparison({
 		);
 		if (historical.id !== projectId || historical.revision !== revision)
 			throw new ApiError(502, "preparation_source_mismatch");
+		return historical.inputs;
+	};
+	const asset = selected ? await assetRead(selected) : null;
+	const pvgis =
+		asset?.purpose === KNOWN_PV_PURPOSE ||
+		asset?.purpose === PVGIS_REFERENCE_PURPOSE;
+	if (asset && !pvgis) {
+		const keys =
+			asset.purpose === GEOMETRIC_PV_PURPOSE
+				? ["geometry", "geometric_pv_preparation"]
+				: asset.purpose === "pvlib_reference_profile_v1"
+					? ["geometry", "pv_preparation", "pv_generation"]
+					: [];
 		if (
-			sameJson(
-				compilePvgisReference(draft),
-				historical.inputs.pvgis_reference,
-			) &&
-			sameJson(referenceSite(inputs), referenceSite(historical.inputs))
-		) {
-			return (current) => {
-				checked(current);
-				return comparisonInputs(current, asset);
-			};
-		}
+			asset.purpose === GEOMETRIC_PV_PURPOSE &&
+			geometricPvDraft(inputs).model === GEOMETRIC_PV_MODEL_SERIES
+		)
+			keys.push(
+				"equipment_selection",
+				"pv_string_plan",
+				"equipment_plant",
+				"pv_plant_string_plan",
+			);
+		const matches = (current: JsonObject) =>
+			keys.every((key) => sameJson(current[key], inputs[key]));
+		if (keys.length && !matches(await historicalInputs(asset)))
+			throw new ApiError(409, "preparation_source_changed");
+		if (placed === null && !keys.length) return null;
+		return (current) => {
+			unchanged(current);
+			if (!matches(current))
+				throw new ApiError(409, "preparation_source_changed");
+			return placed === null
+				? current
+				: comparisonInputs(current, asset, placed);
+		};
+	}
+	if (!known) {
+		if (placed === null)
+			throw new ApiError(422, "pvgis_reference_roof_required");
+		referenceRoof(inputs);
 	}
 	const reference = compilePvgisReference(draft);
-	const site = referenceSite(inputs);
+	const site = known ? referenceSite(inputs) : null;
+	const power = known
+		? draft.arrays!.reduce((sum, array) => sum + array.peak_power_kwp!, 0)
+		: placed!;
+	const matchesBasis = (current: JsonObject) =>
+		known
+			? sameJson(referenceSite(current), site)
+			: sameJson(current.geometry, inputs.geometry);
+	const checked = (current: JsonObject) => {
+		unchanged(current);
+		if (!sameJson(referenceDraft(current), draft) || !matchesBasis(current))
+			throw new ApiError(409, "preparation_source_changed");
+		assertReferenceAcTopology(current);
+	};
 	assertReferenceAcTopology(inputs);
+	if (asset?.purpose === (known ? KNOWN_PV_PURPOSE : PVGIS_REFERENCE_PURPOSE)) {
+		const historical = await historicalInputs(asset);
+		if (
+			sameJson(readPvgisReference(historical.pvgis_reference), reference) &&
+			matchesBasis(historical)
+		)
+			return (current) => {
+				checked(current);
+				return comparisonInputs(current, asset, power);
+			};
+	}
 	const saved = await save();
 	signal.throwIfAborted();
 	if (!saved) throw new ApiError(409, "known_pv_preparation_save_failed");
 	if (
 		saved.id !== projectId ||
-		!sameJson(saved.inputs.pvgis_reference, reference) ||
-		!sameJson(referenceSite(saved.inputs), site)
+		!sameJson(readPvgisReference(saved.inputs.pvgis_reference), reference) ||
+		!matchesBasis(saved.inputs)
 	)
 		throw new ApiError(409, "preparation_source_changed");
 	let run = await start(saved.revision);
@@ -194,15 +274,16 @@ export async function prepareKnownPvForComparison({
 	signal.throwIfAborted();
 	if (run.state !== "succeeded" || !run.result)
 		throw new ApiError(422, "known_pv_preparation_failed");
-	const asset = await assetRead(
+	const preparedAsset = await assetRead(
 		readAsset(run.result.prepared_asset, projectId).id,
 	);
 	const completed = run;
 	return (current) => {
 		checked(current);
 		return comparisonInputs(
-			selectPreparation(current, completed, saved, asset),
-			asset,
+			selectPreparation(current, completed, saved, preparedAsset),
+			preparedAsset,
+			power,
 		);
 	};
 }

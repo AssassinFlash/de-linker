@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import fixture from "../../tests/fixtures/known-pv-reference.json" with { type: "json" };
+import roofFixture from "../../tests/fixtures/preparation-flow-darwin-arm64.json" with { type: "json" };
+import { emptyBrief } from "../domain/brief.ts";
 import { emptyScenario } from "../domain/energyScenario.ts";
 import { prepareKnownPvForComparison } from "./knownPvPreparation.ts";
 import type { JsonObject, Project } from "./protocol.ts";
@@ -10,18 +12,25 @@ const project = fixture.project as Project;
 const run = fixture.run as PlanningRun;
 const asset = fixture.run.result.prepared_asset;
 
-function workflow(inputs: JsonObject) {
+function workflow(
+	inputs: JsonObject,
+	source: { project: Project; run: PlanningRun; asset: JsonObject } = {
+		project,
+		run,
+		asset,
+	},
+) {
 	const calls: string[] = [];
-	const updated = { ...project, inputs };
+	const updated = { ...source.project, inputs };
 	return {
 		calls,
 		options: {
 			inputs,
-			projectId: project.id,
+			projectId: source.project.id,
 			query: async (path: string) => {
 				calls.push(path);
-				if (path === "assets/read") return asset;
-				if (path === "projects/read") return project;
+				if (path === "assets/read") return source.asset;
+				if (path === "projects/read") return source.project;
 				throw new Error(path);
 			},
 			save: async () => {
@@ -30,7 +39,7 @@ function workflow(inputs: JsonObject) {
 			},
 			start: async () => {
 				calls.push("start");
-				return run;
+				return source.run;
 			},
 			signal: new AbortController().signal,
 		},
@@ -114,4 +123,62 @@ test("known PV cannot compare disjoint profile years", async () => {
 			}),
 		/known_pv_no_common_period/,
 	);
+});
+
+const roof = {
+	project: roofFixture.pvgis_reference_project as Project,
+	run: roofFixture.pvgis_reference_run as PlanningRun,
+	asset: roofFixture.pvgis_reference_run.result.prepared_asset,
+};
+const roofInputs = {
+	...roof.project.inputs,
+	brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
+};
+
+test("the native roof run supplies its AC profile and the 20 placed 460 Wp modules", async () => {
+	const { calls, options } = workflow(roofInputs, roof);
+	const apply = await prepareKnownPvForComparison(options);
+	assert.ok(apply);
+	const changed = apply(roofInputs);
+	assert.deepEqual(calls, ["save", "start", "assets/read"]);
+	assert.deepEqual(changed.profile_selections, {
+		schema_version: 1,
+		selected: { pv_available_ac: roof.asset.id },
+	});
+	assert.equal((changed.equipment_setup as JsonObject).pv_dc_kw, 9.2);
+	const geometry = roofFixture.pvgis_reference_project.inputs.geometry;
+	assert.throws(
+		() =>
+			apply({
+				...roofInputs,
+				geometry: { ...geometry, arrays: geometry.arrays.slice(1) },
+			}),
+		/preparation_source_changed/,
+	);
+});
+
+test("a matching roof curve is reused and another owned AC curve is preserved", async () => {
+	const inputs = {
+		...roofInputs,
+		profile_selections: {
+			schema_version: 1,
+			selected: { pv_available_ac: roof.asset.id },
+		},
+	};
+	const { calls, options } = workflow(inputs, roof);
+	const apply = await prepareKnownPvForComparison(options);
+	assert.ok(apply);
+	assert.equal((apply(inputs).equipment_setup as JsonObject).pv_dc_kw, 9.2);
+	assert.deepEqual(calls, ["assets/read", "projects/read"]);
+	const alternate = workflow(inputs, {
+		...roof,
+		asset: { ...roof.asset, purpose: "pvgis_system_profile_v1" },
+	});
+	const preserve = await prepareKnownPvForComparison(alternate.options);
+	assert.ok(preserve);
+	assert.deepEqual(
+		preserve(inputs).profile_selections,
+		inputs.profile_selections,
+	);
+	assert.deepEqual(alternate.calls, ["assets/read"]);
 });

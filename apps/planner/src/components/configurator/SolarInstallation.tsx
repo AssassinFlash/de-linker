@@ -220,16 +220,22 @@ export function SolarInstallation({
 			});
 		});
 	}
-	function referenceChange(patch: Partial<PvgisReferenceDraft>) {
+	function referenceChange(patch: Partial<PvgisReferenceDraft>, method = mode) {
 		if (blocked) return;
 		edit((current) => {
-			const draft = referenceDraft(current);
+			const { arrays, ...settings } = referenceDraft(current);
+			if (method === "roof")
+				return referenceInputs(current, {
+					...settings,
+					...patch,
+					model: "pvgis_5_3_roof_ac_reference_v1",
+				});
 			return referenceInputs(current, {
-				...draft,
+				...settings,
 				...patch,
 				model: KNOWN_PV_MODEL,
-				arrays: draft.arrays?.length
-					? draft.arrays
+				arrays: arrays?.length
+					? arrays
 					: [
 							{
 								id: id(),
@@ -740,7 +746,14 @@ export function SolarInstallation({
 							className={`sc-option-card${mode === value ? " active" : ""}`}
 							aria-pressed={mode === value}
 							key={value}
-							onClick={() => setMode(value)}
+							onClick={() => {
+								if (
+									value !== mode &&
+									(value === "known" || reference.model === KNOWN_PV_MODEL)
+								)
+									referenceChange({}, value);
+								setMode(value);
+							}}
 						>
 							{value === "known"
 								? __("Use module details", "linker-tools")
@@ -864,180 +877,6 @@ export function SolarInstallation({
 										value={known?.source_note ?? ""}
 										onChange={(e) =>
 											knownChange({ source_note: e.currentTarget.value })
-										}
-									/>
-								</label>
-							</div>
-							<h3>{__("Solar generation estimate", "linker-tools")}</h3>
-							<p className="sc-muted">
-								{__(
-									"Compare systems uses JRC PVGIS to estimate AC generation from the location, array details and settings below. Energy comparisons use the period covered by both the solar and energy use profiles.",
-									"linker-tools",
-								)}
-							</p>
-							<div className="sc-fields">
-								{(["latitude", "longitude"] as const).map((key) => {
-									const bound = key === "latitude" ? 90 : 180;
-									return (
-										<label className="sc-field" key={key}>
-											<span>
-												{key === "latitude"
-													? __("Latitude", "linker-tools")
-													: __("Longitude", "linker-tools")}
-											</span>
-											<input
-												type="number"
-												step="any"
-												min={-bound}
-												max={bound}
-												value={site[key] ?? ""}
-												onChange={(e) =>
-													coordinateChange(
-														key,
-														e.currentTarget.validity.valid &&
-															e.currentTarget.value
-															? e.currentTarget.valueAsNumber
-															: null,
-													)
-												}
-											/>
-										</label>
-									);
-								})}
-								<label className="sc-field">
-									<span>{__("Calendar year", "linker-tools")}</span>
-									<input
-										type="number"
-										min="1"
-										max="9998"
-										step="1"
-										value={reference.year ?? ""}
-										onChange={(e) =>
-											referenceChange({
-												year:
-													e.currentTarget.validity.valid &&
-													e.currentTarget.value
-														? e.currentTarget.valueAsNumber
-														: null,
-											})
-										}
-									/>
-								</label>
-								<label className="sc-field">
-									<span>{__("Radiation database", "linker-tools")}</span>
-									<select
-										value={reference.radiation_database ?? ""}
-										onChange={(e) =>
-											referenceChange({
-												radiation_database: (e.currentTarget.value ||
-													null) as PvgisReferenceDraft["radiation_database"],
-											})
-										}
-									>
-										<option value="">
-											{__("Choose a radiation database", "linker-tools")}
-										</option>
-										{REFERENCE_DATABASES.map((database) => (
-											<option key={database}>{database}</option>
-										))}
-									</select>
-								</label>
-								<label className="sc-field">
-									<span>{__("PV reference technology", "linker-tools")}</span>
-									<select
-										value={reference.pv_technology ?? ""}
-										onChange={(e) =>
-											referenceChange({
-												pv_technology: (e.currentTarget.value ||
-													null) as PvgisReferenceDraft["pv_technology"],
-											})
-										}
-									>
-										<option value="">
-											{__("Choose a reference technology", "linker-tools")}
-										</option>
-										{REFERENCE_TECHNOLOGIES.map((technology) => (
-											<option key={technology}>{technology}</option>
-										))}
-									</select>
-								</label>
-								<label className="sc-field">
-									<span>{__("Mounting place", "linker-tools")}</span>
-									<select
-										value={reference.mounting_place ?? ""}
-										onChange={(e) =>
-											referenceChange({
-												mounting_place: (e.currentTarget.value ||
-													null) as PvgisReferenceDraft["mounting_place"],
-											})
-										}
-									>
-										<option value="">
-											{__("Choose the mounting place", "linker-tools")}
-										</option>
-										<option value="free">
-											{__("Freestanding or ventilated", "linker-tools")}
-										</option>
-										<option value="building">
-											{__("Building-integrated", "linker-tools")}
-										</option>
-									</select>
-								</label>
-								<label className="sc-field">
-									<span>{__("System loss (%)", "linker-tools")}</span>
-									<input
-										type="number"
-										step="any"
-										min="0"
-										max="100"
-										value={reference.system_loss_percent ?? ""}
-										onChange={(e) =>
-											referenceChange({
-												system_loss_percent:
-													e.currentTarget.validity.valid &&
-													e.currentTarget.value
-														? e.currentTarget.valueAsNumber
-														: null,
-											})
-										}
-									/>
-								</label>
-								<label className="sc-field">
-									<span>{__("Terrain horizon", "linker-tools")}</span>
-									<select
-										value={
-											reference.use_terrain_horizon === null
-												? ""
-												: String(reference.use_terrain_horizon)
-										}
-										onChange={(e) =>
-											referenceChange({
-												use_terrain_horizon: e.currentTarget.value
-													? e.currentTarget.value === "true"
-													: null,
-											})
-										}
-									>
-										<option value="">
-											{__("Choose a horizon setting", "linker-tools")}
-										</option>
-										<option value="true">
-											{__("Include PVGIS terrain horizon", "linker-tools")}
-										</option>
-										<option value="false">
-											{__("Omit terrain horizon", "linker-tools")}
-										</option>
-									</select>
-								</label>
-								<label className="sc-field">
-									<span>
-										{__("Source of the model settings", "linker-tools")}
-									</span>
-									<input
-										maxLength={4096}
-										value={reference.source_note ?? ""}
-										onChange={(e) =>
-											referenceChange({ source_note: e.currentTarget.value })
 										}
 									/>
 								</label>
@@ -1415,6 +1254,177 @@ export function SolarInstallation({
 							</aside>
 						</div>
 					)}
+					<h3>{__("Solar generation estimate", "linker-tools")}</h3>
+					<p className="sc-muted">
+						{__(
+							"Compare systems uses JRC PVGIS to estimate AC generation from the location, array details and settings below. Energy comparisons use the period covered by both the solar and energy use profiles.",
+							"linker-tools",
+						)}
+					</p>
+					<div className="sc-fields">
+						{mode === "known" &&
+							(["latitude", "longitude"] as const).map((key) => {
+								const bound = key === "latitude" ? 90 : 180;
+								return (
+									<label className="sc-field" key={key}>
+										<span>
+											{key === "latitude"
+												? __("Latitude", "linker-tools")
+												: __("Longitude", "linker-tools")}
+										</span>
+										<input
+											type="number"
+											step="any"
+											min={-bound}
+											max={bound}
+											value={site[key] ?? ""}
+											onChange={(e) =>
+												coordinateChange(
+													key,
+													e.currentTarget.validity.valid &&
+														e.currentTarget.value
+														? e.currentTarget.valueAsNumber
+														: null,
+												)
+											}
+										/>
+									</label>
+								);
+							})}
+						<label className="sc-field">
+							<span>{__("Calendar year", "linker-tools")}</span>
+							<input
+								type="number"
+								min="1"
+								max="9998"
+								step="1"
+								value={reference.year ?? ""}
+								onChange={(e) =>
+									referenceChange({
+										year:
+											e.currentTarget.validity.valid && e.currentTarget.value
+												? e.currentTarget.valueAsNumber
+												: null,
+									})
+								}
+							/>
+						</label>
+						<label className="sc-field">
+							<span>{__("Radiation database", "linker-tools")}</span>
+							<select
+								value={reference.radiation_database ?? ""}
+								onChange={(e) =>
+									referenceChange({
+										radiation_database: (e.currentTarget.value ||
+											null) as PvgisReferenceDraft["radiation_database"],
+									})
+								}
+							>
+								<option value="">
+									{__("Choose a radiation database", "linker-tools")}
+								</option>
+								{REFERENCE_DATABASES.map((database) => (
+									<option key={database}>{database}</option>
+								))}
+							</select>
+						</label>
+						<label className="sc-field">
+							<span>{__("PV reference technology", "linker-tools")}</span>
+							<select
+								value={reference.pv_technology ?? ""}
+								onChange={(e) =>
+									referenceChange({
+										pv_technology: (e.currentTarget.value ||
+											null) as PvgisReferenceDraft["pv_technology"],
+									})
+								}
+							>
+								<option value="">
+									{__("Choose a reference technology", "linker-tools")}
+								</option>
+								{REFERENCE_TECHNOLOGIES.map((technology) => (
+									<option key={technology}>{technology}</option>
+								))}
+							</select>
+						</label>
+						<label className="sc-field">
+							<span>{__("Mounting place", "linker-tools")}</span>
+							<select
+								value={reference.mounting_place ?? ""}
+								onChange={(e) =>
+									referenceChange({
+										mounting_place: (e.currentTarget.value ||
+											null) as PvgisReferenceDraft["mounting_place"],
+									})
+								}
+							>
+								<option value="">
+									{__("Choose the mounting place", "linker-tools")}
+								</option>
+								<option value="free">
+									{__("Freestanding or ventilated", "linker-tools")}
+								</option>
+								<option value="building">
+									{__("Building-integrated", "linker-tools")}
+								</option>
+							</select>
+						</label>
+						<label className="sc-field">
+							<span>{__("System loss (%)", "linker-tools")}</span>
+							<input
+								type="number"
+								step="any"
+								min="0"
+								max="100"
+								value={reference.system_loss_percent ?? ""}
+								onChange={(e) =>
+									referenceChange({
+										system_loss_percent:
+											e.currentTarget.validity.valid && e.currentTarget.value
+												? e.currentTarget.valueAsNumber
+												: null,
+									})
+								}
+							/>
+						</label>
+						<label className="sc-field">
+							<span>{__("Terrain horizon", "linker-tools")}</span>
+							<select
+								value={
+									reference.use_terrain_horizon === null
+										? ""
+										: String(reference.use_terrain_horizon)
+								}
+								onChange={(e) =>
+									referenceChange({
+										use_terrain_horizon: e.currentTarget.value
+											? e.currentTarget.value === "true"
+											: null,
+									})
+								}
+							>
+								<option value="">
+									{__("Choose a horizon setting", "linker-tools")}
+								</option>
+								<option value="true">
+									{__("Include PVGIS terrain horizon", "linker-tools")}
+								</option>
+								<option value="false">
+									{__("Omit terrain horizon", "linker-tools")}
+								</option>
+							</select>
+						</label>
+						<label className="sc-field">
+							<span>{__("Source of the model settings", "linker-tools")}</span>
+							<input
+								maxLength={4096}
+								value={reference.source_note ?? ""}
+								onChange={(e) =>
+									referenceChange({ source_note: e.currentTarget.value })
+								}
+							/>
+						</label>
+					</div>
 					<p className="sc-solar-total">
 						{mode === "roof"
 							? `${summary.count} ${__("placed modules", "linker-tools")} · ${summary.stc_kwp} kWp`

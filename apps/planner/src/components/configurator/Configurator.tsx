@@ -731,16 +731,21 @@ export default function Configurator({
 					{__("Preparing planning report…", "linker-tools")}
 				</p>
 			)}
-			{preparingPv && reference.model === KNOWN_PV_MODEL && (
-				<p className="sc-card" role="status">
-					{__("Preparing the solar generation profile…", "linker-tools")}
-				</p>
-			)}
+			{preparingPv &&
+				(reference.model === KNOWN_PV_MODEL ||
+					inputs.geometry !== undefined) && (
+					<p className="sc-card" role="status">
+						{__("Preparing the solar generation profile…", "linker-tools")}
+					</p>
+				)}
 			{Boolean(failure) && (
 				<div className="sc-card" role="alert">
 					<p>
 						{failure instanceof ApiError &&
-						failure.code === "equipment_selection_changed"
+						[
+							"equipment_selection_changed",
+							"preparation_source_changed",
+						].includes(failure.code)
 							? __(
 									"The project has changed. Compare systems again to update the choices.",
 									"linker-tools",
@@ -767,6 +772,7 @@ export default function Configurator({
 											  [
 													"pvgis_reference_incomplete",
 													"pvgis_reference_site_required",
+													"pvgis_reference_roof_required",
 											  ].includes(failure.code)
 											? __(
 													"Complete the site coordinates, array details and PVGIS settings to compare systems.",
