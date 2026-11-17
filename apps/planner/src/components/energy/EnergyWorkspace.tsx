@@ -1047,7 +1047,7 @@ export function EnergyWorkspace({
 				</div>
 			</div>
 			<div
-				className="lp-energy-switch"
+				className="lp-energy-switch lp-work-toolbar"
 				role="group"
 				aria-label={__("Calculation workspace view", "linker-tools")}
 				hidden={equipmentFocus}
@@ -1155,7 +1155,7 @@ export function EnergyWorkspace({
 			)}
 			{operations.records.length > 0 && (
 				<details
-					className="lp-comparison lp-energy-recovery"
+					className="lp-comparison lp-energy-recovery lp-work-panel"
 					open={unconfirmed.length > 0}
 				>
 					<summary>{__("Stored requests", "linker-tools")}</summary>
@@ -1285,7 +1285,7 @@ export function EnergyWorkspace({
 				}
 			>
 				<div
-					className="lp-energy-switch"
+					className="lp-energy-switch lp-work-toolbar"
 					role="group"
 					aria-label={__("PV generation method", "linker-tools")}
 				>
@@ -1449,181 +1449,198 @@ export function EnergyWorkspace({
 				)}
 				{currentSetup && (
 					<>
-						<div className="lp-scenario-sources">
-							<h3>{__("Interval sources", "linker-tools")}</h3>
-							<ul>
-								{(
-									[
-										"gross_load",
-										...(currentSetup.schedule.some(
-											(period) => period.mode === "outage",
-										)
-											? ["critical_load" as const]
-											: []),
-										joint && sharedDc ? "pv_reference" : "pv_available_ac",
-										"aux_ac",
-									] as const
-								)
-									.filter(
-										(role) =>
-											(!pvInactive ||
-												(role !== "pv_available_ac" &&
-													role !== "pv_reference")) &&
-											(role !== "aux_ac" || currentSetup.aux_ac_kw == null),
-									)
-									.map((role) => (
-										<li key={role}>
-											<span>
-												{role === "pv_available_ac" && !joint && sharedDc
-													? __("PV generation", "linker-tools")
-													: measurementLabel(role)}
-											</span>
-											<strong>
-												{selections.selected[role]
-													? __("Selected in this draft", "linker-tools")
-													: __("Required", "linker-tools")}
-											</strong>
-										</li>
-									))}
-							</ul>
-							<button
-								type="button"
-								className="lp-text-button"
-								onClick={openProfiles}
-								disabled={!syntaxValid}
-							>
-								{__("Review energy inputs", "linker-tools")}
-							</button>
-						</div>
-						{pvOnly ? (
-							<SolarEnergySetup
-								value={currentSetup}
-								hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
-								locale={locale}
-								disabled={blocked || operations.busy || !admitted}
-								onChange={(changes) => {
-									if (joint && jointContext.value)
-										changeJoint({ ...jointContext.value.setup, ...changes });
-									else if (setup) change({ ...setup, ...changes });
-								}}
-								onValidity={setCompactValid}
-								useProfileRange={() => void useRange()}
-								rangeBusy={rangeBusy}
-							/>
-						) : (
-							<>
-								{!joint &&
-									setup &&
-									setup.coupling !== "shared_dc" &&
-									setup.schedule.length === 1 && (
-										<SimpleEnergySetup
-											hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
-											hasEquipment={Boolean(equipmentForEditing)}
-											chooseEquipment={showEquipment}
-											value={setup}
-											storageOnly={storageOnly}
-											locale={locale}
-											disabled={blocked || operations.busy || !admitted}
-											onChange={change}
-											onValidity={setCompactValid}
-											useProfileRange={() => void useRange()}
-											rangeBusy={rangeBusy}
-										/>
-									)}
-								<details
-									className="lp-comparison"
-									open={
-										joint ||
-										setup?.coupling === "shared_dc" ||
-										(setup?.schedule.length ?? 0) > 1
-									}
-								>
-									<summary>
-										{__(
-											"Advanced storage and operating settings",
-											"linker-tools",
-										)}
-									</summary>
-									<ol className="lp-scenario-steps">
-										{(["storage", "initial", "operation"] as const).map(
-											(step, index) => (
-												<li
-													key={step}
-													aria-current={section === step ? "step" : undefined}
-												>
-													<button
-														type="button"
-														disabled={!syntaxValid}
-														onClick={() => setSection(step)}
-													>
-														<span>{String(index + 1).padStart(2, "0")}</span>
-														{step === "storage"
-															? __("Storage", "linker-tools")
-															: step === "initial"
-																? __("Starting state", "linker-tools")
-																: __("Operation", "linker-tools")}
-													</button>
-												</li>
-											),
-										)}
-									</ol>
-									{joint && jointContext.value ? (
-										<PlantEnergyForm
-											storageOnly={storageOnly}
-											referenceCapacitySupported={
-												session.runtime.models.capacity_reference ===
-												REFERENCE_CAPACITY
+						<div className="lp-work-grid">
+							<div className="lp-work-main">
+								{pvOnly ? (
+									<SolarEnergySetup
+										value={currentSetup}
+										hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
+										locale={locale}
+										disabled={blocked || operations.busy || !admitted}
+										onChange={(changes) => {
+											if (joint && jointContext.value)
+												changeJoint({
+													...jointContext.value.setup,
+													...changes,
+												});
+											else if (setup) change({ ...setup, ...changes });
+										}}
+										onValidity={setCompactValid}
+										useProfileRange={() => void useRange()}
+										rangeBusy={rangeBusy}
+									/>
+								) : (
+									<>
+										{!joint &&
+											setup &&
+											setup.coupling !== "shared_dc" &&
+											setup.schedule.length === 1 && (
+												<SimpleEnergySetup
+													hasAuxiliaryProfile={Boolean(
+														selections.selected.aux_ac,
+													)}
+													hasEquipment={Boolean(equipmentForEditing)}
+													chooseEquipment={showEquipment}
+													value={setup}
+													storageOnly={storageOnly}
+													locale={locale}
+													disabled={blocked || operations.busy || !admitted}
+													onChange={change}
+													onValidity={setCompactValid}
+													useProfileRange={() => void useRange()}
+													rangeBusy={rangeBusy}
+												/>
+											)}
+										<details
+											className="lp-comparison"
+											open={
+												joint ||
+												setup?.coupling === "shared_dc" ||
+												(setup?.schedule.length ?? 0) > 1
 											}
-											value={jointContext.value.setup}
-											plant={jointContext.value.plant}
-											converters={converterIds}
-											section={section}
-											locale={locale}
-											disabled={blocked || operations.busy || !admitted}
-											onChange={changeJoint}
-											onValidity={setScenarioValid}
-											useProfileRange={() => void useRange()}
-											rangeBusy={rangeBusy}
-											openEquipment={() => {
-												setView("equipment");
-												openEquipment?.();
-											}}
-											client={client}
-											scope={session.query_scope}
-											active={active && view === "scenario"}
-										/>
-									) : (
-										setup && (
-											<ScenarioForm
-												storageOnly={storageOnly}
-												referenceCapacitySupported={
-													session.runtime.models.capacity_reference ===
-													REFERENCE_CAPACITY
-												}
-												client={client}
-												scope={session.query_scope}
-												active={active && view === "scenario"}
-												equipmentSelection={equipmentForEditing}
-												converters={converterIds}
-												key={setup.coupling ?? "independent_ac"}
-												openEquipment={() => {
-													setView("equipment");
-													openEquipment?.();
-												}}
-												value={setup}
-												section={section}
-												locale={locale}
-												disabled={blocked || operations.busy || !admitted}
-												onChange={change}
-												onValidity={setScenarioValid}
-												useProfileRange={() => void useRange()}
-												rangeBusy={rangeBusy}
-											/>
+										>
+											<summary>
+												{__(
+													"Advanced storage and operating settings",
+													"linker-tools",
+												)}
+											</summary>
+											<ol className="lp-scenario-steps">
+												{(["storage", "initial", "operation"] as const).map(
+													(step, index) => (
+														<li
+															key={step}
+															aria-current={
+																section === step ? "step" : undefined
+															}
+														>
+															<button
+																type="button"
+																disabled={!syntaxValid}
+																onClick={() => setSection(step)}
+															>
+																<span>
+																	{String(index + 1).padStart(2, "0")}
+																</span>
+																{step === "storage"
+																	? __("Storage", "linker-tools")
+																	: step === "initial"
+																		? __("Starting state", "linker-tools")
+																		: __("Operation", "linker-tools")}
+															</button>
+														</li>
+													),
+												)}
+											</ol>
+											{joint && jointContext.value ? (
+												<PlantEnergyForm
+													storageOnly={storageOnly}
+													referenceCapacitySupported={
+														session.runtime.models.capacity_reference ===
+														REFERENCE_CAPACITY
+													}
+													value={jointContext.value.setup}
+													plant={jointContext.value.plant}
+													converters={converterIds}
+													section={section}
+													locale={locale}
+													disabled={blocked || operations.busy || !admitted}
+													onChange={changeJoint}
+													onValidity={setScenarioValid}
+													useProfileRange={() => void useRange()}
+													rangeBusy={rangeBusy}
+													openEquipment={() => {
+														setView("equipment");
+														openEquipment?.();
+													}}
+													client={client}
+													scope={session.query_scope}
+													active={active && view === "scenario"}
+												/>
+											) : (
+												setup && (
+													<ScenarioForm
+														storageOnly={storageOnly}
+														referenceCapacitySupported={
+															session.runtime.models.capacity_reference ===
+															REFERENCE_CAPACITY
+														}
+														client={client}
+														scope={session.query_scope}
+														active={active && view === "scenario"}
+														equipmentSelection={equipmentForEditing}
+														converters={converterIds}
+														key={setup.coupling ?? "independent_ac"}
+														openEquipment={() => {
+															setView("equipment");
+															openEquipment?.();
+														}}
+														value={setup}
+														section={section}
+														locale={locale}
+														disabled={blocked || operations.busy || !admitted}
+														onChange={change}
+														onValidity={setScenarioValid}
+														useProfileRange={() => void useRange()}
+														rangeBusy={rangeBusy}
+													/>
+												)
+											)}
+										</details>
+									</>
+								)}
+							</div>
+							<aside className="lp-work-aside">
+								<section className="lp-scenario-sources lp-work-panel">
+									<h3 className="lp-work-panel-heading">
+										{__("Interval sources", "linker-tools")}
+									</h3>
+									<ul>
+										{(
+											[
+												"gross_load",
+												...(currentSetup.schedule.some(
+													(period) => period.mode === "outage",
+												)
+													? ["critical_load" as const]
+													: []),
+												joint && sharedDc ? "pv_reference" : "pv_available_ac",
+												"aux_ac",
+											] as const
 										)
-									)}
-								</details>
-							</>
-						)}
+											.filter(
+												(role) =>
+													(!pvInactive ||
+														(role !== "pv_available_ac" &&
+															role !== "pv_reference")) &&
+													(role !== "aux_ac" || currentSetup.aux_ac_kw == null),
+											)
+											.map((role) => (
+												<li key={role}>
+													<span>
+														{role === "pv_available_ac" && !joint && sharedDc
+															? __("PV generation", "linker-tools")
+															: measurementLabel(role)}
+													</span>
+													<strong>
+														{selections.selected[role]
+															? __("Selected in this draft", "linker-tools")
+															: __("Required", "linker-tools")}
+													</strong>
+												</li>
+											))}
+									</ul>
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={openProfiles}
+										disabled={!syntaxValid}
+									>
+										{__("Review energy inputs", "linker-tools")}
+									</button>
+								</section>
+							</aside>
+						</div>
 						{joint && !jointAvailable && (
 							<Notice>
 								{__(
@@ -1632,7 +1649,7 @@ export function EnergyWorkspace({
 								)}
 							</Notice>
 						)}
-						<div className="lp-energy-submit">
+						<div className="lp-energy-submit lp-work-panel lp-work-toolbar">
 							<p>
 								{__(
 									"Calculate using the current project inputs. The result retains its inputs and sources.",
@@ -1799,177 +1816,165 @@ export function EnergyWorkspace({
 						{__("Reading saved calculations…", "linker-tools")}
 					</p>
 				)}
-				{runs.page.data && (
-					<aside className="lp-run-history">
-						<h3>{__("Calculation history", "linker-tools")}</h3>
-						{!runs.page.data.items.length && (
-							<p>
-								{__(
-									"No saved calculation is available on this page.",
-									"linker-tools",
+				<div className="lp-work-grid">
+					{runs.page.data && (
+						<aside className="lp-run-history lp-work-aside lp-work-panel">
+							<h3 className="lp-work-panel-heading">
+								{__("Calculation history", "linker-tools")}
+							</h3>
+							{!runs.page.data.items.length && (
+								<p>
+									{__(
+										"No saved calculation is available on this page.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+							{runs.page.data.items.map((run) => (
+								<button
+									type="button"
+									key={run.id}
+									aria-pressed={runs.runId === run.id}
+									onClick={() => runs.select(run.id)}
+								>
+									<strong>
+										{sprintf(__("Revision %d", "linker-tools"), run.revision)}
+									</strong>
+									{run.task_kind && <span>{taskLabel(run.task_kind)}</span>}
+									<span>{runStateLabel(run.state, run.task_kind)}</span>
+									<small>
+										{new Intl.DateTimeFormat(locale, {
+											dateStyle: "short",
+											timeStyle: "short",
+										}).format(run.created_at * 1000)}
+									</small>
+								</button>
+							))}
+							<div className="lp-inline-actions">
+								{runs.hasPrevious && (
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={runs.first}
+									>
+										{__("Latest calculations", "linker-tools")}
+									</button>
 								)}
+								{runs.page.data.next && (
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={runs.next}
+									>
+										{__("Earlier calculations", "linker-tools")}
+									</button>
+								)}
+							</div>
+						</aside>
+					)}
+					<div ref={runTarget} className="lp-run-content lp-work-main">
+						{runs.run.error && (
+							<Notice error>
+								<p>
+									{__(
+										"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+										"linker-tools",
+									)}
+								</p>
+								<button
+									type="button"
+									className="lp-text-button"
+									onClick={() => void runs.run.refetch()}
+								>
+									{__("Refresh calculation status", "linker-tools")}
+								</button>
+							</Notice>
+						)}
+						{runs.runId && !runs.run.data && !runs.run.error && (
+							<p role="status">
+								{__("Reading the saved calculation…", "linker-tools")}
 							</p>
 						)}
-						{runs.page.data.items.map((run) => (
-							<button
-								type="button"
-								key={run.id}
-								aria-pressed={runs.runId === run.id}
-								onClick={() => runs.select(run.id)}
-							>
-								<strong>
-									{sprintf(__("Revision %d", "linker-tools"), run.revision)}
-								</strong>
-								{run.task_kind && <span>{taskLabel(run.task_kind)}</span>}
-								<span>{runStateLabel(run.state, run.task_kind)}</span>
-								<small>
-									{new Intl.DateTimeFormat(locale, {
-										dateStyle: "short",
-										timeStyle: "short",
-									}).format(run.created_at * 1000)}
-								</small>
-							</button>
-						))}
-						<div className="lp-inline-actions">
-							{runs.hasPrevious && (
-								<button
-									type="button"
-									className="lp-text-button"
-									onClick={runs.first}
-								>
-									{__("Latest calculations", "linker-tools")}
-								</button>
-							)}
-							{runs.page.data.next && (
-								<button
-									type="button"
-									className="lp-text-button"
-									onClick={runs.next}
-								>
-									{__("Earlier calculations", "linker-tools")}
-								</button>
-							)}
-						</div>
-					</aside>
-				)}
-				<div ref={runTarget} className="lp-run-content">
-					{runs.run.error && (
-						<Notice error>
-							<p>
-								{__(
-									"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
-									"linker-tools",
-								)}
-							</p>
-							<button
-								type="button"
-								className="lp-text-button"
-								onClick={() => void runs.run.refetch()}
-							>
-								{__("Refresh calculation status", "linker-tools")}
-							</button>
-						</Notice>
-					)}
-					{runs.runId && !runs.run.data && !runs.run.error && (
-						<p role="status">
-							{__("Reading the saved calculation…", "linker-tools")}
-						</p>
-					)}
-					{runs.run.data && (
-						<>
-							{runTask(runs.run.data) === DIRECT_BEAM_TASK ? (
-								<DirectBeamResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									session={session}
-									client={client}
-									locale={locale}
-									sceneModuleUrl={sceneModuleUrl}
-								/>
-							) : runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
-								<PvgisReferenceResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									inputs={draft.history.current}
-									edit={edit}
-									session={session}
-									client={client}
-									recheck={recheck}
-									locale={locale}
-									blocked={blocked || !syntaxValid}
-									active={active && view === "runs"}
-								/>
-							) : [WEATHER_TASK, PV_TASK, GEOMETRIC_PV_TASK].includes(
-									runTask(runs.run.data) ?? "",
-							  ) ? (
-								<PreparationResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									inputs={draft.history.current}
-									edit={edit}
-									session={session}
-									client={client}
-									recheck={recheck}
-									locale={locale}
-									blocked={blocked || !syntaxValid}
-									active={active && view === "runs"}
-								/>
-							) : runTask(runs.run.data) === REPORT_TASK ? (
-								<PlanningReportResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									client={client}
-									scope={session.query_scope}
-									recheck={recheck}
-									operations={operations}
-									current={
-										!dirty &&
-										!draft.pending &&
-										runs.run.data.revision === draft.baseline.revision
-									}
-									blocked={blocked}
-									locale={locale}
-								/>
-							) : runTask(runs.run.data) === SEARCH_TASK ? (
-								<EquipmentSearchResult
-									key={runs.run.data.id}
-									run={runs.run.data}
-									locale={locale}
-									dirty={dirty || Boolean(draft.pending)}
-									confirmedRevision={draft.baseline.revision}
-									client={client}
-									scope={session.query_scope}
-									disabled={
-										blocked ||
-										!!draft.pending ||
-										!!draft.conflict ||
-										operations.busy ||
-										!syntaxValid
-									}
-									apply={applyEquipment}
-									plantActive={hasPlant(draft.history.current)}
-									projectCandidate={readObject(
-										draft.history.current.equipment_candidate ?? {},
-									)}
-									onError={setError}
-								/>
-							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
-								<EquipmentResult
-									run={runs.run.data}
-									locale={locale}
-									dirty={dirty || Boolean(draft.pending)}
-									confirmedRevision={draft.baseline.revision}
-									certificateSources={
-										<CertificateEvidence
-											client={client}
-											scope={session.query_scope}
-											run={runs.run.data}
-										/>
-									}
-								/>
-							) : (
-								<>
-									<RunResult
+						{runs.run.data && (
+							<>
+								{runTask(runs.run.data) === DIRECT_BEAM_TASK ? (
+									<DirectBeamResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										session={session}
+										client={client}
+										locale={locale}
+										sceneModuleUrl={sceneModuleUrl}
+									/>
+								) : runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
+									<PvgisReferenceResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										inputs={draft.history.current}
+										edit={edit}
+										session={session}
+										client={client}
+										recheck={recheck}
+										locale={locale}
+										blocked={blocked || !syntaxValid}
+										active={active && view === "runs"}
+									/>
+								) : [WEATHER_TASK, PV_TASK, GEOMETRIC_PV_TASK].includes(
+										runTask(runs.run.data) ?? "",
+								  ) ? (
+									<PreparationResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										inputs={draft.history.current}
+										edit={edit}
+										session={session}
+										client={client}
+										recheck={recheck}
+										locale={locale}
+										blocked={blocked || !syntaxValid}
+										active={active && view === "runs"}
+									/>
+								) : runTask(runs.run.data) === REPORT_TASK ? (
+									<PlanningReportResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										client={client}
+										scope={session.query_scope}
+										recheck={recheck}
+										operations={operations}
+										current={
+											!dirty &&
+											!draft.pending &&
+											runs.run.data.revision === draft.baseline.revision
+										}
+										blocked={blocked}
+										locale={locale}
+									/>
+								) : runTask(runs.run.data) === SEARCH_TASK ? (
+									<EquipmentSearchResult
+										key={runs.run.data.id}
+										run={runs.run.data}
+										locale={locale}
+										dirty={dirty || Boolean(draft.pending)}
+										confirmedRevision={draft.baseline.revision}
+										client={client}
+										scope={session.query_scope}
+										disabled={
+											blocked ||
+											!!draft.pending ||
+											!!draft.conflict ||
+											operations.busy ||
+											!syntaxValid
+										}
+										apply={applyEquipment}
+										plantActive={hasPlant(draft.history.current)}
+										projectCandidate={readObject(
+											draft.history.current.equipment_candidate ?? {},
+										)}
+										onError={setError}
+									/>
+								) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
+									<EquipmentResult
 										run={runs.run.data}
 										locale={locale}
 										dirty={dirty || Boolean(draft.pending)}
@@ -1982,49 +1987,66 @@ export function EnergyWorkspace({
 											/>
 										}
 									/>
-									{runs.run.data.state === "succeeded" &&
-										typeof runs.run.data.result?.trace_sha256 === "string" && (
-											<TraceExplorer
-												key={runs.run.data.id}
-												run={runs.run.data}
-												client={client}
-												session={session}
-												locale={locale}
-												active={active && view === "runs"}
-											/>
+								) : (
+									<>
+										<RunResult
+											run={runs.run.data}
+											locale={locale}
+											dirty={dirty || Boolean(draft.pending)}
+											confirmedRevision={draft.baseline.revision}
+											certificateSources={
+												<CertificateEvidence
+													client={client}
+													scope={session.query_scope}
+													run={runs.run.data}
+												/>
+											}
+										/>
+										{runs.run.data.state === "succeeded" &&
+											typeof runs.run.data.result?.trace_sha256 ===
+												"string" && (
+												<TraceExplorer
+													key={runs.run.data.id}
+													run={runs.run.data}
+													client={client}
+													session={session}
+													locale={locale}
+													active={active && view === "runs"}
+												/>
+											)}
+										<RunBasis
+											key={runs.run.data.id}
+											run={runs.run.data}
+											session={session}
+											client={client}
+											recheck={recheck}
+											locale={locale}
+										/>
+									</>
+								)}
+								{runPending(runs.run.data.state) && (
+									<button
+										type="button"
+										className="lp-button lp-button-secondary"
+										disabled={runs.cancelPending}
+										onClick={() => void runs.cancel()}
+									>
+										{runs.cancelBusy
+											? __("Confirming cancellation…", "linker-tools")
+											: __("Cancel calculation", "linker-tools")}
+									</button>
+								)}
+								{runs.cancelError && (
+									<Notice error>
+										{__(
+											"Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
+											"linker-tools",
 										)}
-									<RunBasis
-										key={runs.run.data.id}
-										run={runs.run.data}
-										session={session}
-										client={client}
-										recheck={recheck}
-										locale={locale}
-									/>
-								</>
-							)}
-							{runPending(runs.run.data.state) && (
-								<button
-									type="button"
-									className="lp-button lp-button-secondary"
-									disabled={runs.cancelPending}
-									onClick={() => void runs.cancel()}
-								>
-									{runs.cancelBusy
-										? __("Confirming cancellation…", "linker-tools")
-										: __("Cancel calculation", "linker-tools")}
-								</button>
-							)}
-							{runs.cancelError && (
-								<Notice error>
-									{__(
-										"Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
-										"linker-tools",
-									)}
-								</Notice>
-							)}
-						</>
-					)}
+									</Notice>
+								)}
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</section>

@@ -103,42 +103,44 @@ export function EquipmentWorkspace(props: Props) {
 		}
 	}
 	return (
-		<div ref={target}>
-			{props.standalone ? (
-				<div className="lp-section-heading">
-					<span className="lp-index">08</span>
-					<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
+		<div ref={target} className="lp-equipment-workspace">
+			<div className="lp-work-toolbar lp-equipment-heading">
+				{props.standalone ? (
+					<div className="lp-section-heading">
+						<span className="lp-index">08</span>
+						<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
+					</div>
+				) : (
+					<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
+				)}
+				<div
+					className="lp-plant-toolbar"
+					role="group"
+					aria-label={__("System arrangement", "linker-tools")}
+				>
+					<button
+						type="button"
+						className="lp-text-button"
+						aria-pressed={!multi}
+						disabled={disabled || !valid || (multi && !canReturn)}
+						onClick={() => {
+							if (multi) switchMode(false);
+						}}
+					>
+						{__("Single system", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="lp-text-button"
+						aria-pressed={multi}
+						disabled={disabled || !valid}
+						onClick={() => {
+							if (!multi) switchMode(true);
+						}}
+					>
+						{__("Multiple systems", "linker-tools")}
+					</button>
 				</div>
-			) : (
-				<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
-			)}
-			<div
-				className="lp-plant-toolbar"
-				role="group"
-				aria-label={__("System arrangement", "linker-tools")}
-			>
-				<button
-					type="button"
-					className="lp-text-button"
-					aria-pressed={!multi}
-					disabled={disabled || !valid || (multi && !canReturn)}
-					onClick={() => {
-						if (multi) switchMode(false);
-					}}
-				>
-					{__("Single system", "linker-tools")}
-				</button>
-				<button
-					type="button"
-					className="lp-text-button"
-					aria-pressed={multi}
-					disabled={disabled || !valid}
-					onClick={() => {
-						if (!multi) switchMode(true);
-					}}
-				>
-					{__("Multiple systems", "linker-tools")}
-				</button>
 			</div>
 			{commercial ? (
 				<CommercialSizing

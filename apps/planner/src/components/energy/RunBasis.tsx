@@ -173,7 +173,7 @@ export function RunBasis({
 			: "—";
 	return (
 		<details
-			className="lp-comparison lp-run-basis"
+			className="lp-comparison lp-run-basis lp-work-panel"
 			onToggle={(e) => setOpen(e.currentTarget.open)}
 		>
 			<summary>

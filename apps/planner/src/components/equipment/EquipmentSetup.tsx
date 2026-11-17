@@ -396,213 +396,239 @@ export function EquipmentSetup({
 				) : (
 					<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
 				))}
-			{!embedded && (
-				<>
-					<p className="lp-profile-help">
-						{__(
-							"Product properties come from Linker's product data. Each result records the product data and documents used.",
-							"linker-tools",
-						)}
-					</p>
-					{catalog.error && (
-						<Notice error>
-							{__("Product data could not be loaded.", "linker-tools")}
-						</Notice>
-					)}
-					{(catalog.isFetching || (catalog.data && !catalog.data.prepared)) && (
-						<p role="status">
-							{__("Current product data is being prepared.", "linker-tools")}
-						</p>
-					)}
-					<button
-						className="lp-text-button"
-						type="button"
-						disabled={catalog.isFetching || disabled}
-						onClick={() => void catalog.refetch()}
-					>
-						{__("Reload product data", "linker-tools")}
-					</button>
-				</>
-			)}
-			{!embedded && requirementFields}
-
-			{!embedded && !storageOnly && (
-				<PvStringSetup
-					draft={draft}
-					edit={edit}
-					inverterId={
-						typeof setup.inverter_product_id === "number"
-							? setup.inverter_product_id
-							: null
-					}
-					locale={locale}
-					disabled={disabled}
-					onValidity={callbacks.pv_string_plan!}
-				/>
-			)}
-			{!embedded && searchEnabled && (
-				<>
-					<p>
-						{__(
-							"Compare equipment configurations, then choose one for your project. Known requirements narrow the choices.",
-							"linker-tools",
-						)}
-					</p>
-					<div className="lp-energy-submit">
-						<button
-							className="lp-button"
-							type="button"
-							disabled={actionsDisabled || blocked || !valid}
-							onClick={search}
-						>
-							{__("Find equipment combinations", "linker-tools")}
-						</button>
-					</div>
-				</>
-			)}
-			<details
-				className="lp-comparison"
-				open={embedded || typeof setup.inverter_product_id === "number"}
+			<div
+				className={
+					embedded
+						? "lp-equipment-embedded"
+						: "lp-work-grid lp-equipment-layout"
+				}
 			>
-				<summary>{__("Choose equipment manually", "linker-tools")}</summary>
-				<p>
-					{__(
-						"Choose products to check their combination against the requirements entered here.",
-						"linker-tools",
-					)}
-				</p>
-				<fieldset
-					disabled={disabled}
-					className="lp-scenario-fields lp-scenario-block"
-				>
-					<div className="lp-geometry-fields">
-						{choice(
-							"inverter_product_id",
-							__("Inverter or integrated storage system", "linker-tools"),
-							converters,
-						)}
-						{choice(
-							"battery_product_id",
-							__("Battery or storage system", "linker-tools"),
-							storage,
-						)}
-						{useChoice("inverter", __("Inverter", "linker-tools"))}
-						{typeof setup.battery_product_id === "number" &&
-							useChoice("battery", __("Battery", "linker-tools"))}
-						{fixedCount != null ? (
-							<div className="lp-field">
-								<span>{__("Fixed internal module count", "linker-tools")}</span>
-								<p>
-									{sprintf(
-										__(
-											"The manufacturer specifies %d internal battery modules per battery system.",
-											"linker-tools",
-										),
-										fixedCount,
+				{!embedded && (
+					<section className="lp-work-panel lp-work-main lp-equipment-requirements">
+						<header className="lp-work-panel-heading">
+							<h3>{__("Project requirements", "linker-tools")}</h3>
+							<button
+								className="lp-text-button"
+								type="button"
+								disabled={catalog.isFetching || disabled}
+								onClick={() => void catalog.refetch()}
+							>
+								{__("Reload product data", "linker-tools")}
+							</button>
+						</header>
+						<div className="lp-work-panel-body">
+							<p className="lp-profile-help">
+								{__(
+									"Product properties come from Linker's product data. Each result records the product data and documents used.",
+									"linker-tools",
+								)}
+							</p>
+							{catalog.error && (
+								<Notice error>
+									{__("Product data could not be loaded.", "linker-tools")}
+								</Notice>
+							)}
+							{(catalog.isFetching ||
+								(catalog.data && !catalog.data.prepared)) && (
+								<p role="status">
+									{__(
+										"Current product data is being prepared.",
+										"linker-tools",
 									)}
 								</p>
-								{assembly?.documents.map((doc) => (
-									<a
-										className="lp-text-button"
-										key={`${doc.url}:${doc.page}`}
-										href={`${doc.url}#page=${doc.page}`}
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										{__("Source", "linker-tools")}
-									</a>
-								))}
-							</div>
-						) : (
-							number(
-								"modules_per_stack",
-								__("Battery modules per stack", "linker-tools"),
-								"",
-								true,
-							)
-						)}
-						{number(
-							"parallel_stacks",
-							assembly?.sales_unit_kind === "battery_system"
-								? __(
-										"Number of battery systems for this converter",
+							)}
+							{requirementFields}
+						</div>
+						{searchEnabled && (
+							<footer className="lp-work-toolbar">
+								<p className="lp-profile-help">
+									{__(
+										"Compare equipment configurations, then choose one for your project. Known requirements narrow the choices.",
 										"linker-tools",
-									)
-								: __("Parallel stacks or systems", "linker-tools"),
-							"",
-							true,
+									)}
+								</p>
+								<button
+									className="lp-button"
+									type="button"
+									disabled={actionsDisabled || blocked || !valid}
+									onClick={search}
+								>
+									{__("Find equipment combinations", "linker-tools")}
+								</button>
+							</footer>
 						)}
-					</div>
-				</fieldset>
-				{embedded && requirementFields}
-				<details className="lp-comparison">
-					<summary>{__("Additional products", "linker-tools")}</summary>
-					<label className="lp-field">
-						<span>{__("Choose a product", "linker-tools")}</span>
-						<select
-							{...fieldProps("accessory_product_ids")}
-							value=""
-							disabled={blocked}
-							onChange={(event) => {
-								const id = Number(event.currentTarget.value);
-								if (id)
-									change({
-										accessory_product_ids: [...selectedAccessories, id],
-									});
-							}}
-						>
-							<option value="">{__("Choose a product", "linker-tools")}</option>
-							{products
-								.filter(
-									(p) =>
-										p.id !== setup.inverter_product_id &&
-										p.id !== setup.battery_product_id &&
-										!selectedAccessories.includes(p.id),
-								)
-								.map((p) => (
-									<option key={p.id} value={p.id}>
-										{p.brand} {p.model}
-									</option>
-								))}
-						</select>
-						{feedback("accessory_product_ids")}
-					</label>
-					{selectedAccessories.map((id, index) => (
-						<label className="lp-field" key={id}>
-							<span>
-								<input
-									{...fieldProps(`accessory_product_ids[${index}]`)}
-									type="checkbox"
-									checked
-									disabled={disabled}
-									onChange={() =>
-										change({
-											accessory_product_ids: selectedAccessories.filter(
-												(value) => value !== id,
-											),
-										})
-									}
-								/>
-								{products.find((p) => p.id === id)?.model ??
-									__("Use current product data", "linker-tools")}
-							</span>
-							{feedback(`accessory_product_ids[${index}]`)}
-						</label>
-					))}
-				</details>
-				{!embedded && (
-					<div className="lp-energy-submit">
-						<button
-							type="button"
-							className="lp-button"
-							disabled={actionsDisabled || blocked || !valid}
-							onClick={check}
-						>
-							{__("Check equipment", "linker-tools")}
-						</button>
-					</div>
+					</section>
 				)}
-			</details>
+				<div className={embedded ? undefined : "lp-work-aside"}>
+					<details
+						className="lp-comparison lp-work-panel lp-equipment-manual"
+						open={embedded || typeof setup.inverter_product_id === "number"}
+					>
+						<summary className="lp-work-panel-heading">
+							{__("Choose equipment manually", "linker-tools")}
+						</summary>
+						<div className="lp-work-panel-body">
+							<p className="lp-profile-help">
+								{__(
+									"Choose products to check their combination against the requirements entered here.",
+									"linker-tools",
+								)}
+							</p>
+							<fieldset
+								disabled={disabled}
+								className="lp-scenario-fields lp-scenario-block"
+							>
+								<div className="lp-geometry-fields">
+									{choice(
+										"inverter_product_id",
+										__("Inverter or integrated storage system", "linker-tools"),
+										converters,
+									)}
+									{choice(
+										"battery_product_id",
+										__("Battery or storage system", "linker-tools"),
+										storage,
+									)}
+									{useChoice("inverter", __("Inverter", "linker-tools"))}
+									{typeof setup.battery_product_id === "number" &&
+										useChoice("battery", __("Battery", "linker-tools"))}
+									{fixedCount != null ? (
+										<div className="lp-field">
+											<span>
+												{__("Fixed internal module count", "linker-tools")}
+											</span>
+											<p>
+												{sprintf(
+													__(
+														"The manufacturer specifies %d internal battery modules per battery system.",
+														"linker-tools",
+													),
+													fixedCount,
+												)}
+											</p>
+											{assembly?.documents.map((doc) => (
+												<a
+													className="lp-text-button"
+													key={`${doc.url}:${doc.page}`}
+													href={`${doc.url}#page=${doc.page}`}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{__("Source", "linker-tools")}
+												</a>
+											))}
+										</div>
+									) : (
+										number(
+											"modules_per_stack",
+											__("Battery modules per stack", "linker-tools"),
+											"",
+											true,
+										)
+									)}
+									{number(
+										"parallel_stacks",
+										assembly?.sales_unit_kind === "battery_system"
+											? __(
+													"Number of battery systems for this converter",
+													"linker-tools",
+												)
+											: __("Parallel stacks or systems", "linker-tools"),
+										"",
+										true,
+									)}
+								</div>
+							</fieldset>
+							{embedded && requirementFields}
+							<details className="lp-comparison">
+								<summary>{__("Additional products", "linker-tools")}</summary>
+								<label className="lp-field">
+									<span>{__("Choose a product", "linker-tools")}</span>
+									<select
+										{...fieldProps("accessory_product_ids")}
+										value=""
+										disabled={blocked}
+										onChange={(event) => {
+											const id = Number(event.currentTarget.value);
+											if (id)
+												change({
+													accessory_product_ids: [...selectedAccessories, id],
+												});
+										}}
+									>
+										<option value="">
+											{__("Choose a product", "linker-tools")}
+										</option>
+										{products
+											.filter(
+												(p) =>
+													p.id !== setup.inverter_product_id &&
+													p.id !== setup.battery_product_id &&
+													!selectedAccessories.includes(p.id),
+											)
+											.map((p) => (
+												<option key={p.id} value={p.id}>
+													{p.brand} {p.model}
+												</option>
+											))}
+									</select>
+									{feedback("accessory_product_ids")}
+								</label>
+								{selectedAccessories.map((id, index) => (
+									<label className="lp-field" key={id}>
+										<span>
+											<input
+												{...fieldProps(`accessory_product_ids[${index}]`)}
+												type="checkbox"
+												checked
+												disabled={disabled}
+												onChange={() =>
+													change({
+														accessory_product_ids: selectedAccessories.filter(
+															(value) => value !== id,
+														),
+													})
+												}
+											/>
+											{products.find((p) => p.id === id)?.model ??
+												__("Use current product data", "linker-tools")}
+										</span>
+										{feedback(`accessory_product_ids[${index}]`)}
+									</label>
+								))}
+							</details>
+						</div>
+						{!embedded && (
+							<div className="lp-work-toolbar">
+								<button
+									type="button"
+									className="lp-button"
+									disabled={actionsDisabled || blocked || !valid}
+									onClick={check}
+								>
+									{__("Check equipment", "linker-tools")}
+								</button>
+							</div>
+						)}
+					</details>
+				</div>
+			</div>
+			{!embedded && !storageOnly && (
+				<div className="lp-work-panel lp-equipment-wiring">
+					<PvStringSetup
+						draft={draft}
+						edit={edit}
+						inverterId={
+							typeof setup.inverter_product_id === "number"
+								? setup.inverter_product_id
+								: null
+						}
+						locale={locale}
+						disabled={disabled}
+						onValidity={callbacks.pv_string_plan!}
+					/>
+				</div>
+			)}
 		</>
 	);
 }

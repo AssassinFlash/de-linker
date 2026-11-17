@@ -58,36 +58,38 @@ export function ScenarioForm({
 	);
 	const dc = value.coupling === "shared_dc";
 	return (
-		<fieldset className="lp-scenario-fields" disabled={disabled}>
-			<div hidden={section !== "storage"}>
-				<label className="lp-field">
-					<span>{__("System connection", "linker-tools")}</span>
-					<select
-						value={value.coupling ?? "independent_ac"}
-						onChange={(e) =>
-							onChange({
-								...value,
-								coupling: e.currentTarget.value as
-									"shared_dc" | "independent_ac",
-								...(e.currentTarget.value === "shared_dc"
-									? {
-											controller: "self_consumption_with_reserve_v1" as const,
-											aux_ac_kw: null,
-										}
-									: {}),
-								dc: value.dc ?? emptyDcScenario(),
-								battery_binding: null,
-							})
-						}
-					>
-						<option value="independent_ac">
-							{__("Separate AC connections", "linker-tools")}
-						</option>
-						<option value="shared_dc" disabled={storageOnly}>
-							{__("PV and battery share an inverter", "linker-tools")}
-						</option>
-					</select>
-				</label>
+		<fieldset className="lp-scenario-fields lp-work-main" disabled={disabled}>
+			<div className="lp-work-main" hidden={section !== "storage"}>
+				<section className="lp-work-panel">
+					<label className="lp-field">
+						<span>{__("System connection", "linker-tools")}</span>
+						<select
+							value={value.coupling ?? "independent_ac"}
+							onChange={(e) =>
+								onChange({
+									...value,
+									coupling: e.currentTarget.value as
+										"shared_dc" | "independent_ac",
+									...(e.currentTarget.value === "shared_dc"
+										? {
+												controller: "self_consumption_with_reserve_v1" as const,
+												aux_ac_kw: null,
+											}
+										: {}),
+									dc: value.dc ?? emptyDcScenario(),
+									battery_binding: null,
+								})
+							}
+						>
+							<option value="independent_ac">
+								{__("Separate AC connections", "linker-tools")}
+							</option>
+							<option value="shared_dc" disabled={storageOnly}>
+								{__("PV and battery share an inverter", "linker-tools")}
+							</option>
+						</select>
+					</label>
+				</section>
 				{dc && (
 					<DcStorageForm
 						referenceCapacitySupported={referenceCapacitySupported}
@@ -110,10 +112,12 @@ export function ScenarioForm({
 				)}
 			</div>
 			<section
-				className="lp-scenario-block"
+				className="lp-scenario-block lp-work-panel"
 				hidden={section !== "storage" || dc}
 			>
-				<h3>{__("Storage parameters", "linker-tools")}</h3>
+				<h3 className="lp-work-panel-heading">
+					{__("Storage parameters", "linker-tools")}
+				</h3>
 				<p className="lp-profile-help">
 					{__(
 						"These values define a storage scenario at one AC connection. This calculation does not assess product suitability.",
@@ -191,7 +195,7 @@ export function ScenarioForm({
 					</p>
 				</details>
 			</section>
-			<div hidden={section !== "initial"}>
+			<div className="lp-work-panel" hidden={section !== "initial"}>
 				<InitialInventoryForm
 					value={value.initial_inventory}
 					onChange={(initial_inventory) =>
@@ -201,9 +205,12 @@ export function ScenarioForm({
 					report={report}
 				/>
 			</div>
-			<section className="lp-scenario-block" hidden={section !== "operation"}>
+			<section
+				className="lp-scenario-block lp-work-main"
+				hidden={section !== "operation"}
+			>
 				{!dc && (
-					<>
+					<section className="lp-work-panel">
 						<label className="lp-field">
 							<span>{__("Operating strategy", "linker-tools")}</span>
 							<select
@@ -267,7 +274,7 @@ export function ScenarioForm({
 								onChange={(aux_ac_kw) => onChange({ ...value, aux_ac_kw })}
 							/>
 						)}
-					</>
+					</section>
 				)}
 				<OperatingPeriodsForm
 					periods={value.schedule}
@@ -277,43 +284,48 @@ export function ScenarioForm({
 					useProfileRange={useProfileRange}
 					rangeBusy={rangeBusy}
 				/>
-				<label className="lp-field">
-					<span>
-						{__("Stored energy at the end of the calculation", "linker-tools")}
-					</span>
-					<select
-						value={value.terminal_policy ?? ""}
-						onChange={(e) =>
-							onChange({
-								...value,
-								terminal_policy: (e.currentTarget.value ||
-									null) as ScenarioDraft["terminal_policy"],
-							})
-						}
-					>
-						<option value="">{__("Choose an option", "linker-tools")}</option>
-						<option value="none">
-							{__("No minimum required", "linker-tools")}
-						</option>
-						<option value="minimum">
-							{__("Specify a minimum", "linker-tools")}
-						</option>
-					</select>
-				</label>
-				{value.terminal_policy === "minimum" && (
-					<ScenarioNumber
-						field="terminal"
-						label={__("Minimum final stored energy", "linker-tools")}
-						value={value.terminal_min_kwh}
-						unit="kWh"
-						locale={locale}
-						report={report}
-						onChange={(number) =>
-							onChange({ ...value, terminal_min_kwh: number })
-						}
-					/>
-				)}
-				<details className="lp-comparison">
+				<section className="lp-work-panel">
+					<label className="lp-field">
+						<span>
+							{__(
+								"Stored energy at the end of the calculation",
+								"linker-tools",
+							)}
+						</span>
+						<select
+							value={value.terminal_policy ?? ""}
+							onChange={(e) =>
+								onChange({
+									...value,
+									terminal_policy: (e.currentTarget.value ||
+										null) as ScenarioDraft["terminal_policy"],
+								})
+							}
+						>
+							<option value="">{__("Choose an option", "linker-tools")}</option>
+							<option value="none">
+								{__("No minimum required", "linker-tools")}
+							</option>
+							<option value="minimum">
+								{__("Specify a minimum", "linker-tools")}
+							</option>
+						</select>
+					</label>
+					{value.terminal_policy === "minimum" && (
+						<ScenarioNumber
+							field="terminal"
+							label={__("Minimum final stored energy", "linker-tools")}
+							value={value.terminal_min_kwh}
+							unit="kWh"
+							locale={locale}
+							report={report}
+							onChange={(number) =>
+								onChange({ ...value, terminal_min_kwh: number })
+							}
+						/>
+					)}
+				</section>
+				<details className="lp-comparison lp-work-panel">
 					<summary>{__("How storage is operated", "linker-tools")}</summary>
 					<p>
 						{dc

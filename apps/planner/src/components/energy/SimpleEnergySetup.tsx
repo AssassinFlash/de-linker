@@ -71,49 +71,71 @@ export function SimpleEnergySetup({
 		});
 	}
 	return (
-		<fieldset disabled={disabled} className="lp-brief-fields">
-			<h3>{__("Energy use and storage", "linker-tools")}</h3>
-			{storageOnly && (
+		<fieldset disabled={disabled} className="lp-brief-fields lp-work-main">
+			<section className="lp-work-panel">
+				<h3 className="lp-work-panel-heading">
+					{__("Energy use and storage", "linker-tools")}
+				</h3>
+				{storageOnly && (
+					<p>
+						{__(
+							"Storage-only project · no PV generation or roof required.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+				<label className="lp-field">
+					<span>{__("Operating goal", "linker-tools")}</span>
+					<select
+						value={purpose}
+						onChange={(e) => choosePurpose(e.currentTarget.value)}
+					>
+						<option value="">{__("Choose an option", "linker-tools")}</option>
+						<option value="self">
+							{__("Self-consumption", "linker-tools")}
+						</option>
+						<option value="backup">
+							{__("Backup during an outage", "linker-tools")}
+						</option>
+						<option value="peak">
+							{__("Peak shaving · separate AC storage", "linker-tools")}
+						</option>
+					</select>
+				</label>
 				<p>
 					{__(
-						"Storage-only project · no PV generation or roof required.",
+						"Choose an equipment configuration, or enter parameters for a system you already know.",
 						"linker-tools",
 					)}
 				</p>
-			)}
-			<label className="lp-field">
-				<span>{__("Operating goal", "linker-tools")}</span>
-				<select
-					value={purpose}
-					onChange={(e) => choosePurpose(e.currentTarget.value)}
-				>
-					<option value="">{__("Choose an option", "linker-tools")}</option>
-					<option value="self">{__("Self-consumption", "linker-tools")}</option>
-					<option value="backup">
-						{__("Backup during an outage", "linker-tools")}
-					</option>
-					<option value="peak">
-						{__("Peak shaving · separate AC storage", "linker-tools")}
-					</option>
-				</select>
-			</label>
-			<p>
-				{__(
-					"Choose an equipment configuration, or enter parameters for a system you already know.",
-					"linker-tools",
+				{!hasEquipment && (
+					<button type="button" className="lp-button" onClick={chooseEquipment}>
+						{__("Choose equipment", "linker-tools")}
+					</button>
 				)}
-			</p>
-			{!hasEquipment && (
-				<button type="button" className="lp-button" onClick={chooseEquipment}>
-					{__("Choose equipment", "linker-tools")}
-				</button>
-			)}
+				{purpose === "backup" && (
+					<p>
+						{__(
+							"Select a critical-load profile in Energy use. Set the outage period and declare whether a documented backup PV supply is available. The calculation reports any unmet demand.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+				{storageOnly && purpose === "self" && (
+					<p>
+						{__(
+							"Without PV, this mode uses only the starting charge. Choose peak shaving to recharge from the grid below a defined cap.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+			</section>
 			<details
-				className="lp-comparison"
+				className="lp-comparison lp-work-panel"
 				open={hasEquipment || value.battery.usable_window_kwh !== null}
 			>
 				<summary>{__("Storage parameters", "linker-tools")}</summary>
-				<div className="grid gap-5 md:grid-cols-2">
+				<div className="lp-geometry-fields">
 					{BATTERY_FIELDS.map((field) => {
 						const p = batteryPresentation(field);
 						return (
@@ -172,23 +194,7 @@ export function SimpleEnergySetup({
 					/>
 				</label>
 			</details>
-			{purpose === "backup" && (
-				<p>
-					{__(
-						"Select a critical-load profile in Energy use. Set the outage period and declare whether a documented backup PV supply is available. The calculation reports any unmet demand.",
-						"linker-tools",
-					)}
-				</p>
-			)}
-			{storageOnly && purpose === "self" && (
-				<p>
-					{__(
-						"Without PV, this mode uses only the starting charge. Choose peak shaving to recharge from the grid below a defined cap.",
-						"linker-tools",
-					)}
-				</p>
-			)}
-			<details className="lp-comparison">
+			<details className="lp-comparison lp-work-panel">
 				<summary>{__("Starting charge and source", "linker-tools")}</summary>
 				<InitialInventoryForm
 					value={value.initial_inventory}
@@ -207,42 +213,44 @@ export function SimpleEnergySetup({
 				useProfileRange={useProfileRange}
 				rangeBusy={rangeBusy}
 			/>
-			<label className="lp-field">
-				<span>
-					{__("Stored energy at the end of the calculation", "linker-tools")}
-				</span>
-				<select
-					value={value.terminal_policy ?? ""}
-					onChange={(event) =>
-						onChange({
-							...value,
-							terminal_policy: (event.currentTarget.value ||
-								null) as ScenarioDraft["terminal_policy"],
-						})
-					}
-				>
-					<option value="">{__("Choose an option", "linker-tools")}</option>
-					<option value="none">
-						{__("No minimum required", "linker-tools")}
-					</option>
-					<option value="minimum">
-						{__("Specify a minimum", "linker-tools")}
-					</option>
-				</select>
-			</label>
-			{value.terminal_policy === "minimum" && (
-				<ScenarioNumber
-					field="terminal"
-					label={__("Minimum final stored energy", "linker-tools")}
-					value={value.terminal_min_kwh}
-					unit="kWh"
-					locale={locale}
-					report={report}
-					onChange={(terminal_min_kwh) =>
-						onChange({ ...value, terminal_min_kwh })
-					}
-				/>
-			)}
+			<section className="lp-work-panel">
+				<label className="lp-field">
+					<span>
+						{__("Stored energy at the end of the calculation", "linker-tools")}
+					</span>
+					<select
+						value={value.terminal_policy ?? ""}
+						onChange={(event) =>
+							onChange({
+								...value,
+								terminal_policy: (event.currentTarget.value ||
+									null) as ScenarioDraft["terminal_policy"],
+							})
+						}
+					>
+						<option value="">{__("Choose an option", "linker-tools")}</option>
+						<option value="none">
+							{__("No minimum required", "linker-tools")}
+						</option>
+						<option value="minimum">
+							{__("Specify a minimum", "linker-tools")}
+						</option>
+					</select>
+				</label>
+				{value.terminal_policy === "minimum" && (
+					<ScenarioNumber
+						field="terminal"
+						label={__("Minimum final stored energy", "linker-tools")}
+						value={value.terminal_min_kwh}
+						unit="kWh"
+						locale={locale}
+						report={report}
+						onChange={(terminal_min_kwh) =>
+							onChange({ ...value, terminal_min_kwh })
+						}
+					/>
+				)}
+			</section>
 		</fieldset>
 	);
 }

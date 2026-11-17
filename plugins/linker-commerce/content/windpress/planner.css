@@ -491,6 +491,49 @@
 /* Energy scenarios and frozen calculations share the application's design tokens. */
 @layer components {
   [data-linker-planner] .lp-energy-workspace { min-width: 0; }
+  /* Shared task panels for equipment, calculation inputs and retained results. */
+  [data-linker-planner] .lp-work-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .42fr); align-items: start; gap: 20px; }
+  [data-linker-planner] :is(.lp-work-main, .lp-work-aside) { min-width: 0; display: grid; gap: 20px; }
+  [data-linker-planner] .lp-work-panel { min-width: 0; margin: 0; padding: 24px; border: 1px solid var(--lp-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); box-shadow: 0 1px 2px rgb(0 0 0 / .025); }
+  [data-linker-planner] .lp-work-panel-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 0 0 16px; margin: 0 0 20px; border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-work-panel-heading :is(h2, h3, h4) { margin: 0; font-size: 16px; line-height: 1.45; }
+  [data-linker-planner] .lp-work-panel-heading p { flex-basis: 100%; font-size: 12px; color: var(--proto-neutral-600); margin: 0; }
+  [data-linker-planner] .lp-work-panel > :is(h3, h4) { font-size: 16px; margin: 0 0 16px; }
+  [data-linker-planner] .lp-work-panel.lp-scenario-sources { padding: 24px; margin: 0; border: 1px solid var(--lp-line); background: var(--proto-neutral-0); }
+  [data-linker-planner] .lp-work-panel :is(.lp-scenario-fields, .lp-scenario-block) > .lp-field + .lp-field { margin-top: 20px; }
+  [data-linker-planner] .lp-work-panel .lp-geometry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  [data-linker-planner] .lp-equipment-manual .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
+  [data-linker-planner] .lp-equipment-wiring { margin-top: 20px; }
+  [data-linker-planner] .lp-equipment-heading .lp-section-heading { margin: 0; }
+  [data-linker-planner] .lp-equipment-count { font-size: 12px; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-equipment-candidate-picker { align-items: end; }
+  [data-linker-planner] .lp-work-panel > .lp-field + p { margin-top: 12px; }
+  [data-linker-planner] .lp-work-panel > p { font-size: 13px; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-work-panel > :last-child { margin-bottom: 0; }
+  [data-linker-planner] fieldset.lp-work-panel > legend.lp-work-panel-heading { float: left; width: 100%; }
+  [data-linker-planner] fieldset.lp-work-panel > legend + * { clear: both; }
+  [data-linker-planner] .lp-work-panel-body { min-width: 0; }
+  [data-linker-planner] .lp-work-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; }
+  [data-linker-planner] .lp-work-toolbar > :is(h2, h3, p) { margin: 0; }
+  [data-linker-planner] .lp-work-panel > .lp-work-toolbar:last-child { padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--lp-line); }
+  [data-linker-planner] details.lp-work-panel > summary { cursor: pointer; min-height: 44px; align-content: center; font-size: 15px; font-weight: 600; }
+  [data-linker-planner] details.lp-work-panel:not([open]) > summary { margin: 0; padding: 0; border: 0; }
+  [data-linker-planner] details.lp-work-panel > summary.lp-work-panel-heading { display: list-item; }
+  [data-linker-planner] .lp-equipment-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  [data-linker-planner] .lp-equipment-plant-layout { grid-template-columns: minmax(240px, .38fr) minmax(0, 1fr); }
+  [data-linker-planner] .lp-equipment-plant-layout > .lp-work-aside .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
+  [data-linker-planner] .lp-equipment-heading { margin-bottom: 20px; }
+  [data-linker-planner] .lp-equipment-heading .lp-plant-toolbar { margin: 0; }
+  [data-linker-planner] .lp-equipment-candidates { margin-top: 20px; }
+  @media (max-width: 1100px) {
+    [data-linker-planner] .lp-work-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    [data-linker-planner] .lp-work-panel, [data-linker-planner] .lp-work-panel.lp-scenario-sources { padding: 18px; }
+    [data-linker-planner] .lp-work-panel .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
+    [data-linker-planner] .lp-work-panel-heading { gap: 8px 12px; margin-bottom: 16px; padding-bottom: 12px; }
+    [data-linker-planner] .lp-work-toolbar > .lp-button { width: 100%; }
+  }
   [data-linker-planner] .lp-energy-switch { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--lp-line); margin-bottom: 28px; gap: 4px 20px; }
   [data-linker-planner] .lp-energy-switch > button { min-height: 48px; padding: 10px 0; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--proto-neutral-500); font-size: 13px; font-weight: 500; }
   [data-linker-planner] .lp-energy-switch > button[aria-pressed="true"] { border-bottom-color: var(--proto-accent); color: var(--proto-teal-900); font-weight: 600; }
@@ -506,7 +549,7 @@
   [data-linker-planner] .lp-scenario-steps button { text-align: left; width: 100%; min-height: 64px; padding: 10px 0; color: var(--proto-neutral-500); background: transparent; border: 0; font-size: 13px; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-scenario-steps [aria-current="step"] button { color: var(--proto-teal-900); font-weight: 600; }
   [data-linker-planner] .lp-scenario-steps span { display: block; font: 10px var(--proto-font-mono); margin-bottom: 6px; color: var(--proto-teal-700); }
-  [data-linker-planner] .lp-scenario-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
+  [data-linker-planner] .lp-scenario-fields:not(.lp-work-panel) { min-width: 0; padding: 0; margin: 0; border: 0; }
   [data-linker-planner] .lp-scenario-fields > div + .lp-scenario-block { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-scenario-block > h3 { font-size: 18px; margin: 0 0 12px; }
   [data-linker-planner] .lp-pv-parameters { padding-block: 24px; border-top: 1px solid var(--lp-line); }
@@ -529,9 +572,9 @@
   [data-linker-planner] .lp-energy-recovery > p { font-size: 12px; }
   [data-linker-planner] .lp-energy-recovery-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 12px; border-top: 1px solid var(--lp-line); padding-top: 12px; margin-top: 12px; }
   [data-linker-planner] .lp-energy-recovery-row > span { flex: 1 1 100%; }
-  [data-linker-planner] .lp-energy-runs { display: grid; grid-template-columns: minmax(160px, .28fr) minmax(0, 1fr); gap: 32px; align-items: start; }
-  [data-linker-planner] .lp-energy-runs > .lp-notice, [data-linker-planner] .lp-energy-runs > [role="status"] { grid-column: 1 / -1; }
-  [data-linker-planner] .lp-run-history { min-width: 0; padding-right: 20px; border-right: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-energy-runs { min-width: 0; }
+  [data-linker-planner] .lp-energy-runs > .lp-work-grid { grid-template-columns: minmax(220px, .3fr) minmax(0, 1fr); }
+  [data-linker-planner] .lp-run-history { min-width: 0; align-content: start; }
   [data-linker-planner] .lp-run-history > h3 { font-size: 14px; margin: 0 0 16px; }
   [data-linker-planner] .lp-run-history > p { font-size: 12px; color: var(--proto-neutral-600); }
   [data-linker-planner] .lp-run-history > button { width: 100%; text-align: left; padding: 14px 12px; margin: 0; border: 0; border-left: 2px solid transparent; border-bottom: 1px solid var(--lp-line); border-radius: 0; background: transparent; color: var(--proto-neutral-600); font-size: 12px; }
@@ -569,9 +612,8 @@
   [data-linker-planner] .lp-energy-comparison .lp-field-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; margin-block: 20px; }
   [data-linker-planner] .lp-energy-comparison > details { padding-block: 16px; border-bottom: 1px solid var(--lp-line); }
   @media (max-width: 1100px) {
-    [data-linker-planner] .lp-energy-runs { grid-template-columns: minmax(0, 1fr); }
-    [data-linker-planner] .lp-run-history { border-right: 0; padding: 0 0 20px; border-bottom: 1px solid var(--lp-line); }
-    [data-linker-planner] .lp-run-history > button { display: inline-block; width: min(100%, 220px); vertical-align: top; }
+    [data-linker-planner] .lp-energy-runs > .lp-work-grid { grid-template-columns: minmax(0, 1fr); }
+    [data-linker-planner] .lp-run-history > button { width: 100%; }
   }
   @media (max-width: 640px) {
     [data-linker-planner] .lp-comparison-variants { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -603,7 +645,7 @@
   [data-linker-planner] .lp-section-title p { color: var(--proto-neutral-500); font-size: 13px; margin: 8px 0 0; max-width: 580px; }
 
   /* A · Journal disclosures (<details.lp-comparison>, <details.lp-object-inspector>, <details>). */
-  [data-linker-planner] details.lp-comparison {
+  [data-linker-planner] details.lp-comparison:not(.lp-work-panel) {
     margin-block: 0;
     border-top: 1px solid var(--lp-line);
     padding-block: 4px;
@@ -734,12 +776,12 @@
     font-weight: 500;
     margin-block: 4px 12px;
   }
-  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block {
+  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block:not(.lp-work-panel) {
     margin-block: 16px 24px;
     padding-block: 20px 4px;
     border-top: 1px solid var(--lp-line);
   }
-  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block > legend {
+  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block:not(.lp-work-panel) > legend {
     padding: 0 0 12px;
     font-size: 15px;
     font-weight: 600;
@@ -754,6 +796,11 @@
   [data-linker-planner] #lp-equipment .lp-energy-submit {
     margin-block: 16px 24px;
   }
+  [data-linker-planner] #lp-equipment .lp-work-panel fieldset.lp-scenario-block { margin: 0; padding: 0; border: 0; }
+  [data-linker-planner] #lp-equipment .lp-work-panel .lp-geometry-fields { margin: 16px 0; }
+  [data-linker-planner] .lp-equipment-manual .lp-geometry-fields .lp-field:has(> p) { grid-column: 1 / -1; gap: 6px; }
+  [data-linker-planner] .lp-equipment-manual .lp-field > p { margin: 0; }
+  [data-linker-planner] .lp-equipment-manual .lp-field > a.lp-text-button { justify-content: flex-start; min-height: 32px; }
   [data-linker-planner] #lp-equipment .lp-comparison > p {
     font-size: 13px;
     color: var(--proto-neutral-600);

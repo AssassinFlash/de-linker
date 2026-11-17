@@ -36,25 +36,29 @@ export function SolarEnergySetup({
 		return () => onValidity(true);
 	}, [validity, onValidity]);
 	return (
-		<fieldset disabled={disabled} className="lp-scenario-fields">
-			<h3>{__("Solar-only energy flows", "linker-tools")}</h3>
-			<p className="lp-profile-help">
-				{__(
-					"Use available AC PV generation and load at the common metering point. This project has no battery storage.",
-					"linker-tools",
+		<fieldset disabled={disabled} className="lp-scenario-fields lp-work-main">
+			<section className="lp-work-panel">
+				<h3 className="lp-work-panel-heading">
+					{__("Solar-only energy flows", "linker-tools")}
+				</h3>
+				<p className="lp-profile-help">
+					{__(
+						"Use available AC PV generation and load at the common metering point. This project has no battery storage.",
+						"linker-tools",
+					)}
+				</p>
+				{(!hasAuxiliaryProfile || value.aux_ac_kw != null) && (
+					<ScenarioNumber
+						field="aux"
+						label={__("Constant AC auxiliary demand", "linker-tools")}
+						unit="kW"
+						locale={locale}
+						value={value.aux_ac_kw ?? null}
+						report={report}
+						onChange={(aux_ac_kw) => onChange({ aux_ac_kw })}
+					/>
 				)}
-			</p>
-			{(!hasAuxiliaryProfile || value.aux_ac_kw != null) && (
-				<ScenarioNumber
-					field="aux"
-					label={__("Constant AC auxiliary demand", "linker-tools")}
-					unit="kW"
-					locale={locale}
-					value={value.aux_ac_kw ?? null}
-					report={report}
-					onChange={(aux_ac_kw) => onChange({ aux_ac_kw })}
-				/>
-			)}
+			</section>
 			<OperatingPeriodsForm
 				periods={value.schedule}
 				onChange={(schedule) => onChange({ schedule })}

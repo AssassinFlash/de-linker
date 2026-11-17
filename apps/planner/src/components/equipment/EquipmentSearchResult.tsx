@@ -139,111 +139,125 @@ export function EquipmentSearchResult({
 			}
 		>
 			{search && (
-				<>
-					{differentArrangement && (
-						<Notice>
-							{__(
-								"This result is for a different system arrangement. Choose the matching arrangement before using a combination.",
-								"linker-tools",
-							)}
-						</Notice>
-					)}
-					<p>
-						{search.completion === "budget_exhausted"
-							? __(
-									"Search incomplete: the search limit was reached. Some configurations remain unchecked.",
+				<section className="lp-work-panel lp-equipment-candidates">
+					<header className="lp-work-panel-heading">
+						<div>
+							<h3>{__("Equipment combination", "linker-tools")}</h3>
+							<p className="lp-profile-help">
+								{search.completion === "budget_exhausted"
+									? __(
+											"Search incomplete: the search limit was reached. Some configurations remain unchecked.",
+											"linker-tools",
+										)
+									: __(
+											"Search complete within the stated scope.",
+											"linker-tools",
+										)}
+							</p>
+						</div>
+						<p className="lp-equipment-count">
+							{__("Combinations assessed", "linker-tools")}:{" "}
+							{new Intl.NumberFormat(locale).format(candidates.length)}
+						</p>
+					</header>
+					<div className="lp-work-panel-body">
+						{differentArrangement && (
+							<Notice>
+								{__(
+									"This result is for a different system arrangement. Choose the matching arrangement before using a combination.",
 									"linker-tools",
-								)
-							: __("Search complete within the stated scope.", "linker-tools")}
-					</p>
-					<details className="lp-comparison">
-						<summary>{__("Search scope", "linker-tools")}</summary>
-						<p>
-							{plantSearch
-								? __(
-										"The search uses the system count, requirements for each system and coordination groups you have declared. It checks equipment combinations from current product data for each system and the project, counting one shared controller per group. It does not compare alternative system counts or different allocations of project requirements, or simulate joint energy flows. Unresolved conditions remain shown in the results.",
-										"linker-tools",
-									)
-								: __(
-										"This search assesses combinations of one inverter and one external battery assembly. Parallel inverter systems, multiple battery ports and integrated storage systems require separate assessment.",
+								)}
+							</Notice>
+						)}
+						<details className="lp-comparison">
+							<summary>{__("Search scope", "linker-tools")}</summary>
+							<p>
+								{plantSearch
+									? __(
+											"The search uses the system count, requirements for each system and coordination groups you have declared. It checks equipment combinations from current product data for each system and the project, counting one shared controller per group. It does not compare alternative system counts or different allocations of project requirements, or simulate joint energy flows. Unresolved conditions remain shown in the results.",
+											"linker-tools",
+										)
+									: __(
+											"This search assesses combinations of one inverter and one external battery assembly. Parallel inverter systems, multiple battery ports and integrated storage systems require separate assessment.",
+											"linker-tools",
+										)}
+							</p>
+						</details>
+						{Object.values(readObject(readObject(search.coverage).gaps)).some(
+							(v) => typeof v === "number" && v > 0,
+						) && (
+							<Notice>
+								{__(
+									"Some products or combinations lack the supporting data needed for this search.",
+									"linker-tools",
+								)}
+							</Notice>
+						)}
+						<div className="lp-work-grid lp-equipment-candidate-picker">
+							{candidates.length === 0 ? (
+								<Notice>
+									{__(
+										"No combinations were found using the available documented configurations.",
 										"linker-tools",
 									)}
-						</p>
-					</details>
-					<p>
-						{__("Combinations assessed", "linker-tools")}:{" "}
-						{new Intl.NumberFormat(locale).format(candidates.length)}
-					</p>
-					{Object.values(readObject(readObject(search.coverage).gaps)).some(
-						(v) => typeof v === "number" && v > 0,
-					) && (
-						<Notice>
-							{__(
-								"Some products or combinations lack the supporting data needed for this search.",
-								"linker-tools",
+								</Notice>
+							) : (
+								<label className="lp-field lp-work-main">
+									<span>{__("Equipment combination", "linker-tools")}</span>
+									<select
+										value={candidate?.id ?? ""}
+										onChange={(event) => {
+											setSelected(event.currentTarget.value);
+										}}
+									>
+										{["satisfied", "unresolved", "violated"]
+											.filter((status) =>
+												candidates.some((c) => c.status === status),
+											)
+											.map((status) => (
+												<optgroup key={status} label={equipmentStatus(status)}>
+													{candidates
+														.filter((c) => c.status === status)
+														.map((c) => (
+															<option key={c.id} value={c.id}>
+																{names(c)}
+															</option>
+														))}
+												</optgroup>
+											))}
+									</select>
+								</label>
 							)}
-						</Notice>
-					)}
-					{candidates.length === 0 ? (
-						<Notice>
-							{__(
-								"No combinations were found using the available documented configurations.",
-								"linker-tools",
+							{candidate && (
+								<div className="lp-work-aside lp-work-toolbar">
+									<button
+										className="lp-button"
+										type="button"
+										disabled={
+											disabled ||
+											busy ||
+											!detail.data ||
+											detail.isFetching ||
+											differentArrangement ||
+											alreadyAdopted
+										}
+										onClick={() => void applySelected()}
+									>
+										{__("Use this combination in the project", "linker-tools")}
+									</button>
+								</div>
 							)}
-						</Notice>
-					) : (
-						<label className="lp-field">
-							<span>{__("Equipment combination", "linker-tools")}</span>
-							<select
-								value={candidate?.id ?? ""}
-								onChange={(event) => {
-									setSelected(event.currentTarget.value);
-								}}
-							>
-								{["satisfied", "unresolved", "violated"]
-									.filter((status) =>
-										candidates.some((c) => c.status === status),
-									)
-									.map((status) => (
-										<optgroup key={status} label={equipmentStatus(status)}>
-											{candidates
-												.filter((c) => c.status === status)
-												.map((c) => (
-													<option key={c.id} value={c.id}>
-														{names(c)}
-													</option>
-												))}
-										</optgroup>
-									))}
-							</select>
-						</label>
-					)}
-					{detail.error && (
-						<Notice error>
-							{__(
-								"The combination details could not be loaded.",
-								"linker-tools",
-							)}
-						</Notice>
-					)}
-					{candidate && (
-						<button
-							className="lp-button"
-							type="button"
-							disabled={
-								disabled ||
-								busy ||
-								!detail.data ||
-								detail.isFetching ||
-								differentArrangement ||
-								alreadyAdopted
-							}
-							onClick={() => void applySelected()}
-						>
-							{__("Use this combination in the project", "linker-tools")}
-						</button>
-					)}
-				</>
+						</div>
+						{detail.error && (
+							<Notice error>
+								{__(
+									"The combination details could not be loaded.",
+									"linker-tools",
+								)}
+							</Notice>
+						)}
+					</div>
+				</section>
 			)}
 		</EquipmentResult>
 	);

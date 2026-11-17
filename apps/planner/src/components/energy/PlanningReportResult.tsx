@@ -202,7 +202,7 @@ export function PlanningReportResult({
 	}
 	if (!report)
 		return (
-			<div className="lp-run-result">
+			<div className="lp-run-result lp-work-panel">
 				<h3>{__("Planning report", "linker-tools")}</h3>
 				<p role="status">{runStateLabel(run.state, REPORT_TASK)}</p>
 				{run.error && (
@@ -230,7 +230,7 @@ export function PlanningReportResult({
 					</p>
 				</div>
 			)}
-			<div className="lp-run-heading">
+			<div className="lp-run-heading lp-work-panel lp-work-toolbar">
 				<div>
 					<h3 lang={report.locale}>{report.title}</h3>
 					<p lang={report.locale}>{report.subtitle}</p>
@@ -323,7 +323,7 @@ export function PlanningReportResult({
 				["basis", "conditions"].includes(section.id) ? (
 					<details
 						key={section.id}
-						className="lp-comparison"
+						className="lp-comparison lp-work-panel"
 						lang={report.locale}
 					>
 						<summary>{section.title}</summary>
@@ -332,10 +332,10 @@ export function PlanningReportResult({
 				) : (
 					<section
 						key={section.id}
-						className="lp-scenario-block"
+						className="lp-scenario-block lp-work-panel"
 						lang={report.locale}
 					>
-						<h4>{section.title}</h4>
+						<h4 className="lp-work-panel-heading">{section.title}</h4>
 						<SectionContent section={section} />
 					</section>
 				),
