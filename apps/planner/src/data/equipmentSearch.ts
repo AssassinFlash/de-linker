@@ -10,6 +10,12 @@ import type { EquipmentPlant } from "../domain/equipmentPlant.ts";
 import { matchesPlantSearch, readPlantSearch } from "../domain/plantSearch.ts";
 
 export const SEARCH_TASK = "search_woo_equipment_v1";
+export interface EquipmentDemandResult extends JsonObject {
+	status: "satisfied" | "violated" | "unresolved";
+	reason: string;
+	metrics: JsonObject | null;
+	equipment: JsonObject | null;
+}
 interface CandidateMetadata extends JsonObject {
 	id: string;
 	status: "violated" | "unresolved" | "satisfied";
@@ -17,6 +23,7 @@ interface CandidateMetadata extends JsonObject {
 	violated_checks: number;
 	unresolved_checks: number;
 	usable_energy_kwh?: number | null;
+	demand?: EquipmentDemandResult;
 }
 interface SingleCandidate extends CandidateMetadata {
 	selection: EquipmentSelection;
@@ -66,15 +73,27 @@ export function readEquipmentSearchResult(
 			"one_converter_one_external_battery_assembly",
 			"declared_plant_one_external_assembly_per_converter",
 		].includes(String(coverage.template)) ||
-		// The engine ranks candidates by DC/AC proximity once it has assessed
-		// them. Runs recorded before ranking shipped still carry the
-		// pre-ranking statement; the planner accepts exactly these two values.
+		// Saved runs retain the ranking policy used for their assessment.
 		![
+			"unresolved_then_product_and_module_count",
 			"dc_ac_proximity_then_unresolved_then_product_and_module_count",
 			"not_performed_before_qualification",
 		].includes(String(search.ranking))
 	)
 		throw new ApiError(502, "invalid_run_result");
+	if (search.demand !== undefined) {
+		const demand = readObject(search.demand);
+		if (
+			demand.model !== "single_ac_equipment_demand_v1" ||
+			!["complete", "budget_exhausted"].includes(String(demand.completion)) ||
+			!count(demand.interval_count) ||
+			!count(demand.work_used) ||
+			!count(demand.work_budget) ||
+			demand.work_budget === 0 ||
+			(demand.work_used as number) > (demand.work_budget as number)
+		)
+			throw new ApiError(502, "invalid_run_result");
+	}
 	const ids = new Set<string>();
 	let qualified = 0;
 	for (const value of search.candidates) {
@@ -92,6 +111,38 @@ export function readEquipmentSearchResult(
 					!Number.isFinite(c.usable_energy_kwh) ||
 					c.usable_energy_kwh < 0))
 		)
+			throw new ApiError(502, "invalid_run_result");
+		if (search.demand !== undefined) {
+			const demand = readObject(c.demand);
+			if (
+				!["satisfied", "violated", "unresolved"].includes(
+					String(demand.status),
+				) ||
+				typeof demand.reason !== "string" ||
+				!demand.reason ||
+				(demand.status === "satisfied" && demand.metrics === null)
+			)
+				throw new ApiError(502, "invalid_run_result");
+			if (demand.metrics !== null) {
+				const metrics = readObject(demand.metrics);
+				const initial = readObject(metrics.stored_initial);
+				for (const key of ["pv_kwh", "grid_kwh", "initial_unknown_kwh"]) {
+					const value = initial[key];
+					if (typeof value !== "number" || !Number.isFinite(value) || value < 0)
+						throw new ApiError(502, "invalid_run_result");
+				}
+				for (const key of [
+					"unserved_load_kwh",
+					"maximum_interval_average_import_kw",
+				]) {
+					const value = metrics[key];
+					if (typeof value !== "number" || !Number.isFinite(value) || value < 0)
+						throw new ApiError(502, "invalid_run_result");
+				}
+			}
+			if (demand.equipment !== null)
+				readEquipmentAssessment(readObject(demand.equipment).assessment);
+		} else if (c.demand !== undefined)
 			throw new ApiError(502, "invalid_run_result");
 		ids.add(String(c.id));
 		if (

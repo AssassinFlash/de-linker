@@ -102,7 +102,7 @@ class EquipmentKernel:
         basis = self.workspace.blobs.object(proof)
         self.products.confirm_basis(basis, require_reference=False)
         inputs = self.workspace.pinned_inputs(manifest)
-        output = self.compute(inputs, basis, control)
+        output = self.compute(inputs, basis, control, pinned=pinned)
         if "equipment_condition_inputs" in inputs:
             evidence = certificate_documents(basis, cast(Object, output["assessment"]))
             source: Object = {"certificates": evidence}
@@ -125,7 +125,9 @@ class EquipmentKernel:
             **output,
         }
 
-    def compute(self, inputs: Object, basis: Object, control: Control) -> Object:
+    def compute(
+        self, inputs: Object, basis: Object, control: Control, *, pinned: Object
+    ) -> Object:
         if "equipment_plant" in inputs:
             from .plant_assessment import assess_plant
 

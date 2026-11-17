@@ -16,6 +16,7 @@ import { __, sprintf } from "../../i18n.ts";
 import { NumberField } from "../NumberField.tsx";
 import { Notice } from "../Notice.tsx";
 import { PvStringSetup } from "./PvStringSetup.tsx";
+import { EquipmentDemandSetup } from "./EquipmentDemandSetup.tsx";
 
 const numericFields = [
 	"modules_per_stack",
@@ -85,7 +86,21 @@ export function EquipmentSetup({
 			),
 		[],
 	);
-	const valid = Object.values(validity).every(Boolean);
+	const currentInputs = draft.history.current;
+	const demandSupported =
+		!embedded &&
+		currentInputs.equipment_plant_setup === undefined &&
+		currentInputs.equipment_plant === undefined &&
+		(currentInputs.brief === undefined ||
+			readObject(currentInputs.brief).system_scope !== "pv_only") &&
+		(currentInputs.energy_scenario === undefined ||
+			[undefined, "independent_ac"].includes(
+				readObject(currentInputs.energy_scenario).coupling as
+					string | undefined,
+			));
+	const [demandValid, setDemandValid] = useState(true);
+	const valid =
+		Object.values(validity).every(Boolean) && (!demandSupported || demandValid);
 	useEffect(() => {
 		onValidity(valid);
 		return () => onValidity(true);
@@ -438,6 +453,28 @@ export function EquipmentSetup({
 								</p>
 							)}
 							{requirementFields}
+							{demandSupported && (
+								<EquipmentDemandSetup
+									value={
+										currentInputs.equipment_demand === undefined
+											? undefined
+											: readObject(currentInputs.equipment_demand)
+									}
+									locale={locale}
+									disabled={disabled}
+									onValidity={setDemandValid}
+									onChange={(value) => {
+										if (disabled || !client.isCurrentScope(scope)) return;
+										edit((inputs) => {
+											const { equipment_demand: _previous, ...rest } = inputs;
+											return value === null
+												? rest
+												: { ...rest, equipment_demand: value };
+										});
+										onError(null, ["equipment_demand"]);
+									}}
+								/>
+							)}
 						</div>
 						{searchEnabled && (
 							<footer className="lp-work-toolbar">

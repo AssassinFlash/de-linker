@@ -20,6 +20,36 @@
 
 最终 Spec／Standards 各一份只读隔离工作树已由工具回收。四张最终模板／产品对照图保留在本任务目录 `preline-*.png`；两张临时截图与 `/tmp/linker-template-pr.md` 已删除。模板服务、review 服务与浏览器空间均已关闭；发布 SSH 会话及 staging checkpoint 已由发布工具回收。收尾磁盘实读：已用 2,709,762,473,984 字节，可用 1,286,566,854,656 字节。主树和 review 数据按上述用途保留；完整配置器目标 #1132 继续开放。
 
+## 2026-11-18 完整目标续作
+
+主线从未知容量客户的真实需求入口继续 #1132，沿用已验证的计算、报告和发布证据。资源预算：复用当前主工作树与 `/Users/chesterjohn/de-linker-local/review`，只启动 PHP／Engine／Planner；保护 Utrecht 草稿与 Oslo 保存版本 8。浏览器使用一个任务空间、一页；工作截图复用 `/tmp/linker-demand-current.png`。最多一个本轮临时 review 项目，通过正常入口创建，记录 ID 后在验收结束删除。两条只读核对线各占一个自动隔离 worktree：需求到选型、改造到采购清单，不装依赖、不启动实例，核对结束回收；实际树为 `/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-abcb48342a95df782`（保留设备）与 `/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a66ae8c2b6c838d0e`（需求选型）。浏览器空间 16，页面 p1。临时 review 项目 `26816d8c962c4ef9925060f4472e4214`，标题 `Goal 1132 — demand journey 2026-11-18`，Germany／Storage only，经正常入口创建。主线负责回收，期限为本轮结束或暂停。开始可用空间 1,287,423,975,424 字节。
+
+两份调查已完成，复用上述工作树进行独立修复：`agent-abcb48342a95df782` 负责商业储能欧洲邮编输入，`agent-a66ae8c2b6c838d0e` 负责移除无厂商依据的通用 DC/AC 硬限制及其排名影响。每树只使用自身依赖，最多保留本轮所需一份；不另开站点、浏览器或工作树。主线负责整合后回收，截止本轮结束或暂停。
+
+本轮核对：未知容量搜索可正常枚举 690 个组合，但 `_requirements()` 只读取手填 kW/kWh，不消费负载、备电时段或削峰目标。商业模块 `commercial.py:125–147` 按每日超峰总量与固定 `HTW_DISCHARGE_EFFICIENCY` 计算，不能作为项目连续仿真的定容依据直接回填。需求选型必须复用项目时序、明确损耗与初始储能条件，并由实际配置的能量回放报告未满足负载；年耗不生成任意容量倍率。
+
+真实入口验收另使用 `/tmp/linker-demand-profile.csv`：主线负责，单份三小时合成负载（2／4／2 kW，明确为测试输入），仅导入本轮项目以验证备电／削峰回放，验收或暂停后删除；不把测试数值作为产品规则。
+
+需求回放前端在现有公开 seam 增补 `apps/planner/tests/equipment-demand-result.test.tsx`（父线拥有，永久行为回归，无临时报告）；输入与候选结果继续保存在项目及现有 run 中，不建第二份状态存储。
+
+### 需求比较集成进度（2026-11-18）
+
+已集成可选需求声明、逐候选能量回放、容量相同的运行内复用、独立设备证据、需求结果筛选、冻结初始储能采纳与输入变更拒绝。全停电时段只要求关键负载；单系统和 AC 多系统保持同一规则，连接时段仍要求全站负载。集成后 Python dispatch／plant／equipment 共 157 项通过（124.66 s）；前端类型检查及本批五组测试通过。尚未发布，Shared DC／多系统需求搜索及完整目标验收仍待完成。
+
+性能依据：35,040 个时段单容量原完整回放约 6.6 s，verify 原约 5.5 s。只在最坏检查更新时分配 Check，保留全部有限值／容差／约束判定；代理测得 verify 5.482→3.803 s，主线已检查实际差异并通过 157 项集成测试。中断的 InventoryWitness Fraction 优化未纳入。真实 review 保存搜索 `5d6066f213b7404ba21ca86a69dee884` 有 690 个组合、41 个不同已知容量；因此不能把六容量夹具的耗时冒充真实搜索耗时。
+
+本地需求回放预算拟设 210,240 intervals（6 × 35,040）：按当前约 4.9 s／全年容量给物理回放约 30 s 的交互等待目标；设备枚举／证据仍需另外实测，不声称硬时限。三小时验收只需 41 × 3 = 123 intervals，预算足以覆盖该保存搜索全部容量；全年全目录会明确报告未回放组合，性能问题仍未闭环。临时恢复点 `/Users/chesterjohn/de-linker-local/review/planner/runtime.before-demand.json` 与 `workspace.before-demand.sqlite` 各一份，主线负责，配置与服务读回成功且无需恢复后删除；现有 blobs 不改写。
+
+主线同进程对照全年 35,040 时段：HEAD verify 5.101 s、候选 3.293 s，93 项检查完整 document 相同；另两份篡改能量轨迹同样逐字段相同。缓存不变量：本次运行仅候选可用容量变化，充放电功率、效率及损耗来自同一明确情景；将来设备功率参与模拟时必须相应改变缓存依据。
+
+真实 review 客户入口：原关键负载 2／4／2 kW 的三小时停电场景直接计算完成，版本 3、run `83c3d72b3de446e9a70064df61f9007b`，8 kWh 负载、0 kWh 缺供、0 kWh 网格进口。随后设备页勾选需求比较，100% 初始可用窗口、0 kWh 允许缺供、明确测试来源，直接搜索为版本 4、run `fad37dd919a34a16b4329950e7570253`。690 组合：455 满足声明情景、59 缺供、176 资料不足未评估；41 种容量仅回放 123 interval work，completion=complete。筛选缺供实际显示 4.8 kWh 候选缺供 3.2 kWh；筛选满足后采用 13.5 kWh 候选，Storage 容量与 Starting state 未知来源库存均为 13.5，来源说明来自冻结声明，保存版本 5。设备适用性仍独立标为证据未解。EN 桌面与 DE 390 页面实看，未提交询盘或发信。
+
+最终本批检查：planner 域／数据 275 项、组件 408 项、构建模块 1 项通过；首轮格式检查仅命中 energyScenario.ts，格式化后重建，逻辑未变。Spec／Standards 评审各允许一个只读临时隔离树，不安装依赖、不启动站点，由主线在评审结束回收；唯一用途是本批候选，保留至发现修正完成。原前端代理树继续已知 PV 纵切，原后端树保留中断优化片段至主线确认取舍。
+
+完整目标尚有四项核心缺口：设备功率／损耗依据进入需求定容；备电负载／时长直接输入；已知 PV 资料无需屋顶生成时序；多系统／shared DC 从项目总需求比较整套配置。现有 CSV 备电模拟、已选多系统模拟和采购链仍有效；不据本批关闭 #1132。
+
+正式德语新增 21 条，复用原生 PO→MO／JSON 管线。文案对抗审阅：百分比字段使用“Anfangs nutzbarer Anteil der Speicherkapazität”；kWh 缺供指标使用“Ungedeckter Energiebedarf”；空筛选使用“Keine Kombination entspricht diesem Bedarfsfilter.”，避免把未评估筛选描述成满足需求。已有译文保留。
+
 ## 本轮裁定与实现
 
 业主要求从根因修复准备／保存／计算的责任分裂，并明确授权参照本地 Preline productivity 模板大改工具界面。项目列表、项目标题与操作区、桌面章节侧栏和手机章节选择器重新组织；保留现有 React/Vite 与 WindPress。

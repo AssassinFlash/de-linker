@@ -383,6 +383,34 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
         )
         assert len(workspace.runs(owner, project.id)) == 2
 
+        # An outage-only replay consumes critical load, not an unused site profile.
+        outage = deepcopy(authored)
+        outage["profile_selections"]["selected"] = {
+            "critical_load": add_profile(
+                workspace, owner, project.id, mapping_role("critical_load"), (1, 1)
+            ),
+            "aux_ac": profiles["aux_ac"],
+        }
+        outage["energy_plant_setup"]["schedule"][0].update(
+            mode="outage", pv_enabled=False, allow_grid_charge=False
+        )
+        outage_reply = rig.post(
+            "/runs/calculate",
+            {
+                "project_id": project.id,
+                "expected_revision": calculated["project"]["revision"],
+                "inputs": outage,
+                "input_contract": "authored_equipment_discovery_v1",
+                "key": "plant-critical-only",
+            },
+        )
+        assert worker.run_once()
+        outage_run = rig.post("/runs/read", {"run_id": outage_reply["run"]["id"]})
+        assert outage_run["state"] == "succeeded", outage_run
+        assert outage_run["result"]["metrics"]["load_demand_kwh"] == 2
+        assert outage_run["result"]["metrics"]["unserved_load_kwh"] == 2
+        assert "gross_load.raw" not in outage_run["result"]["pinned_assets"]
+
 
 def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
     feed: FixtureObject,
@@ -610,6 +638,7 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
                     **project.inputs,
                     "energy_plant": {
                         **scenario,
+                        "critical_load_asset_id": scenario["gross_load_asset_id"],
                         "schedule": [
                             {
                                 **scenario["schedule"][0],

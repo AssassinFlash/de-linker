@@ -48,7 +48,7 @@ export interface EnergyInputs extends JsonObject {
 	readonly pv_converter_id?: string | null;
 	readonly aux_dc_kw?: number | null;
 	readonly schema_version: 1;
-	readonly gross_load_asset_id: string;
+	readonly gross_load_asset_id: string | null;
 	readonly critical_load_asset_id: string | null;
 	readonly pv_available_asset_id: string | null;
 	readonly aux_ac_asset_id: string | null;
@@ -353,7 +353,8 @@ export function scenarioParts(
 		draft.schedule.length > 0 &&
 		draft.schedule.every((period) => period.pv_enabled === false);
 	if (
-		!gross_load ||
+		(!gross_load &&
+			draft.schedule.some((period) => period.mode !== "outage")) ||
 		(!storageOnly && !pvDisabled && !pv_available_ac) ||
 		(!aux_ac && draft.aux_ac_kw == null)
 	)
@@ -383,7 +384,7 @@ export function scenarioParts(
 					aux_dc_kw: draft.dc!.aux_dc_kw,
 				}
 			: {}),
-		gross_load_asset_id: gross_load,
+		gross_load_asset_id: gross_load ?? null,
 		critical_load_asset_id: critical_load ?? null,
 		pv_available_asset_id:
 			storageOnly || pvDisabled ? null : (pv_available_ac ?? null),

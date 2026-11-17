@@ -1385,6 +1385,78 @@ def test_calculate_admits_unsaved_authored_input_and_runs_without_preparation(
     assert rig.workspace.get(USER, project_id).revision == 2
 
 
+def test_outage_only_calculation_uses_critical_load_without_unused_site_load(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("critical-load-only")
+    inputs = authored_energy(rig, project_id)
+    mapping = CsvMapping(
+        "time",
+        "power",
+        "critical_load",
+        "interval_average_kw",
+        "start",
+        "Europe/Berlin",
+        "synthetic",
+        3600,
+        ",",
+        ".",
+    )
+    critical = rig.post(
+        "/profiles/csv",
+        {
+            "project_id": project_id,
+            "content_base64": base64.b64encode(
+                b"time,power\n2024-03-30T23:00:00Z,1\n2024-03-31T00:00:00Z,1\n"
+            ).decode(),
+            "mapping": json_object(mapping.document()),
+            "source_label": "Critical load acceptance",
+            "rights_note": "created by this test",
+            "key": "critical",
+        },
+    )
+    selected = inputs["profile_selections"]["selected"]
+    selected.pop("gross_load")
+    selected["critical_load"] = critical["id"]
+    scenario = inputs["energy_scenario"]
+    scenario["schedule"][0].update(
+        mode="outage", allow_grid_charge=False, pv_enabled=False, reserve_kwh=0
+    )
+    scenario["initial_inventory"].update(pv_kwh=0, grid_kwh=0, initial_unknown_kwh=5)
+    command = {
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_energy_calculation_v1",
+        "key": "outage",
+    }
+    admitted = rig.post("/runs/calculate", command)
+    assert Worker(
+        Jobs(rig.workspace),
+        "outage-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    completed = rig.post("/runs/read", {"run_id": admitted["run"]["id"]})
+    assert completed["state"] == "succeeded", completed
+    assert completed["result"]["metrics"]["load_demand_kwh"] == 2
+    assert completed["result"]["metrics"]["unserved_load_kwh"] == 0
+    scenario["schedule"][0].update(mode="connected")
+    refused = rig.client.post(
+        "/runs/calculate",
+        json={
+            **command,
+            "schema_version": 1,
+            "expected_revision": 2,
+            "key": "missing-site-load",
+        },
+        headers=headers(),
+    )
+    assert refused.status_code == 422
+
+
 def test_calculate_standalone_accepts_empty_hardware_but_rejects_partial_selection(
     rig: Rig,
 ) -> None:

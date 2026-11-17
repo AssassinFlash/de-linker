@@ -9,17 +9,12 @@ from __future__ import annotations
 import re
 from collections import Counter
 from collections.abc import Callable, Iterator
-from math import inf
 from typing import Any, cast
 
 from pydantic import TypeAdapter, ValidationError
 
 from .canonical import Json, Object, digest, encode
-from .equipment_assessment import (
-    AC_OUTPUT_KEYS,
-    DC_AC_RATIO_MIDPOINT,
-    assess_equipment,
-)
+from .equipment_assessment import assess_equipment
 from .equipment_evidence import EquipmentEvidence
 from .equipment_inputs import Count, EquipmentSelection, EquipmentUse
 from .equipment_requirements import EquipmentRequirements
@@ -369,7 +364,7 @@ class EquipmentSearchSpace:
                             self.basis,
                             evidence=self.evidence,
                         )
-                        if unknown_sizing:
+                        if unknown_sizing or "equipment_demand" in inputs:
                             # With no complete demand there is no smallest
                             # sufficient assembly. Keep cited alternatives for
                             # comparison within the same work budget.
@@ -387,29 +382,9 @@ class EquipmentSearchSpace:
                             )
                 yield from combination_representative.values()
 
-    def inverter_ac_kw(self, product_id: int) -> float | None:
-        fields = cast(dict[str, Any], self.evidence.compiled(product_id)["facts"])
-        for key in AC_OUTPUT_KEYS:
-            found = fields.get(key)
-            if (
-                found
-                and found["status"] == "typed"
-                and found["shape"] == "scalar"
-                and found["quantity"] == "active_power"
-            ):
-                return float(cast(float, found["value"]))
-        return None
-
-    def ratio_deviation(self, selection: Object) -> float:
-        pv = cast(float | None, selection.get("pv_dc_kw"))
-        ac = self.inverter_ac_kw(int(cast(int, selection["inverter_product_id"])))
-        if pv is None or pv <= 0 or ac is None or ac <= 0:
-            return inf
-        return abs(pv / ac - DC_AC_RATIO_MIDPOINT)
-
     def combination_fitness(
         self, candidate: Json
-    ) -> tuple[int, float, int, int, int, int, str]:
+    ) -> tuple[int, int, int, int, int, str]:
         record = cast(Object, candidate)
         value = cast(Object, record.get("selection") or record.get("plant") or {})
         selections = (
@@ -425,7 +400,6 @@ class EquipmentSearchSpace:
         # the candidate digest is the last resort, never the visible order.
         return (
             0 if record["status"] == "satisfied" else 1,
-            max((self.ratio_deviation(row) for row in selections), default=inf),
             int(cast(int, record["unresolved_checks"])),
             min(int(cast(int, row["inverter_product_id"])) for row in selections),
             min(int(cast(int, row["parallel_stacks"] or 0)) for row in selections),
@@ -486,6 +460,6 @@ class EquipmentSearchSpace:
             "qualified_count": sum(
                 row["status"] == "satisfied" for row in cast(list[Object], candidates)
             ),
-            "ranking": "dc_ac_proximity_then_unresolved_then_product_and_module_count",
+            "ranking": "unresolved_then_product_and_module_count",
             "display_order": "ranking_then_canonical_product_and_documented_module_count",
         }

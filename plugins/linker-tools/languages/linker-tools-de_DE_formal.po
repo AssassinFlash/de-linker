@@ -15686,3 +15686,87 @@ msgstr "Moduldetails"
 #: build/configurator.js
 msgid "Enter a postcode using letters, numbers, spaces or hyphens."
 msgstr "Geben Sie die Postleitzahl mit Buchstaben, Ziffern, Leerzeichen oder Bindestrichen ein."
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:75 build/planner/assets/planner.js:1
+msgid "Compare against energy needs"
+msgstr "Mit dem Energiebedarf vergleichen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:81 build/planner/assets/planner.js:1
+msgid "The comparison uses the periods and load in Energy use and the efficiency and power settings in Storage. Usable capacity comes from each equipment combination."
+msgstr "Der Vergleich verwendet die Zeiträume und die Last unter „Strombedarf“ sowie die Wirkungsgrad- und Leistungseinstellungen unter „Speicher“. Die nutzbare Kapazität ergibt sich aus der jeweiligen Gerätekombination."
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:89 build/planner/assets/planner.js:1
+msgid "Initial usable capacity"
+msgstr "Anfangs nutzbarer Anteil der Speicherkapazität"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:106 build/planner/assets/planner.js:1
+msgid "Allowed unserved load"
+msgstr "Zulässiger ungedeckter Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:131 build/planner/assets/planner.js:1
+msgid "Enter the initial usable capacity, allowed unserved load and source note to compare energy needs."
+msgstr "Geben Sie für den Vergleich mit dem Energiebedarf den anfangs nutzbaren Anteil der Speicherkapazität, den zulässigen ungedeckten Energiebedarf und einen Hinweis zur Quelle an."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:203 build/planner/assets/planner.js:1
+msgid "Demand results"
+msgstr "Ergebnisse des Bedarfsvergleichs"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:211 build/planner/assets/planner.js:1
+msgid "All combinations"
+msgstr "Alle Kombinationen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:214 build/planner/assets/planner.js:1
+msgid "Meets the declared demand"
+msgstr "Deckt den angegebenen Bedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:217 build/planner/assets/planner.js:1
+msgid "Does not meet the declared demand"
+msgstr "Deckt den angegebenen Bedarf nicht"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:220 build/planner/assets/planner.js:1
+msgid "Demand not assessed"
+msgstr "Bedarfsdeckung nicht geprüft"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:228 build/planner/assets/planner.js:1
+msgid "Demand comparison is incomplete. Some combinations have not been simulated."
+msgstr "Der Bedarfsvergleich ist unvollständig. Einige Kombinationen wurden noch nicht simuliert."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:291 build/planner/assets/planner.js:1
+msgid "Energy demand comparison"
+msgstr "Vergleich mit dem Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:300 build/planner/assets/planner.js:1
+msgid "Documented usable capacity is missing for this combination."
+msgstr "Für diese Kombination fehlt eine belegte nutzbare Kapazität."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:303 build/planner/assets/planner.js:1
+msgid "This combination was not simulated because the comparison limit was reached."
+msgstr "Diese Kombination wurde nicht simuliert, weil die Grenze für den Vergleich erreicht wurde."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:306 build/planner/assets/planner.js:1
+msgid "The combination cannot satisfy the declared storage, reserve or end-state constraints."
+msgstr "Die Kombination kann die angegebenen Vorgaben für Speicher, Reserve oder Endzustand nicht einhalten."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:310 build/planner/assets/planner.js:1
+msgid "Unserved load"
+msgstr "Ungedeckter Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:320 build/planner/assets/planner.js:1
+msgid "Maximum interval-average grid import"
+msgstr "Höchster mittlerer Netzbezug je Zeitintervall"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:340 build/planner/assets/planner.js:1
+msgid "Equipment evidence remains unresolved for the simulated operating conditions."
+msgstr "Die Eignung der Geräte für die simulierten Betriebsbedingungen ist anhand der vorliegenden Nachweise noch nicht geklärt."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:350 build/planner/assets/planner.js:1
+msgid "The simulated operating conditions exceed the equipment evidence. Review the power and capacity assumptions."
+msgstr "Die simulierten Betriebsbedingungen liegen außerhalb der durch die Gerätenachweise belegten Grenzen. Prüfen Sie die Annahmen zu Leistung und Kapazität."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:347 build/planner/assets/planner.js:1
+msgid "The project inputs have changed since this comparison. Run the equipment search again before using its energy assumptions."
+msgstr "Die Projektangaben haben sich seit diesem Vergleich geändert. Starten Sie die Gerätesuche erneut, bevor Sie die Energieannahmen aus diesem Vergleich übernehmen."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx build/planner/assets/planner.js:1
+msgid "No combinations match this demand filter."
+msgstr "Keine Kombination entspricht diesem Bedarfsfilter."

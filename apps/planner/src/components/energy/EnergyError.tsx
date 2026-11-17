@@ -343,6 +343,11 @@ export function energyErrorText(error: unknown): string {
 				"A new check requires current product data. Reload the data and prepare the selection again.",
 				"linker-tools",
 			);
+		case "equipment_selection_changed":
+			return __(
+				"The project inputs have changed since this comparison. Run the equipment search again before using its energy assumptions.",
+				"linker-tools",
+			);
 		case "equipment_requirements_incomplete":
 			return __("Enter the search requirements first.", "linker-tools");
 		case "equipment_condition_binding_changed":

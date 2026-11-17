@@ -1749,6 +1749,9 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     # This does not replay physics or invent a backup rating for the fixture.
     outage_inputs = json_object(copy.deepcopy(project.inputs))
     outage_inputs["energy_replay"]["schedule"][0]["mode"] = "outage"
+    outage_inputs["energy_replay"]["critical_load_asset_id"] = outage_inputs[
+        "energy_replay"
+    ]["gross_load_asset_id"]
     prepared_model = DcPreparedParameters.read(
         json_object(saved.result)["prepared_dc_parameters"]
     ).battery_model(
@@ -3145,6 +3148,286 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
         )
         assert calculated["run"]["id"] != found.id
         assert rig.post("/runs/find-equipment", command)["run"]["id"] == found.id
+
+
+@pytest.mark.parametrize(
+    ("fraction", "target", "interval_budget", "outage"),
+    [
+        (1.0, 0, 10000, False),
+        (0.0, 0, 10000, False),
+        (0.0, 4, 10000, False),
+        (1.0, 0, 2, False),
+        (1.0, 0, 10000, True),
+    ],
+)
+def test_find_equipment_replays_frozen_candidate_demand_through_rpc(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    fraction: float,
+    target: float,
+    interval_budget: int,
+    outage: bool,
+) -> None:
+    from .test_private_http import Rig, authored_energy
+
+    battery = next(p for p in feed["products"] if p["id"] == 2090)
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": "2",
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["module_energy_kwh_usable"]["citation"]
+        ),
+    }
+    _, source, loaded, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace,
+            source,
+            EquipmentSearchLimits(
+                work_budget=1000, demand_interval_budget=interval_budget
+            ),
+            tolerance=TOLERANCE,
+            max_intervals=10,
+        ),
+        max_attempts=1,
+    )
+    registry = service_registry(energy, None, equipment_search=search)
+    worker = Worker(
+        Jobs(workspace),
+        "demand-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment_search=search,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, ac, client)
+        pid = rig.create("demand-search")
+        declarations = authored_energy(rig, pid)
+        declarations["equipment_setup"] = {
+            "schema_version": 1,
+            "inverter_product_id": None,
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 0,
+            "required_usable_kwh": 0,
+            "required_discharge_ac_kw": 0,
+        }
+        declarations["equipment_demand"] = {
+            "schema_version": 1,
+            "initial_usable_fraction": fraction,
+            "source_note": "Customer declares fraction of each usable window",
+            "max_unserved_load_kwh": target,
+        }
+        scenario = declarations["energy_scenario"]
+        scenario["battery"]["usable_window_kwh"] = None
+        scenario["controller"] = "peak_shaving_with_reserve_v1"
+        scenario["schedule"][0].update(
+            pv_enabled=False,
+            import_policy="limited",
+            import_cap_kw=0,
+        )
+        if outage:
+            from linker_engine.planning.assets import Assets
+            from linker_engine.planning.profile_import import ProfileImport
+
+            from .test_energy_kernel import PROVENANCE, mapping
+
+            critical = ProfileImport(Assets(workspace)).csv(
+                owner,
+                pid,
+                b"time,power\n2024-03-30T23:00:00Z,2\n2024-03-31T00:00:00Z,2\n",
+                mapping("critical_load"),
+                PROVENANCE,
+                key="critical-only",
+            )
+            selected = declarations["profile_selections"]["selected"]
+            selected["critical_load"] = critical.id
+            del selected["gross_load"]
+            scenario["schedule"][0]["mode"] = "outage"
+        command = {
+            "schema_version": 1,
+            "project_id": pid,
+            "expected_revision": 1,
+            "inputs": declarations,
+            "input_contract": "authored_equipment_discovery_v1",
+            "key": "candidate-demand",
+        }
+        reply = rig.post("/runs/find-equipment", command)
+        # Later authored choices must not change the queued candidate replay.
+        altered = copy.deepcopy(reply["project"]["inputs"])
+        altered["energy_scenario"]["schedule"][0]["import_cap_kw"] = 999
+        altered["equipment_demand"]["initial_usable_fraction"] = 0
+        rig.post(
+            "/projects/revise",
+            {
+                "project_id": pid,
+                "expected_revision": 2,
+                "inputs": altered,
+                "input_contract": "authored_equipment_discovery_v1",
+                "key": "later-demand-edit",
+            },
+        )
+        assert worker.run_once()
+        completed = workspace.run(owner, str(reply["run"]["id"]))
+        assert completed.state == "succeeded", completed.error
+        result = json_object(completed.result)
+        demand = result["search"]["demand"]
+        assert demand["model"] == "single_ac_equipment_demand_v1"
+        assert demand["interval_count"] == 2
+        candidates = result["search"]["candidates"]
+        assert any(c["selection"]["parallel_stacks"] == 2 for c in candidates)
+        for candidate in candidates:
+            detail = rig.post(
+                "/equipment/candidates/read",
+                {
+                    "schema_version": 1,
+                    "run_id": completed.id,
+                    "candidate_id": candidate["id"],
+                },
+            )
+            assert detail["assessment"]["overall_status"] == candidate["status"]
+        replayed = [c for c in candidates if c["demand"]["metrics"] is not None]
+        assert replayed
+        for candidate in replayed:
+            outcome = candidate["demand"]
+            assert outcome["metrics"]["load_demand_kwh"] == 4
+            assert outcome["metrics"]["stored_initial"][
+                "initial_unknown_kwh"
+            ] == pytest.approx(candidate["usable_energy_kwh"] * fraction)
+            assert outcome["metrics"]["solar_load_kwh"] == 0
+            assert (
+                outcome["equipment"]["performance_status"]
+                == "not_established_by_scenario_envelope"
+            )
+        if fraction == 0:
+            assert all(
+                c["demand"]["metrics"]["unserved_load_kwh"] == 4 for c in replayed
+            )
+            assert all(
+                c["demand"]["status"] == ("satisfied" if target == 4 else "violated")
+                for c in replayed
+            )
+        else:
+            assert any(c["demand"]["status"] == "satisfied" for c in replayed)
+        assert demand["completion"] == (
+            "budget_exhausted" if interval_budget == 2 else "complete"
+        )
+        distinct = {c["usable_energy_kwh"] for c in replayed}
+        assert demand["work_used"] == len(distinct) * 2
+        if interval_budget == 2:
+            assert len(replayed) > 1
+            assert len({c["selection"]["inverter_product_id"] for c in replayed}) > 1
+            assert len(distinct) == 1
+        for candidate in replayed:
+            assert (
+                candidate["demand"]["equipment"]["selection"] == candidate["selection"]
+            )
+        if interval_budget == 2:
+            assert (
+                sum(
+                    c["demand"]["reason"] == "work_budget_exhausted" for c in candidates
+                )
+                > 0
+            )
+        assert any(
+            c["usable_energy_kwh"] is None
+            and c["demand"]["reason"] == "usable_energy_not_established"
+            for c in candidates
+        )
+        pinned = result["pinned_assets"]
+        assert all(
+            ("critical_load." if outage else "gross_load.") + suffix in pinned
+            for suffix in ("raw", "metadata", "timezone")
+        )
+        critical_missing = copy.deepcopy(altered)
+        critical_missing["profile_selections"]["selected"].pop("critical_load", None)
+        critical_missing["energy_scenario"]["schedule"][0]["mode"] = "outage"
+        missing_reply = rig.client.post(
+            "/runs/find-equipment",
+            json={
+                **command,
+                "expected_revision": 3,
+                "inputs": critical_missing,
+                "key": "missing-critical",
+            },
+            headers=headers(owner),
+        )
+        assert missing_reply.status_code == 422, missing_reply.text
+        assert workspace.get(owner, pid).revision == 3
+        for invalid_demand in (
+            {**altered["equipment_demand"], "initial_usable_fraction": 1.1},
+            {
+                key: value
+                for key, value in altered["equipment_demand"].items()
+                if key != "max_unserved_load_kwh"
+            },
+        ):
+            invalid = rig.client.post(
+                "/runs/find-equipment",
+                json={
+                    **command,
+                    "expected_revision": 3,
+                    "inputs": {**altered, "equipment_demand": invalid_demand},
+                    "key": "invalid-demand",
+                },
+                headers=headers(owner),
+            )
+            assert invalid.status_code == 422, invalid.text
+            expected_field = (
+                "equipment_demand.initial_usable_fraction"
+                if "max_unserved_load_kwh" in invalid_demand
+                else "equipment_demand.max_unserved_load_kwh"
+            )
+            assert invalid.json()["error"]["fields"] == [expected_field]
+            assert workspace.get(owner, pid).revision == 3
+        assert rig.post("/runs/find-equipment", command)["run"]["id"] == completed.id
+        if fraction == 1 and interval_budget == 10000 and not outage:
+            impossible = copy.deepcopy(altered)
+            impossible["energy_scenario"].update(
+                terminal_policy="minimum", terminal_min_kwh=1000000
+            )
+            failed = rig.post(
+                "/runs/find-equipment",
+                {
+                    **command,
+                    "expected_revision": 3,
+                    "inputs": impossible,
+                    "key": "impossible-terminal",
+                },
+            )
+            assert worker.run_once()
+            failed_result = json_object(
+                workspace.run(owner, str(failed["run"]["id"])).result
+            )
+            assessed = [
+                c["demand"]
+                for c in failed_result["search"]["candidates"]
+                if c["demand"]["metrics"] is not None
+            ]
+            assert assessed and all(
+                c["status"] == "violated" and c["reason"] == "scenario_not_feasible"
+                for c in assessed
+            )
 
 
 def test_find_equipment_per_unit_application_reaches_candidate_adoption(
@@ -4659,15 +4942,14 @@ def test_residential_application_excludes_contradicting_converters_and_keeps_unk
     )
 
 
-def test_dc_ac_band_from_solaredge_oversizing_note_flags_oversized_inverter(
-    feed: FixtureObject,
+@pytest.mark.parametrize(
+    ("pv_kwp", "expected_status"),
+    [(10, "satisfied"), (40, "satisfied"), (46, "violated")],
+)
+def test_pv_qualification_uses_the_selected_inverters_cited_limit(
+    feed: FixtureObject, pv_kwp: float, expected_status: str
 ) -> None:
-    """SolarEdge's oversizing note: DC/AC sizing ratio 60% minimum, 135% maximum.
-
-    https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf
-    The measured production defect (SAJ H2-25K-T3, 25 kW AC, on a 10 kWp
-    residential array, ratio 0.4) violates the published minimum sizing.
-    """
+    """SAJ's 45 kWp input limit governs a 25 kW inverter, not another brand's ratio."""
     revisions = {
         str(p["id"]): p["product_revision"] for p in feed["products"] if p["id"] == 1179
     }
@@ -4691,22 +4973,14 @@ def test_dc_ac_band_from_solaredge_oversizing_note_flags_oversized_inverter(
         "products": [p for p in feed["products"] if p["id"] == 1179],
         "compatibility": feed["compatibility"],
     }
+    selection["equipment_selection"]["pv_dc_kw"] = pv_kwp
     result = json_object(assess_equipment(selection, basis))
-    check = next(c for c in result["checks"] if c["id"] == "pv_dc_ac_ratio")
-    assert check["status"] == "violated"
-    assert check["actual"] == pytest.approx(0.4)
-    assert check["required"] == [0.6, 1.35]
-    assert check["band"]["band_basis"] == "cross_manufacturer_planning_band"
-    assert result["overall_status"] == "violated"
-    # A converter with no nominal AC figure stays unresolved on the band.
-    uncited = copy.deepcopy(basis)
-    del next(p for p in uncited["products"] if p["id"] == 1179)["figures"][
-        "ac_output_kw_nominal"
-    ]
-    unresolved = json_object(assess_equipment(selection, uncited))
-    ratio = next(c for c in unresolved["checks"] if c["id"] == "pv_dc_ac_ratio")
-    assert ratio["status"] == "unresolved"
-    assert ratio["required"] == [0.6, 1.35]
+    assert (result["overall_status"] == "violated") == (expected_status == "violated")
+    check = next(c for c in result["checks"] if c["id"] == "pv_dc_input")
+    assert check["status"] == expected_status
+    assert check["actual"] == 45
+    assert check["required"] == pv_kwp
+    assert all(c["id"] != "pv_dc_ac_ratio" for c in result["checks"])
 
 
 def test_identical_combinations_collapse_to_one_candidate(
@@ -4773,15 +5047,10 @@ def test_identical_combinations_collapse_to_one_candidate(
     assert result["completion"] == "exhausted_supported_domain"
 
 
-def test_dc_ac_proximity_ranking_puts_the_array_appropriate_inverter_first(
+def test_search_does_not_prefer_an_uncited_dc_ac_ratio(
     feed: FixtureObject, workspace: Workspace
 ) -> None:
-    """Satisfied candidates order by DC/AC proximity to the band midpoint.
-
-    Band 0.6-1.35 (SolarEdge oversizing note), midpoint 0.975: the 10 kW inverter
-    (ratio 1.0) outranks the 15 kW inverter (ratio 0.667); the 20 kW and 25 kW
-    units violate the published minimum sizing on a 10 kWp array.
-    """
+    """A smaller array does not disqualify or demote an otherwise valid inverter."""
     basis = {
         "products": [
             p for p in feed["products"] if p["id"] in [2063, 2064, 4107, 1179]
@@ -4809,17 +5078,11 @@ def test_dc_ac_proximity_ranking_puts_the_array_appropriate_inverter_first(
             lambda: None,
         )
     )
-    assert (
-        result["ranking"]
-        == "dc_ac_proximity_then_unresolved_then_product_and_module_count"
-    )
-    satisfied = [
-        row["selection"]["inverter_product_id"]
-        for row in result["candidates"]
-        if row["status"] == "satisfied"
-    ]
-    assert satisfied[:2] == [4107, 2063]
-    assert not {2064, 1179} & set(satisfied)
+    assert result["ranking"] == "unresolved_then_product_and_module_count"
+    assert all(row["status"] != "violated" for row in result["candidates"])
+    assert [
+        row["selection"]["inverter_product_id"] for row in result["candidates"]
+    ] == [2063, 2064, 4107]
 
 
 def test_column_limit_condition_binds_count_only_not_stack_count(

@@ -192,7 +192,7 @@ export function readEnergyResult(
 		);
 		for (const role of [
 			"battery",
-			"gross_load",
+			...(pinned["gross_load.raw"] !== undefined ? ["gross_load"] : []),
 			...(dc ? ["pv_available_dc", "aux_ac"] : []),
 		])
 			require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));

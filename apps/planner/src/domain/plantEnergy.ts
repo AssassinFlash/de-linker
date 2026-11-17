@@ -75,7 +75,7 @@ export interface PlantEnergyDraft extends JsonObject {
 export interface PlantEnergyInputs extends JsonObject {
 	readonly schema_version: 1;
 	readonly coupling: "plant_ac" | "plant_shared_dc";
-	readonly gross_load_asset_id: string;
+	readonly gross_load_asset_id: string | null;
 	readonly critical_load_asset_id: string | null;
 	readonly pv_available_asset_id: string | null;
 	readonly aux_ac_asset_id: string | null;
@@ -278,7 +278,10 @@ export function plantEnergyParts(
 		draft.schedule.length > 0 &&
 		draft.schedule.every((period) => period.pv_enabled === false);
 	if (
-		!gross_load ||
+		(!gross_load &&
+			(dcPlant || draft.schedule.some((period) => period.mode !== "outage"))) ||
+		(!critical_load &&
+			draft.schedule.some((period) => period.mode === "outage")) ||
 		(!dcPlant && !isStorageOnly(inputs) && !pvDisabled && !pv_available_ac) ||
 		(!aux_ac && draft.aux_ac_kw == null)
 	)
@@ -337,7 +340,7 @@ export function plantEnergyParts(
 		inputs: {
 			schema_version: 1,
 			coupling: dcPlant ? "plant_shared_dc" : "plant_ac",
-			gross_load_asset_id: gross_load,
+			gross_load_asset_id: gross_load ?? null,
 			critical_load_asset_id: critical_load ?? null,
 			pv_available_asset_id:
 				isStorageOnly(inputs) || (!dcPlant && pvDisabled)

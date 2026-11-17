@@ -105,28 +105,21 @@ def verify(
                 "verification tolerance exceeds finite numerical domain"
             )
         value = max(violation, 0.0)
-        current = Check(
-            code,
-            math.isfinite(value) and value <= allowance,
-            value,
-            unit,
-            index,
-            allowance,
-            arithmetic_allowance,
-        )
+        passed = math.isfinite(value) and value <= allowance
         previous = checks.get(code)
         # Preserve ANY failure; among equal statuses keep the largest margin
         # above its own allowance rather than a large, well-scaled raw residual.
         if (
             previous is None
-            or (not current.passed and previous.passed)
+            or (not passed and previous.passed)
             or (
-                current.passed == previous.passed
-                and current.worst_violation - current.allowance
-                > previous.worst_violation - previous.allowance
+                passed == previous.passed
+                and value - allowance > previous.worst_violation - previous.allowance
             )
         ):
-            checks[code] = current
+            checks[code] = Check(
+                code, passed, value, unit, index, allowance, arithmetic_allowance
+            )
 
     for index, flow in enumerate(flows):
         frame, dt = flow.frame, flow.frame.interval.hours

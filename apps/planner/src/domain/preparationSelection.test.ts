@@ -122,6 +122,57 @@ function dcDraft(inputs: JsonObject = dcPlant.project.inputs) {
 	return { plant, setup };
 }
 
+test("outage-only AC plant uses critical load without a site-load profile", () => {
+	const plant = readEquipmentPlant({
+		...dcPlant.project.inputs.equipment_plant,
+		requirements: {
+			...dcPlant.project.inputs.equipment_plant.requirements,
+			pv_dc_kw: 0,
+		},
+		units: dcPlant.project.inputs.equipment_plant.units.map((unit) => ({
+			...unit,
+			selection: { ...unit.selection, pv_dc_kw: 0 },
+		})),
+		parallel_groups: [],
+	});
+	const setup = {
+		schema_version: 1 as const,
+		coupling: "plant_ac" as const,
+		units: dcDraft().setup.units.map((unit) => ({
+			...unit,
+			pv_dc_input_unused: true,
+		})),
+		aux_ac_kw: 0,
+		schedule: [
+			{
+				...emptyScenario().schedule[0]!,
+				id: "a".repeat(32),
+				start_utc: "2024-03-30T23:00:00Z",
+				end_utc: "2024-03-31T01:00:00Z",
+				mode: "outage" as const,
+				pv_enabled: false,
+				allow_grid_charge: false,
+			},
+		],
+	};
+	const profiles = readSelections({
+		schema_version: 1,
+		selected: { critical_load: "ab".repeat(16) },
+	});
+	const sent = plantEnergyParts(setup, profiles, plant);
+	assert.equal(sent.inputs.gross_load_asset_id, null);
+	assert.equal(sent.inputs.critical_load_asset_id, "ab".repeat(16));
+	assert.throws(
+		() =>
+			plantEnergyParts(
+				{ ...setup, schedule: [{ ...setup.schedule[0]!, mode: "connected" }] },
+				profiles,
+				plant,
+			),
+		refusal("scenario_profiles_required"),
+	);
+});
+
 test("geometry then shared DC drops the whole-roof profile without touching another source", () => {
 	const { native, adopted } = geometricAdoption();
 	const geometricId = native.profile_asset.id;

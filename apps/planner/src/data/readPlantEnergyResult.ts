@@ -191,7 +191,7 @@ export function readPlantEnergyResult(
 			}
 	}
 	for (const role of [
-		"gross_load",
+		...(dc || pinned["gross_load.raw"] !== undefined ? ["gross_load"] : []),
 		...(dc
 			? [
 					"aux_ac",

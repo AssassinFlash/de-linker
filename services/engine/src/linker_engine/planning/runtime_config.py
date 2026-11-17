@@ -257,6 +257,8 @@ class RuntimeConfig(Document):
                 workspace,
                 products or ProductSources(worker_product_provider),
                 self.equipment_search,
+                tolerance=Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+                max_intervals=self.max_intervals,
             ),
             max_attempts=self.max_attempts,
         )
