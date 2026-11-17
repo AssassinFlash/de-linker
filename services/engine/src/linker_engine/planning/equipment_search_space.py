@@ -208,10 +208,7 @@ class EquipmentSearchSpace:
                 [None]
                 if no_battery
                 else [*self.included]
-                if storage_required
-                or plant_backup
-                or use is not None
-                and use.battery != "new"
+                if storage_required or use is not None and use.battery != "new"
                 else [None, *self.included]
             )
             for battery in options:

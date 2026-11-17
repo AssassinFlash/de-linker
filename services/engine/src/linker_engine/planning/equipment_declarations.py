@@ -92,6 +92,7 @@ def compile_discovery_inputs(authored: Object) -> Object:
         object_value(raw.get("requirements"), "plant connection demand"),
         path="equipment_plant_setup.requirements",
         inputs=inputs,
+        whole_plant=True,
     )
     units, groups = raw.get("units"), raw.get("parallel_groups")
     if not isinstance(units, list) or not isinstance(groups, list):

@@ -85,6 +85,7 @@ class PlantSearchPlan(Document):
             raw_requirements,
             inputs=inputs,
             path="equipment_plant_setup.requirements",
+            whole_plant=True,
         )
         units = raw.get("units")
         if not isinstance(units, list):

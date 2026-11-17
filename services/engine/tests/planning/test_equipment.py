@@ -3208,6 +3208,20 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             battery["figures"]["modules_per_stack_max"]["citation"]
         ),
     }
+    # Two separately cited synthetic battery options on the same converter.
+    low_power = copy.deepcopy(battery)
+    low_power.update(id=900001, sku="FIXTURE-BACKUP-ENERGY", model="BU2-5.0-HV5")
+    citation = {
+        "url": "https://de-linker.com/wp-content/uploads/fixtures/mixed-backup-fixture.pdf",
+        "page": 1,
+    }
+    for key, value, unit in (
+        ("module_energy_kwh_usable", 25, "kWh"),
+        ("system_rated_dc_power_kw", 1, "kW"),
+        ("stacks_parallel_max", 1, None),
+    ):
+        low_power["figures"][key] = {"value": value, "unit": unit, "citation": citation}
+    feed["products"].append(low_power)
     _, source, loaded, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
     ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
     energy = EnergyService(workspace, ac, max_attempts=1)
@@ -3220,7 +3234,13 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
         ),
         max_attempts=1,
     )
-    registry = service_registry(energy, None, equipment_search=search)
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, source), max_attempts=1
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(
+        energy, None, equipment=equipment, equipment_search=search, reports=reports
+    )
     worker = Worker(
         Jobs(workspace),
         "plant-backup-rpc",
@@ -3235,16 +3255,20 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
         energy,
         credential=lambda: TOKEN,
         limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment=equipment,
         equipment_search=search,
+        reports=reports,
         product_provider=lambda: loaded,
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         rig = Rig(workspace, ac, client)
 
-        def find(label: str, authored: FixtureObject) -> tuple[str, FixtureObject]:
+        def run_equipment(
+            label: str, authored: FixtureObject, path: str
+        ) -> FixtureObject:
             pid = rig.create(label)
             result = rig.post(
-                "/runs/find-equipment",
+                path,
                 {
                     "project_id": pid,
                     "expected_revision": 1,
@@ -3256,6 +3280,10 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             assert worker.run_once()
             run = rig.post("/runs/read", {"run_id": result["run"]["id"]})
             assert run["state"] == "succeeded", run
+            return run
+
+        def find(label: str, authored: FixtureObject) -> tuple[str, FixtureObject]:
+            run = run_equipment(label, authored, "/runs/find-equipment")
             return run["id"], run["result"]["search"]
 
         common = {
@@ -3292,6 +3320,7 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             (6, 23, 3, "unresolved"),
             (12, 47, 10, "unresolved"),
         ):
+            first_floor = None if load == 7 else 2
             authored = {
                 "backup_demand": {
                     "schema_version": 1,
@@ -3308,7 +3337,9 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
                             "inputs": {
                                 "equipment_setup": {
                                     **selected,
-                                    "required_discharge_ac_kw": 2 if i == 0 else None,
+                                    "required_discharge_ac_kw": first_floor
+                                    if i == 0
+                                    else None,
                                 },
                             },
                         }
@@ -3332,9 +3363,9 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             )
             assert candidate is not None, result["coverage"]
             selections = [u["selection"] for u in candidate["plant"]["units"]]
-            assert [x["required_discharge_ac_kw"] for x in selections] == [2] + [
-                None
-            ] * (n - 1)
+            assert [x["required_discharge_ac_kw"] for x in selections] == [
+                first_floor
+            ] + [None] * (n - 1)
             assert {x["inverter_product_id"] for x in selections} == {4107}
             assert {x["battery_product_id"] for x in selections} == {2090}
             assert all(
@@ -3353,8 +3384,154 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
             assert (
                 candidate["usable_energy_kwh"] == check["actual"]["usable_energy_kwh"]
             )
+            if n == 2 and load == 7:
+                plant = candidate["plant"]
+                assert plant["requirements"]["required_discharge_ac_kw"] is None
+                existing_run = rig.post("/runs/read", {"run_id": run_id})
+                pid = existing_run["project_id"]
+                saved = rig.post(
+                    "/projects/revise",
+                    {
+                        "project_id": pid,
+                        "expected_revision": existing_run["revision"],
+                        "inputs": {
+                            **authored,
+                            "equipment_plant_setup": {
+                                **authored["equipment_plant_setup"],
+                                "requirements": {
+                                    **authored["equipment_plant_setup"]["requirements"],
+                                    "operating_mode": "backup",
+                                },
+                                "units": [
+                                    {
+                                        "id": u["id"],
+                                        "name": u["name"],
+                                        "inputs": {
+                                            "equipment_setup": {
+                                                k: v
+                                                for k, v in u["selection"].items()
+                                                if k != "product_revisions"
+                                            }
+                                        },
+                                    }
+                                    for u in plant["units"]
+                                ],
+                            },
+                            "equipment_plant": plant,
+                            "equipment_candidate": {
+                                "run_id": run_id,
+                                "candidate_id": candidate["id"],
+                                "assessment_sha256": candidate["assessment_sha256"],
+                            },
+                        },
+                        "input_contract": "backup_demand_v1",
+                        "key": "adopt-backup-plant",
+                    },
+                )
+                requested = rig.post(
+                    "/runs/report",
+                    {
+                        "project_id": pid,
+                        "expected_revision": saved["revision"],
+                        "options": {
+                            "locale": "en",
+                            "energy_run_id": None,
+                            "pv_run_id": None,
+                            "equipment_run_id": None,
+                            "logo": None,
+                        },
+                        "key": "report-backup-plant",
+                    },
+                )
+                assert worker.run_once()
+                completed = rig.post("/runs/read", {"run_id": requested["id"]})
+                assert completed["state"] == "succeeded", completed
+                result = completed["result"]
+                source = json_object(
+                    workspace.blobs.object(result["pinned_assets"]["report.source"])
+                )
+                assert source["equipment"] == assessment
+                assert result["prepared_asset"]["media_type"] == "application/pdf"
+                report = build_report(source)
+                section = next(
+                    s for s in report.sections if s.id == "plant-backup-runtime"
+                )
+                assert {row.label: row.value for row in section.rows}.items() >= {
+                    "Backup load": "7 kW",
+                    "Required duration": "6 h",
+                    "Backup power upper bound": "8 kW",
+                    "Backup load energy before losses": "42 kWh",
+                }.items()
             if n == 12:
                 assert check["actual"]["usable_energy_kwh"] >= load * duration
+
+        grid_plant = copy.deepcopy(authored)
+        grid_plant["backup_demand"].update(load_kw=21, duration_hours=1)
+        grid_plant["equipment_plant_setup"]["requirements"]["pv_dc_kw"] = 20
+        grid_units = grid_plant["equipment_plant_setup"]["units"][:2]
+        grid_plant["equipment_plant_setup"]["units"] = grid_units
+        for unit in grid_units:
+            unit["inputs"]["equipment_setup"].update(
+                modules_per_stack=4,
+                parallel_stacks=1,
+                accessory_product_ids=[2092],
+                required_discharge_ac_kw=1,
+            )
+        checked = run_equipment(
+            "grid-plant-backup", grid_plant, "/runs/check-equipment"
+        )
+        checks = {row["id"]: row for row in checked["result"]["assessment"]["checks"]}
+        assert checks["unit:u-0:continuous_battery_ac_output"]["actual"] == 10
+        backup = checks["plant:backup_runtime"]
+        assert backup["actual"]["usable_energy_kwh"] == 36
+        assert backup["actual"]["discharge_upper_bound_kw"] is None
+        assert backup["status"] == "unresolved"
+
+        companion = copy.deepcopy(grid_plant)
+        companion["backup_demand"].update(load_kw=3, duration_hours=2)
+        companion["equipment_plant_setup"]["units"][1]["inputs"] = {
+            "equipment_setup": {**common, "inverter_product_id": 4107}
+        }
+        _, options = find("backup-with-solar-companion", companion)
+        assert any(
+            c["status"] == "unresolved"
+            and c["plant"]["units"][0]["selection"]["battery_product_id"] == 2090
+            and c["plant"]["units"][1]["selection"]["battery_product_id"] is None
+            for c in options["candidates"]
+        )
+
+        mixed = copy.deepcopy(authored)
+        mixed["backup_demand"].update(load_kw=35, duration_hours=20)
+        for unit in mixed["equipment_plant_setup"]["units"]:
+            unit["inputs"] = {
+                "equipment_setup": {**common, "inverter_product_id": 4107}
+            }
+        run_id, options = find("backup-mixed-assemblies", mixed)
+        assert options["completion"] == "budget_exhausted"
+        candidate = next(
+            (
+                c
+                for c in options["candidates"]
+                if c["status"] == "unresolved" and (c["usable_energy_kwh"] or 0) >= 700
+            ),
+            None,
+        )
+        assert candidate is not None, options["coverage"]
+        assert {
+            u["selection"]["battery_product_id"] for u in candidate["plant"]["units"]
+        } == {
+            900001,
+            2090,
+        }
+        assessment = rig.post(
+            "/equipment/candidates/read",
+            {"run_id": run_id, "candidate_id": candidate["id"]},
+        )["assessment"]
+        backup = next(
+            c for c in assessment["checks"] if c["id"] == "plant:backup_runtime"
+        )
+        assert backup["actual"]["discharge_upper_bound_kw"] >= 35
+        assert backup["status"] == "unresolved"
 
 
 def test_backup_candidate_reaches_report_and_bom_without_preparation(

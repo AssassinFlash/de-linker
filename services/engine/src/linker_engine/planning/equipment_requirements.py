@@ -47,6 +47,7 @@ class DeclaredEquipmentRequirements(Document):
         inputs: Object,
         path: str,
         connection: DeclaredEquipmentRequirements | None = None,
+        whole_plant: bool = False,
     ) -> Self:
         """Derive search demand without changing the customer's declarations."""
         values = {key: setup.get(key) for key in cls.model_fields}
@@ -60,7 +61,7 @@ class DeclaredEquipmentRequirements(Document):
         backup = BackupDemand.from_inputs(inputs, complete=True)
         if backup is not None:
             values.update(schema_version=1, operating_mode="backup")
-            if connection is None:
+            if connection is None and not whole_plant:
                 values["required_discharge_ac_kw"] = backup.load_kw
         try:
             return cls.model_validate(values)

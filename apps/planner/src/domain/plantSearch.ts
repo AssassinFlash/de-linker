@@ -130,8 +130,21 @@ export function adoptPlantCandidate(
 	products: readonly EquipmentProduct[],
 	choice: JsonObject,
 ): JsonObject {
-	const plant = readEquipmentPlant(value),
-		draft = readPlantDraft(inputs);
+	const plant = readEquipmentPlant(value);
+	const authored = readPlantDraft(inputs);
+	const draft = {
+		...authored,
+		requirements: {
+			...authored.requirements,
+			...(inputs.backup_demand !== undefined
+				? { operating_mode: "backup" }
+				: {}),
+			...(plant.requirements.application === null &&
+			authored.requirements.application === undefined
+				? { application: null }
+				: {}),
+		},
+	};
 	if (!matchesPlantSearch(compilePlantSearch(draft), plant))
 		throw new ApiError(409, "equipment_selection_changed");
 	const revisions = [

@@ -388,8 +388,13 @@ def assess_plant(
     if backup is not None:
         summary = backup.summary()
         unit_metrics = [
-            {check["id"]: check for check in system["assessment"]["checks"]}
-            for system in systems
+            {
+                check["id"]: check
+                for check in system["assessment"]["checks"]
+                if check["id"] != "continuous_battery_ac_output"
+                or unit.selection.operating_mode == "backup"
+            }
+            for unit, system in zip(plant.units, systems, strict=True)
         ]
 
         def ceiling(key: str) -> float | None:
@@ -432,8 +437,11 @@ def assess_plant(
 
     for key in ("pv_dc_kw", "required_usable_kwh", "required_discharge_ac_kw"):
         requested = getattr(plant.requirements, key)
-        if backup is not None and key == "required_discharge_ac_kw":
-            # The site load is assessed against hardware ceilings above.
+        if (
+            backup is not None
+            and key == "required_discharge_ac_kw"
+            and requested is None
+        ):
             continue
         allocations = [getattr(u.selection, key) for u in plant.units]
         total = (
@@ -478,7 +486,11 @@ def assess_plant(
     # connection. A sum of devices does not establish its dispatch/transfer.
     for key in ("required_usable_kwh", "required_discharge_ac_kw"):
         requested = getattr(plant.requirements, key)
-        if backup is not None and key == "required_discharge_ac_kw":
+        if (
+            backup is not None
+            and key == "required_discharge_ac_kw"
+            and requested is None
+        ):
             continue
         add(
             "plant:" + key,

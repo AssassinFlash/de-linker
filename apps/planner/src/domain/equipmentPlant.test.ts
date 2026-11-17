@@ -463,6 +463,67 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	);
 });
 
+test("whole-site backup adopts a plant with unanswered unit sizing", () => {
+	const base = configured();
+	const draft = {
+		...base,
+		requirements: { ...base.requirements, required_discharge_ac_kw: null },
+		units: base.units.map((unit) => ({
+			...unit,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(unit.inputs),
+					required_usable_kwh: null,
+					required_discharge_ac_kw: null,
+				},
+			},
+		})),
+	};
+	const backup = { schema_version: 1, load_kw: 7, duration_hours: 6 };
+	const current = { ...plantInputs(original, draft), backup_demand: backup };
+	const candidate = compilePlant(
+		{
+			...draft,
+			requirements: {
+				...draft.requirements,
+				operating_mode: "backup",
+				application: null,
+			},
+		},
+		products,
+	);
+	const choice = {
+		run_id: "a".repeat(32),
+		candidate_id: "b".repeat(64),
+		assessment_sha256: "c".repeat(64),
+	};
+	const adopted = adoptPlantCandidate(current, candidate, products, choice);
+	assert.deepEqual(adopted.backup_demand, backup);
+	assert.deepEqual(adopted.equipment_candidate, choice);
+	assert.deepEqual(adopted.equipment_plant, candidate);
+	assert.equal(
+		readPlantDraft(adopted).requirements.required_discharge_ac_kw,
+		null,
+	);
+	assert.equal(
+		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs)
+			.required_discharge_ac_kw,
+		null,
+	);
+	const changed = {
+		...draft,
+		requirements: { ...draft.requirements, required_discharge_ac_kw: 8 },
+	};
+	assert.throws(() =>
+		adoptPlantCandidate(
+			{ ...plantInputs(original, changed), backup_demand: backup },
+			candidate,
+			products,
+			choice,
+		),
+	);
+});
+
 test("device observations retain exact versions and distinct plant nodes through Draft undo and editable preparation", () => {
 	const plant = compilePlant(configured(), products);
 	const inputs: JsonObject = {

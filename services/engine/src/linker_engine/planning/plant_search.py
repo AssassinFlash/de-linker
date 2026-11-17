@@ -101,6 +101,46 @@ def new_combinations(
         yield from itertools.product(*columns)
 
 
+def mixed_backup_combination(
+    capacity: list[tuple[float, float, Object]],
+    output: list[tuple[float, float, Object]],
+    demand: BackupDemand,
+    space: EquipmentSearchSpace,
+) -> tuple[Object, ...] | None:
+    """Try the lowest capacity cost per kW gained before Cartesian expansion."""
+    assert demand.load_kw is not None and demand.duration_hours is not None
+    required_energy = demand.load_kw * demand.duration_hours
+    if any(energy < 0 or power < 0 for energy, power, _ in (*capacity, *output)):
+        return None
+    capacity_energy = sum(row[0] for row in capacity)
+    capacity_power = sum(row[1] for row in capacity)
+    if (
+        capacity_energy < required_energy
+        or capacity_power >= demand.load_kw
+        or sum(row[1] for row in output) < demand.load_kw
+        or sum(row[0] for row in output) >= required_energy
+    ):
+        return None
+    if not space.available(len(capacity)):
+        return None
+    swaps = []
+    for index, (low, high) in enumerate(zip(capacity, output, strict=True)):
+        power_gain = high[1] - low[1]
+        if power_gain > 0:
+            energy_cost = low[0] - high[0]
+            swaps.append((energy_cost / power_gain, index, power_gain, energy_cost))
+    selection = [row[2] for row in capacity]
+    for _, index, power_gain, energy_cost in sorted(swaps):
+        if capacity_energy - energy_cost < required_energy:
+            continue
+        selection[index] = output[index][2]
+        capacity_energy -= energy_cost
+        capacity_power += power_gain
+        if capacity_power >= demand.load_kw:
+            return tuple(selection)
+    return None
+
+
 def search_plant(
     inputs: Object,
     basis: Object,
@@ -256,18 +296,30 @@ def search_plant(
         }
         usable = metrics.get("usable_energy")
         output = metrics.get("continuous_battery_ac_output")
-        energy = float(usable) if isinstance(usable, (float, int)) else -1.0
-        power = float(output) if isinstance(output, (float, int)) else -1.0
-        if key not in best or (energy, power) > best[key][:2]:
+        if selection["battery_product_id"] is None:
+            energy = power = 0.0
+        else:
+            energy = float(usable) if isinstance(usable, (float, int)) else -1.0
+            power = float(output) if isinstance(output, (float, int)) else -1.0
+        better_capacity = key not in best or (energy, power) > best[key][:2]
+        better_output = key not in strongest or (power, energy) > (
+            strongest[key][1],
+            strongest[key][0],
+        )
+        if better_capacity:
             best[key] = (energy, power, selection)
-            if all(k in best for k in keys):
-                assess_once(tuple(best[k][2] for k in keys))
-        if not space.exhausted and (
-            key not in strongest or (power, energy) > strongest[key][:2]
-        ):
-            strongest[key] = (power, energy, selection)
-            if all(k in strongest for k in keys):
-                assess_once(tuple(strongest[k][2] for k in keys))
+        if better_output:
+            strongest[key] = (energy, power, selection)
+        if (better_capacity or better_output) and all(k in best for k in keys):
+            capacity = [best[k] for k in keys]
+            output_options = [strongest[k] for k in keys]
+            mixed = mixed_backup_combination(capacity, output_options, backup, space)
+            if mixed is not None:
+                assess_once(mixed)
+            if better_capacity and not space.exhausted:
+                assess_once(tuple(row[2] for row in capacity))
+            if better_output and not space.exhausted:
+                assess_once(tuple(row[2] for row in output_options))
     if backup is not None and not space.exhausted and len(keys) == len(plan.units):
         for combination in itertools.product(*(cache[k] for k in keys)):
             assess_once(combination)
