@@ -16,6 +16,10 @@ import { readEquipmentPlant } from "./equipmentPlant.ts";
 import { plantEnergyDraft } from "./plantEnergy.ts";
 import {
 	PVGIS_REFERENCE_TASK,
+	KNOWN_PV_MODEL,
+	KNOWN_PV_PURPOSE,
+	readPvgisReference,
+	referenceSite,
 	referencePrepared,
 	referenceRoof,
 	assertReferenceAcTopology,
@@ -79,9 +83,18 @@ export function selectPreparation(
 		// guard keeps its own reader so a mismatched source is refused before
 		// anything is returned.
 		if (task === PVGIS_REFERENCE_TASK) {
-			referenceRoof(inputs);
+			const known =
+				readPvgisReference(historical.inputs.pvgis_reference).model ===
+				KNOWN_PV_MODEL;
+			if (known) {
+				if (
+					ownedAsset.purpose !== KNOWN_PV_PURPOSE ||
+					!sameJson(referenceSite(inputs), referenceSite(historical.inputs))
+				)
+					throw new ApiError(409, "preparation_source_changed");
+			} else referenceRoof(inputs);
 			if (
-				!sameJson(inputs.geometry, historical.inputs.geometry) ||
+				(!known && !sameJson(inputs.geometry, historical.inputs.geometry)) ||
 				!sameJson(inputs.pvgis_reference, historical.inputs.pvgis_reference) ||
 				!referencePrepared(inputs)
 			)

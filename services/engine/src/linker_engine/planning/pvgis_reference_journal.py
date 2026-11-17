@@ -14,6 +14,7 @@ from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, VersionUnavailable
 from .frozen_run import frozen_manifest
 from .jobs import Jobs
+from .pvgis_known_inputs import KnownPvPlan
 from .pvgis_reference_download import ReferenceCapture
 from .pvgis_reference_plan import PvgisReferencePlan
 from .pvgis_response import PvgisCapture, read_pvgis
@@ -26,7 +27,7 @@ class PvgisReferenceJournal:
     kind = "pvgis_roof_reference_acquisition_v1"
 
     def __init__(
-        self, workspace: Workspace, lease: Lease, plan: PvgisReferencePlan
+        self, workspace: Workspace, lease: Lease, plan: PvgisReferencePlan | KnownPvPlan
     ) -> None:
         self.workspace, self.lease, self.plan = workspace, lease, plan
         self.jobs = Jobs(workspace)

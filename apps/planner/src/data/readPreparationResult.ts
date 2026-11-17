@@ -5,6 +5,8 @@ import { sameJson } from "../domain/draft.ts";
 import {
 	PVGIS_REFERENCE_TASK,
 	PVGIS_REFERENCE_PURPOSE,
+	KNOWN_PV_MODEL,
+	KNOWN_PV_PURPOSE,
 } from "../domain/pvgisReference.ts";
 import {
 	GEOMETRIC_PV_PURPOSE,
@@ -107,25 +109,43 @@ export function readPreparationResult(
 					: null,
 			end =
 				typeof summary.end_utc === "string" ? new Date(summary.end_utc) : null;
+		const known = asset.purpose === KNOWN_PV_PURPOSE;
 		const keys = Object.keys(children),
-			fixed = [
-				"reference_plan",
-				"reference_geometry",
-				"reference_parameters",
-				"reference_woo_module",
-				"reference_output",
-			],
+			fixed = known
+				? [
+						"reference_plan",
+						"reference_site",
+						"reference_parameters",
+						"reference_output",
+					]
+				: [
+						"reference_plan",
+						"reference_geometry",
+						"reference_parameters",
+						"reference_woo_module",
+						"reference_output",
+					],
 			originals = keys.filter((key) => /^array\.\d+\.original$/.test(key));
 		require(
-			asset.purpose === PVGIS_REFERENCE_PURPOSE &&
+			(known
+				? models.generation === KNOWN_PV_MODEL
+				: asset.purpose === PVGIS_REFERENCE_PURPOSE) &&
 				metadata.profile_type === asset.purpose &&
 				metadata.derived_from_revision === run.revision &&
-				hash(metadata.geometry_sha256) &&
+				(known
+					? metadata.basis === "customer_declared" &&
+						hash(metadata.site_sha256) &&
+						metadata.site_sha256 === children.reference_site &&
+						!("geometry_sha256" in metadata) &&
+						!("woo_module_inputs" in metadata) &&
+						Object.keys(pinned).sort().join() ===
+							"pvgis_reference.plan,runtime_bundle"
+					: hash(metadata.geometry_sha256) &&
+						metadata.geometry_sha256 === children.reference_geometry &&
+						pinned["woo.module_inputs"] === children.reference_woo_module) &&
 				hash(metadata.parameters_sha256) &&
-				metadata.geometry_sha256 === children.reference_geometry &&
 				metadata.parameters_sha256 === children.reference_parameters &&
 				pinned["pvgis_reference.plan"] === children.reference_plan &&
-				pinned["woo.module_inputs"] === children.reference_woo_module &&
 				fixed.every((key) => hash(children[key])) &&
 				originals.length > 0 &&
 				keys.length === fixed.length + originals.length * 2 &&
@@ -137,7 +157,10 @@ export function readPreparationResult(
 				sameJson(summary, metadata.interpretation) &&
 				summary.measurement === "pv_available_ac" &&
 				summary.origin === "modelled" &&
-				summary.model_role === "official_calendar_year_roof_ac_reference" &&
+				summary.model_role ===
+					(known
+						? "official_calendar_year_customer_declared_ac_reference"
+						: "official_calendar_year_roof_ac_reference") &&
 				summary.native_max_interval_seconds === 3600 &&
 				typeof summary.reconstructed_means === "boolean" &&
 				finite(summary.energy_kwh) &&
@@ -152,7 +175,7 @@ export function readPreparationResult(
 					`${(start.getUTCFullYear() + 1).toString().padStart(4, "0")}-01-01T00:00:00+00:00` &&
 				summary.interval_count === (end.valueOf() - start.valueOf()) / 3600000,
 		);
-		readObject(metadata.woo_module_inputs);
+		if (!known) readObject(metadata.woo_module_inputs);
 		for (const role of [
 			"equipment_release",
 			"country_assessment",

@@ -11,6 +11,7 @@ from .canonical import Object
 from .dc_energy_parameters import DcLossScenario
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
 from .equipment_plant import Identity
+from .existing_system import ExistingSystem
 from .geometry_documents import GeometryDocument
 from .geometry_import_documents import GeometryImportOptions
 from .project_input_contracts import InputContract
@@ -116,6 +117,8 @@ class ProjectInputs(Command):
         assert_plant_exclusivity(value)
         if "brief" in value:
             PlanningBrief.model_validate(value["brief"])
+        if "existing_system" in value:
+            ExistingSystem.model_validate(value["existing_system"])
         if "grid_connection" in value:
             from .grid_connection import GridConnection
 
@@ -142,6 +145,16 @@ class ProjectInputs(Command):
             from .direct_beam_inputs import DirectBeamTaskInputs
 
             DirectBeamTaskInputs.model_validate(value["direct_beam_visibility"])
+        if "pvgis_reference" in value:
+            from .pvgis_known_inputs import MODEL as KNOWN_MODEL
+            from .pvgis_known_inputs import KnownPvInputs
+            from .pvgis_reference_inputs import PvgisReferenceInputs
+
+            parameters = value["pvgis_reference"]
+            model = parameters.get("model") if isinstance(parameters, dict) else None
+            (
+                KnownPvInputs if model == KNOWN_MODEL else PvgisReferenceInputs
+            ).model_validate(parameters)
         if "geometric_pv_preparation" in value:
             from .geometric_pv_inputs import GeometricPvInputs
 

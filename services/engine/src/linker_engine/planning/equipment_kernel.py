@@ -13,6 +13,7 @@ from .equipment_conditions import review_device_conditions
 from .equipment_inputs import EquipmentSelection
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
+from .existing_system import require_retained_inverter
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
 from .records import Actor, Context, Lease
@@ -44,6 +45,7 @@ class EquipmentKernel:
         )
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
+        require_retained_inverter(inputs, selection=True)
         basis = self.products.equipment_basis()
         if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
             from .equipment_plant import EquipmentPlant
@@ -96,14 +98,16 @@ class EquipmentKernel:
             or pinned.get("runtime_bundle") != self.runtime.sha256
         ):
             raise VersionUnavailable("equipment runtime bundle is missing")
-        proof = pinned.get("woo.equipment_inputs")
-        if not isinstance(proof, str):
-            raise VersionUnavailable("equipment publication proof is missing")
-        basis = self.workspace.blobs.object(proof)
-        self.products.confirm_basis(basis, require_reference=False)
         inputs = self.workspace.pinned_inputs(manifest)
+        basis: Object = {}
+        if self.requires_woo_basis(inputs):
+            proof = pinned.get("woo.equipment_inputs")
+            if not isinstance(proof, str):
+                raise VersionUnavailable("equipment publication proof is missing")
+            basis = self.workspace.blobs.object(proof)
+            self.products.confirm_basis(basis, require_reference=False)
         output = self.compute(inputs, basis, control, pinned=pinned)
-        if "equipment_condition_inputs" in inputs:
+        if "equipment_condition_inputs" in inputs and "assessment" in output:
             evidence = certificate_documents(basis, cast(Object, output["assessment"]))
             source: Object = {"certificates": evidence}
             originals = inspect_report_certificates(
@@ -112,7 +116,8 @@ class EquipmentKernel:
             evidence["condition_review"] = review_device_conditions(inputs, evidence)
             output.update(certificates=evidence, dependencies=originals)
         control.checkpoint()
-        self.products.confirm_basis(basis, require_reference=False)
+        if self.requires_woo_basis(inputs):
+            self.products.confirm_basis(basis, require_reference=False)
         return {
             "schema": 1,
             "kind": self.kind,
@@ -125,9 +130,10 @@ class EquipmentKernel:
             **output,
         }
 
-    def compute(
-        self, inputs: Object, basis: Object, control: Control, *, pinned: Object
-    ) -> Object:
+    def requires_woo_basis(self, inputs: Object) -> bool:
+        return True
+
+    def compute(self, inputs: Object, basis: Object, control: Control, *, pinned: Object) -> Object:
         if "equipment_plant" in inputs:
             from .plant_assessment import assess_plant
 

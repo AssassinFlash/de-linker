@@ -6,8 +6,6 @@ import { sameJson } from "../../domain/draft.ts";
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { PlantSetup } from "./PlantSetup.tsx";
 import { DeviceConditionInputs } from "./DeviceConditionInputs.tsx";
-import { CommercialSizing } from "../commercial/CommercialSizing.tsx";
-import { readBrief } from "../../domain/brief.ts";
 import {
 	beginPlant,
 	hasPlant,
@@ -24,7 +22,7 @@ type Props = ComponentProps<typeof EquipmentSetup> & {
 };
 
 export function EquipmentWorkspace(props: Props) {
-	const { draft, disabled, client, scope, edit, onError, session } = props;
+	const { draft, disabled, client, scope, edit, onError } = props;
 	const target = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		if (!props.inputErrors?.length || !props.active || disabled) return;
@@ -56,15 +54,6 @@ export function EquipmentWorkspace(props: Props) {
 		return () => props.onValidity(true);
 	}, [valid, props.onValidity]);
 	const multi = hasPlant(draft.history.current);
-	// Commercial projects size from their own load profile; residential ones
-	// never see this panel.
-	let commercial = false;
-	try {
-		commercial =
-			readBrief(draft.history.current.brief).project_use === "commercial";
-	} catch {
-		commercial = false;
-	}
 	let canReturn = false;
 	try {
 		const setup = readPlantDraft(draft.history.current);
@@ -142,17 +131,6 @@ export function EquipmentWorkspace(props: Props) {
 					</button>
 				</div>
 			</div>
-			{commercial ? (
-				<CommercialSizing
-					draft={draft}
-					client={client}
-					session={session}
-					locale={props.locale}
-					active={props.active}
-					disabled={props.disabled}
-					onError={onError}
-				/>
-			) : null}
 			{multi ? (
 				<PlantSetup {...props} onValidity={reportValidity} />
 			) : (

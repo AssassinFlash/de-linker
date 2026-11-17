@@ -1,0 +1,110 @@
+{
+  "$defs": {
+    "Application": {
+      "enum": [
+        "residential",
+        "commercial"
+      ],
+      "type": "string"
+    },
+    "GridPhase": {
+      "enum": [
+        1,
+        3
+      ],
+      "type": "integer"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "grid_phase": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GridPhase"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "operating_mode": {
+      "anyOf": [
+        {
+          "enum": [
+            "grid_connected",
+            "backup"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Operating Mode"
+    },
+    "pv_dc_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "required_usable_kwh": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "required_discharge_ac_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "application": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Application"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "schema_version",
+    "grid_phase",
+    "operating_mode",
+    "pv_dc_kw",
+    "required_usable_kwh",
+    "required_discharge_ac_kw"
+  ],
+  "title": "DeclaredEquipmentRequirements",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

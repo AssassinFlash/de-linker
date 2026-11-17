@@ -90,12 +90,12 @@ test("saved roof projects reopen in design while energy projects and explicit ro
 	);
 	assert.equal(
 		workspaceFromHash({ brief: { ...brief, system_scope: "storage_only" } }),
-		"overview",
+		"site",
 	);
-	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "overview");
-	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "overview");
+	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "site");
+	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "site");
 	location.hash = "#lp-overview";
-	assert.equal(workspaceFromHash({ brief }), "overview");
+	assert.equal(workspaceFromHash({ brief }), "site");
 	location.hash = "#lp-load";
 	assert.equal(workspaceFromHash({ brief }), "energy");
 });

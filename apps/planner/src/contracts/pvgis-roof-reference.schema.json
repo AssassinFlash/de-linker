@@ -11,11 +11,6 @@
     "schema_version": {
       "$ref": "#/$defs/SchemaVersion"
     },
-    "model": {
-      "const": "pvgis_5_3_roof_ac_reference_v1",
-      "title": "Model",
-      "type": "string"
-    },
     "radiation_database": {
       "enum": [
         "PVGIS-ERA5",
@@ -58,6 +53,11 @@
       "title": "Use Terrain Horizon",
       "type": "boolean"
     },
+    "model": {
+      "const": "pvgis_5_3_roof_ac_reference_v1",
+      "title": "Model",
+      "type": "string"
+    },
     "source_note": {
       "anyOf": [
         {
@@ -74,13 +74,13 @@
   },
   "required": [
     "schema_version",
-    "model",
     "radiation_database",
     "year",
     "pv_technology",
     "mounting_place",
     "system_loss_percent",
-    "use_terrain_horizon"
+    "use_terrain_horizon",
+    "model"
   ],
   "title": "PvgisReferenceInputs",
   "type": "object",

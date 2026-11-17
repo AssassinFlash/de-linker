@@ -52,7 +52,7 @@ export function readDraftReceipt(
 	if (
 		!hash(row.intent_sha256, 64) ||
 		!Array.isArray(row.items) ||
-		!row.items.length
+		(row.items.length === 0) !== (row.report_only === true)
 	)
 		fail();
 	const ids = new Set<number>();
@@ -108,13 +108,14 @@ export function readDraftPreview(
 		typeof row.already_present !== "boolean" ||
 		!hash(row.draft_sha256, 64) ||
 		!Array.isArray(row.changes) ||
-		!row.changes.length
+		(row.changes.length === 0 && row.report_only !== true)
 	)
 		fail();
 	const ids = new Set<number>();
 	const changes = row.changes.map((value) => {
 		const change = readObject(value);
 		if (
+			(row.report_only === true && change.after !== 0) ||
 			!count(change.product_id) ||
 			change.product_id === 0 ||
 			ids.has(change.product_id) ||

@@ -9,6 +9,8 @@ import { selectPreparation } from "../../domain/preparationSelection.ts";
 import {
 	readPvgisReference,
 	referenceRoof,
+	referenceSite,
+	KNOWN_PV_MODEL,
 } from "../../domain/pvgisReference.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { readSelections } from "../../domain/profiles.ts";
@@ -78,7 +80,9 @@ export function PvgisReferenceResult({
 				const project = readProject(projectValue),
 					owned = readObject(assetValue),
 					parameters = readPvgisReference(project.inputs.pvgis_reference),
-					roof = referenceRoof(project.inputs);
+					known = parameters.model === KNOWN_PV_MODEL,
+					roof = known ? null : referenceRoof(project.inputs),
+					site = known ? referenceSite(project.inputs) : null;
 				try {
 					selectPreparation(project.inputs, run, project, owned);
 				} catch (cause) {
@@ -88,7 +92,7 @@ export function PvgisReferenceResult({
 					))
 						throw cause;
 				}
-				return { project, asset: owned, parameters, roof };
+				return { project, asset: owned, parameters, roof, site };
 			} catch (cause) {
 				if (
 					cause instanceof ApiError &&
@@ -128,7 +132,7 @@ export function PvgisReferenceResult({
 				)
 			: "—";
 	const parameters = sourceData?.parameters;
-	const poses = sourceData
+	const poses = sourceData?.roof
 		? panelPoses(sourceData.roof.geometry).filter((p) => p.included)
 		: [];
 	return (
@@ -222,19 +226,53 @@ export function PvgisReferenceResult({
 									? __("Included", "linker-tools")
 									: __("Omitted", "linker-tools")}
 							</dd>
-							<dt>{__("Included modules", "linker-tools")}</dt>
-							<dd>{format(poses.length)}</dd>
-							<dt>{__("Module nameplate power", "linker-tools")}</dt>
-							<dd>
-								{format(
-									poses.reduce((sum, p) => sum + p.stc_power_w, 0) / 1000,
-								)}{" "}
-								kWp
-							</dd>
+							{parameters.model !== KNOWN_PV_MODEL && (
+								<>
+									<dt>{__("Included modules", "linker-tools")}</dt>
+									<dd>{format(poses.length)}</dd>
+									<dt>{__("Module nameplate power", "linker-tools")}</dt>
+									<dd>
+										{format(
+											poses.reduce((sum, p) => sum + p.stc_power_w, 0) / 1000,
+										)}{" "}
+										kWp
+									</dd>
+								</>
+							)}
+							{sourceData?.site && (
+								<>
+									<dt>{__("Project location", "linker-tools")}</dt>
+									<dd>
+										{sourceData.site.location_label} ·{" "}
+										{format(sourceData.site.latitude)},{" "}
+										{format(sourceData.site.longitude)}
+									</dd>
+								</>
+							)}
+							{parameters.arrays?.map((array) => (
+								<div key={array.id}>
+									<dt>{__("Declared PV power", "linker-tools")}</dt>
+									<dd>{format(array.peak_power_kwp)} kWp</dd>
+									<dt>{__("Tilt", "linker-tools")}</dt>
+									<dd>{format(array.tilt_deg)}°</dd>
+									<dt>{__("Azimuth from true north", "linker-tools")}</dt>
+									<dd>{format(array.azimuth_north_clockwise_deg)}°</dd>
+									<dt>{__("PV details source note", "linker-tools")}</dt>
+									<dd>{array.source_note}</dd>
+								</div>
+							))}
 							{parameters.source_note && (
 								<>
 									<dt>
-										{__("Private assumption note (optional)", "linker-tools")}
+										{parameters.model === KNOWN_PV_MODEL
+											? __(
+													"Source of location and system-loss assumptions",
+													"linker-tools",
+												)
+											: __(
+													"Private assumption note (optional)",
+													"linker-tools",
+												)}
 									</dt>
 									<dd>{parameters.source_note}</dd>
 								</>
@@ -244,7 +282,7 @@ export function PvgisReferenceResult({
 					{changed && (
 						<Notice>
 							{__(
-								"The source request, roof or model has changed. A source matching the current inputs is required.",
+								"The source request, location or PV details have changed. A source matching the current inputs is required.",
 								"linker-tools",
 							)}
 						</Notice>
@@ -252,12 +290,12 @@ export function PvgisReferenceResult({
 					{dcConflict && (
 						<Notice>
 							{__(
-								"This whole-roof reference can be used only for an AC scenario for this roof. Change the topology or explicitly remove its DC PV input before selecting it. Your existing selections remain unchanged.",
+								"This reference requires an AC scenario. Change the topology or explicitly remove its DC PV input before selecting it. Your existing selections remain unchanged.",
 								"linker-tools",
 							)}
 						</Notice>
 					)}
-					{sourceData && (
+					{sourceData?.roof && (
 						<PvgisRoofFacts
 							geometry={sourceData.roof.geometry}
 							locale={locale}

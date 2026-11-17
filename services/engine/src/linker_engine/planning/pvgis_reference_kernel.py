@@ -10,6 +10,9 @@ from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
+from .pvgis_known_inputs import MODEL as KNOWN_MODEL
+from .pvgis_known_inputs import KnownPvPlan, KnownPvRequest, known_reference_plan
+from .pvgis_reference_array import PvgisReferenceArray
 from .pvgis_reference_artifacts import prepare_reference_asset
 from .pvgis_reference_download import ReferenceCapture, ReferenceDownloader
 from .pvgis_reference_geometry import reference_plan
@@ -69,7 +72,39 @@ class PvgisRoofReferenceKernel:
             }
         )
 
+    def known_models(self) -> dict[str, str]:
+        return {**self.models, "generation": KNOWN_MODEL}
+
+    def known_parameters(self) -> Object:
+        return {**self.parameters(), "product_policy": "customer_declared_known_pv_v1"}
+
+    def known_execution_key(self) -> str:
+        return execution_key(
+            {
+                "code_sha256": self.runtime.sha256,
+                "models": dict(self.known_models()),
+                "parameters": self.known_parameters(),
+            }
+        )
+
+    def execution_keys(self) -> tuple[str, ...]:
+        return self.execution_key(), self.known_execution_key()
+
     def context(self, inputs: Object) -> Context:
+        parameters = inputs.get("pvgis_reference")
+        if isinstance(parameters, dict) and parameters.get("model") == KNOWN_MODEL:
+            known_plan = known_reference_plan(inputs, self.limits, self.max_array_steps)
+            return Context(
+                self.runtime.sha256,
+                self.known_models(),
+                {
+                    "runtime_bundle": self.runtime.sha256,
+                    "pvgis_reference.plan": self.workspace.blobs.put_object(
+                        known_plan.document()
+                    ),
+                },
+                self.known_parameters(),
+            )
         basis = self.products.roof_basis(inputs)
         basis_sha = self.workspace.blobs.put_object(basis)
         plan = reference_plan(inputs, basis_sha, self.limits, self.max_array_steps)
@@ -92,18 +127,23 @@ class PvgisRoofReferenceKernel:
         if not isinstance(manifest_hash, str):
             raise VersionUnavailable("roof reference task has no pinned manifest")
         manifest = frozen_manifest(self.workspace, lease, manifest_hash)
-        if (
-            request_execution_key(lease.request, manifest, manifest_hash)
-            != self.execution_key()
-        ):
-            raise VersionUnavailable("worker cannot execute the pinned roof reference")
         context = manifest.get("context")
         assert isinstance(context, dict)
+        models = context.get("models")
+        known = isinstance(models, dict) and models.get("generation") == KNOWN_MODEL
+        if request_execution_key(lease.request, manifest, manifest_hash) != (
+            self.known_execution_key() if known else self.execution_key()
+        ):
+            raise VersionUnavailable("worker cannot execute the pinned PVGIS reference")
         pinned = context.get("assets")
         if (
             not isinstance(pinned, dict)
             or set(pinned)
-            != {"runtime_bundle", "woo.module_inputs", "pvgis_reference.plan"}
+            != (
+                {"runtime_bundle", "pvgis_reference.plan"}
+                if known
+                else {"runtime_bundle", "woo.module_inputs", "pvgis_reference.plan"}
+            )
             or any(not isinstance(v, str) for v in pinned.values())
             or pinned["runtime_bundle"] != self.runtime.sha256
         ):
@@ -111,16 +151,28 @@ class PvgisRoofReferenceKernel:
                 "exact roof reference runtime and dependencies required"
             )
         self.workspace.blobs.read(str(pinned["runtime_bundle"]))
-        basis = self.workspace.blobs.object(str(pinned["woo.module_inputs"]))
-        self.products.confirm_basis(basis)
         inputs = self.workspace.pinned_inputs(manifest)
-        self.products.check_roof_inputs(inputs, basis)
-        plan = PvgisReferencePlan.read(
-            self.workspace.blobs.object(str(pinned["pvgis_reference.plan"]))
-        )
-        expected = reference_plan(
-            inputs, str(pinned["woo.module_inputs"]), self.limits, self.max_array_steps
-        )
+        plan: PvgisReferencePlan | KnownPvPlan
+        basis: Object = {}
+        expected: PvgisReferencePlan | KnownPvPlan
+        if known:
+            plan = KnownPvPlan.read(
+                self.workspace.blobs.object(str(pinned["pvgis_reference.plan"]))
+            )
+            expected = known_reference_plan(inputs, self.limits, self.max_array_steps)
+        else:
+            basis = self.workspace.blobs.object(str(pinned["woo.module_inputs"]))
+            self.products.confirm_basis(basis)
+            self.products.check_roof_inputs(inputs, basis)
+            plan = PvgisReferencePlan.read(
+                self.workspace.blobs.object(str(pinned["pvgis_reference.plan"]))
+            )
+            expected = reference_plan(
+                inputs,
+                str(pinned["woo.module_inputs"]),
+                self.limits,
+                self.max_array_steps,
+            )
         if encode(plan.document()) != encode(expected.document()):
             raise VersionUnavailable(
                 "roof reference plan differs from the saved project"
@@ -149,7 +201,9 @@ class PvgisRoofReferenceKernel:
         )
         captures: list[ReferenceCapture] = []
         try:
-            for index, array in enumerate(plan.arrays):
+            for index, array in enumerate(
+                cast(list[PvgisReferenceArray | KnownPvRequest], plan.arrays)
+            ):
                 guard()
                 source = journal.captured(index)
                 if source is None:
@@ -196,7 +250,8 @@ class PvgisRoofReferenceKernel:
             acquisition=journal.current(),
         )
         guard()
-        self.products.confirm_basis(basis)
+        if not known:
+            self.products.confirm_basis(basis)
         metadata = self.workspace.blobs.object(publication.metadata_sha256)
         return AssetResult(
             {

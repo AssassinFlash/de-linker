@@ -9,7 +9,12 @@ from .asset_publication import AssetPublication
 from .canonical import Json, Object, encode
 from .errors import InvalidInput
 from .power_series import PowerSeries
+from .pvgis_known_inputs import MODEL as KNOWN_MODEL
+from .pvgis_known_inputs import MODEL_ROLE as KNOWN_ROLE
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_PURPOSE
+from .pvgis_known_inputs import KnownPvPlan, KnownPvRequest
 from .pvgis_profile import pvgis_profile
+from .pvgis_reference_array import PvgisReferenceArray
 from .pvgis_reference_download import ReferenceCapture
 from .pvgis_reference_plan import PvgisReferencePlan
 from .pvgis_response import read_pvgis
@@ -25,7 +30,7 @@ def prepare_reference_asset(
     revision: int,
     inputs: Object,
     basis: Object,
-    plan: PvgisReferencePlan,
+    plan: PvgisReferencePlan | KnownPvPlan,
     captures: list[ReferenceCapture],
     *,
     guard: Callable[[], None] = lambda: None,
@@ -34,17 +39,36 @@ def prepare_reference_asset(
     if len(captures) != len(plan.arrays):
         raise InvalidInput("every roof array needs its own complete official response")
     plan_sha = blobs.put_object(plan.document())
+    known = isinstance(plan, KnownPvPlan)
+    purpose = KNOWN_PURPOSE if known else PROFILE_PURPOSE
+    model_role = KNOWN_ROLE if known else "official_calendar_year_roof_ac_reference"
     dependencies: Object = {
         "reference_plan": plan_sha,
-        "reference_geometry": blobs.put_object(cast(Object, inputs["geometry"])),
         "reference_parameters": blobs.put_object(
             cast(Object, inputs["pvgis_reference"])
         ),
-        "reference_woo_module": blobs.put_object(basis),
     }
+    if isinstance(plan, KnownPvPlan):
+        dependencies["reference_site"] = blobs.put_object(
+            plan.site.model_dump(mode="json")
+        )
+        binding: Object = {
+            "site_sha256": plan.site_sha256,
+            "basis": "customer_declared",
+        }
+    else:
+        dependencies["reference_geometry"] = blobs.put_object(
+            cast(Object, inputs["geometry"])
+        )
+        dependencies["reference_woo_module"] = blobs.put_object(basis)
+        binding = {
+            "geometry_sha256": plan.geometry_sha256,
+            "module_basis_sha256": plan.module_basis_sha256,
+        }
     arrays: list[Json] = []
     profiles: list[PowerSeries] = []
-    for index, (array, source) in enumerate(zip(plan.arrays, captures, strict=True)):
+    requests = cast(list[PvgisReferenceArray | KnownPvRequest], plan.arrays)
+    for index, (array, source) in enumerate(zip(requests, captures, strict=True)):
         guard()
         raw_sha = blobs.put(source.content)
         capture_sha = blobs.put_object(source.capture.document())
@@ -114,11 +138,10 @@ def prepare_reference_asset(
     dependencies["reference_output"] = output_sha
     manifest: Object = {
         "schema_version": 1,
-        "kind": "pvgis_5_3_roof_ac_reference_v1",
+        "kind": KNOWN_MODEL if known else "pvgis_5_3_roof_ac_reference_v1",
         "plan_sha256": plan_sha,
-        "geometry_sha256": plan.geometry_sha256,
+        **binding,
         "parameters_sha256": plan.parameters_sha256,
-        "module_basis_sha256": plan.module_basis_sha256,
         "arrays": arrays,
         "output_sha256": output_sha,
     }
@@ -131,20 +154,28 @@ def prepare_reference_asset(
         "origin": "modelled",
         "native_max_interval_seconds": 3600,
         "reconstructed_means": any(p.reconstructed_means for p in profiles),
-        "model_role": "official_calendar_year_roof_ac_reference",
+        "model_role": model_role,
     }
     metadata: Object = {
         "schema": 1,
-        "profile_type": PROFILE_PURPOSE,
+        "profile_type": purpose,
         "retention": "permanent",
         "derived_from_revision": revision,
-        "geometry_sha256": plan.geometry_sha256,
+        **(
+            {"basis": "customer_declared", "site_sha256": binding["site_sha256"]}
+            if known
+            else {
+                "geometry_sha256": binding["geometry_sha256"],
+                "woo_module_inputs": basis,
+            }
+        ),
         "parameters_sha256": plan.parameters_sha256,
-        "woo_module_inputs": basis,
         "dependencies": dependencies,
         "interpretation": summary,
         "provenance": {
-            "label": "JRC PVGIS calendar-year roof AC reference",
+            "label": "JRC PVGIS customer-declared AC reference"
+            if known
+            else "JRC PVGIS calendar-year roof AC reference",
             "basis": "Official modelled system output; selected year and model assumptions, not measured generation or specific-device performance",
             "rights_basis": "JRC PVGIS usage conditions; source attribution and private permanent original retention",
         },
@@ -157,7 +188,7 @@ def prepare_reference_asset(
             project_id,
             encode(manifest),
             "application/json",
-            PROFILE_PURPOSE,
+            purpose,
             metadata,
         ),
         summary,

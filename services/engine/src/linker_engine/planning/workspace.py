@@ -16,6 +16,7 @@ from uuid import uuid4
 
 from . import commands
 from .access import active_actor, positive_integer, project_row
+from .backup_demand import BackupDemand
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
 from .country_rules import validate_country_rule_inputs
@@ -29,6 +30,7 @@ from .errors import (
 )
 from .execution_control import require_accepting
 from .execution_identity import execution_key
+from .existing_system import ExistingSystem
 from .geometry import validate_project_geometry
 from .grid_connection import validate_grid_connection
 from .installation_inputs import validate_installation_project
@@ -120,11 +122,14 @@ class Workspace:
                 )
             require_input_contract(None, inputs, input_contract)
             validate_new_brief(inputs)
+            if "existing_system" in inputs:
+                ExistingSystem.read(inputs["existing_system"])
             validate_grid_connection(inputs)
             validate_country_rule_inputs(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)
+            BackupDemand.from_inputs(inputs)
             content = self.blobs.put_object(inputs)
             project_id = uuid4().hex
             now = self.clock()
@@ -298,11 +303,14 @@ class Workspace:
             previous = self._project(connection, actor, project_id)
             require_input_contract(previous.inputs, inputs, input_contract)
             validate_new_brief(inputs)
+            if "existing_system" in inputs:
+                ExistingSystem.read(inputs["existing_system"])
             validate_grid_connection(inputs)
             validate_country_rule_inputs(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)
+            BackupDemand.from_inputs(inputs)
             content = self.blobs.put_object(inputs)
             number = expected_revision + 1
             now = self.clock()
@@ -365,11 +373,14 @@ class Workspace:
             previous = self._project(connection, actor, project_id)
             require_input_contract(previous.inputs, inputs, input_contract)
         validate_new_brief(inputs)
+        if "existing_system" in inputs:
+            ExistingSystem.read(inputs["existing_system"])
         validate_grid_connection(inputs)
         validate_country_rule_inputs(inputs)
         validate_project_geometry(inputs)
         validate_installation_project(inputs)
         validate_condition_inputs(inputs)
+        BackupDemand.from_inputs(inputs)
         # Source reads and derivation stage CAS bytes without holding a writer.
         context = resolve()
         with self.database.transaction() as connection:

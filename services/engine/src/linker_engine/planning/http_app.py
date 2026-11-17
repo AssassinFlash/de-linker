@@ -553,7 +553,10 @@ def create_private_app(
                     else {}
                 ),
                 **(
-                    {"pvgis_roof_reference": pvgis_reference.kernel.kind}
+                    {
+                        "pvgis_roof_reference": pvgis_reference.kernel.kind,
+                        "pvgis_known_reference": "pvgis_5_3_known_ac_reference_v1",
+                    }
                     if pvgis_reference is not None
                     else {}
                 ),

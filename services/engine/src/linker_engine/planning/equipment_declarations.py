@@ -8,7 +8,6 @@ from pydantic import ValidationError
 
 from .canonical import Json, Object, decode_object, encode
 from .energy_declarations import normalize_authored_inputs, object_value
-from .energy_inputs import storage_only_project
 from .equipment_inputs import EquipmentSelection, EquipmentUse
 from .equipment_plant import EquipmentPlant, ParallelGroup, PlantUnit
 from .equipment_requirements import EquipmentRequirements
@@ -72,52 +71,28 @@ def normalize_discovery_inputs(inputs: Object) -> Object:
     return result
 
 
-def _requirements(
-    setup: Object,
-    *,
-    path: str,
-    connection: EquipmentRequirements | None = None,
-    storage_only: bool,
-) -> EquipmentRequirements:
-    values = {key: setup.get(key) for key in EquipmentRequirements.model_fields}
-    if connection is not None:
-        values.update(
-            grid_phase=connection.grid_phase, operating_mode=connection.operating_mode
-        )
-    if storage_only:
-        values["pv_dc_kw"] = 0
-    try:
-        return EquipmentRequirements.model_validate(values)
-    except ValidationError as error:
-        fields = tuple(
-            path + "." + ".".join(str(part) for part in item["loc"])
-            for item in error.errors()
-        )
-        raise InvalidInput(
-            "complete the declared equipment demand", fields=fields
-        ) from error
-
-
 def compile_discovery_inputs(authored: Object) -> Object:
     inputs = decode_object(encode(authored))
-    storage_only = storage_only_project(inputs)
+    from .existing_system import unverified_retained_inverter
+
+    if unverified_retained_inverter(inputs) is not None:
+        return inputs
     raw = inputs.get("equipment_plant_setup")
     if not isinstance(raw, dict):
         setup = object_value(
             inputs.get("equipment_setup"), "equipment demand declarations"
         )
-        inputs["equipment_requirements"] = _requirements(
+        inputs["equipment_requirements"] = EquipmentRequirements.effective(
             setup,
             path="equipment_setup",
-            storage_only=storage_only,
+            inputs=inputs,
         ).model_dump(mode="json")
         return inputs
-    common = _requirements(
+    common = EquipmentRequirements.effective(
         object_value(raw.get("requirements"), "plant connection demand"),
         path="equipment_plant_setup.requirements",
-        storage_only=storage_only,
+        inputs=inputs,
     )
-    raw["requirements"] = common.model_dump(mode="json")
     units, groups = raw.get("units"), raw.get("parallel_groups")
     if not isinstance(units, list) or not isinstance(groups, list):
         raise InvalidInput("declare the named plant systems and their groups")
@@ -128,11 +103,11 @@ def compile_discovery_inputs(authored: Object) -> Object:
         setup = object_value(
             declarations.get("equipment_setup"), "system demand declarations"
         )
-        demand = _requirements(
+        demand = EquipmentRequirements.effective(
             setup,
             path=f"equipment_plant_setup.units[{index}].inputs.equipment_setup",
             connection=common,
-            storage_only=storage_only,
+            inputs=inputs,
         )
         requests.append(
             {

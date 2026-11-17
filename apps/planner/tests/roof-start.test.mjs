@@ -8,46 +8,40 @@ const session = {
 	query_scope: "3".repeat(64),
 	runtime: { limits: { max_json_depth: 32, max_body_bytes: 1000000 } },
 };
-const address = "Karlstraße 1, 80333 München, Germany";
-const geocoded = (country = "DE") => ({
-	formattedAddress: address,
-	addressComponents: [
-		{ longText: "Germany", shortText: country, types: ["country"] },
-		{ longText: "80333", shortText: "80333", types: ["postal_code"] },
-	],
-	location: { latitude: 48.145, longitude: 11.566 },
-});
 const button = (label) =>
 	[...document.querySelectorAll("button")].find(
 		(item) => item.textContent === label,
 	);
+const field = (name) => document.querySelector(`[name="${name}"]`);
 
-async function fixture(t, options = {}) {
+async function fixture(t, search = "", locale = "en") {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
-	const { readBrief } = await import("../src/domain/brief.ts");
+	const { readEntryHints } = await import("../src/domain/entryHints.ts");
 	const requests = [],
-		searches = [],
 		records = [],
-		opened = [];
-	let lookup = async () => ({ places: [geocoded()] });
-	let createFailure = false;
+		opened = [],
+		searches = [];
+	let createFailure = false,
+		lookupFailure = false;
 	const originalFetch = globalThis.fetch;
 	globalThis.fetch = async (url, init) => {
 		assert.equal(url, "https://places.googleapis.com/v1/places:searchText");
-		assert.equal(init.method, "POST");
-		assert.equal(init.headers["X-Goog-Api-Key"], "fixture-google-maps-key");
-		assert.equal(
-			init.headers["X-Goog-FieldMask"],
-			"places.formattedAddress,places.location,places.addressComponents",
-		);
-		const request = JSON.parse(init.body);
-		searches.push(request);
-		const result = await lookup(request);
-		if (result instanceof Response) return result;
-		return new Response(JSON.stringify(result), {
-			headers: { "Content-Type": "application/json" },
+		searches.push(JSON.parse(init.body));
+		return Response.json({
+			places: lookupFailure
+				? []
+				: [
+						{
+							formattedAddress: "Karlstraße 1, 80333 München",
+							addressComponents: [
+								{ shortText: "DE", types: ["country"] },
+								{ shortText: "80333", types: ["postal_code"] },
+							],
+							location: { latitude: 48.145, longitude: 11.566 },
+						},
+					],
 		});
 	};
 	t.after(() => {
@@ -55,14 +49,33 @@ async function fixture(t, options = {}) {
 	});
 	const client = {
 		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path) {
+			assert.equal(path, "products/current");
+			return {
+				schema_version: 1,
+				provider: "woocommerce",
+				figure_projection_version: 2,
+				compatibility_origin: "woocommerce",
+				products: [
+					{
+						id: 42,
+						canonical_product_id: 42,
+						product_revision: "a".repeat(64),
+						brand: "Fixture",
+						model: "PV 42",
+						device_class: "inverters",
+						figures: {},
+					},
+				],
+			};
+		},
 		async send(path, body, scope) {
 			assert.equal(path, "projects/create");
 			assert.equal(scope, session.query_scope);
-			assert.equal(records[0].body, body, "recovery is written before sending");
+			assert.equal(records[0].body, body, "persist recovery before sending");
 			requests.push(body);
 			if (createFailure) throw new Error("response_lost");
 			const command = JSON.parse(body);
-			readBrief(command.inputs.brief);
 			return {
 				id: "1".repeat(32),
 				revision: 1,
@@ -78,87 +91,75 @@ async function fixture(t, options = {}) {
 		},
 		async writeCreation(scope, body, destination) {
 			assert.equal(scope, session.query_scope);
-			const command = JSON.parse(body);
-			if (!records.some((record) => record.body === body))
-				records.push({
-					key: command.key,
-					title: command.title,
-					body,
-					destination,
-					createdAt: 1,
-				});
+			const { key, title } = JSON.parse(body);
+			if (!records.some((entry) => entry.body === body))
+				records.push({ key, title, body, destination, createdAt: 1 });
 		},
 		async clearCreation(scope, body) {
 			assert.equal(scope, session.query_scope);
-			const index = records.findIndex((record) => record.body === body);
+			const index = records.findIndex((entry) => entry.body === body);
 			assert.notEqual(index, -1);
 			records.splice(index, 1);
 		},
 	};
-	const queryClient = new QueryClient({
+	const cache = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
 	});
 	const root = createRoot(dom.element);
 	t.after(async () => {
 		await dom.dispose(root);
-		queryClient.clear();
+		cache.clear();
 	});
-	async function render() {
-		await act(async () =>
+	const render = () =>
+		act(async () =>
 			root.render(
 				React.createElement(
 					QueryClientProvider,
-					{ client: queryClient },
+					{ client: cache },
 					React.createElement(NewProject, {
 						session,
 						client,
 						store,
 						openOnLoad: true,
-						roofStart: {
-							locale: "en",
-							countries: { DE: "Germany", FR: "France" },
+						config: {
+							locale,
+							countries: { DE: "Germany" },
 							googleMapsApiKey: "fixture-google-maps-key",
 						},
+						entryHints: readEntryHints(new URLSearchParams(search)),
 						created: (project, destination) => {
 							opened.push({ project, destination });
 							return true;
 						},
 						recheck: () => assert.fail("unexpected session recheck"),
-						...options,
 					}),
 				),
 			),
 		);
-	}
 	await render();
 	return {
 		requests,
-		searches,
 		records,
 		opened,
-		setLookup: (next) => {
-			lookup = next;
+		searches,
+		loseReceipt: (value) => {
+			createFailure = value;
 		},
-		setCreateFailure: (next) => {
-			createFailure = next;
+		failLookup: () => {
+			lookupFailure = true;
 		},
-		async fill(country = "DE", value = "Karlstraße 1, München") {
+		async fill(site = "Karlstraße 1, München") {
+			await until(() => !field("project_title").matches(":disabled"));
+			await enter(field("project_title"), "Munich PV");
 			await act(async () => {
-				const select = document.querySelector(".lp-roof-start select");
-				select.value = country;
-				select.dispatchEvent(new window.Event("change", { bubbles: true }));
+				const country = field("country");
+				country.value = "DE";
+				country.dispatchEvent(new window.Event("change", { bubbles: true }));
 			});
-			await enter(document.querySelector(".lp-roof-start input"), value);
-			await until(() => !button("Open roof map").disabled);
+			await enter(field("location_label"), site);
 		},
-		async submit() {
-			await act(async () =>
-				document
-					.querySelector("form")
-					.dispatchEvent(
-						new window.Event("submit", { bubbles: true, cancelable: true }),
-					),
-			);
+		async click(label) {
+			await act(async () => button(label).click());
 		},
 		async reload() {
 			await act(async () => root.render(null));
@@ -167,167 +168,84 @@ async function fixture(t, options = {}) {
 	};
 }
 
-test("a storage-only project starts without a roof, geocoding or invented capacity", async (t) => {
-	const page = await fixture(t);
-	const scope = document.querySelector('select[name="system_scope"]');
-	assert.ok(scope, "the same project start offers the planned system");
-	await act(async () => {
-		scope.value = "storage_only";
-		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	await enter(
-		document.querySelector('input[name="project_title"]'),
-		"Oslo battery project",
-	);
-	await page.submit();
-	await until(() => page.opened.length === 1);
-	assert.equal(page.searches.length, 0);
-	assert.equal(
-		page.opened[0].project.inputs.brief.system_scope,
-		"storage_only",
-	);
-	assert.equal(page.opened[0].project.inputs.brief.annual_load.kwh, null);
-	assert.equal(page.opened[0].project.inputs.geometry, undefined);
-	assert.equal(page.opened[0].project.inputs.equipment_setup, undefined);
-	assert.equal(page.records.length, 0);
-});
-
-test("known solar details open equipment without requiring a map or another roof step", async (t) => {
-	const page = await fixture(t);
-	await act(async () => {
-		const entry = document.querySelector('select[name="solar_entry"]');
-		entry.value = "known";
-		entry.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	await enter(
-		document.querySelector('input[name="project_title"]'),
-		"Existing solar system",
-	);
-	await page.submit();
-	await until(() => page.opened.length === 1);
-	assert.equal(page.searches.length, 0);
-	assert.equal(page.opened[0].destination, "equipment");
-	assert.equal(page.opened[0].project.inputs.geometry, undefined);
-});
-
-test("country and real address create a roof project without sizing inputs", async (t) => {
-	const page = await fixture(t);
-	assert.equal(button("Open roof map").disabled, true);
-	await page.submit();
-	assert.equal(page.requests.length, 0);
-	assert.equal(page.searches.length, 0);
+test("the old roof link uses the Project form and opens Solar without geocoding", async (t) => {
+	const page = await fixture(t, "step=roof");
 	await page.fill();
-	await page.submit();
+	await page.click("Continue with solar");
 	await until(() => page.opened.length === 1);
-	assert.deepEqual(page.searches, [
-		{
-			textQuery: "Karlstraße 1, München",
-			languageCode: "en",
-			regionCode: "DE",
-		},
-	]);
+	assert.equal(page.requests.length, 1);
+	assert.equal(page.searches.length, 0);
 	assert.equal(page.opened[0].destination, "design");
-	assert.equal(page.opened[0].project.title, address);
-	assert.deepEqual(page.opened[0].project.inputs.brief.site, {
-		country_code: "DE",
-		location_label: address,
-		postal_code: "80333",
-		latitude: 48.145,
-		longitude: 11.566,
-		coordinate_basis: "user_entered",
-		timezone: null,
-	});
-	assert.deepEqual(Object.keys(page.opened[0].project.inputs), ["brief"]);
-	assert.equal(page.opened[0].project.inputs.brief.annual_load.kwh, null);
-	assert.equal(page.records.length, 0);
-});
-
-test("German roof entry requests German addresses for the saved title and location", async (t) => {
-	const page = await fixture(t, {
-		roofStart: {
-			locale: "de-DE",
-			countries: { DE: "Deutschland" },
-			googleMapsApiKey: "fixture-google-maps-key",
-		},
-	});
-	const germanAddress = "Karlstraße 1, 80333 München, Deutschland";
-	page.setLookup(async ({ languageCode }) => {
-		assert.equal(languageCode, "de");
-		return { places: [{ ...geocoded(), formattedAddress: germanAddress }] };
-	});
-	await page.fill();
-	await page.submit();
-	await until(() => page.opened.length === 1);
-	assert.equal(page.opened[0].project.title, germanAddress);
+	assert.equal(page.opened[0].project.title, "Munich PV");
 	assert.equal(
 		page.opened[0].project.inputs.brief.site.location_label,
-		germanAddress,
-	);
-});
-
-test("address failures keep the input editable and do not create a project", async (t) => {
-	const page = await fixture(t);
-	await page.fill();
-	page.setLookup(async () => ({ places: [geocoded("FR")] }));
-	await page.submit();
-	await until(() =>
-		document.body.textContent.includes("We could not find that address"),
-	);
-	assert.equal(page.requests.length, 0);
-	assert.equal(
-		document.querySelector(".lp-roof-start input").value,
 		"Karlstraße 1, München",
 	);
-	page.setLookup(async () => {
-		return new Response(
-			JSON.stringify({ error: { status: "REQUEST_DENIED" } }),
-			{ status: 403 },
-		);
-	});
-	await page.submit();
-	await until(() =>
-		document.body.textContent.includes("Address search is unavailable"),
-	);
-	assert.equal(page.requests.length, 0);
-	page.setLookup(async () => ({ places: [] }));
-	await page.submit();
-	await until(() =>
-		document.body.textContent.includes("We could not find that address"),
-	);
-	assert.equal(page.requests.length, 0);
-	page.setLookup(async () => ({ places: [geocoded()] }));
-	await page.fill("DE", "Karlstraße 1, 80333 München");
-	await page.submit();
-	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
 });
 
-test("a lost creation reply reloads and retries the same project and roof destination", async (t) => {
-	const page = await fixture(t);
-	page.setCreateFailure(true);
+test("the old product link carries a current product into the same Project form", async (t) => {
+	const page = await fixture(t, "step=equipment&product_id=42&plz=80333");
+	await until(() => document.body.textContent.includes("Fixture PV 42"));
+	assert.equal(field("location_label").value, "80333");
 	await page.fill();
-	await page.submit();
+	await page.click("Continue with solar");
+	await until(() => page.opened.length === 1);
+	assert.equal(page.requests.length, 1);
+	assert.equal(
+		page.opened[0].project.inputs.equipment_setup.inverter_product_id,
+		42,
+	);
+	assert.equal(page.opened[0].destination, "design");
+});
+
+test("coordinates can be looked up in German from the shared Project form", async (t) => {
+	const page = await fixture(t, "", "de-DE");
+	await page.fill();
+	await page.click("Find site coordinates");
+	await until(() =>
+		document.body.textContent.includes("Site coordinates found"),
+	);
+	assert.equal(page.searches[0].languageCode, "de");
+	assert.equal(page.requests.length, 0);
+	await page.click("Continue with solar");
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].project.inputs.brief.site.latitude, 48.145);
+});
+
+test("an unsuccessful optional coordinate search leaves Continue usable", async (t) => {
+	const page = await fixture(t);
+	await page.fill();
+	page.failLookup();
+	await page.click("Find site coordinates");
+	await until(() =>
+		document.body.textContent.includes("The location could not be found"),
+	);
+	await page.click("Continue with solar");
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
+});
+
+test("a lost creation reply is retried using the original request after reload", async (t) => {
+	const page = await fixture(t, "step=roof");
+	page.loseReceipt(true);
+	await page.fill();
+	await page.click("Continue with solar");
 	await until(() => button("Retry project creation"));
 	assert.equal(page.records.length, 1);
-	assert.equal(page.records[0].destination, "design");
-	assert.equal(page.opened.length, 0);
-	const originalRequest = page.requests[0];
+	const request = page.requests[0];
 	await page.reload();
 	await until(
 		() =>
 			button("Retry project creation") &&
 			!button("Retry project creation").disabled,
 	);
-	assert.equal(document.querySelector("input").value, address);
-	assert.equal(document.querySelector("input").readOnly, true);
-	page.setCreateFailure(false);
-	await page.submit();
+	assert.equal(field("project_title").value, "Munich PV");
+	assert.equal(field("project_title").readOnly, true);
+	page.loseReceipt(false);
+	await page.click("Retry project creation");
 	await until(() => page.opened.length === 1);
-	assert.deepEqual(page.requests, [originalRequest, originalRequest]);
-	assert.equal(
-		page.searches.length,
-		1,
-		"retry must not relocate the saved site",
-	);
+	assert.deepEqual(page.requests, [request, request]);
 	assert.equal(page.opened[0].destination, "design");
 	assert.equal(page.records.length, 0);
 });

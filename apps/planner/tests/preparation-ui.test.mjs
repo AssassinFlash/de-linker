@@ -30,6 +30,8 @@ import { projectLanguageUrl } from "../src/data/useSiteIntegration.ts";
 import fixture from "./fixtures/index.ts";
 import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
+import knownPvFixture from "./fixtures/known-pv-reference.json" with { type: "json" };
+import { PvgisReferenceResult } from "../src/components/energy/PvgisReferenceResult.tsx";
 
 const scope = "a".repeat(64);
 const session = {
@@ -1371,6 +1373,234 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 	assert.ok(calls.includes("runs/read"));
 });
 
+test("known PV reference accepts declared planes without a roof and keeps project location", async (t) => {
+	const { PvgisReferenceSetup } =
+		await import("../src/components/energy/PvgisReferenceSetup.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const initial = {
+		...fixture.pvgis_reference_project,
+		inputs: {
+			brief: {
+				...emptyBrief(),
+				site: {
+					...emptyBrief().site,
+					latitude: 52.12567,
+					longitude: 5.12567,
+					coordinate_basis: "user_entered",
+					location_label: "Known existing PV",
+				},
+			},
+		},
+	};
+	let current = beginDraft(initial),
+		setCurrent;
+	const calls = [];
+	const client = {
+		isCurrentScope: () => true,
+		async query() {
+			return {
+				schema_version: 1,
+				provider: "woocommerce",
+				products: [],
+				pv_modules: [],
+			};
+		},
+	};
+	function Harness() {
+		const [draft, setDraft] = useState(current);
+		setCurrent = setDraft;
+		return React.createElement(PvgisReferenceSetup, {
+			draft,
+			edit: (operation) => {
+				current = editDraft(current, operation(current.history.current));
+				setDraft(current);
+				return true;
+			},
+			client,
+			scope,
+			active: true,
+			locale: "en-GB",
+			disabled: false,
+			actionsDisabled: false,
+			onValidity() {},
+			supported: true,
+			start() {
+				calls.push(current.history.current);
+			},
+		});
+	}
+	await mount(t, React.createElement(Harness));
+	const field = (label) =>
+		[...document.querySelectorAll("label")]
+			.find(
+				(node) =>
+					node.querySelector("span")?.firstChild?.textContent.trim() === label,
+			)
+			?.querySelector("input,select,textarea");
+	const method = field("PV details source");
+	assert.ok(method, "known PV can be selected without drawing a roof");
+	await act(async () => {
+		method.value = "known";
+		method.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(field("Declared PV power"), "6.4");
+	await enter(field("Tilt"), "31.25");
+	await enter(field("Azimuth from true north"), "172.5");
+	await enter(field("PV details source note"), "Commissioning report");
+	assert.equal(
+		current.history.current.pvgis_reference_setup.model,
+		"pvgis_5_3_known_ac_reference_v1",
+	);
+	assert.deepEqual(current.history.current.pvgis_reference_setup.arrays[0], {
+		id: "array_1",
+		peak_power_kwp: 6.4,
+		tilt_deg: 31.25,
+		azimuth_north_clockwise_deg: 172.5,
+		source_note: "Commissioning report",
+	});
+	assert.equal(Object.hasOwn(current.history.current, "geometry"), false);
+	assert.equal(current.history.current.brief.site.latitude, 52.12567);
+	assert.equal(calls.length, 0, "unfinished declarations do not start a run");
+	async function choose(label, value) {
+		await act(async () => {
+			const node = field(label);
+			node.value = value;
+			node.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	await choose("Radiation database", "PVGIS-ERA5");
+	await enter(field("Calendar year"), "2020");
+	await choose("PV reference technology", "crystSi");
+	await choose("PVGIS mounting type", "free");
+	await enter(field("PVGIS system loss setting"), "14");
+	await choose("Terrain horizon", "true");
+	await enter(
+		field("Source of location and system-loss assumptions"),
+		"Commissioning report for location and system losses",
+	);
+	assert.deepEqual(
+		current.history.current.pvgis_reference,
+		knownPvFixture.project.inputs.pvgis_reference,
+	);
+	const calculate = () =>
+		[...document.querySelectorAll("button")].find(
+			(node) => node.textContent === "Calculate annual AC reference",
+		);
+	assert.equal(calculate().disabled, true, "save is required");
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((node) => node.textContent === "Add PV plane")
+			.click(),
+	);
+	assert.equal(current.history.current.pvgis_reference_setup.arrays.length, 2);
+	assert.equal(
+		current.history.current.pvgis_reference,
+		undefined,
+		"a blank extra plane cannot silently use the first plane alone",
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.filter((node) => node.textContent === "Remove PV plane")[1]
+			.click(),
+	);
+	assert.deepEqual(
+		current.history.current.pvgis_reference,
+		knownPvFixture.project.inputs.pvgis_reference,
+	);
+	await act(async () => {
+		current = prepareSave(current, crypto.randomUUID(), {
+			maxDepth: 32,
+			maxBytes: 16777216,
+		});
+		const intent = current.pending;
+		current = acknowledgeSave(current, intent, {
+			...current.baseline,
+			revision: 2,
+			inputs: intent.inputs,
+			input_sha256: "d".repeat(64),
+		});
+		setCurrent(current);
+	});
+	assert.equal(calculate().disabled, false);
+	await act(async () => calculate().click());
+	assert.equal(calls.length, 1);
+	assert.equal(Object.hasOwn(calls[0], "geometry"), false);
+});
+
+test("known PV reference result adopts AC without geometry and rejects changed site or declaration", async (t) => {
+	const original = structuredClone(knownPvFixture);
+	const run = readRun(original.run, original.project.id);
+	let inputs = original.project.inputs,
+		replace;
+	const client = {
+		isCurrentScope: () => true,
+		async query(path) {
+			if (path === "projects/read") return original.project;
+			if (path === "assets/read") return run.result.prepared_asset;
+			throw new Error("Unexpected query " + path);
+		},
+	};
+	function Harness() {
+		const [value, setValue] = useState(inputs);
+		replace = setValue;
+		return React.createElement(PvgisReferenceResult, {
+			run,
+			inputs: value,
+			client,
+			session,
+			active: true,
+			blocked: false,
+			locale: "en-GB",
+			recheck() {},
+			edit(operation) {
+				inputs = operation(inputs);
+				setValue(inputs);
+				return true;
+			},
+		});
+	}
+	await mount(t, React.createElement(Harness));
+	await until(() => selectButton() && !selectButton().disabled);
+	assert.match(document.body.textContent, /Commissioning report/);
+	assert.match(document.body.textContent, /52\.126/);
+	assert.equal(document.body.textContent.includes("Included modules"), false);
+	await act(async () => selectButton().click());
+	assert.equal(
+		inputs.profile_selections.selected.pv_available_ac,
+		run.result.prepared_asset.id,
+	);
+	assert.equal(Object.hasOwn(inputs, "geometry"), false);
+	const changedSite = structuredClone(original.project.inputs);
+	changedSite.brief.site.latitude = 51;
+	await act(async () => {
+		inputs = changedSite;
+		replace(inputs);
+	});
+	assert.equal(selectButton().disabled, true);
+	assert.throws(
+		() =>
+			selectPreparation(
+				inputs,
+				run,
+				original.project,
+				run.result.prepared_asset,
+			),
+		(error) => error.code === "preparation_source_changed",
+	);
+	const changedDeclaration = structuredClone(original.project.inputs);
+	changedDeclaration.pvgis_reference.arrays[0].tilt_deg = 20;
+	assert.throws(
+		() =>
+			selectPreparation(
+				changedDeclaration,
+				run,
+				original.project,
+				run.result.prepared_asset,
+			),
+		(error) => error.code === "preparation_source_changed",
+	);
+});
+
 test("PVGIS method keeps explicit saved choices, recovers its exact request and adopts only AC", async (t) => {
 	const original = fixture.pvgis_reference_run;
 	assert.equal(
@@ -1466,9 +1696,13 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 		);
 	await until(() => form() && calls.includes("products/current"));
 	assert.ok(
-		[...form().querySelectorAll("select,input,textarea")].every(
-			(node) => node.value === "",
-		),
+		[...form().querySelectorAll("select,input,textarea")]
+			.filter(
+				(node) =>
+					node.closest("label")?.querySelector("span")?.textContent !==
+					"PV details source",
+			)
+			.every((node) => node.value === ""),
 		"no model choice or numeric assumption is autofilled",
 	);
 	const byLabel = (label) =>

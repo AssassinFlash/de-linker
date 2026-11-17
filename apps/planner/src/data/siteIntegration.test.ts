@@ -41,6 +41,17 @@ test("native language destinations retain the current project without inventing 
 	assert.equal(carried.searchParams.has("nonce"), false);
 });
 
+test("each configurator page stays open when the customer switches language", () => {
+	const id = "a".repeat(32);
+	for (const step of ["project", "solar", "energy", "system", "review"]) {
+		const current = `https://site.example/en/?project=${id}#sc-${step}`;
+		assert.equal(
+			new URL(projectLanguageUrl("/de/", current, id)).hash,
+			`#sc-${step}`,
+		);
+	}
+});
+
 test("language switches keep only validated result/workspace references for the same project", () => {
 	const project = "a".repeat(32),
 		run = "b".repeat(32),

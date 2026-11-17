@@ -481,6 +481,53 @@ def project_materials(source: Object) -> Object:
                         },
                     }
                 )
+    existing = source.get("existing_system")
+    if isinstance(existing, dict):
+        from .existing_system import retained_inverter_declared
+
+        if not (
+            existing["keep_inverter"]
+            and equipment
+            and retained_inverter_declared(source, selection=True)
+        ):
+            lines.append(
+                {
+                    "id": "existing-system",
+                    "handling": "existing_system_declared",
+                    "model": existing["name"],
+                    "quantity": None,
+                    "unit": "piece",
+                    "basis": "customer_declared_existing_system",
+                    "source": existing,
+                }
+            )
+    retained = source.get("retained_inverter")
+    if isinstance(retained, dict):
+        declared_units = cast(list[Object], retained.get("units", []))
+        demand_scopes = declared_units or [retained]
+        for index, scope in enumerate(demand_scopes):
+            requirements = cast(Object, scope["requirements"])
+            if (
+                any(
+                    isinstance(value, (int, float)) and value > 0
+                    for value in (
+                        requirements.get("required_usable_kwh"),
+                        requirements.get("required_discharge_ac_kw"),
+                    )
+                )
+                or requirements.get("operating_mode") == "backup"
+            ):
+                lines.append(
+                    {
+                        "id": f"pending-battery:{index}",
+                        "handling": "pending_battery_selection",
+                        "quantity": None,
+                        "unit": "piece",
+                        "basis": "customer_declared_storage_demand",
+                        "source": requirements,
+                        **({"unit_name": scope["name"]} if "name" in scope else {}),
+                    }
+                )
     return {
         "schema_version": 3,
         "kind": "project_materials_v3",
@@ -496,6 +543,10 @@ def project_materials(source: Object) -> Object:
 
 
 def material_name(line: Object, locale: str) -> str:
+    if line["handling"] == "pending_battery_selection":
+        return text("pending_battery", locale)
+    if line["handling"] == "existing_system_declared":
+        return str(line.get("model") or text("existing_system", locale))
     if line["handling"] in {
         "manufacturer_included",
         "customer_supplied_required",
@@ -552,6 +603,22 @@ def mounting_quantity_explanation(result: Object, locale: str) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
+    if line["handling"] == "pending_battery_selection":
+        return text("pending_battery_compatibility", locale)
+    if line["handling"] == "existing_system_declared":
+        existing = cast(Object, line["source"])
+        return " · ".join(
+            text(key, locale)
+            for key in (
+                (
+                    "existing_system_declared",
+                    "existing_inverter_keep",
+                    "existing_inverter_open",
+                )
+                if existing["keep_inverter"]
+                else ("existing_system_declared",)
+            )
+        )
     if line.get("basis") == "project_declared_installation_materials_v1":
         source = line.get("source")
         declaration = source.get("declaration") if isinstance(source, dict) else None

@@ -26,13 +26,12 @@ final class DraftPreview {
 	public function read( mixed $previous, array $command, array $handoff ): array|WP_Error {
 		unset( $previous, $command );
 		wc_load_cart();
-		$snapshot = $handoff['snapshot'];
-		$error    = ( new DesignProof() )->current_error(
-			array(
-				'kind'        => 'planning_products_v1',
-				'publication' => $snapshot['publication'],
-			)
-		);
+		if ( ! DraftTransfer::envelope_valid( $handoff ) ) {
+			return DesignProof::unavailable();
+		}
+		$snapshot    = $handoff['snapshot'];
+		$error       = DraftTransfer::publication_error( $snapshot );
+		$report_only = DraftTransfer::report_only( $snapshot );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -83,6 +82,9 @@ final class DraftPreview {
 			}
 		}
 		$present = array() !== $replace && $same && Publication::revision( $before ) === Publication::revision( $after );
+		if ( $report_only && array() === $replace ) {
+			$present = isset( Context::report_only_contexts()[ $handoff['id'] ] );
+		}
 		return array(
 			'schema_version'  => 1,
 			'project_id'      => $snapshot['project_id'],
@@ -93,7 +95,8 @@ final class DraftPreview {
 			'draft_sha256'    => self::fingerprint(),
 			'changes'         => $rows,
 			'already_present' => $present,
-			'draft_urls'      => DraftTransfer::urls(),
+			'draft_urls'      => DraftTransfer::urls( $report_only ),
+			...( $report_only ? array( 'report_only' => true ) : array() ),
 		);
 	}
 
@@ -120,7 +123,7 @@ final class DraftPreview {
 	public static function fingerprint(): string {
 		$native   = new \WC_Cart_Session( WC()->cart );
 		$contexts = array();
-		foreach ( Context::active() as $id => $context ) {
+		foreach ( Context::active() + Context::report_only_contexts() as $id => $context ) {
 			$contexts[ $id ] = $context['snapshot_sha256'];
 		}
 		return Publication::revision(

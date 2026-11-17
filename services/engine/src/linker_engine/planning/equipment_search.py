@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import cast
 
+from .backup_demand import BackupDemand
 from .canonical import Json, Object, digest, encode
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_requirements import EquipmentRequirements
@@ -43,7 +44,7 @@ def search_equipment(
             EquipmentRequirements.from_inputs(inputs), inputs
         )
     ]
-    return space.result(
+    result = space.result(
         candidates,
         {
             "template": "one_converter_one_external_battery_assembly",
@@ -54,3 +55,7 @@ def search_equipment(
             ],
         },
     )
+    backup = BackupDemand.from_inputs(inputs, complete=True)
+    if backup is not None:
+        result["backup_demand"] = backup.summary()
+    return result

@@ -77,7 +77,7 @@ def _synthesized_publication(basis: Object) -> Object:
 def publication_scope(workspace: Workspace, source: Object) -> Object:
     """Retain every consumed product/document reference without a second source."""
     bases = source.get("woo_bases")
-    if not isinstance(bases, dict) or "equipment" not in bases:
+    if not isinstance(bases, dict) or not bases:
         raise HandoffIncomplete("the report has no selected equipment")
     scopes: list[Object] = []
     for sha in dict.fromkeys(cast(dict[str, str], bases).values()):
@@ -230,13 +230,24 @@ class Handoffs:
             raise VersionUnavailable("the report has no frozen source")
         source = self.workspace.blobs.object(source_hash)
         equipment = source.get("equipment")
-        if not isinstance(equipment, dict):
+        report_only = (
+            isinstance(source.get("retained_inverter"), dict) and equipment is None
+        )
+        if not report_only and not isinstance(equipment, dict):
             raise HandoffIncomplete("the report has no selected products")
-        products = {
-            cast(int, product["product_id"]): product
-            for product in cast(list[Object], equipment["selected_products"])
-        }
-        material_lines = equipment["provisional_bill_of_materials"]
+        products = (
+            {
+                cast(int, product["product_id"]): product
+                for product in cast(list[Object], equipment["selected_products"])
+            }
+            if isinstance(equipment, dict)
+            else {}
+        )
+        material_lines = (
+            equipment["provisional_bill_of_materials"]
+            if isinstance(equipment, dict)
+            else []
+        )
         material_sha = report.get("materials_sha256")
         if material_sha is not None:
             materials = source.get("materials")
@@ -253,7 +264,7 @@ class Handoffs:
                 if line["handling"] == "woo_product"
             ]
         items = purchase_items(cast(list[Object], material_lines), products)
-        if not items:
+        if not items and not report_only:
             raise HandoffIncomplete("the report has no selected products")
         asset = Assets(self.workspace).get(
             actor, project_id, cast(str, cast(Object, report["prepared_asset"])["id"])
@@ -282,10 +293,28 @@ class Handoffs:
             cast(str, candidate["candidate_id"])
             if isinstance(candidate, dict)
             else digest(encode(equipment))
+            if not report_only
+            else source_hash
         )
+        publication = (
+            publication_scope(self.workspace, source)
+            if not report_only or source.get("woo_bases")
+            else None
+        )
+        if (
+            report_only
+            and publication is not None
+            and not any(
+                publication[field]
+                for field in ("products", "documents", "reference_inputs")
+            )
+        ):
+            publication = None
         snapshot: Object = {
             "schema_version": 1,
-            "kind": "planning_products_v1",
+            "kind": "planning_report_only_v1"
+            if report_only
+            else "planning_products_v1",
             "project_id": project_id,
             "title": project.title,
             "revision": expected_revision,
@@ -301,7 +330,7 @@ class Handoffs:
                 "media_type": asset.media_type,
             },
             "items": items,
-            "publication": publication_scope(self.workspace, source),
+            "publication": publication,
         }
         if material_sha is not None:
             snapshot["materials_sha256"] = material_sha
@@ -379,7 +408,8 @@ class Handoffs:
                 )
             )
             or snapshot.get("schema_version") != 1
-            or snapshot.get("kind") != "planning_products_v1"
+            or snapshot.get("kind")
+            not in {"planning_products_v1", "planning_report_only_v1"}
         ):
             raise VersionUnavailable("the handoff snapshot binding is invalid")
         return {

@@ -1,0 +1,630 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import React, { act } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { setupDom, until, enter } from "./dom-fixture.mjs";
+
+const selection = {
+	schema_version: 1,
+	inverter_product_id: 101,
+	battery_product_id: 201,
+	modules_per_stack: 2,
+	parallel_stacks: 1,
+	accessory_product_ids: [],
+	grid_phase: 3,
+	operating_mode: "grid_connected",
+	pv_dc_kw: 10,
+	required_usable_kwh: null,
+	required_discharge_ac_kw: null,
+	product_revisions: { 101: "a".repeat(64), 201: "b".repeat(64) },
+	equipment_use: { inverter: "retain", battery: "new" },
+};
+const candidates = ["unresolved", "violated"].map((status, index) => ({
+	id: String(index + 1).repeat(64),
+	assessment_sha256: String(index + 3).repeat(64),
+	status,
+	violated_checks: index,
+	unresolved_checks: 1 - index,
+	usable_energy_kwh: index ? 5 : 10,
+	selection,
+}));
+const products = [
+	{
+		canonical_product_id: 101,
+		product_id: 101,
+		brand: "Linker",
+		model: "Hybrid Actual",
+		sku: "INV",
+	},
+	{
+		canonical_product_id: 201,
+		product_id: 201,
+		brand: "Linker",
+		model: "Battery Actual",
+		sku: "BAT",
+	},
+];
+const assessment = (candidate) => ({
+	equipment_status: candidate.status,
+	overall_status: candidate.status,
+	selected_products: products,
+	provisional_bill_of_materials: [
+		{ product_id: 101, quantity: 1 },
+		{ product_id: 201, quantity: 2 },
+	],
+	checks: [
+		{
+			id: "usable_energy",
+			status: candidate.status,
+			reason: "cited_usable_energy_and_sales_basis",
+			actual: 10,
+			required: 8,
+			facts: [
+				{
+					value: 5,
+					unit: "kWh",
+					source: { url: "https://de-linker.com/uploads/battery.pdf", page: 2 },
+				},
+			],
+		},
+	],
+	country_assessment: {
+		status: "unresolved",
+		country_code: null,
+		reason: "versioned_country_rules_required",
+	},
+});
+const run = {
+	id: "a".repeat(32),
+	project_id: "b".repeat(32),
+	state: "succeeded",
+	result: {
+		search: {
+			candidates,
+			products,
+			completion: "budget_exhausted",
+		},
+	},
+};
+async function mount(t, props) {
+	const dom = setupDom();
+	const cache = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	const { createRoot } = await import("react-dom/client");
+	const { SystemOptions } =
+		await import("../src/components/configurator/SystemOptions.tsx");
+	const root = createRoot(dom.element);
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+	});
+	const render = async (next = props) =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(SystemOptions, next),
+				),
+			),
+		);
+	await render();
+	return render;
+}
+
+test("system cards use real candidate data, inspect evidence and select without mutating the candidate", async (t) => {
+	const calls = [],
+		selected = [];
+	const client = {
+		isCurrentScope: () => true,
+		async query(path, body) {
+			calls.push({ path, body });
+			const candidate = candidates.find((c) => c.id === body.candidate_id);
+			return {
+				run_id: run.id,
+				candidate_id: candidate.id,
+				assessment_sha256: candidate.assessment_sha256,
+				assessment: assessment(candidate),
+			};
+		},
+	};
+	const props = {
+		run,
+		client,
+		scope: "scope",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: null,
+		onSelect: async (c) => selected.push(c),
+	};
+	const render = await mount(t, props);
+	await until(() => document.body.textContent.includes("Retained on site"));
+	assert.equal(document.querySelectorAll(".sc-package").length, 2);
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Linker Hybrid Actual/,
+	);
+	assert.match(document.querySelector(".sc-package").textContent, /10 kWh/);
+	assert.match(document.body.textContent, /Search incomplete/);
+	const materials = [...document.querySelectorAll(".sc-equipment")];
+	assert.ok(
+		materials.some(
+			(row) =>
+				/Hybrid Actual/.test(row.textContent) &&
+				/Retained on site/.test(row.textContent) &&
+				/1/.test(row.textContent),
+		),
+	);
+	assert.ok(
+		materials.some(
+			(row) =>
+				/Battery Actual/.test(row.textContent) &&
+				/New equipment/.test(row.textContent) &&
+				/2/.test(row.textContent),
+		),
+	);
+	assert.equal(
+		document
+			.querySelector('a[href="https://de-linker.com/uploads/battery.pdf"]')
+			?.textContent.includes("2"),
+		true,
+	);
+	const use = () =>
+		[...document.querySelectorAll("button")].find(
+			(b) => b.textContent === "Use this configuration",
+		);
+	await act(async () => use().click());
+	assert.deepEqual(selected, [candidates[0]]);
+	assert.equal(calls[0].path, "equipment/candidates/read");
+	await render({ ...props, selectedId: candidates[0].id, disabled: true });
+	assert.ok(
+		[...document.querySelectorAll("button")].find(
+			(b) => b.textContent === "Selected",
+		).disabled,
+	);
+	const filter = document.querySelector("select");
+	await act(async () => {
+		filter.value = "violated";
+		filter.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(document.querySelectorAll(".sc-package").length, 1);
+	await enter(document.querySelector('input[type="search"]'), "not a model");
+	assert.equal(document.querySelectorAll(".sc-package").length, 0);
+	assert.match(document.body.textContent, /No configurations match/);
+});
+
+test("shared plant materials keep one merged quantity and distinguish same-model retained and new units", async (t) => {
+	const first = {
+		...selection,
+		equipment_use: { inverter: "retain", battery: "retain" },
+	};
+	const second = {
+		...selection,
+		equipment_use: { inverter: "new", battery: "replace" },
+	};
+	const candidate = {
+		...candidates[0],
+		plant: {
+			schema_version: 1,
+			requirements: {},
+			units: [
+				{ id: "existing", name: "Existing system", selection: first },
+				{ id: "extension", name: "Extension", selection: second },
+			],
+			parallel_groups: [],
+		},
+	};
+	delete candidate.selection;
+	const rootAssessment = {
+		...assessment(candidate),
+		model: "woo_multi_converter_plant_v1",
+		provisional_bill_of_materials: [
+			{ product_id: 101, quantity: 2 },
+			{ product_id: 201, quantity: 4 },
+		],
+		systems: [
+			{
+				id: "existing",
+				name: "Existing system",
+				selection: first,
+				assessment: assessment(candidate),
+			},
+			{
+				id: "extension",
+				name: "Extension",
+				selection: second,
+				assessment: assessment(candidate),
+			},
+		],
+	};
+	const client = {
+		isCurrentScope: () => true,
+		async query() {
+			return {
+				run_id: run.id,
+				candidate_id: candidate.id,
+				assessment_sha256: candidate.assessment_sha256,
+				assessment: rootAssessment,
+			};
+		},
+	};
+	await mount(t, {
+		run: {
+			...run,
+			result: { search: { ...run.result.search, candidates: [candidate] } },
+		},
+		client,
+		scope: "plant",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => {},
+	});
+	await until(() => document.querySelectorAll(".sc-equipment").length === 2);
+	const inverter = document.querySelector(".sc-equipment");
+	assert.match(
+		inverter.textContent,
+		/Existing system · Retained on site · × 1/,
+	);
+	assert.match(inverter.textContent, /Extension · New equipment · × 1/);
+	assert.equal(inverter.querySelector("strong").textContent, "× 2");
+	assert.match(
+		document.querySelectorAll(".sc-equipment")[1].textContent,
+		/Replacement equipment/,
+	);
+});
+
+test("backup comparison shows the closest evidence-supported options first and keeps every candidate reachable", async (t) => {
+	const options = [
+		[13.5, "violated"],
+		[13.5, "violated"],
+		[18, "violated"],
+		[22.5, "unresolved"],
+		[27, "unresolved"],
+		[null, "unresolved"],
+	].map(([usable_energy_kwh, status], index) => ({
+		...candidates[0],
+		id: String(index + 1).repeat(64),
+		usable_energy_kwh,
+		status,
+	}));
+	const client = {
+		isCurrentScope: () => true,
+		async query(_path, body) {
+			const item = options.find((option) => option.id === body.candidate_id);
+			return {
+				run_id: run.id,
+				candidate_id: item.id,
+				assessment_sha256: item.assessment_sha256,
+				assessment: assessment(item),
+			};
+		},
+	};
+	await mount(t, {
+		run: {
+			...run,
+			result: {
+				search: {
+					...run.result.search,
+					candidates: options,
+					backup_demand: {
+						load_kw: 5,
+						duration_hours: 4,
+						ac_load_energy_kwh: 20,
+					},
+				},
+			},
+		},
+		client,
+		scope: "backup-fit",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => {},
+	});
+	const cards = () => [...document.querySelectorAll(".sc-package")];
+	const capacities = () =>
+		cards().map((card) => card.querySelector("strong").textContent);
+	assert.deepEqual(capacities(), [
+		"22.5 kWh",
+		"27 kWh",
+		"Usable capacity to confirm",
+	]);
+	assert.match(cards()[0].textContent, /2.5 kWh capacity margin before losses/);
+	assert.match(cards()[0].textContent, /Backup duration to confirm/);
+	assert.match(cards()[0].textContent, /1 stack × 2 battery modules/);
+	assert.match(document.body.textContent, /5 kW × 4 h = 20 kWh/);
+	assert.match(
+		document.body.textContent,
+		/None of the configurations found has been confirmed/,
+	);
+	const pager = document.querySelector('nav[aria-label="Configurations"]');
+	assert.ok(pager.classList.contains("sc-actions"));
+	await act(async () => pager.querySelectorAll("button")[1].click());
+	assert.deepEqual(capacities(), ["18 kWh", "13.5 kWh", "13.5 kWh"]);
+	assert.match(cards()[0].textContent, /2 kWh below the backup load energy/);
+	assert.equal(options[0].usable_energy_kwh, 13.5);
+});
+
+test("initial comparison shows three options and more keeps the service order", async (t) => {
+	const options = Array.from({ length: 7 }, (_, index) => ({
+		...candidates[0],
+		id: String(index + 1).repeat(64),
+		usable_energy_kwh: index + 1,
+	}));
+	const client = {
+		isCurrentScope: () => true,
+		async query(path, body) {
+			const candidate = options.find((c) => c.id === body.candidate_id);
+			return {
+				run_id: run.id,
+				candidate_id: candidate.id,
+				assessment_sha256: candidate.assessment_sha256,
+				assessment: assessment(candidate),
+			};
+		},
+	};
+	await mount(t, {
+		run: {
+			...run,
+			result: { search: { ...run.result.search, candidates: options } },
+		},
+		client,
+		scope: "pages",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: options[0].id,
+		onSelect: async () => {},
+	});
+	const cards = () => [...document.querySelectorAll(".sc-package")];
+	assert.equal(cards().length, 3);
+	assert.deepEqual(
+		cards().map(
+			(card) => card.querySelector(".sc-package-capacity strong").textContent,
+		),
+		["1 kWh", "2 kWh", "3 kWh"],
+	);
+	assert.equal(cards()[0].dataset.selected, "true");
+	assert.equal(cards()[0].hasAttribute("aria-pressed"), false);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent === "More configurations")
+			.click(),
+	);
+	assert.deepEqual(
+		cards().map(
+			(card) => card.querySelector(".sc-package-capacity strong").textContent,
+		),
+		["4 kWh", "5 kWh", "6 kWh"],
+	);
+});
+
+test("save a selected configuration, adjust its assembly and restore the comparison", async (t) => {
+	const options = candidates.map((candidate, index) => ({
+		...candidate,
+		selection: { ...candidate.selection, modules_per_stack: index + 2 },
+	}));
+	const selected = [];
+	const snapshots = [];
+	const client = {
+		isCurrentScope: () => true,
+		async query(_path, body) {
+			const item = options.find((option) => option.id === body.candidate_id);
+			return {
+				run_id: run.id,
+				candidate_id: item.id,
+				assessment_sha256: item.assessment_sha256,
+				assessment: assessment(item),
+			};
+		},
+	};
+	const props = {
+		run: {
+			...run,
+			result: { search: { ...run.result.search, candidates: options } },
+		},
+		client,
+		scope: "comparison",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: options[0].id,
+		comparison: null,
+		onSaveComparison: (snapshot) => snapshots.push(snapshot),
+		onSelect: async (item) => selected.push(item),
+	};
+	const render = await mount(t, props);
+	const button = (label) =>
+		[...document.querySelectorAll("button")].find(
+			(item) => item.textContent === label,
+		);
+	const change = async (label, value) =>
+		act(async () => {
+			const input = [...document.querySelectorAll("label")]
+				.find((item) => item.querySelector("span")?.textContent === label)
+				?.querySelector("select");
+			assert.ok(input, label);
+			input.value = value;
+			input.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	await until(() => document.body.textContent.includes("Retained on site"));
+	await act(async () => button("Save a comparison").click());
+	assert.equal(snapshots.length, 1);
+	await render({ ...props, comparison: snapshots[0] });
+	await change("Battery modules per stack", "3");
+	await act(async () => button("Use this adjustment").click());
+	assert.deepEqual(selected, [options[1]]);
+	await render({
+		...props,
+		selectedId: options[1].id,
+		comparison: snapshots[0],
+	});
+	const table = document.querySelector("table");
+	assert.match(table.textContent, /Saved version.*Current/);
+	assert.match(table.textContent, /10 kWh.*5 kWh/);
+	await act(async () => button("Use saved version").click());
+	assert.deepEqual(selected, [options[1], options[0]]);
+});
+
+test("unverified detail cannot be selected and a failed detail read can be retried", async (t) => {
+	let attempts = 0,
+		selected = 0;
+	const client = {
+		isCurrentScope: () => true,
+		async query() {
+			attempts++;
+			if (attempts === 1) throw new Error("unavailable");
+			return {
+				run_id: run.id,
+				candidate_id: candidates[0].id,
+				assessment_sha256: candidates[0].assessment_sha256,
+				assessment: assessment(candidates[0]),
+			};
+		},
+	};
+	await mount(t, {
+		run,
+		client,
+		scope: "retry",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => selected++,
+	});
+	await until(() => document.querySelector('[role="alert"]'));
+	const useFirst = () => document.querySelector(".sc-package button");
+	assert.equal(useFirst().disabled, true);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Try again")
+			.click(),
+	);
+	await until(() => !useFirst().disabled);
+	assert.equal(attempts, 2);
+	assert.equal(selected, 0);
+});
+
+test("demand comparison labels optimistic bounds and the actual profile horizon", async (t) => {
+	const candidate = {
+		...candidates[0],
+		demand: {
+			status: "bounded",
+			reason: "optimistic_profile_bound",
+			basis:
+				"optimistic_full_initial_storage_lossless_upper_bound_not_dispatch",
+			additional_pv_use_upper_kwh: 3,
+			peak_import_lower_bound_kw: 1,
+			missing_facts: [],
+			source_facts: [],
+		},
+	};
+	const demand = {
+		model: "profile_physical_bounds_v1",
+		controller: "self_consumption_with_reserve_v1",
+		horizon_start_utc: "2020-01-01T00:00:00+00:00",
+		horizon_end_utc: "2020-01-01T04:00:00+00:00",
+		baseline: {
+			load_kwh: 8,
+			pv_available_kwh: 8,
+			direct_pv_use_kwh: 4,
+			grid_import_kwh: 4,
+			grid_export_kwh: 4,
+			peak_grid_import_kw: 2,
+			over_target_kwh: 0,
+		},
+	};
+	const client = {
+		isCurrentScope: () => true,
+		async query() {
+			return {
+				run_id: run.id,
+				candidate_id: candidate.id,
+				assessment_sha256: candidate.assessment_sha256,
+				assessment: assessment(candidate),
+			};
+		},
+	};
+	await mount(t, {
+		run: {
+			...run,
+			result: {
+				search: { ...run.result.search, demand, candidates: [candidate] },
+			},
+		},
+		client,
+		scope: "bounds",
+		locale: "en-GB",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => {},
+	});
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Additional solar use, upper bound/,
+	);
+	assert.match(document.querySelector(".sc-package").textContent, /3 kWh/);
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Grid import peak, lower bound/,
+	);
+	assert.match(document.body.textContent, /2020/);
+	assert.match(document.body.textContent, /lossless/);
+	assert.match(document.body.textContent, /full battery/);
+	assert.equal(document.body.textContent.includes("simulated savings"), false);
+});
+
+test("retaining an unverified inverter shows the measured baseline without a candidate", async (t) => {
+	const retained = {
+		...run,
+		result: {
+			retained_inverter: {
+				existing_system: {
+					schema_version: 1,
+					name: "West barn",
+					inverter_power_kw: 7.5,
+					keep_inverter: true,
+				},
+				requirements: {
+					schema_version: 1,
+					grid_phase: null,
+					operating_mode: null,
+					pv_dc_kw: null,
+					required_usable_kwh: 15,
+					required_discharge_ac_kw: null,
+				},
+				profile_baseline: {
+					model: "profile_physical_bounds_v1",
+					controller: "self_consumption_with_reserve_v1",
+					horizon_start_utc: "2024-03-30T23:00:00+00:00",
+					horizon_end_utc: "2024-03-31T01:00:00+00:00",
+					interval_count: 2,
+					baseline: {
+						load_kwh: 4,
+						pv_available_kwh: 4,
+						direct_pv_use_kwh: 2,
+						grid_import_kwh: 2,
+						grid_export_kwh: 2,
+						peak_grid_import_kw: 2,
+						over_target_kwh: 0,
+					},
+				},
+			},
+		},
+	};
+	await mount(t, {
+		run: retained,
+		client: {
+			isCurrentScope: () => true,
+			query: () => assert.fail("no equipment candidate"),
+		},
+		scope: "retained",
+		locale: "en",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => assert.fail("no substitute"),
+	});
+	assert.match(document.body.textContent, /West barn · 7.5 kW/);
+	assert.match(document.body.textContent, /Electricity use4 kWh/);
+	assert.match(document.body.textContent, /Grid import without storage2 kWh/);
+	assert.equal(document.querySelectorAll(".sc-package").length, 0);
+});

@@ -23,6 +23,7 @@ export function DraftTransferButton({
 	blocked,
 	locale,
 	recheck,
+	reportOnly = run.result?.has_report_only_handoff === true,
 }: {
 	run: PlanningRun;
 	client: PlannerClient;
@@ -32,6 +33,7 @@ export function DraftTransferButton({
 	blocked: boolean;
 	locale: string;
 	recheck: () => void;
+	reportOnly?: boolean;
 }) {
 	const [preview, setPreview] = useState<DraftPreview | null>(null),
 		[preparing, setPreparing] = useState(false),
@@ -215,26 +217,41 @@ export function DraftTransferButton({
 			operations.busy ||
 			operations.checking ||
 			blocked;
+	const addLabel = reportOnly
+		? __("Attach report to inquiry", "linker-tools")
+		: __("Add selected products to solution draft", "linker-tools");
 	return (
 		<section className="lp-scenario-block">
-			<p>
-				{__(
-					"These are the products selected in this report. Adding them does not replace any outstanding engineering checks.",
-					"linker-tools",
-				)}
-			</p>
+			{!reportOnly && (
+				<p>
+					{__(
+						"These are the products selected in this report. Adding them does not replace any outstanding engineering checks.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			{readyUrls ? (
 				<>
 					{receipt && (
 						<p role="status">
-							{__("Selected products added to solution draft.", "linker-tools")}
+							{reportOnly
+								? __(
+										"Report ready to include with your inquiry.",
+										"linker-tools",
+									)
+								: __(
+										"Selected products added to solution draft.",
+										"linker-tools",
+									)}
 						</p>
 					)}
 					<a
 						className="lp-button"
 						href={readyUrls[locale.startsWith("de") ? "de" : "en"]}
 					>
-						{__("View solution draft", "linker-tools")}
+						{reportOnly
+							? __("Continue to inquiry", "linker-tools")
+							: __("View solution draft", "linker-tools")}
 					</a>
 					<button
 						type="button"
@@ -246,7 +263,7 @@ export function DraftTransferButton({
 							void prepare();
 						}}
 					>
-						{__("Add selected products to solution draft", "linker-tools")}
+						{addLabel}
 					</button>
 				</>
 			) : record ? (
@@ -270,10 +287,15 @@ export function DraftTransferButton({
 				<>
 					{!current && (
 						<Notice>
-							{__(
-								"Generate a report for the project's current saved inputs before adding products.",
-								"linker-tools",
-							)}
+							{reportOnly
+								? __(
+										"Generate a report for the current project before attaching it.",
+										"linker-tools",
+									)
+								: __(
+										"Generate a report for the project's current saved inputs before adding products.",
+										"linker-tools",
+									)}
 						</Notice>
 					)}
 					{!preview ? (
@@ -283,38 +305,40 @@ export function DraftTransferButton({
 							disabled={busy || !current || operations.storageFailed}
 							onClick={() => void prepare()}
 						>
-							{preparing
-								? __("Preparing changes…", "linker-tools")
-								: __("Add selected products to solution draft", "linker-tools")}
+							{preparing ? __("Preparing changes…", "linker-tools") : addLabel}
 						</button>
 					) : (
 						<>
-							<p>
-								{__(
-									"Review the changes to this project's products in your solution draft.",
-									"linker-tools",
-								)}
-							</p>
-							<div className="lp-table-scroll">
-								<table className="lp-data-table">
-									<thead>
-										<tr>
-											<th>{__("Product", "linker-tools")}</th>
-											<th>{__("Current quantity", "linker-tools")}</th>
-											<th>{__("New quantity", "linker-tools")}</th>
-										</tr>
-									</thead>
-									<tbody>
-										{preview.changes.map((row) => (
-											<tr key={row.productId}>
-												<td>{row.label}</td>
-												<td>{row.before}</td>
-												<td>{row.after}</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
+							{preview.changes.length > 0 && (
+								<>
+									<p>
+										{__(
+											"Review the changes to this project's products in your solution draft.",
+											"linker-tools",
+										)}
+									</p>
+									<div className="lp-table-scroll">
+										<table className="lp-data-table">
+											<thead>
+												<tr>
+													<th>{__("Product", "linker-tools")}</th>
+													<th>{__("Current quantity", "linker-tools")}</th>
+													<th>{__("New quantity", "linker-tools")}</th>
+												</tr>
+											</thead>
+											<tbody>
+												{preview.changes.map((row) => (
+													<tr key={row.productId}>
+														<td>{row.label}</td>
+														<td>{row.before}</td>
+														<td>{row.after}</td>
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
+								</>
+							)}
 							<button
 								type="button"
 								className="lp-button"
@@ -322,8 +346,12 @@ export function DraftTransferButton({
 								onClick={() => void confirm()}
 							>
 								{operations.busy
-									? __("Adding selected products…", "linker-tools")
-									: __("Confirm changes", "linker-tools")}
+									? reportOnly
+										? __("Attaching report…", "linker-tools")
+										: __("Adding selected products…", "linker-tools")
+									: reportOnly
+										? addLabel
+										: __("Confirm changes", "linker-tools")}
 							</button>
 						</>
 					)}

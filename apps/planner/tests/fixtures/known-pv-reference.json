@@ -1,0 +1,199 @@
+{
+	"project": {
+		"id": "00000000000000000000000000000001",
+		"title": "Known PV without drawing",
+		"revision": 1,
+		"input_sha256": "0c5e79941d9adafbf1293ddf4418b17d9d5c7950914a7e836996a758c933d6a2",
+		"inputs": {
+			"brief": {
+				"annual_load": {
+					"basis": null,
+					"kwh": null,
+					"source_note": ""
+				},
+				"project_note": "",
+				"project_use": "residential",
+				"schema_version": 1,
+				"site": {
+					"coordinate_basis": "user_entered",
+					"country_code": "NL",
+					"latitude": 52.12567,
+					"location_label": "Known existing PV",
+					"longitude": 5.12567,
+					"timezone": "Europe/Amsterdam"
+				},
+				"system_scope": "storage_addition"
+			},
+			"pvgis_reference": {
+				"arrays": [
+					{
+						"azimuth_north_clockwise_deg": 172.5,
+						"id": "array_1",
+						"peak_power_kwp": 6.4,
+						"source_note": "Commissioning report",
+						"tilt_deg": 31.25
+					}
+				],
+				"model": "pvgis_5_3_known_ac_reference_v1",
+				"mounting_place": "free",
+				"pv_technology": "crystSi",
+				"radiation_database": "PVGIS-ERA5",
+				"schema_version": 1,
+				"source_note": "Commissioning report for location and system losses",
+				"system_loss_percent": 14,
+				"use_terrain_horizon": true,
+				"year": 2020
+			}
+		}
+	},
+	"run": {
+		"id": "00000000000000000000000000000002",
+		"project_id": "00000000000000000000000000000001",
+		"revision": 1,
+		"state": "succeeded",
+		"is_current": true,
+		"manifest_sha256": "fbf54f0964f1ca44d1717a25860a3ce453ccda7e05221637e490bdcbf4af9fad",
+		"manifest": {
+			"context": {
+				"assets": {
+					"pvgis_reference.plan": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc",
+					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
+				},
+				"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
+				"models": {
+					"acquisition": "official_jrc_https_get_original_v1",
+					"aggregate": "exact_same_axis_array_ac_sum_v1",
+					"generation": "pvgis_5_3_known_ac_reference_v1",
+					"task": "prepare_pvgis_roof_ac_reference_v1"
+				},
+				"parameters": {
+					"kind": "prepare_pvgis_roof_ac_reference_v1",
+					"limits": {
+						"connect_timeout_seconds": 5.0,
+						"max_elapsed_seconds": 60.0,
+						"max_metadata_bytes": 100000,
+						"max_response_bytes": 8000000,
+						"max_weather_rows": 9000,
+						"read_timeout_seconds": 20.0
+					},
+					"max_array_steps": 20000,
+					"product_policy": "customer_declared_known_pv_v1",
+					"retained_original_bytes_policy": "shared_complete_originals_and_remaining_response_cap"
+				}
+			},
+			"input_sha256": "0c5e79941d9adafbf1293ddf4418b17d9d5c7950914a7e836996a758c933d6a2",
+			"project_id": "00000000000000000000000000000001",
+			"revision": 1,
+			"schema": 1
+		},
+		"result_sha256": "70664cbae5f04ecfed2fea7b07d0be07362bbfb9debd9e7325d15d83b7fc370d",
+		"result": {
+			"country_assessment": {
+				"status": "not_assessed"
+			},
+			"dependencies": {
+				"array.0.capture": "bdf537c159b1dc5ccf94947ecaa5849092a2764c35ac2a389e153314ec30d9c1",
+				"array.0.original": "a0457c0b69a527d762daf664e83746c921c03bf9feba0c092d2469fe152e9508",
+				"prepared_asset_content": "31b6807a07683ecd43d1dac017dcba3cd6dfd7c2caf3b334f9b609f95f912978",
+				"prepared_asset_metadata": "4ec127195ea86c50e1a28f6dec6baf75968e0a0259cd1cdee3dfbeb336ee2859",
+				"reference_output": "f9fc49c22869baa0d42ed893f4b98e00eb56996a140bb540228bce377ec10f19",
+				"reference_parameters": "a88f7a8e7e29f06fc33cf287f6f82c7cdda987a8628c483b0846f72d7479674a",
+				"reference_plan": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc",
+				"reference_site": "d6cca478dc375cbcebb6f701d0ee5fbae31241becf46f94158fbbf8f3028c0b6"
+			},
+			"equipment_release": {
+				"status": "not_assessed"
+			},
+			"input_sha256": "0c5e79941d9adafbf1293ddf4418b17d9d5c7950914a7e836996a758c933d6a2",
+			"kind": "prepare_pvgis_roof_ac_reference_v1",
+			"manifest_sha256": "fbf54f0964f1ca44d1717a25860a3ce453ccda7e05221637e490bdcbf4af9fad",
+			"near_shading_assessment": {
+				"status": "not_assessed"
+			},
+			"pinned_assets": {
+				"pvgis_reference.plan": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc",
+				"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
+			},
+			"prepared_asset": {
+				"content_sha256": "31b6807a07683ecd43d1dac017dcba3cd6dfd7c2caf3b334f9b609f95f912978",
+				"id": "00000000000000000000000000000004",
+				"media_type": "application/json",
+				"metadata": {
+					"acquisition": {
+						"arrays": {
+							"0": {
+								"capture_sha256": "bdf537c159b1dc5ccf94947ecaa5849092a2764c35ac2a389e153314ec30d9c1",
+								"failure": null,
+								"raw_sha256": "a0457c0b69a527d762daf664e83746c921c03bf9feba0c092d2469fe152e9508",
+								"validated": true
+							}
+						},
+						"consumed_bytes": 1083800,
+						"deadline_at": 1700000060.0,
+						"dependencies": {
+							"array.0.capture": "bdf537c159b1dc5ccf94947ecaa5849092a2764c35ac2a389e153314ec30d9c1",
+							"array.0.original": "a0457c0b69a527d762daf664e83746c921c03bf9feba0c092d2469fe152e9508",
+							"reference_plan": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc"
+						},
+						"kind": "pvgis_roof_reference_acquisition_v1",
+						"manifest_sha256": "fbf54f0964f1ca44d1717a25860a3ce453ccda7e05221637e490bdcbf4af9fad",
+						"plan_sha256": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc",
+						"run_id": "00000000000000000000000000000002",
+						"schema_version": 1,
+						"started_at": 1700000000.0
+					},
+					"basis": "customer_declared",
+					"dependencies": {
+						"array.0.capture": "bdf537c159b1dc5ccf94947ecaa5849092a2764c35ac2a389e153314ec30d9c1",
+						"array.0.original": "a0457c0b69a527d762daf664e83746c921c03bf9feba0c092d2469fe152e9508",
+						"reference_output": "f9fc49c22869baa0d42ed893f4b98e00eb56996a140bb540228bce377ec10f19",
+						"reference_parameters": "a88f7a8e7e29f06fc33cf287f6f82c7cdda987a8628c483b0846f72d7479674a",
+						"reference_plan": "aa58c4c80af042eb18b69cfa83d1439c85402399d60dbfba6ebf4c664380e4cc",
+						"reference_site": "d6cca478dc375cbcebb6f701d0ee5fbae31241becf46f94158fbbf8f3028c0b6"
+					},
+					"derived_from_revision": 1,
+					"interpretation": {
+						"end_utc": "2021-01-01T00:00:00+00:00",
+						"energy_kwh": 6057.196288,
+						"interval_count": 8784,
+						"measurement": "pv_available_ac",
+						"model_role": "official_calendar_year_customer_declared_ac_reference",
+						"native_max_interval_seconds": 3600,
+						"origin": "modelled",
+						"reconstructed_means": false,
+						"start_utc": "2020-01-01T00:00:00+00:00"
+					},
+					"parameters_sha256": "a88f7a8e7e29f06fc33cf287f6f82c7cdda987a8628c483b0846f72d7479674a",
+					"profile_type": "pvgis_known_ac_reference_profile_v1",
+					"provenance": {
+						"basis": "Official modelled system output; selected year and model assumptions, not measured generation or specific-device performance",
+						"label": "JRC PVGIS customer-declared AC reference",
+						"rights_basis": "JRC PVGIS usage conditions; source attribution and private permanent original retention"
+					},
+					"retention": "permanent",
+					"schema": 1,
+					"site_sha256": "d6cca478dc375cbcebb6f701d0ee5fbae31241becf46f94158fbbf8f3028c0b6"
+				},
+				"metadata_sha256": "4ec127195ea86c50e1a28f6dec6baf75968e0a0259cd1cdee3dfbeb336ee2859",
+				"project_id": "00000000000000000000000000000001",
+				"purpose": "pvgis_known_ac_reference_profile_v1"
+			},
+			"profile_summary": {
+				"end_utc": "2021-01-01T00:00:00+00:00",
+				"energy_kwh": 6057.196288,
+				"interval_count": 8784,
+				"measurement": "pv_available_ac",
+				"model_role": "official_calendar_year_customer_declared_ac_reference",
+				"native_max_interval_seconds": 3600,
+				"origin": "modelled",
+				"reconstructed_means": false,
+				"start_utc": "2020-01-01T00:00:00+00:00"
+			},
+			"project_id": "00000000000000000000000000000001",
+			"revision": 1,
+			"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
+			"schema": 1
+		},
+		"error": null
+	}
+}

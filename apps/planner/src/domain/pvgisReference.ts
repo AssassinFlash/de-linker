@@ -7,7 +7,9 @@ import { activePvGeometry } from "./solarSetup.ts";
 import { isDeclaredReferenceModule } from "./productModules.ts";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/pvgis-roof-reference.schema.json" with { type: "json" };
+import knownSchema from "../contracts/pvgis-known-reference.schema.json" with { type: "json" };
 import { sameJson } from "./draft.ts";
+import { readBrief } from "./brief.ts";
 
 const ajv = new Ajv2020({ strict: true, strictNumbers: true });
 const checkComplete = ajv.compile<JsonObject>(schema);
@@ -23,6 +25,59 @@ const checkDraft = ajv.compile<JsonObject>({
 	),
 });
 
+const checkKnown = ajv.compile<JsonObject>(knownSchema);
+const nullable = (value: object) => ({ anyOf: [value, { type: "null" }] });
+const checkKnownDraft = ajv.compile<JsonObject>({
+	...knownSchema,
+	$defs: {
+		...knownSchema.$defs,
+		Note: { type: "string", maxLength: 4096 },
+		KnownPvArray: {
+			...knownSchema.$defs.KnownPvArray,
+			properties: Object.fromEntries(
+				Object.entries(knownSchema.$defs.KnownPvArray.properties).map(
+					([key, value]) => [
+						key,
+						[
+							"peak_power_kwp",
+							"tilt_deg",
+							"azimuth_north_clockwise_deg",
+						].includes(key)
+							? nullable({ type: "number" })
+							: value,
+					],
+				),
+			),
+		},
+	},
+	properties: Object.fromEntries(
+		Object.entries(knownSchema.properties).map(([key, value]) => [
+			key,
+			["schema_version", "model", "arrays"].includes(key)
+				? value
+				: nullable(value),
+		]),
+	),
+});
+export const KNOWN_PV_MODEL = "pvgis_5_3_known_ac_reference_v1";
+export const KNOWN_PV_PURPOSE = "pvgis_known_ac_reference_profile_v1";
+export function referenceSite(inputs: JsonObject) {
+	const site = readBrief(inputs.brief).site;
+	if (
+		site.latitude === null ||
+		site.longitude === null ||
+		site.coordinate_basis !== "user_entered"
+	)
+		throw new ApiError(422, "pvgis_reference_site_required");
+	return { ...site, postal_code: site.postal_code ?? null };
+}
+export interface KnownPvArray extends JsonObject {
+	readonly id: string;
+	readonly peak_power_kwp: number | null;
+	readonly tilt_deg: number | null;
+	readonly azimuth_north_clockwise_deg: number | null;
+	readonly source_note: string;
+}
 export const PVGIS_REFERENCE_TASK = "prepare_pvgis_roof_ac_reference_v1";
 export const PVGIS_REFERENCE_PURPOSE = "pvgis_roof_ac_reference_profile_v1";
 export const REFERENCE_DATABASES = ["PVGIS-ERA5", "PVGIS-SARAH3"] as const;
@@ -34,7 +89,8 @@ export const REFERENCE_TECHNOLOGIES = [
 ] as const;
 export interface PvgisReferenceDraft extends JsonObject {
 	readonly schema_version: 1;
-	readonly model: "pvgis_5_3_roof_ac_reference_v1";
+	readonly model: "pvgis_5_3_roof_ac_reference_v1" | typeof KNOWN_PV_MODEL;
+	readonly arrays?: readonly KnownPvArray[];
 	readonly radiation_database: (typeof REFERENCE_DATABASES)[number] | null;
 	readonly year: number | null;
 	readonly pv_technology: (typeof REFERENCE_TECHNOLOGIES)[number] | null;
@@ -58,6 +114,11 @@ export function emptyPvgisReference(): PvgisReferenceDraft {
 }
 export function readPvgisReference(value: unknown): PvgisReferenceDraft {
 	const row = readObject(value);
+	if (row.model === KNOWN_PV_MODEL) {
+		if (!checkKnownDraft(row))
+			throw new ApiError(422, "pvgis_reference_invalid");
+		return row as PvgisReferenceDraft;
+	}
 	if (!checkDraft(row)) throw new ApiError(422, "pvgis_reference_invalid");
 	return {
 		...row,
@@ -74,7 +135,14 @@ export function referenceDraft(inputs: JsonObject): PvgisReferenceDraft {
 		: readPvgisReference(value);
 }
 export function compilePvgisReference(value: PvgisReferenceDraft): JsonObject {
-	if (!checkComplete(value))
+	if (
+		!(value.model === KNOWN_PV_MODEL
+			? checkKnown(value) &&
+				Boolean(value.source_note?.trim()) &&
+				value.arrays?.every((a) => a.source_note.trim()) &&
+				new Set(value.arrays?.map((a) => a.id)).size === value.arrays?.length
+			: checkComplete(value))
+	)
 		throw new ApiError(422, "pvgis_reference_incomplete");
 	return value;
 }

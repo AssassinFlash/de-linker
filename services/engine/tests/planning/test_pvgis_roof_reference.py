@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Callable, Mapping
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -18,6 +19,7 @@ from fastapi.testclient import TestClient
 from requests.adapters import BaseAdapter
 from urllib3.response import HTTPResponse
 
+from linker_engine.engine import Engine
 from linker_engine.planning.assets import Asset, Assets
 from linker_engine.planning.canonical import decode_object, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
@@ -63,6 +65,8 @@ from linker_engine.publication import Publication
 
 from .conftest import Clock, FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE
+from .test_equipment import feed as equipment_feed  # noqa: F401
+from .test_equipment import prepared_dc_fixture_source
 from .test_official_weather import Reply
 from .test_private_http import TOKEN, headers
 from .test_pv_generation import geometry
@@ -207,6 +211,377 @@ def prepared_reference_fixture(
         key="reference-source",
     )
     return project, asset
+
+
+def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_reference(
+    client: TestClient,
+    workspace: Workspace,
+    owner: Actor,
+    engine: Engine,
+    equipment_feed: FixtureObject,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
+    from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
+    from linker_engine.planning.equipment_service import EquipmentService
+    from linker_engine.planning.frozen_profiles import frozen_profile
+    from linker_engine.planning.profile_assets import profile_dependencies
+    from linker_engine.planning.profile_selections import check_profile_selections
+
+    assert isinstance(client.app, FastAPI)
+    products = ProductSources(client.app.state.planning_product_provider)
+    values: FixtureObject = {
+        "brief": {
+            "schema_version": 1,
+            "project_use": "residential",
+            "system_scope": "storage_addition",
+            "site": {
+                "country_code": "NL",
+                "location_label": "Declared existing PV site",
+                "latitude": 52.12567,
+                "longitude": 5.12567,
+                "coordinate_basis": "user_entered",
+                "timezone": "Europe/Amsterdam",
+            },
+            "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+            "project_note": "",
+        },
+        "pvgis_reference": {
+            **settings(),
+            "model": "pvgis_5_3_known_ac_reference_v1",
+            "source_note": "Commissioning report for location and system losses",
+            "arrays": [
+                {
+                    "id": "existing",
+                    "peak_power_kwp": 6.4,
+                    "tilt_deg": 31.25,
+                    "azimuth_north_clockwise_deg": 172.5,
+                    "source_note": "Existing PV commissioning report",
+                }
+            ],
+        },
+    }
+    source = Captures()
+    kernel = PvgisRoofReferenceKernel(
+        workspace,
+        products,
+        limits(),
+        max_array_steps=20_000,
+        transport_factory=lambda: source,
+    )
+    energy = EnergyService(
+        workspace,
+        EnergyKernel(workspace, TOLERANCE, max_intervals=9000, products=products),
+        max_attempts=1,
+    )
+    _, search_products, _, _, _, _ = prepared_dc_fixture_source(
+        equipment_feed, engine, monkeypatch
+    )
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace,
+            search_products,
+            EquipmentSearchLimits(work_budget=5000),
+            tolerance=TOLERANCE,
+            max_intervals=9000,
+        ),
+        max_attempts=1,
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1_000_000, 100_000, 10, 32),
+        product_provider=client.app.state.planning_product_provider,
+        pvgis_reference=PvgisRoofReferenceService(workspace, kernel, max_attempts=1),
+        equipment_search=search,
+    )
+    with TestClient(app) as admission:
+        create_body = {
+            "schema_version": 1,
+            "title": "Known PV without drawing",
+            "inputs": values,
+            "key": "known-pv",
+            "input_contract": "known_pv_ac_reference_v1",
+        }
+        invalid = copy.deepcopy(create_body)
+        invalid["inputs"]["pvgis_reference"]["arrays"][0]["peak_power_kwp"] = 0
+        rejected = admission.post(
+            "/projects/create", json=invalid, headers=headers(owner)
+        )
+        assert rejected.status_code == 422, rejected.text
+        blank_source = copy.deepcopy(create_body)
+        blank_source["inputs"]["pvgis_reference"]["source_note"] = " \t "
+        rejected_blank = admission.post(
+            "/projects/create", json=blank_source, headers=headers(owner)
+        )
+        assert rejected_blank.status_code == 422, rejected_blank.text
+        created = admission.post(
+            "/projects/create", json=create_body, headers=headers(owner)
+        )
+        assert created.status_code == 200, created.text
+        project = workspace.get(owner, created.json()["id"])
+        assert project.inputs == values
+        stale_writer = admission.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": 1,
+                "inputs": {"brief": values["brief"]},
+                "key": "stale-writer",
+            },
+            headers=headers(owner),
+        )
+        assert stale_writer.status_code == 422, stale_writer.text
+        assert stale_writer.json()["error"]["code"] == "project_input_contract_required"
+        command = {
+            "schema_version": 1,
+            "project_id": project.id,
+            "expected_revision": 1,
+            "key": "known-reference",
+        }
+        admitted = admission.post(
+            "/runs/pvgis-reference", json=command, headers=headers(owner)
+        )
+        assert admitted.status_code == 200, admitted.text
+        assert (
+            admission.post(
+                "/runs/pvgis-reference", json=command, headers=headers(owner)
+            ).json()
+            == admitted.json()
+        )
+        replayed = admission.post(
+            "/operations/replay/runs/pvgis-reference",
+            json=command,
+            headers=headers(owner),
+        )
+        assert replayed.json()["result"] == admitted.json()
+    assert not source.requests
+    registry = ExecutionRegistry(kernel)
+    worker = Worker(
+        Jobs(workspace),
+        "known-reference",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    assert worker.run_once()
+    finished = workspace.run(owner, admitted.json()["id"])
+    assert finished.state == "succeeded", finished.error
+    result = json_object(finished.result)
+    asset = Assets(workspace).get(owner, project.id, result["prepared_asset"]["id"])
+    assert asset.purpose == "pvgis_known_ac_reference_profile_v1"
+    assert (
+        "geometry_sha256" not in asset.metadata
+        and "woo_module_inputs" not in asset.metadata
+    )
+    assert asset.metadata["basis"] == "customer_declared"
+    assert [
+        (
+            r.latitude_deg,
+            r.longitude_deg,
+            r.peak_power_kwp,
+            r.tilt_deg,
+            r.azimuth_north_clockwise_deg,
+        )
+        for r in source.requests
+    ] == [(52.12567, 5.12567, 6.4, 31.25, 172.5)]
+    adopted = {
+        **values,
+        "profile_selections": {
+            "schema_version": 1,
+            "selected": {"pv_available_ac": asset.id},
+        },
+    }
+    check_profile_selections(Assets(workspace), owner, project.id, adopted)
+    pinned = profile_dependencies(asset, "pv_available_ac", adopted, workspace.blobs)
+    profile = frozen_profile(
+        workspace.blobs,
+        pinned["pv_available_ac.raw"],
+        pinned["pv_available_ac.metadata"],
+        None,
+    )
+    assert profile.total_kwh == pytest.approx(946.43692 * 6.4, abs=1e-8)
+    assert len(profile.intervals) == 8784
+    changed = copy.deepcopy(adopted)
+    changed["brief"]["site"]["latitude"] = 51.0
+    with pytest.raises(InvalidInput):
+        profile_dependencies(asset, "pv_available_ac", changed, workspace.blobs)
+    assert "geometry" not in workspace.get(owner, project.id).inputs
+    from linker_engine.planning.profile_import import ProfileImport
+    from linker_engine.planning.project_input_contracts import KNOWN_PV_INPUT_CONTRACT
+
+    from .test_energy_kernel import PROVENANCE, mapping
+
+    assets = Assets(workspace)
+    load = ProfileImport(assets).csv(
+        owner,
+        project.id,
+        b"time,power\n2020-01-01T00:00:00Z,2\n2020-01-01T01:00:00Z,2\n",
+        mapping("gross_load"),
+        PROVENANCE,
+        key="known-load",
+    )
+    scenario_path = (
+        Path(__file__).resolve().parents[4]
+        / "apps/planner/tests/fixtures/energy-scenario.json"
+    )
+    scenario = json_object(decode_object(scenario_path.read_bytes()))
+    scenario["aux_ac_kw"] = 0
+    scenario["schedule"][0].update(
+        start_utc="2020-01-01T00:00:00Z", end_utc="2020-01-01T02:00:00Z"
+    )
+    energy_inputs = {
+        **adopted,
+        "profile_selections": {
+            "schema_version": 1,
+            "selected": {"gross_load": load.id, "pv_available_ac": asset.id},
+        },
+        "energy_scenario": scenario,
+    }
+    with TestClient(app) as admission:
+        calculation = admission.post(
+            "/runs/calculate",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": project.revision,
+                "input_contract": KNOWN_PV_INPUT_CONTRACT,
+                "inputs": energy_inputs,
+                "key": "known-energy",
+            },
+            headers=headers(owner),
+        )
+        assert calculation.status_code == 200, calculation.text
+    energy_receipt = calculation.json()
+    replay_project = workspace.get(owner, project.id)
+    assert (
+        energy_receipt["project"]["inputs"]["profile_selections"]
+        == energy_inputs["profile_selections"]
+    )
+    energy_registry = ExecutionRegistry(energy.kernel)
+    replay_worker = Worker(
+        Jobs(workspace),
+        "known-energy",
+        {"evaluate": energy_registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=energy_registry.routing(8),
+    )
+    assert replay_worker.run_once()
+    replayed_energy = workspace.run(owner, energy_receipt["run"]["id"])
+    assert replayed_energy.state == "succeeded", replayed_energy.error
+    declarations = {
+        **adopted,
+        "profile_selections": {
+            "schema_version": 1,
+            "selected": {"gross_load": load.id, "pv_available_ac": asset.id},
+        },
+        "equipment_setup": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": None,
+            "required_usable_kwh": None,
+            "required_discharge_ac_kw": None,
+        },
+        "energy_scenario": {
+            "controller": "self_consumption_with_reserve_v1",
+            "battery": None,
+            "schedule": scenario["schedule"],
+        },
+    }
+    search_registry = ExecutionRegistry(search.kernel)
+    search_worker = Worker(
+        Jobs(workspace),
+        "known-compare",
+        {"evaluate": search_registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=search_registry.routing(8),
+    )
+    with TestClient(app) as admission:
+        comparison = admission.post(
+            "/runs/find-equipment",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": replay_project.revision,
+                "input_contract": KNOWN_PV_INPUT_CONTRACT,
+                "inputs": declarations,
+                "key": "known-compare",
+            },
+            headers=headers(owner),
+        )
+        assert comparison.status_code == 200, comparison.text
+        receipt = comparison.json()
+        assert (
+            receipt["project"]["inputs"]["profile_selections"]
+            == declarations["profile_selections"]
+        )
+        assert search_worker.run_once()
+        run = admission.post(
+            "/runs/read",
+            json={"schema_version": 1, "run_id": receipt["run"]["id"]},
+            headers=headers(owner),
+        ).json()
+        assert run["state"] == "succeeded", run
+        comparison_result = run["result"]["search"]
+        assert comparison_result["candidates"]
+        assert comparison_result["demand"]["baseline"]["load_kwh"] == 4
+        assert (
+            run["manifest"]["context"]["assets"]["pv_available_ac.raw"]
+            == asset.content_sha256
+        )
+
+    from linker_engine.planning.report_inputs import ReportOptions
+    from linker_engine.planning.report_model import build_report
+    from linker_engine.planning.report_sources import report_sources
+
+    options = ReportOptions(
+        locale="en",
+        pv_run_id=finished.id,
+        energy_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+    )
+    report_source = report_sources(workspace, products, owner, project, options)
+    note_inputs = copy.deepcopy(project.inputs)
+    note_inputs["brief"]["project_note"] = "Customer updated a project note"
+    note_inputs["brief"]["annual_load"]["kwh"] = 12000
+    note_project = workspace.revise(
+        owner,
+        project.id,
+        receipt["project"]["revision"],
+        note_inputs,
+        key="known-unrelated-brief",
+        input_contract=KNOWN_PV_INPUT_CONTRACT,
+    )
+    assert report_sources(workspace, products, owner, note_project, options)[
+        "pvgis_known_ac_references"
+    ]
+    energy_options = options.model_copy(update={"energy_run_id": replayed_energy.id})
+    energy_report_source = report_sources(
+        workspace, products, owner, replay_project, energy_options
+    )
+    assert energy_report_source["pvgis_known_ac_references"]
+    for locale in ("en", "de"):
+        model = build_report({**report_source, "locale": locale})
+        section = next(s for s in model.sections if s.id == "pvgis-known-reference-0")
+        assert any("6.4" in row.value or "6,4" in row.value for row in section.rows)
+        assert any("31.25" in row.value or "31,25" in row.value for row in section.rows)
+        assert any("Commissioning report" in row.value for row in section.rows)
+        assert all(
+            s.table is None or not s.table.rows
+            for s in model.sections
+            if s.id == "pv-components"
+        )
 
 
 def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(

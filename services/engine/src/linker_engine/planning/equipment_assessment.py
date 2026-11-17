@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from typing import Any, cast
 
+from .backup_demand import BackupDemand
 from .canonical import Json, Object, decode_object, encode
 from .equipment_evidence import EquipmentEvidence
 from .equipment_fact_resolution import FactContext, FactUse, resolve_fact
@@ -82,6 +83,7 @@ def assess_equipment(
         required: Json = None,
         derivation: Object | None = None,
         documents: list[dict[str, Any]] | None = None,
+        missing_facts: list[str] | None = None,
     ) -> None:
         checks.append(
             {
@@ -95,6 +97,11 @@ def assess_equipment(
                 **(
                     {"documents": cast(list[Json], documents)}
                     if documents is not None
+                    else {}
+                ),
+                **(
+                    {"missing_facts": cast(list[Json], missing_facts)}
+                    if missing_facts is not None
                     else {}
                 ),
             }
@@ -325,6 +332,13 @@ def assess_equipment(
         }
     ]
     count, stacks = selection.modules_per_stack, selection.parallel_stacks
+    total: float | None = None
+    inv_discharge_kw: float | None = None
+    discharge_limit: float | None = None
+    discharge_refs: list[dict[str, Any]] = []
+    port_discharge_kw: float | None = None
+    energy_refs: list[dict[str, Any]] = []
+    backup = BackupDemand.from_inputs(inputs, complete=True)
     pair_result = (
         contract.pair(
             inverter["model"],
@@ -685,7 +699,7 @@ def assess_equipment(
         # sales unit. Without this cited identity we publish no battery count.
         multiplier: int | None = None
         energy_val: float | None = None
-        energy_refs: list[dict[str, Any]] = []
+        energy_refs = []
         if sales_kind == "battery_module" and count is not None and stacks is not None:
             multiplier = count * stacks
             energy_val, energy_refs = number(
@@ -774,19 +788,27 @@ def assess_equipment(
         )
         if selection.required_discharge_ac_kw is not None:
             discharge_bounds: list[float] = []
-            discharge_refs: list[dict[str, Any]] = []
-            inv_discharge_kw: float | None = None
+            discharge_refs = []
+            inv_discharge_kw = None
             inv_discharge_refs: list[dict[str, Any]] = []
             for dkey in (
-                "continuous_battery_discharge_ac_power_kw",
-                "max_battery_discharge_power_kw",
+                ("backup_ac_active_power_kw", "rated_backup_ac_active_power_kw")
+                if selection.operating_mode == "backup"
+                else (
+                    "continuous_battery_discharge_ac_power_kw",
+                    "max_battery_discharge_power_kw",
+                )
             ):
                 inv_discharge_kw, inv_discharge_refs = number(
                     selection.inverter_product_id, dkey, "active_power"
                 )
                 if inv_discharge_kw is not None or inv_discharge_refs:
                     break
-            if inv_discharge_kw is None and not inv_discharge_refs:
+            if (
+                inv_discharge_kw is None
+                and not inv_discharge_refs
+                and selection.operating_mode != "backup"
+            ):
                 inv_discharge_kw, inv_discharge_refs = converter_power, converter_refs
             if inv_discharge_kw is not None:
                 discharge_bounds.append(inv_discharge_kw)
@@ -835,8 +857,20 @@ def assess_equipment(
                 discharge_bounds.append(bat_discharge_kw * stacks)
                 discharge_refs.extend(bat_discharge_refs)
 
+            if selection.operating_mode == "backup":
+                port_discharge_kw, port_refs = number(
+                    selection.inverter_product_id,
+                    "max_battery_terminal_discharge_power_kw",
+                    "active_power",
+                    "battery_terminal_power",
+                )
+                if port_discharge_kw is not None:
+                    discharge_bounds.append(port_discharge_kw)
+                discharge_refs.extend(port_refs)
             discharge_limit = min(discharge_bounds) if discharge_bounds else None
-            if discharge_limit is None:
+            if discharge_limit is None or (
+                selection.operating_mode == "backup" and inv_discharge_kw is None
+            ):
                 add(
                     "continuous_battery_ac_output",
                     "unresolved",
@@ -847,10 +881,15 @@ def assess_equipment(
             else:
                 add(
                     "continuous_battery_ac_output",
-                    "satisfied"
-                    if selection.required_discharge_ac_kw <= discharge_limit
-                    else "violated",
-                    "published_limit_comparison",
+                    "violated"
+                    if selection.required_discharge_ac_kw > discharge_limit
+                    else "unresolved"
+                    if selection.operating_mode == "backup"
+                    else "satisfied",
+                    "backup_conversion_and_port_limits_not_established"
+                    if selection.operating_mode == "backup"
+                    and selection.required_discharge_ac_kw <= discharge_limit
+                    else "published_limit_comparison",
                     discharge_refs,
                     discharge_limit,
                     selection.required_discharge_ac_kw,
@@ -861,6 +900,7 @@ def assess_equipment(
                 and discharge_limit is not None
                 and inv_range is not None
                 and operating is not None
+                and selection.operating_mode != "backup"
             )
             add(
                 "battery_discharge_path",
@@ -901,6 +941,49 @@ def assess_equipment(
             "no_battery_selected",
         )
 
+    if backup is not None:
+        summary = backup.summary()
+        # Reuse the selected assembly's resolved limits. DC usable capacity is
+        # an upper bound on AC energy, never a supported duration by itself.
+        missing = ["starting_usable_energy_kwh", "documented_backup_discharge_losses"]
+        if total is None:
+            missing.append("usable_energy_at_selected_voltage_and_assembly")
+        if inv_discharge_kw is None:
+            missing.append("backup_ac_active_power_kw")
+        if port_discharge_kw is None:
+            missing.append("battery_port_discharge_limits")
+        if selection.battery_product_id is None:
+            missing.append("selected_backup_battery")
+        missing.extend(
+            str(row["id"])
+            for row in cast(list[Object], checks)
+            if row["status"] == "unresolved" and row["id"] == "battery_discharge_path"
+        )
+        energy_shortfall = total is not None and total < cast(
+            float, summary["ac_load_energy_kwh"]
+        )
+        power_shortfall = discharge_limit is not None and discharge_limit < cast(
+            float, backup.load_kw
+        )
+        add(
+            "backup_runtime",
+            "violated"
+            if energy_shortfall
+            or power_shortfall
+            or selection.battery_product_id is None
+            else "unresolved",
+            "backup_demand_exceeds_published_upper_bound"
+            if energy_shortfall or power_shortfall
+            else "backup_duration_requires_starting_energy_and_documented_losses",
+            [*energy_refs, *discharge_refs],
+            {
+                "usable_energy_kwh": total,
+                "backup_active_output_kw": inv_discharge_kw,
+                "discharge_upper_bound_kw": discharge_limit,
+            },
+            summary,
+            missing_facts=missing,
+        )
     if selection.operating_mode == "backup":
         add(
             "backup_mode",

@@ -11,7 +11,7 @@ import json
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
-from typing import cast
+from typing import Literal, cast
 
 import pytest
 from conftest import (
@@ -2977,6 +2977,368 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
         assert rig.post("/runs/check-equipment", command)["run"]["id"] == checked.id
 
 
+@pytest.mark.parametrize(
+    ("backup_output", "unit", "expected"),
+    [
+        (None, "kW", "unresolved"),
+        (2, "kW", "violated"),
+        (10, "kW", "satisfied"),
+        (10, "kVA", "unresolved"),
+    ],
+)
+def test_backup_load_and_hours_find_equipment_without_preparation(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    backup_output: float | None,
+    unit: str,
+    expected: str,
+) -> None:
+    from .test_private_http import Rig
+
+    inverter = next(row for row in feed["products"] if row["id"] == 4107)
+    if backup_output is not None:
+        inverter["figures"]["backup_ac_active_power_kw"] = {
+            "value": backup_output,
+            "unit": unit,
+            "citation": copy.deepcopy(
+                inverter["figures"]["battery_voltage_range_v"]["citation"]
+            ),
+        }
+    feed, source, loaded, _, _, _ = prepared_dc_fixture_source(
+        feed, engine, monkeypatch
+    )
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, source, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
+    )
+    registry = service_registry(energy, None, equipment_search=search)
+    worker = Worker(
+        Jobs(workspace),
+        "backup-demand-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment_search=search,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, ac, client)
+        pid = rig.create("backup-demand-project")
+        declarations = {
+            "backup_demand": {"schema_version": 1, "load_kw": 5, "duration_hours": 6},
+            "equipment_setup": {"schema_version": 1, "grid_phase": 3},
+        }
+        command = {
+            "project_id": pid,
+            "expected_revision": 1,
+            "inputs": declarations,
+            "input_contract": "backup_demand_v1",
+            "key": "compare-backup-systems",
+        }
+        reply = rig.post("/runs/find-equipment", command)
+        assert reply["project"]["revision"] == 2
+        assert reply["project"]["inputs"] == declarations
+        assert rig.post("/runs/find-equipment", command) == reply
+        assert rig.replay("/runs/find-equipment", command)["result"] == reply
+        assert len(workspace.runs(owner, pid)) == 1
+        assert worker.run_once()
+        run = workspace.run(owner, reply["run"]["id"])
+        assert run.state == "succeeded", run.error
+        frozen = json_object(workspace.pinned_inputs(run.manifest))
+        assert frozen["equipment_requirements"]["operating_mode"] == "backup"
+        assert frozen["equipment_requirements"]["required_discharge_ac_kw"] == 5
+        assert frozen["equipment_requirements"]["required_usable_kwh"] is None
+        search_result = json_object(run.result)["search"]
+        assert search_result["backup_demand"] == {
+            **declarations["backup_demand"],
+            "ac_load_energy_kwh": 30,
+            "energy_basis": "ac_load_before_losses",
+        }
+        assert search_result["candidates"]
+        assessed_batteries = 0
+        for candidate in search_result["candidates"]:
+            evidence = rig.post(
+                "/equipment/candidates/read",
+                {"run_id": run.id, "candidate_id": candidate["id"]},
+            )["assessment"]
+            checks = {row["id"]: row for row in evidence["checks"]}
+            assert checks["backup_runtime"]["status"] in ("violated", "unresolved")
+            assert (
+                "starting_usable_energy_kwh"
+                in checks["backup_runtime"]["missing_facts"]
+            )
+            assert (
+                "documented_backup_discharge_losses"
+                in checks["backup_runtime"]["missing_facts"]
+            )
+            if (
+                candidate["selection"]["inverter_product_id"] == 4107
+                and candidate["selection"]["battery_product_id"] is not None
+            ):
+                actual = checks["backup_runtime"]["actual"]
+                assert actual["backup_active_output_kw"] == (
+                    backup_output if unit == "kW" else None
+                )
+                if expected == "violated":
+                    assert checks["backup_runtime"]["status"] == "violated"
+                assert (
+                    "battery_port_discharge_limits"
+                    in checks["backup_runtime"]["missing_facts"]
+                )
+            assert evidence["provisional_bill_of_materials"]
+            if candidate["selection"]["battery_product_id"] == 2090:
+                assessed_batteries += 1
+                energy = checks["usable_energy"]["actual"]
+                if energy is not None and energy < 30:
+                    assert checks["backup_runtime"]["status"] == "violated"
+                assert checks["continuous_battery_ac_output"]["status"] != "satisfied"
+        assert assessed_batteries > 0
+        # Reading through a fresh workspace proves the run/receipt was durable.
+        reopened = Workspace(workspace.blobs.directory.parent)
+        assert reopened.run(owner, run.id).result == run.result
+        assert workspace.get(owner, pid).revision == 2
+        if backup_output is None:
+            draft = rig.post(
+                "/projects/create",
+                {
+                    "title": "Incomplete backup demand",
+                    "inputs": {
+                        "backup_demand": {
+                            "schema_version": 1,
+                            "load_kw": None,
+                            "duration_hours": None,
+                        },
+                        "equipment_setup": {"schema_version": 1, "grid_phase": 3},
+                    },
+                    "input_contract": "backup_demand_v1",
+                    "key": "backup-draft",
+                },
+            )
+            incomplete_command = {
+                **command,
+                "schema_version": 1,
+                "project_id": draft["id"],
+                "inputs": draft["inputs"],
+                "key": "incomplete-backup-compare",
+            }
+            incomplete = client.post(
+                "/runs/find-equipment", json=incomplete_command, headers=headers(owner)
+            )
+            assert incomplete.status_code == 422
+            assert incomplete.json()["error"]["fields"] == [
+                "backup_demand.load_kw",
+                "backup_demand.duration_hours",
+            ]
+            assert workspace.runs(owner, draft["id"]) == []
+            assert (
+                rig.replay("/runs/find-equipment", incomplete_command)["status"]
+                == "absent"
+            )
+            assert workspace.get(owner, draft["id"]).revision == 1
+            old_writer = client.post(
+                "/projects/revise",
+                json={
+                    "schema_version": 1,
+                    "project_id": draft["id"],
+                    "expected_revision": 1,
+                    "inputs": {},
+                    "input_contract": "authored_equipment_discovery_v1",
+                    "key": "old-backup-editor",
+                },
+                headers=headers(owner),
+            )
+            assert old_writer.status_code == 422
+            assert (
+                old_writer.json()["error"]["code"] == "project_input_contract_required"
+            )
+
+
+def test_backup_candidate_reaches_report_and_bom_without_preparation(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from .test_private_http import Rig
+
+    feed, source, loaded, _, _, _ = prepared_dc_fixture_source(
+        feed, engine, monkeypatch
+    )
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, source, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(energy, None, equipment_search=search, reports=reports)
+    worker = Worker(
+        Jobs(workspace),
+        "backup-report-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment_search=search,
+        reports=reports,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, ac, client)
+        pid = rig.create("backup-report")
+        authored = {
+            "backup_demand": {"schema_version": 1, "load_kw": 5, "duration_hours": 4},
+            "equipment_setup": {"schema_version": 1, "grid_phase": 3},
+        }
+        found = rig.post(
+            "/runs/find-equipment",
+            {
+                "project_id": pid,
+                "expected_revision": 1,
+                "inputs": authored,
+                "input_contract": "backup_demand_v1",
+                "key": "find-backup-report",
+            },
+        )
+        assert worker.run_once()
+        search_run = rig.post("/runs/read", {"run_id": found["run"]["id"]})
+        assert search_run["state"] == "succeeded"
+        candidate = next(
+            row
+            for row in search_run["result"]["search"]["candidates"]
+            if row["selection"]["battery_product_id"] == 2090
+            and row["selection"]["modules_per_stack"] == 5
+        )
+        detail = rig.post(
+            "/equipment/candidates/read",
+            {"run_id": search_run["id"], "candidate_id": candidate["id"]},
+        )
+        adoption = {
+            **authored,
+            "equipment_selection": candidate["selection"],
+            "equipment_setup": {
+                key: value
+                for key, value in candidate["selection"].items()
+                if key != "product_revisions"
+            },
+            "equipment_candidate": {
+                "run_id": search_run["id"],
+                "candidate_id": candidate["id"],
+                "assessment_sha256": detail["assessment_sha256"],
+            },
+        }
+        saved = rig.post(
+            "/projects/revise",
+            {
+                "project_id": pid,
+                "expected_revision": found["project"]["revision"],
+                "inputs": adoption,
+                "input_contract": "backup_demand_v1",
+                "key": "select-backup-report",
+            },
+        )
+        report_command = {
+            "project_id": pid,
+            "expected_revision": saved["revision"],
+            "options": {
+                "locale": "en",
+                "energy_run_id": None,
+                "pv_run_id": None,
+                "equipment_run_id": None,
+                "logo": None,
+            },
+            "key": "backup-candidate-report",
+        }
+        queued = rig.post("/runs/report", report_command)
+        assert worker.run_once()
+        completed = rig.post("/runs/read", {"run_id": queued["id"]})
+        assert completed["state"] == "succeeded", completed
+        result = completed["result"]
+        report_source = json_object(
+            workspace.blobs.object(result["pinned_assets"]["report.source"])
+        )
+        assert report_source["equipment"] == detail["assessment"]
+        assert any(
+            row.get("candidate_id") == candidate["id"]
+            and row["run_id"] == search_run["id"]
+            for row in report_source["source_runs"]
+        )
+        runtime = next(
+            row
+            for row in report_source["equipment"]["checks"]
+            if row["id"] == "backup_runtime"
+        )
+        assert runtime["required"]["ac_load_energy_kwh"] == 20
+        assert runtime["status"] == "unresolved"
+        for asset, media in (
+            (result["prepared_asset"], "application/pdf"),
+            (result["prepared_attachments"]["bill_of_materials_csv"], "text/csv"),
+        ):
+            response = client.post(
+                "/assets/content",
+                json={"schema_version": 1, "project_id": pid, "asset_id": asset["id"]},
+                headers=headers(owner),
+            )
+            assert response.status_code == 200
+            assert response.content
+            if media == "application/pdf":
+                assert response.content.startswith(b"%PDF")
+            else:
+                assert b"BU2" in response.content
+        assert rig.post("/runs/report", report_command)["id"] == queued["id"]
+        changed = copy.deepcopy(adoption)
+        changed["backup_demand"]["duration_hours"] = 8
+        changed_project = rig.post(
+            "/projects/revise",
+            {
+                "project_id": pid,
+                "expected_revision": saved["revision"],
+                "inputs": changed,
+                "input_contract": "backup_demand_v1",
+                "key": "changed-backup-duration",
+            },
+        )
+        stale_report = client.post(
+            "/runs/report",
+            json={
+                "schema_version": 1,
+                **report_command,
+                "expected_revision": changed_project["revision"],
+                "key": "stale-backup-report",
+            },
+            headers=headers(owner),
+        )
+        assert stale_report.status_code == 422
+        assert stale_report.json()["error"]["code"] == "report_inputs_changed"
+
+
 def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
     feed: FixtureObject,
     engine: Engine,
@@ -2994,7 +3356,7 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
     search = EquipmentService(
         workspace,
         EquipmentSearchKernel(
-            workspace, source, EquipmentSearchLimits(work_budget=1000)
+            workspace, source, EquipmentSearchLimits(work_budget=1000), max_intervals=10
         ),
         max_attempts=1,
     )
@@ -3062,6 +3424,117 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
         assert invalid.json()["error"]["fields"] == ["equipment_setup.grid_phase"]
         assert workspace.get(owner, pid).revision == 1
         declarations["equipment_setup"]["grid_phase"] = 3
+        existing = {
+            "schema_version": 1,
+            "name": "West barn inverter",
+            "inverter_power_kw": 7.5,
+            "keep_inverter": True,
+        }
+        declarations["existing_system"] = existing
+        command["input_contract"] = "existing_system_v1"
+        minimal_project = rig.create("retain-name-and-power-only")
+        minimal = rig.post(
+            "/runs/find-equipment",
+            {
+                **command,
+                "project_id": minimal_project,
+                "key": "minimal-retention",
+                "inputs": {"existing_system": existing},
+            },
+        )
+        assert worker.run_once()
+        minimal_run = workspace.run(owner, str(minimal["run"]["id"]))
+        assert minimal_run.state == "succeeded", minimal_run.error
+        minimal_demand = json_object(minimal_run.result)["retained_inverter"][
+            "requirements"
+        ]
+        assert minimal_demand["grid_phase"] is None
+        assert minimal_demand["operating_mode"] is None
+        partial_project = rig.create("retain-unknown")
+        partial_inputs = {
+            **authored_energy(rig, partial_project),
+            "equipment_setup": declarations["equipment_setup"],
+            "existing_system": existing,
+        }
+        partial_inputs["energy_scenario"]["controller"] = (
+            "self_consumption_with_reserve_v1"
+        )
+        partial_command = {
+            **command,
+            "project_id": partial_project,
+            "inputs": partial_inputs,
+        }
+        partial = rig.post("/runs/find-equipment", partial_command)
+        assert worker.run_once()
+        run = workspace.run(owner, str(partial["run"]["id"]))
+        assert run.state == "succeeded", run.error
+        partial_result = json_object(run.result)
+        assert "search" not in partial_result
+        assert partial_result["retained_inverter"]["existing_system"] == existing
+        assert (
+            partial_result["retained_inverter"]["requirements"]["required_usable_kwh"]
+            == 15
+        )
+        baseline = partial_result["retained_inverter"]["profile_baseline"]
+        assert baseline["baseline"]["load_kwh"] == 4
+        assert baseline["baseline"]["pv_available_kwh"] == 4
+        assert baseline["baseline"]["direct_pv_use_kwh"] == 2
+        assert baseline["baseline"]["grid_import_kwh"] == 2
+        assert baseline["baseline"]["peak_grid_import_kw"] == 2
+        missing_candidate = client.post(
+            "/equipment/candidates/read",
+            json={"schema_version": 1, "run_id": run.id, "candidate_id": "a" * 64},
+            headers=headers(owner),
+        )
+        assert missing_candidate.status_code == 404, missing_candidate.text
+        partial_report = rig.post(
+            "/runs/report",
+            {
+                "project_id": partial_project,
+                "expected_revision": partial["project"]["revision"],
+                "options": {
+                    "locale": "en",
+                    "energy_run_id": None,
+                    "pv_run_id": None,
+                    "equipment_run_id": run.id,
+                    "logo": None,
+                },
+                "key": "partial-report",
+            },
+        )
+        assert worker.run_once()
+        report_run = workspace.run(owner, str(partial_report["id"]))
+        assert report_run.state == "succeeded", report_run.error
+        sections = {
+            section["id"]: section
+            for section in json_object(report_run.result)["report"]["sections"]
+        }
+        assert "7.5 kW" in {row["value"] for row in sections["existing-system"]["rows"]}
+        assert any(
+            "model" in text for text in sections["existing-system"]["paragraphs"]
+        )
+        assert any(
+            "West barn inverter" in row for row in sections["bom"]["table"]["rows"]
+        )
+        assert "4 kWh" in {
+            row["value"] for row in sections["retained-energy-baseline"]["rows"]
+        }
+        assert any("Battery" in row for row in sections["bom"]["table"]["rows"])
+        handoff = rig.post(
+            "/handoffs/prepare",
+            {
+                "project_id": partial_project,
+                "expected_revision": report_run.revision,
+                "report_run_id": report_run.id,
+                "key": "partial-handoff",
+            },
+        )
+        assert handoff["snapshot"]["items"] == []
+        assert handoff["snapshot"]["kind"] == "planning_report_only_v1"
+        assert rig.post("/handoffs/read", {"handoff_id": handoff["id"]}) == handoff
+        assert json_object(report_run.result)["has_report_only_handoff"] is True
+        assert json_object(report_run.result)["has_draft_items"] is False
+        declarations["existing_system"] = {**existing, "keep_inverter": False}
         with workspace.database.transaction() as connection:
             connection.execute(
                 "CREATE TRIGGER fail_discovery_queue BEFORE INSERT ON jobs BEGIN SELECT RAISE(ABORT, 'queue unavailable'); END"
@@ -3077,6 +3550,24 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
             connection.execute("DROP TRIGGER fail_discovery_queue")
         reply = rig.post("/runs/find-equipment", command)
         assert reply["project"]["revision"] == 2
+        assert (
+            reply["project"]["inputs"]["existing_system"]["name"]
+            == "West barn inverter"
+        )
+        old_writer = client.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": 2,
+                "inputs": {},
+                "input_contract": "authored_equipment_discovery_v1",
+                "key": "old-editor",
+            },
+            headers=headers(owner),
+        )
+        assert old_writer.status_code == 422
+        assert old_writer.json()["error"]["code"] == "project_input_contract_required"
         assert "equipment_requirements" not in reply["project"]["inputs"]
         assert (
             reply["project"]["inputs"]["equipment_setup"]["application"]
@@ -3119,7 +3610,7 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
                 "project_id": pid,
                 "expected_revision": 2,
                 "inputs": adoption,
-                "input_contract": "authored_equipment_discovery_v1",
+                "input_contract": "existing_system_v1",
                 "key": "adopt-current-search",
             },
         )
@@ -3141,13 +3632,67 @@ def test_find_equipment_compiles_unsaved_demand_and_reaches_adoption_report(
         assert worker.run_once()
         completed = workspace.run(owner, str(report["id"]))
         assert completed.state == "succeeded", completed.error
-        assert json_object(completed.result)["prepared_asset"]["content_sha256"]
+        result = json_object(completed.result)
+        assert result["prepared_asset"]["content_sha256"]
+        section = next(
+            section
+            for section in result["report"]["sections"]
+            if section["id"] == "existing-system"
+        )
+        assert {row["value"] for row in section["rows"]} == {
+            "West barn inverter",
+            "7.5 kW",
+        }
+        bom = next(
+            section
+            for section in result["report"]["sections"]
+            if section["id"] == "bom"
+        )
+        assert any("West barn inverter" in row for row in bom["table"]["rows"])
+        materials = json_object(
+            workspace.blobs.object(result["pinned_assets"]["report.source"])
+        )["materials"]
+        assert (
+            next(
+                line for line in materials["lines"] if line["id"] == "existing-system"
+            )["handling"]
+            == "existing_system_declared"
+        )
         calculated = rig.post(
             "/runs/calculate",
             {**command, "inputs": adoption, "expected_revision": saved["revision"]},
         )
         assert calculated["run"]["id"] != found.id
         assert rig.post("/runs/find-equipment", command)["run"]["id"] == found.id
+        retention_edit = rig.post(
+            "/projects/revise",
+            {
+                "project_id": pid,
+                "expected_revision": saved["revision"],
+                "inputs": {**adoption, "existing_system": existing},
+                "input_contract": "existing_system_v1",
+                "key": "keep-existing-after-adoption",
+            },
+        )
+        stale = client.post(
+            "/runs/report",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": retention_edit["revision"],
+                "options": {
+                    "locale": "en",
+                    "energy_run_id": None,
+                    "pv_run_id": None,
+                    "equipment_run_id": None,
+                    "logo": None,
+                },
+                "key": "stale-retention-report",
+            },
+            headers=headers(owner),
+        )
+        assert stale.status_code == 422, stale.text
+        assert stale.json()["error"]["fields"] == ["existing_system.keep_inverter"]
 
 
 @pytest.mark.parametrize(
@@ -3559,6 +4104,7 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
 
 
 @pytest.mark.parametrize("shape", ["single", "plant", "legacy"])
+@pytest.mark.parametrize("system_scope", ["new_pv_storage", "storage_only"])
 def test_find_equipment_preserves_unknown_single_and_unit_sizing(
     feed: FixtureObject,
     engine: Engine,
@@ -3566,6 +4112,7 @@ def test_find_equipment_preserves_unknown_single_and_unit_sizing(
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
     shape: str,
+    system_scope: str,
 ) -> None:
     from .test_private_http import Rig, brief_inputs
 
@@ -3602,7 +4149,7 @@ def test_find_equipment_preserves_unknown_single_and_unit_sizing(
         "required_discharge_ac_kw": None,
     }
     authored = brief_inputs("Europe/Berlin")
-    authored["brief"]["system_scope"] = "new_pv_storage"
+    authored["brief"]["system_scope"] = system_scope
     if shape == "plant":
         authored["equipment_plant_setup"] = {
             "schema_version": 1,
@@ -3675,9 +4222,27 @@ def test_find_equipment_preserves_unknown_single_and_unit_sizing(
             if shape == "legacy"
             else None
         )
-        assert demand["pv_dc_kw"] is None
+        assert demand["pv_dc_kw"] == (0 if system_scope == "storage_only" else None)
         assert demand["required_usable_kwh"] is None
         assert demand["required_discharge_ac_kw"] is None
+        project_inputs = response["project"]["inputs"]
+        saved_setup = (
+            project_inputs["equipment_plant_setup"]["units"][0]["inputs"][
+                "equipment_setup"
+            ]
+            if shape == "plant"
+            else project_inputs["equipment_setup"]
+        )
+        assert saved_setup["pv_dc_kw"] is None
+        assert saved_setup["required_usable_kwh"] is None
+        assert saved_setup["required_discharge_ac_kw"] is None
+        if shape == "plant":
+            assert (
+                project_inputs["equipment_plant_setup"]["requirements"]["pv_dc_kw"]
+                is None
+            )
+            assert frozen["equipment_plant_setup"]["requirements"]["pv_dc_kw"] is None
+            assert saved_setup["operating_mode"] is None
 
 
 @pytest.mark.parametrize(
@@ -5988,3 +6553,370 @@ def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() 
         contradicted["equipment_setup"][field] = value
         with pytest.raises(InvalidInput):
             EquipmentRequirements.from_inputs(contradicted)
+
+
+@pytest.mark.parametrize(
+    ("controller", "standard", "topology"),
+    [
+        ("self_consumption_with_reserve_v1", True, None),
+        ("peak_shaving_with_reserve_v1", True, None),
+        ("self_consumption_with_reserve_v1", False, None),
+        ("peak_shaving_with_reserve_v1", False, None),
+        ("self_consumption_with_reserve_v1", False, "plant_ac"),
+        ("self_consumption_with_reserve_v1", False, "plant_shared_dc"),
+        ("self_consumption_with_reserve_v1", False, "shared_dc"),
+        ("peak_shaving_with_reserve_v1", False, "shared_dc"),
+        ("self_consumption_with_reserve_v1", False, "undeclared_plant"),
+    ],
+)
+def test_profile_goal_search_uses_owned_load_without_battery_preparation(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    controller: str,
+    standard: bool,
+    topology: str | None,
+) -> None:
+    import base64
+
+    from linker_engine.planning.csv_mapping import CsvMapping
+
+    from .test_private_http import Rig, standard_profile_command
+
+    peak = controller.startswith("peak")
+    inverter = next(row for row in feed["products"] if row["id"] == 4107)
+    for direction in ("charge", "discharge"):
+        inverter["figures"][f"continuous_battery_{direction}_ac_power_kw"] = {
+            "value": 1.5 if direction == "charge" else 6,
+            "unit": "kW",
+            "citation": copy.deepcopy(
+                inverter["figures"]["battery_voltage_range_v"]["citation"]
+            ),
+        }
+    inverter["figures"]["max_battery_terminal_discharge_power_kw"] = {
+        "value": 2,
+        "unit": "kW",
+        "citation": copy.deepcopy(
+            inverter["figures"]["battery_voltage_range_v"]["citation"]
+        ),
+    }
+    feed, source, loaded, _, _, _ = prepared_dc_fixture_source(
+        feed, engine, monkeypatch
+    )
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=40000, products=source)
+    energy = EnergyService(workspace, ac, max_attempts=1)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace,
+            source,
+            EquipmentSearchLimits(work_budget=1000),
+            tolerance=TOLERANCE,
+            max_intervals=40000,
+        ),
+        max_attempts=1,
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(energy, None, equipment_search=search, reports=reports)
+    worker = Worker(
+        Jobs(workspace),
+        "profile-bounds-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1000000, 8000000, 40000, 32),
+        equipment_search=search,
+        reports=reports,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, ac, client)
+        pid = rig.create("profile-bounds")
+
+        def csv_profile(
+            role: Literal["gross_load", "pv_available_ac"], values: tuple[int, ...]
+        ) -> str:
+            content = "time,power\n" + "".join(
+                f"2026-01-01T{hour:02}:00:00+01:00,{value}\n"
+                for hour, value in enumerate(values)
+            )
+            asset = rig.post(
+                "/profiles/csv",
+                {
+                    "project_id": pid,
+                    "content_base64": base64.b64encode(content.encode()).decode(),
+                    "mapping": json_object(
+                        CsvMapping(
+                            "time",
+                            "power",
+                            role,
+                            "interval_average_kw",
+                            "start",
+                            "Europe/Berlin",
+                            "synthetic",
+                            3600,
+                            ",",
+                            ".",
+                        ).document()
+                    ),
+                    "source_label": "Profile bounds fixture",
+                    "rights_note": "created by test",
+                    "key": role,
+                },
+            )
+            return str(asset["id"])
+
+        selected = {
+            "gross_load": rig.post(
+                "/profiles/standard",
+                standard_profile_command(pid, "standard-bounds-load"),
+            )["id"]
+            if standard
+            else csv_profile("gross_load", (4, 4, 4, 4) if peak else (2, 2, 2, 2))
+        }
+        if standard or not peak:
+            selected["pv_available_ac"] = csv_profile(
+                "pv_available_ac", (10, 0) if standard else (8, 8, 0, 0)
+            )
+        declarations = {
+            "profile_selections": {
+                "schema_version": 1,
+                "selected": selected,
+            },
+            "equipment_setup": {
+                "schema_version": 1,
+                "grid_phase": 3,
+                "operating_mode": "grid_connected",
+                "pv_dc_kw": None,
+                "required_usable_kwh": None,
+                "required_discharge_ac_kw": None,
+            },
+            "energy_scenario": {
+                "controller": controller,
+                "battery": None,
+                "schedule": [
+                    {
+                        "start_utc": "2026-01-01T00:00:00+01:00",
+                        "end_utc": "2026-01-01T02:00:00+01:00"
+                        if standard
+                        else "2026-01-01T04:00:00+01:00",
+                        "mode": "connected",
+                        "pv_enabled": "pv_available_ac" in selected,
+                        "reserve_kwh": None,
+                        "import_cap_kw": 0.5 if peak else None,
+                        "export_cap_kw": None,
+                        "allow_grid_charge": None,
+                    }
+                ],
+            },
+        }
+        command = {
+            "project_id": pid,
+            "expected_revision": 1,
+            "inputs": declarations,
+            "input_contract": "backup_demand_v1",
+            "key": "compare-profile-bounds",
+        }
+        if topology in ("plant_ac", "plant_shared_dc", "undeclared_plant"):
+            setup = {**declarations.pop("equipment_setup"), "pv_dc_kw": 0}
+            declarations["equipment_plant_setup"] = {
+                "schema_version": 1,
+                "requirements": setup,
+                "units": [
+                    {
+                        "id": name,
+                        "name": name,
+                        "inputs": {
+                            "equipment_setup": {
+                                **setup,
+                                "inverter_product_id": 4107,
+                                "battery_product_id": 2090,
+                                "modules_per_stack": 3,
+                                "parallel_stacks": 1,
+                                "equipment_use": {
+                                    "inverter": "retain",
+                                    "battery": "retain",
+                                },
+                            }
+                        },
+                    }
+                    for name in ("east", "west")
+                ],
+                "parallel_groups": [],
+            }
+            if topology != "undeclared_plant":
+                declarations["energy_plant_setup"] = {"coupling": topology}
+        elif topology == "shared_dc":
+            declarations["energy_scenario"]["coupling"] = topology
+            selected.pop("pv_available_ac", None)
+        accepted = rig.post("/runs/find-equipment", command)
+        assert accepted["project"]["inputs"] == declarations
+        assert worker.run_once()
+        run = rig.post("/runs/read", {"run_id": accepted["run"]["id"]})
+        assert run["state"] == "succeeded", run
+        result = run["result"]["search"]
+        assert result["demand"]["model"] == "profile_physical_bounds_v1"
+        if topology is not None:
+            assert result["demand"]["baseline"]["load_kwh"] == (16 if peak else 8)
+            candidates = result["candidates"]
+            assert candidates
+            if topology == "plant_ac":
+                candidate = next(
+                    item
+                    for item in candidates
+                    if all(
+                        unit["selection"]["inverter_product_id"] == 4107
+                        and unit["selection"]["battery_product_id"] == 2090
+                        and unit["selection"]["modules_per_stack"] == 3
+                        for unit in item["plant"]["units"]
+                    )
+                )
+                assert candidate["demand"]["status"] == "bounded"
+                assert candidate["demand"]["additional_pv_use_upper_kwh"] == 4
+            elif topology == "shared_dc" and peak:
+                candidate = next(
+                    item
+                    for item in candidates
+                    if item["selection"]["inverter_product_id"] == 4107
+                    and item["selection"]["battery_product_id"] == 2090
+                )
+                assert candidate["demand"]["status"] == "violated"
+                assert candidate["demand"]["peak_import_lower_bound_kw"] == 2
+            else:
+                assert all(
+                    item["demand"]["status"] == "unresolved" for item in candidates
+                )
+                assert all(
+                    item["demand"]["additional_pv_use_upper_kwh"] is None
+                    for item in candidates
+                )
+                if topology == "shared_dc":
+                    assert result["demand"]["baseline"]["direct_pv_use_kwh"] is None
+                    assert result["demand"]["baseline"]["grid_import_kwh"] is None
+                candidate = candidates[0]
+            detail = rig.post(
+                "/equipment/candidates/read",
+                {"run_id": run["id"], "candidate_id": candidate["id"]},
+            )
+            assert detail["assessment"]["provisional_bill_of_materials"]
+            if topology == "plant_shared_dc":
+                adopted_inputs = {
+                    **accepted["project"]["inputs"],
+                    "equipment_plant": candidate["plant"],
+                    "equipment_candidate": {
+                        "run_id": run["id"],
+                        "candidate_id": candidate["id"],
+                        "assessment_sha256": detail["assessment_sha256"],
+                    },
+                }
+                for unit, built in zip(
+                    adopted_inputs["equipment_plant_setup"]["units"],
+                    candidate["plant"]["units"],
+                    strict=True,
+                ):
+                    unit["inputs"]["equipment_setup"] = {
+                        key: value
+                        for key, value in built["selection"].items()
+                        if key != "product_revisions"
+                    }
+                adopted = rig.post(
+                    "/projects/revise",
+                    {
+                        **command,
+                        "inputs": adopted_inputs,
+                        "expected_revision": accepted["project"]["revision"],
+                        "key": "adopt-shared-dc-candidate",
+                    },
+                )
+                report = rig.post(
+                    "/runs/report",
+                    {
+                        "project_id": pid,
+                        "expected_revision": adopted["revision"],
+                        "key": "report-shared-dc-candidate",
+                        "options": {
+                            "locale": "en",
+                            "energy_run_id": None,
+                            "pv_run_id": None,
+                            "equipment_run_id": None,
+                            "logo": None,
+                        },
+                    },
+                )
+                assert worker.run_once()
+                completed = rig.post("/runs/read", {"run_id": report["id"]})
+                assert completed["state"] == "succeeded", completed
+                pdf = completed["result"]["prepared_asset"]
+                csv = completed["result"]["prepared_attachments"][
+                    "bill_of_materials_csv"
+                ]
+                for asset in (pdf, csv):
+                    response = client.post(
+                        "/assets/content",
+                        json={
+                            "schema_version": 1,
+                            "project_id": pid,
+                            "asset_id": asset["id"],
+                        },
+                        headers=headers(owner),
+                    )
+                    assert response.status_code == 200
+                    assert response.content
+            return
+        baseline = result["demand"]["baseline"]
+        if standard:
+            assert baseline["pv_available_kwh"] == 10
+            assert result["demand"]["interval_count"] == 8
+            assert baseline["load_kwh"] > 0
+        else:
+            assert result["demand"]["interval_count"] == 4
+            assert baseline["load_kwh"] == (16 if peak else 8)
+            assert baseline["pv_available_kwh"] == (0 if peak else 16)
+            assert baseline["over_target_kwh"] == (14 if peak else 0)
+        assert result["candidates"]
+        assert all(
+            c["demand"]["status"] in ("bounded", "violated")
+            for c in result["candidates"]
+        )
+        if standard:
+            assert any(
+                c["demand"]["additional_pv_use_upper_kwh"] > 0
+                for c in result["candidates"]
+                if c["selection"]["battery_product_id"] is not None
+            )
+        else:
+            options = {
+                c["usable_energy_kwh"]: c["demand"]
+                for c in result["candidates"]
+                if c["selection"]["inverter_product_id"] == 4107
+                and c["selection"]["battery_product_id"] == 2090
+            }
+            if peak:
+                assert baseline["peak_grid_import_kw"] == 4
+                assert options[13.5]["status"] == "violated"
+                assert options[13.5]["peak_import_lower_bound_kw"] == 0.625
+                assert options[18]["status"] == "bounded"
+            else:
+                assert options[13.5]["additional_pv_use_upper_kwh"] == 3
+                assert options[18]["additional_pv_use_upper_kwh"] == 3
+                assert {
+                    fact["source"]["figure_key"]
+                    for fact in options[13.5]["source_facts"]
+                } == {
+                    "continuous_battery_charge_ac_power_kw",
+                    "continuous_battery_discharge_ac_power_kw",
+                }
+        assert (
+            rig.post("/runs/find-equipment", command)["run"]["id"]
+            == accepted["run"]["id"]
+        )
+        assert len(workspace.runs(owner, pid)) == 1

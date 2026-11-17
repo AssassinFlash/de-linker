@@ -332,6 +332,74 @@ def _pvgis_reference(
     }
 
 
+def known_reference_capture() -> Object:
+    """Portable native result for the no-geometry PV reference component journey."""
+    with TemporaryDirectory(prefix="known-pv-fixture-") as directory:
+        with fixed_identity(), fixed_runtime(), frozen_publication():
+            root = Path(directory)
+            workspace = Workspace(root / "private", clock=Clock(1_700_000_000.0))
+            owner = Actor("user", "native-known-pv-synthetic-fixture")
+            products = product_sources(root)
+            values: Object = {
+                "brief": {
+                    "schema_version": 1,
+                    "project_use": "residential",
+                    "system_scope": "storage_addition",
+                    "site": {
+                        "country_code": "NL",
+                        "location_label": "Known existing PV",
+                        "latitude": 52.12567,
+                        "longitude": 5.12567,
+                        "coordinate_basis": "user_entered",
+                        "timezone": "Europe/Amsterdam",
+                    },
+                    "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+                    "project_note": "",
+                },
+                "pvgis_reference": {
+                    **reference_inputs(products.module_basis())["pvgis_reference"],
+                    "model": "pvgis_5_3_known_ac_reference_v1",
+                    "source_note": "Commissioning report for location and system losses",
+                    "arrays": [
+                        {
+                            "id": "array_1",
+                            "peak_power_kwp": 6.4,
+                            "tilt_deg": 31.25,
+                            "azimuth_north_clockwise_deg": 172.5,
+                            "source_note": "Commissioning report",
+                        }
+                    ],
+                },
+            }
+            from linker_engine.planning.project_input_contracts import (
+                KNOWN_PV_INPUT_CONTRACT,
+            )
+
+            project = workspace.create(
+                owner,
+                "Known PV without drawing",
+                values,
+                key="known-pv",
+                input_contract=KNOWN_PV_INPUT_CONTRACT,
+            )
+            kernel = PvgisRoofReferenceKernel(
+                workspace,
+                products,
+                reference_limits(),
+                max_array_steps=20_000,
+                transport_factory=Captures,
+            )
+            service = PvgisRoofReferenceService(workspace, kernel, max_attempts=1)
+            from linker_engine.planning.execution_registry import ExecutionRegistry
+
+            registry = ExecutionRegistry(kernel)
+            run = service.evaluate(owner, project.id, 1, key="known-reference")
+            completed = _drained(
+                workspace, registry, run, owner, "known-reference-worker"
+            )
+            return {"project": project_view(project), "run": run_view(completed)}
+
+
 def _direct_beam(
     workspace: Workspace, owner: Actor, products: ProductSources
 ) -> Object:

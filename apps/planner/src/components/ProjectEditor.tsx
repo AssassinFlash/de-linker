@@ -59,6 +59,7 @@ import { replacePlannerLocation } from "../data/plannerLocation.ts";
 import { useGenieContext } from "../data/useGenieContext.ts";
 import { InstallationEditor } from "./installation/InstallationEditor.tsx";
 import { readInstallation } from "../domain/installation.ts";
+import { moduleSummary } from "../domain/panelPoses.ts";
 
 type ProjectWorkspace =
 	| "overview"
@@ -130,7 +131,7 @@ export function workspaceFromHash(inputs: JsonObject): ProjectWorkspace {
 			// The editor reports unsupported input formats in its existing notice.
 		}
 	}
-	return "overview";
+	return "site";
 }
 
 export function ProjectEditor({
@@ -651,17 +652,6 @@ export function ProjectEditor({
 							aria-label={__("Project sections", "linker-tools")}
 						>
 							<a
-								href="#lp-overview"
-								aria-current={workspace === "overview" ? "page" : undefined}
-								onClick={(event) => {
-									event.preventDefault();
-									chooseWorkspace("overview");
-								}}
-							>
-								<Icon name="overview" />
-								{__("Overview", "linker-tools")}
-							</a>
-							<a
 								href="#lp-site"
 								aria-current={workspace === "site" ? "page" : undefined}
 								onClick={(event) => {
@@ -717,18 +707,6 @@ export function ProjectEditor({
 								<Icon name="report" />
 								{__("Review & share", "linker-tools")}
 							</a>
-							<a
-								className="lp-nav-secondary"
-								href="#lp-installation"
-								aria-current={workspace === "installation" ? "page" : undefined}
-								onClick={(event) => {
-									event.preventDefault();
-									chooseWorkspace("installation");
-								}}
-							>
-								<Icon name="route" />
-								{__("Installation routing", "linker-tools")}
-							</a>
 						</nav>
 						<label className="lp-mobile-chapters">
 							<span>{__("Project sections", "linker-tools")}</span>
@@ -743,9 +721,6 @@ export function ProjectEditor({
 									)
 								}
 							>
-								<option value="overview">
-									{__("Overview", "linker-tools")}
-								</option>
 								<option value="site">{__("Project", "linker-tools")}</option>
 								{brief.system_scope !== "storage_only" && (
 									<option value="design">{__("Solar", "linker-tools")}</option>
@@ -758,9 +733,6 @@ export function ProjectEditor({
 								</option>
 								<option value="calculations">
 									{__("Review & share", "linker-tools")}
-								</option>
-								<option value="installation">
-									{__("Installation routing", "linker-tools")}
 								</option>
 							</select>
 						</label>
@@ -1200,6 +1172,7 @@ export function ProjectEditor({
 									workspace,
 								)}
 								equipmentFocus={workspace === "equipment"}
+								demandFocus={workspace === "energy"}
 								openEquipment={() => chooseWorkspace("equipment")}
 								openResults={() => chooseWorkspace("calculations")}
 								recoveryScopes={recoveryScopes}
@@ -1256,6 +1229,58 @@ export function ProjectEditor({
 						</div>
 					)}
 				</div>
+				<aside
+					className="lp-current-configuration"
+					aria-label={__("Current configuration", "linker-tools")}
+				>
+					<h2>{__("Current configuration", "linker-tools")}</h2>
+					<h3>{project.title}</h3>
+					<p>{brief.site.location_label}</p>
+					<dl>
+						{brief.system_scope !== "storage_only" &&
+							geometry.arrays.length > 0 && (
+								<div>
+									<dt>{__("Solar capacity", "linker-tools")}</dt>
+									<dd>
+										{new Intl.NumberFormat(config.locale, {
+											maximumFractionDigits: 2,
+										}).format(moduleSummary(geometry).stc_kwp)}{" "}
+										kWp
+									</dd>
+								</div>
+							)}
+						{brief.annual_load.kwh !== null && (
+							<div>
+								<dt>{__("Annual consumption", "linker-tools")}</dt>
+								<dd>
+									{new Intl.NumberFormat(config.locale).format(
+										brief.annual_load.kwh,
+									)}{" "}
+									kWh
+								</dd>
+							</div>
+						)}
+					</dl>
+					<button
+						type="button"
+						className="lp-text-button"
+						onClick={() => chooseWorkspace("equipment")}
+					>
+						{__("Selected equipment", "linker-tools")}
+					</button>
+					{workspace === "equipment" && (
+						<details>
+							<summary>{__("Installation details", "linker-tools")}</summary>
+							<button
+								type="button"
+								className="lp-text-button"
+								onClick={() => chooseWorkspace("installation")}
+							>
+								{__("Installation routing", "linker-tools")}
+							</button>
+						</details>
+					)}
+				</aside>
 			</div>
 		</div>
 	);

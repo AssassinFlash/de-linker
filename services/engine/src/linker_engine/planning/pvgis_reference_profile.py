@@ -12,6 +12,11 @@ from .frozen_documents import FrozenReader
 from .interval import Interval
 from .power_series import PowerSeries
 from .product_sources import ProductSources
+from .pvgis_known_inputs import MODEL as KNOWN_MODEL
+from .pvgis_known_inputs import MODEL_ROLE as KNOWN_ROLE
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_PURPOSE
+from .pvgis_known_inputs import KnownPvPlan, KnownPvRequest, known_reference_plan
+from .pvgis_reference_array import PvgisReferenceArray
 from .pvgis_reference_artifacts import PROFILE_PURPOSE as PROFILE_PURPOSE
 from .pvgis_reference_geometry import reference_plan
 from .pvgis_reference_plan import PvgisReferencePlan
@@ -37,10 +42,11 @@ def reference_bundle(
     # report passes its reader, so the manifest and every child are verified
     # once per request instead of once per section.
     reader: FrozenReader = blobs if documents is None else documents
+    known = metadata.get("profile_type") == KNOWN_PURPOSE
     if (
         metadata.get("schema") != 1
         or type(metadata.get("schema")) is not int
-        or metadata.get("profile_type") != PROFILE_PURPOSE
+        or metadata.get("profile_type") not in (PROFILE_PURPOSE, KNOWN_PURPOSE)
         or metadata.get("retention") != "permanent"
         or "csv_mapping" in metadata
         or metadata.get("timezone_rules_sha256") is not None
@@ -51,15 +57,22 @@ def reference_bundle(
     arrays = manifest.get("arrays")
     if (
         manifest.get("schema_version") != 1
-        or manifest.get("kind") != "pvgis_5_3_roof_ac_reference_v1"
+        or manifest.get("kind")
+        != (KNOWN_MODEL if known else "pvgis_5_3_roof_ac_reference_v1")
         or not isinstance(arrays, list)
     ):
         raise VersionUnavailable("roof reference original manifest is invalid")
     expected: Object = {
         "reference_plan": manifest.get("plan_sha256"),
-        "reference_geometry": manifest.get("geometry_sha256"),
+        **(
+            {"reference_site": manifest.get("site_sha256")}
+            if known
+            else {
+                "reference_geometry": manifest.get("geometry_sha256"),
+                "reference_woo_module": manifest.get("module_basis_sha256"),
+            }
+        ),
         "reference_parameters": manifest.get("parameters_sha256"),
-        "reference_woo_module": manifest.get("module_basis_sha256"),
         "reference_output": manifest.get("output_sha256"),
     }
     for index, item in enumerate(arrays):
@@ -71,31 +84,68 @@ def reference_bundle(
     ):
         raise VersionUnavailable("roof reference dependencies differ from originals")
     verify_dependencies(reader, metadata)
-    plan = PvgisReferencePlan.read(reader.object(str(dependencies["reference_plan"])))
-    geometry = reader.object(str(dependencies["reference_geometry"]))
     parameters = reader.object(str(dependencies["reference_parameters"]))
-    basis = reader.object(str(dependencies["reference_woo_module"]))
-    try:
-        ProductSources.check_roof_inputs({"geometry": geometry}, basis)
-        regenerated = reference_plan(
-            {"geometry": geometry, "pvgis_reference": parameters},
-            str(dependencies["reference_woo_module"]),
+    plan: PvgisReferencePlan | KnownPvPlan
+    geometry: Object = {}
+    basis: Object = {}
+    site: Object = {}
+    regenerated: PvgisReferencePlan | KnownPvPlan
+    if known:
+        plan = KnownPvPlan.read(reader.object(str(dependencies["reference_plan"])))
+        site = reader.object(str(dependencies["reference_site"]))
+        regenerated = known_reference_plan(
+            {
+                "brief": {
+                    "schema_version": 1,
+                    "project_use": None,
+                    "system_scope": None,
+                    "site": site,
+                    "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+                    "project_note": "",
+                },
+                "pvgis_reference": parameters,
+            },
             plan.limits,
             plan.max_array_steps,
         )
-    except InvalidInput as error:
-        raise VersionUnavailable(
-            "roof reference geometry or product proof changed"
-        ) from error
+        if (
+            metadata.get("basis") != "customer_declared"
+            or metadata.get("site_sha256") != plan.site_sha256
+            or "geometry_sha256" in metadata
+            or "woo_module_inputs" in metadata
+        ):
+            raise VersionUnavailable("known PV reference source binding changed")
+    else:
+        plan = PvgisReferencePlan.read(
+            reader.object(str(dependencies["reference_plan"]))
+        )
+        geometry = reader.object(str(dependencies["reference_geometry"]))
+        basis = reader.object(str(dependencies["reference_woo_module"]))
+        try:
+            ProductSources.check_roof_inputs({"geometry": geometry}, basis)
+            regenerated = reference_plan(
+                {"geometry": geometry, "pvgis_reference": parameters},
+                str(dependencies["reference_woo_module"]),
+                plan.limits,
+                plan.max_array_steps,
+            )
+        except InvalidInput as error:
+            raise VersionUnavailable(
+                "roof reference geometry or product proof changed"
+            ) from error
+        if (
+            metadata.get("geometry_sha256") != plan.geometry_sha256
+            or metadata.get("woo_module_inputs") != basis
+        ):
+            raise VersionUnavailable("roof reference input/proof binding changed")
     if (
         encode(regenerated.document()) != encode(plan.document())
-        or metadata.get("geometry_sha256") != plan.geometry_sha256
         or metadata.get("parameters_sha256") != plan.parameters_sha256
-        or metadata.get("woo_module_inputs") != basis
         or len(arrays) != len(plan.arrays)
     ):
-        raise VersionUnavailable("roof reference input/proof binding changed")
-    for index, (raw, array) in enumerate(zip(arrays, plan.arrays, strict=True)):
+        raise VersionUnavailable("reference input/proof binding changed")
+    requests = cast(list[PvgisReferenceArray | KnownPvRequest], plan.arrays)
+    for index, (raw, array) in enumerate(zip(arrays, requests, strict=True)):
         row = obj(raw)
         base = {
             key: value for key, value in row.items() if key in type(array).model_fields
@@ -135,9 +185,12 @@ def reference_bundle(
     return {
         "manifest": manifest,
         "plan": plan.document(),
-        "geometry": geometry,
+        **(
+            {"site": site}
+            if known
+            else {"geometry": geometry, "woo_module_inputs": basis}
+        ),
         "parameters": parameters,
-        "woo_module_inputs": basis,
         "output": output,
     }
 
@@ -150,7 +203,13 @@ def prepared_reference_profile(
 ) -> PowerSeries:
     bundle = reference_bundle(blobs, raw_sha256, metadata, documents)
     manifest, output = obj(bundle["manifest"]), obj(bundle["output"])
-    plan = PvgisReferencePlan.read(bundle["plan"])
+    known = metadata.get("profile_type") == KNOWN_PURPOSE
+    plan = (
+        KnownPvPlan.read(bundle["plan"])
+        if known
+        else PvgisReferencePlan.read(bundle["plan"])
+    )
+    model_role = KNOWN_ROLE if known else "official_calendar_year_roof_ac_reference"
     start = datetime(plan.parameters.year, 1, 1, tzinfo=UTC)
     end = datetime(plan.parameters.year + 1, 1, 1, tzinfo=UTC)
     intervals = tuple(
@@ -185,12 +244,21 @@ def prepared_reference_profile(
                 3600,
                 encode(
                     {
-                        "adapter": "pvgis_5_3_roof_ac_reference_v1",
-                        "model_role": "official_calendar_year_roof_ac_reference",
+                        "adapter": KNOWN_MODEL
+                        if known
+                        else "pvgis_5_3_roof_ac_reference_v1",
+                        "model_role": model_role,
                         "plan_sha256": manifest["plan_sha256"],
                         "parameters": plan.parameters.model_dump(mode="json"),
                         "arrays": manifest["arrays"],
-                        "geometry_sha256": plan.geometry_sha256,
+                        **(
+                            {
+                                "site": plan.site.model_dump(mode="json"),
+                                "basis": "customer_declared",
+                            }
+                            if isinstance(plan, KnownPvPlan)
+                            else {"geometry_sha256": plan.geometry_sha256}
+                        ),
                         "output_boundary": "provider_modelled_system_output_including_system_loss",
                         "not_modelled": [
                             "specific_module_and_inverter_electrical_release",
@@ -214,7 +282,7 @@ def prepared_reference_profile(
         "origin": "modelled",
         "native_max_interval_seconds": 3600,
         "reconstructed_means": profile.reconstructed_means,
-        "model_role": "official_calendar_year_roof_ac_reference",
+        "model_role": model_role,
     }
     interpretation = obj(metadata.get("interpretation"))
     summary_matches = all(
@@ -252,6 +320,23 @@ def prepared_reference_profile(
 def reference_dependencies(
     asset: Asset, inputs: Object, blobs: Blobs
 ) -> dict[str, str]:
+    if asset.purpose == KNOWN_PURPOSE:
+        from .brief import PlanningBrief
+
+        site = PlanningBrief.read(inputs.get("brief")).site.model_dump(mode="json")
+        if asset.metadata.get("site_sha256") != digest(
+            encode(site)
+        ) or asset.metadata.get("parameters_sha256") != digest(
+            encode(inputs.get("pvgis_reference"))
+        ):
+            raise InvalidInput(
+                "known PV reference differs from the project site or declarations"
+            )
+        reference_bundle(blobs, asset.content_sha256, asset.metadata)
+        return {
+            key: str(value)
+            for key, value in obj(asset.metadata.get("dependencies")).items()
+        }
     if (
         asset.purpose != PROFILE_PURPOSE
         or asset.metadata.get("geometry_sha256")

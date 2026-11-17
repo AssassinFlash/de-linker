@@ -8,6 +8,7 @@ from .errors import EvidenceMissing, InvalidInput, VersionUnavailable
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import reference_dependencies as geometric_pv_dependencies
 from .pv_profile import PURPOSE, reference_dependencies
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_AC_PURPOSE
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import reference_dependencies as roof_ac_dependencies
 from .storage import Blobs
@@ -37,7 +38,10 @@ def profile_dependencies(
                 for key, value in reference_dependencies(asset, inputs, blobs).items()
             }
         )
-    elif asset.purpose == ROOF_AC_PURPOSE and role == "pv_available_ac":
+    elif (
+        asset.purpose in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE)
+        and role == "pv_available_ac"
+    ):
         result.update(
             {
                 f"{name}.{key}": value
