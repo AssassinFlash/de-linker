@@ -137,28 +137,27 @@ def pin_profiles(
     *,
     baseline_only: bool = False,
 ) -> dict[str, str]:
-    schedule = periods(inputs, baseline_only=baseline_only)
-    selected = ProfileSelections.read(inputs.get("profile_selections")).selected
+    source = inputs.get("profile_selections")
+    if source is None:
+        return {}
+    selected = ProfileSelections.read(source).selected
     _, _, coupling = scenario(inputs)
-    needs_pv = any(pv for _, pv, _, _ in schedule)
-    roles = ["gross_load"]
+    has_load = "gross_load" in selected
+    needs_pv = (
+        any(pv for _, pv, _, _ in periods(inputs, baseline_only=baseline_only))
+        if has_load
+        else not storage_only_project(inputs)
+    )
+    roles: list[ProfileRole] = ["gross_load"] if has_load else []
     if (
         needs_pv
         and coupling not in ("shared_dc", "plant_shared_dc")
-        and (
-            "pv_available_ac" in selected
-            or (coupling == "independent_ac" and not baseline_only)
-        )
+        and "pv_available_ac" in selected
     ):
         roles.append("pv_available_ac")
     pinned = {}
     for role in roles:
-        identity = selected.get(cast(ProfileRole, role))
-        if not isinstance(identity, str):
-            raise InvalidInput(
-                "select the owned demand profile",
-                fields=("profile_selections.selected." + role,),
-            )
+        identity = selected[role]
         asset = Assets(workspace).get(actor, project_id, identity)
         products.check_profile(asset.metadata)
         pinned.update(profile_dependencies(asset, role, inputs, workspace.blobs))

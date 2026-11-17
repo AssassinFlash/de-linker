@@ -404,8 +404,10 @@ export function EnergyDemand({
 			backup.load_kw > 0 &&
 			backup.duration_hours !== null &&
 			backup.duration_hours > 0);
+	const solarOnly = brief.system_scope === "pv_only";
 	const canCompare =
 		Boolean(goal) &&
+		(!solarOnly || goal !== "backup") &&
 		(equipment.grid_phase !== null || retainsUnverifiedInverter(inputs)) &&
 		backupReady &&
 		invalid.size === 0 &&
@@ -464,7 +466,7 @@ export function EnergyDemand({
 							<option value="self">
 								{__("Use more solar on site", "linker-tools")}
 							</option>
-							<option value="backup">
+							<option value="backup" disabled={solarOnly}>
 								{__("Backup supply", "linker-tools")}
 							</option>
 							<option value="peak">
@@ -995,42 +997,54 @@ export function EnergyDemand({
 					</div>
 				)}
 			</section>
-			<details className="sc-card">
-				<summary>
-					{__("Required power and capacity already known?", "linker-tools")}
-				</summary>
-				<p className="sc-muted">
-					{__(
-						"These optional values set minimum requirements for equipment comparison. Leave unknown values blank.",
-						"linker-tools",
-					)}
-				</p>
-				<fieldset disabled={blocked} className="sc-fields">
-					{number(
-						"power",
-						__("Continuous discharge power", "linker-tools"),
-						"kW",
-						equipment.required_discharge_ac_kw as number | null,
-						(value) =>
-							edit((current) =>
-								changeDemandEquipment(current, {
-									required_discharge_ac_kw: value,
-								}),
-							),
-					)}
-					{number(
-						"capacity",
-						__("Usable storage capacity", "linker-tools"),
-						"kWh",
-						equipment.required_usable_kwh as number | null,
-						(value) =>
-							edit((current) =>
-								changeDemandEquipment(current, { required_usable_kwh: value }),
-							),
-					)}
-				</fieldset>
-			</details>
+			{!solarOnly && (
+				<details className="sc-card">
+					<summary>
+						{__("Required power and capacity already known?", "linker-tools")}
+					</summary>
+					<p className="sc-muted">
+						{__(
+							"These optional values set minimum requirements for equipment comparison. Leave unknown values blank.",
+							"linker-tools",
+						)}
+					</p>
+					<fieldset disabled={blocked} className="sc-fields">
+						{number(
+							"power",
+							__("Continuous discharge power", "linker-tools"),
+							"kW",
+							equipment.required_discharge_ac_kw as number | null,
+							(value) =>
+								edit((current) =>
+									changeDemandEquipment(current, {
+										required_discharge_ac_kw: value,
+									}),
+								),
+						)}
+						{number(
+							"capacity",
+							__("Usable storage capacity", "linker-tools"),
+							"kWh",
+							equipment.required_usable_kwh as number | null,
+							(value) =>
+								edit((current) =>
+									changeDemandEquipment(current, {
+										required_usable_kwh: value,
+									}),
+								),
+						)}
+					</fieldset>
+				</details>
+			)}
 			<footer className="sc-footer">
+				{goal && goal !== "backup" && !selected && (
+					<p className="sc-muted">
+						{__(
+							"You can compare equipment now. Add a load profile to compare energy use over time.",
+							"linker-tools",
+						)}
+					</p>
+				)}
 				<div className="sc-actions">
 					<button
 						type="button"

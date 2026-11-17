@@ -58,7 +58,7 @@ import {
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
-import { ProjectDetails } from "./ProjectDetails.tsx";
+import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
 import {
 	CandidateMaterials,
@@ -643,7 +643,11 @@ export default function Configurator({
 			? `${number.format(values.reduce((a, b) => a + b, 0))} ${unit}`
 			: "—";
 	const activeStep =
-		step === "solar" && brief.system_scope === "storage_only" ? "energy" : step;
+		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)
+			? "project"
+			: step === "solar" && brief.system_scope === "storage_only"
+				? "energy"
+				: step;
 	return (
 		<div className="sc-configurator">
 			<header className="sc-project-heading">

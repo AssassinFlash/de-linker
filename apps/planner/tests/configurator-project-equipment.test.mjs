@@ -59,6 +59,8 @@ async function mount(t, initial) {
 	const { createRoot } = await import("react-dom/client");
 	const { ProjectEquipment } =
 		await import("../src/components/configurator/ProjectEquipment.tsx");
+	const { ProjectDetails } =
+		await import("../src/components/configurator/ProjectDetails.tsx");
 	const root = createRoot(dom.element);
 	const cache = new QueryClient();
 	let current = initial;
@@ -72,16 +74,23 @@ async function mount(t, initial) {
 	};
 	function Harness() {
 		const [inputs, setInputs] = useState(initial);
-		return React.createElement(ProjectEquipment, {
+		function edit(operation) {
+			current = operation(current);
+			setInputs(current);
+			return true;
+		}
+		return React.createElement(ProjectDetails, {
 			inputs,
-			client,
-			scope,
+			config: { locale: "en", countries: {} },
 			disabled: false,
-			edit(operation) {
-				current = operation(current);
-				setInputs(current);
-				return true;
-			},
+			edit,
+			existingEquipment: React.createElement(ProjectEquipment, {
+				inputs,
+				client,
+				scope,
+				disabled: false,
+				edit,
+			}),
 		});
 	}
 	t.after(async () => {
@@ -146,6 +155,42 @@ test("existing equipment is declared through the current product data and carrie
 	assert.equal(current().equipment_plant_setup, undefined);
 	assert.equal(current().equipment_setup.battery_product_id, 201);
 	assert.equal(current().equipment_setup.equipment_use.inverter, "retain");
+});
+
+test("switching to solar makes excluding backup demand and retained storage an explicit choice", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const current = await mount(t, {
+		brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
+		backup_demand: { schema_version: 1, load_kw: 5, duration_hours: 4 },
+		equipment_setup: {
+			...equipmentDraft({}),
+			inverter_product_id: 101,
+			battery_product_id: 201,
+			modules_per_stack: 3,
+			parallel_stacks: 2,
+			grid_phase: 3,
+			operating_mode: "backup",
+			required_usable_kwh: 30,
+			required_discharge_ac_kw: 6,
+			equipment_use: { inverter: "retain", battery: "retain" },
+		},
+	});
+	await choose("Planned system", "pv_only");
+	assert.equal(current().brief.system_scope, "new_pv_storage");
+	assert.equal(current().backup_demand.load_kw, 5);
+	assert.equal(field("Battery or storage system").value, "201");
+	await act(async () => button("Switch to solar and exclude storage").click());
+	assert.equal(current().brief.system_scope, "pv_only");
+	assert.equal(current().backup_demand, undefined);
+	assert.deepEqual(current().equipment_setup, {
+		...equipmentDraft({}),
+		inverter_product_id: 101,
+		grid_phase: 3,
+		operating_mode: "grid_connected",
+		equipment_use: { inverter: "retain", battery: "new" },
+	});
+	assert.equal(field("Battery or storage system"), undefined);
 });
 
 test("a product from an entry link is visible and can be replaced or cleared", async (t) => {

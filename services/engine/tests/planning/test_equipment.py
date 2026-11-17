@@ -6741,6 +6741,9 @@ def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() 
         ("self_consumption_with_reserve_v1", False, "shared_dc"),
         ("peak_shaving_with_reserve_v1", False, "shared_dc"),
         ("self_consumption_with_reserve_v1", False, "undeclared_plant"),
+        ("self_consumption_with_reserve_v1", False, "missing_load"),
+        ("self_consumption_with_reserve_v1", False, "missing_pv"),
+        ("peak_shaving_with_reserve_v1", False, "unavailable_load"),
     ],
 )
 def test_profile_goal_search_uses_owned_load_without_battery_preparation(
@@ -6935,13 +6938,100 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         elif topology == "shared_dc":
             declarations["energy_scenario"]["coupling"] = topology
             selected.pop("pv_available_ac", None)
+        elif topology == "missing_load":
+            del declarations["profile_selections"]
+            declarations["brief"] = {
+                "schema_version": 1,
+                "project_use": None,
+                "system_scope": "pv_only",
+                "site": {
+                    "country_code": "DE",
+                    "location_label": "Leipzig",
+                    "latitude": None,
+                    "longitude": None,
+                    "coordinate_basis": "not_provided",
+                    "timezone": None,
+                },
+                "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+                "project_note": "",
+            }
+            declarations["energy_scenario"]["schedule"][0].update(
+                start_utc="", end_utc=""
+            )
+            # Older project editors could save the scope while hiding
+            # declarations that still make the search invalid.
+            for storage in (
+                {
+                    "backup_demand": {
+                        "schema_version": 1,
+                        "load_kw": 5,
+                        "duration_hours": 4,
+                    }
+                },
+                {
+                    "equipment_setup": {
+                        **declarations["equipment_setup"],
+                        "required_usable_kwh": 20,
+                    }
+                },
+                {
+                    "equipment_setup": {
+                        **declarations["equipment_setup"],
+                        "battery_product_id": 2090,
+                        "modules_per_stack": 3,
+                        "parallel_stacks": 1,
+                        "equipment_use": {"inverter": "new", "battery": "retain"},
+                    }
+                },
+            ):
+                conflicting = rig.post(
+                    "/runs/find-equipment",
+                    {
+                        **command,
+                        "expected_revision": command["expected_revision"],
+                        "inputs": {**declarations, **storage},
+                        "key": f"legacy-conflict-{command['expected_revision']}",
+                    },
+                )
+                assert worker.run_once()
+                failed = rig.post("/runs/read", {"run_id": conflicting["run"]["id"]})
+                assert failed["state"] == "failed", failed
+                assert failed["error"]["code"] == "invalid_input"
+                command["expected_revision"] = conflicting["project"]["revision"]
+        elif topology == "missing_pv":
+            selected.pop("pv_available_ac")
+        elif topology == "unavailable_load":
+            selected["gross_load"] = "a" * 32
+            command["schema_version"] = 1
+            reply = client.post(
+                "/runs/find-equipment", json=command, headers=headers(owner)
+            )
+            assert reply.status_code == 404, reply.json()
+            assert workspace.get(owner, pid).revision == 1
+            return
         accepted = rig.post("/runs/find-equipment", command)
         assert accepted["project"]["inputs"] == declarations
         assert worker.run_once()
         run = rig.post("/runs/read", {"run_id": accepted["run"]["id"]})
         assert run["state"] == "succeeded", run
         result = run["result"]["search"]
+        assert result["candidates"]
+        if topology == "missing_load":
+            assert "demand" not in result
+            assert all(
+                item["selection"]["battery_product_id"] is None
+                for item in result["candidates"]
+            )
+            return
         assert result["demand"]["model"] == "profile_physical_bounds_v1"
+        if topology == "missing_pv":
+            assert result["demand"]["baseline"]["load_kwh"] == 8
+            assert result["demand"]["baseline"]["pv_available_kwh"] is None
+            assert all(
+                item["demand"]["status"] == "unresolved"
+                for item in result["candidates"]
+            )
+            return
         if topology is not None:
             assert result["demand"]["baseline"]["load_kwh"] == (16 if peak else 8)
             candidates = result["candidates"]

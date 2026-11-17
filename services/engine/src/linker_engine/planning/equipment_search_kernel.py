@@ -177,7 +177,7 @@ class EquipmentSearchKernel(EquipmentKernel):
                 max_intervals=self.max_intervals,
                 work_budget=self.limits.demand_interval_budget,
             )
-        elif requested(inputs):
+        elif requested(inputs) and "gross_load.raw" in pinned:
             assert self.max_intervals is not None
             evaluate_bounds(
                 self.workspace,

@@ -6,7 +6,65 @@ import type { Configuration } from "../../data/config.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
 import { changeEnergyGoal, energyGoal } from "./EnergyDemand.tsx";
+import { changeEquipment, equipmentDraft } from "../../domain/equipment.ts";
+import type { EquipmentUse } from "../../domain/equipment.ts";
+import {
+	hasPlant,
+	plantInputs,
+	readPlantDraft,
+} from "../../domain/equipmentPlant.ts";
 import { __ } from "../../i18n.ts";
+
+const solarDemand = {
+	required_usable_kwh: null,
+	required_discharge_ac_kw: null,
+	operating_mode: "grid_connected",
+} as const;
+
+function hasStorageDemand(setup: JsonObject): boolean {
+	return (
+		setup.operating_mode === "backup" ||
+		[setup.required_usable_kwh, setup.required_discharge_ac_kw].some(
+			(value) => typeof value === "number" && value > 0,
+		)
+	);
+}
+
+function hasBattery(setup: JsonObject): boolean {
+	const use = setup.equipment_use as EquipmentUse | null | undefined;
+	return (
+		setup.battery_product_id !== null || (use != null && use.battery !== "new")
+	);
+}
+
+export function hasStorageToExclude(inputs: JsonObject): boolean {
+	if (energyGoal(inputs) === "backup" || inputs.equipment_demand !== undefined)
+		return true;
+	if (!hasPlant(inputs)) {
+		const setup = equipmentDraft(inputs);
+		return hasBattery(setup) || hasStorageDemand(setup);
+	}
+	const plant = readPlantDraft(inputs);
+	return (
+		hasStorageDemand(plant.requirements) ||
+		plant.units.some(({ inputs }) => {
+			const setup = equipmentDraft(inputs);
+			return hasBattery(setup) || hasStorageDemand(setup);
+		})
+	);
+}
+
+function withoutBattery(inputs: JsonObject): JsonObject {
+	const use = equipmentDraft(inputs).equipment_use as
+		EquipmentUse | null | undefined;
+	return changeEquipment(inputs, {
+		...solarDemand,
+		battery_product_id: null,
+		modules_per_stack: null,
+		parallel_stacks: null,
+		equipment_use: use ? { ...use, battery: "new" } : null,
+	});
+}
 
 export function ProjectDetails({
 	inputs,
@@ -33,6 +91,9 @@ export function ProjectDetails({
 }) {
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
+	const [confirmSolar, setConfirmSolar] = useState(false);
+	const solarConflict =
+		brief.system_scope === "pv_only" && hasStorageToExclude(inputs);
 	const [locating, setLocating] = useState(false);
 	const [locationError, setLocationError] = useState(false);
 	const live = useRef(true);
@@ -90,6 +151,35 @@ export function ProjectDetails({
 		} finally {
 			if (live.current) setLocating(false);
 		}
+	}
+	function changeScope(system_scope: Brief["system_scope"]) {
+		setConfirmSolar(false);
+		edit((current) => {
+			const b =
+				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
+			const amended: JsonObject = { ...current, brief: { ...b, system_scope } };
+			const goal = energyGoal(amended);
+			if (system_scope === "pv_only") {
+				const { equipment_demand: _demand, ...solar } = goal
+					? changeEnergyGoal(amended, goal === "backup" ? "self" : goal)
+					: amended;
+				if (!hasPlant(solar)) return withoutBattery(solar);
+				const plant = readPlantDraft(solar);
+				return plantInputs(solar, {
+					...plant,
+					requirements: { ...plant.requirements, ...solarDemand },
+					units: plant.units.map((unit) => ({
+						...unit,
+						inputs: withoutBattery(unit.inputs),
+					})),
+				});
+			}
+			return goal &&
+				(b.system_scope === "storage_only") !==
+					(system_scope === "storage_only")
+				? changeEnergyGoal(amended, goal)
+				: amended;
+		});
 	}
 	function change(operation: (brief: Brief) => Brief) {
 		edit((current) => ({
@@ -194,19 +284,9 @@ export function ProjectDetails({
 							onChange={(e) => {
 								const system_scope = (e.currentTarget.value ||
 									null) as Brief["system_scope"];
-								edit((current) => {
-									const b =
-										current.brief === undefined
-											? emptyBrief()
-											: readBrief(current.brief);
-									const amended = { ...current, brief: { ...b, system_scope } };
-									const goal = energyGoal(amended);
-									return goal &&
-										(b.system_scope === "storage_only") !==
-											(system_scope === "storage_only")
-										? changeEnergyGoal(amended, goal)
-										: amended;
-								});
+								if (system_scope === "pv_only" && hasStorageToExclude(inputs))
+									setConfirmSolar(true);
+								else changeScope(system_scope);
 							}}
 						>
 							<option value="">{__("Choose an option", "linker-tools")}</option>
@@ -259,7 +339,10 @@ export function ProjectDetails({
 							<option value="self">
 								{__("Use more solar on site", "linker-tools")}
 							</option>
-							<option value="backup">
+							<option
+								value="backup"
+								disabled={brief.system_scope === "pv_only"}
+							>
 								{__("Backup supply", "linker-tools")}
 							</option>
 							<option value="peak">
@@ -268,6 +351,34 @@ export function ProjectDetails({
 						</select>
 					</label>
 				</div>
+				{(confirmSolar || solarConflict) && (
+					<div>
+						<p>
+							{__(
+								"Switching to solar excludes battery equipment and storage requirements, including backup supply.",
+								"linker-tools",
+							)}
+						</p>
+						<div className="sc-actions">
+							<button
+								type="button"
+								className="sc-button"
+								onClick={() => changeScope("pv_only")}
+							>
+								{__("Switch to solar and exclude storage", "linker-tools")}
+							</button>
+							{!solarConflict && (
+								<button
+									type="button"
+									className="sc-button"
+									onClick={() => setConfirmSolar(false)}
+								>
+									{__("Keep current system", "linker-tools")}
+								</button>
+							)}
+						</div>
+					</div>
+				)}
 				{mapKey && brief.system_scope !== "storage_only" && (
 					<div className="sc-actions">
 						<button
@@ -304,6 +415,8 @@ export function ProjectDetails({
 					disabled={
 						disabled ||
 						locating ||
+						confirmSolar ||
+						solarConflict ||
 						creation?.submitDisabled ||
 						(!creation?.locked &&
 							(!brief.system_scope || (creation && !creation.title.trim())))
