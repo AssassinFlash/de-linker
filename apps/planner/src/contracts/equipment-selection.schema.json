@@ -5,6 +5,23 @@
       "maximum": 9007199254740991,
       "type": "integer"
     },
+    "EquipmentUse": {
+      "additionalProperties": false,
+      "properties": {
+        "inverter": {
+          "$ref": "#/$defs/PartUse"
+        },
+        "battery": {
+          "$ref": "#/$defs/PartUse"
+        }
+      },
+      "required": [
+        "inverter",
+        "battery"
+      ],
+      "title": "EquipmentUse",
+      "type": "object"
+    },
     "GridPhase": {
       "enum": [
         1,
@@ -15,6 +32,14 @@
     "Nonnegative": {
       "minimum": 0,
       "type": "number"
+    },
+    "PartUse": {
+      "enum": [
+        "new",
+        "retain",
+        "replace"
+      ],
+      "type": "string"
     },
     "SchemaVersion": {
       "maximum": 1,
@@ -122,6 +147,17 @@
       },
       "title": "Product Revisions",
       "type": "object"
+    },
+    "equipment_use": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EquipmentUse"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

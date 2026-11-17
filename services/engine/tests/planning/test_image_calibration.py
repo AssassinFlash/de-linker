@@ -199,7 +199,6 @@ def test_a_calibrated_source_requires_its_writer_contract() -> None:
     )
 
     assert CALIBRATION_INPUT_CONTRACT in SUPPORTED_INPUT_CONTRACTS
-    assert SUPPORTED_INPUT_CONTRACTS[-1] == CALIBRATION_INPUT_CONTRACT
     # An uncalibrated document needs no new writer; the field is additive.
     assert required_contracts({"geometry": {"sources": [{"id": "source_a"}]}}) == ()
     assert required_contracts({"geometry": {"sources": []}}) == ()

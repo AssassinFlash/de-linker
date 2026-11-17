@@ -5,19 +5,11 @@ import type { Page } from '@playwright/test';
 
 test.setTimeout(45_000);
 
-const QUICK_WORDS = {
-	en: {
-		newProject: 'New project',
-		create: 'Create project',
-		quickStart: 'Quick start: plan in one screen',
-	},
-	de: {
-		newProject: 'Neues Projekt',
-		create: 'Projekt anlegen',
-		quickStart: 'Schnellstart: Planen auf einem Bildschirm',
-	},
+const PROJECT_WORDS = {
+	en: { newProject: 'New project' },
+	de: { newProject: 'Neues Projekt' },
 } as const;
-const words = (locale: string) => QUICK_WORDS[locale as 'en' | 'de'];
+const words = (locale: string) => PROJECT_WORDS[locale as 'en' | 'de'];
 
 async function dismissConsent(page: Page) {
 	const reject = page.getByRole('button', {
@@ -66,9 +58,7 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(page.locator('#downloads h2')).toBeVisible();
 		});
 
-		// The one-screen quick start (owner ruling: lowest customer effort)
-		// replaced the empty configurator's radio cards with native selects;
-		// the Grid connection choice now lives there.
+		// The project form keeps native choices and a readable label/control gap.
 		test(`${locale} ${width}: choice labels breathe and the controls stay native`, async ({
 			page,
 		}) => {
@@ -77,50 +67,35 @@ for (const locale of ['en', 'de'] as const) {
 				`${instance().url}${locale === 'en' ? '/solution-configurator/' : '/de/loesungskonfigurator/'}`
 			);
 			await dismissConsent(page);
-			await page
-				.getByRole('button', { name: words(locale).newProject })
-				.first()
-				.click();
-			await page
-				.locator('input[maxlength="256"]')
-				.first()
-				.fill('E2E quick start');
-			await page
-				.getByRole('button', { name: words(locale).create })
-				.click();
-			await page.waitForURL(/project=/, { timeout: 60_000 });
-			await page
-				.getByRole('button', { name: words(locale).quickStart })
-				.click();
+			if (
+				!(await page.locator('select[name="system_scope"]').isVisible())
+			) {
+				await page
+					.getByRole('button', { name: words(locale).newProject })
+					.first()
+					.click();
+			}
 			const grid = page
-				.locator('label', {
-					has: page.getByRole('combobox'),
-				})
-				.filter({
-					hasText:
-						locale === 'en' ? 'Grid connection' : 'Netzanschluss',
-				});
+				.locator('label')
+				.filter({ has: page.locator('select[name="system_scope"]') });
 			await expect(grid).toBeVisible();
 			const select = grid.getByRole('combobox');
-			// A native select with real options, not a styled proxy.
 			expect(await select.locator('option').count()).toBeGreaterThan(1);
-			// Breathing space between the form's own rows, measured to the
-			// previous visible row (zero-height siblings are skipped).
 			const gap = await grid.evaluate((node) => {
-				const own = node.getBoundingClientRect();
-				let prev = node.previousElementSibling;
-				while (prev && prev.getBoundingClientRect().height === 0)
-					prev = prev.previousElementSibling;
-				return prev
-					? own.top - prev.getBoundingClientRect().bottom
-					: own.top;
+				const label = node
+					.querySelector('span')!
+					.getBoundingClientRect();
+				const control = node
+					.querySelector('select')!
+					.getBoundingClientRect();
+				return control.top - label.bottom;
 			});
 			expect(gap).toBeGreaterThanOrEqual(8);
-			await select.selectOption({ index: 1 });
-			await expect(select).toHaveValue(
-				(await select.locator('option').nth(1).getAttribute('value')) ??
-					''
-			);
+			await select.selectOption('storage_only');
+			await expect(
+				page.locator('input[name="project_title"]')
+			).toBeVisible();
+			await expect(page.locator('.lp-roof-start')).toHaveCount(0);
 		});
 
 		test(`${locale} ${width}: footer links, current language and keyboard panel agree`, async ({

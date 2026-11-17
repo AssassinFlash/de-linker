@@ -126,6 +126,11 @@ export function PlanningReportResult({
 		flight = useRef<AbortController | null>(null);
 	useEffect(() => {
 		lifetime.current++;
+		// A different report run now occupies this component: the replaced
+		// run's in-flight download never reaches its finally-reset, so release
+		// its busy and error state here rather than leaving the button locked.
+		setBusy(false);
+		setError(false);
 		return () => {
 			lifetime.current++;
 			flight.current?.abort();
@@ -215,6 +220,16 @@ export function PlanningReportResult({
 			: __("Report language: German", "linker-tools");
 	return (
 		<article className="lp-run-result">
+			{!current && (
+				<div className="lp-notice" data-report-outdated="" role="status">
+					<p>
+						{__(
+							"This report describes an earlier version of the project.",
+							"linker-tools",
+						)}
+					</p>
+				</div>
+			)}
 			<div className="lp-run-heading">
 				<div>
 					<h3 lang={report.locale}>{report.title}</h3>

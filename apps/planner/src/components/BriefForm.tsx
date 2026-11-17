@@ -1,18 +1,8 @@
-import {
-	lazy,
-	Suspense,
-	useCallback,
-	useEffect,
-	useId,
-	useMemo,
-	useState,
-} from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import type { Brief } from "../domain/brief.ts";
 import type { Configuration } from "../data/config.ts";
 import { __ } from "../i18n.ts";
 import { NumberField } from "./NumberField.tsx";
-
-const LazyGoogle3DMap = lazy(() => import("./design/Google3DMap.tsx"));
 
 export function BriefForm({
 	brief,
@@ -145,6 +135,9 @@ export function BriefForm({
 							<option value="storage_addition">
 								{__("Storage for existing PV", "linker-tools")}
 							</option>
+							<option value="storage_only">
+								{__("Storage only", "linker-tools")}
+							</option>
 							<option value="pv_only">
 								{__("PV without storage", "linker-tools")}
 							</option>
@@ -216,105 +209,92 @@ export function BriefForm({
 							}
 						/>
 					</label>
-					<NumberField
-						locale={config.locale}
-						notation="point-or-comma"
-						label={__("Latitude", "linker-tools")}
-						unit="°"
-						value={brief.site.latitude}
-						min={-90}
-						max={90}
-						onValidity={latitudeValidity}
-						onChange={(latitude) =>
-							onChange({
-								...brief,
-								site: {
-									...brief.site,
-									latitude,
-									coordinate_basis:
-										latitude === null && brief.site.longitude === null
-											? "not_provided"
-											: "user_entered",
-								},
-							})
-						}
-					/>
-					<NumberField
-						locale={config.locale}
-						notation="point-or-comma"
-						label={__("Longitude", "linker-tools")}
-						unit="°"
-						value={brief.site.longitude}
-						min={-180}
-						max={180}
-						onValidity={longitudeValidity}
-						onChange={(longitude) =>
-							onChange({
-								...brief,
-								site: {
-									...brief.site,
-									longitude,
-									coordinate_basis:
-										longitude === null && brief.site.latitude === null
-											? "not_provided"
-											: "user_entered",
-								},
-							})
-						}
-					/>
-					<label className="lp-field">
-						<span id={id + "-zone"}>
-							{__("Project time zone", "linker-tools")}
-						</span>
-						<select
-							aria-labelledby={id + "-zone"}
-							aria-describedby={id + "-zone-help"}
-							value={brief.site.timezone ?? ""}
-							onChange={(event) =>
+				</div>
+				<details className="lp-location-details">
+					<summary>{__("Coordinates and time zone", "linker-tools")}</summary>
+					<div className="grid gap-5 md:grid-cols-2">
+						<NumberField
+							locale={config.locale}
+							notation="point-or-comma"
+							label={__("Latitude", "linker-tools")}
+							unit="°"
+							value={brief.site.latitude}
+							min={-90}
+							max={90}
+							onValidity={latitudeValidity}
+							onChange={(latitude) =>
 								onChange({
 									...brief,
 									site: {
 										...brief.site,
-										timezone: event.currentTarget.value || null,
+										latitude,
+										coordinate_basis:
+											latitude === null && brief.site.longitude === null
+												? "not_provided"
+												: "user_entered",
 									},
 								})
 							}
-						>
-							<option value="">{__("Not specified", "linker-tools")}</option>
-							{brief.site.timezone && !zones.includes(brief.site.timezone) && (
-								<option>{brief.site.timezone}</option>
-							)}
-							{zones.map((zone) => (
-								<option key={zone}>{zone}</option>
-							))}
-						</select>
-						<small id={id + "-zone-help"}>
-							{__(
-								"Used to interpret timestamps in project data.",
-								"linker-tools",
-							)}
-						</small>
-					</label>
-				</div>
-				{config.googleMapsApiKey &&
-					brief.site.latitude !== null &&
-					brief.site.longitude !== null && (
-						<div className="lp-quickstart-map">
-							<Suspense
-								fallback={
-									<p role="status">
-										{__("Loading 3D satellite imagery…", "linker-tools")}
-									</p>
+						/>
+						<NumberField
+							locale={config.locale}
+							notation="point-or-comma"
+							label={__("Longitude", "linker-tools")}
+							unit="°"
+							value={brief.site.longitude}
+							min={-180}
+							max={180}
+							onValidity={longitudeValidity}
+							onChange={(longitude) =>
+								onChange({
+									...brief,
+									site: {
+										...brief.site,
+										longitude,
+										coordinate_basis:
+											longitude === null && brief.site.latitude === null
+												? "not_provided"
+												: "user_entered",
+									},
+								})
+							}
+						/>
+						<label className="lp-field">
+							<span id={id + "-zone"}>
+								{__("Project time zone", "linker-tools")}
+							</span>
+							<select
+								aria-labelledby={id + "-zone"}
+								aria-describedby={id + "-zone-help"}
+								value={brief.site.timezone ?? ""}
+								onChange={(event) =>
+									onChange({
+										...brief,
+										site: {
+											...brief.site,
+											timezone: event.currentTarget.value || null,
+										},
+									})
 								}
 							>
-								<LazyGoogle3DMap
-									compact
-									apiKey={config.googleMapsApiKey}
-									center={[brief.site.longitude, brief.site.latitude]}
-								/>
-							</Suspense>
-						</div>
-					)}
+								<option value="">{__("Not specified", "linker-tools")}</option>
+								{brief.site.timezone &&
+									!zones.includes(brief.site.timezone) && (
+										<option>{brief.site.timezone}</option>
+									)}
+								{zones.map((zone) => (
+									<option key={zone}>{zone}</option>
+								))}
+							</select>
+							<small id={id + "-zone-help"}>
+								{__(
+									"Used to interpret timestamps in project data.",
+									"linker-tools",
+								)}
+							</small>
+						</label>
+					</div>
+				</details>
 			</section>
 			<section
 				className="lp-section"

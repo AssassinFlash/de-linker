@@ -11,6 +11,8 @@ import {
 	fileBase64,
 	readAsset,
 	readImport,
+	readProfileImport,
+	isStandardProfile,
 	readInspection,
 } from "../domain/profiles.ts";
 import type {
@@ -29,6 +31,7 @@ import { Notice } from "./Notice.tsx";
 import { OwnedProfile } from "./OwnedProfile.tsx";
 import { ProfileError } from "./ProfileError.tsx";
 import { ProfileImportSettings } from "./ProfileImportSettings.tsx";
+import { ScenarioNumber } from "./energy/ScenarioNumber.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
 
 export function ProfileIntake({
@@ -38,6 +41,7 @@ export function ProfileIntake({
 	store,
 	locale,
 	timezone,
+	annualKwh = null,
 	recheck,
 	attach,
 	registerGuard,
@@ -52,6 +56,7 @@ export function ProfileIntake({
 	store: DraftStore;
 	locale: string;
 	timezone: string | null;
+	annualKwh?: number | null;
 	recheck: () => void;
 	attach: (assetId: string, role: Measurement) => Promise<boolean>;
 	registerGuard: (guard: () => boolean) => void;
@@ -61,6 +66,30 @@ export function ProfileIntake({
 	recoveryChecking?: boolean;
 }) {
 	const id = useId();
+	const [standard, setStandard] = useState(false);
+	const [annual, setAnnual] = useState<number | null>(annualKwh);
+	const [year, setYear] = useState<number | null>(new Date().getFullYear());
+	const [pattern, setPattern] = useState("H0");
+	const [standardZone, setStandardZone] = useState(timezone ?? "");
+	const [invalidStandard, setInvalidStandard] = useState<ReadonlySet<string>>(
+		new Set(),
+	);
+	const reportStandard = useCallback(
+		(field: string, valid: boolean) =>
+			setInvalidStandard((previous) => {
+				const next = new Set(previous);
+				if (valid) next.delete(field);
+				else next.add(field);
+				return next;
+			}),
+		[],
+	);
+	const standardValid =
+		annual !== null &&
+		annual > 0 &&
+		year !== null &&
+		standardZone.trim() !== "" &&
+		invalidStandard.size === 0;
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [fileName, setFileName] = useState("");
 	const [readingFile, setReadingFile] = useState(false);
@@ -95,7 +124,7 @@ export function ProfileIntake({
 	const admitted = canReveal();
 	const openWork = useRef(false);
 	openWork.current = Boolean(
-		pending || content || readingFile || label || rights,
+		pending || content || readingFile || label || rights || (open && standard),
 	);
 	const lifetime = useRef(0),
 		flight = useRef(false),
@@ -129,9 +158,25 @@ export function ProfileIntake({
 	]);
 	function restore(body: string, scope: string) {
 		pendingScope.current = scope;
-		const command = readImport(JSON.parse(body));
+		const command = readProfileImport(JSON.parse(body));
+		if (isStandardProfile(command)) {
+			setStandard(true);
+			setAnnual(command.annual_kwh);
+			setYear(command.year);
+			setPattern(command.profile);
+			setStandardZone(command.timezone);
+			if (command.project_id !== projectId)
+				throw new Error("wrong_profile_project");
+			setPending(body);
+			setContent("");
+			setAsset(null);
+			setDurable(true);
+			setOpen(true);
+			return;
+		}
 		if (command.project_id !== projectId)
 			throw new Error("wrong_profile_project");
+		setStandard(false);
 		setPending(body);
 		setContent(command.content_base64);
 		setFileName("");
@@ -206,7 +251,9 @@ export function ProfileIntake({
 	]);
 	const serverRecorded = asset !== null && confirmedAssetIds.includes(asset.id);
 	const unprotected =
-		(Boolean(content) || readingFile) && !durable && !serverRecorded;
+		(Boolean(content) || readingFile || (open && standard)) &&
+		!durable &&
+		!serverRecorded;
 	useEffect(() => {
 		if (
 			!serverRecorded ||
@@ -349,11 +396,13 @@ export function ProfileIntake({
 		const mapping = mappedProfile(fields, delimiter);
 		if (
 			!pending &&
-			(!inspection ||
-				!mapping ||
-				(fields.durationMode === "fixed" && !numberValid) ||
-				!label.trim() ||
-				!rights.trim())
+			(standard
+				? !standardValid
+				: !inspection ||
+					!mapping ||
+					(fields.durationMode === "fixed" && !numberValid) ||
+					!label.trim() ||
+					!rights.trim())
 		)
 			return;
 		const instance = lifetime.current;
@@ -365,15 +414,28 @@ export function ProfileIntake({
 		const originScope = pendingScope.current;
 		try {
 			body ??= wire(
-				readImport({
-					schema_version: 1,
-					project_id: projectId,
-					content_base64: content,
-					mapping,
-					source_label: label.trim(),
-					rights_note: rights.trim(),
-					key: crypto.randomUUID(),
-				}),
+				readProfileImport(
+					standard
+						? {
+								schema_version: 1,
+								project_id: projectId,
+								edition: pattern.endsWith("25") ? 2025 : 1999,
+								profile: pattern,
+								year,
+								annual_kwh: annual,
+								timezone: standardZone.trim(),
+								key: crypto.randomUUID(),
+							}
+						: {
+								schema_version: 1,
+								project_id: projectId,
+								content_base64: content,
+								mapping,
+								source_label: label.trim(),
+								rights_note: rights.trim(),
+								key: crypto.randomUUID(),
+							},
+				),
 				session.runtime.limits.max_json_depth,
 				session.runtime.limits.max_body_bytes,
 			);
@@ -386,7 +448,13 @@ export function ProfileIntake({
 			}
 			if (!current(instance)) return;
 			const confirmed = readAsset(
-				await client.send("profiles/csv", body, session.query_scope),
+				await client.send(
+					isStandardProfile(readProfileImport(JSON.parse(body)))
+						? "profiles/standard"
+						: "profiles/csv",
+					body,
+					session.query_scope,
+				),
 				projectId,
 			);
 			if (current(instance)) setAsset(confirmed);
@@ -496,9 +564,25 @@ export function ProfileIntake({
 					className="lp-button lp-button-secondary lp-focus-target"
 					type="button"
 					disabled={checking || recoveryChecking}
-					onClick={() => setOpen(true)}
+					onClick={() => {
+						setStandard(false);
+						setOpen(true);
+					}}
 				>
 					{__("Import interval data", "linker-tools")}
+				</button>
+				<button
+					className="lp-button lp-button-secondary"
+					type="button"
+					disabled={checking || recoveryChecking}
+					onClick={() => {
+						setAnnual(annualKwh);
+						setStandardZone(timezone ?? "");
+						setStandard(true);
+						setOpen(true);
+					}}
+				>
+					{__("Use a typical load profile", "linker-tools")}
 				</button>
 			</>
 		);
@@ -563,10 +647,17 @@ export function ProfileIntake({
 					</p>
 					<details className="lp-comparison">
 						<summary>{__("Original import settings", "linker-tools")}</summary>
-						<ProfileImportSettings
-							command={readImport(JSON.parse(pending))}
-							locale={locale}
-						/>
+						{isStandardProfile(readProfileImport(JSON.parse(pending))) ? (
+							<p>
+								{__("BDEW/VDEW template · German calendar", "linker-tools")}{" "}
+								{`BDEW ${JSON.parse(pending).edition} · ${JSON.parse(pending).profile} · ${JSON.parse(pending).year} · ${new Intl.NumberFormat(locale).format(JSON.parse(pending).annual_kwh)} kWh · ${JSON.parse(pending).timezone}`}
+							</p>
+						) : (
+							<ProfileImportSettings
+								command={readImport(JSON.parse(pending))}
+								locale={locale}
+							/>
+						)}
 					</details>
 					{!asset && (
 						<button
@@ -583,236 +674,353 @@ export function ProfileIntake({
 				</>
 			) : (
 				<>
-					<fieldset disabled={busy} className="lp-brief-fields">
-						<h3>{__("1 · Preview source columns", "linker-tools")}</h3>
-						<p>
-							{__(
-								"CSV files need UTF-8 encoding and unique column headers. Preview sends the file for a private structure check without saving a project data source.",
-								"linker-tools",
-							)}
-						</p>
-						<div className="grid gap-5 md:grid-cols-2">
-							<label className="lp-field">
-								<span id={id + "-file"}>
-									{__("Source file", "linker-tools")}
-								</span>
-								<div className="lp-file-picker">
-									<span className="lp-file-button" aria-hidden="true">
-										{__("Choose CSV file", "linker-tools")}
-									</span>
-									<span
-										className="lp-file-name"
-										id={id + "-file-name"}
-										aria-live="polite"
-									>
-										{fileName ||
-											(content
-												? __("Recovered source file", "linker-tools")
-												: __("No file selected", "linker-tools"))}
-									</span>
-									<input
-										ref={fileInput}
-										type="file"
-										aria-labelledby={id + "-file"}
-										aria-describedby={id + "-file-name"}
-										accept=".csv,.txt,text/csv,text/plain"
-										onChange={(event) => {
-											void chooseFile(event.currentTarget.files?.[0]);
-										}}
-									/>
-								</div>
-							</label>
-							<label className="lp-field">
-								<span id={id + "-delimiter"}>
-									{__("Column delimiter", "linker-tools")}
-								</span>
-								<select
-									aria-labelledby={id + "-delimiter"}
-									value={delimiter}
-									onChange={(event) => {
-										setDelimiter(event.currentTarget.value);
-										setInspection(null);
-										setFields((previous) => ({
-											...previous,
-											timestamp: "",
-											value: "",
-											end: "",
-											fold: "",
-											endFold: "",
-										}));
-									}}
-								>
-									<option value="">{__("Select…", "linker-tools")}</option>
-									<option value=";">{__("Semicolon", "linker-tools")}</option>
-									<option value=",">{__("Comma", "linker-tools")}</option>
-									<option value={"\t"}>{__("Tab", "linker-tools")}</option>
-									<option value="|">
-										{__("Vertical bar", "linker-tools")}
-									</option>
-								</select>
-							</label>
-						</div>
-						<div className="lp-inline-actions">
-							<button
-								className="lp-button lp-button-secondary"
-								type="button"
-								disabled={!content || !delimiter}
-								onClick={() => {
-									void inspect();
-								}}
-							>
-								{__("Preview columns", "linker-tools")}
-							</button>
-							<button
-								className="lp-text-button"
-								type="button"
-								onClick={() => {
-									feedback.current = "cancel";
-									setContent("");
-									setFileName("");
-									setInspection(null);
-									setOpen(false);
-									setError(null);
-									setCloseBlocked(false);
-								}}
-							>
-								{__("Cancel", "linker-tools")}
-							</button>
-						</div>
-					</fieldset>
-					{inspection && (
-						<>
-							<div
-								className="lp-table-scroll"
-								role="region"
-								aria-label={__("Original file preview", "linker-tools")}
-								tabIndex={0}
-							>
-								<table className="lp-data-table">
-									<caption>
-										{__("Original cells · preview only", "linker-tools")}
-									</caption>
-									<thead>
-										<tr>
-											<th scope="col">
-												{__("Starting file line", "linker-tools")}
-											</th>
-											{inspection.columns.map((column, index) => (
-												<th key={index} scope="col">
-													{column}
-												</th>
-											))}
-										</tr>
-									</thead>
-									<tbody>
-										{inspection.rows.map((row) => (
-											<tr key={row.line}>
-												<th scope="row">{row.line}</th>
-												{row.cells.map((cell, index) => (
-													<td key={index}>{cell}</td>
-												))}
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
+					{standard ? (
+						<fieldset disabled={busy} className="lp-brief-fields">
+							<h3>
+								{__("Annual consumption and daily pattern", "linker-tools")}
+							</h3>
 							<p>
-								{sprintf(
-									__(
-										"Data records: %s. Timestamps, units and values are checked after mapping.",
-										"linker-tools",
-									),
-									new Intl.NumberFormat(locale).format(inspection.record_count),
+								{__(
+									"BDEW/VDEW standard profiles use a German calendar. For other European sites, use them as an explicit template or import local meter data. The preview shows the actual annual total and time zone.",
+									"linker-tools",
 								)}
 							</p>
-							<form
-								onSubmit={(event) => {
-									event.preventDefault();
-									void importSource();
-								}}
-							>
-								<fieldset disabled={busy} className="lp-brief-fields">
-									<h3>{__("2 · Define values and source", "linker-tools")}</h3>
-									<ProfileMapping
-										columns={inspection.columns}
-										fields={fields}
-										locale={locale}
-										onChange={setFields}
-										onValidity={numberValidity}
+							<div className="grid gap-5 md:grid-cols-2">
+								<ScenarioNumber
+									field="annual"
+									label={__("Annual consumption", "linker-tools")}
+									value={annual}
+									unit="kWh"
+									locale={locale}
+									onChange={setAnnual}
+									report={reportStandard}
+								/>
+								<ScenarioNumber
+									field="year"
+									label={__("Profile year", "linker-tools")}
+									value={year}
+									unit=""
+									locale={locale}
+									min={2000}
+									max={2100}
+									integer
+									onChange={setYear}
+									report={reportStandard}
+								/>
+								<label className="lp-field">
+									<span>{__("Typical usage pattern", "linker-tools")}</span>
+									<select
+										value={pattern}
+										onChange={(e) => setPattern(e.currentTarget.value)}
+									>
+										<option value="H0">
+											{__("Household · H0", "linker-tools")}
+										</option>
+										<option value="G0">
+											{__("General business · G0", "linker-tools")}
+										</option>
+										<option value="G1">
+											{__("Business on weekdays · G1", "linker-tools")}
+										</option>
+										<option value="G2">
+											{__("Evening business · G2", "linker-tools")}
+										</option>
+										<option value="G3">
+											{__("Continuous operation · G3", "linker-tools")}
+										</option>
+										<option value="G4">
+											{__("Retail · G4", "linker-tools")}
+										</option>
+										<option value="G5">
+											{__("Bakery · G5", "linker-tools")}
+										</option>
+										<option value="G6">
+											{__("Weekend business · G6", "linker-tools")}
+										</option>
+										<option value="H25">
+											{__("Household · H25 (2025)", "linker-tools")}
+										</option>
+										<option value="G25">
+											{__("Business · G25 (2025)", "linker-tools")}
+										</option>
+										<option value="L25">
+											{__("Agriculture · L25 (2025)", "linker-tools")}
+										</option>
+									</select>
+								</label>
+								<label className="lp-field">
+									<span>{__("Time zone", "linker-tools")}</span>
+									<input
+										value={standardZone}
+										onChange={(e) => setStandardZone(e.currentTarget.value)}
+										placeholder="Europe/Berlin"
 									/>
-									<div className="grid gap-5 md:grid-cols-2">
-										<label className="lp-field">
-											<span id={id + "-source-label"}>
-												{__("Source label", "linker-tools")}
+								</label>
+							</div>
+							<div className="lp-inline-actions">
+								<button
+									type="button"
+									className="lp-button"
+									disabled={!standardValid}
+									onClick={() => void importSource()}
+								>
+									{__("Create and review load profile", "linker-tools")}
+								</button>
+								<button
+									type="button"
+									className="lp-text-button"
+									onClick={() => {
+										feedback.current = "cancel";
+										setOpen(false);
+										setStandard(false);
+										setError(null);
+										setCloseBlocked(false);
+									}}
+								>
+									{__("Cancel", "linker-tools")}
+								</button>
+							</div>
+						</fieldset>
+					) : (
+						<>
+							<fieldset disabled={busy} className="lp-brief-fields">
+								<h3>{__("1 · Preview source columns", "linker-tools")}</h3>
+								<p>
+									{__(
+										"CSV files need UTF-8 encoding and unique column headers. Preview sends the file for a private structure check without saving a project data source.",
+										"linker-tools",
+									)}
+								</p>
+								<div className="grid gap-5 md:grid-cols-2">
+									<label className="lp-field">
+										<span id={id + "-file"}>
+											{__("Source file", "linker-tools")}
+										</span>
+										<div className="lp-file-picker">
+											<span className="lp-file-button" aria-hidden="true">
+												{__("Choose CSV file", "linker-tools")}
+											</span>
+											<span
+												className="lp-file-name"
+												id={id + "-file-name"}
+												aria-live="polite"
+											>
+												{fileName ||
+													(content
+														? __("Recovered source file", "linker-tools")
+														: __("No file selected", "linker-tools"))}
 											</span>
 											<input
-												aria-labelledby={id + "-source-label"}
-												aria-describedby={id + "-source-help"}
-												required
-												maxLength={256}
-												value={label}
-												onChange={(event) =>
-													setLabel(event.currentTarget.value)
-												}
+												ref={fileInput}
+												type="file"
+												aria-labelledby={id + "-file"}
+												aria-describedby={id + "-file-name"}
+												accept=".csv,.txt,text/csv,text/plain"
+												onChange={(event) => {
+													void chooseFile(event.currentTarget.files?.[0]);
+												}}
 											/>
-											<small id={id + "-source-help"}>
-												{__(
-													"This name identifies the source in the project. The original file name is not stored.",
-													"linker-tools",
-												)}
-											</small>
-										</label>
-										<label className="lp-field">
-											<span id={id + "-rights"}>
-												{__(
-													"Source and permission for permanent private storage",
-													"linker-tools",
-												)}
-											</span>
-											<textarea
-												aria-labelledby={id + "-rights"}
-												aria-describedby={id + "-rights-help"}
-												required
-												rows={3}
-												maxLength={4096}
-												value={rights}
-												onChange={(event) =>
-													setRights(event.currentTarget.value)
-												}
-											/>
-											<small id={id + "-rights-help"}>
-												{__(
-													"This records where the data came from and your permission to store it permanently with this private project. Examples include your own meter export or data you are authorised to retain.",
-													"linker-tools",
-												)}
-											</small>
-										</label>
-									</div>
-									<p className="lp-profile-help">
-										{__(
-											"Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved.",
-											"linker-tools",
-										)}
-									</p>
-									<p className="lp-profile-help">
-										{__(
-											"Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps.",
-											"linker-tools",
-										)}
-									</p>
+										</div>
+									</label>
+									<label className="lp-field">
+										<span id={id + "-delimiter"}>
+											{__("Column delimiter", "linker-tools")}
+										</span>
+										<select
+											aria-labelledby={id + "-delimiter"}
+											value={delimiter}
+											onChange={(event) => {
+												setDelimiter(event.currentTarget.value);
+												setInspection(null);
+												setFields((previous) => ({
+													...previous,
+													timestamp: "",
+													value: "",
+													end: "",
+													fold: "",
+													endFold: "",
+												}));
+											}}
+										>
+											<option value="">{__("Select…", "linker-tools")}</option>
+											<option value=";">
+												{__("Semicolon", "linker-tools")}
+											</option>
+											<option value=",">{__("Comma", "linker-tools")}</option>
+											<option value={"\t"}>{__("Tab", "linker-tools")}</option>
+											<option value="|">
+												{__("Vertical bar", "linker-tools")}
+											</option>
+										</select>
+									</label>
+								</div>
+								<div className="lp-inline-actions">
 									<button
-										className="lp-button"
-										disabled={
-											!mappedProfile(fields, delimiter) ||
-											(fields.durationMode === "fixed" && !numberValid) ||
-											!label.trim() ||
-											!rights.trim()
-										}
+										className="lp-button lp-button-secondary"
+										type="button"
+										disabled={!content || !delimiter}
+										onClick={() => {
+											void inspect();
+										}}
 									>
-										{__("Import and review data", "linker-tools")}
+										{__("Preview columns", "linker-tools")}
 									</button>
-								</fieldset>
-							</form>
+									<button
+										className="lp-text-button"
+										type="button"
+										onClick={() => {
+											feedback.current = "cancel";
+											setContent("");
+											setFileName("");
+											setInspection(null);
+											setOpen(false);
+											setError(null);
+											setCloseBlocked(false);
+										}}
+									>
+										{__("Cancel", "linker-tools")}
+									</button>
+								</div>
+							</fieldset>
+							{inspection && (
+								<>
+									<div
+										className="lp-table-scroll"
+										role="region"
+										aria-label={__("Original file preview", "linker-tools")}
+										tabIndex={0}
+									>
+										<table className="lp-data-table">
+											<caption>
+												{__("Original cells · preview only", "linker-tools")}
+											</caption>
+											<thead>
+												<tr>
+													<th scope="col">
+														{__("Starting file line", "linker-tools")}
+													</th>
+													{inspection.columns.map((column, index) => (
+														<th key={index} scope="col">
+															{column}
+														</th>
+													))}
+												</tr>
+											</thead>
+											<tbody>
+												{inspection.rows.map((row) => (
+													<tr key={row.line}>
+														<th scope="row">{row.line}</th>
+														{row.cells.map((cell, index) => (
+															<td key={index}>{cell}</td>
+														))}
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
+									<p>
+										{sprintf(
+											__(
+												"Data records: %s. Timestamps, units and values are checked after mapping.",
+												"linker-tools",
+											),
+											new Intl.NumberFormat(locale).format(
+												inspection.record_count,
+											),
+										)}
+									</p>
+									<form
+										onSubmit={(event) => {
+											event.preventDefault();
+											void importSource();
+										}}
+									>
+										<fieldset disabled={busy} className="lp-brief-fields">
+											<h3>
+												{__("2 · Define values and source", "linker-tools")}
+											</h3>
+											<ProfileMapping
+												columns={inspection.columns}
+												fields={fields}
+												locale={locale}
+												onChange={setFields}
+												onValidity={numberValidity}
+											/>
+											<div className="grid gap-5 md:grid-cols-2">
+												<label className="lp-field">
+													<span id={id + "-source-label"}>
+														{__("Source label", "linker-tools")}
+													</span>
+													<input
+														aria-labelledby={id + "-source-label"}
+														aria-describedby={id + "-source-help"}
+														required
+														maxLength={256}
+														value={label}
+														onChange={(event) =>
+															setLabel(event.currentTarget.value)
+														}
+													/>
+													<small id={id + "-source-help"}>
+														{__(
+															"This name identifies the source in the project. The original file name is not stored.",
+															"linker-tools",
+														)}
+													</small>
+												</label>
+												<label className="lp-field">
+													<span id={id + "-rights"}>
+														{__(
+															"Source and permission for permanent private storage",
+															"linker-tools",
+														)}
+													</span>
+													<textarea
+														aria-labelledby={id + "-rights"}
+														aria-describedby={id + "-rights-help"}
+														required
+														rows={3}
+														maxLength={4096}
+														value={rights}
+														onChange={(event) =>
+															setRights(event.currentTarget.value)
+														}
+													/>
+													<small id={id + "-rights-help"}>
+														{__(
+															"This records where the data came from and your permission to store it permanently with this private project. Examples include your own meter export or data you are authorised to retain.",
+															"linker-tools",
+														)}
+													</small>
+												</label>
+											</div>
+											<p className="lp-profile-help">
+												{__(
+													"Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved.",
+													"linker-tools",
+												)}
+											</p>
+											<p className="lp-profile-help">
+												{__(
+													"Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps.",
+													"linker-tools",
+												)}
+											</p>
+											<button
+												className="lp-button"
+												disabled={
+													!mappedProfile(fields, delimiter) ||
+													(fields.durationMode === "fixed" && !numberValid) ||
+													!label.trim() ||
+													!rights.trim()
+												}
+											>
+												{__("Import and review data", "linker-tools")}
+											</button>
+										</fieldset>
+									</form>
+								</>
+							)}
 						</>
 					)}
 				</>

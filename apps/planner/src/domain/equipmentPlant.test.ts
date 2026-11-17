@@ -252,6 +252,40 @@ test("plant qualification rejects crossed ownership and inconsistent product rev
 	}
 });
 
+test("a controller use travels with its group and needs its declared controller", () => {
+	const retained = {
+		...configured(),
+		parallel_groups: configured().parallel_groups.map((g) => ({
+			...g,
+			controller_use: "retain" as const,
+		})),
+	};
+	const draft = readPlantDraft(plantInputs(start(), retained));
+	assert.equal(draft.parallel_groups[0]!.controller_use, "retain");
+	const compiled = compilePlant(retained, products);
+	assert.equal(compiled.parallel_groups[0]!.controller_use, "retain");
+	assert.equal(
+		readEquipmentPlant(structuredClone(compiled)).parallel_groups[0]!
+			.controller_use,
+		"retain",
+	);
+	// A retained or replaced controller without its declared product is an
+	// incomplete draft and an incomplete prepared plant alike.
+	const controllerless = retained.parallel_groups.map((g) => ({
+		...g,
+		controller_product_id: null,
+	}));
+	assert.throws(() =>
+		readPlantDraft(
+			plantInputs(start(), { ...retained, parallel_groups: controllerless }),
+		),
+	);
+	const candidate = structuredClone(compiled);
+	candidate.parallel_groups[0]!.controller_product_id = null;
+	candidate.parallel_groups[0]!.controller_revision = null;
+	assert.throws(() => readEquipmentPlant(candidate));
+});
+
 test("factory counts are applied on preparation without editing saved history or multiplying sales units", () => {
 	const raw = configured();
 	const ready = factoryPlant(raw, {
@@ -341,6 +375,46 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	assert.equal(
 		readPlantDraft(adopted).parallel_groups[0]!.control_network,
 		"lan",
+	);
+	const retained = {
+		...complete,
+		units: complete.units.map((unit) => ({
+			...unit,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(unit.inputs),
+					equipment_use: { inverter: "retain", battery: "new" },
+				},
+			},
+		})),
+	};
+	const retainedInputs = plantInputs(original, retained);
+	const kept = adoptPlantCandidate(retainedInputs, hardware, products, choice);
+	assert.deepEqual(
+		readEquipmentPlant(kept.equipment_plant).units[0]!.selection.equipment_use,
+		{ inverter: "retain", battery: "new" },
+	);
+	assert.equal(
+		kept.equipment_candidate,
+		undefined,
+		"changed procurement intent needs its own assessment",
+	);
+	const alternative = structuredClone(hardware);
+	alternative.units[0]!.selection.inverter_product_id = 3;
+	alternative.units[0]!.selection.product_revisions = { "3": "3".repeat(64) };
+	assert.throws(
+		() =>
+			adoptPlantCandidate(
+				retainedInputs,
+				alternative,
+				[
+					...products,
+					{ ...products[0]!, id: 3, product_revision: "3".repeat(64) },
+				],
+				choice,
+			),
+		(error: unknown) =>
+			error instanceof Error && error.message === "retained_equipment_changed",
 	);
 	const networkChanged = readPlantDraft(current);
 	networkChanged.parallel_groups[0]!.control_network = "rs485";

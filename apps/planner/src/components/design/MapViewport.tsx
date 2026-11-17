@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { Map as MapLibreMap, AttributionControl, Marker } from "maplibre-gl";
 import type {
+	FilterSpecification,
 	GeoJSONSource,
 	MapMouseEvent,
 	StyleSpecification,
@@ -48,6 +49,14 @@ const IMAGERY_LAYER = "linker-site-imagery";
 // The mapped building at the site, drawn dashed until the visitor adopts it.
 const SITE_OUTLINE_SOURCE = "linker-site-outline";
 const SITE_OUTLINE_LAYER = "linker-site-outline";
+
+function selectedFilter(selected: string | null): FilterSpecification {
+	return [
+		"any",
+		["==", ["get", "object_id"], selected ?? ""],
+		["==", ["get", "array_id"], selected ?? ""],
+	];
+}
 
 function aerialOriginsOf(mosaic: PlaceImagery | null | undefined): string[] {
 	return (mosaic?.tiles ?? [])
@@ -147,7 +156,7 @@ export default function MapViewport({
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
 		releaseExternal = useRef<(() => void) | null>(null),
-		[external, setExternal] = useState(true),
+		[external, setExternal] = useState(false),
 		[attempt, setAttempt] = useState(0),
 		[status, setStatus] = useState<"loading" | "ready" | "failed">("loading"),
 		[readyMap, setReadyMap] = useState<MapLibreMap | null>(null),
@@ -232,11 +241,27 @@ export default function MapViewport({
 			releaseExternal.current?.();
 			setExternal(false);
 		};
+		globalThis.document.addEventListener(
+			"cookieyes_consent_update",
+			stopExternal,
+		);
+		globalThis.document.addEventListener(
+			"wp_listen_for_consent_change",
+			stopExternal,
+		);
 		window.addEventListener("pagehide", stopExternal);
 		return () => {
+			globalThis.document.removeEventListener(
+				"cookieyes_consent_update",
+				stopExternal,
+			);
+			globalThis.document.removeEventListener(
+				"wp_listen_for_consent_change",
+				stopExternal,
+			);
 			window.removeEventListener("pagehide", stopExternal);
 		};
-	}, [projection.view !== null]);
+	}, []);
 
 	// Without a design anchor the geometry cannot be projected, but the site's
 	// own position is enough to show the aerial mosaic and let the visitor draw:
@@ -443,7 +468,8 @@ export default function MapViewport({
 									kind === "roof" ? 0.25 : 0.85,
 									0.2,
 								],
-								"fill-outline-color": colours[kind],
+								"fill-outline-color":
+									kind === "module" ? colours.background : colours[kind],
 							},
 						});
 					}
@@ -451,7 +477,7 @@ export default function MapViewport({
 						id: SELECTED,
 						type: "line",
 						source: SOURCE,
-						filter: ["==", ["get", "object_id"], latest.current.selected ?? ""],
+						filter: selectedFilter(latest.current.selected),
 						paint: { "line-color": colours.selected, "line-width": 3 },
 					});
 				}
@@ -758,12 +784,12 @@ export default function MapViewport({
 				features: [],
 			},
 		);
-		map.setFilter(SELECTED, ["==", ["get", "object_id"], selected ?? ""]);
+		map.setFilter(SELECTED, selectedFilter(selected));
 	}, [projection]);
 	useEffect(() => {
 		const map = mapRef.current;
 		if (map?.getLayer(SELECTED))
-			map.setFilter(SELECTED, ["==", ["get", "object_id"], selected ?? ""]);
+			map.setFilter(SELECTED, selectedFilter(selected));
 	}, [selected]);
 
 	if (!available)
@@ -813,6 +839,23 @@ export default function MapViewport({
 				role="group"
 				aria-label={__("Map controls", "linker-tools")}
 			>
+				<button
+					type="button"
+					className="lp-button lp-button-secondary"
+					aria-pressed={external}
+					onClick={() => {
+						if (external) releaseExternal.current?.();
+						setExternal(!external);
+					}}
+				>
+					{imagery
+						? external
+							? __("Hide aerial map", "linker-tools")
+							: __("Show aerial map", "linker-tools")
+						: external
+							? __("Hide street map", "linker-tools")
+							: __("Load street map", "linker-tools")}
+				</button>
 				{placement && (
 					<>
 						<p className="lp-profile-help">
@@ -939,18 +982,6 @@ export default function MapViewport({
 							)}
 				</p>
 				<div className="lp-inline-actions">
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						onClick={() => {
-							if (external) releaseExternal.current?.();
-							setExternal(!external);
-						}}
-					>
-						{external
-							? __("Hide aerial map", "linker-tools")
-							: __("Show aerial map", "linker-tools")}
-					</button>
 					{imagery ? (
 						<a
 							href={imagery.licence_url}

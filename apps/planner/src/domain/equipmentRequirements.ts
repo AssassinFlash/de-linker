@@ -12,11 +12,22 @@ export function readEquipmentRequirements(value: unknown): JsonObject {
 		throw new ApiError(422, "equipment_requirements_incomplete");
 	return value;
 }
-export function compileEquipmentRequirements(setup: JsonObject): JsonObject {
+export function compileEquipmentRequirements(
+	setup: JsonObject,
+	declared: JsonObject = {},
+): JsonObject {
+	// Application belongs to project demand, not the hardware selection. Keep it
+	// when preparing edited hardware fields from a saved search.
+	const requirements: JsonObject = {
+		...setup,
+		...(declared.application !== undefined
+			? { application: declared.application }
+			: {}),
+	};
 	return readEquipmentRequirements(
 		Object.fromEntries(
 			Object.keys(schema.properties)
-				.map((key) => [key, setup[key]])
+				.map((key) => [key, requirements[key]])
 				.filter(([, value]) => value !== undefined),
 		),
 	);

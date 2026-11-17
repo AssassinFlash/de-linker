@@ -7,6 +7,8 @@ import { readTraceWindow } from "./traceWindow.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" };
+import constantAcRunJson from "../../tests/fixtures/constant-ac-energy-run.json" with { type: "json" };
+import constantPlantAcRunJson from "../../tests/fixtures/constant-plant-ac-energy-run.json" with { type: "json" };
 import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
 import { readRun, readRunPage } from "./planningProtocol.ts";
 import {
@@ -394,6 +396,146 @@ test("actual managed two-hour result retains frozen identity, source origins and
 		"not_assessed",
 	);
 });
+
+test("saved AC run accepts declared auxiliary demand and PV disabled for the entire schedule", () => {
+	const run = readRun(
+		constantAcRunJson,
+		constantAcRunJson.project_id,
+		constantAcRunJson.id,
+	);
+	assert.equal(run.state, "succeeded");
+	assert.deepEqual(run.result, constantAcRunJson.result);
+});
+
+function withAcConstants(
+	value: unknown,
+	roles: readonly ("pv_available_ac" | "aux_ac")[] = [
+		"pv_available_ac",
+		"aux_ac",
+	],
+): MutableObject {
+	// Invalid DC reply variant: AC declarations cannot replace its uploaded source.
+	const run = readObject(structuredClone(value)),
+		output = result(run),
+		pinned = readObject(output.pinned_assets),
+		periods = readObject(output.profile_interpretation)
+			.operating_periods as readonly JsonObject[],
+		constants =
+			constantAcRunJson.result.profile_interpretation.operating_periods[0]!
+				.profiles;
+	for (const role of roles) {
+		delete pinned[role + ".raw"];
+		delete pinned[role + ".metadata"];
+		for (const period of periods)
+			readObject(period.profiles)[role] = structuredClone(constants[role]);
+	}
+	readObject(readObject(run.manifest).context).assets = { ...pinned };
+	return run;
+}
+
+test("native plant AC run accepts declared constants with zero PV generation", () => {
+	const run = readRun(
+		constantPlantAcRunJson,
+		constantPlantAcRunJson.project_id,
+	);
+	assert.equal(run.state, "succeeded");
+	assert.deepEqual(run.result, constantPlantAcRunJson.result);
+	assert.equal(readObject(run.result!.metrics).pv_generated_ac_kwh, 0);
+});
+
+for (const native of [constantAcRunJson, constantPlantAcRunJson]) {
+	test(`AC constants require documented modelled provenance: ${native.result.kind}`, () => {
+		for (const role of ["pv_available_ac", "aux_ac"] as const) {
+			for (const mutate of [
+				(source: MutableObject) => {
+					source.origin = "measured";
+				},
+				(source: MutableObject) => {
+					source.timezone = "Europe/Berlin";
+				},
+				(source: MutableObject) => {
+					delete source.raw_sha256;
+				},
+				(source: MutableObject) => {
+					source.raw_sha256 = "invalid";
+				},
+				(source: MutableObject) => {
+					delete source.details;
+				},
+				(source: MutableObject) => {
+					readObject(source.details).basis = "assumed_zero";
+				},
+				(source: MutableObject) => {
+					delete readObject(source.details).power_kw;
+				},
+				(source: MutableObject) => {
+					readObject(source.details).power_kw = -1;
+				},
+				(source: MutableObject) => {
+					readObject(source.details).power_kw = "0";
+				},
+				(source: MutableObject) => {
+					readObject(source.details).power_kw = NaN;
+				},
+				(source: MutableObject) => {
+					readObject(source.details).power_kw = Infinity;
+				},
+				(source: MutableObject) => {
+					readObject(source.details).power_kw =
+						role === "pv_available_ac" ? 1 : -0.1;
+				},
+			]) {
+				const input = readObject(structuredClone(native)),
+					periods = readObject(result(input).profile_interpretation)
+						.operating_periods as readonly JsonObject[],
+					source = readObject(
+						readObject(readObject(periods.at(-1)!.profiles)[role]).source,
+					);
+				mutate(source);
+				assert.throws(
+					() => readRun(input, native.project_id),
+					(error: unknown) => error instanceof ApiError && error.status === 502,
+				);
+			}
+		}
+	});
+}
+
+for (const native of [
+	runJson,
+	roofRunJson,
+	plantAcRunJson.run,
+	dcRunJson.run,
+	dcPlantRunJson.run,
+]) {
+	test(`uploaded sources retain their raw and metadata bindings: ${native.result.kind}`, () => {
+		const roles = Object.keys(native.result.pinned_assets)
+			.filter((key) => key.endsWith(".raw"))
+			.map((key) => key.slice(0, -4));
+		for (const role of roles)
+			for (const field of role === "pv_reference"
+				? ["raw"]
+				: ["raw", "metadata"]) {
+				const input = readObject(structuredClone(native)),
+					pinned = readObject(result(input).pinned_assets);
+				delete pinned[role + "." + field];
+				readObject(readObject(input.manifest).context).assets = { ...pinned };
+				assert.throws(
+					() => readRun(input, native.project_id),
+					(error: unknown) => error instanceof ApiError && error.status === 502,
+				);
+			}
+	});
+}
+
+for (const native of [dcRunJson.run, dcPlantRunJson.run])
+	test(`DC replay cannot substitute an AC constant declaration: ${native.result.kind}`, () => {
+		const input = withAcConstants(native, ["aux_ac"]);
+		assert.throws(
+			() => readRun(input, native.project_id),
+			(error: unknown) => error instanceof ApiError && error.status === 502,
+		);
+	});
 
 test("native roof result binds the generated series to model inputs and retained weather", () => {
 	const run = readRun(roofRunJson, roofRunJson.project_id, roofRunJson.id);

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from .assets import Asset
@@ -57,7 +57,7 @@ def frozen_energy_execution(
     lease: Lease,
     *,
     runtime_sha256: str,
-    models: Mapping[str, str],
+    models: Mapping[str, str] | Callable[[Object], Mapping[str, str]],
     parameters: Object,
 ) -> FrozenEnergyExecution:
     manifest_hash = lease.request.get("manifest_sha256")
@@ -65,11 +65,11 @@ def frozen_energy_execution(
         raise VersionUnavailable("evaluation has no pinned manifest")
     manifest = frozen_manifest(workspace, lease, manifest_hash)
     context = manifest.get("context")
-    if (
-        not isinstance(context, dict)
-        or context.get("code_sha256") != runtime_sha256
-        or context.get("models") != models
-    ):
+    if not isinstance(context, dict) or context.get("code_sha256") != runtime_sha256:
+        raise VersionUnavailable("this worker cannot execute the pinned runtime/models")
+    inputs = workspace.pinned_inputs(manifest)
+    expected_models = models(inputs) if callable(models) else models
+    if context.get("models") != expected_models:
         raise VersionUnavailable("this worker cannot execute the pinned runtime/models")
     if context.get("parameters") != parameters:
         raise VersionUnavailable(
@@ -84,7 +84,7 @@ def frozen_energy_execution(
         workspace,
         manifest_hash,
         manifest,
-        workspace.pinned_inputs(manifest),
+        inputs,
         pinned,
         runtime_sha256,
     )

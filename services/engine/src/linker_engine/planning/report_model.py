@@ -924,6 +924,37 @@ def build_report(source: Object) -> Report:
             if isinstance(schedule, list) and schedule
             else [row("period", None)]
         )
+        storage_only = False
+        if isinstance(scenario, dict) and not (dc or joint_dc):
+            storage_only = scenario["pv_available_asset_id"] is None
+            constant_aux = (
+                scenario["aux_ac_asset_id"] is None
+                and scenario.get("aux_ac_kw") is not None
+            )
+            # Keep legacy profile-based self-consumption reports unchanged.
+            if (
+                storage_only
+                or constant_aux
+                or scenario["controller"]
+                in {
+                    "peak_shaving_with_reserve_v1",
+                    "proportional_peak_shaving_v1",
+                }
+            ):
+                energy_rows.append(
+                    row("energy_controller", text(str(scenario["controller"]), locale))
+                )
+            if storage_only:
+                energy_rows.append(
+                    row("energy_pv_source", text("energy_no_pv", locale))
+                )
+            if constant_aux:
+                energy_rows.append(
+                    row(
+                        "energy_constant_aux",
+                        number(scenario["aux_ac_kw"], locale, "kW"),
+                    )
+                )
         energy_rows.extend(
             [
                 row(label, number(metrics.get(key), locale, "kWh"))
@@ -987,6 +1018,8 @@ def build_report(source: Object) -> Report:
                     text(
                         "scenario_dc_plant_scope"
                         if joint_dc
+                        else "scenario_storage_plant_scope"
+                        if joint and storage_only
                         else "scenario_plant_scope"
                         if joint
                         else "scenario_dc_scope"
@@ -1001,6 +1034,8 @@ def build_report(source: Object) -> Report:
                         text("scenario_plant_limits", locale),
                     ]
                     if joint_dc
+                    else [text("scenario_plant_limits", locale)]
+                    if joint and storage_only
                     else []
                 )
                 + (

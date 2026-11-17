@@ -14,6 +14,9 @@
     "installation_conductor_manufacturer_v1",
     "installation_mounting_quantities_v1",
     "installation_protection_evidence_v1",
-    "geometry_image_calibration_v1"
+    "geometry_image_calibration_v1",
+    "storage_only_brief_v1",
+    "equipment_use_v1",
+    "energy_operating_modes_v1"
   ]
 }

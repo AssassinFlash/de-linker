@@ -302,7 +302,59 @@ for (const hash of [
 		);
 	});
 
-test("Journal workspaces show one task while retaining real input nodes, values and undo history", async (t) => {
+test("a storage-only project continues from project details to energy, system and report without a roof step", async (t) => {
+	await workspaceFixture(t, "available");
+	await act(async () =>
+		document.querySelector('nav a[href="#lp-site"]').click(),
+	);
+	const plannedSystem = document.querySelector(
+		'select[aria-labelledby$="-system"]',
+	);
+	await act(async () => {
+		plannedSystem.value = "storage_only";
+		plannedSystem.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(document.querySelector('nav a[href="#lp-design"]').hidden, true);
+	const next = () => document.querySelector(".lp-project-next button");
+	assert.match(next().textContent, /Continue to energy use/);
+	await act(async () => next().click());
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"energy",
+	);
+	assert.equal(
+		new URL(location.href).searchParams.get("energy_view"),
+		"scenario",
+	);
+	await act(async () => next().click());
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"equipment",
+	);
+	const installation = [
+		...document.querySelectorAll('a[href="#lp-installation"]'),
+	].find((link) => !link.closest("[hidden]"));
+	assert.ok(installation, "system exposes installation details");
+	await act(async () => installation.click());
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"installation",
+	);
+	await act(async () =>
+		document.querySelector('nav a[href="#lp-equipment"]').click(),
+	);
+	await act(async () => next().click());
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"calculations",
+	);
+	assert.equal(
+		new URL(location.href).searchParams.get("energy_view"),
+		"reports",
+	);
+});
+
+test("project sections retain input nodes, values and undo history", async (t) => {
 	const app = await workspaceFixture(t, "available");
 	const nav = (label) =>
 		[...document.querySelectorAll('nav[aria-label="Project sections"] a')].find(
@@ -314,16 +366,16 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 	);
 	assert.equal(document.querySelector("#lp-site").hidden, true);
 	assert.equal(document.querySelector(".lp-design-panel").hidden, true);
-	await act(async () => nav("Energy inputs").click());
+	await act(async () => nav("Energy use").click());
 	assert.equal(document.querySelector("#lp-load").hidden, false);
-	assert.equal(nav("Energy inputs").getAttribute("aria-current"), "page");
+	assert.equal(nav("Energy use").getAttribute("aria-current"), "page");
 	const annual = app.annual();
 	await enter(annual, "25");
-	await act(async () => nav("Roof design").click());
+	await act(async () => nav("Solar").click());
 	assert.equal(document.querySelector("#lp-load").hidden, true);
 	assert.equal(document.querySelector(".lp-design-panel").hidden, false);
 	assert.equal(annual, app.annual());
-	await act(async () => nav("Energy inputs").click());
+	await act(async () => nav("Energy use").click());
 	assert.equal(app.annual().value, "25");
 	await act(async () =>
 		document.querySelector('button[aria-label="Undo"]').click(),
@@ -338,7 +390,7 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 	});
 	assert.equal(document.querySelector(".lp-project").dataset.workspace, "site");
 	assert.equal(document.activeElement.id, "lp-brief-use");
-	await act(async () => nav("Energy inputs").click());
+	await act(async () => nav("Energy use").click());
 	await enter(app.annual(), "1,");
 	await act(async () => {
 		mobileSelect.value = "site";
@@ -360,7 +412,7 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 				new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
 			),
 	);
-	await act(async () => nav("Roof design").click());
+	await act(async () => nav("Solar").click());
 	await act(async () =>
 		[...document.querySelectorAll("button")]
 			.find((button) => button.textContent.trim() === "Add roof face")
@@ -374,7 +426,7 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 		!document.body.textContent.includes("Correct the highlighted input"),
 	);
 	await act(async () => {
-		mobileSelect.value = "overview";
+		mobileSelect.value = "site";
 		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	assert.equal(mobileSelect.value, "design");

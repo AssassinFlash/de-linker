@@ -2,7 +2,7 @@ import type { Draft, SaveIntent } from "../domain/draft.ts";
 import { isProjectInputContract, sameJson } from "../domain/draft.ts";
 import type { JsonObject, Project } from "./protocol.ts";
 import { readObject, readProject } from "./readProtocol.ts";
-import { readImport } from "../domain/profiles.ts";
+import { readProfileImport, isStandardProfile } from "../domain/profiles.ts";
 
 interface StoredDraft {
 	schema_version: 1;
@@ -489,7 +489,7 @@ function validateImport(
 ): Omit<ProfileImportIntent, "body" | "createdAt"> {
 	if (new TextEncoder().encode(body).length > MAX_IMPORT_BYTES)
 		throw new Error("recovery_storage_limit");
-	const command = readImport(JSON.parse(body));
+	const command = readProfileImport(JSON.parse(body));
 	if (
 		!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(
 			command.key,
@@ -499,7 +499,9 @@ function validateImport(
 	return {
 		key: command.key.toLowerCase(),
 		projectId: command.project_id,
-		label: command.source_label,
+		label: isStandardProfile(command)
+			? `BDEW ${command.profile} · ${command.year}`
+			: command.source_label,
 	};
 }
 function scanProfileImports(

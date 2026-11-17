@@ -40,6 +40,7 @@ const savedRequirements = {
 	pv_dc_kw: 200,
 	required_usable_kwh: 61.4,
 	required_discharge_ac_kw: 100,
+	application: "commercial",
 };
 const savedSetup = {
 	schema_version: 1,
@@ -371,12 +372,46 @@ async function untilRun(predicate) {
 	throw new Error("Expected run state was not reached");
 }
 
-test("equipment search results appear without a manual refresh", async (t) => {
+test("storage-only equipment keeps known kW/kWh requirements without PV fields in single and multiple systems", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const app = await equipmentApp(t, {
+		projectId: "1".repeat(32),
+		hash: "#lp-equipment",
+		inputs: {
+			brief: { ...emptyBrief(), system_scope: "storage_only" },
+			equipment_setup: { ...savedSetup, pv_dc_kw: 0 },
+			equipment_requirements: { ...savedRequirements, pv_dc_kw: 0 },
+		},
+	});
+	await untilRun(
+		() =>
+			app.button("Find equipment combinations") &&
+			!app.button("Find equipment combinations").disabled,
+	);
+	assert.equal(app.fieldInput("PV array"), undefined);
+	assert.equal(app.fieldInput("Required usable energy").value, "61.4");
+	await act(async () => app.button("Multiple systems").click());
+	await until(() => app.button("Add system"));
+	assert.equal(app.fieldInput("Total PV nameplate rating"), undefined);
+	assert.equal(app.fieldInput("Total required usable energy").value, "61.4");
+	await act(async () => app.button("Add system").click());
+	assert.equal(
+		[...document.querySelectorAll("button")].filter(
+			(b) => b.textContent === "Remove system",
+		).length,
+		3,
+	);
+});
+
+test("equipment search keeps the declared application and shows results without a manual refresh", async (t) => {
 	const app = await equipmentApp(t, {
 		projectId: "1".repeat(32),
 		inputs: {
 			equipment_setup: savedSetup,
-			equipment_requirements: savedRequirements,
+			equipment_requirements: {
+				...savedRequirements,
+				application: "commercial",
+			},
 		},
 		hash: "#lp-equipment",
 	});

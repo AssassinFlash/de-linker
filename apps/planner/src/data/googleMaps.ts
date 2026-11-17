@@ -107,10 +107,15 @@ export function loadGoogleMaps(apiKey: string): Promise<GoogleMapsApi> {
 	loadedKey = apiKey;
 	loadingPromise = new Promise<GoogleMapsApi>((resolve, reject) => {
 		let settled = false;
+		// A script whose load/error already fired never fires either again, so a
+		// failed request must remove its element: the next call appends a fresh
+		// script instead of re-arming listeners on dead events.
+		let script: HTMLScriptElement | null = null;
 		const fail = (reason: string) => {
 			if (settled) return;
 			settled = true;
 			clearTimeout(timer);
+			script?.remove();
 			loadingPromise = null;
 			reject(new Error(reason));
 		};
@@ -133,13 +138,14 @@ export function loadGoogleMaps(apiKey: string): Promise<GoogleMapsApi> {
 			'script[data-linker-google-maps="1"]',
 		);
 		if (prior) {
+			script = prior;
 			prior.addEventListener("load", succeed, { once: true });
 			prior.addEventListener("error", () => fail("google_maps_load_error"), {
 				once: true,
 			});
 			return;
 		}
-		const script = document.createElement("script");
+		script = document.createElement("script");
 		script.async = true;
 		script.defer = true;
 		script.dataset.linkerGoogleMaps = "1";

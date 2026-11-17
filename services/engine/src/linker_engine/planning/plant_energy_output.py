@@ -105,7 +105,7 @@ def flow_document(flow: PlantFlow) -> Object:
     )
 
 
-def metrics(flows: tuple[PlantFlow, ...]) -> Object:
+def metrics(flows: tuple[PlantFlow, ...], *, controller: str) -> Object:
     if not flows:
         raise InvalidInput("joint metrics require a nonempty horizon")
     load = math.fsum(f.frame.site.load_kw * f.frame.site.interval.hours for f in flows)
@@ -210,7 +210,7 @@ def metrics(flows: tuple[PlantFlow, ...]) -> Object:
                 "source_accounting": "proportional_mixing_in_each_bank_and_at_common_ac_bus; grid_and_unknown_are_not_solar",
                 "solar_autarky": "PV-origin energy delivered to whole-site load / whole-site load demand",
                 "pv_input_self_use": "new AC PV delivered directly to load, auxiliaries or storage / new AC PV generation after curtailment",
-                "control": "proportional_available_power_self_consumption_v1; no forecast or optimality claim",
+                "control": controller + "; no forecast or optimality claim",
             },
         },
     )

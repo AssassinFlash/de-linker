@@ -170,6 +170,7 @@
           "enum": [
             "new_pv_storage",
             "storage_addition",
+            "storage_only",
             "pv_only"
           ],
           "type": "string"

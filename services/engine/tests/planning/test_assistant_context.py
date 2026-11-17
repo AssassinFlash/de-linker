@@ -794,9 +794,13 @@ def test_report_omits_comparison_location_and_private_note(
             },
         },
         "energy_scenario": {
+            "pv_available_asset_id": "a" * 32,
+            "aux_ac_asset_id": "b" * 32,
+            "aux_ac_kw": None,
+            "controller": "self_consumption_with_reserve_v1",
             "schedule": [
                 {"start_utc": "2023-06-16T09:00:00Z", "end_utc": "2023-06-16T11:00:00Z"}
-            ]
+            ],
         },
         "pvgis_roof_ac_references": [
             {

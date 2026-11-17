@@ -32,6 +32,7 @@ export function ProjectOverview({
 	) => void;
 	installation: InstallationInputs;
 }) {
+	const hasSolar = brief.system_scope !== "storage_only";
 	const poses = useMemo(() => panelPoses(geometry), [geometry]),
 		summary = useMemo(() => moduleSummary(geometry), [geometry]),
 		roof = geometry.roofs[0],
@@ -84,12 +85,12 @@ export function ProjectOverview({
 								: __("Basis not specified", "linker-tools")}
 					</small>
 				</div>
-				<div>
+				<div hidden={!hasSolar}>
 					<dt>{__("Included modules", "linker-tools")}</dt>
 					<dd>{geometry.arrays.length ? number(summary.count) : "—"}</dd>
 					<small>{__("Across the current roof layouts", "linker-tools")}</small>
 				</div>
-				<div>
+				<div hidden={!hasSolar}>
 					<dt>{__("Declared DC nameplate power", "linker-tools")}</dt>
 					<dd>
 						{geometry.arrays.length ? (
@@ -115,8 +116,8 @@ export function ProjectOverview({
 					</small>
 				</section>
 			)}
-			<section className="lp-scenario-block">
-				<h3>{__("Installation routing", "linker-tools")}</h3>
+			<details className="lp-scenario-block">
+				<summary>{__("Installation routing", "linker-tools")}</summary>
 				<dl className="lp-overview-metrics">
 					<div>
 						<dt>
@@ -135,9 +136,9 @@ export function ProjectOverview({
 				>
 					{__("Installation routing", "linker-tools")}
 				</button>
-			</section>
-			<div className="lp-overview-work">
-				<div className="lp-overview-preview">
+			</details>
+			<div className="lp-overview-work" data-solar={hasSolar}>
+				<div className="lp-overview-preview" hidden={!hasSolar}>
 					{roof ? (
 						<>
 							<div className="lp-overview-preview-title">
@@ -206,7 +207,11 @@ export function ProjectOverview({
 						</span>
 						<Icon name="arrow" />
 					</button>
-					<button type="button" onClick={() => choose("design")}>
+					<button
+						hidden={!hasSolar}
+						type="button"
+						onClick={() => choose("design")}
+					>
 						<Icon name="layers" />
 						<span>
 							<strong>{__("Roof design", "linker-tools")}</strong>

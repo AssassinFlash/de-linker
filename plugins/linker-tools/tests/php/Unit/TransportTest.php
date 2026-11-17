@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Unit;
 
+use Linker\Tools\Planner\Admission;
 use Linker\Tools\Planner\Principal;
 use Linker\Tools\Planner\SeriesDownload;
 use Linker\Tools\Planner\Transport;
@@ -89,6 +90,32 @@ final class TransportTest extends TestCase {
 			self::assertSame( $expected, $refusal->get_error_code(), $engine_code );
 			self::assertSame( 409, $refusal->get_error_data()['status'], $engine_code );
 		}
+	}
+
+	/** A rejected owned receipt lookup must not create a standard-profile asset. */
+	public function test_standard_profile_refusal_does_not_bypass_write_admission(): void {
+		$writes    = 0;
+		$transport = new Transport(
+			static function ( string $url ) use ( &$writes ): array {
+				if ( 'https://engine.test/operations/replay/profiles/standard' === $url ) {
+					return array(
+						'status' => 422,
+						'body'   => '{"error":{"code":"invalid_input"}}',
+						'type'   => 'application/json',
+					);
+				}
+				++$writes;
+				return array(
+					'status' => 200,
+					'body'   => '{"schema_version":1}',
+					'type'   => 'application/json',
+				);
+			}
+		);
+		$reply     = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:1' ), 'profiles/standard', array(), '{}', $transport );
+		$this->assertIsArray( $reply );
+		$this->assertSame( 422, $reply['status'] );
+		$this->assertSame( 0, $writes );
 	}
 
 	/** An unreadable or unexpected body still yields the generic status code. */

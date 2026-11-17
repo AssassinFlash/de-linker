@@ -316,6 +316,12 @@ def numerical_key(workspace: Workspace, side: EnergyComparisonSide) -> str:
 
 
 def _profile_key(side: EnergyComparisonSide, role: str) -> Json:
+    if (
+        role == "aux_ac"
+        and isinstance(side.scenario, (EnergyInputs, PlantEnergyInputs))
+        and side.scenario.aux_ac_kw is not None
+    ):
+        return {"constant_ac_auxiliary_kw": side.scenario.aux_ac_kw}
     return {
         key: side.pinned.get(f"{role}.{key}") for key in ("raw", "metadata", "timezone")
     }
@@ -369,6 +375,8 @@ def _weather_key(
             **({"opaque": True} if opaque else {}),
         }
     role = "pv_available_dc" if side.dc else "pv_available_ac"
+    if side.scenario.pv_available_asset_id is None:
+        return {"pv_boundary": "storage_only_no_pv"}
     retained = _retained_weather_key(workspace, side, role, documents)
     if retained is not None:
         return {"retained_weather_sha256": retained}

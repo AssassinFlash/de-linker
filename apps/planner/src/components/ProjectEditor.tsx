@@ -59,7 +59,6 @@ import { replacePlannerLocation } from "../data/plannerLocation.ts";
 import { useGenieContext } from "../data/useGenieContext.ts";
 import { InstallationEditor } from "./installation/InstallationEditor.tsx";
 import { readInstallation } from "../domain/installation.ts";
-import { QuickStart } from "./QuickStart.tsx";
 
 type ProjectWorkspace =
 	| "overview"
@@ -123,7 +122,7 @@ export function workspaceFromHash(inputs: JsonObject): ProjectWorkspace {
 				brief.site.latitude !== null &&
 				brief.site.longitude !== null &&
 				brief.project_use === null &&
-				brief.system_scope === null &&
+				brief.system_scope !== "storage_only" &&
 				brief.annual_load.kwh === null
 			)
 				return "design";
@@ -334,11 +333,8 @@ export function ProjectEditor({
 		workspaceFromHash(project.inputs),
 	);
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
-		["calculations", "equipment"].includes(workspace),
+		["energy", "calculations", "equipment"].includes(workspace),
 	);
-	// A saved project can still be re-planned from the one-screen start; the
-	// full workbench stays open underneath and keeps every saved input.
-	const [quickStart, setQuickStart] = useState(false);
 	const workspaceFocus = useRef(false);
 	useEffect(() => {
 		if (!workspaceFocus.current) return;
@@ -352,11 +348,18 @@ export function ProjectEditor({
 		)
 			workspaceFocus.current = false;
 	}, [workspace, client, session.query_scope]);
-	function chooseWorkspace(next: ProjectWorkspace) {
+	function chooseWorkspace(next: ProjectWorkspace, report = false) {
 		if (!client.isCurrentScope(session.query_scope)) return;
 		if (!valid) {
 			setCloseBlocked("invalid");
 			return;
+		}
+		if (report || next === "energy") {
+			const url = new URL(window.location.href);
+			url.searchParams.delete("run");
+			url.searchParams.delete("compare");
+			url.searchParams.set("energy_view", report ? "reports" : "scenario");
+			replacePlannerLocation(url);
 		}
 		if (next === workspace) {
 			revealActionResult(
@@ -368,7 +371,7 @@ export function ProjectEditor({
 			return;
 		}
 		workspaceFocus.current = true;
-		if (next === "calculations" || next === "equipment")
+		if (["energy", "calculations", "equipment"].includes(next))
 			setCalculationsOpened(true);
 		setWorkspace(next);
 		const url = new URL(window.location.href);
@@ -531,41 +534,31 @@ export function ProjectEditor({
 					<select
 						className="lp-mobile-workspace"
 						aria-label={__("Project sections", "linker-tools")}
-						value={workspace}
+						value={workspace === "overview" ? "site" : workspace}
 						onChange={(event) =>
-							chooseWorkspace(event.currentTarget.value as ProjectWorkspace)
+							chooseWorkspace(
+								event.currentTarget.value as ProjectWorkspace,
+								event.currentTarget.value === "calculations",
+							)
 						}
 					>
-						<option value="overview">
-							{__("Project overview", "linker-tools")}
-						</option>
-						<option value="site">
-							{__("Site and project", "linker-tools")}
-						</option>
-						<option value="design">{__("Roof design", "linker-tools")}</option>
-						<option value="energy">
-							{__("Energy inputs", "linker-tools")}
-						</option>
+						<option value="site">{__("Project", "linker-tools")}</option>
+						{brief.system_scope !== "storage_only" && (
+							<option value="design">{__("Solar", "linker-tools")}</option>
+						)}
+						<option value="energy">{__("Energy use", "linker-tools")}</option>
+						<option value="equipment">{__("System", "linker-tools")}</option>
 						<option value="calculations">
-							{__("Energy calculation", "linker-tools")}
+							{__("Review & share", "linker-tools")}
 						</option>
-						<option value="equipment">{__("Equipment", "linker-tools")}</option>
-						<option value="installation">
-							{__("Installation routing", "linker-tools")}
-						</option>
+						{workspace === "installation" && (
+							<option value="installation">
+								{__("Installation routing", "linker-tools")}
+							</option>
+						)}
 					</select>
 				</div>
 				<div className="lp-edit-actions">
-					<button
-						className="lp-text-button"
-						type="button"
-						aria-expanded={quickStart}
-						onClick={() => setQuickStart((value) => !value)}
-					>
-						{quickStart
-							? __("Back to this project's working area", "linker-tools")
-							: __("Quick start: plan in one screen", "linker-tools")}
-					</button>
 					<button
 						className="lp-text-button"
 						type="button"
@@ -657,18 +650,7 @@ export function ProjectEditor({
 					</div>
 				)}
 			</header>
-			{quickStart && (
-				<QuickStart
-					session={session}
-					client={client}
-					store={store}
-					config={config}
-					recheck={recheck}
-					openWorkbench={() => setQuickStart(false)}
-					close={() => setQuickStart(false)}
-				/>
-			)}
-			<div className="lp-project-layout" hidden={quickStart}>
+			<div className="lp-project-layout">
 				<aside className="lp-project-aside">
 					<div className="lp-project-nav-title">
 						<span className="lp-nav-mark" aria-hidden="true">
@@ -681,28 +663,22 @@ export function ProjectEditor({
 					</span>
 					<nav aria-label={__("Project sections", "linker-tools")}>
 						<a
-							href="#lp-overview"
-							aria-current={workspace === "overview" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("overview");
-							}}
-						>
-							<Icon name="overview" />
-							{__("Project overview", "linker-tools")}
-						</a>
-						<a
 							href="#lp-site"
-							aria-current={workspace === "site" ? "page" : undefined}
+							aria-current={
+								workspace === "site" || workspace === "overview"
+									? "page"
+									: undefined
+							}
 							onClick={(event) => {
 								event.preventDefault();
 								chooseWorkspace("site");
 							}}
 						>
 							<Icon name="location" />
-							{__("Site and project", "linker-tools")}
+							{__("Project", "linker-tools")}
 						</a>
 						<a
+							hidden={brief.system_scope === "storage_only"}
 							href="#lp-design"
 							aria-current={workspace === "design" ? "page" : undefined}
 							onClick={(event) => {
@@ -711,7 +687,7 @@ export function ProjectEditor({
 							}}
 						>
 							<Icon name="layers" />
-							{__("Roof design", "linker-tools")}
+							{__("Solar", "linker-tools")}
 						</a>
 						<a
 							href="#lp-load"
@@ -722,51 +698,35 @@ export function ProjectEditor({
 							}}
 						>
 							<Icon name="energy" />
-							{__("Energy inputs", "linker-tools")}
-						</a>
-						<a
-							href="#lp-calculations"
-							aria-current={workspace === "calculations" ? "page" : undefined}
-							onClick={(event) => {
-								event.preventDefault();
-								chooseWorkspace("calculations");
-							}}
-						>
-							<Icon name="energy" />
-							{__("Energy calculation", "linker-tools")}
+							{__("Energy use", "linker-tools")}
 						</a>
 						<a
 							href="#lp-equipment"
-							aria-current={workspace === "equipment" ? "page" : undefined}
+							aria-current={
+								workspace === "equipment" || workspace === "installation"
+									? "page"
+									: undefined
+							}
 							onClick={(event) => {
 								event.preventDefault();
 								chooseWorkspace("equipment");
 							}}
 						>
 							<Icon name="layers" />
-							{__("Equipment", "linker-tools")}
+							{__("System", "linker-tools")}
 						</a>
 						<a
-							href="#lp-installation"
-							aria-current={workspace === "installation" ? "page" : undefined}
+							href="#lp-calculations"
+							aria-current={workspace === "calculations" ? "page" : undefined}
 							onClick={(event) => {
 								event.preventDefault();
-								chooseWorkspace("installation");
+								chooseWorkspace("calculations", true);
 							}}
 						>
-							<Icon name="layers" />
-							{__("Installation routing", "linker-tools")}
+							<Icon name="overview" />
+							{__("Review & share", "linker-tools")}
 						</a>
 					</nav>
-					<div className="lp-source-note">
-						<Icon name="check" />
-						<span>
-							{__(
-								"Project information is kept with its source and revision.",
-								"linker-tools",
-							)}
-						</span>
-					</div>
 				</aside>
 				<div className="lp-editor-main lp-editor-with-design">
 					<header className="lp-project-title">
@@ -774,12 +734,10 @@ export function ProjectEditor({
 							{__("Current project", "linker-tools")}
 						</span>
 						<h1>{project.title}</h1>
-						<p>
-							{__(
-								"Site data and roof layouts are saved in the same project.",
-								"linker-tools",
+						{brief.site.location_label &&
+							brief.site.location_label !== project.title && (
+								<p>{brief.site.location_label}</p>
 							)}
-						</p>
 					</header>
 					{discoveryFailed && (
 						<Notice error>
@@ -921,7 +879,14 @@ export function ProjectEditor({
 								)
 							}
 						/>
-						<div hidden={workspace !== "site"}>
+						<details
+							className="lp-site-technical"
+							hidden={workspace !== "site"}
+							open={Boolean(gridConnection)}
+						>
+							<summary>
+								{__("Grid connection information", "linker-tools")}
+							</summary>
 							<GridConnectionForm
 								value={gridConnection}
 								hasRules={Boolean(countryRuleInputs)}
@@ -954,7 +919,7 @@ export function ProjectEditor({
 									}
 								/>
 							)}
-						</div>
+						</details>
 						<section
 							className="lp-section"
 							id="lp-profiles"
@@ -1038,6 +1003,7 @@ export function ProjectEditor({
 								store={store}
 								locale={config.locale}
 								timezone={brief.site.timezone}
+								annualKwh={brief.annual_load.kwh}
 								recheck={recheck}
 								recoveryScopes={recoveryScopes}
 								recoveryChecking={recoveryChecking}
@@ -1134,6 +1100,20 @@ export function ProjectEditor({
 							/>
 						</div>
 					</fieldset>
+					{workspace === "equipment" && (
+						<div className="lp-inline-actions">
+							<a
+								href="#lp-installation"
+								className="lp-text-button"
+								onClick={(event) => {
+									event.preventDefault();
+									chooseWorkspace("installation");
+								}}
+							>
+								{__("Installation routing", "linker-tools")}
+							</a>
+						</div>
+					)}
 					{workspace === "installation" && (
 						<fieldset
 							disabled={
@@ -1169,7 +1149,9 @@ export function ProjectEditor({
 					)}
 					{calculationsOpened && (
 						<div
-							hidden={workspace !== "calculations" && workspace !== "equipment"}
+							hidden={
+								!["energy", "calculations", "equipment"].includes(workspace)
+							}
 						>
 							<EnergyWorkspace
 								draft={draft}
@@ -1179,9 +1161,9 @@ export function ProjectEditor({
 								client={client}
 								recheck={recheck}
 								locale={config.locale}
-								active={
-									workspace === "calculations" || workspace === "equipment"
-								}
+								active={["energy", "calculations", "equipment"].includes(
+									workspace,
+								)}
 								equipmentFocus={workspace === "equipment"}
 								openEquipment={() => chooseWorkspace("equipment")}
 								openResults={() => chooseWorkspace("calculations")}
@@ -1203,6 +1185,39 @@ export function ProjectEditor({
 									discoveryFailed
 								}
 							/>
+						</div>
+					)}
+					{workspace !== "calculations" && (
+						<div className="lp-project-next">
+							<button
+								type="button"
+								className="lp-button"
+								onClick={() => {
+									if (workspace === "equipment")
+										chooseWorkspace("calculations", true);
+									else if (
+										workspace === "energy" ||
+										workspace === "installation"
+									)
+										chooseWorkspace("equipment");
+									else if (
+										workspace === "design" ||
+										brief.system_scope === "storage_only"
+									)
+										chooseWorkspace("energy");
+									else chooseWorkspace("design");
+								}}
+							>
+								{workspace === "equipment"
+									? __("Review & share", "linker-tools")
+									: workspace === "energy" || workspace === "installation"
+										? __("Continue to system", "linker-tools")
+										: workspace === "design" ||
+											  brief.system_scope === "storage_only"
+											? __("Continue to energy use", "linker-tools")
+											: __("Continue to solar", "linker-tools")}
+								<Icon name="arrow" />
+							</button>
 						</div>
 					)}
 				</div>

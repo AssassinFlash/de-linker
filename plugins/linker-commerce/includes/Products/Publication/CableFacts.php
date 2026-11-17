@@ -27,6 +27,51 @@ final class CableFacts {
 	}
 
 	/**
+	 * Renew versions after a host rewrite without adopting changed source bytes.
+	 *
+	 * @param int                 $owner Canonical Woo record.
+	 * @param array<string,mixed> $manifest Current authority manifest.
+	 * @param bool                $dry_run Preview without changing stored facts.
+	 * @return int Cable records renewed, not individual citations.
+	 */
+	public static function renew_unchanged( int $owner, array $manifest, bool $dry_run = false ): int {
+		$raw = get_post_meta( $owner, self::META_KEY, true );
+		if ( ! is_array( $raw ) ) {
+			return 0;
+		}
+		$documents      = array_column( $manifest['documents'], null, 'document_id' );
+		$renew          = static function ( mixed $source ) use ( $owner, $documents ): mixed {
+			if ( ! is_array( $source ) || ! is_string( $source['document_id'] ?? null ) ) {
+				return $source;
+			}
+			$document = $documents[ $source['document_id'] ] ?? null;
+			if ( is_array( $document ) && ( $source['product_id'] ?? null ) === $owner && ( $source['blob_sha256'] ?? null ) === $document['blob_sha256'] && in_array( $owner, $document['product_ids'], true ) ) {
+				$source['document_revision'] = $document['document_revision'];
+			}
+			return $source;
+		};
+		$next           = $raw;
+		$next['source'] = $renew( $raw['source'] ?? null );
+		foreach ( array( 'parameter_sets', 'reference_current_ratings' ) as $group ) {
+			if ( ! is_array( $raw[ $group ] ?? null ) ) {
+				continue;
+			}
+			foreach ( $raw[ $group ] as $index => $row ) {
+				if ( is_array( $row ) ) {
+					$next[ $group ][ $index ]['source'] = $renew( $row['source'] ?? null );
+				}
+			}
+		}
+		if ( $next === $raw || null === self::project( $owner, $next, $manifest ) ) {
+			return 0;
+		}
+		if ( ! $dry_run ) {
+			update_post_meta( $owner, self::META_KEY, $next );
+		}
+		return 1;
+	}
+
+	/**
 	 * Validate a candidate without changing Woo metadata.
 	 *
 	 * @param int                 $owner Canonical Woo record.

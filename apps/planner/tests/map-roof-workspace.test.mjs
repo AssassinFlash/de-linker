@@ -284,6 +284,19 @@ async function rig(t, options = {}) {
 	};
 }
 
+test("roof editing tools stay folded until an object is selected", async (t) => {
+	const r = await rig(t);
+	const tools = document
+		.querySelector('[aria-label="Add a roof feature"]')
+		?.closest("details");
+	assert.ok(tools, "secondary roof tools have a disclosure");
+	assert.equal(tools.open, false);
+	assert.ok(button("Start roof drawing"));
+	await r.select(r.geometry.roofs[0].id);
+	assert.equal(tools.open, true);
+	assert.ok(button("Edit boundary on map"));
+});
+
 async function selectNative(node, value) {
 	await act(async () => {
 		node.value = value;
@@ -727,7 +740,7 @@ test("provider replacement restores an open prefix only after the new map loads 
 	await until(() => r.active);
 	await r.point(6.96, 50.94);
 	const old = r.map();
-	await r.click("Hide aerial map");
+	await r.click("Load street map");
 	await until(
 		() =>
 			r.map() !== old && document.querySelector('[data-map-status="ready"]'),

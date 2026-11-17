@@ -351,6 +351,26 @@ def rig(workspace: Workspace) -> Iterator[Rig]:
         yield Rig(workspace, kernel, client)
 
 
+@pytest.fixture
+def standard_rig(workspace: Workspace) -> Iterator[Rig]:
+    # A whole published year renders to ~1.2 MB of CSV. The request body stays
+    # small (no uploaded content), so only the deployment CSV ceiling is raised
+    # to the production value; everything else matches the default rig.
+    # A full leap year of quarter-hour intervals is the largest standard horizon.
+    kernel = EnergyKernel(
+        workspace, Tolerance(1e-7, 1e-7, 1e-9), max_intervals=366 * 96
+    )
+    service = EnergyService(workspace, kernel, max_attempts=1)
+    app = create_private_app(
+        workspace,
+        service,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 8_000_000, 2, 16),
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        yield Rig(workspace, kernel, client)
+
+
 def test_current_products_use_shared_woo_preparation_and_close_on_change(
     rig: Rig, client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -803,6 +823,7 @@ def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
         "projects/create",
         "projects/revise",
         "profiles/csv",
+        "profiles/standard",
         "battery/scenario",
         "runs/energy",
     ],
@@ -1493,6 +1514,208 @@ def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
         and response.json()["error"]["code"] == "invalid_input"
     )
     assert set(rig.workspace.blobs.directory.rglob("*")) == initial
+
+
+def standard_profile_command(project_id: str, key: str) -> FixtureObject:
+    return {
+        "project_id": project_id,
+        "edition": 2025,
+        "profile": "H25",
+        "year": 2026,
+        "annual_kwh": 5000.0,
+        "timezone": "Europe/Berlin",
+        "key": key,
+    }
+
+
+def test_standard_profile_retry_recovers_original_without_reexpanding(
+    standard_rig: Rig,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    project_id = standard_rig.create("standard-retry")
+    command = standard_profile_command(project_id, "original-profile")
+    asset = standard_rig.post("/profiles/standard", command)
+
+    def changed_generator(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("generation environment changed after first receipt")
+
+    monkeypatch.setattr(
+        "linker_engine.planning.http_asset_intake.expand", changed_generator
+    )
+    assert standard_rig.replay("/profiles/standard", command)["result"] == asset
+    assert standard_rig.post("/profiles/standard", command) == asset
+    changed = standard_rig.client.post(
+        "/profiles/standard",
+        json={"schema_version": 1, **command, "annual_kwh": 6000},
+        headers=headers(),
+    )
+    assert changed.status_code == 409
+
+
+def test_standard_profile_publishes_expanded_template_as_owned_csv_asset(
+    standard_rig: Rig,
+) -> None:
+    project_id = standard_rig.create("standard-profile")
+    command = standard_profile_command(project_id, "standard-h0")
+    assert standard_rig.replay("/profiles/standard", command)["status"] == "absent"
+    asset = standard_rig.post("/profiles/standard", command)
+    assert standard_rig.replay("/profiles/standard", command)["result"] == asset
+    assert standard_rig.post("/profiles/standard", command) == asset
+    assert asset["purpose"] == "csv_profile_v1"
+    metadata = cast(Object, asset["metadata"])
+    provenance = cast(Object, metadata["provenance"])
+    assert provenance["basis"] == "published_load_profile"
+    assert provenance["profile"] == "H25" and provenance["edition"] == 2025
+    assert cast(float, provenance["expanded_annual_kwh"]) == pytest.approx(
+        5000.0, rel=0.01
+    )
+    mapping = cast(Object, metadata["csv_mapping"])
+    assert mapping["measurement"] == "gross_load" and mapping["origin"] == "template"
+    assert mapping["timezone"] == "Europe/Berlin"
+    interpretation = cast(Object, metadata["interpretation"])
+    assert interpretation["origin"] == "template"
+    assert interpretation["measurement"] == "gross_load"
+    assert cast(float, interpretation["energy_kwh"]) == pytest.approx(
+        cast(float, provenance["expanded_annual_kwh"]), rel=1e-3
+    )
+    # 2026 in Europe/Berlin: 365 published days of 96 quarter-hour slots, with
+    # the spring-forward gap and the duplicated fall-back slots both present.
+    assert interpretation["interval_count"] == 35040
+    with standard_rig.workspace.database.read() as connection:
+        assert (
+            connection.execute("SELECT count(*) FROM project_assets").fetchone()[0] == 1
+        )
+    download = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "asset_id": asset["id"],
+    }
+    assert standard_rig.client.post(
+        "/assets/content", json=download, headers=headers()
+    ).content.startswith(b"time,power\n")
+    assert (
+        standard_rig.client.post(
+            "/assets/content", json=download, headers=headers(FOREIGN)
+        ).status_code
+        == 404
+    )
+    from .test_energy_kernel import BATTERY, worker
+
+    battery = standard_rig.post(
+        "/battery/scenario",
+        {
+            "project_id": project_id,
+            "parameters": BATTERY,
+            "source_note": "Explicit test storage parameters",
+            "key": "standard-battery",
+        },
+    )
+    inputs = brief_inputs("Europe/Berlin")
+    inputs["brief"]["system_scope"] = "storage_only"
+    inputs["energy_replay"] = {
+        "schema_version": 1,
+        "gross_load_asset_id": asset["id"],
+        "critical_load_asset_id": None,
+        "pv_available_asset_id": None,
+        "aux_ac_asset_id": None,
+        "aux_ac_kw": 0,
+        "battery_parameters_asset_id": battery["id"],
+        "initial_inventory": {
+            "pv_kwh": 0,
+            "grid_kwh": 0,
+            "initial_unknown_kwh": 0,
+            "basis": "user_declared",
+            "source_note": "Empty starting charge",
+        },
+        "schedule": [
+            {
+                "start_utc": "2026-01-01T00:00:00+01:00",
+                "end_utc": "2027-01-01T00:00:00+01:00",
+                "mode": "connected",
+                "reserve_kwh": 0,
+                "import_cap_kw": None,
+                "export_cap_kw": 0,
+                "pv_enabled": False,
+                "allow_grid_charge": False,
+            }
+        ],
+        "controller": "self_consumption_with_reserve_v1",
+        "terminal_min_kwh": None,
+    }
+    saved = standard_rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "input_contract": SUPPORTED_INPUT_CONTRACTS[-1],
+            "key": "standard-scenario",
+        },
+    )
+    queued = standard_rig.post(
+        "/runs/energy",
+        {
+            "project_id": project_id,
+            "expected_revision": saved["revision"],
+            "key": "standard-energy",
+        },
+    )
+    assert worker(standard_rig.workspace, standard_rig.kernel).run_once()
+    finished = standard_rig.post("/runs/read", {"run_id": queued["id"]})
+    assert finished["state"] == "succeeded", finished["error"]
+    result = finished["result"]
+    assert result["interval_count"] == 35040
+    assert result["metrics"]["gross_load_kwh"] == pytest.approx(
+        provenance["expanded_annual_kwh"]
+    )
+    assert result["metrics"]["grid_import_kwh"] == pytest.approx(
+        provenance["expanded_annual_kwh"]
+    )
+    assert result["metrics"]["solar_load_kwh"] == 0
+
+
+def test_standard_profile_net_import_role_flows_into_the_same_intake(
+    standard_rig: Rig,
+) -> None:
+    project_id = standard_rig.create("standard-net-import")
+    command = {
+        **standard_profile_command(project_id, "standard-p25"),
+        "profile": "P25",
+    }
+    asset = standard_rig.post("/profiles/standard", command)
+    mapping = cast(Object, cast(Object, asset["metadata"])["csv_mapping"])
+    assert mapping["measurement"] == "net_import"
+    provenance = cast(Object, cast(Object, asset["metadata"])["provenance"])
+    assert provenance["measurement_role"] == "net_import"
+
+
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"profile": "H99"},
+        # Edition 2025 publishes only the -25 tables; a 1999 name must not
+        # silently expand against the wrong decade of coefficients.
+        {"profile": "H0"},
+        {"timezone": "Mars/Olympus_Mons"},
+        {"annual_kwh": 0.0},
+        {"edition": 2007},
+        {"year": 1999},
+    ],
+)
+def test_standard_profile_rejections_are_explicit_and_publish_nothing(
+    standard_rig: Rig, override: Object
+) -> None:
+    project_id = standard_rig.create("standard-reject")
+    initial = set(standard_rig.workspace.blobs.directory.rglob("*"))
+    command = {**standard_profile_command(project_id, "reject"), **override}
+    response = standard_rig.client.post(
+        "/profiles/standard", json={"schema_version": 1, **command}, headers=headers()
+    )
+    assert (
+        response.status_code == 422
+        and response.json()["error"]["code"] == "invalid_input"
+    )
+    assert set(standard_rig.workspace.blobs.directory.rglob("*")) == initial
 
 
 def csv_preview_command(project_id: str, content: bytes, key: str) -> FixtureObject:

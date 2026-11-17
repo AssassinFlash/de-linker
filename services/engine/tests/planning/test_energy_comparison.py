@@ -16,7 +16,7 @@ from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
 from linker_engine.planning.assets import Assets
-from linker_engine.planning.canonical import digest, encode
+from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.execution_registry import service_registry
@@ -93,6 +93,53 @@ def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements
         row.label.endswith("Minimum final stored energy") and row.value == "2 kWh"
         for row in sections[1].rows
     )
+
+
+def test_storage_only_comparison_has_no_weather_dependency_and_distinguishes_auxiliary_demand(
+    workspace: Workspace, owner: Actor
+) -> None:
+    from linker_engine.planning.energy_comparison import compare_energy_runs
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+
+    from .test_energy_kernel import worker
+
+    project = create_scenario(workspace, owner)
+    brief = incomplete_brief()
+    brief["system_scope"] = "storage_only"
+    brief["site"].update(country_code="FR", timezone="Europe/Paris")
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=10)
+    energy = EnergyService(workspace, kernel, max_attempts=1)
+    runs = []
+    for index, auxiliary in enumerate((0, 0.5)):
+        previous = json_object(project.inputs)["energy_replay"]
+        scenario: Object = {
+            **previous,
+            "pv_available_asset_id": None,
+            "aux_ac_asset_id": None,
+            "aux_ac_kw": auxiliary,
+            "schedule": [{**p, "pv_enabled": False} for p in previous["schedule"]],
+        }
+        project = workspace.revise(
+            owner,
+            project.id,
+            project.revision,
+            {**project.inputs, "brief": brief, "energy_replay": scenario},
+            key=f"aux-{index}",
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        run = energy.evaluate(
+            owner, project.id, project.revision, key=f"aux-run-{index}"
+        )
+        assert worker(workspace, kernel).run_once()
+        assert workspace.run(owner, run.id).state == "succeeded"
+        runs.append(run)
+    comparison = json_object(
+        compare_energy_runs(workspace, owner, project.id, runs[0].id, runs[1].id)
+    )
+    conditions = {row["id"]: row["status"] for row in comparison["conditions"]}
+    assert conditions["pv_weather"] == "matched"
+    assert conditions["demand_sources"] == "different"
+    assert comparison["conditions_aligned"] is False
 
 
 def test_saved_comparison_keeps_original_conditions_and_publishes_report(
@@ -291,7 +338,6 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
     from conftest import publication_manifest
     from fastapi import FastAPI
 
-    from linker_engine.planning.canonical import Object
     from linker_engine.planning.energy_comparison import (
         EnergyComparisonSide,
         _weather_key,
@@ -371,11 +417,25 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
     basis_sha = workspace.blobs.put_object(basis)
     equipment_sha = workspace.blobs.put_object(equipment)
 
+    import json
+    from pathlib import Path
+
+    from linker_engine.planning.energy_inputs import EnergyInputs
+
+    scenario = EnergyInputs.read(
+        json.loads(
+            (
+                Path(__file__).resolve().parents[4]
+                / "apps/planner/tests/fixtures/energy-inputs.json"
+            ).read_text()
+        )
+    )
+
     def side(raw: str, metadata: Object) -> EnergyComparisonSide:
         return cast(
             EnergyComparisonSide,
             SimpleNamespace(
-                scenario=None,
+                scenario=scenario,
                 dc=False,
                 pinned={
                     "pv_available_ac.raw": raw,

@@ -91,6 +91,10 @@ test("map overlays retain opaque object identity, excluded modules and actual ex
 			throw new Error("Expected cuboid");
 		assert.equal(feature.geometry.coordinates.length, 6);
 		assert.ok(poses.some((pose) => pose.id === feature.properties.object_id));
+		assert.equal(
+			feature.properties.array_id,
+			poses.find((pose) => pose.id === feature.properties.object_id)!.array_id,
+		);
 	}
 	const obstacle = {
 		id: "opaque:obstacle:with:colons",

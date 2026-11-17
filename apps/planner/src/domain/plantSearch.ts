@@ -3,10 +3,15 @@ import schema from "../contracts/plant-search-plan.schema.json" with { type: "js
 import { ApiError } from "../data/protocol.ts";
 import type { JsonObject } from "../data/protocol.ts";
 import { sameJson } from "./draft.ts";
-import { equipmentDraft, changeEquipment } from "./equipment.ts";
+import {
+	equipmentDraft,
+	changeEquipment,
+	checkRetainedEquipment,
+} from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
 import {
 	plantInputs,
+	compilePlant,
 	plantGroupDraft,
 	readEquipmentPlant,
 	readPlantDraft,
@@ -76,7 +81,9 @@ export function compilePlantSearch(draft: PlantDraft): PlantSearchPlan {
 				operating_mode: requirements.operating_mode ?? null,
 			}),
 		})),
-		parallel_groups: draft.parallel_groups,
+		parallel_groups: draft.parallel_groups.map(
+			({ controller_use: _use, ...group }) => group,
+		),
 	});
 }
 
@@ -144,17 +151,40 @@ export function adoptPlantCandidate(
 		throw new ApiError(409, "product_evidence_changed");
 	const updated: PlantDraft = {
 		...draft,
-		units: plant.units.map((unit, i) => ({
-			id: unit.id,
-			name: unit.name,
-			inputs: changeEquipment(draft.units[i]!.inputs, unit.selection),
-		})),
-		parallel_groups: plant.parallel_groups.map(plantGroupDraft),
+		units: plant.units.map((unit, i) => {
+			const previous = equipmentDraft(draft.units[i]!.inputs);
+			checkRetainedEquipment(previous, unit.selection);
+			return {
+				id: unit.id,
+				name: unit.name,
+				inputs: changeEquipment(draft.units[i]!.inputs, {
+					...unit.selection,
+					...(previous.equipment_use === undefined
+						? {}
+						: { equipment_use: previous.equipment_use }),
+				}),
+			};
+		}),
+		parallel_groups: plant.parallel_groups.map((group, i) => {
+			const previous = draft.parallel_groups[i]!;
+			if (
+				previous.controller_use === "retain" &&
+				previous.controller_product_id !== group.controller_product_id
+			)
+				throw new ApiError(409, "retained_equipment_changed");
+			return {
+				...plantGroupDraft(group),
+				...(previous.controller_use === undefined
+					? {}
+					: { controller_use: previous.controller_use }),
+			};
+		}),
 	};
+	const prepared = compilePlant(updated, products);
 	return {
 		...plantInputs(inputs, updated),
-		equipment_plant: plant,
-		...(inputs.pv_plant_string_plan === undefined
+		equipment_plant: prepared,
+		...(inputs.pv_plant_string_plan === undefined && sameJson(prepared, plant)
 			? { equipment_candidate: choice }
 			: {}),
 	};

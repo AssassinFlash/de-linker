@@ -41,6 +41,22 @@ export interface ImportCommand extends JsonObject {
 	readonly rights_note: string;
 	readonly key: string;
 }
+export interface StandardProfileCommand extends JsonObject {
+	readonly schema_version: 1;
+	readonly project_id: string;
+	readonly edition: 1999 | 2025;
+	readonly profile: string;
+	readonly year: number;
+	readonly annual_kwh: number;
+	readonly timezone: string;
+	readonly key: string;
+}
+export type ProfileImportCommand = ImportCommand | StandardProfileCommand;
+export function isStandardProfile(
+	command: ProfileImportCommand,
+): command is StandardProfileCommand {
+	return typeof command.edition === "number";
+}
 export interface ProfileSelections extends JsonObject {
 	readonly schema_version: 1;
 	readonly selected: Readonly<Partial<Record<ProfileRole, string>>>;
@@ -116,6 +132,36 @@ const checkSelections = ajv.compile<ProfileSelections>(selectionSchema);
 export function readImport(value: unknown): ImportCommand {
 	readObject(value);
 	if (!checkImport(value)) throw new ApiError(422, "invalid_profile_import");
+	return value;
+}
+const checkStandard = ajv.compile<StandardProfileCommand>({
+	type: "object",
+	additionalProperties: false,
+	required: [
+		"schema_version",
+		"project_id",
+		"edition",
+		"profile",
+		"year",
+		"annual_kwh",
+		"timezone",
+		"key",
+	],
+	properties: {
+		schema_version: { type: "integer", const: 1 },
+		project_id: { type: "string", pattern: "^[a-f0-9]{32}$" },
+		edition: { type: "integer", enum: [1999, 2025] },
+		profile: { type: "string", minLength: 1, maxLength: 8 },
+		year: { type: "integer", minimum: 2000, maximum: 2100 },
+		annual_kwh: { type: "number", exclusiveMinimum: 0 },
+		timezone: { type: "string", minLength: 1, maxLength: 64 },
+		key: { type: "string", minLength: 1 },
+	},
+});
+export function readProfileImport(value: unknown): ProfileImportCommand {
+	const candidate = readObject(value);
+	if (candidate.edition === undefined) return readImport(value);
+	if (!checkStandard(value)) throw new ApiError(422, "invalid_profile_import");
 	return value;
 }
 export function readSelections(value: unknown): ProfileSelections {

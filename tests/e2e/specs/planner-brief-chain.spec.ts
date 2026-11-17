@@ -38,10 +38,6 @@ const WORDS = {
 		threePhase: 'Three-phase',
 		notNeeded: 'Not needed',
 		create: 'Create project',
-		quickStart: 'Quick start: plan in one screen',
-		pvSize: 'PV array size',
-		annual: 'Annual electricity use',
-		postcode: 'Postcode or town',
 		carryFailed: 'The project note could not be carried over.',
 		useValues: 'Use these values',
 		newProject: 'New project',
@@ -63,10 +59,6 @@ const WORDS = {
 		threePhase: 'Dreiphasig',
 		notNeeded: 'Nicht benötigt',
 		create: 'Projekt anlegen',
-		quickStart: 'Schnellstart: Planen auf einem Bildschirm',
-		pvSize: 'Größe der PV-Anlage',
-		annual: 'Jährlicher Stromverbrauch',
-		postcode: 'Postleitzahl oder Ort',
 		carryFailed: 'Die Projektnotiz konnte nicht übernommen werden.',
 		useValues: 'Angaben übernehmen',
 		newProject: 'Neues Projekt',
@@ -180,15 +172,16 @@ for (const lang of ['en', 'de'] as const) {
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
 		);
 
-		// The note is the customer's own text; creating the project from it
-		// leaves every sizing input at its default - the numbers in the note
-		// are demands to answer, not inputs to consume.
+		// A free-text note is preserved, not parsed into numeric design inputs.
 		await page.getByRole('button', { name: words.create }).click();
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-		await page.getByRole('button', { name: words.quickStart }).click();
-		await expect(page.getByLabel(words.pvSize)).toHaveValue('10');
-		await expect(page.getByLabel(words.annual)).toHaveValue('5000');
-		await expect(page.getByLabel(words.postcode)).toHaveValue('');
+		await page.locator('nav[aria-label] a[href="#lp-load"]').click();
+		await expect(page.locator('#lp-load input').first()).toHaveValue('');
+		await page.locator('nav[aria-label] a[href="#lp-site"]').click();
+		await expect(page.locator('#lp-site input').first()).toHaveValue('');
+		await expect(page.locator('#lp-notes textarea')).toHaveValue(
+			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
+		);
 	});
 
 	test(`${lang}: a failed note save keeps the text and retries on its own`, async ({
@@ -229,13 +222,21 @@ for (const lang of ['en', 'de'] as const) {
 		const create = async (title: string) => {
 			const p = await context.newPage();
 			await p.goto(instance().url + words.configurator);
-			await p
-				.getByRole('button', { name: words.newProject })
-				.first()
-				.click();
-			await p.locator('input[maxlength="256"]').first().fill(title);
+			// The first successful index read opens the form for an empty workspace.
+			await expect(
+				p.locator('.lp-index-heading button[aria-label]')
+			).toBeEnabled();
+			if (!(await p.locator('select[name="system_scope"]').isVisible())) {
+				await p
+					.getByRole('button', { name: words.newProject })
+					.first()
+					.click();
+			}
+			await p.locator('select[name="solar_entry"]').selectOption('known');
+			await p.locator('input[name="project_title"]').fill(title);
 			await p.getByRole('button', { name: words.create }).click();
 			await expect(p).toHaveURL(/project=/, { timeout: 60_000 });
+			await p.locator('nav[aria-label] a[href="#lp-site"]').click();
 			return p;
 		};
 
@@ -305,13 +306,18 @@ for (const lang of ['en', 'de'] as const) {
 
 		// The guest plans a project of their own.
 		await page.goto(instance().url + words.configurator);
+		await expect(
+			page.locator('.lp-index-heading button[aria-label]')
+		).toBeEnabled();
+		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
+			await page
+				.getByRole('button', { name: words.newProject })
+				.first()
+				.click();
+		}
+		await page.locator('select[name="solar_entry"]').selectOption('known');
 		await page
-			.getByRole('button', { name: words.newProject })
-			.first()
-			.click();
-		await page
-			.locator('input[maxlength="256"]')
-			.first()
+			.locator('input[name="project_title"]')
 			.fill('Guest to claim');
 		await page.getByRole('button', { name: words.create }).click();
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });

@@ -4,14 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .canonical import Json, Object
+from .canonical import Json, Object, digest, encode
 from .dispatch_frame import Frame
 from .energy_alignment import interpretation, schedule_axis
-from .energy_schedule import EnergySchedule
+from .energy_inputs import EnergyInputs
 from .errors import InvalidInput
-from .power_series import PowerSeries
+from .plant_energy_inputs import PlantEnergyInputs
+from .power_series import Measurement, PowerSeries
 from .regrid import regrid
 from .scenario_frames import scenario_frames
+from .series_source import SeriesSource
 from .worker import Control
 
 
@@ -22,7 +24,7 @@ class PreparedEnergy:
 
 
 def prepare_energy(
-    scenario: EnergySchedule,
+    scenario: EnergyInputs | PlantEnergyInputs,
     profiles: dict[str, PowerSeries],
     control: Control,
     *,
@@ -30,6 +32,32 @@ def prepare_energy(
 ) -> PreparedEnergy:
     if scenario.coupling not in {"independent_ac", "plant_ac"}:
         raise InvalidInput("AC replay requires the independent AC boundary")
+    declarations: dict[Measurement, tuple[float, str]] = {}
+    if scenario.pv_available_asset_id is None:
+        declarations["pv_available_ac"] = (0.0, "pv_disabled_for_entire_schedule")
+    if scenario.aux_ac_kw is not None:
+        declarations["aux_ac"] = (
+            scenario.aux_ac_kw,
+            "user_declared_constant_auxiliary_demand",
+        )
+    profiles = dict(profiles)
+    for role, (power, basis) in declarations.items():
+        # Constants are explicit physical inputs, not missing observations filled
+        # from a neighbouring profile. Retain their own declaration in the result.
+        intervals = tuple(period.interval() for period in scenario.schedule)
+        declaration = encode({"basis": basis, "power_kw": power})
+        profiles[role] = PowerSeries(
+            intervals,
+            (power,) * len(intervals),
+            role,
+            SeriesSource(
+                digest(declaration),
+                "modelled",
+                "UTC",
+                max(i.hours * 3600 for i in intervals),
+                declaration,
+            ),
+        )
     frames: list[Frame] = []
     interpretations: list[Json] = []
     for interval, limits, target in schedule_axis(

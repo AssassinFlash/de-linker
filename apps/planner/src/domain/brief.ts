@@ -7,7 +7,7 @@ export interface Brief extends JsonObject {
 	readonly schema_version: 1;
 	readonly project_use: "residential" | "commercial" | "industrial" | null;
 	readonly system_scope:
-		"new_pv_storage" | "storage_addition" | "pv_only" | null;
+		"new_pv_storage" | "storage_addition" | "storage_only" | "pv_only" | null;
 	readonly site: {
 		readonly country_code: string | null;
 		readonly location_label: string;

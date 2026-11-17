@@ -7,6 +7,7 @@ import { sameJson } from "./draft.ts";
 import { DC_MODEL, emptyDcScenario, readDcLossScenario } from "./dcEnergy.ts";
 import type { DcLossScenario } from "./dcEnergy.ts";
 import {
+	isStorageOnly,
 	compileInitialInventory,
 	compileOperatingPeriods,
 	compileTerminalMinimum,
@@ -37,6 +38,10 @@ export interface PlantEnergyUnitDraft extends JsonObject {
 	readonly allow_ac_charge?: boolean | null;
 }
 export interface PlantEnergyDraft extends JsonObject {
+	readonly controller?:
+		| "proportional_available_power_self_consumption_v1"
+		| "proportional_peak_shaving_v1";
+	readonly aux_ac_kw?: number | null;
 	readonly schema_version: 1;
 	readonly coupling?: "plant_ac" | "plant_shared_dc";
 	readonly ac_pv_converter_ids?: readonly string[];
@@ -49,7 +54,7 @@ export interface PlantEnergyInputs extends JsonObject {
 	readonly gross_load_asset_id: string;
 	readonly critical_load_asset_id: string | null;
 	readonly pv_available_asset_id: string | null;
-	readonly aux_ac_asset_id: string;
+	readonly aux_ac_asset_id: string | null;
 	readonly units: readonly (JsonObject & {
 		unit_id: string;
 		battery_parameters_asset_id: string;
@@ -111,6 +116,19 @@ export function plantEnergyDraft(
 		raw.coupling !== "plant_shared_dc"
 	)
 		throw new ApiError(422, "invalid_plant_energy_inputs");
+	if (
+		raw.controller !== undefined &&
+		raw.controller !== "proportional_available_power_self_consumption_v1" &&
+		raw.controller !== "proportional_peak_shaving_v1"
+	)
+		throw new ApiError(422, "invalid_plant_energy_inputs");
+	if (
+		raw.aux_ac_kw != null &&
+		(typeof raw.aux_ac_kw !== "number" ||
+			!Number.isFinite(raw.aux_ac_kw) ||
+			raw.aux_ac_kw < 0)
+	)
+		throw new ApiError(422, "invalid_plant_energy_inputs");
 	const acGroups = raw.ac_pv_converter_ids ?? [];
 	if (
 		!Array.isArray(acGroups) ||
@@ -160,6 +178,10 @@ export function plantEnergyDraft(
 		coupling:
 			raw.coupling === "plant_shared_dc" ? "plant_shared_dc" : "plant_ac",
 		ac_pv_converter_ids: acGroups as readonly string[],
+		...(raw.controller === undefined ? {} : { controller: raw.controller }),
+		...(raw.aux_ac_kw === undefined
+			? {}
+			: { aux_ac_kw: raw.aux_ac_kw as number | null }),
 		schedule,
 		units: plant.units.map(
 			(u) => saved.find((s) => s.unit_id === u.id) ?? emptyPlantUnit(u.id),
@@ -200,13 +222,36 @@ export function plantEnergyParts(
 	const dcPlant = draft.coupling === "plant_shared_dc";
 	if (
 		dcPlant &&
+		(isStorageOnly(inputs) ||
+			draft.controller === "proportional_peak_shaving_v1" ||
+			draft.aux_ac_kw != null)
+	)
+		throw new ApiError(422, "scenario_ac_required");
+	if (
+		draft.controller === "proportional_peak_shaving_v1" &&
+		draft.schedule.some(
+			(p) =>
+				p.mode === "connected" &&
+				(p.import_policy !== "limited" || p.import_cap_kw === null),
+		)
+	)
+		throw new ApiError(422, "grid_cap_required");
+	if (
+		dcPlant &&
 		pv_reference &&
 		pv_available_ac &&
 		(pv_reference === pv_available_ac ||
 			pv_available_ac === geometricRoofAssetId(inputs))
 	)
 		throw new ApiError(422, "plant_dc_duplicate_pv_source");
-	if (!gross_load || (!dcPlant && !pv_available_ac) || !aux_ac)
+	const pvDisabled =
+		draft.schedule.length > 0 &&
+		draft.schedule.every((period) => period.pv_enabled === false);
+	if (
+		!gross_load ||
+		(!dcPlant && !isStorageOnly(inputs) && !pvDisabled && !pv_available_ac) ||
+		(!aux_ac && draft.aux_ac_kw == null)
+	)
 		throw new ApiError(422, "scenario_profiles_required");
 	if (
 		!dcPlant &&
@@ -234,6 +279,8 @@ export function plantEnergyParts(
 			reserve_kwh: unit.reserve_kwh,
 			terminal_min_kwh: compileTerminalMinimum(unit.settings),
 		};
+		if (isStorageOnly(inputs) && state.initial_inventory.pv_kwh !== 0)
+			throw new ApiError(422, "storage_only_initial_pv");
 		if (!dcPlant) return { ...state, pv_dc_input_unused: true };
 		const pvGroup = unit.settings.dc?.pv_converter_id.trim() ?? "";
 		if (
@@ -262,22 +309,31 @@ export function plantEnergyParts(
 			coupling: dcPlant ? "plant_shared_dc" : "plant_ac",
 			gross_load_asset_id: gross_load,
 			critical_load_asset_id: critical_load ?? null,
-			pv_available_asset_id: pv_available_ac ?? null,
+			pv_available_asset_id:
+				isStorageOnly(inputs) || (!dcPlant && pvDisabled)
+					? null
+					: (pv_available_ac ?? null),
 			...(dcPlant
 				? {
 						pv_reference_asset_id: pv_reference ?? null,
 						ac_pv_converter_ids: draft.ac_pv_converter_ids ?? [],
 					}
 				: {}),
-			aux_ac_asset_id: aux_ac,
+			aux_ac_asset_id: draft.aux_ac_kw == null ? aux_ac! : null,
+			...(draft.aux_ac_kw == null ? {} : { aux_ac_kw: draft.aux_ac_kw }),
 			schedule: compileOperatingPeriods(
-				draft.schedule.map((p) => ({ ...p, reserve_kwh: 0 })),
+				draft.schedule.map((p) => ({
+					...p,
+					reserve_kwh: 0,
+					...(isStorageOnly(inputs) ? { pv_enabled: false } : {}),
+				})),
 				critical_load,
 			),
 			units,
 			controller: dcPlant
 				? "local_dc_then_proportional_ac_self_consumption_v1"
-				: "proportional_available_power_self_consumption_v1",
+				: (draft.controller ??
+					"proportional_available_power_self_consumption_v1"),
 		},
 	};
 }

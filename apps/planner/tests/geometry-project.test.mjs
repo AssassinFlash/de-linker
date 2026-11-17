@@ -84,6 +84,14 @@ test("saved roof projects reopen in design while energy projects and explicit ro
 	};
 	assert.equal(workspaceFromHash({ brief }), "design");
 	assert.equal(workspaceFromHash({ brief, geometry: {} }), "design");
+	assert.equal(
+		workspaceFromHash({ brief: { ...brief, system_scope: "new_pv_storage" } }),
+		"design",
+	);
+	assert.equal(
+		workspaceFromHash({ brief: { ...brief, system_scope: "storage_only" } }),
+		"overview",
+	);
 	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "overview");
 	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "overview");
 	location.hash = "#lp-overview";
@@ -215,13 +223,26 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	);
 	assert.equal(retry().textContent, "Try again");
 	assert.equal(lookups.length, 1, "failure must wait for the visitor to retry");
-	const map = maps.findLast((item) => !item.removed);
+	const firstMap = maps.findLast((item) => !item.removed);
 	const overlay = structuredClone(
-		map.getSource("linker-project-geometry").data,
+		firstMap.getSource("linker-project-geometry").data,
 	);
-	assert.equal(map.getSource("linker-site-imagery"), undefined);
+	assert.equal(firstMap.getSource("linker-site-imagery"), undefined);
 	await act(async () => retry().click());
-	await until(() => map.getSource("linker-site-imagery"));
+	// Imagery tiles load only after the visitor's explicit aerial-map consent.
+	const consent = () =>
+		[...document.querySelectorAll("button")].find(
+			(node) => node.textContent.trim() === "Show aerial map",
+		);
+	await until(consent);
+	await act(async () => consent().click());
+	// Granting consent widens the request scope, which recreates the map, so
+	// the imagery assertions target the new live instance.
+	let map = null;
+	await until(() => {
+		map = maps.findLast((item) => !item.removed);
+		return map !== firstMap && map.getSource("linker-site-imagery");
+	});
 	assert.deepEqual(lookups, [
 		{ schema_version: 1, query: "50667", country: "DE" },
 		{ schema_version: 1, query: "50667", country: "DE" },
@@ -387,7 +408,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	await click(asset.metadata.geometry_import_options.source.label);
 	assert.equal(button("Save project").disabled, true);
 	await act(async () =>
-		document.querySelector('nav a[href="#lp-overview"]').click(),
+		document.querySelector('nav a[href="#lp-site"]').click(),
 	);
 	assert.equal(
 		document.querySelector(".lp-project").dataset.workspace,

@@ -229,9 +229,25 @@ export function energyErrorText(error: unknown): string {
 				"The calculation year must be a non-leap year. This model uses 8,760 hourly intervals.",
 				"linker-tools",
 			);
+		case "retained_equipment_changed":
+			return __(
+				"This combination changes equipment marked Keep existing. Choose a matching combination or change the equipment plan to Replace existing.",
+				"linker-tools",
+			);
+		case "storage_only_ac_required":
+		case "scenario_ac_required":
+			return __(
+				"Choose separate AC storage for storage-only, peak-shaving or constant auxiliary-demand calculations. Shared-DC calculations use their own PV and auxiliary profiles.",
+				"linker-tools",
+			);
+		case "storage_only_initial_pv":
+			return __(
+				"A storage-only project cannot start with PV-origin energy. Review the starting charge and its source.",
+				"linker-tools",
+			);
 		case "scenario_profiles_required":
 			return __(
-				"The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles.",
+				"Select the missing interval sources in Energy use. Storage-only projects need no PV source; AC auxiliary demand can use a constant value.",
 				"linker-tools",
 			);
 		case "battery_source_required":

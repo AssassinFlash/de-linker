@@ -8,7 +8,8 @@ import {
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { isDirty, sameJson } from "../../domain/draft.ts";
-import { equipmentDraft } from "../../domain/equipment.ts";
+import { equipmentDraft, PART_USES } from "../../domain/equipment.ts";
+import type { PartUse } from "../../domain/equipment.ts";
 import {
 	compilePlant,
 	factoryPlant,
@@ -18,6 +19,7 @@ import {
 } from "../../domain/equipmentPlant.ts";
 import type { PlantDraft } from "../../domain/equipmentPlant.ts";
 import { compilePlantSearch } from "../../domain/plantSearch.ts";
+import { readObject } from "../../data/readProtocol.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -38,6 +40,9 @@ export function PlantSetup(props: Props) {
 		onValidity,
 		start,
 	} = props;
+	const storageOnly =
+		draft.history.current.brief !== undefined &&
+		readObject(draft.history.current.brief).system_scope === "storage_only";
 	const catalog = useEquipmentProducts(client, scope, active);
 	const setup = useMemo(() => {
 		try {
@@ -46,6 +51,7 @@ export function PlantSetup(props: Props) {
 			return null;
 		}
 	}, [
+		draft.history.current.brief,
 		draft.history.current.equipment_plant,
 		draft.history.current.equipment_plant_setup,
 	]);
@@ -304,11 +310,12 @@ export function PlantSetup(props: Props) {
 							<option value="3">{__("Three-phase", "linker-tools")}</option>
 						</select>
 					</label>
-					{requirementNumber(
-						"pv_dc_kw",
-						__("Total PV nameplate rating", "linker-tools"),
-						"kWp",
-					)}
+					{!storageOnly &&
+						requirementNumber(
+							"pv_dc_kw",
+							__("Total PV nameplate rating", "linker-tools"),
+							"kWp",
+						)}
 					{requirementNumber(
 						"required_usable_kwh",
 						__("Total required usable energy", "linker-tools"),
@@ -444,18 +451,21 @@ export function PlantSetup(props: Props) {
 								{__("Remove system", "linker-tools")}
 							</button>
 						</div>
-						<PlantPvStringSetup
-							draft={draft}
-							unit={unit}
-							units={setup.units}
-							edit={edit}
-							locale={locale}
-							disabled={disabled}
-							onValidity={stringCallbacks[unit.id]!}
-						/>
+						{!storageOnly && (
+							<PlantPvStringSetup
+								draft={draft}
+								unit={unit}
+								units={setup.units}
+								edit={edit}
+								locale={locale}
+								disabled={disabled}
+								onValidity={stringCallbacks[unit.id]!}
+							/>
+						)}
 						<EquipmentSetup
 							{...props}
 							draft={unitDraft}
+							storageOnly={storageOnly}
 							heading={false}
 							embedded
 							standalone={false}
@@ -598,9 +608,15 @@ export function PlantSetup(props: Props) {
 									: null;
 								change((current) => ({
 									...current,
-									parallel_groups: current.parallel_groups.map((g) =>
-										g.id === group.id ? { ...g, controller_product_id: id } : g,
-									),
+									parallel_groups: current.parallel_groups.map((g) => {
+										if (g.id !== group.id) return g;
+										// Clearing the controller drops any intent
+										// declared for it; picking one keeps it.
+										const { controller_use: _declared, ...rest } = g;
+										return id === null
+											? { ...rest, controller_product_id: null }
+											: { ...g, controller_product_id: id };
+									}),
 								}));
 							}}
 						>
@@ -626,6 +642,38 @@ export function PlantSetup(props: Props) {
 								))}
 						</select>
 					</label>
+					{group.controller_product_id !== null && (
+						<label className="lp-field">
+							<span>{__("Controller", "linker-tools")}</span>
+							<select
+								value={group.controller_use ?? "new"}
+								disabled={blocked}
+								onChange={(event) => {
+									const use = event.currentTarget.value as PartUse;
+									change((current) => ({
+										...current,
+										parallel_groups: current.parallel_groups.map((g) => {
+											if (g.id !== group.id) return g;
+											const { controller_use: _previous, ...rest } = g;
+											return use === "new"
+												? rest
+												: { ...rest, controller_use: use };
+										}),
+									}));
+								}}
+							>
+								{PART_USES.map((value) => (
+									<option value={value} key={value}>
+										{value === "new"
+											? __("Buy new", "linker-tools")
+											: value === "retain"
+												? __("Keep existing", "linker-tools")
+												: __("Replace existing", "linker-tools")}
+									</option>
+								))}
+							</select>
+						</label>
+					)}
 					<button
 						type="button"
 						className="lp-text-button"

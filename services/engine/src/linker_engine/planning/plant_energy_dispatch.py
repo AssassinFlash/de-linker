@@ -93,7 +93,11 @@ def _validate(
 
 
 def self_consumption(
-    frame: PlantFrame, units: tuple[StorageUnit, ...], states: States
+    frame: PlantFrame,
+    units: tuple[StorageUnit, ...],
+    states: States,
+    *,
+    grid_target_kw: float = 0,
 ) -> Commands:
     """Share actual post-loss headroom; never borrow another unit's inventory."""
     duration = frame.site.interval.hours
@@ -115,9 +119,27 @@ def self_consumption(
             * model.eta_discharge
             / duration,
         )
-    charging = _shares(charge, max(balance, 0.0))
-    discharging = _shares(discharge, max(-balance, 0.0))
+    charging = _shares(
+        charge,
+        max(balance + grid_target_kw, 0.0)
+        if frame.site.limits.allow_grid_charge
+        else max(balance, 0.0),
+    )
+    discharging = _shares(discharge, max(-balance - grid_target_kw, 0.0))
     return {unit.id: Command(charging[unit.id], discharging[unit.id]) for unit in units}
+
+
+def peak_shaving(
+    frame: PlantFrame, units: tuple[StorageUnit, ...], states: States
+) -> Commands:
+    cap = (
+        frame.site.limits.import_cap_kw
+        if frame.site.limits.mode == "connected"
+        else 0.0
+    )
+    if cap is None:
+        raise InvalidInput("peak shaving requires a grid import limit")
+    return self_consumption(frame, units, states, grid_target_kw=cap)
 
 
 def step(

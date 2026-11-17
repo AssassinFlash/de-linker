@@ -26,6 +26,66 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx build/planner/assets/planner.js:1
+msgid "This report describes an earlier version of the project."
+msgstr "Dieser Bericht beschreibt einen früheren Projektstand."
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Continue to solar"
+msgstr "Weiter zur PV-Planung"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Continue to energy use"
+msgstr "Weiter zum Strombedarf"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Continue to system"
+msgstr "Weiter zum System"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Solar and storage"
+msgstr "Photovoltaik und Speicher"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Solar only"
+msgstr "Nur Photovoltaik"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Add storage to an existing system"
+msgstr "Bestehende Anlage um einen Speicher erweitern"
+
+#: ../../apps/planner/src/components/NewProject.tsx ../../apps/planner/src/components/BriefForm.tsx build/planner/assets/planner.js:1
+msgid "Storage only"
+msgstr "Nur Speicher"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Solar layout"
+msgstr "PV-Planung"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Plan on the map"
+msgstr "Auf der Karte planen"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "I already have the solar details"
+msgstr "Die Angaben zur PV-Anlage liegen bereits vor"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Solar"
+msgstr "Photovoltaik"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Energy use"
+msgstr "Strombedarf"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+msgid "Review & share"
+msgstr "Prüfen und weitergeben"
+
+#: ../../apps/planner/src/components/BriefForm.tsx build/planner/assets/planner.js:1
+msgid "Coordinates and time zone"
+msgstr "Koordinaten und Zeitzone"
+
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "the site postcode"
 msgstr "die Postleitzahl des Standorts"
@@ -1625,7 +1685,210 @@ msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
 msgid "Quotation in preparation"
 msgstr "Angebot in Vorbereitung"
 
+#: build/planner/assets/planner.js
+msgid "Annual consumption and daily pattern"
+msgstr "Jahresverbrauch und Tagesverlauf"
+
+#: build/planner/assets/planner.js
+msgid "Use a typical load profile"
+msgstr "Typisches Lastprofil verwenden"
+
+#: build/planner/assets/planner.js
+msgid "BDEW/VDEW template · German calendar"
+msgstr "BDEW/VDEW-Vorlage · deutscher Kalender"
+
+#: build/planner/assets/planner.js
+msgid "BDEW/VDEW standard profiles use a German calendar. For other European sites, use them as an explicit template or import local meter data. The preview shows the actual annual total and time zone."
+msgstr "BDEW/VDEW-Standardlastprofile verwenden den deutschen Kalender. Für andere europäische Standorte dienen sie als Vorlage; alternativ können Sie lokale Zählerdaten importieren. Die Vorschau zeigt die Jahressumme und die Zeitzone."
+
+#: build/planner/assets/planner.js
+msgid "Typical usage pattern"
+msgstr "Typischer Verbrauchsverlauf"
+
+#: build/planner/assets/planner.js
+msgid "Household · H0"
+msgstr "Haushalt · H0"
+
+#: build/planner/assets/planner.js
+msgid "Household · H25 (2025)"
+msgstr "Haushalt · H25 (2025)"
+
+#: build/planner/assets/planner.js
+msgid "General business · G0"
+msgstr "Gewerbe allgemein · G0"
+
+#: build/planner/assets/planner.js
+msgid "Business on weekdays · G1"
+msgstr "Gewerbe an Werktagen · G1"
+
+#: build/planner/assets/planner.js
+msgid "Evening business · G2"
+msgstr "Gewerbe mit Abendbetrieb · G2"
+
+#: build/planner/assets/planner.js
+msgid "Continuous operation · G3"
+msgstr "Durchgehender Betrieb · G3"
+
+#: build/planner/assets/planner.js
+msgid "Retail · G4"
+msgstr "Einzelhandel · G4"
+
+#: build/planner/assets/planner.js
+msgid "Bakery · G5"
+msgstr "Bäckerei · G5"
+
+#: build/planner/assets/planner.js
+msgid "Weekend business · G6"
+msgstr "Gewerbe mit Wochenendbetrieb · G6"
+
+#: build/planner/assets/planner.js
+msgid "Business · G25 (2025)"
+msgstr "Gewerbe · G25 (2025)"
+
+#: build/planner/assets/planner.js
+msgid "Agriculture · L25 (2025)"
+msgstr "Landwirtschaft · L25 (2025)"
+
+#: build/planner/assets/planner.js
+msgid "Profile year"
+msgstr "Bezugsjahr des Lastprofils"
+
+#: build/planner/assets/planner.js
+msgid "Time zone"
+msgstr "Zeitzone"
+
+#: build/planner/assets/planner.js
+msgid "Create and review load profile"
+msgstr "Lastprofil erstellen und prüfen"
+
+#: build/planner/assets/planner.js
+msgid "Advanced storage and operating settings"
+msgstr "Erweiterte Speicher- und Betriebseinstellungen"
+
+#: build/planner/assets/planner.js
+msgid "Operating strategy"
+msgstr "Betriebsstrategie"
+
+#: build/planner/assets/planner.js
+msgid "Self-consumption with reserve"
+msgstr "Eigenverbrauch mit Reserve"
+
+#: build/planner/assets/planner.js
+msgid "Peak shaving · separate AC storage"
+msgstr "Lastspitzenkappung · separater AC-Speicher"
+
+#: build/planner/assets/planner.js
+msgid "Constant AC auxiliary demand"
+msgstr "Konstanter AC-Hilfsverbrauch"
+
+#: build/planner/assets/planner.js
+msgid "Use constant AC auxiliary demand instead of a profile"
+msgstr "AC-Hilfsverbrauch als konstanten Wert angeben"
+
+#: build/planner/assets/planner.js
+msgid "Peak shaving charges from the grid only when grid charging is allowed and import headroom remains. Discharge covers demand above the cap; during outages it supplies the critical load."
+msgstr "Für die Lastspitzenkappung wird nur aus dem Netz geladen, wenn dies freigegeben ist und unterhalb der Bezugsgrenze Leistung verfügbar bleibt. Der Speicher deckt den Bedarf oberhalb dieser Grenze; bei Netzausfall versorgt er die kritischen Verbraucher."
+
+#: build/planner/assets/planner.js
+msgid "Energy use and storage"
+msgstr "Strombedarf und Speicher"
+
+#: build/planner/assets/planner.js
+msgid "Operating goal"
+msgstr "Betriebsziel"
+
+#: build/planner/assets/planner.js
+msgid "Backup during an outage"
+msgstr "Versorgung bei Netzausfall"
+
+#: build/planner/assets/planner.js
+msgid "Storage-only project · no PV generation or roof required."
+msgstr "Reines Speicherprojekt · ohne PV-Erzeugung oder Dachplanung."
+
+#: build/planner/assets/planner.js
+msgid "Enter known storage capacity, power and efficiencies. Annual consumption shapes the load profile; it does not determine battery size."
+msgstr "Kapazität, Leistung und Wirkungsgrade des Speichers können Sie hier eingeben. Der Jahresverbrauch bestimmt die Skalierung des Lastprofils, nicht die Speichergröße."
+
+#: build/planner/assets/planner.js
+msgid "Allow grid charging below this cap"
+msgstr "Netzladung unterhalb dieser Bezugsgrenze zulassen"
+
+#: build/planner/assets/planner.js
+msgid "Grid import cap"
+msgstr "Netzbezugsgrenze"
+
+#: build/planner/assets/planner.js
+msgid "Calculation start · UTC or offset"
+msgstr "Berechnungsbeginn · UTC oder Zeitversatz"
+
+#: build/planner/assets/planner.js
+msgid "Calculation end · UTC or offset"
+msgstr "Berechnungsende · UTC oder Zeitversatz"
+
+#: build/planner/assets/planner.js
+msgid "Use selected profile dates"
+msgstr "Zeitraum der ausgewählten Profile übernehmen"
+
+#: build/planner/assets/planner.js
+msgid "User-declared starting charge; source unknown."
+msgstr "Angegebener Anfangsladezustand; Energieherkunft unbekannt."
+
+#: build/planner/assets/planner.js
+msgid "User-declared constant AC storage scenario; auxiliary and standing losses explicitly set to zero unless edited."
+msgstr "Angegebenes konstantes AC-Speicherszenario; Hilfsverbrauch und Selbstentladung sind ohne weitere Eingabe mit null angesetzt."
+
+#: build/planner/assets/planner.js
+msgid "The simple setup starts with no reserve, no grid export and no auxiliary or standing losses unless entered. Review starting charge, source notes and loss assumptions in advanced settings."
+msgstr "Die einfache Einrichtung setzt zunächst keine Reserve, keine Netzeinspeisung und keine Hilfs- oder Selbstentladungsverluste an. Anfangsladezustand, Quellenangaben und Verlustannahmen lassen sich in den erweiterten Einstellungen prüfen und anpassen."
+
+#: build/planner/assets/planner.js
+msgid "Without PV, this mode uses only the starting charge. Choose peak shaving to recharge from the grid below a defined cap."
+msgstr "Ohne PV nutzt diese Betriebsart nur die zu Beginn gespeicherte Energie. Für die Netzladung unterhalb einer festgelegten Bezugsgrenze steht die Lastspitzenkappung zur Verfügung."
+
+#: build/planner/assets/planner.js
+msgid "Select a critical-load profile in Energy use, then set the outage start and end below. PV is off in this backup setup; advanced settings can enable a documented backup PV supply. The calculation reports any unmet demand."
+msgstr "Wählen Sie unter Strombedarf ein Profil der kritischen Verbraucher und legen Sie Beginn und Ende des Netzausfalls fest. Die PV-Erzeugung ist hier ausgeschaltet; eine dokumentierte PV-Notstromversorgung lässt sich in den erweiterten Einstellungen aktivieren. Das Ergebnis weist ungedeckten Bedarf aus."
+
+#: build/planner/assets/planner.js
+msgid "A storage-only project cannot start with PV-origin energy. Review the starting charge and its source."
+msgstr "In einem reinen Speicherprojekt kann der Anfangsladezustand keine PV-Energie enthalten. Prüfen Sie die gespeicherte Anfangsenergie und ihre Herkunft."
+
+#: build/planner/assets/planner.js
+msgid "Choose separate AC storage for storage-only, peak-shaving or constant auxiliary-demand calculations. Shared-DC calculations use their own PV and auxiliary profiles."
+msgstr "Reine Speicherprojekte, Lastspitzenkappung und konstanter Hilfsverbrauch verwenden das Modell mit separatem AC-Speicher. Das gemeinsame DC-System benötigt eigene PV- und Hilfsverbrauchsprofile."
+
+#: build/planner/assets/planner.js
+msgid "Select the missing interval sources in Energy use. Storage-only projects need no PV source; AC auxiliary demand can use a constant value."
+msgstr "Ergänzen Sie die fehlenden Zeitreihen unter Strombedarf. Reine Speicherprojekte benötigen keine PV-Quelle; für den AC-Hilfsverbrauch ist auch ein konstanter Wert möglich."
+
+#: build/planner/assets/planner.js
+msgid "This combination changes equipment marked Keep existing. Choose a matching combination or change the equipment plan to Replace existing."
+msgstr "Diese Kombination verändert Geräte mit der Auswahl „Vorhandenes behalten“. Wählen Sie eine passende Kombination oder ändern Sie die Geräteplanung auf „Vorhandenes ersetzen“."
+
+#: build/planner/assets/planner.js
+msgid "Buy new"
+msgstr "Neu beschaffen"
+
+#: build/planner/assets/planner.js
+msgid "Keep existing"
+msgstr "Vorhandenes behalten"
+
+#: build/planner/assets/planner.js
+msgid "Replace existing"
+msgstr "Vorhandenes ersetzen"
+
+#: build/planner/assets/planner.js
+msgid "Controller"
+msgstr "Steuergerät"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Edit boundaries and roof features"
+msgstr "Dachkonturen und Aufbauten bearbeiten"
+
 #: src/configurator/utility/UtilityForm.tsx:79 build/configurator.js
+#: ../../apps/planner/src/components/ProjectEditor.tsx
+#: build/planner/assets/planner.js
 msgid "Project"
 msgstr "Projekt"
 
@@ -1796,7 +2059,7 @@ msgstr "Wählen Sie %s vor dem Senden erneut aus."
 msgid "Selected: %1$s modules, %2$s kWp"
 msgstr "Ausgewählt: %1$s Module, %2$s kWp"
 
-#: src/configurator/solution/Solution.tsx:226 build/configurator.js
+#: src/configurator/solution/Solution.tsx:226 build/configurator.js ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
 msgid "Self-consumption"
 msgstr "Eigenverbrauchsanteil"
 

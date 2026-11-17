@@ -17,6 +17,8 @@ import { join } from 'node:path';
 import { seedConsentCookies } from '../lib/consent';
 import { instance, wp } from '../lib/instance';
 
+test.use({ screenshot: 'only-on-failure' });
+
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
@@ -34,7 +36,8 @@ const WORDS = {
 		addSelectedModulesToString: 'Add selected modules to string',
 		addSelectedProductsToSolution:
 			'Add selected products to solution draft',
-		annualElectricityUse: 'Annual electricity use',
+		advancedStorageAndOperatingSettings:
+			'Advanced storage and operating settings',
 		availablePvAc: 'Available PV output · AC',
 		pointDecimal: 'Point · 12.5',
 		weatherValidated: 'passed validation',
@@ -59,7 +62,7 @@ const WORDS = {
 		discardStoredRequest: 'Discard stored request',
 		endWithUtc: 'End with UTC',
 		energyCalculation: 'Energy calculation',
-		energyInputs: 'Energy inputs',
+		energyInputs: 'Energy use',
 		equipment: 'Equipment',
 		expectedRadiationDatabase: 'Expected radiation database',
 		firstSourceYear: 'First source year',
@@ -88,20 +91,17 @@ const WORDS = {
 		notUsed: 'Not used',
 		operation: 'Operation',
 		pvArrayKwp: 'PV array kWp',
-		pvArraySize: 'PV array size',
 		pvAvailable: 'PV available',
 		pvGeneration: 'PV generation',
 		pvModelPreparedInThis: 'PV model prepared in this draft',
 		pvStringsAndInputs: 'PV strings and inputs',
 		planningReport: 'Planning report',
-		postcodeOrTown: 'Postcode or town',
 		preparePvModel: 'Prepare PV model',
 		prepareEquipmentSelection: 'Prepare equipment selection',
 		prepareScenarioSettings: 'Prepare scenario settings',
 		prepareWeatherSettings: 'Prepare weather settings',
 		previewColumns: 'Preview columns',
 		projectOverview: 'Project overview',
-		quickStartPlanInOne: 'Quick start: plan in one screen',
 		reloadProductData: 'Reload product data',
 		repeatedTimeColumn: 'Repeated-time column',
 		requestWeatherForSavedInputs: 'Request weather for saved inputs',
@@ -160,7 +160,8 @@ const WORDS = {
 			'Ausgew\u00e4hlte Module zum String hinzuf\u00fcgen',
 		addSelectedProductsToSolution:
 			'Ausgew\u00e4hlte Produkte zum L\u00f6sungsentwurf hinzuf\u00fcgen',
-		annualElectricityUse: 'J\u00e4hrlicher Stromverbrauch',
+		advancedStorageAndOperatingSettings:
+			'Erweiterte Speicher- und Betriebseinstellungen',
 		availablePvAc: 'Verf\u00fcgbare PV-Leistung \u00b7 AC',
 		pointDecimal: 'Punkt \u00b7 12.5',
 		weatherValidated: 'gepr\u00fcft und gespeichert',
@@ -187,7 +188,7 @@ const WORDS = {
 		discardStoredRequest: 'Gespeicherte Anfrage verwerfen',
 		endWithUtc: 'Ende (UTC oder Zeitversatz)',
 		energyCalculation: 'Energieberechnung',
-		energyInputs: 'Energiedaten',
+		energyInputs: 'Strombedarf',
 		equipment: 'Ger\u00e4te',
 		expectedRadiationDatabase: 'Erwartete Strahlungsdatenbank',
 		firstSourceYear: 'Erstes Jahr des Quellzeitraums',
@@ -217,20 +218,17 @@ const WORDS = {
 		notUsed: 'Nicht verwendet',
 		operation: 'Betrieb',
 		pvArrayKwp: 'PV-Leistung kWp',
-		pvArraySize: 'Gr\u00f6\u00dfe der PV-Anlage',
 		pvAvailable: 'PV in diesem Zeitraum verf\u00fcgbar',
 		pvGeneration: 'PV-Erzeugung',
 		pvModelPreparedInThis: 'PV-Modell in diesem Entwurf vorbereitet',
 		pvStringsAndInputs: 'PV-Strings und Eing\u00e4nge',
 		planningReport: 'Planungsbericht',
-		postcodeOrTown: 'Postleitzahl oder Ort',
 		preparePvModel: 'PV-Modell vorbereiten',
 		prepareEquipmentSelection: 'Ger\u00e4teauswahl vorbereiten',
 		prepareScenarioSettings: 'Szenario vorbereiten',
 		prepareWeatherSettings: 'Wettereinstellungen vorbereiten',
 		previewColumns: 'Spaltenvorschau',
 		projectOverview: 'Projekt\u00fcbersicht',
-		quickStartPlanInOne: 'Schnellstart: Planen auf einem Bildschirm',
 		reloadProductData: 'Produktdaten neu laden',
 		repeatedTimeColumn:
 			'Spalte f\u00fcr doppelte Ortszeiten \u00b7 optional',
@@ -299,6 +297,7 @@ for (const lang of ['en', 'de'] as const) {
 		page,
 	}) => {
 		test.setTimeout(900_000);
+		page.setDefaultTimeout(15_000);
 
 		const equipResponses: string[] = [];
 		const equipStatuses: number[] = [];
@@ -390,20 +389,22 @@ for (const lang of ['en', 'de'] as const) {
 		await page.goto(instance().url + words.configurator, {
 			waitUntil: 'networkidle',
 		});
-		await page
-			.getByRole('button', { name: words.newProject })
-			.first()
-			.click();
-		await page
-			.locator('input[maxlength="256"]')
-			.first()
-			.fill('Report chain');
+		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
+			await page
+				.getByRole('button', { name: words.newProject })
+				.first()
+				.click();
+		}
+		await page.locator('select[name="solar_entry"]').selectOption('known');
+		await page.locator('input[name="project_title"]').fill('Report chain');
 		await page.getByRole('button', { name: words.createProject }).click();
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
 		const chainProject =
 			new URL(page.url()).searchParams.get('project') ?? '';
 
+		await page.locator('nav[aria-label] a[href="#lp-site"]').click();
 		const site = page.locator('#lp-site');
+		await site.locator('summary').click();
 		await site.locator('select').first().selectOption('DE');
 		await site.locator('input').nth(0).fill('Triftstrasse 5');
 		await site.locator('input').nth(1).fill(num(lang, '48.1689'));
@@ -415,14 +416,9 @@ for (const lang of ['en', 'de'] as const) {
 			.first()
 			.fill('8 kWp roof with battery, Munich, south-facing');
 
-		await page.getByRole('link', { name: words.projectOverview }).click();
-		const roofEntry = page.locator('.lp-overview-empty .lp-button');
-		await roofEntry.waitFor({ state: 'attached' });
-		await page.evaluate(
-			(el) => (el as HTMLElement).click(),
-			await roofEntry.elementHandle()
-		);
+		await page.locator('nav[aria-label] a[href="#lp-design"]').click();
 		await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
+		await page.locator('#lp-design .lp-design-imports > summary').click();
 
 		// Narrowed to .lp-button: the German empty state's 'Erste
 		// Dachfläche hinzufügen' also substring-matches.
@@ -484,14 +480,19 @@ for (const lang of ['en', 'de'] as const) {
 			.locator('#lp-design button', { hasText: words.addModuleArray })
 			.click();
 		const arrayForm = page.locator('#lp-design form');
+		await page.locator('#lp-design .lp-view-switch button').last().click();
+		const position = page.locator('.lp-plan-position');
+		await position.locator('summary').click();
+		await position.locator('input').nth(0).fill('1');
+		await position.locator('input').nth(1).fill('1');
+		await position.getByRole('button').click();
+		await arrayForm.locator('.lp-array-settings > summary').click();
 		await arrayForm.locator('[name="name"]').fill('Main array');
-		await arrayForm.locator('[name="module"]').selectOption({ index: 1 });
+		await arrayForm.locator('[name="module"]').selectOption({ index: 0 });
 		const fillField = async (name: string, value: string) => {
 			const field = arrayForm.locator(`[name="${name}"]`);
 			if (await field.count()) await field.fill(value);
 		};
-		await fillField('u', '1');
-		await fillField('v', '1');
 		await fillField('rows', '2');
 		await fillField('columns', '4');
 		// The configurator/validation row: an out-of-range tilt (max 90) is
@@ -617,7 +618,7 @@ for (const lang of ['en', 'de'] as const) {
 
 		// --- Weather (panel-direct selection; all proven). ---
 		await page
-			.getByRole('link', { name: words.energyCalculation })
+			.locator('.lp-project-aside a[href="#lp-calculations"]')
 			.click({ timeout: 15_000 });
 		await page.waitForTimeout(1000);
 		await switchTab(words.weatherSource);
@@ -649,7 +650,12 @@ for (const lang of ['en', 'de'] as const) {
 				{ timeout: 60_000 }
 			)
 			.toBe(true);
+		const weatherAdmission = page.waitForResponse((response) =>
+			response.url().endsWith('/rpc/runs/weather')
+		);
 		await domClick(words.requestWeatherForSavedInputs);
+		const weatherReply = await weatherAdmission;
+		expect(weatherReply.status()).toBe(200);
 		await expect
 			.poll(
 				async () =>
@@ -784,7 +790,7 @@ for (const lang of ['en', 'de'] as const) {
 		await switchTab(words.equipment);
 		await domClick(words.singleSystem);
 		await page.waitForTimeout(800);
-		const equipment = page.locator('#lp-calculations');
+		const equipment = page.locator('#lp-calculations #lp-equipment');
 		await equipment
 			.getByLabel(words.chooseAnOperatingMode)
 			.selectOption({ index: 1 });
@@ -798,22 +804,24 @@ for (const lang of ['en', 'de'] as const) {
 			.fill('5');
 		await domClick(words.reloadProductData);
 		await page.waitForTimeout(2500);
-		await page
-			.locator('#lp-calculations summary', {
-				hasText: words.chooseEquipmentManually,
-			})
-			.first()
-			.click({ force: true, noWaitAfter: true });
+		const manualSummary = equipment.locator('summary', {
+			hasText: words.chooseEquipmentManually,
+		});
+		if ((await manualSummary.locator('..').getAttribute('open')) === null) {
+			await manualSummary.evaluate((summary) =>
+				summary.scrollIntoView({ block: 'center', behavior: 'instant' })
+			);
+			await manualSummary.click();
+		}
+		await expect(manualSummary.locator('..')).toHaveAttribute('open', '');
 		await page.waitForTimeout(800);
-		const inverterSelect = page
-			.locator('#lp-calculations label', {
-				hasText: words.inverterOrIntegratedStorageSystem,
-			})
-			.locator('select');
+		const inverterSelect = equipment.getByLabel(
+			words.inverterOrIntegratedStorageSystem
+		);
 		await inverterSelect.selectOption({ index: 1 });
 		await page.waitForTimeout(1500);
-		for (const field of await page
-			.locator('#lp-calculations input:visible:not([type="checkbox"])')
+		for (const field of await equipment
+			.locator('input:visible:not([type="checkbox"])')
 			.all()) {
 			const mode = await field.getAttribute('inputmode');
 			if (mode !== 'decimal' && mode !== 'numeric') continue;
@@ -822,76 +830,64 @@ for (const lang of ['en', 'de'] as const) {
 		await saveProject();
 
 		// PV strings: open details, create plan, complete, assign all modules.
-		await page
-			.locator('#lp-calculations summary', {
-				hasText: words.pvStringsAndInputs,
-			})
-			.first()
-			.click({ force: true, noWaitAfter: true });
-		await page.waitForTimeout(800);
-		const stringsDetails = page
-			.locator('#lp-calculations details', {
-				hasText: words.pvStringsAndInputs,
-			})
-			.first();
-		await expect(stringsDetails).toBeVisible();
-		const createPlan = page.locator('#lp-calculations button:visible', {
-			hasText: words.setUpPvStrings,
+		const stringsSummary = equipment.locator('summary', {
+			hasText: words.pvStringsAndInputs,
 		});
-		if ((await createPlan.count()) > 0) {
-			await createPlan.first().click({ force: true, noWaitAfter: true });
-			await page.waitForTimeout(1200);
+		const stringsDetails = stringsSummary.locator('..');
+		await expect(stringsSummary).toBeVisible();
+		if ((await stringsDetails.getAttribute('open')) === null) {
+			await stringsSummary.evaluate((summary) =>
+				summary.scrollIntoView({ block: 'center', behavior: 'instant' })
+			);
+			await stringsSummary.click();
 		}
+		await expect(stringsDetails).toHaveAttribute('open', '');
+		const createPlan = stringsDetails.getByRole('button', {
+			name: words.setUpPvStrings,
+			exact: true,
+		});
+		await expect(createPlan).toBeVisible();
+		await expect(createPlan).toBeEnabled();
+		await createPlan.click();
 		await stringsDetails
 			.getByLabel(words.lowestDesignAmbientTemperature)
 			.fill('-10');
 		await stringsDetails
 			.getByLabel(words.temperatureSourceAndLocation)
 			.fill('Local design minimum, Munich');
-		await stringsDetails.getByLabel(words.mppt).fill('1');
+		await stringsDetails.getByLabel(words.mppt, { exact: true }).fill('1');
 		await stringsDetails.getByLabel(words.inverterInput).fill('1');
-		const selectAllState = await page.evaluate(
-			(selectAllAvailableModules: string) => {
-				const details = Array.from(
-					document.querySelectorAll('#lp-calculations details')
-				).find((n) => n.textContent?.includes('Array 1'));
-				if (details instanceof HTMLDetailsElement && !details.open)
-					details.open = true;
-				const button = Array.from(
-					document.querySelectorAll<HTMLButtonElement>(
-						'#lp-calculations button'
-					)
-				).find((n) =>
-					n.textContent?.includes(selectAllAvailableModules)
-				);
-				if (button && !button.disabled) {
-					button.click();
-					return true;
-				}
-				return false;
-			},
-			words.selectAllAvailableModules
+		const arrayDetails = stringsDetails
+			.locator('details')
+			.filter({
+				has: page.getByText(words.selectAllAvailableModules, {
+					exact: true,
+				}),
+			})
+			.first();
+		if ((await arrayDetails.getAttribute('open')) === null) {
+			const arraySummary = arrayDetails.locator(':scope > summary');
+			await arraySummary.evaluate((summary) =>
+				summary.scrollIntoView({ block: 'center', behavior: 'instant' })
+			);
+			await arraySummary.click();
+		}
+		await expect(arrayDetails).toHaveAttribute('open', '');
+		const selectAll = arrayDetails.getByText(
+			words.selectAllAvailableModules,
+			{ exact: true }
 		);
-		expect(selectAllState).toBe(true);
+		await expect(selectAll).toBeVisible();
+		await expect(selectAll).toBeEnabled();
+		await selectAll.click();
 		await page.waitForTimeout(800);
-		const addState = await page.evaluate(
-			(addSelectedModulesToString: string) => {
-				const button = Array.from(
-					document.querySelectorAll<HTMLButtonElement>(
-						'#lp-calculations button'
-					)
-				).find((n) =>
-					n.textContent?.includes(addSelectedModulesToString)
-				);
-				if (button && !button.disabled) {
-					button.click();
-					return true;
-				}
-				return false;
-			},
-			words.addSelectedModulesToString
-		);
-		expect(addState).toBe(true);
+		const addString = stringsDetails.getByRole('button', {
+			name: words.addSelectedModulesToString,
+			exact: true,
+		});
+		await expect(addString).toBeVisible();
+		await expect(addString).toBeEnabled();
+		await addString.click();
 		await page.waitForTimeout(1500);
 		await expect(stringsDetails).toContainText(words.modulesAssigned, {
 			timeout: 15_000,
@@ -1005,6 +1001,22 @@ for (const lang of ['en', 'de'] as const) {
 		// workspace wrapper DIV hidden). The profiles were already selected in
 		// the profile stage of this chain.
 		await domClick(words.useTheSharedProfileRange);
+		const advancedSummary = page.locator('#lp-calculations summary', {
+			hasText: words.advancedStorageAndOperatingSettings,
+		});
+		await expect(advancedSummary).toBeVisible();
+		if (
+			(await advancedSummary.locator('..').getAttribute('open')) === null
+		) {
+			await advancedSummary.evaluate((summary) =>
+				summary.scrollIntoView({ block: 'center', behavior: 'instant' })
+			);
+			await advancedSummary.click();
+		}
+		await expect(advancedSummary.locator('..')).toHaveAttribute('open', '');
+		await expect(
+			advancedSummary.locator('..').locator('.lp-scenario-steps')
+		).toBeVisible();
 		// The planner re-renders continuously (the equipment stage needed
 		// force:true for the same reason), so Playwright's stability-gated
 		// actions can wait forever here. Fill through the DOM with React's
@@ -1562,20 +1574,20 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(
 			page.locator('input[name^="linker_project_note_revisions"]')
 		).toHaveCount(0);
-		// The configurator/restart row: a fully planned project still reopens
-		// the one-screen quick start, carrying the saved sizing (8 kWp) and the
-		// site's address label.
+		// The saved project reopens its current scheme, not another start
+		// with unrelated default sizing.
 		await page.goto(
 			instance().url + `${words.configurator}?project=${chainProject}`
 		);
+		await expect(page.locator('.lp-project')).toBeVisible();
+		await page.locator('nav[aria-label] a[href="#lp-equipment"]').click();
+		await expect(page.getByLabel(words.pvArrayKwp)).toHaveValue('8');
 		await page
-			.getByRole('button', { name: words.quickStartPlanInOne })
-			.click({ timeout: 30_000 });
-		// Quick start is a fresh one-screen plan over the saved project: the
-		// panel opens with its own editable defaults (the workbench stays open
-		// underneath with every saved input).
-		await expect(page.getByLabel(words.pvArraySize)).toBeVisible();
-		await expect(page.getByLabel(words.annualElectricityUse)).toBeVisible();
-		await expect(page.getByLabel(words.postcodeOrTown)).toBeVisible();
+			.locator('nav[aria-label] a[href="#lp-calculations"]')
+			.click();
+		await expect(page).toHaveURL(/energy_view=reports/);
+		await expect(
+			page.getByRole('button', { name: words.generatePlanningReport })
+		).toBeVisible();
 	});
 }

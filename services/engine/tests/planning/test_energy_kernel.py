@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
 from typing import cast
@@ -26,6 +27,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.power_series import Measurement
 from linker_engine.planning.profile_import import ProfileImport
+from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from linker_engine.planning.records import Actor, Project
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
@@ -172,6 +174,184 @@ def object_field(document: FixtureObject, name: str) -> FixtureObject:
     field = document[name]
     assert isinstance(field, dict)
     return field
+
+
+def test_storage_only_replay_needs_no_pv_source_and_keeps_zero_solar_accounting(
+    workspace: Workspace, owner: Actor
+) -> None:
+    project = create_scenario(workspace, owner)
+    scenario = object_field(project.inputs, "energy_replay")
+    pv_asset_id = scenario["pv_available_asset_id"]
+    scenario["pv_available_asset_id"] = None
+    scenario["initial_inventory"] = {
+        "pv_kwh": 0,
+        "grid_kwh": 5,
+        "initial_unknown_kwh": 0,
+        "basis": "user_declared",
+        "source_note": "Declared starting charge",
+    }
+    for period in scenario["schedule"]:
+        period["pv_enabled"] = False
+    inputs: Object = {
+        **project.inputs,
+        "brief": {
+            "schema_version": 1,
+            "project_use": "commercial",
+            "system_scope": "storage_only",
+            "site": {
+                "country_code": "FR",
+                "location_label": "Test site",
+                "latitude": None,
+                "longitude": None,
+                "coordinate_basis": "not_provided",
+                "timezone": "Europe/Paris",
+            },
+            "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+            "project_note": "",
+        },
+        "energy_replay": scenario,
+    }
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        inputs,
+        key="storage-only",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    run = EnergyService(workspace, kernel, max_attempts=2).evaluate(
+        owner, project.id, project.revision, key="storage-run"
+    )
+    assert worker(workspace, kernel).run_once()
+    completed = workspace.run(owner, run.id)
+    assert completed.state == "succeeded", completed.error
+    result = json_object(completed.result)
+    energy = object_field(result, "metrics")
+    assert energy["gross_load_kwh"] == 4
+    assert energy["grid_import_kwh"] == pytest.approx(0)
+    assert energy["solar_load_kwh"] == 0
+    assert energy["solar_autarky"]["value"] == 0
+    pv = result["profile_interpretation"]["operating_periods"][0]["profiles"][
+        "pv_available_ac"
+    ]
+    assert pv["source"]["details"]["basis"] == "pv_disabled_for_entire_schedule"
+    for violation in ("asset", "generation", "initial"):
+        invalid = deepcopy(inputs)
+        changed = object_field(invalid, "energy_replay")
+        if violation == "asset":
+            changed["pv_available_asset_id"] = pv_asset_id
+        elif violation == "generation":
+            changed["schedule"][0]["pv_enabled"] = True
+        else:
+            changed["initial_inventory"]["pv_kwh"] = 1
+        project = workspace.revise(
+            owner,
+            project.id,
+            project.revision,
+            invalid,
+            key="forbidden-pv-" + violation,
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        with pytest.raises(InvalidInput, match="storage-only"):
+            EnergyService(workspace, kernel, max_attempts=1).evaluate(
+                owner, project.id, project.revision, key="forbidden-" + violation
+            )
+
+
+@pytest.mark.parametrize("pv_enabled", [False, True])
+def test_pv_backup_can_use_previous_solar_inventory_without_a_generation_source(
+    workspace: Workspace, owner: Actor, pv_enabled: bool
+) -> None:
+    project = create_scenario(workspace, owner, outage=True)
+    scenario = object_field(project.inputs, "energy_replay")
+    scenario["pv_available_asset_id"] = None
+    scenario["initial_inventory"]["pv_kwh"] = 3
+    scenario["schedule"] = [
+        {
+            **scenario["schedule"][1],
+            "start_utc": "2024-03-30T23:00:00Z",
+            "pv_enabled": pv_enabled,
+        }
+    ]
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {**project.inputs, "energy_replay": scenario},
+        key="pv-backup",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    service = EnergyService(workspace, kernel, max_attempts=1)
+    if pv_enabled:
+        with pytest.raises(InvalidInput, match="PV source"):
+            service.evaluate(owner, project.id, project.revision, key="backup")
+        return
+    run = service.evaluate(owner, project.id, project.revision, key="backup")
+    assert worker(workspace, kernel).run_once()
+    completed = workspace.run(owner, run.id)
+    assert completed.state == "succeeded", completed.error
+    result = json_object(completed.result)
+    assert result["metrics"]["solar_load_kwh"] == pytest.approx(2)
+    assert result["metrics"]["stored_initial"]["pv_kwh"] == 3
+    assert result["metrics"]["pv_generated_ac_kwh"] == 0
+    pv = result["profile_interpretation"]["operating_periods"][0]["profiles"][
+        "pv_available_ac"
+    ]
+    assert pv["source"]["details"]["basis"] == "pv_disabled_for_entire_schedule"
+
+
+@pytest.mark.parametrize("allow_grid_charge", [True, False])
+def test_peak_shaving_recharges_below_the_grid_cap_before_serving_a_peak(
+    workspace: Workspace, owner: Actor, allow_grid_charge: bool
+) -> None:
+    project = create_scenario(workspace, owner)
+    scenario = object_field(project.inputs, "energy_replay")
+    source = b"time,power\n2024-03-30T23:00:00Z,0\n2024-03-31T00:00:00Z,3\n"
+    load = ProfileImport(Assets(workspace)).csv(
+        owner, project.id, source, mapping("gross_load"), PROVENANCE, key="peak-load"
+    )
+    scenario["gross_load_asset_id"] = load.id
+    scenario["controller"] = "peak_shaving_with_reserve_v1"
+    for period in scenario["schedule"]:
+        period.update(
+            pv_enabled=False, allow_grid_charge=allow_grid_charge, import_cap_kw=2
+        )
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {**project.inputs, "energy_replay": scenario},
+        key="peak",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    run = EnergyService(workspace, kernel, max_attempts=2).evaluate(
+        owner, project.id, project.revision, key="peak-run"
+    )
+    assert worker(workspace, kernel).run_once()
+    completed = workspace.run(owner, run.id)
+    assert completed.state == "succeeded", completed.error
+    result = json_object(completed.result)
+    energy = object_field(result, "metrics")
+    assert energy["grid_import_kwh"] == pytest.approx(4 if allow_grid_charge else 2)
+    assert energy["solar_load_kwh"] == 0
+    assert result["scenario_constraint_status"] == (
+        "satisfied" if allow_grid_charge else "violated"
+    )
+    context = object_field(completed.manifest, "context")
+    assert context["models"]["controller"] == "peak_shaving_with_reserve_v1"
+    from linker_engine.planning.execution_identity import execution_key
+    from linker_engine.planning.execution_registry import service_registry
+
+    registry = service_registry(EnergyService(workspace, kernel, max_attempts=1), None)
+    assert execution_key(context) in registry.execution_keys()
+    flows = json_object(workspace.blobs.object(result["trace_sha256"]))["flows"]
+    assert flows[0]["grid_charge_kw"] == pytest.approx(2 if allow_grid_charge else 0)
+    assert flows[1]["discharge_kw"] == pytest.approx(1 if allow_grid_charge else 0)
 
 
 def test_real_csv_to_durable_run_keeps_analytic_energy_and_frozen_history(
@@ -448,6 +628,68 @@ def test_pinned_hash_substitution_cannot_override_the_input_asset_id(
     assert worker(workspace, kernel).run_once()
     failed = workspace.run(owner, run.id)
     assert failed.error == {"code": "version_unavailable", "retryable": False}
+
+
+@pytest.mark.parametrize("peak", [False, True])
+def test_registered_worker_rejects_controller_evidence_that_disagrees_with_frozen_inputs(
+    workspace: Workspace, owner: Actor, peak: bool
+) -> None:
+    from linker_engine.planning.execution_registry import service_registry
+
+    project = create_scenario(workspace, owner)
+    scenario = object_field(project.inputs, "energy_replay")
+    scenario["controller"] = (
+        "peak_shaving_with_reserve_v1" if peak else "self_consumption_with_reserve_v1"
+    )
+    scenario["schedule"][0]["import_cap_kw"] = 2
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {**project.inputs, "energy_replay": scenario},
+        key="controller",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    service = EnergyService(workspace, kernel, max_attempts=1)
+    valid = service.evaluate(owner, project.id, project.revision, key="valid")
+    context = kernel.context(owner, project.id, project.inputs)
+    context = replace(
+        context,
+        models={
+            **context.models,
+            "controller": "self_consumption_with_reserve_v1"
+            if peak
+            else "peak_shaving_with_reserve_v1",
+        },
+    )
+    forged = workspace.evaluate(
+        owner,
+        project.id,
+        project.revision,
+        context,
+        key="wrong-controller",
+        max_attempts=1,
+    )
+    registry = service_registry(service, None)
+    executor = Worker(
+        Jobs(workspace),
+        "controller-binding-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    assert executor.run_once()
+    assert executor.run_once()
+    completed = workspace.run(owner, valid.id)
+    assert completed.state == "succeeded", completed.error
+    assert completed.manifest == valid.manifest
+    failed = workspace.run(owner, forged.id)
+    assert failed.error == {"code": "version_unavailable", "retryable": False}
+    assert failed.manifest == forged.manifest
+    assert failed.result is None
 
 
 def test_unknown_model_version_is_not_reinterpreted_by_the_current_worker(

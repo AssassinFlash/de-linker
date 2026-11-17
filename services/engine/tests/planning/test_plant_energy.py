@@ -263,6 +263,161 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
             == "joint_outage_ac_pv_topology"
         )
 
+        # The same installed units can peak-shave without a PV or auxiliary file.
+        from linker_engine.planning.assets import Assets
+        from linker_engine.planning.profile_import import ProfileImport
+        from linker_engine.planning.project_input_contracts import (
+            SUPPORTED_INPUT_CONTRACTS,
+        )
+
+        from .test_energy_kernel import PROVENANCE, mapping
+        from .test_private_http import brief_inputs
+
+        peak_load = ProfileImport(Assets(workspace)).csv(
+            owner,
+            project.id,
+            b"time,power\n2024-03-30T23:00:00Z,0\n2024-03-31T00:00:00Z,3\n",
+            mapping("gross_load"),
+            PROVENANCE,
+            key="joint-peak-load",
+        )
+        brief = brief_inputs("Europe/Paris")["brief"]
+        brief["system_scope"] = "storage_only"
+        peak = {
+            **scenario,
+            "controller": "proportional_peak_shaving_v1",
+            "gross_load_asset_id": peak_load.id,
+            "pv_available_asset_id": None,
+            "aux_ac_asset_id": None,
+            "aux_ac_kw": 0,
+            "schedule": [
+                {
+                    **p,
+                    "pv_enabled": False,
+                    "import_cap_kw": 2,
+                    "allow_grid_charge": True,
+                }
+                for p in scenario["schedule"]
+            ],
+        }
+        peak_project = workspace.revise(
+            owner,
+            project.id,
+            project.revision,
+            {**project.inputs, "brief": brief, "energy_plant": peak},
+            key="joint-peak",
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        peak_reply = client.post(
+            "/runs/energy",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": peak_project.revision,
+                "key": "joint-peak-run",
+            },
+            headers=headers(owner),
+        )
+        assert peak_reply.status_code == 200, peak_reply.text
+        assert executor.run_once()
+        peak_run = workspace.run(owner, peak_reply.json()["id"])
+        assert peak_run.state == "succeeded", peak_run.error
+        peak_result = json_object(peak_run.result)
+        assert peak_result["verification"]["physical_passed"]
+        assert peak_result["metrics"]["grid_import_kwh"] == pytest.approx(4)
+        assert peak_result["metrics"]["solar_load_kwh"] == 0
+        assert (
+            json_object(peak_run.manifest)["context"]["models"]["controller"]
+            == "proportional_peak_shaving_v1"
+        )
+        assert (
+            peak_result["metrics"]["definitions"]["control"]
+            == "proportional_peak_shaving_v1; no forecast or optimality claim"
+        )
+        assert workspace.run(owner, rid).manifest == run.manifest
+        assert workspace.run(owner, rid).result_sha256 == run.result_sha256
+        context = joint.context(owner, project.id, peak_project.inputs)
+        forged = workspace.evaluate(
+            owner,
+            project.id,
+            peak_project.revision,
+            replace(
+                context,
+                models={
+                    **context.models,
+                    "controller": "proportional_available_power_self_consumption_v1",
+                },
+            ),
+            key="wrong-plant-controller",
+            max_attempts=1,
+        )
+        assert executor.run_once()
+        rejected = workspace.run(owner, forged.id)
+        assert rejected.error == {"code": "version_unavailable", "retryable": False}
+        assert rejected.manifest == forged.manifest
+        assert rejected.result is None
+
+        # No active PV generation does not erase energy stored before the run.
+        # These fixture converters have a connected-mode envelope only.
+        backup = {
+            **scenario,
+            "pv_available_asset_id": None,
+            "schedule": [{**p, "pv_enabled": False} for p in scenario["schedule"]],
+            "units": [
+                {**u, "initial_inventory": {**u["initial_inventory"], "pv_kwh": 3}}
+                for u in scenario["units"]
+            ],
+        }
+        backup_project = workspace.revise(
+            owner,
+            project.id,
+            peak_project.revision,
+            {**project.inputs, "energy_plant": backup},
+            key="pv-joint-backup",
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        backup_run = energy.evaluate(
+            owner, project.id, backup_project.revision, key="pv-joint-backup-run"
+        )
+        assert executor.run_once()
+        completed_backup = workspace.run(owner, backup_run.id)
+        assert completed_backup.state == "succeeded", completed_backup.error
+        backup_result = json_object(completed_backup.result)
+        assert backup_result["metrics"]["solar_load_kwh"] == pytest.approx(4)
+        assert backup_result["metrics"]["stored_initial"]["pv_kwh"] == 6
+        assert backup_result["metrics"]["pv_generated_ac_kwh"] == 0
+        assert (
+            backup_result["profile_interpretation"]["operating_periods"][0]["profiles"][
+                "pv_available_ac"
+            ]["source"]["details"]["basis"]
+            == "pv_disabled_for_entire_schedule"
+        )
+        forbidden_storage = workspace.revise(
+            owner,
+            project.id,
+            backup_project.revision,
+            {**backup_project.inputs, "brief": brief},
+            key="storage-with-pv-inventory",
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        with pytest.raises(InvalidInput, match="storage-only initial inventory"):
+            energy.evaluate(
+                owner, project.id, forbidden_storage.revision, key="forbidden-storage"
+            )
+        enabled_pv = workspace.revise(
+            owner,
+            project.id,
+            forbidden_storage.revision,
+            {
+                **backup_project.inputs,
+                "energy_plant": {**backup, "schedule": scenario["schedule"]},
+            },
+            key="enabled-pv-without-source",
+            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        )
+        with pytest.raises(InvalidInput, match="PV source"):
+            energy.evaluate(owner, project.id, enabled_pv.revision, key="enabled-pv")
+
         # Opt-in capture reuses this native worker output for the distinct
         # browser consumer. Synthetic source rows never enter product runtime.
         import os

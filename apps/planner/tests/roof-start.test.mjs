@@ -167,6 +167,49 @@ async function fixture(t, options = {}) {
 	};
 }
 
+test("a storage-only project starts without a roof, geocoding or invented capacity", async (t) => {
+	const page = await fixture(t);
+	const scope = document.querySelector('select[name="system_scope"]');
+	assert.ok(scope, "the same project start offers the planned system");
+	await act(async () => {
+		scope.value = "storage_only";
+		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(
+		document.querySelector('input[name="project_title"]'),
+		"Oslo battery project",
+	);
+	await page.submit();
+	await until(() => page.opened.length === 1);
+	assert.equal(page.searches.length, 0);
+	assert.equal(
+		page.opened[0].project.inputs.brief.system_scope,
+		"storage_only",
+	);
+	assert.equal(page.opened[0].project.inputs.brief.annual_load.kwh, null);
+	assert.equal(page.opened[0].project.inputs.geometry, undefined);
+	assert.equal(page.opened[0].project.inputs.equipment_setup, undefined);
+	assert.equal(page.records.length, 0);
+});
+
+test("known solar details open equipment without requiring a map or another roof step", async (t) => {
+	const page = await fixture(t);
+	await act(async () => {
+		const entry = document.querySelector('select[name="solar_entry"]');
+		entry.value = "known";
+		entry.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(
+		document.querySelector('input[name="project_title"]'),
+		"Existing solar system",
+	);
+	await page.submit();
+	await until(() => page.opened.length === 1);
+	assert.equal(page.searches.length, 0);
+	assert.equal(page.opened[0].destination, "equipment");
+	assert.equal(page.opened[0].project.inputs.geometry, undefined);
+});
+
 test("country and real address create a roof project without sizing inputs", async (t) => {
 	const page = await fixture(t);
 	assert.equal(button("Open roof map").disabled, true);

@@ -176,6 +176,17 @@
           },
           "title": "Product Revisions",
           "type": "object"
+        },
+        "equipment_use": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EquipmentUse"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -193,6 +204,23 @@
         "product_revisions"
       ],
       "title": "EquipmentSelection",
+      "type": "object"
+    },
+    "EquipmentUse": {
+      "additionalProperties": false,
+      "properties": {
+        "inverter": {
+          "$ref": "#/$defs/PartUse"
+        },
+        "battery": {
+          "$ref": "#/$defs/PartUse"
+        }
+      },
+      "required": [
+        "inverter",
+        "battery"
+      ],
+      "title": "EquipmentUse",
       "type": "object"
     },
     "GridPhase": {
@@ -254,6 +282,17 @@
             }
           ],
           "default": null
+        },
+        "controller_use": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PartUse"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -264,6 +303,14 @@
       ],
       "title": "ParallelGroup",
       "type": "object"
+    },
+    "PartUse": {
+      "enum": [
+        "new",
+        "retain",
+        "replace"
+      ],
+      "type": "string"
     },
     "PlantUnit": {
       "additionalProperties": false,

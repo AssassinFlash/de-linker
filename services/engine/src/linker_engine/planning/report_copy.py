@@ -1802,6 +1802,22 @@ TEXT = {
     ),
     "material_snapshot": ("Materials snapshot SHA-256", "SHA-256 des Materialstands"),
     "material_woo_product": ("Selected equipment", "Ausgewählte Geräte"),
+    "material_retained_full": (
+        "Existing device · retained on site, not purchased",
+        "Vorhandenes Gerät · bleibt am Standort, keine Beschaffung",
+    ),
+    "material_retention_unresolved": (
+        "retained quantity unresolved",
+        "Menge vorhandener Geräte noch offen",
+    ),
+    "material_replacements": (
+        "purchase {quantity} as replacements",
+        "{quantity} als Ersatz beschaffen",
+    ),
+    "material_replacements_unresolved": (
+        "replacement quantity unresolved",
+        "Menge der Ersatzgeräte noch offen",
+    ),
     "material_pv_reference": (
         "PV reference module · project quotation",
         "PV-Referenzmodul · Projektangebot",
@@ -1839,6 +1855,36 @@ TEXT = {
         "Diese Prüfung vergleicht die gespeicherten Szenarioparameter mit den für die Berechnung ausgewählten Geräten. Die Leistungsfähigkeit der Geräte wird dadurch nicht nachgewiesen.",
     ),
     "check": ("Check", "Prüfung"),
+    "energy_controller": ("Control strategy", "Regelstrategie"),
+    "peak_shaving_with_reserve_v1": (
+        "Peak shaving with reserve",
+        "Lastspitzenkappung mit Reserve",
+    ),
+    "self_consumption_with_reserve_v1": (
+        "Self-consumption with reserve",
+        "Eigenverbrauch mit Reserve",
+    ),
+    "proportional_peak_shaving_v1": (
+        "Proportional peak shaving",
+        "Proportionale Lastspitzenkappung",
+    ),
+    "proportional_available_power_self_consumption_v1": (
+        "Self-consumption with proportional power allocation",
+        "Eigenverbrauch mit proportionaler Leistungsverteilung",
+    ),
+    "energy_pv_source": ("PV input source", "Quelle der PV-Eingangsdaten"),
+    "energy_no_pv": (
+        "No PV source; PV generation is zero",
+        "Keine PV-Quelle; PV-Erzeugung ist null",
+    ),
+    "energy_constant_aux": (
+        "Declared constant AC auxiliary demand",
+        "Angegebener konstanter AC-Hilfsverbrauch",
+    ),
+    "scenario_storage_plant_scope": (
+        "This scenario models storage units at one shared AC metering point without PV generation. Each unit retains its own stored energy by origin, power limits, reserve and loss assumptions. Power is allocated proportionally within each unit's power and energy limits for the current interval, without forecasting or optimal dispatch.",
+        "Dieses Szenario berechnet Speichereinheiten an einem gemeinsamen AC-Messpunkt ohne PV-Erzeugung. Für jede Einheit werden gespeicherte Energie nach Herkunft, Leistungsgrenzen, Reserve und Verlustannahmen getrennt geführt. Die Leistung wird im aktuellen Zeitintervall proportional innerhalb der jeweiligen Leistungs- und Energiegrenzen verteilt, ohne Prognose oder optimierte Einsatzplanung.",
+    ),
     "scenario_scope": (
         "These values come from the selected saved energy result and reflect its original scenario parameters. The general energy-flow model does not establish the performance of the selected equipment.",
         "Die Werte stammen aus dem gespeicherten Ergebnis der ausgewählten Energieberechnung und beruhen auf den damaligen Szenarioparametern. Das allgemeine Energiemodell belegt nicht die Leistungsfähigkeit der ausgewählten Geräte.",

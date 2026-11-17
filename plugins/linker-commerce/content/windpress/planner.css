@@ -88,7 +88,11 @@
   [data-linker-planner] .lp-new-project .lp-inline-actions { margin-top: 16px; }
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
   [data-linker-planner] .lp-workspace-start { margin-bottom: 32px; }
-  [data-linker-planner] .lp-new-project.lp-roof-entry { width: 100%; padding: clamp(20px, 3vw, 32px); }
+  [data-linker-planner] .lp-new-project.lp-roof-entry,
+  [data-linker-planner] .lp-new-project:has(.lp-project-start-options) { width: 100%; padding: clamp(20px, 3vw, 32px); }
+  [data-linker-planner] .lp-project-start-options { margin-bottom: 24px; }
+  [data-linker-planner] .lp-location-details { margin-top: 20px; }
+  [data-linker-planner] .lp-location-details > summary { min-height: 44px; align-content: center; cursor: pointer; color: var(--proto-teal-800); }
   [data-linker-planner] .lp-roof-start { display: grid; grid-template-columns: minmax(170px, .35fr) minmax(0, 1fr); gap: 24px; }
   [data-linker-planner] .lp-roof-start-heading { grid-column: 1 / -1; }
   [data-linker-planner] .lp-roof-start-heading h2 { margin-bottom: 10px; }
@@ -100,35 +104,6 @@
     [data-linker-planner] .lp-roof-start { grid-template-columns: minmax(0, 1fr); gap: 20px; }
     [data-linker-planner] .lp-roof-entry .lp-inline-actions { flex-wrap: wrap; }
   }
-  /* The one-screen start is the default surface for a new project, and it had
-     no rhythm of its own: measured on production 2026-11-14, the eyebrow, the
-     heading, the lede and the form all sat at 0px from each other once the
-     start moved out of the empty-index branch. A section owns its vertical
-     space here the same way .lp-section and .lp-empty already do. */
-  [data-linker-planner] .lp-quickstart { padding: 8px 0 0; }
-  [data-linker-planner] .lp-quickstart-head { padding-bottom: 20px; }
-  [data-linker-planner] .lp-quickstart-head .lp-text-button { margin-bottom: 12px; }
-  [data-linker-planner] .lp-quickstart-head h2,
-  [data-linker-planner] .lp-quickstart-head h1 { margin: 6px 0 0; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2; }
-  [data-linker-planner] .lp-quickstart-head p { max-width: 640px; margin: 10px 0 0; color: var(--proto-neutral-600); }
-  [data-linker-planner] .lp-quickstart-form { display: grid; gap: 16px; margin-top: 8px; }
-  [data-linker-planner] .lp-quickstart-form > .lp-field + .lp-field { margin-top: 0; }
-  [data-linker-planner] .lp-quickstart-actions { display: grid; gap: 10px; margin-top: 24px; }
-  [data-linker-planner] .lp-quickstart-actions .lp-button { justify-self: start; }
-  [data-linker-planner] .lp-quickstart-advanced { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--lp-line); }
-  [data-linker-planner] .lp-quickstart-advanced summary { min-height: 44px; align-content: center; color: var(--proto-teal-800); cursor: pointer; }
-  [data-linker-planner] .lp-quickstart-advanced > p { max-width: 640px; margin: 8px 0 0; color: var(--proto-neutral-500); font-size: 13px; }
-  [data-linker-planner] .lp-quickstart-result { margin-top: 32px; }
-  [data-linker-planner] .lp-quickstart-result > h2 { margin: 0 0 16px; font-size: 18px; }
-  /* The run view lists one row per step with a state, so each row needs a rule
-     between it and the next: the same border vocabulary .lp-project-row uses. */
-  [data-linker-planner] .lp-quickstart-steps { display: grid; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; }
-  [data-linker-planner] .lp-quickstart-steps > li { display: grid; gap: 4px; padding: 14px 0; border-bottom: 1px solid var(--lp-line); }
-  [data-linker-planner] .lp-quickstart-steps > li > strong { font-size: 14px; font-weight: 600; }
-  [data-linker-planner] .lp-quickstart-steps > li > span { display: inline-flex; align-items: center; gap: 6px; color: var(--proto-neutral-600); font-size: 13px; }
-  [data-linker-planner] .lp-quickstart-steps > li[data-state="done"] > span { color: var(--proto-teal-800); }
-  [data-linker-planner] .lp-quickstart-steps > li[data-state="running"] > span { color: var(--proto-teal-700); }
-  [data-linker-planner] .lp-quickstart-steps > li .lp-notice { margin: 6px 0 0; }
   [data-linker-planner] .lp-project-bar { position: sticky; top: var(--lp-site-header-height, 0px); z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 28px; background: rgb(255 255 255 / .83); backdrop-filter: blur(18px); border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-project-bar:has(.lp-navigation-refusal) { flex-wrap: wrap; row-gap: 8px; }
   [data-linker-planner] .lp-navigation-refusal { flex-basis: 100%; min-width: 0; }
@@ -350,20 +325,27 @@
     [data-linker-planner] .lp-button { transition: none; }
   }
 }
-/* A · Journal workspace: one active task, shared mounted inputs/history. */
+/* Project navigation follows the approved continuous planning flow. */
 @layer components {
-  [data-linker-planner] .lp-project-layout { grid-template-columns: 232px minmax(0, 1fr); min-height: 72vh; }
-  [data-linker-planner] .lp-project-aside { padding: 28px 18px; background: rgb(255 255 255 / .54); backdrop-filter: blur(18px); }
-  [data-linker-planner] .lp-project-nav-title { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; margin-bottom: 34px; }
+  [data-linker-planner] .lp-project-layout { grid-template-columns: minmax(0, 1fr); min-height: 72vh; }
+  [data-linker-planner] .lp-project-aside { padding: 0 28px; background: var(--proto-white, #fff); border-right: 0; border-bottom: 1px solid var(--lp-line); max-height: none; z-index: 10; }
+  [data-linker-planner] .lp-project-nav-title { display: none; }
   [data-linker-planner] .lp-nav-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--proto-radius-sm); background: var(--proto-teal-900); color: white; font-size: 19px; flex-shrink: 0; }
-  [data-linker-planner] .lp-project-aside > .lp-eyebrow { padding-inline: 12px; color: var(--proto-neutral-500); font-size: 10px; }
-  [data-linker-planner] .lp-project-aside nav { margin-top: 14px; gap: 6px; }
-  [data-linker-planner] .lp-project-aside nav a { padding: 12px; border-left: 2px solid transparent; }
-  [data-linker-planner] .lp-project-aside nav a[aria-current="page"] { color: var(--proto-teal-900); background: rgb(255 255 255 / .76); border-left-color: var(--proto-accent); font-weight: 600; }
+  [data-linker-planner] .lp-project-aside > .lp-eyebrow { display: none; }
+  [data-linker-planner] .lp-project-aside nav { display: flex; margin: 0; gap: 12px; flex-wrap: wrap; }
+  [data-linker-planner] .lp-project-aside nav a { padding: 16px 12px; border-left: 0; border-bottom: 3px solid transparent; font-size: 14px; }
+  [data-linker-planner] .lp-project-aside nav a[aria-current="page"] { color: var(--proto-teal-900); background: transparent; border-bottom-color: var(--proto-accent); font-weight: 600; }
+  [data-linker-planner] .lp-project-start-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; width: 100%; }
   [data-linker-planner] .lp-editor-main { padding-top: 30px; }
+  [data-linker-planner] .lp-project-next { display: flex; justify-content: flex-end; padding-top: 24px; margin-top: 24px; border-top: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-project-title { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-project-title h1 { margin: 6px 0 8px; font-size: clamp(25px, 2.4vw, 34px); overflow-wrap: anywhere; }
   [data-linker-planner] .lp-project-title p { color: var(--proto-neutral-500); font-size: 12px; margin: 0; }
+  [data-linker-planner] .lp-project[data-workspace="design"] .lp-project-title { margin-bottom: 16px; padding-bottom: 12px; }
+  [data-linker-planner] .lp-project[data-workspace="design"] .lp-project-title > .lp-eyebrow { display: none; }
+  [data-linker-planner] .lp-project[data-workspace="design"] .lp-project-title h1 { font-size: 22px; }
+  [data-linker-planner] #lp-design { padding-top: 0; border-top: 0; }
+  [data-linker-planner] .lp-site-technical > summary { min-height: 44px; padding-block: 12px; color: var(--proto-teal-900); cursor: pointer; }
   [data-linker-planner] .lp-overview-intro { max-width: 670px; }
   [data-linker-planner] .lp-overview-intro h2 { margin-block: 8px 10px; font-size: 24px; }
   [data-linker-planner] .lp-overview-intro p { color: var(--proto-neutral-600); font-size: 13px; }
@@ -387,6 +369,7 @@
   [data-linker-planner] .lp-overview-empty > svg { width: 36px; height: 36px; margin-bottom: 24px; color: var(--proto-teal-700); }
   [data-linker-planner] .lp-overview-empty h3 { font-size: 22px; }
   [data-linker-planner] .lp-overview-empty p { font-size: 13px; max-width: 410px; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-overview-work[data-solar="false"] { grid-template-columns: minmax(0, 1fr); }
   [data-linker-planner] .lp-overview-next h3 { font-size: 14px; margin: 6px 0 10px; }
   [data-linker-planner] .lp-overview-next > button { display: flex; width: 100%; align-items: flex-start; gap: 12px; padding: 20px 0; text-align: left; background: none; color: inherit; border: 0; border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-overview-next > button > svg { flex-shrink: 0; width: 18px; height: 18px; color: var(--proto-teal-800); }
@@ -395,7 +378,7 @@
   [data-linker-planner] .lp-overview-next small { display: block; margin-top: 5px; color: var(--proto-neutral-500); font-size: 11px; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-overview-basis { font-size: 11px; color: var(--proto-neutral-500); margin-top: 20px; }
   @media (max-width: 1100px) {
-    [data-linker-planner] .lp-project-layout { grid-template-columns: 200px minmax(0, 1fr); }
+    [data-linker-planner] .lp-project-layout { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .lp-overview-work { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .lp-overview-next { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; }
     [data-linker-planner] .lp-overview-next h3, [data-linker-planner] .lp-overview-basis { grid-column: 1 / -1; }
@@ -403,6 +386,10 @@
   }
   @media (max-width: 640px) {
     [data-linker-planner] .lp-project-layout { grid-template-columns: minmax(0, 1fr); }
+    [data-linker-planner] .lp-project-start-options { grid-template-columns: minmax(0, 1fr); }
+    [data-linker-planner] .lp-edit-actions { display: grid; grid-template-columns: minmax(0, 1fr) 44px 44px auto; gap: 4px; }
+    [data-linker-planner] .lp-edit-actions [data-linker-genie-open] { display: none; }
+    [data-linker-planner] .lp-edit-actions .lp-save-state { min-width: 0; white-space: normal; }
     [data-linker-planner] .lp-project-aside { display: none; }
     [data-linker-planner] .lp-breadcrumb > span:last-of-type { display: none; }
     [data-linker-planner] .lp-mobile-workspace { display: block; flex: 1; min-width: 0; min-height: 44px; padding: 8px 10px; font-size: 16px; font-weight: 500; color: var(--proto-teal-900); background-color: rgb(255 255 255 / .6); border: 1px solid var(--lp-line); border-radius: var(--proto-radius-sm); }
@@ -454,6 +441,7 @@
   [data-linker-planner] .lp-map-drawing { padding: 20px; border-top: 1px solid var(--lp-line); background: rgb(255 255 255 / .72); }
   [data-linker-planner] .lp-map-drawing h3 { margin: 0 auto 0 0; font-size: 16px; }
   [data-linker-planner] .lp-map-drawing > p { font-size: 12px; margin-block: 12px; }
+  [data-linker-planner] .lp-map-edit-tools > summary { min-height: 44px; padding-block: 12px; color: var(--proto-teal-900); cursor: pointer; }
   [data-linker-planner] .lp-drawing-status { font-weight: 600; color: var(--proto-teal-800); }
   [data-linker-planner] .lp-drawing-properties { padding: 24px 20px; background: rgb(255 255 255 / .8); border-bottom: 1px solid var(--lp-line); backdrop-filter: blur(8px); }
   [data-linker-planner] .lp-drawing-properties h3 { margin: 0 0 12px; font-size: 17px; }

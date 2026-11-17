@@ -27,7 +27,7 @@ from .numerical_tolerance import Tolerance
 from .plant_ac_parameters import storage_unit
 from .plant_assessment import assess_plant, plant_products
 from .plant_energy_checks import verify
-from .plant_energy_dispatch import replay, self_consumption
+from .plant_energy_dispatch import peak_shaving, replay, self_consumption
 from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_model import PlantFrame, StorageUnit
 from .plant_energy_output import flow_document, metrics
@@ -153,14 +153,26 @@ class PlantEnergyKernel:
             "product_policy": "current_woo_plant_and_unit_parameter_assets_v1",
         }
 
-    def execution_key(self) -> str:
-        return execution_key(
-            {
-                "code_sha256": self.runtime.sha256,
-                "models": dict(self.models),
-                "parameters": self.parameters(),
-            }
+    def models_for(self, scenario: PlantScenario) -> dict[str, str]:
+        return {**self.models, "controller": scenario.controller}
+
+    def execution_keys(self) -> tuple[str, ...]:
+        controllers: tuple[str, ...] = (self.models["controller"],)
+        if self.kind == PlantEnergyKernel.kind:
+            controllers += ("proportional_peak_shaving_v1",)
+        return tuple(
+            execution_key(
+                {
+                    "code_sha256": self.runtime.sha256,
+                    "models": {**self.models, "controller": controller},
+                    "parameters": self.parameters(),
+                }
+            )
+            for controller in controllers
         )
+
+    def execution_key(self) -> str:
+        return self.execution_keys()[0]
 
     def scenario(self, inputs: Object) -> PlantScenario:
         return PlantEnergyInputs.from_project(inputs)
@@ -315,7 +327,7 @@ class PlantEnergyKernel:
         self.validate_models(inputs, scenario, cast(Object, pinned), basis)
         self.products.confirm_basis(basis, require_reference=False)
         return Context(
-            self.runtime.sha256, dict(self.models), pinned, self.parameters()
+            self.runtime.sha256, self.models_for(scenario), pinned, self.parameters()
         )
 
     def bind_assets(
@@ -399,7 +411,7 @@ class PlantEnergyKernel:
             self.workspace,
             lease,
             runtime_sha256=self.runtime.sha256,
-            models=self.models,
+            models=lambda inputs: self.models_for(self.scenario(inputs)),
             parameters=self.parameters(),
         )
         inputs, pinned = execution.inputs, execution.pinned
@@ -458,7 +470,9 @@ class PlantEnergyKernel:
             frames,
             units,
             initial,
-            self_consumption,
+            peak_shaving
+            if scenario.controller == "proportional_peak_shaving_v1"
+            else self_consumption,
             checkpoint=control.checkpoint,
             tolerance=self.tolerance,
         )
@@ -527,7 +541,7 @@ class PlantEnergyKernel:
             "interval_count": len(flows),
             "scenario_constraint_status": "satisfied" if checked.passed else "violated",
             "verification": checked.document(),
-            "metrics": metrics(flows),
+            "metrics": metrics(flows, controller=scenario.controller),
             "model": model,
             "profile_interpretation": prepared.profile_interpretation,
             "parameter_sources": {"units": parameter_units, "pool": parameter_pool},

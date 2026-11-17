@@ -30,6 +30,7 @@ export function RevisionComparison({
 		industrial: __("Industrial", "linker-tools"),
 		new_pv_storage: __("New PV and storage", "linker-tools"),
 		storage_addition: __("Storage for existing PV", "linker-tools"),
+		storage_only: __("Storage only", "linker-tools"),
 		pv_only: __("PV without storage", "linker-tools"),
 		bill_total: __("Electricity bills", "linker-tools"),
 		user_estimate: __("Project estimate", "linker-tools"),

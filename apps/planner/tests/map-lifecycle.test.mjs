@@ -12,7 +12,7 @@ const button = (text) =>
 		(node) => node.textContent.trim() === text,
 	);
 
-test("map view loads aerial/street imagery by default, supports hiding/retrying, and preserves geometry", async (t) => {
+test("map view requires consent, releases provider requests on withdrawal, and preserves geometry through retry", async (t) => {
 	const fixture = setupDom();
 	const previous = new globalThis.Map();
 	for (const name of ["MutationObserver", "getComputedStyle"]) {
@@ -65,12 +65,22 @@ test("map view loads aerial/street imagery by default, supports hiding/retrying,
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.ok(maps.length >= 2, "StrictMode should release the first setup");
 	assert.equal(maps[0].removals, 1);
+	assert.equal(typeof activeMap(maps).options.style, "object");
+	assert.throws(
+		() =>
+			activeMap(maps).options.transformRequest(
+				"https://tiles.openfreemap.org/styles/liberty",
+			),
+		/not_authorized/,
+	);
+	await act(async () => button("Load street map").click());
+	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.equal(
 		activeMap(maps).options.style,
 		"https://tiles.openfreemap.org/styles/liberty",
 	);
 	assert.ok(
-		activeMap(maps).fitted,
+		maps.some((map) => map.fitted),
 		"the first ready view must fit the actual geometry",
 	);
 	assert.equal(
@@ -85,13 +95,13 @@ test("map view loads aerial/street imagery by default, supports hiding/retrying,
 	assert.deepEqual(picked, [geometry.roofs[0].id]);
 	const hiddenByButton = activeMap(maps);
 	await act(async () => {
-		button("Hide aerial map").click();
+		button("Hide street map").click();
 		assert.equal(hiddenByButton.removals, 1);
 	});
 	await until(() => typeof activeMap(maps)?.options.style === "object");
 	assert.deepEqual(activeMap(maps).options.style.sources, {});
 	behavior.autoLoad = false;
-	await act(async () => button("Show aerial map").click());
+	await act(async () => button("Load street map").click());
 	const unavailable = activeMap(maps);
 	await act(async () =>
 		unavailable.emit("error", { error: new Error("synthetic offline") }),
@@ -113,8 +123,19 @@ test("map view loads aerial/street imagery by default, supports hiding/retrying,
 	await act(async () => button("Retry loading map").click());
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.equal(unavailable.removals, 1);
-	await act(async () => button("Hide aerial map").click());
+	const withdrawn = activeMap(maps);
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
 	await until(() => typeof activeMap(maps)?.options.style === "object");
+	assert.equal(withdrawn.removals, 1);
+	assert.throws(
+		() =>
+			withdrawn.options.transformRequest(
+				"https://tiles.openfreemap.org/styles/liberty",
+			),
+		/not_authorized/,
+	);
 	activeMap(maps).jumpTo({
 		center: [6.9601, 50.9401],
 		zoom: 19,
@@ -130,9 +151,9 @@ test("map view loads aerial/street imagery by default, supports hiding/retrying,
 	assert.deepEqual(activeMap(maps).options.center, [6.9601, 50.9401]);
 	assert.equal(activeMap(maps).options.bearing, 35);
 	assert.equal(
-		activeMap(maps).options.style,
-		"https://tiles.openfreemap.org/styles/liberty",
-		"reopening the map view restores aerial/street imagery by default",
+		typeof activeMap(maps).options.style,
+		"object",
+		"reopening the map does not silently renew withdrawn consent",
 	);
 	assert.equal(JSON.stringify(geometry), before);
 	assert.ok(
@@ -196,6 +217,8 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 			),
 		);
 	await renderWith(null);
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	await act(async () => button("Load street map").click());
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	const live = activeMap(maps);
 	assert.ok(live.getLayer("linker-site-outline"));

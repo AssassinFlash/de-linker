@@ -28,6 +28,7 @@ import type { Draft } from "../../domain/draft.ts";
 import { isDirty, sameJson } from "../../domain/draft.ts";
 import {
 	BATTERY_FIELDS,
+	isStorageOnly,
 	compileScenario,
 	emptyScenario,
 	readScenarioDraft,
@@ -80,6 +81,7 @@ import {
 	readEquipmentSelection,
 	equipmentDraft,
 	changeEquipment,
+	checkRetainedEquipment,
 	compileEquipment,
 } from "../../domain/equipment.ts";
 import {
@@ -95,6 +97,7 @@ import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
+import { SimpleEnergySetup } from "./SimpleEnergySetup.tsx";
 import { ScenarioForm } from "./ScenarioForm.tsx";
 import { EnergyError } from "./EnergyError.tsx";
 import { RunResult } from "./RunResult.tsx";
@@ -173,6 +176,7 @@ export function EnergyWorkspace({
 	openResults?: () => void;
 	sceneModuleUrl?: string | null;
 }) {
+	const storageOnly = isStorageOnly(draft.history.current);
 	const joint = hasPlant(draft.history.current);
 	const jointContext = useMemo(() => {
 		if (!joint) return { value: null, error: null };
@@ -233,6 +237,15 @@ export function EnergyWorkspace({
 	const setup = parsed.value,
 		currentSetup = joint ? (jointContext.value?.setup ?? null) : setup,
 		selections = readSelections(draft.history.current.profile_selections);
+	const pvInactive =
+		storageOnly ||
+		Boolean(
+			currentSetup &&
+			currentSetup.coupling !== "shared_dc" &&
+			currentSetup.coupling !== "plant_shared_dc" &&
+			currentSetup.schedule.length > 0 &&
+			currentSetup.schedule.every((period) => period.pv_enabled === false),
+		);
 	const [selectedView, setView] = useState<EnergyView>(() =>
 			initialEnergyView(new URL(window.location.href)),
 		),
@@ -240,13 +253,25 @@ export function EnergyWorkspace({
 			"storage",
 		),
 		[scenarioValid, setScenarioValid] = useState(true),
+		[compactValid, setCompactValid] = useState(true),
 		[weatherValid, setWeatherValid] = useState(true),
 		[pvValid, setPvValid] = useState(true),
 		[equipmentValid, setEquipmentValid] = useState(true),
 		[beamValid, setBeamValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
-	const view = equipmentFocus ? "equipment" : selectedView;
+	const view = equipmentFocus
+		? "equipment"
+		: storageOnly &&
+			  [
+					"weather",
+					"pv",
+					"pvgis-reference",
+					"geometric-pv",
+					"direct-beam",
+			  ].includes(selectedView)
+			? "scenario"
+			: selectedView;
 	useEffect(() => {
 		// A link, a reload or the back button can change the requested view after
 		// this workspace mounted. Without this the form keeps whatever view it
@@ -276,7 +301,10 @@ export function EnergyWorkspace({
 		admitted = client.isCurrentScope(session.query_scope),
 		dirty = isDirty(draft),
 		syntaxValid =
-			scenarioValid && weatherValid && pvValid && equipmentValid && beamValid;
+			scenarioValid &&
+			compactValid &&
+			equipmentValid &&
+			(storageOnly || (weatherValid && pvValid && beamValid));
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -370,7 +398,12 @@ export function EnergyWorkspace({
 				)
 			: setup !== null &&
 				sameJson(
-					compileScenario(setup, selections, equipmentSelection),
+					compileScenario(
+						setup,
+						selections,
+						equipmentSelection,
+						draft.history.current,
+					),
 					draft.history.current.energy_replay,
 				);
 	} catch {
@@ -540,11 +573,21 @@ export function EnergyWorkspace({
 			if (!setup) return;
 			if (setup.coupling === "shared_dc" && dirty)
 				throw new ApiError(422, "dc_save_required");
-			const parts = scenarioParts(setup, selections, equipmentSelection),
+			const parts = scenarioParts(
+					setup,
+					selections,
+					equipmentSelection,
+					draft.history.current,
+				),
 				instance = lifetime.current;
 			let bound = setup;
 			try {
-				compileScenario(setup, selections, equipmentSelection);
+				compileScenario(
+					setup,
+					selections,
+					equipmentSelection,
+					draft.history.current,
+				);
 			} catch (cause) {
 				if (
 					!(cause instanceof ApiError) ||
@@ -583,7 +626,12 @@ export function EnergyWorkspace({
 					},
 				};
 			}
-			const replay = compileScenario(bound, selections, equipmentSelection);
+			const replay = compileScenario(
+				bound,
+				selections,
+				equipmentSelection,
+				draft.history.current,
+			);
 			const applied = edit((inputs) => {
 				if (
 					!sameJson(inputs.energy_scenario, setupDocument) ||
@@ -840,6 +888,7 @@ export function EnergyWorkspace({
 				)
 			)
 				throw new ApiError(409, "product_evidence_changed");
+			checkRetainedEquipment(equipmentDraft(snapshot), candidate.selection);
 			const patch = Object.fromEntries(
 				(
 					[
@@ -963,7 +1012,10 @@ export function EnergyWorkspace({
 				readEquipmentRequirements(inputs.equipment_requirements);
 				if (
 					!sameJson(
-						compileEquipmentRequirements(equipmentDraft(inputs)),
+						compileEquipmentRequirements(
+							equipmentDraft(inputs),
+							readObject(inputs.equipment_requirements ?? {}),
+						),
 						inputs.equipment_requirements,
 					)
 				)
@@ -1051,8 +1103,9 @@ export function EnergyWorkspace({
 		setError(null);
 		try {
 			const jointDc = jointContext.value?.setup.coupling === "plant_shared_dc";
-			const pvRoles: ProfileRole[] =
-				joint && jointDc
+			const pvRoles: ProfileRole[] = pvInactive
+				? []
+				: joint && jointDc
 					? (["pv_reference", "pv_available_ac"] as const).filter(
 							(role) => !!selections.selected[role],
 						)
@@ -1060,7 +1113,7 @@ export function EnergyWorkspace({
 			const roles: ProfileRole[] = [
 				"gross_load",
 				...pvRoles,
-				"aux_ac",
+				...(currentSetup.aux_ac_kw == null ? ["aux_ac" as const] : []),
 				...(currentSetup.schedule.some((period) => period.mode === "outage")
 					? ["critical_load" as const]
 					: []),
@@ -1181,6 +1234,7 @@ export function EnergyWorkspace({
 			>
 				<button
 					type="button"
+					hidden={storageOnly}
 					aria-pressed={view === "weather"}
 					onClick={() => chooseView("weather")}
 				>
@@ -1188,6 +1242,7 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
+					hidden={storageOnly}
 					aria-pressed={
 						view === "pv" ||
 						view === "pvgis-reference" ||
@@ -1206,6 +1261,7 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
+					hidden={storageOnly}
 					aria-pressed={view === "direct-beam"}
 					onClick={() => chooseView("direct-beam")}
 				>
@@ -1567,27 +1623,40 @@ export function EnergyWorkspace({
 								{(
 									[
 										"gross_load",
+										...(currentSetup.schedule.some(
+											(period) => period.mode === "outage",
+										)
+											? ["critical_load" as const]
+											: []),
 										jointContext.value?.setup.coupling === "plant_shared_dc"
 											? "pv_reference"
 											: "pv_available_ac",
 										"aux_ac",
 									] as const
-								).map((role) => (
-									<li key={role}>
-										<span>
-											{role === "pv_available_ac" &&
-											!joint &&
-											setup?.coupling === "shared_dc"
-												? __("PV generation", "linker-tools")
-												: measurementLabel(role)}
-										</span>
-										<strong>
-											{selections.selected[role]
-												? __("Selected in this draft", "linker-tools")
-												: __("Required", "linker-tools")}
-										</strong>
-									</li>
-								))}
+								)
+									.filter(
+										(role) =>
+											(!pvInactive ||
+												(role !== "pv_available_ac" &&
+													role !== "pv_reference")) &&
+											(role !== "aux_ac" || currentSetup.aux_ac_kw == null),
+									)
+									.map((role) => (
+										<li key={role}>
+											<span>
+												{role === "pv_available_ac" &&
+												!joint &&
+												setup?.coupling === "shared_dc"
+													? __("PV generation", "linker-tools")
+													: measurementLabel(role)}
+											</span>
+											<strong>
+												{selections.selected[role]
+													? __("Selected in this draft", "linker-tools")
+													: __("Required", "linker-tools")}
+											</strong>
+										</li>
+									))}
 							</ul>
 							<button
 								type="button"
@@ -1598,81 +1667,111 @@ export function EnergyWorkspace({
 								{__("Review energy inputs", "linker-tools")}
 							</button>
 						</div>
-						<ol className="lp-scenario-steps">
-							{(["storage", "initial", "operation"] as const).map(
-								(step, index) => (
-									<li
-										key={step}
-										aria-current={section === step ? "step" : undefined}
-									>
-										<button
-											type="button"
-											disabled={!syntaxValid}
-											onClick={() => setSection(step)}
-										>
-											<span>{String(index + 1).padStart(2, "0")}</span>
-											{step === "storage"
-												? __("Storage", "linker-tools")
-												: step === "initial"
-													? __("Starting state", "linker-tools")
-													: __("Operation", "linker-tools")}
-										</button>
-									</li>
-								),
+						{!joint &&
+							setup &&
+							setup.coupling !== "shared_dc" &&
+							setup.schedule.length === 1 && (
+								<SimpleEnergySetup
+									hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
+									value={setup}
+									storageOnly={storageOnly}
+									locale={locale}
+									disabled={blocked || operations.busy || !admitted}
+									onChange={change}
+									onValidity={setCompactValid}
+									useProfileRange={() => void useRange()}
+									rangeBusy={rangeBusy}
+								/>
 							)}
-						</ol>
-						{joint && jointContext.value ? (
-							<PlantEnergyForm
-								referenceCapacitySupported={
-									session.runtime.models.capacity_reference ===
-									REFERENCE_CAPACITY
-								}
-								value={jointContext.value.setup}
-								plant={jointContext.value.plant}
-								converters={converterIds}
-								section={section}
-								locale={locale}
-								disabled={blocked || operations.busy || !admitted}
-								onChange={changeJoint}
-								onValidity={setScenarioValid}
-								useProfileRange={() => void useRange()}
-								rangeBusy={rangeBusy}
-								openEquipment={() => {
-									setView("equipment");
-									openEquipment?.();
-								}}
-								client={client}
-								scope={session.query_scope}
-								active={active && view === "scenario"}
-							/>
-						) : (
-							setup && (
-								<ScenarioForm
+						<details
+							className="lp-comparison"
+							open={
+								joint ||
+								setup?.coupling === "shared_dc" ||
+								(setup?.schedule.length ?? 0) > 1
+							}
+						>
+							<summary>
+								{__("Advanced storage and operating settings", "linker-tools")}
+							</summary>
+							<ol className="lp-scenario-steps">
+								{(["storage", "initial", "operation"] as const).map(
+									(step, index) => (
+										<li
+											key={step}
+											aria-current={section === step ? "step" : undefined}
+										>
+											<button
+												type="button"
+												disabled={!syntaxValid}
+												onClick={() => setSection(step)}
+											>
+												<span>{String(index + 1).padStart(2, "0")}</span>
+												{step === "storage"
+													? __("Storage", "linker-tools")
+													: step === "initial"
+														? __("Starting state", "linker-tools")
+														: __("Operation", "linker-tools")}
+											</button>
+										</li>
+									),
+								)}
+							</ol>
+							{joint && jointContext.value ? (
+								<PlantEnergyForm
+									storageOnly={storageOnly}
 									referenceCapacitySupported={
 										session.runtime.models.capacity_reference ===
 										REFERENCE_CAPACITY
 									}
-									client={client}
-									scope={session.query_scope}
-									active={active && view === "scenario"}
-									equipmentSelection={equipmentSelection}
+									value={jointContext.value.setup}
+									plant={jointContext.value.plant}
 									converters={converterIds}
-									key={setup.coupling ?? "independent_ac"}
+									section={section}
+									locale={locale}
+									disabled={blocked || operations.busy || !admitted}
+									onChange={changeJoint}
+									onValidity={setScenarioValid}
+									useProfileRange={() => void useRange()}
+									rangeBusy={rangeBusy}
 									openEquipment={() => {
 										setView("equipment");
 										openEquipment?.();
 									}}
-									value={setup}
-									section={section}
-									locale={locale}
-									disabled={blocked || operations.busy || !admitted}
-									onChange={change}
-									onValidity={setScenarioValid}
-									useProfileRange={() => void useRange()}
-									rangeBusy={rangeBusy}
+									client={client}
+									scope={session.query_scope}
+									active={active && view === "scenario"}
 								/>
-							)
-						)}
+							) : (
+								setup && (
+									<ScenarioForm
+										storageOnly={storageOnly}
+										referenceCapacitySupported={
+											session.runtime.models.capacity_reference ===
+											REFERENCE_CAPACITY
+										}
+										client={client}
+										scope={session.query_scope}
+										active={active && view === "scenario"}
+										equipmentSelection={equipmentSelection}
+										converters={converterIds}
+										key={setup.coupling ?? "independent_ac"}
+										openEquipment={() => {
+											setView("equipment");
+											openEquipment?.();
+										}}
+										value={setup}
+										section={section}
+										locale={locale}
+										disabled={blocked || operations.busy || !admitted}
+										onChange={change}
+										onValidity={setScenarioValid}
+										useProfileRange={() => void useRange()}
+										rangeBusy={rangeBusy}
+									/>
+								)
+							)}
+						</details>
 						{joint && !jointAvailable && (
 							<Notice>
 								{__(

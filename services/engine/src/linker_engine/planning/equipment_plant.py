@@ -12,7 +12,7 @@ from pydantic import Field, model_validator
 
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
-from .equipment_inputs import Count, EquipmentSelection
+from .equipment_inputs import Count, EquipmentSelection, PartUse
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
 
@@ -37,6 +37,11 @@ class ParallelGroup(Document):
     control_network: ControlNetwork | None = Field(
         default=None, exclude_if=lambda value: value is None
     )
+    # Same procurement semantics as EquipmentSelection.equipment_use, applied
+    # to this group's shared controller; absent means a new controller.
+    controller_use: PartUse | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def distinct_members(self) -> ParallelGroup:
@@ -44,6 +49,12 @@ class ParallelGroup(Document):
             raise ValueError("a parallel group cannot repeat a converter")
         if (self.controller_product_id is None) != (self.controller_revision is None):
             raise ValueError("a controller needs its current Woo product revision")
+        if (
+            self.controller_use is not None
+            and self.controller_product_id is None
+            and self.controller_use != "new"
+        ):
+            raise ValueError("a retained or replaced controller needs its product")
         return self
 
 
@@ -96,18 +107,25 @@ def matches_setup(plant: EquipmentPlant, setup: Object) -> bool:
         selection = inputs.get("equipment_setup", inputs.get("equipment_selection"))
         if not isinstance(selection, dict):
             return False
-        actual = {
-            key: selection.get(key)
-            for key in EquipmentSelection.model_fields
-            if key != "product_revisions"
+        # Compare every field the selection model knows, defaulting unanswered
+        # fields to None on both sides: a plant saved before `equipment_use`
+        # existed keeps matching its untouched draft, while a draft that adds,
+        # drops or changes a declared use forces preparation again.
+        blank = {
+            name: None
+            for name in EquipmentSelection.model_fields
+            if name != "product_revisions"
         }
+        prepared = {
+            **blank,
+            **unit.selection.model_dump(mode="json", exclude={"product_revisions"}),
+        }
+        actual = {**blank, **{key: selection[key] for key in blank if key in selection}}
         actual.update(
             grid_phase=plant.requirements.grid_phase,
             operating_mode=plant.requirements.operating_mode,
         )
-        if actual != unit.selection.model_dump(
-            mode="json", exclude={"product_revisions"}
-        ):
+        if actual != prepared:
             return False
     return groups == [
         g.model_dump(mode="json", exclude={"controller_revision"})
