@@ -42,11 +42,12 @@
   [data-linker-planner] .lp-workspace-masthead { color: var(--proto-neutral-0); border-bottom: 1px solid rgb(255 255 255 / .15); }
   [data-linker-planner] .lp-workspace-masthead-inner { max-width: 1200px; margin-inline: auto; padding: 18px 24px; display: flex; align-items: center; gap: 24px; }
   [data-linker-planner] .lp-workspace-masthead .lp-workspace-brand { margin: 0; }
+  [data-linker-planner] .lp-workspace-masthead .lp-workspace-brand strong { color: inherit; }
   [data-linker-planner] .lp-workspace-masthead .lp-rail-session { color: var(--proto-teal-100); margin-left: auto; padding: 0; }
   [data-linker-planner] .lp-workspace-masthead .lp-rail-help { margin: 0; background: transparent; color: var(--proto-neutral-0); border-color: rgb(255 255 255 / .25); }
   [data-linker-planner] .lp-workspace > .lp-page { max-width: 1200px; margin-inline: auto; padding: 44px 24px 64px; }
   [data-linker-planner] .lp-workspace-header { color: var(--proto-neutral-0); }
-  [data-linker-planner] .lp-workspace-header :is(.lp-eyebrow, p) { color: var(--proto-teal-100); }
+  [data-linker-planner] .lp-workspace-header > div:first-child > :is(.lp-eyebrow, p) { color: var(--proto-teal-100); }
   [data-linker-planner] .lp-workspace-header .lp-new-project { color: var(--proto-ink); }
   [data-linker-planner] .lp-workspace-brand, [data-linker-planner] .lp-project-nav-title { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
   [data-linker-planner] .lp-workspace-brand strong, [data-linker-planner] .lp-project-nav-title > span:last-child { font-size: 12px; line-height: 1.45; font-weight: 600; }
@@ -612,7 +613,7 @@
   [data-linker-planner] .lp-report-heading p:last-child { margin-bottom: 0; }
   [data-linker-planner] .lp-comparison-main, [data-linker-planner] .lp-comparison-sidebar { min-width: 0; }
   [data-linker-planner] .lp-comparison-sidebar > .lp-comparison-variants { grid-template-columns: minmax(0, 1fr); margin-top: 0; gap: 16px; }
-  [data-linker-planner] .lp-comparison-sidebar .lp-field-summary { grid-template-columns: minmax(0, 1fr); }
+  [data-linker-planner] .lp-energy-comparison .lp-comparison-sidebar .lp-field-summary { grid-template-columns: minmax(0, 1fr); }
   [data-linker-planner] .lp-comparison-sidebar .lp-work-toolbar { align-items: stretch; }
   @media (max-width: 980px) {
     [data-linker-planner] .lp-report-detail-layout, [data-linker-planner] .lp-comparison-detail { grid-template-columns: minmax(0, 1fr); }
