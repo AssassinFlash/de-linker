@@ -78,9 +78,13 @@ export const RPC_PATHS = [
 	"projects/revise",
 	"projects/runs",
 	"runs/read",
+	"runs/inputs",
 	"runs/compare",
 	"runs/cancel",
 	"runs/energy",
+	"runs/calculate",
+	"runs/find-equipment",
+	"runs/check-equipment",
 	"runs/pv",
 	"runs/pvgis-reference",
 	"runs/direct-beam",
@@ -118,12 +122,14 @@ export class ApiError extends Error {
 	readonly code: string;
 	readonly profileIssue: ProfileIssue | null;
 	readonly evidenceIssue: EvidenceIssue | null;
+	readonly fields: readonly string[];
 
 	constructor(
 		status: number,
 		code: string,
 		profileIssue: ProfileIssue | null = null,
 		evidenceIssue: EvidenceIssue | null = null,
+		fields: readonly string[] = [],
 	) {
 		super(code);
 		this.name = "ApiError";
@@ -131,7 +137,74 @@ export class ApiError extends Error {
 		this.code = code;
 		this.profileIssue = profileIssue;
 		this.evidenceIssue = evidenceIssue;
+		this.fields = fields;
 	}
+}
+
+/** Match the HTTP validation handler's 16 paths and 16 bounded path segments.
+ * Only schema identifiers survive; submitted values and messages are discarded. */
+export function readInputFields(value: unknown): readonly string[] {
+	if (!Array.isArray(value)) return [];
+	const fields: string[] = [];
+	for (const item of value.slice(0, 16)) {
+		let path: string;
+		if (typeof item === "string") path = item;
+		else if (
+			item &&
+			typeof item === "object" &&
+			Array.isArray(item.path) &&
+			item.path.length <= 16 &&
+			item.path.every(
+				(part: unknown) =>
+					(typeof part === "string" &&
+						part.length <= 64 &&
+						/^(?:[A-Za-z_][A-Za-z0-9_]*|[0-9]+)$/.test(part)) ||
+					(typeof part === "number" && Number.isSafeInteger(part) && part >= 0),
+			)
+		)
+			path = item.path
+				.map((part: string | number, index: number) =>
+					/^\d+$/.test(String(part)) ? `[${part}]` : (index ? "." : "") + part,
+				)
+				.join("");
+		else continue;
+		path = path.replace(/^body\./, "").replace(/^inputs\./, "");
+		if (
+			path.length <= 1040 &&
+			/^[A-Za-z_][A-Za-z0-9_]*(?:(?:\.[A-Za-z_][A-Za-z0-9_]*)|(?:\[[0-9]+\]))*$/.test(
+				path,
+			)
+		)
+			fields.push(path);
+	}
+	return [...new Set(fields)];
+}
+
+export function clearInputFields(
+	error: unknown,
+	changed?: readonly string[],
+): unknown {
+	if (!changed || !(error instanceof ApiError) || !error.fields.length)
+		return null;
+	const remaining = error.fields.filter(
+		(field) =>
+			!changed.some(
+				(path) =>
+					field === path ||
+					field.startsWith(path + ".") ||
+					field.startsWith(path + "["),
+			),
+	);
+	if (remaining.length === error.fields.length) return error;
+	return remaining.length
+		? new ApiError(
+				error.status,
+				error.code,
+				error.profileIssue,
+				error.evidenceIssue,
+				remaining,
+			)
+		: null;
 }
 
 export interface EvidenceIssue {

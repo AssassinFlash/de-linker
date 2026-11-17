@@ -1,3 +1,4 @@
+import { equipmentFieldMessage } from "./equipmentLabels.ts";
 import { useEffect, useMemo, useState } from "react";
 import type { ComponentProps } from "react";
 import { PlantPvStringSetup } from "./PlantPvStringSetup.tsx";
@@ -7,18 +8,15 @@ import {
 } from "../../domain/pvPlantStrings.ts";
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
-import { isDirty, sameJson } from "../../domain/draft.ts";
+import { sameJson } from "../../domain/draft.ts";
 import { equipmentDraft, PART_USES } from "../../domain/equipment.ts";
 import type { PartUse } from "../../domain/equipment.ts";
 import {
-	compilePlant,
-	factoryPlant,
 	plantInputs,
 	readPlantDraft,
 	plantIdentity as newId,
 } from "../../domain/equipmentPlant.ts";
 import type { PlantDraft } from "../../domain/equipmentPlant.ts";
-import { compilePlantSearch } from "../../domain/plantSearch.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -38,7 +36,6 @@ export function PlantSetup(props: Props) {
 		actionsDisabled,
 		onError,
 		onValidity,
-		start,
 	} = props;
 	const storageOnly =
 		draft.history.current.brief !== undefined &&
@@ -56,6 +53,13 @@ export function PlantSetup(props: Props) {
 		draft.history.current.equipment_plant_setup,
 	]);
 	const [selectedId, select] = useState<string | null>(null);
+	useEffect(() => {
+		const index = props.inputErrors
+			?.map((path) => /^equipment_plant_setup\.units\[(\d+)\]/.exec(path)?.[1])
+			.find((value) => value !== undefined);
+		if (index !== undefined && setup?.units[Number(index)])
+			select(setup.units[Number(index)]!.id);
+	}, [props.inputErrors, setup]);
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
 	const [stringValidity, setStringValidity] = useState<Record<string, boolean>>(
 		{},
@@ -139,33 +143,10 @@ export function PlantSetup(props: Props) {
 		!!catalog.error ||
 		!catalog.data?.prepared;
 	const products = catalog.data?.products ?? [];
-	let prepared = false;
-	let searchPrepared = false;
-	try {
-		searchPrepared =
-			!!setup &&
-			sameJson(
-				compilePlantSearch(setup),
-				draft.history.current.equipment_plant_requirements,
-			);
-	} catch {
-		/* Search demand can be prepared before products are chosen. */
-	}
-	try {
-		prepared =
-			!!setup &&
-			!blocked &&
-			sameJson(
-				compilePlant(
-					factoryPlant(setup, catalog.data?.assemblies ?? {}),
-					products,
-				),
-				draft.history.current.equipment_plant,
-			);
-	} catch {
-		/* Incomplete inputs remain editable and saveable. */
-	}
-	function change(operation: (current: PlantDraft) => PlantDraft): boolean {
+	function change(
+		operation: (current: PlantDraft) => PlantDraft,
+		changed: readonly string[] = [],
+	): boolean {
 		if (disabled || !client.isCurrentScope(scope)) return false;
 		try {
 			const before = readPlantDraft(draft.history.current);
@@ -178,7 +159,7 @@ export function PlantSetup(props: Props) {
 				})
 			)
 				throw new ApiError(409, "conflict");
-			onError(null);
+			onError(null, changed);
 			return true;
 		} catch (error) {
 			onError(error);
@@ -196,8 +177,24 @@ export function PlantSetup(props: Props) {
 		);
 	const selected =
 		setup.units.find((u) => u.id === selectedId)?.id ?? setup.units[0]!.id;
+	const pathFor = (key: string) => "equipment_plant_setup.requirements." + key;
+	const message = (key: string) =>
+		equipmentFieldMessage(props.inputErrors ?? [], pathFor(key));
+	const fieldProps = (key: string) => ({
+		name: pathFor(key),
+		"aria-invalid": Boolean(message(key)),
+		"aria-describedby": message(key) ? pathFor(key) + "-error" : undefined,
+	});
+	const feedback = (key: string) =>
+		message(key) ? (
+			<small className="lp-field-error" id={pathFor(key) + "-error"}>
+				{message(key)}
+			</small>
+		) : null;
 	const requirementNumber = (key: string, label: string, unit: string) => (
 		<NumberField
+			name={pathFor(key)}
+			error={message(key)}
 			label={label}
 			unit={unit}
 			locale={locale}
@@ -209,10 +206,13 @@ export function PlantSetup(props: Props) {
 			}
 			onValidity={fieldCallbacks[key]!}
 			onChange={(value) =>
-				change((current) => ({
-					...current,
-					requirements: { ...current.requirements, [key]: value },
-				}))
+				change(
+					(current) => ({
+						...current,
+						requirements: { ...current.requirements, [key]: value },
+					}),
+					[pathFor(key)],
+				)
 			}
 		/>
 	);
@@ -257,6 +257,7 @@ export function PlantSetup(props: Props) {
 					<label className="lp-field">
 						<span>{__("Choose an operating mode", "linker-tools")}</span>
 						<select
+							{...fieldProps("operating_mode")}
 							value={
 								typeof setup.requirements.operating_mode === "string"
 									? setup.requirements.operating_mode
@@ -264,13 +265,16 @@ export function PlantSetup(props: Props) {
 							}
 							onChange={(event) => {
 								const mode = event.currentTarget.value || null;
-								change((current) => ({
-									...current,
-									requirements: {
-										...current.requirements,
-										operating_mode: mode,
-									},
-								}));
+								change(
+									(current) => ({
+										...current,
+										requirements: {
+											...current.requirements,
+											operating_mode: mode,
+										},
+									}),
+									[pathFor("operating_mode")],
+								);
 							}}
 						>
 							<option value="">
@@ -283,10 +287,12 @@ export function PlantSetup(props: Props) {
 								{__("Backup operation", "linker-tools")}
 							</option>
 						</select>
+						{feedback("operating_mode")}
 					</label>
 					<label className="lp-field">
 						<span>{__("Grid connection", "linker-tools")}</span>
 						<select
+							{...fieldProps("grid_phase")}
 							value={
 								typeof setup.requirements.grid_phase === "number"
 									? String(setup.requirements.grid_phase)
@@ -296,19 +302,23 @@ export function PlantSetup(props: Props) {
 								const phase = event.currentTarget.value
 									? Number(event.currentTarget.value)
 									: null;
-								change((current) => ({
-									...current,
-									requirements: {
-										...current.requirements,
-										grid_phase: phase,
-									},
-								}));
+								change(
+									(current) => ({
+										...current,
+										requirements: {
+											...current.requirements,
+											grid_phase: phase,
+										},
+									}),
+									[pathFor("grid_phase")],
+								);
 							}}
 						>
 							<option value="">—</option>
 							<option value="1">{__("Single-phase", "linker-tools")}</option>
 							<option value="3">{__("Three-phase", "linker-tools")}</option>
 						</select>
+						{feedback("grid_phase")}
 					</label>
 					{!storageOnly &&
 						requirementNumber(
@@ -316,17 +326,39 @@ export function PlantSetup(props: Props) {
 							__("Total PV nameplate rating", "linker-tools"),
 							"kWp",
 						)}
-					{requirementNumber(
-						"required_usable_kwh",
-						__("Total required usable energy", "linker-tools"),
-						"kWh",
-					)}
-					{requirementNumber(
-						"required_discharge_ac_kw",
-						__("Total required continuous AC discharge power", "linker-tools"),
-						"kW",
-					)}
 				</div>
+				<details
+					className="lp-comparison"
+					open={
+						typeof setup.requirements.required_usable_kwh === "number" ||
+						typeof setup.requirements.required_discharge_ac_kw === "number"
+					}
+				>
+					<summary>
+						{__("Known power and capacity (optional)", "linker-tools")}
+					</summary>
+					<p>
+						{__(
+							"Leave these blank to compare equipment configurations. Add a requirement when your project already specifies it.",
+							"linker-tools",
+						)}
+					</p>
+					<div className="lp-geometry-fields">
+						{requirementNumber(
+							"required_usable_kwh",
+							__("Total required usable energy", "linker-tools"),
+							"kWh",
+						)}
+						{requirementNumber(
+							"required_discharge_ac_kw",
+							__(
+								"Total required continuous AC discharge power",
+								"linker-tools",
+							),
+							"kW",
+						)}
+					</div>
+				</details>
 			</fieldset>
 			<div className="lp-plant-toolbar">
 				<h3>{__("Systems in this project", "linker-tools")}</h3>
@@ -397,7 +429,7 @@ export function PlantSetup(props: Props) {
 					</button>
 				))}
 			</nav>
-			{setup.units.map((unit) => {
+			{setup.units.map((unit, unitIndex) => {
 				const unitDraft = {
 					...draft,
 					baseline: { ...draft.baseline, inputs: unit.inputs },
@@ -465,6 +497,7 @@ export function PlantSetup(props: Props) {
 						<EquipmentSetup
 							{...props}
 							draft={unitDraft}
+							inputPath={`equipment_plant_setup.units[${unitIndex}].inputs.equipment_setup`}
 							storageOnly={storageOnly}
 							heading={false}
 							embedded
@@ -691,77 +724,13 @@ export function PlantSetup(props: Props) {
 				</fieldset>
 			))}
 			<div className="lp-energy-submit">
-				<div>
-					<strong>
-						{prepared
-							? __("The multi-system plan is prepared.", "linker-tools")
-							: __(
-									"Complete the project requirements and choose equipment for every system.",
-									"linker-tools",
-								)}
-					</strong>
-					<p>
-						{isDirty(draft) || draft.pending
-							? __(
-									"Save project records these inputs before a new calculation can start.",
-									"linker-tools",
-								)
-							: sprintf(
-									__(
-										"A new calculation uses saved input revision %d.",
-										"linker-tools",
-									),
-									draft.baseline.revision,
-								)}
-					</p>
-				</div>
-				<button
-					type="button"
-					className="lp-button lp-button-secondary"
-					disabled={blocked || actionsDisabled || !valid}
-					onClick={() => {
-						if (!client.isCurrentScope(scope)) return;
-						try {
-							const before = readPlantDraft(draft.history.current);
-							const preparedSetup = factoryPlant(
-								before,
-								catalog.data?.assemblies ?? {},
-							);
-							const compiled = compilePlant(preparedSetup, products);
-							if (
-								!edit((inputs) => {
-									if (!sameJson(readPlantDraft(inputs), before))
-										throw new ApiError(409, "conflict");
-									return {
-										...plantInputs(inputs, preparedSetup),
-										equipment_plant: compiled,
-									};
-								})
-							)
-								throw new ApiError(409, "conflict");
-							onError(null);
-						} catch (error) {
-							onError(error);
-						}
-					}}
-				>
-					{__("Prepare multi-system plan", "linker-tools")}
-				</button>
 				<button
 					type="button"
 					className="lp-button"
-					disabled={
-						blocked ||
-						actionsDisabled ||
-						!valid ||
-						!prepared ||
-						isDirty(draft) ||
-						!!draft.pending ||
-						!!draft.conflict
-					}
-					onClick={start}
+					disabled={actionsDisabled || blocked || !valid}
+					onClick={props.check}
 				>
-					{__("Check saved multi-system plan", "linker-tools")}
+					{__("Check equipment", "linker-tools")}
 				</button>
 			</div>
 			{props.searchEnabled && (
@@ -769,7 +738,7 @@ export function PlantSetup(props: Props) {
 					<h3>{__("Multi-system combination", "linker-tools")}</h3>
 					<p>
 						{__(
-							"Complete the requirements for the project and each system. The search can propose equipment combinations.",
+							"Choose the systems in your project. Add known requirements to narrow the equipment combinations.",
 							"linker-tools",
 						)}
 					</p>
@@ -782,40 +751,7 @@ export function PlantSetup(props: Props) {
 							)}
 						</p>
 					</details>
-					{searchPrepared && (
-						<p role="status">
-							{__(
-								"The requirements are ready for a multi-system equipment search.",
-								"linker-tools",
-							)}
-						</p>
-					)}
 					<div className="lp-energy-submit">
-						<button
-							type="button"
-							className="lp-button lp-button-secondary"
-							disabled={blocked || actionsDisabled || !valid}
-							onClick={() => {
-								if (!client.isCurrentScope(scope)) return;
-								try {
-									const before = readPlantDraft(draft.history.current),
-										plan = compilePlantSearch(before);
-									if (
-										!edit((inputs) => {
-											if (!sameJson(readPlantDraft(inputs), before))
-												throw new ApiError(409, "conflict");
-											return { ...inputs, equipment_plant_requirements: plan };
-										})
-									)
-										throw new ApiError(409, "conflict");
-									onError(null);
-								} catch (error) {
-									onError(error);
-								}
-							}}
-						>
-							{__("Prepare multi-system search", "linker-tools")}
-						</button>
 						<button
 							type="button"
 							className="lp-button"
@@ -823,8 +759,6 @@ export function PlantSetup(props: Props) {
 								blocked ||
 								actionsDisabled ||
 								!valid ||
-								!searchPrepared ||
-								isDirty(draft) ||
 								!!draft.pending ||
 								!!draft.conflict
 							}

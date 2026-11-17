@@ -54,17 +54,12 @@ const emptySetup = () => ({
 	required_discharge_ac_kw: null,
 });
 
-test("an all-null equipment_setup row falls through to saved requirements", () => {
+test("explicit unknown equipment demand remains unknown beside old prepared requirements", () => {
 	const setup = equipmentDraft({
 		equipment_setup: emptySetup(),
 		equipment_requirements: { ...savedRequirements },
 	});
-	assert.equal(setup.pv_dc_kw, 200);
-	assert.equal(setup.required_usable_kwh, 61.4);
-	assert.equal(setup.required_discharge_ac_kw, 100);
-	assert.equal(setup.grid_phase, 3);
-	assert.equal(setup.operating_mode, "grid_connected");
-	assert.equal(setup.inverter_product_id, null);
+	assert.deepEqual(setup, emptySetup());
 });
 
 test("a valued equipment_setup row still wins over requirements", () => {
@@ -82,7 +77,7 @@ test("a valued equipment_setup row still wins over requirements", () => {
 	assert.equal(setup.required_usable_kwh, null);
 });
 
-test("editing a backfilled draft keeps the backfilled values", () => {
+test("editing authored unknown demand changes only the edited field", () => {
 	const draft = beginDraft({
 		id: "1".repeat(32),
 		title: "Fixture",
@@ -102,29 +97,29 @@ test("editing a backfilled draft keeps the backfilled values", () => {
 		unknown
 	>;
 	assert.equal(changed.pv_dc_kw, 220);
-	assert.equal(changed.required_usable_kwh, 61.4);
-	assert.equal(changed.operating_mode, "grid_connected");
+	assert.equal(changed.required_usable_kwh, null);
+	assert.equal(changed.operating_mode, null);
 	// Undo returns to the unchanged baseline inputs.
 	const undone = undoDraft(next);
 	assert.deepEqual(undone.history.current.equipment_setup, emptySetup());
 });
 
-test("a backfilled draft never carries requirements-only fields into the setup row", () => {
-	// `application` belongs to equipment_requirements; the selection schema
-	// rejects unknown properties, so a draft that keeps it fails at
-	// compileEquipment (measured 2026-11-15 on saved projects).
-	const draft = equipmentDraft({
+test("legacy demand promotes application into authored setup", () => {
+	const inputs = {
 		equipment_requirements: { ...savedRequirements, application: "commercial" },
-	});
-	assert.equal("application" in draft, false);
-	const persisted = changeEquipment(draft, { pv_dc_kw: 220 });
-	const row = persisted.equipment_setup as Record<string, unknown>;
-	assert.equal("application" in row, false);
-	assert.equal(row.pv_dc_kw, 220);
-	assert.equal(row.inverter_product_id, null);
+	};
+	const draft = equipmentDraft(inputs);
+	assert.equal(draft.application, "commercial");
+	const row = changeEquipment(inputs, { pv_dc_kw: 220 })
+		.equipment_setup as JsonObject;
+	assert.equal(row.application, "commercial");
+	assert.equal(
+		equipmentDraft(changeEquipment(inputs, { application: null })).application,
+		null,
+	);
 });
 
-test("a polluted saved setup row is sanitized before it reaches the selection schema", () => {
+test("authored application remains outside the physical selection", () => {
 	// Rows written before the fix keep `application` in equipment_setup;
 	// reopening such a project must still compile a valid selection.
 	const row = {
@@ -135,8 +130,9 @@ test("a polluted saved setup row is sanitized before it reaches the selection sc
 		application: "commercial",
 	};
 	const draft = equipmentDraft({ equipment_setup: row });
-	assert.equal("application" in draft, false);
+	assert.equal(draft.application, "commercial");
 	const selection = compileEquipment(draft, products);
+	assert.equal("application" in selection, false);
 	assert.equal(selection.inverter_product_id, 101);
 	assert.equal(selection.battery_product_id, null);
 	assert.equal(selection.product_revisions["101"], "6".repeat(64));

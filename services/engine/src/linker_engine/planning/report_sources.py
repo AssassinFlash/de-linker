@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from typing import cast
 
@@ -78,6 +79,107 @@ def report_sources(
     project: Project,
     options: ReportOptions,
 ) -> Object:
+    declared_inputs = project.inputs
+    if options.energy_run_id is not None:
+        energy_run = workspace.run(actor, options.energy_run_id)
+        if energy_run.project_id != project.id:
+            raise InvalidInput("report analysis must belong to this project")
+        context = energy_run.manifest.get("context")
+        pinned = context.get("assets") if isinstance(context, dict) else None
+        if isinstance(pinned, dict) and "resolved_inputs" in pinned:
+            authored = workspace.get(
+                actor, project.id, revision=energy_run.revision
+            ).inputs
+            authored_brief = authored.get("brief")
+            current_brief = project.inputs.get("brief")
+            authored_scope = (
+                authored_brief.get("system_scope")
+                if isinstance(authored_brief, dict)
+                else None
+            )
+            current_scope = (
+                current_brief.get("system_scope")
+                if isinstance(current_brief, dict)
+                else None
+            )
+            if authored_scope != current_scope or any(
+                authored.get(field) != project.inputs.get(field)
+                for field in (
+                    "energy_scenario",
+                    "energy_plant_setup",
+                    "profile_selections",
+                    "equipment_setup",
+                    "equipment_selection",
+                    "equipment_plant_setup",
+                    "equipment_plant",
+                )
+            ):
+                raise ReportInputsChanged(
+                    "report energy declarations differ from the selected calculation"
+                )
+            resolved = workspace.pinned_inputs(energy_run.manifest)
+            project = replace(
+                project,
+                inputs={
+                    **project.inputs,
+                    **{
+                        field: resolved[field]
+                        for field in (
+                            "energy_replay",
+                            "energy_plant",
+                            "equipment_selection",
+                            "equipment_plant",
+                        )
+                        if field in resolved
+                    },
+                },
+            )
+    if options.equipment_run_id is not None:
+        checked = workspace.run(actor, options.equipment_run_id)
+        if checked.project_id != project.id:
+            raise InvalidInput("report equipment check must belong to this project")
+        context = checked.manifest.get("context")
+        pinned = context.get("assets") if isinstance(context, dict) else None
+        if isinstance(pinned, dict) and "resolved_inputs" in pinned:
+            authored = workspace.get(
+                actor, project.id, revision=checked.revision
+            ).inputs
+            authored_brief = authored.get("brief")
+            current_brief = declared_inputs.get("brief")
+            authored_scope = (
+                authored_brief.get("system_scope")
+                if isinstance(authored_brief, dict)
+                else None
+            )
+            current_scope = (
+                current_brief.get("system_scope")
+                if isinstance(current_brief, dict)
+                else None
+            )
+            if authored_scope != current_scope or any(
+                authored.get(field) != declared_inputs.get(field)
+                for field in (
+                    "equipment_setup",
+                    "equipment_selection",
+                    "equipment_plant_setup",
+                    "equipment_plant",
+                )
+            ):
+                raise ReportInputsChanged(
+                    "report hardware declarations differ from the selected check"
+                )
+            resolved = workspace.pinned_inputs(checked.manifest)
+            project = replace(
+                project,
+                inputs={
+                    **project.inputs,
+                    **{
+                        field: resolved[field]
+                        for field in ("equipment_selection", "equipment_plant")
+                        if field in resolved
+                    },
+                },
+            )
     sources: list[Json] = []
     bases: dict[str, Json] = {}
     labels: list[str] = []

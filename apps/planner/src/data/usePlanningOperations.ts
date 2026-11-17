@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "./PlannerClient.ts";
-import type { JsonObject, Session } from "./protocol.ts";
-import { ApiError } from "./protocol.ts";
+import type { JsonObject, Project, Session } from "./protocol.ts";
+import { ApiError, clearInputFields } from "./protocol.ts";
 import { wire } from "./readProtocol.ts";
 import { readDraftReceipt } from "./draftTransfer.ts";
 import type { DraftReceipt } from "./draftTransfer.ts";
@@ -13,6 +13,7 @@ import type {
 } from "./PlanningIntentStore.ts";
 import {
 	readBatteryAsset,
+	readCurrentCalculation,
 	readPlanningOperation,
 	readRun,
 	RUN_OPERATIONS,
@@ -40,7 +41,17 @@ export type PlanningReply =
 			readonly intent: PlanningIntent;
 	  }
 	| {
-			readonly path: RunOperation;
+			readonly path:
+				"runs/calculate" | "runs/find-equipment" | "runs/check-equipment";
+			readonly project: Project;
+			readonly run: PlanningRun;
+			readonly intent: PlanningIntent;
+	  }
+	| {
+			readonly path: Exclude<
+				RunOperation,
+				"runs/calculate" | "runs/find-equipment" | "runs/check-equipment"
+			>;
 			readonly run: PlanningRun;
 			readonly intent: PlanningIntent;
 	  };
@@ -54,6 +65,9 @@ export type PlanningReply =
 // of the same project must not offer it as a stored request the customer has to
 // discard by hand. Keys are the journal's own identity: scope:path:key.
 const inflight = new Set<string>();
+const settlementListeners = new Set<
+	(projectId: string, scope: string) => void
+>();
 const inflightKey = (scope: string, path: string, key: string) =>
 	scope + ":" + path + ":" + key.toLowerCase();
 
@@ -66,6 +80,7 @@ export function usePlanningOperations({
 	recoveryChecking = false,
 	confirmedBatteryId = null,
 	confirmedBatteryIds = [],
+	acknowledgeProject,
 	store = planningIntentStore,
 }: {
 	projectId: string;
@@ -76,6 +91,11 @@ export function usePlanningOperations({
 	recoveryChecking?: boolean;
 	confirmedBatteryId?: string | null;
 	confirmedBatteryIds?: readonly string[];
+	acknowledgeProject?: (
+		project: Project,
+		command: JsonObject,
+		path: "runs/calculate" | "runs/find-equipment" | "runs/check-equipment",
+	) => Promise<void>;
 	store?: PlanningJournal;
 }) {
 	const [records, setRecords] = useState<readonly PlanningIntent[]>([]),
@@ -106,11 +126,15 @@ export function usePlanningOperations({
 		setIntent(null);
 		setRecords([]);
 		setChecking(true);
+		const settled = (settledProject: string, settledScope: string) => {
+			if (settledProject === projectId && settledScope === session.query_scope)
+				setRefresh((value) => value + 1);
+		};
+		settlementListeners.add(settled);
 		return () => {
-			// Navigation must not abandon a request the server has already been
-			// offered. The journal entry and the engine's own receipt own it from
-			// the moment it is written: the reply below still acknowledges and
-			// clears it without touching this page's unmounted state.
+			settlementListeners.delete(settled);
+			// Dispatch and its exact journal request outlive this editor. An authored
+			// command also needs an active editor to acknowledge the project snapshot.
 			lifetime.current++;
 		};
 	}, [projectId, session.query_scope]);
@@ -266,7 +290,20 @@ export function usePlanningOperations({
 					receipt: readDraftReceipt(raw, command, client.origin),
 					intent: pending,
 				};
-			else {
+			else if (
+				path === "runs/calculate" ||
+				path === "runs/find-equipment" ||
+				path === "runs/check-equipment"
+			) {
+				const accepted = readCurrentCalculation(raw, command, path);
+				// Retain the exact request for recovery until an active editor has
+				// persisted this baseline. A retired editor no longer owns the draft slot.
+				if (!current()) return;
+				if (acknowledgeProject)
+					await acknowledgeProject(accepted.project, command, path);
+				if (!current()) return;
+				reply = { path, ...accepted, intent: pending };
+			} else {
 				const run = readRun(raw, projectId, undefined, RUN_OPERATIONS[path]);
 				if (run.revision !== command.expected_revision)
 					throw new ApiError(502, "invalid_run_reply");
@@ -366,6 +403,9 @@ export function usePlanningOperations({
 				flight.current = null;
 				if (instance === lifetime.current) setBusy(false);
 			}
+			if (instance !== lifetime.current)
+				for (const settled of settlementListeners)
+					settled(projectId, session.query_scope);
 		}
 	}
 	return {
@@ -373,6 +413,8 @@ export function usePlanningOperations({
 		checking,
 		storageFailed,
 		error,
+		clearError: (changed?: readonly string[]) =>
+			setError((previous: unknown) => clearInputFields(previous, changed)),
 		busy,
 		intent,
 		refresh: () => setRefresh((value) => value + 1),

@@ -9,6 +9,7 @@ export function OperatingPeriodsForm({
 	useProfileRange,
 	rangeBusy,
 	perUnitReserve = false,
+	hasStorage = true,
 }: {
 	periods: readonly PeriodDraft[];
 	onChange: (next: readonly PeriodDraft[]) => void;
@@ -17,6 +18,7 @@ export function OperatingPeriodsForm({
 	useProfileRange: () => void;
 	rangeBusy: boolean;
 	perUnitReserve?: boolean;
+	hasStorage?: boolean;
 }) {
 	return (
 		<>
@@ -42,6 +44,7 @@ export function OperatingPeriodsForm({
 					key={period.id}
 					period={period}
 					perUnitReserve={perUnitReserve}
+					hasStorage={hasStorage}
 					index={index}
 					locale={locale}
 					report={report}

@@ -47,10 +47,24 @@
           ]
         },
         "required_usable_kwh": {
-          "$ref": "#/$defs/Nonnegative"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "required_discharge_ac_kw": {
-          "$ref": "#/$defs/Nonnegative"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "application": {
           "anyOf": [
@@ -90,6 +104,14 @@
       "minimum": 0,
       "type": "number"
     },
+    "PartUse": {
+      "enum": [
+        "new",
+        "retain",
+        "replace"
+      ],
+      "type": "string"
+    },
     "SchemaVersion": {
       "maximum": 1,
       "minimum": 1,
@@ -123,6 +145,17 @@
           "anyOf": [
             {
               "$ref": "#/$defs/ControlNetwork"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "controller_use": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PartUse"
             },
             {
               "type": "null"

@@ -258,6 +258,24 @@ class ProjectRevise(ProjectInputs):
     key: Key
 
 
+class EnergyCalculate(ProjectRevise):
+    @field_validator("inputs", mode="before")
+    @classmethod
+    def authored_only(cls, value: object) -> object:
+        from .energy_declarations import normalize_authored_inputs
+
+        return normalize_authored_inputs(value) if isinstance(value, dict) else value
+
+
+class EquipmentFind(ProjectRevise):
+    @field_validator("inputs", mode="before")
+    @classmethod
+    def authored_only(cls, value: object) -> object:
+        from .equipment_declarations import normalize_discovery_inputs
+
+        return normalize_discovery_inputs(value) if isinstance(value, dict) else value
+
+
 class ProjectDelete(Command):
     project_id: Id
     expected_revision: Revision
@@ -286,6 +304,10 @@ class EnergyEvaluate(Command):
 
 class RunRead(Command):
     run_id: Id
+
+
+class RunInputsRead(RunRead):
+    project_id: Id
 
 
 class ReportEvaluate(EnergyEvaluate):

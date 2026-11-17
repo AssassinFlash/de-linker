@@ -17,6 +17,9 @@
     "geometry_image_calibration_v1",
     "storage_only_brief_v1",
     "equipment_use_v1",
-    "energy_operating_modes_v1"
+    "energy_operating_modes_v1",
+    "nullable_equipment_requirements_v1",
+    "authored_energy_calculation_v1",
+    "authored_equipment_discovery_v1"
   ]
 }

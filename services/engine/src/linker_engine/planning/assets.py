@@ -33,8 +33,11 @@ class Asset:
 
 
 class Assets:
-    def __init__(self, workspace: Workspace) -> None:
+    def __init__(
+        self, workspace: Workspace, *, staged: dict[str, Asset] | None = None
+    ) -> None:
         self.workspace = workspace
+        self.staged = staged if staged is not None else {}
 
     def _record(self, row: sqlite3.Row) -> Asset:
         return Asset(
@@ -50,6 +53,9 @@ class Assets:
     def get(self, actor: Actor, project_id: str, asset_id: str) -> Asset:
         with self.workspace.database.read() as connection:
             project_row(connection, actor, project_id)
+            staged = self.staged.get(asset_id)
+            if staged is not None and staged.project_id == project_id:
+                return staged
             row = connection.execute(
                 "SELECT * FROM project_assets WHERE project_id=? AND id=?",
                 (project_id, asset_id),

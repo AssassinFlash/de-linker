@@ -208,7 +208,10 @@ const draftShape = object({
 }) as { required: string[] };
 // Optional DC settings preserve every previously saved AC draft verbatim.
 draftShape.required = draftShape.required.filter(
-	(key) => !["coupling", "dc", "controller", "aux_ac_kw"].includes(key),
+	(key) =>
+		!["coupling", "dc", "controller", "aux_ac_kw", "battery_binding"].includes(
+			key,
+		),
 );
 const checkDraft = ajv.compile<ScenarioDraft>({
 	$defs: { ...batterySchema.$defs, ...dcLossSchema.$defs },
@@ -231,7 +234,9 @@ export function readScenarioDraft(value: unknown): ScenarioDraft {
 		value.schedule.length
 	)
 		throw new ApiError(422, "invalid_scenario_draft");
-	return value;
+	return value.battery_binding === undefined
+		? { ...value, battery_binding: null }
+		: value;
 }
 export function emptyPeriod(): PeriodDraft {
 	return {
@@ -248,6 +253,22 @@ export function emptyPeriod(): PeriodDraft {
 		allow_grid_charge: null,
 	};
 }
+export function useEquipmentCapacity(
+	scenario: ScenarioDraft,
+	usableKwh: number,
+): ScenarioDraft {
+	if (
+		scenario.coupling === "shared_dc" ||
+		scenario.battery.usable_window_kwh !== null
+	)
+		return scenario;
+	return {
+		...scenario,
+		battery: { ...scenario.battery, usable_window_kwh: usableKwh },
+		battery_binding: null,
+	};
+}
+
 export function emptyScenario(): ScenarioDraft {
 	return readScenarioDraft({
 		schema_version: 1,
@@ -423,7 +444,9 @@ export function scenarioInputs(
 	// replay together with its setup; a job/result itself remains immutable.
 	const next = invalidateEnergyReplay(inputs);
 	return {
-		...(scenario.coupling === "shared_dc" ? dropGeometricRoofAc(next) : next),
+		...(!isPvOnly(inputs) && scenario.coupling === "shared_dc"
+			? dropGeometricRoofAc(next)
+			: next),
 		energy_scenario: readObject(readScenarioDraft(scenario)),
 	};
 }
@@ -511,6 +534,13 @@ export function compileTerminalMinimum(
 	)
 		throw new ApiError(422, "terminal_condition_required");
 	return draft.terminal_policy === "none" ? null : draft.terminal_min_kwh;
+}
+
+export function isPvOnly(inputs: JsonObject): boolean {
+	return (
+		inputs.brief !== undefined &&
+		readObject(inputs.brief).system_scope === "pv_only"
+	);
 }
 
 export function isStorageOnly(inputs: JsonObject): boolean {

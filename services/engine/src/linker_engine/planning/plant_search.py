@@ -113,12 +113,27 @@ def search_plant(
     assessments: dict[str, Object] = {}
     keys: list[str] = []
     pending: deque[tuple[str, Iterator[tuple[Object, Object]]]] = deque()
-    # Unit checks depend on this same brief, current Woo snapshot and demand.
-    unit_context = {"brief": inputs.get("brief")}
-    for unit in plan.units:
+    # Equal demand alone cannot share choices when units retain different
+    # hardware or declare different procurement intent.
+    raw = cast(Object, inputs["equipment_plant_setup"])
+    raw_units = cast(list[Object], raw["units"])
+    for unit, raw_unit in zip(plan.units, raw_units, strict=True):
         if not space.available():
             break
-        key = digest(encode(cast(Object, unit.requirements.model_dump(mode="json"))))
+        unit_context = {
+            **cast(Object, raw_unit["inputs"]),
+            "brief": inputs.get("brief"),
+        }
+        key = digest(
+            encode(
+                {
+                    "requirements": cast(
+                        Object, unit.requirements.model_dump(mode="json")
+                    ),
+                    "inputs": unit_context,
+                }
+            )
+        )
         keys.append(key)
         if key not in cache:
             cache[key] = []

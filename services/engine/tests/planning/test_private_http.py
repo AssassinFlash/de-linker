@@ -1187,6 +1187,621 @@ def test_owned_project_refresh_reopen_pagination_and_readonly_team(rig: Rig) -> 
     assert stale.status_code == 409 and stale.json()["error"]["code"] == "conflict"
 
 
+def authored_energy(rig: Rig, project_id: str) -> FixtureObject:
+    """The released browser declaration, with owned measured profile choices."""
+    fixture = (
+        Path(__file__).resolve().parents[4]
+        / "apps/planner/tests/fixtures/energy-scenario.json"
+    )
+    scenario = json.loads(fixture.read_text())
+    selected = {}
+    for role, powers in (
+        ("gross_load", (2, 2)),
+        ("pv_available_ac", (4, 0)),
+        ("aux_ac", (0, 0)),
+    ):
+        content = f"time,power\n2024-03-30T23:00:00Z,{powers[0]}\n2024-03-31T00:00:00Z,{powers[1]}\n".encode()
+        mapping = CsvMapping(
+            "time",
+            "power",
+            cast(Measurement, role),
+            "interval_average_kw",
+            "start",
+            "Europe/Berlin",
+            "synthetic",
+            3600,
+            ",",
+            ".",
+        )
+        asset = rig.post(
+            "/profiles/csv",
+            {
+                "project_id": project_id,
+                "content_base64": base64.b64encode(content).decode(),
+                "mapping": json_object(mapping.document()),
+                "source_label": "Analytic fixture",
+                "rights_note": "created by this test",
+                "key": role,
+            },
+        )
+        selected[role] = asset["id"]
+    scenario["schedule"][0].update(export_policy="limited", export_cap_kw=0)
+    return {
+        "energy_scenario": scenario,
+        "profile_selections": {"schema_version": 1, "selected": selected},
+    }
+
+
+@pytest.mark.parametrize("historical", [False, True])
+def test_run_inputs_reads_owned_immutable_execution_for_both_manifest_formats(
+    rig: Rig, historical: bool
+) -> None:
+    from .test_energy_kernel import create_scenario
+
+    if historical:
+        snapshot = create_scenario(rig.workspace, USER)
+        project_id = snapshot.id
+        original = json_object(snapshot.inputs)
+        queued = rig.post(
+            "/runs/energy",
+            {
+                "project_id": project_id,
+                "expected_revision": snapshot.revision,
+                "key": "old-run-inputs",
+            },
+        )
+        expected_load = original["energy_replay"]["gross_load_asset_id"]
+    else:
+        project_id = rig.create("run-inputs")
+        authored = authored_energy(rig, project_id)
+        expected_load = authored["profile_selections"]["selected"]["gross_load"]
+        calculated = rig.post(
+            "/runs/calculate",
+            {
+                "project_id": project_id,
+                "expected_revision": 1,
+                "inputs": authored,
+                "input_contract": "authored_energy_calculation_v1",
+                "key": "new-run-inputs",
+            },
+        )
+        queued = calculated["run"]
+        snapshot = rig.workspace.get(USER, project_id)
+        assert "energy_replay" not in snapshot.inputs
+    command = {"schema_version": 1, "project_id": project_id, "run_id": queued["id"]}
+    result = rig.post("/runs/inputs", command)
+    assert set(result) == {
+        "schema_version",
+        "project_id",
+        "run_id",
+        "manifest_sha256",
+        "inputs",
+    }
+    assert result["schema_version"] == 1 and result["project_id"] == project_id
+    assert result["run_id"] == queued["id"]
+    assert result["manifest_sha256"] == queued["manifest_sha256"]
+    assert result["inputs"]["energy_replay"]["gross_load_asset_id"] == expected_load
+    if historical:
+        assert result["inputs"] == original
+        assert rig.workspace.input_hash(result["inputs"]) == snapshot.input_sha256
+    battery = result["inputs"]["energy_replay"]["battery_parameters_asset_id"]
+    parameters = rig.client.post(
+        "/assets/content",
+        json={"schema_version": 1, "project_id": project_id, "asset_id": battery},
+        headers=headers(),
+    )
+    assert parameters.status_code == 200
+    assert parameters.json()["eta_charge"] == 0.9
+    rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": snapshot.revision,
+            "inputs": {"note": "later authored state"},
+            "input_contract": "authored_equipment_discovery_v1",
+            "key": "after-run-inputs",
+        },
+    )
+    assert rig.post("/runs/inputs", command) == result
+    foreign = rig.client.post("/runs/inputs", json=command, headers=headers(FOREIGN))
+    assert foreign.status_code == 404
+    other_project = rig.create("other-run-inputs")
+    mismatch = rig.client.post(
+        "/runs/inputs", json={**command, "project_id": other_project}, headers=headers()
+    )
+    assert mismatch.status_code == 404
+
+
+def test_run_inputs_rejects_resolved_document_bound_to_another_snapshot(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("misbound-run-inputs")
+    wrong = rig.workspace.blobs.put_object(
+        {
+            "schema_version": 1,
+            "source_input_sha256": "0" * 64,
+            "inputs": {"from_wrong_snapshot": True},
+        }
+    )
+    context = Context(
+        rig.kernel.runtime.sha256,
+        rig.kernel.models,
+        {"runtime_bundle": rig.kernel.runtime.sha256, "resolved_inputs": wrong},
+        rig.kernel.parameters(),
+    )
+    run = rig.workspace.evaluate(
+        USER, project_id, 1, context, key="misbound-execution", max_attempts=1
+    )
+    response = rig.client.post(
+        "/runs/inputs",
+        json={"schema_version": 1, "project_id": project_id, "run_id": run.id},
+        headers=headers(),
+    )
+    assert response.status_code == 503
+    assert response.json() == {"error": {"code": "version_unavailable"}}
+
+
+def test_calculate_admits_unsaved_authored_input_and_runs_without_preparation(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("calculate-project")
+    inputs = authored_energy(rig, project_id)
+    command = {
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_energy_calculation_v1",
+        "key": "calculate",
+    }
+    reply = rig.post("/runs/calculate", command)
+    project, run = reply["project"], reply["run"]
+    assert reply["schema_version"] == 1
+    assert project["revision"] == 2
+    assert "energy_replay" not in project["inputs"]
+    assert "battery_binding" not in project["inputs"]["energy_scenario"]
+    assert rig.workspace.get(USER, project_id).inputs == project["inputs"]
+    assert rig.post("/runs/calculate", command) == reply
+    assert rig.replay("/runs/calculate", command)["result"] == reply
+    assert len(rig.workspace.runs(USER, project_id)) == 1
+    assert Worker(
+        Jobs(rig.workspace),
+        "calculate-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    completed = rig.post("/runs/read", {"run_id": run["id"]})
+    assert completed["state"] == "succeeded", completed
+    assert completed["result"]["metrics"]["solar_load_kwh"] == pytest.approx(3.62)
+    assert completed["result"]["input_sha256"] == project["input_sha256"]
+    unchanged = rig.post(
+        "/runs/calculate",
+        {**command, "expected_revision": 2, "key": "same-authored-inputs"},
+    )
+    assert unchanged["project"] == project
+    assert unchanged["run"]["id"] != run["id"]
+    assert rig.workspace.get(USER, project_id).revision == 2
+
+
+def test_calculate_standalone_accepts_empty_hardware_but_rejects_partial_selection(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("standalone-empty-hardware")
+    inputs = authored_energy(rig, project_id)
+    setup = {
+        "schema_version": 1,
+        "grid_phase": 3,
+        "operating_mode": "grid_connected",
+        "inverter_product_id": None,
+        "battery_product_id": None,
+        "modules_per_stack": None,
+        "parallel_stacks": None,
+        "accessory_product_ids": [],
+        "pv_dc_kw": None,
+        "required_usable_kwh": None,
+        "required_discharge_ac_kw": None,
+        "equipment_use": {"inverter": "new", "battery": "new"},
+    }
+    inputs["equipment_setup"] = setup
+    command = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_equipment_discovery_v1",
+        "key": "standalone",
+    }
+    admitted = rig.post("/runs/calculate", command)
+    assert Worker(
+        Jobs(rig.workspace),
+        "standalone-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    completed = rig.post("/runs/read", {"run_id": admitted["run"]["id"]})
+    assert completed["state"] == "succeeded", completed
+    assert completed["result"]["metrics"]["solar_load_kwh"] == pytest.approx(3.62)
+    for index, partial in enumerate(
+        ({"battery_product_id": 2090}, {"modules_per_stack": 3})
+    ):
+        command.update(
+            expected_revision=2,
+            key=f"partial-{index}",
+            inputs={**inputs, "equipment_setup": {**setup, **partial}},
+        )
+        refused = rig.client.post("/runs/calculate", json=command, headers=headers())
+        assert refused.status_code == 422, refused.text
+        assert rig.workspace.get(USER, project_id).revision == 2
+    assert len(rig.workspace.runs(USER, project_id)) == 1
+
+
+@pytest.mark.parametrize("authored_coupling", [None, "shared_dc"])
+def test_calculate_pv_only_uses_absent_storage_without_battery_declarations(
+    rig: Rig,
+    authored_coupling: str | None,
+) -> None:
+    project_id = rig.create("pv-only")
+    inputs = authored_energy(rig, project_id)
+    inputs["brief"] = brief_inputs("Europe/Paris")["brief"]
+    inputs["brief"]["system_scope"] = "pv_only"
+    for field in (
+        "battery",
+        "source_note",
+        "initial_inventory",
+        "terminal_policy",
+        "terminal_min_kwh",
+    ):
+        inputs["energy_scenario"].pop(field)
+    inputs["energy_scenario"]["schedule"][0]["reserve_kwh"] = None
+    if authored_coupling is not None:
+        inputs["energy_scenario"]["coupling"] = authored_coupling
+        inputs["energy_scenario"]["dc"] = {
+            "source_note": "",
+            "pv_converter_id": "retained-array",
+            "battery_port_id": "",
+            "aux_dc_kw": None,
+            "losses": {
+                field: None
+                for field in (
+                    "eta_bus_to_battery",
+                    "eta_battery_to_bus",
+                    "eta_store_charge",
+                    "eta_store_discharge",
+                    "eta_inverter_forward",
+                    "eta_inverter_reverse",
+                    "internal_aux_kw",
+                    "standing_loss_rate_per_hour",
+                )
+            },
+        }
+    reply = rig.post(
+        "/runs/calculate",
+        {
+            "project_id": project_id,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "pv-only",
+        },
+    )
+    assert Worker(
+        Jobs(rig.workspace),
+        "pv-only-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    completed = rig.post("/runs/read", {"run_id": reply["run"]["id"]})
+    assert completed["state"] == "succeeded", completed
+    metrics = completed["result"]["metrics"]
+    assert metrics["solar_load_kwh"] == 2
+    assert metrics["grid_import_kwh"] == 2
+    assert completed["result"]["model"]["usable_window_kwh"] == 0
+    assert completed["result"]["kind"] == rig.kernel.kind
+    assert (
+        reply["project"]["inputs"]["energy_scenario"].get("coupling")
+        == authored_coupling
+    )
+    if authored_coupling is not None:
+        assert (
+            reply["project"]["inputs"]["energy_scenario"]["dc"]
+            == inputs["energy_scenario"]["dc"]
+        )
+    execution = rig.post(
+        "/runs/inputs", {"project_id": project_id, "run_id": reply["run"]["id"]}
+    )["inputs"]
+    assert (
+        execution["energy_replay"].get("coupling", "independent_ac") == "independent_ac"
+    )
+    assert (
+        execution["energy_replay"]["pv_available_asset_id"]
+        == inputs["profile_selections"]["selected"]["pv_available_ac"]
+    )
+    assert "battery" not in reply["project"]["inputs"]["energy_scenario"]
+    no_ac = {
+        **inputs,
+        "profile_selections": {
+            "schema_version": 1,
+            "selected": {
+                key: value
+                for key, value in inputs["profile_selections"]["selected"].items()
+                if key != "pv_available_ac"
+            },
+        },
+    }
+    refused = rig.client.post(
+        "/runs/calculate",
+        json={
+            "schema_version": 1,
+            "project_id": project_id,
+            "expected_revision": 2,
+            "inputs": no_ac,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "missing-ac-source",
+        },
+        headers=headers(),
+    )
+    assert refused.status_code == 422, refused.text
+    assert rig.workspace.get(USER, project_id).revision == 2
+
+
+def test_calculated_report_keeps_resolved_basis_after_project_edits(rig: Rig) -> None:
+    from linker_engine.planning.execution_registry import service_registry
+    from linker_engine.planning.product_sources import ProductSources
+    from linker_engine.planning.report_inputs import ReportOptions
+    from linker_engine.planning.report_kernel import ReportKernel, ReportService
+
+    def no_products() -> None:
+        pytest.fail("isolated energy report must not require hardware")
+
+    project_id = rig.create("calculated-report")
+    inputs = authored_energy(rig, project_id)
+    inputs.update(brief_inputs("Europe/Paris"))
+    reply = rig.post(
+        "/runs/calculate",
+        {
+            "project_id": project_id,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "report-energy",
+        },
+    )
+    energy = EnergyService(rig.workspace, rig.kernel, max_attempts=1)
+    reports = ReportService(
+        rig.workspace,
+        ReportKernel(rig.workspace, ProductSources(no_products)),
+        max_attempts=1,
+    )
+    registry = service_registry(energy, None, reports=reports)
+    worker = Worker(
+        Jobs(rig.workspace),
+        "resolved-report-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    assert worker.run_once()
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=reply["run"]["id"],
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+    )
+    report = reports.evaluate(USER, project_id, 2, options, key="resolved-report")
+    rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 2,
+            "inputs": {"note": "later edits"},
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "after-report",
+        },
+    )
+    assert worker.run_once()
+    completed = rig.workspace.run(USER, report.id)
+    assert completed.state == "succeeded", completed.error
+    assert completed.is_current is False
+    source_sha = completed.manifest["context"]["assets"]["report.source"]
+    source = rig.workspace.blobs.object(source_sha)
+    assert source["energy_scenario"]["controller"] == "self_consumption_with_reserve_v1"
+    assert source["energy"]["metrics"]["solar_load_kwh"] == pytest.approx(3.62)
+    assert source["source_runs"][0]["run_id"] == reply["run"]["id"]
+
+
+def test_calculated_report_requires_the_same_system_scope_but_allows_note_edits(
+    rig: Rig,
+) -> None:
+    from linker_engine.planning.product_sources import ProductSources
+    from linker_engine.planning.report_inputs import ReportOptions
+    from linker_engine.planning.report_kernel import ReportKernel, ReportService
+    from linker_engine.planning.report_sources import ReportInputsChanged
+
+    project_id = rig.create("report-scope")
+    inputs = authored_energy(rig, project_id)
+    inputs.update(brief_inputs("Europe/Paris"))
+    inputs["brief"]["system_scope"] = "pv_only"
+    # A declared interval with PV disabled is valid under both scopes, so the
+    # report must detect the changed storage topology rather than a PV mismatch.
+    inputs["energy_scenario"]["schedule"][0]["pv_enabled"] = False
+    calculated = rig.post(
+        "/runs/calculate",
+        {
+            "project_id": project_id,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "scope-energy",
+        },
+    )
+    assert Worker(
+        Jobs(rig.workspace),
+        "report-scope-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    energy_run = rig.post("/runs/read", {"run_id": calculated["run"]["id"]})
+    assert energy_run["state"] == "succeeded", energy_run
+    assert energy_run["result"]["model"]["usable_window_kwh"] == 0
+    reports = ReportService(
+        rig.workspace,
+        ReportKernel(
+            rig.workspace,
+            ProductSources(
+                lambda: pytest.fail("numeric report must not load hardware")
+            ),
+        ),
+        max_attempts=1,
+    )
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=energy_run["id"],
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+    )
+    authored = calculated["project"]["inputs"]
+    authored["brief"]["project_note"] = "Updated customer note"
+    authored["brief"]["site"]["location_label"] = "Updated display label"
+    note = rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 2,
+            "inputs": authored,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "scope-note",
+        },
+    )
+    accepted = reports.evaluate(
+        USER, project_id, note["revision"], options, key="report-note"
+    )
+    assert accepted.state == "queued"
+    authored["brief"]["system_scope"] = "storage_only"
+    changed = rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 3,
+            "inputs": authored,
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "scope-changed",
+        },
+    )
+    with pytest.raises(ReportInputsChanged):
+        reports.evaluate(
+            USER, project_id, changed["revision"], options, key="report-wrong-scope"
+        )
+
+
+def test_calculate_failure_never_advances_project_or_admits_partial_run(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("calculate-failure")
+    inputs = authored_energy(rig, project_id)
+    command = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_energy_calculation_v1",
+        "key": "failure",
+    }
+    inputs["energy_scenario"]["battery"]["eta_charge"] = None
+    invalid = rig.client.post("/runs/calculate", json=command, headers=headers())
+    assert invalid.status_code == 422, invalid.text
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert rig.workspace.runs(USER, project_id) == []
+    inputs["energy_scenario"]["battery"]["eta_charge"] = 0.9
+    # Fail the durable queue's actual write after source resolution, rather than
+    # mocking the service's admission logic.
+    with rig.workspace.database.transaction() as connection:
+        connection.execute(
+            "CREATE TRIGGER fail_queue BEFORE INSERT ON jobs BEGIN SELECT RAISE(ABORT, 'queue unavailable'); END"
+        )
+    failed = rig.client.post("/runs/calculate", json=command, headers=headers())
+    assert failed.status_code == 500
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert rig.workspace.runs(USER, project_id) == []
+    assert rig.replay("/runs/calculate", command)["status"] == "absent"
+    with rig.workspace.database.transaction() as connection:
+        connection.execute("DROP TRIGGER fail_queue")
+    admitted = rig.post("/runs/calculate", command)
+    assert admitted["project"]["revision"] == 2
+    ExecutionControl(rig.workspace).set_draining(True)
+    assert rig.post("/runs/calculate", command) == admitted
+    changed = rig.client.post(
+        "/runs/calculate", json={**command, "key": "another"}, headers=headers()
+    )
+    assert changed.status_code == 503
+
+
+def test_calculate_keeps_frozen_inputs_after_edits_and_rejects_foreign_writers(
+    rig: Rig,
+) -> None:
+    from linker_engine.planning.energy_comparison import comparison_side
+
+    project_id = rig.create("calculate-frozen")
+    inputs = authored_energy(rig, project_id)
+    command = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": inputs,
+        "input_contract": "authored_energy_calculation_v1",
+        "key": "frozen",
+    }
+    foreign = rig.client.post("/runs/calculate", json=command, headers=headers(FOREIGN))
+    assert foreign.status_code == 404
+    first = rig.post("/runs/calculate", command)
+    saved = rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 2,
+            "inputs": {"note": "authored energy was edited away"},
+            "input_contract": "authored_energy_calculation_v1",
+            "key": "later",
+        },
+    )
+    assert saved["revision"] == 3
+    assert Worker(
+        Jobs(rig.workspace),
+        "frozen-worker",
+        {"evaluate": rig.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    ).run_once()
+    completed = rig.post("/runs/read", {"run_id": first["run"]["id"]})
+    assert completed["state"] == "succeeded", completed
+    side = comparison_side(rig.workspace, USER, project_id, str(completed["id"]))
+    assert side.scenario.initial_inventory.energy().total == 0
+    assert side.inputs["energy_scenario"]["battery"]["eta_charge"] == 0.9
+    assert "energy_replay" in side.inputs
+    retried = rig.post("/runs/calculate", command)
+    assert retried["project"] == first["project"]
+    assert retried["run"]["id"] == first["run"]["id"]
+    assert rig.workspace.get(USER, project_id).revision == 3
+    stale = rig.client.post(
+        "/runs/calculate", json={**command, "key": "stale"}, headers=headers()
+    )
+    assert stale.status_code == 409
+    command["inputs"]["energy_scenario"]["battery"]["eta_charge"] = 0.8
+    conflict = rig.client.post("/runs/calculate", json=command, headers=headers())
+    assert conflict.status_code == 409
+
+
 def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
     rig: Rig,
 ) -> None:
@@ -1793,6 +2408,161 @@ def test_http_unknown_creation_and_csv_import_recover_original_after_native_clai
         ).status_code
         == 404
     )
+
+
+@pytest.mark.parametrize(
+    "operation", ["calculate", "find-equipment", "check-equipment"]
+)
+@pytest.mark.parametrize("changed_inputs", [False, True])
+def test_current_command_receipt_survives_native_guest_claim_without_duplicate_run(
+    rig: Rig,
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    operation: str,
+    changed_inputs: bool,
+) -> None:
+    from linker_engine.planning.equipment_kernel import EquipmentKernel
+    from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
+    from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
+    from linker_engine.planning.equipment_service import EquipmentService
+    from linker_engine.planning.guest_claims import GuestClaims
+    from linker_engine.planning.product_sources import ProductSources
+
+    assert isinstance(client.app, FastAPI)
+    provider = client.app.state.planning_product_provider
+    loaded = provider()
+    loaded.publication.feed["figure_projection_version"] = 2
+    loaded.publication.feed["compatibility_origin"] = "woocommerce"
+    manifest = publication_manifest(loaded.publication.feed)
+    for product in manifest["products"]:
+        product["ready"]["engineering"] = True
+    monkeypatch.setattr(Publication, "read", lambda _self: manifest)
+    source = ProductSources(provider)
+    kernel = EnergyKernel(
+        rig.workspace, Tolerance(1e-7, 1e-7, 1e-9), max_intervals=100, products=source
+    )
+    energy = EnergyService(rig.workspace, kernel, max_attempts=1)
+    search = EquipmentService(
+        rig.workspace,
+        EquipmentSearchKernel(
+            rig.workspace, source, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
+    )
+    app = create_private_app(
+        rig.workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 2, 16),
+        equipment_search=search,
+        equipment=EquipmentService(
+            rig.workspace, EquipmentKernel(rig.workspace, source), max_attempts=1
+        ),
+        product_provider=provider,
+    )
+    guest = Actor("guest", "native-current-command")
+    with TestClient(app, raise_server_exceptions=False) as private:
+        current = Rig(rig.workspace, kernel, private)
+        project_id = current.create("guest-current-project", guest)
+        mapping = CsvMapping(
+            "time",
+            "power",
+            "gross_load",
+            "interval_average_kw",
+            "start",
+            "Europe/Berlin",
+            "synthetic",
+            3600,
+            ",",
+            ".",
+        )
+        asset = current.post(
+            "/profiles/csv",
+            {
+                "project_id": project_id,
+                "content_base64": base64.b64encode(
+                    b"time,power\n2024-03-30T23:00:00Z,2\n2024-03-31T00:00:00Z,2\n"
+                ).decode(),
+                "mapping": json_object(mapping.document()),
+                "source_label": "Synthetic guest demand",
+                "rights_note": "created by this test",
+                "key": "guest-load",
+            },
+            guest,
+        )
+        scenario = json.loads(
+            (
+                Path(__file__).resolve().parents[4]
+                / "apps/planner/tests/fixtures/energy-scenario.json"
+            ).read_text()
+        )
+        scenario.pop("battery_binding")
+        scenario["aux_ac_kw"] = 0
+        scenario["schedule"][0]["pv_enabled"] = False
+        inputs = brief_inputs("Europe/Berlin")
+        inputs["brief"]["system_scope"] = "storage_only"
+        inputs.update(
+            energy_scenario=scenario,
+            profile_selections={
+                "schema_version": 1,
+                "selected": {"gross_load": asset["id"]},
+            },
+            equipment_setup={
+                "schema_version": 1,
+                "grid_phase": 3,
+                "operating_mode": "grid_connected",
+                "inverter_product_id": None,
+                "battery_product_id": None,
+                "modules_per_stack": None,
+                "parallel_stacks": None,
+                "accessory_product_ids": [],
+                "pv_dc_kw": 0,
+                "required_usable_kwh": None,
+                "required_discharge_ac_kw": None,
+            },
+        )
+        if operation == "check-equipment":
+            inputs["brief"]["system_scope"] = "pv_only"
+            inputs["equipment_setup"]["inverter_product_id"] = 4107
+        expected = 1
+        if not changed_inputs:
+            saved = current.post(
+                "/projects/revise",
+                {
+                    "project_id": project_id,
+                    "expected_revision": 1,
+                    "inputs": inputs,
+                    "input_contract": "authored_equipment_discovery_v1",
+                    "key": "saved-guest-inputs",
+                },
+                guest,
+            )
+            expected = saved["revision"]
+        command = {
+            "schema_version": 1,
+            "project_id": project_id,
+            "expected_revision": expected,
+            "inputs": inputs,
+            "input_contract": "authored_equipment_discovery_v1",
+            "key": "uncertain-current-command",
+        }
+        path = "/runs/" + operation
+        original = current.post(path, command, guest)
+        assert original["project"]["revision"] == expected + int(changed_inputs)
+        GuestClaims(rig.workspace).claim(guest, USER, key="claim-current-command")
+        retried = current.post(path, command)
+        assert retried == original
+        assert current.replay(path, command)["result"] == original
+        assert len(rig.workspace.runs(USER, project_id)) == 1
+        assert (
+            rig.workspace.get(USER, project_id).revision
+            == original["project"]["revision"]
+        )
+        for prefix in ("", "/operations/replay"):
+            foreign = private.post(
+                prefix + path, json=command, headers=headers(FOREIGN)
+            )
+            assert foreign.status_code == 404
 
 
 def test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release(

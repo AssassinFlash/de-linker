@@ -124,6 +124,8 @@ def bind_energy_assets(
     pinned: Object,
 ) -> None:
     expected = {"runtime_bundle", "battery.raw", "battery.metadata"}
+    if "resolved_inputs" in pinned:
+        expected.add("resolved_inputs")
     if "equipment_selection" in inputs:
         expected.update({"woo.equipment_inputs", "equipment.selection"})
         selection = pinned.get("equipment.selection")

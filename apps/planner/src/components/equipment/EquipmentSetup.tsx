@@ -1,10 +1,8 @@
+import { equipmentFieldMessage } from "./equipmentLabels.ts";
 import { useEffect, useMemo, useState } from "react";
-import { compileEquipmentRequirements } from "../../domain/equipmentRequirements.ts";
 import type { Draft } from "../../domain/draft.ts";
-import { isDirty, sameJson } from "../../domain/draft.ts";
 import {
 	changeEquipment,
-	compileEquipment,
 	equipmentDraft,
 	factoryEquipment,
 	PART_USES,
@@ -12,7 +10,6 @@ import {
 import type { EquipmentUse, PartUse } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject } from "../../data/protocol.ts";
-import { ApiError } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -39,8 +36,10 @@ export function EquipmentSetup({
 	actionsDisabled,
 	onValidity,
 	onError,
-	start,
+	inputErrors = [],
+	inputPath = "equipment_setup",
 	search,
+	check,
 	searchEnabled,
 	standalone,
 	heading = true,
@@ -56,9 +55,11 @@ export function EquipmentSetup({
 	disabled: boolean;
 	actionsDisabled: boolean;
 	onValidity: (valid: boolean) => void;
-	onError: (error: unknown) => void;
-	start: () => void;
+	onError: (error: unknown, changed?: readonly string[]) => void;
+	inputErrors?: readonly string[];
+	inputPath?: string;
 	search: () => void;
+	check: () => void;
 	searchEnabled: boolean;
 	standalone: boolean;
 	heading?: boolean;
@@ -114,43 +115,26 @@ export function EquipmentSetup({
 		assembly?.sales_unit_kind === "battery_system"
 			? assembly.fixed_modules_per_stack
 			: null;
-	const configuredSetup = setup
-		? factoryEquipment(setup, catalog.data?.assemblies ?? {})
-		: null;
 	useEffect(() => {
 		if (fixedCount !== null && fixedCount !== undefined)
 			callbacks.modules_per_stack!(true);
 	}, [fixedCount, callbacks]);
-	let prepared = false;
-	try {
-		prepared =
-			!!setup &&
-			!blocked &&
-			sameJson(
-				compileEquipment(configuredSetup!, products),
-				draft.history.current.equipment_selection,
-			);
-	} catch {
-		/* Incomplete selections remain editable. */
-	}
-	let searchPrepared = false;
-	try {
-		searchPrepared =
-			!!setup &&
-			sameJson(
-				compileEquipmentRequirements(
-					setup,
-					readObject(draft.history.current.equipment_requirements ?? {}),
-				),
-				draft.history.current.equipment_requirements,
-			);
-	} catch {
-		/* Missing project demand stays editable. */
-	}
 	function change(patch: JsonObject) {
 		if (!disabled && client.isCurrentScope(scope)) {
-			edit((inputs) => changeEquipment(inputs, patch));
-			onError(null);
+			edit((inputs) => {
+				const next = changeEquipment(inputs, patch);
+				return changeEquipment(
+					next,
+					factoryEquipment(
+						equipmentDraft(next),
+						catalog.data?.assemblies ?? {},
+					),
+				);
+			});
+			onError(
+				null,
+				Object.keys(patch).map((key) => inputPath + "." + key),
+			);
 		}
 	}
 	if (!setup)
@@ -162,6 +146,21 @@ export function EquipmentSetup({
 				)}
 			</Notice>
 		);
+	const message = (key: string) =>
+		equipmentFieldMessage(inputErrors, inputPath + "." + key);
+	const fieldProps = (key: string) => ({
+		name: inputPath + "." + key,
+		"aria-invalid": Boolean(message(key)),
+		"aria-describedby": message(key)
+			? inputPath + "." + key + "-error"
+			: undefined,
+	});
+	const feedback = (key: string) =>
+		message(key) ? (
+			<small className="lp-field-error" id={inputPath + "." + key + "-error"}>
+				{message(key)}
+			</small>
+		) : null;
 	const selectedAccessories = Array.isArray(setup.accessory_product_ids)
 		? (setup.accessory_product_ids as number[])
 		: [];
@@ -182,6 +181,7 @@ export function EquipmentSetup({
 		<label className="lp-field">
 			<span>{label}</span>
 			<select
+				{...fieldProps(key)}
 				value={typeof setup[key] === "number" ? String(setup[key]) : ""}
 				disabled={blocked}
 				onChange={(event) => {
@@ -207,6 +207,7 @@ export function EquipmentSetup({
 					</option>
 				))}
 			</select>
+			{feedback(key)}
 		</label>
 	);
 	const useChoice = (part: "inverter" | "battery", label: string) => (
@@ -255,6 +256,8 @@ export function EquipmentSetup({
 		integer = false,
 	) => (
 		<NumberField
+			name={inputPath + "." + key}
+			error={message(key)}
 			key={key}
 			label={label}
 			unit={unit}
@@ -277,6 +280,7 @@ export function EquipmentSetup({
 						<label className="lp-field">
 							<span>{__("Choose an operating mode", "linker-tools")}</span>
 							<select
+								{...fieldProps("operating_mode")}
 								value={
 									typeof setup.operating_mode === "string"
 										? setup.operating_mode
@@ -298,10 +302,12 @@ export function EquipmentSetup({
 									{__("Backup operation", "linker-tools")}
 								</option>
 							</select>
+							{feedback("operating_mode")}
 						</label>
 						<label className="lp-field">
 							<span>{__("Grid connection", "linker-tools")}</span>
 							<select
+								{...fieldProps("grid_phase")}
 								value={
 									typeof setup.grid_phase === "number"
 										? String(setup.grid_phase)
@@ -319,22 +325,63 @@ export function EquipmentSetup({
 								<option value="1">{__("Single-phase", "linker-tools")}</option>
 								<option value="3">{__("Three-phase", "linker-tools")}</option>
 							</select>
+							{feedback("grid_phase")}
 						</label>
 					</>
 				)}
+				<label className="lp-field">
+					<span>{__("Application", "linker-tools")}</span>
+					<select
+						{...fieldProps("application")}
+						value={
+							typeof setup.application === "string" ? setup.application : ""
+						}
+						onChange={(event) =>
+							change({ application: event.currentTarget.value || null })
+						}
+					>
+						<option value="">{__("Any application", "linker-tools")}</option>
+						<option value="residential">
+							{__("Residential", "linker-tools")}
+						</option>
+						<option value="commercial">
+							{__("Commercial", "linker-tools")}
+						</option>
+					</select>
+					{feedback("application")}
+				</label>
 				{!storageOnly &&
 					number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
-				{number(
-					"required_usable_kwh",
-					__("Required usable energy", "linker-tools"),
-					"kWh",
-				)}
-				{number(
-					"required_discharge_ac_kw",
-					__("Required continuous AC discharge power", "linker-tools"),
-					"kW",
-				)}
 			</div>
+			<details
+				className="lp-comparison"
+				open={
+					typeof setup.required_usable_kwh === "number" ||
+					typeof setup.required_discharge_ac_kw === "number"
+				}
+			>
+				<summary>
+					{__("Known power and capacity (optional)", "linker-tools")}
+				</summary>
+				<p>
+					{__(
+						"Leave these blank to compare equipment configurations. Add a requirement when your project already specifies it.",
+						"linker-tools",
+					)}
+				</p>
+				<div className="lp-geometry-fields">
+					{number(
+						"required_usable_kwh",
+						__("Required usable energy", "linker-tools"),
+						"kWh",
+					)}
+					{number(
+						"required_discharge_ac_kw",
+						__("Required continuous AC discharge power", "linker-tools"),
+						"kW",
+					)}
+				</div>
+			</details>
 		</fieldset>
 	);
 	return (
@@ -397,59 +444,15 @@ export function EquipmentSetup({
 				<>
 					<p>
 						{__(
-							"Find combinations using the requirements above. Selecting products is optional.",
+							"Compare equipment configurations, then choose one for your project. Known requirements narrow the choices.",
 							"linker-tools",
 						)}
 					</p>
-					<p>
-						{searchPrepared && !isDirty(draft)
-							? __(
-									"The saved requirements are ready for the search.",
-									"linker-tools",
-								)
-							: __(
-									"Prepare the search, then save the project.",
-									"linker-tools",
-								)}
-					</p>
 					<div className="lp-energy-submit">
-						<button
-							className="lp-button lp-button-secondary"
-							type="button"
-							disabled={disabled || !valid}
-							onClick={() => {
-								if (!setup) return;
-								try {
-									const requirements = compileEquipmentRequirements(
-										setup,
-										readObject(
-											draft.history.current.equipment_requirements ?? {},
-										),
-									);
-									if (client.isCurrentScope(scope)) {
-										edit((inputs) => ({
-											...inputs,
-											equipment_requirements: requirements,
-										}));
-										onError(null);
-									}
-								} catch (error) {
-									onError(error);
-								}
-							}}
-						>
-							{__("Prepare equipment search", "linker-tools")}
-						</button>
 						<button
 							className="lp-button"
 							type="button"
-							disabled={
-								!searchPrepared ||
-								isDirty(draft) ||
-								actionsDisabled ||
-								blocked ||
-								!valid
-							}
+							disabled={actionsDisabled || blocked || !valid}
 							onClick={search}
 						>
 							{__("Find equipment combinations", "linker-tools")}
@@ -537,6 +540,7 @@ export function EquipmentSetup({
 					<label className="lp-field">
 						<span>{__("Choose a product", "linker-tools")}</span>
 						<select
+							{...fieldProps("accessory_product_ids")}
 							value=""
 							disabled={blocked}
 							onChange={(event) => {
@@ -561,11 +565,13 @@ export function EquipmentSetup({
 									</option>
 								))}
 						</select>
+						{feedback("accessory_product_ids")}
 					</label>
-					{selectedAccessories.map((id) => (
+					{selectedAccessories.map((id, index) => (
 						<label className="lp-field" key={id}>
 							<span>
 								<input
+									{...fieldProps(`accessory_product_ids[${index}]`)}
 									type="checkbox"
 									checked
 									disabled={disabled}
@@ -580,84 +586,19 @@ export function EquipmentSetup({
 								{products.find((p) => p.id === id)?.model ??
 									__("Use current product data", "linker-tools")}
 							</span>
+							{feedback(`accessory_product_ids[${index}]`)}
 						</label>
 					))}
 				</details>
 				{!embedded && (
 					<div className="lp-energy-submit">
-						<div>
-							<strong>
-								{prepared
-									? __(
-											"Equipment selection prepared in this draft",
-											"linker-tools",
-										)
-									: __(
-											"Choose products and prepare the selection before saving the project.",
-											"linker-tools",
-										)}
-							</strong>
-							<p>
-								{isDirty(draft) || draft.pending
-									? __(
-											"Save project records these inputs before a new calculation can start.",
-											"linker-tools",
-										)
-									: sprintf(
-											__(
-												"A new calculation uses saved input revision %d.",
-												"linker-tools",
-											),
-											draft.baseline.revision,
-										)}
-							</p>
-						</div>
-						<button
-							type="button"
-							className="lp-button lp-button-secondary"
-							disabled={
-								actionsDisabled ||
-								blocked ||
-								!valid ||
-								!setup.inverter_product_id ||
-								!setup.operating_mode
-							}
-							onClick={() => {
-								try {
-									const value = compileEquipment(configuredSetup!, products);
-									if (
-										!edit((current) => {
-											if (!sameJson(equipmentDraft(current), setup))
-												throw new ApiError(409, "conflict");
-											return {
-												...changeEquipment(current, configuredSetup!),
-												equipment_selection: value,
-											};
-										})
-									)
-										throw new ApiError(409, "conflict");
-									onError(null);
-								} catch (error) {
-									onError(error);
-								}
-							}}
-						>
-							{__("Prepare equipment selection", "linker-tools")}
-						</button>
 						<button
 							type="button"
 							className="lp-button"
-							disabled={
-								actionsDisabled ||
-								!valid ||
-								!prepared ||
-								isDirty(draft) ||
-								!!draft.pending ||
-								!!draft.conflict
-							}
-							onClick={start}
+							disabled={actionsDisabled || blocked || !valid}
+							onClick={check}
 						>
-							{__("Check saved equipment selection", "linker-tools")}
+							{__("Check equipment", "linker-tools")}
 						</button>
 					</div>
 				)}

@@ -16,6 +16,7 @@ interface CandidateMetadata extends JsonObject {
 	assessment_sha256: string;
 	violated_checks: number;
 	unresolved_checks: number;
+	usable_energy_kwh?: number | null;
 }
 interface SingleCandidate extends CandidateMetadata {
 	selection: EquipmentSelection;
@@ -84,7 +85,12 @@ export function readEquipmentSearchResult(
 			!hash(c.assessment_sha256) ||
 			!["violated", "unresolved", "satisfied"].includes(String(c.status)) ||
 			!count(c.violated_checks) ||
-			!count(c.unresolved_checks)
+			!count(c.unresolved_checks) ||
+			(c.usable_energy_kwh !== undefined &&
+				c.usable_energy_kwh !== null &&
+				(typeof c.usable_energy_kwh !== "number" ||
+					!Number.isFinite(c.usable_energy_kwh) ||
+					c.usable_energy_kwh < 0))
 		)
 			throw new ApiError(502, "invalid_run_result");
 		ids.add(String(c.id));

@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 from .canonical import Object
+from .direct_beam_weather import check_direct_beam
+from .energy_declarations import EnergyDeclarations, normalize_authored_inputs
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
+from .equipment_candidate_choice import check_equipment_candidate
 from .errors import EvidenceMissing, InvalidInput
+from .geometric_pv_job import check_geometric_pv
+from .geometry_import_selections import check_geometry_imports
 from .plant_energy_kernel import PlantEnergyKernel
-from .records import Actor, Run
+from .pv_preparation import check_pv_preparation
+from .records import Actor, Context, Project, Run
 from .workspace import Workspace
 
 
@@ -69,6 +75,74 @@ class EnergyService:
         return self.kernel_for(
             self.workspace.get(actor, project_id, revision=revision).inputs
         ).kind
+
+    def calculate(
+        self,
+        actor: Actor,
+        project_id: str,
+        expected_revision: int,
+        inputs: Object,
+        *,
+        key: str,
+        input_contract: str | None = None,
+    ) -> tuple[Project, Run]:
+        authored = normalize_authored_inputs(inputs)
+        declarations = EnergyDeclarations(
+            self.workspace, actor, project_id, authored, self.kernel.products
+        )
+
+        def resolve() -> Context:
+            previous = self.workspace.get(
+                actor, project_id, revision=expected_revision
+            ).inputs
+            execution = declarations.compile()
+            for check in (
+                check_geometry_imports,
+                check_pv_preparation,
+                check_direct_beam,
+                check_geometric_pv,
+            ):
+                check(declarations.assets, actor, project_id, execution)
+            check_equipment_candidate(
+                self.workspace,
+                actor,
+                project_id,
+                execution,
+                products=self.kernel.products,
+                previous=previous,
+            )
+            if self.kernel.products is not None:
+                self.kernel.products.check_project(execution, previous)
+            kernel = self.kernel_for(execution)
+            context = kernel.context(
+                actor, project_id, execution, assets=declarations.assets
+            )
+            resolved = self.workspace.blobs.put_object(
+                {
+                    "schema_version": 1,
+                    "source_input_sha256": self.workspace.input_hash(authored),
+                    "inputs": execution,
+                }
+            )
+            return Context(
+                context.code_sha256,
+                context.models,
+                {**context.assets, "resolved_inputs": resolved},
+                context.parameters,
+            )
+
+        return self.workspace.evaluate_inputs(
+            actor,
+            project_id,
+            expected_revision,
+            authored,
+            resolve,
+            operation="calculate",
+            publish=declarations.publish,
+            key=key,
+            input_contract=input_contract,
+            max_attempts=self.max_attempts,
+        )
 
     def evaluate(
         self, actor: Actor, project_id: str, expected_revision: int, *, key: str

@@ -10,7 +10,16 @@ import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" }
 import constantAcRunJson from "../../tests/fixtures/constant-ac-energy-run.json" with { type: "json" };
 import constantPlantAcRunJson from "../../tests/fixtures/constant-plant-ac-energy-run.json" with { type: "json" };
 import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
-import { readRun, readRunPage } from "./planningProtocol.ts";
+import {
+	readRun,
+	readRunPage,
+	readPlanningOperation,
+	readCurrentCalculation,
+} from "./planningProtocol.ts";
+import scenarioJson from "../../tests/fixtures/energy-scenario.json" with { type: "json" };
+import profilesJson from "../../tests/fixtures/energy-selections.json" with { type: "json" };
+import { authoredCalculationInputs } from "../domain/currentCalculation.ts";
+import { projectInputContract } from "../domain/draft.ts";
 import {
 	readPlanningReport,
 	readReportResult,
@@ -20,11 +29,73 @@ import { readObject as objectDocument } from "./readProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 
+import { readRunInputs } from "./planningProtocol.ts";
+
+test("source input replies belong to the selected immutable run", () => {
+	const inputs = { energy_replay: { battery_parameters_asset_id: "owned" } };
+	const reply = {
+		schema_version: 1,
+		project_id: runJson.project_id,
+		run_id: runJson.id,
+		manifest_sha256: runJson.manifest_sha256,
+		inputs,
+	};
+	assert.equal(readRunInputs(reply, runJson), inputs);
+	for (const patch of [
+		{ project_id: "f".repeat(32) },
+		{ run_id: "f".repeat(32) },
+		{ manifest_sha256: "f".repeat(64) },
+		{ inputs: null },
+		{ schema_version: 2 },
+	])
+		assert.throws(() => readRunInputs({ ...reply, ...patch }, runJson));
+});
+
 type MutableObject = { -readonly [P in keyof JsonObject]: JsonObject[P] };
 const readObject = (value: unknown): MutableObject =>
 	objectDocument(value) as MutableObject;
 const original = () => readObject(structuredClone(runJson));
 const result = (run: JsonObject) => readObject(run.result);
+
+test("calculate current inputs binds the confirmed project and run to its authored request", () => {
+	const command = {
+		schema_version: 1,
+		project_id: runJson.project_id,
+		expected_revision: runJson.revision,
+		input_contract: projectInputContract,
+		key: "37c3a9ef-4d58-49df-b38e-61090c8a19aa",
+		inputs: { energy_scenario: scenarioJson, profile_selections: profilesJson },
+	};
+	assert.deepEqual(
+		readPlanningOperation("runs/calculate", JSON.stringify(command)),
+		command,
+	);
+	const run = original();
+	run.state = "queued";
+	run.result = null;
+	run.result_sha256 = null;
+	const project = {
+		id: runJson.project_id,
+		title: "Current calculation",
+		revision: runJson.revision,
+		input_sha256: runJson.manifest.input_sha256,
+		inputs: authoredCalculationInputs(command.inputs),
+	};
+	const reply = { schema_version: 1, project, run };
+	assert.equal(readCurrentCalculation(reply, command).run.id, runJson.id);
+	assert.throws(() =>
+		readCurrentCalculation(
+			{ ...reply, project: { ...project, inputs: {} } },
+			command,
+		),
+	);
+	assert.throws(() =>
+		readCurrentCalculation(
+			{ ...reply, project: { ...project, input_sha256: "f".repeat(64) } },
+			command,
+		),
+	);
+});
 
 test("a frozen report names its language when it differs from the site", () => {
 	assert.equal(reportLanguageDiffers("en", "de-DE"), true);

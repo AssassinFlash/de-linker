@@ -9,11 +9,14 @@ import { DcParameterSources } from "./DcParameterSources.tsx";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
-import { readBatteryAsset } from "../../data/planningProtocol.ts";
+import {
+	readBatteryAsset,
+	readRunInputs,
+} from "../../data/planningProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session, JsonObject } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
-import { readObject, readProject } from "../../data/readProtocol.ts";
+import { readObject } from "../../data/readProtocol.ts";
 import {
 	readEnergyInputs,
 	BATTERY_FIELDS,
@@ -54,27 +57,22 @@ export function RunBasis({
 		retry: false,
 		queryFn: async ({ signal }) => {
 			try {
-				const historical = readProject(
+				const frozen = readRunInputs(
 					await client.query(
-						"projects/read",
+						"runs/inputs",
 						{
 							schema_version: 1,
 							project_id: run.project_id,
-							revision: run.revision,
+							run_id: run.id,
 						},
 						session.query_scope,
 						signal,
 					),
+					run,
 				);
-				if (
-					historical.id !== run.project_id ||
-					historical.revision !== run.revision ||
-					historical.input_sha256 !== run.manifest.input_sha256
-				)
-					throw new ApiError(502, "run_source_mismatch");
 				const selected = joint
-						? readPlantEnergyInputs(historical.inputs.energy_plant)
-						: readEnergyInputs(historical.inputs.energy_replay),
+						? readPlantEnergyInputs(frozen.energy_plant)
+						: readEnergyInputs(frozen.energy_replay),
 					pins = readObject(readObject(run.manifest.context).assets);
 				const profiles: [
 					import("../../domain/profiles.ts").ProfileRole | "pv_available_dc",

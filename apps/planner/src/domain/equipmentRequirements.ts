@@ -20,7 +20,8 @@ export function compileEquipmentRequirements(
 	// when preparing edited hardware fields from a saved search.
 	const requirements: JsonObject = {
 		...setup,
-		...(declared.application !== undefined
+		...(!Object.hasOwn(setup, "application") &&
+		declared.application !== undefined
 			? { application: declared.application }
 			: {}),
 	};

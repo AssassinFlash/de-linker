@@ -224,7 +224,6 @@
       "items": {
         "$ref": "#/$defs/PlantStorageInputs"
       },
-      "minItems": 1,
       "title": "Units",
       "type": "array"
     },

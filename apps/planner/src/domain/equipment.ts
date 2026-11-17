@@ -88,19 +88,14 @@ const EQUIPMENT_SETUP_FIELDS = [
 	"equipment_use",
 ] as const;
 
-/** The setup row carries exactly the hardware fields and nothing else. */
+/** Customer demand travels with the authored setup, never the physical selection. */
 const EQUIPMENT_ROW_FIELDS = [
 	"schema_version",
+	"application",
 	"accessory_product_ids",
 	...EQUIPMENT_SETUP_FIELDS,
 ] as const;
 
-/**
- * Project any source document onto the setup-row contract. Requirements-only
- * fields (notably `application`) belong to equipment_requirements; the
- * selection schema rejects unknown properties, so keeping them in a draft row
- * fails every later compileEquipment (measured 2026-11-15 on saved projects).
- */
 function equipmentRow(row: JsonObject): JsonObject {
 	return Object.fromEntries(
 		EQUIPMENT_ROW_FIELDS.filter((key) => row[key] !== undefined).map((key) => [
@@ -110,27 +105,22 @@ function equipmentRow(row: JsonObject): JsonObject {
 	);
 }
 
-/**
- * A saved equipment_setup row can be an all-null placeholder (written before
- * any field was touched) while equipment_requirements already carries the
- * prepared search inputs. Such an empty row must not shadow the saved
- * requirements, or the reopened form shows nothing.
- */
-function equipmentSetupEmpty(row: JsonObject): boolean {
-	const accessories = row.accessory_product_ids;
-	return (
-		Array.isArray(accessories) &&
-		accessories.length === 0 &&
-		// Rows saved before `equipment_use` exist carry it as undefined.
-		EQUIPMENT_SETUP_FIELDS.every((key) => row[key] == null)
-	);
-}
-
 export function equipmentDraft(inputs: JsonObject): JsonObject {
 	const noPv =
 		inputs.brief !== undefined &&
 		readObject(inputs.brief).system_scope === "storage_only";
 	const scopeFields = noPv ? { pv_dc_kw: 0 } : {};
+	const legacy =
+		inputs.equipment_requirements === undefined
+			? null
+			: readObject(inputs.equipment_requirements);
+	const application =
+		legacy &&
+		typeof legacy === "object" &&
+		!Array.isArray(legacy) &&
+		Object.hasOwn(legacy, "application")
+			? { application: legacy.application! }
+			: {};
 	if (inputs.equipment_setup !== undefined) {
 		const row = readObject(inputs.equipment_setup);
 		if (
@@ -173,12 +163,12 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 				!PART_USES.includes((use as JsonObject).battery as PartUse))
 		)
 			throw new ApiError(422, "equipment_selection_incomplete");
-		if (!equipmentSetupEmpty(row))
-			return { ...equipmentRow(row), ...scopeFields };
+		return { ...application, ...equipmentRow(row), ...scopeFields };
 	}
 	if (inputs.equipment_selection !== undefined)
 		return {
-			...readEquipmentSelection(inputs.equipment_selection),
+			...equipmentRow(readEquipmentSelection(inputs.equipment_selection)),
+			...application,
 			...scopeFields,
 		};
 	if (inputs.equipment_requirements !== undefined)
@@ -231,7 +221,8 @@ export function compileEquipment(
 		if (!product) throw new ApiError(409, "product_evidence_changed");
 		revisions[String(product.id)] = product.product_revision;
 	}
-	const value = { ...setup, product_revisions: revisions };
+	const { application: _demand, ...hardware } = setup;
+	const value = { ...hardware, product_revisions: revisions };
 	return readEquipmentSelection(value);
 }
 

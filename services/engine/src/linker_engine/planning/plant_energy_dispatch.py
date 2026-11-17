@@ -58,12 +58,7 @@ def _validate(
     tolerance: Tolerance | None = None,
 ) -> None:
     ids = {unit.id for unit in units}
-    if (
-        not units
-        or len(ids) != len(units)
-        or ids != set(states)
-        or ids != set(frame.reserves_kwh)
-    ):
+    if len(ids) != len(units) or ids != set(states) or ids != set(frame.reserves_kwh):
         raise InvalidInput("plant states and reserves need every distinct unit")
     for unit in units:
         allowance = (

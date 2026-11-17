@@ -22,7 +22,9 @@ from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     BatteryScenario,
     CsvImport,
+    EnergyCalculate,
     EnergyEvaluate,
+    EquipmentFind,
     GeometryImportCommand,
     HandoffPrepare,
     ProjectCreate,
@@ -116,6 +118,38 @@ class HttpReplay:
                     )
                 )
             )
+        elif path in ("runs/calculate", "runs/find-equipment", "runs/check-equipment"):
+            current = (
+                EnergyCalculate.model_validate(value)
+                if path == "runs/calculate"
+                else EquipmentFind.model_validate(value)
+            )
+            command_scope = f"{path.removeprefix('runs/')}:{current.project_id}"
+            receipt, command_sha256 = self.receipt(
+                actor,
+                command_scope,
+                current.key,
+                revise_command(
+                    current.expected_revision,
+                    current.inputs,
+                    input_contract=current.input_contract,
+                ),
+                project_id=current.project_id,
+            )
+            result = None
+            if receipt is not None:
+                run = self.workspace.run(
+                    actor, commands.receipt_string(receipt, "run_id")
+                )
+                result = {
+                    "schema_version": 1,
+                    "project": project_view(
+                        self.workspace.get(
+                            actor, current.project_id, revision=run.revision
+                        )
+                    ),
+                    "run": run_view(run),
+                }
         elif path == "projects/delete":
             delete = ProjectDelete.model_validate(value)
             command_scope = f"delete:{delete.project_id}"

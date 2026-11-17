@@ -101,7 +101,12 @@ export function matchesPlantSearch(
 				request.name === unit.name &&
 				sameJson(
 					request.requirements,
-					compileEquipmentRequirements(unit.selection),
+					compileEquipmentRequirements({
+						...unit.selection,
+						...(Object.hasOwn(request.requirements, "application")
+							? { application: request.requirements.application! }
+							: {}),
+					}),
 				)
 			);
 		}) &&

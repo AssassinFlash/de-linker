@@ -2,13 +2,362 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
 import { IDBFactory } from "fake-indexeddb";
-import { setupDom, until, deferred } from "./dom-fixture.mjs";
+import { setupDom, until, deferred, enter } from "./dom-fixture.mjs";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DraftStore } from "../src/data/DraftStore.ts";
+import { useProjectDraft } from "../src/data/useProjectDraft.ts";
+import { editDraft } from "../src/domain/draft.ts";
 import { PlanningIntentStore } from "../src/data/PlanningIntentStore.ts";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { usePlanningOperations } from "../src/data/usePlanningOperations.ts";
 import result from "./fixtures/energy-run.json" with { type: "json" };
 import scenario from "./fixtures/energy-scenario.json" with { type: "json" };
 import preparation from "./fixtures/index.ts";
+
+import {
+	authoredCalculationInputs,
+	authoredDiscoveryInputs,
+} from "../src/domain/currentCalculation.ts";
+import { projectInputContract } from "../src/domain/draft.ts";
+
+for (const path of [
+	"runs/calculate",
+	"runs/find-equipment",
+	"runs/check-equipment",
+]) {
+	test(`${path} cannot let a retired editor overwrite reopened edits and recovers its project acknowledgement`, async (t) => {
+		const dom = setupDom();
+		const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+		Object.defineProperty(globalThis, "indexedDB", {
+			value: new IDBFactory(),
+			configurable: true,
+		});
+		const { createRoot } = await import("react-dom/client");
+		const root = createRoot(dom.element);
+		const cache = new QueryClient({
+			defaultOptions: { queries: { retry: false } },
+		});
+		const drafts = new DraftStore(),
+			journal = new PlanningIntentStore(),
+			gate = deferred(),
+			calls = [];
+		const opening = {
+			id: projectId,
+			title: "Remounted command owner",
+			revision: result.revision,
+			input_sha256: "a".repeat(64),
+			inputs: { note: "Opening" },
+		};
+		let serverProject = opening,
+			draftApi,
+			operations,
+			dispatched;
+		const normalize =
+			path === "runs/calculate"
+				? authoredCalculationInputs
+				: authoredDiscoveryInputs;
+		const kind =
+			path === "runs/calculate"
+				? "single_ac_energy_replay_v1"
+				: path === "runs/check-equipment"
+					? "qualify_woo_equipment_v1"
+					: "search_woo_equipment_v1";
+		const client = new PlannerClient({
+			baseUrl: "https://fixture.invalid/api/",
+			nonceUrl: "https://fixture.invalid/nonce",
+			origin: "https://fixture.invalid",
+			fetch: async (url, request) => {
+				const route = new URL(url).pathname;
+				if (route === "/nonce") return new Response("abcdefghij");
+				if (route.endsWith("/bootstrap")) return json(session);
+				assert.equal(route.split("/rpc/")[1], path);
+				calls.push(request.body);
+				const command = JSON.parse(request.body);
+				await gate.promise;
+				serverProject = {
+					...opening,
+					revision: opening.revision + 1,
+					input_sha256: result.manifest.input_sha256,
+					inputs: normalize(command.inputs),
+				};
+				const run = {
+					...result,
+					revision: serverProject.revision,
+					state: "queued",
+					result: null,
+					result_sha256: null,
+					manifest: {
+						...result.manifest,
+						revision: serverProject.revision,
+						context: {
+							...result.manifest.context,
+							parameters: { kind },
+							models:
+								path === "runs/calculate" ? { replay: kind } : { task: kind },
+						},
+					},
+				};
+				return json({ schema_version: 1, project: serverProject, run });
+			},
+		});
+		await client.bootstrap();
+		function Editor({ project, close }) {
+			draftApi = useProjectDraft(project, session, client, drafts, () => {});
+			operations = usePlanningOperations({
+				projectId,
+				session,
+				client,
+				store: journal,
+				acknowledgeProject: draftApi.acknowledgeProject,
+				recheck() {},
+			});
+			if (!draftApi.draft) return null;
+			return React.createElement(
+				React.Fragment,
+				null,
+				React.createElement("textarea", {
+					"aria-label": "Project note",
+					value: draftApi.draft.history.current.note ?? "",
+					onChange: (event) =>
+						draftApi.update((current) =>
+							editDraft(current, {
+								...current.history.current,
+								note: event.target.value,
+							}),
+						),
+				}),
+				React.createElement(
+					"button",
+					{
+						disabled: operations.checking,
+						onClick() {
+							dispatched = operations.start(path, {
+								expected_revision: draftApi.draft.baseline.revision,
+								input_contract: projectInputContract,
+								inputs: normalize(draftApi.draft.history.current),
+							});
+						},
+					},
+					"Run current command",
+				),
+				React.createElement(
+					"button",
+					{
+						onClick: async () => {
+							if (await draftApi.flush()) close();
+						},
+					},
+					"Close project",
+				),
+				operations.records.length
+					? React.createElement(
+							"button",
+							{
+								disabled: operations.busy || operations.checking,
+								onClick: () => operations.retry(operations.records[0]),
+							},
+							"Recover original command",
+						)
+					: null,
+			);
+		}
+		function Harness() {
+			const [open, setOpen] = React.useState(true);
+			return open
+				? React.createElement(Editor, {
+						project: serverProject,
+						close: () => setOpen(false),
+					})
+				: React.createElement(
+						"button",
+						{ onClick: () => setOpen(true) },
+						"Open project",
+					);
+		}
+		const button = (text) =>
+			[...document.querySelectorAll("button")].find(
+				(node) => node.textContent === text,
+			);
+		const click = async (text) => {
+			const node = button(text);
+			assert.ok(node, text);
+			assert.equal(node.disabled, false, text);
+			await act(async () => node.click());
+		};
+		t.after(async () => {
+			gate.resolve();
+			await act(async () => dispatched);
+			await dom.dispose(root);
+			cache.clear();
+			if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+			else delete globalThis.indexedDB;
+		});
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Harness),
+				),
+			),
+		);
+		await until(
+			() => document.querySelector("textarea") && !operations.checking,
+		);
+		await enter(
+			document.querySelector("textarea"),
+			"Submitted from old editor",
+		);
+		await click("Run current command");
+		await until(() => calls.length === 1);
+		await click("Close project");
+		await until(() => button("Open project"));
+		await click("Open project");
+		await until(
+			() => document.querySelector("textarea") && !operations.checking,
+		);
+		await enter(document.querySelector("textarea"), "New editor work");
+		await act(async () => draftApi.flush());
+		assert.equal(
+			(await drafts.read(scope, projectId)).history.current.note,
+			"New editor work",
+		);
+		gate.resolve();
+		await act(async () => dispatched);
+		assert.equal(
+			(await drafts.read(scope, projectId)).history.current.note,
+			"New editor work",
+			"a retired editor must not replace the active editor's durable history",
+		);
+		await until(
+			() =>
+				button("Recover original command") &&
+				!button("Recover original command").disabled,
+		);
+		assert.equal(
+			(await journal.list([scope], projectId)).length,
+			1,
+			"the exact command still owns the pending project acknowledgement",
+		);
+		await click("Recover original command");
+		await until(
+			() =>
+				draftApi.draft.baseline.revision === opening.revision + 1 &&
+				!operations.records.length,
+		);
+		assert.equal(draftApi.draft.history.current.note, "New editor work");
+		assert.equal(
+			draftApi.draft.baseline.inputs.note,
+			"Submitted from old editor",
+		);
+		assert.equal(calls[1], calls[0]);
+		await click("Close project");
+		await until(() => button("Open project"));
+		await click("Open project");
+		await until(
+			() => document.querySelector("textarea")?.value === "New editor work",
+		);
+		assert.equal(draftApi.draft.baseline.revision, opening.revision + 1);
+		assert.equal(draftApi.draft.conflict, null);
+		assert.equal(
+			(await drafts.read(scope, projectId)).history.current.note,
+			"New editor work",
+		);
+	});
+}
+
+for (const path of [
+	"runs/calculate",
+	"runs/find-equipment",
+	"runs/check-equipment",
+]) {
+	test(`${path} confirms the authored snapshot before clearing the receipt and retries unchanged wire`, async (t) => {
+		const normalize =
+			path === "runs/calculate"
+				? authoredCalculationInputs
+				: authoredDiscoveryInputs;
+		let lost = true;
+		const snapshots = [];
+		const task =
+			path === "runs/calculate"
+				? result.manifest.context.parameters.kind
+				: path === "runs/check-equipment"
+					? "qualify_woo_equipment_v1"
+					: "search_woo_equipment_v1";
+		const run = {
+			...result,
+			state: "queued",
+			result: null,
+			result_sha256: null,
+			manifest: {
+				...result.manifest,
+				context: {
+					...result.manifest.context,
+					parameters: { kind: task },
+					models:
+						path === "runs/calculate"
+							? result.manifest.context.models
+							: { task },
+				},
+			},
+		};
+		const r = await rig(
+			t,
+			async (call) => {
+				if (lost) throw new TypeError("lost command acknowledgement");
+				return json({
+					schema_version: 1,
+					project: {
+						id: projectId,
+						title: "Current",
+						revision: result.revision,
+						input_sha256: run.manifest.input_sha256,
+						inputs: normalize(JSON.parse(call.body).inputs),
+					},
+					run,
+				});
+			},
+			{
+				async acknowledgeProject(project, command, operation) {
+					assert.equal(operation, path);
+					assert.equal(
+						(await r.durable.list([scope], projectId))[0].resultId,
+						null,
+					);
+					snapshots.push({ project, command });
+				},
+			},
+		);
+		const inputs = {
+			energy_scenario: scenario,
+			equipment_setup: { application: null },
+			equipment_requirements: { application: "commercial" },
+		};
+		await act(async () =>
+			r.api.start(path, {
+				expected_revision: result.revision,
+				input_contract: projectInputContract,
+				inputs,
+			}),
+		);
+		await until(() => r.api.records.length === 1);
+		inputs.energy_scenario = { changed: true };
+		lost = false;
+		let reply;
+		await act(async () => {
+			reply = await r.api.retry(r.api.records[0]);
+		});
+		assert.equal(reply.path, path);
+		assert.equal(reply.project.id, projectId);
+		assert.equal(snapshots.length, 1);
+		assert.deepEqual(
+			snapshots[0].project.inputs,
+			normalize(JSON.parse(r.calls[0].body).inputs),
+		);
+		assert.equal(r.calls[0].body, r.calls[1].body);
+		await until(() => r.api.records.length === 0);
+	});
+}
 
 const scope = "a".repeat(64),
 	projectId = result.project_id;

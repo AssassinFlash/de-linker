@@ -336,6 +336,7 @@ test("plant search prepares demand without hardware and adopts one whole candida
 				equipment_setup: {
 					...equipmentDraft(unit.inputs),
 					required_usable_kwh: 0,
+					application: "commercial",
 					required_discharge_ac_kw: 0,
 				},
 			},
@@ -372,6 +373,11 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	assert.deepEqual(adopted.site, { country_code: "FR" });
 	assert.deepEqual(adopted.equipment_candidate, choice);
 	assert.deepEqual(adopted.equipment_plant, hardware);
+	assert.equal(
+		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs).application,
+		"commercial",
+	);
+	assert.equal("application" in hardware.units[0]!.selection, false);
 	assert.equal(
 		readPlantDraft(adopted).parallel_groups[0]!.control_network,
 		"lan",

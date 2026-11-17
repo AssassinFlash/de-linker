@@ -903,6 +903,9 @@ def build_report(source: Object) -> Report:
             "plant_ac_energy_replay_v1",
             "plant_shared_dc_energy_replay_v1",
         }
+        pv_only_plant = (
+            joint and isinstance(brief, dict) and brief.get("system_scope") == "pv_only"
+        )
         # The report resolves this scenario against the selected frozen run.
         # Display each actual segment, rather than suggesting an annual total
         # or merging different operating states. The label explicitly says UTC.
@@ -1018,6 +1021,8 @@ def build_report(source: Object) -> Report:
                     text(
                         "scenario_dc_plant_scope"
                         if joint_dc
+                        else "scenario_pv_only_plant_scope"
+                        if pv_only_plant
                         else "scenario_storage_plant_scope"
                         if joint and storage_only
                         else "scenario_plant_scope"
@@ -1035,7 +1040,7 @@ def build_report(source: Object) -> Report:
                     ]
                     if joint_dc
                     else [text("scenario_plant_limits", locale)]
-                    if joint and storage_only
+                    if joint and (storage_only or pv_only_plant)
                     else []
                 )
                 + (

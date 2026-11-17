@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
 import { ApiError } from "../../data/protocol.ts";
 import type { Session } from "../../data/protocol.ts";
@@ -25,6 +25,29 @@ type Props = ComponentProps<typeof EquipmentSetup> & {
 
 export function EquipmentWorkspace(props: Props) {
 	const { draft, disabled, client, scope, edit, onError, session } = props;
+	const target = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (!props.inputErrors?.length || !props.active || disabled) return;
+		const frame = window.requestAnimationFrame(() => {
+			const field = [
+				...(target.current?.querySelectorAll<HTMLElement>("[name]") ?? []),
+			].find(
+				(node) =>
+					props.inputErrors!.includes(node.getAttribute("name") ?? "") &&
+					!node.closest("[hidden]"),
+			);
+			if (!field) return;
+			let ancestor = field.parentElement;
+			while (ancestor && ancestor !== target.current) {
+				if (ancestor.tagName === "DETAILS")
+					(ancestor as HTMLDetailsElement).open = true;
+				ancestor = ancestor.parentElement;
+			}
+			field.focus();
+			field.scrollIntoView({ block: "center" });
+		});
+		return () => window.cancelAnimationFrame(frame);
+	}, [props.inputErrors, props.active, disabled]);
 	const [equipmentValid, reportValidity] = useState(true);
 	const [conditionValid, reportConditionValidity] = useState(true);
 	const valid = equipmentValid && conditionValid;
@@ -80,7 +103,7 @@ export function EquipmentWorkspace(props: Props) {
 		}
 	}
 	return (
-		<>
+		<div ref={target}>
 			{props.standalone ? (
 				<div className="lp-section-heading">
 					<span className="lp-index">08</span>
@@ -147,6 +170,6 @@ export function EquipmentWorkspace(props: Props) {
 				onValidity={reportConditionValidity}
 				onError={onError}
 			/>
-		</>
+		</div>
 	);
 }

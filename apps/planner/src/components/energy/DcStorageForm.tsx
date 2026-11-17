@@ -103,7 +103,7 @@ export function DcStorageForm({
 			</h3>
 			<p className="lp-profile-help">
 				{__(
-					"The saved product selection supplies battery capacity, voltage, current and equipment power limits where documented. Losses and auxiliary consumption remain separate calculation assumptions.",
+					"The selected products supply battery capacity, voltage, current and equipment power limits where documented. Losses and auxiliary consumption remain separate calculation assumptions.",
 					"linker-tools",
 				)}
 			</p>

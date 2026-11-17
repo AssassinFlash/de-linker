@@ -77,8 +77,10 @@ from .http_documents import (
     Command,
     CsvImport,
     CsvInspect,
+    EnergyCalculate,
     EnergyEvaluate,
     EquipmentCandidateRead,
+    EquipmentFind,
     GeometryImportCommand,
     GeometryReview,
     HandoffPrepare,
@@ -96,6 +98,7 @@ from .http_documents import (
     ProjectRuns,
     ReportEvaluate,
     RunCompare,
+    RunInputsRead,
     RunRead,
     SessionClaim,
     StandardProfile,
@@ -954,6 +957,19 @@ def create_private_app(
     def run_read(body: RunRead, request: Request) -> Object:
         return run_view(workspace.run(verified_actor(request.scope), body.run_id))
 
+    @app.post("/runs/inputs")
+    def run_inputs(body: RunInputsRead, request: Request) -> Object:
+        run = workspace.run(verified_actor(request.scope), body.run_id)
+        if run.project_id != body.project_id:
+            raise NotFound("run not found in this project")
+        return {
+            "schema_version": 1,
+            "project_id": run.project_id,
+            "run_id": run.id,
+            "manifest_sha256": run.manifest_sha256,
+            "inputs": workspace.pinned_inputs(run.manifest),
+        }
+
     @app.post("/runs/compare")
     def run_compare(body: RunCompare, request: Request) -> Object:
         return compare_energy_runs(
@@ -969,6 +985,26 @@ def create_private_app(
         return run_view(
             workspace.cancel(verified_actor(request.scope, write=True), body.run_id)
         )
+
+    @app.post("/runs/calculate")
+    def calculate(body: EnergyCalculate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/calculate", body)
+        if previous is not None:
+            return previous
+        project, run = energy.calculate(
+            actor,
+            body.project_id,
+            body.expected_revision,
+            body.inputs,
+            key=body.key,
+            input_contract=body.input_contract,
+        )
+        return {
+            "schema_version": 1,
+            "project": project_view(project),
+            "run": run_view(run),
+        }
 
     @app.post("/runs/energy")
     def evaluate(body: EnergyEvaluate, request: Request) -> Object:
@@ -1055,6 +1091,50 @@ def create_private_app(
                 key=body.key,
             )
         )
+
+    @app.post("/runs/check-equipment")
+    def check_current_equipment(body: EquipmentFind, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/check-equipment", body)
+        if previous is not None:
+            return previous
+        if equipment is None:
+            raise VersionUnavailable("equipment qualification is not configured")
+        project, run = equipment.check(
+            actor,
+            body.project_id,
+            body.expected_revision,
+            body.inputs,
+            key=body.key,
+            input_contract=body.input_contract,
+        )
+        return {
+            "schema_version": 1,
+            "project": project_view(project),
+            "run": run_view(run),
+        }
+
+    @app.post("/runs/find-equipment")
+    def find_current_equipment(body: EquipmentFind, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/find-equipment", body)
+        if previous is not None:
+            return previous
+        if equipment_search is None:
+            raise VersionUnavailable("equipment search is not configured")
+        project, run = equipment_search.find(
+            actor,
+            body.project_id,
+            body.expected_revision,
+            body.inputs,
+            key=body.key,
+            input_contract=body.input_contract,
+        )
+        return {
+            "schema_version": 1,
+            "project": project_view(project),
+            "run": run_view(run),
+        }
 
     @app.post("/runs/equipment-search")
     def equipment_find(body: EnergyEvaluate, request: Request) -> Object:

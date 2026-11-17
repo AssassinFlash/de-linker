@@ -1,0 +1,131 @@
+import type { Json, JsonObject, Project } from "../data/protocol.ts";
+import type { Draft } from "./draft.ts";
+import { sameJson } from "./draft.ts";
+
+const isObject = (value: unknown): value is JsonObject =>
+	value !== null && typeof value === "object" && !Array.isArray(value);
+
+function withoutBatteryBinding(value: JsonObject): JsonObject {
+	const { battery_binding: _derived, ...authored } = value;
+	return authored;
+}
+
+/** Only the calculation module's execution projections are removed. Other
+ * project declarations and owned source selections remain the customer's input. */
+export function authoredCalculationInputs(inputs: JsonObject): JsonObject {
+	const { energy_replay: _single, energy_plant: _plant, ...remaining } = inputs;
+	const authored: Record<string, Json> = { ...remaining };
+	if (isObject(authored.energy_scenario))
+		authored.energy_scenario = withoutBatteryBinding(authored.energy_scenario);
+	const plant = authored.energy_plant_setup;
+	if (isObject(plant) && Array.isArray(plant.units)) {
+		authored.energy_plant_setup = {
+			...plant,
+			units: plant.units.map((unit) =>
+				isObject(unit) && isObject(unit.settings)
+					? { ...unit, settings: withoutBatteryBinding(unit.settings) }
+					: unit,
+			),
+		};
+	}
+	return authored;
+}
+
+/** Match the server's authored discovery snapshot, retaining demand separately
+ * from a candidate's physical selection. Explicit null is an answered filter. */
+export function authoredDiscoveryInputs(inputs: JsonObject): JsonObject {
+	const result = authoredCalculationInputs(inputs);
+	const normalize = (source: JsonObject): JsonObject => {
+		const { equipment_requirements: legacy, ...remaining } = source;
+		const next: Record<string, Json> = { ...remaining };
+		let setup = next.equipment_setup;
+		if (!Object.hasOwn(next, "equipment_setup")) {
+			if (isObject(next.equipment_selection)) {
+				const { product_revisions: _revisions, ...hardware } =
+					next.equipment_selection;
+				setup = hardware;
+			} else if (isObject(legacy)) {
+				setup = {
+					schema_version: 1,
+					inverter_product_id: null,
+					battery_product_id: null,
+					modules_per_stack: null,
+					parallel_stacks: null,
+					accessory_product_ids: [],
+					...Object.fromEntries(
+						[
+							"schema_version",
+							"grid_phase",
+							"operating_mode",
+							"pv_dc_kw",
+							"required_usable_kwh",
+							"required_discharge_ac_kw",
+						]
+							.filter((key) => Object.hasOwn(legacy, key))
+							.map((key) => [key, legacy[key]!]),
+					),
+				};
+			}
+		}
+		if (isObject(setup))
+			next.equipment_setup = {
+				...setup,
+				...(!Object.hasOwn(setup, "application") &&
+				isObject(legacy) &&
+				Object.hasOwn(legacy, "application")
+					? { application: legacy.application! }
+					: {}),
+			};
+		return next;
+	};
+	const { equipment_plant_requirements: _prepared, ...remaining } = result;
+	const next: Record<string, Json> = { ...remaining };
+	const plant = next.equipment_plant_setup;
+	if (!isObject(plant)) return normalize(next);
+	delete next.equipment_requirements;
+	if (Array.isArray(plant.units))
+		next.equipment_plant_setup = {
+			...plant,
+			units: plant.units.map((unit) =>
+				isObject(unit) && isObject(unit.inputs)
+					? { ...unit, inputs: normalize(unit.inputs) }
+					: unit,
+			),
+		};
+	return next;
+}
+
+/** Confirm the snapshot captured by Calculate, preserving edits made while
+ * the request was in flight. Calculation progress is not an editing step. */
+export function acknowledgeCalculation(
+	draft: Draft,
+	expectedRevision: number,
+	submittedInputs: JsonObject,
+	project: Project,
+	normalize: (inputs: JsonObject) => JsonObject = authoredCalculationInputs,
+): Draft {
+	if (
+		project.id !== draft.baseline.id ||
+		(project.revision !== expectedRevision &&
+			project.revision !== expectedRevision + 1) ||
+		!sameJson(project.inputs, submittedInputs)
+	)
+		throw new Error("invalid_calculation_snapshot");
+	if (draft.baseline.revision > project.revision) return draft;
+	if (
+		draft.baseline.revision === project.revision &&
+		(draft.baseline.input_sha256 !== project.input_sha256 ||
+			!sameJson(draft.baseline.inputs, project.inputs))
+	)
+		throw new Error("invalid_calculation_snapshot");
+	return {
+		...draft,
+		baseline: project,
+		history: {
+			...draft.history,
+			past: draft.history.past.map(normalize),
+			current: normalize(draft.history.current),
+			future: draft.history.future.map(normalize),
+		},
+	};
+}

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from .assets import Asset
+from .assets import Asset, Assets
 from .canonical import Json, Object, digest, encode
 from .dc_battery_model import DcBatteryModel
 from .dc_energy_output import flow_document, metrics
@@ -36,8 +36,15 @@ class DcEnergyKernel(EnergyKernel):
         "equipment_envelope": "selected_woo_dc_scenario_v1",
     }
 
-    def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
-        context = super().context(actor, project_id, inputs)
+    def context(
+        self,
+        actor: Actor,
+        project_id: str,
+        inputs: Object,
+        *,
+        assets: Assets | None = None,
+    ) -> Context:
+        context = super().context(actor, project_id, inputs, assets=assets)
         if self.products is None or "woo.equipment_inputs" not in context.assets:
             raise EvidenceMissing(
                 "woo_dc_parameters: current Woo equipment selection required"

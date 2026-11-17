@@ -22,6 +22,334 @@ from .test_equipment import feed as feed
 from .test_equipment import plant_inputs, prepared_dc_fixture_source
 
 
+@pytest.mark.parametrize("authored_coupling", [None, "plant_shared_dc"])
+def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrical_report(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    authored_coupling: str | None,
+) -> None:
+    from linker_engine.planning.energy_kernel import EnergyKernel
+    from linker_engine.planning.energy_service import EnergyService
+    from linker_engine.planning.execution_registry import service_registry
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.http_app import HttpLimits, create_private_app
+    from linker_engine.planning.jobs import Jobs
+    from linker_engine.planning.plant_energy_kernel import PlantEnergyKernel
+    from linker_engine.planning.report_kernel import ReportKernel, ReportService
+    from linker_engine.planning.worker import Worker
+
+    from .test_energy_kernel import add_profile
+    from .test_private_http import TOKEN, Rig, brief_inputs, headers
+    from .test_pv_generation import geometry
+
+    feed, source, loaded, _, _, _ = prepared_dc_fixture_source(
+        feed, engine, monkeypatch
+    )
+    brief = brief_inputs("Europe/Berlin")["brief"]
+    brief["system_scope"] = "pv_only"
+    project = workspace.create(
+        owner, "Two PV inverters, no storage", {"brief": brief}, key="pv-only-plant"
+    )
+    profiles = {
+        role: add_profile(workspace, owner, project.id, role, values)
+        for role, values in (
+            ("gross_load", (1, 1)),
+            ("pv_available_ac", (2, 0)),
+            ("aux_ac", (0, 0)),
+        )
+    }
+    layout = geometry()
+    module_id = layout["module_specs"][0]["id"]
+    specification = json_object(source.module_basis())["module"]["specification"]
+    layout["module_specs"] = [{**specification, "id": module_id}]
+    first_array = layout["arrays"][0]["id"]
+    layout["arrays"].append(
+        {
+            **layout["arrays"][0],
+            "id": "pv_b",
+            "name": "PV B",
+            "origin_uv": [10, 10],
+            "rows": 1,
+            "columns": 1,
+            "excluded_slots": [],
+        }
+    )
+    poses = panel_poses(read_geometry(layout))
+    assignments = {
+        uid: [pose.id for pose in poses if pose.included and pose.array_id == array]
+        for uid, array in (("a", first_array), ("b", "pv_b"))
+    }
+    template = plant_inputs(feed, coordinated=False)
+    units = []
+    plans = []
+    for unit in template["units"]:
+        uid = unit["id"]
+        selection = {
+            **unit["selection"],
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+            "pv_dc_kw": specification["stc_power_w"] * len(assignments[uid]) / 1000,
+            "required_usable_kwh": None,
+            "required_discharge_ac_kw": None,
+        }
+        units.append(
+            {
+                "id": uid,
+                "name": unit["name"],
+                "inputs": {
+                    "equipment_setup": {
+                        key: value
+                        for key, value in selection.items()
+                        if key != "product_revisions"
+                    }
+                },
+            }
+        )
+        plans.append(
+            {
+                "unit_id": uid,
+                "inverter_instance_id": None,
+                "plan": {
+                    "schema_version": 1,
+                    "inverter_product_id": selection["inverter_product_id"],
+                    "minimum_ambient_c": None,
+                    "temperature_source": None,
+                    "strings": [
+                        {
+                            "id": "string_" + uid,
+                            "mppt": 1,
+                            "input": 1,
+                            "module_ids": assignments[uid],
+                        }
+                    ],
+                },
+            }
+        )
+    authored = {
+        "brief": brief,
+        "geometry": layout,
+        "profile_selections": {"schema_version": 1, "selected": profiles},
+        "equipment_plant_setup": {
+            "schema_version": 1,
+            "requirements": {
+                **template["requirements"],
+                "pv_dc_kw": sum(
+                    u["inputs"]["equipment_setup"]["pv_dc_kw"] for u in units
+                ),
+                "required_usable_kwh": None,
+                "required_discharge_ac_kw": None,
+            },
+            "units": units,
+            "parallel_groups": [],
+        },
+        "pv_plant_string_plan": {"schema_version": 1, "units": plans},
+        "energy_plant_setup": {
+            "schema_version": 1,
+            "coupling": "plant_ac",
+            "units": [],
+            "schedule": [
+                {
+                    "id": "a" * 32,
+                    "start_utc": "2024-03-30T23:00:00Z",
+                    "end_utc": "2024-03-31T01:00:00Z",
+                    "mode": "connected",
+                    "reserve_kwh": None,
+                    "import_policy": "unlimited",
+                    "import_cap_kw": None,
+                    "export_policy": "unlimited",
+                    "export_cap_kw": None,
+                    "pv_enabled": True,
+                    "allow_grid_charge": None,
+                }
+            ],
+        },
+    }
+    if authored_coupling is None:
+        authored["energy_plant_setup"].pop("coupling")
+    else:
+        authored["energy_plant_setup"]["coupling"] = authored_coupling
+    single = EnergyKernel(workspace, TOLERANCE, max_intervals=20, products=source)
+    joint = PlantEnergyKernel(workspace, TOLERANCE, max_intervals=20, products=source)
+    energy = EnergyService(workspace, single, max_attempts=1, plant_kernel=joint)
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(energy, None, reports=reports)
+    worker = Worker(
+        Jobs(workspace),
+        "pv-only-plant-worker",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1_000_000, 10_000, 10, 32),
+        reports=reports,
+        product_provider=lambda: loaded,
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        rig = Rig(workspace, single, client)
+        calculated = rig.post(
+            "/runs/calculate",
+            {
+                "project_id": project.id,
+                "expected_revision": 1,
+                "inputs": authored,
+                "input_contract": "authored_equipment_discovery_v1",
+                "key": "pv-only-calculation",
+            },
+        )
+        assert calculated["project"]["inputs"] == authored
+        run_id = calculated["run"]["id"]
+        execution = rig.post(
+            "/runs/inputs", {"project_id": project.id, "run_id": run_id}
+        )["inputs"]
+        assert execution["energy_plant"]["coupling"] == "plant_ac"
+        assert execution["energy_plant"]["units"] == []
+        assert all(
+            unit["selection"]["pv_dc_kw"] > 0
+            for unit in execution["equipment_plant"]["units"]
+        )
+        assert len(execution["equipment_plant"]["units"]) == 2
+        assert worker.run_once()
+        run = rig.post("/runs/read", {"run_id": run_id})
+        assert run["state"] == "succeeded", run
+        result = run["result"]
+        assert result["verification"]["physical_passed"]
+        assert result["metrics"]["solar_load_kwh"] == 1
+        assert result["metrics"]["grid_import_kwh"] == 1
+        assert result["metrics"]["pv_export_kwh"] == 1
+        assert result["metrics"]["pv_generated_ac_kwh"] == 2
+        assert result["metrics"]["units"] == []
+        assert result["model"]["units"] == []
+        assert result["parameter_sources"] == {"units": [], "pool": {}}
+        assert not any(":battery." in key for key in result["pinned_assets"])
+        from linker_engine.planning.energy_comparison import comparison_side
+
+        reference = json_object(
+            comparison_side(workspace, owner, project.id, str(run_id)).reference()
+        )
+        assert reference["storage_units"] == [] and reference["usable_window_kwh"] == 0
+        assessment = result["equipment_binding"]["assessment"]
+        assert len(result["equipment_binding"]["plant"]["units"]) == 2
+        assert {u["unit_id"] for u in assessment["pv_electrical"]["units"]} == {
+            "a",
+            "b",
+        }
+        assert assessment["pv_electrical"]["method"] == "woo_plant_layout_electrical_v1"
+        assert {p["product_id"] for p in assessment["selected_products"]} == {4107}
+        report = rig.post(
+            "/runs/report",
+            {
+                "project_id": project.id,
+                "expected_revision": calculated["project"]["revision"],
+                "key": "pv-only-report",
+                "options": {
+                    "locale": "en",
+                    "energy_run_id": run_id,
+                    "pv_run_id": None,
+                    "equipment_run_id": None,
+                    "logo": None,
+                },
+            },
+        )
+        assert worker.run_once()
+        completed = workspace.run(owner, str(report["id"]))
+        assert completed.state == "succeeded", completed.error
+        assert json_object(completed.result)["prepared_asset"]["content_sha256"]
+        report_model = json_object(completed.result)["report"]
+        energy_section = next(
+            section for section in report_model["sections"] if section["id"] == "energy"
+        )
+        assert "contains no battery storage" in energy_section["paragraphs"][0]
+        assert "individual storage units" not in " ".join(energy_section["paragraphs"])
+        assert "storage converters" not in " ".join(energy_section["paragraphs"])
+        frozen_report = json_object(
+            workspace.blobs.object(
+                completed.manifest["context"]["assets"]["report.source"]
+            )
+        )
+        assert len(frozen_report["equipment_plant"]["units"]) == 2
+        assert frozen_report["energy_scenario"]["units"] == []
+        assert (
+            frozen_report["equipment"]["pv_electrical"] == assessment["pv_electrical"]
+        )
+        from linker_engine.planning.report_model import build_report
+
+        german_report = build_report({**frozen_report, "locale": "de"})
+        german_energy = next(
+            section for section in german_report.sections if section.id == "energy"
+        )
+        assert "keinen Batteriespeicher" in german_energy.paragraphs[0]
+        assert "einzelnen Speichereinheiten" not in " ".join(german_energy.paragraphs)
+        from copy import deepcopy
+
+        missing_storage = deepcopy(authored)
+        missing_storage["brief"]["system_scope"] = "new_pv_storage"
+        conflicting_battery = deepcopy(authored)
+        conflicting_battery["equipment_plant_setup"]["units"][0]["inputs"][
+            "equipment_setup"
+        ].update(
+            battery_product_id=2090,
+            modules_per_stack=3,
+            parallel_stacks=1,
+            accessory_product_ids=[2092],
+        )
+        missing_ac = deepcopy(authored)
+        missing_ac["profile_selections"]["selected"].pop("pv_available_ac")
+        wrong_measurement = deepcopy(authored)
+        wrong_measurement["profile_selections"]["selected"]["pv_available_ac"] = (
+            profiles["gross_load"]
+        )
+        single_battery = {
+            "brief": deepcopy(brief),
+            "profile_selections": deepcopy(authored["profile_selections"]),
+            "equipment_setup": deepcopy(
+                conflicting_battery["equipment_plant_setup"]["units"][0]["inputs"][
+                    "equipment_setup"
+                ]
+            ),
+            "energy_scenario": {
+                "schema_version": 1,
+                "coupling": "shared_dc",
+                "schedule": deepcopy(authored["energy_plant_setup"]["schedule"]),
+            },
+        }
+        for key, invalid in (
+            ("missing-storage", missing_storage),
+            ("conflicting-battery", conflicting_battery),
+            ("missing-ac-source", missing_ac),
+            ("wrong-measurement", wrong_measurement),
+            ("selected-single-battery", single_battery),
+        ):
+            refused = client.post(
+                "/runs/calculate",
+                json={
+                    "schema_version": 1,
+                    "project_id": project.id,
+                    "expected_revision": calculated["project"]["revision"],
+                    "inputs": invalid,
+                    "input_contract": "authored_equipment_discovery_v1",
+                    "key": key,
+                },
+                headers=headers(owner),
+            )
+            assert refused.status_code == 422, refused.text
+        assert (
+            workspace.get(owner, project.id).revision
+            == calculated["project"]["revision"]
+        )
+        assert len(workspace.runs(owner, project.id)) == 2
+
+
 def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
     feed: FixtureObject,
     engine: Engine,
@@ -438,6 +766,69 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
                     }
                 )
             )
+    from .test_energy_kernel import authored_from_execution
+
+    authored = authored_from_execution(
+        {**json_object(project.inputs), "energy_plant": scenario}, assumptions
+    )
+    prepared_plant = authored.pop("equipment_plant")
+    authored["equipment_plant_setup"] = {
+        "schema_version": 1,
+        "requirements": prepared_plant["requirements"],
+        "units": [
+            {
+                "id": u["id"],
+                "name": u["name"],
+                "inputs": {
+                    "equipment_setup": {
+                        k: v
+                        for k, v in u["selection"].items()
+                        if k != "product_revisions"
+                    }
+                },
+            }
+            for u in prepared_plant["units"]
+        ],
+        "parallel_groups": [
+            {k: v for k, v in g.items() if k != "controller_revision"}
+            for g in prepared_plant["parallel_groups"]
+        ],
+    }
+    snapshot, calculated = energy.calculate(
+        owner,
+        project.id,
+        enabled_pv.revision,
+        authored,
+        key="current-ac-plant",
+        input_contract="authored_energy_calculation_v1",
+    )
+    assert (
+        "energy_plant" not in snapshot.inputs
+        and "equipment_plant" not in snapshot.inputs
+    )
+    assert executor.run_once()
+    calculated = workspace.run(owner, calculated.id)
+    assert calculated.state == "succeeded", calculated.error
+    assert json_object(calculated.result)["metrics"][
+        "grid_import_kwh"
+    ] == pytest.approx(0.38)
+    from linker_engine.planning.report_inputs import ReportOptions
+
+    report_run = reports.evaluate(
+        owner,
+        project.id,
+        snapshot.revision,
+        ReportOptions(
+            locale="en",
+            energy_run_id=calculated.id,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+        ),
+        key="current-ac-plant-report",
+    )
+    assert executor.run_once()
+    assert workspace.run(owner, report_run.id).state == "succeeded"
 
 
 def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
@@ -876,6 +1267,38 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
                     }
                 )
             )
+    from .test_energy_kernel import authored_from_execution
+
+    authored = authored_from_execution(json_object(project.inputs), assumptions)
+    snapshot, calculated = energy.calculate(
+        owner,
+        project.id,
+        project.revision,
+        authored,
+        key="current-dc-plant",
+        input_contract="authored_energy_calculation_v1",
+    )
+    assert "energy_plant" not in snapshot.inputs
+    assert executor.run_once()
+    calculated = workspace.run(owner, calculated.id)
+    assert calculated.state == "succeeded", calculated.error
+    assert json_object(calculated.result)["metrics"]["pv_generated_dc_kwh"] > 0
+    assert json_object(calculated.result)["kind"] == joint.kind
+    current_report = reports.evaluate(
+        owner,
+        project.id,
+        snapshot.revision,
+        ReportOptions(
+            locale="en",
+            energy_run_id=calculated.id,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+        ),
+        key="current-dc-plant-report",
+    )
+    assert executor.run_once()
+    assert workspace.run(owner, current_report.id).state == "succeeded"
 
 
 def test_joint_verifier_cannot_finance_microsecond_delivery_from_soft_stock_tolerance() -> (

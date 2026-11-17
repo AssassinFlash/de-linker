@@ -281,7 +281,14 @@ class PlantEnergyKernel:
             result.append(unit)
         return tuple(result)
 
-    def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
+    def context(
+        self,
+        actor: Actor,
+        project_id: str,
+        inputs: Object,
+        *,
+        assets: Assets | None = None,
+    ) -> Context:
         scenario = self.scenario(inputs)
         plant = EquipmentPlant.from_inputs(inputs)
         check_equipment_candidate(
@@ -292,7 +299,7 @@ class PlantEnergyKernel:
         if inputs.get("pv_plant_string_plan") is not None:
             basis["pv_module_inputs"] = self.products.electrical_module_basis()
             assess_plant(inputs, basis)
-        assets = Assets(self.workspace)
+        assets = assets if assets is not None else Assets(self.workspace)
         pinned = {
             "runtime_bundle": self.runtime.sha256,
             "woo.equipment_inputs": self.workspace.blobs.put_object(basis),
@@ -338,6 +345,8 @@ class PlantEnergyKernel:
         pinned: Object,
     ) -> None:
         expected = {"runtime_bundle", "woo.equipment_inputs", "equipment.plant"}
+        if "resolved_inputs" in pinned:
+            expected.add("resolved_inputs")
         plant_hash = pinned.get("equipment.plant")
         if not isinstance(plant_hash, str) or self.workspace.blobs.object(
             plant_hash
@@ -523,7 +532,9 @@ class PlantEnergyKernel:
             Object,
             {
                 "version": self.models["battery"],
-                "pv_boundary": "independent_ac_generation; converter_dc_pv_inputs_unused",
+                "pv_boundary": "available_ac_generation_at_common_connection; no_storage"
+                if not units
+                else "independent_ac_generation; converter_dc_pv_inputs_unused",
                 "source_accounting": self.models["source_accounting"],
                 "units": [
                     {

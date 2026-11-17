@@ -8,6 +8,7 @@ import { DC_MODEL, emptyDcScenario, readDcLossScenario } from "./dcEnergy.ts";
 import type { DcLossScenario } from "./dcEnergy.ts";
 import {
 	isStorageOnly,
+	isPvOnly,
 	compileInitialInventory,
 	compileOperatingPeriods,
 	compileTerminalMinimum,
@@ -16,6 +17,29 @@ import {
 } from "./energyScenario.ts";
 import type { PeriodDraft, ScenarioDraft } from "./energyScenario.ts";
 import type { EquipmentPlant } from "./equipmentPlant.ts";
+import { readPlantDraft } from "./equipmentPlant.ts";
+import { equipmentDraft } from "./equipment.ts";
+
+/** The energy editor follows authored device identities before source resolution. */
+export interface PlantEnergyEquipment {
+	readonly requirements: JsonObject;
+	readonly units: readonly {
+		readonly id: string;
+		readonly name: string;
+		readonly selection: JsonObject;
+	}[];
+}
+export function plantEnergyEquipment(inputs: JsonObject): PlantEnergyEquipment {
+	const draft = readPlantDraft(inputs);
+	return {
+		requirements: draft.requirements,
+		units: draft.units.map((unit) => ({
+			id: unit.id,
+			name: unit.name,
+			selection: equipmentDraft(unit.inputs),
+		})),
+	};
+}
 import type { ProfileSelections } from "./profiles.ts";
 import { dropGeometricRoofAc, geometricRoofAssetId } from "./profiles.ts";
 
@@ -94,14 +118,20 @@ export function emptyPlantUnit(unit_id: string): PlantEnergyUnitDraft {
 /** Keep physical identities across edits; new devices start without guessed states. */
 export function plantEnergyDraft(
 	inputs: JsonObject,
-	plant: EquipmentPlant,
+	plant: PlantEnergyEquipment,
 ): PlantEnergyDraft {
 	if (inputs.energy_plant_setup === undefined) {
 		return {
 			schema_version: 1,
-			coupling: plant.units.some((u) => (u.selection.pv_dc_kw ?? 0) > 0)
-				? "plant_shared_dc"
-				: "plant_ac",
+			coupling:
+				!isPvOnly(inputs) &&
+				plant.units.some(
+					(u) =>
+						typeof u.selection.pv_dc_kw === "number" &&
+						u.selection.pv_dc_kw > 0,
+				)
+					? "plant_shared_dc"
+					: "plant_ac",
 			ac_pv_converter_ids: [],
 			schedule: emptyScenario().schedule.map((p) => ({ ...p, reserve_kwh: 0 })),
 			units: plant.units.map((u) => emptyPlantUnit(u.id)),
@@ -370,6 +400,8 @@ export function plantEnergyInputs(
 ): JsonObject {
 	const { energy_plant: _old, energy_replay: _single, ...rest } = inputs;
 	const base =
-		setup.coupling === "plant_shared_dc" ? dropGeometricRoofAc(rest) : rest;
+		!isPvOnly(inputs) && setup.coupling === "plant_shared_dc"
+			? dropGeometricRoofAc(rest)
+			: rest;
 	return { ...base, energy_plant_setup: setup };
 }

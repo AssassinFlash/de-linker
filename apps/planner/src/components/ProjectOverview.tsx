@@ -45,99 +45,17 @@ export function ProjectOverview({
 			tabIndex={-1}
 		>
 			<div className="lp-overview-intro">
-				<span className="lp-eyebrow">
-					{__("Project overview", "linker-tools")}
-				</span>
 				<h2 id="lp-overview-heading">
-					{__("Your project at a glance", "linker-tools")}
+					{__("Project overview", "linker-tools")}
 				</h2>
 				<p>
 					{__(
-						"Site information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops.",
+						"Choose a workspace to continue planning your system.",
 						"linker-tools",
 					)}
 				</p>
 			</div>
-			<dl className="lp-overview-metrics">
-				<div>
-					<dt>{__("Country", "linker-tools")}</dt>
-					<dd>
-						{brief.site.country_code
-							? (config.countries[brief.site.country_code] ??
-								brief.site.country_code)
-							: "—"}
-					</dd>
-					<small>{__("Project location", "linker-tools")}</small>
-				</div>
-				<div>
-					<dt>{__("Annual consumption", "linker-tools")}</dt>
-					<dd>
-						{brief.annual_load.kwh === null
-							? "—"
-							: number(brief.annual_load.kwh)}
-						{brief.annual_load.kwh !== null && <small> kWh</small>}
-					</dd>
-					<small>
-						{brief.annual_load.basis === "bill_total"
-							? __("Electricity bills", "linker-tools")
-							: brief.annual_load.basis === "user_estimate"
-								? __("Project estimate", "linker-tools")
-								: __("Basis not specified", "linker-tools")}
-					</small>
-				</div>
-				<div hidden={!hasSolar}>
-					<dt>{__("Included modules", "linker-tools")}</dt>
-					<dd>{geometry.arrays.length ? number(summary.count) : "—"}</dd>
-					<small>{__("Across the current roof layouts", "linker-tools")}</small>
-				</div>
-				<div hidden={!hasSolar}>
-					<dt>{__("Declared DC nameplate power", "linker-tools")}</dt>
-					<dd>
-						{geometry.arrays.length ? (
-							<>
-								{number(summary.stc_kwp)}
-								<small> kWp</small>
-							</>
-						) : (
-							"—"
-						)}
-					</dd>
-					<small>
-						{__("Module count and declared specifications", "linker-tools")}
-					</small>
-				</div>
-			</dl>
-			{brief.project_note.trim() !== "" && (
-				<section className="lp-scenario-block">
-					<h3>{__("Your project note", "linker-tools")}</h3>
-					<p>{brief.project_note}</p>
-					<small>
-						{__("This note is not used in the calculation.", "linker-tools")}
-					</small>
-				</section>
-			)}
-			<details className="lp-scenario-block">
-				<summary>{__("Installation routing", "linker-tools")}</summary>
-				<dl className="lp-overview-metrics">
-					<div>
-						<dt>
-							{__("Physical devices and site connections", "linker-tools")}
-						</dt>
-						<dd>{installation.instances.length}</dd>
-					</div>
-					<div>
-						<dt>{__("Physical cables and conductors", "linker-tools")}</dt>
-						<dd>{installation.cable_runs.length}</dd>
-					</div>
-				</dl>
-				<button
-					className="lp-text-button"
-					onClick={() => choose("installation")}
-				>
-					{__("Installation routing", "linker-tools")}
-				</button>
-			</details>
-			<div className="lp-overview-work" data-solar={hasSolar}>
+			<div className="lp-overview-summary" data-solar={hasSolar}>
 				<div className="lp-overview-preview" hidden={!hasSolar}>
 					{roof ? (
 						<>
@@ -168,12 +86,10 @@ export function ProjectOverview({
 					) : (
 						<div className="lp-overview-empty">
 							<Icon name="layers" />
-							<h3>
-								{__("A place for the roof and its layout", "linker-tools")}
-							</h3>
+							<h3>{__("Plan your solar layout", "linker-tools")}</h3>
 							<p>
 								{__(
-									"Roof design is optional. A measured roof can be added here while the project information and energy inputs remain available in their workspaces.",
+									"Add roof faces, obstacles and modules, or continue with a known PV size. Roof drawing is optional.",
 									"linker-tools",
 								)}
 							</p>
@@ -188,85 +104,176 @@ export function ProjectOverview({
 						</div>
 					)}
 				</div>
-				<aside
-					className="lp-overview-next"
-					aria-label={__("Project workspaces", "linker-tools")}
+				<section
+					className="lp-overview-inputs"
+					aria-labelledby="lp-overview-inputs-heading"
 				>
-					<h3>{__("Continue your project", "linker-tools")}</h3>
-					<button type="button" onClick={() => choose("site")}>
-						<Icon name="location" />
-						<span>
-							<strong>{__("Site and project", "linker-tools")}</strong>
+					<h3 id="lp-overview-inputs-heading">
+						{__("Current inputs", "linker-tools")}
+					</h3>
+					<dl className="lp-overview-facts">
+						<div>
+							<dt>{__("Country", "linker-tools")}</dt>
+							<dd>
+								{brief.site.country_code
+									? (config.countries[brief.site.country_code] ??
+										brief.site.country_code)
+									: "—"}
+							</dd>
+							<small>{__("Project location", "linker-tools")}</small>
+						</div>
+						<div>
+							<dt>{__("Annual consumption", "linker-tools")}</dt>
+							<dd>
+								{brief.annual_load.kwh === null
+									? "—"
+									: number(brief.annual_load.kwh)}
+								{brief.annual_load.kwh !== null && <small> kWh</small>}
+							</dd>
 							<small>
-								{brief.site.location_label ||
-									__(
-										"Location, system scope and site conditions",
-										"linker-tools",
-									)}
+								{brief.annual_load.basis === "bill_total"
+									? __("Electricity bills", "linker-tools")
+									: brief.annual_load.basis === "user_estimate"
+										? __("Project estimate", "linker-tools")
+										: __("Basis not specified", "linker-tools")}
 							</small>
-						</span>
-						<Icon name="arrow" />
-					</button>
+						</div>
+						<div hidden={!hasSolar}>
+							<dt>{__("Included modules", "linker-tools")}</dt>
+							<dd>{geometry.arrays.length ? number(summary.count) : "—"}</dd>
+							<small>
+								{__("Across the current roof layouts", "linker-tools")}
+							</small>
+						</div>
+						<div hidden={!hasSolar}>
+							<dt>{__("Declared DC nameplate power", "linker-tools")}</dt>
+							<dd>
+								{geometry.arrays.length ? (
+									<>
+										{number(summary.stc_kwp)}
+										<small> kWp</small>
+									</>
+								) : (
+									"—"
+								)}
+							</dd>
+							<small>
+								{__("Module count and declared specifications", "linker-tools")}
+							</small>
+						</div>
+					</dl>
 					<button
-						hidden={!hasSolar}
+						className="lp-text-button"
 						type="button"
-						onClick={() => choose("design")}
+						onClick={() => choose("site")}
 					>
-						<Icon name="layers" />
-						<span>
-							<strong>{__("Roof design", "linker-tools")}</strong>
-							<small>
-								{__("Roof faces, obstacles and module layout", "linker-tools")}
-							</small>
-						</span>
+						{__("Edit project information", "linker-tools")}
 						<Icon name="arrow" />
 					</button>
-					<button type="button" onClick={() => choose("energy")}>
-						<Icon name="energy" />
-						<span>
-							<strong>{__("Energy inputs", "linker-tools")}</strong>
-							<small>
-								{__("Annual consumption and interval data", "linker-tools")}
-							</small>
-						</span>
-						<Icon name="arrow" />
-					</button>
-					<button type="button" onClick={() => choose("calculations")}>
-						<Icon name="energy" />
-						<span>
-							<strong>{__("Energy calculation", "linker-tools")}</strong>
-							<small>
-								{__("Scenario settings and saved calculations", "linker-tools")}
-							</small>
-						</span>
-						<Icon name="arrow" />
-					</button>
-					<button type="button" onClick={() => choose("equipment")}>
-						<Icon name="layers" />
-						<span>
-							<strong>{__("Equipment", "linker-tools")}</strong>
-							<small>{__("Equipment checks", "linker-tools")}</small>
-						</span>
-						<Icon name="arrow" />
-					</button>
-					<button type="button" onClick={() => choose("installation")}>
-						<Icon name="layers" />
-						<span>
-							<strong>{__("Installation routing", "linker-tools")}</strong>
-							<small>
-								{__("Physical devices and site connections", "linker-tools")}
-							</small>
-						</span>
-						<Icon name="arrow" />
-					</button>
-					<p className="lp-overview-basis">
-						{__(
-							"The overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence.",
-							"linker-tools",
-						)}
-					</p>
-				</aside>
+				</section>
 			</div>
+			<nav
+				className="lp-overview-next"
+				aria-label={__("Project workspaces", "linker-tools")}
+			>
+				<h3>{__("Continue your project", "linker-tools")}</h3>
+				<button type="button" onClick={() => choose("site")}>
+					<Icon name="location" />
+					<span>
+						<strong>{__("Site and project", "linker-tools")}</strong>
+						<small>
+							{brief.site.location_label ||
+								__(
+									"Location, system scope and site conditions",
+									"linker-tools",
+								)}
+						</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+				<button
+					hidden={!hasSolar}
+					type="button"
+					onClick={() => choose("design")}
+				>
+					<Icon name="solar" />
+					<span>
+						<strong>{__("Roof design", "linker-tools")}</strong>
+						<small>
+							{__("Roof faces, obstacles and module layout", "linker-tools")}
+						</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+				<button type="button" onClick={() => choose("energy")}>
+					<Icon name="energy" />
+					<span>
+						<strong>{__("Energy inputs", "linker-tools")}</strong>
+						<small>
+							{__("Annual consumption and interval data", "linker-tools")}
+						</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+				<button type="button" onClick={() => choose("calculations")}>
+					<Icon name="report" />
+					<span>
+						<strong>{__("Energy calculation", "linker-tools")}</strong>
+						<small>
+							{__("Scenario settings and saved calculations", "linker-tools")}
+						</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+				<button type="button" onClick={() => choose("equipment")}>
+					<Icon name="system" />
+					<span>
+						<strong>{__("Equipment", "linker-tools")}</strong>
+						<small>{__("Equipment checks", "linker-tools")}</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+				<button type="button" onClick={() => choose("installation")}>
+					<Icon name="route" />
+					<span>
+						<strong>{__("Installation routing", "linker-tools")}</strong>
+						<small>
+							{__("Physical devices and site connections", "linker-tools")}
+						</small>
+					</span>
+					<Icon name="arrow" />
+				</button>
+			</nav>
+			{brief.project_note.trim() !== "" && (
+				<section className="lp-overview-note">
+					<h3>{__("Your project note", "linker-tools")}</h3>
+					<p>{brief.project_note}</p>
+					<small>
+						{__("This note is not used in the calculation.", "linker-tools")}
+					</small>
+				</section>
+			)}
+			<details className="lp-overview-routing">
+				<summary>{__("Installation routing", "linker-tools")}</summary>
+				<dl className="lp-overview-facts">
+					<div>
+						<dt>
+							{__("Physical devices and site connections", "linker-tools")}
+						</dt>
+						<dd>{installation.instances.length}</dd>
+					</div>
+					<div>
+						<dt>{__("Physical cables and conductors", "linker-tools")}</dt>
+						<dd>{installation.cable_runs.length}</dd>
+					</div>
+				</dl>
+				<button
+					className="lp-text-button"
+					onClick={() => choose("installation")}
+				>
+					{__("Installation routing", "linker-tools")}
+				</button>
+			</details>
 		</section>
 	);
 }

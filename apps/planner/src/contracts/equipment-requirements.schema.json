@@ -51,10 +51,24 @@
       ]
     },
     "required_usable_kwh": {
-      "$ref": "#/$defs/Nonnegative"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "required_discharge_ac_kw": {
-      "$ref": "#/$defs/Nonnegative"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "application": {
       "anyOf": [

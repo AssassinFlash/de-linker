@@ -1,193 +1,430 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import React, { act, useState } from "react";
+import React, { act } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
+import { emptyScenario } from "../src/domain/energyScenario.ts";
+import { SimpleEnergySetup } from "../src/components/energy/SimpleEnergySetup.tsx";
+import { RunBasis } from "../src/components/energy/RunBasis.tsx";
+import energyInputs from "./fixtures/energy-inputs.json" with { type: "json" };
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
+import { EnergyError } from "../src/components/energy/EnergyError.tsx";
 import {
-	EnergyError,
-	energyErrorText,
-} from "../src/components/energy/EnergyError.tsx";
-import {
-	beginDraft,
 	editDraft,
 	undoDraft,
-	prepareSave,
-	acknowledgeSave,
+	redoDraft,
+	isDirty,
 } from "../src/domain/draft.ts";
+import { authoredCalculationInputs } from "../src/domain/currentCalculation.ts";
+import { equipmentDraft } from "../src/domain/equipment.ts";
+import { plantEnergyDraft } from "../src/domain/plantEnergy.ts";
+import { useProjectDraft } from "../src/data/useProjectDraft.ts";
+import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { ApiError } from "../src/data/protocol.ts";
 import scenario from "./fixtures/energy-scenario.json" with { type: "json" };
 import selections from "./fixtures/energy-selections.json" with { type: "json" };
 import actualRun from "./fixtures/energy-run.json" with { type: "json" };
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
-import { plantEnergyDraft } from "../src/domain/plantEnergy.ts";
-import { DC_LOSS_FIELDS } from "../src/domain/dcEnergy.ts";
 
-function preparedPlantInputs() {
-	const { equipment_plant: plant, energy_plant: original } =
-		plantFixture.project.inputs;
-	const empty = plantEnergyDraft({ equipment_plant: plant }, plant);
-	const setup = {
-		...empty,
-		schedule: scenario.schedule,
-		units: empty.units.map((unit) => {
-			const saved = original.units.find((u) => u.unit_id === unit.unit_id);
-			const source = plantFixture.run.result.parameter_sources.units.find(
-				(u) => u.unit_id === unit.unit_id,
-			);
-			const parameters =
-				plantFixture.run.result.parameter_sources.pool[source.parameter_sha256]
-					.loss_scenario;
-			return {
-				...unit,
-				reserve_kwh: 0,
-				pv_dc_input_unused: true,
-				allow_ac_charge: false,
-				settings: {
-					...scenario,
-					dc: {
-						...unit.settings.dc,
-						pv_converter_id: "",
-						aux_dc_kw: 0,
-						source_note: parameters.source_note,
-						battery_port_id: parameters.battery_port_id,
-						battery_temperature_c: parameters.battery_temperature_c,
-						losses: Object.fromEntries(
-							DC_LOSS_FIELDS.map((k) => [k, parameters[k]]),
-						),
-					},
-					battery_binding: {
-						asset_id: saved.battery_parameters_asset_id,
-						parameters,
-						source_note: parameters.source_note,
-						equipment_selection: plant.units.find((u) => u.id === unit.unit_id)
-							.selection,
-					},
-				},
-			};
-		}),
-	};
-	return {
-		equipment_plant: plant,
-		energy_plant_setup: setup,
-		profile_selections: selections,
-	};
+for (const joint of [false, true]) {
+	test(`${joint ? "plant" : "single"} source details read the run's frozen inputs and retain owned source hash checks`, async (t) => {
+		const dom = setupDom();
+		const { createRoot } = await import("react-dom/client");
+		const root = createRoot(dom.element);
+		const queryClient = new QueryClient({
+			defaultOptions: { queries: { retry: false } },
+		});
+		t.after(async () => {
+			await dom.dispose(root);
+			queryClient.clear();
+		});
+		const run = joint ? plantFixture.run : actualRun;
+		const inputs = joint
+			? plantFixture.project.inputs
+			: { energy_replay: energyInputs };
+		const selected = inputs[joint ? "energy_plant" : "energy_replay"];
+		const pins = run.manifest.context.assets;
+		const assets = new Map();
+		for (const [role, field] of [
+			["gross_load", "gross_load_asset_id"],
+			["pv_available_ac", "pv_available_asset_id"],
+			["critical_load", "critical_load_asset_id"],
+			["aux_ac", "aux_ac_asset_id"],
+		]) {
+			const id = selected[field];
+			if (id)
+				assets.set(id, {
+					id,
+					project_id: run.project_id,
+					content_sha256: pins[role + ".raw"],
+					metadata_sha256: pins[role + ".metadata"],
+					media_type: "text/csv",
+					purpose: "csv_profile_v1",
+					metadata: { provenance: { label: "Frozen " + role } },
+				});
+		}
+		if (!joint)
+			assets.set(selected.battery_parameters_asset_id, {
+				id: selected.battery_parameters_asset_id,
+				project_id: run.project_id,
+				content_sha256: pins["battery.raw"],
+				metadata_sha256: pins["battery.metadata"],
+				media_type: "application/json",
+				purpose: "battery_parameters_v1",
+				metadata: run.result.battery_parameter_provenance,
+			});
+		const requests = [];
+		const client = {
+			isCurrentScope: () => true,
+			async query(path, command) {
+				requests.push({ path, command });
+				if (path === "runs/inputs")
+					return {
+						schema_version: 1,
+						project_id: run.project_id,
+						run_id: run.id,
+						manifest_sha256: run.manifest_sha256,
+						inputs,
+					};
+				if (path === "assets/read") return assets.get(command.asset_id);
+				throw new Error("unexpected source read " + path);
+			},
+		};
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: queryClient },
+					React.createElement(RunBasis, {
+						run,
+						client,
+						session: { query_scope: scope },
+						locale: "en-GB",
+						recheck() {},
+					}),
+				),
+			),
+		);
+		await act(async () => document.querySelector("summary").click());
+		await until(() => document.querySelector(".lp-run-source-list"));
+		assert.equal(requests[0].path, "runs/inputs");
+		assert.deepEqual(requests[0].command, {
+			schema_version: 1,
+			project_id: run.project_id,
+			run_id: run.id,
+		});
+		assert.equal(
+			requests.some((row) => row.path === "projects/read"),
+			false,
+		);
+		assert.match(document.body.textContent, /Frozen gross_load/);
+	});
 }
 
-async function energyRig(t, inputs) {
+const scope = "a".repeat(64);
+const json = (value) =>
+	new Response(JSON.stringify(value), {
+		headers: { "Content-Type": "application/json" },
+	});
+const button = (text) =>
+	[...document.querySelectorAll("button")].find(
+		(node) => node.textContent === text && !node.closest("[hidden]"),
+	);
+async function click(text) {
+	const node = button(text);
+	assert.ok(node, text);
+	assert.equal(node.disabled, false, text);
+	await act(async () => node.click());
+}
+
+async function energyRig(
+	t,
+	{
+		joint = false,
+		dc = false,
+		delay = false,
+		hardware = false,
+		pvOnly = false,
+		newPlant = false,
+		scopeSwitch = false,
+	} = {},
+) {
 	const dom = setupDom();
 	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
 		value: new IDBFactory(),
 		configurable: true,
 	});
-	window.history.replaceState(
-		null,
-		"",
-		`?project=${actualRun.project_id}#lp-calculations`,
-	);
 	const { createRoot } = await import("react-dom/client");
 	const root = createRoot(dom.element);
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
 	});
-	t.after(async () => {
-		await dom.dispose(root);
-		queryClient.clear();
-		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
-		else delete globalThis.indexedDB;
-	});
-	let current = beginDraft({
+	const plant = plantFixture.project.inputs.equipment_plant;
+	const baseInputs = joint
+		? {
+				equipment_plant_setup: {
+					schema_version: 1,
+					requirements: {
+						...plant.requirements,
+						...(newPlant || scopeSwitch ? { pv_dc_kw: 10 } : {}),
+					},
+					units: plant.units.map((unit) => ({
+						id: unit.id,
+						name: unit.name,
+						inputs: {
+							equipment_setup: {
+								...equipmentDraft({ equipment_selection: unit.selection }),
+								...(newPlant || scopeSwitch
+									? {
+											pv_dc_kw: 5,
+											battery_product_id: null,
+											modules_per_stack: null,
+											parallel_stacks: null,
+										}
+									: {}),
+							},
+						},
+					})),
+					parallel_groups: [],
+				},
+				energy_plant_setup: {
+					...plantEnergyDraft({ equipment_plant: plant }, plant),
+					coupling: dc ? "plant_shared_dc" : "plant_ac",
+				},
+				profile_selections: selections,
+			}
+		: {
+				energy_scenario: {
+					...scenario,
+					coupling: dc ? "shared_dc" : "independent_ac",
+				},
+				equipment_setup: {
+					...equipmentDraft({}),
+					...(hardware ? { inverter_product_id: 101 } : {}),
+				},
+				profile_selections: selections,
+			};
+	if (newPlant) delete baseInputs.energy_plant_setup;
+	const project = {
 		id: actualRun.project_id,
-		title: "Energy transition fixture",
+		title: "Current energy inputs",
 		revision: 1,
 		input_sha256: "b".repeat(64),
-		inputs,
-	});
-	const client = {
-		isCurrentScope: () => true,
-		async query(path) {
-			if (path === "projects/runs") return { items: [], next: null };
-			throw new ApiError(404, "not_found");
+		inputs: authoredCalculationInputs({
+			...baseInputs,
+			...(scopeSwitch
+				? {
+						brief: { system_scope: "new_pv_storage" },
+						geometric_roof_ac_selection: {
+							schema_version: 1,
+							asset_id: selections.selected.pv_available_ac,
+						},
+						profile_selections: {
+							...selections,
+							selected: {
+								...selections.selected,
+								pv_reference: "f".repeat(32),
+							},
+						},
+					}
+				: pvOnly
+					? { brief: { system_scope: "pv_only" } }
+					: {}),
+		}),
+	};
+	const session = {
+		schema_version: 1,
+		kind: "guest",
+		cookie_confirmed: true,
+		expires_at: 2000000000,
+		query_scope: scope,
+		nonce: "abcdefghij",
+		claim_pending: false,
+		runtime: {
+			schema_version: 1,
+			runtime_sha256: actualRun.manifest.context.code_sha256,
+			models: {
+				...actualRun.manifest.context.models,
+				plant_replay: "plant_ac_energy_replay_v1",
+				plant_dc_replay: "plant_shared_dc_energy_replay_v1",
+			},
+			limits: {
+				max_body_bytes: 16777216,
+				max_csv_bytes: 8388608,
+				max_page_size: 100,
+				max_json_depth: 32,
+			},
 		},
-		async send(path, serialized) {
-			assert.equal(path, "battery/scenario");
-			const body = JSON.parse(serialized);
-			return {
-				id: "c".repeat(32),
-				project_id: actualRun.project_id,
-				content_sha256: "d".repeat(64),
-				metadata_sha256: "e".repeat(64),
-				media_type: "application/json",
-				purpose: "battery_parameters_v1",
-				metadata: {
-					retention: "permanent",
-					provenance: {
-						basis: "user_explicit_scenario_not_equipment_release",
-						label: body.source_note,
-					},
-					derived_from_revision: body.expected_revision,
-					...(body.equipment_unit_id
-						? { equipment_unit_id: body.equipment_unit_id }
-						: {}),
-					dependencies: {
-						dc_prepared_parameters: "f".repeat(64),
-						dc_woo_inputs: "a".repeat(64),
+	};
+	const gate = deferred(),
+		requests = [];
+	let run, draftApi, durable;
+	const store = {
+		async read() {
+			return null;
+		},
+		async candidates() {
+			return [];
+		},
+		async write(_scope, draft) {
+			durable = structuredClone(draft);
+		},
+	};
+	const client = new PlannerClient({
+		baseUrl: "https://fixture.invalid/api/",
+		nonceUrl: "https://fixture.invalid/nonce",
+		origin: "https://fixture.invalid",
+		fetch: async (url, request) => {
+			const path = new URL(url).pathname;
+			if (path === "/nonce") return new Response("abcdefghij");
+			if (path.endsWith("/bootstrap")) return json(session);
+			const operation = path.split("/rpc/")[1],
+				command = JSON.parse(request.body);
+			requests.push({ operation, command, body: request.body });
+			if (operation === "products/current")
+				return json({
+					schema_version: 1,
+					provider: "woocommerce",
+					products: [
+						{
+							id: 101,
+							canonical_product_id: 101,
+							product_revision: "6".repeat(64),
+							model: "Declared converter",
+							brand: "Fixture",
+							device_class: "hybrid_inverter",
+							figures: {},
+						},
+					],
+					dc_battery_ports: { 101: ["authored-port"] },
+					cable_references: [],
+					figure_projection_version: 2,
+					compatibility_origin: "woocommerce",
+				});
+			if (operation === "projects/runs") return json({ items: [], next: null });
+			if (operation === "runs/read") return json(run);
+			if (operation !== "runs/calculate")
+				return json({ error: { code: "not_found" } });
+			const solarScope = command.inputs.brief?.system_scope === "pv_only";
+			const kind = joint
+				? dc && !solarScope
+					? "plant_shared_dc_energy_replay_v1"
+					: "plant_ac_energy_replay_v1"
+				: dc && !solarScope
+					? "shared_dc_energy_replay_v1"
+					: "single_ac_energy_replay_v1";
+			run = {
+				...actualRun,
+				revision: 2,
+				state: "queued",
+				result: null,
+				result_sha256: null,
+				manifest: {
+					...actualRun.manifest,
+					revision: 2,
+					context: {
+						...actualRun.manifest.context,
+						parameters: { kind },
+						models: { replay: kind },
 					},
 				},
 			};
+			if (delay) await gate.promise;
+			return json({
+				schema_version: 1,
+				project: {
+					...project,
+					revision: 2,
+					input_sha256: run.manifest.input_sha256,
+					inputs: command.inputs,
+				},
+				run,
+			});
 		},
-	};
+	});
+	await client.bootstrap();
 	function Harness() {
-		const [draft, setDraft] = useState(current);
+		draftApi = useProjectDraft(project, session, client, store, () => {});
+		if (!draftApi.draft) return null;
+		const { draft, update } = draftApi;
 		return React.createElement(
 			React.Fragment,
 			null,
+			scopeSwitch
+				? React.createElement(
+						"select",
+						{
+							"aria-label": "System scope",
+							value: draft.history.current.brief.system_scope,
+							onChange: (event) =>
+								update((current) =>
+									editDraft(current, {
+										...current.history.current,
+										brief: {
+											...current.history.current.brief,
+											system_scope: event.target.value,
+										},
+									}),
+								),
+						},
+						React.createElement(
+							"option",
+							{ value: "new_pv_storage" },
+							"PV and storage",
+						),
+						React.createElement("option", { value: "pv_only" }, "PV only"),
+					)
+				: null,
+			React.createElement(
+				"label",
+				null,
+				"Project note",
+				React.createElement("textarea", {
+					"aria-label": "Project note",
+					value: draft.history.current.note ?? "",
+					onChange: (event) =>
+						update((current) =>
+							editDraft(current, {
+								...current.history.current,
+								note: event.target.value,
+							}),
+						),
+				}),
+			),
 			React.createElement(
 				"button",
 				{
-					onClick() {
-						current = beginDraft({
-							...current.baseline,
-							revision: current.baseline.revision + 1,
-							inputs: current.history.current,
-						});
-						setDraft(current);
-					},
+					onClick: () => update(undoDraft),
+					disabled: !draft.history.past.length,
 				},
-				"Confirm saved revision",
+				"Undo",
+			),
+			React.createElement(
+				"button",
+				{
+					onClick: () => update(redoDraft),
+					disabled: !draft.history.future.length,
+				},
+				"Redo",
 			),
 			React.createElement(EnergyWorkspace, {
 				draft,
 				client,
+				session,
 				locale: "en-GB",
 				blocked: false,
 				active: true,
-				session: {
-					query_scope: "a".repeat(64),
-					runtime: {
-						models: {
-							...actualRun.manifest.context.models,
-							plant_replay: "plant_ac_energy_replay_v1",
-							plant_dc_replay: "plant_shared_dc_energy_replay_v1",
-						},
-						limits: {
-							max_json_depth: 32,
-							max_body_bytes: 16777216,
-							max_page_size: 100,
-						},
-					},
-				},
+				acknowledgeProject: draftApi.acknowledgeProject,
+				flush: draftApi.flush,
 				recheck() {},
 				onValidity() {},
 				openProfiles() {},
 				edit(operation) {
-					current = editDraft(current, operation(current.history.current));
-					setDraft(current);
-					return true;
-				},
-				async flush() {
+					update((current) =>
+						editDraft(current, operation(current.history.current)),
+					);
 					return true;
 				},
 			}),
@@ -202,224 +439,278 @@ async function energyRig(t, inputs) {
 			),
 		),
 	);
+	t.after(async () => {
+		gate.resolve();
+		await dom.dispose(root);
+		queryClient.clear();
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else delete globalThis.indexedDB;
+	});
 	await until(
 		() =>
-			button("Prepare scenario settings") &&
-			!button("Prepare scenario settings").disabled,
+			button("Calculate energy flows") &&
+			!button("Calculate energy flows").disabled,
 	);
 	return {
-		get inputs() {
-			return current.history.current;
+		requests,
+		gate,
+		get draft() {
+			return draftApi.draft;
+		},
+		get durable() {
+			return durable;
 		},
 	};
 }
 
-async function choose(label, value) {
-	await act(async () => {
-		const field = control(label);
-		assert.ok(field, label);
-		field.value = value;
-		field.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-}
-
-for (const joint of [false, true]) {
-	test(`switching ${joint ? "plant" : "single"} peak shaving to shared DC can prepare without hidden AC choices`, async (t) => {
-		const inputs = preparedPlantInputs();
-		if (joint) {
-			inputs.energy_plant_setup = {
-				...inputs.energy_plant_setup,
-				controller: "proportional_peak_shaving_v1",
-				aux_ac_kw: 0,
-			};
-		} else {
-			inputs.equipment_selection = inputs.equipment_plant.units[0].selection;
-			inputs.energy_scenario = {
-				...scenario,
-				dc: {
-					...inputs.energy_plant_setup.units[0].settings.dc,
-					pv_converter_id: "roof-group",
-				},
-			};
-			delete inputs.equipment_plant;
-			delete inputs.energy_plant_setup;
-		}
-		const rig = await energyRig(t, inputs);
-		if (!joint) {
-			await choose("Operating goal", "peak");
-			await act(async () => enter(control("Grid import cap"), "2"));
-		}
-		await choose(
-			joint ? "PV connection for this plant" : "System connection",
-			joint ? "plant_shared_dc" : "shared_dc",
-		);
-		await click("Confirm saved revision");
-		await click("Prepare scenario settings");
-		await until(() => rig.inputs[joint ? "energy_plant" : "energy_replay"]);
-		const replay = rig.inputs[joint ? "energy_plant" : "energy_replay"];
-		assert.ok(replay, document.querySelector('[role="alert"]')?.textContent);
-		assert.equal(replay.coupling, joint ? "plant_shared_dc" : "shared_dc");
-		assert.equal(replay.aux_ac_asset_id, selections.selected.aux_ac);
-		assert.equal(replay.aux_ac_kw, undefined);
-		assert.equal(
-			replay.controller,
-			joint
-				? "local_dc_then_proportional_ac_self_consumption_v1"
-				: "self_consumption_with_reserve_v1",
-		);
-	});
-}
-
-for (const joint of [false, true]) {
-	test(`storage-only ${joint ? "plant" : "single"} preparation rejects PV-origin starting inventory`, async (t) => {
-		const inputs = joint
-			? preparedPlantInputs()
-			: { energy_scenario: structuredClone(scenario) };
-		inputs.brief = { system_scope: "storage_only" };
-		inputs.profile_selections = {
-			schema_version: 1,
-			selected: {
-				gross_load: selections.selected.gross_load,
-				aux_ac: selections.selected.aux_ac,
-			},
-		};
-		const states = joint
-			? inputs.energy_plant_setup.units.map((u) => u.settings)
-			: [inputs.energy_scenario];
-		for (const state of states)
-			state.initial_inventory = { ...state.initial_inventory, pv_kwh: 1 };
-		const rig = await energyRig(t, inputs);
-		await click("Prepare scenario settings");
-		await until(
-			() =>
-				rig.inputs[joint ? "energy_plant" : "energy_replay"] ||
-				document.querySelector('[role="alert"]'),
-		);
-		assert.equal(
-			rig.inputs[joint ? "energy_plant" : "energy_replay"],
-			undefined,
-		);
-		assert.match(
-			document.querySelector('[role="alert"]').textContent,
-			/PV-origin/,
-		);
-	});
-	test(`PV ${joint ? "plant" : "single"} preparation still needs a source when any period enables generation`, async (t) => {
-		const inputs = joint
-			? preparedPlantInputs()
-			: { energy_scenario: structuredClone(scenario) };
-		inputs.profile_selections = {
-			schema_version: 1,
-			selected: {
-				gross_load: selections.selected.gross_load,
-				aux_ac: selections.selected.aux_ac,
-			},
-		};
-		const setup = inputs[joint ? "energy_plant_setup" : "energy_scenario"];
-		setup.schedule = [
-			{
-				...scenario.schedule[0],
-				pv_enabled: false,
-				end_utc: "2024-03-31T00:00:00Z",
-			},
-			{
-				...scenario.schedule[0],
-				id: "b".repeat(32),
-				start_utc: "2024-03-31T00:00:00Z",
-				pv_enabled: true,
-			},
-		];
-		const rig = await energyRig(t, inputs);
-		await click("Prepare scenario settings");
-		await until(() => document.querySelector('[role="alert"]'));
-		assert.match(
-			document.querySelector('[role="alert"]').textContent,
-			/Select the missing interval sources/,
-		);
-		assert.equal(
-			rig.inputs[joint ? "energy_plant" : "energy_replay"],
-			undefined,
-		);
-	});
-	for (const keepPvSelection of [false, true])
-		test(`PV ${joint ? "plant" : "single"} backup prepares without generation while retaining PV-origin starting energy (retained PV selection: ${keepPvSelection})`, async (t) => {
-			const inputs = joint
-				? preparedPlantInputs()
-				: { energy_scenario: structuredClone(scenario) };
-			inputs.profile_selections = {
-				schema_version: 1,
-				selected: {
-					gross_load: selections.selected.gross_load,
-					critical_load: "d".repeat(32),
-					aux_ac: selections.selected.aux_ac,
-					...(keepPvSelection ? { pv_available_ac: "e".repeat(32) } : {}),
-				},
-			};
-			if (joint) {
-				inputs.energy_plant_setup.schedule = scenario.schedule.map((p) => ({
-					...p,
-					mode: "outage",
-					pv_enabled: false,
-				}));
-				inputs.energy_plant_setup.units = inputs.energy_plant_setup.units.map(
-					(u) => ({
-						...u,
-						settings: {
-							...u.settings,
-							initial_inventory: { ...u.settings.initial_inventory, pv_kwh: 1 },
-						},
-					}),
-				);
-			} else {
-				inputs.energy_scenario.initial_inventory.pv_kwh = 1;
-			}
-			const rig = await energyRig(t, inputs);
-			if (!joint) await choose("Operating goal", "backup");
-			assert.doesNotMatch(
-				document.querySelector(".lp-scenario-sources").textContent,
-				/Available PV output/,
-			);
-			assert.match(
-				document.querySelector(".lp-scenario-sources").textContent,
-				/Critical load/,
-			);
-			await click("Prepare scenario settings");
-			await until(
-				() =>
-					rig.inputs[joint ? "energy_plant" : "energy_replay"] ||
-					document.querySelector('[role="alert"]'),
-			);
-			const replay = rig.inputs[joint ? "energy_plant" : "energy_replay"];
-			assert.ok(replay, document.querySelector('[role="alert"]')?.textContent);
-			assert.equal(replay.pv_available_asset_id, null);
-			assert.equal(
-				rig.inputs.profile_selections.selected.pv_available_ac,
-				keepPvSelection ? "e".repeat(32) : undefined,
-			);
-			assert.ok(replay.schedule.every((p) => !p.pv_enabled));
-			for (const state of joint ? replay.units : [replay])
-				assert.equal(state.initial_inventory.pv_kwh, 1);
-		});
-}
-
-const button = (text) =>
-	[...document.querySelectorAll("button")].find(
-		(node) =>
-			(node.getAttribute("aria-label") ?? node.textContent) === text &&
-			!node.closest("[hidden]"),
+test("a new PV-only plant with positive PV starts at the AC source and its first ordinary schedule edit stays AC", async (t) => {
+	const rig = await energyRig(t, { joint: true, pvOnly: true, newPlant: true });
+	assert.equal(
+		rig.draft.history.current.energy_plant_setup,
+		undefined,
+		"no AC coupling was seeded into this project",
 	);
-const control = (text) =>
-	[...document.querySelectorAll("label")]
-		.find((label) => label.querySelector("span")?.textContent.startsWith(text))
-		?.querySelector("input,textarea,select");
-const click = async (text) => {
-	const node = button(text);
-	assert.ok(node, "missing control " + text);
-	assert.equal(node.disabled, false, "disabled " + text);
-	await act(async () => node.click());
-};
+	const sources = document.querySelector(".lp-scenario-sources");
+	assert.match(sources.textContent, /Available PV output · AC/);
+	assert.doesNotMatch(sources.textContent, /Roof PV source/);
+	const field = (label) =>
+		[...document.querySelectorAll("label")]
+			.find(
+				(node) =>
+					!node.closest("[hidden]") &&
+					node.querySelector("span")?.textContent === label,
+			)
+			?.querySelector("input,select");
+	await enter(field("Start with UTC or offset"), "2024-03-30T23:00:00Z");
+	assert.equal(
+		rig.draft.history.current.energy_plant_setup.coupling,
+		"plant_ac",
+	);
+	await enter(field("End with UTC or offset"), "2024-03-31T01:00:00Z");
+	for (const [label, value] of [
+		["Grid condition", "connected"],
+		["PV available in this period", "true"],
+		["Grid import limit", "unlimited"],
+		["Grid export limit", "unlimited"],
+	])
+		await act(async () => {
+			field(label).value = value;
+			field(label).dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	await click("Calculate energy flows");
+	await until(() => rig.draft.baseline.revision === 2);
+	const command = rig.requests.find(
+		(row) => row.operation === "runs/calculate",
+	).command;
+	assert.equal(
+		command.inputs.equipment_plant_setup.units[0].inputs.equipment_setup
+			.pv_dc_kw,
+		5,
+	);
+	assert.equal(command.inputs.energy_plant_setup.coupling, "plant_ac");
+	assert.equal(
+		command.inputs.profile_selections.selected.pv_available_ac,
+		selections.selected.pv_available_ac,
+	);
+});
 
-test("a missing saved-wiring assessment has a specific explanation and the native equipment entry", async (t) => {
+for (const joint of [false, true])
+	for (const editDates of [false, true]) {
+		test(`${joint ? "plant" : "single"} retained shared DC switches to PV-only AC source interpretation ${editDates ? "with a date edit" : "without changing declarations"}`, async (t) => {
+			const rig = await energyRig(t, { joint, dc: true, scopeSwitch: true });
+			const key = joint ? "energy_plant_setup" : "energy_scenario";
+			const original = structuredClone(rig.draft.history.current);
+			const select = document.querySelector('[aria-label="System scope"]');
+			await act(async () => {
+				select.value = "pv_only";
+				select.dispatchEvent(new window.Event("change", { bubbles: true }));
+			});
+			const sources = document.querySelector(".lp-scenario-sources");
+			assert.match(sources.textContent, /Available PV output · AC/);
+			assert.doesNotMatch(sources.textContent, /Roof PV source/);
+			if (editDates) {
+				const start = [...document.querySelectorAll("label")]
+					.find(
+						(node) =>
+							!node.closest("[hidden]") &&
+							node.querySelector("span")?.textContent ===
+								"Start with UTC or offset",
+					)
+					.querySelector("input");
+				await enter(start, "2024-03-30T22:00:00Z");
+			}
+			assert.equal(
+				rig.draft.history.current[key].coupling,
+				original[key].coupling,
+			);
+			assert.deepEqual(
+				rig.draft.history.current.profile_selections,
+				original.profile_selections,
+			);
+			assert.deepEqual(
+				rig.draft.history.current.geometric_roof_ac_selection,
+				original.geometric_roof_ac_selection,
+			);
+			if (!joint)
+				assert.deepEqual(
+					rig.draft.history.current[key].battery,
+					original[key].battery,
+				);
+			await click("Calculate energy flows");
+			await until(() => rig.draft.baseline.revision === 2);
+			const command = rig.requests.find(
+				(row) => row.operation === "runs/calculate",
+			).command;
+			assert.equal(command.inputs.brief.system_scope, "pv_only");
+			assert.equal(command.inputs[key].coupling, original[key].coupling);
+			if (joint)
+				assert.deepEqual(command.inputs[key].units, original[key].units);
+			assert.deepEqual(
+				command.inputs.profile_selections,
+				original.profile_selections,
+			);
+		});
+	}
+
+for (const joint of [false, true]) {
+	test(`${joint ? "plant" : "single"} PV-only workspace edits solar periods and calculates without storage controls`, async (t) => {
+		const rig = await energyRig(t, { joint, pvOnly: true });
+		const heading = [...document.querySelectorAll("h3")].find(
+			(node) =>
+				!node.closest("[hidden]") &&
+				node.textContent === "Solar-only energy flows",
+		);
+		assert.ok(heading);
+		const visibleHeadings = [...document.querySelectorAll("h3,summary")]
+			.filter((node) => !node.closest("[hidden]"))
+			.map((node) => node.textContent);
+		assert.equal(visibleHeadings.includes("Storage parameters"), false);
+		assert.equal(
+			visibleHeadings.includes("Advanced storage and operating settings"),
+			false,
+		);
+		const fieldset = heading.closest("fieldset");
+		assert.equal(
+			fieldset.textContent.includes("Reserved stored energy"),
+			false,
+		);
+		assert.equal(fieldset.textContent.includes("Grid charging allowed"), false);
+		const aux = [...fieldset.querySelectorAll("input")].find((input) =>
+			document
+				.getElementById(input.getAttribute("aria-labelledby"))
+				?.textContent.startsWith("Constant AC auxiliary demand"),
+		);
+		// The retained fixture has an auxiliary profile; its choice remains owned.
+		assert.equal(aux, undefined);
+		const period = [...fieldset.querySelectorAll("label")]
+			.find(
+				(label) =>
+					label.querySelector("span")?.textContent ===
+					"Start with UTC or offset",
+			)
+			.querySelector("input");
+		await enter(period, "2024-03-30T22:00:00Z");
+		await click("Calculate energy flows");
+		await until(() => rig.draft.baseline.revision === 2);
+		const command = rig.requests.find(
+			(row) => row.operation === "runs/calculate",
+		).command;
+		const declared =
+			command.inputs[joint ? "energy_plant_setup" : "energy_scenario"];
+		assert.equal(command.inputs.brief.system_scope, "pv_only");
+		assert.equal(declared.schedule[0].start_utc, "2024-03-30T22:00:00Z");
+		assert.equal(command.inputs.energy_replay, undefined);
+		assert.equal(command.inputs.energy_plant, undefined);
+	});
+}
+
+test("DC editing uses the current authored converter before any prepared selection exists", async (t) => {
+	const rig = await energyRig(t, { dc: true, hardware: true });
+	const port = () =>
+		[...document.querySelectorAll("label")]
+			.find(
+				(label) =>
+					label.querySelector("span")?.textContent === "Connected battery port",
+			)
+			?.querySelector("select");
+	await until(() => port()?.querySelector('option[value="authored-port"]'));
+	assert.equal(port().disabled, false);
+	await act(async () => {
+		port().value = "authored-port";
+		port().dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(
+		rig.draft.history.current.energy_scenario.dc.battery_port_id,
+		"authored-port",
+	);
+	assert.equal(rig.draft.history.current.equipment_selection, undefined);
+});
+
+for (const joint of [false, true])
+	for (const dc of [false, true]) {
+		test(`${joint ? "plant" : "single"} ${dc ? "DC" : "AC"} calculation submits current declarations without preparation or a save command`, async (t) => {
+			const rig = await energyRig(t, { joint, dc });
+			assert.equal(button("Prepare scenario settings"), undefined);
+			await enter(
+				document.querySelector('[aria-label="Project note"]'),
+				"Edited before calculation",
+			);
+			await click("Calculate energy flows");
+			await until(() => rig.draft.baseline.revision === 2);
+			const mutations = rig.requests.filter((row) =>
+				[
+					"runs/calculate",
+					"battery/scenario",
+					"projects/revise",
+					"runs/energy",
+				].includes(row.operation),
+			);
+			assert.deepEqual(
+				mutations.map((row) => row.operation),
+				["runs/calculate"],
+			);
+			assert.equal(
+				mutations[0].command.inputs.note,
+				"Edited before calculation",
+			);
+			assert.equal(mutations[0].command.expected_revision, 1);
+			assert.equal(
+				mutations[0].command.input_contract,
+				"authored_equipment_discovery_v1",
+			);
+			assert.equal(isDirty(rig.draft), false);
+			if (joint) assert.ok(rig.draft.history.current.equipment_plant_setup);
+			assert.equal("energy_replay" in rig.draft.history.current, false);
+		});
+	}
+
+test("a late calculation acknowledgement persists the captured baseline and preserves later edits, undo and redo", async (t) => {
+	const rig = await energyRig(t, { delay: true });
+	const note = document.querySelector('[aria-label="Project note"]');
+	await enter(note, "Submitted");
+	await click("Calculate energy flows");
+	await until(() =>
+		rig.requests.some((row) => row.operation === "runs/calculate"),
+	);
+	await enter(note, "Edited while calculating");
+	await click("Undo");
+	await click("Redo");
+	rig.gate.resolve();
+	await until(
+		() =>
+			rig.draft.baseline.revision === 2 && rig.durable?.baseline.revision === 2,
+	);
+	assert.equal(rig.draft.baseline.inputs.note, "Submitted");
+	assert.equal(rig.draft.history.current.note, "Edited while calculating");
+	assert.equal(isDirty(rig.draft), true);
+	await click("Undo");
+	assert.equal(rig.draft.history.current.note, "Submitted");
+	assert.equal(isDirty(rig.draft), false);
+	await click("Redo");
+	assert.equal(rig.draft.history.current.note, "Edited while calculating");
+});
+
+test("a missing wiring assessment directs the customer to equipment and stale report input to recalculation", async (t) => {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const root = createRoot(dom.element);
@@ -433,23 +724,7 @@ test("a missing saved-wiring assessment has a specific explanation and the nativ
 		),
 	);
 	assert.match(dom.element.textContent, /saved PV strings/);
-	assert.match(
-		dom.element.textContent,
-		/select that completed result under Equipment checks/,
-	);
 	assert.equal(dom.element.querySelector("button").textContent, "Equipment");
-	await act(async () =>
-		root.render(
-			React.createElement(EnergyError, {
-				error: new ApiError(422, "report_inputs_changed"),
-			}),
-		),
-	);
-	assert.match(
-		dom.element.textContent,
-		/does not match the saved project inputs/,
-	);
-	assert.equal(dom.element.querySelector("button"), null);
 	let opened = false;
 	await act(async () =>
 		root.render(
@@ -461,13 +736,96 @@ test("a missing saved-wiring assessment has a specific explanation and the nativ
 			}),
 		),
 	);
-	const recalculate = dom.element.querySelector("button");
-	assert.equal(recalculate.textContent, "Recalculate energy");
-	await act(async () => recalculate.click());
+	assert.match(
+		dom.element.textContent,
+		/does not match the saved project inputs/,
+	);
+	await click("Recalculate energy");
 	assert.equal(opened, true);
 });
 
-test("changing the simple operating goal preserves an auxiliary profile and does not assume island PV", async (t) => {
+test("choosing an operating goal preserves unknown assumptions and manually declared physical values", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	let next;
+	const render = async (value) =>
+		act(async () =>
+			root.render(
+				React.createElement(SimpleEnergySetup, {
+					value,
+					storageOnly: false,
+					hasAuxiliaryProfile: false,
+					hasEquipment: true,
+					chooseEquipment() {},
+					locale: "en-GB",
+					disabled: false,
+					onChange(value) {
+						next = value;
+					},
+					onValidity() {},
+					useProfileRange() {},
+					rangeBusy: false,
+				}),
+			),
+		);
+	const choose = async () =>
+		act(async () => {
+			const goal = [...document.querySelectorAll("label")]
+				.find((label) => label.textContent.startsWith("Operating goal"))
+				.querySelector("select");
+			goal.value = "peak";
+			goal.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	const unknown = emptyScenario();
+	await render(unknown);
+	await choose();
+	assert.deepEqual(next.battery, unknown.battery);
+	assert.deepEqual(next.initial_inventory, unknown.initial_inventory);
+	assert.equal(next.source_note, "");
+	assert.equal(next.aux_ac_kw ?? null, null);
+	assert.equal(next.terminal_policy, null);
+	assert.equal(next.schedule[0].reserve_kwh, null);
+	assert.equal(next.schedule[0].export_policy, null);
+	assert.equal(next.schedule[0].export_cap_kw, null);
+	assert.equal(next.schedule[0].allow_grid_charge, null);
+	assert.equal(next.schedule[0].pv_enabled, null);
+	const manual = {
+		...scenario,
+		source_note: "My measured losses",
+		initial_inventory: {
+			pv_kwh: 1,
+			grid_kwh: 2,
+			initial_unknown_kwh: 3,
+			source_note: "Read from commissioning record",
+		},
+		aux_ac_kw: 0.12,
+		battery: {
+			...scenario.battery,
+			internal_aux_kw: 0.03,
+			standing_loss_rate_per_hour: 0.001,
+		},
+	};
+	await render(manual);
+	await choose();
+	assert.deepEqual(next.battery, manual.battery);
+	assert.deepEqual(next.initial_inventory, manual.initial_inventory);
+	assert.equal(next.source_note, manual.source_note);
+	assert.equal(next.aux_ac_kw, 0.12);
+	assert.equal(next.terminal_policy, manual.terminal_policy);
+	assert.equal(next.schedule[0].reserve_kwh, manual.schedule[0].reserve_kwh);
+	assert.equal(
+		next.schedule[0].export_policy,
+		manual.schedule[0].export_policy,
+	);
+	assert.equal(
+		next.schedule[0].export_cap_kw,
+		manual.schedule[0].export_cap_kw,
+	);
+});
+
+test("changing the simple operating goal preserves an auxiliary profile and its declared PV availability", async (t) => {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { SimpleEnergySetup } =
@@ -493,452 +851,14 @@ test("changing the simple operating goal preserves an auxiliary profile and does
 		),
 	);
 	await act(async () => {
-		const goal = control("Operating goal");
+		const goal = [...document.querySelectorAll("label")]
+			.find((label) => label.textContent.startsWith("Operating goal"))
+			.querySelector("select");
 		goal.value = "backup";
 		goal.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	assert.equal(next.aux_ac_kw, null);
-	assert.equal(next.schedule[0].pv_enabled, false);
+	assert.equal(next.aux_ac_kw, scenario.aux_ac_kw);
+	assert.equal(next.schedule[0].pv_enabled, scenario.schedule[0].pv_enabled);
 	assert.equal(next.schedule[0].allow_grid_charge, false);
 	assert.equal(next.schedule[0].mode, "outage");
-});
-
-test("storage-only customers prepare peak shaving without PV or auxiliary CSV", async (t) => {
-	const dom = setupDom();
-	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
-	Object.defineProperty(globalThis, "indexedDB", {
-		value: new IDBFactory(),
-		configurable: true,
-	});
-	window.history.replaceState(
-		null,
-		"",
-		`?project=${actualRun.project_id}#lp-calculations`,
-	);
-	const { createRoot } = await import("react-dom/client");
-	const root = createRoot(dom.element);
-	const queryClient = new QueryClient({
-		defaultOptions: { queries: { retry: false } },
-	});
-	t.after(async () => {
-		await dom.dispose(root);
-		queryClient.clear();
-		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
-		else delete globalThis.indexedDB;
-	});
-	let current = beginDraft({
-		id: actualRun.project_id,
-		title: "Storage only",
-		revision: 1,
-		input_sha256: "b".repeat(64),
-		inputs: {
-			brief: { system_scope: "storage_only" },
-			energy_scenario: { ...scenario, aux_ac_kw: 0 },
-			profile_selections: {
-				schema_version: 1,
-				selected: { gross_load: selections.selected.gross_load },
-			},
-		},
-	});
-	const session = {
-		query_scope: "a".repeat(64),
-		runtime: {
-			models: actualRun.manifest.context.models,
-			limits: {
-				max_json_depth: 32,
-				max_body_bytes: 16777216,
-				max_page_size: 100,
-			},
-		},
-	};
-	const client = {
-		isCurrentScope: () => true,
-		async query(path) {
-			if (path === "projects/runs") return { items: [], next: null };
-			throw new ApiError(404, "not_found");
-		},
-		async send() {
-			assert.fail("existing battery source should be reused");
-		},
-	};
-	function Harness() {
-		const [draft, setDraft] = useState(current);
-		return React.createElement(EnergyWorkspace, {
-			draft,
-			session,
-			client,
-			locale: "en-GB",
-			blocked: false,
-			active: true,
-			recheck() {},
-			onValidity() {},
-			openProfiles() {},
-			edit(operation) {
-				current = editDraft(current, operation(current.history.current));
-				setDraft(current);
-				return true;
-			},
-			async flush() {
-				return true;
-			},
-		});
-	}
-	await act(async () =>
-		root.render(
-			React.createElement(
-				QueryClientProvider,
-				{ client: queryClient },
-				React.createElement(Harness),
-			),
-		),
-	);
-	await until(() => control("Operating goal"));
-	await act(async () => {
-		const goal = control("Operating goal");
-		goal.value = "peak";
-		goal.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	await act(async () => enter(control("Grid import cap"), "2"));
-	const grid = [...document.querySelectorAll('input[type="checkbox"]')].find(
-		(input) =>
-			input
-				.closest("label")
-				.textContent.includes("Allow grid charging below this cap"),
-	);
-	await act(async () => grid.click());
-	await until(
-		() =>
-			button("Prepare scenario settings") &&
-			!button("Prepare scenario settings").disabled,
-	);
-	await click("Prepare scenario settings");
-	await until(() => current.history.current.energy_replay);
-	const replay = current.history.current.energy_replay;
-	assert.equal(replay.pv_available_asset_id, null);
-	assert.equal(replay.aux_ac_asset_id, null);
-	assert.equal(replay.aux_ac_kw, 0);
-	assert.equal(replay.controller, "peak_shaving_with_reserve_v1");
-	assert.equal(replay.schedule[0].allow_grid_charge, true);
-	assert.equal(replay.schedule[0].pv_enabled, false);
-	assert.equal(replay.schedule[0].import_cap_kw, 2);
-	assert.match(document.body.textContent, /no PV generation or roof required/);
-});
-
-test("actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response", async (t) => {
-	const dom = setupDom(),
-		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
-	window.requestAnimationFrame = (callback) => window.setTimeout(callback, 0);
-	window.cancelAnimationFrame = (frame) => window.clearTimeout(frame);
-	let lastRevealed;
-	window.HTMLElement.prototype.scrollIntoView = function () {
-		lastRevealed = this;
-	};
-	Object.defineProperty(globalThis, "indexedDB", {
-		value: new IDBFactory(),
-		configurable: true,
-	});
-	window.history.replaceState(
-		null,
-		"",
-		`?project=${actualRun.project_id}#lp-calculations`,
-	);
-	const scope = "a".repeat(64),
-		project = {
-			id: actualRun.project_id,
-			title: "Synthetic component workflow",
-			revision: 1,
-			input_sha256: "b".repeat(64),
-			inputs: {
-				profile_selections: selections,
-				energy_scenario: { ...scenario, battery_binding: null },
-			},
-		};
-	const session = {
-		query_scope: scope,
-		runtime: {
-			models: actualRun.manifest.context.models,
-			limits: {
-				max_json_depth: 32,
-				max_body_bytes: 16777216,
-				max_page_size: 100,
-			},
-		},
-	};
-	const requests = [],
-		queryClient = new QueryClient({
-			defaultOptions: { queries: { retry: false } },
-		});
-	let setter,
-		current = beginDraft(project),
-		gate = null,
-		serverRun = null;
-	const assetFor = (body, index) => ({
-		id: String(index).repeat(32),
-		project_id: project.id,
-		content_sha256: "c".repeat(64),
-		metadata_sha256: "d".repeat(64),
-		media_type: "application/json",
-		purpose: "battery_parameters_v1",
-		metadata: {
-			retention: "permanent",
-			provenance: {
-				basis: "user_explicit_scenario_not_equipment_release",
-				label: body.source_note,
-			},
-		},
-	});
-	const client = {
-		isCurrentScope: (value) => value === scope,
-		async send(path, serialized) {
-			const body = JSON.parse(serialized);
-			requests.push({ path, body, serialized });
-			if (path === "battery/scenario") {
-				if (gate) await gate.promise;
-				return assetFor(body, requests.filter((x) => x.path === path).length);
-			}
-			if (path === "runs/energy") {
-				// Component transport fixture, not a simulated numerical engine.
-				serverRun = {
-					...actualRun,
-					state: "queued",
-					result: null,
-					result_sha256: null,
-					error: null,
-					revision: body.expected_revision,
-					manifest: { ...actualRun.manifest, revision: body.expected_revision },
-				};
-				return serverRun;
-			}
-			throw new Error("Unexpected mutation " + path);
-		},
-		async query(path) {
-			if (path === "projects/runs")
-				return {
-					items: serverRun
-						? [
-								{
-									id: serverRun.id,
-									project_id: project.id,
-									revision: serverRun.revision,
-									manifest_sha256: serverRun.manifest_sha256,
-									result_sha256: serverRun.result_sha256,
-									state: serverRun.state,
-									is_current: true,
-									created_at: 1700000000,
-								},
-							]
-						: [],
-					next: null,
-				};
-			if (path === "runs/read") return serverRun;
-			if (path === "runs/cancel") {
-				serverRun = { ...serverRun, state: "cancelled" };
-				return serverRun;
-			}
-			throw new ApiError(404, "not_found");
-		},
-	};
-	function edit(operation) {
-		try {
-			current = editDraft(current, operation(current.history.current));
-			setter(current);
-			return true;
-		} catch {
-			return false;
-		}
-	}
-	function Harness() {
-		const [draft, setDraft] = useState(current);
-		setter = setDraft;
-		return React.createElement(
-			React.Fragment,
-			null,
-			React.createElement(
-				"button",
-				{
-					onClick: () => {
-						current = prepareSave(current, crypto.randomUUID(), {
-							maxDepth: 32,
-							maxBytes: 16777216,
-						});
-						const intent = current.pending;
-						current = acknowledgeSave(current, intent, {
-							...project,
-							revision: intent.expectedRevision + 1,
-							input_sha256: "e".repeat(64),
-							inputs: intent.inputs,
-						});
-						setter(current);
-					},
-				},
-				"Confirm project save fixture",
-			),
-			React.createElement(EnergyWorkspace, {
-				draft,
-				edit,
-				flush: async () => true,
-				session,
-				client,
-				recheck: () => {},
-				locale: "en-US",
-				blocked: false,
-				active: true,
-				onValidity: () => {},
-				openProfiles: () => {},
-			}),
-		);
-	}
-	const { createRoot } = await import("react-dom/client"),
-		root = createRoot(dom.element);
-	t.after(async () => {
-		await dom.dispose(root);
-		queryClient.clear();
-		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
-		else delete globalThis.indexedDB;
-	});
-	await act(async () =>
-		root.render(
-			React.createElement(
-				QueryClientProvider,
-				{ client: queryClient },
-				React.createElement(Harness),
-			),
-		),
-	);
-	await until(
-		() =>
-			button("Prepare scenario settings") &&
-			!button("Prepare scenario settings").disabled,
-	);
-	const sourceNote = control("Source or assumption for storage parameters");
-	await enter(sourceNote, "");
-	button("Prepare scenario settings").focus();
-	await click("Prepare scenario settings");
-	assert.ok(
-		document.activeElement ===
-			document.querySelector('.lp-focus-target[tabindex="-1"]'),
-		"the error receives focus from the explicit preparation action",
-	);
-	assert.match(
-		document.activeElement.textContent,
-		/storage parameters need a source/,
-	);
-	assert.equal(
-		requests.length,
-		0,
-		"an incomplete scenario creates no parameter asset",
-	);
-	await act(async () => {
-		current = undoDraft(current);
-		setter(current);
-	});
-	assert.equal(
-		document.querySelector('[role="alert"]'),
-		null,
-		"Undo clears validation feedback for the superseded inputs",
-	);
-	const charge = control("AC charging power");
-	await enter(charge, "unfinished");
-	assert.equal(charge.getAttribute("aria-invalid"), "true");
-	assert.equal(button("03Operation").disabled, true);
-	await act(async () =>
-		charge.dispatchEvent(
-			new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-		),
-	);
-	await enter(charge, "7");
-	await click("02Starting state");
-	await click("01Storage");
-	assert.equal(
-		control("AC charging power"),
-		charge,
-		"hidden sections retain the same real input node",
-	);
-	assert.equal(charge.value, "7");
-	await click("Prepare scenario settings");
-	await until(() => current.history.current.energy_replay !== undefined);
-	assert.equal(requests.length, 1);
-	assert.equal(requests[0].body.parameters.charge_ac_kw, 7);
-	assert.equal(
-		button("Calculate saved scenario").disabled,
-		true,
-		"prepared unsaved inputs cannot start a job",
-	);
-	await click("Confirm project save fixture");
-	await until(() => !button("Calculate saved scenario").disabled);
-	await act(async () => {
-		button("Calculate saved scenario").click();
-		button("Calculate saved scenario")?.click();
-	});
-	await until(
-		() => document.querySelector(".lp-run-result h3")?.textContent === "Queued",
-	);
-	await until(
-		() =>
-			document.activeElement ===
-			document.querySelector('.lp-run-result h3[tabindex="-1"]'),
-	);
-	assert.ok(
-		document.activeElement ===
-			document.querySelector('.lp-run-result h3[tabindex="-1"]'),
-		"the newly selected calculation is revealed after the long setup form collapses",
-	);
-	assert.ok(
-		lastRevealed === document.querySelector(".lp-run-heading"),
-		"result status and input revision are revealed together",
-	);
-	assert.equal(requests.filter((x) => x.path === "runs/energy").length, 1);
-	assert.equal(requests.at(-1).body.expected_revision, 2);
-	assert.equal(new URL(location.href).searchParams.get("run"), actualRun.id);
-	await click("Cancel calculation");
-	await until(
-		() =>
-			document.querySelector(".lp-run-result h3")?.textContent ===
-			"Calculation cancelled",
-	);
-	await click("Scenario settings");
-	assert.equal(new URL(location.href).searchParams.get("run"), null);
-	await enter(control("AC charging power"), "8");
-	gate = deferred();
-	await click("Prepare scenario settings");
-	await until(
-		() => requests.filter((x) => x.path === "battery/scenario").length === 2,
-	);
-	await act(async () => {
-		current = undoDraft(current);
-		setter(current);
-	});
-	const restored = structuredClone(current.history.current);
-	await act(async () => gate.resolve());
-	await until(() =>
-		document
-			.querySelector(".lp-notice")
-			?.textContent.includes("inputs changed before preparation finished"),
-	);
-	assert.deepEqual(
-		current.history.current,
-		restored,
-		"late asset response cannot overwrite the restored scenario",
-	);
-	assert.equal(current.history.current.energy_scenario.battery.charge_ac_kw, 7);
-});
-
-test("a user-initiated calculation blocked by the readiness guard explains itself", () => {
-	const previousWindow = globalThis.window;
-	globalThis.window = {
-		wp: { i18n: { __: (message) => message, sprintf: () => "" } },
-	};
-	try {
-		// The pipeline's silent skip stays silent; a visitor's click on an
-		// enabled button must surface why nothing started (production
-		// 2026-11-07: "Check saved equipment selection" did nothing
-		// observable).
-		assert.match(
-			energyErrorText(new ApiError(409, "inputs_not_ready")),
-			/not ready to calculate yet/,
-		);
-	} finally {
-		if (previousWindow) globalThis.window = previousWindow;
-		else delete globalThis.window;
-	}
 });

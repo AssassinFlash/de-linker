@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import type { EquipmentPlant } from "../../domain/equipmentPlant.ts";
+import type { PlantEnergyEquipment } from "../../domain/plantEnergy.ts";
 import type {
 	PlantEnergyDraft,
 	PlantEnergyUnitDraft,
@@ -32,7 +32,7 @@ export function PlantEnergyForm({
 	storageOnly = false,
 }: {
 	value: PlantEnergyDraft;
-	plant: EquipmentPlant;
+	plant: PlantEnergyEquipment;
 	section: "storage" | "initial" | "operation";
 	locale: string;
 	disabled: boolean;
@@ -303,7 +303,11 @@ export function PlantEnergyForm({
 						client={client}
 						scope={scope}
 						active={active}
-						inverterId={hardware.selection.inverter_product_id}
+						inverterId={
+							typeof hardware.selection.inverter_product_id === "number"
+								? hardware.selection.inverter_product_id
+								: null
+						}
 						storageOnly={!dcPlant}
 						showPvAssignment={unit.pv_dc_input_unused !== true}
 					/>
