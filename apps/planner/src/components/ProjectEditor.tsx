@@ -59,7 +59,6 @@ import { replacePlannerLocation } from "../data/plannerLocation.ts";
 import { useGenieContext } from "../data/useGenieContext.ts";
 import { InstallationEditor } from "./installation/InstallationEditor.tsx";
 import { readInstallation } from "../domain/installation.ts";
-import { moduleSummary } from "../domain/panelPoses.ts";
 
 type ProjectWorkspace =
 	| "overview"
@@ -1172,7 +1171,6 @@ export function ProjectEditor({
 									workspace,
 								)}
 								equipmentFocus={workspace === "equipment"}
-								demandFocus={workspace === "energy"}
 								openEquipment={() => chooseWorkspace("equipment")}
 								openResults={() => chooseWorkspace("calculations")}
 								recoveryScopes={recoveryScopes}
@@ -1229,58 +1227,6 @@ export function ProjectEditor({
 						</div>
 					)}
 				</div>
-				<aside
-					className="lp-current-configuration"
-					aria-label={__("Current configuration", "linker-tools")}
-				>
-					<h2>{__("Current configuration", "linker-tools")}</h2>
-					<h3>{project.title}</h3>
-					<p>{brief.site.location_label}</p>
-					<dl>
-						{brief.system_scope !== "storage_only" &&
-							geometry.arrays.length > 0 && (
-								<div>
-									<dt>{__("Solar capacity", "linker-tools")}</dt>
-									<dd>
-										{new Intl.NumberFormat(config.locale, {
-											maximumFractionDigits: 2,
-										}).format(moduleSummary(geometry).stc_kwp)}{" "}
-										kWp
-									</dd>
-								</div>
-							)}
-						{brief.annual_load.kwh !== null && (
-							<div>
-								<dt>{__("Annual consumption", "linker-tools")}</dt>
-								<dd>
-									{new Intl.NumberFormat(config.locale).format(
-										brief.annual_load.kwh,
-									)}{" "}
-									kWh
-								</dd>
-							</div>
-						)}
-					</dl>
-					<button
-						type="button"
-						className="lp-text-button"
-						onClick={() => chooseWorkspace("equipment")}
-					>
-						{__("Selected equipment", "linker-tools")}
-					</button>
-					{workspace === "equipment" && (
-						<details>
-							<summary>{__("Installation details", "linker-tools")}</summary>
-							<button
-								type="button"
-								className="lp-text-button"
-								onClick={() => chooseWorkspace("installation")}
-							>
-								{__("Installation routing", "linker-tools")}
-							</button>
-						</details>
-					)}
-				</aside>
 			</div>
 		</div>
 	);

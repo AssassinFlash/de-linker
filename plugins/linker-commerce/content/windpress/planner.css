@@ -249,7 +249,8 @@
   [data-linker-planner] .lp-canvas-tools { position: absolute; top: 10px; left: 12px; right: 12px; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 2px; width: fit-content; max-width: calc(100% - 24px); padding: 3px; border: 1px solid rgb(255 255 255 / .8); background: rgb(255 255 255 / .74); box-shadow: 0 5px 20px rgb(14 40 35 / .06); backdrop-filter: blur(20px); border-radius: var(--proto-radius-sm); }
   [data-linker-planner] .lp-tool-button { min-height: 36px; padding: 6px 10px; font-size: 11px; }
   [data-linker-planner] .lp-plan-svg { display: block; width: 100%; height: 460px; touch-action: none; user-select: none; }
-  [data-linker-planner] .lp-plan-svg polygon, [data-linker-planner] .lp-plan-svg path { vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+  [data-linker-planner] .sc-roof-board .sc-roof-vertex { fill: var(--proto-neutral-0); stroke: var(--proto-ink-deep); stroke-width: 1.5px; }
+  [data-linker-planner] .sc-roof-board :is(polygon, circle), [data-linker-planner] .lp-plan-svg polygon, [data-linker-planner] .lp-plan-svg path { vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
   [data-linker-planner] .lp-roof-shape { fill: var(--proto-neutral-200); stroke: var(--proto-neutral-500); stroke-width: 1.5px; }
   [data-linker-planner] .lp-panel-shape { fill: var(--proto-teal-900); stroke: var(--proto-neutral-50); stroke-width: 1px; cursor: grab; }
   [data-linker-planner] .lp-panel-shape[data-excluded] { fill: rgb(255 255 255 / .5); stroke: var(--proto-neutral-500); stroke-dasharray: 3 3; }

@@ -19,6 +19,11 @@ import {
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { manualSource, rectangularRoof } from "../../domain/geometryEditing.ts";
 import { readGeometry } from "../../domain/validateGeometry.ts";
+import {
+	attachGeometryImport,
+	readGeometryImports,
+} from "../../domain/geometryImports.ts";
+import { GeometryIntake } from "../design/GeometryIntake.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
 import { readObject } from "../../data/readProtocol.ts";
@@ -32,6 +37,7 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { readBrief } from "../../domain/brief.ts";
+import { LazySceneViewport } from "../design/LazySceneViewport.tsx";
 import { LazyMapViewport } from "../design/LazyMapViewport.tsx";
 import type { MapCamera } from "../design/MapViewport.tsx";
 import {
@@ -52,6 +58,14 @@ export interface SolarInstallationProps {
 	next: () => void;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
+	geometryImport?: {
+		projectId: string;
+		recheck: () => void;
+		confirmedInputs: JsonObject;
+		onActivity: (open: boolean) => void;
+		recoveryScopes?: readonly string[] | undefined;
+		recoveryChecking?: boolean | undefined;
+	};
 }
 const id = () => "solar_" + crypto.randomUUID();
 export function SolarInstallation({
@@ -64,6 +78,7 @@ export function SolarInstallation({
 	next,
 	initialMap = false,
 	onEditing,
+	geometryImport,
 }: SolarInstallationProps) {
 	const geometry =
 		inputs.geometry === undefined
@@ -90,7 +105,10 @@ export function SolarInstallation({
 		"select",
 	);
 	const [error, setError] = useState("");
-	const [map, setMap] = useState(initialMap);
+	const [view, setView] = useState<"plan" | "map" | "scene">(
+		initialMap ? "map" : "plan",
+	);
+	const map = view === "map";
 	useEffect(
 		() => onEditing?.(mode === "roof" && tool !== "select"),
 		[mode, tool, onEditing],
@@ -507,7 +525,8 @@ export function SolarInstallation({
 		setDrawingKey(crypto.randomUUID());
 		setError("");
 		if ((value === "roof" || value === "obstacle") && mapReferenced)
-			setMap(true);
+			setView("map");
+		else if (view === "scene" && value !== "select") setView("plan");
 	}
 	const field = (key: keyof typeof fields, label: string, unit = "m") => (
 		<label className="sc-field">
@@ -641,7 +660,65 @@ export function SolarInstallation({
 					signal,
 				),
 			);
-			return readPlaceImagery(reply.imagery);
+			return {
+				imagery: readPlaceImagery(reply.imagery),
+				latitude: reply.latitude,
+				longitude: reply.longitude,
+				country: reply.country_code,
+			};
+		},
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
+	});
+	const latitude = site.latitude ?? imagery.data?.latitude,
+		longitude = site.longitude ?? imagery.data?.longitude,
+		country = site.country_code ?? imagery.data?.country;
+	const outline = useQuery({
+		queryKey: [
+			session.query_scope,
+			"sc-solar-outline",
+			site.location_label,
+			country,
+			latitude,
+			longitude,
+		],
+		enabled:
+			map && !blocked && imagery.isSuccess && Boolean(site.location_label),
+		retry: false,
+		queryFn: async ({ signal }) => {
+			if (
+				typeof latitude !== "number" ||
+				typeof longitude !== "number" ||
+				typeof country !== "string"
+			)
+				return null;
+			const found = readObject(
+				await client.query(
+					"places/outline",
+					{
+						schema_version: 1,
+						query: site.location_label,
+						country,
+						latitude,
+						longitude,
+					},
+					session.query_scope,
+					signal,
+				),
+			);
+			if (
+				found.found !== true ||
+				!Array.isArray(found.outline) ||
+				found.outline.length < 3 ||
+				typeof found.source !== "string" ||
+				typeof found.licence !== "string"
+			)
+				return null;
+			return {
+				ring: found.outline as [number, number][],
+				source: found.source,
+				licence: found.licence,
+			};
 		},
 	});
 	return (
@@ -1006,18 +1083,56 @@ export function SolarInstallation({
 									>
 										{__("Undo", "linker-tools")}
 									</button>
-									<button
-										type="button"
-										aria-pressed={map}
-										onClick={() => setMap(!map)}
-									>
-										{__("Aerial map", "linker-tools")}
-									</button>
 								</div>
+								<div
+									className="sc-roof-tools"
+									role="group"
+									aria-label={__("Plan view controls", "linker-tools")}
+								>
+									{(
+										[
+											["plan", __("Plan view", "linker-tools")],
+											["scene", __("3D view", "linker-tools")],
+											["map", __("Aerial map", "linker-tools")],
+										] as const
+									).map(([value, label]) => (
+										<button
+											type="button"
+											key={value}
+											aria-pressed={view === value}
+											disabled={
+												(value === "scene" && !roof) || vertices.length > 0
+											}
+											onClick={() => {
+												setView(value);
+												if (value === "scene") setTool("select");
+											}}
+										>
+											{label}
+										</button>
+									))}
+								</div>
+								{map && imagery.isError && (
+									<div role="alert">
+										<p>
+											{__(
+												"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
+												"linker-tools",
+											)}
+										</p>
+										<button
+											type="button"
+											onClick={() => void imagery.refetch()}
+										>
+											{__("Try again", "linker-tools")}
+										</button>
+									</div>
+								)}
 								{map ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
-										imagery={imagery.data ?? null}
+										imagery={imagery.data?.imagery ?? null}
+										siteOutline={outline.data ?? null}
 										document={geometry}
 										poses={poses}
 										selected={selected}
@@ -1044,6 +1159,16 @@ export function SolarInstallation({
 												: null
 										}
 									/>
+								) : view === "scene" && roof ? (
+									<LazySceneViewport
+										sceneModuleUrl={config.sceneModuleUrl ?? null}
+										document={geometry}
+										poses={poses}
+										selected={selected}
+										select={select}
+										commit={commit}
+										disabled={blocked}
+									/>
 								) : (
 									<svg
 										className="sc-roof-board"
@@ -1069,9 +1194,7 @@ export function SolarInstallation({
 												points={roof.boundary_uv
 													.map((p) => p.join(","))
 													.join(" ")}
-												fill="#e2e8e5"
-												stroke="currentColor"
-												strokeWidth="0.03"
+												className="lp-roof-shape"
 												onClick={() => select(roof.id)}
 											/>
 										)}
@@ -1084,9 +1207,7 @@ export function SolarInstallation({
 													points={o.footprint_uv
 														.map((p) => p.join(","))
 														.join(" ")}
-													fill="#8b8178"
-													stroke="currentColor"
-													strokeWidth="0.03"
+													className="lp-obstacle-shape"
 													onClick={(e) => {
 														e.stopPropagation();
 														select(o.id);
@@ -1104,9 +1225,8 @@ export function SolarInstallation({
 													points={p.footprint_uv
 														.map((v) => v.join(","))
 														.join(" ")}
-													fill={selected === p.array_id ? "#087f73" : "#284a60"}
-													stroke="white"
-													strokeWidth="0.025"
+													className="lp-panel-shape"
+													data-selected={selected === p.array_id || undefined}
 													onClick={(e) => {
 														e.stopPropagation();
 														select(p.array_id);
@@ -1120,9 +1240,7 @@ export function SolarInstallation({
 													cx={u}
 													cy={v}
 													r={Math.max(width, depth) * 0.012}
-													fill="white"
-													stroke="currentColor"
-													strokeWidth=".025"
+													className="sc-roof-vertex"
 													onPointerDown={(e) =>
 														startDrag(e, roof.id, "vertex", index)
 													}
@@ -1305,6 +1423,47 @@ export function SolarInstallation({
 								: __("Solar capacity not entered", "linker-tools")}
 					</p>
 				</div>
+				{geometryImport && (
+					<GeometryIntake
+						geometry={geometry}
+						projectId={geometryImport.projectId}
+						session={session}
+						client={client}
+						locale={config.locale}
+						recheck={geometryImport.recheck}
+						disabled={blocked || tool !== "select"}
+						onActivity={geometryImport.onActivity}
+						attach={(before, asset) => {
+							try {
+								if (
+									!edit((current) =>
+										attachGeometryImport(
+											invalidateEnergyReplay(current),
+											before,
+											asset,
+										),
+									)
+								)
+									return false;
+							} catch {
+								return false;
+							}
+							setMode("roof");
+							select(asset.geometry.roofs[0]!.id);
+							return true;
+						}}
+						currentAssetIds={Object.values(
+							readGeometryImports(inputs.geometry_imports).selected,
+						)}
+						confirmedAssetIds={Object.values(
+							readGeometryImports(
+								geometryImport.confirmedInputs.geometry_imports,
+							).selected,
+						)}
+						recoveryScopes={geometryImport.recoveryScopes}
+						recoveryChecking={geometryImport.recoveryChecking}
+					/>
+				)}
 				{error && <p role="alert">{error}</p>}
 				<footer className="sc-next">
 					<button type="button" onClick={next}>

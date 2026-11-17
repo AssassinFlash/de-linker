@@ -547,7 +547,7 @@ export default function SceneViewport(props: SceneProps) {
 		const style = getComputedStyle(host.current),
 			token = (name: string) => style.getPropertyValue(name).trim();
 		setPalette({
-			roof: token("--proto-neutral-300"),
+			roof: token("--proto-neutral-500"),
 			module: token("--proto-teal-900"),
 			selected: token("--proto-teal-400"),
 			obstacle: token("--proto-neutral-600"),

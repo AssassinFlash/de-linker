@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import React, { act, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
-import { setupDom, enter } from "./dom-fixture.mjs";
+import { setupDom, enter, until } from "./dom-fixture.mjs";
 import { emptyBrief } from "../src/domain/brief.ts";
 
 async function mount(
@@ -208,6 +208,19 @@ test("new roof interaction places moves rotates removes and undoes an actual mod
 	assert.equal(app.inputs.geometry.arrays.length, before);
 	await click("Undo");
 	assert.equal(app.inputs.geometry.arrays.at(-1).id, added.id);
+	const layout = app.inputs.geometry;
+	const { register } = await import("node:module");
+	register("./scene-renderer-loader.mjs", import.meta.url);
+	const { behavior } = await import("./scene-renderer-three.mjs");
+	behavior.mode = "ready";
+	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+	t.after(() => delete globalThis.getComputedStyle);
+	await click("3D view");
+	await until(() => document.querySelector('[data-renderer="WebGL 2"]'));
+	assert.equal(document.querySelector(".sc-roof-board"), null);
+	await click("Plan view");
+	assert.ok(document.querySelector(".sc-roof-board"));
+	assert.equal(app.inputs.geometry, layout);
 	assert.deepEqual(
 		app.inputs.geometry.coordinate_system,
 		flat.coordinate_system,

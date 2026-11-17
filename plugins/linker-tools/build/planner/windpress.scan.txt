@@ -21,7 +21,6 @@ lp-comparison-detail
 lp-comparison-main
 lp-comparison-sidebar
 lp-comparison-variants
-lp-current-configuration
 lp-data-table
 lp-design-canvas
 lp-design-empty
@@ -250,6 +249,7 @@ sc-roof-board
 sc-roof-layout
 sc-roof-props
 sc-roof-tools
+sc-roof-vertex
 sc-section-head
 sc-sidebar
 sc-solar

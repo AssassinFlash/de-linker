@@ -35,6 +35,7 @@ import {
 	isDirty,
 	keepLocalAgainst,
 	undoDraft,
+	redoDraft,
 	projectInputContract,
 	sameJson,
 	useRemote,
@@ -151,8 +152,9 @@ export default function Configurator({
 		["energy", "solar"].includes(initialStep()),
 	);
 	const [roofEditing, setRoofEditing] = useState(false);
+	const [importOpen, setImportOpen] = useState(false);
 	const [navigationRefused, setNavigationRefused] = useState(false);
-	const navigationBlocked = !energyValid || roofEditing;
+	const navigationBlocked = !energyValid || roofEditing || importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		if (!navigationBlocked) return true;
@@ -615,6 +617,18 @@ export default function Configurator({
 					</button>
 					<button
 						className="sc-button"
+						disabled={
+							controller.busy ||
+							navigationBlocked ||
+							Boolean(draft.pending || draft.conflict) ||
+							!draft.history.future.length
+						}
+						onClick={() => update(redoDraft)}
+					>
+						{__("Redo", "linker-tools")}
+					</button>
+					<button
+						className="sc-button"
 						disabled={controller.busy || navigationBlocked}
 						onClick={() => void controller.save()}
 					>
@@ -650,7 +664,7 @@ export default function Configurator({
 			</nav>
 			{navigationRefused && navigationBlocked && (
 				<p role="alert">
-					{roofEditing
+					{roofEditing || importOpen
 						? __(
 								"Finish or cancel roof editing before leaving this workspace.",
 								"linker-tools",
@@ -811,6 +825,14 @@ export default function Configurator({
 							next={() => navigate("energy")}
 							initialMap={mapPropertyLinks.has(location.hash)}
 							onEditing={setRoofEditing}
+							geometryImport={{
+								projectId: project.id,
+								recheck,
+								confirmedInputs: draft.baseline.inputs,
+								onActivity: setImportOpen,
+								recoveryScopes,
+								recoveryChecking,
+							}}
 						/>
 					)}
 					{(energyOpened || activeStep === "energy") && (

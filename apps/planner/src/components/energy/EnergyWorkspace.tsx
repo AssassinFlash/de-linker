@@ -1,5 +1,4 @@
 import { SolarEnergySetup } from "./SolarEnergySetup.tsx";
-import { ProjectEnergyDemand } from "./ProjectEnergyDemand.tsx";
 import {
 	PLANT_ENERGY_TASK,
 	DC_PLANT_ENERGY_TASK,
@@ -164,7 +163,6 @@ export function EnergyWorkspace({
 	openProfiles,
 	openDesign,
 	equipmentFocus = false,
-	demandFocus = false,
 	openEquipment,
 	openResults,
 	sceneModuleUrl = null,
@@ -189,7 +187,6 @@ export function EnergyWorkspace({
 	openProfiles: () => void;
 	openDesign?: () => void;
 	equipmentFocus?: boolean;
-	demandFocus?: boolean;
 	openEquipment?: () => void;
 	openResults?: () => void;
 	sceneModuleUrl?: string | null;
@@ -1187,37 +1184,6 @@ export function EnergyWorkspace({
 				if (instance === lifetime.current) setRangeBusy(false);
 			}
 		}
-	}
-	if (demandFocus && !joint && !pvOnly && setup) {
-		return (
-			<section className="lp-section lp-energy-workspace">
-				<ProjectEnergyDemand
-					inputs={draft.history.current}
-					scenario={setup}
-					locale={locale}
-					disabled={
-						blocked ||
-						operations.busy ||
-						operations.checking ||
-						operations.storageFailed ||
-						unconfirmed.length > 0 ||
-						Boolean(draft.pending || draft.conflict) ||
-						!admitted
-					}
-					edit={edit}
-					changeScenario={change}
-					compare={() => void submitEquipment("runs/find-equipment")}
-					onValidity={setScenarioValid}
-				/>
-				{Boolean(actionError) && (
-					<EnergyError
-						error={actionError}
-						openEquipment={showEquipment}
-						openScenario={() => chooseView("scenario")}
-					/>
-				)}
-			</section>
-		);
 	}
 	return (
 		<section

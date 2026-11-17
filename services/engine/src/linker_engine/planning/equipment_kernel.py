@@ -133,7 +133,9 @@ class EquipmentKernel:
     def requires_woo_basis(self, inputs: Object) -> bool:
         return True
 
-    def compute(self, inputs: Object, basis: Object, control: Control, *, pinned: Object) -> Object:
+    def compute(
+        self, inputs: Object, basis: Object, control: Control, *, pinned: Object
+    ) -> Object:
         if "equipment_plant" in inputs:
             from .plant_assessment import assess_plant
 
