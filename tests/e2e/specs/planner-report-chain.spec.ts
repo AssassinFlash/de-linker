@@ -444,7 +444,7 @@ for (const lang of ['en', 'de'] as const) {
 		await chapter('lp-site');
 		const site = page.locator('#lp-site');
 		await site
-			.getByLabel(words.country, { exact: true })
+			.getByRole('combobox', { name: words.country, exact: true })
 			.selectOption('DE');
 		await site
 			.getByLabel(words.address, { exact: true })
@@ -594,35 +594,59 @@ for (const lang of ['en', 'de'] as const) {
 				})
 				.click();
 			await profiles
-				.getByLabel(words.timestampColumn, { exact: true })
+				.getByRole('combobox', {
+					name: words.timestampColumn,
+					exact: true,
+				})
 				.selectOption({ label: 'timestamp' });
 			await profiles
-				.getByLabel(words.valueColumn, { exact: true })
+				.getByRole('combobox', { name: words.valueColumn, exact: true })
 				.selectOption({ label: 'power' });
 			await profiles
-				.getByLabel(words.measurementPoint, { exact: true })
+				.getByRole('combobox', {
+					name: words.measurementPoint,
+					exact: true,
+				})
 				.selectOption({ label: measurement });
 			await profiles
-				.getByLabel(words.valueMeaning, { exact: true })
+				.getByRole('combobox', {
+					name: words.valueMeaning,
+					exact: true,
+				})
 				.selectOption({ label: words.avgPowerKw });
 			await profiles
-				.getByLabel(words.decimalSeparator, { exact: true })
+				.getByRole('combobox', {
+					name: words.decimalSeparator,
+					exact: true,
+				})
 				.selectOption({ label: words.pointDecimal });
 			await profiles
-				.getByLabel(words.sourceType, { exact: true })
+				.getByRole('combobox', { name: words.sourceType, exact: true })
 				.selectOption({ label: words.syntheticSource });
 			await profiles
-				.getByLabel(words.intervalBoundaries, { exact: true })
+				.getByRole('combobox', {
+					name: words.intervalBoundaries,
+					exact: true,
+				})
 				.selectOption({ label: words.timestampAndFixedDuration });
 			await profiles
-				.getByLabel(words.timestampIdentifies, { exact: true })
+				.getByRole('combobox', {
+					name: words.timestampIdentifies,
+					exact: true,
+				})
 				.selectOption('start');
 			await profiles.getByLabel(words.intervalDuration).fill('15');
 			await profiles
-				.getByLabel(words.sourceTimeZone, { exact: true })
+				.getByRole('combobox', {
+					name: words.sourceTimeZone,
+					exact: true,
+				})
 				.selectOption({ label: 'UTC' });
 			await profiles
-				.getByLabel(words.repeatedTimeColumn, { exact: true })
+				.getByRole('combobox', {
+					name: words.repeatedTimeColumn,
+					exact: true,
+				})
 				.selectOption({ label: words.notUsed });
 			await profiles
 				.getByLabel(words.sourceLabel, { exact: true })
@@ -664,10 +688,13 @@ for (const lang of ['en', 'de'] as const) {
 		await calculation.getByLabel(words.firstSourceYear).fill('2005');
 		await calculation.getByLabel(words.lastSourceYear).fill('2023');
 		await calculation
-			.getByLabel(words.expectedRadiationDatabase, { exact: true })
+			.getByRole('combobox', {
+				name: words.expectedRadiationDatabase,
+				exact: true,
+			})
 			.selectOption('PVGIS-SARAH3');
 		await calculation
-			.getByLabel(words.terrainHorizon, { exact: true })
+			.getByRole('combobox', { name: words.terrainHorizon, exact: true })
 			.selectOption('true');
 		await calculation
 			.getByLabel(words.syntheticCalculationYear)
@@ -715,7 +742,10 @@ for (const lang of ['en', 'de'] as const) {
 			}),
 		});
 		await arrayModel
-			.getByLabel(words.irradianceTransposition, { exact: true })
+			.getByRole('combobox', {
+				name: words.irradianceTransposition,
+				exact: true,
+			})
 			.selectOption('isotropic');
 		for (const [label, value] of [
 			[words.groundReflectance, '20'],
@@ -795,10 +825,13 @@ for (const lang of ['en', 'de'] as const) {
 			.getByRole('button', { name: words.singleSystem, exact: true })
 			.click();
 		await equipment
-			.getByLabel(words.chooseAnOperatingMode, { exact: true })
+			.getByRole('combobox', {
+				name: words.chooseAnOperatingMode,
+				exact: true,
+			})
 			.selectOption('grid_connected');
 		await equipment
-			.getByLabel(words.gridConnection, { exact: true })
+			.getByRole('combobox', { name: words.gridConnection, exact: true })
 			.selectOption('1');
 		await equipment.getByLabel(words.pvArrayKwp).fill('8');
 		const requirements = await openDetails(
@@ -842,10 +875,10 @@ for (const lang of ['en', 'de'] as const) {
 		const manual = await openDetails(
 			equipment.getByText(words.chooseEquipmentManually, { exact: true })
 		);
-		const inverterSelect = manual.getByLabel(
-			words.inverterOrIntegratedStorageSystem,
-			{ exact: true }
-		);
+		const inverterSelect = manual.getByRole('combobox', {
+			name: words.inverterOrIntegratedStorageSystem,
+			exact: true,
+		});
 		await expect(inverterSelect.locator('option')).not.toHaveCount(1, {
 			timeout: 60_000,
 		});
@@ -929,7 +962,7 @@ for (const lang of ['en', 'de'] as const) {
 		const scenario = calculation.locator('fieldset.lp-brief-fields');
 		await expect(scenario).toBeVisible();
 		await scenario
-			.getByLabel(words.operatingGoal, { exact: true })
+			.getByRole('combobox', { name: words.operatingGoal, exact: true })
 			.selectOption('self');
 		const storage = await openDetails(
 			scenario.getByText(words.storageParameters, { exact: true })
@@ -972,23 +1005,26 @@ for (const lang of ['en', 'de'] as const) {
 			period.getByLabel(words.endWithUtc, { exact: true })
 		).toHaveValue(/^2026-01-31T00:00:00(?:\.0+)?(?:Z|\+00:00)$/);
 		await period
-			.getByLabel(words.gridCondition, { exact: true })
+			.getByRole('combobox', { name: words.gridCondition, exact: true })
 			.selectOption('connected');
 		await period.getByLabel(words.reservedStoredEnergy).fill('0');
 		await period
-			.getByLabel(words.pvAvailable, { exact: true })
+			.getByRole('combobox', { name: words.pvAvailable, exact: true })
 			.selectOption('true');
 		await period
-			.getByLabel(words.gridCharging, { exact: true })
+			.getByRole('combobox', { name: words.gridCharging, exact: true })
 			.selectOption('false');
 		await period
-			.getByLabel(words.gridImportLimit, { exact: true })
+			.getByRole('combobox', { name: words.gridImportLimit, exact: true })
 			.selectOption('unlimited');
 		await period
-			.getByLabel(words.gridExportLimit, { exact: true })
+			.getByRole('combobox', { name: words.gridExportLimit, exact: true })
 			.selectOption('unlimited');
 		await scenario
-			.getByLabel(words.finalStoredEnergy, { exact: true })
+			.getByRole('combobox', {
+				name: words.finalStoredEnergy,
+				exact: true,
+			})
 			.selectOption('none');
 		await expect(
 			storage.getByLabel(words.sourceOrAssumptionForStorage, {
@@ -1056,7 +1092,10 @@ for (const lang of ['en', 'de'] as const) {
 			words.pvGeneration,
 			words.equipmentChecks,
 		]) {
-			const select = report.getByLabel(label, { exact: true });
+			const select = report.getByRole('combobox', {
+				name: label,
+				exact: true,
+			});
 			await expect(select.locator('option')).not.toHaveCount(1, {
 				timeout: 120_000,
 			});
