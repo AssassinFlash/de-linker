@@ -17,14 +17,7 @@ import type { DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { useProjectDraft } from "../data/useProjectDraft.ts";
 import { useProjectBar } from "../data/useProjectBar.ts";
-import {
-	editDraft,
-	isDirty,
-	keepLocalAgainst,
-	redoDraft,
-	undoDraft,
-	useRemote,
-} from "../domain/draft.ts";
+import { editDraft, isDirty, redoDraft, undoDraft } from "../domain/draft.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { readSelections } from "../domain/profiles.ts";
 import { __, sprintf } from "../i18n.ts";
@@ -170,6 +163,7 @@ export function ProjectEditor({
 		recovered,
 		recoveries,
 		restore,
+		resolveConflict,
 	} = useProjectDraft(project, session, client, store, recheck);
 	// Map imagery is independent of postcode geocoding. A selected full address
 	// already has its exact centre stored in the brief.
@@ -835,13 +829,15 @@ export function ProjectEditor({
 							<div className="lp-inline-actions">
 								<button
 									className="lp-button"
-									onClick={() => update(keepLocalAgainst)}
+									disabled={busy}
+									onClick={() => void resolveConflict("local")}
 								>
 									{__("Keep open changes", "linker-tools")}
 								</button>
 								<button
 									className="lp-button lp-button-secondary"
-									onClick={() => update(useRemote)}
+									disabled={busy}
+									onClick={() => void resolveConflict("saved")}
 								>
 									{__("Use saved revision", "linker-tools")}
 								</button>

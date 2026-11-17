@@ -38,12 +38,10 @@ import {
 import {
 	editDraft,
 	isDirty,
-	keepLocalAgainst,
 	undoDraft,
 	redoDraft,
 	projectInputContract,
 	sameJson,
-	useRemote,
 } from "../../domain/draft.ts";
 import {
 	authoredDiscoveryInputs,
@@ -827,11 +825,16 @@ export default function Configurator({
 					<div className="sc-actions">
 						<button
 							className="sc-button"
-							onClick={() => update(keepLocalAgainst)}
+							disabled={controller.busy}
+							onClick={() => void controller.resolveConflict("local")}
 						>
 							{__("Keep my changes", "linker-tools")}
 						</button>
-						<button className="sc-button" onClick={() => update(useRemote)}>
+						<button
+							className="sc-button"
+							disabled={controller.busy}
+							onClick={() => void controller.resolveConflict("saved")}
+						>
 							{__("Use saved project", "linker-tools")}
 						</button>
 					</div>

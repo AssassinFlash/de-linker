@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { IDBFactory } from "fake-indexeddb";
+import { IDBFactory, IDBObjectStore } from "fake-indexeddb";
 import React, { act } from "react";
 import { setupDom, until } from "./dom-fixture.mjs";
 
-for (const { name, source, uncertain, changed } of [
+for (const { name, source, uncertain, changed, failure, copied } of [
 	{ name: "Prior scope: now-saved edits do not reappear", source: "prior" },
 	{ name: "Current scope: now-saved edits do not reappear", source: "current" },
 	{
@@ -27,6 +27,18 @@ for (const { name, source, uncertain, changed } of [
 		uncertain: true,
 		changed: true,
 	},
+	{
+		name: "Prior scope: an aborted resolution keeps the draft available for retry",
+		source: "prior",
+		uncertain: true,
+		failure: true,
+	},
+	{
+		name: "Prior scope: a conflict copied by an earlier editor is resolved on both opens",
+		source: "prior",
+		uncertain: true,
+		copied: true,
+	},
 ])
 	test(name, async (t) => {
 		const fixture = setupDom();
@@ -36,6 +48,7 @@ for (const { name, source, uncertain, changed } of [
 			await import("@tanstack/react-query");
 		const { default: Configurator } =
 			await import("../src/components/configurator/Configurator.tsx");
+		const { DraftStore } = await import("../src/data/DraftStore.ts");
 		const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 		const { emptyBrief } = await import("../src/domain/brief.ts");
 		const { beginDraft, editDraft, prepareSave } =
@@ -120,17 +133,19 @@ for (const { name, source, uncertain, changed } of [
 			},
 		});
 		await client.bootstrap();
-		const store = {
-			async read() {
-				return source === "current" ? previous : savedLocal;
-			},
-			async candidates(scope, authorized) {
-				assert.equal(scope, session.query_scope);
-				assert.equal(authorized, current);
-				return [{ scope: "c".repeat(64), draft: previous, updatedAt: 0 }];
-			},
-			async write() {},
-		};
+		const priorScope = "c".repeat(64);
+		const store = new DraftStore();
+		await store.write(
+			session.query_scope,
+			source === "current"
+				? previous
+				: copied
+					? { ...previous, conflict: current }
+					: savedLocal,
+		);
+		const unrelated = { ...old, id: "9".repeat(32) };
+		if (source !== "current") await store.write(priorScope, previous);
+		await store.write(priorScope, beginDraft(unrelated));
 		const cache = new QueryClient({
 			defaultOptions: { queries: { retry: false } },
 		});
@@ -140,23 +155,28 @@ for (const { name, source, uncertain, changed } of [
 			cache.clear();
 			delete globalThis.indexedDB;
 		});
-		await act(async () =>
-			root.render(
-				React.createElement(
-					QueryClientProvider,
-					{ client: cache },
-					React.createElement(Configurator, {
-						project: current,
-						session,
-						client,
-						store,
-						config: { locale: "en-GB", countries: { NO: "Norway" } },
-						recheck: () => assert.fail("unexpected identity failure"),
-						close: () => true,
-					}),
+		const open = (drafts) =>
+			act(async () =>
+				root.render(
+					React.createElement(
+						QueryClientProvider,
+						{ client: cache },
+						React.createElement(Configurator, {
+							project: current,
+							session,
+							client,
+							store: drafts,
+							config: { locale: "en-GB", countries: { NO: "Norway" } },
+							recheck: () => assert.fail("unexpected identity failure"),
+							close: () => {
+								root.render(null);
+								return true;
+							},
+						}),
+					),
 				),
-			),
-		);
+			);
+		await open(store);
 		const field = () => document.querySelector('[name="location_label"]');
 		const button = (text) =>
 			[...document.querySelectorAll("button")].find(
@@ -173,7 +193,7 @@ for (const { name, source, uncertain, changed } of [
 			assert.ok(status("Saved · revision 2"));
 			assert.equal(status("Unsaved changes"), false);
 			assert.equal(button("Restore local changes"), undefined);
-			assert.equal(button("Keep my changes"), undefined);
+			assert.equal(Boolean(button("Keep my changes")), false);
 			assert.equal(button("Retry save"), undefined);
 			await act(async () => button("Save snapshot").click());
 			assert.deepEqual(saves, []);
@@ -190,16 +210,63 @@ for (const { name, source, uncertain, changed } of [
 		} else {
 			assert.ok(button("Use saved project"));
 			assert.equal(button("Save snapshot").disabled, true);
-			if (!changed) {
+			if (failure) {
+				const deletion = IDBObjectStore.prototype.delete;
+				const abort = t.mock.method(
+					IDBObjectStore.prototype,
+					"delete",
+					function (key) {
+						const request = deletion.call(this, key);
+						if (key === priorScope + ":" + current.id) this.transaction.abort();
+						return request;
+					},
+				);
 				await act(async () => button("Use saved project").click());
-				assert.ok(status("Saved · revision 2"));
-				assert.equal(button("Keep my changes"), undefined);
-				assert.deepEqual(saves, []);
-				return;
+				await until(() =>
+					document.body.textContent.includes(
+						"The project could not be saved or recovered.",
+					),
+				);
+				assert.equal(button("Use saved project")?.disabled, false);
+				assert.equal(
+					(await store.read(priorScope, current.id))?.pending?.body,
+					previous.pending.body,
+				);
+				assert.deepEqual(
+					await store.read(session.query_scope, current.id),
+					savedLocal,
+				);
+				abort.mock.restore();
 			}
-			await act(async () => button("Keep my changes").click());
-			assert.equal(field().value, "Local workshop");
-			assert.ok(status("Unsaved changes"));
+			await act(async () =>
+				button(changed ? "Keep my changes" : "Use saved project").click(),
+			);
+			await until(() =>
+				status(changed ? "Unsaved changes" : "Saved · revision 2"),
+			);
+			await act(async () => button("Projects").click());
+			await until(() => !field());
+			const reopenedStore = new DraftStore();
+			await open(reopenedStore);
+			await until(field);
+			assert.equal(Boolean(button("Keep my changes")), false);
+			assert.equal(
+				field().value,
+				changed ? "Local workshop" : "Saved workshop",
+			);
+			assert.ok(status(changed ? "Unsaved changes" : "Saved · revision 2"));
+			assert.deepEqual(saves, []);
+			await act(async () => {
+				assert.deepEqual(
+					(await reopenedStore.read(priorScope, unrelated.id))?.baseline,
+					unrelated,
+				);
+				assert.deepEqual(
+					await reopenedStore.candidates(session.query_scope, current),
+					[],
+				);
+			});
+			if (!changed) return;
 			await act(async () => button("Save snapshot").click());
 			await until(() => status("Saved · revision 3"));
 			assert.equal(saves.length, 1);
