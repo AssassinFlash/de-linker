@@ -54,7 +54,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
         owner, "Two PV inverters, no storage", {"brief": brief}, key="pv-only-plant"
     )
     profiles = {
-        role: add_profile(workspace, owner, project.id, role, values)
+        role: add_profile(workspace, owner, project.id, mapping_role(role), values)
         for role, values in (
             ("gross_load", (1, 1)),
             ("pv_available_ac", (2, 0)),
@@ -272,11 +272,11 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
         assert "contains no battery storage" in energy_section["paragraphs"][0]
         assert "individual storage units" not in " ".join(energy_section["paragraphs"])
         assert "storage converters" not in " ".join(energy_section["paragraphs"])
-        frozen_report = json_object(
-            workspace.blobs.object(
-                completed.manifest["context"]["assets"]["report.source"]
-            )
-        )
+        source_sha: str = json_object(
+            json_object(completed.manifest["context"])["assets"]
+        )["report.source"]
+        assert isinstance(source_sha, str)
+        frozen_report = json_object(workspace.blobs.object(source_sha))
         assert len(frozen_report["equipment_plant"]["units"]) == 2
         assert frozen_report["energy_scenario"]["units"] == []
         assert (

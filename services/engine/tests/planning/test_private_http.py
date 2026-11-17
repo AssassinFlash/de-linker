@@ -8,7 +8,7 @@ import json
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from typing import NoReturn, cast
 
 import pytest
 from conftest import publication_manifest
@@ -20,6 +20,7 @@ from linker_engine.planning import timezone_rules
 from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.commands import command_hash as canonical_command_hash
 from linker_engine.planning.csv_mapping import CsvMapping
+from linker_engine.planning.energy_inputs import EnergyInputs
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.execution_control import ExecutionControl
@@ -1555,7 +1556,7 @@ def test_calculated_report_keeps_resolved_basis_after_project_edits(rig: Rig) ->
     from linker_engine.planning.report_inputs import ReportOptions
     from linker_engine.planning.report_kernel import ReportKernel, ReportService
 
-    def no_products() -> None:
+    def no_products() -> NoReturn:
         pytest.fail("isolated energy report must not require hardware")
 
     project_id = rig.create("calculated-report")
@@ -1610,8 +1611,11 @@ def test_calculated_report_keeps_resolved_basis_after_project_edits(rig: Rig) ->
     completed = rig.workspace.run(USER, report.id)
     assert completed.state == "succeeded", completed.error
     assert completed.is_current is False
-    source_sha = completed.manifest["context"]["assets"]["report.source"]
-    source = rig.workspace.blobs.object(source_sha)
+    source_sha: str = json_object(json_object(completed.manifest["context"])["assets"])[
+        "report.source"
+    ]
+    assert isinstance(source_sha, str)
+    source = json_object(rig.workspace.blobs.object(source_sha))
     assert source["energy_scenario"]["controller"] == "self_consumption_with_reserve_v1"
     assert source["energy"]["metrics"]["solar_load_kwh"] == pytest.approx(3.62)
     assert source["source_runs"][0]["run_id"] == reply["run"]["id"]
@@ -1753,7 +1757,7 @@ def test_calculate_keeps_frozen_inputs_after_edits_and_rejects_foreign_writers(
 
     project_id = rig.create("calculate-frozen")
     inputs = authored_energy(rig, project_id)
-    command = {
+    command: FixtureObject = {
         "schema_version": 1,
         "project_id": project_id,
         "expected_revision": 1,
@@ -1786,8 +1790,9 @@ def test_calculate_keeps_frozen_inputs_after_edits_and_rejects_foreign_writers(
     completed = rig.post("/runs/read", {"run_id": first["run"]["id"]})
     assert completed["state"] == "succeeded", completed
     side = comparison_side(rig.workspace, USER, project_id, str(completed["id"]))
+    assert isinstance(side.scenario, EnergyInputs)
     assert side.scenario.initial_inventory.energy().total == 0
-    assert side.inputs["energy_scenario"]["battery"]["eta_charge"] == 0.9
+    assert json_object(side.inputs["energy_scenario"])["battery"]["eta_charge"] == 0.9
     assert "energy_replay" in side.inputs
     retried = rig.post("/runs/calculate", command)
     assert retried["project"] == first["project"]

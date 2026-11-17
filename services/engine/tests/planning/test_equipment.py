@@ -23,7 +23,7 @@ from conftest import (
 from fastapi.testclient import TestClient
 
 from linker_engine.engine import Engine
-from linker_engine.planning.canonical import digest, encode
+from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.dc_energy_parameters import DcLossScenario
 from linker_engine.planning.energy_equipment import assess_energy_equipment
 from linker_engine.planning.energy_inputs import BatteryParameters
@@ -3191,7 +3191,7 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         for key, value in inputs(feed, 3)["equipment_selection"].items()
         if key != "product_revisions"
     }
-    authored = {
+    authored: FixtureObject = {
         "equipment_plant_setup": {
             "schema_version": 1,
             "requirements": {
@@ -3942,7 +3942,7 @@ def test_prepared_search_preserves_unknown_and_zero_storage_lower_bounds(
         equipment_search=search,
         product_provider=lambda: shared,
     )
-    requirements = {
+    requirements: Object = {
         "schema_version": 1,
         "grid_phase": 3,
         "operating_mode": "grid_connected",

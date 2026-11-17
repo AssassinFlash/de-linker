@@ -1,3 +1,4 @@
+import pvOnlyPlantJson from "../../tests/fixtures/plant-pv-only-energy-run.json" with { type: "json" };
 import { readEquipmentAssessment } from "./readEquipmentResult.ts";
 import { readDcParameters } from "../domain/dcEnergy.ts";
 import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
@@ -103,6 +104,91 @@ test("a frozen report names its language when it differs from the site", () => {
 	assert.equal(reportLanguageDiffers("en", "en-US"), false);
 	assert.equal(reportLanguageDiffers("de", "de-DE-formal"), false);
 });
+
+test("native PV-only plant result retains two real inverters and an explicit empty storage scope", () => {
+	const run = readRun(
+		pvOnlyPlantJson.run,
+		pvOnlyPlantJson.project.id,
+		undefined,
+		"single_ac_energy_replay_v1",
+	);
+	const result = readObject(run.result);
+	assert.equal(
+		(readObject(readObject(result.equipment_binding).plant).units as unknown[])
+			.length,
+		2,
+	);
+	assert.deepEqual(readObject(result.model).units, []);
+	assert.deepEqual(result.parameter_sources, { units: [], pool: {} });
+	assert.deepEqual(readObject(result.metrics).units, []);
+	assert.equal(readObject(result.metrics).pv_generated_ac_kwh, 2);
+	assert.equal(readObject(result.metrics).solar_load_kwh, 1);
+	assert.equal(readObject(result.metrics).grid_import_kwh, 1);
+	assert.equal(readObject(result.metrics).pv_export_kwh, 1);
+});
+
+test("empty storage metadata requires the native no-storage boundary and never disguises real battery units", () => {
+	for (const markedNoStorage of [false, true]) {
+		const corrupt = readObject(structuredClone(plantAcRunJson.run));
+		const result = readObject(corrupt.result),
+			model = readObject(result.model);
+		result.parameter_sources = { units: [], pool: {} };
+		model.units = [];
+		readObject(result.metrics).units = [];
+		if (markedNoStorage)
+			model.pv_boundary =
+				"available_ac_generation_at_common_connection; no_storage";
+		readObject(result.equipment_binding).scenario_model = model;
+		assert.throws(() => readRun(corrupt, corrupt.project_id as string));
+	}
+	const corrupt = readObject(structuredClone(pvOnlyPlantJson.run));
+	const result = readObject(corrupt.result),
+		model = readObject(result.model);
+	model.pv_boundary =
+		"independent_ac_generation; converter_dc_pv_inputs_unused";
+	readObject(result.equipment_binding).scenario_model = model;
+	assert.throws(() => readRun(corrupt, pvOnlyPlantJson.project.id));
+});
+
+for (const mutation of [
+	"selected_battery",
+	"battery_counts",
+	"parameter_pool",
+	"model_unit",
+	"metric_unit",
+	"battery_pins",
+	"hardware_evidence",
+] as const) {
+	test(`native PV-only marker rejects contradictory ${mutation}`, () => {
+		const corrupt = readObject(structuredClone(pvOnlyPlantJson.run));
+		const result = readObject(corrupt.result),
+			binding = readObject(result.equipment_binding);
+		const units = readObject(binding.plant).units as JsonObject[];
+		if (mutation === "selected_battery")
+			readObject(units[0]).selection =
+				plantAcRunJson.project.inputs.equipment_plant.units[0]!.selection;
+		if (mutation === "battery_counts")
+			readObject(readObject(units[0]).selection).modules_per_stack = 1;
+		if (mutation === "parameter_pool")
+			readObject(readObject(result.parameter_sources).pool)["f".repeat(64)] =
+				{};
+		if (mutation === "model_unit")
+			readObject(result.model).units = [{ unit_id: "a" }];
+		if (mutation === "metric_unit")
+			readObject(result.metrics).units = [{ unit_id: "a" }];
+		if (mutation === "battery_pins") {
+			const pins = {
+				...readObject(result.pinned_assets),
+				"unit:a:battery.raw": "f".repeat(64),
+			};
+			result.pinned_assets = pins;
+			readObject(readObject(corrupt.manifest).context).assets = pins;
+		}
+		if (mutation === "hardware_evidence")
+			readObject(binding.assessment).selected_products = [];
+		assert.throws(() => readRun(corrupt, pvOnlyPlantJson.project.id));
+	});
+}
 
 for (const plantRunJson of [plantAcRunJson, dcPlantRunJson]) {
 	test(`native joint result retains named parameter proofs, unit trace and the shared report consumer: ${plantRunJson.run.result.kind}`, () => {

@@ -6,6 +6,10 @@ import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 import { emptyScenario } from "../src/domain/energyScenario.ts";
 import { SimpleEnergySetup } from "../src/components/energy/SimpleEnergySetup.tsx";
+import pvOnlyPlantFixture from "./fixtures/plant-pv-only-energy-run.json" with { type: "json" };
+import { readRun } from "../src/data/planningProtocol.ts";
+import { PlantParameterBasis } from "../src/components/energy/PlantParameterBasis.tsx";
+import { RunResult } from "../src/components/energy/RunResult.tsx";
 import { RunBasis } from "../src/components/energy/RunBasis.tsx";
 import energyInputs from "./fixtures/energy-inputs.json" with { type: "json" };
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
@@ -27,8 +31,59 @@ import selections from "./fixtures/energy-selections.json" with { type: "json" }
 import actualRun from "./fixtures/energy-run.json" with { type: "json" };
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
 
-for (const joint of [false, true]) {
-	test(`${joint ? "plant" : "single"} source details read the run's frozen inputs and retain owned source hash checks`, async (t) => {
+test("native PV-only plant parameter presentation explicitly has no battery sources", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const run = readRun(pvOnlyPlantFixture.run, pvOnlyPlantFixture.project.id);
+	await act(async () =>
+		root.render(
+			React.createElement(PlantParameterBasis, {
+				result: run.result,
+				locale: "en-GB",
+			}),
+		),
+	);
+	assert.match(dom.element.textContent, /No battery parameters are used/);
+	assert.doesNotMatch(
+		dom.element.textContent,
+		/Connected battery port|Usable storage capacity|Charge efficiency/,
+	);
+	assert.equal(dom.element.querySelector("details"), null);
+});
+
+test("native PV-only plant result shows PV and grid flows without an empty storage table", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const run = readRun(pvOnlyPlantFixture.run, pvOnlyPlantFixture.project.id);
+	await act(async () =>
+		root.render(
+			React.createElement(RunResult, {
+				run,
+				locale: "en-GB",
+				dirty: false,
+				confirmedRevision: run.revision,
+			}),
+		),
+	);
+	assert.match(dom.element.textContent, /Solar supplied to load/);
+	assert.match(dom.element.textContent, /Grid import/);
+	assert.match(dom.element.textContent, /no battery storage/);
+	assert.doesNotMatch(
+		dom.element.textContent,
+		/Stored energy by unit|Initial and final stored energy/,
+	);
+	assert.equal(run.result.equipment_binding.plant.units.length, 2);
+	assert.match(dom.element.textContent, /A · a/);
+	assert.match(dom.element.textContent, /B · b/);
+});
+
+for (const kind of ["single", "plant", "pv_only"]) {
+	const joint = kind !== "single";
+	test(`${kind} source details read the run's frozen inputs and retain owned source hash checks`, async (t) => {
 		const dom = setupDom();
 		const { createRoot } = await import("react-dom/client");
 		const root = createRoot(dom.element);
@@ -39,10 +94,18 @@ for (const joint of [false, true]) {
 			await dom.dispose(root);
 			queryClient.clear();
 		});
-		const run = joint ? plantFixture.run : actualRun;
-		const inputs = joint
-			? plantFixture.project.inputs
-			: { energy_replay: energyInputs };
+		const run =
+			kind === "pv_only"
+				? readRun(pvOnlyPlantFixture.run, pvOnlyPlantFixture.project.id)
+				: joint
+					? plantFixture.run
+					: actualRun;
+		const inputs =
+			kind === "pv_only"
+				? pvOnlyPlantFixture.execution_inputs
+				: joint
+					? plantFixture.project.inputs
+					: { energy_replay: energyInputs };
 		const selected = inputs[joint ? "energy_plant" : "energy_replay"];
 		const pins = run.manifest.context.assets;
 		const assets = new Map();
@@ -119,6 +182,25 @@ for (const joint of [false, true]) {
 			false,
 		);
 		assert.match(document.body.textContent, /Frozen gross_load/);
+		if (kind === "pv_only") {
+			assert.match(document.body.textContent, /Frozen pv_available_ac/);
+			assert.match(document.body.textContent, /No battery parameters are used/);
+			assert.doesNotMatch(
+				document.body.textContent,
+				/Each storage unit uses|Connected battery port|fixed internal energy window/,
+			);
+			assert.deepEqual(
+				requests
+					.filter((row) => row.path === "assets/read")
+					.map((row) => row.command.asset_id)
+					.sort(),
+				[
+					inputs.energy_plant.gross_load_asset_id,
+					inputs.energy_plant.pv_available_asset_id,
+					inputs.energy_plant.aux_ac_asset_id,
+				].sort(),
+			);
+		}
 	});
 }
 

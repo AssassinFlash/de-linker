@@ -22,6 +22,9 @@ import {
 } from "./readEnergyDetails.ts";
 import { verifyDcModel } from "./readDcEnergyModel.ts";
 
+export const PLANT_NO_STORAGE_BOUNDARY =
+	"available_ac_generation_at_common_connection; no_storage";
+
 /** Verify consumed identities and source bindings without recalculating physics. */
 export function readPlantEnergyResult(
 	result: JsonObject,
@@ -33,6 +36,7 @@ export function readPlantEnergyResult(
 		pinned = readObject(result.pinned_assets),
 		model = readObject(result.model);
 	const dc = result.kind === DC_PLANT_ENERGY_TASK;
+	const noStorage = !dc && model.pv_boundary === PLANT_NO_STORAGE_BOUNDARY;
 	require(
 		run.state === "succeeded" &&
 			hash(run.result_sha256) &&
@@ -57,7 +61,9 @@ export function readPlantEnergyResult(
 			model.pv_boundary ===
 				(dc
 					? "each_retained_group_assigned_once_at_its_DC_or_AC_stage"
-					: "independent_ac_generation; converter_dc_pv_inputs_unused") &&
+					: noStorage
+						? PLANT_NO_STORAGE_BOUNDARY
+						: "independent_ac_generation; converter_dc_pv_inputs_unused") &&
 			sameJson(pinned, context.assets) &&
 			Object.values(pinned).every(hash) &&
 			readObject(result.dependencies).energy_trace === result.trace_sha256,
@@ -78,6 +84,16 @@ export function readPlantEnergyResult(
 			sameJson(binding.scenario_model, model) &&
 			binding.performance_status === "not_established_by_scenario_envelope",
 	);
+	const storageUnits = noStorage ? [] : plant.units;
+	if (noStorage)
+		require(
+			plant.units.every(
+				({ selection }) =>
+					selection.battery_product_id === null &&
+					selection.modules_per_stack === null &&
+					selection.parallel_stacks === null,
+			),
+		);
 	const revisions = new Map<number, string>();
 	for (const unit of plant.units)
 		for (const [id, revision] of Object.entries(
@@ -100,19 +116,25 @@ export function readPlantEnergyResult(
 	}
 	const sources = readObject(result.parameter_sources),
 		pool = readObject(sources.pool);
+	if (noStorage)
+		require(
+			Object.keys(pool).length === 0 &&
+				!Object.keys(pinned).some((key) => /^unit:[^:]+:battery\./.test(key)),
+		);
 	require(
 		Array.isArray(sources.units) &&
 			Array.isArray(model.units) &&
-			sources.units.length === plant.units.length &&
-			model.units.length === plant.units.length,
+			sources.units.length === storageUnits.length &&
+			model.units.length === storageUnits.length,
 	);
 	const parameterUnits = sources.units as readonly JsonObject[],
 		unitModels = model.units as readonly JsonObject[];
 	require(
-		new Set(parameterUnits.map((u) => u.unit_id)).size === plant.units.length &&
-			new Set(unitModels.map((u) => u.unit_id)).size === plant.units.length,
+		new Set(parameterUnits.map((u) => u.unit_id)).size ===
+			storageUnits.length &&
+			new Set(unitModels.map((u) => u.unit_id)).size === storageUnits.length,
 	);
-	for (const unit of plant.units) {
+	for (const unit of storageUnits) {
 		const entry = parameterUnits.find((u) => u.unit_id === unit.id),
 			unitModel = unitModels.find((u) => u.unit_id === unit.id),
 			prefix = `unit:${unit.id}:battery.`;
@@ -183,9 +205,9 @@ export function readPlantEnergyResult(
 	const metrics = readObject(result.metrics);
 	require(
 		Array.isArray(metrics.units) &&
-			metrics.units.length === plant.units.length &&
+			metrics.units.length === storageUnits.length &&
 			new Set(metrics.units.map((u) => readObject(u).unit_id)).size ===
-				plant.units.length,
+				storageUnits.length,
 	);
 	for (const raw of metrics.units) {
 		const unit = readObject(raw);
@@ -201,7 +223,7 @@ export function readPlantEnergyResult(
 			])
 				require(number(unit[name]));
 		require(
-			plant.units.some((u) => u.id === unit.unit_id) &&
+			storageUnits.some((u) => u.id === unit.unit_id) &&
 				number(unit.usable_window_kwh) &&
 				number(unit.charge_ac_kwh) &&
 				number(unit.discharge_ac_kwh),

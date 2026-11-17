@@ -50,8 +50,9 @@ const WORDS = {
 		energyCalculation: 'Energy calculation',
 		expectedRadiationDatabase: 'Expected radiation database',
 		firstSourceYear: 'First source year',
-		furtherAssessmentOfTheComplete:
+		equipmentScope:
 			'Further assessment of the complete system is required.',
+		reportScope: 'It does not approve the complete installation.',
 		generatePlanningReport: 'Generate planning report',
 		gridCharging: 'Grid charging allowed',
 		gridCondition: 'Grid condition',
@@ -119,6 +120,7 @@ const WORDS = {
 		useTheSharedProfileRange: 'Use the shared profile range',
 		useThisProfileInThe: 'Use this profile in the open draft',
 		useThisWeatherSource: 'Use this weather source',
+		useThisPvProfile: 'Use this PV profile',
 		valueColumn: 'Value column',
 		valueMeaning: 'Value meaning and unit',
 		viewSolutionDraft: 'View solution draft',
@@ -210,8 +212,8 @@ const WORDS = {
 		energyCalculation: 'Energieberechnung',
 		expectedRadiationDatabase: 'Erwartete Strahlungsdatenbank',
 		firstSourceYear: 'Erstes Jahr des Quellzeitraums',
-		furtherAssessmentOfTheComplete:
-			'Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden.',
+		equipmentScope: 'Die Gesamtanlage muss noch weiter geprüft werden.',
+		reportScope: 'Der Bericht erteilt keine Freigabe für die Gesamtanlage.',
 		generatePlanningReport: 'Planungsbericht erstellen',
 		gridCharging: 'Laden aus dem Netz freigegeben',
 		gridCondition: 'Netzzustand',
@@ -282,6 +284,7 @@ const WORDS = {
 		useTheSharedProfileRange: 'Gemeinsamen Profilzeitraum übernehmen',
 		useThisProfileInThe: 'Profil im offenen Projektentwurf verwenden',
 		useThisWeatherSource: 'Diese Wetterquelle verwenden',
+		useThisPvProfile: 'Dieses PV-Profil verwenden',
 		valueColumn: 'Wertespalte',
 		valueMeaning: 'Bedeutung und Einheit der Werte',
 		viewSolutionDraft: 'Lösungsentwurf ansehen',
@@ -696,9 +699,10 @@ for (const lang of ['en', 'de'] as const) {
 		await calculation
 			.getByRole('combobox', { name: words.terrainHorizon, exact: true })
 			.selectOption('true');
+		// Align the synthetic weather timeline with the imported 2026 load data.
 		await calculation
 			.getByLabel(words.syntheticCalculationYear)
-			.fill('2023');
+			.fill('2026');
 		await calculation
 			.getByRole('button', {
 				name: words.prepareWeatherSettings,
@@ -817,6 +821,17 @@ for (const lang of ['en', 'de'] as const) {
 			result.locator('.lp-run-heading [role="status"]')
 		).toHaveText(words.sourceReady, { timeout: 240_000 });
 
+		// Use the generated source in the energy calculation as well as its report.
+		await result
+			.getByRole('button', { name: words.useThisPvProfile, exact: true })
+			.click();
+		await expect(
+			result.getByRole('button', {
+				name: words.selectedInTheCurrentDraft,
+				exact: true,
+			})
+		).toBeDisabled();
+
 		// Keep the fixture's first real converter and its intentionally insufficient
 		// storage selection. The result must name that selection and its failed checks.
 		await chapter('lp-equipment');
@@ -921,10 +936,8 @@ for (const lang of ['en', 'de'] as const) {
 			.first();
 		await openDetails(arrayDetails.locator(':scope > summary'));
 		await arrayDetails
-			.getByRole('button', {
-				name: words.selectAllAvailableModules,
-				exact: true,
-			})
+			.getByRole('button')
+			.filter({ hasText: words.selectAllAvailableModules })
 			.click();
 		await strings
 			.getByRole('button', {
@@ -953,9 +966,7 @@ for (const lang of ['en', 'de'] as const) {
 		});
 		await expect(result).toContainText(selectedInverter);
 		await expect(result).toContainText(words.requirementsNotMet);
-		await expect(result).toContainText(
-			words.furtherAssessmentOfTheComplete
-		);
+		await expect(result).toContainText(words.equipmentScope);
 
 		// The compact form authors explicit independent-AC simulation assumptions.
 		await switchTab(words.scenarioSettings);
@@ -976,7 +987,11 @@ for (const lang of ['en', 'de'] as const) {
 			[words.internalAuxiliary, '0'],
 			[words.standingLoss, '0'],
 		] as const)
-			await storage.getByLabel(label).fill(value);
+			await storage
+				.getByRole('textbox', {
+					name: new RegExp('^' + label + '(?:\\s|$)'),
+				})
+				.fill(value);
 		const simulationNote =
 			'Declared independent-AC test simulation: 10 kWh, 5 kW each direction, 95% efficiencies, zero internal auxiliary and standing loss; not selected-product performance.';
 		await storage
@@ -1027,7 +1042,8 @@ for (const lang of ['en', 'de'] as const) {
 			})
 			.selectOption('none');
 		await expect(
-			storage.getByLabel(words.sourceOrAssumptionForStorage, {
+			scenario.getByRole('textbox', {
+				name: words.sourceOrAssumptionForStorage,
 				exact: true,
 			})
 		).toHaveValue(simulationNote);
@@ -1043,7 +1059,8 @@ for (const lang of ['en', 'de'] as const) {
 			.click();
 		await expect(calculation).toContainText(words.requestUnconfirmed);
 		await expect(
-			storage.getByLabel(words.sourceOrAssumptionForStorage, {
+			scenario.getByRole('textbox', {
+				name: words.sourceOrAssumptionForStorage,
 				exact: true,
 			})
 		).toHaveValue(simulationNote);
@@ -1121,9 +1138,7 @@ for (const lang of ['en', 'de'] as const) {
 		).toBeEnabled({ timeout: 120_000 });
 		await expect(result).toContainText(selectedInverter);
 		await expect(result).toContainText(words.requirementsNotMet);
-		await expect(result).toContainText(
-			words.furtherAssessmentOfTheComplete
-		);
+		await expect(result).toContainText(words.reportScope);
 		const pdf = await downloadedBytes(
 			page,
 			result.getByRole('button', { name: words.downloadPdf, exact: true })

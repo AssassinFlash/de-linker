@@ -142,6 +142,18 @@ msgstr "Geben Sie die Anzahl der parallelen Stacks oder Systeme ein."
 msgid "Review this equipment requirement and enter a valid value."
 msgstr "Prüfen Sie diese Geräteanforderung und geben Sie einen gültigen Wert ein."
 
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx build/planner/assets/planner.js:1
+msgid "No battery parameters are used in this PV-only calculation."
+msgstr "Für diese reine PV-Berechnung werden keine Batterieparameter verwendet."
+
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx build/planner/assets/planner.js:1
+msgid "This PV-only calculation includes no battery storage."
+msgstr "Diese reine PV-Berechnung umfasst keinen Batteriespeicher."
+
+#: ../../apps/planner/src/components/energy/RunBasis.tsx build/planner/assets/planner.js:1
+msgid "Available AC PV generation and site demand are evaluated at the common connection without battery storage. Import and export limits apply once at that connection."
+msgstr "Die verfügbare AC-PV-Erzeugung und der Standortbedarf werden ohne Batteriespeicher am gemeinsamen Anschlusspunkt bilanziert. Die Grenzen für Netzbezug und Einspeisung gelten für den gesamten Anschluss."
+
 #: ../../apps/planner/src/components/energy/SolarEnergySetup.tsx build/planner/assets/planner.js:1
 msgid "Solar-only energy flows"
 msgstr "Energieflüsse ohne Batteriespeicher"
@@ -10594,10 +10606,10 @@ msgstr "Berechnungen vergleichen"
 #: build/planner/assets/planner.js
 msgid ""
 "Assign the roof modules to strings and inverter inputs. The equipment check "
-"uses the saved wiring plan and product data."
+"uses the current wiring plan and product data."
 msgstr ""
 "Ordnen Sie die Dachmodule den Strings und Wechselrichtereingängen zu. Die "
-"Geräteprüfung verwendet den gespeicherten Verschaltungsplan und die "
+"Geräteprüfung verwendet den aktuellen Verschaltungsplan und die "
 "Produktdaten."
 
 #: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
@@ -10700,10 +10712,10 @@ msgstr "Verschaltungsplan entfernen"
 #: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
 #: build/planner/assets/planner.js
 msgid ""
-"Save the project, then check the equipment selection. Cold open-circuit "
+"Check equipment to assess this wiring plan. Cold open-circuit "
 "voltage and STC checks are shown separately from outstanding design checks."
 msgstr ""
-"Nach dem Speichern des Projekts kann die Geräteauswahl geprüft werden. "
+"Wählen Sie „Geräte prüfen“, um diesen Verschaltungsplan zu bewerten. "
 "Leerlaufspannung bei Kälte und STC-Prüfungen werden getrennt von den noch "
 "offenen Auslegungsprüfungen angezeigt."
 

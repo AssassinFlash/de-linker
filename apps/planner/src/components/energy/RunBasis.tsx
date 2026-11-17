@@ -1,3 +1,4 @@
+import { PLANT_NO_STORAGE_BOUNDARY } from "../../data/readPlantEnergyResult.ts";
 import {
 	isPlantEnergyTask,
 	readPlantEnergyInputs,
@@ -161,6 +162,7 @@ export function RunBasis({
 	if (!run.result) return null;
 	const dc = run.result.kind === DC_ENERGY_TASK;
 	const model = readObject(run.result.model),
+		noStorage = joint && model.pv_boundary === PLANT_NO_STORAGE_BOUNDARY,
 		periods = readObject(run.result.profile_interpretation)
 			.operating_periods as readonly JsonObject[];
 	const number = (value: unknown) =>
@@ -311,20 +313,25 @@ export function RunBasis({
 						/>
 					)}
 					<p>
-						{joint
+						{noStorage
 							? __(
-									"Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance.",
+									"Available AC PV generation and site demand are evaluated at the common connection without battery storage. Import and export limits apply once at that connection.",
 									"linker-tools",
 								)
-							: dc
+							: joint
 								? __(
-										"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+										"Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance.",
 										"linker-tools",
 									)
-								: __(
-										"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
-										"linker-tools",
-									)}
+								: dc
+									? __(
+											"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+											"linker-tools",
+										)
+									: __(
+											"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
+											"linker-tools",
+										)}
 					</p>
 					<div className="lp-table-scroll" tabIndex={0}>
 						<table>
