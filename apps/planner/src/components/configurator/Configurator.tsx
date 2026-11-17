@@ -45,6 +45,8 @@ import {
 } from "../../domain/draft.ts";
 import {
 	authoredDiscoveryInputs,
+	needsComparisonModels,
+	restoreComparisonModels,
 	sameEquipmentDemand,
 } from "../../domain/currentCalculation.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
@@ -266,6 +268,32 @@ export default function Configurator({
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
 	const adoptedRun = adoptedSearch.data ?? null;
+	const legacyModels = draft
+		? needsComparisonModels(draft.history.current)
+		: false;
+	const comparisonSource = useQuery({
+		queryKey: [
+			session.query_scope,
+			"configurator-comparison-models",
+			project.id,
+			selectedSearch,
+		],
+		enabled:
+			legacyModels &&
+			adoptedRun !== null &&
+			client.isCurrentScope(session.query_scope),
+		queryFn: async ({ signal }) =>
+			readRunInputs(
+				await client.query(
+					"runs/inputs",
+					{ schema_version: 1, project_id: project.id, run_id: adoptedRun!.id },
+					session.query_scope,
+					signal,
+				),
+				adoptedRun!,
+			),
+	});
+	const comparisonInputs = legacyModels ? comparisonSource.data : undefined;
 	const frozenSearch = adoptedRun?.result?.search
 		? readObject(adoptedRun.result.search)
 		: null;
@@ -296,6 +324,7 @@ export default function Configurator({
 	}
 	const blocked =
 		!admitted ||
+		(legacyModels && comparisonInputs === undefined) ||
 		recoveryChecking ||
 		recoveryFailed ||
 		controller.busy ||
@@ -319,11 +348,15 @@ export default function Configurator({
 				return false;
 			const next = update((previous) => {
 				const before = previous.history.current;
-				const after = operation(before);
+				const restored =
+					comparisonInputs && needsComparisonModels(before)
+						? restoreComparisonModels(before, comparisonInputs)
+						: before;
+				const after = operation(restored);
 				if (
 					after.equipment_candidate != null &&
 					sameJson(after.equipment_candidate, before.equipment_candidate) &&
-					!sameEquipmentDemand(before, after)
+					!sameEquipmentDemand(restored, after)
 				) {
 					const { equipment_candidate: _stale, ...inputs } = after;
 					return editDraft(previous, inputs);
@@ -333,7 +366,7 @@ export default function Configurator({
 			latest.current = next;
 			return next !== null;
 		},
-		[client, session.query_scope, update],
+		[client, comparisonInputs, session.query_scope, update],
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
@@ -457,7 +490,11 @@ export default function Configurator({
 				return;
 			if (!products.prepared)
 				throw new ApiError(409, "product_evidence_changed");
-			if (!sameEquipmentDemand(snapshot, frozen))
+			const authoredSnapshot =
+				comparisonInputs && needsComparisonModels(snapshot)
+					? restoreComparisonModels(snapshot, comparisonInputs)
+					: snapshot;
+			if (!sameEquipmentDemand(authoredSnapshot, frozen))
 				throw new ApiError(409, "equipment_selection_changed");
 			const choice = {
 				run_id: run.id,
@@ -467,7 +504,7 @@ export default function Configurator({
 			let next: JsonObject;
 			if (isPlantCandidate(candidate))
 				next = adoptPlantCandidate(
-					snapshot,
+					authoredSnapshot,
 					candidate.plant,
 					products.products,
 					choice,
@@ -616,7 +653,12 @@ export default function Configurator({
 		review: __("Review & share", "linker-tools"),
 	};
 	const failure =
-		error ?? operations.error ?? history.error ?? search.error ?? report.error;
+		(legacyModels ? (adoptedSearch.error ?? comparisonSource.error) : null) ??
+		error ??
+		operations.error ??
+		history.error ??
+		search.error ??
+		report.error;
 	const country = brief.site.country_code
 		? (config.countries[brief.site.country_code] ?? brief.site.country_code)
 		: "";
@@ -814,6 +856,18 @@ export default function Configurator({
 												)
 											: energyErrorText(failure)}
 					</p>
+					{legacyModels && (adoptedSearch.error || comparisonSource.error) && (
+						<button
+							className="sc-button"
+							onClick={() =>
+								void (adoptedSearch.error
+									? adoptedSearch.refetch()
+									: comparisonSource.refetch())
+							}
+						>
+							{__("Try again", "linker-tools")}
+						</button>
+					)}
 				</div>
 			)}
 			{(controller.failed ||
@@ -900,7 +954,11 @@ export default function Configurator({
 						<ProjectDetails
 							existingEquipment={
 								<ProjectEquipment
-									inputs={inputs}
+									inputs={
+										comparisonInputs
+											? restoreComparisonModels(inputs, comparisonInputs)
+											: inputs
+									}
 									client={client}
 									scope={session.query_scope}
 									disabled={blocked}

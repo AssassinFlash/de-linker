@@ -1,6 +1,8 @@
 import type { Json, JsonObject, Project } from "../data/protocol.ts";
 import type { Draft } from "./draft.ts";
 import { sameJson } from "./draft.ts";
+import { comparisonModels, equipmentDraft } from "./equipment.ts";
+import { hasPlant, readPlantDraft } from "./equipmentPlant.ts";
 
 const isObject = (value: unknown): value is JsonObject =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
@@ -123,6 +125,67 @@ export function authoredDiscoveryInputs(inputs: JsonObject): JsonObject {
 			),
 		};
 	return next;
+}
+
+/** Old adoption saved the recommended IDs in the editable equipment fields. */
+export function needsComparisonModels(inputs: JsonObject): boolean {
+	if (!inputs.equipment_candidate) return false;
+	if (!hasPlant(inputs))
+		return equipmentDraft(inputs).comparison_models === undefined;
+	const plant = readPlantDraft(inputs);
+	return (
+		plant.units.some(
+			(unit) => equipmentDraft(unit.inputs).comparison_models === undefined,
+		) ||
+		plant.parallel_groups.some(
+			(group) => group.comparison_controller_product_id === undefined,
+		)
+	);
+}
+
+export function restoreComparisonModels(
+	inputs: JsonObject,
+	searched: JsonObject,
+): JsonObject {
+	function restore(current: JsonObject, previous: JsonObject): JsonObject {
+		const setup = equipmentDraft(current);
+		return setup.comparison_models === undefined
+			? {
+					...current,
+					equipment_setup: {
+						...setup,
+						comparison_models: comparisonModels(equipmentDraft(previous)),
+					},
+				}
+			: current;
+	}
+	if (!hasPlant(inputs)) return restore(inputs, searched);
+	const plant = readPlantDraft(inputs);
+	const before = readPlantDraft(searched);
+	return {
+		...inputs,
+		equipment_plant_setup: {
+			...plant,
+			units: plant.units.map((unit) => {
+				const prior = before.units.find((row) => row.id === unit.id);
+				return prior
+					? { ...unit, inputs: restore(unit.inputs, prior.inputs) }
+					: unit;
+			}),
+			parallel_groups: plant.parallel_groups.map((group) => {
+				const prior = before.parallel_groups.find((row) => row.id === group.id);
+				if (!prior || group.comparison_controller_product_id !== undefined)
+					return group;
+				return {
+					...group,
+					comparison_controller_product_id:
+						prior.comparison_controller_product_id === undefined
+							? prior.controller_product_id
+							: prior.comparison_controller_product_id,
+				};
+			}),
+		},
+	};
 }
 
 /** Confirm the snapshot captured by Calculate, preserving edits made while

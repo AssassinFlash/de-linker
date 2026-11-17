@@ -235,6 +235,7 @@ async function equipmentApp(
 		findRefusal = null,
 		pvReference = null,
 		pvFailure = null,
+		legacyInputs = null,
 	},
 ) {
 	const fixture = setupDom();
@@ -294,13 +295,13 @@ async function equipmentApp(
 	const session = makeSession();
 	const requests = [];
 	const reads = [];
-	let frozenInputs = null;
+	let frozenInputs = legacyInputs;
 	let findAttempts = 0;
 	let lostReceipt = null;
 	let reportRun = null;
 	let pvRun = null,
 		pvAttempts = 0;
-	let serverRun = null,
+	let serverRun = legacyInputs ? makeRun(projectId, "succeeded") : null,
 		nextScope = session.query_scope,
 		admittedScope = session.query_scope;
 	const store = {
@@ -1272,6 +1273,73 @@ for (const [multi, selection] of [
 				battery_product_id: null,
 			});
 		}
+	});
+}
+
+for (const multi of [false, true]) {
+	test(`${multi ? "plant" : "single"} legacy equipment edit keeps the other comparison class open`, async (t) => {
+		const setup = { ...savedSetup, operating_mode: "grid_connected" };
+		const unit = (equipment) => ({
+			id: "main",
+			name: "Main",
+			inputs: { equipment_setup: equipment },
+		});
+		const declared = (equipment) =>
+			multi
+				? {
+						equipment_plant_setup: {
+							schema_version: 1,
+							requirements: { ...savedRequirements },
+							units: [unit(equipment)],
+							parallel_groups: [],
+						},
+					}
+				: { equipment_setup: equipment };
+		const legacy = declared(setup);
+		const adopted = declared({
+			...setup,
+			inverter_product_id: 101,
+			battery_product_id: 201,
+			modules_per_stack: 5,
+			parallel_stacks: 2,
+		});
+		const app = await equipmentApp(t, {
+			projectId: (multi ? "d" : "c").repeat(32),
+			hash: "#sc-project",
+			legacyInputs: legacy,
+			inputs: {
+				...adopted,
+				equipment_candidate: {
+					run_id: "7".repeat(32),
+					candidate_id: "c".repeat(64),
+					assessment_sha256: "d".repeat(64),
+				},
+			},
+		});
+		const field = () =>
+			app.fieldSelect("Inverter or integrated storage system");
+		const details = () =>
+			document.querySelector(
+				'section[aria-label="System arrangement"] details',
+			);
+		await untilRun(details);
+		if (!details().open)
+			await act(async () => details().querySelector("summary").click());
+		await untilRun(() => field()?.matches(":enabled"));
+		assert.equal(field().value, "");
+		await app.updateSelect("Inverter or integrated storage system", "101");
+		await app.step("Energy use");
+		await chooseGoal(app);
+		await compare(app);
+		await untilRun(() => searchRequests(app).length === 1);
+		const inputs = searchRequests(app)[0].body.inputs;
+		const equipment = multi
+			? inputs.equipment_plant_setup.units[0].inputs.equipment_setup
+			: inputs.equipment_setup;
+		assert.deepEqual(equipment.comparison_models, {
+			inverter_product_id: 101,
+			battery_product_id: null,
+		});
 	});
 }
 
