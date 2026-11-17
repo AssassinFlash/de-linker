@@ -134,6 +134,18 @@ import {
 	readSolarSetup,
 } from "../../domain/solarSetup.ts";
 
+function requireUnchangedDemand(inputs: JsonObject, frozenInputs: JsonObject) {
+	const current = authoredDiscoveryInputs(inputs);
+	const frozen = authoredDiscoveryInputs(frozenInputs);
+	if (
+		isStorageOnly(current) !== isStorageOnly(frozen) ||
+		["energy_scenario", "profile_selections", "equipment_demand"].some(
+			(key) => !sameJson(current[key] ?? null, frozen[key] ?? null),
+		)
+	)
+		throw new ApiError(409, "equipment_selection_changed");
+}
+
 export function EnergyWorkspace({
 	draft,
 	edit,
@@ -723,17 +735,7 @@ export function EnergyWorkspace({
 					selectedRun,
 				)
 			: null;
-		if (demandInputs) {
-			const frozen = authoredDiscoveryInputs(demandInputs);
-			const currentInputs = authoredDiscoveryInputs(snapshot);
-			for (const key of [
-				"energy_scenario",
-				"profile_selections",
-				"equipment_demand",
-			])
-				if (!sameJson(currentInputs[key] ?? null, frozen[key] ?? null))
-					throw new ApiError(409, "equipment_selection_changed");
-		}
+		if (demandInputs) requireUnchangedDemand(snapshot, demandInputs);
 		if (
 			!client.isCurrentScope(session.query_scope) ||
 			instance !== lifetime.current
@@ -804,17 +806,7 @@ export function EnergyWorkspace({
 		const applied = edit((inputs) => {
 			if (!sameJson(equipmentContext(inputs), original))
 				throw new ApiError(409, "equipment_selection_changed");
-			if (demandInputs) {
-				const frozen = authoredDiscoveryInputs(demandInputs);
-				const currentInputs = authoredDiscoveryInputs(inputs);
-				for (const key of [
-					"energy_scenario",
-					"profile_selections",
-					"equipment_demand",
-				])
-					if (!sameJson(currentInputs[key] ?? null, frozen[key] ?? null))
-						throw new ApiError(409, "equipment_selection_changed");
-			}
+			if (demandInputs) requireUnchangedDemand(inputs, demandInputs);
 			const updated = applyEquipmentContext(inputs, replacement);
 			if (
 				!isPlantCandidate(candidate) &&

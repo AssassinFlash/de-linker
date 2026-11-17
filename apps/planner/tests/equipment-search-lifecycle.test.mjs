@@ -953,7 +953,15 @@ test("multiple systems discover from current named demand without a prepared har
 	const app = await equipmentApp(t, {
 		projectId: "8".repeat(32),
 		hash: "#lp-equipment",
-		inputs: { equipment_setup: { ...savedSetup, application: "commercial" } },
+		inputs: {
+			equipment_setup: { ...savedSetup, application: "commercial" },
+			equipment_demand: {
+				schema_version: 1,
+				initial_usable_fraction: 0.5,
+				max_unserved_load_kwh: 0,
+				source_note: "Starting charge for single-system comparison",
+			},
+		},
 	});
 	await untilRun(
 		() =>
@@ -974,6 +982,7 @@ test("multiple systems discover from current named demand without a prepared har
 	);
 	assert.equal(request.body.expected_revision, 1);
 	assert.equal(request.body.inputs.equipment_plant_setup.units.length, 2);
+	assert.equal(Object.hasOwn(request.body.inputs, "equipment_demand"), false);
 	assert.equal(
 		request.body.inputs.equipment_plant_setup.units[0].inputs.equipment_setup
 			.application,
@@ -983,6 +992,52 @@ test("multiple systems discover from current named demand without a prepared har
 	assert.equal(
 		app.requests.some((row) => row.path === "projects/revise"),
 		false,
+	);
+});
+
+test("switching to PV without storage clears the hidden demand declaration and Undo restores it", async (t) => {
+	const demand = {
+		schema_version: 1,
+		initial_usable_fraction: 0.5,
+		max_unserved_load_kwh: 0,
+		source_note: "Measured charge",
+	};
+	const app = await equipmentApp(t, {
+		projectId: "8".repeat(32),
+		hash: "#lp-equipment",
+		inputs: { equipment_setup: savedSetup, equipment_demand: demand },
+	});
+	await untilRun(() => app.button("Save project"));
+	const plannedSystem = [...document.querySelectorAll("label")]
+		.find((node) => node.textContent.includes("Planned system"))
+		.querySelector("select");
+	await act(async () => {
+		plannedSystem.value = "pv_only";
+		plannedSystem.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await act(async () => app.button("Save project").click());
+	await untilRun(() =>
+		app.requests.some((row) => row.path === "projects/revise"),
+	);
+	assert.equal(
+		Object.hasOwn(
+			app.requests.find((row) => row.path === "projects/revise").body.inputs,
+			"equipment_demand",
+		),
+		false,
+	);
+	await act(async () =>
+		document.querySelector('button[aria-label="Undo"]').click(),
+	);
+	await act(async () => app.button("Save project").click());
+	await untilRun(
+		() =>
+			app.requests.filter((row) => row.path === "projects/revise").length === 2,
+	);
+	assert.deepEqual(
+		app.requests.filter((row) => row.path === "projects/revise")[1].body.inputs
+			.equipment_demand,
+		demand,
 	);
 });
 
@@ -1137,105 +1192,120 @@ test("adopting a combination retains its report reference when default procureme
 	assert.equal("application" in saved.equipment_selection, false);
 });
 
-test("energy-qualified adoption replaces old capacity and keeps the frozen initial inventory while rejecting changed energy inputs", async (t) => {
-	const { emptyScenario } = await import("../src/domain/energyScenario.ts");
-	const scenario = emptyScenario();
-	scenario.battery.usable_window_kwh = 12;
-	const app = await equipmentApp(t, {
-		projectId: "1".repeat(32),
-		hash: "#lp-equipment",
-		inputs: {
-			equipment_setup: savedSetup,
-			energy_scenario: scenario,
-			equipment_demand: {
-				schema_version: 1,
-				initial_usable_fraction: 0.5,
-				max_unserved_load_kwh: 0,
-				source_note: "Frozen measured starting charge",
+for (const changedInput of ["efficiency", "system scope"]) {
+	test(`energy-qualified adoption preserves frozen inventory and rejects changed ${changedInput}`, async (t) => {
+		const { emptyScenario } = await import("../src/domain/energyScenario.ts");
+		const scenario = emptyScenario();
+		scenario.battery.usable_window_kwh = 12;
+		const app = await equipmentApp(t, {
+			projectId: "1".repeat(32),
+			hash: "#lp-equipment",
+			inputs: {
+				equipment_setup: savedSetup,
+				energy_scenario: scenario,
+				equipment_demand: {
+					schema_version: 1,
+					initial_usable_fraction: 0.5,
+					max_unserved_load_kwh: 0,
+					source_note: "Frozen measured starting charge",
+				},
 			},
-		},
-		demandCandidate: {
-			status: "satisfied",
-			reason: "target_met",
-			equipment: null,
-			metrics: {
-				unserved_load_kwh: 0,
-				maximum_interval_average_import_kw: 4,
-				stored_initial: { pv_kwh: 3, grid_kwh: 7, initial_unknown_kwh: 11 },
+			demandCandidate: {
+				status: "satisfied",
+				reason: "target_met",
+				equipment: null,
+				metrics: {
+					unserved_load_kwh: 0,
+					maximum_interval_average_import_kw: 4,
+					stored_initial: { pv_kwh: 3, grid_kwh: 7, initial_unknown_kwh: 11 },
+				},
 			},
-		},
+		});
+		await untilRun(
+			() =>
+				app.button("Find equipment combinations") &&
+				!app.button("Find equipment combinations").disabled,
+		);
+		await act(async () => app.button("Find equipment combinations").click());
+		await untilRun(() => app.runHeading() === "Queued");
+		app.setServerRun("succeeded");
+		await untilRun(
+			() =>
+				app.button("Use this combination in the project") &&
+				!app.button("Use this combination in the project").disabled,
+		);
+		await act(async () =>
+			document
+				.querySelector(
+					'nav[aria-label="Project sections"] a[href="#lp-calculations"]',
+				)
+				.click(),
+		);
+		await act(async () => app.button("Scenario settings").click());
+		await act(async () => app.button("01Storage").click());
+		if (changedInput === "efficiency") {
+			await enter(app.fieldInput("Charging efficiency"), "80");
+		} else {
+			const plannedSystem = [...document.querySelectorAll("label")]
+				.find((node) => node.textContent.includes("Planned system"))
+				.querySelector("select");
+			await act(async () => {
+				plannedSystem.value = "storage_only";
+				plannedSystem.dispatchEvent(
+					new window.Event("change", { bubbles: true }),
+				);
+			});
+		}
+		await act(async () => app.button("Saved calculations").click());
+		await untilRun(
+			() =>
+				app.button("Use this combination in the project") &&
+				!app.button("Use this combination in the project").disabled,
+		);
+		await act(async () =>
+			app.button("Use this combination in the project").click(),
+		);
+		await until(() =>
+			document.body.textContent.includes(
+				"The project inputs have changed since this comparison. Run the equipment search again before using its energy assumptions.",
+			),
+		);
+		assert.equal(app.fieldInput("Usable stored energy").value, "12");
+		if (changedInput === "efficiency")
+			assert.equal(app.fieldInput("Charging efficiency").value, "80");
+		await act(async () =>
+			document.querySelector('button[aria-label="Undo"]').click(),
+		);
+		await act(async () => app.button("Saved calculations").click());
+		await untilRun(
+			() =>
+				app.button("Use this combination in the project") &&
+				!app.button("Use this combination in the project").disabled,
+		);
+		await act(async () =>
+			app.button("Use this combination in the project").click(),
+		);
+		assert.equal(
+			app.fieldInput("Usable stored energy")?.value,
+			"80",
+			"energy-qualified capacity replaces the old manual capacity",
+		);
+		await act(async () => app.button("Save project").click());
+		await untilRun(() =>
+			app.requests.some((row) => row.path === "projects/revise"),
+		);
+		const adopted = app.requests
+			.filter((row) => row.path === "projects/revise")
+			.at(-1).body.inputs;
+		assert.equal(adopted.energy_scenario.battery.usable_window_kwh, 80);
+		assert.deepEqual(adopted.energy_scenario.initial_inventory, {
+			pv_kwh: 3,
+			grid_kwh: 7,
+			initial_unknown_kwh: 11,
+			source_note: "Frozen measured starting charge",
+		});
 	});
-	await untilRun(
-		() =>
-			app.button("Find equipment combinations") &&
-			!app.button("Find equipment combinations").disabled,
-	);
-	await act(async () => app.button("Find equipment combinations").click());
-	await untilRun(() => app.runHeading() === "Queued");
-	app.setServerRun("succeeded");
-	await untilRun(
-		() =>
-			app.button("Use this combination in the project") &&
-			!app.button("Use this combination in the project").disabled,
-	);
-	await act(async () =>
-		document
-			.querySelector(
-				'nav[aria-label="Project sections"] a[href="#lp-calculations"]',
-			)
-			.click(),
-	);
-	await act(async () => app.button("Scenario settings").click());
-	await act(async () => app.button("01Storage").click());
-	await enter(app.fieldInput("Charging efficiency"), "80");
-	await act(async () => app.button("Saved calculations").click());
-	await untilRun(
-		() =>
-			app.button("Use this combination in the project") &&
-			!app.button("Use this combination in the project").disabled,
-	);
-	await act(async () =>
-		app.button("Use this combination in the project").click(),
-	);
-	await until(() =>
-		document.body.textContent.includes(
-			"The project inputs have changed since this comparison. Run the equipment search again before using its energy assumptions.",
-		),
-	);
-	assert.equal(app.fieldInput("Usable stored energy").value, "12");
-	assert.equal(app.fieldInput("Charging efficiency").value, "80");
-	await act(async () =>
-		document.querySelector('button[aria-label="Undo"]').click(),
-	);
-	await act(async () => app.button("Saved calculations").click());
-	await untilRun(
-		() =>
-			app.button("Use this combination in the project") &&
-			!app.button("Use this combination in the project").disabled,
-	);
-	await act(async () =>
-		app.button("Use this combination in the project").click(),
-	);
-	assert.equal(
-		app.fieldInput("Usable stored energy")?.value,
-		"80",
-		"energy-qualified capacity replaces the old manual capacity",
-	);
-	await act(async () => app.button("Save project").click());
-	await untilRun(() =>
-		app.requests.some((row) => row.path === "projects/revise"),
-	);
-	const adopted = app.requests
-		.filter((row) => row.path === "projects/revise")
-		.at(-1).body.inputs;
-	assert.equal(adopted.energy_scenario.battery.usable_window_kwh, 80);
-	assert.deepEqual(adopted.energy_scenario.initial_inventory, {
-		pv_kwh: 3,
-		grid_kwh: 7,
-		initial_unknown_kwh: 11,
-		source_note: "Frozen measured starting charge",
-	});
-});
+}
 
 test("explicit unknown setup fields stay unknown after reopen beside legacy demand", async (t) => {
 	const app = await equipmentApp(t, {

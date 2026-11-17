@@ -321,7 +321,7 @@ export function EquipmentSearchResult({
 								{candidate.demand.reason === "scenario_not_feasible" && (
 									<p>
 										{__(
-											"The combination cannot satisfy the declared storage, reserve or end-state constraints.",
+											"This simulation did not meet the declared storage, reserve or end-state constraints.",
 											"linker-tools",
 										)}
 									</p>

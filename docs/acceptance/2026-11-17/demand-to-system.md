@@ -50,6 +50,8 @@
 
 正式德语新增 21 条，复用原生 PO→MO／JSON 管线。文案对抗审阅：百分比字段使用“Anfangs nutzbarer Anteil der Speicherkapazität”；kWh 缺供指标使用“Ungedeckter Energiebedarf”；空筛选使用“Keine Kombination entspricht diesem Bedarfsfilter.”，避免把未评估筛选描述成满足需求。已有译文保留。
 
+需求候选 `336671c37` 的 Spec 评审发现三项：冻结采用漏查影响 PV 时段的纯储能范围；切换多系统后保留隐藏需求声明；策略回放失败被描述成硬件不可满足。主线核实后修正，采用检查复用同一函数；多系统／shared DC／纯光伏切换移除不适用声明，现有 Undo 可恢复。结果提示改为 “This simulation did not meet the declared storage, reserve or end-state constraints.”／“Diese Simulation erfüllte die angegebenen Vorgaben für Speicher, Reserve oder Endzustand nicht.”，文案审阅保留本次模拟的证据范围，不断言所有策略均失败。新增回归先红后绿，最终相关域测试 23 项、组件测试 20 项、类型检查、翻译编译、两层构建校验通过。Standards 无硬规则违反；重复检查建议随同修复。增量复审复用原评审代理，每轴只查修复及受影响上下文。
+
 ## 本轮裁定与实现
 
 业主要求从根因修复准备／保存／计算的责任分裂，并明确授权参照本地 Preline productivity 模板大改工具界面。项目列表、项目标题与操作区、桌面章节侧栏和手机章节选择器重新组织；保留现有 React/Vite 与 WindPress。

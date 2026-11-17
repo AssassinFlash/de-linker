@@ -901,12 +901,16 @@ export function ProjectEditor({
 							config={config}
 							onValidity={setBriefValid}
 							onChange={(next) =>
-								update((previous) =>
-									editDraft(previous, {
-										...previous.history.current,
+								update((previous) => {
+									const { equipment_demand, ...rest } =
+										previous.history.current;
+									return editDraft(previous, {
+										...(next.system_scope === "pv_only"
+											? rest
+											: previous.history.current),
 										brief: readBrief(next),
-									}),
-								)
+									});
+								})
 							}
 						/>
 						<details

@@ -121,6 +121,7 @@ export function applyEquipmentContext(
 	);
 	for (const key of equipmentFields) delete next[key];
 	const merged = { ...next, ...context };
+	if (hasPlant(merged)) delete merged.equipment_demand;
 	return changed ? dropGeometricRoofAc(merged) : merged;
 }
 export function readEquipmentPlant(value: unknown): EquipmentPlant {
@@ -309,6 +310,7 @@ export function plantInputs(inputs: JsonObject, draft: PlantDraft): JsonObject {
 	for (const key of [
 		"equipment_plant",
 		"equipment_plant_requirements",
+		"equipment_demand",
 		"equipment_selection",
 		"equipment_candidate",
 		"equipment_setup",

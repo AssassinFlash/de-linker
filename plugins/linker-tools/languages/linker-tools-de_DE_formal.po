@@ -15744,8 +15744,8 @@ msgid "This combination was not simulated because the comparison limit was reach
 msgstr "Diese Kombination wurde nicht simuliert, weil die Grenze für den Vergleich erreicht wurde."
 
 #: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:306 build/planner/assets/planner.js:1
-msgid "The combination cannot satisfy the declared storage, reserve or end-state constraints."
-msgstr "Die Kombination kann die angegebenen Vorgaben für Speicher, Reserve oder Endzustand nicht einhalten."
+msgid "This simulation did not meet the declared storage, reserve or end-state constraints."
+msgstr "Diese Simulation erfüllte die angegebenen Vorgaben für Speicher, Reserve oder Endzustand nicht."
 
 #: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:310 build/planner/assets/planner.js:1
 msgid "Unserved load"

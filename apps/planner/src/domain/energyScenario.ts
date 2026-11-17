@@ -443,7 +443,8 @@ export function scenarioInputs(
 ): JsonObject {
 	// The effective replay input is invalidated on editing. Undo restores the prior
 	// replay together with its setup; a job/result itself remains immutable.
-	const next = invalidateEnergyReplay(inputs);
+	const next = { ...invalidateEnergyReplay(inputs) };
+	if (scenario.coupling === "shared_dc") delete next.equipment_demand;
 	return {
 		...(!isPvOnly(inputs) && scenario.coupling === "shared_dc"
 			? dropGeometricRoofAc(next)
