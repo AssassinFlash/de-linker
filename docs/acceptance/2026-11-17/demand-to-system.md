@@ -57,4 +57,12 @@
 
 实看发现多系统需求 fieldset 的旧 reset 覆盖新面板间距；将 reset 限定到非面板 fieldset，保留 legend 语义并将窄侧栏字段排为单列，英德文复看确认。Spec 与 Standards 独立评审及该 fieldset 增量复审无发现。更新后的 EN／DE 完整报告链均通过（2 项，3 分钟），覆盖 PDF／CSV、草稿和隔离本地询盘；本次命令中的 `planner-projects.spec.ts` 未匹配文件，未将其计为已重跑的项目测试。
 
-当前仍待：其余受影响状态实看与最终记录；最新候选 CI；合并、成对 Planner 与站点发布、生产入口读回；本轮资源回收。[PR 1134](https://github.com/AssassinFlash/de-linker/pull/1134) 保持草稿，完整目标保持开放。
+发布恢复资源：主线复用 `/Users/chesterjohn/de-linker-data/planner-production/` 的既有 Archives／Remote 增量备份接口，创建一次当前生产 Planner 数据库与 CAS 独立归档；沿用既有 owner、登记表和 N=3 轮换，禁止新增服务端整站备份。新 release 通过 `tools/planner/publish/cli.sh` 创建，保留 current 与 previous；站点发布自动流式保存数据库快照并保留上一批代码。主线负责发布后读回和回收。
+
+纯光伏和多系统计算设置的 EN／DE、1440／390 呈现实看完成；手机切换系统、初始状态和运行设置可操作。验收后 Oslo 恢复为 Saved · revision 8。生产 Planner 恢复点为 `/Users/chesterjohn/de-linker-data/planner-production/archive-20261117T124728Z-f1b360b4`，原生校验通过，轮换后保留 3 份；该操作前后可用空间为 1,267,013,607,424／1,266,483,744,768 字节。
+
+候选 `121f0589e` 的首次 CI 在 `workspace-lifecycle.test.mjs` 首次加载编辑器时未在夹具的 2 秒期限内出现 textarea，其余 387 项组件检查通过。相同候选本地单文件 23 项及完整组件集 388 项通过；仅重跑失败 CI 作业一次后，run 44085565970 attempt 2 全绿，headSha 确认为 `121f0589ef11a98e97e9168c697f8e98271665ac`。测试超时与产品代码均未为此次重跑修改。临时日志 `/tmp/linker-planner-current-tests.log`、`/tmp/linker-ci-rerun.log` 各保留一份，由主线在 CI 原因与结果登记后回收。
+
+资源回收：`agent-a59bc662892acd775`、`agent-a7a87623acf00ba39` 的源码格式化后与已提交版本相同，`agent-a98f3423e89850493` 的三份测试与已提交版本字节相同；确认没有进程占用及额外文件后删除这三份工作树。删除前后可用空间为 1,264,356,139,008／1,274,564,382,720 字节，实际增加 10,208,243,712 字节。其余四份实现树仍在核对整合差异。
+
+当前仍待：验收记录提交后的最终 CI；合并、成对 Planner 与站点发布、生产入口读回；剩余资源回收。[PR 1134](https://github.com/AssassinFlash/de-linker/pull/1134) 保持草稿，完整目标保持开放。
