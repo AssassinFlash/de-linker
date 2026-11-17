@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Quotation\Issuer;
 
 use WC_Order;
@@ -57,6 +58,26 @@ final class Documents {
 				'url'   => $url,
 				'kind'  => 'quotation',
 			);
+		}
+		$planning_inquiries = wc_get_orders(
+			array(
+				'customer_id'  => $customer_id,
+				'limit'        => -1,
+				'meta_key'     => Context::META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one customer's inquiries.
+				'meta_compare' => 'EXISTS',
+			)
+		);
+		foreach ( is_array( $planning_inquiries ) ? $planning_inquiries : array() as $order ) {
+			$created = $order->get_date_created();
+			foreach ( Context::stored( $order ) as $id => $entry ) {
+				$documents[] = array(
+					/* translators: %s: name of the planning project. */
+					'title' => sprintf( __( 'Design report: %s', 'linker-commerce' ), $entry['reference']['title'] ),
+					'date'  => $created instanceof \DateTimeInterface ? $created->getTimestamp() : 0,
+					'url'   => Context::report_url( $order, $id ),
+					'kind'  => 'report',
+				);
+			}
 		}
 		foreach ( $this->solutions->for_customer( $customer_id ) as $solution ) {
 			if ( '' !== $this->solutions->report_path( $solution->ID ) ) {

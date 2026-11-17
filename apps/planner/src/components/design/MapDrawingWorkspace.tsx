@@ -848,8 +848,14 @@ export function MapDrawingWorkspace({
 						{adoptError && <Notice error>{adoptError}</Notice>}
 					</div>
 				)}
-				{!drawing && (
-					<>
+				{!drawing && geometry.roofs.length > 0 && (
+					<details
+						className="lp-map-edit-tools"
+						open={Boolean(mapProps.selected)}
+					>
+						<summary>
+							{__("Edit boundaries and roof features", "linker-tools")}
+						</summary>
 						<MapRingSelector
 							geometry={geometry}
 							selected={mapProps.selected}
@@ -862,7 +868,7 @@ export function MapDrawingWorkspace({
 							disabled={!canStartDrawing || !geographicReady}
 							begin={(target) => begin({ kind: "new_feature", target })}
 						/>
-					</>
+					</details>
 				)}
 				{!drawing && unchanged && (
 					<p className="lp-drawing-status" role="status">

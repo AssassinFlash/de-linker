@@ -9,8 +9,11 @@ import pytest
 from pydantic import ValidationError
 
 from linker_engine.planning.brief import PlanningBrief, brief_schema, validate_new_brief
+from linker_engine.planning.canonical import Object
 from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.http_documents import ProjectCreate
+from linker_engine.planning.records import Actor
+from linker_engine.planning.workspace import Workspace
 
 from .conftest import FixtureObject, json_object
 
@@ -70,6 +73,62 @@ def test_optional_postal_code_is_preserved_without_changing_the_site_position() 
             "inputs": {"brief": brief},
         }
     ).inputs == {"brief": brief}
+
+
+def test_storage_only_brief_is_saveable_without_solar_geometry() -> None:
+    brief = incomplete_brief()
+    brief["system_scope"] = "storage_only"
+    validate_new_brief({"brief": brief})
+    assert PlanningBrief.model_validate(brief).system_scope == "storage_only"
+    assert ProjectCreate.model_validate(
+        {
+            "schema_version": 1,
+            "title": "Storage without PV",
+            "key": "storage-only",
+            "inputs": {"brief": brief},
+        }
+    ).inputs == {"brief": brief}
+
+
+def test_storage_only_history_requires_a_reader_that_understands_its_scope(
+    workspace: Workspace, owner: Actor
+) -> None:
+    from linker_engine.planning.errors import ProjectInputContractRequired
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+    from linker_engine.planning.project_input_floor import check_project_input_contracts
+
+    brief = incomplete_brief()
+    brief["system_scope"] = "storage_only"
+    values: Object = {"brief": brief}
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.create(owner, "Storage", values, key="old-editor")
+    project = workspace.create(
+        owner,
+        "Storage",
+        values,
+        key="new-editor",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    assert workspace.get(owner, project.id).inputs == values
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.revise(owner, project.id, 1, {}, key="old-editor-removal")
+    workspace.revise(
+        owner,
+        project.id,
+        1,
+        {},
+        key="new-editor-removal",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    with pytest.raises(ValueError, match="does not support retained"):
+        check_project_input_contracts(
+            workspace.database.path.parent,
+            [
+                item
+                for item in SUPPORTED_INPUT_CONTRACTS
+                if item != "storage_only_brief_v1"
+            ],
+        )
 
 
 def test_schema_is_the_published_frontend_contract() -> None:

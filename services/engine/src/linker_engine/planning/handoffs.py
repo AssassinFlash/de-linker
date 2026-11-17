@@ -129,6 +129,54 @@ def publication_scope(workspace: Workspace, source: Object) -> Object:
     return result
 
 
+def purchase_items(
+    material_lines: list[Object], products: dict[int, Object]
+) -> list[Json]:
+    """Purchasable items per line: quantity minus the exact retained share.
+
+    The complete system list keeps retained originals visible; this purchase
+    view subtracts 'retained_quantity' when the report states one, so a mixed
+    retain/new line buys only the new units. A declared retention without an
+    exact share, or a share exceeding the quantity, stops the handoff instead
+    of guessing a purchase count.
+    """
+    items: list[Json] = []
+    for line in material_lines:
+        product_id, quantity = line.get("product_id"), line.get("quantity")
+        if (
+            type(product_id) is not int
+            or product_id <= 0
+            or type(quantity) is not int
+            or quantity <= 0
+        ):
+            raise HandoffIncomplete("selected product quantities remain unresolved")
+        if "retained_quantity" in line:
+            retained = line.get("retained_quantity")
+            if type(retained) is not int:
+                raise HandoffIncomplete(
+                    "retained equipment quantities remain unresolved"
+                )
+            if retained > quantity:
+                raise HandoffIncomplete(
+                    "retained equipment exceeds the established quantity"
+                )
+            if quantity - retained <= 0:
+                continue
+            quantity -= retained
+        product = products.get(product_id, {})
+        label = (
+            " ".join(
+                str(product.get(key) or line.get(key) or "")
+                for key in ("brand", "model")
+            ).strip()
+            or str(product.get("sku") or line.get("sku") or "").strip()
+        )
+        if not label:
+            raise HandoffIncomplete("selected product identity is unresolved")
+        items.append({"product_id": product_id, "quantity": quantity, "label": label})
+    return items
+
+
 class Handoffs:
     def __init__(self, workspace: Workspace) -> None:
         self.workspace = workspace
@@ -185,7 +233,7 @@ class Handoffs:
         if not isinstance(equipment, dict):
             raise HandoffIncomplete("the report has no selected products")
         products = {
-            product["product_id"]: product
+            cast(int, product["product_id"]): product
             for product in cast(list[Object], equipment["selected_products"])
         }
         material_lines = equipment["provisional_bill_of_materials"]
@@ -204,29 +252,7 @@ class Handoffs:
                 for line in cast(list[Object], materials["lines"])
                 if line["handling"] == "woo_product"
             ]
-        items: list[Json] = []
-        for line in cast(list[Object], material_lines):
-            product_id, quantity = line.get("product_id"), line.get("quantity")
-            if (
-                type(product_id) is not int
-                or product_id <= 0
-                or type(quantity) is not int
-                or quantity <= 0
-            ):
-                raise HandoffIncomplete("selected product quantities remain unresolved")
-            product = products.get(product_id, {})
-            label = (
-                " ".join(
-                    str(product.get(key) or line.get(key) or "")
-                    for key in ("brand", "model")
-                ).strip()
-                or str(product.get("sku") or line.get("sku") or "").strip()
-            )
-            if not label:
-                raise HandoffIncomplete("selected product identity is unresolved")
-            items.append(
-                {"product_id": product_id, "quantity": quantity, "label": label}
-            )
+        items = purchase_items(cast(list[Object], material_lines), products)
         if not items:
             raise HandoffIncomplete("the report has no selected products")
         asset = Assets(self.workspace).get(

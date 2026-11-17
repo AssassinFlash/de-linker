@@ -20,6 +20,387 @@ import { ApiError } from "../src/data/protocol.ts";
 import scenario from "./fixtures/energy-scenario.json" with { type: "json" };
 import selections from "./fixtures/energy-selections.json" with { type: "json" };
 import actualRun from "./fixtures/energy-run.json" with { type: "json" };
+import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
+import { plantEnergyDraft } from "../src/domain/plantEnergy.ts";
+import { DC_LOSS_FIELDS } from "../src/domain/dcEnergy.ts";
+
+function preparedPlantInputs() {
+	const { equipment_plant: plant, energy_plant: original } =
+		plantFixture.project.inputs;
+	const empty = plantEnergyDraft({ equipment_plant: plant }, plant);
+	const setup = {
+		...empty,
+		schedule: scenario.schedule,
+		units: empty.units.map((unit) => {
+			const saved = original.units.find((u) => u.unit_id === unit.unit_id);
+			const source = plantFixture.run.result.parameter_sources.units.find(
+				(u) => u.unit_id === unit.unit_id,
+			);
+			const parameters =
+				plantFixture.run.result.parameter_sources.pool[source.parameter_sha256]
+					.loss_scenario;
+			return {
+				...unit,
+				reserve_kwh: 0,
+				pv_dc_input_unused: true,
+				allow_ac_charge: false,
+				settings: {
+					...scenario,
+					dc: {
+						...unit.settings.dc,
+						pv_converter_id: "",
+						aux_dc_kw: 0,
+						source_note: parameters.source_note,
+						battery_port_id: parameters.battery_port_id,
+						battery_temperature_c: parameters.battery_temperature_c,
+						losses: Object.fromEntries(
+							DC_LOSS_FIELDS.map((k) => [k, parameters[k]]),
+						),
+					},
+					battery_binding: {
+						asset_id: saved.battery_parameters_asset_id,
+						parameters,
+						source_note: parameters.source_note,
+						equipment_selection: plant.units.find((u) => u.id === unit.unit_id)
+							.selection,
+					},
+				},
+			};
+		}),
+	};
+	return {
+		equipment_plant: plant,
+		energy_plant_setup: setup,
+		profile_selections: selections,
+	};
+}
+
+async function energyRig(t, inputs) {
+	const dom = setupDom();
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	Object.defineProperty(globalThis, "indexedDB", {
+		value: new IDBFactory(),
+		configurable: true,
+	});
+	window.history.replaceState(
+		null,
+		"",
+		`?project=${actualRun.project_id}#lp-calculations`,
+	);
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	const queryClient = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	t.after(async () => {
+		await dom.dispose(root);
+		queryClient.clear();
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else delete globalThis.indexedDB;
+	});
+	let current = beginDraft({
+		id: actualRun.project_id,
+		title: "Energy transition fixture",
+		revision: 1,
+		input_sha256: "b".repeat(64),
+		inputs,
+	});
+	const client = {
+		isCurrentScope: () => true,
+		async query(path) {
+			if (path === "projects/runs") return { items: [], next: null };
+			throw new ApiError(404, "not_found");
+		},
+		async send(path, serialized) {
+			assert.equal(path, "battery/scenario");
+			const body = JSON.parse(serialized);
+			return {
+				id: "c".repeat(32),
+				project_id: actualRun.project_id,
+				content_sha256: "d".repeat(64),
+				metadata_sha256: "e".repeat(64),
+				media_type: "application/json",
+				purpose: "battery_parameters_v1",
+				metadata: {
+					retention: "permanent",
+					provenance: {
+						basis: "user_explicit_scenario_not_equipment_release",
+						label: body.source_note,
+					},
+					derived_from_revision: body.expected_revision,
+					...(body.equipment_unit_id
+						? { equipment_unit_id: body.equipment_unit_id }
+						: {}),
+					dependencies: {
+						dc_prepared_parameters: "f".repeat(64),
+						dc_woo_inputs: "a".repeat(64),
+					},
+				},
+			};
+		},
+	};
+	function Harness() {
+		const [draft, setDraft] = useState(current);
+		return React.createElement(
+			React.Fragment,
+			null,
+			React.createElement(
+				"button",
+				{
+					onClick() {
+						current = beginDraft({
+							...current.baseline,
+							revision: current.baseline.revision + 1,
+							inputs: current.history.current,
+						});
+						setDraft(current);
+					},
+				},
+				"Confirm saved revision",
+			),
+			React.createElement(EnergyWorkspace, {
+				draft,
+				client,
+				locale: "en-GB",
+				blocked: false,
+				active: true,
+				session: {
+					query_scope: "a".repeat(64),
+					runtime: {
+						models: {
+							...actualRun.manifest.context.models,
+							plant_replay: "plant_ac_energy_replay_v1",
+							plant_dc_replay: "plant_shared_dc_energy_replay_v1",
+						},
+						limits: {
+							max_json_depth: 32,
+							max_body_bytes: 16777216,
+							max_page_size: 100,
+						},
+					},
+				},
+				recheck() {},
+				onValidity() {},
+				openProfiles() {},
+				edit(operation) {
+					current = editDraft(current, operation(current.history.current));
+					setDraft(current);
+					return true;
+				},
+				async flush() {
+					return true;
+				},
+			}),
+		);
+	}
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: queryClient },
+				React.createElement(Harness),
+			),
+		),
+	);
+	await until(
+		() =>
+			button("Prepare scenario settings") &&
+			!button("Prepare scenario settings").disabled,
+	);
+	return {
+		get inputs() {
+			return current.history.current;
+		},
+	};
+}
+
+async function choose(label, value) {
+	await act(async () => {
+		const field = control(label);
+		assert.ok(field, label);
+		field.value = value;
+		field.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+}
+
+for (const joint of [false, true]) {
+	test(`switching ${joint ? "plant" : "single"} peak shaving to shared DC can prepare without hidden AC choices`, async (t) => {
+		const inputs = preparedPlantInputs();
+		if (joint) {
+			inputs.energy_plant_setup = {
+				...inputs.energy_plant_setup,
+				controller: "proportional_peak_shaving_v1",
+				aux_ac_kw: 0,
+			};
+		} else {
+			inputs.equipment_selection = inputs.equipment_plant.units[0].selection;
+			inputs.energy_scenario = {
+				...scenario,
+				dc: {
+					...inputs.energy_plant_setup.units[0].settings.dc,
+					pv_converter_id: "roof-group",
+				},
+			};
+			delete inputs.equipment_plant;
+			delete inputs.energy_plant_setup;
+		}
+		const rig = await energyRig(t, inputs);
+		if (!joint) {
+			await choose("Operating goal", "peak");
+			await act(async () => enter(control("Grid import cap"), "2"));
+		}
+		await choose(
+			joint ? "PV connection for this plant" : "System connection",
+			joint ? "plant_shared_dc" : "shared_dc",
+		);
+		await click("Confirm saved revision");
+		await click("Prepare scenario settings");
+		await until(() => rig.inputs[joint ? "energy_plant" : "energy_replay"]);
+		const replay = rig.inputs[joint ? "energy_plant" : "energy_replay"];
+		assert.ok(replay, document.querySelector('[role="alert"]')?.textContent);
+		assert.equal(replay.coupling, joint ? "plant_shared_dc" : "shared_dc");
+		assert.equal(replay.aux_ac_asset_id, selections.selected.aux_ac);
+		assert.equal(replay.aux_ac_kw, undefined);
+		assert.equal(
+			replay.controller,
+			joint
+				? "local_dc_then_proportional_ac_self_consumption_v1"
+				: "self_consumption_with_reserve_v1",
+		);
+	});
+}
+
+for (const joint of [false, true]) {
+	test(`storage-only ${joint ? "plant" : "single"} preparation rejects PV-origin starting inventory`, async (t) => {
+		const inputs = joint
+			? preparedPlantInputs()
+			: { energy_scenario: structuredClone(scenario) };
+		inputs.brief = { system_scope: "storage_only" };
+		inputs.profile_selections = {
+			schema_version: 1,
+			selected: {
+				gross_load: selections.selected.gross_load,
+				aux_ac: selections.selected.aux_ac,
+			},
+		};
+		const states = joint
+			? inputs.energy_plant_setup.units.map((u) => u.settings)
+			: [inputs.energy_scenario];
+		for (const state of states)
+			state.initial_inventory = { ...state.initial_inventory, pv_kwh: 1 };
+		const rig = await energyRig(t, inputs);
+		await click("Prepare scenario settings");
+		await until(
+			() =>
+				rig.inputs[joint ? "energy_plant" : "energy_replay"] ||
+				document.querySelector('[role="alert"]'),
+		);
+		assert.equal(
+			rig.inputs[joint ? "energy_plant" : "energy_replay"],
+			undefined,
+		);
+		assert.match(
+			document.querySelector('[role="alert"]').textContent,
+			/PV-origin/,
+		);
+	});
+	test(`PV ${joint ? "plant" : "single"} preparation still needs a source when any period enables generation`, async (t) => {
+		const inputs = joint
+			? preparedPlantInputs()
+			: { energy_scenario: structuredClone(scenario) };
+		inputs.profile_selections = {
+			schema_version: 1,
+			selected: {
+				gross_load: selections.selected.gross_load,
+				aux_ac: selections.selected.aux_ac,
+			},
+		};
+		const setup = inputs[joint ? "energy_plant_setup" : "energy_scenario"];
+		setup.schedule = [
+			{
+				...scenario.schedule[0],
+				pv_enabled: false,
+				end_utc: "2024-03-31T00:00:00Z",
+			},
+			{
+				...scenario.schedule[0],
+				id: "b".repeat(32),
+				start_utc: "2024-03-31T00:00:00Z",
+				pv_enabled: true,
+			},
+		];
+		const rig = await energyRig(t, inputs);
+		await click("Prepare scenario settings");
+		await until(() => document.querySelector('[role="alert"]'));
+		assert.match(
+			document.querySelector('[role="alert"]').textContent,
+			/Select the missing interval sources/,
+		);
+		assert.equal(
+			rig.inputs[joint ? "energy_plant" : "energy_replay"],
+			undefined,
+		);
+	});
+	for (const keepPvSelection of [false, true])
+		test(`PV ${joint ? "plant" : "single"} backup prepares without generation while retaining PV-origin starting energy (retained PV selection: ${keepPvSelection})`, async (t) => {
+			const inputs = joint
+				? preparedPlantInputs()
+				: { energy_scenario: structuredClone(scenario) };
+			inputs.profile_selections = {
+				schema_version: 1,
+				selected: {
+					gross_load: selections.selected.gross_load,
+					critical_load: "d".repeat(32),
+					aux_ac: selections.selected.aux_ac,
+					...(keepPvSelection ? { pv_available_ac: "e".repeat(32) } : {}),
+				},
+			};
+			if (joint) {
+				inputs.energy_plant_setup.schedule = scenario.schedule.map((p) => ({
+					...p,
+					mode: "outage",
+					pv_enabled: false,
+				}));
+				inputs.energy_plant_setup.units = inputs.energy_plant_setup.units.map(
+					(u) => ({
+						...u,
+						settings: {
+							...u.settings,
+							initial_inventory: { ...u.settings.initial_inventory, pv_kwh: 1 },
+						},
+					}),
+				);
+			} else {
+				inputs.energy_scenario.initial_inventory.pv_kwh = 1;
+			}
+			const rig = await energyRig(t, inputs);
+			if (!joint) await choose("Operating goal", "backup");
+			assert.doesNotMatch(
+				document.querySelector(".lp-scenario-sources").textContent,
+				/Available PV output/,
+			);
+			assert.match(
+				document.querySelector(".lp-scenario-sources").textContent,
+				/Critical load/,
+			);
+			await click("Prepare scenario settings");
+			await until(
+				() =>
+					rig.inputs[joint ? "energy_plant" : "energy_replay"] ||
+					document.querySelector('[role="alert"]'),
+			);
+			const replay = rig.inputs[joint ? "energy_plant" : "energy_replay"];
+			assert.ok(replay, document.querySelector('[role="alert"]')?.textContent);
+			assert.equal(replay.pv_available_asset_id, null);
+			assert.equal(
+				rig.inputs.profile_selections.selected.pv_available_ac,
+				keepPvSelection ? "e".repeat(32) : undefined,
+			);
+			assert.ok(replay.schedule.every((p) => !p.pv_enabled));
+			for (const state of joint ? replay.units : [replay])
+				assert.equal(state.initial_inventory.pv_kwh, 1);
+		});
+}
 
 const button = (text) =>
 	[...document.querySelectorAll("button")].find(
@@ -84,6 +465,163 @@ test("a missing saved-wiring assessment has a specific explanation and the nativ
 	assert.equal(recalculate.textContent, "Recalculate energy");
 	await act(async () => recalculate.click());
 	assert.equal(opened, true);
+});
+
+test("changing the simple operating goal preserves an auxiliary profile and does not assume island PV", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SimpleEnergySetup } =
+		await import("../src/components/energy/SimpleEnergySetup.tsx");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	let next;
+	await act(async () =>
+		root.render(
+			React.createElement(SimpleEnergySetup, {
+				value: scenario,
+				storageOnly: false,
+				hasAuxiliaryProfile: true,
+				locale: "en-GB",
+				disabled: false,
+				onChange(value) {
+					next = value;
+				},
+				onValidity() {},
+				useProfileRange() {},
+				rangeBusy: false,
+			}),
+		),
+	);
+	await act(async () => {
+		const goal = control("Operating goal");
+		goal.value = "backup";
+		goal.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(next.aux_ac_kw, null);
+	assert.equal(next.schedule[0].pv_enabled, false);
+	assert.equal(next.schedule[0].allow_grid_charge, false);
+	assert.equal(next.schedule[0].mode, "outage");
+});
+
+test("storage-only customers prepare peak shaving without PV or auxiliary CSV", async (t) => {
+	const dom = setupDom();
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	Object.defineProperty(globalThis, "indexedDB", {
+		value: new IDBFactory(),
+		configurable: true,
+	});
+	window.history.replaceState(
+		null,
+		"",
+		`?project=${actualRun.project_id}#lp-calculations`,
+	);
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	const queryClient = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	t.after(async () => {
+		await dom.dispose(root);
+		queryClient.clear();
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else delete globalThis.indexedDB;
+	});
+	let current = beginDraft({
+		id: actualRun.project_id,
+		title: "Storage only",
+		revision: 1,
+		input_sha256: "b".repeat(64),
+		inputs: {
+			brief: { system_scope: "storage_only" },
+			energy_scenario: { ...scenario, aux_ac_kw: 0 },
+			profile_selections: {
+				schema_version: 1,
+				selected: { gross_load: selections.selected.gross_load },
+			},
+		},
+	});
+	const session = {
+		query_scope: "a".repeat(64),
+		runtime: {
+			models: actualRun.manifest.context.models,
+			limits: {
+				max_json_depth: 32,
+				max_body_bytes: 16777216,
+				max_page_size: 100,
+			},
+		},
+	};
+	const client = {
+		isCurrentScope: () => true,
+		async query(path) {
+			if (path === "projects/runs") return { items: [], next: null };
+			throw new ApiError(404, "not_found");
+		},
+		async send() {
+			assert.fail("existing battery source should be reused");
+		},
+	};
+	function Harness() {
+		const [draft, setDraft] = useState(current);
+		return React.createElement(EnergyWorkspace, {
+			draft,
+			session,
+			client,
+			locale: "en-GB",
+			blocked: false,
+			active: true,
+			recheck() {},
+			onValidity() {},
+			openProfiles() {},
+			edit(operation) {
+				current = editDraft(current, operation(current.history.current));
+				setDraft(current);
+				return true;
+			},
+			async flush() {
+				return true;
+			},
+		});
+	}
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: queryClient },
+				React.createElement(Harness),
+			),
+		),
+	);
+	await until(() => control("Operating goal"));
+	await act(async () => {
+		const goal = control("Operating goal");
+		goal.value = "peak";
+		goal.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await act(async () => enter(control("Grid import cap"), "2"));
+	const grid = [...document.querySelectorAll('input[type="checkbox"]')].find(
+		(input) =>
+			input
+				.closest("label")
+				.textContent.includes("Allow grid charging below this cap"),
+	);
+	await act(async () => grid.click());
+	await until(
+		() =>
+			button("Prepare scenario settings") &&
+			!button("Prepare scenario settings").disabled,
+	);
+	await click("Prepare scenario settings");
+	await until(() => current.history.current.energy_replay);
+	const replay = current.history.current.energy_replay;
+	assert.equal(replay.pv_available_asset_id, null);
+	assert.equal(replay.aux_ac_asset_id, null);
+	assert.equal(replay.aux_ac_kw, 0);
+	assert.equal(replay.controller, "peak_shaving_with_reserve_v1");
+	assert.equal(replay.schedule[0].allow_grid_charge, true);
+	assert.equal(replay.schedule[0].pv_enabled, false);
+	assert.equal(replay.schedule[0].import_cap_kw, 2);
+	assert.match(document.body.textContent, /no PV generation or roof required/);
 });
 
 test("actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response", async (t) => {

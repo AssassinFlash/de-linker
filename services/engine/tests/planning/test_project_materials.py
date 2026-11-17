@@ -16,8 +16,10 @@ from pypdf import PdfReader
 from linker_engine import pdf
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.equipment_facts import compile_product
+from linker_engine.planning.handoffs import HandoffIncomplete, purchase_items
 from linker_engine.planning.project_materials import (
     material_quantity,
+    material_scope,
     materials_csv,
     project_materials,
 )
@@ -402,6 +404,324 @@ def test_en_and_de_reports_and_csv_use_the_same_material_model() -> None:
         )
         assert any('"quote":"PV terminals × 16"' in row[6] for row in rows[2:])
         assert any(condition in row[6] for row in rows[2:])
+
+
+def test_retained_equipment_stays_listed_and_leaves_procurement() -> None:
+    source = copy.deepcopy(_source_data())
+    equipment = cast(Object, source["equipment"])
+    products = cast(list[Object], equipment["selected_products"])
+    converter = products[0]
+    converter["package_contents"] = cast(
+        Object,
+        {
+            "status": "documented",
+            "items": [
+                {
+                    "id": "smart-meter",
+                    "label": {"en": "Smart meter", "de": "Smart Meter"},
+                    "quantity": 1,
+                    "unit": "piece",
+                    "role": "meter",
+                    "source": _source(40, "Smart meter × 1"),
+                }
+            ],
+        },
+    )
+    equipment["selected_products"] = [
+        converter,
+        {
+            "product_id": 7001,
+            "product_revision": "d" * 64,
+            "brand": "GoodWe",
+            "model": "BAT-C",
+            "sku": "DLK-GOODWE-BATC",
+        },
+        {
+            "product_id": 9001,
+            "product_revision": "e" * 64,
+            "brand": "GoodWe",
+            "model": "Backup Box",
+            "sku": "DLK-GOODWE-BACKUP",
+        },
+    ]
+    equipment["provisional_bill_of_materials"] = [
+        {"product_id": 6506, "quantity": 2, "basis": "selected_converter"},
+        {"product_id": 7001, "quantity": 2, "basis": "selected_battery"},
+        {"product_id": 9001, "quantity": 1, "basis": "manufacturer_required_backup"},
+    ]
+    equipment["installation_requirements"] = [
+        {"included": True, "kind": "meter", "documents": []}
+    ]
+    source["equipment_selection"] = {
+        "inverter_product_id": 6506,
+        "battery_product_id": 7001,
+        "accessory_product_ids": [9001],
+        "equipment_use": {"inverter": "retain", "battery": "replace"},
+    }
+
+    materials = project_materials(cast(Object, source))
+    lines = cast(list[Object], materials["lines"])
+    product_rows = [row for row in lines if row["handling"] == "woo_product"]
+
+    assert [row["product_id"] for row in product_rows] == [6506, 7001, 9001]
+    retained = product_rows[0]
+    assert retained["quantity"] == 2
+    assert retained["retained_quantity"] == 2
+    battery = next(row for row in product_rows if row["product_id"] == 7001)
+    assert battery["quantity"] == 2
+    assert "retained_quantity" not in battery
+    assert battery["replacement_quantity"] == 2
+    for locale, replacement_scope in (
+        ("en", "Selected equipment · purchase 2 as replacements"),
+        ("de", "Ausgewählte Geräte · 2 als Ersatz beschaffen"),
+    ):
+        assert material_scope(battery, locale) == replacement_scope
+        assert replacement_scope in materials_csv(materials, "0" * 64, locale).decode(
+            "utf-8-sig"
+        )
+    # The complete system list keeps the retained converter's documented
+    # package contents, while its inclusion still covers the generic row.
+    package = [row for row in lines if str(row["id"]).startswith("package:6506")]
+    assert [row["quantity"] for row in package] == [2]
+    assert not [row for row in lines if str(row["id"]).startswith("included:")]
+    for locale, scope in (
+        ("en", "Existing device · retained on site, not purchased"),
+        ("de", "Vorhandenes Gerät · bleibt am Standort, keine Beschaffung"),
+    ):
+        assert material_scope(retained, locale) == scope
+        assert scope in materials_csv(materials, "0" * 64, locale).decode("utf-8-sig")
+    woo_products = {
+        cast(int, row["product_id"]): next(
+            product
+            for product in cast(list[Object], equipment["selected_products"])
+            if product["product_id"] == row["product_id"]
+        )
+        for row in product_rows
+    }
+    items = purchase_items(product_rows, woo_products)
+    assert [
+        (item["product_id"], item["quantity"]) for item in cast(list[Object], items)
+    ] == [
+        (7001, 2),
+        (9001, 1),
+    ]
+
+
+def test_plant_retention_purchases_only_new_units_of_a_shared_model() -> None:
+    source = copy.deepcopy(_source_data())
+    equipment = cast(Object, source["equipment"])
+    equipment["selected_products"] = [
+        {
+            "product_id": 6506,
+            "product_revision": "c" * 64,
+            "brand": "GoodWe",
+            "model": "GW75K-ET-G10",
+            "sku": "DLK-A",
+        },
+        {
+            "product_id": 8001,
+            "product_revision": "e" * 64,
+            "brand": "GoodWe",
+            "model": "Controller",
+            "sku": "DLK-C",
+        },
+    ]
+    north_selection: Object = {
+        "inverter_product_id": 6506,
+        "battery_product_id": None,
+        "accessory_product_ids": [],
+        "equipment_use": {"inverter": "retain", "battery": "new"},
+    }
+    south_selection: Object = {
+        "inverter_product_id": 6506,
+        "battery_product_id": None,
+        "accessory_product_ids": [],
+    }
+    # Two same-model converters: north keeps the original device, south adds
+    # a new one. The unmerged per-system assessment bills still carry each
+    # owner's exact quantity, which is where the retained share comes from.
+    equipment["systems"] = [
+        {
+            "id": "north",
+            "name": "North",
+            "selection": north_selection,
+            "assessment": {
+                "provisional_bill_of_materials": [
+                    {"product_id": 6506, "quantity": 1, "basis": "selected_converter"}
+                ]
+            },
+        },
+        {
+            "id": "south",
+            "name": "South",
+            "selection": south_selection,
+            "assessment": {
+                "provisional_bill_of_materials": [
+                    {"product_id": 6506, "quantity": 1, "basis": "selected_converter"}
+                ]
+            },
+        },
+    ]
+    equipment["provisional_bill_of_materials"] = [
+        {
+            "product_id": 6506,
+            "quantity": 2,
+            "basis": "plant_allocations",
+            "unit_ids": ["north", "south"],
+        },
+        {
+            "product_id": 8001,
+            "quantity": 1,
+            "basis": "selected_parallel_controller",
+            "group_ids": ["ac"],
+        },
+    ]
+    equipment["installation_requirements"] = []
+    source["equipment_plant"] = {
+        "units": [
+            {"id": "north", "name": "North", "selection": north_selection},
+            {"id": "south", "name": "South", "selection": south_selection},
+        ],
+        "parallel_groups": [],
+    }
+
+    materials = project_materials(cast(Object, source))
+    lines = cast(list[Object], materials["lines"])
+    product_rows = [row for row in lines if row["handling"] == "woo_product"]
+
+    assert [row["product_id"] for row in product_rows] == [6506, 8001]
+    shared = next(row for row in product_rows if row["product_id"] == 6506)
+    assert shared["quantity"] == 2
+    assert shared["retained_quantity"] == 1
+    assert material_scope(shared, "en") == (
+        "Selected equipment · 1 of 2 retained on site · purchase 1"
+    )
+    assert material_scope(shared, "de") == (
+        "Ausgewählte Geräte · 1 von 2 vorhanden · Beschaffung 1"
+    )
+    woo_products = {
+        cast(int, row["product_id"]): next(
+            product
+            for product in cast(list[Object], equipment["selected_products"])
+            if product["product_id"] == row["product_id"]
+        )
+        for row in product_rows
+    }
+    items = purchase_items(product_rows, woo_products)
+    assert [
+        (item["product_id"], item["quantity"]) for item in cast(list[Object], items)
+    ] == [
+        (6506, 1),
+        (8001, 1),
+    ]
+    # The shared controller is one selected device per AC group, independently
+    # retained from the converter units that group contains.
+    plant = cast(Object, source["equipment_plant"])
+    plant["parallel_groups"] = [
+        {"id": "ac", "controller_product_id": 8001, "controller_use": "retain"}
+    ]
+    kept_controller = project_materials(cast(Object, source))
+    kept_rows = [
+        row
+        for row in cast(list[Object], kept_controller["lines"])
+        if row["handling"] == "woo_product"
+    ]
+    assert (
+        next(row for row in kept_rows if row["product_id"] == 8001)["retained_quantity"]
+        == 1
+    )
+    assert [
+        (item["product_id"], item["quantity"])
+        for item in cast(list[Object], purchase_items(kept_rows, woo_products))
+    ] == [(6506, 1)]
+
+
+@pytest.mark.parametrize(
+    ("use", "line_id", "quantity_key", "en", "de"),
+    [
+        (
+            "retain",
+            "product:retained:7001",
+            "retained_quantity",
+            "Selected equipment · retained quantity unresolved",
+            "Ausgewählte Geräte · Menge vorhandener Geräte noch offen",
+        ),
+        (
+            "replace",
+            "product:replacement:7001",
+            "replacement_quantity",
+            "Selected equipment · replacement quantity unresolved",
+            "Ausgewählte Geräte · Menge der Ersatzgeräte noch offen",
+        ),
+    ],
+)
+def test_existing_device_without_a_bill_line_stays_visible_unresolved(
+    use: str,
+    line_id: str,
+    quantity_key: str,
+    en: str,
+    de: str,
+) -> None:
+    source = copy.deepcopy(_source_data())
+    equipment = cast(Object, source["equipment"])
+    equipment["selected_products"] = [
+        {
+            "product_id": 6506,
+            "product_revision": "c" * 64,
+            "brand": "GoodWe",
+            "model": "GW75K-ET-G10",
+            "sku": "DLK-A",
+        },
+        {
+            "product_id": 7001,
+            "product_revision": "d" * 64,
+            "brand": "GoodWe",
+            "model": "BAT-C",
+            "sku": "DLK-B",
+        },
+    ]
+    # Without an established module count, the selected device remains visible
+    # with an unresolved retained or replacement quantity.
+    equipment["provisional_bill_of_materials"] = [
+        {"product_id": 6506, "quantity": 1, "basis": "selected_converter"}
+    ]
+    equipment["installation_requirements"] = []
+    source["equipment_selection"] = {
+        "inverter_product_id": 6506,
+        "battery_product_id": 7001,
+        "accessory_product_ids": [],
+        "equipment_use": {"inverter": "new", "battery": use},
+    }
+
+    materials = project_materials(cast(Object, source))
+    product_rows = [
+        row
+        for row in cast(list[Object], materials["lines"])
+        if row["handling"] == "woo_product"
+    ]
+
+    assert [row["product_id"] for row in product_rows] == [6506, 7001]
+    selected = next(row for row in product_rows if row["product_id"] == 7001)
+    assert selected["id"] == line_id
+    assert selected["quantity"] is None
+    assert selected[quantity_key] is None
+    assert material_scope(selected, "en") == en
+    assert material_scope(selected, "de") == de
+    with pytest.raises(HandoffIncomplete):
+        purchase_items(product_rows, {})
+
+
+def test_purchase_items_rejects_a_retained_share_above_the_quantity() -> None:
+    line: Object = {
+        "product_id": 6506,
+        "quantity": 1,
+        "retained_quantity": 2,
+        "brand": "GoodWe",
+        "model": "GW75K-ET-G10",
+    }
+
+    with pytest.raises(HandoffIncomplete):
+        purchase_items([line], {})
 
 
 def test_route_quantity_uses_report_display_precision() -> None:

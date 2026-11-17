@@ -7,10 +7,13 @@ import {
 	compileEquipment,
 	equipmentDraft,
 	factoryEquipment,
+	PART_USES,
 } from "../../domain/equipment.ts";
+import type { EquipmentUse, PartUse } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
+import { readObject } from "../../data/readProtocol.ts";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { NumberField } from "../NumberField.tsx";
@@ -42,6 +45,7 @@ export function EquipmentSetup({
 	standalone,
 	heading = true,
 	embedded = false,
+	storageOnly: suppliedStorageOnly = false,
 }: {
 	draft: Draft;
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
@@ -59,7 +63,12 @@ export function EquipmentSetup({
 	standalone: boolean;
 	heading?: boolean;
 	embedded?: boolean;
+	storageOnly?: boolean;
 }) {
+	const storageOnly =
+		suppliedStorageOnly ||
+		(draft.history.current.brief !== undefined &&
+			readObject(draft.history.current.brief).system_scope === "storage_only");
 	const catalog = useEquipmentProducts(client, scope, active);
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
 	const callbacks = useMemo(
@@ -87,6 +96,7 @@ export function EquipmentSetup({
 			return null;
 		}
 	}, [
+		draft.history.current.brief,
 		draft.history.current.equipment_setup,
 		draft.history.current.equipment_selection,
 		draft.history.current.equipment_requirements,
@@ -128,7 +138,10 @@ export function EquipmentSetup({
 		searchPrepared =
 			!!setup &&
 			sameJson(
-				compileEquipmentRequirements(setup),
+				compileEquipmentRequirements(
+					setup,
+					readObject(draft.history.current.equipment_requirements ?? {}),
+				),
 				draft.history.current.equipment_requirements,
 			);
 	} catch {
@@ -152,19 +165,36 @@ export function EquipmentSetup({
 	const selectedAccessories = Array.isArray(setup.accessory_product_ids)
 		? (setup.accessory_product_ids as number[])
 		: [];
+	/** An all-new plan stores as null, the canonical absence of the field. */
+	const nextUse = (
+		part: "inverter" | "battery",
+		value: PartUse,
+	): JsonObject | null => {
+		const previous = setup.equipment_use as Partial<EquipmentUse> | null;
+		const plan: EquipmentUse = {
+			inverter: previous?.inverter ?? "new",
+			battery: previous?.battery ?? "new",
+			[part]: value,
+		};
+		return plan.inverter === "new" && plan.battery === "new" ? null : plan;
+	};
 	const choice = (key: string, label: string, options = products) => (
 		<label className="lp-field">
 			<span>{label}</span>
 			<select
 				value={typeof setup[key] === "number" ? String(setup[key]) : ""}
 				disabled={blocked}
-				onChange={(event) =>
-					change({
-						[key]: event.currentTarget.value
-							? Number(event.currentTarget.value)
-							: null,
-					})
-				}
+				onChange={(event) => {
+					const id = event.currentTarget.value
+						? Number(event.currentTarget.value)
+						: null;
+					change(
+						// Dropping the battery drops any intent declared for it.
+						key === "battery_product_id" && id === null
+							? { [key]: id, equipment_use: nextUse("battery", "new") }
+							: { [key]: id },
+					);
+				}}
 			>
 				<option value="">
 					{key === "battery_product_id"
@@ -174,6 +204,32 @@ export function EquipmentSetup({
 				{options.map((p) => (
 					<option value={p.id} key={p.id}>
 						{p.brand} {p.model}
+					</option>
+				))}
+			</select>
+		</label>
+	);
+	const useChoice = (part: "inverter" | "battery", label: string) => (
+		<label className="lp-field">
+			<span>{label}</span>
+			<select
+				value={
+					(setup.equipment_use as Partial<EquipmentUse> | null)?.[part] ?? "new"
+				}
+				disabled={blocked}
+				onChange={(event) =>
+					change({
+						equipment_use: nextUse(part, event.currentTarget.value as PartUse),
+					})
+				}
+			>
+				{PART_USES.map((value) => (
+					<option value={value} key={value}>
+						{value === "new"
+							? __("Buy new", "linker-tools")
+							: value === "retain"
+								? __("Keep existing", "linker-tools")
+								: __("Replace existing", "linker-tools")}
 					</option>
 				))}
 			</select>
@@ -266,7 +322,8 @@ export function EquipmentSetup({
 						</label>
 					</>
 				)}
-				{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
+				{!storageOnly &&
+					number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
 				{number(
 					"required_usable_kwh",
 					__("Required usable energy", "linker-tools"),
@@ -322,7 +379,7 @@ export function EquipmentSetup({
 			)}
 			{!embedded && requirementFields}
 
-			{!embedded && (
+			{!embedded && !storageOnly && (
 				<PvStringSetup
 					draft={draft}
 					edit={edit}
@@ -363,7 +420,12 @@ export function EquipmentSetup({
 							onClick={() => {
 								if (!setup) return;
 								try {
-									const requirements = compileEquipmentRequirements(setup);
+									const requirements = compileEquipmentRequirements(
+										setup,
+										readObject(
+											draft.history.current.equipment_requirements ?? {},
+										),
+									);
 									if (client.isCurrentScope(scope)) {
 										edit((inputs) => ({
 											...inputs,
@@ -421,6 +483,9 @@ export function EquipmentSetup({
 							__("Battery or storage system", "linker-tools"),
 							storage,
 						)}
+						{useChoice("inverter", __("Inverter", "linker-tools"))}
+						{typeof setup.battery_product_id === "number" &&
+							useChoice("battery", __("Battery", "linker-tools"))}
 						{fixedCount != null ? (
 							<div className="lp-field">
 								<span>{__("Fixed internal module count", "linker-tools")}</span>

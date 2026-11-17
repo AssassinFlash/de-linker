@@ -101,6 +101,7 @@ export const RPC_PATHS = [
 	"assets/read",
 	"assets/content",
 	"profiles/csv",
+	"profiles/standard",
 	"profiles/inspect",
 	"profiles/preview",
 	"geometry/review",

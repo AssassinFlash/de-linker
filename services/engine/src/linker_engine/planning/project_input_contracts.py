@@ -27,7 +27,13 @@ type InputContract = Literal[
     "installation_mounting_quantities_v1",
     "installation_protection_evidence_v1",
     "geometry_image_calibration_v1",
+    "storage_only_brief_v1",
+    "equipment_use_v1",
+    "energy_operating_modes_v1",
 ]
+ENERGY_MODES_INPUT_CONTRACT: InputContract = "energy_operating_modes_v1"
+EQUIPMENT_USE_INPUT_CONTRACT: InputContract = "equipment_use_v1"
+STORAGE_ONLY_INPUT_CONTRACT: InputContract = "storage_only_brief_v1"
 CALIBRATION_INPUT_CONTRACT: InputContract = "geometry_image_calibration_v1"
 MOUNTING_QUANTITIES_INPUT_CONTRACT: InputContract = (
     "installation_mounting_quantities_v1"
@@ -69,12 +75,77 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     MOUNTING_QUANTITIES_INPUT_CONTRACT,
     PROTECTION_EVIDENCE_INPUT_CONTRACT,
     CALIBRATION_INPUT_CONTRACT,
+    STORAGE_ONLY_INPUT_CONTRACT,
+    EQUIPMENT_USE_INPUT_CONTRACT,
+    ENERGY_MODES_INPUT_CONTRACT,
 )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    for key in (
+        "energy_scenario",
+        "energy_plant_setup",
+        "energy_replay",
+        "energy_plant",
+    ):
+        energy = inputs.get(key)
+        if not isinstance(energy, Mapping):
+            continue
+        if (
+            "aux_ac_kw" in energy
+            or (
+                key in ("energy_scenario", "energy_plant_setup")
+                and "controller" in energy
+            )
+            or energy.get("controller")
+            in ("peak_shaving_with_reserve_v1", "proportional_peak_shaving_v1")
+            or (
+                (
+                    key == "energy_replay"
+                    and energy.get("coupling", "independent_ac") == "independent_ac"
+                    or key == "energy_plant"
+                    and energy.get("coupling") == "plant_ac"
+                )
+                and any(
+                    field in energy and energy[field] is None
+                    for field in ("pv_available_asset_id", "aux_ac_asset_id")
+                )
+            )
+        ):
+            required.append(ENERGY_MODES_INPUT_CONTRACT)
+            break
+    brief = inputs.get("brief")
+    if isinstance(brief, Mapping) and brief.get("system_scope") == "storage_only":
+        required.append(STORAGE_ONLY_INPUT_CONTRACT)
+    selections = [inputs.get("equipment_setup"), inputs.get("equipment_selection")]
+    controller_use = False
+    for key in ("equipment_plant", "equipment_plant_setup"):
+        plant = inputs.get(key)
+        if not isinstance(plant, Mapping):
+            continue
+        groups = plant.get("parallel_groups")
+        controller_use = controller_use or any(
+            isinstance(group, Mapping) and group.get("controller_use") is not None
+            for group in (groups if isinstance(groups, list) else [])
+        )
+        units = plant.get("units")
+        for unit in units if isinstance(units, list) else []:
+            if not isinstance(unit, Mapping):
+                continue
+            selections.append(unit.get("selection"))
+            unit_inputs = unit.get("inputs")
+            if isinstance(unit_inputs, Mapping):
+                selections.extend(
+                    unit_inputs.get(field)
+                    for field in ("equipment_setup", "equipment_selection")
+                )
+    if controller_use or any(
+        isinstance(selection, Mapping) and selection.get("equipment_use") is not None
+        for selection in selections
+    ):
+        required.append(EQUIPMENT_USE_INPUT_CONTRACT)
     geometry = inputs.get("geometry")
     if isinstance(geometry, Mapping):
         sources = geometry.get("sources")

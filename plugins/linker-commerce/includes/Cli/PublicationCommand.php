@@ -751,6 +751,7 @@ final class PublicationCommand {
 		$manifest = Publication::manifest();
 		$figures  = array();
 		$claims   = array();
+		$cables   = array();
 		foreach ( $manifest['products'] as $product ) {
 			$id    = (int) $product['product_id'];
 			$count = \Linker\Commerce\Products\Publication\EvidenceBindings::repair_unchanged( $id, $dry_run );
@@ -761,12 +762,17 @@ final class PublicationCommand {
 			if ( $count > 0 ) {
 				$claims[ $id ] = $count;
 			}
+			$count = \Linker\Commerce\Products\Publication\CableFacts::renew_unchanged( $id, $manifest, $dry_run );
+			if ( $count > 0 ) {
+				$cables[ $id ] = $count;
+			}
 		}
-		$total = array_sum( $figures ) + array_sum( $claims );
+		$total = array_sum( $figures ) + array_sum( $claims ) + array_sum( $cables );
 		$count = (string) wp_json_encode(
 			array(
 				'figures'      => $figures,
 				'declarations' => $claims,
+				'cables'       => $cables,
 			),
 			JSON_PRETTY_PRINT
 		);
@@ -774,9 +780,10 @@ final class PublicationCommand {
 			\WP_CLI::log( $count );
 			\WP_CLI::success(
 				sprintf(
-					'%d figure binding(s) and %d declaration(s) cite unchanged bytes and can be renewed.',
+					'%d figure binding(s), %d declaration(s) and %d cable record(s) cite unchanged bytes and can be renewed.',
 					array_sum( $figures ),
-					array_sum( $claims )
+					array_sum( $claims ),
+					array_sum( $cables )
 				)
 			);
 			return;
@@ -787,9 +794,10 @@ final class PublicationCommand {
 		\WP_CLI::log( $count );
 		\WP_CLI::success(
 			sprintf(
-				'%d figure binding(s) and %d declaration(s) renewed; replaced files remain unbound.',
+				'%d figure binding(s), %d declaration(s) and %d cable record(s) renewed; replaced files remain unbound.',
 				array_sum( $figures ),
-				array_sum( $claims )
+				array_sum( $claims ),
+				array_sum( $cables )
 			)
 		);
 	}

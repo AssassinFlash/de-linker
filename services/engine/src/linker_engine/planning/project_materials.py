@@ -18,6 +18,73 @@ from .report_copy import text
 from .report_numbers import number
 
 
+def _equipment_shares(
+    equipment: Object, source: Object, use_kind: str
+) -> dict[int, int | None]:
+    """Read retained/replacement counts from the unmerged per-system bills.
+
+    Same-model units can have different uses. A missing exact bill quantity
+    stays unresolved rather than being inferred from the merged plant total.
+    """
+    owners: list[tuple[Object, list[Object]]] = []
+    systems = equipment.get("systems")
+    if isinstance(systems, list):
+        for system in cast(list[Object], systems):
+            raw_selection = system.get("selection")
+            assessment = system.get("assessment")
+            raw_bill = (
+                assessment.get("provisional_bill_of_materials")
+                if isinstance(assessment, dict)
+                else None
+            )
+            if isinstance(raw_selection, dict) and isinstance(raw_bill, list):
+                owners.append((raw_selection, cast(list[Object], raw_bill)))
+    elif isinstance(source.get("equipment_selection"), dict):
+        owners.append(
+            (
+                cast(Object, source["equipment_selection"]),
+                cast(list[Object], equipment.get("provisional_bill_of_materials")),
+            )
+        )
+    shares: dict[int, int | None] = {}
+    for selection, bill in owners:
+        use = selection.get("equipment_use")
+        if not isinstance(use, dict):
+            continue
+        retained_ids: set[int] = set()
+        for part in ("inverter", "battery"):
+            if use.get(part) != use_kind:
+                continue
+            product_id = selection.get(f"{part}_product_id")
+            if type(product_id) is int:
+                retained_ids.add(product_id)
+        for product_id in retained_ids:
+            exact: list[int] = []
+            for line in bill:
+                if line.get("product_id") != product_id:
+                    continue
+                quantity = line.get("quantity")
+                if type(quantity) is int:
+                    exact.append(quantity)
+            if product_id not in shares:
+                shares[product_id] = sum(exact) if exact else None
+                continue
+            current = shares[product_id]
+            if current is not None and exact:
+                shares[product_id] = current + sum(exact)
+            else:
+                shares[product_id] = None
+    plant = source.get("equipment_plant")
+    if isinstance(plant, dict):
+        for group in cast(list[Object], plant["parallel_groups"]):
+            product_id = group.get("controller_product_id")
+            if group.get("controller_use") == use_kind and type(product_id) is int:
+                # plant_assessment emits one selected controller per AC group.
+                current = shares.get(product_id, 0)
+                shares[product_id] = current + 1 if current is not None else None
+    return shares
+
+
 def project_materials(source: Object) -> Object:
     lines: list[Json] = []
     covered_inclusions: set[tuple[str, str]] = set()
@@ -27,22 +94,38 @@ def project_materials(source: Object) -> Object:
             p["product_id"]: p
             for p in cast(list[Object], equipment["selected_products"])
         }
+        retained_shares = _equipment_shares(equipment, source, "retain")
+        replacement_shares = _equipment_shares(equipment, source, "replace")
         for index, line in enumerate(
             cast(list[Object], equipment["provisional_bill_of_materials"])
         ):
-            product = products.get(line["product_id"], {})
+            product_id = cast(int, line["product_id"])
+            product = products.get(product_id, {})
             identity = {
                 field: line.get(field, product.get(field))
                 for field in ("brand", "model", "sku")
             }
             facts = product.get("facts", {})
             sales = facts.get("sales_unit_kind") if isinstance(facts, dict) else None
+            # Retained devices stay in the complete system list with their
+            # exact on-site share; procurement reads quantity minus the share.
+            retained_quantity = (
+                {"retained_quantity": retained_shares[product_id]}
+                if product_id in retained_shares
+                else {}
+            )
             lines.append(
                 {
-                    "id": f"product:{index}:{line['product_id']}",
+                    "id": f"product:{index}:{product_id}",
                     "handling": "woo_product",
-                    "product_id": line["product_id"],
+                    "product_id": product_id,
                     **identity,
+                    **retained_quantity,
+                    **(
+                        {"replacement_quantity": replacement_shares[product_id]}
+                        if product_id in replacement_shares
+                        else {}
+                    ),
                     "quantity": line.get("quantity"),
                     "unit": "piece",
                     "basis": line["basis"],
@@ -77,6 +160,8 @@ def project_materials(source: Object) -> Object:
                         not math.isfinite(quantity) or quantity > 2**53 - 1
                     ):
                         quantity = None
+                    # Package contents describe the complete system, so a
+                    # retained device's documented inclusions stay listed.
                     lines.append(
                         {
                             "id": f"package:{line['product_id']}:{item['id']}",
@@ -127,6 +212,8 @@ def project_materials(source: Object) -> Object:
                     cast(list[Object], installation["items"])
                 ):
                     product_id = cast(int, line["product_id"])
+                    # Installation facts describe the complete system and stay
+                    # listed for a retained device, exactly as for a new one.
                     lines.append(
                         _installation_fact_line(
                             product_id,
@@ -170,6 +257,49 @@ def project_materials(source: Object) -> Object:
                         ),
                     }
                 )
+        # Keep declared retained/replacement devices visible when their module
+        # count was not established by the assessment.
+        billed = {
+            line["product_id"]
+            for line in cast(list[Object], equipment["provisional_bill_of_materials"])
+        }
+        for product_id in sorted(
+            (set(retained_shares) | set(replacement_shares)) - billed
+        ):
+            product = products.get(product_id, {})
+            use = "retained" if product_id in retained_shares else "replacement"
+            lines.append(
+                {
+                    "id": f"product:{use}:{product_id}",
+                    "handling": "woo_product",
+                    "product_id": product_id,
+                    **{
+                        field: product.get(field) for field in ("brand", "model", "sku")
+                    },
+                    **(
+                        {"retained_quantity": None}
+                        if product_id in retained_shares
+                        else {}
+                    ),
+                    **(
+                        {"replacement_quantity": None}
+                        if product_id in replacement_shares
+                        else {}
+                    ),
+                    "quantity": None,
+                    "unit": "piece",
+                    "basis": f"{use}_original_without_bill",
+                    "source": {
+                        "woo_basis": cast(Object, source.get("woo_bases", {})).get(
+                            "equipment"
+                        ),
+                        "product_revision": product.get("product_revision"),
+                        "selection": source.get(
+                            "equipment_plant", source.get("equipment_selection")
+                        ),
+                    },
+                }
+            )
     pv = source.get("pv_components")
     if isinstance(pv, dict) and pv.get("status") == "available":
         for part in cast(list[Object], pv["components"]):
@@ -476,6 +606,34 @@ def material_scope(line: Object, locale: str) -> str:
             else "material_installation_requirement",
             locale,
         )
+    if line["handling"] == "woo_product":
+        scope = text("material_woo_product", locale)
+        if "retained_quantity" in line:
+            retained = line["retained_quantity"]
+            quantity = line.get("quantity")
+            if type(retained) is not int or type(quantity) is not int:
+                scope += f" · {text('material_retention_unresolved', locale)}"
+            elif retained >= quantity:
+                scope = text("material_retained_full", locale)
+            elif locale == "de":
+                scope += (
+                    f" · {retained} von {quantity} vorhanden"
+                    f" · Beschaffung {quantity - retained}"
+                )
+            else:
+                scope += (
+                    f" · {retained} of {quantity} retained on site"
+                    f" · purchase {quantity - retained}"
+                )
+        if "replacement_quantity" in line:
+            replacement = line["replacement_quantity"]
+            description = (
+                text("material_replacements", locale).format(quantity=replacement)
+                if type(replacement) is int
+                else text("material_replacements_unresolved", locale)
+            )
+            scope += f" · {description}"
+        return scope
     if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")

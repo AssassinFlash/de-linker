@@ -28,6 +28,7 @@ export function ScenarioForm({
 	scope,
 	active,
 	referenceCapacitySupported = false,
+	storageOnly = false,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -44,6 +45,7 @@ export function ScenarioForm({
 	scope: string;
 	active: boolean;
 	referenceCapacitySupported?: boolean;
+	storageOnly?: boolean;
 }) {
 	const validity = useRef(new Map<string, boolean>());
 	const report = useCallback(
@@ -67,6 +69,12 @@ export function ScenarioForm({
 								...value,
 								coupling: e.currentTarget.value as
 									"shared_dc" | "independent_ac",
+								...(e.currentTarget.value === "shared_dc"
+									? {
+											controller: "self_consumption_with_reserve_v1" as const,
+											aux_ac_kw: null,
+										}
+									: {}),
 								dc: value.dc ?? emptyDcScenario(),
 								battery_binding: null,
 							})
@@ -75,7 +83,7 @@ export function ScenarioForm({
 						<option value="independent_ac">
 							{__("Separate AC connections", "linker-tools")}
 						</option>
-						<option value="shared_dc">
+						<option value="shared_dc" disabled={storageOnly}>
 							{__("PV and battery share an inverter", "linker-tools")}
 						</option>
 					</select>
@@ -194,6 +202,73 @@ export function ScenarioForm({
 				/>
 			</div>
 			<section className="lp-scenario-block" hidden={section !== "operation"}>
+				{!dc && (
+					<>
+						<label className="lp-field">
+							<span>{__("Operating strategy", "linker-tools")}</span>
+							<select
+								value={value.controller ?? "self_consumption_with_reserve_v1"}
+								onChange={(e) =>
+									onChange({
+										...value,
+										controller: e.currentTarget.value as NonNullable<
+											ScenarioDraft["controller"]
+										>,
+										schedule: value.schedule.map((p) => ({
+											...p,
+											...(e.currentTarget.value ===
+											"peak_shaving_with_reserve_v1"
+												? { import_policy: "limited" as const }
+												: {}),
+										})),
+									})
+								}
+							>
+								<option value="self_consumption_with_reserve_v1">
+									{__("Self-consumption with reserve", "linker-tools")}
+								</option>
+								<option value="peak_shaving_with_reserve_v1">
+									{__("Peak shaving · separate AC storage", "linker-tools")}
+								</option>
+							</select>
+						</label>
+						<p>
+							{__(
+								"Peak shaving charges from the grid only when grid charging is allowed and import headroom remains. Discharge covers demand above the cap; during outages it supplies the critical load.",
+								"linker-tools",
+							)}
+						</p>
+						<label className="lp-field">
+							<span>
+								<input
+									type="checkbox"
+									checked={value.aux_ac_kw != null}
+									onChange={(e) =>
+										onChange({
+											...value,
+											aux_ac_kw: e.currentTarget.checked ? 0 : null,
+										})
+									}
+								/>{" "}
+								{__(
+									"Use constant AC auxiliary demand instead of a profile",
+									"linker-tools",
+								)}
+							</span>
+						</label>
+						{value.aux_ac_kw != null && (
+							<ScenarioNumber
+								field="aux-ac"
+								label={__("Constant AC auxiliary demand", "linker-tools")}
+								value={value.aux_ac_kw}
+								unit="kW"
+								locale={locale}
+								report={report}
+								onChange={(aux_ac_kw) => onChange({ ...value, aux_ac_kw })}
+							/>
+						)}
+					</>
+				)}
 				<OperatingPeriodsForm
 					periods={value.schedule}
 					onChange={(schedule) => onChange({ ...value, schedule })}

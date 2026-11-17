@@ -49,7 +49,9 @@ class AnnualLoadBrief(Document):
 class PlanningBrief(Document):
     schema_version: SchemaVersion
     project_use: Literal["residential", "commercial", "industrial"] | None
-    system_scope: Literal["new_pv_storage", "storage_addition", "pv_only"] | None
+    system_scope: (
+        Literal["new_pv_storage", "storage_addition", "storage_only", "pv_only"] | None
+    )
     site: SiteBrief
     annual_load: AnnualLoadBrief
     project_note: Text

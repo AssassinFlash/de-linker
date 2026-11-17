@@ -7,6 +7,7 @@ import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
+import type { Brief } from "../domain/brief.ts";
 import { projectInputContract } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
@@ -54,6 +55,9 @@ export function NewProject({
 		Boolean(entryHints || initialProject || openOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
+	const [systemScope, setSystemScope] =
+		useState<Brief["system_scope"]>("new_pv_storage");
+	const [solarEntry, setSolarEntry] = useState("roof");
 	const [country, setCountry] = useState("");
 	const [address, setAddress] = useState("");
 	const [addressFailure, setAddressFailure] = useState<
@@ -98,11 +102,14 @@ export function NewProject({
 			entryHints.postalCode,
 			entryHints.productId,
 		].some((v) => v !== null);
+	const standardEntry = Boolean(roofStart && !initialProject && !entryHints);
 	const roofEntry = Boolean(
 		roofStart &&
 		!initialProject &&
-		(!entryHints ||
-			(entryHints.roof && !entryHints.invalid && !hasCarriedValues)),
+		((standardEntry &&
+			systemScope !== "storage_only" &&
+			solarEntry === "roof") ||
+			(entryHints?.roof && !entryHints.invalid && !hasCarriedValues)),
 	);
 	const needsAddress = roofEntry && !intent.current;
 	useEffect(() => {
@@ -200,6 +207,7 @@ export function NewProject({
 				roofInputs = {
 					brief: {
 						...brief,
+						...(standardEntry ? { system_scope: systemScope } : {}),
 						site: {
 							...brief.site,
 							country_code: country,
@@ -268,7 +276,20 @@ export function NewProject({
 										),
 										placed,
 									)
-								: { brief: emptyBrief() }),
+								: {
+										brief: {
+											...emptyBrief(),
+											...(standardEntry
+												? {
+														system_scope: systemScope,
+														site: {
+															...emptyBrief().site,
+															country_code: country || null,
+														},
+													}
+												: {}),
+										},
+									}),
 					key: crypto.randomUUID(),
 				},
 				session.runtime.limits.max_json_depth,
@@ -277,7 +298,10 @@ export function NewProject({
 			if (selectedRequest === undefined)
 				destination.current = roofEntry
 					? "design"
-					: entryHints?.equipment
+					: entryHints?.equipment ||
+						  (standardEntry &&
+								systemScope !== "storage_only" &&
+								solarEntry === "known")
 						? "equipment"
 						: entryHints?.roof
 							? "design"
@@ -526,6 +550,77 @@ export function NewProject({
 					</select>
 				</label>
 			)}
+			{standardEntry && !intent.current && (
+				<div className="lp-project-start-options">
+					<label className="lp-field">
+						<span>{__("Planned system", "linker-tools")}</span>
+						<select
+							name="system_scope"
+							value={systemScope ?? ""}
+							disabled={busy}
+							onChange={(event) =>
+								setSystemScope(
+									event.currentTarget.value as Brief["system_scope"],
+								)
+							}
+						>
+							<option value="new_pv_storage">
+								{__("Solar and storage", "linker-tools")}
+							</option>
+							<option value="pv_only">
+								{__("Solar only", "linker-tools")}
+							</option>
+							<option value="storage_addition">
+								{__("Add storage to an existing system", "linker-tools")}
+							</option>
+							<option value="storage_only">
+								{__("Storage only", "linker-tools")}
+							</option>
+						</select>
+					</label>
+					{!roofEntry && roofStart && (
+						<label className="lp-field">
+							<span>{__("Country", "linker-tools")}</span>
+							<select
+								name="country"
+								value={country}
+								disabled={busy}
+								autoComplete="country"
+								onChange={(event) => setCountry(event.currentTarget.value)}
+							>
+								<option value="">
+									{__("Select a country", "linker-tools")}
+								</option>
+								{Object.entries(roofStart.countries)
+									.sort((a, b) => a[1].localeCompare(b[1], roofStart.locale))
+									.map(([code, name]) => (
+										<option key={code} value={code}>
+											{name}
+										</option>
+									))}
+							</select>
+						</label>
+					)}
+					{systemScope !== "storage_only" && (
+						<label className="lp-field">
+							<span>{__("Solar layout", "linker-tools")}</span>
+							<select
+								name="solar_entry"
+								value={solarEntry}
+								disabled={busy}
+								onChange={(event) => setSolarEntry(event.currentTarget.value)}
+							>
+								<option value="roof">
+									{__("Plan on the map", "linker-tools")}
+								</option>
+								<option value="known">
+									{__("I already have the solar details", "linker-tools")}
+								</option>
+							</select>
+						</label>
+					)}
+				</div>
+			)}
 			{needsAddress && roofStart ? (
 				<RoofStart
 					config={roofStart}
@@ -545,6 +640,7 @@ export function NewProject({
 				<label className="lp-field">
 					<span>{__("Project name", "linker-tools")}</span>
 					<input
+						name="project_title"
 						autoFocus
 						required
 						maxLength={256}

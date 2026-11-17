@@ -50,8 +50,9 @@ export interface EnergyInputs extends JsonObject {
 	readonly schema_version: 1;
 	readonly gross_load_asset_id: string;
 	readonly critical_load_asset_id: string | null;
-	readonly pv_available_asset_id: string;
-	readonly aux_ac_asset_id: string;
+	readonly pv_available_asset_id: string | null;
+	readonly aux_ac_asset_id: string | null;
+	readonly aux_ac_kw?: number | null;
 	readonly battery_parameters_asset_id: string;
 	readonly initial_inventory: {
 		readonly pv_kwh: number;
@@ -61,7 +62,8 @@ export interface EnergyInputs extends JsonObject {
 		readonly source_note: string;
 	};
 	readonly schedule: readonly OperatingPeriod[];
-	readonly controller: "self_consumption_with_reserve_v1";
+	readonly controller:
+		"self_consumption_with_reserve_v1" | "peak_shaving_with_reserve_v1";
 	readonly terminal_min_kwh: number | null;
 }
 export interface PeriodDraft extends JsonObject {
@@ -78,6 +80,9 @@ export interface PeriodDraft extends JsonObject {
 	readonly allow_grid_charge: boolean | null;
 }
 export interface ScenarioDraft extends JsonObject {
+	readonly controller?:
+		"self_consumption_with_reserve_v1" | "peak_shaving_with_reserve_v1";
+	readonly aux_ac_kw?: number | null;
 	readonly schema_version: 1;
 	readonly coupling?: "independent_ac" | "shared_dc";
 	readonly dc?: DcScenarioDraft;
@@ -132,6 +137,11 @@ const checkParts = ajv.compile<JsonObject>({
 	),
 });
 const draftShape = object({
+	controller: {
+		type: "string",
+		enum: ["self_consumption_with_reserve_v1", "peak_shaving_with_reserve_v1"],
+	},
+	aux_ac_kw: nullableEnergy,
 	schema_version: { type: "integer", const: 1 },
 	coupling: { enum: ["independent_ac", "shared_dc"], type: "string" },
 	dc: object(
@@ -198,7 +208,7 @@ const draftShape = object({
 }) as { required: string[] };
 // Optional DC settings preserve every previously saved AC draft verbatim.
 draftShape.required = draftShape.required.filter(
-	(key) => key !== "coupling" && key !== "dc",
+	(key) => !["coupling", "dc", "controller", "aux_ac_kw"].includes(key),
 );
 const checkDraft = ajv.compile<ScenarioDraft>({
 	$defs: { ...batterySchema.$defs, ...dcLossSchema.$defs },
@@ -270,11 +280,29 @@ export function scenarioParts(
 	draft: ScenarioDraft,
 	profiles: ProfileSelections,
 	equipmentSelection: JsonObject | null = null,
+	projectInputs: JsonObject = {},
 ): {
 	readonly parameters: BatteryParameters | DcLossScenario;
 	readonly inputs: JsonObject;
 } {
 	const dc = draft.coupling === "shared_dc";
+	if (
+		dc &&
+		(draft.controller === "peak_shaving_with_reserve_v1" ||
+			draft.aux_ac_kw != null)
+	)
+		throw new ApiError(422, "scenario_ac_required");
+	if (
+		draft.controller === "peak_shaving_with_reserve_v1" &&
+		draft.schedule.some(
+			(p) =>
+				p.mode === "connected" &&
+				(p.import_policy !== "limited" || p.import_cap_kw === null),
+		)
+	)
+		throw new ApiError(422, "grid_cap_required");
+	const storageOnly = isStorageOnly(projectInputs);
+	if (storageOnly && dc) throw new ApiError(422, "storage_only_ac_required");
 	if (dc && !draft.dc?.source_note.trim())
 		throw new ApiError(422, "battery_source_required");
 	if (dc && !equipmentSelection)
@@ -299,7 +327,15 @@ export function scenarioParts(
 		: scenarioBattery(draft);
 	const { gross_load, critical_load, pv_available_ac, aux_ac } =
 		profiles.selected;
-	if (!gross_load || !pv_available_ac || !aux_ac)
+	const pvDisabled =
+		!dc &&
+		draft.schedule.length > 0 &&
+		draft.schedule.every((period) => period.pv_enabled === false);
+	if (
+		!gross_load ||
+		(!storageOnly && !pvDisabled && !pv_available_ac) ||
+		(!aux_ac && draft.aux_ac_kw == null)
+	)
 		throw new ApiError(422, "scenario_profiles_required");
 	const inventory = compileInitialInventory(draft.initial_inventory);
 	const total =
@@ -309,7 +345,14 @@ export function scenarioParts(
 	if (parameters.model !== DC_MODEL && total > parameters.usable_window_kwh)
 		throw new ApiError(422, "initial_inventory_exceeds_window");
 	const terminal = compileTerminalMinimum(draft);
-	const schedule = compileOperatingPeriods(draft.schedule, critical_load);
+	const schedule = compileOperatingPeriods(
+		storageOnly
+			? draft.schedule.map((p) => ({ ...p, pv_enabled: false }))
+			: draft.schedule,
+		critical_load,
+	);
+	if (storageOnly && inventory.pv_kwh !== 0)
+		throw new ApiError(422, "storage_only_initial_pv");
 	const inputs: JsonObject = {
 		schema_version: 1,
 		...(dc
@@ -321,11 +364,13 @@ export function scenarioParts(
 			: {}),
 		gross_load_asset_id: gross_load,
 		critical_load_asset_id: critical_load ?? null,
-		pv_available_asset_id: pv_available_ac,
-		aux_ac_asset_id: aux_ac,
+		pv_available_asset_id:
+			storageOnly || pvDisabled ? null : (pv_available_ac ?? null),
+		aux_ac_asset_id: draft.aux_ac_kw == null ? aux_ac! : null,
+		...(draft.aux_ac_kw == null ? {} : { aux_ac_kw: draft.aux_ac_kw }),
 		initial_inventory: { ...inventory, basis: "user_declared" },
 		schedule,
-		controller: "self_consumption_with_reserve_v1",
+		controller: draft.controller ?? "self_consumption_with_reserve_v1",
 		terminal_min_kwh: terminal,
 	};
 	if (!checkParts(inputs)) throw new ApiError(422, "invalid_energy_inputs");
@@ -336,11 +381,13 @@ export function compileScenario(
 	draft: ScenarioDraft,
 	profiles: ProfileSelections,
 	equipmentSelection: JsonObject | null = null,
+	projectInputs: JsonObject = {},
 ): EnergyInputs {
 	const { parameters, inputs } = scenarioParts(
 			draft,
 			profiles,
 			equipmentSelection,
+			projectInputs,
 		),
 		binding = draft.battery_binding;
 	if (
@@ -464,4 +511,11 @@ export function compileTerminalMinimum(
 	)
 		throw new ApiError(422, "terminal_condition_required");
 	return draft.terminal_policy === "none" ? null : draft.terminal_min_kwh;
+}
+
+export function isStorageOnly(inputs: JsonObject): boolean {
+	return (
+		inputs.brief !== undefined &&
+		readObject(inputs.brief).system_scope === "storage_only"
+	);
 }

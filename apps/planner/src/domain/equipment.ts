@@ -21,6 +21,14 @@ export function factoryEquipment(
 		: setup;
 }
 
+/** Procurement intent per primary device; absent or null means new. */
+export const PART_USES = ["new", "retain", "replace"] as const;
+export type PartUse = (typeof PART_USES)[number];
+export interface EquipmentUse extends JsonObject {
+	inverter: PartUse;
+	battery: PartUse;
+}
+
 export interface EquipmentSelection extends JsonObject {
 	schema_version: 1;
 	inverter_product_id: number;
@@ -34,6 +42,7 @@ export interface EquipmentSelection extends JsonObject {
 	required_usable_kwh: number | null;
 	required_discharge_ac_kw: number | null;
 	product_revisions: Record<string, string>;
+	equipment_use?: EquipmentUse | null;
 }
 const validate = new Ajv2020({
 	strict: true,
@@ -57,7 +66,10 @@ export function readEquipmentSelection(value: unknown): EquipmentSelection {
 			[...new Set(selected)].map(String).sort().join() ||
 		(value.modules_per_stack !== null &&
 			value.parallel_stacks !== null &&
-			!Number.isSafeInteger(value.modules_per_stack * value.parallel_stacks))
+			!Number.isSafeInteger(value.modules_per_stack * value.parallel_stacks)) ||
+		(value.equipment_use != null &&
+			value.equipment_use.battery !== "new" &&
+			value.battery_product_id === null)
 	)
 		throw new ApiError(422, "equipment_selection_incomplete");
 	return value;
@@ -73,7 +85,30 @@ const EQUIPMENT_SETUP_FIELDS = [
 	"pv_dc_kw",
 	"required_usable_kwh",
 	"required_discharge_ac_kw",
+	"equipment_use",
 ] as const;
+
+/** The setup row carries exactly the hardware fields and nothing else. */
+const EQUIPMENT_ROW_FIELDS = [
+	"schema_version",
+	"accessory_product_ids",
+	...EQUIPMENT_SETUP_FIELDS,
+] as const;
+
+/**
+ * Project any source document onto the setup-row contract. Requirements-only
+ * fields (notably `application`) belong to equipment_requirements; the
+ * selection schema rejects unknown properties, so keeping them in a draft row
+ * fails every later compileEquipment (measured 2026-11-15 on saved projects).
+ */
+function equipmentRow(row: JsonObject): JsonObject {
+	return Object.fromEntries(
+		EQUIPMENT_ROW_FIELDS.filter((key) => row[key] !== undefined).map((key) => [
+			key,
+			row[key] as Json,
+		]),
+	);
+}
 
 /**
  * A saved equipment_setup row can be an all-null placeholder (written before
@@ -86,11 +121,16 @@ function equipmentSetupEmpty(row: JsonObject): boolean {
 	return (
 		Array.isArray(accessories) &&
 		accessories.length === 0 &&
-		EQUIPMENT_SETUP_FIELDS.every((key) => row[key] === null)
+		// Rows saved before `equipment_use` exist carry it as undefined.
+		EQUIPMENT_SETUP_FIELDS.every((key) => row[key] == null)
 	);
 }
 
 export function equipmentDraft(inputs: JsonObject): JsonObject {
+	const noPv =
+		inputs.brief !== undefined &&
+		readObject(inputs.brief).system_scope === "storage_only";
+	const scopeFields = noPv ? { pv_dc_kw: 0 } : {};
 	if (inputs.equipment_setup !== undefined) {
 		const row = readObject(inputs.equipment_setup);
 		if (
@@ -124,14 +164,28 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 			)
 				throw new ApiError(422, "equipment_selection_incomplete");
 		}
-		if (!equipmentSetupEmpty(row)) return row;
+		const use = row.equipment_use;
+		if (
+			use !== undefined &&
+			use !== null &&
+			(typeof use !== "object" ||
+				!PART_USES.includes((use as JsonObject).inverter as PartUse) ||
+				!PART_USES.includes((use as JsonObject).battery as PartUse))
+		)
+			throw new ApiError(422, "equipment_selection_incomplete");
+		if (!equipmentSetupEmpty(row))
+			return { ...equipmentRow(row), ...scopeFields };
 	}
 	if (inputs.equipment_selection !== undefined)
-		return readEquipmentSelection(inputs.equipment_selection);
+		return {
+			...readEquipmentSelection(inputs.equipment_selection),
+			...scopeFields,
+		};
 	if (inputs.equipment_requirements !== undefined)
 		return {
 			...equipmentDraft({}),
-			...readEquipmentRequirements(inputs.equipment_requirements),
+			...equipmentRow(readEquipmentRequirements(inputs.equipment_requirements)),
+			...scopeFields,
 		};
 	return {
 		schema_version: 1,
@@ -142,9 +196,10 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 		accessory_product_ids: [],
 		grid_phase: null,
 		operating_mode: null,
-		pv_dc_kw: null,
+		pv_dc_kw: noPv ? 0 : null,
 		required_usable_kwh: null,
 		required_discharge_ac_kw: null,
+		equipment_use: null,
 	};
 }
 export function changeEquipment(
@@ -178,4 +233,20 @@ export function compileEquipment(
 	}
 	const value = { ...setup, product_revisions: revisions };
 	return readEquipmentSelection(value);
+}
+
+/** A search result may not turn retained hardware into a different purchase. */
+export function checkRetainedEquipment(
+	setup: JsonObject,
+	candidate: EquipmentSelection,
+): void {
+	const use = setup.equipment_use as EquipmentUse | null | undefined;
+	const keys = [
+		...(use?.inverter === "retain" ? ["inverter_product_id"] : []),
+		...(use?.battery === "retain"
+			? ["battery_product_id", "modules_per_stack", "parallel_stacks"]
+			: []),
+	];
+	if (keys.some((key) => setup[key] !== candidate[key]))
+		throw new ApiError(409, "retained_equipment_changed");
 }

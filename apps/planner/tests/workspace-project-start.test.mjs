@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
 import React, { act } from "react";
-import { setupDom, until } from "./dom-fixture.mjs";
+import { setupDom, until, enter } from "./dom-fixture.mjs";
 register("./map-library-loader.mjs", import.meta.url);
 
 const projectId = "7".repeat(32);
@@ -27,14 +27,7 @@ const session = {
 	},
 };
 
-/**
- * The one-screen start owns a running chain of server commands. Creating the
- * project puts a row in the saved-project index, so a start rendered only in
- * the empty-index branch is unmounted by its own first success: the chain stops
- * polling and its queued server run is orphaned. Measured in production before
- * the fix: projects/create 200 at 12.4s, the start gone at 13.3s, no runs/read.
- */
-test("the start survives its own project appearing in the saved-project index", async (t) => {
+test("project setup retains entered information when the saved-project index refreshes", async (t) => {
 	const fixture = setupDom();
 	// The shared fixture opens a project from its URL; this test starts at the
 	// empty index, which is where the one-screen start lives.
@@ -124,16 +117,17 @@ test("the start survives its own project appearing in the saved-project index", 
 			),
 		),
 	);
-	const start = () => document.querySelector(".lp-quickstart");
-	await until(() => document.querySelector(".lp-roof-start"));
-	assert.equal(start(), null, "roof location is the default on an empty index");
-	await act(async () =>
-		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent === "Start with equipment")
-			.click(),
+	const start = () => document.querySelector(".lp-new-project");
+	await until(() => document.querySelector('select[name="system_scope"]'));
+	await act(async () => {
+		const scope = document.querySelector('select[name="system_scope"]');
+		scope.value = "storage_only";
+		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(
+		document.querySelector('input[name="project_title"]'),
+		"Oslo storage",
 	);
-	await until(() => start());
-	assert.equal(document.querySelector(".lp-workspace-start").hidden, true);
 
 	listed = [
 		{
@@ -152,8 +146,13 @@ test("the start survives its own project appearing in the saved-project index", 
 	await until(
 		() => document.querySelectorAll(".lp-project-entry").length === 1,
 	);
-	assert.ok(
-		start(),
-		"the start that is running the project must stay mounted when the index gains its row",
+	assert.ok(start());
+	assert.equal(
+		document.querySelector('input[name="project_title"]').value,
+		"Oslo storage",
+	);
+	assert.equal(
+		document.querySelector('select[name="system_scope"]').value,
+		"storage_only",
 	);
 });

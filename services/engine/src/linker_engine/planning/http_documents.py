@@ -350,6 +350,22 @@ class CsvImport(Command):
     key: Key
 
 
+class StandardProfile(Command):
+    """Expand a published BDEW/VDEW standard load profile into an owned asset.
+
+    The published edition's own calendar rules apply (no caller holidays or
+    dynamisation overrides), so replay after a retry reproduces the same bytes.
+    """
+
+    project_id: Id
+    edition: Literal[1999, 2025]
+    profile: Annotated[str, Field(min_length=1, max_length=8)]
+    year: Annotated[int, Field(strict=True, ge=2000, le=2100)]
+    annual_kwh: Annotated[float, Field(gt=0)]
+    timezone: Annotated[str, Field(min_length=1, max_length=64)]
+    key: Key
+
+
 class CsvInspect(Command):
     project_id: Id
     content_base64: str

@@ -23,6 +23,7 @@ const MERCATOR_LATITUDE_LIMIT = 85.051129;
 
 export interface MapObject {
 	object_id: string;
+	array_id?: string;
 	kind: "roof" | "module" | "obstacle" | "keepout";
 	roof_id: string;
 	source_id: string;
@@ -168,6 +169,7 @@ export function geographicMapGeometry(
 			{
 				kind: "module",
 				object_id: pose.id,
+				array_id: array.id,
 				roof_id: roof.id,
 				source_id: array.source_id,
 				included: pose.included,

@@ -171,10 +171,35 @@
       ]
     },
     "pv_available_asset_id": {
-      "$ref": "#/$defs/Identifier"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "aux_ac_asset_id": {
-      "$ref": "#/$defs/Identifier"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "aux_ac_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "battery_parameters_asset_id": {
       "$ref": "#/$defs/Identifier"
@@ -191,7 +216,10 @@
       "type": "array"
     },
     "controller": {
-      "const": "self_consumption_with_reserve_v1",
+      "enum": [
+        "self_consumption_with_reserve_v1",
+        "peak_shaving_with_reserve_v1"
+      ],
       "title": "Controller",
       "type": "string"
     },

@@ -14,8 +14,9 @@ import {
 	readEquipmentSelection,
 	changeEquipment,
 	factoryEquipment,
+	PART_USES,
 } from "./equipment.ts";
-import type { EquipmentSelection } from "./equipment.ts";
+import type { EquipmentSelection, PartUse } from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
 import type { BatteryAssemblies } from "../data/equipmentProducts.ts";
 
@@ -45,6 +46,8 @@ export interface PlantGroupDraft extends JsonObject {
 	unit_ids: string[];
 	controller_product_id: number | null;
 	control_network?: "lan" | "rs485";
+	/** Same procurement semantics as the selection's equipment_use. */
+	controller_use?: PartUse | null;
 }
 /** Preserve optional context across edit/prepare/adopt without adding nulls to old projects. */
 export function plantGroupDraft({
@@ -154,7 +157,10 @@ export function readEquipmentPlant(value: unknown): EquipmentPlant {
 			new Set(group.unit_ids).size !== group.unit_ids.length ||
 			group.unit_ids.some((id) => !ids.has(id) || used.has(id)) ||
 			(group.controller_product_id === null) !==
-				(group.controller_revision === null)
+				(group.controller_revision === null) ||
+			(group.controller_use != null &&
+				group.controller_use !== "new" &&
+				group.controller_product_id === null)
 		)
 			throw incomplete();
 		for (const id of group.unit_ids) used.add(id);
@@ -168,15 +174,26 @@ export function readEquipmentPlant(value: unknown): EquipmentPlant {
 	return value;
 }
 export function readPlantDraft(inputs: JsonObject): PlantDraft {
+	const noPv =
+		inputs.brief !== undefined &&
+		readObject(inputs.brief).system_scope === "storage_only";
+	const scopeFields = noPv ? { pv_dc_kw: 0 } : {};
+	const unitInputs = (source: JsonObject): JsonObject =>
+		noPv
+			? {
+					...source,
+					equipment_setup: { ...equipmentDraft(source), pv_dc_kw: 0 },
+				}
+			: source;
 	if (inputs.equipment_plant_setup === undefined) {
 		const plant = readEquipmentPlant(inputs.equipment_plant);
 		return {
 			schema_version: 1,
-			requirements: plant.requirements,
+			requirements: { ...plant.requirements, ...scopeFields },
 			units: plant.units.map((u) => ({
 				id: u.id,
 				name: u.name,
-				inputs: { equipment_selection: u.selection },
+				inputs: unitInputs({ equipment_selection: u.selection }),
 			})),
 			parallel_groups: plant.parallel_groups.map(plantGroupDraft),
 		};
@@ -189,7 +206,7 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 		!Array.isArray(raw.parallel_groups)
 	)
 		throw incomplete();
-	const requirements = readObject(raw.requirements);
+	const requirements = { ...readObject(raw.requirements), ...scopeFields };
 	const units = raw.units.map((value) => {
 		const u = readObject(value),
 			source = readObject(u.inputs);
@@ -201,7 +218,7 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 		)
 			throw incomplete();
 		equipmentDraft(source);
-		return { id: u.id, name: u.name, inputs: source };
+		return { id: u.id, name: u.name, inputs: unitInputs(source) };
 	});
 	const groups = raw.parallel_groups.map((value) => {
 		const g = readObject(value);
@@ -213,6 +230,12 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 			(g.control_network !== undefined &&
 				g.control_network !== "lan" &&
 				g.control_network !== "rs485") ||
+			(g.controller_use !== undefined &&
+				g.controller_use !== null &&
+				!PART_USES.includes(g.controller_use as PartUse)) ||
+			(g.controller_use != null &&
+				g.controller_use !== "new" &&
+				g.controller_product_id === null) ||
 			(g.controller_product_id !== null &&
 				(typeof g.controller_product_id !== "number" ||
 					!Number.isSafeInteger(g.controller_product_id) ||
@@ -226,6 +249,9 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 			...(g.control_network === undefined
 				? {}
 				: { control_network: g.control_network as "lan" | "rs485" }),
+			...(g.controller_use === undefined
+				? {}
+				: { controller_use: g.controller_use as PartUse | null }),
 		};
 	});
 	if (

@@ -8,10 +8,13 @@ designing anything; ADRs under `docs/adr/` record decisions that changed it.
 de-linker.com — the B2B photovoltaic-and-storage **inquiry** site of Linker
 Technology GmbH. WordPress + WooCommerce, English and German as equals
 (`de_DE_formal`, Sie-form). Customers are installers, EPC contractors and
-distributors. The only funnel: product categories and products → inquiry
-(presented as a Proforma invoice) → everything afterwards is offline. There is
-no checkout-payment-shipping chain; WooCommerce's checkout endpoint serves the
-Proforma request page. Orders were repositioned as inquiries (owner, 2026-10-09).
+distributors. The customer flow is products or a system proposal → inquiry →
+Quotation / Angebot → offline confirmation and subsequent transactions. The
+website issues quotations without bank details or payment instructions; invoicing,
+payment and shipping stay offline (owner, 2026-11-08). Guests may submit inquiries
+without accounts; the retained checkout endpoint is an inquiry entry, not a
+payment flow. Historical Proforma URLs and stored identifiers do not define the
+current customer-facing terminology.
 
 ## The two customer-facing tools
 
@@ -28,9 +31,10 @@ Proforma request page. Orders were repositioned as inquiries (owner, 2026-10-09)
 Product / Produkt, product category / Produktkategorie — never catalogue or
 article. Customer's working list: solution draft / Lösungsentwurf. List inside
 a proposal: bill of materials / Stückliste. Inquiry statuses: Inquiry received /
-Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt ·
-Completed / Abgeschlossen · Cancelled / Storniert. German cart words
-(Warenkorb …) are banned; stock tells status only, never amounts.
+Anfrage eingegangen · Quotation in preparation / Angebot in Vorbereitung ·
+Completed / Abgeschlossen · Cancelled / Storniert. Customer-facing commerce
+terms are maintained in `tools/checks/commerce-terms.txt`; stock tells status
+only, never amounts.
 
 Planning terms: a **weather source** is a retained original with its provenance
 and declared time interpretation. **Weather acquisition** obtains that source;
@@ -41,8 +45,8 @@ original data; it does not select a source or complete the original evaluation.
 
 ## Architecture in one breath
 
-React+TS on WordPress's own React for the existing plugin entries; the unified
-planner is being built with an isolated modern runtime (see
+React+TS on WordPress's own React for the classic plugin entries; the unified
+planner has an isolated React/Vite runtime (see
 `docs/adr/0002-isolated-planner-runtime.md`).
 PHP 8.3 Composer PSR-4, PHPUnit/WP-Mock, PHPStan L8, WPCS+Woo sniffs;
 FastAPI services on the VPS (engine: sizing/PVGIS/LoD2/report; genie:
@@ -63,5 +67,5 @@ A historical snapshot records the customer's earlier result, rather than the
 current product facts. The confirmed rules and acceptance cases are in
 `docs/specs/609-product-publication.md`.
 
-`AGENTS.md` is the binding rulebook (owner rulings by date, delivery gates,
-model routing). This file summarises; AGENTS.md decides.
+`AGENTS.md` is the binding rulebook for business constraints and delivery gates.
+This file summarises; AGENTS.md and the user's latest explicit rulings decide.

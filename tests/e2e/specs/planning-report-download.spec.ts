@@ -110,6 +110,10 @@ test('the owner reads the frozen report and everyone else is refused', async ({
 			`/inquiries/${inquiry.order}/planning-report/${inquiry.handoff}`
 		);
 
+		// Documents exposes the same frozen report as the inquiry page.
+		await page.goto(`${instance().url}/my-account/documents/`);
+		await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+
 		// The owner's session reads the file, with or without the key.
 		const owner = await context.request.get(href);
 		expect(owner.status(), 'the owner reads the report').toBe(200);

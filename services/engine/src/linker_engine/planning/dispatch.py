@@ -33,26 +33,46 @@ def _losses(
 
 
 def self_consumption_with_reserve(
-    frame: Frame, model: BatteryModel, state: EnergyOrigins
+    frame: Frame,
+    model: BatteryModel,
+    state: EnergyOrigins,
+    *,
+    grid_target_kw: float = 0,
 ) -> Command:
     """Executable local policy, with no forecast or grid-recharge promise."""
     pv = frame.pv_potential_kw if frame.limits.pv_enabled else 0.0
     balance = pv - frame.load_kw - frame.aux_ac_kw
+    charging_headroom = (
+        max(balance + grid_target_kw, 0.0)
+        if frame.limits.allow_grid_charge
+        else max(balance, 0.0)
+    )
+    discharge_demand = max(-balance - grid_target_kw, 0.0)
     state, _, _, _ = _losses(frame, model, state)
     duration = frame.interval.hours
     charge = min(
-        max(balance, 0.0),
+        charging_headroom,
         model.charge_ac_kw,
         max(model.usable_window_kwh - state.total, 0.0) / (model.eta_charge * duration),
     )
     discharge = min(
-        max(-balance, 0.0),
+        discharge_demand,
         model.discharge_ac_kw,
         max(state.total - frame.limits.reserve_kwh, 0.0)
         * model.eta_discharge
         / duration,
     )
     return Command(charge, discharge)
+
+
+def peak_shaving_with_reserve(
+    frame: Frame, model: BatteryModel, state: EnergyOrigins
+) -> Command:
+    """Hold the declared grid cap; recharge using available headroom, no forecast."""
+    cap = frame.limits.import_cap_kw if frame.limits.mode == "connected" else 0.0
+    if cap is None:
+        raise InvalidInput("peak shaving requires a grid import limit")
+    return self_consumption_with_reserve(frame, model, state, grid_target_kw=cap)
 
 
 def step(

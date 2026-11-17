@@ -176,11 +176,16 @@ export function verifyEnergyDetails(
 			// A generated roof profile identifies its frozen model input
 			// bundle as the series source. The asset's raw bytes remain the
 			// original weather; CSV/system-output profiles identify raw bytes.
-			let sourceMatches = source.raw_sha256 === pinned[key + ".raw"];
+			let sourceMatches =
+				energyHash(pinned[key + ".raw"]) &&
+				energyHash(pinned[key + ".metadata"]) &&
+				source.raw_sha256 === pinned[key + ".raw"];
 			const geometricInput = pinned[key + ".model.inputs"];
 			if (geometricInput !== undefined) {
 				const details = readObject(source.details);
 				sourceMatches =
+					energyHash(pinned[key + ".raw"]) &&
+					energyHash(pinned[key + ".metadata"]) &&
 					!reference &&
 					!dc &&
 					role === "pv_available_ac" &&
@@ -205,6 +210,8 @@ export function verifyEnergyDetails(
 			} else if (modelInput !== undefined) {
 				const details = readObject(source.details);
 				sourceMatches =
+					energyHash(pinned[key + ".raw"]) &&
+					(reference || energyHash(pinned[key + ".metadata"])) &&
 					(reference ||
 						role === (dc ? "pv_available_dc" : "pv_available_ac")) &&
 					source.origin === "modelled" &&
@@ -233,6 +240,24 @@ export function verifyEnergyDetails(
 							details.converter_ids,
 							readObject(result.model).ac_pv_converter_ids,
 						);
+			} else if (
+				!dc &&
+				!mixed &&
+				(role === "pv_available_ac" || role === "aux_ac") &&
+				pinned[key + ".raw"] === undefined &&
+				pinned[key + ".metadata"] === undefined
+			) {
+				const details = readObject(source.details);
+				sourceMatches =
+					source.origin === "modelled" &&
+					source.timezone === "UTC" &&
+					energyHash(source.raw_sha256) &&
+					Object.keys(details).sort().join() === "basis,power_kw" &&
+					(role === "pv_available_ac"
+						? details.basis === "pv_disabled_for_entire_schedule" &&
+							details.power_kw === 0
+						: details.basis === "user_declared_constant_auxiliary_demand" &&
+							energyNumber(details.power_kw));
 			}
 			energyRequire(
 				profile.measurement === measured &&

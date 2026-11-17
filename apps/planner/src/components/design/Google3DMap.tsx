@@ -489,7 +489,13 @@ export function Google3DMap({
 					<button
 						type="button"
 						className="lp-button lp-button-secondary"
-						onClick={() => setAttempt((value) => value + 1)}
+						onClick={() => {
+							// The failed state above unmounts the host div, so the
+							// reload effect would find no host and return early.
+							// Restore the mounted layout before the attempt re-runs it.
+							setStatus("loading");
+							setAttempt((value) => value + 1);
+						}}
 					>
 						{__("Retry 3D", "linker-tools")}
 					</button>

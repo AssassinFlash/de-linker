@@ -94,6 +94,256 @@ from .test_pvgis_roof_reference import limits as reference_limits
 from .test_pvgis_roof_reference import prepared_reference_fixture
 
 
+def frozen_ac_report_source() -> FixtureObject:
+    """Synthetic frozen consumer input; no new dispatch calculation is performed."""
+    return {
+        "locale": "en",
+        "title": "Saved AC scenario",
+        "project_id": "report-energy-fixture",
+        "revision": 2,
+        "generated_at": "2026-11-17T00:00:00Z",
+        "source_runs": [],
+        "materials": {"lines": []},
+        "energy_scenario": {
+            "schema_version": 1,
+            "coupling": "independent_ac",
+            "controller": "peak_shaving_with_reserve_v1",
+            "gross_load_asset_id": "load-fixture",
+            "critical_load_asset_id": None,
+            "pv_available_asset_id": None,
+            "aux_ac_asset_id": None,
+            "aux_ac_kw": 0.25,
+            "battery_parameters_asset_id": "battery-fixture",
+            "initial_inventory": {
+                "pv_kwh": 0,
+                "grid_kwh": 10,
+                "initial_unknown_kwh": 0,
+                "basis": "synthetic_fixture",
+                "source_note": "Synthetic stored grid energy",
+            },
+            "terminal_min_kwh": None,
+            "pv_converter_id": None,
+            "aux_dc_kw": None,
+            "schedule": [
+                {
+                    "start_utc": "2020-01-01T00:00:00Z",
+                    "end_utc": "2020-01-01T01:00:00Z",
+                    "mode": "connected",
+                    "reserve_kwh": 1,
+                    "import_cap_kw": 2,
+                    "export_cap_kw": 0,
+                    "pv_enabled": False,
+                    "allow_grid_charge": False,
+                }
+            ],
+        },
+        "energy": {
+            "kind": "single_ac_energy_replay_v1",
+            "interval_count": 1,
+            "metrics": {
+                "load_demand_kwh": 4,
+                "pv_generated_ac_kwh": 0,
+                "grid_import_kwh": 2,
+                "pv_export_kwh": 0,
+                "pv_curtailed_kwh": 0,
+                "unserved_load_kwh": 0,
+                "solar_autarky": {"value": 0},
+                "pv_input_self_use": {"value": None},
+            },
+        },
+    }
+
+
+def frozen_plant_report_source() -> FixtureObject:
+    source = frozen_ac_report_source()
+    scenario = source["energy_scenario"]
+    unit = {
+        "unit_id": "storage-a",
+        "battery_parameters_asset_id": scenario.pop("battery_parameters_asset_id"),
+        "initial_inventory": scenario.pop("initial_inventory"),
+        "reserve_kwh": 1,
+        "terminal_min_kwh": scenario.pop("terminal_min_kwh"),
+        "pv_dc_input_unused": True,
+    }
+    scenario.pop("pv_converter_id")
+    scenario.pop("aux_dc_kw")
+    scenario.update(
+        coupling="plant_ac", controller="proportional_peak_shaving_v1", units=[unit]
+    )
+    scenario["schedule"][0]["reserve_kwh"] = 0
+    source["energy"].update(
+        kind="plant_ac_energy_replay_v1",
+        equipment_binding={
+            "plant": {"units": [{"id": "storage-a", "name": "Storage A"}]}
+        },
+        parameter_sources={
+            "units": [{"unit_id": "storage-a", "parameter_sha256": "a" * 64}],
+            "pool": {
+                "a" * 64: {
+                    "source_facts": {},
+                    "loss_scenario": {
+                        "eta_bus_to_battery": 1,
+                        "eta_battery_to_bus": 1,
+                        "eta_store_charge": 1,
+                        "eta_store_discharge": 1,
+                        "eta_inverter_forward": 1,
+                        "eta_inverter_reverse": 1,
+                        "internal_aux_kw": 0,
+                        "standing_loss_rate_per_hour": 0,
+                        "source_note": "Synthetic loss-free consumer fixture",
+                    },
+                }
+            },
+        },
+    )
+    source["energy"]["metrics"]["units"] = [
+        {
+            "unit_id": "storage-a",
+            "usable_window_kwh": 12,
+            "stored_initial": {"pv_kwh": 0, "grid_kwh": 10, "initial_unknown_kwh": 0},
+            "stored_final": {"pv_kwh": 0, "grid_kwh": 7.75, "initial_unknown_kwh": 0},
+        }
+    ]
+    return source
+
+
+@pytest.mark.parametrize("plant", [False, True])
+@pytest.mark.parametrize(
+    ("locale", "strategy", "plant_strategy"),
+    [
+        ("en", "Peak shaving with reserve", "Proportional peak shaving"),
+        ("de", "Lastspitzenkappung mit Reserve", "Proportionale Lastspitzenkappung"),
+    ],
+)
+def test_report_and_pdf_show_frozen_peak_shaving_strategy(
+    locale: str,
+    strategy: str,
+    plant_strategy: str,
+    plant: bool,
+) -> None:
+    source = frozen_plant_report_source() if plant else frozen_ac_report_source()
+    strategy = plant_strategy if plant else strategy
+    source["locale"] = locale
+    original = copy.deepcopy(source)
+    report = build_report(source)
+    section = next(s for s in report.sections if s.id == "energy")
+    assert strategy in {r.value for r in section.rows}
+    written = " ".join(
+        " ".join(page.extract_text().split())
+        for page in PdfReader(io.BytesIO(pdf.render(report))).pages
+    )
+    assert strategy in written
+    assert source == original
+
+
+@pytest.mark.parametrize("plant", [False, True])
+@pytest.mark.parametrize("aux_kw", [0, 0.25])
+@pytest.mark.parametrize(
+    ("locale", "pv_source", "aux_label", "nonzero_aux"),
+    [
+        (
+            "en",
+            "No PV source; PV generation is zero",
+            "Declared constant AC auxiliary demand",
+            "0.25 kW",
+        ),
+        (
+            "de",
+            "Keine PV-Quelle; PV-Erzeugung ist null",
+            "Angegebener konstanter AC-Hilfsverbrauch",
+            "0,25 kW",
+        ),
+    ],
+)
+def test_storage_only_report_and_pdf_identify_zero_pv_and_constant_auxiliary(
+    plant: bool,
+    aux_kw: float,
+    locale: str,
+    pv_source: str,
+    aux_label: str,
+    nonzero_aux: str,
+) -> None:
+    source = frozen_plant_report_source() if plant else frozen_ac_report_source()
+    source["locale"] = locale
+    source["energy_scenario"]["aux_ac_kw"] = aux_kw
+    report = build_report(source)
+    section = next(s for s in report.sections if s.id == "energy")
+    assert pv_source in {r.value for r in section.rows}
+    auxiliary = next(r for r in section.rows if r.label == aux_label)
+    assert auxiliary.value == (nonzero_aux if aux_kw else "0 kW")
+    assert text("scenario_plant_scope", locale) not in section.paragraphs
+    written = " ".join(
+        " ".join(page.extract_text().split())
+        for page in PdfReader(io.BytesIO(pdf.render(report))).pages
+    )
+    assert pv_source in written
+    assert aux_label in written and auxiliary.value in written
+
+
+@pytest.mark.parametrize("plant", [False, True])
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_profile_self_consumption_report_keeps_its_source_semantics(
+    plant: bool,
+    locale: str,
+) -> None:
+    source = frozen_plant_report_source() if plant else frozen_ac_report_source()
+    source["locale"] = locale
+    scenario = source["energy_scenario"]
+    scenario.update(
+        controller="proportional_available_power_self_consumption_v1"
+        if plant
+        else "self_consumption_with_reserve_v1",
+        pv_available_asset_id="pv-profile-fixture",
+        aux_ac_asset_id="aux-profile-fixture",
+    )
+    scenario.pop("aux_ac_kw")
+    scenario["schedule"][0]["pv_enabled"] = True
+    source["energy"]["metrics"].update(
+        pv_generated_ac_kwh=1,
+        grid_import_kwh=1,
+        solar_autarky={"value": 0.25},
+        pv_input_self_use={"value": 1},
+    )
+    original = copy.deepcopy(source)
+    report = build_report(source)
+    section = next(s for s in report.sections if s.id == "energy")
+    assert section.paragraphs == [
+        text("scenario_plant_scope" if plant else "scenario_scope", locale)
+    ]
+    values = {r.label: r.value for r in section.rows}
+    strategies = {
+        "en": (
+            "Self-consumption with reserve",
+            "Self-consumption with proportional power allocation",
+        ),
+        "de": (
+            "Eigenverbrauch mit Reserve",
+            "Eigenverbrauch mit proportionaler Leistungsverteilung",
+        ),
+    }
+    assert text("energy_controller", locale) not in values
+    assert text("energy_pv_source", locale) not in values
+    assert text("energy_constant_aux", locale) not in values
+    assert values[text("generation", locale)] == "1 kWh"
+    assert values[text("autarky", locale)] == "25 %"
+    assert values[text("self_use", locale)] == "100 %"
+    assert source == original
+
+    # The new constant-auxiliary option also works with a real PV profile and
+    # self-consumption control; it must not turn that profile into zero PV.
+    scenario.update(aux_ac_asset_id=None, aux_ac_kw=0.25)
+    with_constant = next(s for s in build_report(source).sections if s.id == "energy")
+    constant_values = {r.label: r.value for r in with_constant.rows}
+    assert (
+        constant_values[text("energy_controller", locale)] == strategies[locale][plant]
+    )
+    assert constant_values[text("energy_constant_aux", locale)] == (
+        "0.25 kW" if locale == "en" else "0,25 kW"
+    )
+    assert text("energy_pv_source", locale) not in constant_values
+    assert with_constant.paragraphs == section.paragraphs
+
+
 def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     request: pytest.FixtureRequest,
     engine: Engine,

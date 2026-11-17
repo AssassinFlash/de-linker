@@ -170,10 +170,14 @@ export function readPlantEnergyResult(
 	}
 	for (const role of [
 		"gross_load",
-		...(!dc || pinned["pv_available_ac.raw"] !== undefined
-			? ["pv_available_ac"]
+		...(dc
+			? [
+					"aux_ac",
+					...(pinned["pv_available_ac.raw"] !== undefined
+						? ["pv_available_ac"]
+						: []),
+				]
 			: []),
-		"aux_ac",
 	])
 		require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));
 	const metrics = readObject(result.metrics);

@@ -12,6 +12,15 @@ from .equipment_requirements import GridPhase
 # Interoperable JSON integer ceiling, not a physical installation limit.
 type Count = Annotated[int, Field(strict=True, gt=0, le=9007199254740991)]
 
+# Procurement intent per primary device: a new installation, a retained
+# existing device, or a replacement purchase. Absent means new.
+type PartUse = Literal["new", "retain", "replace"]
+
+
+class EquipmentUse(Document):
+    inverter: PartUse
+    battery: PartUse
+
 
 class EquipmentSelection(Document):
     schema_version: SchemaVersion
@@ -27,6 +36,13 @@ class EquipmentSelection(Document):
     required_usable_kwh: Nonnegative | None
     required_discharge_ac_kw: Nonnegative | None
     product_revisions: dict[str, Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]]
+    # Procurement intent: retained and replaced devices keep the product
+    # identity declared above and join physics and compatibility checks; only
+    # the purchase list differs. Omit an unanswered field so retained
+    # projects/candidates keep their original canonical representation.
+    equipment_use: EquipmentUse | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def distinct_parts(self) -> EquipmentSelection:
@@ -36,6 +52,12 @@ class EquipmentSelection(Document):
             self.battery_product_id in self.accessory_product_ids
         ):
             raise ValueError("a primary device cannot also be its accessory")
+        if (
+            self.equipment_use is not None
+            and self.battery_product_id is None
+            and self.equipment_use.battery != "new"
+        ):
+            raise ValueError("a retained or replaced battery needs its product")
         selected = {self.inverter_product_id, *self.accessory_product_ids}
         if self.battery_product_id is not None:
             selected.add(self.battery_product_id)

@@ -98,6 +98,7 @@ from .http_documents import (
     RunCompare,
     RunRead,
     SessionClaim,
+    StandardProfile,
     TraceRead,
     WeatherAssetsRead,
 )
@@ -1196,6 +1197,11 @@ def create_private_app(
     def csv_profile(body: CsvImport, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
         return asset_view(intake.csv(actor, body))
+
+    @app.post("/profiles/standard")
+    def standard_profile(body: StandardProfile, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        return asset_view(intake.standard(actor, body))
 
     @app.post("/profiles/inspect")
     def csv_inspect(body: CsvInspect, request: Request) -> Object:

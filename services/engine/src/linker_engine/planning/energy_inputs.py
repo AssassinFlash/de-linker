@@ -173,12 +173,17 @@ class EnergyInputs(Document):
     schema_version: SchemaVersion
     gross_load_asset_id: Identifier
     critical_load_asset_id: Identifier | None
-    pv_available_asset_id: Identifier
-    aux_ac_asset_id: Identifier
+    pv_available_asset_id: Identifier | None
+    aux_ac_asset_id: Identifier | None
+    aux_ac_kw: Nonnegative | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     battery_parameters_asset_id: Identifier
     initial_inventory: InitialInventory
     schedule: Annotated[list[ScheduleSegment], Field(min_length=1)]
-    controller: Literal["self_consumption_with_reserve_v1"]
+    controller: Literal[
+        "self_consumption_with_reserve_v1", "peak_shaving_with_reserve_v1"
+    ]
     terminal_min_kwh: Nonnegative | None
     coupling: Literal["independent_ac", "shared_dc"] = "independent_ac"
     pv_converter_id: Identifier | None = None
@@ -186,8 +191,25 @@ class EnergyInputs(Document):
 
     @model_validator(mode="after")
     def physical_boundary(self) -> Self:
+        if (self.aux_ac_asset_id is None) == (self.aux_ac_kw is None):
+            raise ValueError(
+                "select either an auxiliary profile or explicit constant AC auxiliary demand"
+            )
+        if self.controller == "peak_shaving_with_reserve_v1":
+            if self.coupling != "independent_ac":
+                raise ValueError("peak shaving requires the separate AC storage model")
+            if any(
+                p.mode == "connected" and p.import_cap_kw is None for p in self.schedule
+            ):
+                raise ValueError("peak shaving requires a grid import limit")
         if self.coupling == "shared_dc":
-            if self.pv_converter_id is None or self.aux_dc_kw is None:
+            if self.aux_ac_asset_id is None:
+                raise ValueError("shared DC requires an auxiliary profile")
+            if (
+                self.pv_converter_id is None
+                or self.aux_dc_kw is None
+                or self.pv_available_asset_id is None
+            ):
                 raise ValueError(
                     "shared DC requires a selected PV converter and explicit DC auxiliary demand"
                 )
@@ -199,16 +221,43 @@ class EnergyInputs(Document):
 
     @classmethod
     def from_project(cls, inputs: Object) -> Self:
-        return cls.read(inputs.get("energy_replay"))
+        scenario = cls.read(inputs.get("energy_replay"))
+        check_pv_boundary(inputs, scenario.pv_available_asset_id, scenario.schedule)
+        if storage_only_project(inputs) and scenario.initial_inventory.pv_kwh != 0:
+            raise InvalidInput(
+                "storage-only initial inventory cannot contain PV energy"
+            )
+        return scenario
 
     def profiles(self) -> dict[str, str]:
         result = {
             "gross_load": self.gross_load_asset_id,
-            "pv_available_dc"
-            if self.coupling == "shared_dc"
-            else "pv_available_ac": self.pv_available_asset_id,
-            "aux_ac": self.aux_ac_asset_id,
         }
+        if self.aux_ac_asset_id is not None:
+            result["aux_ac"] = self.aux_ac_asset_id
+        if self.pv_available_asset_id is not None:
+            result[
+                "pv_available_dc" if self.coupling == "shared_dc" else "pv_available_ac"
+            ] = self.pv_available_asset_id
         if self.critical_load_asset_id is not None:
             result["critical_load"] = self.critical_load_asset_id
         return result
+
+
+def storage_only_project(inputs: Object) -> bool:
+    brief = inputs.get("brief")
+    return isinstance(brief, dict) and brief.get("system_scope") == "storage_only"
+
+
+def check_pv_boundary(
+    inputs: Object, asset_id: str | None, schedule: list[ScheduleSegment]
+) -> None:
+    if storage_only_project(inputs):
+        if asset_id is not None or any(period.pv_enabled for period in schedule):
+            raise InvalidInput(
+                "storage-only replay must declare no PV source or generation"
+            )
+    elif asset_id is None and (
+        not schedule or any(period.pv_enabled for period in schedule)
+    ):
+        raise InvalidInput("PV source is required when generation is enabled")

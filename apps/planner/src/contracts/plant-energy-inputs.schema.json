@@ -182,10 +182,35 @@
       ]
     },
     "pv_available_asset_id": {
-      "$ref": "#/$defs/Identifier"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "aux_ac_asset_id": {
-      "$ref": "#/$defs/Identifier"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "aux_ac_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "schedule": {
       "items": {
@@ -204,7 +229,10 @@
       "type": "array"
     },
     "controller": {
-      "const": "proportional_available_power_self_consumption_v1",
+      "enum": [
+        "proportional_available_power_self_consumption_v1",
+        "proportional_peak_shaving_v1"
+      ],
       "title": "Controller",
       "type": "string"
     }

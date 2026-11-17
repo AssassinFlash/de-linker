@@ -295,7 +295,10 @@ async function rig(
 					rows: [{ line: 2, cells: ["2024-01-01T00:00Z", "-4"] }],
 					rows_truncated: true,
 				});
-			if (path.endsWith("/profiles/csv")) {
+			if (
+				path.endsWith("/profiles/csv") ||
+				path.endsWith("/profiles/standard")
+			) {
 				uploads.push(init.body);
 				if (durableStore)
 					assert.equal(
@@ -417,6 +420,64 @@ async function rig(
 		dom,
 	};
 }
+
+test("a typical load request survives lost acknowledgement and reload without changing its key", async (t) => {
+	const body = JSON.stringify({
+		schema_version: 1,
+		project_id: projectId,
+		edition: 1999,
+		profile: "G1",
+		year: 2024,
+		annual_kwh: 12000,
+		timezone: "Europe/Oslo",
+		key: crypto.randomUUID(),
+	});
+	const fixture = await rig(t, {
+		bodies: [body],
+		realRecovery: true,
+		lost: true,
+	});
+	await until(() => button("Check or retry this import"));
+	assert.match(document.body.textContent, /BDEW/);
+	await act(async () => button("Check or retry this import").click());
+	await until(
+		() =>
+			fixture.uploads.length === 1 &&
+			!button("Check or retry this import").disabled,
+	);
+	assert.deepEqual(
+		(await fixture.readImports()).map((record) => record.body),
+		[body],
+	);
+	await act(async () => button("Check or retry this import").click());
+	await until(() => button("Use this profile in the open draft"));
+	assert.deepEqual(fixture.uploads, [body, body]);
+	assert.equal(
+		fixture.calls.filter((path) => path.endsWith("/profiles/standard")).length,
+		2,
+	);
+});
+
+test("annual consumption and a named daily pattern create a reviewable standard source", async (t) => {
+	const fixture = await rig(t, { realRecovery: true });
+	await until(
+		() =>
+			button("Use a typical load profile") &&
+			!button("Use a typical load profile").disabled,
+	);
+	await act(async () => button("Use a typical load profile").click());
+	await choose("Typical usage pattern", "G1");
+	await act(async () => enter(field("Annual consumption kWh"), "12000"));
+	await act(async () => button("Create and review load profile").click());
+	await until(() => fixture.uploads.length === 1);
+	const sent = JSON.parse(fixture.uploads[0]);
+	assert.equal(sent.profile, "G1");
+	assert.equal(sent.annual_kwh, 12000);
+	assert.equal(sent.timezone, "Europe/Oslo");
+	assert.equal(sent.edition, 1999);
+	await until(() => button("Use this profile in the open draft"));
+	assert.match(document.body.textContent, /German calendar/);
+});
 
 for (const status of [200, 422, 500])
 	for (const response of [[], null, {}])

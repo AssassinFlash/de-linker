@@ -29,6 +29,7 @@ from .http_documents import (
     ProjectDelete,
     ProjectRevise,
     ReportEvaluate,
+    StandardProfile,
 )
 from .http_views import asset_view, project_view, run_view
 from .project_input_contracts import (
@@ -241,6 +242,15 @@ class HttpReplay:
             command = self.intake.csv_command(actor, csv)
             command_sha256 = commands.command_hash(command, csv.key)
             asset = self.intake.assets.receipt(actor, csv.project_id, csv.key, command)
+            result = None if asset is None else asset_view(asset)
+        elif path == "profiles/standard":
+            standard = StandardProfile.model_validate(value)
+            command_scope = f"asset:{standard.project_id}"
+            command = self.intake.standard_command(standard)
+            command_sha256 = commands.command_hash(command, standard.key)
+            asset = self.intake.assets.receipt(
+                actor, standard.project_id, standard.key, command
+            )
             result = None if asset is None else asset_view(asset)
         elif path == "geometry/import":
             geometry = GeometryImportCommand.model_validate(value)

@@ -14,7 +14,7 @@ from .access import positive_integer
 from .assets import Asset, Assets
 from .battery_model import BatteryModel
 from .canonical import Json, Object, encode
-from .dispatch import replay, self_consumption_with_reserve
+from .dispatch import peak_shaving_with_reserve, replay, self_consumption_with_reserve
 from .dispatch_checks import verify
 from .energy_equipment import MODEL as EQUIPMENT_MODEL
 from .energy_equipment import assess_energy_equipment
@@ -74,14 +74,31 @@ class EnergyKernel:
             else "isolated_algorithm_fixture",
         }
 
-    def execution_key(self) -> str:
-        return execution_key(
-            {
-                "code_sha256": self.runtime.sha256,
-                "models": dict(self.models),
-                "parameters": self.parameters(),
-            }
+    def models_for(self, scenario: EnergyInputs) -> dict[str, str]:
+        return {
+            **self.models,
+            "controller": scenario.controller
+            if scenario.coupling == "independent_ac"
+            else self.models["controller"],
+        }
+
+    def execution_keys(self) -> tuple[str, ...]:
+        controllers: tuple[str, ...] = (self.models["controller"],)
+        if self.coupling == "independent_ac":
+            controllers += ("peak_shaving_with_reserve_v1",)
+        return tuple(
+            execution_key(
+                {
+                    "code_sha256": self.runtime.sha256,
+                    "models": {**self.models, "controller": controller},
+                    "parameters": self.parameters(),
+                }
+            )
+            for controller in controllers
         )
+
+    def execution_key(self) -> str:
+        return self.execution_keys()[0]
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         scenario = self.scenario(inputs)
@@ -116,7 +133,7 @@ class EnergyKernel:
             )
         return Context(
             self.runtime.sha256,
-            dict(self.models),
+            self.models_for(scenario),
             pinned,
             self.parameters(),
         )
@@ -127,7 +144,7 @@ class EnergyKernel:
             self.workspace,
             lease,
             runtime_sha256=self.runtime.sha256,
-            models=self.models,
+            models=lambda inputs: self.models_for(self.scenario(inputs)),
             parameters=self.parameters(),
         )
         manifest_hash, manifest = execution.manifest_hash, execution.manifest
@@ -213,7 +230,9 @@ class EnergyKernel:
             prepared.frames,
             model,
             initial,
-            self_consumption_with_reserve,
+            peak_shaving_with_reserve
+            if scenario.controller == "peak_shaving_with_reserve_v1"
+            else self_consumption_with_reserve,
             checkpoint=control.checkpoint,
             tolerance=self.tolerance,
         )

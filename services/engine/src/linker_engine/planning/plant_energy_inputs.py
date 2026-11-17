@@ -19,6 +19,8 @@ from .energy_inputs import (
     Nonnegative,
     ScheduleSegment,
     SchemaVersion,
+    check_pv_boundary,
+    storage_only_project,
 )
 from .equipment_plant import EquipmentPlant, Identity
 from .errors import EvidenceMissing, InvalidInput
@@ -46,14 +48,28 @@ class PlantEnergyInputs(Document):
     coupling: Literal["plant_ac"]
     gross_load_asset_id: Identifier
     critical_load_asset_id: Identifier | None
-    pv_available_asset_id: Identifier
-    aux_ac_asset_id: Identifier
+    pv_available_asset_id: Identifier | None
+    aux_ac_asset_id: Identifier | None
+    aux_ac_kw: Nonnegative | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     schedule: Annotated[list[ScheduleSegment], Field(min_length=1)]
     units: Annotated[list[PlantStorageInputs], Field(min_length=1)]
-    controller: Literal["proportional_available_power_self_consumption_v1"]
+    controller: Literal[
+        "proportional_available_power_self_consumption_v1",
+        "proportional_peak_shaving_v1",
+    ]
 
     @model_validator(mode="after")
     def explicit_reserves(self) -> Self:
+        if (self.aux_ac_asset_id is None) == (self.aux_ac_kw is None):
+            raise ValueError(
+                "select either an auxiliary profile or explicit constant AC auxiliary demand"
+            )
+        if self.controller == "proportional_peak_shaving_v1" and any(
+            p.mode == "connected" and p.import_cap_kw is None for p in self.schedule
+        ):
+            raise ValueError("peak shaving requires a grid import limit")
         if len({unit.unit_id for unit in self.units}) != len(self.units):
             raise ValueError("each storage instance needs its own state")
         if any(period.reserve_kwh != 0 for period in self.schedule):
@@ -66,6 +82,13 @@ class PlantEnergyInputs(Document):
     def from_project(cls, inputs: Object) -> Self:
         plant = EquipmentPlant.from_inputs(inputs)
         scenario = cls.read(inputs.get("energy_plant"))
+        check_pv_boundary(inputs, scenario.pv_available_asset_id, scenario.schedule)
+        if storage_only_project(inputs) and any(
+            u.initial_inventory.pv_kwh != 0 for u in scenario.units
+        ):
+            raise InvalidInput(
+                "storage-only initial inventory cannot contain PV energy"
+            )
         if any(p.mode == "outage" and p.pv_enabled for p in scenario.schedule):
             raise EvidenceMissing(
                 "joint outage AC PV requires an explicitly documented island bus",
@@ -86,9 +109,11 @@ class PlantEnergyInputs(Document):
     def profiles(self) -> dict[str, str]:
         result = {
             "gross_load": self.gross_load_asset_id,
-            "pv_available_ac": self.pv_available_asset_id,
-            "aux_ac": self.aux_ac_asset_id,
         }
+        if self.aux_ac_asset_id is not None:
+            result["aux_ac"] = self.aux_ac_asset_id
+        if self.pv_available_asset_id is not None:
+            result["pv_available_ac"] = self.pv_available_asset_id
         if self.critical_load_asset_id is not None:
             result["critical_load"] = self.critical_load_asset_id
         return result

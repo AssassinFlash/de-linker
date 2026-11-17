@@ -193,8 +193,7 @@ export function readEnergyResult(
 		for (const role of [
 			"battery",
 			"gross_load",
-			dc ? "pv_available_dc" : "pv_available_ac",
-			"aux_ac",
+			...(dc ? ["pv_available_dc", "aux_ac"] : []),
 		])
 			require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));
 		equipmentBinding(result, models, pinned, model, dc);

@@ -31,13 +31,19 @@ class ProfileImport:
         provenance: Object,
         *,
         key: str,
+        receipt_command: Object | None = None,
     ) -> Asset:
         # Ownership precedes parsing/auxiliary blob writes. Assets.add repeats
         # this under its transaction in case ownership changed meanwhile.
         self.assets.check_write(actor, project_id)
         logical = self.logical(mapping, provenance)
-        previous = self.previous(
-            actor, project_id, content, mapping, provenance, key=key
+        previous = self.assets.receipt(
+            actor,
+            project_id,
+            key,
+            receipt_command
+            if receipt_command is not None
+            else self.command(content, mapping, provenance),
         )
         if previous is not None:
             return previous
@@ -69,6 +75,7 @@ class ProfileImport:
             },
             key=key,
             logical_metadata=logical,
+            receipt_command=receipt_command,
         )
 
     @staticmethod

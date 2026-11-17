@@ -28,6 +28,13 @@ from .worker import Control
 from .workspace import Workspace
 
 
+def _fully_retained(line: Object) -> bool:
+    """A product line whose exact quantity is entirely retained on site."""
+    quantity = line.get("quantity")
+    retained = line.get("retained_quantity")
+    return type(quantity) is int and type(retained) is int and quantity - retained <= 0
+
+
 class ReportKernel:
     kind = "planning_report_v1"
     models = {
@@ -261,7 +268,9 @@ class ReportKernel:
                 "report_sha256": report_sha,
                 "materials_sha256": dependencies["materials_model"],
                 "has_draft_items": any(
-                    isinstance(line, dict) and line.get("handling") == "woo_product"
+                    isinstance(line, dict)
+                    and line.get("handling") == "woo_product"
+                    and not _fully_retained(line)
                     for line in cast(list[Object], materials["lines"])
                 ),
                 "source_runs": source["source_runs"],

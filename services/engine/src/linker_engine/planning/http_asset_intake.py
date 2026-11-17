@@ -4,17 +4,22 @@ from __future__ import annotations
 
 import base64
 import binascii
+from typing import cast
 
 from .assets import Asset, Assets
 from .canonical import Object, digest, encode
+from .csv_mapping import CsvMapping
 from .dc_energy_parameters import DcLossScenario
 from .dc_parameter_source import prepare_dc_parameters
 from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput
-from .http_documents import BatteryScenario, CsvImport
+from .http_documents import BatteryScenario, CsvImport, StandardProfile
+from .load_profile import expand, to_csv
+from .power_series import Measurement
 from .product_sources import ProductSources
 from .profile_import import ProfileImport
 from .records import Actor
+from .timezone_rules import require_iana_timezone
 
 
 class HttpAssetIntake:
@@ -72,6 +77,61 @@ class HttpAssetIntake:
             body.mapping.mapping(),
             self.csv_provenance(body),
         )
+
+    def standard_materials(
+        self, actor: Actor, body: StandardProfile
+    ) -> tuple[bytes, CsvMapping, Object]:
+        self.assets.check_write(actor, body.project_id)
+        # A zone key that ZoneInfo cannot resolve must be intake rejection, not
+        # a 500 from the expansion's first calendar lookup.
+        require_iana_timezone(body.timezone)
+        expanded = expand(
+            body.edition,
+            body.profile,
+            year=body.year,
+            annual_kwh=body.annual_kwh,
+            timezone=body.timezone,
+        )
+        content = to_csv(expanded, body.timezone)
+        if len(content) > self.max_csv_bytes:
+            raise InvalidInput("expanded profile exceeds deployment file limit")
+        mapping = CsvMapping(
+            "time",
+            "power",
+            cast(Measurement, expanded.measurement_role),
+            "interval_average_kw",
+            "start",
+            body.timezone,
+            "template",
+            900,
+            ",",
+            ".",
+        )
+        return content, mapping, cast(Object, expanded.provenance())
+
+    def standard(self, actor: Actor, body: StandardProfile) -> Asset:
+        command = self.standard_command(body)
+        previous = self.assets.receipt(actor, body.project_id, body.key, command)
+        if previous is not None:
+            return previous
+        content, mapping, provenance = self.standard_materials(actor, body)
+        return ProfileImport(self.assets).csv(
+            actor,
+            body.project_id,
+            content,
+            mapping,
+            provenance,
+            key=body.key,
+            receipt_command=command,
+        )
+
+    @staticmethod
+    def standard_command(body: StandardProfile) -> Object:
+        return {
+            "standard_profile": cast(
+                Object, body.model_dump(mode="json", exclude={"key"})
+            ),
+        }
 
     @staticmethod
     def battery_content(body: BatteryScenario) -> bytes:
