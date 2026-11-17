@@ -20,6 +20,7 @@ export function ScenarioForm({
 	onValidity,
 	useProfileRange,
 	rangeBusy,
+	inputErrors,
 	section,
 	equipmentSelection,
 	converters,
@@ -37,6 +38,7 @@ export function ScenarioForm({
 	onValidity: (valid: boolean) => void;
 	useProfileRange: () => void;
 	rangeBusy: boolean;
+	inputErrors?: readonly string[];
 	section: "storage" | "initial" | "operation";
 	equipmentSelection: JsonObject | null;
 	converters: readonly string[];
@@ -278,6 +280,7 @@ export function ScenarioForm({
 				)}
 				<OperatingPeriodsForm
 					periods={value.schedule}
+					inputErrors={inputErrors}
 					onChange={(schedule) => onChange({ ...value, schedule })}
 					locale={locale}
 					report={report}

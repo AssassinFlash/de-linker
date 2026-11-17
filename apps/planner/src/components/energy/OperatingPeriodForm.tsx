@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { PeriodDraft } from "../../domain/energyScenario.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
@@ -11,6 +12,8 @@ export function OperatingPeriodForm({
 	report,
 	perUnitReserve = false,
 	hasStorage = true,
+	inputPath = "energy_scenario.schedule",
+	inputErrors = [],
 }: {
 	period: PeriodDraft;
 	index: number;
@@ -20,7 +23,18 @@ export function OperatingPeriodForm({
 	report: (field: string, valid: boolean) => void;
 	perUnitReserve?: boolean;
 	hasStorage?: boolean;
+	inputPath?: string | undefined;
+	inputErrors?: readonly string[] | undefined;
 }) {
+	const errorId = useId(),
+		startPath = `${inputPath}[${index}].start_utc`,
+		endPath = `${inputPath}[${index}].end_utc`,
+		startError = inputErrors.includes(startPath),
+		endError = inputErrors.includes(endPath),
+		dateError = __(
+			"Enter a date and time with Z or a UTC offset. The end must be after the start.",
+			"linker-tools",
+		);
 	const field = "period-" + period.id;
 	function patch(
 		values: Partial<
@@ -52,18 +66,34 @@ export function OperatingPeriodForm({
 					<input
 						type="text"
 						value={period.start_utc}
+						name={startPath}
+						aria-invalid={startError}
+						aria-describedby={startError ? errorId + "-start" : undefined}
 						placeholder="2024-03-30T23:00:00Z"
 						onChange={(e) => patch({ start_utc: e.currentTarget.value })}
 					/>
+					{startError && (
+						<small className="lp-field-error" id={errorId + "-start"}>
+							{dateError}
+						</small>
+					)}
 				</label>
 				<label className="lp-field">
 					<span>{__("End with UTC or offset", "linker-tools")}</span>
 					<input
 						type="text"
 						value={period.end_utc}
+						name={endPath}
+						aria-invalid={endError}
+						aria-describedby={endError ? errorId + "-end" : undefined}
 						placeholder="2024-03-31T01:00:00Z"
 						onChange={(e) => patch({ end_utc: e.currentTarget.value })}
 					/>
+					{endError && (
+						<small className="lp-field-error" id={errorId + "-end"}>
+							{dateError}
+						</small>
+					)}
 				</label>
 				<label className="lp-field">
 					<span>{__("Grid condition", "linker-tools")}</span>

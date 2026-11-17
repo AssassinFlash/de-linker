@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime
 from uuid import uuid4
 
 from .asset_validation import validate_asset
@@ -13,6 +14,7 @@ from .dc_parameter_source import prepare_dc_parameters
 from .energy_inputs import BatteryParameters, InitialInventory, storage_only_project
 from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput
+from .interval import Interval, utc
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_selections import ProfileSelections, check_profile_selections
@@ -51,8 +53,34 @@ def schedule(
     if not isinstance(periods, list) or not periods:
         raise InvalidInput("explicit operating periods required")
     result: list[Json] = []
-    for raw in periods:
+    for index, raw in enumerate(periods):
         period = object_value(raw, "operating period")
+        path = (
+            "energy_plant_setup" if plant else "energy_scenario"
+        ) + f".schedule[{index}]"
+        instants: dict[str, datetime] = {}
+        invalid_fields = []
+        for field in ("start_utc", "end_utc"):
+            value = period.get(field)
+            if not isinstance(value, str):
+                invalid_fields.append(path + "." + field)
+                continue
+            try:
+                instants[field] = utc(datetime.fromisoformat(value))
+            except (ValueError, InvalidInput):
+                invalid_fields.append(path + "." + field)
+        if invalid_fields:
+            raise InvalidInput(
+                "operating periods require explicit ISO timestamps",
+                fields=invalid_fields,
+            )
+        try:
+            Interval(instants["start_utc"], instants["end_utc"])
+        except InvalidInput as error:
+            raise InvalidInput(
+                "operating period end must follow its start",
+                fields=(path + ".start_utc", path + ".end_utc"),
+            ) from error
         outage = period.get("mode") == "outage"
         if outage and period.get("allow_grid_charge") is True:
             raise InvalidInput("grid charging cannot be enabled during an outage")

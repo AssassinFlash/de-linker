@@ -205,8 +205,9 @@ for (const kind of ["single", "plant", "pv_only"]) {
 }
 
 const scope = "a".repeat(64);
-const json = (value) =>
+const json = (value, status = 200) =>
 	new Response(JSON.stringify(value), {
+		status,
 		headers: { "Content-Type": "application/json" },
 	});
 const button = (text) =>
@@ -226,6 +227,8 @@ async function energyRig(
 		joint = false,
 		dc = false,
 		delay = false,
+		delayRange = false,
+		invalidDates = false,
 		hardware = false,
 		pvOnly = false,
 		newPlant = false,
@@ -331,6 +334,7 @@ async function energyRig(
 				...actualRun.manifest.context.models,
 				plant_replay: "plant_ac_energy_replay_v1",
 				plant_dc_replay: "plant_shared_dc_energy_replay_v1",
+				...(invalidDates ? { report: "planning_report_v1" } : {}),
 			},
 			limits: {
 				max_body_bytes: 16777216,
@@ -365,6 +369,54 @@ async function energyRig(
 			const operation = path.split("/rpc/")[1],
 				command = JSON.parse(request.body);
 			requests.push({ operation, command, body: request.body });
+			if (operation === "assets/read" || operation === "profiles/preview") {
+				const role = Object.keys(selections.selected).find(
+					(role) => selections.selected[role] === command.asset_id,
+				);
+				assert.ok(role, "selected profile asset");
+				const asset = {
+					id: command.asset_id,
+					project_id: project.id,
+					content_sha256: actualRun.manifest.context.assets[role + ".raw"],
+					metadata_sha256:
+						actualRun.manifest.context.assets[role + ".metadata"],
+					media_type: "text/csv",
+					purpose: "csv_profile_v1",
+					metadata: {},
+				};
+				if (operation === "assets/read") return json(asset);
+				if (delayRange) await gate.promise;
+				return json({
+					schema_version: 1,
+					evaluation_scope: "profile_interpretation",
+					project_id: project.id,
+					asset_id: asset.id,
+					content_sha256: asset.content_sha256,
+					metadata_sha256: asset.metadata_sha256,
+					measurement: role,
+					source: { origin: "synthetic" },
+					transformations: [],
+					summary: {
+						start_utc: "2024-03-30T23:00:00Z",
+						end_utc: "2024-03-31T01:00:00Z",
+						interval_count: 2,
+						covered_seconds: 7200,
+						span_seconds: 7200,
+						gap_seconds: 0,
+						gap_count: 0,
+						energy_kwh: 2,
+						min_interval_mean_kw: 1,
+						max_interval_mean_kw: 1,
+						native_max_interval_seconds: 3600,
+						effective_max_interval_seconds: 3600,
+						reconstructed_means: false,
+					},
+					rows: [],
+					first_gaps: [],
+					gaps_truncated: false,
+					next_offset: null,
+				});
+			}
 			if (operation === "products/current")
 				return json({
 					schema_version: 1,
@@ -389,6 +441,21 @@ async function energyRig(
 			if (operation === "runs/read") return json(run);
 			if (operation !== "runs/calculate")
 				return json({ error: { code: "not_found" } });
+			if (invalidDates) {
+				const prefix = joint ? "energy_plant_setup" : "energy_scenario";
+				return json(
+					{
+						error: {
+							code: "invalid_input",
+							fields: [
+								prefix + ".schedule[0].start_utc",
+								prefix + ".schedule[0].end_utc",
+							],
+						},
+					},
+					422,
+				);
+			}
 			const solarScope = command.inputs.brief?.system_scope === "pv_only";
 			const kind = joint
 				? dc && !solarScope
@@ -543,6 +610,178 @@ async function energyRig(
 			return durable;
 		},
 	};
+}
+
+const scenarioField = (label) =>
+	[...document.querySelectorAll("label")]
+		.find(
+			(node) =>
+				!node.closest("[hidden]") &&
+				node.querySelector("span")?.childNodes[0]?.textContent.trim() === label,
+		)
+		?.querySelector("input,select");
+async function chooseScenario(label, value) {
+	await act(async () => {
+		const select = scenarioField(label);
+		assert.ok(select, label);
+		select.value = value;
+		select.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+}
+
+for (const joint of [false, true]) {
+	test(`${joint ? "plant" : "single"} shared profile range preserves reserve and grid cap edits made while previews are pending`, async (t) => {
+		const rig = await energyRig(t, { joint, delayRange: true });
+		const key = joint ? "energy_plant_setup" : "energy_scenario";
+		await click("03Operation");
+		await enter(scenarioField("Start with UTC or offset"), "");
+		await enter(scenarioField("End with UTC or offset"), "");
+		assert.equal(scenarioField("Start with UTC or offset").value, "");
+		await click("Use the shared profile range");
+		await until(() =>
+			rig.requests.some((row) => row.operation === "profiles/preview"),
+		);
+		await chooseScenario("Grid import limit", "limited");
+		await enter(scenarioField("Import cap"), "3");
+		await chooseScenario("Grid export limit", "limited");
+		await enter(scenarioField("Export cap"), "2");
+		if (joint) await click("02Starting state");
+		await enter(scenarioField("Reserved stored energy"), "1");
+		if (joint) await click("03Operation");
+		await act(async () => rig.gate.resolve());
+		await until(() => button("Use the shared profile range"));
+		const setup = rig.draft.history.current[key];
+		assert.equal(setup.schedule[0].start_utc, "2024-03-30T23:00:00Z");
+		assert.equal(setup.schedule[0].end_utc, "2024-03-31T01:00:00Z");
+		assert.equal(
+			joint ? setup.units[0].reserve_kwh : setup.schedule[0].reserve_kwh,
+			1,
+		);
+		assert.equal(setup.schedule[0].import_cap_kw, 3);
+		assert.equal(setup.schedule[0].export_cap_kw, 2);
+		await click("Calculate energy flows");
+		await until(() => rig.draft.baseline.revision === 2);
+		assert.deepEqual(
+			rig.requests.find((row) => row.operation === "runs/calculate").command
+				.inputs[key],
+			authoredCalculationInputs({ [key]: setup })[key],
+		);
+	});
+}
+
+test("an untouched new plant can apply its first shared profile range", async (t) => {
+	const rig = await energyRig(t, {
+		joint: true,
+		pvOnly: true,
+		newPlant: true,
+		delayRange: true,
+	});
+	assert.equal(rig.draft.history.current.energy_plant_setup, undefined);
+	await click("Use the shared profile range");
+	await until(() =>
+		rig.requests.some((row) => row.operation === "profiles/preview"),
+	);
+	await act(async () => rig.gate.resolve());
+	await until(() => button("Use the shared profile range"));
+	assert.equal(
+		rig.draft.history.current.energy_plant_setup?.schedule[0].start_utc,
+		"2024-03-30T23:00:00Z",
+	);
+	assert.equal(
+		rig.draft.history.current.energy_plant_setup?.schedule[0].end_utc,
+		"2024-03-31T01:00:00Z",
+	);
+});
+
+for (const joint of [false, true]) {
+	for (const boundary of ["start_utc", "end_utc"]) {
+		test(`${joint ? "plant" : "single"} pending shared profile range blocks calculation and retains a user-edited ${boundary}`, async (t) => {
+			const rig = await energyRig(t, { joint, delayRange: true });
+			const key = joint ? "energy_plant_setup" : "energy_scenario";
+			await click("03Operation");
+			await enter(scenarioField("Start with UTC or offset"), "");
+			await enter(scenarioField("End with UTC or offset"), "");
+			await click("Use the shared profile range");
+			await until(() =>
+				rig.requests.some((row) => row.operation === "profiles/preview"),
+			);
+			assert.equal(button("Calculate energy flows").disabled, true);
+			await act(async () => button("Calculate energy flows").click());
+			assert.equal(
+				rig.requests.some((row) => row.operation === "runs/calculate"),
+				false,
+			);
+			const value = "2024-03-31T00:00:00Z";
+			await enter(
+				scenarioField(
+					boundary === "start_utc"
+						? "Start with UTC or offset"
+						: "End with UTC or offset",
+				),
+				value,
+			);
+			await act(async () => rig.gate.resolve());
+			await until(() => button("Use the shared profile range"));
+			assert.equal(rig.draft.history.current[key].schedule[0][boundary], value);
+			assert.equal(
+				rig.draft.history.current[key].schedule[0][
+					boundary === "start_utc" ? "end_utc" : "start_utc"
+				],
+				"",
+			);
+			assert.equal(
+				rig.requests.some((row) => row.operation === "runs/calculate"),
+				false,
+			);
+		});
+	}
+}
+
+for (const joint of [false, true]) {
+	for (const pvOnly of [false, true]) {
+		test(`${joint ? "plant" : "single"} ${pvOnly ? "PV-only" : "storage"} rejected dates reveal and highlight the authored timestamp fields`, async (t) => {
+			const rig = await energyRig(t, { joint, pvOnly, invalidDates: true });
+			await click("Calculate energy flows");
+			await until(() =>
+				document.querySelector('input[aria-invalid="true"][name$="start_utc"]'),
+			);
+			const start = document.querySelector(
+				'input[aria-invalid="true"][name$="start_utc"]',
+			);
+			const end = document.querySelector(
+				'input[aria-invalid="true"][name$="end_utc"]',
+			);
+			assert.ok(end);
+			await until(() => document.activeElement === start);
+			assert.equal(start.closest("[hidden]"), null);
+			const details = start.closest("details");
+			if (details) assert.equal(details.open, true);
+			assert.match(
+				document.getElementById(start.getAttribute("aria-describedby"))
+					.textContent,
+				/date and time with Z or a UTC offset.*end must be after the start/,
+			);
+			assert.doesNotMatch(
+				document.body.textContent,
+				/energy_scenario\.schedule|energy_plant_setup\.schedule/,
+			);
+			assert.equal(rig.draft.baseline.revision, 1);
+			assert.equal(document.querySelector(".lp-run-result"), null);
+			await click("Planning report");
+			assert.equal(
+				button("Planning report").getAttribute("aria-pressed"),
+				"true",
+			);
+			await click("Scenario settings");
+			await enter(start, "2024-03-30T23:30:00Z");
+			await until(
+				() =>
+					!document.querySelector(
+						'input[aria-invalid="true"][name$="start_utc"]',
+					),
+			);
+		});
+	}
 }
 
 test("a new PV-only plant with positive PV starts at the AC source and its first ordinary schedule edit stays AC", async (t) => {

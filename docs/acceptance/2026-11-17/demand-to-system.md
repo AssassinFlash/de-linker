@@ -1,6 +1,6 @@
 # 配置器：当前输入操作与工作台重排
 
-目标：[全欧洲系统方案配置器正式落地并接入 Linker 客户链路](https://github.com/AssassinFlash/de-linker/issues/1132)。基线 `a92cda3a8`；候选分支 `codex/demand-to-system`。本记录随候选验收更新，不代表已发布。
+目标：[全欧洲系统方案配置器正式落地并接入 Linker 客户链路](https://github.com/AssassinFlash/de-linker/issues/1132)。基线 `a92cda3a8`；主候选经 PR 1134 合并并发布为 `21d9375d5`。生产验收发现的日期失败恢复增量在 `codex/planner-operating-periods`，仍在验证。
 
 ## 本轮裁定与实现
 
@@ -38,6 +38,7 @@
 | “Gewerblicher Speicher auslegen” | 格不正确 | “Gewerbespeicher auslegen” |
 | “Save the project, then check the equipment selection” | 新设备检查直接接收当前输入，旧提示错误要求先保存 | “Check equipment to assess this wiring plan.”；德语使用实际按钮名 „Geräte prüfen“ |
 | 多系统报告默认描述独立储能单元 | 纯光伏没有储能单元 | EN: “This calculation uses available AC PV generation and load at the common metering point. The declared scenario contains no battery storage.” DE: “Die Berechnung verwendet die verfügbare AC-PV-Erzeugung und die Last am gemeinsamen Messpunkt. Das angegebene Szenario enthält keinen Batteriespeicher.” |
+| 日期缺项初稿仅说明日期、时间和时区 | 对相同／倒置的起止时刻没有可执行指导 | EN: “Enter a date and time with Z or a UTC offset. The end must be after the start.” DE: “Geben Sie Datum und Uhrzeit mit Z oder einem UTC-Zeitversatz an. Das Ende muss nach dem Beginn liegen.” |
 
 字段错误使用实际字段名称和更正动作；不向客户显示内部路径。新文案维持 EN／正式 DE，译文编译及覆盖检查通过。
 
@@ -63,6 +64,24 @@
 
 候选 `121f0589e` 的首次 CI 在 `workspace-lifecycle.test.mjs` 首次加载编辑器时未在夹具的 2 秒期限内出现 textarea，其余 387 项组件检查通过。相同候选本地单文件 23 项及完整组件集 388 项通过；仅重跑失败 CI 作业一次后，run 44085565970 attempt 2 全绿，headSha 确认为 `121f0589ef11a98e97e9168c697f8e98271665ac`。测试超时与产品代码均未为此次重跑修改。临时日志 `/tmp/linker-planner-current-tests.log`、`/tmp/linker-ci-rerun.log` 各保留一份，由主线在 CI 原因与结果登记后回收。
 
-资源回收：`agent-a59bc662892acd775`、`agent-a7a87623acf00ba39` 的源码格式化后与已提交版本相同，`agent-a98f3423e89850493` 的三份测试与已提交版本字节相同；确认没有进程占用及额外文件后删除这三份工作树。删除前后可用空间为 1,264,356,139,008／1,274,564,382,720 字节，实际增加 10,208,243,712 字节。其余四份实现树仍在核对整合差异。
+资源回收：`agent-a59bc662892acd775`、`agent-a7a87623acf00ba39` 的源码格式化后与已提交版本相同，`agent-a98f3423e89850493` 的三份测试与已提交版本字节相同；确认没有进程占用及额外文件后删除这三份工作树。删除前后可用空间为 1,264,356,139,008／1,274,564,382,720 字节，实际增加 10,208,243,712 字节。其余四份实现树核对后确认差异均为已整合的界面改版、当前输入命令及后续缺陷修正；无活跃进程，现已删除，实际可用空间再增加 13,615,927,296 字节。七份工作树合计释放 23,824,171,008 字节。review 的 PHP、Planner worker、Engine 与 Genie 已通过 `just down review` 停止，保留实例数据以保护 Utrecht 草稿。两份评审补丁、本地升级恢复副本和组件测试临时日志共 4 份已回收，实际可用空间增加 2,138,112 字节。
 
-当前仍待：验收记录提交后的最终 CI；合并、成对 Planner 与站点发布、生产入口读回；剩余资源回收。[PR 1134](https://github.com/AssassinFlash/de-linker/pull/1134) 保持草稿，完整目标保持开放。
+生产读回预算：主线沿用浏览器空间 14 和 Amsterdam 保存项目，仅只读核对该项目。当前输入操作如需生产写入，最多创建 1 个明确标为 `Goal 1132 release acceptance` 的临时项目，只用于新网关／worker／结果和报告读回；不提交询盘、不发信，完成后通过项目删除入口回收。发布日志复用本机会话任务输出；最终发布批次与实际结果补入本记录。保留四份最终评审证据至 `docs/acceptance/2026-11-17/demand-to-system/`：多系统桌面、手机运行设置截图和德语报告 PDF／CSV，各一份，供本记录引用；归档后删除对应临时原件。
+
+最终证据：[多系统桌面](demand-to-system/multi-system-en-1440.png) · [手机运行设置](demand-to-system/operation-en-390.png) · [德语报告 PDF](demand-to-system/planning-report-de.pdf) · [物料 CSV](demand-to-system/bill-of-materials-de.csv)。四份均核对归档字节，临时原件已删除。
+
+最终提交 `c3a18f7be` 的 CI run 44088194030 全绿；PR 1134 于 2026-11-17 13:11 UTC 合并为 `21d9375d5a199082c7586e91913be28074d9cd89`。Planner 成对发布完成：release `/opt/linker-planner/releases/964ca6cb5c31270c7bd62fa482adf1c16fc9aeef59874853d73ccd7570e69645`，runtime `3164f7458367d8cbe17cde27aeaa25a99c5bd46e08a079aeb8de640d9766a16b`。HTTP PID 48644、worker PID 48892 均 active，原生 status 证实监听 8911、运行时与 worker 身份一致、draining=false、pending=0。切换中的一次提前 status 读取发生在监听启动前；13:14:50 HTTP 启动、13:14:53 worker ready 后读回通过。保留 current／previous 两个 release。站点原子发布批次 `20261117T131550502102Z-21d9375d5` 已启动；数据库恢复快照 `/Users/chesterjohn/de-linker-data/snapshots/db-20261117T131558Z.sql.gz`，8,154,047 字节，原生快照校验通过。
+
+站点批次 `20261117T131550502102Z-21d9375d5` 已在原批续完：WindPress 编译更新实际 CSS，verify 与 archive 成功，任务退出 0。生产临时项目当前输入直接提交为版本 2；第一次运行因日期为空失败（job `invalid_input`）。采用共同时间范围请求期间继续修改其他运行字段，触发 `scenario_changed`，日期没有写入；界面未在提交时指出日期缺项。等待范围选用完成后，直接计算生成版本 3，运行 `9c1cb9faf8a24e858a9d16e2b6de383a` 成功：35,040 区间、负载与购电 4,990.56 kWh、光伏及未供电量均为零，符合明确声明的纯储能空初始电量测试情景。
+
+新增缺陷工作预算：一名后端代理复用其隔离 worktree，已定位空日期仅在 worker 解析；在共享 authored schedule 编译处修复并补 HTTP 拒绝／回滚测试。依赖独立 uv 安装、不建实例，主线整合后回收该树。前端修复线另占一份隔离 worktree，负责共同时间范围异步更新与提交校验，依赖独立安装；主线负责集成、评审和回收。主线继续生产报告及界面读回。继续复用主线、review 数据和临时生产项目，不新增生产测试项目。完整目标保持开放，尚需报告读回、失败恢复修复和临时资源回收。生产 PDF 下载限一份，保存到新目录 `/tmp/linker-production-report-1132/`，主线实看后回收；生产截图复用已登记 `/tmp/linker-demand-current.png`，每次查看后覆盖，不累积副本。
+
+生产后续读回：版本 3 报告 `6efdd3323b5747ca95617db555cc3814` 已生成并下载，两页 PDF 实看，包含原始运行引用、4,990.565 kWh 负载／购电和明确的合成情景来源。EN／DE、1440／390 的新情景与报告布局已刷新实看；DE 页面明确标注既有英文报告语言。当前输入设备搜索直接保存版本 4，评估 644 组；采用 SAJ H2-25K-T3 + BU2-5.0-HV1、3 模块、1 并联组及 BC2-HV1 后直接检查，保存版本 5，显示 Equipment check complete 与逐项证据。未提交生产询盘或发信。Amsterdam 只读重开仍为 Saved · revision 3；真实荷兰航拍、已存屋面与 8 块／3.6 kWp 组件均实际显示。
+
+后端原只读代理工作树由工具在完成时自动回收，后续修复使用 `/Users/chesterjohn/Documents/de-linker/.claude/worktrees/engine-schedule-admission`（独立 .venv）；前端为 `/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-ad08ef02046093a37`。后端增量已整合，主线逐文件字节核对并通过 16 项 HTTP／plant 针对性测试、Ruff 与类型检查。该隔离树无进程引用，只有已整合文件和可重建缓存，现已回收，实际释放 3,477,172,224 字节。前端树集成后同样由主线回收。生产 PDF 实看后删除，实际释放 126,976 字节。review 已重启 PHP、Engine 与 Planner worker，供失败恢复增量验收；Genie 未启动。真实 Oslo 界面清空开始日期后提交被拒绝，Undo 恢复 Saved · revision 8；缺少日期字段提示的前端增量仍待集成。联调发现前端只接收 `schedule[0]` 索引路径，主线修正后端原点号索引输出，16 项边界测试再次通过。
+
+增量评审预算：Spec 与 Standards 各一份只读隔离工作树、不安装依赖、不创建站点；主线提交完整候选后并行评审，收到结果即由工具回收。复用 `/tmp/linker-demand-pr.md` 作为本次后续 PR 正文，发布后删除。发布前沿用既有 Archives/Remote 再取一次当前生产增量恢复点，仍按同源 N=3 轮换；不建立新的备份根目录。恢复点 `/Users/chesterjohn/de-linker-data/planner-production/archive-20261117T134931Z-f1b360b4` 已校验，保留 3 份；操作前后可用空间 1,284,099,723,264／1,284,012,273,664 字节。
+
+日期恢复增量集成后，前端 273 项域／数据测试与 399 项组件测试通过（672 项），TypeScript、Prettier、Vite 及两层产物校验通过。翻译覆盖无缺口、9 份目录校验通过；Planner PHP 入口 3 项／37 断言通过。后端针对性 16 项通过；原独立后端完整受影响集为 182 项通过。候选 `cbebe6d0d` 的 Spec 与 Standards 独立评审均无发现，PR 为 [1135](https://github.com/AssassinFlash/de-linker/pull/1135)。评审站日期错误已在 EN／DE、1440／390 实看：开始日期缺项时聚焦实际字段并显示更正指导；英文桌面可在错误存在时切换报告再返回，德语修改日期后字段错误清除。验收结束用 Undo 恢复 Oslo 保存版本 8。截图等待实际滚动完成后查看，沿用临时工作图，不增加重复归档。生产增量发布待 CI 通过。
+
+前端隔离树 `agent-ad08ef02046093a37` 的 8 份改动与集成候选逐字节相同，未跟踪文件为空、忽略文件仅可重建 node_modules，无进程占用；已回收，实际可用空间增加 3,823,177,728 字节（1,284,015,484,928 → 1,287,838,662,656）。两份只读评审树已由工具自动回收。review 的 PHP、Planner worker 和 Engine 已停止，保留实例数据及 Utrecht 草稿。13:49 已验证恢复归档包含生产临时项目版本 5，与此次发布前项目状态一致；沿用该恢复点。

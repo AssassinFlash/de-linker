@@ -21,6 +21,7 @@ export function SimpleEnergySetup({
 	onValidity,
 	useProfileRange,
 	rangeBusy,
+	inputErrors,
 }: {
 	value: ScenarioDraft;
 	storageOnly: boolean;
@@ -33,6 +34,7 @@ export function SimpleEnergySetup({
 	onValidity: (valid: boolean) => void;
 	useProfileRange: () => void;
 	rangeBusy: boolean;
+	inputErrors?: readonly string[];
 }) {
 	const validity = useRef(new Map<string, boolean>());
 	const report = useCallback(
@@ -207,6 +209,7 @@ export function SimpleEnergySetup({
 			</details>
 			<OperatingPeriodsForm
 				periods={value.schedule}
+				inputErrors={inputErrors}
 				onChange={(schedule) => onChange({ ...value, schedule })}
 				locale={locale}
 				report={report}

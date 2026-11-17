@@ -375,6 +375,50 @@ export function EnergyWorkspace({
 				client.isCurrentScope(session.query_scope),
 			);
 	}, [actionError, active, client, session.query_scope]);
+	const schedulePath = joint
+			? "energy_plant_setup.schedule"
+			: "energy_scenario.schedule",
+		scenarioErrors =
+			actionError instanceof ApiError
+				? actionError.fields.filter((path) =>
+						path.startsWith(schedulePath + "["),
+					)
+				: [],
+		scenarioTarget = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (!scenarioErrors.length || !active || blocked || operations.busy) return;
+		setView("scenario");
+		setSection("operation");
+		const frame = window.requestAnimationFrame(() => {
+			if (!client.isCurrentScope(session.query_scope)) return;
+			const field = [
+				...(scenarioTarget.current?.querySelectorAll<HTMLInputElement>(
+					"input[name]",
+				) ?? []),
+			].find(
+				(node) =>
+					scenarioErrors.includes(node.name) && !node.closest("[hidden]"),
+			);
+			if (!field) return;
+			let ancestor = field.parentElement;
+			while (ancestor && ancestor !== scenarioTarget.current) {
+				if (ancestor.tagName === "DETAILS")
+					(ancestor as HTMLDetailsElement).open = true;
+				ancestor = ancestor.parentElement;
+			}
+			field.focus();
+			field.scrollIntoView({ block: "center" });
+		});
+		return () => window.cancelAnimationFrame(frame);
+	}, [
+		actionError,
+		active,
+		blocked,
+		schedulePath,
+		operations.busy,
+		client,
+		session.query_scope,
+	]);
 	const runs = usePlanningRuns({
 		projectId,
 		session,
@@ -416,19 +460,32 @@ export function EnergyWorkspace({
 		!draft.pending &&
 		!draft.conflict &&
 		!blocked &&
+		!rangeBusy &&
 		syntaxValid &&
 		admitted &&
 		!operations.busy &&
 		!operations.checking &&
 		!operations.storageFailed &&
 		!unconfirmed.length;
+	function clearScheduleErrors(next: ScenarioDraft | PlantEnergyDraft) {
+		const changed = scenarioErrors.filter((path) => {
+			const [index, field] = path.slice(schedulePath.length + 1).split("].");
+			return (
+				next.schedule[Number(index)]?.[field!] !==
+				currentSetup?.schedule[Number(index)]?.[field!]
+			);
+		});
+		if (changed.length) operations.clearError(changed);
+	}
 	function change(next: ScenarioDraft) {
 		if (blocked || !client.isCurrentScope(session.query_scope)) return;
+		clearScheduleErrors(next);
 		edit((inputs) => scenarioInputs(inputs, next));
 		setError(null);
 	}
 	function changeJoint(next: PlantEnergyDraft) {
 		if (blocked || !client.isCurrentScope(session.query_scope)) return;
+		clearScheduleErrors(next);
 		edit((inputs) => plantEnergyInputs(inputs, next));
 		setError(null);
 	}
@@ -922,22 +979,36 @@ export function EnergyWorkspace({
 		setRangeBusy(true);
 		setError(null);
 		try {
-			const jointDc = joint && sharedDc;
-			const pvRoles: ProfileRole[] = pvInactive
-				? []
-				: joint && jointDc
-					? (["pv_reference", "pv_available_ac"] as const).filter(
-							(role) => !!selections.selected[role],
-						)
-					: ["pv_available_ac"];
-			const roles: ProfileRole[] = [
-				"gross_load",
-				...pvRoles,
-				...(currentSetup.aux_ac_kw == null ? ["aux_ac" as const] : []),
-				...(currentSetup.schedule.some((period) => period.mode === "outage")
-					? ["critical_load" as const]
-					: []),
-			];
+			const profileRoles = (
+				inputs: JsonObject,
+				value: ScenarioDraft | PlantEnergyDraft,
+			): ProfileRole[] => {
+				const selected = readSelections(inputs.profile_selections).selected,
+					dc =
+						!isPvOnly(inputs) &&
+						(value.coupling === "shared_dc" ||
+							value.coupling === "plant_shared_dc"),
+					inactive =
+						isStorageOnly(inputs) ||
+						(!dc &&
+							value.schedule.every((period) => period.pv_enabled === false)),
+					pvRoles: ProfileRole[] = inactive
+						? []
+						: joint && dc
+							? (["pv_reference", "pv_available_ac"] as const).filter(
+									(role) => !!selected[role],
+								)
+							: ["pv_available_ac"];
+				return [
+					"gross_load",
+					...pvRoles,
+					...(value.aux_ac_kw == null ? ["aux_ac" as const] : []),
+					...(value.schedule.some((period) => period.mode === "outage")
+						? ["critical_load" as const]
+						: []),
+				];
+			};
+			const roles = profileRoles(draft.history.current, currentSetup);
 			const ranges = await Promise.all(
 				roles.map(async (role) => {
 					const id = selections.selected[role];
@@ -984,25 +1055,61 @@ export function EnergyWorkspace({
 				!client.isCurrentScope(session.query_scope)
 			)
 				return;
-			const range = sharedProfileRange(ranges),
-				last = currentSetup.schedule.length - 1;
+			const range = sharedProfileRange(ranges);
 			const applied = edit((inputs) => {
-				if (
-					!sameJson(
-						joint ? inputs.energy_plant_setup : inputs.energy_scenario,
-						setupDocument,
-					) ||
-					!sameJson(readSelections(inputs.profile_selections), selections)
-				)
-					throw new Error("scenario_changed");
-				const schedule = currentSetup.schedule.map((period, index) => ({
-					...period,
-					...(index === 0 ? { start_utc: range.start_utc } : {}),
-					...(index === last ? { end_utc: range.end_utc } : {}),
-				}));
-				return joint && jointContext.value
-					? plantEnergyInputs(inputs, { ...jointContext.value.setup, schedule })
-					: scenarioInputs(inputs, { ...setup!, schedule });
+				if (hasPlant(inputs) !== joint)
+					throw new ApiError(409, "scenario_changed");
+				const selected = readSelections(inputs.profile_selections).selected;
+				function applyRange<T extends ScenarioDraft | PlantEnergyDraft>(
+					value: T,
+				): T {
+					if (
+						!sameJson(profileRoles(inputs, value), roles) ||
+						roles.some(
+							(role) => selected[role] !== selections.selected[role],
+						) ||
+						!sameJson(
+							value.schedule.map(({ id, start_utc, end_utc }) => ({
+								id,
+								start_utc,
+								end_utc,
+							})),
+							currentSetup!.schedule.map(({ id, start_utc, end_utc }) => ({
+								id,
+								start_utc,
+								end_utc,
+							})),
+						)
+					)
+						throw new ApiError(409, "scenario_changed");
+					return {
+						...value,
+						schedule: value.schedule.map((period, index) => ({
+							...period,
+							...(index === 0 ? { start_utc: range.start_utc } : {}),
+							...(index === value.schedule.length - 1
+								? { end_utc: range.end_utc }
+								: {}),
+						})),
+					};
+				}
+				return joint
+					? plantEnergyInputs(
+							inputs,
+							applyRange(
+								inputs.energy_plant_setup === undefined
+									? jointContext.value!.setup
+									: plantEnergyDraft(inputs, plantEnergyEquipment(inputs)),
+							),
+						)
+					: scenarioInputs(
+							inputs,
+							applyRange(
+								inputs.energy_scenario === undefined
+									? setup!
+									: readScenarioDraft(inputs.energy_scenario),
+							),
+						);
 			});
 			if (!applied) throw new ApiError(409, "scenario_changed");
 		} catch (cause) {
@@ -1433,7 +1540,7 @@ export function EnergyWorkspace({
 					}
 				/>
 			</div>
-			<div hidden={view !== "scenario"}>
+			<div hidden={view !== "scenario"} ref={scenarioTarget}>
 				{Boolean(joint ? jointContext.error : parsed.error) && (
 					<Notice error>
 						{joint
@@ -1453,6 +1560,7 @@ export function EnergyWorkspace({
 							<div className="lp-work-main">
 								{pvOnly ? (
 									<SolarEnergySetup
+										inputPath={schedulePath}
 										value={currentSetup}
 										hasAuxiliaryProfile={Boolean(selections.selected.aux_ac)}
 										locale={locale}
@@ -1468,6 +1576,7 @@ export function EnergyWorkspace({
 										onValidity={setCompactValid}
 										useProfileRange={() => void useRange()}
 										rangeBusy={rangeBusy}
+										inputErrors={scenarioErrors}
 									/>
 								) : (
 									<>
@@ -1489,6 +1598,7 @@ export function EnergyWorkspace({
 													onValidity={setCompactValid}
 													useProfileRange={() => void useRange()}
 													rangeBusy={rangeBusy}
+													inputErrors={scenarioErrors}
 												/>
 											)}
 										<details
@@ -1549,6 +1659,7 @@ export function EnergyWorkspace({
 													onValidity={setScenarioValid}
 													useProfileRange={() => void useRange()}
 													rangeBusy={rangeBusy}
+													inputErrors={scenarioErrors}
 													openEquipment={() => {
 														setView("equipment");
 														openEquipment?.();
@@ -1583,6 +1694,7 @@ export function EnergyWorkspace({
 														onValidity={setScenarioValid}
 														useProfileRange={() => void useRange()}
 														rangeBusy={rangeBusy}
+														inputErrors={scenarioErrors}
 													/>
 												)
 											)}

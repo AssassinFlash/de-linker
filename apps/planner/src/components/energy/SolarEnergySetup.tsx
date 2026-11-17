@@ -15,6 +15,8 @@ export function SolarEnergySetup({
 	onValidity,
 	useProfileRange,
 	rangeBusy,
+	inputErrors,
+	inputPath,
 }: {
 	value: SolarSettings;
 	onChange: (changes: Partial<SolarSettings>) => void;
@@ -24,6 +26,8 @@ export function SolarEnergySetup({
 	onValidity: (valid: boolean) => void;
 	useProfileRange: () => void;
 	rangeBusy: boolean;
+	inputErrors?: readonly string[];
+	inputPath?: string;
 }) {
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
 	const report = useCallback((field: string, valid: boolean) => {
@@ -61,6 +65,8 @@ export function SolarEnergySetup({
 			</section>
 			<OperatingPeriodsForm
 				periods={value.schedule}
+				inputErrors={inputErrors}
+				inputPath={inputPath}
 				onChange={(schedule) => onChange({ schedule })}
 				locale={locale}
 				report={report}
