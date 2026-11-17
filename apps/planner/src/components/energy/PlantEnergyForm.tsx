@@ -83,7 +83,7 @@ export function PlantEnergyForm({
 		});
 	return (
 		<fieldset className="lp-scenario-fields lp-work-main" disabled={disabled}>
-			<section className="lp-work-panel">
+			<section className="lp-work-panel" hidden={section !== "storage"}>
 				<h3 className="lp-work-panel-heading">
 					{__("System connection", "linker-tools")}
 				</h3>

@@ -219,7 +219,7 @@ export function PlanningReportResult({
 			? __("Report language: English", "linker-tools")
 			: __("Report language: German", "linker-tools");
 	return (
-		<article className="lp-run-result">
+		<article className="lp-run-result lp-report-detail">
 			{!current && (
 				<div className="lp-notice" data-report-outdated="" role="status">
 					<p>
@@ -230,7 +230,7 @@ export function PlanningReportResult({
 					</p>
 				</div>
 			)}
-			<div className="lp-run-heading lp-work-panel lp-work-toolbar">
+			<header className="lp-run-heading lp-work-panel lp-report-heading">
 				<div>
 					<h3 lang={report.locale}>{report.title}</h3>
 					<p lang={report.locale}>{report.subtitle}</p>
@@ -250,96 +250,107 @@ export function PlanningReportResult({
 						</time>
 					</p>
 				</div>
-				<button
-					type="button"
-					className="lp-button"
-					disabled={busy || !client.isCurrentScope(scope)}
-					onClick={() => void download("pdf")}
-				>
-					{__("Download PDF", "linker-tools")}
-				</button>
-				{csv && (
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("materials")}
-					>
-						{__("Download bill of materials (CSV)", "linker-tools")}
-					</button>
-				)}
-				{ruleCsv && (
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("rules")}
-					>
-						{__("Download country rule review (CSV)", "linker-tools")}
-					</button>
-				)}
-				{seriesCsv && (
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("series")}
-					>
-						{__("Download PV string intervals (CSV)", "linker-tools")}
-					</button>
-				)}
-			</div>
-			{seriesCsv && (
-				<p>
-					{__(
-						"The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
-						"linker-tools",
+			</header>
+			<div className="lp-report-detail-layout">
+				<aside className="lp-report-actions lp-work-panel">
+					<div className="lp-report-downloads">
+						<button
+							type="button"
+							className="lp-button"
+							disabled={busy || !client.isCurrentScope(scope)}
+							onClick={() => void download("pdf")}
+						>
+							{__("Download PDF", "linker-tools")}
+						</button>
+						{csv && (
+							<button
+								type="button"
+								className="lp-button lp-button-secondary"
+								disabled={busy || !client.isCurrentScope(scope)}
+								onClick={() => void download("materials")}
+							>
+								{__("Download bill of materials (CSV)", "linker-tools")}
+							</button>
+						)}
+						{ruleCsv && (
+							<button
+								type="button"
+								className="lp-button lp-button-secondary"
+								disabled={busy || !client.isCurrentScope(scope)}
+								onClick={() => void download("rules")}
+							>
+								{__("Download country rule review (CSV)", "linker-tools")}
+							</button>
+						)}
+						{seriesCsv && (
+							<button
+								type="button"
+								className="lp-button lp-button-secondary"
+								disabled={busy || !client.isCurrentScope(scope)}
+								onClick={() => void download("series")}
+							>
+								{__("Download PV string intervals (CSV)", "linker-tools")}
+							</button>
+						)}
+					</div>
+					{seriesCsv && (
+						<p>
+							{__(
+								"The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+								"linker-tools",
+							)}
+						</p>
 					)}
-				</p>
-			)}
-			{error && (
-				<Notice error>
-					{__("The file could not be downloaded. Try again.", "linker-tools")}
-				</Notice>
-			)}
-			{(typeof run.result?.has_draft_items === "boolean"
-				? run.result.has_draft_items
-				: report.sections.some(
-						(section) => section.id === "bom" && section.table?.rows.length,
-					)) && (
-				<DraftTransferButton
-					run={run}
-					client={client}
-					scope={scope}
-					operations={operations}
-					current={current}
-					blocked={blocked}
-					locale={locale}
-					recheck={recheck}
-				/>
-			)}
-			{report.sections.map((section) =>
-				section.id.startsWith("check-") ||
-				["basis", "conditions"].includes(section.id) ? (
-					<details
-						key={section.id}
-						className="lp-comparison lp-work-panel"
-						lang={report.locale}
-					>
-						<summary>{section.title}</summary>
-						<SectionContent section={section} />
-					</details>
-				) : (
-					<section
-						key={section.id}
-						className="lp-scenario-block lp-work-panel"
-						lang={report.locale}
-					>
-						<h4 className="lp-work-panel-heading">{section.title}</h4>
-						<SectionContent section={section} />
-					</section>
-				),
-			)}
+					{error && (
+						<Notice error>
+							{__(
+								"The file could not be downloaded. Try again.",
+								"linker-tools",
+							)}
+						</Notice>
+					)}
+					{(typeof run.result?.has_draft_items === "boolean"
+						? run.result.has_draft_items
+						: report.sections.some(
+								(section) => section.id === "bom" && section.table?.rows.length,
+							)) && (
+						<DraftTransferButton
+							run={run}
+							client={client}
+							scope={scope}
+							operations={operations}
+							current={current}
+							blocked={blocked}
+							locale={locale}
+							recheck={recheck}
+						/>
+					)}
+				</aside>
+				<div className="lp-report-content">
+					{report.sections.map((section) =>
+						section.id.startsWith("check-") ||
+						["basis", "conditions"].includes(section.id) ? (
+							<details
+								key={section.id}
+								className="lp-comparison lp-work-panel"
+								lang={report.locale}
+							>
+								<summary>{section.title}</summary>
+								<SectionContent section={section} />
+							</details>
+						) : (
+							<section
+								key={section.id}
+								className="lp-scenario-block lp-work-panel"
+								lang={report.locale}
+							>
+								<h4 className="lp-work-panel-heading">{section.title}</h4>
+								<SectionContent section={section} />
+							</section>
+						),
+					)}
+				</div>
+			</div>
 		</article>
 	);
 }

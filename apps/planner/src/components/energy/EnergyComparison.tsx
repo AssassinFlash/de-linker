@@ -217,181 +217,194 @@ export function EnergyComparison({
 			</div>
 			{data && !query.error && (
 				<>
-					<div className="lp-comparison-variants">
-						{([data.baseline, data.candidate] as const).map((ref) => (
-							<section className="lp-work-panel" key={ref.run_id}>
-								<h4 className="lp-work-panel-heading">{label(ref.revision)}</h4>
-								{ref.equipment_models.map((name, i) => (
-									<p key={i}>{name}</p>
-								))}
-								<dl className="lp-field-summary">
-									<div>
-										<dt>{equipmentCheckLabel("usable_energy")}</dt>
-										<dd>{format(ref.usable_window_kwh, "kWh")}</dd>
-									</div>
-									{(["modules_per_stack", "parallel_stacks"] as const).map(
-										(field) =>
-											ref[field] !== null && (
-												<div key={field}>
-													<dt>{equipmentCheckLabel(field)}</dt>
-													<dd>
-														{new Intl.NumberFormat(locale).format(ref[field])}
-													</dd>
-												</div>
-											),
+					<div className="lp-comparison-detail">
+						<div className="lp-comparison-main">
+							<section className="lp-work-panel">
+								<h4 className="lp-work-panel-heading">
+									{__("Result", "linker-tools")}
+								</h4>
+								{!data.conditions_aligned && (
+									<Notice>
+										{__(
+											"No differences are shown because the comparison conditions differ or are incomplete.",
+											"linker-tools",
+										)}
+									</Notice>
+								)}
+								<p>
+									{__(
+										"Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary.",
+										"linker-tools",
 									)}
-								</dl>
-								{ref.equipment_status !== null && (
-									<p>{equipmentStatus(ref.equipment_status)}</p>
-								)}
-								{ref.source_note && (
-									<details>
-										<summary>
-											{__(
-												"Source or assumption for storage parameters",
-												"linker-tools",
-											)}
-										</summary>
-										<p>{ref.source_note}</p>
-									</details>
-								)}
-								<p>
-									{ref.coupling.startsWith("plant_")
-										? __(
-												"Multiple storage units at a shared AC metering point",
-												"linker-tools",
-											)
-										: ref.coupling === "shared_dc"
-											? __("PV and battery share an inverter", "linker-tools")
-											: __("Separate AC connections", "linker-tools")}
 								</p>
+								<div className="lp-table-scroll">
+									<table className="lp-data-table">
+										<thead>
+											<tr>
+												<th>{__("Result", "linker-tools")}</th>
+												<th>{__("Baseline calculation", "linker-tools")}</th>
+												<th>{__("Comparison calculation", "linker-tools")}</th>
+												<th>{__("Difference", "linker-tools")}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{data.metrics.map((row) => (
+												<tr key={row.id}>
+													<th scope="row">{comparisonLabel(row.id)}</th>
+													<td>
+														{format(row.baseline, row.unit)}
+														{row.id === "pv_generation" || row.id === "pv_use"
+															? ` (${row.baseline_boundary.toUpperCase()})`
+															: ""}
+													</td>
+													<td>
+														{format(row.candidate, row.unit)}
+														{row.id === "pv_generation" || row.id === "pv_use"
+															? ` (${row.candidate_boundary.toUpperCase()})`
+															: ""}
+													</td>
+													<td>
+														{row.delta === null
+															? "—"
+															: format(row.delta, row.delta_unit)}
+													</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+								</div>
+							</section>
+							<div className="lp-comparison-variants">
+								<details className="lp-comparison lp-work-panel">
+									<summary>{__("Comparison basis", "linker-tools")}</summary>
+									<dl className="lp-field-summary">
+										{data.conditions.map((c) => (
+											<div key={c.id}>
+												<dt>{comparisonLabel(c.id)}</dt>
+												<dd>{comparisonLabel(c.status)}</dd>
+											</div>
+										))}
+									</dl>
+								</details>
+								<details className="lp-comparison lp-work-panel">
+									<summary>
+										{__("Design and assumption changes", "linker-tools")}
+									</summary>
+									<dl className="lp-field-summary">
+										{data.differences.map((d) => (
+											<div key={d.id}>
+												<dt>{comparisonLabel(d.id)}</dt>
+												<dd>
+													{d.changed
+														? __("Changed", "linker-tools")
+														: __("Unchanged", "linker-tools")}
+												</dd>
+											</div>
+										))}
+									</dl>
+								</details>
+							</div>
+						</div>
+						<aside className="lp-comparison-sidebar">
+							<div className="lp-comparison-variants">
+								{([data.baseline, data.candidate] as const).map((ref) => (
+									<section className="lp-work-panel" key={ref.run_id}>
+										<h4 className="lp-work-panel-heading">
+											{label(ref.revision)}
+										</h4>
+										{ref.equipment_models.map((name, i) => (
+											<p key={i}>{name}</p>
+										))}
+										<dl className="lp-field-summary">
+											<div>
+												<dt>{equipmentCheckLabel("usable_energy")}</dt>
+												<dd>{format(ref.usable_window_kwh, "kWh")}</dd>
+											</div>
+											{(["modules_per_stack", "parallel_stacks"] as const).map(
+												(field) =>
+													ref[field] !== null && (
+														<div key={field}>
+															<dt>{equipmentCheckLabel(field)}</dt>
+															<dd>
+																{new Intl.NumberFormat(locale).format(
+																	ref[field],
+																)}
+															</dd>
+														</div>
+													),
+											)}
+										</dl>
+										{ref.equipment_status !== null && (
+											<p>{equipmentStatus(ref.equipment_status)}</p>
+										)}
+										{ref.source_note && (
+											<details>
+												<summary>
+													{__(
+														"Source or assumption for storage parameters",
+														"linker-tools",
+													)}
+												</summary>
+												<p>{ref.source_note}</p>
+											</details>
+										)}
+										<p>
+											{ref.coupling.startsWith("plant_")
+												? __(
+														"Multiple storage units at a shared AC metering point",
+														"linker-tools",
+													)
+												: ref.coupling === "shared_dc"
+													? __(
+															"PV and battery share an inverter",
+															"linker-tools",
+														)
+													: __("Separate AC connections", "linker-tools")}
+										</p>
+										<p>
+											{ref.scenario_constraint_status === "satisfied"
+												? __("Scenario requirements met", "linker-tools")
+												: __("Scenario requirements not met", "linker-tools")}
+										</p>
+										<button
+											type="button"
+											className="lp-text-button"
+											onClick={() => openRun(ref.run_id)}
+										>
+											{__("Open saved calculation", "linker-tools")}
+										</button>
+									</section>
+								))}
+							</div>
+							<div className="lp-work-panel lp-work-toolbar">
 								<p>
-									{ref.scenario_constraint_status === "satisfied"
-										? __("Scenario requirements met", "linker-tools")
-										: __("Scenario requirements not met", "linker-tools")}
+									{__(
+										"Matching comparison conditions do not establish manufacturer performance or installation approval.",
+										"linker-tools",
+									)}
 								</p>
 								<button
 									type="button"
-									className="lp-text-button"
-									onClick={() => openRun(ref.run_id)}
+									className="lp-button"
+									disabled={reportDisabled || query.isFetching}
+									onClick={() =>
+										void generateReport({
+											locale: locale.startsWith("de") ? "de" : "en",
+											energy_run_id: null,
+											pv_run_id: null,
+											equipment_run_id: null,
+											logo: null,
+											comparison: {
+												baseline_run_id: data.baseline.run_id,
+												candidate_run_id: data.candidate.run_id,
+											},
+										})
+									}
 								>
-									{__("Open saved calculation", "linker-tools")}
+									{__("Save comparison in planning report", "linker-tools")}
 								</button>
-							</section>
-						))}
-					</div>
-					<section className="lp-work-panel">
-						<h4 className="lp-work-panel-heading">
-							{__("Result", "linker-tools")}
-						</h4>
-						{!data.conditions_aligned && (
-							<Notice>
-								{__(
-									"No differences are shown because the comparison conditions differ or are incomplete.",
-									"linker-tools",
-								)}
-							</Notice>
-						)}
-						<p>
-							{__(
-								"Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary.",
-								"linker-tools",
-							)}
-						</p>
-						<div className="lp-table-scroll">
-							<table className="lp-data-table">
-								<thead>
-									<tr>
-										<th>{__("Result", "linker-tools")}</th>
-										<th>{__("Baseline calculation", "linker-tools")}</th>
-										<th>{__("Comparison calculation", "linker-tools")}</th>
-										<th>{__("Difference", "linker-tools")}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{data.metrics.map((row) => (
-										<tr key={row.id}>
-											<th scope="row">{comparisonLabel(row.id)}</th>
-											<td>
-												{format(row.baseline, row.unit)}
-												{row.id === "pv_generation" || row.id === "pv_use"
-													? ` (${row.baseline_boundary.toUpperCase()})`
-													: ""}
-											</td>
-											<td>
-												{format(row.candidate, row.unit)}
-												{row.id === "pv_generation" || row.id === "pv_use"
-													? ` (${row.candidate_boundary.toUpperCase()})`
-													: ""}
-											</td>
-											<td>
-												{row.delta === null
-													? "—"
-													: format(row.delta, row.delta_unit)}
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					</section>
-					<div className="lp-comparison-variants">
-						<details className="lp-comparison lp-work-panel">
-							<summary>{__("Comparison basis", "linker-tools")}</summary>
-							<dl className="lp-field-summary">
-								{data.conditions.map((c) => (
-									<div key={c.id}>
-										<dt>{comparisonLabel(c.id)}</dt>
-										<dd>{comparisonLabel(c.status)}</dd>
-									</div>
-								))}
-							</dl>
-						</details>
-						<details className="lp-comparison lp-work-panel">
-							<summary>
-								{__("Design and assumption changes", "linker-tools")}
-							</summary>
-							<dl className="lp-field-summary">
-								{data.differences.map((d) => (
-									<div key={d.id}>
-										<dt>{comparisonLabel(d.id)}</dt>
-										<dd>
-											{d.changed
-												? __("Changed", "linker-tools")
-												: __("Unchanged", "linker-tools")}
-										</dd>
-									</div>
-								))}
-							</dl>
-						</details>
-					</div>
-					<div className="lp-work-panel lp-work-toolbar">
-						<p>
-							{__(
-								"Matching comparison conditions do not establish manufacturer performance or installation approval.",
-								"linker-tools",
-							)}
-						</p>
-						<button
-							type="button"
-							className="lp-button"
-							disabled={reportDisabled || query.isFetching}
-							onClick={() =>
-								void generateReport({
-									locale: locale.startsWith("de") ? "de" : "en",
-									energy_run_id: null,
-									pv_run_id: null,
-									equipment_run_id: null,
-									logo: null,
-									comparison: {
-										baseline_run_id: data.baseline.run_id,
-										candidate_run_id: data.candidate.run_id,
-									},
-								})
-							}
-						>
-							{__("Save comparison in planning report", "linker-tools")}
-						</button>
+							</div>
+						</aside>
 					</div>
 				</>
 			)}

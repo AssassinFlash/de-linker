@@ -17,6 +17,7 @@ export function SolarEnergySetup({
 	rangeBusy,
 	inputErrors,
 	inputPath,
+	section = "operation",
 }: {
 	value: SolarSettings;
 	onChange: (changes: Partial<SolarSettings>) => void;
@@ -28,6 +29,7 @@ export function SolarEnergySetup({
 	rangeBusy: boolean;
 	inputErrors?: readonly string[];
 	inputPath?: string;
+	section?: "storage" | "operation";
 }) {
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
 	const report = useCallback((field: string, valid: boolean) => {
@@ -41,7 +43,7 @@ export function SolarEnergySetup({
 	}, [validity, onValidity]);
 	return (
 		<fieldset disabled={disabled} className="lp-scenario-fields lp-work-main">
-			<section className="lp-work-panel">
+			<section className="lp-work-panel" hidden={section !== "storage"}>
 				<h3 className="lp-work-panel-heading">
 					{__("Solar-only energy flows", "linker-tools")}
 				</h3>
@@ -63,17 +65,19 @@ export function SolarEnergySetup({
 					/>
 				)}
 			</section>
-			<OperatingPeriodsForm
-				periods={value.schedule}
-				inputErrors={inputErrors}
-				inputPath={inputPath}
-				onChange={(schedule) => onChange({ schedule })}
-				locale={locale}
-				report={report}
-				useProfileRange={useProfileRange}
-				rangeBusy={rangeBusy}
-				hasStorage={false}
-			/>
+			<div hidden={section !== "operation"}>
+				<OperatingPeriodsForm
+					periods={value.schedule}
+					inputErrors={inputErrors}
+					inputPath={inputPath}
+					onChange={(schedule) => onChange({ schedule })}
+					locale={locale}
+					report={report}
+					useProfileRange={useProfileRange}
+					rangeBusy={rangeBusy}
+					hasStorage={false}
+				/>
+			</div>
 		</fieldset>
 	);
 }

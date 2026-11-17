@@ -9,6 +9,7 @@ import { InitialInventoryForm } from "./InitialInventoryForm.tsx";
 import { OperatingPeriodsForm } from "./OperatingPeriodsForm.tsx";
 import { batteryPresentation } from "./batteryPresentation.ts";
 import { DcStorageForm } from "./DcStorageForm.tsx";
+import { SimpleEnergySetup } from "./SimpleEnergySetup.tsx";
 import { emptyDcScenario } from "../../domain/dcEnergy.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 
@@ -213,34 +214,45 @@ export function ScenarioForm({
 			>
 				{!dc && (
 					<section className="lp-work-panel">
-						<label className="lp-field">
-							<span>{__("Operating strategy", "linker-tools")}</span>
-							<select
-								value={value.controller ?? "self_consumption_with_reserve_v1"}
-								onChange={(e) =>
-									onChange({
-										...value,
-										controller: e.currentTarget.value as NonNullable<
-											ScenarioDraft["controller"]
-										>,
-										schedule: value.schedule.map((p) => ({
-											...p,
-											...(e.currentTarget.value ===
-											"peak_shaving_with_reserve_v1"
-												? { import_policy: "limited" as const }
-												: {}),
-										})),
-									})
-								}
-							>
-								<option value="self_consumption_with_reserve_v1">
-									{__("Self-consumption with reserve", "linker-tools")}
-								</option>
-								<option value="peak_shaving_with_reserve_v1">
-									{__("Peak shaving · separate AC storage", "linker-tools")}
-								</option>
-							</select>
-						</label>
+						{value.schedule.length === 1 ? (
+							<SimpleEnergySetup
+								value={value}
+								storageOnly={storageOnly}
+								hasEquipment={equipmentSelection !== null}
+								chooseEquipment={openEquipment}
+								disabled={disabled}
+								onChange={onChange}
+							/>
+						) : (
+							<label className="lp-field">
+								<span>{__("Operating strategy", "linker-tools")}</span>
+								<select
+									value={value.controller ?? "self_consumption_with_reserve_v1"}
+									onChange={(e) =>
+										onChange({
+											...value,
+											controller: e.currentTarget.value as NonNullable<
+												ScenarioDraft["controller"]
+											>,
+											schedule: value.schedule.map((p) => ({
+												...p,
+												...(e.currentTarget.value ===
+												"peak_shaving_with_reserve_v1"
+													? { import_policy: "limited" as const }
+													: {}),
+											})),
+										})
+									}
+								>
+									<option value="self_consumption_with_reserve_v1">
+										{__("Self-consumption with reserve", "linker-tools")}
+									</option>
+									<option value="peak_shaving_with_reserve_v1">
+										{__("Peak shaving · separate AC storage", "linker-tools")}
+									</option>
+								</select>
+							</label>
+						)}
 						<p>
 							{__(
 								"Peak shaving charges from the grid only when grid charging is allowed and import headroom remains. Discharge covers demand above the cap; during outages it supplies the critical load.",

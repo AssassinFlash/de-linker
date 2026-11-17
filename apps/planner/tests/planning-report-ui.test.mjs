@@ -51,7 +51,9 @@ for (const locale of ["en-GB", "de-DE"]) {
 			) & window.Node.DOCUMENT_POSITION_FOLLOWING,
 		);
 		assert.equal(
-			document.querySelector(".lp-run-heading button").disabled,
+			[...document.querySelectorAll("button")].find(
+				(button) => button.textContent === "Download PDF",
+			).disabled,
 			false,
 		);
 		await act(async () => changeCurrent(true));
@@ -94,13 +96,22 @@ test("changing report during a download releases the new report's download butto
 	}
 	await act(async () => root.render(React.createElement(Harness)));
 	await act(async () =>
-		document.querySelector(".lp-run-heading button").click(),
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent === "Download PDF")
+			.click(),
 	);
-	assert.equal(document.querySelector(".lp-run-heading button").disabled, true);
+	assert.equal(
+		[...document.querySelectorAll("button")].find(
+			(button) => button.textContent === "Download PDF",
+		).disabled,
+		true,
+	);
 	await act(async () => replace(second));
 	assert.equal(calls[0][3].aborted, true);
 	assert.equal(
-		document.querySelector(".lp-run-heading button").disabled,
+		[...document.querySelectorAll("button")].find(
+			(button) => button.textContent === "Download PDF",
+		).disabled,
 		false,
 	);
 	await act(async () =>
