@@ -150,12 +150,21 @@ for (const { locale, account, lost } of LOCALES) {
 				height: width === 390 ? 844 : 900,
 			});
 			const login = createCustomer(Date.now(), locale);
-			wp(['user', 'meta', 'update', login, 'locale', locale === 'de' ? 'de_DE_formal' : 'en_US']);
+			wp([
+				'user',
+				'meta',
+				'update',
+				login,
+				'locale',
+				locale === 'de' ? 'de_DE_formal' : 'en_US',
+			]);
 			await page.goto(url(account));
 			await page.locator('#username').fill(login);
 			const before = mark();
 			await page
-				.getByRole('button', { name: /Reset password|Passwort zurücksetzen/i })
+				.getByRole('button', {
+					name: /Reset password|Passwort zurücksetzen/i,
+				})
 				.click();
 			await page.waitForLoadState('load');
 			await expect(
@@ -171,13 +180,16 @@ for (const { locale, account, lost } of LOCALES) {
 			// Follow this request's mail; generating a second key invalidates the first.
 			const resetLink = () => {
 				const message = since(before).find(
-					(mail) => mail.html.includes(login) && mail.html.includes('key=')
+					(mail) =>
+						mail.html.includes(login) && mail.html.includes('key=')
 				);
 				return message?.html
 					.match(/href="([^"]*\bkey=[^"]*)"/i)?.[1]
 					?.replace(/&amp;/g, '&');
 			};
-			await expect.poll(() => Boolean(resetLink()), { timeout: 60_000 }).toBe(true);
+			await expect
+				.poll(() => Boolean(resetLink()), { timeout: 60_000 })
+				.toBe(true);
 			const address = new URL(resetLink()!);
 			expect(address.origin).toBe(new URL(instance().url).origin);
 			await page.goto(address.href);

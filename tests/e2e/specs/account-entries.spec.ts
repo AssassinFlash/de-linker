@@ -427,7 +427,9 @@ for (const locale of ['en', 'de'] as const) {
 			);
 			await direct.click();
 			await expect(page).toHaveURL(
-				instance().url + account + (locale === 'de' ? 'registrieren/' : 'register/')
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 			await expect(page.locator('form.register')).toBeVisible();
 			await page.goBack();
