@@ -7335,9 +7335,13 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
     import base64
 
     from linker_engine.planning.csv_mapping import CsvMapping
+    from linker_engine.planning.pvgis_reference_kernel import PvgisRoofReferenceKernel
 
     from .test_private_http import Rig, standard_profile_command
+    from .test_pv_generation import geometry
+    from .test_pvgis_roof_reference import limits as reference_limits
 
+    wired = topology in ("wired_single", "plant_ac")
     peak = controller.startswith("peak")
     inverter = next(row for row in feed["products"] if row["id"] == 4107)
     for direction in ("charge", "discharge"):
@@ -7368,6 +7372,11 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             EquipmentSearchLimits(work_budget=1000),
             tolerance=TOLERANCE,
             max_intervals=40000,
+            pvgis_reference=PvgisRoofReferenceKernel(
+                workspace, source, reference_limits(), max_array_steps=20_000
+            )
+            if wired
+            else None,
         ),
         max_attempts=1,
     )
@@ -7481,6 +7490,15 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 ],
             },
         }
+        if wired:
+            layout = geometry()
+            module = json_object(source.electrical_module_basis())["module"]
+            layout["module_specs"] = [{**module["specification"], "id": "module"}]
+            layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+            declarations.update(
+                brief={**incomplete_brief(), "system_scope": "new_pv_storage"},
+                geometry=layout,
+            )
         if peak and not standard and topology is None:
             period = declarations["energy_scenario"]["schedule"][0]
             split = "2026-01-01T02:00:00+01:00"
@@ -7612,8 +7630,6 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 SUPPORTED_INPUT_CONTRACTS,
             )
 
-            from .test_pv_generation import geometry
-
             choice = {
                 "run_id": run["id"],
                 "candidate_id": candidate["id"],
@@ -7623,6 +7639,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             values["equipment_candidate"] = choice
             if "plant" in candidate:
                 values["equipment_plant"] = candidate["plant"]
+                values["equipment_plant_setup"]["requirements"]["pv_dc_kw"] = candidate[
+                    "plant"
+                ]["requirements"]["pv_dc_kw"]
                 for unit, built in zip(
                     values["equipment_plant_setup"]["units"],
                     candidate["plant"]["units"],
@@ -7658,12 +7677,17 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                     "key": "adopt-before-wiring",
                 },
             )
-            layout = geometry()
-            module = json_object(source.electrical_module_basis())["module"]
-            layout["module_specs"] = [{**module["specification"], "id": "module"}]
-            layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+            layout = values["geometry"]
             modules = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
-            values["geometry"] = layout
+            compared = json_object(
+                workspace.pinned_inputs(workspace.run(owner, run["id"]).manifest)
+            )
+            demand = (
+                compared["equipment_plant_setup"]["requirements"]
+                if "plant" in candidate
+                else compared["equipment_requirements"]
+            )
+            assert demand["pv_dc_kw"] == pytest.approx(5.52)
 
             def plan(name: str, ids: list[str]) -> FixtureObject:
                 return {
@@ -7775,6 +7799,36 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 stale.status_code == 422
                 and stale.json()["error"]["code"] == "report_inputs_changed"
             ), stale.text
+
+            layout["arrays"][0]["excluded_slots"] = ["0:0"]
+            changed["strings"][0]["module_ids"].remove(modules[0])
+            rechecked = rig.post(
+                "/runs/check-equipment",
+                {
+                    **command_base,
+                    "expected_revision": saved["revision"],
+                    "inputs": values,
+                    "key": "check-eleven-modules",
+                },
+            )
+            assert worker.run_once()
+            assert (
+                rig.post("/runs/read", {"run_id": rechecked["run"]["id"]})["state"]
+                == "succeeded"
+            )
+            stale = client.post(
+                "/runs/report",
+                json={
+                    **report_command,
+                    "schema_version": 1,
+                    "expected_revision": rechecked["project"]["revision"],
+                    "options": {**options, "equipment_run_id": rechecked["run"]["id"]},
+                    "key": "old-twelve-module-comparison",
+                },
+                headers=headers(owner),
+            )
+            assert stale.status_code == 422, stale.text
+            assert stale.json()["error"]["code"] == "report_inputs_changed"
 
         if topology == "missing_load":
             assert "demand" not in result

@@ -9,7 +9,7 @@ from typing import cast
 from .assets import Asset, Assets
 from .canonical import Json, Object
 from .certificate_evidence import certificate_documents
-from .comparison_pv import is_known
+from .comparison_pv import is_known, roof_power
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
@@ -467,11 +467,37 @@ def report_sources(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
         run = workspace.run(actor, cast(str, candidate["run_id"]))
+        assert run.result is not None
         searched = normalize_discovery_inputs(workspace.pinned_inputs(run.manifest))
         current = restore_comparison_models(
             normalize_discovery_inputs(declared_inputs), searched
         )
         previous_brief, current_brief = searched.get("brief"), current.get("brief")
+        if use_wiring_check and searched.get("geometry") != current.get("geometry"):
+            prepared = run.result.get("prepared_asset")
+            if (
+                isinstance(prepared, dict)
+                and prepared.get("purpose") == ROOF_AC_PURPOSE
+            ):
+                raise ReportInputsChanged(
+                    "report roof differs from the comparison PV reference"
+                )
+            context = cast(Object, run.manifest["context"])
+            if (
+                "resolved_inputs" in _pinned_assets(run)
+                and "pvgis_execution_keys" in cast(Object, context["parameters"])
+                and isinstance(previous_brief, dict)
+                and previous_brief.get("system_scope") in ("new_pv_storage", "pv_only")
+                and not is_known(
+                    searched.get(
+                        "pvgis_reference_setup", searched.get("pvgis_reference")
+                    )
+                )
+                and roof_power(searched) != roof_power(current)
+            ):
+                raise ReportInputsChanged(
+                    "report roof capacity differs from the equipment comparison"
+                )
         if (
             any(
                 (
@@ -509,7 +535,6 @@ def report_sources(
             raise ReportInputsChanged(
                 "report demand differs from the selected candidate"
             )
-        assert run.result is not None
         equipment_source_run = run
         equipment_source_inputs = workspace.pinned_inputs(run.manifest)
         detail = EquipmentCandidateStore(workspace).read(
