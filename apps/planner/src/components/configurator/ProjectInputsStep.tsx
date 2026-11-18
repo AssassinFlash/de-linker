@@ -29,6 +29,8 @@ export function ProjectInputsStep({
 			!node.closest("[hidden]") &&
 			!node.querySelector("dialog[open]")
 		) {
+			const disclosure = node.closest("details");
+			if (disclosure) disclosure.open = true;
 			node.focus({ preventScroll: true });
 			node.scrollIntoView({ block: "start" });
 		}
@@ -37,14 +39,19 @@ export function ProjectInputsStep({
 		<>
 			{details}
 			{solar && (
-				<section
-					id="sc-solar"
-					ref={solarSection}
-					tabIndex={-1}
-					aria-label={__("Solar", "linker-tools")}
-				>
-					{solar}
-				</section>
+				<details className="sc-card">
+					<summary>
+						{__("Solar installation and roof layout", "linker-tools")}
+					</summary>
+					<section
+						id="sc-solar"
+						ref={solarSection}
+						tabIndex={-1}
+						aria-label={__("Solar", "linker-tools")}
+					>
+						{solar}
+					</section>
+				</details>
 			)}
 			{energy && (
 				<section

@@ -631,9 +631,9 @@ export function EnergyDemand({
 					</>
 				)}
 			</fieldset>
-			<section className="sc-card">
+			<details className="sc-card">
+				<summary>{__("Electricity use over time", "linker-tools")}</summary>
 				<div className="sc-section-head">
-					<h2>{__("Electricity use over time", "linker-tools")}</h2>
 					<button
 						className="sc-button"
 						type="button"
@@ -1092,7 +1092,7 @@ export function EnergyDemand({
 						</details>
 					</div>
 				)}
-			</section>
+			</details>
 			{!solarOnly && (
 				<details className="sc-card">
 					<summary>
@@ -1132,7 +1132,14 @@ export function EnergyDemand({
 					</fieldset>
 				</details>
 			)}
-			{children}
+			{children && (
+				<details className="sc-card">
+					<summary>
+						{__("Detailed energy calculations", "linker-tools")}
+					</summary>
+					{children}
+				</details>
+			)}
 			<>
 				{goal && needsGridPhase && (
 					<p className="sc-muted">
