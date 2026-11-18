@@ -60,6 +60,7 @@ final class Module {
 		$this->blog->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
+		add_action( 'linker_tools_planner_form_assets', array( $this, 'enqueue_form_script' ) );
 	}
 
 	/**
@@ -86,6 +87,11 @@ final class Module {
 			// and undo follow Woo's nonce, validation, notices and readback.
 			wp_enqueue_script( 'wc-cart' );
 		}
+		$this->enqueue_form_script();
+	}
+
+	/** Shared inquiry retention and native account form interactions. */
+	public function enqueue_form_script(): void {
 		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
 		// The register card initializes WooCommerce's selectWoo on its country
 		// field; the country-select script also carries that field's

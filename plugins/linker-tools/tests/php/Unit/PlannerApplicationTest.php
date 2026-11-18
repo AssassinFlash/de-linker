@@ -106,6 +106,7 @@ final class PlannerApplicationTest extends TestCase {
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn( string $value ): string => $value ) );
 		$app = new Application( $root . 'linker-tools.php' );
 		$app->assets();
+		WP_Mock::expectAction( 'linker_tools_planner_form_assets' );
 		$html = $app->mount();
 		$this->assertSame( 1, preg_match( '/data-planner-config="([^"]+)"/', $html, $matches ) );
 		$config = json_decode( html_entity_decode( $matches[1] ?? throw new \RuntimeException( 'Native planner configuration was not rendered.' ), ENT_QUOTES ), true );

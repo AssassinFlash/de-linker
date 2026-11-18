@@ -132,8 +132,8 @@ final class Handler {
 					$fields[ $key ] = is_string( $post[ $key ] ?? null ) ? sanitize_text_field( $post[ $key ] ) : '';
 				}
 				$fields[ Context::REVISIONS_FIELD ] = Context::submission_fingerprint( $post )['revisions'];
-				$fields['billing']                  = BillingFields::values( $post );
 			}
+			$fields['billing'] = BillingFields::values( $post );
 			if ( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) ) {
 				// The journal holds this UUID for other input; a new one is the
 				// only way past the changed-input refusal.

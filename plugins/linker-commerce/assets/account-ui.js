@@ -58,12 +58,17 @@
 		syncDraftState();
 	}
 	const inquiryStorageKey = 'linker-inquiry-edit';
-	if ( inquiry ) {
-		const form = inquiry.querySelector( '.linker-inquiry-form' );
-		const retentionError = inquiry.querySelector( '[data-inquiry-retention-error]' );
+	const planner = document.querySelector( '[data-linker-planner]' );
+	let navController;
+	function connectRetention( form ) {
+		if ( ! form ) return;
+		navController?.abort();
+		navController = new AbortController();
+		const retentionError = form.querySelector( '[data-inquiry-retention-error]' );
 		const names = [ 'name', 'email', 'company', 'message' ];
-		const context = form?.dataset.inquiryContext || '';
-		const field = ( name ) => form?.elements.namedItem( name );
+		const context = form.dataset.inquiryContext || '';
+		const project = planner ? new URL( window.location.href ).searchParams.get( 'project' ) : null;
+		const field = ( name ) => name === 'message' ? form.querySelector( 'textarea' ) : form.elements.namedItem( name );
 
 		// A one-use bridge for the explicit edit/return navigation. It stays in
 		// this tab, uses the native authentication context, and never writes an inquiry or
@@ -72,7 +77,7 @@
 			const raw = window.sessionStorage.getItem( inquiryStorageKey );
 			window.sessionStorage.removeItem( inquiryStorageKey );
 			const kept = raw ? JSON.parse( raw ) : null;
-			if ( context && kept?.context === context && names.every( ( name ) => typeof kept.fields?.[ name ] === 'string' ) && field( 'linker_inquiry_retained' )?.value !== '1' ) {
+			if ( context && kept?.context === context && ( kept.project ?? null ) === project && names.every( ( name ) => typeof kept.fields?.[ name ] === 'string' ) && field( 'linker_inquiry_retained' )?.value !== '1' ) {
 				let detailsChanged = false;
 				for ( const name of names ) {
 					const control = field( name );
@@ -106,6 +111,7 @@
 
 
 		document.addEventListener( 'click', ( event ) => {
+			if ( ! form.isConnected ) return;
 			const link = event.target.closest( '[data-inquiry-edit], a[lang], a[hreflang]' );
 			if ( ! link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
 				return;
@@ -127,7 +133,7 @@
 				if ( ! context ) {
 					throw new Error( 'Missing native inquiry context' );
 				}
-				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent, ...( null !== includeProjectNotes ? { includeProjectNotes } : {} ) } ) );
+				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, ...( project ? { project } : {} ), fields, consent, ...( null !== includeProjectNotes ? { includeProjectNotes } : {} ) } ) );
 			} catch {
 				event.preventDefault();
 				if ( retentionError ) {
@@ -135,6 +141,13 @@
 					retentionError.focus();
 				}
 			}
+		}, { signal: navController.signal } );
+	}
+	if ( inquiry ) {
+		connectRetention( inquiry.querySelector( '.linker-inquiry-form' ) );
+	} else if ( planner ) {
+		planner.addEventListener( 'linker:inquiry-form-mounted', ( event ) => {
+			if ( event.target instanceof HTMLFormElement ) connectRetention( event.target );
 		} );
 	} else if ( ! draftSurface ) {
 		// Account and confirmation pages retire the bridge; editing the draft keeps it.
@@ -187,7 +200,7 @@
 		'submit',
 		( event ) => {
 			const form = event.target;
-			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) ) {
+			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) || planner?.contains( form ) ) {
 				return;
 			}
 			if ( form.matches( '.linker-inquiry-form' ) && draftBlocked() ) {

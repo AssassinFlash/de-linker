@@ -55,10 +55,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame(
 			array(
 				array(
-					'product_id' => $product->get_id(),
-					'label'      => $product->get_name(),
-					'quantity'   => 2,
-					'project_id' => null,
+					'product_id'    => $product->get_id(),
+					'label'         => $product->get_name(),
+					'quantity'      => 2,
+					'project_id'    => null,
+					'project_title' => null,
 				),
 			),
 			$preview['inquiry_lines']

@@ -226,6 +226,12 @@ final class Application {
 		}
 		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
 		$this->mounted = true;
+		/**
+		 * Load the native inquiry form's interactions on the planner document.
+		 *
+		 * @since 0.1.0
+		 */
+		do_action( 'linker_tools_planner_form_assets' );
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );
 		$countries    = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();

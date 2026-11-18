@@ -95,7 +95,7 @@ final class Form {
 		try {
 			$fields = do_shortcode( self::fields_template() );
 			$fields = preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => 'privacy' === $token[1] ? esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy', $language ) ) : $this->value( array( 'key' => $token[1] ) ), $fields ) ?? '';
-			return '<form class="linker-inquiry-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
+			return '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
 				. ( null === $handoff ? '' : self::planner_fields( $handoff['id'], '' ) )
 				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff ) . $fields . '</form>';
 		} finally {

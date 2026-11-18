@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createRequire} from 'node:module';
 import {test} from 'node:test';
-const require=createRequire(import.meta.url);
-const {JSDOM}=require('../../../linker-tools/node_modules/jsdom');
+import {JSDOM} from 'jsdom';
 const script=readFileSync(new URL('../../assets/account-ui.js',import.meta.url),'utf8');
 
 function account(){
@@ -261,6 +259,33 @@ test('editing the draft preserves fields once across nonce ticks, within the aut
  returned.win.document.querySelector('a[lang]').click();
  const translated=inquiryDraft({saved:Object.entries(returned.win.sessionStorage)});
  assert.equal(translated.field('message').value,'Keep this when changing language');
+});
+
+test('mounted planner form retains the editable message and consent for the same project after switching language',()=>{
+ const markup='<form class="linker-inquiry-form" data-inquiry-context="guest-session"><textarea></textarea><input type="hidden" name="message" value="Selected direction"><input name="name"><input name="email"><input name="company"><input type="checkbox" name="consent"><input type="checkbox" name="linker_include_project_notes" checked></form>';
+ function mount(project,saved){
+  const {window}=new JSDOM('<section data-linker-planner></section><a lang="de" href="#sc-review">DE</a>',{url:`https://example.test/configurator/?project=${project}#sc-review`,runScripts:'outside-only'});
+  if(saved) window.sessionStorage.setItem('linker-inquiry-edit',saved);
+  window.eval(script);
+  const root=window.document.querySelector('section');
+  root.innerHTML=markup;
+  const form=root.querySelector('form');
+  form.dispatchEvent(new window.Event('linker:inquiry-form-mounted',{bubbles:true}));
+  return {window,form};
+ }
+ const first=mount('solar');
+ first.form.querySelector('textarea').value='Meet Friday';
+ first.form.elements.consent.checked=true;
+ first.form.elements.linker_include_project_notes.checked=false;
+ first.window.document.querySelector('a').click();
+ const saved=first.window.sessionStorage.getItem('linker-inquiry-edit');
+ const next=mount('solar',saved),other=mount('storage',saved);
+ assert.equal(next.form.querySelector('textarea').value,'Meet Friday');
+ assert.equal(next.form.elements.consent.checked,true);
+ assert.equal(next.form.elements.linker_include_project_notes.checked,false);
+ assert.equal(other.form.querySelector('textarea').value,'');
+ assert.equal(next.window.sessionStorage.length,0);
+ for(const page of [first,next,other])page.window.close();
 });
 
 test('unavailable tab storage keeps the inquiry open and explains the edit failure',()=>{

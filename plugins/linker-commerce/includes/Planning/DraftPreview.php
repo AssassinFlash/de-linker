@@ -119,10 +119,11 @@ final class DraftPreview {
 		foreach ( $preview['changes'] as $row ) {
 			if ( $row['after'] > 0 ) {
 				$lines[] = array(
-					'product_id' => $row['product_id'],
-					'label'      => $row['label'],
-					'quantity'   => $row['after'],
-					'project_id' => $preview['project_id'],
+					'product_id'    => $row['product_id'],
+					'label'         => $row['label'],
+					'quantity'      => $row['after'],
+					'project_id'    => $preview['project_id'],
+					'project_title' => $handoff['snapshot']['title'],
 				);
 			}
 		}
@@ -146,10 +147,11 @@ final class DraftPreview {
 			}
 			$source  = $line[ DraftTransfer::LINE_META ] ?? '';
 			$lines[] = array(
-				'product_id' => (int) $line['product_id'],
-				'label'      => $line['data']->get_name(),
-				'quantity'   => $line['quantity'],
-				'project_id' => $active[ $source ]['snapshot']['project_id'] ?? null,
+				'product_id'    => (int) $line['product_id'],
+				'label'         => $line['data']->get_name(),
+				'quantity'      => $line['quantity'],
+				'project_id'    => $active[ $source ]['snapshot']['project_id'] ?? null,
+				'project_title' => $active[ $source ]['snapshot']['title'] ?? null,
 			);
 		}
 		return $lines;
