@@ -41,6 +41,61 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 */
 	private NormalMailAuthorizationFixture $authorization;
 
+	/** A planner review projects all native lines without applying or consuming the draft. */
+	public function test_planner_inquiry_preview_includes_the_manual_draft_and_project_report(): void {
+		$this->as_user( 0 );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$product = $this->product( '100' );
+		WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$handoff = $this->planning_report();
+		$cart    = WC()->cart->get_cart_hash();
+		$preview = ( new \Linker\Commerce\Planning\DraftPreview() )->inquiry( null, array( 'lang' => 'en' ), $handoff );
+		$this->assertIsArray( $preview );
+		$this->assertSame(
+			array(
+				array(
+					'product_id' => $product->get_id(),
+					'label'      => $product->get_name(),
+					'quantity'   => 2,
+					'project_id' => null,
+				),
+			),
+			$preview['inquiry_lines']
+		);
+		$this->assertStringContainsString( 'name="linker_inquiry_nonce"', $preview['inquiry_form_html'] );
+		$this->assertStringContainsString( 'name="consent"', $preview['inquiry_form_html'] );
+		$this->assertStringContainsString( 'linker_project_note_revisions[' . $handoff['id'] . ']', $preview['inquiry_form_html'] );
+		$this->assertSame( $cart, WC()->cart->get_cart_hash() );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::session_notes() );
+	}
+
+	/** The final POST cannot silently send an unrelated or changed native cart. */
+	public function test_planner_submission_requires_its_reviewed_native_draft(): void {
+		$this->as_user( 0 );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$stamp  = (string) ( time() - 10 );
+		$post   = array(
+			'name'                        => 'Alex Weber',
+			'email'                       => self::TESTER,
+			'message'                     => 'Reviewed project',
+			'consent'                     => '1',
+			'linker_started'              => $stamp,
+			'linker_started_nonce'        => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'linker_inquiry_nonce'        => wp_create_nonce( 'linker_inquiry' ),
+			'linker_planner_handoff_id'   => str_repeat( 'a', 32 ),
+			'linker_draft_hash'           => WC()->cart->get_cart_hash(),
+			'linker_planner_draft_sha256' => \Linker\Commerce\Planning\DraftPreview::fingerprint(),
+		);
+		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+		if ( $result instanceof \WC_Order ) {
+			$this->later( static fn () => $result->delete( true ) );
+		}
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 'linker_draft_changed', $result->get_error_code() );
+	}
+
 	/** Retired Woo checkout transports cannot bypass the shared public inquiry sender. */
 	public function test_alternate_checkout_transports_cannot_create_an_inquiry(): void {
 		$this->as_user( 0 );

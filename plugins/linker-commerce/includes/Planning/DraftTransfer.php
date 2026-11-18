@@ -268,8 +268,10 @@ final class DraftTransfer {
 			if ( $report_only ) {
 				$result['report_only'] = true;
 			}
-			$receipts[ $key ] = $result;
 			$session->set( self::CONTEXTS, $contexts );
+			$result['inquiry_cart_hash']    = WC()->cart->get_cart_hash();
+			$result['inquiry_draft_sha256'] = DraftPreview::fingerprint();
+			$receipts[ $key ]               = $result;
 			$session->set( self::RECEIPTS, $receipts );
 			if ( $report_only ) {
 				$session->set_customer_session_cookie( true );

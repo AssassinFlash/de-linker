@@ -11,6 +11,9 @@ namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Mail\LocaleSwitch;
+use Linker\Commerce\Planning\Context;
+use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Protection\Configuration;
 use WC_Order;
 use WP_Error;
 use Linker\Commerce\Protection\Business;
@@ -66,11 +69,28 @@ final class Handler {
 			if ( isset( $post[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) || isset( $post[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ) ) {
 				$payload['project_notes'] = \Linker\Commerce\Planning\Context::submission_fingerprint( $post );
 			}
-			$sender = new Sender();
+			$sender  = new Sender();
+			$current = ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft );
+			if ( isset( $post['linker_planner_handoff_id'] ) || isset( $post['linker_planner_draft_sha256'] ) ) {
+				$id                 = $post['linker_planner_handoff_id'] ?? '';
+				$fingerprint        = $post['linker_planner_draft_sha256'] ?? '';
+				$contexts           = Context::active() + Context::report_only_contexts();
+				$payload['planner'] = array(
+					'handoff' => is_string( $id ) ? $id : '',
+					'draft'   => is_string( $fingerprint ) ? $fingerprint : '',
+				);
+				$current            = is_string( $id ) && isset( $contexts[ $id ] )
+					&& is_string( $fingerprint ) && hash_equals( DraftPreview::fingerprint(), $fingerprint )
+					&& hash_equals( WC()->cart->get_cart_hash(), $draft );
+				// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
+				if ( ! $current && 'enforce' !== Configuration::active_mode() ) {
+					return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
+				}
+			}
 			// Conversation summaries belong to the separately reviewed Genie confirmation.
 			return \Linker\Commerce\Planning\Context::with_submission(
 				$post,
-				static fn (): WC_Order|WP_Error => Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) )
+				static fn (): WC_Order|WP_Error => Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), $current, static fn () => $sender->preflight( $details ) )
 			);
 		} finally {
 			$locale->back();
@@ -107,6 +127,13 @@ final class Handler {
 			// A definite refusal returns to fresh verification. Unknown/pending
 			// outcomes may first recover their existing UUID without a new proof.
 			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';
+			if ( '1' === $fields['linker_recovery_available'] && isset( $post['linker_planner_handoff_id'], $post['linker_planner_draft_sha256'] ) ) {
+				foreach ( array( 'linker_planner_handoff_id', 'linker_planner_draft_sha256', 'linker_draft_hash' ) as $key ) {
+					$fields[ $key ] = is_string( $post[ $key ] ?? null ) ? sanitize_text_field( $post[ $key ] ) : '';
+				}
+				$fields[ Context::REVISIONS_FIELD ] = Context::submission_fingerprint( $post )['revisions'];
+				$fields['billing']                  = BillingFields::values( $post );
+			}
 			if ( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) ) {
 				// The journal holds this UUID for other input; a new one is the
 				// only way past the changed-input refusal.

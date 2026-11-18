@@ -116,14 +116,19 @@ final class Context {
 	 * Resolve valid project notes in the current Woo session, including notes
 	 * whose product lines were subsequently removed from the cart.
 	 *
+	 * @param array<string,mixed>|null $proposed Optional replacement project shown before a confirmed transfer.
 	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
-	public static function session_notes(): array {
+	public static function session_notes( ?array $proposed = null ): array {
 		// WC()->session is null outside a request that loaded the native cart.
 		if ( ! function_exists( 'WC' ) || null === WC()->session ) {
 			return array();
 		}
-		$stored     = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
+		$stored = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
+		if ( null !== $proposed ) {
+			$stored                    = array_filter( $stored, static fn ( $context ): bool => ( $context['snapshot']['project_id'] ?? null ) !== $proposed['snapshot']['project_id'] );
+			$stored[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
+		}
 		$by_project = array();
 		foreach ( $stored as $id => $handoff ) {
 			if ( ! is_string( $id ) || ! self::valid( $handoff, $id ) ) {
@@ -185,10 +190,11 @@ final class Context {
 	/**
 	 * Render the inquiry form's project-notes review and inclusion section.
 	 *
-	 * @param array<string,mixed> $previous Consumed flash fields after a failed POST.
+	 * @param array<string,mixed>      $previous Consumed flash fields after a failed POST.
+	 * @param array<string,mixed>|null $proposed Handoff included in the projected inquiry.
 	 */
-	public static function inquiry_notes_section( array $previous = array() ): string {
-		$notes = self::session_notes();
+	public static function inquiry_notes_section( array $previous = array(), ?array $proposed = null ): string {
+		$notes = self::session_notes( $proposed );
 		if ( array() === $notes ) {
 			return '';
 		}

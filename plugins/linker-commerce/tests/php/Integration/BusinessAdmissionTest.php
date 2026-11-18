@@ -646,21 +646,138 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'your partner account', $body );
 	}
 
+	/** Read the controls the browser submits, including checked report revisions.
+	 *
+	 * @param string $html Native form markup.
+	 * @return array<string,mixed>
+	 */
+	private function inquiry_controls( string $html ): array {
+		$doc = new \DOMDocument();
+		$doc->loadHTML( '<meta charset="UTF-8">' . $html, LIBXML_NOERROR );
+		$xpath = new \DOMXPath( $doc );
+		$post  = array();
+		foreach ( $xpath->query( '//form[contains(@class,"linker-inquiry-form")]//*[self::input or self::textarea or self::select]' ) as $field ) {
+			$name = $field->getAttribute( 'name' );
+			if ( '' === $name || ( 'checkbox' === $field->getAttribute( 'type' ) && ! $field->hasAttribute( 'checked' ) ) ) {
+				continue;
+			}
+			$value = match ( $xpath->evaluate( 'name()', $field ) ) {
+				'textarea' => $xpath->evaluate( 'string(.)', $field ),
+				'select' => $xpath->evaluate( 'string(option[@selected]/@value)', $field ),
+				default => $field->getAttribute( 'value' ),
+			};
+			parse_str( rawurlencode( $name ) . '=' . rawurlencode( $value ), $values );
+			$post = array_replace_recursive( $post, $values );
+		}
+		return $post;
+	}
+
+	/** The native cart can receive a product selection or a report without products. */
+	public static function reviewed_drafts(): array {
+		return array(
+			'account report' => array( false ),
+			'guest products' => array( true ),
+		);
+	}
+
 	/**
 	 * Completed browser retry returns the same native order after the cart was emptied.
+	 *
+	 * @dataProvider reviewed_drafts
+	 * @param bool $guest Guest with a product selection, or returning customer with a report.
 	 */
-	public function test_native_inquiry_retry_is_idempotent_and_payload_changes_are_refused(): void {
-		$product = $this->product( '125' );
-		WC()->cart->add_to_cart( $product->get_id(), 2 );
-		$this->as_user( $this->customer()->get_id() );
-		$report = $this->planning_report();
-		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
-		$post     = $this->post() + array(
-			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
-			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
-			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+	public function test_native_inquiry_retry_is_idempotent_and_payload_changes_are_refused( bool $guest ): void {
+		if ( $guest ) {
+			$present = static function ( $enabled, $name, $value ): bool {
+				$_COOKIE[ $name ] = $value;
+				return false;
+			};
+			add_filter( 'woocommerce_set_cookie_enabled', $present, 10, 3 );
+			WC()->session->set_customer_session_cookie( true );
+			remove_filter( 'woocommerce_set_cookie_enabled', $present );
+		} else {
+			$this->as_user( $this->customer()->get_id() );
+		}
+		$product  = $this->product( '125' );
+		$id       = $product->get_id();
+		$report   = $this->planning_report();
+		$manifest = \Linker\Commerce\Products\Publication::manifest();
+		$versions = array_column( $manifest['products'], 'product_revision', 'product_id' );
+		WC()->cart->add_to_cart( $id, 2 );
+		$contexts = array();
+		$other    = $this->planning_report();
+		foreach ( array( $report, $other ) as $index => $group ) {
+			$group['id']                      = str_repeat( 0 === $index ? 'a' : 'e', 32 );
+			$quantity                         = 0 === $index ? 1 : 3;
+			$group['snapshot']['kind']        = 'planning_products_v1';
+			$group['snapshot']['items']       = array(
+				array(
+					'product_id' => $id,
+					'quantity'   => $quantity,
+					'label'      => $product->get_name(),
+				),
+			);
+			$group['snapshot']['publication'] = array(
+				'engineering_contract'   => 2,
+				'reference_inputs'       => array(),
+				'products'               => array(
+					array(
+						'product_id'       => $id,
+						'product_revision' => $versions[ $id ],
+					),
+				),
+				'documents'              => array(),
+				'compatibility_revision' => $manifest['compatibility_revision'],
+			);
+			$contexts[ $group['id'] ]         = \Linker\Commerce\Planning\DraftTransfer::native_context( $group );
+			$this->assertNotFalse( WC()->cart->add_to_cart( $id, $quantity, 0, array(), array( \Linker\Commerce\Planning\DraftTransfer::LINE_META => $group['id'] ) ) );
+		}
+		if ( $guest ) {
+			$report['snapshot']['kind']        = 'planning_products_v1';
+			$report['snapshot']['publication'] = $group['snapshot']['publication'];
+			$report['snapshot']['items']       = array(
+				array(
+					'product_id' => $id,
+					'quantity'   => 4,
+					'label'      => $product->get_name(),
+				),
+			);
+		}
+		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $contexts );
+		WC()->session->save_data();
+		$command = array(
+			'schema_version'    => 1,
+			'project_id'        => $report['snapshot']['project_id'],
+			'report_run_id'     => $report['snapshot']['report_run_id'],
+			'expected_revision' => $report['snapshot']['revision'],
+			'key'               => wp_generate_uuid4(),
 		);
-		$endpoint = static fn () => 'https://planner.example.test';
+		$preview = ( new \Linker\Commerce\Planning\DraftPreview() )->inquiry( null, $command + array( 'lang' => 'en' ), $report );
+		$this->assertIsArray( $preview );
+		$quantities = $guest ? array( 2, 3, 4 ) : array( 2, 3 );
+		$projects   = array( null, $other['snapshot']['project_id'] );
+		if ( $guest ) {
+			$projects[] = $report['snapshot']['project_id'];
+		}
+		$this->assertSame( $quantities, array_column( $preview['inquiry_lines'], 'quantity' ) );
+		$this->assertSame( $projects, array_column( $preview['inquiry_lines'], 'project_id' ) );
+		$this->assertCount( 3, WC()->cart->get_cart() );
+		$command['expected_draft_sha256'] = $preview['draft_sha256'];
+		$transfer                         = new \Linker\Commerce\Planning\DraftTransfer();
+		$receipt                          = $transfer->apply( null, $command, $report );
+		$this->assertIsArray( $receipt, is_wp_error( $receipt ) ? $receipt->get_error_code() : '' );
+		$this->assertSame( $receipt, $transfer->receipt( null, $command, $report )['receipt'] );
+		$post    = $this->inquiry_controls( $preview['inquiry_form_html'] );
+		$contact = $this->post();
+		foreach ( array( 'name', 'email', 'message', 'consent', 'linker_proof' ) as $field ) {
+			$post[ $field ] = $contact[ $field ];
+		}
+		if ( ! $guest ) {
+			$post['billing_address_1'] = 'Geänderte Straße 7';
+		}
+		$post['linker_draft_hash']           = $receipt['inquiry_cart_hash'];
+		$post['linker_planner_draft_sha256'] = $receipt['inquiry_draft_sha256'];
+		$endpoint                            = static fn () => 'https://planner.example.test';
 		add_filter( 'pre_option_linker_planner_url', $endpoint );
 		$this->later(
 			static function () use ( $endpoint ): void {
@@ -674,7 +791,21 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				return $previous;
 			}
 			if ( 1 === ++$calls ) {
-				$pending = ( new Handler() )->process( $post );
+				$pending  = ( new Handler() )->process( $post );
+				$original = $_POST;
+				$_POST    = wp_slash( $post );
+				$stop     = static function (): void {
+					throw new \RuntimeException( 'fixture_pending_redirect' );
+				};
+				add_filter( 'wp_redirect', $stop );
+				try {
+					( new Handler() )->handle();
+				} catch ( \RuntimeException $redirect ) {
+					self::assertSame( 'fixture_pending_redirect', $redirect->getMessage() );
+				} finally {
+					remove_filter( 'wp_redirect', $stop );
+					$_POST = $original;
+				}
 			}
 			return array(
 				'response' => array( 'code' => 200 ),
@@ -697,13 +828,28 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$marker = self::newest_mail_job();
 		$this->assertTrue( WC()->cart->is_empty() );
-		$retry = ( new Handler() )->process( $post );
-		$this->assertInstanceOf( WC_Order::class, $retry );
+		$form       = new \Linker\Commerce\Inquiry\Form();
+		$shortcodes = $GLOBALS['shortcode_tags'];
+		$form->register();
+		$recovery                  = $form->render();
+		$GLOBALS['shortcode_tags'] = $shortcodes;
+		$retry_post                = $this->inquiry_controls( $recovery );
+		$this->assertSame( \Linker\Commerce\Inquiry\BillingFields::values( $post ), \Linker\Commerce\Inquiry\BillingFields::values( $retry_post ) );
+		$this->assertSame( \Linker\Commerce\Planning\Context::submission_fingerprint( $post ), \Linker\Commerce\Planning\Context::submission_fingerprint( $retry_post ) );
+		$this->assertEquals( Submission::from_post( $post, false ), Submission::from_post( $retry_post, false ) );
+		$retry = ( new Handler() )->process( $retry_post );
+		$this->assertInstanceOf( WC_Order::class, $retry, is_wp_error( $retry ) ? $retry->get_error_code() : '' );
 		$this->assertSame( $first->get_id(), $retry->get_id() );
 		$this->assertInstanceOf( WP_Error::class, $pending );
 		$this->assertSame( 'linker_inquiry_pending', $pending->get_error_code() );
-		$this->assertSame( array( $report['id'] ), array_keys( \Linker\Commerce\Planning\Context::stored( $first ) ) );
-		$this->assertSame( 1, $calls );
+		$this->assertSame( array( str_repeat( 'e', 32 ), $report['id'] ), array_keys( \Linker\Commerce\Planning\Context::stored( $first ) ) );
+		$items = array_values( $first->get_items() );
+		$this->assertSame( array_fill( 0, count( $quantities ), $id ), array_map( static fn ( $item ) => $item->get_product_id(), $items ) );
+		$this->assertSame( $quantities, array_map( static fn ( $item ) => $item->get_quantity(), $items ) );
+		$this->assertSame( 2, $calls );
+		$changed = ( new Handler() )->process( array_replace( $post, array( 'linker_planner_handoff_id' => str_repeat( 'e', 32 ) ) ) );
+		$this->assertInstanceOf( WP_Error::class, $changed );
+		$this->assertSame( 'linker_draft_changed', $changed->get_error_code() );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'message' => 'Different submission.' ) ) ) );
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'c', 32 );

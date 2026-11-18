@@ -29,7 +29,7 @@ final class Form {
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
-		add_shortcode( 'linker_inquiry_billing', array( BillingFields::class, 'render' ) );
+		add_shortcode( 'linker_inquiry_billing', fn (): string => BillingFields::render( $this->flash['fields']['billing'] ?? array() ) );
 		add_shortcode( 'linker_inquiry_restriction', array( new \Linker\Commerce\Presentation\LoginGate(), 'restricted_notice' ) );
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
@@ -43,7 +43,20 @@ final class Form {
 	 * Active planning project notes, rendered separately from the customer message.
 	 */
 	public function project_notes(): string {
-		return \Linker\Commerce\Planning\Context::inquiry_notes_section( (array) ( $this->flash['fields'] ?? array() ) );
+		$previous = (array) ( $this->flash['fields'] ?? array() );
+		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
+			// A pending UUID checks the original report selection even after Woo emptied the cart.
+			$html = '';
+			if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
+				$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
+				$html .= '<input type="hidden" name="linker_include_project_notes" value="' . esc_attr( $previous[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ) . '" />';
+			}
+			foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] as $id => $revision ) {
+				$html .= '<input type="hidden" name="linker_project_note_revisions[' . esc_attr( $id ) . ']" value="' . esc_attr( $revision ) . '" />';
+			}
+			return $html;
+		}
+		return \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous );
 	}
 
 	/**
@@ -56,12 +69,37 @@ final class Form {
 			WC()->session->set( 'linker_inquiry_' . $key, null );
 		}
 		try {
-			$template = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
+			$template = do_shortcode( str_replace( '{{inquiry-fields}}', self::fields_template(), Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) ) );
 			// Core intentionally refuses shortcode expansion in form actions and empty attributes.
 			// Insert customer text last so a message can never execute shortcodes.
 			return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
 		} finally {
 			$this->flash = array();
+		}
+	}
+
+	/** Shared native reply, consent and submit controls for checkout and planner Review. */
+	private static function fields_template(): string {
+		return Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/fields.html' );
+	}
+
+	/**
+	 * Render the native POST form for the proposed draft, without consuming checkout flash data.
+	 *
+	 * @param array<string,mixed>|null $handoff Verified engine handoff, or the current native draft alone.
+	 * @param string                   $language Requested planner language.
+	 */
+	public function planning( ?array $handoff, string $language ): string {
+		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
+		$locale->to( OrderLocale::current( $language ) );
+		try {
+			$fields = do_shortcode( self::fields_template() );
+			$fields = preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => 'privacy' === $token[1] ? esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy', $language ) ) : $this->value( array( 'key' => $token[1] ) ), $fields ) ?? '';
+			return '<form class="linker-inquiry-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
+				. ( null === $handoff ? '' : self::planner_fields( $handoff['id'], '' ) )
+				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff ) . $fields . '</form>';
+		} finally {
+			$locale->back();
 		}
 	}
 
@@ -121,10 +159,32 @@ final class Form {
 	 * Nonce, language, anti-bot time, and transport fields.
 	 */
 	public function hidden(): string {
-		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
+		return $this->hidden_fields( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' );
+	}
+
+	/** Fields carried from the reviewed transfer through native retries.
+	 *
+	 * @param string $handoff Planner handoff ID.
+	 * @param string $fingerprint Post-apply draft fingerprint.
+	 */
+	private static function planner_fields( string $handoff, string $fingerprint ): string {
+		return '<input type="hidden" name="linker_planner_handoff_id" value="' . esc_attr( $handoff ) . '" /><input type="hidden" name="linker_planner_draft_sha256" value="' . esc_attr( $fingerprint ) . '" />';
+	}
+
+	/** Native guard and draft binding for both POST surfaces.
+	 *
+	 * @param string $language Form language.
+	 */
+	private function hidden_fields( string $language ): string {
+		$previous = $this->flash['fields'] ?? array();
+		$binding  = '';
+		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
+			$binding = self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
+		}
+		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
+		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( $previous['linker_draft_hash'] ?? WC()->cart->get_cart_hash() ) . '" />'
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
 	}
 

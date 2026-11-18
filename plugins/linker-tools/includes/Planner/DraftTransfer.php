@@ -26,6 +26,13 @@ final class DraftTransfer {
 	public function apply( Principal $principal, array $command, Admission $admission, Transport $transport, string $mode = 'apply' ): WP_REST_Response|WP_Error {
 		$write          = 'read' !== $mode;
 		$engine_command = $command;
+		$preview        = in_array( $mode, array( 'preview', 'inquiry-preview' ), true );
+		if ( 'inquiry-preview' === $mode ) {
+			if ( ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) ) {
+				return Failure::make( 'input', 422 );
+			}
+			unset( $engine_command['lang'] );
+		}
 		unset( $engine_command['expected_draft_sha256'] );
 		$keys = array_keys( $engine_command );
 		sort( $keys );
@@ -37,10 +44,10 @@ final class DraftTransfer {
 				return Failure::make( 'input', 422 );
 			}
 		}
-		if ( 'preview' !== $mode && ( ! is_string( $command['expected_draft_sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $command['expected_draft_sha256'] ) ) ) {
+		if ( ! $preview && ( ! is_string( $command['expected_draft_sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $command['expected_draft_sha256'] ) ) ) {
 			return Failure::make( 'input', 422 );
 		}
-		if ( count( $command ) !== count( $engine_command ) + ( 'preview' === $mode ? 0 : 1 ) ) {
+		if ( $preview && array_key_exists( 'expected_draft_sha256', $command ) ) {
 			return Failure::make( 'input', 422 );
 		}
 		$body = wp_json_encode( $engine_command );

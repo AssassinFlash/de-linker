@@ -103,6 +103,59 @@ final class DraftPreview {
 	}
 
 	/**
+	 * Preview the complete inquiry, keeping manual and other project lines distinct.
+	 *
+	 * @param mixed               $previous Earlier integration.
+	 * @param array<string,mixed> $command Owned preview with a validated language.
+	 * @param array<string,mixed> $handoff Server-frozen report.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function inquiry( mixed $previous, array $command, array $handoff ): array|WP_Error {
+		$preview = $this->read( $previous, $command, $handoff );
+		if ( is_wp_error( $preview ) ) {
+			return $preview;
+		}
+		$lines = self::cart_lines( self::replacement_keys( $preview['project_id'], $handoff['id'] ) );
+		foreach ( $preview['changes'] as $row ) {
+			if ( $row['after'] > 0 ) {
+				$lines[] = array(
+					'product_id' => $row['product_id'],
+					'label'      => $row['label'],
+					'quantity'   => $row['after'],
+					'project_id' => $preview['project_id'],
+				);
+			}
+		}
+		$preview['inquiry_lines']     = $lines;
+		$preview['inquiry_form_html'] = ( new \Linker\Commerce\Inquiry\Form() )->planning( $handoff, $command['lang'] );
+		return $preview;
+	}
+
+	/**
+	 * Native lines included in the inquiry, preserving each project's quantities.
+	 *
+	 * @param string[] $exclude Cart keys replaced by a proposed handoff.
+	 * @return list<array<string,mixed>>
+	 */
+	public static function cart_lines( array $exclude = array() ): array {
+		$active = Context::active();
+		$lines  = array();
+		foreach ( WC()->cart->get_cart() as $key => $line ) {
+			if ( in_array( $key, $exclude, true ) ) {
+				continue;
+			}
+			$source  = $line[ DraftTransfer::LINE_META ] ?? '';
+			$lines[] = array(
+				'product_id' => (int) $line['product_id'],
+				'label'      => $line['data']->get_name(),
+				'quantity'   => $line['quantity'],
+				'project_id' => $active[ $source ]['snapshot']['project_id'] ?? null,
+			);
+		}
+		return $lines;
+	}
+
+	/**
 	 * Unrelated/manual lines remain in the draft.
 	 *
 	 * @param string      $project_id Frozen project identity.
