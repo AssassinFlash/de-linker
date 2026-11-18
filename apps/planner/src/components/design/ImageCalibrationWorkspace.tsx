@@ -352,6 +352,7 @@ export function ImageCalibrationWorkspace({
 			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 		>("input,textarea,select") ?? []) {
 			if (input.type === "file") continue;
+			input.setCustomValidity("");
 			if (
 				input.required &&
 				(input instanceof window.HTMLInputElement && input.type === "checkbox"

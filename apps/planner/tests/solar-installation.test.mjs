@@ -18,6 +18,7 @@ const aerial = {
 async function mount(
 	t,
 	initial = { brief: emptyBrief(), geometry: structuredClone(flat) },
+	placeImagery = aerial,
 ) {
 	const dom = setupDom();
 	const previousStyle = Object.getOwnPropertyDescriptor(
@@ -47,7 +48,7 @@ async function mount(
 			client: {
 				isCurrentScope: () => true,
 				query: async (path) => {
-					if (path === "places/lookup") return { imagery: aerial };
+					if (path === "places/lookup") return { imagery: placeImagery };
 					if (path === "places/outline") return { found: false };
 					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
 				},
@@ -174,6 +175,114 @@ test("a project with a located building starts on the aerial map without creatin
 			button("Show aerial map"),
 	);
 	assert.equal(app.inputs.geometry, undefined);
+});
+
+test("a site without licensed aerial imagery can open the roof image wizard while the draw tool is selected", async (t) => {
+	const brief = emptyBrief();
+	const app = await mount(
+		t,
+		{
+			brief: {
+				...brief,
+				site: {
+					...brief.site,
+					country_code: "GB",
+					location_label: "London",
+					latitude: 51.5,
+					longitude: -0.12,
+				},
+			},
+		},
+		null,
+	);
+	await until(() => button("Load street map"));
+	await click("Draw roof");
+	assert.equal(button("Calibrate a roof image").disabled, false);
+	await click("Calibrate a roof image");
+	const form = document.querySelector(".lp-import-panel form");
+	const fileInput = form.querySelector(
+		'input[type="file"][accept*="image/png"]',
+	);
+	assert.ok(fileInput);
+	const originalCreate = globalThis.createImageBitmap;
+	globalThis.createImageBitmap = async () => ({
+		width: 800,
+		height: 600,
+		close() {},
+	});
+	t.after(() => {
+		globalThis.createImageBitmap = originalCreate;
+	});
+	const file = new Blob([new Uint8Array([137, 80, 78, 71])], {
+		type: "image/png",
+	});
+	Object.defineProperty(file, "name", { value: "roof-plan.png" });
+	Object.defineProperty(fileInput, "files", { value: [file] });
+	await act(async () =>
+		fileInput.dispatchEvent(new window.Event("change", { bubbles: true })),
+	);
+	assert.match(form.textContent, /roof-plan\.png/);
+	const mark = async (x, y) => {
+		const svg = form.querySelector(".lp-plan-svg");
+		svg.getBoundingClientRect = () => ({
+			left: 0,
+			top: 0,
+			width: 800,
+			height: 600,
+		});
+		await act(async () =>
+			svg.dispatchEvent(
+				new window.MouseEvent("click", {
+					bubbles: true,
+					clientX: x,
+					clientY: y,
+				}),
+			),
+		);
+	};
+	await click("Continue");
+	await mark(100, 500);
+	await mark(700, 500);
+	await enter(form.elements.namedItem("length"), "12");
+	await click("Check span (0 of 2)");
+	await mark(100, 100);
+	await mark(700, 100);
+	await enter(form.elements.namedItem("check_length"), "12");
+	await click("Continue");
+	await click("Roof outline (0 points)");
+	for (const point of [
+		[100, 100],
+		[700, 100],
+		[700, 500],
+		[100, 500],
+	])
+		await mark(...point);
+	form.elements.namedItem("source").value = "roof-plan.png";
+	form.elements.namedItem("rights").value =
+		"Owner drawing with permission to retain and derive";
+	await click("Add roof to current design");
+	assert.equal(
+		app.inputs.geometry,
+		undefined,
+		"permission must be confirmed before adding geometry",
+	);
+	await act(async () => form.elements.namedItem("retention").click());
+	await click("Add roof to current design");
+	assert.ok(
+		app.inputs.geometry,
+		document.querySelector(".lp-import-panel [role=alert]")?.textContent,
+	);
+	const { roofs, sources, coordinate_system: frame } = app.inputs.geometry;
+	assert.equal(roofs.length, 1);
+	assert.equal(frame.anchor, null);
+	assert.equal(sources[0].calibration.m_per_pixel, 0.02);
+	assert.equal(
+		sources[0].rights_note,
+		"Owner drawing with permission to retain and derive",
+	);
+	assert.equal(sources[0].rights_basis, "user_attestation");
+	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Select / move").getAttribute("aria-pressed"), "true");
 });
 
 test("the first aerial roof uses the selected roof corner as its confirmed origin", async (t) => {

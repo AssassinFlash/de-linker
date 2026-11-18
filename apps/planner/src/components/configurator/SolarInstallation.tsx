@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlaceImagery } from "../../domain/place.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
 import type { Configuration } from "../../data/config.ts";
@@ -24,6 +24,7 @@ import {
 	attachGeometryImport,
 	readGeometryImports,
 } from "../../domain/geometryImports.ts";
+import { ImageCalibrationWorkspace } from "../design/ImageCalibrationWorkspace.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
@@ -127,10 +128,20 @@ export function SolarInstallation({
 		startOnMap ? "map" : "plan",
 	);
 	const map = view === "map";
-	useEffect(
-		() => onEditing?.(mode === "roof" && tool !== "select"),
-		[mode, tool, onEditing],
+	const [calibrationOpen, setCalibrationOpen] = useState(false);
+	const [importOpen, setImportOpen] = useState(false);
+	const reportImportActivity = geometryImport?.onActivity;
+	const geometryImportActivity = useCallback(
+		(open: boolean) => {
+			setImportOpen(open);
+			reportImportActivity?.(open);
+		},
+		[reportImportActivity],
 	);
+	useEffect(() => {
+		onEditing?.(calibrationOpen || (mode === "roof" && tool !== "select"));
+		return () => onEditing?.(false);
+	}, [calibrationOpen, mode, tool, onEditing]);
 	const camera = useRef<MapCamera | null>(null);
 	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
@@ -179,7 +190,7 @@ export function SolarInstallation({
 			);
 		return value;
 	};
-	function commit(command: GeometryCommand) {
+	function commit(command: GeometryCommand, useRoofReference = false) {
 		if (blocked) return false;
 		try {
 			const ok = edit((current) => {
@@ -187,10 +198,14 @@ export function SolarInstallation({
 					current.geometry === undefined
 						? emptyGeometry()
 						: readGeometry(current.geometry, policy);
-				return {
+				const updated = {
 					...invalidateEnergyReplay(current),
 					geometry: readObject(applyGeometryCommand(before, command)),
 				};
+				return useRoofReference &&
+					referenceDraft(current).model === KNOWN_PV_MODEL
+					? roofReferenceInputs(updated)
+					: updated;
 			});
 			if (ok) {
 				setUndo((previous) => [...previous, geometry]);
@@ -814,7 +829,25 @@ export function SolarInstallation({
 					)}
 				</p>
 			</header>
-			<fieldset disabled={blocked}>
+			<ImageCalibrationWorkspace
+				geometry={geometry}
+				roofId={null}
+				locale={config.locale}
+				disabled={blocked || importOpen || vertices.length > 0}
+				onActivity={setCalibrationOpen}
+				commit={(command) => {
+					if (!commit(command, true)) return false;
+					setMode("roof");
+					setView("plan");
+					startTool("select");
+					if (command.type === "group") {
+						const roof = command.edits.find((edit) => edit.type === "put_roof");
+						if (roof?.type === "put_roof") select(roof.value.id);
+					}
+					return true;
+				}}
+			/>
+			<fieldset disabled={blocked || calibrationOpen}>
 				<div className="sc-option-row">
 					{(["known", "roof"] as const).map((value) => (
 						<button
@@ -1568,7 +1601,7 @@ export function SolarInstallation({
 						locale={config.locale}
 						recheck={geometryImport.recheck}
 						disabled={blocked || tool !== "select"}
-						onActivity={geometryImport.onActivity}
+						onActivity={geometryImportActivity}
 						attach={(before, asset) => {
 							try {
 								if (
