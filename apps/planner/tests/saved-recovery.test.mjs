@@ -190,7 +190,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 		assert.equal(field().value, changed ? "Local workshop" : "Saved workshop");
 		assert.deepEqual(saves, [], "opening the project must not resubmit a save");
 		if (!uncertain) {
-			assert.ok(status("Saved · revision 2"));
+			assert.equal(status("Saved · revision 2"), false);
 			assert.equal(status("Unsaved changes"), false);
 			assert.equal(button("Restore local changes"), undefined);
 			assert.equal(Boolean(button("Keep my changes")), false);
@@ -200,7 +200,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 			await until(() => !field());
 			assert.deepEqual(saves, []);
 		} else if (source === "current") {
-			assert.ok(status("Save not confirmed"));
+			assert.equal(button("Projects").disabled, false);
 			assert.equal(button("Save snapshot"), undefined);
 			await act(async () => button("Projects").click());
 			await until(() => !field());
@@ -243,7 +243,9 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 			await act(async () =>
 				button(changed ? "Keep my changes" : "Use saved project").click(),
 			);
-			await until(() => status(changed ? "Editing" : "Saved · revision 2"));
+			await until(
+				() => !button("Keep my changes") && !button("Projects").disabled,
+			);
 			await act(async () => button("Projects").click());
 			await until(() => !field());
 			const reopenedStore = new DraftStore();
@@ -254,7 +256,6 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 				field().value,
 				changed ? "Local workshop" : "Saved workshop",
 			);
-			assert.ok(status(changed ? "Saved · revision 3" : "Saved · revision 2"));
 			assert.equal(saves.length, changed ? 1 : 0);
 			await act(async () => {
 				assert.deepEqual(

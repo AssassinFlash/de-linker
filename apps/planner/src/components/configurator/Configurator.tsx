@@ -1008,18 +1008,6 @@ export default function Configurator({
 					<h1>{project.title}</h1>
 					<p>{siteLabel}</p>
 				</div>
-				<span className="sc-badge" role="status">
-					{controller.busy
-						? __("Saving…", "linker-tools")
-						: draft.pending
-							? __("Save not confirmed", "linker-tools")
-							: isDirty(draft)
-								? __("Editing", "linker-tools")
-								: sprintf(
-										__("Saved · revision %d", "linker-tools"),
-										draft.baseline.revision,
-									)}
-				</span>
 			</header>
 			<ConfiguratorSteps
 				active={activeStep}

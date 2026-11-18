@@ -88,6 +88,7 @@ export function ProjectDetails({
 		title: string;
 		changeTitle: (value: string) => void;
 		locked: boolean;
+		titleLocked?: boolean;
 		submitDisabled?: boolean;
 		submitLabel?: string;
 	};
@@ -220,21 +221,6 @@ export function ProjectDetails({
 			</header>
 			<fieldset className="sc-card sc-project-card" disabled={fieldsDisabled}>
 				<div className="sc-fields">
-					{creation && (
-						<label className="sc-field">
-							<span>{__("Project name", "linker-tools")}</span>
-							<input
-								name="project_title"
-								required
-								maxLength={256}
-								value={creation.title}
-								readOnly={creation.locked}
-								onChange={(event) =>
-									creation.changeTitle(event.currentTarget.value)
-								}
-							/>
-						</label>
-					)}
 					<label className="sc-field">
 						<span>{__("Country", "linker-tools")}</span>
 						<select
@@ -389,6 +375,20 @@ export function ProjectDetails({
 				{existingEquipment}
 				<details>
 					<summary>{__("Site details", "linker-tools")}</summary>
+					{creation && (
+						<label className="sc-field">
+							<span>{__("Project name (optional)", "linker-tools")}</span>
+							<input
+								name="project_title"
+								maxLength={256}
+								value={creation.title}
+								readOnly={creation.locked || creation.titleLocked}
+								onChange={(event) =>
+									creation.changeTitle(event.currentTarget.value)
+								}
+							/>
+						</label>
+					)}
 					<label className="sc-field">
 						<span>{__("Site use", "linker-tools")}</span>
 						<select
@@ -452,8 +452,7 @@ export function ProjectDetails({
 							pendingScope !== null ||
 							solarConflict ||
 							creation?.submitDisabled ||
-							(!creation?.locked &&
-								(!brief.system_scope || (creation && !creation.title.trim())))
+							(!creation?.locked && !brief.system_scope)
 						}
 						onClick={next}
 					>
