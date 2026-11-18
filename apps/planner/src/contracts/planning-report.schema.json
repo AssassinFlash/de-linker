@@ -1,5 +1,44 @@
 {
   "$defs": {
+    "ReportPhaseConflict": {
+      "properties": {
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "actual": {
+          "enum": [
+            1,
+            3
+          ],
+          "title": "Actual",
+          "type": "integer"
+        },
+        "required": {
+          "enum": [
+            1,
+            3
+          ],
+          "title": "Required",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "actual",
+        "required"
+      ],
+      "title": "ReportPhaseConflict",
+      "type": "object",
+      "additionalProperties": false
+    },
     "ReportRow": {
       "properties": {
         "label": {
@@ -152,6 +191,13 @@
         "$ref": "#/$defs/ReportSection"
       },
       "title": "Sections",
+      "type": "array"
+    },
+    "phase_conflicts": {
+      "items": {
+        "$ref": "#/$defs/ReportPhaseConflict"
+      },
+      "title": "Phase Conflicts",
       "type": "array"
     }
   },

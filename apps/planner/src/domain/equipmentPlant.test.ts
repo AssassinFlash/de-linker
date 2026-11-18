@@ -69,13 +69,17 @@ test("plant strings keep independent ports and other units across edits, prepara
 	const inputs = {
 		...start(),
 		pv_plant_string_plan: wiring,
-		equipment_candidate: { id: "stale" },
+		equipment_candidate: {
+			run_id: "a".repeat(32),
+			candidate_id: "b".repeat(64),
+			assessment_sha256: "c".repeat(64),
+		},
 	};
 	const updated = changePvPlantStringUnit(inputs, "a", {
 		...a,
 		plan: { ...a.plan, minimum_ambient_c: -15 },
 	});
-	assert.equal(updated.equipment_candidate, undefined);
+	assert.deepEqual(updated.equipment_candidate, inputs.equipment_candidate);
 	assert.deepEqual(
 		readPvPlantStringPlan(updated.pv_plant_string_plan).units.find(
 			(u) => u.unit_id === "b",

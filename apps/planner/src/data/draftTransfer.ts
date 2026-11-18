@@ -13,10 +13,11 @@ export interface DraftReceipt {
 }
 export interface DraftPreview {
 	readonly draftSha256: string;
-	readonly phaseConflict: {
+	readonly phaseConflicts: readonly {
+		readonly unit: string | null;
 		readonly actual: 1 | 3;
 		readonly required: 1 | 3;
-	} | null;
+	}[];
 	readonly alreadyPresent: boolean;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
 	readonly changes: readonly {
@@ -139,20 +140,29 @@ export function readDraftPreview(
 			after: change.after,
 		};
 	});
-	let phaseConflict: DraftPreview["phaseConflict"] = null;
-	if (row.phase_conflict !== undefined) {
-		const { actual, required } = readObject(row.phase_conflict);
+	const conflicts = row.phase_conflicts;
+	if (conflicts !== undefined && !Array.isArray(conflicts)) fail();
+	const readConflict = (value: unknown, legacy = false) => {
+		const check = readObject(value);
+		const unit = legacy ? null : check.unit;
+		const { actual, required } = check;
 		if (
+			(unit !== null && (typeof unit !== "string" || !unit.trim())) ||
 			(actual !== 1 && actual !== 3) ||
 			(required !== 1 && required !== 3) ||
 			actual === required
 		)
 			fail();
-		phaseConflict = { actual, required };
-	}
+		return { unit, actual, required } as const;
+	};
 	return {
 		draftSha256: String(row.draft_sha256),
-		phaseConflict,
+		phaseConflicts:
+			conflicts !== undefined
+				? conflicts.map((value) => readConflict(value))
+				: row.phase_conflict === undefined
+					? []
+					: [readConflict(row.phase_conflict, true)],
 		changes,
 		alreadyPresent: row.already_present,
 		urls: readUrls(readObject(row.draft_urls), origin),

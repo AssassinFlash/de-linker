@@ -41,6 +41,7 @@ export interface PlanningReport {
 	generated_at: string;
 	locale: "en" | "de";
 	sections: ReportSection[];
+	phase_conflicts?: { unit: string | null; actual: 1 | 3; required: 1 | 3 }[];
 }
 /** A frozen report keeps its own language; only the surrounding UI follows the site. */
 export function reportLanguageDiffers(

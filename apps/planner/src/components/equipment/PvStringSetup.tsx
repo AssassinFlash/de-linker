@@ -182,7 +182,6 @@ export function PvStringSetup({
 			if (controlled) return controlled.change(value);
 			return edit((inputs) => {
 				const next = { ...inputs };
-				delete next.equipment_candidate;
 				if (value) next.pv_string_plan = value;
 				else delete next.pv_string_plan;
 				return next;

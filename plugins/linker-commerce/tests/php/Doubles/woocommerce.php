@@ -25,6 +25,10 @@ if ( ! class_exists( 'WC_Data' ) ) {
 	class WC_Order extends WC_Abstract_Order {}
 	class WC_Customer extends WC_Data {}
 	class WC_Cart {}
+	class WC_Cart_Session {
+		public function __construct( private WC_Cart $cart ) {}
+		public function get_cart_for_session() { return $this->cart->get_cart(); }
+	}
 }
 if ( ! class_exists( 'WC_DateTime' ) ) {
 	class WC_DateTime extends \DateTimeImmutable {}

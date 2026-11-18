@@ -372,6 +372,54 @@ def test_controller_network_limit_keeps_its_source_and_network_scope(
     )
 
 
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_frozen_plant_phase_conflicts_identify_only_the_mismatching_hardware(
+    feed: FixtureObject, locale: str
+) -> None:
+    from linker_engine.planning.plant_assessment import assess_plant
+
+    plant = plant_inputs(feed)
+    hardware, declaration_only = plant["units"]
+    hardware["name"] = "Depot · East"
+    declaration_only["name"] = "Office"
+    single_phase = next(p for p in feed["products"] if p["id"] == 3577)
+    hardware["selection"].update(
+        inverter_product_id=3577,
+        battery_product_id=None,
+        modules_per_stack=None,
+        parallel_stacks=None,
+        accessory_product_ids=[],
+        product_revisions={"3577": single_phase["product_revision"]},
+    )
+    declaration_only["selection"] = {**hardware["selection"], "grid_phase": 1}
+    plant["units"].append({**copy.deepcopy(hardware), "id": "c", "name": "West"})
+    assessment = json_object(
+        assess_plant({"equipment_plant": plant}, json_object(feed))
+    )
+    assert [
+        (check["semantic_id"], check["status"], check["actual"], check["required"])
+        for check in assessment["checks"]
+        if check.get("unit_name") == "Office"
+        and check.get("semantic_id") in {"grid_phase", "plant_grid_phase"}
+    ] == [("grid_phase", "satisfied", 1, 1), ("plant_grid_phase", "violated", 1, 3)]
+    report = build_report(
+        {
+            "locale": locale,
+            "title": "Depot",
+            "project_id": "a" * 32,
+            "revision": 3,
+            "input_sha256": "1" * 64,
+            "source_runs": [],
+            "generated_at": "2026-11-18T00:00:00Z",
+            "equipment": assessment,
+        }
+    ).model_dump(mode="json")
+    assert report["phase_conflicts"] == [
+        {"unit": "Depot · East", "actual": 1, "required": 3},
+        {"unit": "West", "actual": 1, "required": 3},
+    ]
+
+
 @pytest.mark.parametrize("with_equipment_use", [False, True])
 def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     feed: FixtureObject,
@@ -2651,7 +2699,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                 direct.model_copy(update={"equipment_run_id": wired_run.id}),
             )
         )
-        assert report["candidate"] is None
+        assert report["candidate"] == original_choice
         assert report["equipment"]["pv_electrical"] == wiring
         assert any(row["run_id"] == wired_run.id for row in report["source_runs"])
         assert (
@@ -7263,6 +7311,7 @@ def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() 
         ("peak_shaving_with_reserve_v1", True, None),
         ("self_consumption_with_reserve_v1", False, None),
         ("peak_shaving_with_reserve_v1", False, None),
+        ("self_consumption_with_reserve_v1", False, "wired_single"),
         ("self_consumption_with_reserve_v1", False, "plant_ac"),
         ("self_consumption_with_reserve_v1", False, "plant_shared_dc"),
         ("self_consumption_with_reserve_v1", False, "shared_dc"),
@@ -7323,7 +7372,12 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         max_attempts=1,
     )
     reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
-    registry = service_registry(energy, None, equipment_search=search, reports=reports)
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, source), max_attempts=1
+    )
+    registry = service_registry(
+        energy, None, equipment=equipment, equipment_search=search, reports=reports
+    )
     worker = Worker(
         Jobs(workspace),
         "profile-bounds-worker",
@@ -7338,6 +7392,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         energy,
         credential=lambda: TOKEN,
         limits=HttpLimits(1000000, 8000000, 40000, 32),
+        equipment=equipment,
         equipment_search=search,
         reports=reports,
         product_provider=lambda: loaded,
@@ -7550,6 +7605,177 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         assert run["state"] == "succeeded", run
         result = run["result"]["search"]
         assert result["candidates"]
+
+        def verify_wired_report(candidate: FixtureObject) -> None:
+            from linker_engine.planning.geometry import panel_poses, read_geometry
+            from linker_engine.planning.project_input_contracts import (
+                SUPPORTED_INPUT_CONTRACTS,
+            )
+
+            from .test_pv_generation import geometry
+
+            choice = {
+                "run_id": run["id"],
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            }
+            values = copy.deepcopy(accepted["project"]["inputs"])
+            values["equipment_candidate"] = choice
+            if "plant" in candidate:
+                values["equipment_plant"] = candidate["plant"]
+                for unit, built in zip(
+                    values["equipment_plant_setup"]["units"],
+                    candidate["plant"]["units"],
+                    strict=True,
+                ):
+                    unit["inputs"]["equipment_setup"] = {
+                        key: value
+                        for key, value in built["selection"].items()
+                        if key != "product_revisions"
+                    }
+            else:
+                selection = candidate["selection"]
+                values["equipment_selection"] = selection
+                values["equipment_setup"] = {
+                    key: value
+                    for key, value in selection.items()
+                    if key != "product_revisions"
+                }
+                values["equipment_setup"]["comparison_models"] = {
+                    "inverter_product_id": None,
+                    "battery_product_id": None,
+                }
+            command_base = {
+                "project_id": pid,
+                "input_contract": SUPPORTED_INPUT_CONTRACTS[-1],
+            }
+            adopted = rig.post(
+                "/projects/revise",
+                {
+                    **command_base,
+                    "expected_revision": accepted["project"]["revision"],
+                    "inputs": values,
+                    "key": "adopt-before-wiring",
+                },
+            )
+            layout = geometry()
+            module = json_object(source.electrical_module_basis())["module"]
+            layout["module_specs"] = [{**module["specification"], "id": "module"}]
+            layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+            modules = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
+            values["geometry"] = layout
+
+            def plan(name: str, ids: list[str]) -> FixtureObject:
+                return {
+                    "schema_version": 1,
+                    "inverter_product_id": 4107,
+                    "minimum_ambient_c": -10,
+                    "temperature_source": "Fixture design temperature",
+                    "strings": [{"id": name, "mppt": 1, "input": 1, "module_ids": ids}],
+                }
+
+            if "plant" in candidate:
+                values["pv_plant_string_plan"] = {
+                    "schema_version": 1,
+                    "units": [
+                        {
+                            "unit_id": unit,
+                            "inverter_instance_id": None,
+                            "plan": plan(f"s_{unit}", ids),
+                        }
+                        for unit, ids in (("east", modules[:6]), ("west", modules[6:]))
+                    ],
+                }
+                names = ["s_east", "s_west"]
+            else:
+                values["pv_string_plan"] = plan("s_main", modules)
+                names = ["s_main"]
+            checked = rig.post(
+                "/runs/check-equipment",
+                {
+                    **command_base,
+                    "expected_revision": adopted["revision"],
+                    "inputs": values,
+                    "key": "check-adopted-wiring",
+                },
+            )
+            assert worker.run_once()
+            check = rig.post("/runs/read", {"run_id": checked["run"]["id"]})
+            assert check["state"] == "succeeded", check["error"]
+            options = {
+                "locale": "en",
+                "equipment_run_id": check["id"],
+                "energy_run_id": None,
+                "pv_run_id": None,
+                "logo": None,
+            }
+            report_command = {
+                "project_id": pid,
+                "expected_revision": checked["project"]["revision"],
+                "key": "report-adopted-wiring",
+                "options": options,
+            }
+            queued = rig.post("/runs/report", report_command)
+            assert worker.run_once()
+            report = rig.post("/runs/read", {"run_id": queued["id"]})
+            assert report["state"] == "succeeded", report["error"]
+            pdf = workspace.blobs.read(
+                report["result"]["prepared_asset"]["content_sha256"]
+            )
+            text = " ".join(
+                " ".join(page.extract_text().split())
+                for page in PdfReader(io.BytesIO(pdf)).pages
+            )
+            assert "PV wiring plan" in text
+            upper = 4 if "plant" in candidate else 3
+            assert f"Additional solar use, upper bound {upper} kWh" in text
+            frozen = json_object(
+                workspace.blobs.object(
+                    report["manifest"]["context"]["assets"]["report.source"]
+                )
+            )
+            wiring = frozen["equipment"]["pv_electrical"]
+            strings = (
+                [s for unit in wiring["units"] for s in unit["assessment"]["strings"]]
+                if "plant" in candidate
+                else wiring["strings"]
+            )
+            assert [s["id"] for s in strings] == names
+            assert frozen["candidate"] == choice
+            assert [
+                (item["run_id"], item.get("candidate_id"))
+                for item in frozen["source_runs"]
+            ] == [(run["id"], candidate["id"]), (check["id"], None)]
+            changed = (
+                values["pv_plant_string_plan"]["units"][0]["plan"]
+                if "plant" in candidate
+                else values["pv_string_plan"]
+            )
+            changed["strings"][0]["mppt"] = 2
+            saved = rig.post(
+                "/projects/revise",
+                {
+                    **command_base,
+                    "expected_revision": checked["project"]["revision"],
+                    "inputs": values,
+                    "key": "rewire-again",
+                },
+            )
+            stale = client.post(
+                "/runs/report",
+                json={
+                    **report_command,
+                    "schema_version": 1,
+                    "expected_revision": saved["revision"],
+                    "key": "stale-wiring",
+                },
+                headers=headers(owner),
+            )
+            assert (
+                stale.status_code == 422
+                and stale.json()["error"]["code"] == "report_inputs_changed"
+            ), stale.text
+
         if topology == "missing_load":
             assert "demand" not in result
             assert all(
@@ -7565,6 +7791,15 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 item["demand"]["status"] == "unresolved"
                 for item in result["candidates"]
             )
+            return
+        if topology == "wired_single":
+            candidate = next(
+                c
+                for c in result["candidates"]
+                if c["selection"]["inverter_product_id"] == 4107
+                and c["demand"]["additional_pv_use_upper_kwh"] == 3
+            )
+            verify_wired_report(candidate)
             return
         if topology is not None:
             assert result["demand"]["baseline"]["load_kwh"] == (16 if peak else 8)
@@ -7583,6 +7818,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 )
                 assert candidate["demand"]["status"] == "bounded"
                 assert candidate["demand"]["additional_pv_use_upper_kwh"] == 4
+                verify_wired_report(candidate)
             elif topology == "shared_dc" and peak:
                 candidate = next(
                     item

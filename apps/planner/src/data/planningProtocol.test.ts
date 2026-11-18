@@ -379,7 +379,24 @@ test("report output keeps serialized fields mandatory and old column layout opti
 			},
 		],
 	};
-	assert.doesNotThrow(() => readPlanningReport(report));
+	assert.equal(readPlanningReport(report).phase_conflicts, undefined);
+	const phaseConflicts = [
+		{ unit: null, actual: 1, required: 3 },
+		{ unit: "West", actual: 3, required: 1 },
+	];
+	assert.deepEqual(
+		readPlanningReport({ ...report, phase_conflicts: phaseConflicts })
+			.phase_conflicts,
+		phaseConflicts,
+	);
+	assert.throws(
+		() =>
+			readPlanningReport({
+				...report,
+				phase_conflicts: [{ unit: "West", actual: 2, required: 3 }],
+			}),
+		{ code: "invalid_planning_report" },
+	);
 	assert.doesNotThrow(() =>
 		readPlanningReport({
 			...report,

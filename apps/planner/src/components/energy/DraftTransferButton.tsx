@@ -339,19 +339,20 @@ export function DraftTransferButton({
 									</div>
 								</>
 							)}
-							{preview.phaseConflict && (
-								<Notice>
+							{preview.phaseConflicts.map((conflict, index) => (
+								<Notice key={index}>
+									{conflict.unit && <strong>{conflict.unit}: </strong>}
 									{sprintf(
 										// translators: 1: inverter phase count, 2: required grid phase count.
 										__(
 											"Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.",
 											"linker-tools",
 										),
-										preview.phaseConflict.actual,
-										preview.phaseConflict.required,
+										conflict.actual,
+										conflict.required,
 									)}
 								</Notice>
-							)}
+							))}
 							<button
 								type="button"
 								className="lp-button"

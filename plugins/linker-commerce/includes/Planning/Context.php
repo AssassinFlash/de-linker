@@ -562,55 +562,82 @@ final class Context {
 	}
 
 	/**
-	 * Read the single-system grid-phase check preserved in the frozen report.
-	 * Its translated rows predate this projection and remain immutable.
+	 * Read hardware phase conflicts from the frozen report, including older reports.
 	 *
 	 * @param array<string,mixed> $snapshot Frozen handoff snapshot.
-	 * @return array{actual:int,required:int}|null
+	 * @return list<array{unit:string|null,actual:1|3,required:1|3}>
 	 */
-	public static function phase_conflict( array $snapshot ): ?array {
-		foreach ( $snapshot['report']['sections'] ?? array() as $section ) {
-			$labels = match ( $section['title'] ?? null ) {
+	public static function phase_conflicts( array $snapshot ): array {
+		$report    = $snapshot['report'] ?? array();
+		$conflicts = array();
+		if ( array_key_exists( 'phase_conflicts', $report ) ) {
+			foreach ( $report['phase_conflicts'] as $check ) {
+				$unit     = $check['unit'] ?? null;
+				$actual   = $check['actual'] ?? null;
+				$required = $check['required'] ?? null;
+				if ( ( null === $unit || ( is_string( $unit ) && '' !== trim( $unit ) ) )
+					&& ( 1 === $actual || 3 === $actual )
+					&& ( 1 === $required || 3 === $required )
+					&& $actual !== $required ) {
+					$conflicts[] = array(
+						'unit'     => $unit,
+						'actual'   => $actual,
+						'required' => $required,
+					);
+				}
+			}
+			return $conflicts;
+		}
+
+		foreach ( $report['sections'] ?? array() as $section ) {
+			if ( ! preg_match( '/\Acheck-[0-9]+\z/', $section['id'] ?? '' ) ) {
+				continue;
+			}
+			$title     = $section['title'] ?? '';
+			$separator = strrpos( $title, ' · ' );
+			$unit      = false === $separator ? null : substr( $title, 0, $separator );
+			$check     = false === $separator ? $title : substr( $title, $separator + strlen( ' · ' ) );
+			$labels    = match ( $check ) {
 				'Grid phases' => array( 'Assessment status', 'Requirements not met', 'Result', 'Requirement' ),
 				'Netzphasen'  => array( 'Prüfstatus', 'Anforderungen nicht erfüllt', 'Ergebnis', 'Anforderung' ),
 				default       => null,
 			};
-			if ( null === $labels || ! preg_match( '/\Acheck-[0-9]+\z/', $section['id'] ?? '' ) ) {
+			if ( null === $labels || ( null !== $unit && '' === trim( $unit ) ) ) {
 				continue;
 			}
 			$rows     = array_column( $section['rows'] ?? array(), 'value', 'label' );
 			$actual   = $rows[ $labels[2] ] ?? null;
 			$required = $rows[ $labels[3] ] ?? null;
 			if ( ( $rows[ $labels[0] ] ?? null ) === $labels[1]
-				&& in_array( $actual, array( '1', '3' ), true )
-				&& in_array( $required, array( '1', '3' ), true )
+				&& ( '1' === $actual || '3' === $actual )
+				&& ( '1' === $required || '3' === $required )
 				&& $actual !== $required ) {
-				return array(
-					'actual'   => (int) $actual,
-					'required' => (int) $required,
+				$conflicts[] = array(
+					'unit'     => $unit,
+					'actual'   => '1' === $actual ? 1 : 3,
+					'required' => '1' === $required ? 1 : 3,
 				);
 			}
 		}
-		return null;
+		return $conflicts;
 	}
 
-	/** Show each active project's conflict in the native Woo cart. */
+	/** Show each active project's hardware conflicts in the native Woo cart. */
 	public function cart_phase_notices(): void {
 		foreach ( self::active() as $handoff ) {
 			$snapshot = $handoff['snapshot'];
-			$conflict = self::phase_conflict( $snapshot );
-			if ( null === $conflict ) {
-				continue;
+			foreach ( self::phase_conflicts( $snapshot ) as $conflict ) {
+				$unit = null === $conflict['unit'] ? '' : esc_html( $conflict['unit'] ) . ': ';
+				wc_print_notice(
+					esc_html( $snapshot['title'] ) . ': ' . $unit . sprintf(
+						/* translators: 1: inverter phase count, 2: required grid phase count. */
+						esc_html__( 'Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.', 'linker-commerce' ),
+						$conflict['actual'],
+						$conflict['required']
+					),
+					'notice'
+				);
 			}
-			wc_print_notice(
-				esc_html( $snapshot['title'] ) . ': ' . sprintf(
-					/* translators: 1: inverter phase count, 2: required grid phase count. */
-					esc_html__( 'Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.', 'linker-commerce' ),
-					$conflict['actual'],
-					$conflict['required']
-				),
-				'notice'
-			);
 		}
 	}
 

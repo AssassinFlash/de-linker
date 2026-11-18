@@ -5,7 +5,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any, Literal, cast
 
-from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
+from linker_engine.models import (
+    Report,
+    ReportPhaseConflict,
+    ReportRow,
+    ReportSection,
+    ReportTable,
+)
 
 from .canonical import Object
 from .certificate_report import certificate_sections
@@ -36,6 +42,7 @@ from .report_pvlib import pvlib_sections
 def build_report(source: Object) -> Report:
     locale = cast(Literal["en", "de"], source["locale"])
     sections: list[ReportSection] = []
+    phase_conflicts: list[ReportPhaseConflict] = []
 
     def row(key: str, value: Any, href: str | None = None) -> ReportRow:
         return ReportRow(
@@ -485,6 +492,23 @@ def build_report(source: Object) -> Report:
         sections.extend(grid_sections)
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
             semantic_id = str(check.get("semantic_id", check["id"]))
+            actual, required = check["actual"], check["required"]
+            if (
+                semantic_id == "grid_phase"
+                and check["status"] == "violated"
+                and type(actual) is int
+                and actual in (1, 3)
+                and type(required) is int
+                and required in (1, 3)
+                and actual != required
+            ):
+                phase_conflicts.append(
+                    ReportPhaseConflict(
+                        unit=check.get("unit_name"),
+                        actual=cast(Literal[1, 3], actual),
+                        required=cast(Literal[1, 3], required),
+                    )
+                )
             if isinstance(source.get("energy_equipment"), dict) and check["id"] in {
                 "scenario_operating_mode",
                 "scenario_parameter_basis",
@@ -1552,4 +1576,5 @@ def build_report(source: Object) -> Report:
         generated_at=str(source["generated_at"]),
         locale=locale,
         sections=sections,
+        phase_conflicts=phase_conflicts,
     )

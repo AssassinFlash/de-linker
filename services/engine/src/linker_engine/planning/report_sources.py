@@ -450,11 +450,17 @@ def report_sources(
         options.equipment_run_id is not None and retained_comparison is None
     ):
         require_retained_inverter(project.inputs, selection=True)
+    use_wiring_check = False
     if isinstance(candidate, dict):
-        use_wiring_check = has_wiring and options.equipment_run_id not in (
+        separate_equipment = options.equipment_run_id not in (
             None,
             candidate.get("run_id"),
         )
+        if separate_equipment and not has_wiring:
+            raise InvalidInput(
+                "report equipment differs from the adopted project candidate"
+            )
+        use_wiring_check = separate_equipment
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
         check_equipment_candidate(
@@ -503,16 +509,6 @@ def report_sources(
             raise ReportInputsChanged(
                 "report demand differs from the selected candidate"
             )
-        if options.equipment_run_id not in (None, candidate.get("run_id")):
-            if not has_wiring:
-                raise InvalidInput(
-                    "report equipment differs from the adopted project candidate"
-                )
-            # The dedicated check below must match the saved equipment and
-            # wiring. Cite that run for the report; the project keeps its choice.
-            candidate = None
-    if isinstance(candidate, dict):
-        run = workspace.run(actor, cast(str, candidate["run_id"]))
         assert run.result is not None
         equipment_source_run = run
         equipment_source_inputs = workspace.pinned_inputs(run.manifest)
@@ -585,8 +581,10 @@ def report_sources(
                 raise ReportInputsChanged(
                     "report candidate PV source dependencies have changed"
                 )
-        bases["equipment"] = pinned["woo.equipment_inputs"]
-    elif retained_comparison is not None and options.equipment_run_id is not None:
+        bases["comparison_equipment.adopted" if use_wiring_check else "equipment"] = (
+            pinned["woo.equipment_inputs"]
+        )
+    if retained_comparison is not None and options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentSearchKernel.kind, ())
         for role in ("gross_load", "pv_available_ac"):
             name = f"{role}.metadata"
@@ -602,7 +600,9 @@ def report_sources(
                     bases["energy_equipment"] = workspace.blobs.put_object(
                         equipment_basis
                     )
-    elif options.equipment_run_id is not None:
+    elif options.equipment_run_id is not None and (
+        not isinstance(candidate, dict) or use_wiring_check
+    ):
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ("backup_demand",))
         previous = workspace.pinned_inputs(run.manifest)
         equipment_source_run = run
@@ -1305,6 +1305,7 @@ def report_sources(
                 **(
                     {"candidate_id": candidate["candidate_id"]}
                     if isinstance(candidate, dict)
+                    and equipment_source_run.id == candidate["run_id"]
                     else {}
                 ),
             }

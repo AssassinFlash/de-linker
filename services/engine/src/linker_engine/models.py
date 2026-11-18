@@ -295,12 +295,21 @@ class ReportSection(BaseModel):
     table: ReportTable | None = None
 
 
+class ReportPhaseConflict(BaseModel):
+    unit: str | None
+    actual: Literal[1, 3]
+    required: Literal[1, 3]
+
+
 class Report(BaseModel):
     title: str
     subtitle: str
     generated_at: str
     locale: Locale
     sections: list[ReportSection]
+    phase_conflicts: list[ReportPhaseConflict] = Field(
+        default_factory=list, exclude_if=lambda conflicts: not conflicts
+    )
 
 
 class ResidentialResult(BaseModel):

@@ -59,12 +59,14 @@ def closed_document(
         value.setdefault("additionalProperties", False)
         if serialized_output:
             # A serialized report includes model defaults; the existing UI
-            # requires them and does not insert missing arrays/nulls. Only the
-            # new layout hint stays optional for immutable older report tables.
+            # requires them and does not insert missing arrays/nulls. Fields
+            # absent in immutable older reports stay optional.
+            optional = {
+                "Report": {"phase_conflicts"},
+                "ReportTable": {"column_weights"},
+            }.get(value.get("title"), set())
             value["required"] = [
-                key
-                for key in value["properties"]
-                if not (value.get("title") == "ReportTable" and key == "column_weights")
+                key for key in value["properties"] if key not in optional
             ]
     return value
 

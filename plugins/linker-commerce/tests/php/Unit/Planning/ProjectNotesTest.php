@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Planning;
 
 use Linker\Commerce\Planning\Context;
+use Linker\Commerce\Planning\DraftPreview;
 use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Tests\TestCase;
@@ -160,7 +161,7 @@ final class ProjectNotesTest extends TestCase {
 			}
 		};
 		$cart                 = &$this->cart;
-		$woocommerce->cart    = new class( $cart ) {
+		$woocommerce->cart    = new class( $cart ) extends \WC_Cart {
 			/**
 			 * Live cart fixture.
 			 *
@@ -260,6 +261,100 @@ final class ProjectNotesTest extends TestCase {
 		$this->keep();
 		$context->cart_phase_notices();
 		$this->assertConditionsMet();
+	}
+
+	/** Frozen EN and DE unit checks distinguish hardware from the declared plant connection. */
+	public function test_cart_shows_multiple_hardware_conflicts_but_not_the_plant_declaration(): void {
+		$handoff = $this->handoff();
+		$id      = $handoff['id'];
+		WP_Mock::userFunction( 'wc_load_cart' );
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'woocommerce_checkout_page_id' ),
+				'return' => 1,
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/inquiry/' ) );
+		WP_Mock::passthruFunction( 'esc_html' );
+		WP_Mock::passthruFunction( 'esc_html__' );
+		$notices = array();
+		WP_Mock::userFunction(
+			'wc_print_notice',
+			array(
+				'return' => static function ( string $text ) use ( &$notices ): void {
+					$notices[] = $text;
+				},
+			)
+		);
+
+		foreach ( array( 'en', 'de' ) as $locale ) {
+			$de                                        = 'de' === $locale;
+			$hardware                                  = $de ? 'Netzphasen' : 'Grid phases';
+			$plant                                     = $de ? 'Phasenanzahl am Netzanschluss der Gesamtanlage' : 'Plant grid phases';
+			$rows                                      = array_map(
+				static fn ( string $label, string $value ): array => array(
+					'label' => $label,
+					'value' => $value,
+				),
+				$de ? array( 'Prüfstatus', 'Ergebnis', 'Anforderung' ) : array( 'Assessment status', 'Result', 'Requirement' ),
+				array( $de ? 'Anforderungen nicht erfüllt' : 'Requirements not met', '1', '3' )
+			);
+			$handoff['snapshot']['report']['sections'] = array(
+				array(
+					'id'    => 'check-1',
+					'title' => 'Depot · East · ' . $hardware,
+					'rows'  => $rows,
+				),
+				array(
+					'id'    => 'check-9',
+					'title' => 'Office · ' . $plant,
+					'rows'  => $rows,
+				),
+				array(
+					'id'    => 'check-14',
+					'title' => 'West · ' . $hardware,
+					'rows'  => $rows,
+				),
+			);
+			foreach ( array( false, true ) as $structured ) {
+				if ( $structured ) {
+					$handoff['snapshot']['report']['phase_conflicts'] = array(
+						array(
+							'unit'     => 'Depot · East',
+							'actual'   => 1,
+							'required' => 3,
+						),
+						array(
+							'unit'     => 'West',
+							'actual'   => 1,
+							'required' => 3,
+						),
+					);
+				}
+				$preview_handoff                            = $handoff;
+				$preview_handoff['snapshot']['kind']        = 'planning_report_only_v1';
+				$preview_handoff['snapshot']['publication'] = null;
+				$preview_handoff['snapshot']['items']       = array();
+				$this->cart                                 = array();
+				$preview                                    = ( new DraftPreview() )->read( null, array(), $preview_handoff );
+				$this->assertIsArray( $preview );
+				$this->assertSame( array( 'Depot · East', 'West' ), array_column( $preview['phase_conflicts'], 'unit' ) );
+				$this->assertSame( array( 1, 1 ), array_column( $preview['phase_conflicts'], 'actual' ) );
+				$this->assertSame( array( 3, 3 ), array_column( $preview['phase_conflicts'], 'required' ) );
+				$this->assertSame( array(), $preview['changes'] );
+
+				$this->session[ DraftTransfer::CONTEXTS ] = array( $id => DraftTransfer::native_context( $handoff ) );
+				$this->cart                               = array( 'converter' => array( DraftTransfer::LINE_META => $id ) );
+				$notices                                  = array();
+				( new Context() )->cart_phase_notices();
+				$this->assertCount( 2, $notices );
+				$this->assertStringStartsWith( 'Installer project: Depot · East: Grid phase mismatch.', $notices[0] );
+				$this->assertStringStartsWith( 'Installer project: West: Grid phase mismatch.', $notices[1] );
+			}
+			unset( $handoff['snapshot']['report']['phase_conflicts'] );
+		}
 	}
 
 	/** The customer's note reaches the inquiry snapshot without being parsed. */

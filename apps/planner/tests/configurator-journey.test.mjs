@@ -21,6 +21,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	const applied = [];
 	let phaseConflict = { actual: 1, required: 3 };
 	let reportOnly = false;
+	let phaseConflicts;
 	const client = {
 		origin,
 		isCurrentScope: () => true,
@@ -52,6 +53,9 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				...(phaseConflict === undefined
 					? {}
 					: { phase_conflict: phaseConflict }),
+				...(phaseConflicts === undefined
+					? {}
+					: { phase_conflicts: phaseConflicts }),
 			};
 		},
 	};
@@ -126,12 +130,28 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
 	);
 	assert.equal(button("Änderungen bestätigen").disabled, false);
+	phaseConflict = undefined;
+	phaseConflicts = [
+		{ unit: "Depot · East", actual: 1, required: 3 },
+		{ unit: "West", actual: 1, required: 3 },
+	];
+	await render("multi-inverter-de", "de");
+	await act(async () =>
+		button("Ausgewählte Produkte zum Lösungsentwurf hinzufügen").click(),
+	);
+	for (const unit of ["Depot · East", "West"])
+		assert.ok(
+			dom.element.textContent.includes(
+				`${unit}: Die Phasenanzahl passt nicht zum Projekt.`,
+			),
+		);
 
 	window.wp.i18n.__ = (message) => message;
 	reportOnly = true;
 	await render("report-only");
 	await act(async () => button("Attach report to inquiry").click());
-	assert.match(dom.element.textContent, /Grid phase mismatch/);
+	assert.match(dom.element.textContent, /Depot · East: Grid phase mismatch/);
+	assert.match(dom.element.textContent, /West: Grid phase mismatch/);
 	await act(async () => button("Attach report to inquiry").click());
 	assert.equal(applied.length, 2);
 });

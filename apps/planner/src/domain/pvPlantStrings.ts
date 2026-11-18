@@ -34,7 +34,7 @@ export function readPvPlantStringPlan(value: unknown): PvPlantStringPlan {
 		throw new ApiError(422, "pv_plant_string_plan_incomplete");
 	return value;
 }
-/** A unit edit replaces only its own plan and always invalidates search adoption. */
+/** A unit edit replaces only its own wiring plan. */
 export function changePvPlantStringUnit(
 	inputs: JsonObject,
 	unitId: string,
@@ -47,7 +47,6 @@ export function changePvPlantStringUnit(
 	const units = current.units.filter((u) => u.unit_id !== unitId);
 	if (unit) units.push(unit);
 	const next = { ...inputs };
-	delete next.equipment_candidate;
 	delete next.pv_string_plan;
 	if (units.length)
 		next.pv_plant_string_plan = readPvPlantStringPlan({
