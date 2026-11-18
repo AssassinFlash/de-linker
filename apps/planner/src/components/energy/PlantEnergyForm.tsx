@@ -31,6 +31,7 @@ export function PlantEnergyForm({
 	converters,
 	referenceCapacitySupported = false,
 	storageOnly = false,
+	sharedDcOnly = false,
 }: {
 	value: PlantEnergyDraft;
 	plant: PlantEnergyEquipment;
@@ -49,6 +50,7 @@ export function PlantEnergyForm({
 	converters: readonly string[];
 	referenceCapacitySupported?: boolean;
 	storageOnly?: boolean;
+	sharedDcOnly?: boolean;
 }) {
 	const [selected, select] = useState(plant.units[0]!.id);
 	const [numbersValid, setNumbersValid] = useState(true);
@@ -87,7 +89,7 @@ export function PlantEnergyForm({
 				<h3 className="lp-work-panel-heading">
 					{__("System connection", "linker-tools")}
 				</h3>
-				{section === "storage" && (
+				{section === "storage" && !sharedDcOnly && (
 					<label className="lp-field">
 						<span>{__("PV connection for this plant", "linker-tools")}</span>
 						<select

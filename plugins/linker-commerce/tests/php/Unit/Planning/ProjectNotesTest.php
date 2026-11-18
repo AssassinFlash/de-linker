@@ -29,6 +29,13 @@ final class ProjectNotesTest extends TestCase {
 	 */
 	private array $session = array();
 
+	/**
+	 * Current native cart lines.
+	 *
+	 * @var array<string,array<string,mixed>>
+	 */
+	private array $cart = array();
+
 	/** Shared fixtures: the note text carried by the handoff snapshot. */
 	private const NOTE = "SAJ H2-10K, -40 °C, 6000 W\nwest roof, no backup.";
 
@@ -152,14 +159,31 @@ final class ProjectNotesTest extends TestCase {
 				$this->store[ $key ] = $value;
 			}
 		};
-		$woocommerce->cart    = new class() {
+		$cart                 = &$this->cart;
+		$woocommerce->cart    = new class( $cart ) {
 			/**
-			 * No cart lines: the note cases prove the note path alone.
+			 * Live cart fixture.
 			 *
-			 * @return array<int,array<string,mixed>>
+			 * @var array<string,array<string,mixed>>
+			 */
+			private array $lines;
+
+			/**
+			 * Bind the cart fixture.
+			 *
+			 * @param array<string,array<string,mixed>> $lines Native cart lines.
+			 */
+			public function __construct( array &$lines ) {
+				$this->lines = &$lines;
+			}
+
+			/**
+			 * Read native cart lines.
+			 *
+			 * @return array<string,array<string,mixed>>
 			 */
 			public function get_cart(): array {
-				return array();
+				return $this->lines;
 			}
 		};
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
@@ -174,6 +198,68 @@ final class ProjectNotesTest extends TestCase {
 		$handoff                                  = DraftTransfer::native_context( $this->handoff() );
 		$this->session[ DraftTransfer::CONTEXTS ] = array( $handoff['id'] => $handoff );
 		return $handoff;
+	}
+
+	/** Only a violated, frozen phase check reaches the native Woo draft. */
+	public function test_cart_shows_the_frozen_phase_conflict_once_per_project(): void {
+		$handoff                                     = $this->handoff();
+		$handoff['snapshot']['report']['sections'][] = array(
+			'id'    => 'check-2',
+			'title' => 'Netzphasen',
+			'rows'  => array(
+				array(
+					'label' => 'Prüfstatus',
+					'value' => 'Anforderungen nicht erfüllt',
+				),
+				array(
+					'label' => 'Ergebnis',
+					'value' => '1',
+				),
+				array(
+					'label' => 'Anforderung',
+					'value' => '3',
+				),
+			),
+		);
+		$id                                       = $handoff['id'];
+		$this->session[ DraftTransfer::CONTEXTS ] = array( $id => DraftTransfer::native_context( $handoff ) );
+		$this->cart                               = array(
+			'converter' => array( DraftTransfer::LINE_META => $id ),
+			'battery'   => array( DraftTransfer::LINE_META => $id ),
+		);
+		WP_Mock::passthruFunction( 'esc_html' );
+		WP_Mock::passthruFunction( 'esc_html__' );
+		WP_Mock::userFunction(
+			'wc_print_notice',
+			array(
+				'times' => 1,
+				'args'  => array( 'Installer project: Grid phase mismatch. Selected inverter: 1. Project requirement: 3. You can send an inquiry to discuss the configuration.', 'notice' ),
+			)
+		);
+		$context = new Context();
+		$context->cart_phase_notices();
+
+		$handoff['snapshot']['report']['sections'][1]['title'] = 'Grid phases';
+		$handoff['snapshot']['report']['sections'][1]['rows']  = array(
+			array(
+				'label' => 'Assessment status',
+				'value' => 'Checked requirements met',
+			),
+			array(
+				'label' => 'Result',
+				'value' => '3',
+			),
+			array(
+				'label' => 'Requirement',
+				'value' => '3',
+			),
+		);
+		$this->session[ DraftTransfer::CONTEXTS ]              = array( $id => DraftTransfer::native_context( $handoff ) );
+		$context->cart_phase_notices();
+
+		$this->keep();
+		$context->cart_phase_notices();
+		$this->assertConditionsMet();
 	}
 
 	/** The customer's note reaches the inquiry snapshot without being parsed. */

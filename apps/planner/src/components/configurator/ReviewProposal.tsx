@@ -632,7 +632,7 @@ export function ReviewProposal({
 			{transferable && run && (
 				<section className="sc-card sc-draft-transfer">
 					<h2>{__("Request a quotation", "linker-tools")}</h2>
-					{selected && (
+					{selected && current && (
 						<p>
 							{sprintf(
 								__(

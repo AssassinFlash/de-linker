@@ -10,7 +10,7 @@ import { readPlanningOperation } from "../../data/planningProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
 /** Preview is read-only. Only explicit confirmation submits a durable Woo intent. */
@@ -338,6 +338,19 @@ export function DraftTransferButton({
 										</table>
 									</div>
 								</>
+							)}
+							{preview.phaseConflict && (
+								<Notice>
+									{sprintf(
+										// translators: 1: inverter phase count, 2: required grid phase count.
+										__(
+											"Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.",
+											"linker-tools",
+										),
+										preview.phaseConflict.actual,
+										preview.phaseConflict.required,
+									)}
+								</Notice>
 							)}
 							<button
 								type="button"

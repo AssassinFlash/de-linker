@@ -16835,6 +16835,12 @@ msgstr "Bestätigen Sie das Wechselrichtermodell, um die Kompatibilität mit Bat
 msgid "You can continue with the existing inverter. Confirm its model to check equipment compatibility."
 msgstr "Sie können mit dem vorhandenen Wechselrichter weiterplanen. Bestätigen Sie das Modell, um die Gerätekompatibilität zu prüfen."
 
+#. translators: 1: inverter phase count, 2: required grid phase count.
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration."
+msgstr "Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration."
+
 #: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
 msgid "Attach report to inquiry"
 msgstr "Bericht an Anfrage anhängen"
@@ -16982,3 +16988,27 @@ msgstr "Obergrenze der Ersatzstromleistung"
 #: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
 msgid "Confirm shared backup transfer, starting charge and discharge losses."
 msgstr "Prüfen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste."
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Shared DC energy flows"
+msgstr "Energieflüsse bei DC-Kopplung"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Set up shared DC energy flows"
+msgstr "DC-gekoppelte Energieflüsse einrichten"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Optional"
+msgstr "Optional"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Use the prepared roof PV source for DC groups. Upload a separate interval profile for any additional AC generation."
+msgstr "Verwenden Sie das berechnete Dach-PV-Profil für die DC-Gruppen. Laden Sie für zusätzliche AC-Erzeugung ein separates Zeitreihenprofil hoch."
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Selected for the report"
+msgstr "Für den Bericht ausgewählt"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Use this calculation in the report"
+msgstr "Diese Berechnung im Bericht verwenden"

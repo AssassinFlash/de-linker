@@ -11,6 +11,7 @@ import {
 import {
 	configuratorReportSources,
 	hasReportWiring,
+	sharedDcReportRun,
 } from "../../data/configuratorReportSources.ts";
 import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
@@ -32,7 +33,9 @@ import {
 	type RunPage,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
-import { REPORT_TASK } from "../../data/planningReport.ts";
+import { REPORT_TASK, type ReportOptions } from "../../data/planningReport.ts";
+import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
+import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
 import {
@@ -49,6 +52,7 @@ import {
 	sameJson,
 } from "../../domain/draft.ts";
 import {
+	authoredCalculationInputs,
 	authoredDiscoveryInputs,
 	needsComparisonModels,
 	restoreComparisonModels,
@@ -66,6 +70,8 @@ import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
+import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
+import { hasPlant } from "../../domain/equipmentPlant.ts";
 import {
 	CandidateMaterials,
 	SystemOptions,
@@ -77,7 +83,7 @@ import { ReviewProposal } from "./ReviewProposal.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
-import { activePvGeometry } from "../../domain/solarSetup.ts";
+import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
@@ -166,9 +172,20 @@ export default function Configurator({
 	const [roofEditing, setRoofEditing] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const [navigationRefused, setNavigationRefused] = useState(false);
-	const navigationBlocked = !energyValid || roofEditing || importOpen;
+	const [sharedDcValid, setSharedDcValid] = useState(true);
+	const profileGuard = useRef<() => boolean>(() => true);
+	const registerProfileGuard = useCallback((guard: () => boolean) => {
+		profileGuard.current = guard;
+	}, []);
+	const [submittedDc, setSubmittedDc] = useState<{
+		id: string;
+		task: SharedDcTask;
+	} | null>(null);
+	const navigationBlocked =
+		!energyValid || !sharedDcValid || roofEditing || importOpen;
 	function mayLeave() {
-		if (!client.isCurrentScope(session.query_scope)) return false;
+		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
+			return false;
 		if (!navigationBlocked) return true;
 		setNavigationRefused(true);
 		main.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
@@ -386,13 +403,21 @@ export default function Configurator({
 	);
 	function accepted(run: PlanningRun) {
 		const task = runTask(run);
-		if (task !== SEARCH_TASK && task !== REPORT_TASK) return;
+		if (
+			task !== SEARCH_TASK &&
+			task !== REPORT_TASK &&
+			task !== DC_PLANT_ENERGY_TASK &&
+			task !== WEATHER_TASK &&
+			task !== PV_TASK
+		)
+			return;
 		cache.setQueryData(
 			[session.query_scope, "configurator-result", project.id, task, run.id],
 			run,
 		);
 		if (task === SEARCH_TASK) setSubmittedSearch(run.id);
-		else setSubmittedReport(run.id);
+		else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
@@ -464,6 +489,54 @@ export default function Configurator({
 		if (next === "energy") setEnergyOpened(true);
 		setStep(next);
 		setNavigationRefused(false);
+	}
+	async function startSharedDc(
+		path: "runs/calculate" | "runs/weather" | "runs/pv",
+	) {
+		if (
+			blocked ||
+			modelsUnavailable ||
+			!latest.current ||
+			!profileGuard.current()
+		)
+			return;
+		const instance = lifetime.current;
+		setError(null);
+		try {
+			const current = latest.current;
+			if (path === "runs/pv") checkPvWeather(current.baseline.inputs);
+			const reply = await operations.start(path, {
+				expected_revision: current.baseline.revision,
+				...(path === "runs/calculate"
+					? {
+							input_contract: projectInputContract,
+							inputs: authoredCalculationInputs(current.history.current),
+						}
+					: {}),
+			});
+			if (reply && "run" in reply && instance === lifetime.current && admitted)
+				accepted(reply.run);
+		} catch (cause) {
+			if (
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			)
+				setError(cause);
+		}
+	}
+	async function generateComparison(options: ReportOptions) {
+		if (blocked || !latest.current || isDirty(latest.current)) return;
+		const reply = await operations.start("runs/report", {
+			expected_revision: latest.current.baseline.revision,
+			options,
+		});
+		if (
+			reply?.path === "runs/report" &&
+			client.isCurrentScope(session.query_scope)
+		) {
+			accepted(reply.run);
+			navigate("review");
+		}
 	}
 	async function compare() {
 		if (blocked || modelsUnavailable || !latest.current) return;
@@ -601,6 +674,8 @@ export default function Configurator({
 					signal: request.signal,
 				});
 			if (!current()) return;
+			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
+				throw new ApiError(409, "report_inputs_changed");
 			if (hasReportWiring(saved.inputs) && !sources.equipment_run_id) {
 				const readCheck = async (id: string) =>
 					readRun(
@@ -985,7 +1060,15 @@ export default function Configurator({
 									reply.path !== "runs/pvgis-reference"
 								) {
 									accepted(reply.run);
-									navigate(reply.path === "runs/report" ? "review" : "system");
+									if (reply.path === "runs/report") navigate("review");
+									else if (reply.path === "runs/find-equipment")
+										navigate("system");
+									else if (
+										reply.path === "runs/calculate" ||
+										reply.path === "runs/weather" ||
+										reply.path === "runs/pv"
+									)
+										navigate("energy");
 								}
 							})
 						}
@@ -1063,6 +1146,45 @@ export default function Configurator({
 								compare={() => void compare()}
 								onValidity={setEnergyValid}
 							/>
+							{hasPlant(inputs) &&
+								brief.system_scope !== "storage_only" &&
+								brief.system_scope !== "pv_only" && (
+									<SharedDcEnergy
+										draft={draft}
+										locale={config.locale}
+										client={client}
+										session={session}
+										store={store}
+										disabled={blocked || modelsUnavailable || !energyValid}
+										active={activeStep === "energy"}
+										edit={edit}
+										save={controller.save}
+										openEquipment={() => navigate("project")}
+										openDesign={() => navigate("solar")}
+										onValidity={setSharedDcValid}
+										registerProfileGuard={registerProfileGuard}
+										recoveryScopes={recoveryScopes}
+										recoveryChecking={recoveryChecking}
+										recheck={recheck}
+										runs={[
+											...(latestRuns ?? []),
+											...(olderHistory.data?.pages.flatMap(
+												(page) => page.items,
+											) ?? []),
+										]}
+										moreRuns={
+											(olderHistory.data
+												? olderHistory.hasNextPage
+												: firstCursor) && !olderHistory.isFetching
+												? () => void olderHistory.fetchNextPage()
+												: undefined
+										}
+										submitted={submittedDc}
+										start={(path) => void startSharedDc(path)}
+										generateComparison={generateComparison}
+										operationError={error ?? operations.error}
+									/>
+								)}
 						</div>
 					)}
 					{activeStep === "system" && (

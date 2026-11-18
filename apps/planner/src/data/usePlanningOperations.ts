@@ -384,7 +384,9 @@ export function usePlanningOperations({
 			if (
 				dispatched &&
 				(isPreMutationInputRefusal(cause) ||
-					(["battery/scenario", "runs/energy"].includes(path) &&
+					(["battery/scenario", "runs/energy", "runs/calculate"].includes(
+						path,
+					) &&
 						cause instanceof ApiError &&
 						cause.status === 422 &&
 						["evidence_missing", "method_domain_exceeded"].includes(

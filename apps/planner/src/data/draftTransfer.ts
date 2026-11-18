@@ -13,6 +13,10 @@ export interface DraftReceipt {
 }
 export interface DraftPreview {
 	readonly draftSha256: string;
+	readonly phaseConflict: {
+		readonly actual: 1 | 3;
+		readonly required: 1 | 3;
+	} | null;
 	readonly alreadyPresent: boolean;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
 	readonly changes: readonly {
@@ -135,8 +139,20 @@ export function readDraftPreview(
 			after: change.after,
 		};
 	});
+	let phaseConflict: DraftPreview["phaseConflict"] = null;
+	if (row.phase_conflict !== undefined) {
+		const { actual, required } = readObject(row.phase_conflict);
+		if (
+			(actual !== 1 && actual !== 3) ||
+			(required !== 1 && required !== 3) ||
+			actual === required
+		)
+			fail();
+		phaseConflict = { actual, required };
+	}
 	return {
 		draftSha256: String(row.draft_sha256),
+		phaseConflict,
 		changes,
 		alreadyPresent: row.already_present,
 		urls: readUrls(readObject(row.draft_urls), origin),

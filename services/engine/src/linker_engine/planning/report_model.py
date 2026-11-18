@@ -247,6 +247,16 @@ def build_report(source: Object) -> Report:
                 if peak_comparison["lower_bound_kw"] is not None
                 else [],
                 rows=[
+                    row(
+                        "peak_target",
+                        f"{period['start_utc']} – {period['end_utc']}: "
+                        + number(period["import_cap_kw"], locale, "kW"),
+                    )
+                    for period in cast(
+                        list[Object], peak_comparison.get("target_periods", [])
+                    )
+                ]
+                + [
                     row(label, number(value, locale, "kW"))
                     for label, field in (
                         ("peak_target", "target_kw"),

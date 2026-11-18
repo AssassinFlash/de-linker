@@ -12,8 +12,9 @@ import {
 	readSelections,
 	rememberGeometricRoof,
 } from "./profiles.ts";
-import { readEquipmentPlant } from "./equipmentPlant.ts";
-import { plantEnergyDraft } from "./plantEnergy.ts";
+import { hasPlant } from "./equipmentPlant.ts";
+import { plantEnergyDraft, plantEnergyEquipment } from "./plantEnergy.ts";
+import { isPvOnly, isStorageOnly } from "./energyScenario.ts";
 import {
 	PVGIS_REFERENCE_TASK,
 	KNOWN_PV_MODEL,
@@ -34,9 +35,11 @@ import {
 export function preparationPvRole(
 	inputs: JsonObject,
 ): "pv_reference" | "pv_available_ac" {
-	return inputs.equipment_plant !== undefined &&
-		plantEnergyDraft(inputs, readEquipmentPlant(inputs.equipment_plant))
-			.coupling === "plant_shared_dc"
+	return hasPlant(inputs) &&
+		!isPvOnly(inputs) &&
+		!isStorageOnly(inputs) &&
+		plantEnergyDraft(inputs, plantEnergyEquipment(inputs)).coupling ===
+			"plant_shared_dc"
 		? "pv_reference"
 		: "pv_available_ac";
 }

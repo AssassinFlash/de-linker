@@ -166,11 +166,24 @@ def pin_profiles(
     return pinned
 
 
-def uniform_peak_target(
+def peak_targets(
     schedule: list[tuple[Interval, bool, float | None, bool]],
-) -> float | None:
+) -> Object:
     caps = {cap for _, _, cap, _ in schedule}
-    return next(iter(caps)) if len(caps) == 1 else None
+    if len(caps) == 1:
+        return {"peak_target_kw": next(iter(caps))}
+    return {
+        "peak_target_kw": None,
+        "peak_target_periods": [
+            {
+                "start_utc": interval.start.isoformat(),
+                "end_utc": interval.end.isoformat(),
+                "import_cap_kw": cap,
+            }
+            for interval, _, cap, _ in schedule
+            if cap is not None
+        ],
+    }
 
 
 def evaluate_bounds(
@@ -276,7 +289,7 @@ def evaluate_bounds(
         "baseline": baseline,
     }
     if controller == CONTROLLERS[1]:
-        profile_summary["peak_target_kw"] = uniform_peak_target(schedule)
+        profile_summary.update(peak_targets(schedule))
     control.checkpoint()
     if basis is None:
         search["demand"] = profile_summary

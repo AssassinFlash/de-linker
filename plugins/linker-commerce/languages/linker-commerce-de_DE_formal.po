@@ -2748,6 +2748,12 @@ msgstr "Projektnotizen mit dieser Anfrage senden"
 msgid "This note is not used in the calculation."
 msgstr "Diese Notiz geht nicht in die Berechnung ein."
 
+#. translators: 1: inverter phase count, 2: required grid phase count.
+#: includes/Planning/Context.php:606
+#, php-format
+msgid "Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration."
+msgstr "Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration."
+
 #: includes/Planning/Context.php:487 includes/Planning/Context.php:622
 #: includes/Planning/Context.php:624
 msgid "Planning project"

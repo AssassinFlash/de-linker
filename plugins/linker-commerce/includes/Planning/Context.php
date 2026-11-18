@@ -562,6 +562,59 @@ final class Context {
 	}
 
 	/**
+	 * Read the single-system grid-phase check preserved in the frozen report.
+	 * Its translated rows predate this projection and remain immutable.
+	 *
+	 * @param array<string,mixed> $snapshot Frozen handoff snapshot.
+	 * @return array{actual:int,required:int}|null
+	 */
+	public static function phase_conflict( array $snapshot ): ?array {
+		foreach ( $snapshot['report']['sections'] ?? array() as $section ) {
+			$labels = match ( $section['title'] ?? null ) {
+				'Grid phases' => array( 'Assessment status', 'Requirements not met', 'Result', 'Requirement' ),
+				'Netzphasen'  => array( 'Prüfstatus', 'Anforderungen nicht erfüllt', 'Ergebnis', 'Anforderung' ),
+				default       => null,
+			};
+			if ( null === $labels || ! preg_match( '/\Acheck-[0-9]+\z/', $section['id'] ?? '' ) ) {
+				continue;
+			}
+			$rows     = array_column( $section['rows'] ?? array(), 'value', 'label' );
+			$actual   = $rows[ $labels[2] ] ?? null;
+			$required = $rows[ $labels[3] ] ?? null;
+			if ( ( $rows[ $labels[0] ] ?? null ) === $labels[1]
+				&& in_array( $actual, array( '1', '3' ), true )
+				&& in_array( $required, array( '1', '3' ), true )
+				&& $actual !== $required ) {
+				return array(
+					'actual'   => (int) $actual,
+					'required' => (int) $required,
+				);
+			}
+		}
+		return null;
+	}
+
+	/** Show each active project's conflict in the native Woo cart. */
+	public function cart_phase_notices(): void {
+		foreach ( self::active() as $handoff ) {
+			$snapshot = $handoff['snapshot'];
+			$conflict = self::phase_conflict( $snapshot );
+			if ( null === $conflict ) {
+				continue;
+			}
+			wc_print_notice(
+				esc_html( $snapshot['title'] ) . ': ' . sprintf(
+					/* translators: 1: inverter phase count, 2: required grid phase count. */
+					esc_html__( 'Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.', 'linker-commerce' ),
+					$conflict['actual'],
+					$conflict['required']
+				),
+				'notice'
+			);
+		}
+	}
+
+	/**
 	 * Show the reference and project note in the native draft item-data surface.
 	 *
 	 * @param array<array<string,mixed>> $data Native item descriptions.

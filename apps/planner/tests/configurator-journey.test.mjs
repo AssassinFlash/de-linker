@@ -9,6 +9,133 @@ import React, { act } from "react";
 import { deferred, enter, setupDom, until } from "./dom-fixture.mjs";
 import preparation from "./fixtures/index.ts";
 
+test("draft confirmation shows the frozen phase conflict and still lets the customer continue", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { DraftTransferButton } =
+		await import("../src/components/energy/DraftTransferButton.tsx");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const origin = window.location.origin;
+	const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+	const applied = [];
+	let phaseConflict = { actual: 1, required: 3 };
+	let reportOnly = false;
+	const client = {
+		origin,
+		isCurrentScope: () => true,
+		async query(path, command) {
+			assert.equal(path, "draft/preview");
+			assert.equal(command.report_run_id, run.id);
+			return {
+				schema_version: 1,
+				project_id: run.project_id,
+				report_run_id: run.id,
+				revision: run.revision,
+				handoff_id: "c".repeat(32),
+				draft_sha256: "d".repeat(64),
+				snapshot_sha256: "e".repeat(64),
+				already_present: false,
+				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+				...(reportOnly
+					? { changes: [], report_only: true }
+					: {
+							changes: [
+								{
+									product_id: 1,
+									label: "GoodWe inverter",
+									before: 0,
+									after: 1,
+								},
+							],
+						}),
+				...(phaseConflict === undefined
+					? {}
+					: { phase_conflict: phaseConflict }),
+			};
+		},
+	};
+	const operations = {
+		records: [],
+		async start(...args) {
+			applied.push(args);
+		},
+	};
+	const render = (key, locale = "en") =>
+		act(async () =>
+			root.render(
+				React.createElement(DraftTransferButton, {
+					key,
+					run,
+					client,
+					operations,
+					scope: "owned",
+					current: true,
+					blocked: false,
+					locale,
+					reportOnly,
+					recheck() {},
+				}),
+			),
+		);
+	const button = (text) =>
+		[...dom.element.querySelectorAll("button")].find(
+			(item) => item.textContent.trim() === text,
+		);
+	await render("conflict");
+	await act(async () =>
+		button("Add selected products to solution draft").click(),
+	);
+	assert.match(
+		dom.element.textContent,
+		/Grid phase mismatch\. Selected inverter: 1\. Project requirement: 3\. You can send an inquiry to discuss the configuration\./,
+	);
+	await act(async () => button("Confirm changes").click());
+	assert.deepEqual(applied, [
+		[
+			"draft/apply",
+			{
+				expected_revision: 3,
+				report_run_id: run.id,
+				expected_draft_sha256: "d".repeat(64),
+			},
+		],
+	]);
+
+	phaseConflict = undefined;
+	await render("without-conflict");
+	await act(async () =>
+		button("Add selected products to solution draft").click(),
+	);
+	assert.doesNotMatch(dom.element.textContent, /Grid phase mismatch/);
+	assert.equal(button("Confirm changes").disabled, false);
+
+	const { default: catalog } = await import(
+		"../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+		{ with: { type: "json" } }
+	);
+	window.wp.i18n.__ = (message) =>
+		catalog.locale_data.messages[message]?.[0] ?? message;
+	phaseConflict = { actual: 1, required: 3 };
+	await render("formal-german", "de");
+	const add = button("Ausgewählte Produkte zum Lösungsentwurf hinzufügen");
+	assert.ok(add);
+	await act(async () => add.click());
+	assert.match(
+		dom.element.textContent,
+		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
+	);
+	assert.equal(button("Änderungen bestätigen").disabled, false);
+
+	window.wp.i18n.__ = (message) => message;
+	reportOnly = true;
+	await render("report-only");
+	await act(async () => button("Attach report to inquiry").click());
+	assert.match(dom.element.textContent, /Grid phase mismatch/);
+	await act(async () => button("Attach report to inquiry").click());
+	assert.equal(applied.length, 2);
+});
+
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
 	const dom = setupDom();
 	globalThis.indexedDB = new IDBFactory();
@@ -690,6 +817,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			`linker-planning-${project.id}-r2-en.csv`,
 			`linker-planning-${project.id}-r3-de.pdf`,
 		]);
+
 		await act(async () => root.render(null));
 		cache.clear();
 		wrongProject = true;
@@ -731,6 +859,27 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await until(() => dom.element.textContent.includes("Saved · revision 4"));
 		assertContext(context(), 2, [earlier.id]);
 		await ask(dom.element.querySelector(".sc-project-heading"), 4, []);
+
+		await act(async () => root.render(null));
+		cache.clear();
+		project.revision = current.revision + 1;
+		project.input_sha256 = "f".repeat(64);
+		currentSummary.is_current = false;
+		window.history.replaceState(null, "", deepLink);
+		await render("en");
+		await until(() => button("Download PDF", history()));
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Attach report to inquiry"));
+		const staleTransfer = button("Attach report to inquiry");
+		assert.equal(staleTransfer.disabled, true);
+		assert.match(
+			staleTransfer.closest(".sc-draft-transfer").textContent,
+			/Generate a report for the current project before attaching it\./,
+		);
+		assert.doesNotMatch(
+			staleTransfer.closest(".sc-draft-transfer").textContent,
+			/Your inquiry uses the current report/,
+		);
 	} finally {
 		await dom.dispose(root);
 		cache.clear();

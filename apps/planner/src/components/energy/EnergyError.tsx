@@ -318,6 +318,11 @@ export function energyErrorText(error: unknown): string {
 				"The inputs changed before preparation finished. Your current draft remains open.",
 				"linker-tools",
 			);
+		case "profile_role_mismatch":
+			return __(
+				"The saved source could not be checked. Existing project inputs remain unchanged.",
+				"linker-tools",
+			);
 		case "no_shared_profile_range":
 			return __(
 				"The required profiles have no shared time range.",

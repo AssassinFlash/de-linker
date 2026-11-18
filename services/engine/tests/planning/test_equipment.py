@@ -7426,6 +7426,13 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 ],
             },
         }
+        if peak and not standard and topology is None:
+            period = declarations["energy_scenario"]["schedule"][0]
+            split = "2026-01-01T02:00:00+01:00"
+            declarations["energy_scenario"]["schedule"] = [
+                {**period, "end_utc": split, "import_cap_kw": 0.25},
+                {**period, "start_utc": split, "import_cap_kw": 0.75},
+            ]
         command = {
             "project_id": pid,
             "expected_revision": 1,
@@ -7695,7 +7702,19 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 and c["selection"]["battery_product_id"] == 2090
             }
             if peak:
-                assert result["demand"]["peak_target_kw"] == 0.5
+                assert result["demand"]["peak_target_kw"] is None
+                assert result["demand"]["peak_target_periods"] == [
+                    {
+                        "start_utc": "2025-12-31T23:00:00+00:00",
+                        "end_utc": "2026-01-01T01:00:00+00:00",
+                        "import_cap_kw": 0.25,
+                    },
+                    {
+                        "start_utc": "2026-01-01T01:00:00+00:00",
+                        "end_utc": "2026-01-01T03:00:00+00:00",
+                        "import_cap_kw": 0.75,
+                    },
+                ]
                 assert baseline["peak_grid_import_kw"] == 4
                 assert options[13.5]["status"] == "violated"
                 assert options[13.5]["peak_import_lower_bound_kw"] == 0.625
@@ -7816,7 +7835,12 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             bound = str(candidate["demand"]["peak_import_lower_bound_kw"])
             if locale == "de":
                 bound = bound.replace(".", ",")
-            assert f"{labels[0]} {'0.5' if locale == 'en' else '0,5'} kW" in text
+            for start, end, cap in (
+                ("2025-12-31T23:00:00+00:00", "2026-01-01T01:00:00+00:00", "0.25"),
+                ("2026-01-01T01:00:00+00:00", "2026-01-01T03:00:00+00:00", "0.75"),
+            ):
+                shown = cap if locale == "en" else cap.replace(".", ",")
+                assert f"{labels[0]} {start} – {end}: {shown} kW" in text
             assert f"{labels[1]} 4 kW" in text
             assert (
                 f"{labels[2]} {bound.removesuffix('.0').removesuffix(',0')} kW" in text
@@ -7828,7 +7852,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             "battery_product_id": candidate["selection"]["battery_product_id"],
         }
         peak_changed = copy.deepcopy(adopted_inputs)
-        peak_changed["energy_scenario"]["schedule"][0]["import_cap_kw"] = 0.25
+        peak_changed["energy_scenario"]["schedule"][0]["import_cap_kw"] = 0.125
         load_changed = copy.deepcopy(adopted_inputs)
         load_changed["profile_selections"]["selected"]["gross_load"] = csv_profile(
             "gross_load", (6, 6, 6, 6), key="updated-load"

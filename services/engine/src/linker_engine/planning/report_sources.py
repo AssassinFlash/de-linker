@@ -50,7 +50,7 @@ from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .profile_demand_bounds import MODEL as PROFILE_BOUNDS_MODEL
-from .profile_demand_bounds import periods, uniform_peak_target
+from .profile_demand_bounds import peak_targets, periods
 from .profile_selections import ProfileSelections
 from .pv_preparation import PvReferenceKernel
 from .pv_profile_preparation import PROFILE_PURPOSE as PVLIB_PURPOSE
@@ -538,12 +538,16 @@ def report_sources(
                     "upper_kwh": bounds["additional_pv_use_upper_kwh"],
                 }
             elif summary.get("controller") == "peak_shaving_with_reserve_v1":
-                # Older comparisons carry the limit only in their pinned inputs.
-                target = summary.get("peak_target_kw")
-                if "peak_target_kw" not in summary:
-                    target = uniform_peak_target(periods(equipment_source_inputs))
+                # Older comparisons may have only a scalar, or null for varying caps.
+                targets = summary
+                if (
+                    targets.get("peak_target_kw") is None
+                    and "peak_target_periods" not in targets
+                ):
+                    targets = peak_targets(periods(equipment_source_inputs))
                 peak_comparison = {
-                    "target_kw": target,
+                    "target_kw": targets.get("peak_target_kw"),
+                    "target_periods": targets.get("peak_target_periods", []),
                     "baseline_kw": baseline["peak_grid_import_kw"],
                     "lower_bound_kw": bounds["peak_import_lower_bound_kw"],
                     "status": bounds["status"],
