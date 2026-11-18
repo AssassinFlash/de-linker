@@ -2,16 +2,16 @@
 
 Run with --wp and a WP-CLI prefix to print a read-only diff. Import plan_pair
 and pass its changed payload to reviewed_page_pair.invoke after approval and
-backup. The existing wrapper locks the content and translation preimages and
-adopts the reviewed German baseline with the English page in one transaction.
+backup. The existing wrapper locks both full page preimages and translation
+metadata and adopts the reviewed German baseline in the same transaction.
 """
 
 from __future__ import annotations
 
 import argparse
+from typing import Any
 
 import reviewed_page_pair
-
 
 EN_GUEST = (
     "You can send an inquiry or request a Proforma invoice without an account.",
@@ -22,9 +22,11 @@ DE_GUEST = (
     "Auch ohne Konto können Sie ein Angebot anfordern oder uns eine Nachricht senden.",
 )
 
-# WordPress post_content fragments, not HTML transformed by REST rendering.
-# The Terms freight and electronic-document clauses, the Privacy tax declaration,
-# and the homepage delivery-package list require confirmation of offline facts.
+CAPABILITY_DE_BEFORE = "Wir prüfen die verfügbaren technischen Daten mit Ihnen, um die passende Konfiguration vor der Auftragsbestätigung einzugrenzen."
+EPC_DE_ADJUSTMENT_BEFORE = "Wenn sich die Standortbedingungen ändern, bevor der Auftrag in die Produktion freigegeben wird, lässt sich die Konfiguration noch ändern."
+
+# Each native post_content fragment lists its original and final text. A third
+# value records the exact previous candidate where it differs from the final.
 REVISIONS = {
     (1674, 6825): (
         (
@@ -91,10 +93,17 @@ REVISIONS = {
         (
             (
                 "We review the available technical data to help narrow the configuration before the Proforma is issued.",
+                "Before we prepare your quotation, we review the available technical data with you to narrow down the configuration.",
                 "We review the available technical data with you to narrow down the configuration before order confirmation.",
             ),
         ),
-        (),
+        (
+            (
+                CAPABILITY_DE_BEFORE,
+                "Bevor wir Ihr Angebot erstellen, prüfen wir mit Ihnen die verfügbaren technischen Daten und grenzen die Auswahl passender Konfigurationen ein.",
+                CAPABILITY_DE_BEFORE,
+            ),
+        ),
     ),
     (842, 6867): (
         (
@@ -120,6 +129,11 @@ REVISIONS = {
                 "Die Konfiguration bleibt flexibel, bis die Proformarechnung ausgestellt wird.",
                 "Während der Angebotserstellung bleibt die Konfiguration flexibel.",
             ),
+            (
+                EPC_DE_ADJUSTMENT_BEFORE,
+                "Wenn sich die Standortbedingungen während der Angebotserstellung ändern, können wir die Konfiguration noch anpassen.",
+                EPC_DE_ADJUSTMENT_BEFORE,
+            ),
         ),
     ),
     (826, 6869): (
@@ -133,7 +147,10 @@ REVISIONS = {
                 "Our team prepares your quotation and works with you on any subsequent order.",
             ),
             ("Proforma &amp; Delivery", "Quotation &amp; Delivery"),
-            ("STAGE 04 · PROFORMA &amp; DELIVERY", "STAGE 04 · QUOTATION &amp; DELIVERY"),
+            (
+                "STAGE 04 · PROFORMA &amp; DELIVERY",
+                "STAGE 04 · QUOTATION &amp; DELIVERY",
+            ),
             (
                 "Inquiries are checked against stock in Germany and confirmed with a proforma invoice and delivery date.",
                 "We check availability against our stock in Germany and prepare your quotation. We discuss estimated delivery dates with you for each order.",
@@ -162,7 +179,10 @@ REVISIONS = {
     ),
     (749, 6923): (
         (
-            ("Proforma &amp; availability</span>", "Quotation &amp; availability</span>"),
+            (
+                "Proforma &amp; availability</span>",
+                "Quotation &amp; availability</span>",
+            ),
             ("Proforma &amp; availability</h3>", "Quotation &amp; availability</h3>"),
             (
                 "Your inquiry is checked against stock in Germany, and you receive a proforma invoice with a delivery date you can plan around.",
@@ -170,7 +190,10 @@ REVISIONS = {
             ),
         ),
         (
-            ("Proforma &amp; Verfügbarkeit</span>", "Angebot &amp; Verfügbarkeit</span>"),
+            (
+                "Proforma &amp; Verfügbarkeit</span>",
+                "Angebot &amp; Verfügbarkeit</span>",
+            ),
             ("Proforma &amp; Verfügbarkeit</h3>", "Angebot &amp; Verfügbarkeit</h3>"),
             (
                 "Ihre Anfrage wird gegen den Lagerbestand in Deutschland geprüft, und Sie erhalten eine Proformarechnung mit einem Lieferdatum, mit dem Sie planen können.",
@@ -182,12 +205,14 @@ REVISIONS = {
         (
             (
                 "Linker delivers a project quote detailing equipment scope, pricing, warranty coverage, and a delivery schedule confirmed in the Proforma.",
+                "Your project quotation lists the equipment and prices for your storage system. We work out the delivery schedule with you when arranging the order.",
                 "Linker prepares a project quotation covering equipment scope, pricing and warranty coverage. We discuss the delivery schedule with you for the order.",
             ),
         ),
         (
             (
                 "Linker liefert ein Projektangebot mit Geräteumfang, Preisgestaltung, Garantieabdeckung und einem in der Proformarechnung bestätigten Lieferplan.",
+                "Ihr Projektangebot führt die Geräte und Preise für Ihr Speichersystem auf. Den Lieferplan stimmen wir bei der Auftragsabwicklung mit Ihnen ab.",
                 "Im Projektangebot legt Linker den Lieferumfang, die Preise und die Garantieleistungen dar. Den Lieferplan stimmen wir mit Ihnen zum Auftrag ab.",
             ),
         ),
@@ -209,42 +234,70 @@ REVISIONS = {
 }
 
 
-def plan_pair(ids: tuple[int, int], snapshot: dict) -> dict | None:
-    """Return one native adopt payload or None for an already-applied pair."""
+def _plan_pair(
+    ids: tuple[int, int], snapshot: dict[str, Any]
+) -> tuple[dict[str, Any] | None, list[tuple[int, str, str]]]:
     changes = []
-    states = []
+    diff = []
+    states = {"original", "previous", "final"}
     for page_id, revisions in zip(ids, REVISIONS[ids], strict=True):
         before = after = snapshot["pages"][str(page_id)]
-        for old, new in revisions:
-            counts = (before.count(old), before.count(new))
-            states.append(counts)
-            if counts == (1, 0):
-                after = after.replace(old, new, 1)
-            elif counts != (0, 1):
-                raise ValueError(f"Page {page_id} has an ambiguous copy fragment: {old}")
+        for original, final, *previous in revisions:
+            versions = {
+                "original": original,
+                "previous": previous[0] if previous else final,
+                "final": final,
+            }
+            counts = {text: before.count(text) for text in set(versions.values())}
+            if sum(counts.values()) != 1:
+                raise ValueError(
+                    f"Page {page_id} has an ambiguous copy fragment: {original}"
+                )
+            matched = next(text for text, count in counts.items() if count == 1)
+            states.intersection_update(
+                state for state, text in versions.items() if text == matched
+            )
+            if matched != final:
+                after = after.replace(matched, final, 1)
+                diff.append((page_id, matched, final))
         changes.append({"id": page_id, "before": before, "after": after})
-    if all(state == (0, 1) for state in states):
-        return None
-    if any(state == (0, 1) for state in states):
-        raise ValueError(f"Pair {ids} already contains part of the reviewed copy")
-    return {"mode": "adopt", "changes": changes, "metadata_before": snapshot["metadata"]}
+    if not states:
+        raise ValueError(f"Pair {ids} contains a partial revision of the reviewed copy")
+    if "final" in states:
+        if not snapshot["current"]:
+            raise ValueError(
+                f"Pair {ids} has final copy but a stale translation baseline. Recover the native baseline before retrying."
+            )
+        return None, diff
+    return {
+        "mode": "adopt",
+        "changes": changes,
+        "metadata_before": snapshot["metadata"],
+    }, diff
+
+
+def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    """Return a native adopt payload or None for final copy with a current baseline."""
+    payload, _ = _plan_pair(ids, snapshot)
+    return payload
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="Read-only WP-CLI prefix")
     args = parser.parse_args()
-    for ids, revisions in REVISIONS.items():
+    for ids in REVISIONS:
         snapshot = reviewed_page_pair.read(args.wp, *ids)
         print(snapshot["home"], *ids)
-        if plan_pair(ids, snapshot) is None:
+        try:
+            payload, diff = _plan_pair(ids, snapshot)
+        except ValueError as error:
+            parser.exit(1, f"{error}\n")
+        if payload is None:
             print("Already applied")
             continue
-        for page_id, page_revisions in zip(ids, revisions, strict=True):
-            if page_revisions:
-                print(f"Page {page_id}")
-            for old, new in page_revisions:
-                print(f"- {old}\n+ {new}")
+        for page_id, before, after in diff:
+            print(f"Page {page_id}\n- {before}\n+ {after}")
 
 
 if __name__ == "__main__":
