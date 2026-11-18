@@ -3,10 +3,11 @@ import { instance, wp } from '../lib/instance';
 
 const local = /^http:\/\/127\.0\.0\.1:\d+$/;
 
-test('a first guest sends a retained-inverter report without adding any products', async ({
+test('a first guest sends a retained-inverter inquiry directly from review', async ({
 	page,
 	context,
 }) => {
+	test.setTimeout(240_000);
 	const { url } = instance();
 	expect(url).toMatch(local);
 	const tag = Date.now();
@@ -22,7 +23,8 @@ test('a first guest sends a retained-inverter report without adding any products
 	if (await reject.isVisible()) await reject.click();
 	page.setDefaultTimeout(15_000);
 	const project = page.getByRole('form', { name: 'New project' });
-	await project.getByLabel('Project name').fill(title);
+	await project.getByText('Site details', { exact: true }).click();
+	await project.getByLabel('Project name (optional)').fill(title);
 	await project.locator('select[name=country]').selectOption('DE');
 	await project.getByLabel('Town or site').fill('Berlin');
 	await project
@@ -36,10 +38,6 @@ test('a first guest sends a retained-inverter report without adding any products
 	await project.getByLabel('Existing system name').fill('Workshop inverter');
 	await project.getByLabel('Existing inverter power (kW)').fill('7.5');
 	await project.getByLabel('Keep the existing inverter').check();
-	await project.getByRole('button', { name: 'Continue with solar' }).click();
-	await workspace
-		.getByRole('button', { name: 'Continue with energy use' })
-		.click();
 	await workspace.getByLabel('Grid connection').selectOption('3');
 	await workspace.getByLabel('Backup load').fill('3');
 	await workspace.getByLabel('Required duration').fill('2');
@@ -50,48 +48,26 @@ test('a first guest sends a retained-inverter report without adding any products
 	await workspace
 		.getByRole('button', { name: 'Review the proposal' })
 		.click();
-	await workspace
-		.getByRole('button', { name: 'Generate project report' })
-		.click();
-	const attach = workspace.getByRole('button', {
-		name: 'Attach report to inquiry',
-		exact: true,
-	});
-	await expect(attach).toBeVisible({ timeout: 90_000 });
+	const form = workspace.locator('form.linker-inquiry-form');
+	await expect(form).toBeVisible({ timeout: 120_000 });
 	await expect(
-		workspace.getByRole('button', {
-			name: 'Add selected products to solution draft',
+		workspace.getByRole('table', {
+			name: 'Products included in your inquiry',
 		})
 	).toHaveCount(0);
-	const emptyCart = await context.request.get(
-		`${url}/wp-json/wc/store/v1/cart`
-	);
-	expect(emptyCart.ok()).toBe(true);
-	expect((await emptyCart.json()).items).toEqual([]);
-	await attach.click();
-	const applied = page.waitForResponse((response) =>
-		new URL(response.url()).pathname.endsWith('/draft/apply')
-	);
-	await attach.click();
-	const transfer = await applied;
-	expect(transfer.ok()).toBe(true);
 	await expect(
-		workspace.getByText('Report ready to include with your inquiry.')
+		workspace.getByRole('heading', { name: title, exact: true })
 	).toBeVisible();
-	const attachedCart = await context.request.get(
-		`${url}/wp-json/wc/store/v1/cart`
-	);
-	expect(attachedCart.ok()).toBe(true);
-	expect((await attachedCart.json()).items).toEqual([]);
-	await workspace.getByRole('link', { name: 'Continue to inquiry' }).click();
-	const form = page.locator('form.linker-inquiry-form');
-	await expect(form).toBeVisible();
-	await expect(
-		form.getByRole('checkbox', { name: /include planning reports/i })
-	).toBeChecked();
-	await expect(page.getByText(title, { exact: false }).first()).toBeVisible();
+	const cart = await context.request.get(`${url}/wp-json/wc/store/v1/cart`);
+	expect(cart.ok()).toBe(true);
+	expect((await cart.json()).items).toEqual([]);
 	await form.locator('[name="name"]').fill('E2E Report Guest');
 	await form.locator('[name="email"]').fill(email);
+	await form
+		.locator('[name="message"]')
+		.fill(
+			'Please quote backup storage for our existing workshop inverter.'
+		);
 	await form.locator('[name="consent"]').check();
 	// PublicGuard requires three seconds on a rendered form.
 	await page.waitForTimeout(3100);

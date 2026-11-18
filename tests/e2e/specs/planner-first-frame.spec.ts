@@ -4,7 +4,7 @@ import { instance } from '../lib/instance';
 
 test.setTimeout(180_000);
 
-test('de: the first New project dialog is German while the catalog load is delayed', async ({
+test('de: the initial project form is German while the catalog load is delayed', async ({
 	page,
 }) => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
@@ -38,19 +38,24 @@ test('de: the first New project dialog is German while the catalog load is delay
 	);
 
 	release();
-	// The shell button itself is inline-translated; the dialog strings come
-	// from the now-loaded full catalog, and the first dialog render must
-	// already be German — not an English frame that translates afterwards.
+	const form = page.getByRole('form', { name: 'Neues Projekt', exact: true });
+	await expect(form.getByLabel('Geplantes System')).toBeVisible({
+		timeout: 120_000,
+	});
 	await expect(
-		page.getByRole('button', { name: 'Neues Projekt' })
-	).toBeVisible({ timeout: 120_000 });
-	await page.getByRole('button', { name: 'Neues Projekt' }).click();
-	const dialog = page.locator('.lp-new-project');
-	await expect(dialog).toBeVisible();
-	await expect(dialog).toContainText('Projektname');
-	const actions = dialog.locator('.lp-inline-actions button');
-	await expect(actions.filter({ hasText: 'Projekt anlegen' })).toBeVisible();
-	await expect(actions.filter({ hasText: 'Abbrechen' })).toBeVisible();
-	await expect(dialog).not.toContainText('Create project');
-	await expect(dialog).not.toContainText('Cancel');
+		form.getByRole('heading', { name: 'Was planen Sie?' })
+	).toBeVisible();
+	await form.getByLabel('Geplantes System').selectOption('new_pv_storage');
+	await expect(
+		page.getByRole('button', { name: 'Systeme vergleichen' })
+	).toBeVisible();
+	await form.getByText('Standortdetails', { exact: true }).click();
+	await expect(form.getByLabel('Projektname (optional)')).toBeVisible();
+	await expect(
+		page.getByRole('button', { name: 'Gespeicherte Projekte' })
+	).toBeVisible();
+	await expect(
+		page.getByRole('navigation', { name: 'Projektnavigation' })
+	).toBeVisible();
+	await expect(form).not.toContainText(/Project name|Compare systems/);
 });

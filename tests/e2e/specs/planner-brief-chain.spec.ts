@@ -19,6 +19,11 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import { seedConsentCookies } from '../lib/consent';
 import { instance, wp } from '../lib/instance';
+import {
+	compareProject,
+	plannerWords,
+	startSolarProject,
+} from '../lib/planner-entry';
 
 type Lang = 'en' | 'de';
 
@@ -31,66 +36,42 @@ const WORDS = {
 		configurator: '/solution-configurator/',
 		noteLabel: 'Your project note',
 		notUsed: 'This note is not used in the calculation.',
-		save: 'Save',
 		saved: 'Project note saved.',
 		carried: 'Carried over',
 		confirmed: 'Confirmed',
 		threePhase: 'Three-phase',
 		notNeeded: 'Not needed',
-		create: 'Create project',
 		carryFailed: 'The project note could not be carried over.',
 		useValues: 'Use these values',
-		newProject: 'New project',
-		saveProject: 'Save project',
-		savedState: 'Saved',
-		useSaved: 'Use saved revision',
-		keptOpen: 'Open changes have been kept alongside the saved revision.',
+		useSaved: 'Use saved project',
+		keptOpen:
+			'This project was changed elsewhere. Choose which inputs to continue with.',
 		projects: 'Projects',
-		annualConsumption: 'Annual consumption',
-		address: 'Address or location reference',
+		address: 'Town or site',
 	},
 	de: {
 		entry: '/de/fuer-installateur/',
 		configurator: '/de/loesungskonfigurator/',
 		noteLabel: 'Ihre Projektnotiz',
 		notUsed: 'Diese Notiz fließt nicht in die Berechnung ein.',
-		save: 'Speichern',
 		saved: 'Projektnotiz gespeichert.',
 		carried: 'Übernommen',
 		confirmed: 'Bestätigt',
 		threePhase: 'Dreiphasig',
 		notNeeded: 'Nicht benötigt',
-		create: 'Projekt anlegen',
 		carryFailed: 'Die Projektnotiz konnte nicht übernommen werden.',
 		useValues: 'Angaben übernehmen',
-		newProject: 'Neues Projekt',
-		saveProject: 'Projekt speichern',
-		savedState: 'Gespeichert',
-		useSaved: 'Gespeicherte Version verwenden',
+		useSaved: 'Gespeicherten Stand verwenden',
 		keptOpen:
-			'Die offenen Änderungen und die gespeicherte Version sind erhalten geblieben.',
+			'Das Projekt wurde an anderer Stelle geändert. Wählen Sie den Stand, mit dem Sie weiterarbeiten möchten.',
 		projects: 'Projekte',
-		annualConsumption: 'Jahresverbrauch',
-		address: 'Adresse oder Standortbezeichnung',
+		address: 'Ort oder Standort',
 	},
 } as const;
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
-
-async function openSection(page: Page, section: 'site' | 'energy') {
-	const mobile = page.locator('.lp-mobile-workspace');
-	if (await mobile.isVisible()) await mobile.selectOption(section);
-	else {
-		const hash = section === 'site' ? 'lp-site' : 'lp-load';
-		await page.locator(`.lp-project-aside a[href="#${hash}"]`).click();
-	}
-	await expect(page.locator('.lp-project')).toHaveAttribute(
-		'data-workspace',
-		section
-	);
-}
 
 /** Stages a brief from the language's installer entry and returns its id from
  * the configurator URL (the URL never carries customer text). */
@@ -133,9 +114,6 @@ for (const lang of ['en', 'de'] as const) {
 		// live status, not a page reload.
 		const edited = NOTE + ', EV charging from 2027';
 		await note.fill(edited);
-		await page
-			.getByRole('button', { name: words.save, exact: true })
-			.click();
 		await expect(
 			page.locator('.lp-project-brief-start [role="status"]')
 		).toContainText(words.saved);
@@ -180,6 +158,37 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(
 			page.getByRole('button', { name: words.useValues })
 		).toHaveCount(0);
+		const latestNote = 'Updated workshop brief';
+		await page
+			.getByRole('textbox', { name: words.noteLabel })
+			.fill(latestNote);
+		const created = page.waitForResponse('**/rpc/projects/create');
+		const form = page.getByRole('form', { name: plannerWords[lang].form });
+		await form
+			.locator('select[name=system_scope]')
+			.selectOption('new_pv_storage');
+		await form.getByLabel(plannerWords[lang].purpose).selectOption('self');
+		await expect(
+			page.getByRole('combobox', {
+				name: plannerWords[lang].grid,
+				exact: true,
+			})
+		).toHaveValue('3');
+		await compareProject(page, lang);
+		const response = await created;
+		expect(response.ok()).toBe(true);
+		expect(response.request().postDataJSON().inputs).toMatchObject({
+			brief: {
+				project_note: latestNote,
+				annual_load: { kwh: 8000 },
+				site: { location_label: '81671' },
+			},
+			equipment_setup: {
+				pv_dc_kw: 10,
+				grid_phase: 3,
+				operating_mode: 'grid_connected',
+			},
+		});
 	});
 
 	test(`${lang}: the note never sizes the project`, async ({ page }) => {
@@ -189,20 +198,17 @@ for (const lang of ['en', 'de'] as const) {
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
 		);
 
-		// A free-text note is preserved, not parsed into numeric design inputs.
-		await page.getByRole('button', { name: words.create }).click();
-		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-		await openSection(page, 'energy');
-		await expect(
-			page.locator('#lp-load').getByLabel(words.annualConsumption)
-		).toHaveValue('');
-		await openSection(page, 'site');
-		await expect(
-			page.locator('#lp-site').getByLabel(words.address, { exact: true })
-		).toHaveValue('');
-		await expect(page.locator('#lp-notes textarea')).toHaveValue(
-			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
-		);
+		// Project creation must preserve the note without deriving address or load from it.
+		const created = page.waitForResponse('**/rpc/projects/create');
+		await startSolarProject(page, lang, 'Unstructured note');
+		const response = await created;
+		expect(response.ok()).toBe(true);
+		expect(response.request().postDataJSON().inputs.brief).toMatchObject({
+			project_note:
+				'Please quote 99 kWp and 45000 kWh for our workshop in Munich',
+			site: { location_label: '' },
+			annual_load: { kwh: null },
+		});
 	});
 
 	test(`${lang}: a failed note save keeps the text and retries on its own`, async ({
@@ -211,30 +217,27 @@ for (const lang of ['en', 'de'] as const) {
 		await stageBrief(page, lang, NOTE);
 		const note = page.getByRole('textbox', { name: words.noteLabel });
 		const edited = NOTE + ', EV charging from 2027';
-		await note.fill(edited);
 
 		// The staging endpoint fails: the panel says so, keeps the
 		// customer's text untouched and never claims success.
 		await page.route('**/rpc/sources/project-brief/stage', (route) =>
 			route.abort()
 		);
-		await page
-			.getByRole('button', { name: words.save, exact: true })
-			.click();
+		await note.fill(edited);
 		await expect(
 			page.locator('.lp-project-brief-start .lp-notice')
 		).toContainText(words.carryFailed);
 		await expect(note).toHaveValue(edited);
 
-		// The retry is note-only: the same gesture stages the kept text once
-		// the endpoint answers again.
+		// The normal continuation retries staging before it creates the project.
 		await page.unroute('**/rpc/sources/project-brief/stage');
-		await page
-			.getByRole('button', { name: words.save, exact: true })
-			.click();
-		await expect(
-			page.locator('.lp-project-brief-start [role="status"]')
-		).toContainText(words.saved);
+		const created = page.waitForResponse('**/rpc/projects/create');
+		await startSolarProject(page, lang, 'Recovered note');
+		const response = await created;
+		expect(response.ok()).toBe(true);
+		expect(
+			response.request().postDataJSON().inputs.brief.project_note
+		).toBe(edited);
 	});
 
 	test(`${lang}: two projects keep revisions apart and a concurrent save conflicts visibly`, async ({
@@ -243,21 +246,12 @@ for (const lang of ['en', 'de'] as const) {
 		const create = async (title: string) => {
 			const p = await context.newPage();
 			await p.goto(instance().url + words.configurator);
-			// The first successful index read opens the form for an empty workspace.
-			await expect(
-				p.locator('.lp-index-heading button[aria-label]')
-			).toBeEnabled();
-			if (!(await p.locator('select[name="system_scope"]').isVisible())) {
-				await p
-					.getByRole('button', { name: words.newProject })
-					.first()
-					.click();
-			}
-			await p.locator('select[name="solar_entry"]').selectOption('known');
-			await p.locator('input[name="project_title"]').fill(title);
-			await p.getByRole('button', { name: words.create }).click();
-			await expect(p).toHaveURL(/project=/, { timeout: 60_000 });
-			await openSection(p, 'site');
+			await startSolarProject(p, lang, title);
+			await p
+				.getByRole('navigation', { name: plannerWords[lang].nav })
+				.getByRole('button')
+				.first()
+				.click();
 			return p;
 		};
 
@@ -271,23 +265,22 @@ for (const lang of ['en', 'de'] as const) {
 		// first.
 		const other = await context.newPage();
 		await other.goto(first.url());
-		const address = other
-			.locator('#lp-site')
-			.getByLabel(words.address, { exact: true });
+		const address = other.getByLabel(words.address, { exact: true });
 		await address.fill('Triftstrasse 15');
-		await other.getByRole('button', { name: words.saveProject }).click();
-		await expect(other.locator('.lp-save-state')).toContainText(
-			words.savedState,
-			{ timeout: 30_000 }
-		);
+		await other
+			.getByRole('button', { name: words.projects, exact: true })
+			.click();
+		await expect(
+			other.getByRole('region', { name: plannerWords[lang].list })
+		).toBeVisible();
 
 		// The stale tab edits the same field and saves into a conflict: the
 		// revision it knew is gone, its change is kept alongside it.
-		const stale = first
-			.locator('#lp-site')
-			.getByLabel(words.address, { exact: true });
+		const stale = first.getByLabel(words.address, { exact: true });
 		await stale.fill('Triftstrasse 25');
-		await first.getByRole('button', { name: words.saveProject }).click();
+		await first
+			.getByRole('button', { name: words.projects, exact: true })
+			.click();
 		await expect(
 			first.getByText(words.keptOpen, { exact: true })
 		).toBeVisible({ timeout: 30_000 });
@@ -331,21 +324,7 @@ for (const lang of ['en', 'de'] as const) {
 
 		// The guest plans a project of their own.
 		await page.goto(instance().url + words.configurator);
-		await expect(
-			page.locator('.lp-index-heading button[aria-label]')
-		).toBeEnabled();
-		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
-			await page
-				.getByRole('button', { name: words.newProject })
-				.first()
-				.click();
-		}
-		await page.locator('select[name="solar_entry"]').selectOption('known');
-		await page
-			.locator('input[name="project_title"]')
-			.fill('Guest to claim');
-		await page.getByRole('button', { name: words.create }).click();
-		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
+		await startSolarProject(page, lang, 'Guest to claim');
 		const projectUrl = page.url();
 
 		// The identity switch: signing in inside the same browser session
@@ -364,20 +343,18 @@ for (const lang of ['en', 'de'] as const) {
 		// The claimed project stays reachable under the account, and the
 		// projects screen lists it there.
 		await page.goto(projectUrl);
-		await expect(page.locator('.lp-project-bar')).toContainText(
-			'Guest to claim',
-			{ timeout: 60_000 }
-		);
+		await expect(
+			page.getByRole('heading', { name: 'Guest to claim', level: 1 })
+		).toBeVisible({ timeout: 60_000 });
 		await page
-			.locator('.lp-project-bar button', { hasText: words.projects })
+			.getByRole('button', { name: words.projects, exact: true })
 			.click();
-		await expect(page.locator('.lp-workspace')).toBeVisible();
-		await expect(page.locator('.lp-project-rows')).toContainText(
-			'Guest to claim',
-			{
-				timeout: 30_000,
-			}
-		);
+		const list = page.getByRole('region', {
+			name: plannerWords[lang].list,
+		});
+		await expect(
+			list.getByRole('listitem').filter({ hasText: 'Guest to claim' })
+		).toBeVisible({ timeout: 30_000 });
 	});
 }
 
@@ -387,9 +364,6 @@ test('the staged brief survives refresh and the language switch (English root)',
 	const briefId = await stageBrief(page, 'en', NOTE);
 	const edited = NOTE + ', EV charging from 2027';
 	await page.getByRole('textbox', { name: WORDS.en.noteLabel }).fill(edited);
-	await page
-		.getByRole('button', { name: WORDS.en.save, exact: true })
-		.click();
 	await expect(
 		page.locator('.lp-project-brief-start [role="status"]')
 	).toContainText(WORDS.en.saved);
@@ -410,9 +384,13 @@ test('the staged brief survives refresh and the language switch (English root)',
 	);
 	const germanNote = page.locator('.lp-project-brief-start textarea');
 	await expect(germanNote).toHaveValue(edited);
-	await expect(
-		page.locator('.lp-project-brief-start a', {
-			hasText: 'Zurück zur Eingabe',
-		})
-	).toHaveAttribute('href', /\/de\/fuer-installateur\/$/);
+	const back = page
+		.locator('.lp-project-brief-start')
+		.getByRole('link', { name: 'Zurück zur Eingabe' });
+	await expect(back).toHaveAttribute(
+		'href',
+		`/de/fuer-installateur/?brief=${briefId}`
+	);
+	await back.click();
+	await expect(page.locator('#lki-hero-query')).toHaveValue(edited);
 });

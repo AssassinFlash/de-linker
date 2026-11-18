@@ -20,6 +20,13 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { seedConsentCookies } from '../lib/consent';
+import {
+	plannerWords,
+	fillSolarProject,
+	compareProject,
+	reopenProject,
+	deleteOpenProject,
+} from '../lib/planner-entry';
 import { instance, REPO_ROOT } from '../lib/instance';
 
 test.setTimeout(240_000);
@@ -34,69 +41,27 @@ type Lang = 'en' | 'de';
 const WORDS = {
 	en: {
 		configurator: '/solution-configurator/',
-		newProject: 'New project',
-		create: 'Create project',
-		overview: 'Project overview',
-		sections: 'Project sections',
-		openRoof: 'Open roof workspace',
 		importRoof: 'Import roof geometry',
-		stepFile: 'File and roof',
-		roofFile: 'Roof file',
-		roofInFile: 'Roof in this file',
-		roofFaceName: 'Roof face name',
 		continue: 'Continue',
 		stepPlane: 'Roof plane',
-		pitch: 'Roof pitch',
-		bearing: 'Downslope direction from true north',
-		height: 'Relative height at the first outline point',
-		basis: 'Measurement or drawing reference',
 		stepSource: 'Source',
-		sourceRef: 'Source reference',
-		rights: 'Permission or licence basis',
-		exportPermission: 'Permission to export geometry',
-		retention:
-			'I have permission to upload this original file, derive roof geometry from it and retain both privately with this project.',
 		prepare: 'Prepare roof preview',
 		review: 'Review imported roof',
 		area: 'Roof-plane area',
 		openings: 'Openings retained',
 		attach: 'Add roof to current design',
-		saveProject: 'Save project',
-		savedState: 'Saved',
-		deleteProject: 'Delete project',
 	},
 	de: {
 		configurator: '/de/loesungskonfigurator/',
-		newProject: 'Neues Projekt',
-		create: 'Projekt anlegen',
-		overview: 'Projektübersicht',
-		sections: 'Projektbereiche',
-		openRoof: 'Dachplanung öffnen',
 		importRoof: 'Dachgeometrie importieren',
-		stepFile: 'Datei und Dach',
-		roofFile: 'Dachdatei',
-		roofInFile: 'Dachfläche in dieser Datei',
-		roofFaceName: 'Name der Dachfläche',
 		continue: 'Weiter',
 		stepPlane: 'Dachebene',
-		pitch: 'Dachneigung',
-		bearing: 'Gefällerichtung ab geografisch Nord',
-		height: 'Relative Höhe am ersten Umrisspunkt',
-		basis: 'Aufmaß- oder Zeichnungsreferenz',
 		stepSource: 'Quelle',
-		sourceRef: 'Quellenreferenz',
-		rights: 'Berechtigungs- oder Lizenzgrundlage',
-		exportPermission: 'Berechtigung zum Export der Geometrie',
-		retention:
-			'Ich habe die Berechtigung, diese Originaldatei hochzuladen, daraus Dachgeometrie abzuleiten und beides privat mit diesem Projekt aufzubewahren.',
 		prepare: 'Dachvorschau vorbereiten',
 		review: 'Importierte Dachfläche prüfen',
 		area: 'Fläche in der Dachebene',
 		openings: 'Übernommene Aussparungen',
 		attach: 'Dachfläche in den Entwurf übernehmen',
-		saveProject: 'Projekt speichern',
-		savedState: 'Gespeichert',
-		deleteProject: 'Projekt löschen',
 	},
 } as const;
 
@@ -107,33 +72,6 @@ function num(lang: Lang, value: string): string {
 
 /** The repository's own WGS 84 fixture: a 3-4-5 roof carrying one opening. */
 const SOURCE = join(REPO_ROOT, 'fixtures/planning/source-roof-wgs84.geojson');
-
-/**
- * Create an empty project and open its roof workspace. The empty roof
- * workspace is what makes this project eligible to adopt the import's own
- * geographic origin (a nonempty frame must be aligned first).
- */
-async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
-	const words = WORDS[lang];
-	await page.goto(instance().url + words.configurator, {
-		waitUntil: 'networkidle',
-	});
-	await page.getByRole('button', { name: words.newProject }).first().click();
-	await page.locator('input[maxlength="256"]').first().fill(title);
-	await page.getByRole('button', { name: words.create }).click();
-	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-	await expect(page.locator('.lp-save-state')).toBeVisible({
-		timeout: 30_000,
-	});
-	const overviewLink = page.getByRole('link', { name: words.overview });
-	if (await overviewLink.isVisible()) await overviewLink.click();
-	else
-		await page
-			.getByRole('combobox', { name: words.sections })
-			.selectOption('overview');
-	await page.locator('.lp-overview-empty .lp-button').click();
-	await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
-}
 
 /** Fill the three wizard steps and prepare the server preview. */
 async function fillWizard(page: Page, lang: Lang) {
@@ -197,7 +135,11 @@ test.describe('native roof import', () => {
 					height: width === 390 ? 844 : 900,
 				});
 				const title = `m-roof import ${lang} ${width}`;
-				await emptyRoofWorkspace(page, lang, title);
+				await page.goto(instance().url + words.configurator);
+				await fillSolarProject(page, lang, title);
+				await page
+					.getByText(plannerWords[lang].roof, { exact: true })
+					.click();
 
 				const panel = await fillWizard(page, lang);
 
@@ -213,39 +155,27 @@ test.describe('native roof import', () => {
 				await panel
 					.getByRole('button', { name: words.attach, exact: true })
 					.click();
-				// Attachment is one history step; the project then has to be
-				// saved before the roof belongs to it.
-				await page
-					.getByRole('button', { name: words.saveProject })
-					.click();
-				await expect(page.locator('.lp-save-state')).toContainText(
-					words.savedState,
-					{ timeout: 120_000 }
+				await expect(
+					page.getByText(
+						lang === 'en'
+							? 'Roof added: Imported 3-4-5 roof'
+							: 'Dachfläche hinzugefügt: Imported 3-4-5 roof',
+						{ exact: true }
+					)
+				).toBeVisible();
+				await compareProject(page, lang);
+				const { inputs } = await reopenProject(page, lang, title);
+				expect(inputs.geometry.roofs).toHaveLength(1);
+				expect(inputs.geometry.roofs[0].name).toBe(
+					'Imported 3-4-5 roof'
 				);
-
-				// Reopen from the server: the roof and its opening survive.
-				await page.reload({ waitUntil: 'networkidle' });
-				await expect(page.locator('#lp-design')).toContainText(
-					/Imported 3-4-5 roof/,
-					{ timeout: 120_000 }
-				);
-
-				// Leave the instance as it was found: the test project and its
-				// revisions are removed through the app's own delete command.
-				await page.goto(instance().url + words.configurator, {
-					waitUntil: 'networkidle',
-				});
-				const row = page.locator('.lp-project-entry', {
-					hasText: title,
-				});
-				await row.locator('.lp-project-delete').click();
-				await page
-					.getByRole('button', {
-						name: words.deleteProject,
-						exact: true,
-					})
-					.click();
-				await expect(row).toHaveCount(0, { timeout: 60_000 });
+				expect(inputs.geometry.roofs[0].holes_uv).toHaveLength(1);
+				await expect(
+					page
+						.getByText('Imported 3-4-5 roof', { exact: true })
+						.first()
+				).toBeAttached();
+				await deleteOpenProject(page, lang, title);
 			});
 		}
 	}

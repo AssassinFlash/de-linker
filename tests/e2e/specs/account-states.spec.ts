@@ -39,6 +39,8 @@ const output = join(
 );
 
 /** One language's account surface: slugs and the strings the page renders. */
+import { startSolarProject } from '../lib/planner-entry';
+
 interface Language {
 	lang: 'en' | 'de';
 	account: string;
@@ -63,8 +65,6 @@ interface Language {
 	statusReceived: string;
 	productCount: string;
 	invalidOrder: string;
-	newProject: string;
-	createProject: string;
 }
 
 const LANGUAGES: Language[] = [
@@ -94,8 +94,6 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Inquiry received',
 		productCount: '1 product',
 		invalidOrder: 'Invalid order.',
-		newProject: 'New project',
-		createProject: 'Create project',
 	},
 	{
 		lang: 'de',
@@ -124,8 +122,6 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Anfrage eingegangen',
 		productCount: '1 Produkt',
 		invalidOrder: 'Ungültige Bestellung.',
-		newProject: 'Neues Projekt',
-		createProject: 'Projekt anlegen',
 	},
 ];
 
@@ -470,26 +466,10 @@ for (const language of LANGUAGES) {
 				await page.goto(base() + language.configuratorPath, {
 					waitUntil: 'networkidle',
 				});
-				await page
-					.getByRole('button', { name: language.newProject })
-					.first()
-					.click();
-				await page
-					.locator('input[maxlength="256"]')
-					.first()
-					.fill(title);
-				await page
-					.getByRole('button', { name: language.createProject })
-					.click();
-				await expect(page).toHaveURL(/project=[a-f0-9]{32}/, {
-					timeout: 60_000,
-				});
+				await startSolarProject(page, language.lang, title);
 				const projectId = new URL(page.url()).searchParams.get(
 					'project'
 				)!;
-				await expect(page.locator('.lp-save-state')).toBeVisible({
-					timeout: 30_000,
-				});
 
 				await page.goto(base() + language.solutions);
 				const panel = page.locator(
@@ -518,6 +498,9 @@ for (const language of LANGUAGES) {
 				await expect(page).toHaveURL(
 					new RegExp(`project=${projectId}`)
 				);
+				await expect(
+					page.getByRole('heading', { name: title, level: 1 })
+				).toBeVisible();
 				await expectNoOverflow(page, width);
 				await shot(
 					page,

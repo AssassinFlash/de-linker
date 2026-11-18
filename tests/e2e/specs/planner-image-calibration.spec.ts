@@ -19,6 +19,13 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { seedConsentCookies } from '../lib/consent';
+import {
+	plannerWords,
+	fillSolarProject,
+	compareProject,
+	reopenProject,
+	deleteOpenProject,
+} from '../lib/planner-entry';
 import { instance, REPO_ROOT } from '../lib/instance';
 
 test.setTimeout(240_000);
@@ -32,77 +39,37 @@ type Lang = 'en' | 'de';
 const WORDS = {
 	en: {
 		configurator: '/solution-configurator/',
-		newProject: 'New project',
-		create: 'Create project',
-		overview: 'Project overview',
-		sections: 'Project sections',
 		calibrate: 'Calibrate a roof image',
 		stepImage: 'Image and roof',
 		stepScale: 'Scale',
 		stepOutline: 'Outline',
 		continue: 'Continue',
 		drawingType: 'Drawing type',
-		plan: 'Horizontal plan or site plan',
-		faceName: 'Roof face name',
 		scaleSpan: 'Scale span (0 of 2)',
 		checkSpan: 'Check span (0 of 2)',
 		outline: 'Roof outline (0 points)',
-		scaleLength: 'Real length of the scale span',
-		bearing: 'Down-slope bearing as drawn',
-		checkLength: 'Real length of the check span',
 		recordedScale: 'Recorded scale',
-		status: 'Measurement status',
 		usable: 'Usable uniform scale',
-		referenceOnly: 'Reference only',
-		reference: 'Measurement or drawing reference',
-		rights: 'Permission or licence basis',
-		export: 'Permission to export geometry',
-		retention:
-			'I have permission to use this drawing, derive the roof outline from it and keep the calibration with the project.',
 		add: 'Add roof to current design',
 		area: 'Roof-plane area',
-		outlinePoints: 'Outline points',
 		sourceProperties: 'Source properties',
-		saveProject: 'Save project',
-		savedState: 'Saved',
-		deleteProject: 'Delete project',
 	},
 	de: {
 		configurator: '/de/loesungskonfigurator/',
-		newProject: 'Neues Projekt',
-		create: 'Projekt anlegen',
-		overview: 'Projektübersicht',
-		sections: 'Projektbereiche',
 		calibrate: 'Dachbild kalibrieren',
 		stepImage: 'Bild und Dach',
 		stepScale: 'Maßstab',
 		stepOutline: 'Umriss',
 		continue: 'Weiter',
 		drawingType: 'Art der Zeichnung',
-		plan: 'Horizontaler Grundriss oder Lageplan',
-		faceName: 'Name der Dachfläche',
 		scaleSpan: 'Maßstabstrecke (0 von 2)',
 		checkSpan: 'Prüfstrecke (0 von 2)',
 		outline: 'Dachumriss (0 Punkte)',
-		scaleLength: 'Tatsächliche Länge der Maßstabstrecke',
-		bearing: 'Gefällerichtung laut Zeichnung',
-		checkLength: 'Tatsächliche Länge der Prüfstrecke',
 		recordedScale: 'Gespeicherter Maßstab',
-		status: 'Status der Messung',
 		usable: 'Nutzbarer einheitlicher Maßstab',
-		referenceOnly: 'Nur als Referenz',
-		reference: 'Aufmaß- oder Zeichnungsreferenz',
-		rights: 'Berechtigungs- oder Lizenzgrundlage',
-		export: 'Berechtigung zum Export der Geometrie',
-		retention:
-			'Ich habe die Berechtigung, diese Zeichnung zu verwenden, daraus den Dachumriss abzuleiten und die Kalibrierung mit dem Projekt aufzubewahren.',
 		add: 'Dachfläche in den Entwurf übernehmen',
 		area: 'Fläche in der Dachebene',
-		outlinePoints: 'Umrisspunkte',
 		sourceProperties: 'Quelleneigenschaften',
-		saveProject: 'Projekt speichern',
-		savedState: 'Gespeichert',
-		deleteProject: 'Projekt löschen',
 	},
 } as const;
 
@@ -113,28 +80,6 @@ function num(lang: Lang, value: string): string {
 
 /** The repository's own 1200 x 800 fixture plan; 600 px is declared as 12 m. */
 const DRAWING = join(REPO_ROOT, 'tests/e2e/fixtures/roof-plan-calibration.png');
-
-async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
-	const words = WORDS[lang];
-	await page.goto(instance().url + words.configurator, {
-		waitUntil: 'networkidle',
-	});
-	await page.getByRole('button', { name: words.newProject }).first().click();
-	await page.locator('input[maxlength="256"]').first().fill(title);
-	await page.getByRole('button', { name: words.create }).click();
-	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-	await expect(page.locator('.lp-save-state')).toBeVisible({
-		timeout: 30_000,
-	});
-	const overviewLink = page.getByRole('link', { name: words.overview });
-	if (await overviewLink.isVisible()) await overviewLink.click();
-	else
-		await page
-			.getByRole('combobox', { name: words.sections })
-			.selectOption('overview');
-	await page.locator('.lp-overview-empty .lp-button').click();
-	await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
-}
 
 /**
  * A click at an image pixel. The surface uses `xMidYMid meet`, so the
@@ -172,7 +117,11 @@ test.describe('native image calibration', () => {
 					height: width === 390 ? 844 : 900,
 				});
 				const title = `m-image calibration ${lang} ${width}`;
-				await emptyRoofWorkspace(page, lang, title);
+				await page.goto(instance().url + words.configurator);
+				await fillSolarProject(page, lang, title);
+				await page
+					.getByText(plannerWords[lang].roof, { exact: true })
+					.click();
 
 				await page
 					.getByRole('button', { name: words.calibrate, exact: true })
@@ -264,59 +213,39 @@ test.describe('native image calibration', () => {
 					.getByRole('button', { name: words.add, exact: true })
 					.click();
 				await page
-					.getByRole('button', { name: words.saveProject })
-					.click();
-				await expect(page.locator('.lp-save-state')).toContainText(
-					words.savedState,
-					{ timeout: 120_000 }
-				);
-
-				// Reopen from the server: the drawing-derived roof and the source
-				// declarations it was measured from survive the round trip.
-				await page.reload({ waitUntil: 'networkidle' });
-				await expect(page.locator('#lp-design')).toContainText(
-					'Calibrated drawing roof',
-					{ timeout: 120_000 }
-				);
-				// The roof carries the calibrated source: select it, then open
-				// that source's properties and read the stored calibration back.
-				await page
-					.locator('.lp-object-tree')
+					.getByRole('dialog')
 					.getByRole('button', {
-						name: 'Calibrated drawing roof',
+						name: lang === 'en' ? 'Close' : 'Schließen',
 						exact: true,
 					})
 					.click();
-				await page
-					.getByRole('button', {
-						name: words.sourceProperties,
-						exact: true,
-					})
-					.click();
-				const properties = page.locator('.lp-geometry-form');
-				await expect(properties).toContainText(
-					'Synthetic calibration fixture; not a survey',
-					{ timeout: 15_000 }
+				await compareProject(page, lang);
+				const { inputs } = await reopenProject(page, lang, title);
+				expect(inputs.geometry.roofs).toHaveLength(1);
+				const roof = inputs.geometry.roofs[0];
+				expect(roof.name).toBe('Calibrated drawing roof');
+				expect(inputs.geometry.sources).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							id: roof.source_id,
+							spatial_precision_m: 0.05,
+							calibration_note:
+								'Synthetic calibration fixture; not a survey',
+							calibration: expect.objectContaining({
+								m_per_pixel: 0.02,
+							}),
+						}),
+					])
 				);
+				await page
+					.getByText(words.sourceProperties, { exact: true })
+					.click();
 				await expect(
-					properties.locator('[name="precision"]')
-				).toHaveValue(num(lang, '0.05'));
-
-				// Leave the instance as it was found.
-				await page.goto(instance().url + words.configurator, {
-					waitUntil: 'networkidle',
-				});
-				const row = page.locator('.lp-project-entry', {
-					hasText: title,
-				});
-				await row.locator('.lp-project-delete').click();
-				await page
-					.getByRole('button', {
-						name: words.deleteProject,
-						exact: true,
+					page.getByRole('group', {
+						name: 'roof-plan-calibration.png',
 					})
-					.click();
-				await expect(row).toHaveCount(0, { timeout: 60_000 });
+				).toBeVisible();
+				await deleteOpenProject(page, lang, title);
 			});
 		}
 	}

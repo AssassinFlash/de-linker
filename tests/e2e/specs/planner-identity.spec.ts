@@ -1,24 +1,4 @@
-/**
- * The tool's own identity block: what it is, what its output does not claim,
- * and the ten reviewable source links — in both languages and at both judged
- * widths.
- *
- * `ToolIdentity` is the one place a customer learns the product name and that
- * a displayed model is not an engineering approval
- * (docs/acceptance/2026-10-22/548/map-display/SYSTEM-IDENTITY-READBACK.md and
- * its native matrix: ten links, whole block framed, saved revision kept). The
- * one-screen quick start (2026-11-06), the generic module tiers (2026-11-08)
- * and the report work (2026-11-09) rebuilt the workspace around that footer
- * without touching it — `ToolIdentity.tsx`, `CreditText.tsx` and the
- * `lp-tool-*` rules of the planner stylesheet still carry only their
- * introducing commit — so the block is read here from the shipped bundle on a
- * real instance. The wording below is that contract, not a snapshot of
- * whatever the current build happens to say.
- *
- * The revision line is asserted beside the identity because an identity block
- * over an unknown or unsaved project would frame the wrong thing; it belongs
- * to the editor and is read where the editor owns it.
- */
+/** The configurator identifies its sources on a reopened project with a persisted revision. */
 /**
  * External dependencies
  */
@@ -29,6 +9,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import { seedConsentCookies } from '../lib/consent';
 import { instance } from '../lib/instance';
+import { reopenProject, startSolarProject } from '../lib/planner-entry';
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
@@ -40,8 +21,6 @@ type Lang = 'en' | 'de';
 const CONTRACT = {
 	en: {
 		configurator: '/solution-configurator/',
-		newProject: 'New project',
-		create: 'Continue with solar',
 		product: 'Solution Configurator',
 		owner: 'by Linker',
 		summary: 'About this tool',
@@ -49,7 +28,6 @@ const CONTRACT = {
 		boundary:
 			'All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.',
 		credits: 'Software and data credits',
-		revision: /^Saved · revision \d+$/,
 		/** The whole block, so nothing inside it can drift unnoticed. */
 		block: 'Solution Configurator by Linker Linker brings your inputs into an editable project for solar and storage planning. About this tool You can reopen saved projects and restore available drafts. All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval. Software and data credits Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS. Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors. OpenFreeMap privacy policy',
 		links: [
@@ -73,8 +51,6 @@ const CONTRACT = {
 	},
 	de: {
 		configurator: '/de/loesungskonfigurator/',
-		newProject: 'Neues Projekt',
-		create: 'Weiter zur PV-Anlage',
 		product: 'Lösungskonfigurator',
 		owner: 'von Linker',
 		summary: 'Über dieses Werkzeug',
@@ -85,7 +61,6 @@ const CONTRACT = {
 		boundary:
 			'Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe.',
 		credits: 'Software und Datenquellen',
-		revision: /^Gespeichert · Version \d+$/,
 		block: 'Lösungskonfigurator von Linker Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung. Über dieses Werkzeug Gespeicherte Projekte können Sie erneut öffnen und vorhandene Entwürfe wiederherstellen. Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe. Software und Datenquellen Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS. Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende. Datenschutzhinweise von OpenFreeMap',
 		links: [
 			['React', 'https://react.dev/'],
@@ -120,18 +95,12 @@ async function savedProject(page: Page, lang: Lang): Promise<void> {
 	await page.goto(instance().url + words.configurator, {
 		waitUntil: 'networkidle',
 	});
-	const form = page.getByRole('form', { name: words.newProject });
-	await form
-		.locator('input[name="project_title"]')
-		.fill(`Identity ${lang} e2e`);
-	await form.getByRole('button', { name: words.create }).click();
-	await expect(page).toHaveURL(/project=[a-f0-9]{32}/, { timeout: 60_000 });
-	// The save-state line is the hydrated editor's own chrome.
-	await expect(
-		page.locator('.sc-project-heading').getByRole('status')
-	).toBeVisible({
-		timeout: 30_000,
-	});
+	const title = `Identity ${lang} e2e`;
+	await startSolarProject(page, lang, title);
+	const projectId = new URL(page.url()).searchParams.get('project');
+	const project = await reopenProject(page, lang, title);
+	expect(project.id).toBe(projectId);
+	expect(project.revision).toBeGreaterThan(0);
 }
 
 /** Expands the disclosure the way a customer does. */
@@ -212,11 +181,6 @@ for (const lang of ['en', 'de'] as const) {
 					'_blank',
 				])
 			);
-
-			// The block frames a saved revision, not an unsaved draft.
-			await expect(
-				page.locator('.sc-project-heading').getByRole('status')
-			).toHaveText(words.revision);
 		});
 	}
 }

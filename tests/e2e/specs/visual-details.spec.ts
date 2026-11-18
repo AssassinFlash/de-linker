@@ -5,11 +5,7 @@ import type { Page } from '@playwright/test';
 
 test.setTimeout(45_000);
 
-const PROJECT_WORDS = {
-	en: { newProject: 'New project' },
-	de: { newProject: 'Neues Projekt' },
-} as const;
-const words = (locale: string) => PROJECT_WORDS[locale as 'en' | 'de'];
+import { plannerWords, compareProject } from '../lib/planner-entry';
 
 async function dismissConsent(page: Page) {
 	const reject = page.getByRole('button', {
@@ -67,14 +63,45 @@ for (const locale of ['en', 'de'] as const) {
 				`${instance().url}${locale === 'en' ? '/solution-configurator/' : '/de/loesungskonfigurator/'}`
 			);
 			await dismissConsent(page);
-			if (
-				!(await page.locator('select[name="system_scope"]').isVisible())
-			) {
-				await page
-					.getByRole('button', { name: words(locale).newProject })
-					.first()
-					.click();
+			const words = plannerWords[locale];
+			const form = page.getByRole('form', {
+				name: words.form,
+				exact: true,
+			});
+			const nav = page.getByRole('navigation', { name: words.nav });
+			const steps = nav.getByRole('button');
+			await expect(steps).toHaveCount(3);
+			const roof = page.getByText(words.roof, { exact: true });
+			const energy = page.getByRole('region', {
+				name: words.energy,
+				exact: true,
+			});
+			await expect(roof).toHaveCount(0);
+			await expect(energy).toHaveCount(0);
+			for (const [i, label] of words.steps.entries()) {
+				await expect(steps.nth(i)).toHaveAccessibleName(
+					width === 390 ? label : `${i + 1} ${label}`
+				);
 			}
+			await expect(steps.first()).toHaveAttribute('aria-current', 'step');
+			await nav.scrollIntoViewIfNeeded();
+			await test.info().attach('project-entry', {
+				body: await page.screenshot(),
+				contentType: 'image/png',
+			});
+			const title = `Project ${locale} ${width}`;
+			await form.getByText(words.details, { exact: true }).click();
+			await form.getByLabel(words.name).fill(title);
+			await page
+				.getByRole('button', { name: words.saved, exact: true })
+				.click();
+			const list = page.getByRole('region', { name: words.list });
+			await expect(list).toBeVisible();
+			await expect(form).toBeHidden();
+			await page
+				.getByRole('button', { name: words.back, exact: true })
+				.click();
+			await expect(form.getByLabel(words.name)).toHaveValue(title);
 			const grid = page
 				.locator('label')
 				.filter({ has: page.locator('select[name="system_scope"]') });
@@ -90,12 +117,36 @@ for (const locale of ['en', 'de'] as const) {
 					.getBoundingClientRect();
 				return control.top - label.bottom;
 			});
-			expect(gap).toBeGreaterThanOrEqual(8);
+			// The project label and native control have a 7 px gap.
+			expect(gap).toBe(7);
+			await select.selectOption('new_pv_storage');
+			await roof.click();
+			await expect(
+				page.getByRole('region', { name: words.solar, exact: true })
+			).toBeVisible();
 			await select.selectOption('storage_only');
 			await expect(
 				page.locator('input[name="project_title"]')
 			).toBeVisible();
-			await expect(page.locator('.lp-roof-start')).toHaveCount(0);
+			await expect(steps).toHaveCount(3);
+			await expect(roof).toHaveCount(0);
+			await expect(energy).toBeVisible();
+			await form.getByLabel(words.purpose).selectOption('self');
+			await energy
+				.getByRole('combobox', { name: words.grid, exact: true })
+				.selectOption('3');
+			await compareProject(page, locale);
+			await expect(steps.nth(1)).toHaveAttribute('aria-current', 'step');
+			await page
+				.getByRole('button', { name: words.projects, exact: true })
+				.click();
+			const row = list.getByRole('listitem').filter({ hasText: title });
+			await row
+				.getByRole('button', { name: words.open, exact: true })
+				.click();
+			await expect(
+				page.getByRole('heading', { name: title, level: 1 })
+			).toBeVisible();
 		});
 
 		test(`${locale} ${width}: footer links, current language and keyboard panel agree`, async ({

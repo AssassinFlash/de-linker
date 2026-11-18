@@ -57,8 +57,15 @@ for (const [locale, spec] of Object.entries(PAGES)) {
 
 		// The staged note is the configurator's project input: the first frame
 		// carries it, so the customer never retypes the requirement.
-		await expect(page.locator('body')).toContainText('10 kWp', {
-			timeout: 60_000,
+		const form = page.getByRole('form', {
+			name: locale === 'en' ? 'New project' : 'Neues Projekt',
+			exact: true,
 		});
+		await expect(
+			form.getByRole('textbox', {
+				name:
+					locale === 'en' ? 'Your project note' : 'Ihre Projektnotiz',
+			})
+		).toHaveValue(spec.note, { timeout: 60_000 });
 	});
 }

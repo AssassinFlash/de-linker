@@ -1,5 +1,5 @@
 /**
- * The commercial quick start reaches its report PDF, end to end.
+ * A commercial project reaches its report PDF and Woo draft.
  *
  * Production walk 2026-11-11 §B: a commercial customer filled the one-screen
  * quick start, got the sized 690-combination answer and the provisional bill of
@@ -9,58 +9,126 @@
  * contract reads an adopted candidate as the project's single equipment source,
  * so the extra run contradicted it.
  *
- * This drives the shipped planner bundle over the real review instance: the
- * quick start's own form, the real engine's search/qualification/report runs,
- * and the customer's own Download PDF button. The assertion is the delivered
- * file: HTTP 200, PDF bytes, and pages in it.
+ * Exercise the same adopted-candidate contract through the configurator:
+ * fresh project, commercial inputs, real comparison, PDF and product transfer.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { seedConsentCookies } from '../lib/consent';
-import { instance } from '../lib/instance';
+import { instance, wp } from '../lib/instance';
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
 
-test('a commercial quick start downloads its planning report PDF', async ({
+async function reviewCommercialProject(page: Page) {
+	await page.setViewportSize({ width: 1440, height: 900 });
+
+	// The public size-hint link carries a declared PV rating, not a calculation.
+	await page.goto(instance().url + '/solution-configurator/?pv_kwp=100', {
+		waitUntil: 'networkidle',
+	});
+	const form = page.getByRole('form', { name: 'New project' });
+	const title = `E2E commercial ${Date.now()}`;
+	await expect(page.getByText('100 kWp', { exact: true })).toBeVisible();
+	await expect(
+		page.getByLabel('Use these values for the new project')
+	).toBeChecked();
+	await form.getByText('Site details', { exact: true }).click();
+	await form.getByLabel('Project name (optional)').fill(title);
+	await form
+		.getByRole('combobox', { name: 'Country', exact: true })
+		.selectOption('DE');
+	await form.getByLabel('Town or site').fill('80331 München');
+	await form.getByLabel('Planned system').selectOption('new_pv_storage');
+	await form.getByLabel('Main purpose').selectOption('peak');
+	await form.getByLabel('Site use').selectOption('commercial');
+	await expect(
+		page.getByText('Solar installation and roof layout', { exact: true })
+	).toBeVisible();
+	await page.getByLabel('Annual electricity use').fill('250000');
+	await page
+		.getByRole('combobox', { name: 'Grid connection', exact: true })
+		.selectOption('3');
+	await page.getByLabel('Target grid import limit').fill('70');
+	await page.getByRole('button', { name: 'Compare systems' }).click();
+	const option = page
+		.getByRole('button', { name: 'Use this configuration', exact: true })
+		.first();
+	await expect(option).toBeVisible({ timeout: 120_000 });
+	await option.click();
+	await expect(
+		page
+			.getByRole('navigation', { name: 'Project navigation' })
+			.getByRole('button', { name: /Review & inquire/ })
+	).toHaveAttribute('aria-current', 'step');
+	return title;
+}
+
+test('a commercial customer sends the selected system and quantities directly from review', async ({
 	page,
 }) => {
 	test.setTimeout(420_000);
-	await page.setViewportSize({ width: 1440, height: 900 });
-
-	await page.goto(instance().url + '/solution-configurator/', {
-		waitUntil: 'networkidle',
+	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+	const title = await reviewCommercialProject(page);
+	const products = page.getByRole('table', {
+		name: 'Products included in your inquiry',
 	});
-	// The customer's own route into the one-screen start: the projects panel's
-	// button, not the inline form the empty index shows (that copy belongs to
-	// the index and leaves with the first saved project).
-	const start = page.getByRole('button', { name: 'Start a solution' });
-	if (await start.count()) await start.first().click();
-	const form = page.locator('.lp-quickstart-form');
-	await expect(form).toBeVisible({ timeout: 120_000 });
-
-	// The production walk's own commercial inputs: 100 kWp, a commercial annual
-	// consumption, three phases and a peak-shaving goal, with a postcode.
-	await form.getByLabel('Project type').selectOption('commercial');
-	await form.getByLabel('PV array size').selectOption('100');
-	await form.getByLabel('Annual electricity use').selectOption('250000');
-	// The walk's own goal: cut the commercial peak demand.
-	await form.getByLabel('System goal').selectOption('peak_shaving');
-	await form.getByLabel('Postcode or town').fill('80331');
-
-	await form.getByRole('button', { name: 'Generate solution' }).click();
-
-	// The report step must finish, not fail: the report is the whole point of
-	// this spec, and its failure was silent behind a plausible sentence.
-	const reportStep = page.locator('li[data-step="report"]');
-	await expect(reportStep).toHaveAttribute('data-state', 'done', {
-		timeout: 300_000,
+	await expect(products).toBeVisible({ timeout: 180_000 });
+	const expected = await products.locator('tbody tr').evaluateAll((rows) =>
+		rows.map((row) => ({
+			name: row.querySelectorAll('td')[0]!.textContent!.trim(),
+			quantity: Number(row.querySelectorAll('td')[1]!.textContent),
+		}))
+	);
+	expect(expected.length).toBeGreaterThan(0);
+	const email = `e2e-commercial-${Date.now()}@example.test`;
+	const form = page.locator('form.linker-inquiry-form');
+	await form.locator('[name="name"]').fill('E2E Commercial Guest');
+	await form.locator('[name="email"]').fill(email);
+	await form
+		.locator('[name="message"]')
+		.fill('Please quote this system for our Munich site.');
+	await form.locator('[name="consent"]').check();
+	await page.waitForTimeout(3100);
+	await form.getByRole('button', { name: 'Send inquiry' }).click();
+	await expect(page.locator('.linker-form-success')).toBeVisible({
+		timeout: 60_000,
 	});
-	await expect(reportStep).not.toContainText(/stopped|could not/i);
+	const result = JSON.parse(
+		wp([
+			'eval',
+			`
+		$orders = wc_get_orders(array('billing_email' => '${email}', 'limit' => 2));
+		if (count($orders) !== 1) { throw new RuntimeException('Expected one inquiry'); }
+		$order = $orders[0];
+		$stored = Linker\\Commerce\\Planning\\Context::stored($order);
+		echo wp_json_encode(array('status' => $order->get_status(), 'customer' => $order->get_customer_id(), 'title' => reset($stored)['reference']['title'], 'lines' => array_values(array_map(static fn($item) => array('name' => $item->get_name(), 'quantity' => $item->get_quantity()), $order->get_items()))));
+	`,
+		])
+	);
+	expect(result).toMatchObject({
+		status: 'inquiry-received',
+		customer: 0,
+		title,
+	});
+	expect(result.lines).toHaveLength(expected.length);
+	expect(result.lines).toEqual(expect.arrayContaining(expected));
+});
+
+test('a commercial customer downloads the project PDF and transfers the selected system to a solution draft', async ({
+	page,
+}) => {
+	test.setTimeout(420_000);
+	await reviewCommercialProject(page);
+	await expect(
+		page.getByRole('button', { name: 'Download PDF', exact: true })
+	).toBeVisible({ timeout: 180_000 });
 
 	// The PDF the customer downloads: bytes, page count, and a 200.
+	const asset = page.waitForResponse('**/rpc/assets/content');
 	const download = page.waitForEvent('download', { timeout: 120_000 });
 	await page.getByRole('button', { name: 'Download PDF' }).click();
+	expect((await asset).status()).toBe(200);
 	const file = await download;
 	const path = await file.path();
 	expect(path, 'the browser saved the report').toBeTruthy();
@@ -79,4 +147,35 @@ test('a commercial quick start downloads its planning report PDF', async ({
 	expect(file.suggestedFilename()).toMatch(
 		/^linker-planning-[a-f0-9]{32}-r\d+-en\.pdf$/
 	);
+
+	await page
+		.getByRole('button', {
+			name: 'Add selected products to solution draft',
+		})
+		.click();
+	const preview = page.getByRole('table').filter({
+		has: page.getByRole('columnheader', { name: 'New quantity' }),
+	});
+	await expect(preview.getByRole('row').nth(1)).toBeVisible();
+	const rows = await preview.locator('tbody tr').evaluateAll((lines) =>
+		lines.map((line) => {
+			const cells = line.querySelectorAll('td');
+			return {
+				name: cells[0]!.textContent!.trim(),
+				quantity: Number(cells[2]!.textContent),
+			};
+		})
+	);
+	expect(rows.length).toBeGreaterThan(0);
+	await page.getByRole('button', { name: 'Confirm changes' }).click();
+	await page.getByRole('link', { name: 'View solution draft' }).click();
+	for (const item of rows) {
+		const row = page
+			.locator('.cart_item:visible')
+			.filter({ hasText: item.name });
+		await expect(row).toBeVisible();
+		await expect(row.locator('input.qty')).toHaveValue(
+			String(item.quantity)
+		);
+	}
 });
