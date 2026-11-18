@@ -390,7 +390,7 @@ class Handoffs:
     def admit_inquiry(
         self, actor: Actor, handoff_id: str, snapshot_sha256: str
     ) -> Object:
-        if actor.kind != "team":
+        if actor.kind == "team":
             raise NotFound("project handoff not found")
         with self.workspace.database.transaction() as connection:
             try:

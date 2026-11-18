@@ -300,61 +300,69 @@ final class Context {
 	}
 
 	/**
-	 * Admit the native order's frozen reports under the same locks as project deletion.
-	 * The caller's original database transaction stays open through the final commit.
+	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
-	 * @param WC_Order        $order Native order in the submission transaction.
-	 * @param callable():void $commit Receive and commit that order.
+	 * @param callable(array<string,array<string,mixed>>):(WC_Order|WP_Error) $submit Native order writer.
 	 */
-	public static function commit_inquiry( WC_Order $order, callable $commit ): ?WP_Error {
-		$raw = $order->get_meta( self::META );
-		if ( '' === $raw ) {
-			$commit();
-			return null;
+	public static function submit_inquiry( callable $submit ): WC_Order|WP_Error {
+		$handoffs = self::active() + array_intersect_key( self::report_only_contexts(), self::included_notes() );
+		if ( array() === $handoffs ) {
+			return $submit( array() );
 		}
-		$entries  = self::stored( $order );
-		$captured = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
-		$retry    = new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
-		if ( array() === $entries || $entries !== $captured ) {
+		$retry = new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+		if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
 			return $retry;
 		}
-		$references = array_column( $entries, 'reference' );
+		$references = array_map( self::reference( ... ), $handoffs );
 		$projects   = array_unique( array_column( $references, 'project_id' ) );
 		sort( $projects, SORT_STRING );
-		$problem = null;
-		$work    = static function () use ( $order, $references, $commit, $retry, &$problem ): void {
+		$result = $retry;
+		$work   = static function () use ( $references, $submit, &$result ): void {
 			foreach ( $references as $reference ) {
 				/**
 				 * Admit the server-stored handoff before commit.
 				 *
 				 * @since 0.3.0
 				 */
-				$admitted = apply_filters( 'linker_tools_planning_admit_inquiry', null, $reference, $order->get_id() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
+				$admitted = apply_filters( 'linker_tools_planning_admit_inquiry', null, $reference ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
 				if ( true === $admitted ) {
 					continue;
 				}
-				$problem = $retry;
 				if ( $admitted instanceof WP_Error && 'linker_planner_handoff_not_found' === $admitted->get_error_code() && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
 					$message = ! empty( $reference['report_only'] )
 						/* translators: %s: planning project title. */
-						? __( 'The planning project “%s” was deleted. Deselect the planning report, then send your inquiry again.', 'linker-commerce' )
+						? __( 'The planning project “%s” is no longer accessible. Clear the “Include planning reports and project notes with this inquiry” checkbox, then send your inquiry again.', 'linker-commerce' )
 						/* translators: %s: planning project title. */
-						: __( 'The planning project “%s” was deleted. Remove its products from your solution draft, then send your inquiry again.', 'linker-commerce' );
-					$problem = new WP_Error( 'planning_project_deleted', sprintf( $message, $reference['title'] ), array( 'status' => 409 ) );
+						: __( 'The planning project “%s” is no longer accessible. Remove its products from your solution draft, then send your inquiry again.', 'linker-commerce' );
+					$result = new WP_Error( 'planning_project_deleted', sprintf( $message, $reference['title'] ), array( 'status' => 409 ) );
 				}
 				return;
 			}
-			$commit();
+			$result = $submit( $references );
 		};
 		foreach ( array_reverse( $projects ) as $project_id ) {
-			$work = static function () use ( $project_id, $work, $retry, &$problem ): void {
-				if ( ! \Linker\Commerce\Inquiry\Assessment\Lock::run( 'planning-project:' . $project_id, $work, guard_connection: true ) ) {
-					$problem = $retry;
-				}
+			$work = static function () use ( $project_id, $work ): void {
+				ProjectReferences::with_lock( $project_id, $work );
 			};
 		}
 		$work();
-		return $problem;
+		return $result;
+	}
+
+	/**
+	 * Require the saved order to carry exactly the admitted draft's references.
+	 *
+	 * @param WC_Order                          $order Persisted native order.
+	 * @param array<string,array<string,mixed>> $references Admitted handoffs by ID.
+	 */
+	public static function matches_admission( WC_Order $order, array $references ): bool {
+		$raw = $order->get_meta( self::META );
+		if ( '' === $raw ) {
+			return array() === $references;
+		}
+		$entries  = self::stored( $order );
+		$captured = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		return array() !== $entries && $entries === $captured && array_map( static fn ( array $entry ) => $entry['reference'], $entries ) === $references;
 	}
 
 	/**
@@ -429,7 +437,18 @@ final class Context {
 		$result = array();
 		if ( is_array( $raw ) ) {
 			foreach ( $raw as $id => $entry ) {
-				if ( is_string( $id ) && is_array( $entry ) && self::valid_reference( $entry['reference'] ?? null, $id ) ) {
+				if ( ! is_string( $id ) || ! is_array( $entry ) ) {
+					continue;
+				}
+				if ( ! array_key_exists( 'reference', $entry ) && self::valid( $entry['handoff'] ?? null, $id ) ) {
+					$snapshot = $entry['handoff']['snapshot'];
+					if ( ! isset( $snapshot['title'], $snapshot['input_sha256'], $snapshot['report_source_sha256'], $snapshot['report_sha256'], $snapshot['pdf'], $snapshot['items'] ) ) {
+						continue;
+					}
+					$entry['reference'] = self::reference( $entry['handoff'] );
+					unset( $entry['handoff'] );
+				}
+				if ( self::valid_reference( $entry['reference'] ?? null, $id ) ) {
 					$result[ $id ] = $entry;
 				}
 			}

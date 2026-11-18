@@ -66,9 +66,31 @@ final class Sender {
 			)
 		);
 		WC()->cart->calculate_totals();
+		try {
+			$order = \Linker\Commerce\Planning\Context::submit_inquiry( fn ( array $references ) => $this->create( $details, $data, $summary, $context, $references ) );
+			if ( $order instanceof WC_Order ) {
+				\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
+				WC()->cart->empty_cart();
+			}
+			return $order;
+		} catch ( \Throwable $error ) {
+			return $this->unknown();
+		}
+	}
+
+	/**
+	 * Create and receive the native order while holding its project locks.
+	 *
+	 * @param Submission                        $details Validated submission.
+	 * @param array<string,mixed>               $data Checkout fields.
+	 * @param array<string,mixed>|false|null    $summary Selected conversation summary.
+	 * @param array<string,mixed>               $context Related conversation/page.
+	 * @param array<string,array<string,mixed>> $references Admitted frozen reports.
+	 */
+	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references ): WC_Order|WP_Error {
 		$prepared_key = '';
 		$transaction  = null;
-		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, &$prepared_key, &$transaction ): void {
+		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $references, &$prepared_key, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
 			if ( $awaited ) {
@@ -82,11 +104,8 @@ final class Sender {
 			}
 			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
 			// Optional summary/provider work has finished before the first native write.
-			// A planning lock must cover the owning COMMIT, not a caller's savepoint.
-			if ( $order->get_meta( \Linker\Commerce\Planning\Context::META ) && \Linker\Commerce\Mail\Capacity::transaction_active() ) {
-				throw new \RuntimeException( esc_html__( 'The solution could not be checked. Please try again.', 'linker-commerce' ) );
-			}
 			$transaction = new NativeTransaction();
+			\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
 		try {
@@ -105,24 +124,14 @@ final class Sender {
 			if ( ! $transaction instanceof NativeTransaction ) {
 				return $this->unknown();
 			}
-			$problem = \Linker\Commerce\Planning\Context::commit_inquiry(
-				$order,
-				function () use ( $order, $details, $context, $transaction ): void {
-					$this->receive( $order, $details, 'inquiry', $context );
-					$transaction->commit();
-				}
-			);
-			if ( $problem instanceof WP_Error ) {
-				$transaction->rollback();
-				return $problem;
+			if ( ! \Linker\Commerce\Planning\Context::matches_admission( $order, $references ) ) {
+				return $this->unknown();
 			}
-			\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
-			WC()->cart->empty_cart();
+			$this->receive( $order, $details, 'inquiry', $context );
+			$transaction->commit();
 			return $order;
 		} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
 			return $error->problem;
-		} catch ( \Throwable $error ) {
-			return $this->unknown();
 		} finally {
 			remove_action( 'woocommerce_checkout_create_order', $prepare );
 			if ( $transaction instanceof NativeTransaction ) {

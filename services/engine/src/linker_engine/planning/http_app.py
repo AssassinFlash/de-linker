@@ -761,7 +761,9 @@ def create_private_app(
     @app.post("/handoffs/admit-inquiry")
     def admit_inquiry(body: InquiryAdmission, request: Request) -> Object:
         return Handoffs(workspace).admit_inquiry(
-            verified_actor(request.scope), body.handoff_id, body.snapshot_sha256
+            verified_actor(request.scope, write=True),
+            body.handoff_id,
+            body.snapshot_sha256,
         )
 
     @app.post("/handoffs/read")

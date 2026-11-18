@@ -72,31 +72,32 @@ final class InquiryTest extends IntegrationTestCase {
 	public function test_planning_report_submission( string $outcome ): void {
 		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
 		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		$guest = 'guest' === $outcome;
+		$ok    = $guest || in_array( $outcome, array( 'admitted', 'lost_lock' ), true );
+		$this->as_user( $guest ? 0 : $this->customer()->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
-		$handoff                         = array(
-			'schema_version'  => 1,
-			'id'              => str_repeat( 'b', 32 ),
-			'snapshot_sha256' => str_repeat( 'c', 64 ),
-			'snapshot'        => array(
-				'schema_version'       => 1,
-				'kind'                 => 'planning_report_only_v1',
-				'project_id'           => str_repeat( 'a', 32 ),
-				'title'                => 'Roof plan',
-				'revision'             => 1,
-				'report_run_id'        => str_repeat( 'd', 32 ),
-				'input_sha256'         => str_repeat( '1', 64 ),
-				'report_source_sha256' => str_repeat( '2', 64 ),
-				'report_sha256'        => str_repeat( '3', 64 ),
-				'pdf'                  => array(
-					'asset_id'   => str_repeat( 'e', 32 ),
-					'sha256'     => str_repeat( '4', 64 ),
-					'media_type' => 'application/pdf',
-				),
-				'publication'          => null,
-				'items'                => array(),
-			),
-		);
+		if ( $guest ) {
+			$session = WC()->session;
+			$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+			$cookies = $_COOKIE;
+			$present = static function ( $enabled, $name, $value ) {
+				$_COOKIE[ $name ] = $value;
+				return false;
+			};
+			add_filter( 'woocommerce_set_cookie_enabled', $present, 10, 3 );
+			$session->set_customer_session_cookie( true );
+			remove_filter( 'woocommerce_set_cookie_enabled', $present );
+			$session->set( 'linker_planner_seen', true );
+			$session->save_data();
+			$this->later(
+				static function () use ( $cookies ) {
+					$_COOKIE = $cookies;
+				}
+			);
+		}
+		$subject                         = $guest ? \Linker\Tools\Planner\NativeIdentity::guest_subject( WC()->session->get_customer_id() ) : \Linker\Tools\Planner\NativeIdentity::user_subject( get_current_user_id() );
+		$handoff                         = $this->planning_report();
 		$other                           = $handoff;
 		$other['id']                     = str_repeat( 'd', 32 );
 		$other['snapshot']['project_id'] = str_repeat( '1', 32 );
@@ -108,35 +109,91 @@ final class InquiryTest extends IntegrationTestCase {
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
 		$base = static fn () => 'https://planner.example.test';
 		add_filter( 'pre_option_linker_planner_url', $base );
-		$this->later( static fn () => remove_filter( 'pre_option_linker_planner_url', $base ) );
+		$this->later(
+			static function () use ( $base ): void {
+				remove_filter( 'pre_option_linker_planner_url', $base );
+			}
+		);
 		global $wpdb;
+		$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$peer->set_prefix( $wpdb->prefix );
+		$this->later(
+			static function () use ( $peer ): void {
+				$peer->close();
+			}
+		);
+		$delete = static function () use ( $peer, $handoff, $guest, $subject ) {
+			global $wpdb;
+			$writer = $wpdb;
+			$wpdb   = $peer;
+			try {
+				return \Linker\Tools\Planner\ProjectDelete::prepared(
+					new \Linker\Tools\Planner\Principal( $guest ? 'guest' : 'user', $subject ),
+					array( 'project_id' => $handoff['snapshot']['project_id'] ),
+					new \Linker\Tools\Planner\Transport()
+				);
+			} finally {
+				$wpdb = $writer;
+			}
+		};
 		$locks  = array_map( static fn ( $entry ) => 'linker-assessment-' . md5( $wpdb->dbname . '/' . $wpdb->prefix . '/planning-project:' . $entry['snapshot']['project_id'] ), $draft );
 		$held   = static function () use ( $locks, $wpdb ): array {
 			return array_values( array_map( static fn ( $name ) => (int) $wpdb->get_var( $wpdb->prepare( 'SELECT IS_USED_LOCK(%s) = CONNECTION_ID()', $name ) ), $locks ) );
 		};
 		$calls  = array();
-		$engine = static function ( $previous, $args, $url ) use ( $outcome, $held, &$calls ) {
+		$engine = static function ( $previous, $args, $url ) use ( $ok, $outcome, $held, $delete, $wpdb, $locks, &$calls ) {
+			if ( 'https://planner.example.test/projects/prepared-handoffs' === $url ) {
+				return array(
+					'response' => array( 'code' => 200 ),
+					'headers'  => array( 'content-type' => 'application/json' ),
+					'body'     => '{"has_handoffs":true,"inquiry_generation":1}',
+				);
+			}
 			if ( 'https://planner.example.test/handoffs/admit-inquiry' !== $url ) {
 				return $previous;
 			}
-			$calls[] = array( json_decode( $args['body'], true ), $args['headers']['X-Linker-Planner-Principal-Kind'], $held() );
+			$blocked = $delete();
+			self::assertInstanceOf( \WP_Error::class, $blocked );
+			$calls[] = array( json_decode( $args['body'], true ), $args['headers']['X-Linker-Planner-Principal-Kind'], $args['headers']['X-Linker-Planner-Principal-Subject'], \Linker\Commerce\Mail\Capacity::transaction_active(), $held(), $blocked->get_error_code() );
+			if ( 'lost_lock' === $outcome && 2 === count( $calls ) ) {
+				$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', reset( $locks ) ) );
+			}
+
 			return array(
-				'response' => array( 'code' => 'admitted' === $outcome ? 200 : 404 ),
+				'response' => array( 'code' => $ok ? 200 : 404 ),
 				'headers'  => array( 'content-type' => 'application/json' ),
-				'body'     => 'admitted' === $outcome ? '{"admitted":true}' : wp_json_encode( array( 'error' => array( 'code' => $outcome ) ) ),
+				'body'     => $ok ? '{"admitted":true}' : wp_json_encode( array( 'error' => array( 'code' => $outcome ) ) ),
 			);
 		};
 		add_filter( 'pre_http_request', $engine, 10, 3 );
-		$this->later( static fn () => remove_filter( 'pre_http_request', $engine, 10 ) );
+		$this->later(
+			static function () use ( $engine ): void {
+				remove_filter( 'pre_http_request', $engine, 10 );
+			}
+		);
+		$received    = false;
+		$on_received = static function () use ( &$received ): void {
+			$received = true;
+		};
+		add_action( 'woocommerce_order_status_' . Statuses::RECEIVED, $on_received );
+		$this->later(
+			static function () use ( $on_received ): void {
+				remove_action( 'woocommerce_order_status_' . Statuses::RECEIVED, $on_received );
+			}
+		);
 		$at_commit      = null;
-		$observe_commit = static function ( $sql ) use ( &$at_commit, $held, &$calls ) {
-			if ( 'COMMIT' === $sql && $calls && null === $at_commit ) {
+		$observe_commit = static function ( $sql ) use ( &$at_commit, $held, &$received ) {
+			if ( 'COMMIT' === $sql && $received && null === $at_commit ) {
 				$at_commit = $held();
 			}
 			return $sql;
 		};
 		add_filter( 'query', $observe_commit );
-		$this->later( static fn () => remove_filter( 'query', $observe_commit ) );
+		$this->later(
+			static function () use ( $observe_commit ): void {
+				remove_filter( 'query', $observe_commit );
+			}
+		);
 		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $draft );
 		$post       = array(
 			'name'    => 'Maria Weber',
@@ -154,14 +211,18 @@ final class InquiryTest extends IntegrationTestCase {
 		if ( 'outer_transaction' === $outcome ) {
 			$result = \Linker\Commerce\Mail\NativeTransaction::run( $submit );
 			$this->assertInstanceOf( \WP_Error::class, $result );
-			$this->assertSame( 'checkout-error', $result->get_error_code() );
+			$this->assertSame( 'planning_admission_unavailable', $result->get_error_code() );
 			$this->assertSame( array(), $calls );
 			$this->assertSame( $draft, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ) );
 			return;
 		}
 		$result = $submit();
 		if ( $result instanceof \WC_Order ) {
-			$this->later( static fn () => $result->delete( true ) );
+			$this->later(
+				static function () use ( $result ): void {
+					$result->delete( true );
+				}
+			);
 		}
 		$this->assertSame( array( 0, 0 ), $held() );
 		$expected = array();
@@ -172,19 +233,31 @@ final class InquiryTest extends IntegrationTestCase {
 					'handoff_id'      => $entry['id'],
 					'snapshot_sha256' => $entry['snapshot_sha256'],
 				),
-				'team',
+				$guest ? 'guest' : 'user',
+				$subject,
+				false,
 				array( 1, 1 ),
+				'linker_planner_inquiry_unavailable',
 			);
-			if ( 'admitted' !== $outcome ) {
+			if ( ! $ok ) {
 				break;
 			}
 		}
 		$this->assertSame( $expected, $calls );
-		if ( 'admitted' === $outcome ) {
+		if ( 'lost_lock' === $outcome ) {
+			$this->assertInstanceOf( \WP_Error::class, $result );
+			$this->assertFalse( \Linker\Commerce\Planning\ProjectReferences::contains( $handoff['snapshot']['project_id'] ), 'A submitter that lost a project lock must not commit an inquiry.' );
+			return;
+		}
+		if ( $ok ) {
 			$this->assertInstanceOf( \WC_Order::class, $result );
 			$this->assertSame( Statuses::RECEIVED, $result->get_status() );
 			$this->assertSame( array_keys( $draft ), array_keys( \Linker\Commerce\Planning\Context::stored( $result ) ) );
 			$this->assertSame( array( 1, 1 ), $at_commit );
+			$after = $delete();
+			$this->assertIsArray( $after );
+			$this->assertSame( 409, $after['status'] );
+			$this->assertSame( 'inquiry_linked', json_decode( $after['body'], true )['error']['code'] );
 			$this->assertTrue( WC()->cart->is_empty() );
 		} else {
 			$this->assertInstanceOf( \WP_Error::class, $result );
@@ -203,6 +276,8 @@ final class InquiryTest extends IntegrationTestCase {
 	public function report_admissions(): array {
 		return array(
 			'frozen reports' => array( 'admitted' ),
+			'guest reports'  => array( 'guest' ),
+			'lost lock'      => array( 'lost_lock' ),
 			'deleted report' => array( 'handoff_not_found' ),
 			'old endpoint'   => array( 'not_found' ),
 			'external owner' => array( 'outer_transaction' ),

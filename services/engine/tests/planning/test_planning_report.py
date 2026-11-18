@@ -41,7 +41,6 @@ from linker_engine.planning.errors import (
 )
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.frozen_profiles import frozen_profile
-from linker_engine.planning.guest_claims import GuestClaims
 from linker_engine.planning.handoffs import Handoffs
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
@@ -661,9 +660,26 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         )
         with pytest.raises(NotFound):
             Handoffs(workspace).read(Actor("user", "other:account"), handoff["id"])
+        admission = {
+            "schema_version": 1,
+            "handoff_id": handoff["id"],
+            "snapshot_sha256": handoff["snapshot_sha256"],
+        }
         guest = owner
+        guest_headers = caller_headers()
+        assert client.post(
+            "/handoffs/admit-inquiry", json=admission, headers=guest_headers
+        ).json() == {"admitted": True}
         owner = Actor("user", "report:account")
-        GuestClaims(workspace).claim(guest, owner, key="native-login")
+        claim = client.post(
+            "/identity/claim-session",
+            json={"schema_version": 1, "key": "native-login"},
+            headers={
+                **caller_headers(),
+                "X-Linker-Planner-Previous-Guest": guest.subject,
+            },
+        )
+        assert claim.status_code == 200 and claim.json()["guest_retired"] is True
         assert (
             client.post(
                 "/handoffs/prepare", json=transfer_command, headers=caller_headers()
@@ -777,16 +793,29 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         check = client.post(
             "/projects/prepared-handoffs", json=source, headers=caller_headers()
         )
-        assert check.json() == {"has_handoffs": True, "inquiry_generation": 0}
-        admission = {
-            "schema_version": 1,
-            "handoff_id": handoff["id"],
-            "snapshot_sha256": handoff["snapshot_sha256"],
-        }
-        team = {**caller_headers(), "X-Linker-Planner-Principal-Kind": "team"}
+        assert check.json() == {"has_handoffs": True, "inquiry_generation": 1}
+        team = headers(Actor("team", "report:inquiry"))
         assert (
             client.post(
-                "/handoffs/admit-inquiry", json=admission, headers=caller_headers()
+                "/handoffs/read",
+                json={"schema_version": 1, "handoff_id": handoff["id"]},
+                headers=team,
+            ).json()
+            == handoff
+        )
+        for denied_actor in (
+            guest,
+            Actor("guest", "other:guest"),
+            Actor("user", "other:account"),
+        ):
+            denied = client.post(
+                "/handoffs/admit-inquiry", json=admission, headers=headers(denied_actor)
+            )
+            assert denied.status_code == 404
+            assert denied.json()["error"]["code"] == "handoff_not_found"
+        assert (
+            client.post(
+                "/handoffs/admit-inquiry", json=admission, headers=team
             ).status_code
             == 404
         )
@@ -794,16 +823,16 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             client.post(
                 "/handoffs/admit-inquiry",
                 json={**admission, "snapshot_sha256": "0" * 64},
-                headers=team,
+                headers=caller_headers(),
             ).status_code
             == 409
         )
         assert client.post(
-            "/handoffs/admit-inquiry", json=admission, headers=team
+            "/handoffs/admit-inquiry", json=admission, headers=caller_headers()
         ).json() == {"admitted": True}
         stale = client.post(
             "/projects/delete-after-inquiry-check",
-            json={**delete, "inquiry_generation": 0},
+            json={**delete, "inquiry_generation": check.json()["inquiry_generation"]},
             headers=caller_headers(),
         )
         assert (
@@ -816,20 +845,27 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         latest = client.post(
             "/projects/prepared-handoffs", json=source, headers=caller_headers()
         ).json()
-        assert latest["inquiry_generation"] == 1
+        assert latest["inquiry_generation"] == 2
         removed = client.post(
             "/projects/delete-after-inquiry-check",
             json={**delete, "inquiry_generation": latest["inquiry_generation"]},
             headers=caller_headers(),
         )
-        assert removed.status_code == 200 and removed.json()["deleted"] is True
+        assert removed.status_code == 200
+        assert removed.json() == {
+            "project_id": project.id,
+            "revision": changed.revision,
+            "deleted": True,
+        }
         assert (
             client.post(
                 "/projects/delete", json=delete, headers=caller_headers()
             ).json()
             == removed.json()
         )
-        missing = client.post("/handoffs/admit-inquiry", json=admission, headers=team)
+        missing = client.post(
+            "/handoffs/admit-inquiry", json=admission, headers=caller_headers()
+        )
         assert missing.status_code == 404
         assert missing.json()["error"]["code"] == "handoff_not_found"
 

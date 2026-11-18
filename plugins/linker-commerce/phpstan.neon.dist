@@ -27,6 +27,8 @@ parameters:
 		# span both plugins, and the integration tests drive linker-tools' side
 		# with this plugin's mail (ContactRequest, FormGuard, RateLimit).
 		- ../linker-tools/includes/Genie
+		# Native inquiry tests exercise Planner identity, transport and project deletion.
+		- ../linker-tools/includes/Planner
 	scanFiles:
 		# Native designed-page predicate, supplied by installed LiveCanvas at runtime.
 		- ../../tools/php/livecanvas-stubs.php

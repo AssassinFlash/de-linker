@@ -13,6 +13,35 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 
 /** Read Woo's authoritative store directly so database errors cannot look like absence. */
 final class ProjectReferences {
+	private const LOCK_PREFIX = 'planning-project:';
+
+	/**
+	 * Check the transaction connection still owns every lock taken before HTTP.
+	 *
+	 * @param array<string,array<string,mixed>> $references Admitted frozen reports.
+	 * @throws \RuntimeException A required native project lock was lost.
+	 */
+	public static function require_locks( array $references ): void {
+		global $wpdb;
+		foreach ( array_unique( array_column( $references, 'project_id' ) ) as $project ) {
+			$name = \Linker\Commerce\Inquiry\Assessment\Lock::name( self::LOCK_PREFIX . $project );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Only this native connection may commit the project reference.
+			if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT IS_USED_LOCK(%s) = CONNECTION_ID()', $name ) ) ) {
+				throw new \RuntimeException( 'planning_project_lock_lost' );
+			}
+		}
+	}
+
+	/**
+	 * Serialize the inquiry commit with the project's native deletion check.
+	 *
+	 * @param string          $project_id Owned planner project.
+	 * @param callable():void $work Native project operation.
+	 */
+	public static function with_lock( string $project_id, callable $work ): bool {
+		return \Linker\Commerce\Inquiry\Assessment\Lock::run( self::LOCK_PREFIX . $project_id, $work, guard_connection: true );
+	}
+
 	/**
 	 * Read compact references and the full snapshots saved by the original writer.
 	 *

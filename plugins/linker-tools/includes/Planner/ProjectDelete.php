@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Planner;
 
-use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Planning\ProjectReferences;
 use WP_Error;
 
@@ -26,13 +25,13 @@ final class ProjectDelete {
 	 */
 	public static function prepared( Principal $principal, array $command, Transport $transport ): array|WP_Error {
 		$project = $command['project_id'] ?? null;
-		if ( ! is_string( $project ) || ! class_exists( Lock::class ) || ! class_exists( ProjectReferences::class ) ) {
+		if ( ! is_string( $project ) || ! class_exists( ProjectReferences::class ) ) {
 			return Failure::make( 'inquiry_unavailable', 503 );
 		}
 		$reply = null;
 		try {
-			$taken = Lock::run(
-				'planning-project:' . $project,
+			$taken = ProjectReferences::with_lock(
+				$project,
 				static function () use ( $project, $command, $principal, $transport, &$reply ): void {
 					$state = $transport->object(
 						$principal,
@@ -62,9 +61,7 @@ final class ProjectDelete {
 					}
 					$command['inquiry_generation'] = $state['inquiry_generation'];
 					$reply                         = $transport->call( $principal, 'projects/delete-after-inquiry-check', (string) wp_json_encode( $command ) );
-				},
-				0,
-				true
+				}
 			);
 		} catch ( \Throwable ) {
 			return Failure::make( 'inquiry_unavailable', 503 );

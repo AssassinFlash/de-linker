@@ -27,6 +27,36 @@ use WC_Product_Simple;
  */
 abstract class IntegrationTestCase extends TestCase {
 
+	/** A native report-only handoff that can accompany an actual Woo inquiry.
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function planning_report(): array {
+		return array(
+			'schema_version'  => 1,
+			'id'              => str_repeat( 'b', 32 ),
+			'snapshot_sha256' => str_repeat( 'c', 64 ),
+			'snapshot'        => array(
+				'schema_version'       => 1,
+				'kind'                 => 'planning_report_only_v1',
+				'project_id'           => bin2hex( random_bytes( 16 ) ),
+				'title'                => 'Roof plan',
+				'revision'             => 1,
+				'report_run_id'        => str_repeat( 'd', 32 ),
+				'input_sha256'         => str_repeat( '1', 64 ),
+				'report_source_sha256' => str_repeat( '2', 64 ),
+				'report_sha256'        => str_repeat( '3', 64 ),
+				'pdf'                  => array(
+					'asset_id'   => str_repeat( 'e', 32 ),
+					'sha256'     => str_repeat( '4', 64 ),
+					'media_type' => 'application/pdf',
+				),
+				'publication'          => null,
+				'items'                => array(),
+			),
+		);
+	}
+
 	/** Every fixture delivery uses this synthetic tester (AGENTS §5). */
 	protected const TESTER = 'tester246@example.test';
 

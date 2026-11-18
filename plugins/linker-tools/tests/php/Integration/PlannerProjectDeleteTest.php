@@ -79,9 +79,13 @@ final class PlannerProjectDeleteTest extends TestCase {
 		$endpoint = static fn (): string => 'https://engine.test';
 		add_filter( 'pre_option_linker_planner_url', $endpoint );
 		try {
+			if ( 'yes' === $hpos && array() !== \WC_Install::get_missing_base_tables() ) {
+				// A fresh standalone inquiry fixture starts with only CPT order storage.
+				self::assertSame( array(), \WC_Install::verify_base_tables( false, true ) );
+			}
 			wp_set_current_user( 1 );
-			$_COOKIE[ LOGGED_IN_COOKIE ] = wp_generate_auth_cookie( 1, time() + HOUR_IN_SECONDS, 'logged_in', 'deletion-test-token' );
-			$_COOKIE[ Identity::COOKIE ] = bin2hex( random_bytes( 16 ) );
+			$_COOKIE[ constant( 'LOGGED_IN_COOKIE' ) ] = wp_generate_auth_cookie( 1, time() + HOUR_IN_SECONDS, 'logged_in', 'deletion-test-token' );
+			$_COOKIE[ Identity::COOKIE ]               = bin2hex( random_bytes( 16 ) );
 			$request->set_header( 'x-wp-nonce', wp_create_nonce( 'wp_rest' ) );
 			$transport = new Transport(
 				static function ( string $url, array $args ) use ( $command, $body, $reply, $result, $project, &$attempts, &$deleted ): array|\WP_Error {
@@ -129,17 +133,22 @@ final class PlannerProjectDeleteTest extends TestCase {
 			);
 			$gateway   = new Gateway( new NativeIdentity(), $transport );
 			$ledger    = new \Linker\Commerce\Protection\Ledger();
-			$before    = $ledger->summary()['counts']['planner_write']['dispatched'] ?? 0;
+			$summary   = $ledger->summary();
+			self::assertIsArray( $summary );
+			$before = $summary['counts']['planner_write']['dispatched'] ?? 0;
 			$order->set_status( 'pending' );
 			$order_id = $order->save();
 			$order->delete( false );
 			$order = wc_get_order( $order_id );
 			self::assertInstanceOf( \WC_Order::class, $order );
+			self::assertSame( 'trash', $order->get_status( 'edit' ) );
 			foreach ( array( array( 'reference' => array( 'project_id' => $project ) ), array( 'handoff' => array( 'snapshot' => array( 'project_id' => $project ) ) ) ) as $entry ) {
-				$order->update_meta_data( Context::META, wp_json_encode( array( $handoff => $entry ) ) );
+				$metadata = wp_json_encode( array( $handoff => $entry ) );
+				self::assertIsString( $metadata );
+				$order->update_meta_data( Context::META, $metadata );
 				$order->save_meta_data();
 				$refused = $gateway->forward( $request );
-				self::assertInstanceOf( \WP_REST_Response::class, $refused, is_wp_error( $refused ) ? $refused->get_error_code() : '' );
+				self::assertInstanceOf( \WP_REST_Response::class, $refused );
 				self::assertSame( 409, $refused->get_status() );
 				self::assertSame( 'inquiry_linked', $refused->get_data()->error->code );
 			}
@@ -149,24 +158,25 @@ final class PlannerProjectDeleteTest extends TestCase {
 			self::assertInstanceOf( \WP_Error::class, $unreadable );
 			self::assertSame( 503, $unreadable->get_error_data()['status'] );
 			self::assertSame( 0, $attempts );
-			$order->update_meta_data(
-				Context::META,
-				wp_json_encode(
-					array(
-						$handoff => array(
-							'reference' => array(
-								'project_id' => $handoff,
-								'title'      => $project,
-							),
+			$metadata = wp_json_encode(
+				array(
+					$handoff => array(
+						'reference' => array(
+							'project_id' => $handoff,
+							'title'      => $project,
 						),
-					)
+					),
 				)
 			);
+			self::assertIsString( $metadata );
+			$order->update_meta_data( Context::META, $metadata );
 			$order->save_meta_data();
 			$lost = $gateway->forward( $request );
 			self::assertInstanceOf( \WP_Error::class, $lost );
 			self::assertSame( 503, $lost->get_error_data()['status'] );
-			self::assertSame( $before + 1, $ledger->summary()['counts']['planner_write']['dispatched'] ?? 0 );
+			$summary = $ledger->summary();
+			self::assertIsArray( $summary );
+			self::assertSame( $before + 1, $summary['counts']['planner_write']['dispatched'] ?? 0 );
 			$replay = $gateway->forward( $request );
 			self::assertInstanceOf( \WP_REST_Response::class, $replay );
 			self::assertTrue( $replay->get_data()->deleted );

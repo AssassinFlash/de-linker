@@ -11,6 +11,17 @@ namespace Linker\Commerce\Inquiry\Assessment;
 
 /** A database mutex is automatically released when a worker dies. */
 final class Lock {
+	/** Server-wide name scoped to the current database and site.
+	 *
+	 * @param string $key Logical operation.
+	 */
+	public static function name( string $key ): string {
+		global $wpdb;
+		// Follow Genie's proven database/prefix namespace for server-wide locks.
+		$database = isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
+		return 'linker-assessment-' . md5( $database . '/' . $wpdb->prefix . '/' . $key );
+	}
+
 	/**
 	 * Run without waiting; a durable scheduled task retries a busy lock.
 	 *
@@ -23,9 +34,7 @@ final class Lock {
 	 */
 	public static function run( string $key, callable $work, int $wait_seconds = 0, bool $guard_connection = false ): bool {
 		global $wpdb;
-		// Follow Genie's proven database/prefix namespace for server-wide locks.
-		$database = isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
-		$name     = 'linker-assessment-' . md5( $database . '/' . $wpdb->prefix . '/' . $key );
+		$name = self::name( $key );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- A MySQL connection mutex has no WordPress API; zero wait protects the caller.
 		// #568 allows at most one second for short DB-only business/mail edits.
 		// Every existing review/model consumer retains the default zero wait.

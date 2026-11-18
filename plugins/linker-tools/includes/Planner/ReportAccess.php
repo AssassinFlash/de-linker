@@ -23,7 +23,7 @@ final class ReportAccess {
 	/** Register the server-only Commerce seam. */
 	public function register(): void {
 		add_filter( 'linker_tools_planning_report_content', array( $this, 'read' ), 10, 3 );
-		add_filter( 'linker_tools_planning_admit_inquiry', array( $this, 'admit' ), 10, 3 );
+		add_filter( 'linker_tools_planning_admit_inquiry', array( $this, 'admit' ), 10, 2 );
 	}
 
 	/**
@@ -78,12 +78,11 @@ final class ReportAccess {
 	 * Fence pending deletes against the exact handoff being committed by Commerce.
 	 *
 	 * @param mixed               $previous Earlier service adapter.
-	 * @param array<string,mixed> $reference Server-stored compact context.
-	 * @param int                 $order_id Submitting inquiry.
+	 * @param array<string,mixed> $reference Frozen reference from the current server-owned Woo draft.
 	 */
-	public function admit( mixed $previous, array $reference, int $order_id ): true|WP_Error {
+	public function admit( mixed $previous, array $reference ): true|WP_Error {
 		unset( $previous );
-		$principal = $this->inquiry_principal( $reference, $order_id );
+		$principal = ( new NativeIdentity() )->inquiry_submitter();
 		if ( $principal instanceof WP_Error ) {
 			return $principal;
 		}

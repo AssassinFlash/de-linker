@@ -192,3 +192,11 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 临时访客项目 `Goal 1132 release acceptance`（`acd2ca3897f543d1be9d1c93cb73e23f`）以 Rotterdam、10 kWp、三相输入直接比较，保存修订 2。采用 SAJ HS2-10K-T2-X 后生成修订 3 报告，实际下载的 PDF、Woo 草稿和询盘表单均列出逆变器与 Chint DTSU666 各一件。客户可从正式德语入口重开，手机显示冻结报告的语言为英语。Amsterdam 只读打开时仍为修订 3。未提交生产询盘或发信。批准的生产测试账户 53 现有规划询盘报告与已保存方案报告数均为零，登录后下载冻结报告仍缺该账户的测试文件。
 
 访客通过商品行 Remove 清空测试草稿，表单显示可无产品留言。此后临时项目删除入口仍提示已交接询盘并拒绝删除。正常比较请求在等待回执时短暂要求客户确认上一请求；刚重开已选方案时，System 在历史结果加载完成前提示先填需求。两项按本次操作复现处理。主线保留上述唯一生产临时项目供修复读回。两条修复线各使用一份隔离工作树（`agent-a5865b673a3c2a637` 和 `agent-a27c1cf90d7b85960`），各自独立依赖，整合后由主线回收。
+
+## 2026-11-18 · 询盘恢复提示与评审站复验（#1140）
+
+初稿将项目状态写作 `was deleted` / `wurde gelöscht`。评审确认，项目删除和访客失去原项目访问权会得到同一结果。商品分支定稿说明该项目已无法访问，要求移除该项目商品后重新发送。EN 使用 `Remove its products from your solution draft`，DE 使用 `Entfernen Sie die zugehörigen Produkte aus Ihrem Lösungsentwurf`，对应商品行 Remove / Entfernen。
+
+仅报告分支的初稿 `Deselect the planning report` / `Wählen Sie den Planungsbericht ab` 暗示可逐份取消。表单只有一个复选框，定稿在消息中引用其完整标签 `Include planning reports and project notes with this inquiry` / `Planungsberichte und Projektnotizen mit dieser Anfrage senden`，然后请客户重发询盘。
+
+评审站两种语言的访客询盘页和德语无产品留言回执均通过。历史完整快照能在所属账户 Documents 中列出，原订单链接可下载冻结 PDF。其他账户和遭修改的快照均无法下载。生产验收仍沿用原 Rotterdam 项目。
