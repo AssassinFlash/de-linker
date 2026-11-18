@@ -640,10 +640,12 @@ export function NewProject({
 				</form>
 				<aside className="sc-sidebar">
 					<section className="sc-card">
-						<p className="sc-eyebrow">
-							{__("Current configuration", "linker-tools")}
-						</p>
-						<h3>{projectName}</h3>
+						<div>
+							<p className="sc-eyebrow">
+								{__("Current configuration", "linker-tools")}
+							</p>
+							<h3>{projectName}</h3>
+						</div>
 						<dl>
 							{brief.system_scope && (
 								<div>
