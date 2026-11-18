@@ -237,12 +237,6 @@ export function WeatherForm({
 				</p>
 				<p>
 					{__(
-						"Preparation updates the open draft. Selecting a returned weather source is a separate step.",
-						"linker-tools",
-					)}
-				</p>
-				<p>
-					{__(
 						"Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history.",
 						"linker-tools",
 					)}

@@ -251,12 +251,6 @@ export function PreparationResult({
 							</p>
 						</>
 					)}
-					<p>
-						{__(
-							"Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft.",
-							"linker-tools",
-						)}
-					</p>
 					{source.isPending && (
 						<p role="status">
 							{__("Checking the saved source…", "linker-tools")}
