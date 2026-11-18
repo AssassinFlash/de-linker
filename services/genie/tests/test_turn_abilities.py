@@ -331,7 +331,28 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                     "price_reason": "login",
                 },
             }
-        return {"qualified": [{"product_id": 1}]}
+        return {
+            "qualified": [
+                {
+                    "product_id": 1,
+                    "pairings": [
+                        {
+                            "product_id": 1,
+                            "verdict": "released",
+                            "documents": [
+                                {
+                                    "document_id": "doc-1",
+                                    "document_revision": "revision-1",
+                                    "product_id": 1,
+                                    "url": "https://wp.test/alias-1.pdf",
+                                    "page": 2,
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
 
     def prepare(
         body: TurnRequest,
@@ -394,6 +415,7 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                     TextBlock(text="Current results.", refs=[str(product_id)]),
                     CardsBlock(product_ids=[product_id]),
                     DocumentBlock(ref="fixture-document"),
+                    DocumentBlock(ref="compat.document.1.0"),
                 ],
             ), facts
 
@@ -453,6 +475,12 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
         document = next(block for block in blocks if block["type"] == "document")
         assert document["document_id"] == "doc-1"
         assert document["document_revision"] == "revision-1"
+        compat = next(
+            block for block in blocks if block.get("ref") == "compat.document.1.0"
+        )
+        assert compat["evidence_product_id"] == 1
+        assert compat["document_id"] == "doc-1"
+        assert compat["document_revision"] == "revision-1"
     else:
         assert response.status_code == (503 if failure == "outage" else 409), (
             response.text

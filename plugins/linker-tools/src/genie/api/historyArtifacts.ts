@@ -62,11 +62,19 @@ function documentPages(
 	};
 }
 
-function documentOwner( ref: string ): number | undefined {
-	const match = ref.match(
+function documentOwner( block: DocumentBlock ): number | undefined {
+	if ( block.evidence_product_id !== undefined ) {
+		return block.evidence_product_id;
+	}
+	const match = block.ref.match(
 		/^p(\d+)\.(?:document\.\d+|.+\.source(?:\.\d+)?)$/
 	);
 	return match ? Number( match[ 1 ] ) : undefined;
+}
+
+function requiresDocumentOwner( ref: string ): boolean {
+	// Legacy compatibility and indexed PDF refs do not encode their evidence owner.
+	return /^(?:compat\.document\.|[a-f0-9]{12}-p\d+-)/.test( ref );
 }
 
 function documentLabel(
@@ -80,7 +88,7 @@ function documentLabel(
 	}
 	const baseUrl = block.url.split( '#' )[ 0 ];
 	const { title, suffix } = documentPages( block, locale );
-	const owner = documentOwner( block.ref );
+	const owner = documentOwner( block );
 	const candidates =
 		owner === undefined
 			? products
@@ -216,7 +224,7 @@ export async function restoreArtifacts(
 		if ( block.type === 'cards' || block.type === 'compare' ) {
 			block.product_ids.forEach( ( id ) => ids.add( id ) );
 		} else if ( block.type === 'document' ) {
-			const owner = documentOwner( block.ref );
+			const owner = documentOwner( block );
 			if ( owner !== undefined ) {
 				ids.add( owner );
 			}
@@ -310,16 +318,17 @@ export async function restoreArtifacts(
 				return { ...block, add: { ...block.add, proof: undefined } };
 			}
 			if ( block.type === 'document' ) {
-				const owner = documentOwner( block.ref );
+				const owner = documentOwner( block );
 				const canonical =
 					owner === undefined ? undefined : allowed.get( owner );
 				const current = documents.find(
 					( item ) =>
 						item.document_id === block.document_id &&
 						item.document_revision === block.document_revision &&
-						( owner === undefined ||
-							( canonical !== undefined &&
-								item.product_ids?.includes( canonical ) ) ) &&
+						( owner === undefined
+							? ! requiresDocumentOwner( block.ref )
+							: canonical !== undefined &&
+								item.product_ids?.includes( canonical ) ) &&
 						[ item.url, ...( item.aliases ?? [] ) ].includes(
 							block.url?.split( '#' )[ 0 ] ?? ''
 						)

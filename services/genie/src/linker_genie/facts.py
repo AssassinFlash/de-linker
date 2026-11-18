@@ -36,12 +36,37 @@ class Fact:
 
 
 @dataclass(frozen=True)
+class DocumentEvidence:
+    """The exact published association used by a tool's evidence."""
+
+    document_id: str
+    document_revision: str
+    product_id: int
+
+    @classmethod
+    def read(cls, row: dict[str, Any], product_id: Any) -> DocumentEvidence | None:
+        document_id = row.get("document_id")
+        revision = row.get("document_revision")
+        if (
+            isinstance(document_id, str)
+            and document_id
+            and isinstance(revision, str)
+            and revision
+            and type(product_id) is int
+            and product_id > 0
+        ):
+            return cls(document_id, revision, product_id)
+        return None
+
+
+@dataclass(frozen=True)
 class Document:
     """A hosted document a tool of this turn returned, for a document block."""
 
     url: str
     title: str
     page: int | None
+    evidence: DocumentEvidence | None = None
 
 
 @dataclass(frozen=True)
@@ -403,7 +428,7 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
                 value = f"{url} · p.{page}" if isinstance(page, int) else url
                 fact_id = f"compat.document.{paired_id}.{document_index}"
                 gathered.add(Fact(id=fact_id, value=value, source="search-products"))
-                gathered.documents[fact_id] = _document(document, url, page)
+                gathered.documents[fact_id] = _compat_document(document, url, page)
     extreme = payload.get("extreme")
     if isinstance(extreme, dict):
         # The ability's aggregate (#368). The model names this product; grounding
@@ -599,7 +624,7 @@ def _from_compatibility(
         value = f"{url} · p.{page}" if isinstance(page, int) else url
         fact_id = f"compat.document.{index}"
         gathered.add(Fact(id=fact_id, value=value, source="check-compatibility"))
-        gathered.documents[fact_id] = _document(document, url, page)
+        gathered.documents[fact_id] = _compat_document(document, url, page)
 
 
 def _from_size_hint(gathered: TurnFacts, payload: dict[str, Any]) -> None:
@@ -970,10 +995,12 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
             )
         url = hit.get("doc_url")
         if isinstance(url, str) and url:
+            evidence = DocumentEvidence.read(hit, hit.get("evidence_product_id"))
             gathered.documents[chunk_id] = Document(
                 url=url,
                 title=str(title) or _file_name(url),
                 page=page if isinstance(page, int) else None,
+                evidence=evidence,
             )
             support_ids: list[str] = []
             for support in hit.get("supporting_documents", []):
@@ -997,6 +1024,9 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                     url=support_url,
                     title=str(support.get("title") or _file_name(support_url)),
                     page=support_page,
+                    evidence=DocumentEvidence.read(
+                        support, support.get("evidence_product_id")
+                    ),
                 )
                 gathered.chunk_ids.add(ref)
                 support_ids.append(ref)
@@ -1017,6 +1047,7 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                         url=url,
                         title=str(title) or _file_name(url),
                         page=note.page,
+                        evidence=evidence,
                     )
         figures = hit.get("figures")
         for figure, value in (figures if isinstance(figures, dict) else {}).items():
@@ -1151,12 +1182,28 @@ def _figure_evidence(figure: dict[str, Any], documents: list[Any]) -> list[Docum
     return evidence
 
 
-def _document(document: dict[str, Any], url: str, page: Any) -> Document:
+def _compat_document(document: dict[str, Any], url: str, page: Any) -> Document:
+    return _document(
+        document,
+        url,
+        page,
+        evidence=DocumentEvidence.read(document, document.get("product_id")),
+    )
+
+
+def _document(
+    document: dict[str, Any],
+    url: str,
+    page: Any,
+    *,
+    evidence: DocumentEvidence | None = None,
+) -> Document:
     title = document.get("title")
     return Document(
         url=url,
         title=title if isinstance(title, str) and title else _file_name(url),
         page=page if isinstance(page, int) else None,
+        evidence=evidence,
     )
 
 

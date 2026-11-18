@@ -411,6 +411,25 @@ def _compute_turn(
         if block.get("type") != "document" or not block.get("url"):
             continue
         url = block["url"].split("#")[0]
+        cited = result.facts.documents.get(block["ref"])
+        evidence = cited.evidence if cited is not None else None
+        if evidence is not None:
+            document = permission.documents.get(evidence.document_id)
+            owner = permission.canonical(evidence.product_id)
+            if (
+                document is None
+                or owner not in document["product_ids"]
+                or document["document_revision"] != evidence.document_revision
+                or url not in [document["url"], *document.get("aliases", [])]
+            ):
+                raise PublicationChanged("cited document association changed")
+            block["evidence_product_id"] = owner
+            block["document_id"] = evidence.document_id
+            block["document_revision"] = evidence.document_revision
+            continue
+        if block["ref"].startswith("compat.document."):
+            block["url"] = None
+            continue
         document = next(
             (
                 d

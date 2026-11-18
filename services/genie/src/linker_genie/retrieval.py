@@ -119,6 +119,7 @@ class SupportingDocument(TypedDict):
     doc_url: str
     title: str
     page: int
+    evidence_product_id: int
 
 
 def _document_title(document: dict[str, Any], lang: str) -> str:
@@ -156,6 +157,7 @@ class DocumentHit:
     supporting_documents: tuple[SupportingDocument, ...] = ()
     conditional_certificate: bool = False
     compatibility_iot: bool = False
+    evidence_product_id: int | None = None
 
     @property
     def link(self) -> str:
@@ -192,6 +194,7 @@ class Permit(TypedDict):
     document_revision: str
     url: str
     product_ids: list[int]
+    evidence_product_id: int
     table_header: NotRequired[str]
     table_text: NotRequired[str]
     scope_note: NotRequired[str]
@@ -610,6 +613,7 @@ class DocumentIndex:
                     document_id=permit["document_id"],
                     document_revision=permit["document_revision"],
                     product_ids=tuple(permit["product_ids"]),
+                    evidence_product_id=permit["evidence_product_id"],
                     text=text,
                     scope_note=permit.get("scope_note", ""),
                     qualifications=tuple(qualifications),
@@ -806,6 +810,7 @@ class DocumentIndex:
                     "document_revision": str(association["document_revision"]),
                     "url": str(association["url"]),
                     "product_ids": sorted(ids),
+                    "evidence_product_id": association["product_id"],
                     "table_header": header,
                 }
                 current_document = snapshot.documents[str(association["document_id"])]
@@ -824,6 +829,7 @@ class DocumentIndex:
                             "doc_url": support_doc["url"],
                             "title": _document_title(support_doc, lang),
                             "page": 2,
+                            "evidence_product_id": relation["inverter_id"],
                         }
                     ]
                     note = inverter_condition(relation["base_text"])
@@ -879,6 +885,7 @@ class DocumentIndex:
                             "doc_url": str(association["url"]),
                             "title": _document_title(document, lang),
                             "page": 9,
+                            "evidence_product_id": association["product_id"],
                         }
                     ]
                 if scopes.get(cid, {}).get("basis") == "compatibility_esa":
@@ -904,6 +911,7 @@ class DocumentIndex:
                             "doc_url": manual["url"],
                             "title": _document_title(manual, lang),
                             "page": 4,
+                            "evidence_product_id": relation["inverter_id"],
                         }
                     ]
                     if snapshot.products[relation["device_id"]]["model"] == "GMK330":
@@ -929,6 +937,7 @@ class DocumentIndex:
                                 "doc_url": manual["url"],
                                 "title": _document_title(manual, lang),
                                 "page": 35,
+                                "evidence_product_id": relation["inverter_id"],
                             }
                         )
                     else:
@@ -952,6 +961,7 @@ class DocumentIndex:
                                 "doc_url": str(association["url"]),
                                 "title": _document_title(document, lang),
                                 "page": 13,
+                                "evidence_product_id": association["product_id"],
                             }
                         )
                     output[row]["qualification_required"] = True
@@ -975,6 +985,7 @@ class DocumentIndex:
                                 "doc_url": document["url"],
                                 "title": _document_title(document, lang),
                                 "page": page_number,
+                                "evidence_product_id": relation["product_id"],
                             }
                         )
                 if cid in column_texts:
@@ -1032,6 +1043,7 @@ class DocumentIndex:
                                     "doc_url": document["url"],
                                     "title": _document_title(document, lang),
                                     "page": page_number,
+                                    "evidence_product_id": value["product_id"],
                                 }
                             )
                 projection = scopes.get(cid, {}).get("table_projection", {})

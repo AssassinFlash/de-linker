@@ -170,9 +170,9 @@ final class CompatibilityTest extends TestCase {
 
 	/**
 	 * Conditions are bilingual objects (the file folds the old parallel
-	 * arrays), and documents are the slim {url, page?} references.
+	 * arrays), and evidence links preserve the association bound by Woo.
 	 */
-	public function test_conditions_are_bilingual_and_documents_are_slim(): void {
+	public function test_conditions_are_bilingual_and_documents_keep_woo_evidence_owner(): void {
 		$answer = Compatibility::for_models( 'GW10K-ET', 'FH9637M', $this->manifest );
 
 		$this->assertNotNull( $answer );
@@ -182,6 +182,9 @@ final class CompatibilityTest extends TestCase {
 		}
 		foreach ( $answer['documents'] as $document ) {
 			$this->assertStringStartsWith( 'https://de-linker.com/', $document['url'] );
+			$published = array_column( $this->manifest['documents'], null, 'document_id' )[ $document['document_id'] ];
+			$this->assertSame( $published['document_revision'], $document['document_revision'] );
+			$this->assertContains( $document['product_id'], $published['product_ids'] );
 			$keys = array_keys( $document );
 			$this->assertNotContains( 'title', $keys, 'documents carry no titles' );
 			$this->assertNotContains( 'title_de', $keys, 'documents carry no German titles' );
