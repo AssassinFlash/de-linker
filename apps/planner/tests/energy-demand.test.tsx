@@ -189,10 +189,15 @@ test("a real typical profile is imported and selected for the same project", asy
 			};
 		},
 	};
+	let resolved = false;
+	const ensureProject = async () => {
+		resolved = true;
+		return projectId;
+	};
 	const render = () =>
 		root.render(
 			<EnergyDemand
-				projectId={projectId}
+				projectId={ensureProject}
 				inputs={inputs}
 				locale="en"
 				disabled={false}
@@ -216,6 +221,7 @@ test("a real typical profile is imported and selected for the same project", asy
 			.querySelector("input");
 	try {
 		await act(async () => render());
+		assert.equal(resolved, false);
 		await enter(field("Annual electricity use"), "6000");
 		await enter(field("Time zone"), "Europe/Berlin");
 		const select = dom.element.querySelector('select[name="load-pattern"]');
@@ -228,6 +234,7 @@ test("a real typical profile is imported and selected for the same project", asy
 				.find((x) => x.textContent === "Use this load profile")
 				.click(),
 		);
+		assert.equal(resolved, true);
 		assert.equal(calls[0].path, "profiles/standard");
 		assert.equal(calls[0].body.project_id, projectId);
 		assert.equal(calls[0].body.annual_kwh, 6000);

@@ -23,7 +23,11 @@ import {
 	readProfileImport,
 	readSelections,
 } from "../../domain/profiles.ts";
-import type { CsvInspection, ProfilePreview } from "../../domain/profiles.ts";
+import type {
+	CsvInspection,
+	ProfileImportCommand,
+	ProfilePreview,
+} from "../../domain/profiles.ts";
 import { KNOWN_PV_MODEL, referenceDraft } from "../../domain/pvgisReference.ts";
 import { emptyMapping, mappedProfile } from "../ProfileMapping.tsx";
 import { issueLabel } from "../ProfileLabels.ts";
@@ -117,7 +121,7 @@ export function EnergyDemand({
 	recheck,
 	onValidity,
 }: {
-	projectId: string;
+	projectId: string | (() => Promise<string>);
 	inputs: JsonObject;
 	locale: string;
 	disabled: boolean;
@@ -221,7 +225,10 @@ export function EnergyDemand({
 		asset: ReturnType<typeof readAsset>;
 		preview: ProfilePreview;
 	} | null>(null);
-	const pending = useRef<{ path: JsonRpcPath; body: JsonObject } | null>(null);
+	const pending = useRef<{
+		path: JsonRpcPath;
+		body: ProfileImportCommand;
+	} | null>(null);
 	const flight = useRef(false);
 	const generation = useRef(0);
 	const selected = readSelections(inputs.profile_selections).selected
@@ -260,13 +267,16 @@ export function EnergyDemand({
 					: __("The profile request failed. Please try again.", "linker-tools"),
 		);
 	}
+	function resolveProjectId() {
+		return typeof projectId === "string" ? projectId : projectId();
+	}
 	async function previewAsset(asset: ReturnType<typeof readAsset>, offset = 0) {
 		return readPreview(
 			await client.query(
 				"profiles/preview",
 				{
 					schema_version: 1,
-					project_id: projectId,
+					project_id: asset.project_id,
 					asset_id: asset.id,
 					offset,
 					page_size: pageSize,
@@ -282,13 +292,15 @@ export function EnergyDemand({
 		let active = true;
 		void (async () => {
 			try {
+				const id = await resolveProjectId();
+				if (!active) return;
 				const asset = readAsset(
 					await client.query(
 						"assets/read",
-						{ schema_version: 1, project_id: projectId, asset_id: selected },
+						{ schema_version: 1, project_id: id, asset_id: selected },
 						session.query_scope,
 					),
-					projectId,
+					id,
 				);
 				const result = await previewAsset(asset);
 				if (
@@ -343,7 +355,7 @@ export function EnergyDemand({
 	}
 	async function importProfile(command?: {
 		path: JsonRpcPath;
-		body: JsonObject;
+		body: ProfileImportCommand;
 	}) {
 		if (command) pending.current = command;
 		const request = pending.current;
@@ -351,7 +363,7 @@ export function EnergyDemand({
 		const instance = generation.current;
 		const asset = readAsset(
 			await client.query(request.path, request.body, session.query_scope),
-			projectId,
+			request.body.project_id,
 		);
 		const result = await previewAsset(asset);
 		if (
@@ -707,12 +719,12 @@ export function EnergyDemand({
 								className="sc-button"
 								disabled={!canStandard || pending.current !== null}
 								onClick={() =>
-									void run(() =>
+									void run(async () =>
 										importProfile({
 											path: "profiles/standard",
 											body: readProfileImport({
 												schema_version: 1,
-												project_id: projectId,
+												project_id: await resolveProjectId(),
 												edition: pattern.endsWith("25") ? 2025 : 1999,
 												profile: pattern,
 												year: Number(year),
@@ -776,7 +788,7 @@ export function EnergyDemand({
 												"profiles/inspect",
 												{
 													schema_version: 1,
-													project_id: projectId,
+													project_id: await resolveProjectId(),
 													content_base64: content,
 													delimiter,
 													page_size: Math.min(
@@ -971,12 +983,12 @@ export function EnergyDemand({
 											pending.current !== null
 										}
 										onClick={() =>
-											void run(() =>
+											void run(async () =>
 												importProfile({
 													path: "profiles/csv",
 													body: readProfileImport({
 														schema_version: 1,
-														project_id: projectId,
+														project_id: await resolveProjectId(),
 														content_base64: content,
 														mapping: csvMapping,
 														source_label: label.trim(),
