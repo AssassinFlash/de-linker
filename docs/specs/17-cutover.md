@@ -40,7 +40,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 3. 在 Hostinger 站点账户执行 `LC_ALL=C ps -u "$(id -un)" -o pid=,lstart=,comm=`，记录此时所有承载本站的 `lsphp` 的 PID 和启动时间。让这批进程自然退出，或使用已确认会等待在途请求结束的本站托管排空操作。用同一列表逐项核对原进程均已退出。先确认账户可完整看到本站 Web worker；名单丢失可在已核实的新站点重新采集。`.maintenance` 只能阻止后来进入 WordPress 的请求，维护状态和 Planner 的 `pending=0` 都不能证明此前已进入 Woo 的请求结束。若无法确认排空，保留旧 Planner；超出维护窗口则用 `just cutover rollback-deploy` 恢复站点，让客户继续发送带报告的询盘。
 4. 排空后才执行 `tools/planner/publish/cli.sh <同一完整 Git SHA>`，读回 HTTP、worker 的运行版本和 8911 的就绪状态。生产用已登记的草稿项目读回删除结果，用已有询盘读回删除拒绝及账户报告下载。生产验收不提交询盘、不发信。
 
-新 Planner 已经启动时，回滚顺序相反。先用其 `planner_release.py rollback` 恢复原 Planner，确认新版 HTTP 进程已退出、原版本已接管 8911 并拒绝删除已有 handoff 的项目，再恢复旧 Woo。这样已接收的受检查删除会在恢复旧写入端之前完成或终止。
+启用新版 Planner 后，项目可能已被删除，而客户之前打开的 Woo 草稿仍持有报告引用。此后恢复 Planner 可用 `planner_release.py rollback`，须保留带报告准入检查的 Woo。确认原 Planner 已接管 8911、拒绝删除已有 handoff 的项目。带报告询盘在此期间保留草稿供重试；发布修正后的配套 Planner 后恢复提交。此阶段的站点修复须保留提交检查，否则旧草稿可提交已失效的报告。
 
 ### 部署前快照与完整备份（#305）
 
