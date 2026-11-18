@@ -72,6 +72,12 @@ export function Workspace({
 	recheck: () => void;
 }) {
 	const [showProjects, setShowProjects] = useState(false);
+	const [comparison, setComparison] = useState<{
+		projectId: string;
+		inputs: JsonObject;
+	} | null>(null);
+	const consumeComparison = useCallback(() => setComparison(null), []);
+	const [provisionedId, setProvisionedId] = useState<string | null>(null);
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
@@ -139,6 +145,8 @@ export function Workspace({
 			setEntryHints(null);
 			setSavedSource(null);
 			setBriefSource(null);
+			setComparison(null);
+			setProvisionedId(null);
 			setSelected(id);
 			setShowProjects(id === null);
 		},
@@ -176,7 +184,7 @@ export function Workspace({
 		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
-	useSiteIntegration(selected);
+	useSiteIntegration(selected ?? provisionedId);
 	const projects = useMemo(() => {
 		const seen = new Set<string>();
 		return (index.data?.pages.flatMap((page) => page.items) ?? []).filter(
@@ -187,7 +195,11 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	function created(project: Project, destination?: CreationDestination) {
+	function created(
+		project: Project,
+		destination?: CreationDestination,
+		comparisonInputs?: JsonObject,
+	) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
 			[session.query_scope, "project", project.id, session.claim_pending],
@@ -196,6 +208,13 @@ export function Workspace({
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
+		if (destination === "edit") {
+			const url = new URL(location.href);
+			url.searchParams.set("project", project.id);
+			replacePlannerLocation(url);
+			setProvisionedId(project.id);
+			return true;
+		}
 		select(
 			project.id,
 			destination === "energy"
@@ -208,6 +227,11 @@ export function Workspace({
 							? "sc-review"
 							: "sc-project",
 		);
+		if (destination === "compare")
+			setComparison({
+				projectId: project.id,
+				inputs: comparisonInputs ?? project.inputs,
+			});
 		return true;
 	}
 	const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
@@ -346,6 +370,12 @@ export function Workspace({
 				<Configurator
 					key={session.query_scope + ":" + selected}
 					project={project.data}
+					{...(comparison?.projectId === selected && {
+						entryComparison: {
+							inputs: comparison.inputs,
+							consume: consumeComparison,
+						},
+					})}
 					client={client}
 					store={store}
 					config={config}
@@ -453,6 +483,9 @@ export function Workspace({
 							dismiss={() => {
 								const url = new URL(location.href);
 								url.searchParams.delete("brief");
+								for (const key of ENTRY_QUERY_KEYS)
+									url.searchParams.delete(key);
+								setEntryHints(null);
 								replacePlannerLocation(url);
 								setBriefSource(null);
 							}}

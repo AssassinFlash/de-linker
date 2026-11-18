@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -20,7 +26,13 @@ import type { Configuration } from "../data/config.ts";
 import { ConfiguratorSteps } from "./configurator/ConfiguratorSteps.tsx";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
-import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
+import { ProjectInputsStep } from "./configurator/ProjectInputsStep.tsx";
+import { SolarInstallation } from "./configurator/SolarInstallation.tsx";
+import {
+	EnergyDemand,
+	changeEnergyGoal,
+	energyGoal,
+} from "./configurator/EnergyDemand.tsx";
 
 export function NewProject({
 	session,
@@ -32,6 +44,7 @@ export function NewProject({
 	recoveryChecking = false,
 	recoveryDiscoveryFailed = false,
 	entryHints = null,
+	briefEntry,
 	initialProject = null,
 	cancelled,
 	locale = "en",
@@ -40,12 +53,24 @@ export function NewProject({
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
-	created: (project: Project, destination?: CreationDestination) => boolean;
+	created: (
+		project: Project,
+		destination?: CreationDestination,
+		comparisonInputs?: JsonObject,
+	) => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryDiscoveryFailed?: boolean;
 	entryHints?: EntryHints | null;
+	briefEntry?: {
+		note: string;
+		flush: () => Promise<boolean>;
+		render: (
+			disabled: boolean,
+			apply: (hints: JsonObject) => boolean,
+		) => ReactNode;
+	};
 	initialProject?: { title: string; inputs: JsonObject } | null;
 	cancelled?: () => void;
 	locale?: string;
@@ -93,7 +118,8 @@ export function NewProject({
 		...seed,
 		brief: {
 			...seedBrief,
-			system_scope: seedBrief.system_scope ?? "new_pv_storage",
+			system_scope:
+				seedBrief.system_scope ?? (entryHints?.roof ? "new_pv_storage" : null),
 		},
 	};
 	const seeded =
@@ -122,18 +148,25 @@ export function NewProject({
 		setDraft(changed);
 		return true;
 	}
+	const [detailsReady, setDetailsReady] = useState(true);
+	const [importOpen, setImportOpen] = useState(false);
+	const [roofEditing, setRoofEditing] = useState(false);
+	const provisioned = useRef<Project | null>(null);
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
 	const intentScope = useRef(session.query_scope);
 	const destination = useRef<CreationDestination | null>(null);
 	const projectForm = useRef<HTMLFormElement>(null);
-	const requestedStep = useRef<CreationDestination | null>(null);
+	const energySection = useRef<HTMLDivElement>(null);
 	const lifetime = useRef(0);
 	const sending = useRef(false);
 	const openWork = useRef(false);
 	openWork.current = Boolean(
-		intent.current || draft || (title && title !== initialProject?.title),
+		intent.current ||
+		draft ||
+		(briefEntry && briefEntry.note !== seedBrief.project_note) ||
+		(title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
 	const waitingForProduct = Boolean(
@@ -193,15 +226,18 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 	]);
-	async function submit() {
+	async function submit(action: "compare" | "edit") {
 		if (
 			sending.current ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
+			!detailsReady ||
+			roofEditing ||
 			!client.isCurrentScope(session.query_scope) ||
-			(!intent.current && (!title.trim() || !brief.system_scope))
+			(!intent.current &&
+				(!projectForm.current?.reportValidity() || !brief.system_scope))
 		)
 			return;
 		const instance = lifetime.current;
@@ -214,30 +250,43 @@ export function NewProject({
 		setProjectGone(false);
 		setInputContractRequired(false);
 		try {
+			if (
+				!intent.current &&
+				briefEntry &&
+				(!(await briefEntry.flush()) ||
+					lifetime.current !== instance ||
+					!client.isCurrentScope(session.query_scope))
+			)
+				return;
+			const currentInputs = {
+				...inputs,
+				brief: {
+					...brief,
+					...(briefEntry && { project_note: briefEntry.note }),
+					site: {
+						...brief.site,
+						location_label: brief.site.location_label.trim(),
+					},
+				},
+			};
+			if (provisioned.current) {
+				if (action === "compare")
+					created(provisioned.current, "compare", currentInputs);
+				return provisioned.current;
+			}
 			if (!intent.current) {
 				intent.current = wire(
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
-						title: title.trim(),
-						inputs: {
-							...inputs,
-							brief: {
-								...brief,
-								site: {
-									...brief.site,
-									location_label: brief.site.location_label.trim(),
-								},
-							},
-						},
+						title: projectName.slice(0, 256),
+						inputs: currentInputs,
 						key: crypto.randomUUID(),
 					},
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current =
-					requestedStep.current ??
-					(brief.system_scope === "storage_only" ? "energy" : "design");
+				destination.current = action;
 			}
 			await store
 				.writeCreation(originScope, intent.current, destination.current)
@@ -259,16 +308,24 @@ export function NewProject({
 			await store.clearCreation(originScope, intent.current).catch(() => {
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
-			if (lifetime.current !== instance) return;
-			const createdBrief =
-				project.inputs.brief === undefined
-					? null
-					: readBrief(project.inputs.brief);
 			if (
+				lifetime.current !== instance ||
+				!client.isCurrentScope(session.query_scope)
+			)
+				return;
+			const target = destination.current;
+			if (target === "edit") {
+				provisioned.current = project;
+				setDraft(project.inputs);
+				setTitle(project.title);
+				// Reload or language navigation can now resume this same owned project.
+				created(project, "edit");
+			} else if (
 				!created(
 					project,
-					destination.current ??
-						(createdBrief?.system_scope === "storage_only"
+					target ??
+						(readBrief(project.inputs.brief ?? emptyBrief()).system_scope ===
+						"storage_only"
 							? "energy"
 							: undefined),
 				)
@@ -278,9 +335,8 @@ export function NewProject({
 			}
 			intent.current = null;
 			destination.current = null;
-			setTitle("");
-			setDraft(null);
 			setRecoveredInputs(null);
+			return project;
 		} catch (error) {
 			if (lifetime.current !== instance) return;
 			setFailed(true);
@@ -332,11 +388,45 @@ export function NewProject({
 			if (lifetime.current === instance) setBusy(false);
 		}
 	}
+	const resolveProject = useRef(submit);
+	resolveProject.current = submit;
+	const ensureProjectId = useCallback(async () => {
+		const project =
+			provisioned.current ?? (await resolveProject.current("edit"));
+		if (!project) throw new Error("project_creation_not_confirmed");
+		return project.id;
+	}, []);
+	const locked =
+		busy ||
+		checking ||
+		recoveryChecking ||
+		recoveryDiscoveryFailed ||
+		!admitted;
+	function compare() {
+		if (
+			!detailsReady ||
+			roofEditing ||
+			importOpen ||
+			!projectForm.current?.reportValidity()
+		)
+			return;
+		void submit("compare");
+	}
+	function continueProject() {
+		if (intent.current) void submit("compare");
+		else
+			energySection.current
+				?.querySelector<HTMLButtonElement>("footer button.sc-primary")
+				?.click();
+	}
 	const selectedRequest = requests.find(
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	const projectName = title.trim() || __("New project", "linker-tools");
+	const projectName =
+		title.trim() ||
+		brief.site.location_label.trim() ||
+		__("New project", "linker-tools");
 	const country = brief.site.country_code
 		? config?.countries[brief.site.country_code]
 		: undefined;
@@ -358,31 +448,9 @@ export function NewProject({
 					{site && <p>{site}</p>}
 				</div>
 			</header>
-			<ConfiguratorSteps
-				active="project"
-				onSelect={(step) => {
-					const form = projectForm.current;
-					if (!form || step === "project") return;
-					if (!form.reportValidity()) return;
-					const next = form.querySelector<HTMLButtonElement>(
-						'button[type="submit"]',
-					);
-					if (!next || next.disabled) return;
-					requestedStep.current = step === "system" ? "equipment" : "review";
-					form.requestSubmit(next);
-					requestedStep.current = null;
-				}}
-			/>
+			<ConfiguratorSteps active="project" />
 			<div className="sc-layout">
-				<form
-					ref={projectForm}
-					className="sc-main"
-					aria-label={__("New project", "linker-tools")}
-					onSubmit={(event) => {
-						event.preventDefault();
-						void submit();
-					}}
-				>
+				<div className="sc-main">
 					{entryHints &&
 						!intent.current &&
 						(hasCarriedValues || entryHints.invalid) && (
@@ -529,6 +597,35 @@ export function NewProject({
 								)}
 							</Notice>
 						)}
+					{!intent.current &&
+						briefEntry?.render(
+							busy || checking || recoveryChecking || !admitted,
+							(hints) =>
+								edit((current) => {
+									const b = readBrief(current.brief);
+									const carried = readBrief(hints.brief);
+									return reviseCarriedEquipment(
+										{
+											...current,
+											brief: {
+												...b,
+												annual_load:
+													b.annual_load.kwh === null
+														? carried.annual_load
+														: b.annual_load,
+												site: {
+													...b.site,
+													location_label:
+														b.site.location_label ||
+														carried.site.location_label,
+												},
+											},
+										},
+										hints,
+										true,
+									);
+								}),
+						)}
 					{requests.length > 1 && (
 						<label className="sc-field">
 							<span>{__("Unconfirmed project creations", "linker-tools")}</span>
@@ -559,42 +656,105 @@ export function NewProject({
 							</select>
 						</label>
 					)}
-					<ProjectDetails
-						inputs={inputs}
-						config={config ?? { locale, countries: {} }}
-						disabled={
-							busy ||
-							checking ||
-							recoveryChecking ||
-							recoveryDiscoveryFailed ||
-							!admitted
-						}
-						edit={edit}
-						creation={{
-							title,
-							changeTitle: setTitle,
-							locked: Boolean(intent.current),
-							submitDisabled: waitingForProduct,
-							...(busy
-								? { submitLabel: __("Creating…", "linker-tools") }
-								: failed
-									? {
-											submitLabel: __("Retry project creation", "linker-tools"),
-										}
-									: {}),
-						}}
-						existingEquipment={
-							config && (
-								<ProjectEquipment
+					<ProjectInputsStep
+						focusSection={entryHints?.roof ? "solar" : null}
+						details={
+							<form
+								ref={projectForm}
+
+								aria-label={__("New project", "linker-tools")}
+								onSubmit={(event) => {
+									event.preventDefault();
+									continueProject();
+								}}
+							>
+								<ProjectDetails
+									embedded
+									onReady={setDetailsReady}
 									inputs={inputs}
-									client={client}
-									scope={session.query_scope}
-									disabled={busy || Boolean(intent.current)}
+									config={config ?? { locale, countries: {} }}
+									disabled={locked}
 									edit={edit}
+									creation={{
+										title,
+										changeTitle: setTitle,
+										locked: Boolean(intent.current),
+										titleLocked: Boolean(provisioned.current),
+									}}
+									existingEquipment={
+										config && (
+											<ProjectEquipment
+												inputs={inputs}
+												client={client}
+												scope={session.query_scope}
+												disabled={locked || Boolean(intent.current)}
+												edit={edit}
+											/>
+										)
+									}
+								/>
+							</form>
+						}
+						solar={
+							config &&
+							brief.system_scope &&
+							brief.system_scope !== "storage_only" && (
+								<SolarInstallation
+									inputs={inputs}
+									config={config}
+									client={client}
+									session={session}
+									disabled={locked || Boolean(intent.current)}
+									edit={edit}
+									initialMap={Boolean(entryHints?.roof)}
+									onEditing={setRoofEditing}
+									geometryImport={{
+										projectId: provisioned.current?.id ?? ensureProjectId,
+										recheck,
+										confirmedInputs: provisioned.current?.inputs ?? inputs,
+										onActivity: setImportOpen,
+										recoveryScopes,
+										recoveryChecking,
+									}}
 								/>
 							)
 						}
+						energy={
+							brief.system_scope && (
+								<div ref={energySection}>
+									<EnergyDemand
+										embedded
+										projectId={ensureProjectId}
+										inputs={inputs}
+										locale={locale}
+										disabled={
+											locked ||
+											Boolean(intent.current) ||
+											waitingForProduct ||
+											roofEditing ||
+											importOpen ||
+											!detailsReady
+										}
+										edit={edit}
+										compare={compare}
+										client={client}
+										session={session}
+										recheck={recheck}
+									/>
+								</div>
+							)
+						}
 					/>
+					{intent.current && (
+						<button
+							type="button"
+							onClick={() => void submit("compare")}
+							className="sc-button sc-primary"
+							disabled={locked}
+						>
+							{__("Retry project creation", "linker-tools")}
+						</button>
+					)}
 					{cancelled && !intent.current && (
 						<button
 							className="sc-button"
@@ -631,7 +791,7 @@ export function NewProject({
 							)}
 						</Notice>
 					)}
-				</form>
+				</div>
 				<aside className="sc-sidebar">
 					<section className="sc-card">
 						<div>

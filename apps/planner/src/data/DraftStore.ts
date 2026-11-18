@@ -17,12 +17,15 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
-export type CreationDestination = "design" | "equipment" | "energy" | "review";
+export type CreationDestination =
+	"compare" | "edit" | "design" | "equipment" | "energy" | "review";
 function isCreationDestination(
 	value: unknown,
 ): value is CreationDestination | null {
 	return (
 		value === null ||
+		value === "compare" ||
+		value === "edit" ||
 		value === "design" ||
 		value === "equipment" ||
 		value === "energy" ||

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
+import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
 import { setupDom, until, enter } from "./dom-fixture.mjs";
 register("./map-library-loader.mjs", import.meta.url);
@@ -17,7 +18,10 @@ const session = {
 	runtime: {
 		schema_version: 1,
 		runtime_sha256: "4".repeat(64),
-		models: {},
+		models: {
+			equipment_search: "search_woo_equipment_v1",
+			report: "planning_report_v1",
+		},
 		limits: {
 			max_body_bytes: 1000000,
 			max_csv_bytes: 100000,
@@ -27,7 +31,7 @@ const session = {
 	},
 };
 
-for (const target of ["continue", "review"])
+for (const target of ["compare", "retry", "profile"])
 	test(`project setup retains its inputs when opening saved projects and continuing via ${target}`, async (t) => {
 		const fixture = setupDom();
 		// The shared fixture opens a project from its URL; this test starts at the
@@ -35,6 +39,7 @@ for (const target of ["continue", "review"])
 		window.history.replaceState({}, "", "/workspace/");
 		const globals = new Map();
 		for (const [name, value] of Object.entries({
+			indexedDB: new IDBFactory(),
 			MutationObserver: window.MutationObserver,
 			getComputedStyle: window.getComputedStyle.bind(window),
 			requestAnimationFrame: (callback) =>
@@ -54,20 +59,62 @@ for (const target of ["continue", "review"])
 		const { Workspace } = await import("../src/components/Workspace.tsx");
 
 		let listed = [];
-		const creates = [];
+		const creates = [],
+			searches = [],
+			destinations = [];
+		let run;
 		let accepted;
 		const client = {
 			async send(path, body) {
+				const command = JSON.parse(body);
+				if (path === "runs/find-equipment") {
+					searches.push(command);
+					assert.equal(command.project_id, projectId);
+					assert.equal(command.expected_revision, 1);
+					accepted = {
+						...accepted,
+						inputs: command.inputs,
+						revision: 2,
+						input_sha256: "8".repeat(64),
+					};
+					const kind = "search_woo_equipment_v1";
+					run = {
+						id: "9".repeat(32),
+						project_id: projectId,
+						revision: 2,
+						manifest_sha256: "a".repeat(64),
+						result_sha256: null,
+						state: "queued",
+						is_current: true,
+						manifest: {
+							schema: 1,
+							project_id: projectId,
+							revision: 2,
+							input_sha256: accepted.input_sha256,
+							context: {
+								code_sha256: "4".repeat(64),
+								models: { task: kind },
+								assets: { "woo.equipment_inputs": "5".repeat(64) },
+								parameters: { kind },
+							},
+						},
+						result: null,
+						error: null,
+					};
+					return { schema_version: 1, project: accepted, run };
+				}
 				assert.equal(path, "projects/create");
 				creates.push(body);
-				const command = JSON.parse(body);
-				accepted = {
-					id: projectId,
-					revision: 1,
-					title: command.title,
-					inputs: command.inputs,
-					input_sha256: "2".repeat(64),
-				};
+				if (!accepted)
+					accepted = {
+						id: projectId,
+						revision: 1,
+						title: command.title,
+						inputs: command.inputs,
+						input_sha256: "2".repeat(64),
+					};
+				if (target === "retry" && creates.length === 1)
+					throw new Error("lost creation response");
 				return accepted;
 			},
 			invalidate() {},
@@ -80,14 +127,69 @@ for (const target of ["continue", "review"])
 			isCurrentScope(scope) {
 				return scope === session.query_scope;
 			},
-			async query(path) {
+			async query(path, body) {
+				if (path === "profiles/standard" || path === "assets/read") {
+					assert.equal(body.project_id, projectId);
+					return {
+						id: "2".repeat(32),
+						project_id: projectId,
+						content_sha256: "a".repeat(64),
+						metadata_sha256: "b".repeat(64),
+						media_type: "application/json",
+						purpose: "csv_profile_v1",
+						metadata: {},
+					};
+				}
+				if (path === "profiles/preview")
+					return {
+						schema_version: 1,
+						evaluation_scope: "profile_interpretation",
+						project_id: projectId,
+						asset_id: "2".repeat(32),
+						content_sha256: "a".repeat(64),
+						metadata_sha256: "b".repeat(64),
+						measurement: "gross_load",
+						source: {},
+						transformations: [],
+						summary: {
+							start_utc: "2026-01-01T00:00:00Z",
+							end_utc: "2026-01-01T00:15:00Z",
+							interval_count: 1,
+							covered_seconds: 900,
+							span_seconds: 900,
+							gap_seconds: 0,
+							gap_count: 0,
+							energy_kwh: 1,
+							min_interval_mean_kw: 4,
+							max_interval_mean_kw: 4,
+							native_max_interval_seconds: 900,
+							effective_max_interval_seconds: 900,
+							reconstructed_means: false,
+						},
+						rows: [
+							{
+								interval_index: 0,
+								start_utc: "2026-01-01T00:00:00Z",
+								end_utc: "2026-01-01T00:15:00Z",
+								interval_mean_kw: 4,
+							},
+						],
+						first_gaps: [],
+						gaps_truncated: false,
+						next_offset: null,
+					};
 				if (path === "projects/list")
 					return { schema_version: 1, items: listed, next: null };
+				if (path === "projects/runs") return { items: [], next: null };
+				if (path === "runs/read") return run;
+				if (path === "projects/read") return accepted;
 				throw new Error("unexpected command " + path);
 			},
 		};
 		const store = {
-			async writeCreation() {},
+			async writeCreation(_scope, _body, destination) {
+				destinations.push(destination);
+			},
 			async clearCreation() {},
 			async readCreations() {
 				return [];
@@ -139,19 +241,38 @@ for (const target of ["continue", "review"])
 		await until(() => document.querySelector('select[name="system_scope"]'));
 		const reviewStep = () =>
 			[...document.querySelectorAll("nav button")].find((button) =>
-				button.textContent.includes("Review & share"),
+				button.textContent.includes("Review & inquire"),
 			);
+		assert.equal(
+			document.querySelector("#sc-solar"),
+			null,
+			"unselected project does not ask for solar inputs",
+		);
 		await act(async () => reviewStep().click());
 		assert.equal(creates.length, 0);
-		await act(async () => {
-			const scope = document.querySelector('select[name="system_scope"]');
-			scope.value = "storage_only";
-			scope.dispatchEvent(new window.Event("change", { bubbles: true }));
-		});
-		await enter(
-			document.querySelector('input[name="project_title"]'),
-			"Oslo storage",
+		const choose = async (select, value) =>
+			act(async () => {
+				select.value = value;
+				select.dispatchEvent(new window.Event("change", { bubbles: true }));
+			});
+		await choose(
+			document.querySelector('[name="system_scope"]'),
+			"new_pv_storage",
 		);
+		assert.ok(
+			document.querySelector("#sc-solar"),
+			"solar is editable without creating a project",
+		);
+		await choose(
+			document.querySelector('[name="system_scope"]'),
+			"storage_only",
+		);
+		assert.equal(
+			document.querySelector("#sc-solar"),
+			null,
+			"storage does not ask for a roof",
+		);
+		await enter(document.querySelector('[name="location_label"]'), "Oslo");
 
 		listed = [
 			{
@@ -179,8 +300,8 @@ for (const target of ["continue", "review"])
 		await act(async () => toolbarButton("Back to project").click());
 		assert.equal(start().closest("[hidden]"), null);
 		assert.equal(
-			document.querySelector('input[name="project_title"]').value,
-			"Oslo storage",
+			document.querySelector('input[name="location_label"]').value,
+			"Oslo",
 		);
 		assert.equal(
 			document.querySelector('select[name="system_scope"]').value,
@@ -189,29 +310,77 @@ for (const target of ["continue", "review"])
 		const purpose = document.querySelector('select[name="project_purpose"]');
 		assert.ok(purpose, "purpose belongs to the initial Project page");
 		await act(async () => {
-			purpose.value = "backup";
+			purpose.value = "self";
 			purpose.dispatchEvent(new window.Event("change", { bubbles: true }));
 		});
-		const next = [...document.querySelectorAll("button")].find(
-			(item) => item.textContent === "Continue with storage",
+		const grid = [...document.querySelectorAll("label")].find(
+			(el) =>
+				el.textContent.includes("Grid connection") &&
+				el.querySelector("select"),
 		);
+		await choose(grid.querySelector("select"), "3");
+		const annual = [...document.querySelectorAll("label")].find((el) =>
+			el.textContent.includes("Annual electricity use"),
+		);
+		await enter(annual.querySelector("input"), "6400");
+		const button = (name) =>
+			[...document.querySelectorAll("button")].find(
+				(el) => el.textContent === name,
+			);
+		assert.equal(creates.length, 0);
+		if (target === "profile") {
+			const panel = [...document.querySelectorAll("summary")].find(
+				(el) => el.textContent === "Electricity use over time",
+			);
+			await act(async () => panel.click());
+			await enter(
+				document.querySelector('input[placeholder="Europe/Berlin"]'),
+				"Europe/Oslo",
+			);
+			await choose(document.querySelector('[name="load-pattern"]'), "H0");
+			await act(async () => button("Use this load profile").click());
+			await until(
+				() => document.querySelector('input[name="project_title"]').readOnly,
+			);
+			assert.equal(
+				new URL(location.href).searchParams.get("project"),
+				projectId,
+			);
+			assert.equal(searches.length, 0);
+			await enter(annual.querySelector("input"), "7100");
+		}
+		assert.ok(!button("Compare systems").disabled);
 		await act(async () => {
-			const action = target === "review" ? reviewStep() : next;
-			action.click();
-			action.click();
+			button("Compare systems").click();
+			button("Compare systems").click();
 		});
-		await until(
-			() =>
-				location.hash === (target === "continue" ? "#sc-energy" : "#sc-review"),
+		if (target === "retry") {
+			await until(() => button("Retry project creation"));
+			assert.equal(searches.length, 0);
+			await act(async () => button("Retry project creation").click());
+		}
+		await until(() => location.hash === "#sc-system");
+		assert.equal(new Set(creates).size, 1);
+		assert.equal(creates.length, target === "retry" ? 2 : 1);
+		assert.ok(
+			destinations.every(
+				(destination) =>
+					destination === (target === "profile" ? "edit" : "compare"),
+			),
 		);
-		assert.equal(creates.length, 1);
-		assert.equal(accepted.inputs.backup_demand.load_kw, null);
-		assert.equal(accepted.title, "Oslo storage");
-		await until(() =>
-			document
-				.querySelector("nav [aria-current=step]")
-				?.textContent.includes(
-					target === "continue" ? "Energy use" : "Review & share",
-				),
+		assert.equal(searches.length, 1);
+		assert.equal(JSON.parse(creates[0]).inputs.brief.annual_load.kwh, 6400);
+		assert.equal(searches[0].inputs.equipment_setup.grid_phase, 3);
+		assert.equal(accepted.title, "Oslo");
+		if (target === "profile") {
+			assert.equal(searches[0].inputs.brief.annual_load.kwh, 7100);
+			assert.equal(
+				searches[0].inputs.profile_selections.selected.gross_load,
+				"2".repeat(32),
+			);
+		}
+		assert.match(
+			document.querySelector("nav [aria-current=step]").textContent,
+			/Choose a solution/,
 		);
 	});
