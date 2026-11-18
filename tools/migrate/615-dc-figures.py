@@ -38,7 +38,12 @@ def main() -> int:
     target.add_argument("--production", action="store_true")
     parser.add_argument("action", choices=("preview", "apply", "rollback"))
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--plan", type=Path, help="Reviewed JSON plan to preview")
     args = parser.parse_args()
+    if args.plan and args.action != "preview":
+        parser.error(
+            "--plan is only used for preview; apply and rollback use the receipt."
+        )
     site = remote_target() if args.production else local_target(args.instance)
     if args.action == "preview" and args.receipt.exists():
         parser.error(
@@ -46,7 +51,9 @@ def main() -> int:
         )
     request: dict[str, Any] = {"action": args.action}
     if args.action == "preview":
-        request["plan"] = json.loads((HERE / "615-dc-figures.json").read_text())
+        request["plan"] = json.loads(
+            (args.plan or HERE / "615-dc-figures.json").read_text()
+        )
     else:
         request["receipt"] = json.loads(args.receipt.read_text())
     encoded_request = base64.b64encode(json.dumps(request).encode()).decode()

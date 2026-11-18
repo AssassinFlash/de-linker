@@ -32,18 +32,21 @@ try {
 			}
 			return \Linker\Commerce\Products\Publication::revision( $data );
 		};
-		$documents_match = static function ( int $id, array $expected ): void {
+		$document_urls = static function ( int $id, array $expected ): array {
 			$actual = array();
+			$urls   = array();
 			foreach ( \Linker\Commerce\Products\Publication::manifest()['documents'] as $row ) {
 				if ( in_array( $id, $row['product_ids'], true ) ) {
-					$actual[ $row['document_id'] ] = $row['blob_sha256'];
+					$actual[ $row['document_id'] ] = $row;
 				}
 			}
 			foreach ( $expected as $doc => $sha ) {
-				if ( ( $actual[ $doc ] ?? null ) !== $sha ) {
+				if ( ( $actual[ $doc ]['blob_sha256'] ?? null ) !== $sha ) {
 					throw new RuntimeException( esc_html( "Associated source bytes changed for {$id}/{$doc}." ) );
 				}
+				$urls[ $doc ] = $actual[ $doc ]['url'];
 			}
+			return $urls;
 		};
 		if ( 'preview' === $request['action'] ) {
 			$receipt = array(
@@ -59,13 +62,23 @@ try {
 				if ( ! $product instanceof WC_Product || $product->get_attribute( 'pa_model' ) !== $patch['model'] ) {
 					throw new RuntimeException( esc_html( "Model identity changed for {$id}." ) );
 				}
-				$documents_match( $id, $patch['documents'] );
+				$urls   = $document_urls( $id, $patch['documents'] );
 				$before = get_post_meta( $id, $key, true );
 				$raw    = is_string( $before ) ? json_decode( $before, true, 512, JSON_THROW_ON_ERROR ) : $before;
 				if ( ! is_array( $raw ) ) {
 					throw new RuntimeException( 'Unreadable existing Woo figures.' );
 				}
 				foreach ( $patch['figures'] as $field => $change ) {
+					if ( isset( $change['set']['citation']['document_id'] ) ) {
+						$doc = $change['set']['citation']['document_id'];
+						if ( ! isset( $urls[ $doc ] ) ) {
+							throw new RuntimeException( esc_html( "Unverified citation for {$id}/{$field}." ) );
+						}
+						$change['set']['citation'] = array(
+							'url'  => $urls[ $doc ],
+							'page' => $change['set']['citation']['page'],
+						);
+					}
 					$existing = $raw[ $field ] ?? null;
 					$matches  = is_array( $existing );
 					foreach ( $change['set'] as $name => $value ) {
@@ -111,7 +124,7 @@ try {
 				if ( ( $current !== $entry[ $from ] && $current !== $entry[ $to ] ) || $protect( (int) $id ) !== $entry['protected'] ) {
 					throw new RuntimeException( esc_html( "Concurrent edit to {$id}; receipt cannot overwrite it." ) );
 				}
-				$documents_match( (int) $id, $entry['documents'] );
+				$document_urls( (int) $id, $entry['documents'] );
 			}
 			foreach ( $receipt['products'] as $id => $entry ) {
 				$current = get_post_meta( (int) $id, $key, true );

@@ -1,0 +1,232 @@
+{
+  "purpose": "#1132 one-time Woo import for the H2-25K-T3 and H2-30K-T3-DE battery port count and directional maximum current per port.",
+  "reviewed_sources": [
+    {
+      "document_id": "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5",
+      "file": "H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+      "pages": {
+        "2": "No. of BAT: 2"
+      }
+    },
+    {
+      "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+      "file": "SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "pages": {
+        "38": "H2-25K-T3 and H2-30K-T3-DE: Max. Charging/Discharging Current [A], 2*50",
+        "43": "E: BAT1+, BAT1-; F: BAT2+, BAT2- (battery inputs)."
+      }
+    }
+  ],
+  "products": {
+    "1179": {
+      "model": "H2-25K-T3",
+      "documents": {
+        "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "figures": {
+        "n_battery_ports": {
+          "expect": {
+            "value": "2",
+            "unit": "",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5",
+              "page": 2
+            },
+            "evidence_refs": [
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        },
+        "max_battery_charge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+              "page": 38
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p38",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ],
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "charge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            }
+          }
+        },
+        "max_battery_discharge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+              "page": 38
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p38",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ],
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "discharge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            }
+          }
+        }
+      }
+    },
+    "1181": {
+      "model": "H2-30K-T3-DE",
+      "documents": {
+        "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "figures": {
+        "n_battery_ports": {
+          "expect": {
+            "value": "2",
+            "unit": "",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5",
+              "page": 2
+            },
+            "evidence_refs": [
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        },
+        "max_battery_charge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+              "page": 38
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p38",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ],
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "charge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            }
+          }
+        },
+        "max_battery_discharge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "citation": {
+              "doc": "saj_h2_10_30k_datasheet_eu_en.pdf",
+              "page": 2
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2"
+            ],
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+              "page": 38
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p38",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ],
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "discharge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            }
+          }
+        }
+      }
+    }
+  }
+}
