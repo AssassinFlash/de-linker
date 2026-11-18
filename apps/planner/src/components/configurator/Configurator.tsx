@@ -185,6 +185,7 @@ export default function Configurator({
 	const [inputsOpened, setInputsOpened] = useState(
 		() => !["system", "review"].includes(initialStep()),
 	);
+	const [coordinatesValid, setCoordinatesValid] = useState(true);
 	const [roofEditing, setRoofEditing] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const [navigationRefused, setNavigationRefused] = useState(false);
@@ -225,7 +226,10 @@ export default function Configurator({
 		(id) => wiringValidity[id],
 	);
 	const invalidInput =
-		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
+		!coordinatesValid ||
+		!energyValid ||
+		!sharedDcValid ||
+		wiringStates.includes("invalid");
 	const missingModules = wiringStates.includes("selection");
 	const navigationBlocked =
 		!detailsReady ||
@@ -1355,6 +1359,7 @@ export default function Configurator({
 														)
 											}
 											initialMap={mapPropertyLinks.has(location.hash)}
+											onCoordinateValidity={setCoordinatesValid}
 											onEditing={setRoofEditing}
 											geometryImport={{
 												projectId: project.id,
@@ -1379,6 +1384,7 @@ export default function Configurator({
 										edit={edit}
 										modelsUnavailable={modelsUnavailable}
 										embedded
+										compareDisabled={!coordinatesValid}
 										compare={() => void compare()}
 										onValidity={setEnergyValid}
 									>

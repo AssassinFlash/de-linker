@@ -30,6 +30,7 @@ import {
 	type CalibrationCommand,
 } from "../design/ImageCalibrationWorkspace.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
+import { NumberField } from "../NumberField.tsx";
 import { SourceMeasurements } from "../design/MapSourceDetails.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
@@ -71,6 +72,7 @@ export interface SolarInstallationProps {
 	wiring?: ReactNode;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
+	onCoordinateValidity?: (valid: boolean) => void;
 	geometryImport?: {
 		projectId: string | (() => Promise<string>);
 		recheck: () => void;
@@ -134,6 +136,7 @@ export function SolarInstallation({
 	wiring,
 	initialMap = false,
 	onEditing,
+	onCoordinateValidity,
 	geometryImport,
 }: SolarInstallationProps) {
 	const geometry =
@@ -159,6 +162,16 @@ export function SolarInstallation({
 			? "roof"
 			: "known",
 	);
+	const [latitudeValid, setLatitudeValid] = useState(true);
+	const [longitudeValid, setLongitudeValid] = useState(true);
+	const showCoordinates =
+		mode === "known" || !geometry.coordinate_system.anchor;
+	const coordinatesValid =
+		!showCoordinates || (latitudeValid && longitudeValid);
+	useEffect(() => {
+		onCoordinateValidity?.(coordinatesValid);
+		return () => onCoordinateValidity?.(true);
+	}, [coordinatesValid, onCoordinateValidity]);
 	const templates = useModuleTemplates(client, session.query_scope, !disabled);
 	const [moduleId, setModuleId] = useState(geometry.module_specs[0]?.id ?? "");
 	const module =
@@ -1548,7 +1561,11 @@ export function SolarInstallation({
 													site.longitude !== null && (
 														<button
 															type="button"
-															disabled={!confirmed || !fields.source.trim()}
+															disabled={
+																!coordinatesValid ||
+																!confirmed ||
+																!fields.source.trim()
+															}
 															onClick={confirmMapReference}
 														>
 															{__(
@@ -1656,33 +1673,27 @@ export function SolarInstallation({
 						)}
 					</p>
 					<div className="sc-fields">
-						{(mode === "known" || !geometry.coordinate_system.anchor) &&
+						{showCoordinates &&
 							(["latitude", "longitude"] as const).map((key) => {
-								const bound = key === "latitude" ? 90 : 180;
+								const latitude = key === "latitude";
+								const bound = latitude ? 90 : 180;
 								return (
-									<label className="sc-field" key={key}>
-										<span>
-											{key === "latitude"
+									<NumberField
+										key={key}
+										label={
+											latitude
 												? __("Latitude", "linker-tools")
-												: __("Longitude", "linker-tools")}
-										</span>
-										<input
-											type="number"
-											step="any"
-											min={-bound}
-											max={bound}
-											value={site[key] ?? ""}
-											onChange={(e) =>
-												coordinateChange(
-													key,
-													e.currentTarget.validity.valid &&
-														e.currentTarget.value
-														? e.currentTarget.valueAsNumber
-														: null,
-												)
-											}
-										/>
-									</label>
+												: __("Longitude", "linker-tools")
+										}
+										unit=""
+										locale={config.locale}
+										notation="point-or-comma"
+										min={-bound}
+										max={bound}
+										value={site[key]}
+										onChange={(value) => coordinateChange(key, value)}
+										onValidity={latitude ? setLatitudeValid : setLongitudeValid}
+									/>
 								);
 							})}
 						<label className="sc-field">
@@ -1828,7 +1839,10 @@ export function SolarInstallation({
 								<fieldset key={source.id}>
 									<legend>{source.note}</legend>
 									<dl className="lp-drawing-source">
-										<SourceMeasurements source={source} locale={config.locale} />
+										<SourceMeasurements
+											source={source}
+											locale={config.locale}
+										/>
 									</dl>
 									<GeometryExportPermission
 										value={source.permissions.export}
@@ -1914,6 +1928,7 @@ export function SolarInstallation({
 						<button
 							className="sc-button sc-primary"
 							type="button"
+							disabled={!coordinatesValid}
 							onClick={next}
 						>
 							{__("Continue with energy use", "linker-tools")}

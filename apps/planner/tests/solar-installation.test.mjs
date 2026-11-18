@@ -145,7 +145,8 @@ test("reopened roof source shows its declared precision, measurement note and re
 	});
 	await mount(t, { brief: emptyBrief(), geometry }, aerial, null, "de");
 	const properties = [...document.querySelectorAll("fieldset")].find(
-		(field) => field.querySelector(":scope > legend")?.textContent === "roof-plan.png",
+		(field) =>
+			field.querySelector(":scope > legend")?.textContent === "roof-plan.png",
 	);
 	assert.ok(properties);
 	assert.match(properties.textContent, /0,05/);
@@ -164,6 +165,26 @@ test("roof overview opens the editor and returns to the recorded layout", async 
 	await click("Close");
 	assert.equal(document.querySelector("dialog[open]"), null);
 	assert.deepEqual(app.inputs.geometry, flat);
+});
+test("site coordinates keep pasted notation and leave mixed or out-of-range values available for correction", async (t) => {
+	const app = await mount(t);
+	const latitude = input("Latitude"),
+		longitude = input("Longitude");
+	await enter(latitude, "48.1689");
+	await enter(longitude, "11,5844");
+	assert.equal(app.inputs.brief.site.longitude, 11.5844);
+	await enter(latitude, "1.234,5");
+	assert.equal(latitude.value, "1.234,5");
+	assert.equal(latitude.getAttribute("aria-invalid"), "true");
+	assert.equal(app.inputs.brief.site.latitude, 48.1689);
+	await enter(longitude, "181");
+	await enter(latitude, "48,17");
+	assert.equal(button("Continue with energy use").disabled, true);
+	assert.equal(longitude.value, "181");
+	await enter(longitude, "");
+	assert.equal(button("Continue with energy use").disabled, false);
+	assert.equal(app.inputs.brief.site.latitude, 48.17);
+	assert.equal(app.inputs.brief.site.longitude, null);
 });
 test("new solar module details persist known capacity and source without requiring a roof", async (t) => {
 	const app = await mount(t);

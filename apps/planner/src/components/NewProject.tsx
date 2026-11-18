@@ -158,6 +158,7 @@ export function NewProject({
 		if (comparingDirections) optionsHeading.current?.focus();
 	}, [comparingDirections]);
 	const [importOpen, setImportOpen] = useState(false);
+	const [coordinatesValid, setCoordinatesValid] = useState(true);
 	const [roofEditing, setRoofEditing] = useState(false);
 	const provisioned = useRef<Project | null>(null);
 	const [checking, setChecking] = useState(true);
@@ -245,6 +246,7 @@ export function NewProject({
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
 			!detailsReady ||
+			!coordinatesValid ||
 			roofEditing ||
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
@@ -826,6 +828,7 @@ export function NewProject({
 									disabled={locked || Boolean(intent.current)}
 									edit={edit}
 									initialMap={Boolean(entryHints?.roof)}
+									onCoordinateValidity={setCoordinatesValid}
 									onEditing={setRoofEditing}
 									geometryImport={{
 										projectId: provisioned.current?.id ?? ensureProjectId,
@@ -855,6 +858,7 @@ export function NewProject({
 											!detailsReady
 										}
 										edit={edit}
+										compareDisabled={!coordinatesValid}
 										compare={compare}
 										client={client}
 										session={session}

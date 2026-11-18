@@ -112,6 +112,7 @@ export function EnergyDemand({
 	disabled,
 	edit,
 	compare,
+	compareDisabled = false,
 	back,
 	embedded = false,
 	children,
@@ -127,6 +128,7 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
+	compareDisabled?: boolean;
 	back?: () => void;
 	embedded?: boolean;
 	children?: React.ReactNode;
@@ -1167,7 +1169,7 @@ export function EnergyDemand({
 				<button
 					type="button"
 					className="sc-button sc-primary"
-					disabled={!canCompare}
+					disabled={compareDisabled || !canCompare}
 					onClick={compare}
 				>
 					{__("Compare systems", "linker-tools")}

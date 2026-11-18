@@ -504,6 +504,21 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 				(b) => b.textContent === "Compare systems",
 			);
 		await until(() => compare() && !compare().disabled);
+		const latitude = [...dom.element.querySelectorAll("label")]
+			.find(
+				(field) =>
+					field.querySelector("span")?.textContent.trim() === "Latitude",
+			)
+			.querySelector("input");
+		await enter(latitude, "1.234,5");
+		assert.equal(latitude.value, "1.234,5");
+		assert.equal(compare().disabled, true);
+		await act(async () =>
+			latitude.dispatchEvent(
+				new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+			),
+		);
+		assert.equal(compare().disabled, false);
 		await act(async () => compare().click());
 		await until(() => window.location.hash === "#sc-system");
 		await act(async () => root.unmount());
