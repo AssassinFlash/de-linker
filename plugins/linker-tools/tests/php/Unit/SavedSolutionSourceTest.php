@@ -28,10 +28,14 @@ final class SavedSolutionSourceTest extends TestCase {
 
 	/**
 	 * The archive is input-only and remains private after ownership/status changes.
+	 *
+	 * @dataProvider saved_designs
+	 * @param string               $kind  Writer's design kind.
+	 * @param array<string, mixed> $input Writer's original input.
 	 */
-	public function test_only_active_owner_can_read_original_inputs_without_old_results(): void {
-		$user  = 5;
-		$post  = new WP_Post(
+	public function test_only_active_owner_can_read_original_inputs_without_old_results( string $kind, array $input ): void {
+		$user = 5;
+		$post = new WP_Post(
 			(object) array(
 				'ID'          => 45,
 				'post_type'   => SavedSolutions::POST_TYPE,
@@ -40,15 +44,10 @@ final class SavedSolutionSourceTest extends TestCase {
 				'post_title'  => 'Original project',
 			)
 		);
-		$input = array(
-			'annual_kwh' => 4500,
-			'heat_pump'  => true,
-			'extra'      => array( 'preserved' => true ),
-		);
      // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Deterministic JSON fixture codec without a WordPress runtime.
 		$raw = (string) json_encode(
 			array(
-				'kind'     => 'residential',
+				'kind'     => $kind,
 				'input'    => $input,
 				'snapshot' => array( 'old_result' => 987 ),
 			)
@@ -79,7 +78,7 @@ final class SavedSolutionSourceTest extends TestCase {
 			'get_post_meta',
 			array(
 				'args'   => array( 45, SavedSolutions::ITEMS_META, true ),
-				'return' => '[{"product_id":1946,"quantity":1}]',
+				'return' => '[{"product_id":4107,"quantity":2},{"product_id":1946,"quantity":4}]',
 			)
 		);
 		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $value ): string => $value ) );
@@ -93,7 +92,9 @@ final class SavedSolutionSourceTest extends TestCase {
 		$source  = $read->read( new Principal( 'user', 'wp:1:user:5' ), $command );
 		$this->assertIsArray( $source );
      // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Deterministic JSON fixture codec without a WordPress runtime.
-		$this->assertEquals( json_decode( (string) json_encode( $input ) ), $source['input'] );
+		$this->assertEquals( json_decode( (string) json_encode( (object) $input ) ), $source['input'] );
+		$this->assertSame( array( 4107, 1946 ), array_column( $source['recorded_items'], 'product_id' ) );
+		$this->assertSame( array( 2, 4 ), array_column( $source['recorded_items'], 'quantity' ) );
 		$this->assertSame( hash( 'sha256', $raw ), $source['source_sha256'] );
 		$this->assertArrayNotHasKey( 'snapshot', $source );
 		$this->assertInstanceOf( WP_Error::class, $read->read( new Principal( 'guest', 'guest5' ), $command ) );
@@ -103,5 +104,24 @@ final class SavedSolutionSourceTest extends TestCase {
 		$post->post_status = 'trash';
 		$this->assertInstanceOf( WP_Error::class, $read->read( new Principal( 'user', 'wp:1:user:5' ), $command ) );
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Original inputs as stored by each writer.
+	 *
+	 * @return array<string, array{string, array<string,mixed>}> Saved writer fixtures.
+	 */
+	public static function saved_designs(): array {
+		return array(
+			'residential form'     => array(
+				'residential',
+				array(
+					'annual_kwh' => 4500,
+					'heat_pump'  => true,
+					'extra'      => array( 'preserved' => true ),
+				),
+			),
+			'Genie equipment only' => array( 'genie', array() ),
+		);
 	}
 }

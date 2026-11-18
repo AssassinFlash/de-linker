@@ -73,7 +73,11 @@ export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 		source.kind === "industrial"
 			? source.kind
 			: null;
-	if (projectUse === null) return empty;
+	if (projectUse === null)
+		return {
+			...empty,
+			invalid: source.kind !== "genie" || Object.keys(source.input).length > 0,
+		};
 	const params = new URLSearchParams();
 	let unsupported = false;
 	for (const key of ["annual_kwh", "pv_kwp", "phase", "backup", "plz"]) {

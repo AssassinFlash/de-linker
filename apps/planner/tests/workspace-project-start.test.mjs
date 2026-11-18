@@ -31,16 +31,29 @@ const session = {
 	},
 };
 
-for (const target of ["preliminary", "compare", "retry", "profile"]) {
+for (const target of ["preliminary", "saved", "compare", "retry", "profile"]) {
+	const saved = target === "saved";
 	const name =
-		target === "preliminary"
-			? "A guest can compare preliminary options from a blank project and review their chosen direction"
-			: `project setup retains its inputs when opening saved projects and continuing via ${target}`;
+		{
+			preliminary:
+				"A guest can compare preliminary options from a blank project and review their chosen direction",
+			saved:
+				"An account owner can reopen a Genie equipment list and carry the original quantities into the project",
+		}[target] ??
+		`project setup retains its inputs when opening saved projects and continuing via ${target}`;
 	test(name, async (t) => {
 		const fixture = setupDom();
 		// The shared fixture opens a project from its URL; this test starts at the
 		// empty index, which is where the one-screen start lives.
-		window.history.replaceState({}, "", "/workspace/");
+		window.history.replaceState(
+			{},
+			"",
+			saved ? "/workspace/?saved_solution=45" : "/workspace/",
+		);
+		const recordedItems = [
+			{ product_id: 4107, quantity: 2 },
+			{ product_id: 1946, quantity: 4 },
+		];
 		const globals = new Map();
 		for (const [name, value] of Object.entries({
 			indexedDB: new IDBFactory(),
@@ -123,7 +136,7 @@ for (const target of ["preliminary", "compare", "retry", "profile"]) {
 			},
 			invalidate() {},
 			async bootstrap() {
-				return session;
+				return saved ? { ...session, kind: "user" } : session;
 			},
 			async probeScope() {
 				return session.query_scope;
@@ -132,6 +145,20 @@ for (const target of ["preliminary", "compare", "retry", "profile"]) {
 				return scope === session.query_scope;
 			},
 			async query(path, body) {
+				if (path === "recovery/scopes")
+					return { schema_version: 1, scopes: [], next: null };
+				if (saved && path === "sources/saved-solution") {
+					assert.equal(body.solution_id, 45);
+					return {
+						schema_version: 1,
+						solution_id: 45,
+						title: "Saved equipment",
+						kind: "genie",
+						input: {},
+						recorded_items: recordedItems,
+						source_sha256: "a".repeat(64),
+					};
+				}
 				if (path === "profiles/standard" || path === "assets/read") {
 					assert.equal(body.project_id, projectId);
 					return {
@@ -250,7 +277,17 @@ for (const target of ["preliminary", "compare", "retry", "profile"]) {
 		await mount();
 		const start = () => document.querySelector("form");
 		await until(() => document.querySelector('select[name="system_scope"]'));
-		if (target === "preliminary") {
+		if (target === "preliminary" || saved) {
+			if (saved) {
+				assert.equal(
+					document.querySelector('[name="project_title"]').value,
+					"Saved equipment",
+				);
+				assert.doesNotMatch(
+					document.body.textContent,
+					/Some saved inputs cannot be carried over/,
+				);
+			}
 			const compare = [...document.querySelectorAll("button")].find(
 				(button) => button.textContent === "Compare preliminary options",
 			);
@@ -273,7 +310,17 @@ for (const target of ["preliminary", "compare", "retry", "profile"]) {
 			assert.deepEqual(destinations, ["review"]);
 			assert.equal(creates.length, 1);
 			const inputs = JSON.parse(creates[0]).inputs;
-			assert.deepEqual(Object.keys(inputs), ["brief"]);
+			assert.deepEqual(
+				Object.keys(inputs),
+				saved ? ["brief", "saved_solution_reference"] : ["brief"],
+			);
+			if (saved) {
+				assert.equal(inputs.saved_solution_reference.solution_id, 45);
+				assert.deepEqual(
+					inputs.saved_solution_reference.recorded_items,
+					recordedItems,
+				);
+			}
 			assert.equal(inputs.brief.system_scope, "storage_addition");
 			assert.equal(inputs.brief.project_use, null);
 			assert.equal(inputs.brief.annual_load.kwh, null);
