@@ -205,6 +205,13 @@
   --proto-paper-mist: #edf1f5;       /* marketing pale cool-grey background */
   --proto-paper-mist-deep: #e1e7ee;  /* same family, one step deeper */
   --proto-line-journal: #d7dde4;     /* journal hairline */
+  /* Five-step configurator surfaces from the November 17 prototype. */
+  --sc-paper: #f5f8f6;
+  --sc-muted: #52655f;
+  --sc-line: #dce5e1;
+  --sc-input-line: #bacbc3;
+  --sc-soft: #e8f3ee;
+  --sc-board: #e7ede3;
   --proto-mint: #d9e6ef;             /* journal mint panel */
   --proto-navy-deep: #102c30;        /* journal dark footer band */
 --proto-radius-card: 18px;         /* journal cards (was hardcoded 18px) */

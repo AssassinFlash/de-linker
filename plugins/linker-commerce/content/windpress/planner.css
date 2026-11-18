@@ -1036,26 +1036,33 @@
 
 /* System configurator presentation from the approved November 17 prototype. */
 @layer components {
-  .sc-configurator { width: 100%; min-width: 0; max-width: 1376px; margin-inline: auto; padding: 12px 32px 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
+  .sc-configurator { width: 100%; min-width: 0; max-width: 1376px; margin-inline: auto; padding: 12px 32px 60px; color: var(--proto-ink-deep); background: var(--sc-paper); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
   .sc-configurator *, .sc-configurator *::before, .sc-configurator *::after { box-sizing: border-box; }
   .sc-configurator :is(h1, h2, h3, p) { margin: 0; color: inherit; }
-  .sc-configurator :is(h1, h2, h3) { font-family: inherit; font-weight: 600; }
-  .sc-configurator h1 { font-size: clamp(25px, 3vw, 36px); line-height: 1.2; letter-spacing: -.03em; }
-  .sc-configurator h2 { font-size: 21px; line-height: 1.4; letter-spacing: -.02em; }
-  .sc-configurator h3 { font-size: 16px; line-height: 1.4; }
+  .sc-configurator :is(h1, h2, h3) { font-family: inherit; overflow-wrap: anywhere; }
+  .sc-configurator h2 { font-size: 21px; line-height: 1.55; letter-spacing: -.4px; font-weight: 700; }
+  .sc-configurator h3 { font-size: 16px; line-height: 1.55; letter-spacing: normal; font-weight: 700; }
+  .sc-configurator h1, .sc-configurator header.sc-section-head :is(h1, h2) { font-size: clamp(25px, 3vw, 36px); line-height: 1.2; letter-spacing: -1px; font-weight: 650; }
   .sc-configurator :is(button, input, select, textarea) { font: inherit; color: inherit; }
   .sc-configurator button { min-height: 44px; cursor: pointer; }
   .sc-configurator button:disabled { opacity: .45; cursor: default; }
   .sc-configurator :is(button, a, input, select, textarea, summary):focus-visible { outline: 3px solid var(--proto-accent); outline-offset: 4px; }
   .sc-configurator a { color: var(--proto-accent); }
-  .sc-configurator .sc-muted { color: var(--proto-neutral-500); font-size: 13px; line-height: 1.55; }
+  .sc-configurator .sc-muted { color: var(--sc-muted); font-size: 13px; line-height: 1.55; }
   .sc-configurator .sc-project-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-width: 0; margin: 10px 0 24px; }
   .sc-configurator .sc-project-heading > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-project-heading h1 { font-size: 27px; }
-  .sc-configurator .sc-project-heading p { margin-top: 5px; color: var(--proto-neutral-500); font-size: 14px; }
-  .sc-configurator .sc-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--proto-color-line); }
-  .sc-configurator .sc-nav button { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 16px; border: 0; border-radius: var(--proto-radius-md); color: var(--proto-neutral-500); background: transparent; font-size: 14px; font-weight: 600; }
-  .sc-configurator .sc-nav button:hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
+  .sc-configurator .sc-project-heading h1 + p { margin-top: 5px; color: var(--sc-muted); font-size: 14px; }
+  .sc-configurator .sc-project-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 8px 20px; font-size: 14px; }
+  .sc-configurator .sc-project-toolbar.sc-actions { justify-content: flex-end; }
+  .sc-configurator .sc-project-toolbar .sc-button { background: transparent; border-color: transparent; }
+  .sc-configurator .sc-project-toolbar .sc-button:hover:enabled { background: var(--sc-soft); }
+  .sc-configurator .sc-eyebrow { margin: 0 0 8px; color: var(--sc-muted); font-size: 11px; line-height: 1.55; letter-spacing: 1.7px; text-transform: uppercase; font-weight: 700; }
+  .sc-configurator .sc-badge { flex: none; padding: 3px 9px; border: 1px solid var(--sc-line); border-radius: 20px; background: var(--sc-paper); color: var(--proto-ink-deep); font-size: 11px; font-weight: 600; }
+  .sc-configurator .sc-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--sc-line); }
+  .sc-configurator .sc-nav button { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border: 0; border-radius: 6px; color: var(--sc-muted); background: transparent; font-size: 15px; font-weight: 600; }
+  .sc-configurator .sc-nav button:disabled { opacity: 1; font-weight: 400; }
+  .sc-configurator .sc-nav button:not([aria-current="step"]):hover:enabled { color: var(--proto-ink-deep); background: var(--sc-soft); }
   .sc-configurator .sc-nav button[aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
   .sc-configurator .sc-step-number { margin-right: 8px; font-size: 12px; opacity: .7; }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
@@ -1066,103 +1073,121 @@
   .sc-configurator .sc-card > .sc-fields + p, .sc-configurator .sc-card > fieldset > .sc-fields + p { margin-block: 22px 12px; }
   .sc-configurator .sc-solar .sc-fields + h3 { margin-block: 24px 8px; }
   .sc-configurator .sc-card > :is(label, p, details) + :is(.sc-fields, details) { margin-block-start: 16px; }
-  .sc-configurator .sc-card label:has(> input[type="checkbox"]) { display: flex; align-items: center; gap: 10px; }
+  .sc-configurator .sc-card label:has(> input[type="checkbox"]) { display: flex; flex-direction: row; align-items: center; gap: 10px; }
   .sc-configurator .sc-card label > input[type="checkbox"] { flex: none; margin: 0; padding: 0; }
   .sc-configurator .sc-card > details > summary { cursor: pointer; min-height: 44px; align-content: center; }
   .sc-configurator .sc-card > details[open] > summary { margin-bottom: 12px; }
-  .sc-configurator .sc-card { min-width: 0; padding: 26px; margin-bottom: 20px; background: var(--proto-neutral-0); border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); }
+  .sc-configurator .sc-card { min-width: 0; padding: 26px; margin-bottom: 20px; background: var(--proto-neutral-0); border: 1px solid var(--sc-line); border-radius: var(--proto-radius-lg); }
+  .sc-configurator .sc-project-card .sc-card { margin: 20px 0 0; padding: 20px 0 0; border: 0; border-top: 1px solid var(--sc-line); border-radius: 0; }
   .sc-configurator .sc-sidebar .sc-card { padding: 22px; }
   .sc-configurator .sc-sidebar dl { margin: 20px 0 0; }
-  .sc-configurator .sc-sidebar dt { color: var(--proto-neutral-500); font-size: 12px; }
-  .sc-configurator .sc-sidebar dd { margin: 2px 0 15px; font-size: 18px; font-weight: 600; }
-  .sc-configurator .sc-sidebar .sc-actions { border-top: 1px solid var(--proto-color-line); padding-top: 16px; margin-top: 16px; }
+  .sc-configurator .sc-sidebar dt { color: var(--sc-muted); font-size: 12px; }
+  .sc-configurator .sc-sidebar dd { margin: 2px 0 15px; font-size: 18px; font-weight: 650; }
+  .sc-configurator .sc-sidebar .sc-card > :is(.sc-actions, details) { border-top: 1px solid var(--sc-line); padding-top: 16px; margin-top: 16px; }
+  .sc-configurator .sc-sidebar summary { cursor: pointer; color: var(--proto-accent); font-size: 13px; text-decoration: underline; }
   .sc-configurator .sc-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
   .sc-configurator .sc-section-head > * { min-width: 0; }
-  .sc-configurator .sc-section-head p { max-width: 680px; margin-top: 10px; color: var(--proto-neutral-500); }
+  .sc-configurator .sc-section-head p { max-width: 680px; margin-top: 10px; color: var(--sc-muted); }
+  .sc-configurator header.sc-section-head p { font-size: 15px; }
   .sc-configurator .sc-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-  .sc-configurator .sc-field, .sc-configurator .sc-fields .lp-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 14px; font-weight: 500; }
+  .sc-configurator .sc-fields > .sc-wide { grid-column: 1 / -1; }
+  .sc-configurator .sc-field, .sc-configurator .sc-fields .lp-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 14px; font-weight: 550; }
   .sc-configurator .sc-fields .lp-field > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
-  .sc-configurator .sc-fields .lp-field :is(input, select, textarea) { min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); box-shadow: none; }
-  .sc-configurator :is(input, select, textarea) { width: 100%; min-width: 0; min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
+  .sc-configurator :is(input, select, textarea), .sc-configurator .sc-fields .lp-field :is(input, select, textarea) { width: 100%; min-width: 0; min-height: 46px; padding: 11px; border: 1px solid var(--sc-input-line); border-radius: 7px; background: var(--proto-neutral-0); color: var(--proto-ink-deep); box-shadow: none; }
   .sc-configurator select { appearance: auto; }
   .sc-configurator textarea { min-height: 90px; resize: vertical; }
   .sc-configurator :is(input[type="checkbox"], input[type="radio"]) { width: 20px; height: 20px; min-height: 20px; accent-color: var(--proto-accent); }
   .sc-configurator input[type="file"] { max-width: 100%; padding: 8px; }
-  .sc-configurator .sc-field small, .sc-configurator .sc-fields .lp-field small { color: var(--proto-neutral-500); font-size: 12px; font-weight: 400; }
+  .sc-configurator .sc-field small, .sc-configurator .sc-fields .lp-field small { color: var(--sc-muted); font-size: 12px; font-weight: 400; }
   .sc-configurator .sc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .sc-configurator .sc-option { flex: 1 1 180px; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); text-align: left; font-weight: 600; }
-  .sc-configurator .sc-option span { display: block; margin-top: 5px; color: var(--proto-neutral-500); font-size: 13px; font-weight: 400; }
-  .sc-configurator .sc-option[aria-pressed="true"] { background: var(--proto-teal-50); color: var(--proto-teal-800); border-color: var(--proto-accent); }
+  .sc-configurator .sc-option { flex: 1 1 180px; min-width: 0; padding: 20px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); text-align: left; font-weight: 600; }
+  .sc-configurator .sc-option span { display: block; margin-top: 5px; color: var(--sc-muted); font-size: 13px; font-weight: 400; }
+  .sc-configurator .sc-option[aria-pressed="true"] { background: var(--sc-soft); color: var(--proto-teal-800); border-color: var(--proto-accent); }
   .sc-configurator .sc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .sc-configurator .sc-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; line-height: 1.55; text-align: center; text-decoration: none; transition: background var(--proto-duration) var(--proto-ease); }
-  .sc-configurator .sc-button:hover:enabled { background: var(--proto-teal-50); }
+  .sc-configurator .sc-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; line-height: 1.55; text-align: center; text-decoration: none; transition: background var(--proto-duration) var(--proto-ease); }
+  .sc-configurator .sc-button:hover:enabled { background: var(--sc-soft); }
   .sc-configurator .sc-primary { background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); }
   .sc-configurator .sc-primary:hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
   .sc-configurator .sc-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 26px; }
+  .sc-configurator .sc-footer > .sc-primary { margin-inline-start: auto; }
+  .sc-configurator .sc-metrics { display: flex; flex-wrap: wrap; gap: 30px; padding-block: 18px; margin: 0; }
+  .sc-configurator .sc-metric { min-width: 0; }
+  .sc-configurator .sc-metric :is(strong, dd) { display: block; margin: 0; font-size: 27px; font-weight: 650; line-height: 1.4; letter-spacing: -.7px; }
+  .sc-configurator .sc-metric :is(span, dt) { color: var(--sc-muted); font-size: 12px; }
+  .sc-configurator .sc-review-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 26px; margin-bottom: 20px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); }
+  .sc-configurator .sc-review-actions > .sc-card { margin: 0; padding: 0; border: 0; }
   .sc-configurator .sc-system-options > p + p { margin-top: 12px; }
   .sc-configurator .sc-product-filter { margin-block: 16px 20px; }
   .sc-configurator .sc-product-filter summary { min-height: 44px; align-content: center; font-weight: 600; cursor: pointer; }
   .sc-configurator .sc-product-filter[open] .sc-fields { margin-top: 12px; }
   .sc-configurator .sc-comparison { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .sc-configurator .sc-package { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); text-align: left; }
+  .sc-configurator .sc-package { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 20px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); text-align: left; }
   .sc-configurator .sc-package[aria-pressed="true"], .sc-configurator .sc-package[data-selected="true"] { padding: 19px; border: 2px solid var(--proto-accent); }
-  .sc-configurator .sc-package p { color: var(--proto-neutral-500); font-size: 13px; }
+  .sc-configurator .sc-package p { color: var(--sc-muted); font-size: 13px; }
   .sc-configurator .sc-package-capacity { display: grid; gap: 2px; }
-  .sc-configurator .sc-package-capacity strong { font-size: 22px; line-height: 1.25; color: var(--proto-ink-deep); }
-  .sc-configurator .sc-package-capacity span { font-size: 13px; color: var(--proto-neutral-500); }
-  .sc-configurator .sc-package .sc-package-status { padding-top: 12px; border-top: 1px solid var(--proto-color-line); font-weight: 600; color: var(--proto-ink-deep); }
+  .sc-configurator .sc-package-capacity strong { font-size: 27px; font-weight: 650; line-height: 1.25; color: var(--proto-ink-deep); }
+  .sc-configurator .sc-package-capacity span { font-size: 13px; color: var(--sc-muted); }
+  .sc-configurator .sc-package .sc-package-status { padding-top: 12px; border-top: 1px solid var(--sc-line); font-weight: 600; color: var(--proto-ink-deep); }
   .sc-configurator .sc-package .sc-button { width: 100%; margin-top: auto; }
-  .sc-configurator .sc-equipment { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 19px 0; border-bottom: 1px solid var(--proto-color-line); }
+  .sc-configurator .sc-equipment { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 19px 0; border-bottom: 1px solid var(--sc-line); }
   .sc-configurator .sc-equipment:last-child { border-bottom: 0; }
   .sc-configurator .sc-equipment > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-equipment :is(img, svg) { width: 62px; height: 72px; object-fit: contain; }
-  .sc-configurator .sc-equipment p { color: var(--proto-neutral-500); font-size: 13px; }
+  .sc-configurator .sc-equipment p { color: var(--sc-muted); font-size: 13px; }
   .sc-configurator .sc-equipment input { max-width: 75px; padding: 6px; text-align: center; }
-  .sc-configurator .sc-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid var(--proto-color-line); font-size: 13px; }
+  .sc-configurator .sc-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid var(--sc-line); font-size: 13px; }
   .sc-configurator .sc-summary > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-summary dd { margin: 0; text-align: right; }
   @media (max-width: 1000px) {
     .sc-configurator .sc-layout { grid-template-columns: minmax(0, 1fr); }
     .sc-configurator .sc-sidebar { position: static; }
-    .sc-configurator .sc-sidebar dl { display: flex; flex-wrap: wrap; gap: 20px 24px; }
+    .sc-configurator .sc-sidebar .sc-card { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 24px; }
+    .sc-configurator .sc-sidebar dl { display: flex; flex-wrap: wrap; gap: 20px 24px; margin: 0; }
+    .sc-configurator .sc-sidebar .sc-card > :is(.sc-actions, details) { border: 0; padding: 0; margin: 0; }
+    .sc-configurator .sc-sidebar details[open] { flex-basis: 100%; }
   }
   @media (max-width: 600px) {
     .sc-configurator { padding: 5px 16px 35px; }
-    .sc-configurator .sc-project-heading { align-items: flex-start; flex-wrap: wrap; margin-top: 5px; }
+    .sc-configurator .sc-project-toolbar { gap: 6px 12px; padding-block: 10px 16px; }
+    .sc-configurator .sc-project-toolbar .sc-actions { width: 100%; justify-content: flex-end; gap: 4px; }
+    .sc-configurator .sc-project-toolbar .sc-button { padding-inline: 9px; font-size: 13px; }
+    .sc-configurator .sc-project-heading { gap: 12px; margin-top: 5px; }
     .sc-configurator .sc-project-heading h1 { font-size: 23px; }
-    .sc-configurator .sc-project-heading { gap: 6px; margin-bottom: 12px; }
-    .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
-    .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
+    .sc-configurator .sc-project-heading .sc-badge { max-width: 120px; text-align: center; }
     .sc-configurator .sc-nav { gap: 5px; margin-bottom: 20px; }
-    .sc-configurator .sc-nav button { flex: 1 0 auto; padding: 7px 10px; font-size: 12px; }
+    .sc-configurator .sc-nav button { flex: 1; min-width: min-content; min-height: 44px; padding: 7px 9px; font-size: 12px; }
     .sc-configurator .sc-step-number { display: none; }
     .sc-configurator .sc-layout { gap: 0; }
     .sc-configurator .sc-card { padding: 20px; }
     .sc-configurator .sc-section-head { flex-wrap: wrap; }
-    .sc-configurator .sc-fields, .sc-configurator .sc-comparison { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-fields, .sc-configurator .sc-comparison, .sc-configurator .sc-review-actions { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-review-actions { padding: 20px; }
     .sc-configurator :is(input, select, textarea) { font-size: 16px; }
     .sc-configurator .sc-option { flex-basis: 100%; padding: 16px; }
     .sc-configurator .sc-footer { align-items: stretch; }
     .sc-configurator .sc-footer .sc-button { font-size: 13px; }
-    .sc-configurator .sc-package { gap: 12px; }
+    .sc-configurator .sc-metrics { gap: 20px; }
+    .sc-configurator .sc-metric :is(strong, dd) { font-size: 25px; }
+    .sc-configurator .sc-package { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); align-items: start; }
+    .sc-configurator .sc-package > :not(h3, .sc-package-capacity) { grid-column: 1 / -1; }
     .sc-configurator .sc-equipment { grid-template-columns: minmax(0, 1fr) 60px; gap: 10px; }
     .sc-configurator .sc-equipment :is(img, svg) { width: 44px; }
     .sc-configurator .sc-equipment input { max-width: 60px; }
   }
   .sc-configurator .sc-review .sc-report-table { max-width: 100%; overflow-x: auto; margin-block: 16px; }
   .sc-configurator .sc-review table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-  .sc-configurator .sc-review :is(th, td) { padding: 13px 12px; border-bottom: 1px solid var(--proto-color-line); vertical-align: top; overflow-wrap: anywhere; }
-  .sc-configurator .sc-review th { color: var(--proto-neutral-500); font-weight: 600; }
+  .sc-configurator .sc-review :is(th, td) { padding: 13px 12px; border-bottom: 1px solid var(--sc-line); vertical-align: top; overflow-wrap: anywhere; }
+  .sc-configurator .sc-review th { color: var(--sc-muted); font-weight: 600; }
   .sc-configurator .sc-review :is(th, td):first-child { padding-left: 0; }
   .sc-configurator .sc-bom-label { display: none; }
   @media (max-width: 600px) {
     .sc-configurator .sc-bom-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .sc-configurator .sc-bom-table tbody { display: grid; }
-    .sc-configurator .sc-bom-table tbody tr { display: grid; gap: 5px; padding-block: 14px; border-bottom: 1px solid var(--proto-color-line); }
+    .sc-configurator .sc-bom-table tbody tr { display: grid; gap: 5px; padding-block: 14px; border-bottom: 1px solid var(--sc-line); }
     .sc-configurator .sc-bom-table tbody td { display: grid; grid-template-columns: minmax(72px, 30%) 1fr; gap: 12px; padding: 0; border: 0; }
-    .sc-configurator .sc-bom-label { display: block; color: var(--proto-neutral-500); }
+    .sc-configurator .sc-bom-label { display: block; color: var(--sc-muted); }
   }
-  .sc-configurator .sc-review details { margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--proto-color-line); }
+  .sc-configurator .sc-review details { margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--sc-line); }
   .sc-configurator .sc-review summary { min-height: 44px; align-content: center; font-weight: 600; cursor: pointer; }
   .sc-configurator .sc-review details section { margin-top: 22px; }
   .sc-configurator .sc-review :is(.sc-card, details section) > p { margin-top: 10px; }
@@ -1171,7 +1196,7 @@
   .sc-configurator .sc-main nav:not(.sc-nav) { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-block: 16px 24px; }
   .sc-configurator .sc-draft-transfer .lp-scenario-block > p { margin-block: 12px; }
   .sc-configurator .sc-draft-transfer .lp-button { min-height: 44px; padding: 9px 15px; border-radius: var(--proto-radius-md); font: inherit; font-weight: 600; background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); white-space: normal; }
-  .sc-configurator .sc-draft-transfer .lp-button-secondary { background: var(--proto-neutral-0); color: var(--proto-ink-deep); border-color: var(--proto-color-line); }
+  .sc-configurator .sc-draft-transfer .lp-button-secondary { background: var(--proto-neutral-0); color: var(--proto-ink-deep); border-color: var(--sc-line); }
   .sc-configurator .sc-draft-transfer .lp-table-scroll { max-width: 100%; overflow-x: auto; }
   @media (prefers-reduced-motion: reduce) {
     .sc-configurator .sc-button { transition: none; }
@@ -1184,24 +1209,33 @@
   .sc-configurator .sc-solar > fieldset { min-inline-size: 0; min-width: 0; margin: 0; padding: 0; border: 0; }
   .sc-configurator .sc-solar > .sc-section-head { flex-direction: column; gap: 0; }
   .sc-configurator .sc-solar .sc-option-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .sc-configurator .sc-solar .sc-option-card { flex: 1 1 180px; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); text-align: left; font-weight: 600; }
-  .sc-configurator .sc-solar .sc-option-card:hover:enabled { background: var(--proto-teal-50); }
-  .sc-configurator .sc-solar .sc-option-card[aria-pressed="true"], .sc-configurator .sc-solar .sc-option-card.active { border-color: var(--proto-accent); background: var(--proto-teal-50); color: var(--proto-teal-800); }
+  .sc-configurator .sc-solar .sc-option-card { flex: 1 1 180px; min-width: 0; padding: 20px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); text-align: left; font-weight: 600; }
+  .sc-configurator .sc-solar .sc-option-card span { display: block; margin-top: 5px; color: var(--sc-muted); font-size: 13px; font-weight: 400; }
+  .sc-configurator .sc-solar .sc-option-card:hover:enabled { background: var(--sc-soft); }
+  .sc-configurator .sc-solar .sc-option-card[aria-pressed="true"], .sc-configurator .sc-solar .sc-option-card.active { border-color: var(--proto-accent); background: var(--sc-soft); color: var(--proto-teal-800); }
   .sc-configurator .sc-solar .sc-card > :is(.sc-fields, .sc-roof-layout) { margin-top: 20px; }
+  .sc-configurator .sc-roof-overview { display: grid; justify-items: start; gap: 16px; margin-top: 18px; }
+  .sc-configurator .sc-roof-preview { display: block; width: 100%; height: auto; max-height: 250px; border-radius: var(--proto-radius-md); background: var(--sc-board); }
+  .sc-configurator .sc-roof-preview polygon { vector-effect: non-scaling-stroke; cursor: default; }
+  .sc-configurator dialog.sc-roof-dialog { width: min(1400px, calc(100vw - 24px)); max-width: none; max-height: 94dvh; margin: auto; padding: 0; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--sc-line); border-radius: 14px; background: var(--proto-neutral-0); color: var(--proto-ink-deep); box-shadow: 0 20px 90px rgb(16 44 48 / .25); }
+  .sc-configurator .sc-roof-dialog::backdrop { background: rgb(21 53 47 / .5); backdrop-filter: blur(3px); }
+  .sc-configurator .sc-dialog-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 24px; border-bottom: 1px solid var(--sc-line); background: var(--proto-neutral-0); }
+  .sc-configurator .sc-dialog-head :is(h2, h3) { font-size: 20px; }
+  .sc-configurator .sc-roof-dialog .sc-roof-layout { min-inline-size: 0; margin: 0; padding: 18px; border: 0; background: var(--sc-paper); }
   .sc-configurator .sc-solar .sc-roof-layout { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; }
   .sc-configurator .sc-solar .sc-roof-layout > div { min-width: 0; }
   .sc-configurator .sc-solar .sc-roof-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props, .sc-next) button, .sc-configurator .sc-solar .sc-roof-layout > div > button { min-width: 0; min-height: 44px; max-width: 100%; padding: 8px 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; font-size: 13px; line-height: 1.45; }
-  .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props) button:hover:enabled, .sc-configurator .sc-solar .sc-roof-layout > div > button:hover:enabled { background: var(--proto-teal-50); }
+  .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props, .sc-next) button, .sc-configurator .sc-solar .sc-roof-layout > div > button { min-width: 0; min-height: 44px; max-width: 100%; padding: 8px 12px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; font-size: 13px; line-height: 1.45; }
+  .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props) button:hover:enabled, .sc-configurator .sc-solar .sc-roof-layout > div > button:hover:enabled { background: var(--sc-soft); }
   .sc-configurator .sc-solar .sc-roof-tools button[aria-pressed="true"] { background: var(--proto-ink-deep); color: var(--proto-neutral-0); border-color: var(--proto-ink-deep); }
-  .sc-configurator .sc-solar svg.sc-roof-board { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; min-height: 300px; max-height: 65vh; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-paper-journal); color: var(--proto-ink-deep); }
-  .sc-configurator .sc-solar .sc-roof-props { display: grid; gap: 14px; min-width: 0; padding: 16px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
+  .sc-configurator .sc-solar svg.sc-roof-board { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; min-height: 300px; max-height: 65vh; touch-action: none; user-select: none; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--sc-board); color: var(--proto-ink-deep); }
+  .sc-configurator .sc-solar .sc-roof-props { display: grid; gap: 14px; min-width: 0; padding: 16px; border: 1px solid var(--sc-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-roof-props .sc-field { font-size: 12px; }
   .sc-configurator .sc-solar .sc-roof-props :is(input:not([type="checkbox"]), select) { min-height: 44px; padding: 8px; }
   .sc-configurator .sc-solar .sc-check { display: flex; align-items: flex-start; gap: 10px; min-width: 0; font-size: 12px; font-weight: 400; }
   .sc-configurator .sc-solar .sc-check input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; }
-  .sc-configurator .sc-solar .sc-hint { margin-top: 12px; color: var(--proto-neutral-500); font-size: 13px; overflow-wrap: anywhere; }
-  .sc-configurator .sc-solar .sc-solar-total { padding-top: 18px; margin-top: 20px; border-top: 1px solid var(--proto-color-line); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .sc-configurator .sc-solar .sc-hint { margin-top: 12px; color: var(--sc-muted); font-size: 13px; overflow-wrap: anywhere; }
+  .sc-configurator .sc-solar .sc-solar-total { padding-top: 18px; margin-top: 20px; border-top: 1px solid var(--sc-line); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
   .sc-configurator .sc-solar .sc-next { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
   .sc-configurator .sc-solar .sc-next button { padding: 9px 15px; background: var(--proto-accent); border-color: var(--proto-accent); color: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-next button:hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
@@ -1212,6 +1246,8 @@
   }
   @media (max-width: 600px) {
     .sc-configurator .sc-solar .sc-option-card { flex-basis: 100%; padding: 16px; }
+    .sc-configurator .sc-dialog-head { padding: 16px; }
+    .sc-configurator .sc-roof-dialog .sc-roof-layout { padding: 10px; }
     .sc-configurator .sc-solar .sc-roof-tools { gap: 5px; }
     .sc-configurator .sc-solar .sc-roof-tools button { padding: 6px 9px; font-size: 12px; }
     .sc-configurator .sc-solar svg.sc-roof-board { min-height: 280px; }
