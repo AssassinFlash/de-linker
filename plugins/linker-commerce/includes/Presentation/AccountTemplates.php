@@ -274,8 +274,12 @@ final class AccountTemplates {
 		}
 		$items = wc_get_account_menu_items();
 		$html  = '';
-		if ( 'mobile' === ( $atts['type'] ?? '' ) ) {
-			foreach ( array( 'dashboard', 'orders', 'documents', 'edit-account' ) as $endpoint ) {
+		$type  = $atts['type'] ?? '';
+		if ( in_array( $type, array( 'mobile', 'shortcuts' ), true ) ) {
+			$endpoints = 'mobile' === $type
+				? array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' )
+				: array( 'orders', 'saved-solutions', 'documents' );
+			foreach ( $endpoints as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
 					$current = 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ? 'page' : $this->endpoint_current( $endpoint );
 					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
@@ -294,7 +298,7 @@ final class AccountTemplates {
 					);
 				}
 			}
-			return $this->fragment( 'mobile-nav', array( 'items' => $html ) );
+			return 'mobile' === $type ? $this->fragment( 'mobile-nav', array( 'items' => $html ) ) : $html;
 		}
 		foreach ( $this->nav_groups() as $group => $endpoints ) {
 			$links = '';
