@@ -202,3 +202,9 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 评审站两种语言的访客询盘页和德语无产品留言回执均通过。历史完整快照能在所属账户 Documents 中列出，原订单链接可下载冻结 PDF。其他账户和遭修改的快照均无法下载。生产验收仍沿用原 Rotterdam 项目。
 
 混合版本演练复用一个评审项目 `5f9ea2c74a164fcca37bb55e94cbfa1c`。新 Woo 配旧 Planner 时，删除返回 409，项目可重开。访客提交报告后看到重试提示，邮箱和报告勾选均保留，订单数为 0。切回新 Planner 后重提同一草稿，只生成询盘 8874，成功页提供 95,696 字节的冻结 PDF。HTTP 与 worker 读回同一版本 `eb5b446f1c6bd96dce71378482daf129760a745118e75ff9ba5378b505739e09`。Oslo 修订 8、Utrecht 修订 5。生产恢复点 `archive-20261118T062854Z-f1b360b4` 已验证，含 Rotterdam 与 Amsterdam 的修订 3。
+
+[PR #1140](https://github.com/AssassinFlash/de-linker/pull/1140) 合并为 `9585fadb5`，文件树与通过[完整 CI](https://github.com/AssassinFlash/de-linker/actions/runs/44257354303)及双轴评审的 `3fa0ef781` 相同。评审站验证了报告拒绝、审核占位竞争和普通询盘最后一个名额，四项用例共 37 个断言。访客保留原逆变器、零新增商品提交后，成功页可下载该询盘的 PDF。
+
+生产站点批次 `20261118T072900863919Z-9585fadb5` 的数据库快照 `db-20261118T072907Z.sql.gz` 为 8,217,255 字节。Web 缓存重置、verify 和 archive 成功。线上 Woo、Tools 关键文件和公网实际提供的三个配置器模块均与合并版逐字节一致。切换时记录的三个请求 worker 均已自然退出。
+
+同一提交的 Planner 发布成功，release `50a26650a7e51d18cefdc5ae1d4567bfb26b9790f2a1656a1d10a529a6d7d51d` 的原生 status 读回 HTTP 与 worker 运行身份一致，worker PID 70242、`draining=false`、`pending=0`。生产 Rotterdam 和 Amsterdam 的数据库读回均为修订 3。Rotterdam 所属访客的浏览器空间 69 已不在任务空间列表，其生产删除仍待原访客会话验收。账户 53 仍缺获权下载的规划报告。#1132 保持开放。
