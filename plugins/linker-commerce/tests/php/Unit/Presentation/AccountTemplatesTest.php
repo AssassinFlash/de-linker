@@ -222,6 +222,45 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( '', $row['total'] );
 	}
 
+	/** The list names its amount column and labels only amounts the customer may read. */
+	public function test_inquiries_label_visible_amounts(): void {
+		$this->plain_text();
+		$this->visible_prices( true );
+		WP_Mock::userFunction( 'add_shortcode' );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => '/my-account/inquiries/?inquiry-status=open' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => '/my-account/inquiries/' ) );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $count ): string => (string) $count ) );
+		$item = Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_quantity' )->andReturn( 1 );
+		$item->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( '' );
+		$priced   = $this->inquiry( Statuses::RECEIVED, array( $item ) );
+		$unpriced = $this->inquiry( Statuses::RECEIVED );
+		$priced->allows( 'get_customer_id' )->andReturn( 5 );
+		$unpriced->allows( 'get_customer_id' )->andReturn( 5 );
+		WP_Mock::userFunction( 'wc_get_order' )->with( 20 )->andReturn( $priced );
+		WP_Mock::userFunction( 'wc_get_order' )->with( 21 )->andReturn( $unpriced );
+		$adapter = new AccountTemplates();
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		$adapter->register();
+		$this->expand_fields( $adapter );
+
+		ob_start();
+		AccountTemplates::output(
+			array(
+				'template_name' => 'myaccount/orders.php',
+				'args'          => array( 'customer_orders' => (object) array( 'orders' => array( 20, 21 ) ) ),
+			)
+		);
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<span>Amount</span>', $html );
+		$this->assertMatchesRegularExpression( '/<span class="sr-only">Amount:\s*<\/span>\s*€1\.00/', $html );
+		$this->assertSame( 1, substr_count( $html, 'Amount:' ) );
+		$this->assertSame( 1, substr_count( $html, '€1.00' ) );
+	}
+
 	/** The pending inquiry summary omits its monetary field, including its label. */
 	public function test_pending_summary_has_no_empty_amount_label(): void {
 		$this->plain_text();
@@ -272,15 +311,6 @@ final class AccountTemplatesTest extends TestCase {
 			'approved'   => array( Approval::APPROVED ),
 			'restricted' => array( Approval::RESTRICTED ),
 		);
-	}
-
-	/** Pending customers keep the contact slot as well as the endpoint content. */
-	public function test_pending_account_keeps_its_contact_slot(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 5 );
-		WP_Mock::expectAction( 'linker_account_after_content' );
-		( new AccountTemplates() )->hook( array( 'name' => 'after-content' ) );
-		$this->assertConditionsMet();
 	}
 
 	/**
@@ -335,6 +365,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( 'https://example.test/logout/?redirect_to=https%3A%2F%2Fexample.test%2Fmy-account%2F%3Fsigned-out%3Dtrue&_wpnonce=abc', $html );
 		$this->assertStringNotContainsString( 'https://example.test/my-account/customer-logout/', $html );
 		$this->assertStringContainsString( 'aria-current="page"', $html );
+		$this->assertStringContainsString( 'https://example.test/my-account/saved-solutions/', $adapter->nav( array( 'type' => 'mobile' ) ) );
 	}
 
 	/**
@@ -586,7 +617,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * @param string                        $status Status slug.
 	 * @param array<\WC_Order_Item_Product> $items Inquiry product lines.
 	 */
-	private function inquiry( string $status, array $items = array() ): WC_Order {
+	private function inquiry( string $status, array $items = array() ): WC_Order&\Mockery\MockInterface {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );

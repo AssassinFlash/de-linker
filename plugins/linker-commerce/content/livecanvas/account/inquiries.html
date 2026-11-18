@@ -5,6 +5,13 @@
 		<a href="[linker_account_field key='open-url']" aria-current="[linker_account_field key='open-current']">[linker_account_text key="open"]</a>
 	</nav>
 	<section class="linker-account-panel linker-account-inquiry-panel">
+		<div class="linker-account-inquiry-columns" aria-hidden="true">
+			<span>[linker_account_text key="number"]</span>
+			<span>[linker_account_text key="status"]</span>
+			<span>[linker_account_text key="date"]</span>
+			<span>[linker_account_text key="amount"]</span>
+			<span>[linker_account_text key="actions"]</span>
+		</div>
 		<ul class="linker-account-rows linker-account-inquiry-list">[linker_account_rows type="inquiries"]</ul>
 		[linker_account_hook name="pagination"]
 		<nav class="linker-account-pagination" aria-label="[linker_account_text key='inquiries']">[linker_account_rows type="pagination"]</nav>

@@ -26,7 +26,10 @@ do_action( 'woocommerce_before_edit_account_form' );
 	do_action( 'woocommerce_edit_account_form_start' );
 	?>
 
-	<section class="linker-account-panel" aria-label="<?php esc_attr_e( 'Your details', 'linker-commerce' ); ?>">
+	<section class="linker-account-panel" aria-labelledby="linker-account-personal-details">
+		<header class="linker-account-panel-heading">
+			<h2 id="linker-account-personal-details"><?php esc_html_e( 'Your details', 'linker-commerce' ); ?></h2>
+		</header>
 		<div class="linker-account-panel-body">
 			<div class="linker-account-field-pair">
 				<p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">

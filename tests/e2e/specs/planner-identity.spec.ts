@@ -41,17 +41,17 @@ const CONTRACT = {
 	en: {
 		configurator: '/solution-configurator/',
 		newProject: 'New project',
-		create: 'Create project',
+		create: 'Continue with solar',
 		product: 'Solution Configurator',
 		owner: 'by Linker',
 		summary: 'About this tool',
-		role: 'Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.',
+		role: 'You can reopen saved projects and restore available drafts.',
 		boundary:
 			'All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.',
 		credits: 'Software and data credits',
 		revision: /^Saved · revision \d+$/,
 		/** The whole block, so nothing inside it can drift unnoticed. */
-		block: 'Solution Configurator by Linker Linker brings your inputs into an editable project for solar and storage planning. About this tool Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts. All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval. Software and data credits Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS. Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors. OpenFreeMap privacy policy',
+		block: 'Solution Configurator by Linker Linker brings your inputs into an editable project for solar and storage planning. About this tool You can reopen saved projects and restore available drafts. All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval. Software and data credits Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS. Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors. OpenFreeMap privacy policy',
 		links: [
 			['React', 'https://react.dev/'],
 			['TanStack Query', 'https://tanstack.com/query'],
@@ -74,11 +74,11 @@ const CONTRACT = {
 	de: {
 		configurator: '/de/loesungskonfigurator/',
 		newProject: 'Neues Projekt',
-		create: 'Projekt anlegen',
+		create: 'Weiter zur PV-Anlage',
 		product: 'Lösungskonfigurator',
 		owner: 'von Linker',
 		summary: 'Über dieses Werkzeug',
-		role: 'Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen.',
+		role: 'Gespeicherte Projekte können Sie erneut öffnen und vorhandene Entwürfe wiederherstellen.',
 		// Written in German, not translated word for word: it keeps both
 		// promises (the recorded source data stays as declared, the display is
 		// no professional approval).
@@ -86,7 +86,7 @@ const CONTRACT = {
 			'Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe.',
 		credits: 'Software und Datenquellen',
 		revision: /^Gespeichert · Version \d+$/,
-		block: 'Lösungskonfigurator von Linker Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung. Über dieses Werkzeug Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen. Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe. Software und Datenquellen Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS. Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende. Datenschutzhinweise von OpenFreeMap',
+		block: 'Lösungskonfigurator von Linker Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung. Über dieses Werkzeug Gespeicherte Projekte können Sie erneut öffnen und vorhandene Entwürfe wiederherstellen. Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe. Software und Datenquellen Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS. Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende. Datenschutzhinweise von OpenFreeMap',
 		links: [
 			['React', 'https://react.dev/'],
 			['TanStack Query', 'https://tanstack.com/query'],
@@ -120,15 +120,16 @@ async function savedProject(page: Page, lang: Lang): Promise<void> {
 	await page.goto(instance().url + words.configurator, {
 		waitUntil: 'networkidle',
 	});
-	await page.getByRole('button', { name: words.newProject }).first().click();
-	await page
-		.locator('input[maxlength="256"]')
-		.first()
+	const form = page.getByRole('form', { name: words.newProject });
+	await form
+		.locator('input[name="project_title"]')
 		.fill(`Identity ${lang} e2e`);
-	await page.getByRole('button', { name: words.create }).click();
+	await form.getByRole('button', { name: words.create }).click();
 	await expect(page).toHaveURL(/project=[a-f0-9]{32}/, { timeout: 60_000 });
 	// The save-state line is the hydrated editor's own chrome.
-	await expect(page.locator('.lp-save-state')).toBeVisible({
+	await expect(
+		page.locator('.sc-project-heading').getByRole('status')
+	).toBeVisible({
 		timeout: 30_000,
 	});
 }
@@ -213,9 +214,9 @@ for (const lang of ['en', 'de'] as const) {
 			);
 
 			// The block frames a saved revision, not an unsaved draft.
-			await expect(page.locator('.lp-save-state')).toHaveText(
-				words.revision
-			);
+			await expect(
+				page.locator('.sc-project-heading').getByRole('status')
+			).toHaveText(words.revision);
 		});
 	}
 }
