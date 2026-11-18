@@ -109,6 +109,7 @@ export function EnergyDemand({
 	edit,
 	compare,
 	back,
+	embedded = false,
 	children,
 	modelsUnavailable = false,
 	client,
@@ -122,7 +123,8 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
-	back: () => void;
+	back?: () => void;
+	embedded?: boolean;
 	children?: React.ReactNode;
 	modelsUnavailable?: boolean;
 	client: PlannerClient;
@@ -144,6 +146,22 @@ export function EnergyDemand({
 		{ load_kw: number | null; duration_hours: number | null } | undefined;
 	const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set());
 	useEffect(() => onValidity?.(invalid.size === 0), [invalid, onValidity]);
+	useEffect(() => {
+		setInvalid((previous) => {
+			const next = new Set(
+				[...previous].filter(
+					(field) =>
+						!(
+							(field.startsWith("backup-") && goal !== "backup") ||
+							(field === "peak" && goal !== "peak") ||
+							(brief.system_scope === "pv_only" &&
+								(field === "power" || field === "capacity"))
+						),
+				),
+			);
+			return next.size === previous.size ? previous : next;
+		});
+	}, [goal, brief.system_scope]);
 	const validityCallbacks = useRef(new Map<string, (valid: boolean) => void>());
 	function report(field: string) {
 		let callback = validityCallbacks.current.get(field);
@@ -457,7 +475,11 @@ export function EnergyDemand({
 		<div>
 			<header className="sc-section-head">
 				<div>
-					<h1>{__("What should the system do?", "linker-tools")}</h1>
+					<h2>
+						{embedded
+							? __("Energy use", "linker-tools")
+							: __("What should the system do?", "linker-tools")}
+					</h2>
 					<p className="sc-muted">
 						{__(
 							"The purpose determines which information matters.",
@@ -468,41 +490,45 @@ export function EnergyDemand({
 			</header>
 			<fieldset disabled={blocked} className="sc-card">
 				<div className="sc-fields">
-					<label className="sc-field">
-						<span>{__("Purpose", "linker-tools")}</span>
-						<select
-							value={goal}
-							disabled={modelsUnavailable}
-							onChange={(event) => {
-								const next = event.currentTarget.value;
-								if (next === "self" || next === "backup" || next === "peak") {
-									setInvalid(
-										(previous) =>
-											new Set(
-												[...previous].filter(
-													(field) =>
-														field !== "backup-load" &&
-														field !== "backup-hours" &&
-														field !== "peak",
+					{!embedded && (
+						<label className="sc-field">
+							<span>{__("Purpose", "linker-tools")}</span>
+							<select
+								value={goal}
+								disabled={modelsUnavailable}
+								onChange={(event) => {
+									const next = event.currentTarget.value;
+									if (next === "self" || next === "backup" || next === "peak") {
+										setInvalid(
+											(previous) =>
+												new Set(
+													[...previous].filter(
+														(field) =>
+															field !== "backup-load" &&
+															field !== "backup-hours" &&
+															field !== "peak",
+													),
 												),
-											),
-									);
-									edit((current) => changeEnergyGoal(current, next));
-								}
-							}}
-						>
-							<option value="">{__("Choose an option", "linker-tools")}</option>
-							<option value="self">
-								{__("Use more solar on site", "linker-tools")}
-							</option>
-							<option value="backup" disabled={solarOnly}>
-								{__("Backup supply", "linker-tools")}
-							</option>
-							<option value="peak">
-								{__("Reduce peak demand", "linker-tools")}
-							</option>
-						</select>
-					</label>
+										);
+										edit((current) => changeEnergyGoal(current, next));
+									}
+								}}
+							>
+								<option value="">
+									{__("Choose an option", "linker-tools")}
+								</option>
+								<option value="self">
+									{__("Use more solar on site", "linker-tools")}
+								</option>
+								<option value="backup" disabled={solarOnly}>
+									{__("Backup supply", "linker-tools")}
+								</option>
+								<option value="peak">
+									{__("Reduce peak demand", "linker-tools")}
+								</option>
+							</select>
+						</label>
+					)}
 					{number(
 						"annual",
 						__("Annual electricity use", "linker-tools"),
@@ -1114,9 +1140,11 @@ export function EnergyDemand({
 				)}
 			</>
 			<footer className="sc-footer">
-				<button className="sc-button" type="button" onClick={back}>
-					{__("Back", "linker-tools")}
-				</button>
+				{back && (
+					<button className="sc-button" type="button" onClick={back}>
+						{__("Back", "linker-tools")}
+					</button>
+				)}
 				<button
 					type="button"
 					className="sc-button sc-primary"

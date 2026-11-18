@@ -73,6 +73,7 @@ import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
+import { ProjectInputsStep } from "./ProjectInputsStep.tsx";
 import { ConfiguratorSteps, type Step } from "./ConfiguratorSteps.tsx";
 import { EnergyDemand, energyGoal } from "./EnergyDemand.tsx";
 import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
@@ -173,8 +174,8 @@ export default function Configurator({
 	const [step, setStep] = useState<Step>(initialStep);
 	const main = useRef<HTMLElement>(null);
 	const [energyValid, setEnergyValid] = useState(true);
-	const [energyOpened, setEnergyOpened] = useState(() =>
-		["energy", "solar"].includes(initialStep()),
+	const [inputsOpened, setInputsOpened] = useState(
+		() => !["system", "review"].includes(initialStep()),
 	);
 	const [roofEditing, setRoofEditing] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
@@ -193,7 +194,7 @@ export default function Configurator({
 	>({});
 	const wiringInputs = draft?.history.current;
 	const wiringPlant =
-		step === "solar" && wiringInputs && hasPlant(wiringInputs)
+		wiringInputs && hasPlant(wiringInputs)
 			? readPlantDraft(wiringInputs)
 			: null;
 	const wiringIds = wiringPlant?.units.map((unit) => unit.id).join(",") ?? "";
@@ -245,6 +246,7 @@ export default function Configurator({
 	useEffect(() => {
 		if (lastStep.current === step) return;
 		lastStep.current = step;
+		if (step === "solar" || step === "energy") return;
 		main.current?.focus({ preventScroll: true });
 		main.current?.scrollIntoView?.({ block: "start" });
 	}, [step]);
@@ -553,7 +555,7 @@ export default function Configurator({
 		const url = new URL(location.href);
 		url.hash = "sc-" + next;
 		replacePlannerLocation(url);
-		if (next === "energy") setEnergyOpened(true);
+		if (next !== "system" && next !== "review") setInputsOpened(true);
 		setStep(next);
 		setNavigationRefused(false);
 	}
@@ -572,7 +574,9 @@ export default function Configurator({
 		try {
 			const current = latest.current;
 			const saved =
-				path === "runs/calculate" && !current.pending ? current.baseline : await controller.save();
+				path === "runs/calculate" && !current.pending
+					? current.baseline
+					: await controller.save();
 			if (
 				!saved ||
 				instance !== lifetime.current ||
@@ -616,7 +620,7 @@ export default function Configurator({
 		}
 	}
 	async function compare() {
-		if (blocked || modelsUnavailable || !latest.current) return;
+		if (blocked || modelsUnavailable || !latest.current || !mayLeave()) return;
 		setError(null);
 		const instance = lifetime.current;
 		const reply = await operations.start("runs/find-equipment", {
@@ -922,11 +926,12 @@ export default function Configurator({
 		wiringPlant &&
 		inputs.geometry !== undefined &&
 		activePvGeometry(inputs.geometry).arrays.length > 0;
+	const sectionLink = step === "solar" || step === "energy" ? step : null;
 	const activeStep =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)
 			? "project"
-			: step === "solar" && brief.system_scope === "storage_only"
-				? "energy"
+			: sectionLink
+				? "project"
 				: step;
 	return (
 		<div className="sc-configurator">
@@ -1176,166 +1181,167 @@ export default function Configurator({
 					tabIndex={-1}
 					className="sc-main"
 				>
-					{activeStep === "project" && (
-						<ProjectDetails
-							existingEquipment={
-								<ProjectEquipment
-									inputs={
-										comparisonInputs
-											? restoreComparisonModels(inputs, comparisonInputs)
-											: inputs
-									}
-									client={client}
-									scope={session.query_scope}
-									disabled={blocked || modelsUnavailable}
-									edit={edit}
-								/>
-							}
-							inputs={inputs}
-							config={config}
-							disabled={blocked || modelsUnavailable}
-							edit={edit}
-							next={() =>
-								navigate(
-									brief.system_scope === "storage_only" ? "energy" : "solar",
-								)
-							}
-						/>
-					)}
-					{activeStep === "solar" && (
-						<SolarInstallation
-							inputs={inputs}
-							config={config}
-							client={client}
-							session={session}
-							disabled={blocked || modelsUnavailable}
-							edit={edit}
-							back={() => navigate("project")}
-							next={() => navigate("energy")}
-							wiring={
-								wiringPlant
-									? wiringPlant.units.map((unit, index) => {
-											const hasPlan = plantWiring.some(
-												(row) => row.unit_id === unit.id,
-											);
-											if (
-												!hasPlan &&
-												(!hasRoofModules ||
-													typeof equipmentDraft(unit.inputs)
-														.inverter_product_id !== "number")
-											)
-												return null;
-											return (
-												<fieldset className="sc-card" key={unit.id}>
-													<legend>
-														{unit.name ||
-															sprintf(
-																__("System %d", "linker-tools"),
-																index + 1,
-															)}
-													</legend>
-													<PlantPvStringSetup
-														draft={draft}
-														unit={unit}
-														units={wiringPlant.units}
-														edit={editWiring}
-														locale={config.locale}
-														disabled={blocked || modelsUnavailable}
-														onValidity={wiringCallbacks[unit.id]!}
-														checkedInReport
-													/>
-												</fieldset>
-											);
-										})
-									: (typeof inverterId === "number" ||
-											inputs.pv_string_plan != null) && (
-											<PvStringSetup
-												draft={draft}
-												edit={editWiring}
-												inverterId={
-													typeof inverterId === "number" ? inverterId : null
+					{(inputsOpened || activeStep === "project") && (
+						<div hidden={activeStep !== "project"}>
+							<ProjectInputsStep
+								focusSection={activeStep === "project" ? sectionLink : null}
+								details={
+									<ProjectDetails
+										existingEquipment={
+											<ProjectEquipment
+												inputs={
+													comparisonInputs
+														? restoreComparisonModels(inputs, comparisonInputs)
+														: inputs
 												}
-												locale={config.locale}
+												client={client}
+												scope={session.query_scope}
 												disabled={blocked || modelsUnavailable}
-												onValidity={wiringCallbacks[""]!}
-												checkedInReport
+												edit={edit}
 											/>
-										)
-							}
-							initialMap={mapPropertyLinks.has(location.hash)}
-							onEditing={setRoofEditing}
-							geometryImport={{
-								projectId: project.id,
-								recheck,
-								confirmedInputs: draft.baseline.inputs,
-								onActivity: setImportOpen,
-								recoveryScopes,
-								recoveryChecking,
-							}}
-						/>
-					)}
-					{(energyOpened || activeStep === "energy") && (
-						<div hidden={activeStep !== "energy"}>
-							<EnergyDemand
-								projectId={project.id}
-								inputs={inputs}
-								locale={config.locale}
-								client={client}
-								session={session}
-								recheck={recheck}
-								disabled={blocked}
-								edit={edit}
-								modelsUnavailable={modelsUnavailable}
-								back={() =>
-									navigate(
-										brief.system_scope === "storage_only" ? "project" : "solar",
-									)
+										}
+										inputs={inputs}
+										config={config}
+										disabled={blocked || modelsUnavailable}
+										edit={edit}
+									/>
 								}
-								compare={() => void compare()}
-								onValidity={setEnergyValid}
-							>
-								{hasPlant(inputs) &&
+								solar={
 									brief.system_scope !== "storage_only" &&
-									brief.system_scope !== "pv_only" && (
-										<SharedDcEnergy
-											draft={draft}
+									(brief.system_scope || sectionLink === "solar") ? (
+										<SolarInstallation
+											inputs={inputs}
+											config={config}
+											client={client}
+											session={session}
+											disabled={blocked || modelsUnavailable}
+											edit={edit}
+											wiring={
+												wiringPlant
+													? wiringPlant.units.map((unit, index) => {
+															const hasPlan = plantWiring.some(
+																(row) => row.unit_id === unit.id,
+															);
+															if (
+																!hasPlan &&
+																(!hasRoofModules ||
+																	typeof equipmentDraft(unit.inputs)
+																		.inverter_product_id !== "number")
+															)
+																return null;
+															return (
+																<fieldset className="sc-card" key={unit.id}>
+																	<legend>
+																		{unit.name ||
+																			sprintf(
+																				__("System %d", "linker-tools"),
+																				index + 1,
+																			)}
+																	</legend>
+																	<PlantPvStringSetup
+																		draft={draft}
+																		unit={unit}
+																		units={wiringPlant.units}
+																		edit={editWiring}
+																		locale={config.locale}
+																		disabled={blocked || modelsUnavailable}
+																		onValidity={wiringCallbacks[unit.id]!}
+																		checkedInReport
+																	/>
+																</fieldset>
+															);
+														})
+													: (typeof inverterId === "number" ||
+															inputs.pv_string_plan != null) && (
+															<PvStringSetup
+																draft={draft}
+																edit={editWiring}
+																inverterId={
+																	typeof inverterId === "number"
+																		? inverterId
+																		: null
+																}
+																locale={config.locale}
+																disabled={blocked || modelsUnavailable}
+																onValidity={wiringCallbacks[""]!}
+																checkedInReport
+															/>
+														)
+											}
+											initialMap={mapPropertyLinks.has(location.hash)}
+											onEditing={setRoofEditing}
+											geometryImport={{
+												projectId: project.id,
+												recheck,
+												confirmedInputs: draft.baseline.inputs,
+												onActivity: setImportOpen,
+												recoveryScopes,
+												recoveryChecking,
+											}}
+										/>
+									) : null
+								}
+								energy={
+									brief.system_scope || sectionLink === "energy" ? (
+										<EnergyDemand
+											projectId={project.id}
+											inputs={inputs}
 											locale={config.locale}
 											client={client}
 											session={session}
-											store={store}
-											disabled={
-												actionBlocked || modelsUnavailable || !energyValid
-											}
-											active={activeStep === "energy"}
-											edit={edit}
-											save={controller.save}
-											openEquipment={() => navigate("project")}
-											openDesign={() => navigate("solar")}
-											onValidity={setSharedDcValid}
-											registerProfileGuard={registerProfileGuard}
-											recoveryScopes={recoveryScopes}
-											recoveryChecking={recoveryChecking}
 											recheck={recheck}
-											runs={[
-												...(latestRuns ?? []),
-												...(olderHistory.data?.pages.flatMap(
-													(page) => page.items,
-												) ?? []),
-											]}
-											moreRuns={
-												(olderHistory.data
-													? olderHistory.hasNextPage
-													: firstCursor) && !olderHistory.isFetching
-													? () => void olderHistory.fetchNextPage()
-													: undefined
-											}
-											submitted={submittedDc}
-											start={(path) => void startSharedDc(path)}
-											generateComparison={generateComparison}
-											operationError={error ?? operations.error}
-										/>
-									)}
-							</EnergyDemand>
+											disabled={blocked}
+											edit={edit}
+											modelsUnavailable={modelsUnavailable}
+											embedded
+											compare={() => void compare()}
+											onValidity={setEnergyValid}
+										>
+											{hasPlant(inputs) &&
+												brief.system_scope !== "storage_only" &&
+												brief.system_scope !== "pv_only" && (
+													<SharedDcEnergy
+														draft={draft}
+														locale={config.locale}
+														client={client}
+														session={session}
+														store={store}
+														disabled={
+															actionBlocked || modelsUnavailable || !energyValid
+														}
+														active={activeStep === "project"}
+														edit={edit}
+														save={controller.save}
+														openEquipment={() => navigate("project")}
+														openDesign={() => navigate("solar")}
+														onValidity={setSharedDcValid}
+														registerProfileGuard={registerProfileGuard}
+														recoveryScopes={recoveryScopes}
+														recoveryChecking={recoveryChecking}
+														recheck={recheck}
+														runs={[
+															...(latestRuns ?? []),
+															...(olderHistory.data?.pages.flatMap(
+																(page) => page.items,
+															) ?? []),
+														]}
+														moreRuns={
+															(olderHistory.data
+																? olderHistory.hasNextPage
+																: firstCursor) && !olderHistory.isFetching
+																? () => void olderHistory.fetchNextPage()
+																: undefined
+														}
+														submitted={submittedDc}
+														start={(path) => void startSharedDc(path)}
+														generateComparison={generateComparison}
+														operationError={error ?? operations.error}
+													/>
+												)}
+										</EnergyDemand>
+									) : null
+								}
+							/>
 						</div>
 					)}
 					{activeStep === "system" && (

@@ -65,8 +65,8 @@ export interface SolarInstallationProps {
 	session: Session;
 	disabled: boolean;
 	edit: (op: (inputs: JsonObject) => JsonObject) => boolean;
-	next: () => void;
-	back: () => void;
+	next?: () => void;
+	back?: () => void;
 	wiring?: ReactNode;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
@@ -977,7 +977,7 @@ export function SolarInstallation({
 	return (
 		<section className="sc-solar">
 			<header className="sc-section-head">
-				<h1>{__("Define the solar installation", "linker-tools")}</h1>
+				<h2>{__("Define the solar installation", "linker-tools")}</h2>
 				<p>
 					{__(
 						"A roof layout or the module details can provide the starting point.",
@@ -1900,14 +1900,22 @@ export function SolarInstallation({
 				)}
 				{!editorOpen && error && <p role="alert">{error}</p>}
 				{wiring}
-				<footer className="sc-footer">
-					<button className="sc-button" type="button" onClick={back}>
-						{__("Back", "linker-tools")}
-					</button>
-					<button className="sc-button sc-primary" type="button" onClick={next}>
-						{__("Continue with energy use", "linker-tools")}
-					</button>
-				</footer>
+				{next && (
+					<footer className="sc-footer">
+						{back && (
+							<button className="sc-button" type="button" onClick={back}>
+								{__("Back", "linker-tools")}
+							</button>
+						)}
+						<button
+							className="sc-button sc-primary"
+							type="button"
+							onClick={next}
+						>
+							{__("Continue with energy use", "linker-tools")}
+						</button>
+					</footer>
+				)}
 			</fieldset>
 			{mode === "known" && calibration}
 		</section>
