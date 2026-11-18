@@ -617,7 +617,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * @param string                        $status Status slug.
 	 * @param array<\WC_Order_Item_Product> $items Inquiry product lines.
 	 */
-	private function inquiry( string $status, array $items = array() ): WC_Order {
+	private function inquiry( string $status, array $items = array() ): WC_Order&\Mockery\MockInterface {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
