@@ -108,6 +108,7 @@ function ReportDownloads({
 	client,
 	scope,
 	recheck,
+	askGenie,
 	children,
 }: {
 	run: PlanningRun;
@@ -115,6 +116,7 @@ function ReportDownloads({
 	client: PlannerClient;
 	scope: string;
 	recheck: () => void;
+	askGenie: () => void;
 	children?: ReactNode;
 }) {
 	const [busy, setBusy] = useState(false),
@@ -243,6 +245,15 @@ function ReportDownloads({
 						{__("Download PV string intervals (CSV)", "linker-tools")}
 					</button>
 				)}
+				<button
+					type="button"
+					className="sc-button"
+					data-linker-genie-open
+					disabled={!client.isCurrentScope(scope)}
+					onClick={askGenie}
+				>
+					{__("Ask Genie", "linker-tools")}
+				</button>
 				{children}
 			</div>
 			{error && (
@@ -279,6 +290,7 @@ export function ReviewProposal({
 	blocked,
 	current,
 	generate,
+	askGenie,
 	recheck,
 }: {
 	project: Project;
@@ -292,6 +304,7 @@ export function ReviewProposal({
 	blocked: boolean;
 	current: boolean;
 	generate: (logo: string | null) => void;
+	askGenie: (run: PlanningRun) => void;
 	recheck: () => void;
 }) {
 	const scope = session.query_scope;
@@ -492,6 +505,7 @@ export function ReviewProposal({
 							client={client}
 							scope={scope}
 							recheck={recheck}
+							askGenie={() => askGenie(run)}
 						>
 							<button
 								type="button"
@@ -610,6 +624,7 @@ export function ReviewProposal({
 								client={client}
 								scope={scope}
 								recheck={recheck}
+								askGenie={() => askGenie(earlierRun)}
 							/>
 							<ReportPreview report={earlierReport} />
 						</>

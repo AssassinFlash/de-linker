@@ -1,12 +1,101 @@
 import energyFixture from "./fixtures/energy-run.json" with { type: "json" };
 import replay from "./fixtures/energy-inputs.json" with { type: "json" };
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
+import flatRoof from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
 import { enter, setupDom, until } from "./dom-fixture.mjs";
 import preparation from "./fixtures/index.ts";
+
+test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
+	const dom = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const scope = "3".repeat(64);
+	const cache = new QueryClient();
+	const root = createRoot(dom.element);
+	const project = {
+		id: "1".repeat(32),
+		title: "Roof capacity",
+		revision: 1,
+		input_sha256: "2".repeat(64),
+	};
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+	const session = {
+		kind: "guest",
+		query_scope: scope,
+		claim_pending: false,
+		runtime: { limits: { max_page_size: 30 }, models: {} },
+	};
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		query: async (path) => {
+			assert.equal(path, "projects/runs");
+			return { items: [], next: null };
+		},
+	};
+	const store = {
+		read: async () => null,
+		candidates: async () => [],
+		write: async () => {},
+	};
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	});
+	const capacity = () =>
+		[...dom.element.querySelectorAll("dt")].find(
+			(item) => item.textContent === "Solar capacity",
+		)?.nextElementSibling?.textContent;
+	const allExcluded = {
+		...flatRoof,
+		arrays: flatRoof.arrays.map((array) => ({
+			...array,
+			excluded_slots: ["0:0", "0:1", "0:2", "1:0", "1:1", "1:2"],
+		})),
+	};
+	for (const [inputs, expected] of [
+		[{ geometry: flatRoof }, "2.5 kWp"],
+		[{ geometry: allExcluded }, "—"],
+		[{}, "—"],
+		[
+			{
+				geometry: flatRoof,
+				pvgis_reference: knownPv.project.inputs.pvgis_reference,
+			},
+			"6.4 kWp",
+		],
+	]) {
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						key: expected + Boolean(inputs.geometry),
+						project: { ...project, inputs: { brief, ...inputs } },
+						session,
+						client,
+						store,
+						config: { locale: "en", countries: {} },
+						recheck: () => assert.fail("Unexpected identity change"),
+						close: () => true,
+					}),
+				),
+			),
+		);
+		await until(() => capacity() !== undefined);
+		assert.equal(capacity(), expected);
+	}
+});
 
 test("a storage project continues from its location directly to energy use", async () => {
 	const fixture = setupDom();
@@ -300,7 +389,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 	}
 });
 
-test("Review & share downloads earlier PDF and CSV while inquiry stays with the current report", async () => {
+test("Review & share asks Genie and downloads the chosen report while inquiry stays with the current report", async () => {
 	const dom = setupDom(),
 		scope = "3".repeat(64),
 		{ createRoot } = await import("react-dom/client"),
@@ -364,8 +453,9 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 	const downloads = [],
 		requests = [],
 		filenames = [];
+	let activeScope = scope;
 	const client = {
-		isCurrentScope: (s) => s === scope,
+		isCurrentScope: (s) => s === activeScope,
 		async query(path, body) {
 			requests.push([path, body]);
 			if (path === "projects/runs") {
@@ -419,6 +509,7 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 						session: {
 							kind: "guest",
 							query_scope: scope,
+							nonce: "guest-proof",
 							claim_pending: false,
 							runtime: {
 								limits: {
@@ -444,6 +535,29 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 		await until(() => button("Earlier calculations"));
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Attach report to inquiry"));
+		const context = () => {
+			let detail;
+			const receive = (event) => (detail = event.detail);
+			window.addEventListener("linker-genie-planning-context", receive);
+			window.dispatchEvent(
+				new CustomEvent("linker-genie-planning-context-request"),
+			);
+			window.removeEventListener("linker-genie-planning-context", receive);
+			return detail;
+		};
+		const ask = async (within, revision, runIds) => {
+			const opener = button("Ask Genie", within);
+			assert.ok(opener?.hasAttribute("data-linker-genie-open"));
+			await act(async () => opener.click());
+			const { page, plannerNonce } = context();
+			assert.equal(page.planning_project_id, project.id);
+			assert.equal(page.planning_revision, revision);
+			assert.deepEqual(page.planning_run_ids, runIds);
+			assert.equal(page.planning_unsaved, false);
+			assert.equal(plannerNonce, "guest-proof");
+		};
+		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
+		await ask(button("Download PDF").closest("section"), 3, [current.id]);
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Revision 2"));
 		await act(async () => button("Revision 2").click());
@@ -451,6 +565,16 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 			'section[aria-label="Calculation history"]',
 		);
 		await until(() => history.textContent.includes("Project planning report"));
+		assert.deepEqual(context().page.planning_run_ids, []);
+		await ask(history, 2, [earlier.id]);
+		activeScope = "4".repeat(64);
+		assert.equal(context(), null);
+		activeScope = scope;
+		window.history.replaceState(null, "", `?project=${"f".repeat(32)}`);
+		assert.equal(context(), null);
+		window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+		await ask(button("Download PDF").closest("section"), 3, [current.id]);
+		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
 		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
 		assert.equal(button("Attach report to inquiry", history), undefined);
 		assert.equal(history.querySelector('input[type="file"]'), null);

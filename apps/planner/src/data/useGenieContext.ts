@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { PlannerClient } from "./PlannerClient.ts";
 import { PLANNER_NAVIGATION } from "./plannerLocation.ts";
 import type { Project, Session } from "./protocol.ts";
 
@@ -7,12 +8,32 @@ export function useGenieContext(
 	project: Project,
 	session: Session,
 	unsaved: boolean,
+	selection?: {
+		client: Pick<PlannerClient, "isCurrentScope">;
+		report: { id: string; revision: number } | null;
+	},
 ) {
+	const client = selection?.client;
+	const reportId = selection?.report?.id;
+	const revision = selection?.report?.revision ?? project.revision;
 	useEffect(() => {
+		const clear = () =>
+			window.dispatchEvent(
+				new CustomEvent("linker-genie-planning-context", { detail: null }),
+			);
 		const publish = () => {
 			const params = new URL(location.href).searchParams;
-			const comparison = params.get("compare");
-			const run = params.get("run");
+			if (
+				client &&
+				(session.claim_pending ||
+					!client.isCurrentScope(session.query_scope) ||
+					params.get("project") !== project.id)
+			) {
+				clear();
+				return;
+			}
+			const comparison = client ? null : params.get("compare");
+			const run = client ? reportId : params.get("run");
 			const runs =
 				comparison &&
 				/^[a-f0-9]{32},[a-f0-9]{32}$/.test(comparison) &&
@@ -29,7 +50,7 @@ export function useGenieContext(
 							title: project.title,
 							url: location.href,
 							planning_project_id: project.id,
-							planning_revision: project.revision,
+							planning_revision: revision,
 							planning_run_ids: runs,
 							planning_unsaved: unsaved,
 						},
@@ -55,9 +76,17 @@ export function useGenieContext(
 				"linker-genie-planning-context-request",
 			])
 				window.removeEventListener(event, publish);
-			window.dispatchEvent(
-				new CustomEvent("linker-genie-planning-context", { detail: null }),
-			);
+			clear();
 		};
-	}, [project.id, project.title, project.revision, session.nonce, unsaved]);
+	}, [
+		client,
+		project.id,
+		project.title,
+		reportId,
+		revision,
+		session.claim_pending,
+		session.nonce,
+		session.query_scope,
+		unsaved,
+	]);
 }

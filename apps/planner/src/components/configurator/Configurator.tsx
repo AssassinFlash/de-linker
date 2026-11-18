@@ -12,6 +12,7 @@ import {
 	configuratorReportSources,
 	hasReportWiring,
 } from "../../data/configuratorReportSources.ts";
+import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import {
@@ -75,6 +76,8 @@ import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
+import { moduleSummary } from "../../domain/panelPoses.ts";
+import { activePvGeometry } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
@@ -186,6 +189,10 @@ export default function Configurator({
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
 	const [viewedReport, setViewedReport] = useState<string | null>(null);
+	const [genieReport, setGenieReport] = useState<{
+		id: string;
+		projectRevision: number;
+	} | null>(null);
 	const cache = useQueryClient();
 	const latest = useRef(draft);
 	latest.current = draft;
@@ -299,6 +306,20 @@ export default function Configurator({
 	);
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
+	const genieRun =
+		step === "review" &&
+		genieReport?.projectRevision === draft?.baseline.revision
+			? [reportRun, historicalRunQuery.data].find(
+					(run) => run?.id === genieReport?.id && run?.state === "succeeded",
+				)
+			: null;
+	useGenieContext(
+		draft?.baseline ?? project,
+		session,
+		!genieRun &&
+			(!draft || isDirty(draft) || Boolean(draft.pending || draft.conflict)),
+		{ client, report: genieRun ?? null },
+	);
 	const adoptedRun = adoptedSearch.data ?? null;
 	const legacyModels = draft
 		? needsComparisonModels(draft.history.current)
@@ -416,6 +437,7 @@ export default function Configurator({
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
+		setGenieReport(null);
 		const url = new URL(location.href);
 		url.hash = "sc-" + next;
 		replacePlannerLocation(url);
@@ -687,6 +709,12 @@ export default function Configurator({
 	const pvSizes = pvArrays?.length
 		? pvArrays.map((a) => a.peak_power_kwp)
 		: selectedUnits.map((u) => u.pv_dc_kw);
+	const roofModules =
+		brief.system_scope !== "storage_only" &&
+		!pvSizes.length &&
+		inputs.geometry !== undefined
+			? moduleSummary(activePvGeometry(inputs.geometry).geometry)
+			: null;
 	const assessment = selectedDetail.data;
 	const assessments = assessment?.systems
 		? (assessment.systems as JsonObject[]).map((u) => readObject(u.assessment))
@@ -730,6 +758,15 @@ export default function Configurator({
 											draft.baseline.revision,
 										)}
 					</span>
+					<button
+						type="button"
+						className="sc-button"
+						data-linker-genie-open
+						disabled={!admitted}
+						onClick={() => setGenieReport(null)}
+					>
+						{__("Ask Genie", "linker-tools")}
+					</button>
 					<button
 						className="sc-button"
 						disabled={
@@ -1108,7 +1145,10 @@ export default function Configurator({
 							history={{
 								items: earlierReports,
 								selected: viewedReport,
-								select: setViewedReport,
+								select: (id) => {
+									setGenieReport(null);
+									setViewedReport(id);
+								},
 								run: historicalRunQuery.data ?? null,
 								reading: historicalRunQuery.isLoading,
 								readFailed: historicalRunQuery.isError,
@@ -1131,6 +1171,12 @@ export default function Configurator({
 								!isDirty(draft),
 							)}
 							generate={(logo) => void generate(logo)}
+							askGenie={(run) =>
+								setGenieReport({
+									id: run.id,
+									projectRevision: draft.baseline.revision,
+								})
+							}
 							recheck={recheck}
 						/>
 					)}
@@ -1145,7 +1191,12 @@ export default function Configurator({
 							{brief.system_scope !== "storage_only" && (
 								<div>
 									<dt>{__("Solar capacity", "linker-tools")}</dt>
-									<dd>{total(pvSizes, "kWp")}</dd>
+									<dd>
+										{total(
+											roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
+											"kWp",
+										)}
+									</dd>
 								</div>
 							)}
 							{brief.system_scope !== "pv_only" && (
