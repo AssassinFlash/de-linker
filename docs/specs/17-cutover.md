@@ -31,6 +31,17 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 
 `just cutover rollback-deploy` 从同一发布检出版本读取同一个库存函数。预检逐项比较 manifest 的 deploy ID、库存与实际备份 inode，明确列出混批、缺失、被替换的备份，任一不符则零写入；还拒绝 live 在发布后发生未登记变更。回滚从 pending 同目录或 archived 站外目录把整批文件 rename 回来，可捕获失败时恢复整批当前版本。完成后逐路径读回恢复的 device/inode（原先不存在则确认不存在），用 `wp plugin list --fields=name,status` 确认三个插件 active，再运行与部署相同的 verify；输出实际读回结果，任何检查不通过均非零。回滚会消耗上一版，不提供 redo，不导入数据库，也不改插件激活状态。原完整备份回滚入口不变。
 
+### 首次启用可删除草稿报告的项目（#1132）
+
+本批用同一个已评审的完整 Git SHA，**先发布站点，确认旧 Woo 请求退出后再发布 Planner**。旧 Planner 在一个事务内拒绝删除任何已有 handoff 的项目。保留这个版本即可保护切换前已经开始、尚未提交的询盘。混合版本期间，带规划报告的新询盘会提示稍后重试，购物车和报告选择保留。请将此批安排在低流量窗口。
+
+1. 核实 8911 上实际运行的旧 Planner 具有上述拒绝行为，留好站点和 Planner 各自的恢复点。在评审站用同一对版本实走：仅转入草稿的项目删除返回冲突且仍能重开；新 Woo 遇到旧 Planner 缺少 `handoffs/admit-inquiry` 时，表单保留草稿、没有已提交询盘，并允许重新提交。切到新 Planner 后，同一草稿重提只产生一份询盘，账户能下载报告。
+2. 保持旧 Planner 运行，从最终 SHA 执行 `just cutover deploy`。确认 live Woo `Sender`、Tools 和前端与候选一致，Web `opcache-reset` 成功，站点 verify 通过。此后新请求使用新 Woo。若站点切换中断，保持旧 Planner，按同批 `resume-deploy` 恢复。
+3. 在 Hostinger 站点账户执行 `LC_ALL=C ps -u "$(id -un)" -o pid=,lstart=,comm=`，记录此时所有承载本站的 `lsphp` 的 PID 和启动时间。让这批进程自然退出，或使用已确认会等待在途请求结束的本站托管排空操作。用同一列表逐项核对原进程均已退出。先确认账户可完整看到本站 Web worker；名单丢失可在已核实的新站点重新采集。`.maintenance` 只能阻止后来进入 WordPress 的请求，维护状态和 Planner 的 `pending=0` 都不能证明此前已进入 Woo 的请求结束。若无法确认排空，保留旧 Planner；超出维护窗口则用 `just cutover rollback-deploy` 恢复站点，让客户继续发送带报告的询盘。
+4. 排空后才执行 `tools/planner/publish/cli.sh <同一完整 Git SHA>`，读回 HTTP、worker 的运行版本和 8911 的就绪状态。生产用已登记的草稿项目读回删除结果，用已有询盘读回删除拒绝及账户报告下载。生产验收不提交询盘、不发信。
+
+新 Planner 已经启动时，回滚顺序相反。先用其 `planner_release.py rollback` 恢复原 Planner，确认新版 HTTP 进程已退出、原版本已接管 8911 并拒绝删除已有 handoff 的项目，再恢复旧 Woo。这样已接收的受检查删除会在恢复旧写入端之前完成或终止。
+
 ### 部署前快照与完整备份（#305）
 
 业主 2026-10-18 问：每次部署前都做一次完整备份是否必要（4.6 GB，30–60 分钟）。结论按"部署能改动什么"分层：
