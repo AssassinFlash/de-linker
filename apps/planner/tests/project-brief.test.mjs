@@ -67,6 +67,15 @@ async function openBrief(t, hints = null) {
 			if (String(url).endsWith("/bootstrap")) return response(current);
 			const path = String(url);
 			requests.push([path, init?.body]);
+			if (path.endsWith("/products/current"))
+				return response({
+					schema_version: 1,
+					provider: "woocommerce",
+					figure_projection_version: 2,
+					compatibility_origin: "woocommerce",
+					products: [],
+					pv_modules: [],
+				});
 			if (path.endsWith("/sources/project-brief")) return response(record);
 			if (path.endsWith("/sources/project-brief/stage")) {
 				const command = JSON.parse(init.body);
@@ -123,8 +132,15 @@ async function openBrief(t, hints = null) {
 					client,
 					store,
 					locale: "en",
+					config: {
+						locale: "en",
+						countries: { DE: "Germany" },
+						baseUrl: location.origin + "/rpc/",
+						nonceUrl: location.origin + "/nonce",
+					},
 					recheck: () => assert.fail("unexpected identity failure"),
-					created: (project) => {
+					created: (project, destination) => {
+						assert.equal(destination, "compare");
 						state.created = project;
 						return true;
 					},
@@ -141,29 +157,55 @@ async function openBrief(t, hints = null) {
 		);
 	const click = async (label) => {
 		const b = button(label);
-		assert.ok(b, label);
+		assert.ok(b?.matches(":enabled"), label);
 		await act(async () => b.click());
 	};
-	await until(
-		() =>
-			button("Continue with solar") && !button("Continue with solar").disabled,
+	const choose = async (control, value) => {
+		assert.ok(control?.matches(":enabled"));
+		await act(async () => {
+			control.value = value;
+			control.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	};
+	const named = (name) => fixture.element.querySelector(`[name="${name}"]`);
+	await until(() => named("system_scope")?.matches(":enabled"));
+	assert.ok(!requests.some(([path]) => path.endsWith("/projects/create")));
+	await choose(named("system_scope"), "new_pv_storage");
+	await choose(named("project_purpose"), "self");
+	const grid = [...fixture.element.querySelectorAll("label")]
+		.find(
+			(el) =>
+				el.querySelector("select") &&
+				el.textContent.includes("Grid connection"),
+		)
+		.querySelector("select");
+	assert.equal(
+		grid.value,
+		"",
+		"note text and proposed hints do not set the grid connection",
 	);
+	// A proposed phase in the consent case must come from acceptance, not this fixture.
+	if (!hints?.phase) await choose(grid, "1");
 	return { fixture, state, requests, click, button };
 }
 
-test("Next carries the staged note without inferring sizing", async (t) => {
-	const { fixture, state, click } = await openBrief(t);
+test("Compare carries the staged note without inferring capacity or load", async (t) => {
+	const { fixture, state, click, requests } = await openBrief(t);
 	assert.equal(fixture.element.querySelector("textarea").value, NOTE);
-	await click("Continue with solar");
+	await click("Compare systems");
 	await until(() => state.created);
-	const { inputs } = state.created;
+	const creates = requests.filter(([p]) => p.endsWith("/projects/create"));
+	assert.equal(creates.length, 1);
+	const { inputs } = JSON.parse(creates[0][1]);
 	assert.equal(inputs.brief.project_note, NOTE);
 	assert.equal(inputs.brief.annual_load.kwh, null);
 	assert.equal(inputs.brief.site.location_label, "");
-	assert.equal(inputs.equipment_setup, undefined);
+	assert.equal(inputs.equipment_setup.grid_phase, 1);
+	assert.equal(inputs.equipment_setup.pv_dc_kw, null);
+	assert.equal(inputs.equipment_setup.inverter_product_id, null);
 });
 
-test("after editing the site, consent and a note edit are carried on Next", async (t) => {
+test("after editing the site, consent and a note edit are carried on Compare", async (t) => {
 	const { readEntryHints } = await import("../src/domain/entryHints.ts");
 	const { fixture, state, click, requests, button } = await openBrief(
 		t,
@@ -175,9 +217,13 @@ test("after editing the site, consent and a note edit are carried on Next", asyn
 		fixture.element.querySelector('[name="location_label"]'),
 		"Customer site",
 	);
+	assert.ok(
+		button("Compare systems").disabled,
+		"proposed phase is not yet applied",
+	);
 	await click("Use these values");
 	await enter(fixture.element.querySelector("textarea"), "Revised requirement");
-	await click("Continue with solar");
+	await click("Compare systems");
 	await until(() => state.created);
 	const { inputs } = state.created;
 	assert.equal(inputs.brief.project_note, "Revised requirement");
@@ -189,7 +235,7 @@ test("after editing the site, consent and a note edit are carried on Next", asyn
 	assert.equal(button("Save"), undefined);
 });
 
-test("a failed stage keeps the form open; retrying Next does not opt into sizing", async (t) => {
+test("a failed stage keeps the form open; retrying Compare does not opt into sizing", async (t) => {
 	const { readEntryHints } = await import("../src/domain/entryHints.ts");
 	const { fixture, state, click, requests } = await openBrief(
 		t,
@@ -197,7 +243,7 @@ test("a failed stage keeps the form open; retrying Next does not opt into sizing
 	);
 	state.failStage = true;
 	await enter(fixture.element.querySelector("textarea"), "Edited brief");
-	await click("Continue with solar");
+	await click("Compare systems");
 	await until(() =>
 		fixture.element.textContent.includes(
 			"The project note could not be carried over.",
@@ -207,7 +253,7 @@ test("a failed stage keeps the form open; retrying Next does not opt into sizing
 	assert.ok(!requests.some(([p]) => p.endsWith("/create")));
 	state.failStage = false;
 	state.failCreate = true;
-	await click("Continue with solar");
+	await click("Compare systems");
 	await until(() =>
 		fixture.element.textContent.includes("Retry project creation"),
 	);
@@ -217,27 +263,38 @@ test("a failed stage keeps the form open; retrying Next does not opt into sizing
 	const creates = requests.filter(([p]) => p.endsWith("/create"));
 	assert.equal(creates.length, 2);
 	assert.equal(creates[0][1], creates[1][1]);
+	assert.deepEqual(
+		requests
+			.filter(([p]) => p.endsWith("/stage"))
+			.map(([, body]) => JSON.parse(body).expected_revision),
+		[REVISION, REVISION],
+	);
 	assert.equal(state.created.inputs.brief.annual_load.kwh, null);
 	assert.equal(state.created.inputs.brief.project_note, "Edited brief");
 });
 test("a conflicting staged brief stays open until the customer chooses a revision", async (t) => {
-	const { fixture, state, click, button } = await openBrief(t);
+	const { fixture, state, click, button, requests } = await openBrief(t);
 	Object.assign(state.record, {
 		revision: "c".repeat(64),
 		text: "Other tab's note",
 	});
 	await enter(fixture.element.querySelector("textarea"), "My open note");
-	await click("Continue with solar");
+	await click("Compare systems");
 	await until(() => button("Use saved revision"));
 	assert.equal(fixture.element.querySelector("textarea").value, "My open note");
 	assert.ok(fixture.element.textContent.includes("Other tab's note"));
 	assert.equal(state.created, null);
+	assert.ok(!requests.some(([p]) => p.endsWith("/projects/create")));
 	await click("Use saved revision");
-	await click("Continue with solar");
+	assert.equal(
+		fixture.element.querySelector("textarea").value,
+		"Other tab's note",
+	);
+	await click("Compare systems");
 	await until(() => state.created);
 	assert.equal(state.created.inputs.brief.project_note, "Other tab's note");
 });
-test("autosave followed immediately by Next stages only the latest subsequent edit", async (t) => {
+test("autosave followed immediately by Compare stages only the latest subsequent edit", async (t) => {
 	const { fixture, state, click, requests } = await openBrief(t);
 	let release;
 	state.holdStage = new Promise((resolve) => {
@@ -246,7 +303,7 @@ test("autosave followed immediately by Next stages only the latest subsequent ed
 	await enter(fixture.element.querySelector("textarea"), "First edit");
 	await until(() => requests.some(([p]) => p.endsWith("/stage")));
 	await enter(fixture.element.querySelector("textarea"), "Second edit");
-	await click("Continue with solar");
+	await click("Compare systems");
 	await act(async () => {
 		release();
 	});
