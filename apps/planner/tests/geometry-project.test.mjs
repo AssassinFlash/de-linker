@@ -423,7 +423,11 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	assert.equal(button("Save snapshot"), undefined);
 	await click("Projects");
 	assert.equal(saved, null);
-	await act(async () => document.querySelector(".sc-nav button").click());
+	await act(async () =>
+		[...document.querySelectorAll(".sc-nav button")]
+			.find((node) => node.textContent.includes("Choose a solution"))
+			.click(),
+	);
 	assert.equal(location.hash, "#sc-solar");
 	assert.match(document.body.textContent, /Finish or cancel roof editing/);
 	await click("Check or retry this upload");

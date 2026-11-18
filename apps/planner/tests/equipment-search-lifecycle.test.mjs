@@ -692,6 +692,8 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 				),
 			);
 			await app.step("Project");
+			await openDetails("Solar installation and roof layout");
+			await openDetails("Solar generation estimate");
 			const latitude = app.fieldInput("Latitude");
 			assert.equal(latitude.value, "52.12567");
 			await enter(latitude, "52.1");
@@ -737,13 +739,19 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 	});
 }
 
+async function openDetails(label) {
+	const summary = () => [...document.querySelectorAll("summary")].find((node) => node.textContent.trim() === label && !node.closest("[hidden]"));
+	await until(summary);
+	if (!summary().parentElement.open) await act(async () => summary().click());
+}
+
 async function compare(app) {
 	await untilRun(() => app.button("Compare systems")?.matches(":enabled"));
 	await act(async () => app.button("Compare systems").click());
 }
 async function chooseGoal(app, goal = "self") {
-	await until(() => app.fieldSelect("Purpose"));
-	await app.updateSelect("Purpose", goal);
+	await until(() => app.fieldSelect("Main purpose"));
+	await app.updateSelect("Main purpose", goal);
 }
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
@@ -757,6 +765,8 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 			equipment_setup: { ...savedSetup, pv_dc_kw: null },
 		},
 	});
+	await openDetails("Solar installation and roof layout");
+	await openDetails("Solar generation estimate");
 	await untilRun(() => app.fieldInput("Calendar year")?.matches(":enabled"));
 	assert.equal(location.hash, "#sc-project");
 	assert.equal(app.fieldInput("Calendar year").value, "2020");
@@ -783,9 +793,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 		app.button("Use this configuration")?.matches(":enabled"),
 	);
 	await act(async () => app.button("Use this configuration").click());
-	await untilRun(() => app.button("Review the proposal")?.matches(":enabled"));
-	await act(async () => app.button("Review the proposal").click());
-	assert.equal(location.hash, "#sc-review");
+	await untilRun(() => location.hash === "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
 	await untilRun(() =>
 		app.button("Generate project report")?.matches(":enabled"),
@@ -794,6 +802,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Project");
+	await openDetails("Solar installation and roof layout");
 	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
@@ -844,10 +853,7 @@ for (const purpose of [
 			app.button("Use this configuration")?.matches(":enabled"),
 		);
 		await act(async () => app.button("Use this configuration").click());
-		await untilRun(() =>
-			app.button("Review the proposal")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Review the proposal").click());
+		await untilRun(() => location.hash === "#sc-review");
 		await untilRun(() =>
 			app.button("Generate project report")?.matches(":enabled"),
 		);
@@ -889,6 +895,7 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	await app.updateSelect("Planned system", "pv_only");
 	if (app.button("Switch to solar and exclude storage"))
 		await click("Switch to solar and exclude storage");
+	await openDetails("Solar installation and roof layout");
 	await click("Place modules on the roof");
 	const module =
 		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
@@ -976,6 +983,7 @@ for (const multi of [false, true]) {
 			},
 		});
 		if (multi) {
+			await openDetails("Equipment and system arrangement");
 			await until(() => app.button("Multiple systems")?.matches(":enabled"));
 			await act(async () => app.button("Multiple systems").click());
 			const names = [...document.querySelectorAll("label")]
@@ -994,6 +1002,7 @@ for (const multi of [false, true]) {
 		await chooseGoal(app);
 		assert.equal(app.fieldSelect("Grid connection").value, "");
 		assert.equal(app.button("Compare systems").disabled, true);
+		await openDetails("Required power and capacity already known?");
 		assert.equal(app.fieldInput("Usable storage capacity").value, "61.4");
 		assert.equal(app.fieldInput("Continuous discharge power").value, "100");
 		assert.equal(app.fieldInput("PV array"), undefined);
@@ -1050,6 +1059,7 @@ test("commercial backup compares direct demand while leaving device parameters u
 	assert.match(document.body.textContent, /20 kWh/);
 	const optional = app.fieldInput("Usable storage capacity").closest("details");
 	assert.equal(optional.open, false);
+	await openDetails("Required power and capacity already known?");
 	assert.equal(app.fieldInput("Usable storage capacity").value, "");
 	assert.equal(app.fieldInput("Continuous discharge power").value, "");
 	assert.doesNotMatch(document.body.textContent, /Commercial storage sizing/);
@@ -1082,7 +1092,7 @@ test("changing the purpose drops backup demand before the next comparison", asyn
 	});
 	await until(() => app.fieldInput("Backup load"));
 	assert.equal(app.fieldInput("Backup load").value, "5");
-	await app.updateSelect("Purpose", "peak");
+	await app.updateSelect("Main purpose", "peak");
 	await enter(app.fieldInput("Target grid import limit"), "13");
 	await compare(app);
 	await untilRun(app.pending);
@@ -1245,8 +1255,11 @@ for (const [multi, selection] of [
 				equipment_requirements: savedRequirements,
 			},
 		});
-		await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
-		if (multi) await act(async () => app.button("Multiple systems").click());
+		if (multi) {
+			await openDetails("Equipment and system arrangement");
+			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
+			await act(async () => app.button("Multiple systems").click());
+		}
 		await chooseGoal(app, selection === "backup" ? "backup" : "self");
 		if (selection === "backup") {
 			await enter(app.fieldInput("Backup load"), "5");
@@ -1259,9 +1272,8 @@ for (const [multi, selection] of [
 			app.button("Use this configuration")?.matches(":enabled"),
 		);
 		await act(async () => app.button("Use this configuration").click());
-		await untilRun(() => app.button("Selected"));
-		assert.equal(app.requests.length, 1);
-		await act(async () => app.button("Review the proposal").click());
+		await untilRun(() => location.hash === "#sc-review");
+		assert.deepEqual(app.requests.map(({path}) => path), ["runs/find-equipment", "projects/revise"]);
 		await untilRun(() =>
 			app.button("Generate project report")?.matches(":enabled"),
 		);
@@ -1334,9 +1346,7 @@ for (const [multi, selection] of [
 		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
 		if (selection === "none") {
 			await app.step("Project");
-			const declarations = document.querySelector("details");
-			if (!declarations.open)
-				await act(async () => declarations.querySelector("summary").click());
+			await openDetails("Equipment and system arrangement");
 			await untilRun(() =>
 				app
 					.fieldSelect("Inverter or integrated storage system")
@@ -1620,6 +1630,7 @@ for (const change of [
 			selectionGate: gate,
 		});
 		if (change === "plant model preference") {
+			await openDetails("Equipment and system arrangement");
 			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 			await act(async () => app.button("Multiple systems").click());
 		}
@@ -1646,7 +1657,7 @@ for (const change of [
 			await app.step("Choose a solution");
 		} else if (change === "purpose") {
 			await app.step("Project");
-			await app.updateSelect("Purpose", "peak");
+			await app.updateSelect("Main purpose", "peak");
 			await app.step("Choose a solution");
 		} else if (change === "system scope") {
 			await app.step("Project");
@@ -1688,7 +1699,7 @@ for (const authored of [false, true]) {
 				...(authored ? { equipment_setup: emptySetup } : {}),
 			},
 		});
-		await until(() => app.fieldInput("Usable storage capacity"));
+		await openDetails("Required power and capacity already known?");
 		assert.equal(
 			app.fieldInput("Usable storage capacity").value,
 			authored ? "" : "61.4",

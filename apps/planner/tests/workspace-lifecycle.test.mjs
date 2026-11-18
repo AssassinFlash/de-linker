@@ -55,17 +55,18 @@ const choose = (select, value) =>
 async function startProjectCreation(title) {
 	const name = 'input[name="project_title"]';
 	await until(() => document.querySelector(name));
-	await enter(document.querySelector(name), title);
-	const form = document.querySelector(name).form;
-	await choose(
-		form.querySelector('select[name="system_scope"]'),
-		"new_pv_storage",
-	);
-	await until(
-		() =>
-			button("Continue with solar") && !button("Continue with solar").disabled,
-	);
-	await act(async () => button("Continue with solar").click());
+	const titleInput = document.querySelector(name);
+	const naming = titleInput.closest("details");
+	if (naming && !naming.open) await act(async () => naming.querySelector("summary").click());
+	await enter(titleInput, title);
+	await choose(document.querySelector('select[name="system_scope"]'), "storage_only");
+	await choose(document.querySelector('select[name="project_purpose"]'), "self");
+	const grid = [...document.querySelectorAll("label")]
+		.find((label) => label.querySelector("span")?.textContent.trim() === "Grid connection")
+		.querySelector("select");
+	await choose(grid, "3");
+	await until(() => button("Compare systems")?.matches(":enabled"));
+	await act(async () => button("Compare systems").click());
 }
 
 async function workspaceFixture(t, mode, configureDom = () => {}) {
@@ -334,6 +335,9 @@ test("step changes retain the energy input and undo history and protect unfinish
 			new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
 		),
 	);
+	const solar = document.querySelector("#sc-solar").closest("details");
+	assert.equal(solar.open, false);
+	await act(async () => solar.querySelector("summary").click());
 	await act(async () => button("Place modules on the roof").click());
 	await act(async () => button("Open roof layout").click());
 	await act(async () => button("Draw roof").click());
@@ -669,17 +673,8 @@ test("creation authentication failure rechecks once and explicitly retries the e
 	await until(() =>
 		document.querySelector('input[name="project_title"]')?.matches(":enabled"),
 	);
-	await enter(document.querySelector("input"), "Synthetic new project");
 	const before = bootstraps;
-	const submit = () =>
-		act(async () =>
-			document
-				.querySelector("form")
-				.dispatchEvent(
-					new window.Event("submit", { bubbles: true, cancelable: true }),
-				),
-		);
-	await submit();
+	await startProjectCreation("Synthetic new project");
 	await until(
 		() =>
 			bootstraps > before &&
@@ -687,8 +682,8 @@ test("creation authentication failure rechecks once and explicitly retries the e
 			!document.querySelector("form").parentElement.hidden,
 	);
 	assert.equal(creates, 1); // No automatic mutation replay after reauthentication.
-	assert.equal(document.querySelector("input").value, "Synthetic new project");
-	await submit();
+	assert.equal(document.querySelector('input[name="project_title"]').value, "Synthetic new project");
+	await act(async () => button("Retry project creation").click());
 	await until(() => created !== null);
 	assert.equal(creates, 2);
 	assert.equal(bodies[0], bodies[1]);
@@ -1219,16 +1214,8 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 			),
 		),
 	);
-	await until(() => document.querySelector("form"));
-	const submit = () =>
-		act(async () =>
-			document
-				.querySelector("form")
-				.dispatchEvent(
-					new window.Event("submit", { bubbles: true, cancelable: true }),
-				),
-		);
-	await submit();
+	await until(() => button("Retry project creation")?.matches(":enabled"));
+	await act(async () => button("Retry project creation").click());
 	await until(() =>
 		document.body.textContent.includes(
 			"The project this request belonged to was deleted.",
@@ -1240,8 +1227,8 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	assert.notEqual(records[0].body, dead);
 	assert.equal(records[0].title, "Deleted project");
 	assert.equal(records[0].createdAt, 1);
-	assert.equal(document.querySelector("input").value, "Deleted project");
-	await submit();
+	assert.equal(document.querySelector('input[name="project_title"]').value, "Deleted project");
+	await act(async () => button("Retry project creation").click());
 	await until(() => created !== null);
 	assert.equal(bodies.length, 2);
 	assert.equal(bodies[1].title, "Deleted project");
@@ -1335,14 +1322,8 @@ test("an unknown creation 404 stays a retry failure instead of rekeying a live r
 			),
 		),
 	);
-	await until(() => document.querySelector("form"));
-	await act(async () =>
-		document
-			.querySelector("form")
-			.dispatchEvent(
-				new window.Event("submit", { bubbles: true, cancelable: true }),
-			),
-	);
+	await until(() => button("Retry project creation")?.matches(":enabled"));
+	await act(async () => button("Retry project creation").click());
 	await until(() =>
 		document.body.textContent.includes(
 			"Project creation was not confirmed. Retrying uses the same request.",

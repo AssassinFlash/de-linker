@@ -349,9 +349,7 @@ test("a storage project includes location and energy demand on one stage", async
 			),
 			["Project", "Choose a solution", "Review & inquire"],
 		);
-		await until(() =>
-			fixture.element.textContent.includes("What should the system do?"),
-		);
+		await until(() => fixture.element.querySelector("#sc-energy select"));
 		assert.equal(requests.includes("projects/revise"), false);
 		assert.doesNotMatch(fixture.element.textContent, /PV strings and inputs/);
 		assert.equal(
@@ -418,6 +416,15 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 		isCurrentScope: (value) => value === scope,
 		query: async (path, body) => {
 			queries.push(path);
+			if (path === "products/current")
+				return {
+					schema_version: 1,
+					provider: "woocommerce",
+					products: [],
+					pv_modules: [],
+					figure_projection_version: 2,
+					compatibility_origin: "woocommerce",
+				};
 			if (path === "projects/runs") {
 				if (!run) return { items: [], next: null };
 				const { manifest, result, error, ...summary } = run;
@@ -501,6 +508,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 		await until(() => window.location.hash === "#sc-system");
 		await act(async () => root.unmount());
 		cache.clear();
+		queries.length = 0;
 		run = {
 			...run,
 			state: "succeeded",
@@ -539,6 +547,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 		assert.deepEqual(commands, ["runs/find-equipment"]);
 		assert.ok(
 			queries.every((path) => path === "projects/runs" || path === "runs/read"),
+			queries.join(", "),
 		);
 	} finally {
 		await dom.dispose(root);
@@ -887,7 +896,12 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await until(() => button("Ask Genie", history()));
 		await ask(history(), 2, [earlier.id]);
 		await act(async () => saving.resolve());
-		await until(() => dom.element.textContent.includes("Saved · revision 4"));
+		await until(() =>
+			button(
+				"Ask Genie",
+				dom.element.querySelector(".sc-project-toolbar"),
+			)?.matches(":enabled"),
+		);
 		assertContext(context(), 2, [earlier.id]);
 		await ask(dom.element.querySelector(".sc-project-toolbar"), 4, []);
 

@@ -117,24 +117,33 @@ async function exercise(t, historical) {
 			),
 		),
 	);
-	await until(() => document.querySelector("select"));
+	const recoverySelect = () =>
+		[...document.querySelectorAll("label")]
+			.find(
+				(label) =>
+					label.querySelector("span")?.textContent ===
+					"Unconfirmed project creations",
+			)
+			?.querySelector("select");
+	const name = () => document.querySelector('input[name="project_title"]');
+	await until(recoverySelect);
+	const nameDetails = name().closest("details");
+	if (nameDetails && !nameDetails.open)
+		await act(async () => nameDetails.querySelector("summary").click());
 	assert.equal(sent.length, 0);
-	assert.equal(document.querySelector("input").value, pending[0].title);
-	assert.equal(document.querySelector("input").readOnly, true);
+	assert.equal(name().value, pending[0].title);
+	assert.equal(name().readOnly, true);
 	await act(async () => {
-		const select = document.querySelector("select");
+		const select = recoverySelect();
 		select.value = originScope + ":" + pending[1].key;
 		select.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	assert.equal(document.querySelector("input").value, pending[1].title);
+	assert.equal(name().value, pending[1].title);
 	assert.equal(sent.length, 0);
-	await act(async () =>
-		document
-			.querySelector("form")
-			.dispatchEvent(
-				new window.Event("submit", { bubbles: true, cancelable: true }),
-			),
+	const retry = [...document.querySelectorAll("button")].find(
+		(node) => node.textContent === "Retry project creation",
 	);
+	await act(async () => retry.click());
 	await until(() => created !== null);
 	assert.deepEqual(sent, [pending[1].body]);
 	assert.deepEqual(cleared, [[originScope, pending[1].body]]);
