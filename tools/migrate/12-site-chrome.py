@@ -1817,8 +1817,11 @@ def do_verify(wp: WP) -> int:
     ids = resolve(wp)
     plan = steps(ids)
     ok = True
+    german_header: tuple[Step, str] | None = None
     for step in plan:
         post = read_post(wp, step.post_id)
+        if step.key == "header-de":
+            german_header = (step, post["post_content"])
         if step.key.startswith("header-"):
             # The menu thumbnails of both header partials must resolve
             # through their own src (spec 12 item 8): the deferred form is
@@ -1833,10 +1836,20 @@ def do_verify(wp: WP) -> int:
         for token in stale_tokens(post["post_content"]):
             print(f"FAIL {step.key}: {token} still present")
             ok = False
-        for _old, new, *_previous in step.pairs:
-            if new not in post["post_content"]:
+        for old, new, *previous in step.pairs:
+            body = post["post_content"]
+            if new not in body:
                 print(f"FAIL {step.key}: new string missing: {new[:80]!r}")
                 ok = False
+            elif previous:
+                final_count = body.count(new)
+                earlier_count = sum(body.count(text) for text in (old, *previous))
+                if final_count != 1 or earlier_count:
+                    print(
+                        f"FAIL {step.key}: expected one final fragment, found"
+                        f" {final_count} final and {earlier_count} earlier: {new[:80]!r}"
+                    )
+                    ok = False
         # The multi-hit sentence rules (M2): once applied, the old string is
         # gone and the new one is there. verify refuses both halves a miss —
         # a typo in the old string would otherwise apply silently never.
@@ -1906,10 +1919,17 @@ def do_verify(wp: WP) -> int:
         if seen:
             print(f"FAIL post #{row['ID']} ({row['post_title']}): {', '.join(seen)}")
             ok = False
-    # The German sources' legacy metas are what the 9-i18n import reads;
-    # a stale copy there reverts the German pages on the import's next run.
+    # The legacy import reads page mirrors. Headers are excluded from that
+    # import, but this migration still refreshes their existing mirrors.
     sources = sorted({step.english_id for step in plan if step.lang == "de"})
     legacy = wp.eval_php(LEGACY_META_PHP, sources) or {}
+    if german_header:
+        step, body = german_header
+        if legacy_meta_updates([step], {step.post_id: body}, legacy):
+            print(
+                f"FAIL source #{step.english_id} _linker_de_content differs from header-de"
+            )
+            ok = False
     for source_id, row in sorted(legacy.items(), key=lambda item: int(item[0])):
         seen = stale_tokens(row.get("content", "")) + stale_tokens(row.get("title", ""))
         if seen:

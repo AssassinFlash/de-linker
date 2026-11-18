@@ -173,6 +173,33 @@ final class Storefront {
 	}
 
 	/**
+	 * Localize the shared image descriptions that name the draft thumbnail links.
+	 *
+	 * @param string $thumbnail WooCommerce thumbnail HTML.
+	 */
+	public function cart_item_thumbnail( string $thumbnail ): string {
+		if ( ! $this->german_request() || ! is_cart() ) {
+			return $thumbnail;
+		}
+		$image = new \WP_HTML_Tag_Processor( $thumbnail );
+		if ( ! $image->next_tag( 'IMG' ) ) {
+			return $thumbnail;
+		}
+
+		// These shared attachments have no German media twin. Retain their
+		// product identity and visual description in this cart rendering only.
+		$alt = match ( $image->get_attribute( 'alt' ) ) {
+			'SAJ B2-10.0-HV1: three white modules on a grey base' => __( 'SAJ B2-10.0-HV1: three white modules on a grey base', 'linker-i18n' ),
+			'SAJ BC2-HV1 control module on top of the B2 stack' => __( 'SAJ BC2-HV1 control module on top of the B2 stack', 'linker-i18n' ),
+			default => null,
+		};
+		if ( null !== $alt ) {
+			$image->set_attribute( 'alt', $alt );
+		}
+		return $image->get_updated_html();
+	}
+
+	/**
 	 * The German permalink on a Store API product (filter
 	 * `rest_request_after_callbacks`).
 	 *

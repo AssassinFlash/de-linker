@@ -192,6 +192,7 @@ final class Plugin {
 		add_filter( 'woocommerce_product_get_name', array( $storefront, 'name' ), 10, 2 );
 		add_filter( 'woocommerce_add_to_cart_item_name_in_quotes', array( $storefront, 'quoted_item_name' ), 10, 2 );
 		add_filter( 'woocommerce_cart_item_permalink', array( $storefront, 'cart_item_permalink' ), 10, 2 );
+		add_filter( 'woocommerce_cart_item_thumbnail', array( $storefront, 'cart_item_thumbnail' ) );
 		// Before RestLang::leave and StoreApiPrices (both priority 10). The
 		// language is the request's `lang`, and a null `prices` is still a
 		// product, so either neighbour moving earlier still leaves the German

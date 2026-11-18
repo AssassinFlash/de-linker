@@ -5,6 +5,39 @@ import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
 
 test.setTimeout(60_000);
 
+test('German draft thumbnail links name the two products and describe their images', async ({
+	page,
+}) => {
+	const base = instance().url;
+	const products = [
+		{
+			slug: 'saj-b2-10-0-hv1',
+			alt: 'SAJ B2-10.0-HV1: drei weiße Module auf einem grauen Sockel',
+		},
+		{
+			slug: 'saj-bc2-hv1',
+			alt: 'SAJ BC2-HV1: Steuermodul oben auf dem B2-Stapel',
+		},
+	];
+	for (const { slug } of products) {
+		await page.goto(`${base}/de/produkt/${slug}/`);
+		const reject = page.getByRole('button', { name: 'Alle ablehnen' });
+		if (await reject.isVisible()) await reject.click();
+		await page.locator('a[href*="add-to-cart="]:visible').first().click();
+	}
+	await page.goto(`${base}/de/loesungsentwurf/`);
+	for (const { slug, alt } of products) {
+		const link = page
+			.locator('.product-thumbnail')
+			.getByRole('link', { name: alt, exact: true });
+		await expect(link).toHaveAttribute(
+			'href',
+			`${base}/de/produkt/${slug}/`
+		);
+		await expect(link.getByRole('img')).toHaveAttribute('alt', alt);
+	}
+});
+
 for (const locale of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
 		test(`${locale} ${width}: filled draft actions, quantity and inquiry entry`, async ({

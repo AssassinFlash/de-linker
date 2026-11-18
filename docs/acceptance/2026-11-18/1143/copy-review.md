@@ -61,3 +61,10 @@
 从二十个英德公开入口逐页读取定稿，各页返回 HTTP 200，十对页面的原生翻译基线均为 `current=true`。
 
 正式写入时依次读取快照并调用 `plan_pair`，将有差异的载荷交给现有 `reviewed_page_pair.invoke`。每对必须完整匹配原始版或旧候选的精确片段，写入器仍核对两页完整正文和翻译元数据并在同一事务采纳德语基线。全部定稿片段仍须有原生 `current=true` 才报告 `Already applied`。若正文已定稿而基线过期，预览报错并停止，由原生双语流程核对并恢复基线。
+
+## 德语 Lösungsentwurf 图片链接
+
+- **原句。** 附件 4462 为 `SAJ B2-10.0-HV1: three white modules on a grey base`，附件 2085 为 `SAJ BC2-HV1 control module on top of the B2 stack`。每张图均由对应英德商品共用，没有德语附件配对。
+- **初稿。** 给链接加「Produkt ansehen」和商品名称，沿用英文图片描述。
+- **质询。** Woo 在缩略图过滤器之后生成链接，原生可访问名称取图像 `alt`。一条本地化的同义描述可以同时保留识别目的地的型号和图像内容。适用范围为德语 Woo 草稿中的这两条现有描述，其他附件及原语种仍从原数据渲染。
+- **定稿。** `SAJ B2-10.0-HV1: drei weiße Module auf einem grauen Sockel` / `SAJ BC2-HV1: Steuermodul oben auf dem B2-Stapel`。在 `de_DE_formal` 用真实商品和 Woo 原生购物车模板核对，图片地址保持原值。评审站加载候选插件后，访客从两个德语商品页加购，在 Lösungsentwurf 中按上述图片名称均能找到对应商品链接。Chromium 整页回归通过。

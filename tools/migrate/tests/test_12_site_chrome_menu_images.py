@@ -176,6 +176,88 @@ def test_a_re_run_writes_no_data_src_onto_the_menu_images(step_key: str) -> None
     assert chrome.unresolved_menu_images(twice) == []
 
 
+def verify_header(
+    monkeypatch: pytest.MonkeyPatch, step_key: str, body: str, legacy: str = ""
+) -> int:
+    ids = fake_ids()
+    ids["header"] = {"en": 17, "de": 6909}
+    header = next(step for step in chrome.steps(ids) if step.key == step_key)
+    monkeypatch.setattr(chrome, "resolve", lambda wp: ids)
+    monkeypatch.setattr(chrome, "steps", lambda ids: [header])
+    monkeypatch.setattr(chrome, "read_post", lambda wp, post_id: {"post_content": body})
+    monkeypatch.setattr(chrome, "seo_meta", lambda wp: {})
+
+    class FixtureWP:
+        slugs = iter(
+            ["solution-configurator", "loesungskonfigurator", "genie", "genie"]
+        )
+
+        def run(self, *args: str) -> str:
+            return next(self.slugs)
+
+        def json(self, *args: str) -> list[str]:
+            return []
+
+        def eval_php(self, source: str, ids: list[int]) -> dict[str, dict[str, str]]:
+            return (
+                {"17": {"content": legacy}} if source == chrome.LEGACY_META_PHP else {}
+            )
+
+    return int(chrome.do_verify(FixtureWP()))
+
+
+def test_verify_rejects_a_stale_german_header_mirror_after_the_page_is_current(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    german = HEADER_PARTIALS["header-de"].read_text()
+    stale = german
+    for _, previous, current in ROOF_COPY["header-de"]:
+        stale = stale.replace(current, previous, 1)
+    ids = fake_ids()
+    ids["header"] = {"en": 17, "de": 6909}
+    header = next(step for step in chrome.steps(ids) if step.key == "header-de")
+
+    assert verify_header(monkeypatch, "header-de", german, stale) == 1
+    assert "_linker_de_content" in capsys.readouterr().out
+    assert chrome.legacy_meta_updates(
+        [header], {6909: german}, {"17": {"content": stale}}
+    ) == [(17, {"_linker_de_content": german})]
+    assert verify_header(monkeypatch, "header-de", german, german) == 0
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("slot", ["desktop", "mobile"])
+@pytest.mark.parametrize("extra_version", ["previous", "current"])
+def test_verify_rejects_two_roof_descriptions_in_one_slot(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    step_key: str,
+    slot: str,
+    extra_version: str,
+) -> None:
+    body = HEADER_PARTIALS[step_key].read_text()
+    index, css = (
+        (0, "tv-tool-desc") if slot == "desktop" else (1, "tv-mobile-link-desc")
+    )
+    _, previous, current = ROOF_COPY[step_key][index]
+    final_span = f'<span class="{css}">{current}</span>'
+    extra = previous if extra_version == "previous" else current
+    assert body.count(final_span) == 1
+    contested = body.replace(
+        final_span, f'<span class="{css}">{extra}</span>{final_span}', 1
+    )
+    assert chrome.stale_tokens(contested) == []
+    assert verify_header(monkeypatch, step_key, body) == 0
+    capsys.readouterr()
+
+    result = verify_header(monkeypatch, step_key, contested)
+    output = capsys.readouterr().out
+    assert result == 1, output
+    assert f"FAIL {step_key}:" in output
+    assert css in output
+    assert "verify: FAILED" in output
+
+
 def test_the_menu_image_deferral_switch_is_gone() -> None:
     assert not hasattr(chrome, "defer_menu_images")
     assert "menu_images" not in chrome.Step.__init__.__code__.co_varnames

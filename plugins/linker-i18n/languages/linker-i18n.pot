@@ -29,6 +29,14 @@ msgstr ""
 msgid "Linker Technology GmbH"
 msgstr ""
 
+#: includes/Woo/Storefront.php
+msgid "SAJ B2-10.0-HV1: three white modules on a grey base"
+msgstr ""
+
+#: includes/Woo/Storefront.php
+msgid "SAJ BC2-HV1 control module on top of the B2 stack"
+msgstr ""
+
 #: includes/Admin/StatusColumn.php:58
 msgid "German"
 msgstr ""
