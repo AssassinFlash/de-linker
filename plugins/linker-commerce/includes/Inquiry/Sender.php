@@ -82,6 +82,10 @@ final class Sender {
 			}
 			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
 			// Optional summary/provider work has finished before the first native write.
+			// A planning lock must cover the owning COMMIT, not a caller's savepoint.
+			if ( $order->get_meta( \Linker\Commerce\Planning\Context::META ) && \Linker\Commerce\Mail\Capacity::transaction_active() ) {
+				throw new \RuntimeException( esc_html__( 'The solution could not be checked. Please try again.', 'linker-commerce' ) );
+			}
 			$transaction = new NativeTransaction();
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
@@ -98,11 +102,19 @@ final class Sender {
 			if ( $stored instanceof WP_Error ) {
 				return $stored;
 			}
-			$this->receive( $order, $details, 'inquiry', $context );
 			if ( ! $transaction instanceof NativeTransaction ) {
 				return $this->unknown();
 			}
-			$transaction->commit();
+			$problem = \Linker\Commerce\Planning\Context::commit_inquiry(
+				$order,
+				function () use ( $order, $details, $context, $transaction ): void {
+					$this->receive( $order, $details, 'inquiry', $context );
+					$transaction->commit();
+				}
+			);
+			if ( $problem instanceof WP_Error ) {
+				return $problem;
+			}
 			\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
 			WC()->cart->empty_cart();
 			return $order;

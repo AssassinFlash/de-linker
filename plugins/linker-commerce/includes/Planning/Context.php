@@ -300,6 +300,64 @@ final class Context {
 	}
 
 	/**
+	 * Admit the native order's frozen reports under the same locks as project deletion.
+	 * The caller's original database transaction stays open through the final commit.
+	 *
+	 * @param WC_Order        $order Native order in the submission transaction.
+	 * @param callable():void $commit Receive and commit that order.
+	 */
+	public static function commit_inquiry( WC_Order $order, callable $commit ): ?WP_Error {
+		$raw = $order->get_meta( self::META );
+		if ( '' === $raw ) {
+			$commit();
+			return null;
+		}
+		$entries    = self::stored( $order );
+		$captured   = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		$retry      = new WP_Error( 'planning_context_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+		if ( array() === $entries || $entries !== $captured ) {
+			return $retry;
+		}
+		$references = array_column( $entries, 'reference' );
+		$projects   = array_unique( array_column( $references, 'project_id' ) );
+		sort( $projects, SORT_STRING );
+		$problem = null;
+		$work    = static function () use ( $order, $references, $commit, $retry, &$problem ): void {
+			foreach ( $references as $reference ) {
+				/**
+				 * Admit the server-stored handoff before commit.
+				 *
+				 * @since 0.3.0
+				 */
+				$admitted = apply_filters( 'linker_tools_planning_admit_inquiry', null, $reference, $order->get_id() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
+				if ( true === $admitted ) {
+					continue;
+				}
+				$problem = $retry;
+				if ( $admitted instanceof WP_Error && 'linker_planner_handoff_not_found' === $admitted->get_error_code() && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
+					$message = ! empty( $reference['report_only'] )
+						/* translators: %s: planning project title. */
+						? __( 'The planning project “%s” was deleted. Deselect the planning report, then send your inquiry again.', 'linker-commerce' )
+						/* translators: %s: planning project title. */
+						: __( 'The planning project “%s” was deleted. Remove its products from your solution draft, then send your inquiry again.', 'linker-commerce' );
+					$problem = new WP_Error( 'planning_project_deleted', sprintf( $message, $reference['title'] ), array( 'status' => 409 ) );
+				}
+				return;
+			}
+			$commit();
+		};
+		foreach ( array_reverse( $projects ) as $project_id ) {
+			$work = static function () use ( $project_id, $work, $retry, &$problem ): void {
+				if ( ! \Linker\Commerce\Inquiry\Assessment\Lock::run( 'planning-project:' . $project_id, $work, guard_connection: true ) ) {
+					$problem = $retry;
+				}
+			};
+		}
+		$work();
+		return $problem;
+	}
+
+	/**
 	 * Remove only the exact consumed note revisions after an inquiry commits,
 	 * preserving any newer note written by another tab.
 	 *

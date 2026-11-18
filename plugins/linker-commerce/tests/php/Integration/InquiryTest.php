@@ -64,6 +64,142 @@ final class InquiryTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Actual submission admits each frozen report under all project locks or retains the draft.
+	 *
+	 * @dataProvider report_admissions
+	 * @param string $outcome Engine reply.
+	 */
+	public function test_planning_report_submission( string $outcome ): void {
+		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
+		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$handoff = array(
+			'schema_version'  => 1,
+			'id'              => str_repeat( 'b', 32 ),
+			'snapshot_sha256' => str_repeat( 'c', 64 ),
+			'snapshot'        => array(
+				'schema_version'       => 1,
+				'kind'                 => 'planning_report_only_v1',
+				'project_id'           => str_repeat( 'a', 32 ),
+				'title'                => 'Roof plan',
+				'revision'             => 1,
+				'report_run_id'        => str_repeat( 'd', 32 ),
+				'input_sha256'         => str_repeat( '1', 64 ),
+				'report_source_sha256' => str_repeat( '2', 64 ),
+				'report_sha256'        => str_repeat( '3', 64 ),
+				'pdf'                  => array(
+					'asset_id'   => str_repeat( 'e', 32 ),
+					'sha256'     => str_repeat( '4', 64 ),
+					'media_type' => 'application/pdf',
+				),
+				'publication'          => null,
+				'items'                => array(),
+			),
+		);
+		$other = $handoff;
+		$other['id'] = str_repeat( 'd', 32 );
+		$other['snapshot']['project_id'] = str_repeat( '1', 32 );
+		$draft = array(
+			$handoff['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $handoff ),
+			$other['id']   => \Linker\Commerce\Planning\DraftTransfer::native_context( $other ),
+		);
+		$product = $this->product( '100' );
+		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
+		$base = static fn () => 'https://planner.example.test';
+		add_filter( 'pre_option_linker_planner_url', $base );
+		$this->later( static fn () => remove_filter( 'pre_option_linker_planner_url', $base ) );
+		global $wpdb;
+		$locks = array_map( static fn ( $entry ) => 'linker-assessment-' . md5( $wpdb->dbname . '/' . $wpdb->prefix . '/planning-project:' . $entry['snapshot']['project_id'] ), $draft );
+		$held = static function () use ( $locks, $wpdb ): array {
+			return array_values( array_map( static fn ( $name ) => (int) $wpdb->get_var( $wpdb->prepare( 'SELECT IS_USED_LOCK(%s) = CONNECTION_ID()', $name ) ), $locks ) );
+		};
+		$calls = array();
+		$engine = static function ( $previous, $args, $url ) use ( $outcome, $held, &$calls ) {
+			if ( 'https://planner.example.test/handoffs/admit-inquiry' !== $url ) {
+				return $previous;
+			}
+			$calls[] = array( json_decode( $args['body'], true ), $args['headers']['X-Linker-Planner-Principal-Kind'], $held() );
+			return array(
+				'response' => array( 'code' => 'admitted' === $outcome ? 200 : 404 ),
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => 'admitted' === $outcome ? '{"admitted":true}' : wp_json_encode( array( 'error' => array( 'code' => $outcome ) ) ),
+			);
+		};
+		add_filter( 'pre_http_request', $engine, 10, 3 );
+		$this->later( static fn () => remove_filter( 'pre_http_request', $engine, 10 ) );
+		$at_commit = null;
+		$observe_commit = static function ( $sql ) use ( &$at_commit, $held, &$calls ) {
+			if ( 'COMMIT' === $sql && $calls && null === $at_commit ) {
+				$at_commit = $held();
+			}
+			return $sql;
+		};
+		add_filter( 'query', $observe_commit );
+		$this->later( static fn () => remove_filter( 'query', $observe_commit ) );
+		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $draft );
+		$post       = array(
+			'name'                                      => 'Maria Weber',
+			'email'                                     => 'maria@example.test',
+			'consent'                                   => '1',
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD   => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD   => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array_column( $draft, 'snapshot_sha256', 'id' ),
+		);
+		$submission = Submission::from_post( $post, false );
+		$this->assertInstanceOf( Submission::class, $submission );
+		\Linker\Commerce\Planning\Context::inquiry_notes_section();
+		$this->assertSame( array(), $calls );
+		$result = \Linker\Commerce\Planning\Context::with_submission( $post, static fn () => ( new Sender() )->request( $submission, array(), false ) );
+		if ( $result instanceof \WC_Order ) {
+			$this->later( static fn () => $result->delete( true ) );
+		}
+		$this->assertSame( array( 0, 0 ), $held() );
+		$expected = array();
+		foreach ( $draft as $entry ) {
+			$expected[] = array(
+				array(
+					'schema_version'  => 1,
+					'handoff_id'      => $entry['id'],
+					'snapshot_sha256' => $entry['snapshot_sha256'],
+				),
+				'team',
+				array( 1, 1 ),
+			);
+			if ( 'admitted' !== $outcome ) {
+				break;
+			}
+		}
+		$this->assertSame( $expected, $calls );
+		if ( 'admitted' === $outcome ) {
+			$this->assertInstanceOf( \WC_Order::class, $result );
+			$this->assertSame( Statuses::RECEIVED, $result->get_status() );
+			$this->assertSame( array_keys( $draft ), array_keys( \Linker\Commerce\Planning\Context::stored( $result ) ) );
+			$this->assertSame( array( 1, 1 ), $at_commit );
+			$this->assertTrue( WC()->cart->is_empty() );
+		} else {
+			$this->assertInstanceOf( \WP_Error::class, $result );
+			$this->assertSame( 'handoff_not_found' === $outcome ? 'planning_project_deleted' : 'planning_context_unavailable', $result->get_error_code() );
+			$this->assertSame( $draft, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ) );
+			$this->assertSame( 1, WC()->cart->get_cart_contents_count() );
+			$this->assertNull( $at_commit );
+		}
+	}
+
+	/**
+	 * Private engine admission replies.
+	 *
+	 * @return array<string,array{string}>
+	 */
+	public function report_admissions(): array {
+		return array(
+			'frozen reports' => array( 'admitted' ),
+			'deleted report' => array( 'handoff_not_found' ),
+			'old endpoint'   => array( 'not_found' ),
+		);
+	}
+
+	/**
 	 * The inquiry stores the conversation summary the team reads (#244).
 	 */
 	public function test_an_inquiry_carries_the_conversations_summary(): void {

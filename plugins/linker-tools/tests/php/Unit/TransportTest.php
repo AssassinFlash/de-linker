@@ -92,6 +92,23 @@ final class TransportTest extends TestCase {
 		}
 	}
 
+	/** Delete coordination evidence belongs to the native gateway alone. */
+	public function test_browser_cannot_supply_delete_authorization(): void {
+		$transport = new Transport( static fn (): never => self::fail( 'Browser-supplied evidence reached private RPC.' ) );
+		foreach ( array(
+			'inquiry_generation'   => 0,
+			'prepared_handoff_ids' => array(),
+		) as $field => $value ) {
+			$command = array(
+				'schema_version' => 1,
+				$field           => $value,
+			);
+			$result  = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:17' ), 'projects/delete', $command, (string) wp_json_encode( $command ), $transport );
+			self::assertInstanceOf( \WP_Error::class, $result );
+			self::assertSame( 422, $result->get_error_data()['status'] );
+		}
+	}
+
 	/** A rejected owned receipt lookup must not create a standard-profile asset. */
 	public function test_standard_profile_refusal_does_not_bypass_write_admission(): void {
 		$writes    = 0;

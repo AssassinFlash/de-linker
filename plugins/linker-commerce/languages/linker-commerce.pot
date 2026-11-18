@@ -2411,6 +2411,14 @@ msgstr ""
 msgid "Please add a product or write a message."
 msgstr ""
 
+#, php-format
+msgid "The planning project “%s” was deleted. Remove its products from your solution draft, then send your inquiry again."
+msgstr ""
+
+#, php-format
+msgid "The planning project “%s” was deleted. Deselect the planning report, then send your inquiry again."
+msgstr ""
+
 #: includes/Inquiry/Sender.php:142 includes/Planning/Context.php:169
 #: includes/Protection/Business.php:69
 msgid ""

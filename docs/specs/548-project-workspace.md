@@ -57,8 +57,12 @@ subsequent increments of that same active delivery.
     before publishing a restored workspace. Existing stores/backups are never
     overwritten. Backup/files/directories are private to the service account.
 12. An owner may delete one project with `expected_revision` and an idempotency
-    key. A stale revision and a project with a handoff (the inquiry the team
-    already received) both refuse with the same conflict and remove nothing.
+    key. A stale revision or a frozen report referenced by a Woo inquiry
+    refuses deletion. A report prepared for the solution draft can be removed
+    with its project. For prepared reports Woo checks its stored inquiry
+    references under the same project lock used through inquiry commit.
+    Admission of a submission advances the engine's generation, invalidating
+    a delete that reached the engine after its Woo request released the lock.
     Deletion cancels queued, running and retrying jobs and removes the project's
     runs, jobs, artifacts, downloads, assets, ownership transfers and revisions,
     so an in-flight worker loses its lease with the row and cannot publish.

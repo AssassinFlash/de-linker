@@ -30,6 +30,9 @@ final class Admission {
 	 * @return array{status:int,type:string,body:string}|WP_Error Private reply or admission refusal.
 	 */
 	public function send( Principal $principal, string $path, array $command, string $body, Transport $transport ): array|WP_Error {
+		if ( 'projects/delete' === $path && array_diff( array_keys( $command ), array( 'schema_version', 'key', 'project_id', 'expected_revision' ) ) ) {
+			return Failure::make( 'input', 422 );
+		}
 		$policy = $this->policy( $path );
 		if ( null === $policy ) {
 			return $transport->call( $principal, $path, $body );
@@ -101,6 +104,18 @@ final class Admission {
 		// An uncertain/repeated request reuses the same private command key.
 		// The native journal does not infer that an upstream timeout did no work.
 		$reply = $transport->call( $principal, $path, $body );
+		if ( 'projects/delete' === $path && ! is_wp_error( $reply ) && 409 === $reply['status'] && 'prepared_handoff' === ( json_decode( $reply['body'], true )['error']['code'] ?? null ) ) {
+			$reply = ProjectDelete::prepared( $principal, $command, $transport );
+		}
+		if ( 'projects/delete' === $path && ! is_wp_error( $reply ) ) {
+			if ( 400 <= $reply['status'] ) {
+				return $reply;
+			}
+			$result = json_decode( $reply['body'], true );
+			if ( 200 !== $reply['status'] || ! str_starts_with( $reply['type'], 'application/json' ) || true !== ( $result['deleted'] ?? null ) || ( $result['project_id'] ?? null ) !== $command['project_id'] || ( $result['revision'] ?? null ) !== $command['expected_revision'] ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+		}
 		if ( ! is_wp_error( $reply ) ) {
 			$completed = $ledger->complete( $id, $fingerprint );
 			if ( is_wp_error( $completed ) ) {
