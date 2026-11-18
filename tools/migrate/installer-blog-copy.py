@@ -99,7 +99,10 @@ REVISIONS = {
                 "Listen Sie jeden Stromkreis auf, den Sie bei einem Netzausfall mit Strom versorgen möchten: Kühlschrank, Beleuchtung, Router, Sicherheitssystem, Garagentoröffner. Summieren Sie deren kontinuierliche Watt und schätzen Sie den täglichen kWh-Verbrauch, indem Sie die Watt mit den Nutzungsstunden multiplizieren.",
                 "Legen Sie zuerst fest, welche Stromkreise bei einem Netzausfall versorgt werden sollen, etwa für Kühlung, Beleuchtung, Router und Alarmanlage. Aus der höchsten gleichzeitigen Last ergibt sich die nötige Dauerleistung in kW. Bei Motoren und Kompressoren zählt zusätzlich die kurzzeitige Anlaufleistung, die das System im Notstrombetrieb liefern kann.",
             ),
-            ("Wenden Sie den Autonomiefaktor an", "Energiebedarf während des Ausfalls berechnen"),
+            (
+                "Wenden Sie den Autonomiefaktor an",
+                "Energiebedarf während des Ausfalls berechnen",
+            ),
             (
                 "Wie viele Stunden Backup ohne Solaraufladung? Ein typisches europäisches Wohn-Backup-Ziel liegt bei 8-24 Stunden für wesentliche Lasten. Multiplizieren Sie die täglichen kWh mit den Autonomiestunden geteilt durch 24, um die Ziel-Nutzungskapazität zu erhalten.",
                 "Für Notstrom ohne Nachladen aus der PV-Anlage zählt die Laufzeit jedes Verbrauchers im geplanten Ausfallzeitraum. Multiplizieren Sie je Verbraucher die Leistung in kW mit der Laufzeit in Stunden und addieren Sie die Ergebnisse. Bei einer mittleren Last von 0,3 kW über vier Stunden benötigen die versorgten Stromkreise 1,2 kWh. Berücksichtigen Sie auch Geräte, die sich zwischendurch ein- und ausschalten.",
@@ -241,7 +244,9 @@ def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] 
             elif counts == (0, 1):
                 versions.add("final")
             else:
-                raise ValueError(f"Article {post_id} has an ambiguous body fragment: {original}")
+                raise ValueError(
+                    f"Article {post_id} has an ambiguous body fragment: {original}"
+                )
         change = {"id": post_id, "before": before, "after": after}
         if post_id in EXCERPT_REVISIONS:
             original, final = EXCERPT_REVISIONS[post_id]
@@ -258,7 +263,9 @@ def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] 
         raise ValueError(f"Pair {ids} contains a partial revision of the reviewed copy")
     if versions == {"final"}:
         if not snapshot["current"]:
-            raise ValueError(f"Pair {ids} has final copy but a stale translation baseline")
+            raise ValueError(
+                f"Pair {ids} has final copy but a stale translation baseline"
+            )
         return None
     return {
         "mode": "adopt",
@@ -285,10 +292,14 @@ def main() -> None:
         for change in payload["changes"]:
             fields = [("body", change["before"], change["after"])]
             if "before_excerpt" in change:
-                fields.append(("excerpt", change["before_excerpt"], change["after_excerpt"]))
+                fields.append(
+                    ("excerpt", change["before_excerpt"], change["after_excerpt"])
+                )
             for field, before, after in fields:
-                label = f'{change["id"]} {field}'
-                for line in unified_diff(before.splitlines(), after.splitlines(), label, label, lineterm=""):
+                label = f"{change['id']} {field}"
+                for line in unified_diff(
+                    before.splitlines(), after.splitlines(), label, label, lineterm=""
+                ):
                     print(line)
 
 

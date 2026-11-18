@@ -9,7 +9,9 @@ import pytest
 
 HERE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(HERE))
-spec = importlib.util.spec_from_file_location("blog_copy", HERE / "installer-blog-copy.py")
+spec = importlib.util.spec_from_file_location(
+    "blog_copy", HERE / "installer-blog-copy.py"
+)
 assert spec and spec.loader
 copy = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(copy)

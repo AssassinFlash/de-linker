@@ -52,25 +52,32 @@ def pages(request: pytest.FixtureRequest) -> Any:
     assert urlsplit(site["home"]).hostname in {"localhost", "127.0.0.1"}
     assert Path(site["root"]).resolve().is_relative_to(Path.home() / "de-linker-local")
     post_type = getattr(request, "param", "page")
-    title = '#1143 blog pair fixture ' if post_type == 'post' else 'Reviewed pair fixture '
+    title = (
+        "#1143 blog pair fixture " if post_type == "post" else "Reviewed pair fixture "
+    )
     created = php(
-        "$type=" + json.dumps(post_type) + ";$title=" + json.dumps(title) + ";" + r"""
+        "$type="
+        + json.dumps(post_type)
+        + ";$title="
+        + json.dumps(title)
+        + ";"
+        + r"""
 $ids=[];
 foreach(['en','de'] as $lang){
     $id=wp_insert_post(wp_slash(['post_type'=>$type,'post_status'=>'private',
         'post_title'=>$title.$lang,
         'post_excerpt'=>'Original excerpt '.$lang.'.',
-        'post_content'=>'<p>Original '.$lang.'. \\u003c \\s+</p>']),true,false);
+        'post_content'=>'<p>Original '.$lang.'. \\u003c \\s+</p><p>Separate '.$lang.'.</p>']),true,false);
     if(is_wp_error($id))throw new RuntimeException('Fixture insert failed');
     pll_set_post_language($id,$lang);$ids[]=$id;
 }
 pll_save_post_translations(['en'=>$ids[0],'de'=>$ids[1]]);
+do_action('pre_post_update',$ids[0],[]);
 update_post_meta($ids[0],'_linker_i18n_status','structure_mismatch');
 update_post_meta($ids[0],'_linker_i18n_note',wp_slash('Preserve \\ original note.'));
-update_post_meta($ids[1],'_linker_i18n_source_hash','original-hash');
-update_post_meta($ids[1],'_linker_i18n_units','{}');
 echo '@@fixture@@'.wp_json_encode(['ids'=>$ids]);
-""")
+"""
+    )
     ids = created["ids"]
     try:
         yield ids
@@ -270,6 +277,97 @@ echo '@@fixture@@'.wp_json_encode(['error'=>$error,'injected'=>$injected,'blocke
             assert result["injected"] is True
 
 
+@pytest.mark.parametrize(
+    "pages,post_type", [("page", "page"), ("post", "post")], indirect=["pages"]
+)
+def test_pair_rejects_unreviewed_english_title(
+    pages: list[int], post_type: str
+) -> None:
+    before = pair.read(WP, *pages, post_type=post_type)
+    assert before["current"] is True
+    changed = php(
+        f"wp_update_post(['ID'=>{pages[0]},'post_title'=>'Unreviewed English title'],true,false);"
+        f"echo '@@fixture@@'.wp_json_encode(['title'=>get_post({pages[0]})->post_title]);"
+    )
+    assert changed["title"] == "Unreviewed English title"
+    stale = pair.read(WP, *pages, post_type=post_type)
+    assert stale["current"] is False
+    assert stale["pages"] == before["pages"]
+    assert stale["metadata"] == before["metadata"]
+    changes = [
+        {
+            "id": post_id,
+            "before": stale["pages"][str(post_id)],
+            "after": f"<p>Reviewed {lang}.</p>",
+        }
+        for post_id, lang in zip(pages, ("en", "de"), strict=True)
+    ]
+    payload = {
+        "mode": "adopt",
+        "post_type": post_type,
+        "changes": changes,
+        "metadata_before": stale["metadata"],
+    }
+    source = base64.b64encode(pair.render(payload).encode()).decode()
+    result = php(
+        f"try{{eval(base64_decode('{source}'));$error='';}}"
+        "catch(Throwable $e){$error=$e->getMessage();}"
+        "echo PHP_EOL.'@@fixture@@'.wp_json_encode(['error'=>$error]);"
+    )
+    assert (
+        result["error"]
+        == "Translation baseline is stale before reviewed copy adoption."
+    )
+    assert pair.read(WP, *pages, post_type=post_type) == stale
+
+
+@pytest.mark.parametrize("pages", ["post"], indirect=True)
+@pytest.mark.parametrize(
+    "unreviewed",
+    ["<p>New unreviewed paragraph.</p>", '<p class="new">Separate en.</p>'],
+)
+def test_partial_blog_edit_rejects_drift_outside_the_reviewed_paragraph(
+    pages: list[int], unreviewed: str
+) -> None:
+    before = pair.read(WP, *pages, post_type="post")
+    assert before["current"] is True
+    changed = before["pages"][str(pages[0])].replace("<p>Separate en.</p>", unreviewed)
+    assert changed != before["pages"][str(pages[0])]
+    encoded = base64.b64encode(changed.encode()).decode()
+    php(
+        f"wp_update_post(wp_slash(['ID'=>{pages[0]},'post_content'=>base64_decode('{encoded}')]),true,false);"
+        "echo '@@fixture@@'.wp_json_encode(['changed'=>true]);"
+    )
+    stale = pair.read(WP, *pages, post_type="post")
+    assert stale["current"] is False
+    assert stale["metadata"] == before["metadata"]
+    changes = [
+        {
+            "id": post_id,
+            "before": stale["pages"][str(post_id)],
+            "after": stale["pages"][str(post_id)].replace(
+                f"Original {lang}.", f"Reviewed {lang}."
+            ),
+        }
+        for post_id, lang in zip(pages, ("en", "de"), strict=True)
+    ]
+    assert unreviewed in changes[0]["after"]
+    payload = {
+        "mode": "adopt",
+        "post_type": "post",
+        "changes": changes,
+        "metadata_before": stale["metadata"],
+    }
+    source = base64.b64encode(pair.render(payload).encode()).decode()
+    result = php(
+        f"try{{eval(base64_decode('{source}'));$error='';}}"
+        "catch(Throwable $e){$error=$e->getMessage();}"
+        "echo PHP_EOL.'@@fixture@@'.wp_json_encode(['error'=>$error]);"
+    )
+    assert "Translation baseline is stale" in result["error"]
+    assert pair.read(WP, *pages, post_type="post") == stale
+
+
 @pytest.mark.parametrize("pages", ["post"], indirect=True)
 def test_native_blog_pair_saves_excerpts_and_restores_copy(pages: list[int]) -> None:
     def rejected(payload: dict[str, Any]) -> str:
@@ -277,7 +375,7 @@ def test_native_blog_pair_saves_excerpts_and_restores_copy(pages: list[int]) -> 
         result = php(
             f"try{{eval(base64_decode('{source}'));$error='';}}"
             "catch(Throwable $e){$error=$e->getMessage();}"
-            "echo '@@fixture@@'.wp_json_encode(['error'=>$error]);"
+            "echo PHP_EOL.'@@fixture@@'.wp_json_encode(['error'=>$error]);"
         )
         return str(result["error"])
 

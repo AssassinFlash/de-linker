@@ -90,4 +90,4 @@
 - 备电按关键负荷和停电时段，电池用实际产品的可用容量。SAJ B2 数据表也给出充放电温度和安装方式。[REopt Module 6](https://www.nlr.gov/reopt/curriculum/videos/reopt-lite-tutorial-module-6-text) · [SAJ B2 数据表](https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf) · [Pylontech Force H3 数据表](https://de-linker.com/wp-content/uploads/2026/09/Pylontech_Force-H3_Datenblatt_DE-SD-260507.pdf)
 - 示例的一刻钟为明确假设。当地实际计费应看适用费率的量价合同。[Netze BW 2026 费率表 1、3](https://assets.cdn.netze-bw.de/xytfb1vrn7of/7eQvxehZzn3ECbR9rALmyD/ecc795b9dcd666ce1f53d9d04362a321/netzentgelte-strom-netze-bw-gmbh-2026.pdf) · [Netze BW 2026 规则 §4.1.1 及年度最大需量定义](https://assets.cdn.netze-bw.de/xytfb1vrn7of/2xbvzba27IJwe250rd5DmE/f7821823df3bf261de1e55a472b35db2/regelungen-fuer-die-nutzung-des-stromverteilnetzes-2026.pdf)
 
-评审站已对七对原文及两条摘要运行只读差异预览。迁移离线套件 389 项通过，33 项按环境跳过。`c222` 私有文章夹具验证了错误类型拒绝、摘要冲突时整对无改动，以及正文、摘要与德语基线的同事务保存和恢复。两轮夹具 9149–9152 均已删除并读回确认。发布前按现有恢复流程备份，并在封面替代文本处理完成后重新读取配对及翻译基线，再应用并读回七对文章。
+评审站七对文章的原生翻译基线均为 `current=true`。已从评审站公开入口读回 14 篇文章正文及 553 / 6887 各自的文章页摘要。`/blog/` 和 `/de/blog/` 的文章卡片显示标题和日期。

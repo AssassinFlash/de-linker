@@ -182,7 +182,7 @@ final class Storefront {
 			return $thumbnail;
 		}
 		$image = new \WP_HTML_Tag_Processor( $thumbnail );
-		if ( ! $image->next_tag( 'IMG' ) ) {
+		if ( ! $image->next_tag( array( 'tag_name' => 'IMG' ) ) ) {
 			return $thumbnail;
 		}
 

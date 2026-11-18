@@ -26,7 +26,7 @@ use Linker\I18n\Woo\Projection;
 		throw new RuntimeException( 'Reviewed paired saving is CLI-only.' );
 	}
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- JSON transport only, never executable data.
-	$pair = json_decode( base64_decode( '__REVIEWED_PAIR_PAYLOAD__' ), true, 512, JSON_THROW_ON_ERROR );
+	$pair      = json_decode( base64_decode( '__REVIEWED_PAIR_PAYLOAD__' ), true, 512, JSON_THROW_ON_ERROR );
 	$post_type = $pair['post_type'] ?? 'page';
 	if ( ! in_array( $post_type, array( 'page', 'post' ), true ) || 2 !== count( $pair['changes'] ) ) {
 		throw new RuntimeException( 'Exactly two explicit pages or two explicit blog posts are required.' );
@@ -126,7 +126,7 @@ use Linker\I18n\Woo\Projection;
 		}
 		return $check;
 	};
-	$lock           = static function ( int $id ) use ( $en, $de, $pair, $keys, &$locked, $wpdb ): void {
+	$lock           = static function ( int $id ) use ( $en, $de, $pair, $keys, $translator, &$locked, $wpdb ): void {
 		if ( $id !== $en && $id !== $de ) {
 			return;
 		}
@@ -149,6 +149,10 @@ use Linker\I18n\Woo\Projection;
 			}
 			if ( $current !== $pair['metadata_before'] ) {
 				throw new RuntimeException( 'Translation metadata changed since backup.' );
+			}
+			// A partial copy edit cannot review all differences in a stale English source.
+			if ( 'adopt' === $pair['mode'] && ! $translator->current( State::POST, $en ) ) {
+				throw new RuntimeException( 'Translation baseline is stale before reviewed copy adoption.' );
 			}
 			$locked = true;
 		}
