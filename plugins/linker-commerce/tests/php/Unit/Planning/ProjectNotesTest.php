@@ -349,9 +349,8 @@ final class ProjectNotesTest extends TestCase {
 				$this->cart                               = array( 'converter' => array( DraftTransfer::LINE_META => $id ) );
 				$notices                                  = array();
 				( new Context() )->cart_phase_notices();
-				$this->assertCount( 2, $notices );
-				$this->assertStringStartsWith( 'Installer project: Depot · East: Grid phase mismatch.', $notices[0] );
-				$this->assertStringStartsWith( 'Installer project: West: Grid phase mismatch.', $notices[1] );
+				$message = 'Grid phase mismatch. Selected inverter: 1. Project requirement: 3. You can send an inquiry to discuss the configuration.';
+				$this->assertSame( array( 'Installer project: Depot · East: ' . $message, 'Installer project: West: ' . $message ), $notices );
 			}
 			unset( $handoff['snapshot']['report']['phase_conflicts'] );
 		}
