@@ -73,7 +73,8 @@ import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
-import { EnergyDemand } from "./EnergyDemand.tsx";
+import { ConfiguratorSteps, type Step } from "./ConfiguratorSteps.tsx";
+import { EnergyDemand, energyGoal } from "./EnergyDemand.tsx";
 import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
 import {
 	CandidateMaterials,
@@ -94,8 +95,6 @@ import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
-type Step = "project" | "solar" | "energy" | "system" | "review";
-const steps: Step[] = ["project", "solar", "energy", "system", "review"];
 const mapPropertyLinks = new Set([
 	"#lp-map-roof-properties",
 	"#lp-map-ring-properties",
@@ -220,11 +219,7 @@ export default function Configurator({
 		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
 	const missingModules = wiringStates.includes("selection");
 	const navigationBlocked =
-		invalidInput ||
-		missingModules ||
-		wiringStates.includes("pending") ||
-		roofEditing ||
-		importOpen;
+		invalidInput || missingModules || roofEditing || importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
@@ -476,7 +471,7 @@ export default function Configurator({
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
-	const blocked =
+	const actionBlocked =
 		!admitted ||
 		recoveryChecking ||
 		recoveryFailed ||
@@ -487,8 +482,9 @@ export default function Configurator({
 		operations.checking ||
 		operations.storageFailed ||
 		controller.recoveries.length > 0 ||
-		Boolean(draft?.pending || draft?.conflict) ||
+		Boolean(draft?.conflict) ||
 		operations.records.some((r) => r.resultId === null);
+	const blocked = actionBlocked || Boolean(draft?.pending);
 	const edit = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject): boolean => {
 			if (
@@ -544,6 +540,15 @@ export default function Configurator({
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
+		if (latest.current?.pending && !controller.busy) {
+			void controller.save().then((saved) => {
+				if (saved && client.isCurrentScope(session.query_scope)) openStep(next);
+			});
+			return;
+		}
+		openStep(next);
+	}
+	function openStep(next: Step) {
 		setGenieReportId(null);
 		const url = new URL(location.href);
 		url.hash = "sc-" + next;
@@ -556,7 +561,7 @@ export default function Configurator({
 		path: "runs/calculate" | "runs/weather" | "runs/pv",
 	) {
 		if (
-			blocked ||
+			actionBlocked ||
 			modelsUnavailable ||
 			!latest.current ||
 			!profileGuard.current()
@@ -566,9 +571,17 @@ export default function Configurator({
 		setError(null);
 		try {
 			const current = latest.current;
-			if (path === "runs/pv") checkPvWeather(current.baseline.inputs);
+			const saved =
+				path === "runs/calculate" && !current.pending ? current.baseline : await controller.save();
+			if (
+				!saved ||
+				instance !== lifetime.current ||
+				!client.isCurrentScope(session.query_scope)
+			)
+				return;
+			if (path === "runs/pv") checkPvWeather(saved.inputs);
 			const reply = await operations.start(path, {
-				expected_revision: current.baseline.revision,
+				expected_revision: saved.revision,
 				...(path === "runs/calculate"
 					? {
 							input_contract: projectInputContract,
@@ -587,9 +600,11 @@ export default function Configurator({
 		}
 	}
 	async function generateComparison(options: ReportOptions) {
-		if (blocked || !latest.current || isDirty(latest.current)) return;
+		if (actionBlocked || !latest.current || !profileGuard.current()) return;
+		const saved = await controller.save();
+		if (!saved || !client.isCurrentScope(session.query_scope)) return;
 		const reply = await operations.start("runs/report", {
-			expected_revision: latest.current.baseline.revision,
+			expected_revision: saved.revision,
 			options,
 		});
 		if (
@@ -712,7 +727,7 @@ export default function Configurator({
 	}
 	async function generate(logo: string | null) {
 		if (
-			blocked ||
+			actionBlocked ||
 			modelsUnavailable ||
 			reportPreparation.current ||
 			!latest.current
@@ -811,16 +826,6 @@ export default function Configurator({
 	const inputs = draft.history.current;
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
-	const visible = steps.filter(
-		(s) => s !== "solar" || brief.system_scope !== "storage_only",
-	);
-	const labels: Record<Step, string> = {
-		project: __("Project", "linker-tools"),
-		solar: __("Solar", "linker-tools"),
-		energy: __("Energy use", "linker-tools"),
-		system: __("System", "linker-tools"),
-		review: __("Review & share", "linker-tools"),
-	};
 	const failedRead = [
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
 		...(step === "system" ? [systemRead] : []),
@@ -888,6 +893,26 @@ export default function Configurator({
 		values.length && values.every((v): v is number => typeof v === "number")
 			? `${number.format(values.reduce((a, b) => a + b, 0))} ${unit}`
 			: "—";
+	const capacities = [
+		...(brief.system_scope === "storage_only"
+			? []
+			: [
+					[
+						__("Solar capacity", "linker-tools"),
+						total(roofModules?.count ? [roofModules.stc_kwp] : pvSizes, "kWp"),
+					],
+				]),
+		...(brief.system_scope === "pv_only"
+			? []
+			: [
+					[
+						__("Usable battery capacity", "linker-tools"),
+						total([selectedCandidate?.usable_energy_kwh], "kWh"),
+					],
+				]),
+		[__("Inverter power", "linker-tools"), total(powers, "kW")],
+	];
+	const purpose = energyGoal(inputs);
 	const inverterId = equipmentDraft(inputs).inverter_product_id;
 	const plantWiring =
 		wiringPlant && inputs.pv_plant_string_plan != null
@@ -905,102 +930,96 @@ export default function Configurator({
 				: step;
 	return (
 		<div className="sc-configurator">
+			<div className="sc-project-toolbar sc-actions">
+				<button
+					type="button"
+					className="sc-button"
+					data-linker-genie-open
+					data-linker-genie-planning=""
+					disabled={!admitted}
+					onClick={() => setGenieReportId(null)}
+				>
+					{__("Ask Genie", "linker-tools")}
+				</button>
+				<button
+					className="sc-button"
+					disabled={
+						controller.busy ||
+						preparingReport ||
+						navigationBlocked ||
+						Boolean(draft.pending || draft.conflict) ||
+						!draft.history.past.length
+					}
+					onClick={() => update(undoDraft)}
+				>
+					{__("Undo", "linker-tools")}
+				</button>
+				<button
+					className="sc-button"
+					disabled={
+						controller.busy ||
+						navigationBlocked ||
+						Boolean(draft.pending || draft.conflict) ||
+						!draft.history.future.length
+					}
+					onClick={() => update(redoDraft)}
+				>
+					{__("Redo", "linker-tools")}
+				</button>
+
+				<button
+					className="sc-button"
+					disabled={
+						controller.busy ||
+						Boolean(draft.conflict) ||
+						controller.recoveries.length > 0
+					}
+					onClick={() => {
+						if (
+							!mayLeave() ||
+							controller.busy ||
+							operations.busy ||
+							preparingReport ||
+							selecting
+						)
+							return;
+						void controller.save().then(async (saved) => {
+							if (
+								saved &&
+								(await controller.flush()) &&
+								client.isCurrentScope(session.query_scope)
+							)
+								close();
+						});
+					}}
+				>
+					{__("Projects", "linker-tools")}
+				</button>
+			</div>
 			<header className="sc-project-heading">
 				<div>
-					<p className="sc-muted">{__("Your project", "linker-tools")}</p>
+					<p className="sc-eyebrow">{__("Your project", "linker-tools")}</p>
 					<h1>{project.title}</h1>
 					<p>{siteLabel}</p>
 				</div>
-				<div className="sc-actions">
-					<span className="sc-muted" role="status">
-						{controller.busy
-							? __("Saving…", "linker-tools")
-							: draft.pending
-								? __("Save not confirmed", "linker-tools")
-								: isDirty(draft)
-									? __("Unsaved changes", "linker-tools")
-									: sprintf(
-											__("Saved · revision %d", "linker-tools"),
-											draft.baseline.revision,
-										)}
-					</span>
-					<button
-						type="button"
-						className="sc-button"
-						data-linker-genie-open
-						data-linker-genie-planning=""
-						disabled={!admitted}
-						onClick={() => setGenieReportId(null)}
-					>
-						{__("Ask Genie", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							preparingReport ||
-							navigationBlocked ||
-							Boolean(draft.pending || draft.conflict) ||
-							!draft.history.past.length
-						}
-						onClick={() => update(undoDraft)}
-					>
-						{__("Undo", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							navigationBlocked ||
-							Boolean(draft.pending || draft.conflict) ||
-							!draft.history.future.length
-						}
-						onClick={() => update(redoDraft)}
-					>
-						{__("Redo", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							navigationBlocked ||
-							Boolean(draft.conflict) ||
-							controller.recoveries.length > 0
-						}
-						onClick={() => void controller.save()}
-					>
-						{draft.pending && !draft.conflict && !controller.busy
-							? __("Retry save", "linker-tools")
-							: __("Save snapshot", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						onClick={() => {
-							if (!mayLeave()) return;
-							void controller.flush().then((ok) => {
-								if (ok) close();
-							});
-						}}
-					>
-						{__("Projects", "linker-tools")}
-					</button>
-				</div>
+				<span className="sc-badge" role="status">
+					{controller.busy
+						? __("Saving…", "linker-tools")
+						: draft.pending
+							? __("Save not confirmed", "linker-tools")
+							: isDirty(draft)
+								? __("Editing", "linker-tools")
+								: sprintf(
+										__("Saved · revision %d", "linker-tools"),
+										draft.baseline.revision,
+									)}
+				</span>
 			</header>
-			<nav
-				className="sc-nav"
-				aria-label={__("Project navigation", "linker-tools")}
-			>
-				{visible.map((s, i) => (
-					<button
-						key={s}
-						aria-current={activeStep === s ? "step" : undefined}
-						onClick={() => navigate(s)}
-					>
-						<span className="sc-step-number">{i + 1}</span>
-						{labels[s]}
-					</button>
-				))}
-			</nav>
+			<ConfiguratorSteps
+				active={activeStep}
+				storageOnly={brief.system_scope === "storage_only"}
+				onSelect={navigate}
+			/>
 			{navigationRefused &&
 				navigationBlocked &&
 				(!missingModules || invalidInput || roofEditing || importOpen) && (
@@ -1010,15 +1029,10 @@ export default function Configurator({
 									"Finish or cancel roof editing before leaving this workspace.",
 									"linker-tools",
 								)
-							: invalidInput
-								? __(
-										"Correct the highlighted input before leaving this project.",
-										"linker-tools",
-									)
-								: __(
-										"Save or cancel your string changes before continuing.",
-										"linker-tools",
-									)}
+							: __(
+									"Correct the highlighted input before leaving this project.",
+									"linker-tools",
+								)}
 					</p>
 				)}
 			{preparingReport && activeStep === "review" && (
@@ -1196,6 +1210,7 @@ export default function Configurator({
 							session={session}
 							disabled={blocked || modelsUnavailable}
 							edit={edit}
+							back={() => navigate("project")}
 							next={() => navigate("energy")}
 							wiring={
 								wiringPlant
@@ -1271,48 +1286,56 @@ export default function Configurator({
 								disabled={blocked}
 								edit={edit}
 								modelsUnavailable={modelsUnavailable}
+								back={() =>
+									navigate(
+										brief.system_scope === "storage_only" ? "project" : "solar",
+									)
+								}
 								compare={() => void compare()}
 								onValidity={setEnergyValid}
-							/>
-							{hasPlant(inputs) &&
-								brief.system_scope !== "storage_only" &&
-								brief.system_scope !== "pv_only" && (
-									<SharedDcEnergy
-										draft={draft}
-										locale={config.locale}
-										client={client}
-										session={session}
-										store={store}
-										disabled={blocked || modelsUnavailable || !energyValid}
-										active={activeStep === "energy"}
-										edit={edit}
-										save={controller.save}
-										openEquipment={() => navigate("project")}
-										openDesign={() => navigate("solar")}
-										onValidity={setSharedDcValid}
-										registerProfileGuard={registerProfileGuard}
-										recoveryScopes={recoveryScopes}
-										recoveryChecking={recoveryChecking}
-										recheck={recheck}
-										runs={[
-											...(latestRuns ?? []),
-											...(olderHistory.data?.pages.flatMap(
-												(page) => page.items,
-											) ?? []),
-										]}
-										moreRuns={
-											(olderHistory.data
-												? olderHistory.hasNextPage
-												: firstCursor) && !olderHistory.isFetching
-												? () => void olderHistory.fetchNextPage()
-												: undefined
-										}
-										submitted={submittedDc}
-										start={(path) => void startSharedDc(path)}
-										generateComparison={generateComparison}
-										operationError={error ?? operations.error}
-									/>
-								)}
+							>
+								{hasPlant(inputs) &&
+									brief.system_scope !== "storage_only" &&
+									brief.system_scope !== "pv_only" && (
+										<SharedDcEnergy
+											draft={draft}
+											locale={config.locale}
+											client={client}
+											session={session}
+											store={store}
+											disabled={
+												actionBlocked || modelsUnavailable || !energyValid
+											}
+											active={activeStep === "energy"}
+											edit={edit}
+											save={controller.save}
+											openEquipment={() => navigate("project")}
+											openDesign={() => navigate("solar")}
+											onValidity={setSharedDcValid}
+											registerProfileGuard={registerProfileGuard}
+											recoveryScopes={recoveryScopes}
+											recoveryChecking={recoveryChecking}
+											recheck={recheck}
+											runs={[
+												...(latestRuns ?? []),
+												...(olderHistory.data?.pages.flatMap(
+													(page) => page.items,
+												) ?? []),
+											]}
+											moreRuns={
+												(olderHistory.data
+													? olderHistory.hasNextPage
+													: firstCursor) && !olderHistory.isFetching
+													? () => void olderHistory.fetchNextPage()
+													: undefined
+											}
+											submitted={submittedDc}
+											start={(path) => void startSharedDc(path)}
+											generateComparison={generateComparison}
+											operationError={error ?? operations.error}
+										/>
+									)}
+							</EnergyDemand>
 						</div>
 					)}
 					{activeStep === "system" && (
@@ -1417,6 +1440,53 @@ export default function Configurator({
 						<ReviewProposal
 							project={draft.baseline}
 							inputs={inputs}
+							summary={
+								<section
+									className="sc-card"
+									aria-label={__("Project summary", "linker-tools")}
+								>
+									<h2>{__("Project summary", "linker-tools")}</h2>
+									<dl className="sc-metrics">
+										{capacities.map(([label, value]) => (
+											<div key={label} className="sc-metric">
+												<dt>{label}</dt>
+												<dd>{value}</dd>
+											</div>
+										))}
+									</dl>
+									<dl>
+										<div className="sc-summary">
+											<dt>{__("Annual electricity use", "linker-tools")}</dt>
+											<dd>{total([brief.annual_load.kwh], "kWh")}</dd>
+										</div>
+										<div className="sc-summary">
+											<dt>{__("Main purpose", "linker-tools")}</dt>
+											<dd>
+												{
+													{
+														self: __("Use more solar on site", "linker-tools"),
+														backup: __("Backup supply", "linker-tools"),
+														peak: __("Reduce peak demand", "linker-tools"),
+														"": "—",
+													}[purpose]
+												}
+											</dd>
+										</div>
+									</dl>
+								</section>
+							}
+							materials={
+								selectedCandidate && assessment ? (
+									<section className="sc-card">
+										<h2>{__("Bill of materials", "linker-tools")}</h2>
+										<CandidateMaterials
+											candidate={selectedCandidate}
+											assessment={assessment}
+											locale={config.locale}
+										/>
+									</section>
+								) : null
+							}
 							run={reportRun}
 							history={{
 								items: earlierReports,
@@ -1446,7 +1516,7 @@ export default function Configurator({
 							session={session}
 							operations={operations}
 							locale={config.locale}
-							blocked={blocked || modelsUnavailable}
+							blocked={actionBlocked || modelsUnavailable}
 							current={Boolean(
 								reportRun &&
 								reportRun.revision === draft.baseline.revision &&
@@ -1460,44 +1530,28 @@ export default function Configurator({
 				</main>
 				<aside className="sc-sidebar">
 					<section className="sc-card">
-						<p className="sc-muted">
-							{__("Current configuration", "linker-tools")}
-						</p>
-						<h3>{project.title}</h3>
+						<div>
+							<p className="sc-eyebrow">
+								{__("Current configuration", "linker-tools")}
+							</p>
+							<h3>{project.title}</h3>
+						</div>
 						<dl>
-							{brief.system_scope !== "storage_only" && (
-								<div>
-									<dt>{__("Solar capacity", "linker-tools")}</dt>
-									<dd>
-										{total(
-											roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
-											"kWp",
-										)}
-									</dd>
+							{capacities.map(([label, value]) => (
+								<div key={label}>
+									<dt>{label}</dt>
+									<dd>{value}</dd>
 								</div>
-							)}
-							{brief.system_scope !== "pv_only" && (
-								<div>
-									<dt>{__("Usable battery capacity", "linker-tools")}</dt>
-									<dd>
-										{total([selectedCandidate?.usable_energy_kwh], "kWh")}
-									</dd>
-								</div>
-							)}
-							<div>
-								<dt>{__("Inverter power", "linker-tools")}</dt>
-								<dd>{total(powers, "kW")}</dd>
-							</div>
+							))}
 						</dl>
-						{selectedCandidate && assessment && (
-							<details>
-								<summary>{__("View parts list", "linker-tools")}</summary>
-								<CandidateMaterials
-									candidate={selectedCandidate}
-									assessment={assessment}
-									locale={config.locale}
-								/>
-							</details>
+						{activeStep !== "review" && (
+							<button
+								type="button"
+								className="sc-button"
+								onClick={() => navigate("review")}
+							>
+								{__("View parts list", "linker-tools")}
+							</button>
 						)}
 					</section>
 				</aside>

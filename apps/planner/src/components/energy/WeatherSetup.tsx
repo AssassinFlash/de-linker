@@ -26,6 +26,7 @@ export function WeatherSetup({
 	onValidity,
 	onError,
 	start,
+	savesOnStart = false,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -36,6 +37,7 @@ export function WeatherSetup({
 	onValidity: (valid: boolean) => void;
 	onError: (error: unknown) => void;
 	start: () => void;
+	savesOnStart?: boolean;
 }) {
 	const inputs = draft.history.current,
 		parsed = useMemo(() => {
@@ -99,20 +101,22 @@ export function WeatherSetup({
 							? __("Weather settings prepared in this draft", "linker-tools")
 							: __("Weather settings need preparation", "linker-tools")}
 					</strong>
-					<p>
-						{dirty || draft.pending
-							? __(
-									"Save project records these settings before a weather request can start.",
-									"linker-tools",
-								)
-							: sprintf(
-									__(
-										"A weather request uses saved input revision %d.",
+					{!savesOnStart && (
+						<p>
+							{dirty || draft.pending
+								? __(
+										"Save project records these settings before a weather request can start.",
 										"linker-tools",
-									),
-									draft.baseline.revision,
-								)}
-					</p>
+									)
+								: sprintf(
+										__(
+											"A weather request uses saved input revision %d.",
+											"linker-tools",
+										),
+										draft.baseline.revision,
+									)}
+						</p>
+					)}
 				</div>
 				<button
 					type="button"
@@ -138,13 +142,14 @@ export function WeatherSetup({
 						actionsDisabled ||
 						!valid ||
 						!prepared ||
-						dirty ||
-						!!draft.pending ||
+						(!savesOnStart && (dirty || !!draft.pending)) ||
 						!!draft.conflict
 					}
 					onClick={start}
 				>
-					{__("Request weather for saved inputs", "linker-tools")}
+					{savesOnStart
+						? __("Request weather", "linker-tools")
+						: __("Request weather for saved inputs", "linker-tools")}
 				</button>
 			</div>
 		</>

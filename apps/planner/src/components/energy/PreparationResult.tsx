@@ -253,7 +253,7 @@ export function PreparationResult({
 					)}
 					<p>
 						{__(
-							"Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft. Save project saves that selection on the server.",
+							"Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft.",
 							"linker-tools",
 						)}
 					</p>

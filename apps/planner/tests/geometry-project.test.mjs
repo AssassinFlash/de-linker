@@ -420,7 +420,9 @@ test("import joins one project history step, guards navigation, and a confirmed 
 			),
 	);
 	await click(asset.metadata.geometry_import_options.source.label);
-	assert.equal(button("Save snapshot").disabled, true);
+	assert.equal(button("Save snapshot"), undefined);
+	await click("Projects");
+	assert.equal(saved, null);
 	await act(async () => document.querySelector(".sc-nav button").click());
 	assert.equal(location.hash, "#sc-solar");
 	assert.match(document.body.textContent, /Finish or cancel roof editing/);
@@ -463,7 +465,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	);
 	await click("Place modules on the roof");
 	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
-	await click("Save snapshot");
+	await click("Projects");
 	await until(
 		() =>
 			saved &&

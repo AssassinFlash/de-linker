@@ -31,6 +31,7 @@ async function mount(
 	locale = "en",
 ) {
 	const dom = setupDom();
+
 	if (locale === "de") {
 		window.wp.i18n.__ = (message) =>
 			plannerGerman.locale_data.messages[message]?.[0] ?? message;
@@ -104,7 +105,8 @@ async function mount(
 }
 function button(text) {
 	const el = [...document.querySelectorAll("button")].find(
-		(e) => e.textContent.trim() === text,
+		(e) =>
+			e.getAttribute("aria-label") === text || e.textContent.trim() === text,
 	);
 	assert.ok(el, `Missing ${text}`);
 	return el;
@@ -119,6 +121,19 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("roof overview opens the editor and returns to the recorded layout", async (t) => {
+	const app = await mount(t);
+	assert.ok(document.querySelector("svg.sc-roof-preview"));
+	assert.equal(document.querySelector("dialog[open]"), null);
+	await click("Open roof layout");
+	assert.ok(document.querySelector("dialog[open] .sc-roof-board"));
+	await click("Draw roof");
+	assert.equal(button("Close").disabled, true);
+	await click("Select / move");
+	await click("Close");
+	assert.equal(document.querySelector("dialog[open]"), null);
+	assert.deepEqual(app.inputs.geometry, flat);
+});
 test("new solar module details persist known capacity and source without requiring a roof", async (t) => {
 	const app = await mount(t);
 	await click("Use module details");
@@ -183,6 +198,7 @@ test("a project with a located building starts on the aerial map without creatin
 		button("Place modules on the roof").getAttribute("aria-pressed"),
 		"true",
 	);
+	await click("Open roof layout");
 	assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
 	await until(
 		() =>
@@ -210,6 +226,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 		},
 		null,
 	);
+	await click("Open roof layout");
 	await until(() => button("Load street map"));
 	await click("Draw roof");
 	assert.equal(button("Calibrate a roof image").disabled, false);
@@ -345,6 +362,7 @@ test("replacing and recalibrating a roof requires permission for the selected dr
 		origin_enu: [30, -20, 4],
 	});
 	const app = await mount(t, { brief: emptyBrief(), geometry: original });
+	await click("Open roof layout");
 	let form = await traceRoofImage(t, "owner-plan.png", "roof");
 	await click("Add roof to current design");
 	assert.deepEqual(
@@ -437,8 +455,10 @@ test("undoing image calibration restores known PV inputs and keeps later project
 		app.inputs.pvgis_reference_setup.model,
 		"pvgis_5_3_roof_ac_reference_v1",
 	);
+	await click("Close");
 	await enter(input("Latitude"), "52.12567");
 	await enter(input("System loss"), "12");
+	await click("Open roof layout");
 	await click("Undo");
 	assert.deepEqual(app.inputs.pvgis_reference_setup, {
 		...known,
@@ -493,6 +513,7 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 	);
 	const { maps } = await import("./map-library-fixture.mjs");
 	const map = () => maps.findLast((value) => !value.removed);
+	await click("Open roof layout");
 	const tileUrl = official.tiles[0].replace("{bbox-epsg-3857}", "1,2,3,4");
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.throws(
@@ -604,6 +625,7 @@ test("German Solar explains viewing consent and the customer drawing path", asyn
 		viewing,
 		"de",
 	);
+	await click(window.wp.i18n.__("Open roof layout"));
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.match(
 		document.body.textContent,
@@ -646,6 +668,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	});
 	const { maps } = await import("./map-library-fixture.mjs");
 	const map = () => maps.findLast((value) => !value.removed);
+	await click("Open roof layout");
 	await until(
 		() =>
 			button("Show aerial map") &&
@@ -772,6 +795,7 @@ test("the solar page records a named map origin only after confirmation", async 
 		brief,
 	});
 	await click("Place modules on the roof");
+	await click("Open roof layout");
 	assert.equal(app.inputs.geometry, undefined);
 	await enter(input("Drawing source"), "Installer site plan");
 	await act(async () => document.querySelector(".sc-check input").click());
@@ -832,6 +856,7 @@ test("the solar page records a named map origin only after confirmation", async 
 test("new roof interaction places moves rotates removes and undoes an actual module group", async (t) => {
 	const app = await mount(t);
 	await click("Place modules on the roof");
+	await click("Open roof layout");
 	await enter(input("Rows"), "1");
 	await enter(input("Columns"), "2");
 	await enter(input("Module gap"), "0.05");

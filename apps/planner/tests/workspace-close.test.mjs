@@ -56,7 +56,7 @@ test("a deferred close completes across a same-scope revalidation without being 
 		origin: location.origin,
 		baseUrl: location.origin + "/rpc/",
 		nonceUrl: location.origin + "/nonce",
-		fetch: async (url) => {
+		fetch: async (url, request) => {
 			if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
 			if (String(url).endsWith("/scope")) {
 				probes++;
@@ -74,6 +74,19 @@ test("a deferred close completes across a same-scope revalidation without being 
 			if (String(url).endsWith("/recovery/scopes"))
 				return response({ schema_version: 1, scopes: [], next: null });
 			if (String(url).endsWith("/projects/read")) return response(project);
+			if (String(url).endsWith("/projects/revise")) {
+				const command = JSON.parse(request.body);
+				assert.equal(
+					command.inputs.brief.site.location_label,
+					"SYNTHETIC UNSAVED NOTE",
+				);
+				return response({
+					...project,
+					revision: command.expected_revision + 1,
+					inputs: command.inputs,
+					input_sha256: "3".repeat(64),
+				});
+			}
 			if (String(url).endsWith("/projects/runs"))
 				return response({ items: [], next: null });
 			assert.ok(String(url).endsWith("/projects/list"));

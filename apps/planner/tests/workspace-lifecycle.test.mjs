@@ -38,7 +38,9 @@ const editor = () =>
 	document.querySelector(".sc-project-heading")?.parentElement;
 const button = (label, area = document) =>
 	[...area.querySelectorAll("button")].find(
-		(node) => node.textContent.trim() === label,
+		(node) =>
+			node.textContent.trim() === label ||
+			node.getAttribute("aria-label") === label,
 	);
 const nav = (label) =>
 	[...document.querySelectorAll(".sc-nav button")].find(
@@ -248,7 +250,7 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 	await app.recheck("online");
 	assert.equal(app.annual().value, "1,");
 	assert.equal(app.annual().getAttribute("aria-invalid"), "true");
-	assert.equal(button("Save snapshot").disabled, true);
+	assert.equal(button("Save snapshot"), undefined);
 	await act(async () =>
 		[...document.querySelectorAll("button")]
 			.find((button) => button.textContent === "Projects")
@@ -319,7 +321,7 @@ test("step changes retain the energy input and undo history and protect unfinish
 	assert.equal(app.annual(), annual);
 	assert.equal(annual.value, "25");
 	await act(async () =>
-		button("Undo", document.querySelector(".sc-project-heading")).click(),
+		button("Undo", document.querySelector(".sc-project-toolbar")).click(),
 	);
 	assert.equal(annual.value, "10");
 	await enter(annual, "1,");
@@ -336,6 +338,7 @@ test("step changes retain the energy input and undo history and protect unfinish
 	);
 	await act(async () => nav("Solar").click());
 	await act(async () => button("Place modules on the roof").click());
+	await act(async () => button("Open roof layout").click());
 	await act(async () => button("Draw roof").click());
 	await act(async () => nav("Project").click());
 	assert.equal(location.hash, "#sc-solar");
@@ -343,6 +346,7 @@ test("step changes retain the energy input and undo history and protect unfinish
 		document.body.textContent.includes("Finish or cancel roof editing"),
 	);
 	await act(async () => button("Select / move").click());
+	await act(async () => button("Close").click());
 	await act(async () => nav("Project").click());
 	assert.equal(location.hash, "#sc-project");
 });
@@ -957,10 +961,7 @@ test("native confirmation fences pending creation, revision and navigation befor
 				closing = stage === "close";
 				await act(async () =>
 					[...document.querySelectorAll("button")]
-						.find(
-							(button) =>
-								button.textContent === (closing ? "Projects" : "Save snapshot"),
-						)
+						.find((button) => button.textContent === "Projects")
 						.click(),
 				);
 			} else {

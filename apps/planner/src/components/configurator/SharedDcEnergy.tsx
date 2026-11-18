@@ -278,7 +278,7 @@ export function SharedDcEnergy({
 		setAdopting(true);
 		try {
 			if (
-				!edit((snapshot) => {
+				adopted !== run.id && !edit((snapshot) => {
 					if (!sameEnergyReportInputs(basis.inputs, snapshot))
 						throw new ApiError(409, "scenario_changed");
 					return { ...snapshot, shared_dc_energy_run_id: run.id };
@@ -392,6 +392,7 @@ export function SharedDcEnergy({
 		preparation.error;
 	const brief = inputs.brief === undefined ? null : readBrief(inputs.brief);
 	const editorProps = {
+		savesOnStart: true,
 		draft,
 		edit,
 		locale,
@@ -727,10 +728,7 @@ export function SharedDcEnergy({
 									locale={locale}
 									recheck={recheck}
 									reportDisabled={
-										blocked ||
-										!valid ||
-										isDirty(draft) ||
-										!session.runtime.models.report
+										blocked || !valid || !session.runtime.models.report
 									}
 									generateReport={generateComparison}
 									openRun={setChosen}

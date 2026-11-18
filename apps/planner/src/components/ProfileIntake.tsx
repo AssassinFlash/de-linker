@@ -553,7 +553,7 @@ export function ProfileIntake({
 										"linker-tools",
 									)
 								: __(
-										"The profile is selected in the open draft. Save the project to record this selection.",
+										"The profile is selected in the open draft.",
 										"linker-tools",
 									)}
 						</Notice>

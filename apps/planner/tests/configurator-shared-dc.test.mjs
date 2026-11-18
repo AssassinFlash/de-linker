@@ -462,6 +462,72 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 	assert.equal(reports.length, 1);
 });
 
+test("edited weather settings and the adopted weather source reach PV without a separate save", async (t) => {
+	const sent = [];
+	const records = new Map();
+	const weather = preparation.weather_run,
+		pv = preparation.pv_run;
+	const ui = await configurator(t, {
+		setup(project) {
+			const plant = readPlantDraft(project.inputs);
+			Object.assign(project, structuredClone(preparation.weather_project), {
+				revision: 1,
+			});
+			project.inputs.equipment_plant_setup = plant;
+			const module = project.inputs.geometry.module_specs[0];
+			module.source.note = "declared_reference synthetic test module";
+			module.gamma_pdc_per_c =
+				project.inputs.pv_generation.modules[0].gamma_pdc_per_c;
+			project.inputs.pv_generation.modules[0].source = module.source;
+		},
+		query(path, body) {
+			if (path === "projects/runs") return { items: [], next: null };
+			if (path === "projects/read") return records.get(body.revision);
+			if (path === "assets/read") return weather.result.prepared_asset;
+			if (path === "runs/weather/status") return preparation.weather_status;
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
+			if (path === "runs/read")
+				return body.run_id === weather.id ? weather : pv;
+			throw new Error(path);
+		},
+		send(path, command) {
+			sent.push([path, command]);
+			if (path === "projects/revise") {
+				const revision = command.expected_revision + 1;
+				const project = {
+					...(revision === 2
+						? preparation.weather_project
+						: preparation.pv_project),
+					revision,
+					inputs: command.inputs,
+				};
+				records.set(revision, project);
+				return project;
+			}
+			assert.equal(command.expected_revision, path === "runs/weather" ? 2 : 3);
+			return path === "runs/weather" ? weather : pv;
+		},
+	});
+	await ui.click("Set up shared DC energy flows");
+	await ui.click("Interval sources");
+	await ui.click("Weather source");
+	await ui.click("Request weather");
+	await ui.click("Use this weather source");
+	await ui.click("Weather-based PV reference");
+	await ui.click("Calculate PV");
+	await until(() => sent.some(([p]) => p === "runs/pv"));
+	assert.deepEqual(
+		sent.map(([p]) => p),
+		["projects/revise", "runs/weather", "projects/revise", "runs/pv"],
+	);
+	assert.equal(
+		records.get(3).inputs.pv_preparation.weather_asset_id,
+		weather.result.prepared_asset.id,
+	);
+	assert.equal(ui.button("Save snapshot"), undefined);
+});
+
 test("a draft plant selects the native PV preparation as the DC source", async (t) => {
 	const run = preparation.pv_run;
 	const weather = preparation.weather_run.result.prepared_asset;
@@ -509,7 +575,7 @@ test("a draft plant selects the native PV preparation as the DC source", async (
 	await ui.click("Interval sources");
 	await ui.click("Weather-based PV reference");
 	await ui.click("Use this PV profile");
-	await ui.click("Save snapshot");
+	await ui.click("Projects");
 	await until(() => Boolean(saved));
 	assert.deepEqual(saved.inputs.profile_selections.selected, {
 		pv_reference: run.result.prepared_asset.id,

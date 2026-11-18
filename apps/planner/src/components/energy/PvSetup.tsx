@@ -28,6 +28,7 @@ export function PvSetup({
 	onValidity,
 	onError,
 	start,
+	savesOnStart = false,
 	openDesign,
 	client,
 	scope,
@@ -42,6 +43,7 @@ export function PvSetup({
 	onValidity: (valid: boolean) => void;
 	onError: (error: unknown) => void;
 	start: () => void;
+	savesOnStart?: boolean;
 	openDesign: (() => void) | undefined;
 	client: PlannerClient;
 	scope: string;
@@ -168,20 +170,22 @@ export function PvSetup({
 							? __("PV model prepared in this draft", "linker-tools")
 							: __("PV model settings need preparation", "linker-tools")}
 					</strong>
-					<p>
-						{dirty || draft.pending
-							? __(
-									"The roof layout, PV model and weather selection must be recorded with Save project before PV generation can start.",
-									"linker-tools",
-								)
-							: sprintf(
-									__(
-										"PV generation uses saved input revision %d.",
+					{!savesOnStart && (
+						<p>
+							{dirty || draft.pending
+								? __(
+										"The roof layout, PV model and weather selection must be recorded with Save project before PV generation can start.",
 										"linker-tools",
-									),
-									draft.baseline.revision,
-								)}
-					</p>
+									)
+								: sprintf(
+										__(
+											"PV generation uses saved input revision %d.",
+											"linker-tools",
+										),
+										draft.baseline.revision,
+									)}
+						</p>
+					)}
 				</div>
 				<button
 					type="button"
@@ -209,12 +213,13 @@ export function PvSetup({
 						!valid ||
 						!prepared ||
 						!weatherSelected ||
-						dirty ||
-						!!draft.pending ||
+						(!savesOnStart && (dirty || !!draft.pending)) ||
 						!!draft.conflict
 					}
 				>
-					{__("Calculate PV for saved inputs", "linker-tools")}
+					{savesOnStart
+						? __("Calculate PV", "linker-tools")
+						: __("Calculate PV for saved inputs", "linker-tools")}
 				</button>
 			</div>
 		</>

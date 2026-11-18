@@ -28,6 +28,14 @@ export function setupDom() {
 		'<!doctype html><header id="lc-header"></header><section data-linker-planner></section>',
 		{ url: "https://fixture.invalid/workspace/?project=" + "1".repeat(32) },
 	);
+	// JSDOM does not implement the native dialog top layer.
+	dom.window.HTMLDialogElement.prototype.showModal = function () {
+		this.open = true;
+	};
+	dom.window.HTMLDialogElement.prototype.close = function () {
+		this.open = false;
+		this.dispatchEvent(new dom.window.Event("close"));
+	};
 	// JSDOM has no layout/scroll implementation. Actual sticky-header clearance
 	// and scrolling are independently verified in the native browser matrix.
 	dom.window.HTMLElement.prototype.scrollIntoView = function () {};

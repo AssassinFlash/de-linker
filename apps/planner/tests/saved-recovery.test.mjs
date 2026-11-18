@@ -162,7 +162,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 						QueryClientProvider,
 						{ client: cache },
 						React.createElement(Configurator, {
-							project: current,
+							project: saves.length && changed ? revised : current,
 							session,
 							client,
 							store: drafts,
@@ -195,13 +195,15 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 			assert.equal(button("Restore local changes"), undefined);
 			assert.equal(Boolean(button("Keep my changes")), false);
 			assert.equal(button("Retry save"), undefined);
-			await act(async () => button("Save snapshot").click());
+			assert.equal(button("Save snapshot"), undefined);
+			await act(async () => button("Projects").click());
+			await until(() => !field());
 			assert.deepEqual(saves, []);
 		} else if (source === "current") {
 			assert.ok(status("Save not confirmed"));
-			assert.equal(button("Retry save")?.disabled, false);
-			await act(async () => button("Retry save").click());
-			await until(() => status("Saved · revision 2"));
+			assert.equal(button("Save snapshot"), undefined);
+			await act(async () => button("Projects").click());
+			await until(() => !field());
 			assert.deepEqual(
 				saves,
 				[previous.pending.body],
@@ -209,7 +211,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 			);
 		} else {
 			assert.ok(button("Use saved project"));
-			assert.equal(button("Save snapshot").disabled, true);
+			assert.equal(button("Projects").disabled, true);
 			if (failure) {
 				const deletion = IDBObjectStore.prototype.delete;
 				const abort = t.mock.method(
@@ -241,9 +243,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 			await act(async () =>
 				button(changed ? "Keep my changes" : "Use saved project").click(),
 			);
-			await until(() =>
-				status(changed ? "Unsaved changes" : "Saved · revision 2"),
-			);
+			await until(() => status(changed ? "Editing" : "Saved · revision 2"));
 			await act(async () => button("Projects").click());
 			await until(() => !field());
 			const reopenedStore = new DraftStore();
@@ -254,8 +254,8 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 				field().value,
 				changed ? "Local workshop" : "Saved workshop",
 			);
-			assert.ok(status(changed ? "Unsaved changes" : "Saved · revision 2"));
-			assert.deepEqual(saves, []);
+			assert.ok(status(changed ? "Saved · revision 3" : "Saved · revision 2"));
+			assert.equal(saves.length, changed ? 1 : 0);
 			await act(async () => {
 				assert.deepEqual(
 					(await reopenedStore.read(priorScope, unrelated.id))?.baseline,
@@ -267,8 +267,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 				);
 			});
 			if (!changed) return;
-			await act(async () => button("Save snapshot").click());
-			await until(() => status("Saved · revision 3"));
+
 			assert.equal(saves.length, 1);
 			const command = JSON.parse(saves[0]);
 			assert.equal(command.expected_revision, 2);

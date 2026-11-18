@@ -242,6 +242,21 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 		await until(() => capacity() !== undefined);
 		assert.equal(capacity(), expected);
 	}
+	await act(async () =>
+		[...dom.element.querySelectorAll(".sc-nav button")]
+			.find((b) => b.textContent.includes("Review"))
+			.click(),
+	);
+	assert.match(
+		dom.element.querySelector('main section[aria-label="Project summary"]')
+			.textContent,
+		/6.4 kWp/,
+	);
+	assert.ok(
+		![...dom.element.querySelectorAll("main button")].some((b) =>
+			b.textContent.includes("solution draft"),
+		),
+	);
 });
 
 test("a storage project continues from its location directly to energy use", async () => {
@@ -819,7 +834,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			earlier.id,
 		);
 		await ask(history(), 2, [earlier.id]);
-		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
+		await ask(dom.element.querySelector(".sc-project-toolbar"), 3, []);
 		await act(async () => button("Revision 2").click());
 		assert.equal(
 			new URL(languageLink("en").href).searchParams.has("run"),
@@ -858,7 +873,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await render("en");
 		await until(() => dom.element.querySelector('[name="location_label"]'));
 		await enter(dom.element.querySelector('[name="location_label"]'), "Berlin");
-		await act(async () => button("Save snapshot").click());
+		await act(async () => button("Projects").click());
 		await until(() => requests.some(([path]) => path === "projects/revise"));
 		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
 			(node) => node.textContent.includes("Review & share"),
@@ -879,7 +894,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await act(async () => saving.resolve());
 		await until(() => dom.element.textContent.includes("Saved · revision 4"));
 		assertContext(context(), 2, [earlier.id]);
-		await ask(dom.element.querySelector(".sc-project-heading"), 4, []);
+		await ask(dom.element.querySelector(".sc-project-toolbar"), 4, []);
 
 		await act(async () => root.render(null));
 		cache.clear();
@@ -1529,7 +1544,7 @@ for (const scenario of [
 				await act(async () => button("Undo").click());
 				await until(() => peak()?.value === "10");
 				await enter(peak(), "9");
-				await act(async () => button("Save snapshot").click());
+				await act(async () => button("Projects").click());
 				await until(() =>
 					requests.some(([path]) => path === "projects/revise"),
 				);

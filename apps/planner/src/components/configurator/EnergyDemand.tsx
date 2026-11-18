@@ -27,6 +27,7 @@ import type { CsvInspection, ProfilePreview } from "../../domain/profiles.ts";
 import { KNOWN_PV_MODEL, referenceDraft } from "../../domain/pvgisReference.ts";
 import { emptyMapping, mappedProfile } from "../ProfileMapping.tsx";
 import { issueLabel } from "../ProfileLabels.ts";
+import { ProfileCurve } from "../ProfileCurve.tsx";
 import { NumberField } from "../NumberField.tsx";
 import { __ } from "../../i18n.ts";
 import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
@@ -107,6 +108,8 @@ export function EnergyDemand({
 	disabled,
 	edit,
 	compare,
+	back,
+	children,
 	modelsUnavailable = false,
 	client,
 	session,
@@ -119,6 +122,8 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
+	back: () => void;
+	children?: React.ReactNode;
 	modelsUnavailable?: boolean;
 	client: PlannerClient;
 	session: Session;
@@ -194,17 +199,22 @@ export function EnergyDemand({
 	const [rights, setRights] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
-	const [preview, setPreview] = useState<ProfilePreview | null>(null);
+	const [review, setReview] = useState<{
+		asset: ReturnType<typeof readAsset>;
+		preview: ProfilePreview;
+	} | null>(null);
 	const pending = useRef<{ path: JsonRpcPath; body: JsonObject } | null>(null);
 	const flight = useRef(false);
 	const generation = useRef(0);
 	const selected = readSelections(inputs.profile_selections).selected
 		.gross_load;
+	const preview = review?.asset.id === selected ? review?.preview : null;
+	const pageSize = Math.min(20, session.runtime.limits.max_page_size);
 	const blocked = disabled || busy;
 	const demandBlocked = blocked || modelsUnavailable;
 	useEffect(() => {
 		generation.current++;
-		setPreview(null);
+		setReview(null);
 		setError("");
 		pending.current = null;
 		flight.current = false;
@@ -232,7 +242,7 @@ export function EnergyDemand({
 					: __("The profile request failed. Please try again.", "linker-tools"),
 		);
 	}
-	async function previewAsset(asset: ReturnType<typeof readAsset>) {
+	async function previewAsset(asset: ReturnType<typeof readAsset>, offset = 0) {
 		return readPreview(
 			await client.query(
 				"profiles/preview",
@@ -240,8 +250,8 @@ export function EnergyDemand({
 					schema_version: 1,
 					project_id: projectId,
 					asset_id: asset.id,
-					offset: 0,
-					page_size: Math.min(20, session.runtime.limits.max_page_size),
+					offset,
+					page_size: pageSize,
 				},
 				session.query_scope,
 			),
@@ -268,7 +278,7 @@ export function EnergyDemand({
 					instance === generation.current &&
 					client.isCurrentScope(session.query_scope)
 				)
-					setPreview(result);
+					setReview({ asset, preview: result });
 			} catch (cause) {
 				if (active && instance === generation.current) failure(cause);
 			}
@@ -300,6 +310,18 @@ export function EnergyDemand({
 				setBusy(false);
 			}
 		}
+	}
+	function readPage(offset: number) {
+		if (!review) return;
+		void run(async () => {
+			const page = await previewAsset(review.asset, offset);
+			if (client.isCurrentScope(session.query_scope))
+				setReview((current) =>
+					current?.asset.id === page.asset_id
+						? { asset: current.asset, preview: page }
+						: current,
+				);
+		});
 	}
 	async function importProfile(command?: {
 		path: JsonRpcPath;
@@ -360,7 +382,7 @@ export function EnergyDemand({
 				};
 			})
 		) {
-			setPreview(result);
+			setReview({ asset, preview: result });
 			pending.current = null;
 			setCsv(false);
 			setContent("");
@@ -979,28 +1001,56 @@ export function EnergyDemand({
 								{__("gaps in the source data", "linker-tools")}
 							</p>
 						)}
+						<ProfileCurve preview={preview} locale={locale} />
 						<details>
 							<summary>{__("View readings", "linker-tools")}</summary>
-							<table>
-								<thead>
-									<tr>
-										<th>{__("Interval start (UTC)", "linker-tools")}</th>
-										<th>kW</th>
-									</tr>
-								</thead>
-								<tbody>
-									{preview.rows.map((row) => (
-										<tr key={row.interval_index}>
-											<td>{row.start_utc}</td>
-											<td>
-												{new Intl.NumberFormat(locale).format(
-													row.interval_mean_kw,
-												)}
-											</td>
+							<div className="lp-table-scroll">
+								<table className="lp-data-table">
+									<thead>
+										<tr>
+											<th>{__("Interval start (UTC)", "linker-tools")}</th>
+											<th>kW</th>
 										</tr>
-									))}
-								</tbody>
-							</table>
+									</thead>
+									<tbody>
+										{preview.rows.map((row) => (
+											<tr key={row.interval_index}>
+												<td>{row.start_utc}</td>
+												<td>
+													{new Intl.NumberFormat(locale).format(
+														row.interval_mean_kw,
+													)}
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+							{(preview.next_offset !== null ||
+								(preview.rows[0]?.interval_index ?? 0) > 0) && (
+								<div className="sc-actions">
+									<button
+										type="button"
+										className="sc-button"
+										disabled={demandBlocked || !preview.rows[0]?.interval_index}
+										onClick={() =>
+											readPage(
+												Math.max(0, preview.rows[0]!.interval_index - pageSize),
+											)
+										}
+									>
+										{__("Previous", "linker-tools")}
+									</button>
+									<button
+										type="button"
+										className="sc-button"
+										disabled={demandBlocked || preview.next_offset === null}
+										onClick={() => readPage(preview.next_offset!)}
+									>
+										{__("Next intervals", "linker-tools")}
+									</button>
+								</div>
+							)}
 						</details>
 					</div>
 				)}
@@ -1044,7 +1094,8 @@ export function EnergyDemand({
 					</fieldset>
 				</details>
 			)}
-			<footer className="sc-footer">
+			{children}
+			<>
 				{goal && needsGridPhase && (
 					<p className="sc-muted">
 						{__(
@@ -1061,16 +1112,19 @@ export function EnergyDemand({
 						)}
 					</p>
 				)}
-				<div className="sc-actions">
-					<button
-						type="button"
-						className="sc-button sc-primary"
-						disabled={!canCompare}
-						onClick={compare}
-					>
-						{__("Compare systems", "linker-tools")}
-					</button>
-				</div>
+			</>
+			<footer className="sc-footer">
+				<button className="sc-button" type="button" onClick={back}>
+					{__("Back", "linker-tools")}
+				</button>
+				<button
+					type="button"
+					className="sc-button sc-primary"
+					disabled={!canCompare}
+					onClick={compare}
+				>
+					{__("Compare systems", "linker-tools")}
+				</button>
 			</footer>
 		</div>
 	);

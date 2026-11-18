@@ -379,7 +379,7 @@ export function GeometryIntake({
 									"linker-tools",
 								)
 							: __(
-									"Imported roof is in the current design. Save the project to record it.",
+									"Imported roof is in the current design.",
 									"linker-tools",
 								)}
 					</span>
@@ -678,7 +678,7 @@ export function GeometryIntake({
 							</button>
 							<p className="lp-profile-help">
 								{__(
-									"One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design.",
+									"One editable roof face is added as a single step in project history. You can undo this addition in the open design.",
 									"linker-tools",
 								)}
 							</p>

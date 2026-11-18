@@ -405,6 +405,7 @@ async function equipmentApp(
 					},
 				};
 			}
+			if (path === "projects/list") return { items: [{...project, updated_at: 1}], next:null };
 			if (path === "projects/read") {
 				assert.equal(body.project_id, projectId);
 				if (scope !== session.query_scope) throw new ApiError(404, "not_found");
@@ -507,7 +508,7 @@ async function equipmentApp(
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
-				node.textContent === text &&
+				(node.textContent === text || node.getAttribute("aria-label") === text) &&
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
@@ -797,12 +798,14 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Solar");
+	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
-			.querySelector(".lp-panel-shape")
+			.querySelector("dialog .lp-panel-shape")
 			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
 	);
 	await act(async () => app.button("Remove selected").click());
+	await act(async () => app.button("Close").click());
 	await app.step("System");
 	assert.equal(Boolean(app.button("Selected")), false);
 	assert.equal(app.button("Review the proposal").disabled, true);
@@ -899,6 +902,7 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		app.fieldSelect("PV module")?.querySelector(`option[value="${module.id}"]`),
 	);
 	await app.updateSelect("PV module", module.id);
+	await click("Open roof layout");
 	for (const [label, value] of [
 		["Width", "8"],
 		["Depth", "5"],
@@ -921,6 +925,7 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	])
 		await enter(app.fieldInput(label), value);
 	await click("Place module group");
+	await click("Close");
 	assert.match(
 		document.querySelector(".sc-solar-total").textContent,
 		/2 placed modules · 0.92 kWp/,
@@ -1550,7 +1555,7 @@ test("a failed legacy model read still lets the customer save annual electricity
 	assert.ok(annual.matches(":enabled"));
 	assert.ok(app.fieldSelect("Grid connection").matches(":disabled"));
 	await enter(annual, "42");
-	await act(async () => app.button("Save snapshot").click());
+	await act(async () => app.button("Projects").click());
 	await untilRun(() =>
 		app.requests.some(({ path }) => path === "projects/revise"),
 	);
@@ -1558,7 +1563,9 @@ test("a failed legacy model read still lets the customer save annual electricity
 	assert.deepEqual(app.requests.at(-1).body.inputs.equipment_setup, selected);
 	assert.equal(app.requests.at(-1).body.inputs.brief.annual_load.kwh, 42);
 	app.recoverLegacyInputs();
-	await act(async () => app.button("Try again").click());
+	await untilRun(() => app.button("Open project"));
+	await act(async () => app.button("Open project").click());
+	await untilRun(() => document.querySelector(".sc-nav"));
 	await app.step("Project");
 	const details = document.querySelector(
 		'section[aria-label="System arrangement"] details',

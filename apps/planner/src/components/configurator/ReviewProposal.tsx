@@ -283,6 +283,8 @@ interface ReportHistory {
 
 export function ReviewProposal({
 	project,
+	summary,
+	materials,
 	run,
 	history,
 	client,
@@ -296,6 +298,8 @@ export function ReviewProposal({
 	recheck,
 }: {
 	project: Project;
+	summary?: ReactNode;
+	materials?: ReactNode;
 	inputs: JsonObject;
 	run: PlanningRun | null;
 	history?: ReportHistory;
@@ -396,6 +400,42 @@ export function ReviewProposal({
 				: report.sections.some(
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
+	const transfer = transferable && run && (
+		<section className="sc-card sc-draft-transfer">
+			<h2>{__("Request a quotation", "linker-tools")}</h2>
+			{selected && current && (
+				<p>
+					{sprintf(
+						__(
+							"Your inquiry uses the current report (revision %d).",
+							"linker-tools",
+						),
+						run.revision,
+					)}
+				</p>
+			)}
+			{!reportOnly && (
+				<p className="sc-muted">
+					{__(
+						"The selected equipment and project details are included.",
+						"linker-tools",
+					)}
+				</p>
+			)}
+			<DraftTransferButton
+				key={`${run.id}:${scope}`}
+				run={run}
+				client={client}
+				scope={scope}
+				operations={operations}
+				reportOnly={reportOnly}
+				current={current}
+				blocked={blocked}
+				locale={locale}
+				recheck={recheck}
+			/>
+		</section>
+	);
 	return (
 		<article className="sc-review">
 			<header className="sc-section-head">
@@ -417,6 +457,8 @@ export function ReviewProposal({
 					)}
 				</p>
 			)}
+			{!selected && (!report || !current) && summary}
+			{!selected && !report && materials}
 			{!selected && !report && (
 				<section className="sc-card">
 					<h2>{__("Project report", "linker-tools")}</h2>
@@ -489,42 +531,45 @@ export function ReviewProposal({
 								<ReportContent section={section} />
 							</section>
 						))}
-					<section className="sc-card">
-						<div className="sc-section-head">
-							<div>
-								<h2>{__("Project report", "linker-tools")}</h2>
-								<p className="sc-muted">
-									{__(
-										"Project inputs, layout, equipment and selection basis.",
-										"linker-tools",
-									)}
-								</p>
+					<div className="sc-review-actions">
+						<section className="sc-card">
+							<div className="sc-section-head">
+								<div>
+									<h2>{__("Project report", "linker-tools")}</h2>
+									<p className="sc-muted">
+										{__(
+											"Project inputs, layout, equipment and selection basis.",
+											"linker-tools",
+										)}
+									</p>
+								</div>
 							</div>
-						</div>
-						{logoField}
-						<ReportDownloads
-							run={run}
-							report={report}
-							client={client}
-							scope={scope}
-							recheck={recheck}
-							askGenie={() => askGenie(run)}
-						>
-							<button
-								type="button"
-								className="sc-button"
-								disabled={disabled}
-								onClick={() => generate(logo)}
+							{logoField}
+							<ReportDownloads
+								run={run}
+								report={report}
+								client={client}
+								scope={scope}
+								recheck={recheck}
+								askGenie={() => askGenie(run)}
 							>
-								{reportLanguageDiffers(report.locale, locale)
-									? locale.startsWith("de")
-										? __("Generate report in German", "linker-tools")
-										: __("Generate report in English", "linker-tools")
-									: __("Update project report", "linker-tools")}
-							</button>
-						</ReportDownloads>
-						<ReportPreview report={report} />
-					</section>
+								<button
+									type="button"
+									className="sc-button"
+									disabled={disabled}
+									onClick={() => generate(logo)}
+								>
+									{reportLanguageDiffers(report.locale, locale)
+										? locale.startsWith("de")
+											? __("Generate report in German", "linker-tools")
+											: __("Generate report in English", "linker-tools")
+										: __("Update project report", "linker-tools")}
+								</button>
+							</ReportDownloads>
+							<ReportPreview report={report} />
+						</section>
+						{transfer}
+					</div>
 				</>
 			)}
 			{history && (selected || history.items.length > 0 || history.hasMore) && (
@@ -629,42 +674,7 @@ export function ReviewProposal({
 					)}
 				</section>
 			)}
-			{transferable && run && (
-				<section className="sc-card sc-draft-transfer">
-					<h2>{__("Request a quotation", "linker-tools")}</h2>
-					{selected && current && (
-						<p>
-							{sprintf(
-								__(
-									"Your inquiry uses the current report (revision %d).",
-									"linker-tools",
-								),
-								run.revision,
-							)}
-						</p>
-					)}
-					{!reportOnly && (
-						<p className="sc-muted">
-							{__(
-								"The selected equipment and project details are included.",
-								"linker-tools",
-							)}
-						</p>
-					)}
-					<DraftTransferButton
-						key={`${run.id}:${scope}`}
-						run={run}
-						client={client}
-						scope={scope}
-						operations={operations}
-						reportOnly={reportOnly}
-						current={current}
-						blocked={blocked}
-						locale={locale}
-						recheck={recheck}
-					/>
-				</section>
-			)}
+			{selected && transfer}
 		</article>
 	);
 }

@@ -33,7 +33,10 @@ export function ProfileCurve({
 		const row = rows[i]!;
 		path += `${i > 0 && row.start_utc === rows[i - 1]!.end_utc ? "L" : "M"}${x(row.start_utc)},${y(row.interval_mean_kw)} H${x(row.end_utc)} `;
 	}
-	const title = __("PV profile · visible intervals", "linker-tools");
+	const title =
+		preview.measurement === "gross_load"
+			? __("Load profile · visible intervals", "linker-tools")
+			: __("PV profile · visible intervals", "linker-tools");
 	return (
 		<figure className="lp-profile-review">
 			<figcaption>{title}</figcaption>

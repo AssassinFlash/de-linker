@@ -66,6 +66,7 @@ export interface SolarInstallationProps {
 	disabled: boolean;
 	edit: (op: (inputs: JsonObject) => JsonObject) => boolean;
 	next: () => void;
+	back: () => void;
 	wiring?: ReactNode;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
@@ -128,6 +129,7 @@ export function SolarInstallation({
 	disabled,
 	edit,
 	next,
+	back,
 	wiring,
 	initialMap = false,
 	onEditing,
@@ -174,7 +176,12 @@ export function SolarInstallation({
 	const [view, setView] = useState<"plan" | "map" | "scene">(
 		startOnMap ? "map" : "plan",
 	);
-	const map = view === "map";
+	const [editorOpen, setEditorOpen] = useState(initialMap);
+	const dialog = useRef<HTMLDialogElement>(null);
+	useEffect(() => {
+		if (editorOpen && mode === "roof") dialog.current?.showModal();
+	}, [editorOpen, mode]);
+	const map = editorOpen && mode === "roof" && view === "map";
 	const [calibrationOpen, setCalibrationOpen] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const reportImportActivity = geometryImport?.onActivity;
@@ -336,7 +343,10 @@ export function SolarInstallation({
 			if (!ok) return;
 			setUndo(undo.slice(0, -1));
 			setError("");
-			if (restoredMode) setMode(restoredMode);
+			if (restoredMode) {
+				setEditorOpen(false);
+				setMode(restoredMode);
+			}
 		} catch {
 			setError(
 				__(
@@ -946,6 +956,24 @@ export function SolarInstallation({
 			};
 		},
 	});
+	const calibration = (
+		<ImageCalibrationWorkspace
+			geometry={geometry}
+			roofId={null}
+			locale={config.locale}
+			disabled={blocked || importOpen || vertices.length > 0}
+			onActivity={setCalibrationOpen}
+			commit={(command) => {
+				if (!commit({ calibration: command })) return false;
+				setMode("roof");
+				setEditorOpen(true);
+				setView("plan");
+				startTool("select");
+				select(command.edits[1].value.id);
+				return true;
+			}}
+		/>
+	);
 	return (
 		<section className="sc-solar">
 			<header className="sc-section-head">
@@ -957,27 +985,19 @@ export function SolarInstallation({
 					)}
 				</p>
 			</header>
-			<ImageCalibrationWorkspace
-				geometry={geometry}
-				roofId={null}
-				locale={config.locale}
-				disabled={blocked || importOpen || vertices.length > 0}
-				onActivity={setCalibrationOpen}
-				commit={(command) => {
-					if (!commit({ calibration: command })) return false;
-					setMode("roof");
-					setView("plan");
-					startTool("select");
-					select(command.edits[1].value.id);
-					return true;
-				}}
-			/>
-			<fieldset disabled={blocked || calibrationOpen}>
+
+			<fieldset disabled={blocked || (mode === "known" && calibrationOpen)}>
 				<div className="sc-option-row">
 					{(["known", "roof"] as const).map((value) => (
 						<button
 							type="button"
 							className={`sc-option-card${mode === value ? " active" : ""}`}
+							disabled={calibrationOpen}
+							aria-label={
+								value === "known"
+									? __("Use module details", "linker-tools")
+									: __("Place modules on the roof", "linker-tools")
+							}
 							aria-pressed={mode === value}
 							key={value}
 							onClick={() => {
@@ -992,6 +1012,11 @@ export function SolarInstallation({
 							{value === "known"
 								? __("Use module details", "linker-tools")
 								: __("Place modules on the roof", "linker-tools")}
+							<span className="sc-muted">
+								{value === "known"
+									? __("Quantity, power and orientation", "linker-tools")
+									: __("Roof outline, obstacles and layout", "linker-tools")}
+							</span>
 						</button>
 					))}
 				</div>
@@ -1117,389 +1142,512 @@ export function SolarInstallation({
 							</div>
 						</>
 					) : (
-						<div className="sc-roof-layout">
-							<div>
-								<div className="sc-roof-tools">
-									{(["select", "roof", "modules", "obstacle"] as const).map(
-										(value) => (
-											<button
-												type="button"
-												key={value}
-												aria-pressed={tool === value}
-												onClick={() => startTool(value)}
-											>
-												{
-													{
-														select: __("Select / move", "linker-tools"),
-														roof: __("Draw roof", "linker-tools"),
-														modules: __("Place modules", "linker-tools"),
-														obstacle: __("Obstacle", "linker-tools"),
-													}[value]
-												}
-											</button>
-										),
-									)}
-									<button
-										type="button"
-										disabled={!undo.length}
-										onClick={undoRoofEdit}
-									>
-										{__("Undo", "linker-tools")}
-									</button>
-								</div>
-								<div
-									className="sc-roof-tools"
-									role="group"
-									aria-label={__("Plan view controls", "linker-tools")}
+						<div className="sc-roof-overview">
+							{roof && (
+								<svg
+									className="sc-roof-preview"
+									role="img"
+									aria-label={roof.name || __("Roof design", "linker-tools")}
+									viewBox={`${minU - 1} ${minV - 1} ${width + 2} ${depth + 2}`}
 								>
-									{(
-										[
-											["plan", __("Plan view", "linker-tools")],
-											["scene", __("3D view", "linker-tools")],
-											["map", __("Aerial map", "linker-tools")],
-										] as const
-									).map(([value, label]) => (
-										<button
-											type="button"
-											key={value}
-											aria-pressed={view === value}
-											disabled={
-												(value === "scene" && !roof) || vertices.length > 0
-											}
-											onClick={() => {
-												setView(value);
-												if (value === "scene") setTool("select");
-											}}
-										>
-											{label}
-										</button>
-									))}
-								</div>
-								{map && imagery.isError && (
-									<div role="alert">
-										<p>
-											{__(
-												"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
-												"linker-tools",
-											)}
-										</p>
-										<button
-											type="button"
-											onClick={() => void imagery.refetch()}
-										>
-											{__("Try again", "linker-tools")}
-										</button>
-									</div>
-								)}
-								{map ? (
-									<LazyMapViewport
-										mapModuleUrl={config.mapModuleUrl ?? null}
-										imagery={imagery.data?.imagery ?? viewingImagery}
-										viewOnly={viewOnly}
-										onAerialReady={setReadyAerial}
-										siteOutline={outline.data ?? null}
-										document={geometry}
-										poses={poses}
-										selected={selected}
-										select={select}
-										disabled={blocked}
-										openReferences={() =>
-											setError(
-												__(
-													"Confirm the geographic origin and true-north basis in the project before drawing on the map.",
-													"linker-tools",
-												),
+									<path
+										fillRule="evenodd"
+										className="lp-roof-shape"
+										d={[roof.boundary_uv, ...roof.holes_uv]
+											.map(
+												(ring) =>
+													`M${ring.map((p) => p.join(",")).join(" L")}Z`,
 											)
-										}
-										camera={camera}
-										siteCentre={siteCentre}
-										interaction={interaction}
-										placement={
-											tool === "modules" && roof && module && mapReferenced
-												? {
-														roofId: roof.id,
-														place: placeModules,
-														review: () =>
-															revealActionResult(moduleRows.current),
-													}
-												: null
-										}
+											.join(" ")}
 									/>
-								) : view === "scene" && roof ? (
-									<LazySceneViewport
-										sceneModuleUrl={config.sceneModuleUrl ?? null}
-										document={geometry}
-										poses={poses}
-										selected={selected}
-										select={select}
-										commit={commit}
-										disabled={blocked}
-									/>
-								) : (
-									<svg
-										className="sc-roof-board"
-										viewBox={`${minU - 1} ${minV - 1} ${width + 2} ${depth + 2}`}
-										aria-label={__("Editable roof plan", "linker-tools")}
-										role="img"
-										onPointerUp={endDrag}
-										onPointerCancel={() => {
-											drag.current = null;
-										}}
-										onClick={(e) => {
-											if (blocked || tool !== "modules" || !roof) return;
-											const point = planPoint(
-												e.currentTarget,
-												e.clientX,
-												e.clientY,
-											);
-											if (point) placeModules(point);
-										}}
-									>
-										{roof && (
+									{geometry.obstacles
+										.filter((o) => o.roof_id === roof.id)
+										.map((o) => (
 											<polygon
-												points={roof.boundary_uv
+												key={o.id}
+												className="lp-obstacle-shape"
+												points={o.footprint_uv
 													.map((p) => p.join(","))
 													.join(" ")}
-												className="lp-roof-shape"
-												onClick={() => select(roof.id)}
 											/>
-										)}
-										{geometry.obstacles
-											.filter((o) => o.roof_id === roof?.id)
-											.map((o) => (
-												<polygon
-													key={o.id}
-													onPointerDown={(e) => startDrag(e, o.id, "obstacle")}
-													points={o.footprint_uv
-														.map((p) => p.join(","))
-														.join(" ")}
-													className="lp-obstacle-shape"
-													onClick={(e) => {
-														e.stopPropagation();
-														select(o.id);
-													}}
-												/>
-											))}
-										{poses
-											.filter((p) => p.roof_id === roof?.id && p.included)
-											.map((p) => (
-												<polygon
-													key={p.id}
-													onPointerDown={(e) =>
-														startDrag(e, p.array_id, "array")
-													}
-													points={p.footprint_uv
-														.map((v) => v.join(","))
-														.join(" ")}
-													className="lp-panel-shape"
-													data-selected={selected === p.array_id || undefined}
-													onClick={(e) => {
-														e.stopPropagation();
-														select(p.array_id);
-													}}
-												/>
-											))}
-										{tool === "select" &&
-											roof?.boundary_uv.map(([u, v], index) => (
-												<circle
-													key={`corner-${index}`}
-													cx={u}
-													cy={v}
-													r={Math.max(width, depth) * 0.012}
-													className="sc-roof-vertex"
-													onPointerDown={(e) =>
-														startDrag(e, roof.id, "vertex", index)
-													}
-												/>
-											))}
-									</svg>
-								)}
-								{interaction && vertices.length >= 3 && (
-									<button
-										type="button"
-										disabled={interaction.requiresAerial && !canConfirmAerial}
-										onClick={() =>
-											tool === "roof"
-												? addRoof(vertices)
-												: addObstacle(vertices)
-										}
-									>
-										{firstMapRoof && tool === "roof"
-											? __("Confirm roof and map origin", "linker-tools")
-											: __("Finish outline", "linker-tools")}
-									</button>
-								)}
-								<p className="sc-hint">
-									{map && viewOnly
-										? __(
-												"Use the plan view or a roof image you have permission to use to create the layout.",
-												"linker-tools",
-											)
-										: interaction?.requiresAerial
-											? __(
-													"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
-													"linker-tools",
-												)
-											: interaction
-												? __(
-														"Click each corner on the map, then finish the outline.",
-														"linker-tools",
-													)
-												: tool === "roof" && !mapReferenced
-													? __(
-															"Enter the roof dimensions or confirm the map origin to draw on the map.",
-															"linker-tools",
-														)
-													: __(
-															"The plan uses metres in the recorded roof plane.",
+										))}
+									{poses
+										.filter((p) => p.included && p.roof_id === roof.id)
+										.map((p) => (
+											<polygon
+												key={p.id}
+												className="lp-panel-shape"
+												points={p.footprint_uv
+													.map((v) => v.join(","))
+													.join(" ")}
+											/>
+										))}
+								</svg>
+							)}
+							<button
+								className="sc-button sc-primary"
+								type="button"
+								onClick={() => setEditorOpen(true)}
+							>
+								{__("Open roof layout", "linker-tools")}
+							</button>
+							{editorOpen && (
+								<dialog
+									className="sc-roof-dialog"
+									ref={dialog}
+									aria-label={__("Roof design", "linker-tools")}
+									onCancel={(e) => {
+										if (calibrationOpen || tool !== "select")
+											e.preventDefault();
+									}}
+									onClose={() => setEditorOpen(false)}
+								>
+									<header className="sc-dialog-head">
+										<h2>{__("Roof design", "linker-tools")}</h2>
+										<button
+											className="sc-button"
+											type="button"
+											disabled={calibrationOpen || tool !== "select"}
+											onClick={() => dialog.current?.close()}
+										>
+											{__("Close", "linker-tools")}
+										</button>
+									</header>
+									<div className="sc-dialog-body">
+										{calibration}
+										<fieldset
+											disabled={blocked || calibrationOpen}
+											className="sc-roof-layout"
+										>
+											<div>
+												<div className="sc-roof-tools">
+													{(
+														["select", "roof", "modules", "obstacle"] as const
+													).map((value) => (
+														<button
+															type="button"
+															key={value}
+															aria-pressed={tool === value}
+															onClick={() => startTool(value)}
+														>
+															{
+																{
+																	select: __("Select / move", "linker-tools"),
+																	roof: __("Draw roof", "linker-tools"),
+																	modules: __("Place modules", "linker-tools"),
+																	obstacle: __("Obstacle", "linker-tools"),
+																}[value]
+															}
+														</button>
+													))}
+													<button
+														type="button"
+														disabled={!undo.length}
+														onClick={undoRoofEdit}
+													>
+														{__("Undo", "linker-tools")}
+													</button>
+												</div>
+												<div
+													className="sc-roof-tools"
+													role="group"
+													aria-label={__("Plan view controls", "linker-tools")}
+												>
+													{(
+														[
+															["plan", __("Plan view", "linker-tools")],
+															["scene", __("3D view", "linker-tools")],
+															["map", __("Aerial map", "linker-tools")],
+														] as const
+													).map(([value, label]) => (
+														<button
+															type="button"
+															key={value}
+															aria-pressed={view === value}
+															disabled={
+																(value === "scene" && !roof) ||
+																vertices.length > 0
+															}
+															onClick={() => {
+																setView(value);
+																if (value === "scene") setTool("select");
+															}}
+														>
+															{label}
+														</button>
+													))}
+												</div>
+												{map && imagery.isError && (
+													<div role="alert">
+														<p>
+															{__(
+																"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
+																"linker-tools",
+															)}
+														</p>
+														<button
+															type="button"
+															onClick={() => void imagery.refetch()}
+														>
+															{__("Try again", "linker-tools")}
+														</button>
+													</div>
+												)}
+												{map ? (
+													<LazyMapViewport
+														mapModuleUrl={config.mapModuleUrl ?? null}
+														imagery={imagery.data?.imagery ?? viewingImagery}
+														viewOnly={viewOnly}
+														onAerialReady={setReadyAerial}
+														siteOutline={outline.data ?? null}
+														document={geometry}
+														poses={poses}
+														selected={selected}
+														select={select}
+														disabled={blocked}
+														openReferences={() =>
+															setError(
+																__(
+																	"Confirm the geographic origin and true-north basis in the project before drawing on the map.",
+																	"linker-tools",
+																),
+															)
+														}
+														camera={camera}
+														siteCentre={siteCentre}
+														interaction={interaction}
+														placement={
+															tool === "modules" &&
+															roof &&
+															module &&
+															mapReferenced
+																? {
+																		roofId: roof.id,
+																		place: placeModules,
+																		review: () =>
+																			revealActionResult(moduleRows.current),
+																	}
+																: null
+														}
+													/>
+												) : view === "scene" && roof ? (
+													<LazySceneViewport
+														sceneModuleUrl={config.sceneModuleUrl ?? null}
+														document={geometry}
+														poses={poses}
+														selected={selected}
+														select={select}
+														commit={commit}
+														disabled={blocked}
+													/>
+												) : (
+													<svg
+														className="sc-roof-board"
+														viewBox={`${minU - 1} ${minV - 1} ${width + 2} ${depth + 2}`}
+														aria-label={__(
+															"Editable roof plan",
 															"linker-tools",
 														)}
-								</p>
-							</div>
-							<aside className="sc-roof-props">
-								<label className="sc-field">
-									<span>{__("Selected roof", "linker-tools")}</span>
-									<select
-										value={roof?.id ?? ""}
-										onChange={(e) => select(e.currentTarget.value)}
-									>
-										<option value="">
-											{__("Choose a roof", "linker-tools")}
-										</option>
-										{geometry.roofs.map((r) => (
-											<option key={r.id} value={r.id}>
-												{r.name}
-											</option>
-										))}
-									</select>
-								</label>
-								{field("width", __("Width", "linker-tools"))}
-								{field("depth", __("Depth", "linker-tools"))}
-								{field("pitch", __("Pitch", "linker-tools"), "°")}
-								{field("azimuth", __("Azimuth", "linker-tools"), "°")}
-								{field("height", __("Relative roof height", "linker-tools"))}
-								{field("originU", __("Origin east / U", "linker-tools"))}
-								{field("originV", __("Origin north / V", "linker-tools"))}
-								<label className="sc-field">
-									<span>{__("Drawing source", "linker-tools")}</span>
-									<input
-										value={
-											map && firstMapRoof && tool === "roof"
-												? (readyAerial?.credit ?? "")
-												: fields.source
-										}
-										readOnly={map && firstMapRoof && tool === "roof"}
-										onChange={(e) => {
-											const value = e.currentTarget.value;
-											setFields((previous) => ({ ...previous, source: value }));
-										}}
-									/>
-								</label>
-								<label className="sc-check">
-									<input
-										type="checkbox"
-										checked={confirmed}
-										onChange={(e) => setConfirmed(e.currentTarget.checked)}
-									/>
-									{__(
-										"I confirm these dimensions and permission to use this drawing.",
-										"linker-tools",
-									)}
-								</label>
-								{!(map && firstMapRoof) &&
-									!geometry.coordinate_system.anchor &&
-									site.coordinate_basis === "user_entered" &&
-									site.latitude !== null &&
-									site.longitude !== null && (
-										<button
-											type="button"
-											disabled={!confirmed || !fields.source.trim()}
-											onClick={confirmMapReference}
-										>
-											{__(
-												"Confirm site coordinates as map origin and use true north",
-												"linker-tools",
-											)}
-										</button>
-									)}
-								<button
-									type="button"
-									disabled={!confirmed || !fields.source.trim()}
-									onClick={() => addRoof()}
-								>
-									{__("Add rectangular roof", "linker-tools")}
-								</button>
-								{field(
-									"obstacleHeight",
-									__("Obstacle height above roof", "linker-tools"),
-								)}
-								<button
-									type="button"
-									disabled={!roof}
-									onClick={() => addObstacle()}
-								>
-									{__("Add obstacle", "linker-tools")}
-								</button>
-								{field("rows", __("Rows", "linker-tools"), "")}
-								{field("columns", __("Columns", "linker-tools"), "")}
-								{field("gap", __("Module gap", "linker-tools"))}
-								<button
-									type="button"
-									disabled={!module || !roof}
-									onClick={() => placeModules()}
-								>
-									{__("Place module group", "linker-tools")}
-								</button>
-								<button
-									type="button"
-									disabled={!selected}
-									onClick={removeSelected}
-								>
-									{__("Remove selected", "linker-tools")}
-								</button>
-								{geometry.arrays.some((a) => a.id === selected) && (
-									<div className="sc-actions">
-										{(
-											[
-												[-0.1, 0, "←"],
-												[0, -0.1, "↑"],
-												[0, 0.1, "↓"],
-												[0.1, 0, "→"],
-											] as const
-										).map(([u, v, label]) => (
-											<button
-												type="button"
-												key={label}
-												aria-label={`${__("Move selected", "linker-tools")} ${label}`}
-												onClick={() =>
-													commit({
-														type: "move_arrays",
-														ids: [selected!],
-														delta_uv: [u, v],
-													})
-												}
-											>
-												{label}
-											</button>
-										))}
-										<button
-											type="button"
-											onClick={() =>
-												commit({
-													type: "rotate_arrays",
-													ids: [selected!],
-													delta_deg: 90,
-												})
-											}
-										>
-											{__("Rotate selected", "linker-tools")}
-										</button>
+														role="img"
+														onPointerUp={endDrag}
+														onPointerCancel={() => {
+															drag.current = null;
+														}}
+														onClick={(e) => {
+															if (blocked || tool !== "modules" || !roof)
+																return;
+															const point = planPoint(
+																e.currentTarget,
+																e.clientX,
+																e.clientY,
+															);
+															if (point) placeModules(point);
+														}}
+													>
+														{roof && (
+															<polygon
+																points={roof.boundary_uv
+																	.map((p) => p.join(","))
+																	.join(" ")}
+																className="lp-roof-shape"
+																onClick={() => select(roof.id)}
+															/>
+														)}
+														{geometry.obstacles
+															.filter((o) => o.roof_id === roof?.id)
+															.map((o) => (
+																<polygon
+																	key={o.id}
+																	onPointerDown={(e) =>
+																		startDrag(e, o.id, "obstacle")
+																	}
+																	points={o.footprint_uv
+																		.map((p) => p.join(","))
+																		.join(" ")}
+																	className="lp-obstacle-shape"
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		select(o.id);
+																	}}
+																/>
+															))}
+														{poses
+															.filter(
+																(p) => p.roof_id === roof?.id && p.included,
+															)
+															.map((p) => (
+																<polygon
+																	key={p.id}
+																	onPointerDown={(e) =>
+																		startDrag(e, p.array_id, "array")
+																	}
+																	points={p.footprint_uv
+																		.map((v) => v.join(","))
+																		.join(" ")}
+																	className="lp-panel-shape"
+																	data-selected={
+																		selected === p.array_id || undefined
+																	}
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		select(p.array_id);
+																	}}
+																/>
+															))}
+														{tool === "select" &&
+															roof?.boundary_uv.map(([u, v], index) => (
+																<circle
+																	key={`corner-${index}`}
+																	cx={u}
+																	cy={v}
+																	r={Math.max(width, depth) * 0.012}
+																	className="sc-roof-vertex"
+																	onPointerDown={(e) =>
+																		startDrag(e, roof.id, "vertex", index)
+																	}
+																/>
+															))}
+													</svg>
+												)}
+												{interaction && vertices.length >= 3 && (
+													<button
+														type="button"
+														disabled={
+															interaction.requiresAerial && !canConfirmAerial
+														}
+														onClick={() =>
+															tool === "roof"
+																? addRoof(vertices)
+																: addObstacle(vertices)
+														}
+													>
+														{firstMapRoof && tool === "roof"
+															? __(
+																	"Confirm roof and map origin",
+																	"linker-tools",
+																)
+															: __("Finish outline", "linker-tools")}
+													</button>
+												)}
+												<p className="sc-hint">
+													{map && viewOnly
+														? __(
+																"Use the plan view or a roof image you have permission to use to create the layout.",
+																"linker-tools",
+															)
+														: interaction?.requiresAerial
+															? __(
+																	"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
+																	"linker-tools",
+																)
+															: interaction
+																? __(
+																		"Click each corner on the map, then finish the outline.",
+																		"linker-tools",
+																	)
+																: tool === "roof" && !mapReferenced
+																	? __(
+																			"Enter the roof dimensions or confirm the map origin to draw on the map.",
+																			"linker-tools",
+																		)
+																	: __(
+																			"The plan uses metres in the recorded roof plane.",
+																			"linker-tools",
+																		)}
+												</p>
+											</div>
+											<aside className="sc-roof-props">
+												<label className="sc-field">
+													<span>{__("Selected roof", "linker-tools")}</span>
+													<select
+														value={roof?.id ?? ""}
+														onChange={(e) => select(e.currentTarget.value)}
+													>
+														<option value="">
+															{__("Choose a roof", "linker-tools")}
+														</option>
+														{geometry.roofs.map((r) => (
+															<option key={r.id} value={r.id}>
+																{r.name}
+															</option>
+														))}
+													</select>
+												</label>
+												{field("width", __("Width", "linker-tools"))}
+												{field("depth", __("Depth", "linker-tools"))}
+												{field("pitch", __("Pitch", "linker-tools"), "°")}
+												{field("azimuth", __("Azimuth", "linker-tools"), "°")}
+												{field(
+													"height",
+													__("Relative roof height", "linker-tools"),
+												)}
+												{field(
+													"originU",
+													__("Origin east / U", "linker-tools"),
+												)}
+												{field(
+													"originV",
+													__("Origin north / V", "linker-tools"),
+												)}
+												<label className="sc-field">
+													<span>{__("Drawing source", "linker-tools")}</span>
+													<input
+														value={
+															map && firstMapRoof && tool === "roof"
+																? (readyAerial?.credit ?? "")
+																: fields.source
+														}
+														readOnly={map && firstMapRoof && tool === "roof"}
+														onChange={(e) => {
+															const value = e.currentTarget.value;
+															setFields((previous) => ({
+																...previous,
+																source: value,
+															}));
+														}}
+													/>
+												</label>
+												<label className="sc-check">
+													<input
+														type="checkbox"
+														checked={confirmed}
+														onChange={(e) =>
+															setConfirmed(e.currentTarget.checked)
+														}
+													/>
+													{__(
+														"I confirm these dimensions and permission to use this drawing.",
+														"linker-tools",
+													)}
+												</label>
+												{!(map && firstMapRoof) &&
+													!geometry.coordinate_system.anchor &&
+													site.coordinate_basis === "user_entered" &&
+													site.latitude !== null &&
+													site.longitude !== null && (
+														<button
+															type="button"
+															disabled={!confirmed || !fields.source.trim()}
+															onClick={confirmMapReference}
+														>
+															{__(
+																"Confirm site coordinates as map origin and use true north",
+																"linker-tools",
+															)}
+														</button>
+													)}
+												<button
+													type="button"
+													disabled={!confirmed || !fields.source.trim()}
+													onClick={() => addRoof()}
+												>
+													{__("Add rectangular roof", "linker-tools")}
+												</button>
+												{field(
+													"obstacleHeight",
+													__("Obstacle height above roof", "linker-tools"),
+												)}
+												<button
+													type="button"
+													disabled={!roof}
+													onClick={() => addObstacle()}
+												>
+													{__("Add obstacle", "linker-tools")}
+												</button>
+												{field("rows", __("Rows", "linker-tools"), "")}
+												{field("columns", __("Columns", "linker-tools"), "")}
+												{field("gap", __("Module gap", "linker-tools"))}
+												<button
+													type="button"
+													disabled={!module || !roof}
+													onClick={() => placeModules()}
+												>
+													{__("Place module group", "linker-tools")}
+												</button>
+												<button
+													type="button"
+													disabled={!selected}
+													onClick={removeSelected}
+												>
+													{__("Remove selected", "linker-tools")}
+												</button>
+												{geometry.arrays.some((a) => a.id === selected) && (
+													<div className="sc-actions">
+														{(
+															[
+																[-0.1, 0, "←"],
+																[0, -0.1, "↑"],
+																[0, 0.1, "↓"],
+																[0.1, 0, "→"],
+															] as const
+														).map(([u, v, label]) => (
+															<button
+																type="button"
+																key={label}
+																aria-label={`${__("Move selected", "linker-tools")} ${label}`}
+																onClick={() =>
+																	commit({
+																		type: "move_arrays",
+																		ids: [selected!],
+																		delta_uv: [u, v],
+																	})
+																}
+															>
+																{label}
+															</button>
+														))}
+														<button
+															type="button"
+															onClick={() =>
+																commit({
+																	type: "rotate_arrays",
+																	ids: [selected!],
+																	delta_deg: 90,
+																})
+															}
+														>
+															{__("Rotate selected", "linker-tools")}
+														</button>
+													</div>
+												)}
+											</aside>
+										</fieldset>
+										{error && <p role="alert">{error}</p>}
 									</div>
-								)}
-							</aside>
+								</dialog>
+							)}
 						</div>
 					)}
-					<h3>{__("Solar generation estimate", "linker-tools")}</h3>
+					<p className="sc-solar-total">
+						{mode === "roof"
+							? `${summary.count} ${__("placed modules", "linker-tools")} · ${summary.stc_kwp} kWp`
+							: known?.peak_power_kwp != null
+								? `${known.peak_power_kwp} kWp`
+								: __("Solar capacity not entered", "linker-tools")}
+					</p>
+				</div>
+				<details className="sc-card sc-product-filter">
+					<summary>{__("Solar generation estimate", "linker-tools")}</summary>
 					<p className="sc-muted">
 						{__(
 							"Compare systems uses JRC PVGIS to estimate AC generation from the location, array details and settings below. Energy comparisons use the period covered by both the solar and energy use profiles.",
@@ -1670,14 +1818,7 @@ export function SolarInstallation({
 							/>
 						</label>
 					</div>
-					<p className="sc-solar-total">
-						{mode === "roof"
-							? `${summary.count} ${__("placed modules", "linker-tools")} · ${summary.stc_kwp} kWp`
-							: known?.peak_power_kwp != null
-								? `${known.peak_power_kwp} kWp`
-								: __("Solar capacity not entered", "linker-tools")}
-					</p>
-				</div>
+				</details>
 				{mode === "roof" && geometry.sources.length > 0 && (
 					<details className="sc-card sc-product-filter">
 						<summary>{__("Source properties", "linker-tools")}</summary>
@@ -1757,14 +1898,18 @@ export function SolarInstallation({
 						recoveryChecking={geometryImport.recoveryChecking}
 					/>
 				)}
-				{error && <p role="alert">{error}</p>}
+				{!editorOpen && error && <p role="alert">{error}</p>}
 				{wiring}
-				<footer className="sc-next">
-					<button type="button" onClick={next}>
+				<footer className="sc-footer">
+					<button className="sc-button" type="button" onClick={back}>
+						{__("Back", "linker-tools")}
+					</button>
+					<button className="sc-button sc-primary" type="button" onClick={next}>
 						{__("Continue with energy use", "linker-tools")}
 					</button>
 				</footer>
 			</fieldset>
+			{mode === "known" && calibration}
 		</section>
 	);
 }

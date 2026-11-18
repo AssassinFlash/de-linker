@@ -237,7 +237,7 @@ export function WeatherForm({
 				</p>
 				<p>
 					{__(
-						"Preparation updates the open draft. Save project records the settings before a weather request can start. Selecting a returned weather source is a separate step.",
+						"Preparation updates the open draft. Selecting a returned weather source is a separate step.",
 						"linker-tools",
 					)}
 				</p>

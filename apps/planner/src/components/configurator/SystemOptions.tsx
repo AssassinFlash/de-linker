@@ -677,7 +677,7 @@ export function SystemOptions({
 		<section className="sc-system-options">
 			<header className="sc-section-head">
 				<div>
-					<h2>{__("A system for this project", "linker-tools")}</h2>
+					<h1>{__("A system for this project", "linker-tools")}</h1>
 					<p>
 						{__(
 							"Compare the equipment, then adjust the configuration.",
@@ -724,62 +724,7 @@ export function SystemOptions({
 						{format(backupEnergy)} kWh
 					</p>
 				)}
-			{bounded && baseline && (
-				<section className="sc-card">
-					<h3>{__("Your demand profile", "linker-tools")}</h3>
-					<p className="sc-muted">
-						{__("Profile period (UTC)", "linker-tools")}:{" "}
-						{String(demand.horizon_start_utc)} –{" "}
-						{String(demand.horizon_end_utc)}
-					</p>
-					<dl className="sc-fields">
-						<div>
-							<dt>{__("Electricity use", "linker-tools")}</dt>
-							<dd>
-								{typeof baseline.load_kwh === "number"
-									? `${format(baseline.load_kwh)} kWh`
-									: "—"}
-							</dd>
-						</div>
-						<div>
-							<dt>{__("Direct solar use", "linker-tools")}</dt>
-							<dd>
-								{typeof baseline.direct_pv_use_kwh === "number"
-									? `${format(baseline.direct_pv_use_kwh)} kWh`
-									: "—"}
-							</dd>
-						</div>
-						<div>
-							<dt>{__("Grid import without storage", "linker-tools")}</dt>
-							<dd>
-								{typeof baseline.grid_import_kwh === "number"
-									? `${format(baseline.grid_import_kwh)} kWh`
-									: "—"}
-							</dd>
-						</div>
-						{typeof demand.peak_target_kw === "number" && (
-							<div>
-								<dt>{__("Target grid import limit", "linker-tools")}</dt>
-								<dd>{format(demand.peak_target_kw)} kW</dd>
-							</div>
-						)}
-						<div>
-							<dt>{__("Grid import peak without storage", "linker-tools")}</dt>
-							<dd>
-								{typeof baseline.peak_grid_import_kw === "number"
-									? `${format(baseline.peak_grid_import_kw)} kW`
-									: "—"}
-							</dd>
-						</div>
-					</dl>
-					<p className="sc-muted">
-						{__(
-							"These optimistic bounds assume a full battery at the start and lossless storage. Actual operation depends on the remaining equipment and operating checks.",
-							"linker-tools",
-						)}
-					</p>
-				</section>
-			)}
+
 			{candidates.length > 0 && (
 				<details className="sc-product-filter">
 					<summary>{__("Find a product", "linker-tools")}</summary>
@@ -904,7 +849,9 @@ export function SystemOptions({
 						{bounds(item)}
 						<button
 							type="button"
-							className="sc-button"
+							className={
+								item.id === selectedId ? "sc-button sc-primary" : "sc-button"
+							}
 							aria-pressed={item.id === selectedId}
 							disabled={
 								disabled ||
@@ -1049,7 +996,12 @@ export function SystemOptions({
 			)}
 			{candidate && (
 				<section className="sc-card">
-					<h2>{title(candidate)}</h2>
+					<h2>
+						{candidate.id === selectedId
+							? __("Selected equipment", "linker-tools")
+							: title(candidate)}
+					</h2>
+					{candidate.id === selectedId && <p>{title(candidate)}</p>}
 					{detail.isPending && (
 						<p role="status" className="sc-muted">
 							{__("Loading equipment and evidence…", "linker-tools")}
@@ -1119,6 +1071,62 @@ export function SystemOptions({
 							)}
 						</>
 					)}
+				</section>
+			)}
+			{bounded && baseline && (
+				<section className="sc-card">
+					<h3>{__("Your demand profile", "linker-tools")}</h3>
+					<p className="sc-muted">
+						{__("Profile period (UTC)", "linker-tools")}:{" "}
+						{String(demand.horizon_start_utc)} –{" "}
+						{String(demand.horizon_end_utc)}
+					</p>
+					<dl className="sc-fields">
+						<div>
+							<dt>{__("Electricity use", "linker-tools")}</dt>
+							<dd>
+								{typeof baseline.load_kwh === "number"
+									? `${format(baseline.load_kwh)} kWh`
+									: "—"}
+							</dd>
+						</div>
+						<div>
+							<dt>{__("Direct solar use", "linker-tools")}</dt>
+							<dd>
+								{typeof baseline.direct_pv_use_kwh === "number"
+									? `${format(baseline.direct_pv_use_kwh)} kWh`
+									: "—"}
+							</dd>
+						</div>
+						<div>
+							<dt>{__("Grid import without storage", "linker-tools")}</dt>
+							<dd>
+								{typeof baseline.grid_import_kwh === "number"
+									? `${format(baseline.grid_import_kwh)} kWh`
+									: "—"}
+							</dd>
+						</div>
+						{typeof demand.peak_target_kw === "number" && (
+							<div>
+								<dt>{__("Target grid import limit", "linker-tools")}</dt>
+								<dd>{format(demand.peak_target_kw)} kW</dd>
+							</div>
+						)}
+						<div>
+							<dt>{__("Grid import peak without storage", "linker-tools")}</dt>
+							<dd>
+								{typeof baseline.peak_grid_import_kw === "number"
+									? `${format(baseline.peak_grid_import_kw)} kW`
+									: "—"}
+							</dd>
+						</div>
+					</dl>
+					<p className="sc-muted">
+						{__(
+							"These optimistic bounds assume a full battery at the start and lossless storage. Actual operation depends on the remaining equipment and operating checks.",
+							"linker-tools",
+						)}
+					</p>
 				</section>
 			)}
 			{saved && selected && (

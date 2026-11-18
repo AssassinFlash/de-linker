@@ -171,10 +171,21 @@ test("a real typical profile is imported and selected for the same project", asy
 					effective_max_interval_seconds: 900,
 					reconstructed_means: false,
 				},
-				rows: [],
+				rows: [
+					{
+						interval_index: body.offset,
+						start_utc: body.offset
+							? "2020-01-01T00:15:00Z"
+							: "2020-01-01T00:00:00Z",
+						end_utc: body.offset
+							? "2020-01-01T00:30:00Z"
+							: "2020-01-01T00:15:00Z",
+						interval_mean_kw: body.offset ? 2.5 : 1.25,
+					},
+				],
 				first_gaps: [],
 				gaps_truncated: false,
-				next_offset: null,
+				next_offset: body.offset ? null : 1,
 			};
 		},
 	};
@@ -222,6 +233,19 @@ test("a real typical profile is imported and selected for the same project", asy
 		assert.equal(calls[0].body.annual_kwh, 6000);
 		assert.equal(inputs.profile_selections.selected.gross_load, asset.id);
 		assert.match(dom.element.textContent, /6,000 kWh/);
+		assert.ok(
+			dom.element.querySelector(
+				'svg[aria-label="Load profile · visible intervals"]',
+			),
+		);
+		const page = (text) =>
+			[...dom.element.querySelectorAll("button")].find(
+				(b) => b.textContent === text,
+			);
+		await act(async () => page("Next intervals").click());
+		assert.match(dom.element.querySelector("tbody").textContent, /2.5/);
+		await act(async () => page("Previous").click());
+		assert.match(dom.element.querySelector("tbody").textContent, /1.25/);
 		assert.equal(calls[0].body.year, 2020);
 		assert.equal(
 			inputs.energy_scenario.schedule[0].start_utc,
