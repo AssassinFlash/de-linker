@@ -433,9 +433,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		update_option(
 			IntakeStore::OPTION,
 			array(
-				'entries'        => array(),
-				'campaign_count' => 0,
-				'business'       => $used,
+				'entries'               => array(),
+				'campaign_count'        => 0,
+				'business'              => $used,
+				'business_dispositions' => array(),
 			),
 			false
 		);
