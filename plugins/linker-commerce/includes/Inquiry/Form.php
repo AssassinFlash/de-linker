@@ -72,6 +72,9 @@ final class Form {
 	 */
 	public function value( $atts = array() ): string {
 		$key      = (string) ( $atts['key'] ?? '' );
+		if ( 'draft-hash' === $key ) {
+			return esc_attr( WC()->cart->get_cart_hash() );
+		}
 		$customer = new WC_Customer( get_current_user_id() );
 		$previous = (array) ( $this->flash['fields'] ?? array() );
 		$name     = trim( $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() );
@@ -124,7 +127,6 @@ final class Form {
 		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
 	}
 

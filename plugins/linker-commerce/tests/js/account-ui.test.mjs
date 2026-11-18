@@ -215,6 +215,18 @@ test('a valid edit submits the native update once, then sends the inquiry once a
  win.close();
 });
 
+test('replacing the inquiry cart carries Woo’s current draft identity with the next native inquiry POST', () => {
+ const markup = readFileSync(new URL('../../content/livecanvas/inquiry/form.html', import.meta.url), 'utf8');
+ const {window:win} = new JSDOM(markup.replaceAll('{{draft-hash}}', 'initial'));
+ const form = win.document.querySelector('.linker-inquiry-form');
+ const cart = win.document.querySelector('.woocommerce-cart-form');
+ const refreshed = new JSDOM(markup.replaceAll('{{draft-hash}}', 'saved')).window.document.querySelector('.woocommerce-cart-form');
+ cart.replaceWith(refreshed);
+ assert.deepEqual(new win.FormData(form).getAll('linker_draft_hash'), ['saved']);
+ assert.equal(new win.FormData(refreshed).has('linker_draft_hash'), false);
+ win.close();
+});
+
 test('standalone continuation validates the field and follows the original link after Woo removes the last row', async () => {
  const dom = new JSDOM(`<div id="tv-storefront-cart"><p data-inquiry-draft-pending hidden></p>
   <form class="woocommerce-cart-form"><input class="qty" type="number" min="0" max="5" step="1" name="cart[line][qty]" value="1"><button type="submit" name="update_cart">Update</button></form>
@@ -262,10 +274,12 @@ test('Woo rejection retains the edit and inquiry entries for a retry from Send',
  const replacement = draft.cloneNode(true);
  replacement.classList.remove('processing');
  replacement.querySelector('.qty').value = '1';
+ replacement.querySelector('button').disabled = true; // Woo disables Update on a refreshed form.
  draft.replaceWith(replacement);
  await Promise.resolve();
  assert.equal(inquiries, 0);
  assert.equal(replacement.querySelector('.qty').value, '4');
+ assert.equal(replacement.querySelector('button').disabled, false);
  assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden, false);
  send.click();
  assert.deepEqual(updates, ['4', '4']);
@@ -294,6 +308,28 @@ test('changing a quantity during draft verification cancels the earlier Send int
  await Promise.resolve();
  assert.equal(inquiries, 0);
  assert.equal(replacement.querySelector('.qty').value, '4');
+ win.close();
+});
+
+test('a quantity invalidated during verification can be corrected and sent', async () => {
+ const {win, form, draft, send} = inquiryDraft();
+ const qty = draft.querySelector('.qty');
+ let updates = 0, inquiries = 0;
+ draft.addEventListener('submit', event => { updates++; event.preventDefault(); });
+ form.addEventListener('submit', event => { if (!event.defaultPrevented) inquiries++; event.preventDefault(); });
+ qty.value = '3';
+ send.click();
+ qty.value = '';
+ draft.requestSubmit(draft.querySelector('button'));
+ assert.equal(updates, 1, 'native validity stopped the verified submission');
+ qty.value = '4';
+ send.click();
+ assert.equal(updates, 2, 'correcting the field allows a new attempt');
+ const replacement = draft.cloneNode(true);
+ replacement.querySelector('.qty').defaultValue = '4';
+ draft.replaceWith(replacement);
+ await Promise.resolve();
+ assert.equal(inquiries, 1);
  win.close();
 });
 

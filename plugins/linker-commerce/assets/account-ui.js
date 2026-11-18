@@ -15,6 +15,7 @@
 	const inquiry = document.querySelector( '.linker-inquiry' );
 	const draftSurface = document.querySelector( '.linker-inquiry, #tv-storefront-cart' );
 	const draftForm = () => draftSurface?.querySelector( '.woocommerce-cart-form' );
+	const updateButton = ( form ) => form.querySelector( 'button[name="update_cart"], input[type="submit"][name="update_cart"]' );
 	const quantities = ( form ) => Array.from( form?.querySelectorAll( 'input.qty' ) || [] );
 	const send = inquiry?.querySelector( '.linker-inquiry-form button[type="submit"]' );
 	const notice = draftSurface?.querySelector( '[data-inquiry-draft-pending]' );
@@ -56,8 +57,9 @@
 		} else {
 			if ( notice ) notice.hidden = false;
 			for ( const input of rows ) {
-				if ( values.has( input.name ) ) {
+				if ( values.has( input.name ) && input.value !== values.get( input.name ) ) {
 					input.value = values.get( input.name );
+					updateButton( form ).disabled = false;
 				}
 			}
 		}
@@ -87,7 +89,7 @@
 		continuation = { form, resume };
 		if ( notice ) notice.hidden = true;
 		// Woo records the clicked update button before routing a verified submit to AJAX.
-		const update = form.querySelector( 'button[name="update_cart"], input[type="submit"][name="update_cart"]' );
+		const update = updateButton( form );
 		update.disabled = false;
 		update.click();
 		syncDraftState();
@@ -106,6 +108,8 @@
 				continuation = null;
 			}
 		};
+		// Constraint validation can cancel the verified cart submit before Woo starts AJAX.
+		draftSurface.addEventListener( 'invalid', cancelVerification, true );
 		draftSurface.addEventListener( 'linker:draft-verification-cancelled', cancelVerification, true );
 		draftSurface.addEventListener( 'linker:protection', ( event ) => {
 			if ( [ 'failed', 'expired' ].includes( event.detail.state ) ) {
