@@ -16,7 +16,13 @@ def render(payload: dict[str, Any]) -> str:
     """Keep the hardened content writer unchanged, inside the baseline wrapper."""
     encoded = base64.b64encode(json.dumps(payload).encode()).decode()
     writer_payload = base64.b64encode(
-        json.dumps({"operation": "save", "changes": payload["changes"]}).encode()
+        json.dumps(
+            {
+                "operation": "save",
+                "changes": payload["changes"],
+                "post_type": payload.get("post_type", "page"),
+            }
+        ).encode()
     ).decode()
     writer = (
         (HERE / "repair-legal-script.php")
@@ -58,6 +64,9 @@ def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
     raise RuntimeError("WordPress returned no structured paired readback")
 
 
-def read(prefix: str, en: int, de: int) -> dict[str, Any]:
+def read(prefix: str, en: int, de: int, *, post_type: str = "page") -> dict[str, Any]:
     """Read the explicit language pair and four native translation keys."""
-    return invoke(prefix, {"mode": "read", "changes": [{"id": en}, {"id": de}]})
+    return invoke(
+        prefix,
+        {"mode": "read", "post_type": post_type, "changes": [{"id": en}, {"id": de}]},
+    )

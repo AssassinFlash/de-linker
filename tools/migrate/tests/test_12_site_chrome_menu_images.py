@@ -44,6 +44,34 @@ LAZY_CLASSES = (
 DESKTOP_IMAGES = 7
 RAIL_IMAGES = 5
 
+# (Original, previously published, current) descriptions, desktop then mobile.
+ROOF_COPY = {
+    "header-en": (
+        (
+            "Organise the goal, site and existing equipment into a project direction you can keep refining.",
+            "Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout.",
+            "Bring your goal, site and existing equipment into a complete solution with a bill of materials. You can add a roof layout if needed.",
+        ),
+        (
+            "Organise the project direction and keep refining it.",
+            "Configure a complete solution with a bill of materials. The Roof detail step adds the layout.",
+            "Configure a complete solution with a bill of materials. You can add a roof layout if needed.",
+        ),
+    ),
+    "header-de": (
+        (
+            "Organisieren Sie Ziel, Standort und vorhandene Ausrüstung in eine Projektrichtung, die Sie weiter verfeinern können.",
+            "Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf.",
+            "Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Bei Bedarf können Sie die Dachfläche einzeichnen.",
+        ),
+        (
+            "Organisieren Sie die Projektrichtung und verfeinern Sie sie weiter.",
+            "Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf.",
+            "Konfigurieren Sie eine vollständige Lösung mit Stückliste. Bei Bedarf können Sie die Dachfläche einzeichnen.",
+        ),
+    ),
+}
+
 
 def load_script() -> ModuleType:
     """12-site-chrome.py is a script, not an importable module name."""
@@ -100,6 +128,38 @@ def test_a_header_step_leaves_the_shipped_partial_byte_identical(step_key: str) 
 
 
 @pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("version", [0, 1], ids=["original", "previously-published"])
+def test_header_roof_copy_reaches_the_shipped_partial(
+    step_key: str, version: int
+) -> None:
+    final = HEADER_PARTIALS[step_key].read_text()
+    source = final
+    for descriptions in ROOF_COPY[step_key]:
+        assert source.count(descriptions[2]) == 1
+        source = source.replace(descriptions[2], descriptions[version], 1)
+
+    assert header_step(step_key).planned(source) == final
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("invalid", ["unknown", "duplicated", "mixed"])
+def test_header_rejects_unrecognized_or_ambiguous_roof_copy(
+    step_key: str, invalid: str
+) -> None:
+    final = HEADER_PARTIALS[step_key].read_text()
+    original, previous, current = ROOF_COPY[step_key][0]
+    span = '<span class="tv-tool-desc">{}</span>'
+    malformed = {
+        "unknown": span.format("Unknown planner description."),
+        "duplicated": span.format(current) * 2,
+        "mixed": span.format(original) + span.format(previous),
+    }[invalid]
+
+    with pytest.raises(SystemExit, match=step_key):
+        header_step(step_key).planned(final.replace(span.format(current), malformed, 1))
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
 def test_a_re_run_writes_no_data_src_onto_the_menu_images(step_key: str) -> None:
     """The regression this pins: `present` writes the repo partial, the
     migration runs again over the instance's copy — and the copy must keep
@@ -114,6 +174,88 @@ def test_a_re_run_writes_no_data_src_onto_the_menu_images(step_key: str) -> None
     assert "data-src" not in once and "data-src" not in twice
     assert chrome.unresolved_menu_images(once) == []
     assert chrome.unresolved_menu_images(twice) == []
+
+
+def verify_header(
+    monkeypatch: pytest.MonkeyPatch, step_key: str, body: str, legacy: str = ""
+) -> int:
+    ids = fake_ids()
+    ids["header"] = {"en": 17, "de": 6909}
+    header = next(step for step in chrome.steps(ids) if step.key == step_key)
+    monkeypatch.setattr(chrome, "resolve", lambda wp: ids)
+    monkeypatch.setattr(chrome, "steps", lambda ids: [header])
+    monkeypatch.setattr(chrome, "read_post", lambda wp, post_id: {"post_content": body})
+    monkeypatch.setattr(chrome, "seo_meta", lambda wp: {})
+
+    class FixtureWP:
+        slugs = iter(
+            ["solution-configurator", "loesungskonfigurator", "genie", "genie"]
+        )
+
+        def run(self, *args: str) -> str:
+            return next(self.slugs)
+
+        def json(self, *args: str) -> list[str]:
+            return []
+
+        def eval_php(self, source: str, ids: list[int]) -> dict[str, dict[str, str]]:
+            return (
+                {"17": {"content": legacy}} if source == chrome.LEGACY_META_PHP else {}
+            )
+
+    return int(chrome.do_verify(FixtureWP()))
+
+
+def test_verify_rejects_a_stale_german_header_mirror_after_the_page_is_current(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    german = HEADER_PARTIALS["header-de"].read_text()
+    stale = german
+    for _, previous, current in ROOF_COPY["header-de"]:
+        stale = stale.replace(current, previous, 1)
+    ids = fake_ids()
+    ids["header"] = {"en": 17, "de": 6909}
+    header = next(step for step in chrome.steps(ids) if step.key == "header-de")
+
+    assert verify_header(monkeypatch, "header-de", german, stale) == 1
+    assert "_linker_de_content" in capsys.readouterr().out
+    assert chrome.legacy_meta_updates(
+        [header], {6909: german}, {"17": {"content": stale}}
+    ) == [(17, {"_linker_de_content": german})]
+    assert verify_header(monkeypatch, "header-de", german, german) == 0
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("slot", ["desktop", "mobile"])
+@pytest.mark.parametrize("extra_version", ["previous", "current"])
+def test_verify_rejects_two_roof_descriptions_in_one_slot(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    step_key: str,
+    slot: str,
+    extra_version: str,
+) -> None:
+    body = HEADER_PARTIALS[step_key].read_text()
+    index, css = (
+        (0, "tv-tool-desc") if slot == "desktop" else (1, "tv-mobile-link-desc")
+    )
+    _, previous, current = ROOF_COPY[step_key][index]
+    final_span = f'<span class="{css}">{current}</span>'
+    extra = previous if extra_version == "previous" else current
+    assert body.count(final_span) == 1
+    contested = body.replace(
+        final_span, f'<span class="{css}">{extra}</span>{final_span}', 1
+    )
+    assert chrome.stale_tokens(contested) == []
+    assert verify_header(monkeypatch, step_key, body) == 0
+    capsys.readouterr()
+
+    result = verify_header(monkeypatch, step_key, contested)
+    output = capsys.readouterr().out
+    assert result == 1, output
+    assert f"FAIL {step_key}:" in output
+    assert css in output
+    assert "verify: FAILED" in output
 
 
 def test_the_menu_image_deferral_switch_is_gone() -> None:

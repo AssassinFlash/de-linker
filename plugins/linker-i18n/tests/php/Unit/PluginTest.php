@@ -125,6 +125,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'woocommerce_product_get_name', Storefront::class, 'name', 10, 2 ),
 		array( 'filter', 'woocommerce_add_to_cart_item_name_in_quotes', Storefront::class, 'quoted_item_name', 10, 2 ),
 		array( 'filter', 'woocommerce_cart_item_permalink', Storefront::class, 'cart_item_permalink', 10, 2 ),
+		array( 'filter', 'woocommerce_cart_item_thumbnail', Storefront::class, 'cart_item_thumbnail', 10, 1 ),
 		array( 'filter', 'rest_request_after_callbacks', Storefront::class, 'store_product_links', 9, 3 ),
 		array( 'filter', 'woocommerce_product_get_sku', Storefront::class, 'sku', 10, 2 ),
 		array( 'filter', 'woocommerce_get_shop_page_id', Storefront::class, 'page_id', 10, 1 ),

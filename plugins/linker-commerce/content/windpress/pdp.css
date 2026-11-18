@@ -1568,9 +1568,9 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 	}
 
 	#tv-storefront-pdp .pdp-crumbs {
-		min-height: 44px;
-		margin: 0 0 12px;
-		padding-block: 0;
+		min-height: var(--proto-control-height);
+		margin-block: 0 var(--proto-space-3);
+		padding-block: var(--proto-space-3) 0;
 	}
 
 	#tv-storefront-pdp .pdp-crumbs > span {

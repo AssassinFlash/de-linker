@@ -312,7 +312,11 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 		font-size: clamp(1.5rem, 7vw, 1.75rem);
 	}
 
-	html[lang^="de"] #tv-cs-page-v1 #included .lk-comp-callout-panel h4 {
+	#tv-cs-page-v1 #included .lk-compliance-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	html[lang^="de"] #tv-cs-page-v1 #included .lk-comp-callout-panel :is(h3, h4) {
 		-webkit-hyphens: manual;
 		hyphens: manual;
 		font-size: clamp(1.25rem, 5.5vw, 1.375rem);
