@@ -7312,6 +7312,8 @@ def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() 
         ("self_consumption_with_reserve_v1", False, None),
         ("peak_shaving_with_reserve_v1", False, None),
         ("self_consumption_with_reserve_v1", False, "wired_single"),
+        ("self_consumption_with_reserve_v1", False, "wired_dc_plant"),
+        ("self_consumption_with_reserve_v1", False, "wired_dc_plant_legacy"),
         ("self_consumption_with_reserve_v1", False, "plant_ac"),
         ("self_consumption_with_reserve_v1", False, "plant_shared_dc"),
         ("self_consumption_with_reserve_v1", False, "plant_shared_dc_ac_branch"),
@@ -7337,6 +7339,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
 
     from linker_engine.planning.csv_mapping import CsvMapping
     from linker_engine.planning.pvgis_reference_kernel import PvgisRoofReferenceKernel
+    from linker_engine.planning.worker import Control
 
     from .test_private_http import Rig, standard_profile_command
     from .test_pv_generation import geometry
@@ -7348,7 +7351,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
     if ac_branch:
         topology = "plant_shared_dc"
     dc = topology in ("shared_dc", "plant_shared_dc")
-    wired = topology in ("wired_single", "plant_ac")
+    legacy_dc = topology == "wired_dc_plant_legacy"
+    wired_dc = topology == "wired_dc_plant" or legacy_dc
+    wired = topology in ("wired_single", "plant_ac") or wired_dc
     peak = controller.startswith("peak")
     inverter = next(row for row in feed["products"] if row["id"] == 4107)
     for direction in ("charge", "discharge"):
@@ -7387,6 +7392,18 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         ),
         max_attempts=1,
     )
+    if legacy_dc:
+        # Reproduce the earlier result format before the real worker freezes it.
+        compute = search.kernel.compute
+
+        def legacy_result(
+            inputs: Object, basis: Object, control: Control, *, pinned: Object
+        ) -> Object:
+            result = compute(inputs, basis, control, pinned=pinned)
+            result.pop("pv_capacity_basis", None)
+            return result
+
+        monkeypatch.setattr(search.kernel, "compute", legacy_result)
     reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
     equipment = EquipmentService(
         workspace, EquipmentKernel(workspace, source), max_attempts=1
@@ -7521,7 +7538,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             "input_contract": "backup_demand_v1",
             "key": "compare-profile-bounds",
         }
-        if topology in ("plant_ac", "plant_shared_dc", "undeclared_plant"):
+        if wired_dc or topology in ("plant_ac", "plant_shared_dc", "undeclared_plant"):
             setup = {**declarations.pop("equipment_setup"), "pv_dc_kw": 0}
             declarations["equipment_plant_setup"] = {
                 "schema_version": 1,
@@ -7549,7 +7566,13 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 "parallel_groups": [],
             }
             if topology != "undeclared_plant":
-                declarations["energy_plant_setup"] = {"coupling": topology}
+                declarations["energy_plant_setup"] = {
+                    "coupling": "plant_shared_dc" if wired_dc else topology
+                }
+            if wired_dc:
+                declarations["equipment_plant_setup"]["requirements"]["pv_dc_kw"] = 5.52
+                for unit in declarations["equipment_plant_setup"]["units"]:
+                    unit["inputs"]["equipment_setup"]["pv_dc_kw"] = 2.76
             if topology in ("plant_ac", "undeclared_plant"):
                 # Switching to a plant retains the earlier single-system declarations.
                 declarations["energy_scenario"]["coupling"] = "shared_dc"
@@ -7815,8 +7838,11 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 for page in PdfReader(io.BytesIO(pdf)).pages
             )
             assert "PV wiring plan" in text
-            upper = 4 if "plant" in candidate else 3
-            assert f"Additional solar use, upper bound {upper} kWh" in text
+            if wired_dc:
+                assert "Additional solar use, upper bound" not in text
+            else:
+                upper = 4 if "plant" in candidate else 3
+                assert f"Additional solar use, upper bound {upper} kWh" in text
             frozen = json_object(
                 workspace.blobs.object(
                     report["manifest"]["context"]["assets"]["report.source"]
@@ -7891,6 +7917,51 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 },
                 headers=headers(owner),
             )
+            if wired_dc and not legacy_dc:
+                assert stale.status_code == 200, stale.text
+                assert worker.run_once()
+                updated = rig.post("/runs/read", {"run_id": stale.json()["id"]})
+                assert updated["state"] == "succeeded", updated["error"]
+                frozen = json_object(
+                    workspace.blobs.object(
+                        updated["manifest"]["context"]["assets"]["report.source"]
+                    )
+                )
+                assert frozen["candidate"] == choice
+                assert [entry["run_id"] for entry in frozen["source_runs"]] == [
+                    run["id"],
+                    rechecked["run"]["id"],
+                ]
+                # Even with current wiring, changing compared hardware requires a new choice.
+                setup = values["equipment_plant_setup"]
+                plant = values["equipment_plant"]
+                for field, declaration, selection in (
+                    ("plant", setup["requirements"], plant["requirements"]),
+                    (
+                        "east",
+                        setup["units"][0]["inputs"]["equipment_setup"],
+                        plant["units"][0]["selection"],
+                    ),
+                ):
+                    original = declaration["pv_dc_kw"]
+                    declaration["pv_dc_kw"] = selection["pv_dc_kw"] = 4
+                    altered = client.post(
+                        "/runs/check-equipment",
+                        json={
+                            **command_base,
+                            "schema_version": 1,
+                            "expected_revision": rechecked["project"]["revision"],
+                            "inputs": values,
+                            "key": f"old-choice-different-{field}-capacity",
+                        },
+                        headers=headers(owner),
+                    )
+                    assert altered.status_code == 422, altered.text
+                    assert altered.json()["error"]["code"] == "invalid_input", (
+                        altered.text
+                    )
+                    declaration["pv_dc_kw"] = selection["pv_dc_kw"] = original
+                return
             assert stale.status_code == 422, stale.text
             assert stale.json()["error"]["code"] == "report_inputs_changed"
 
@@ -7923,6 +7994,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             assert result["demand"]["baseline"]["load_kwh"] == (16 if peak else 8)
             candidates = result["candidates"]
             assert candidates
+            if wired_dc:
+                verify_wired_report(candidates[0])
+                return
             if topology == "plant_ac":
                 candidate = next(
                     item

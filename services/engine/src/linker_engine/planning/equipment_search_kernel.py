@@ -5,7 +5,7 @@ from __future__ import annotations
 from .asset_publication import AssetResult
 from .assets import Asset
 from .canonical import Json, Object
-from .comparison_pv import ComparisonPv, comparison_horizon
+from .comparison_pv import ComparisonPv, comparison_horizon, shared_dc
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_demand import pin_demand_profiles, replay_demand
 from .equipment_kernel import EquipmentKernel
@@ -286,7 +286,10 @@ class EquipmentSearchKernel(EquipmentKernel):
                 ),
                 tolerance=self.tolerance,
             )
-        return {"search": result}
+        output: Object = {"search": result}
+        if shared_dc(inputs):
+            output["pv_capacity_basis"] = "declared_hardware"
+        return output
 
 
 def baseline_requested(inputs: Object) -> bool:

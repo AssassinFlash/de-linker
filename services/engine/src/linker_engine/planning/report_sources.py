@@ -484,7 +484,8 @@ def report_sources(
                 )
             context = cast(Object, run.manifest["context"])
             if (
-                "resolved_inputs" in _pinned_assets(run)
+                run.result.get("pv_capacity_basis") != "declared_hardware"
+                and "resolved_inputs" in _pinned_assets(run)
                 and "pvgis_execution_keys" in cast(Object, context["parameters"])
                 and isinstance(previous_brief, dict)
                 and previous_brief.get("system_scope") in ("new_pv_storage", "pv_only")
