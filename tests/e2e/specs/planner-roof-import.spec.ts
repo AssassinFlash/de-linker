@@ -170,11 +170,19 @@ test.describe('native roof import', () => {
 					'Imported 3-4-5 roof'
 				);
 				expect(inputs.geometry.roofs[0].holes_uv).toHaveLength(1);
-				await expect(
-					page
-						.getByText('Imported 3-4-5 roof', { exact: true })
-						.first()
-				).toBeAttached();
+				await page
+					.getByText(plannerWords[lang].roof, { exact: true })
+					.click();
+				const preview = page.getByRole('img', {
+					name: 'Imported 3-4-5 roof',
+					exact: true,
+				});
+				await expect(preview).toBeVisible();
+				expect(
+					(
+						await preview.locator('path').first().getAttribute('d')
+					)?.match(/M/g)
+				).toHaveLength(2);
 				await deleteOpenProject(page, lang, title);
 			});
 		}
