@@ -186,13 +186,18 @@ for (const target of ["compare", "retry", "profile"])
 				throw new Error("unexpected command " + path);
 			},
 		};
+		let pending = null;
 		const store = {
-			async writeCreation(_scope, _body, destination) {
+			async writeCreation(_scope, body, destination) {
+				const { title, key } = JSON.parse(body);
+				pending = { title, key, body, destination, createdAt: 1 };
 				destinations.push(destination);
 			},
-			async clearCreation() {},
+			async clearCreation() {
+				pending = null;
+			},
 			async readCreations() {
-				return [];
+				return pending ? [pending] : [];
 			},
 			async read() {
 				return null;
@@ -219,24 +224,26 @@ for (const target of ["compare", "retry", "profile"])
 				else delete globalThis[name];
 			}
 		});
-		await act(async () =>
-			root.render(
-				React.createElement(
-					React.StrictMode,
-					null,
-					React.createElement(SessionBoundary, { client }, (value, recheck) =>
-						React.createElement(Workspace, {
-							key: value.query_scope,
-							session: value,
-							client,
-							store,
-							config,
-							recheck,
-						}),
+		const mount = () =>
+			act(async () =>
+				root.render(
+					React.createElement(
+						React.StrictMode,
+						null,
+						React.createElement(SessionBoundary, { client }, (value, recheck) =>
+							React.createElement(Workspace, {
+								key: value.query_scope,
+								session: value,
+								client,
+								store,
+								config,
+								recheck,
+							}),
+						),
 					),
 				),
-			),
-		);
+			);
+		await mount();
 		const start = () => document.querySelector("form");
 		await until(() => document.querySelector('select[name="system_scope"]'));
 		const reviewStep = () =>
@@ -357,6 +364,14 @@ for (const target of ["compare", "retry", "profile"])
 		if (target === "retry") {
 			await until(() => button("Retry project creation"));
 			assert.equal(searches.length, 0);
+			await act(async () => root.render(null));
+			await mount();
+			await until(() => button("Retry project creation")?.matches(":enabled"));
+			assert.equal(
+				creates.length,
+				1,
+				"a new visit discovers but does not resubmit the command",
+			);
 			await act(async () => button("Retry project creation").click());
 		}
 		await until(() => location.hash === "#sc-system");
