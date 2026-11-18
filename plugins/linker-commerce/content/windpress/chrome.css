@@ -48,6 +48,10 @@ body.admin-bar header#lc-header{top:var(--lk-toolbar-offset)}
 #tv-header-v2 .tv-nav-frame{display:flex;flex-direction:row;gap:clamp(.5rem,1vw,1rem);align-items:center;justify-content:space-between;width:100%;min-height:64px;padding:8px 16px;background:transparent;border:none;border-radius:0;box-shadow:none}
 #tv-header-v2 .lc-block{background:transparent!important}
 #tv-header-v2 .tv-desktop-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
+#tv-header-v2 .tv-home-resources{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 20px;border-top:1px solid var(--proto-neutral-200)}
+#tv-header-v2 .tv-home-resources a{display:inline-flex;align-items:center;min-height:44px;color:var(--proto-teal-700);font-size:13px;font-weight:600;text-decoration:none}
+#tv-header-v2 .tv-home-resources a:is(:hover,:focus-visible){text-decoration:underline;text-underline-offset:3px}
+@media(max-width:760px){#tv-header-v2 .tv-home-resources{justify-content:space-between;gap:0 10px}}
 @media (max-width:1279px){
 #tv-header-v2 .lnk-lang-toggle--desktop{display:none!important}
 #tv-header-v2 .tv-desktop-actions .tv-header-cart-link,
