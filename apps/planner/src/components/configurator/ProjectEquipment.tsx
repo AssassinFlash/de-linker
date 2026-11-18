@@ -367,6 +367,28 @@ export function ProjectEquipment({
 			factoryEquipment(equipmentDraft(amended), productData!.assemblies),
 		);
 	}
+	const capacityField = (
+		label: string,
+		setup: JsonObject,
+		change: (kw: number | null) => void,
+	) =>
+		scopeOfWork !== "storage_only" && (
+			<label className="sc-field">
+				<span>{label} (kWp)</span>
+				<input
+					type="number"
+					min="0"
+					step="any"
+					disabled={disabled || !productData}
+					value={String(setup.pv_dc_kw ?? "")}
+					onChange={(event) => {
+						const input = event.currentTarget;
+						if (input.validity.valid)
+							change(input.value === "" ? null : input.valueAsNumber);
+					}}
+				/>
+			</label>
+		);
 	const declarations = (
 		source: JsonObject,
 		change: (patch: JsonObject) => void,
@@ -542,6 +564,18 @@ export function ProjectEquipment({
 				) : null}
 				{plant ? (
 					<>
+						{capacityField(
+							__("Total PV nameplate rating", "linker-tools"),
+							plant.requirements,
+							(pv_dc_kw) =>
+								update((current) => {
+									const draft = readPlantDraft(current);
+									return plantInputs(current, {
+										...draft,
+										requirements: { ...draft.requirements, pv_dc_kw },
+									});
+								}),
+						)}
 						{plant.units.map((unit, index) => (
 							<fieldset
 								key={unit.id}
@@ -561,29 +595,10 @@ export function ProjectEquipment({
 										}
 									/>
 								</label>
-								{scopeOfWork !== "storage_only" && (
-									<label className="sc-field">
-										<span>
-											{__("Allocated PV nameplate rating", "linker-tools")}{" "}
-											(kWp)
-										</span>
-										<input
-											type="number"
-											min="0"
-											step="any"
-											disabled={!productData}
-											value={String(equipmentDraft(unit.inputs).pv_dc_kw ?? "")}
-											onChange={(event) => {
-												const kw = event.currentTarget.valueAsNumber;
-												if (event.currentTarget.validity.valid)
-													updateUnit(unit.id, {
-														hardware: {
-															pv_dc_kw: Number.isFinite(kw) ? kw : null,
-														},
-													});
-											}}
-										/>
-									</label>
+								{capacityField(
+									__("Allocated PV nameplate rating", "linker-tools"),
+									equipmentDraft(unit.inputs),
+									(pv_dc_kw) => updateUnit(unit.id, { hardware: { pv_dc_kw } }),
 								)}
 								{declarations(unit.inputs, (hardware) =>
 									updateUnit(unit.id, { hardware }),

@@ -110,7 +110,10 @@ async function mount(t, initial) {
 }
 
 test("existing equipment is declared through the current product data and carried into named systems", async (t) => {
-	const current = await mount(t, {});
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const current = await mount(t, {
+		equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 4 },
+	});
 	await until(() =>
 		field("Inverter or integrated storage system")?.querySelector(
 			'option[value="101"]',
@@ -158,6 +161,10 @@ test("existing equipment is declared through the current product data and carrie
 		),
 		[13.8, 9.2],
 	);
+	const total = field("Total PV nameplate rating (kWp)");
+	assert.equal(total?.value, "4");
+	await enter(total, "23");
+	assert.equal(current().equipment_plant_setup.requirements.pv_dc_kw, 23);
 	await enter(field("System name", units[1]), "Annex");
 	assert.equal(current().equipment_plant_setup.units[1].name, "Annex");
 	await act(async () => button("Remove system", units[1]).click());
