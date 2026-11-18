@@ -166,6 +166,7 @@ export function ProjectDetails({
 			if (system_scope === "storage_only") {
 				delete amended.pv_string_plan;
 				delete amended.pv_plant_string_plan;
+				delete amended.shared_dc_energy_run_id;
 			}
 			const goal = energyGoal(amended);
 			if (system_scope === "pv_only") {

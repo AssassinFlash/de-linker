@@ -205,18 +205,21 @@ test("changing to storage requires confirmation before removing active PV wiring
 	const current = await mount(t, {
 		brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
 		pv_string_plan: plan,
+		shared_dc_energy_run_id: "b".repeat(32),
 	});
 	await choose("Planned system", "storage_only");
 	assert.equal(current().brief.system_scope, "new_pv_storage");
 	assert.deepEqual(current().pv_string_plan, plan);
 	await act(async () => button("Keep current system").click());
 	assert.deepEqual(current().pv_string_plan, plan);
+	assert.equal(current().shared_dc_energy_run_id, "b".repeat(32));
 	await choose("Planned system", "storage_only");
 	await act(async () =>
 		button("Switch to storage and remove PV wiring").click(),
 	);
 	assert.equal(current().brief.system_scope, "storage_only");
 	assert.equal(current().pv_string_plan, undefined);
+	assert.equal(current().shared_dc_energy_run_id, undefined);
 });
 
 test("a product from an entry link is visible and can be replaced or cleared", async (t) => {
