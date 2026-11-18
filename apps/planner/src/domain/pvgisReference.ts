@@ -134,6 +134,16 @@ export function referenceDraft(inputs: JsonObject): PvgisReferenceDraft {
 		? emptyPvgisReference()
 		: readPvgisReference(value);
 }
+export function knownReferenceArrays(
+	inputs: JsonObject,
+): readonly KnownPvArray[] | undefined {
+	const active = referenceDraft(inputs);
+	if (active.model === KNOWN_PV_MODEL) return active.arrays;
+	const arrays = inputs.inactive_known_pv_arrays;
+	if (arrays === undefined) return undefined;
+	return readPvgisReference({ ...active, model: KNOWN_PV_MODEL, arrays })
+		.arrays;
+}
 export function compilePvgisReference(value: PvgisReferenceDraft): JsonObject {
 	if (
 		!(value.model === KNOWN_PV_MODEL
@@ -198,6 +208,13 @@ export function referenceInputs(
 		...invalidateEnergyReplay(inputs),
 		pvgis_reference_setup: value,
 	};
+	if (value.model === KNOWN_PV_MODEL) {
+		delete next.inactive_known_pv_arrays;
+	} else {
+		const previous = referenceDraft(inputs);
+		if (previous.model === KNOWN_PV_MODEL && previous.arrays)
+			next.inactive_known_pv_arrays = previous.arrays;
+	}
 	try {
 		next.pvgis_reference = compilePvgisReference(value);
 	} catch {

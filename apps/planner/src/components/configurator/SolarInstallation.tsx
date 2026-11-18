@@ -31,6 +31,7 @@ import {
 	referenceDraft,
 	referenceInputs,
 	KNOWN_PV_MODEL,
+	knownReferenceArrays,
 	REFERENCE_DATABASES,
 	REFERENCE_TECHNOLOGIES,
 	type PvgisReferenceDraft,
@@ -235,7 +236,8 @@ export function SolarInstallation({
 		if (blocked) return;
 		edit((current) => {
 			if (method === "roof") return roofReferenceInputs(current, patch);
-			const { arrays, ...settings } = referenceDraft(current);
+			const { arrays: _active, ...settings } = referenceDraft(current);
+			const arrays = knownReferenceArrays(current);
 			return referenceInputs(current, {
 				...settings,
 				...patch,

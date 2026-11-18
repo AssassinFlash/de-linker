@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import type { PlanningRun } from "../../data/planningProtocol.ts";
+import type { PlanningRun, RunSummary } from "../../data/planningProtocol.ts";
 import {
 	REPORT_TASK,
 	reportFromRun,
 	reportLanguageDiffers,
+	type PlanningReport,
 	type ReportSection,
 } from "../../data/planningReport.ts";
 import {
@@ -15,7 +16,7 @@ import {
 } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
@@ -85,45 +86,42 @@ function ReportContent({ section }: { section: ReportSection }) {
 	);
 }
 
-export function ReviewProposal({
-	project,
+function ReportPreview({ report }: { report: PlanningReport }) {
+	return (
+		<details>
+			<summary>{__("Preview report", "linker-tools")}</summary>
+			<div lang={report.locale}>
+				{report.sections.map((section) => (
+					<section key={section.id}>
+						<h3>{section.title}</h3>
+						<ReportContent section={section} />
+					</section>
+				))}
+			</div>
+		</details>
+	);
+}
+
+function ReportDownloads({
 	run,
+	report,
 	client,
-	session,
-	operations,
-	locale,
-	blocked,
-	current,
-	generate,
+	scope,
 	recheck,
+	children,
 }: {
-	project: Project;
-	inputs: JsonObject;
-	run: PlanningRun | null;
+	run: PlanningRun;
+	report: PlanningReport;
 	client: PlannerClient;
-	session: Session;
-	operations: ReturnType<typeof usePlanningOperations>;
-	locale: string;
-	blocked: boolean;
-	current: boolean;
-	generate: (logo: string | null) => void;
+	scope: string;
 	recheck: () => void;
+	children?: ReactNode;
 }) {
-	const scope = session.query_scope;
-	const report = run?.result ? reportFromRun(run) : null;
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
-	const [logo, setLogo] = useState<string | null>(null),
-		[logoError, setLogoError] = useState(false),
-		[reading, setReading] = useState(false);
-	const reader = useRef<FileReader | null>(null);
-	useEffect(
-		() => () => {
-			reader.current?.abort();
-			reader.current = null;
-		},
-		[],
-	);
+	const attachments = run.result?.prepared_attachments
+		? readObject(run.result.prepared_attachments)
+		: null;
 	const lifetime = useRef(0),
 		flight = useRef<AbortController | null>(null),
 		objectUrl = useRef<string | null>(null);
@@ -138,19 +136,10 @@ export function ReviewProposal({
 			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
 			objectUrl.current = null;
 		};
-	}, [run?.id, scope]);
+	}, [run.id, scope]);
 	async function download(format: "pdf" | "materials" | "rules" | "series") {
-		if (
-			!run?.result ||
-			!report ||
-			busy ||
-			flight.current ||
-			!client.isCurrentScope(scope)
-		)
+		if (!run.result || busy || flight.current || !client.isCurrentScope(scope))
 			return;
-		const attachments = run.result.prepared_attachments
-			? readObject(run.result.prepared_attachments)
-			: null;
 		const raw =
 			format === "pdf"
 				? run.result.prepared_asset
@@ -213,6 +202,113 @@ export function ReviewProposal({
 			if (instance === lifetime.current) setBusy(false);
 		}
 	}
+	return (
+		<>
+			<div className="sc-actions">
+				<button
+					type="button"
+					className="sc-button"
+					disabled={busy || !client.isCurrentScope(scope)}
+					onClick={() => void download("pdf")}
+				>
+					{__("Download PDF", "linker-tools")}
+				</button>
+				{Boolean(attachments?.bill_of_materials_csv) && (
+					<button
+						type="button"
+						className="sc-button"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("materials")}
+					>
+						{__("Download bill of materials (CSV)", "linker-tools")}
+					</button>
+				)}
+				{Boolean(attachments?.country_rule_review_csv) && (
+					<button
+						type="button"
+						className="sc-button"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("rules")}
+					>
+						{__("Download country rule review (CSV)", "linker-tools")}
+					</button>
+				)}
+				{Boolean(attachments?.pv_series_csv) && (
+					<button
+						type="button"
+						className="sc-button"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("series")}
+					>
+						{__("Download PV string intervals (CSV)", "linker-tools")}
+					</button>
+				)}
+				{children}
+			</div>
+			{error && (
+				<p role="alert">
+					{__("The file could not be downloaded. Try again.", "linker-tools")}
+				</p>
+			)}
+		</>
+	);
+}
+
+interface ReportHistory {
+	items: readonly RunSummary[];
+	selected: string | null;
+	select: (id: string) => void;
+	run: PlanningRun | null;
+	reading: boolean;
+	readFailed: boolean;
+	retryRead: () => void;
+	hasMore: boolean;
+	loading: boolean;
+	loadFailed: boolean;
+	loadMore: () => void;
+}
+
+export function ReviewProposal({
+	project,
+	run,
+	history,
+	client,
+	session,
+	operations,
+	locale,
+	blocked,
+	current,
+	generate,
+	recheck,
+}: {
+	project: Project;
+	inputs: JsonObject;
+	run: PlanningRun | null;
+	history?: ReportHistory;
+	client: PlannerClient;
+	session: Session;
+	operations: ReturnType<typeof usePlanningOperations>;
+	locale: string;
+	blocked: boolean;
+	current: boolean;
+	generate: (logo: string | null) => void;
+	recheck: () => void;
+}) {
+	const scope = session.query_scope;
+	const report = run?.result ? reportFromRun(run) : null;
+	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
+	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
+	const [logo, setLogo] = useState<string | null>(null),
+		[logoError, setLogoError] = useState(false),
+		[reading, setReading] = useState(false);
+	const reader = useRef<FileReader | null>(null);
+	useEffect(
+		() => () => {
+			reader.current?.abort();
+			reader.current = null;
+		},
+		[],
+	);
 	const waiting = Boolean(
 		run && ["queued", "running", "retry_wait"].includes(run.state),
 	);
@@ -274,9 +370,6 @@ export function ReviewProposal({
 			)}
 		</label>
 	);
-	const attachments = run?.result?.prepared_attachments
-		? readObject(run.result.prepared_attachments)
-		: null;
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable =
 		run?.result &&
@@ -393,45 +486,13 @@ export function ReviewProposal({
 							</div>
 						</div>
 						{logoField}
-						<div className="sc-actions">
-							<button
-								type="button"
-								className="sc-button"
-								disabled={busy || !client.isCurrentScope(scope)}
-								onClick={() => void download("pdf")}
-							>
-								{__("Download PDF", "linker-tools")}
-							</button>
-							{Boolean(attachments?.bill_of_materials_csv) && (
-								<button
-									type="button"
-									className="sc-button"
-									disabled={busy || !client.isCurrentScope(scope)}
-									onClick={() => void download("materials")}
-								>
-									{__("Download bill of materials (CSV)", "linker-tools")}
-								</button>
-							)}
-							{Boolean(attachments?.country_rule_review_csv) && (
-								<button
-									type="button"
-									className="sc-button"
-									disabled={busy || !client.isCurrentScope(scope)}
-									onClick={() => void download("rules")}
-								>
-									{__("Download country rule review (CSV)", "linker-tools")}
-								</button>
-							)}
-							{Boolean(attachments?.pv_series_csv) && (
-								<button
-									type="button"
-									className="sc-button"
-									disabled={busy || !client.isCurrentScope(scope)}
-									onClick={() => void download("series")}
-								>
-									{__("Download PV string intervals (CSV)", "linker-tools")}
-								</button>
-							)}
+						<ReportDownloads
+							run={run}
+							report={report}
+							client={client}
+							scope={scope}
+							recheck={recheck}
+						>
 							<button
 								type="button"
 								className="sc-button"
@@ -444,26 +505,8 @@ export function ReviewProposal({
 										: __("Generate report in English", "linker-tools")
 									: __("Update project report", "linker-tools")}
 							</button>
-						</div>
-						{error && (
-							<p role="alert">
-								{__(
-									"The file could not be downloaded. Try again.",
-									"linker-tools",
-								)}
-							</p>
-						)}
-						<details>
-							<summary>{__("Preview report", "linker-tools")}</summary>
-							<div lang={report.locale}>
-								{report.sections.map((section) => (
-									<section key={section.id}>
-										<h3>{section.title}</h3>
-										<ReportContent section={section} />
-									</section>
-								))}
-							</div>
-						</details>
+						</ReportDownloads>
+						<ReportPreview report={report} />
 					</section>
 					{transferable && (
 						<section className="sc-card sc-draft-transfer">
@@ -491,6 +534,87 @@ export function ReviewProposal({
 						</section>
 					)}
 				</>
+			)}
+			{history && (history.items.length > 0 || history.hasMore) && (
+				<section
+					className="sc-card"
+					aria-label={__("Calculation history", "linker-tools")}
+				>
+					<h2>{__("Calculation history", "linker-tools")}</h2>
+					<div className="sc-actions">
+						{history.items.map((item) => (
+							<button
+								type="button"
+								className="sc-button"
+								key={item.id}
+								aria-pressed={history.selected === item.id}
+								disabled={!client.isCurrentScope(scope)}
+								onClick={() => history.select(item.id)}
+							>
+								{sprintf(__("Revision %d", "linker-tools"), item.revision)}
+								{" · "}
+								{new Intl.DateTimeFormat(locale, {
+									dateStyle: "short",
+									timeStyle: "short",
+								}).format(item.created_at * 1000)}
+							</button>
+						))}
+						{history.hasMore && (
+							<button
+								type="button"
+								className="sc-button"
+								disabled={history.loading || !client.isCurrentScope(scope)}
+								onClick={history.loadMore}
+							>
+								{__("Earlier calculations", "linker-tools")}
+							</button>
+						)}
+					</div>
+					{history.loadFailed && (
+						<p role="alert">
+							{__(
+								"Saved calculation history could not be refreshed.",
+								"linker-tools",
+							)}
+						</p>
+					)}
+					{history.reading && (
+						<p role="status">
+							{__("Reading the saved calculation…", "linker-tools")}
+						</p>
+					)}
+					{history.readFailed && (
+						<div role="alert">
+							<p>
+								{__(
+									"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+									"linker-tools",
+								)}
+							</p>
+							<button
+								type="button"
+								className="sc-button"
+								disabled={!client.isCurrentScope(scope)}
+								onClick={history.retryRead}
+							>
+								{__("Refresh calculation status", "linker-tools")}
+							</button>
+						</div>
+					)}
+					{earlierRun && earlierReport && (
+						<>
+							<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
+							<ReportDownloads
+								run={earlierRun}
+								report={earlierReport}
+								client={client}
+								scope={scope}
+								recheck={recheck}
+							/>
+							<ReportPreview report={earlierReport} />
+						</>
+					)}
+				</section>
 			)}
 		</article>
 	);

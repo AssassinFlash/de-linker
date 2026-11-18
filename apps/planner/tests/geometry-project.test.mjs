@@ -453,6 +453,16 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	await until(() => local?.history.current.geometry === undefined);
 	await click("Redo");
 	await until(() => local?.history.current.geometry?.roofs.length === 1);
+	await click("Use module details");
+	await until(
+		() => local?.history.current.pvgis_reference_setup?.arrays?.length,
+	);
+	assert.deepEqual(
+		local.history.current.pvgis_reference_setup.arrays,
+		knownPv.project.inputs.pvgis_reference.arrays,
+	);
+	await click("Place modules on the roof");
+	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
 	await click("Save snapshot");
 	await until(
 		() =>

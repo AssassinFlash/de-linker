@@ -12,10 +12,13 @@ import {
 	configuratorReportSources,
 	hasReportWiring,
 } from "../../data/configuratorReportSources.ts";
-import { prepareKnownPvForComparison } from "../../data/knownPvPreparation.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import {
 	readRunInputs,
 	readRun,
@@ -25,6 +28,7 @@ import {
 	waitForRunPoll,
 	RUN_OPERATIONS,
 	type PlanningRun,
+	type RunPage,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
 import { REPORT_TASK } from "../../data/planningReport.ts";
@@ -70,11 +74,7 @@ import {
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
-import {
-	referenceDraft,
-	KNOWN_PV_MODEL,
-	PVGIS_REFERENCE_TASK,
-} from "../../domain/pvgisReference.ts";
+import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
@@ -180,28 +180,20 @@ export default function Configurator({
 	}, [step]);
 	const [error, setError] = useState<unknown>(null);
 	const [selecting, setSelecting] = useState(false);
-	const [preparingPv, setPreparingPv] = useState(false);
-	const [recoveredPvRun, setRecoveredPvRun] = useState<PlanningRun | null>(
-		null,
-	);
-	const pvPreparation = useRef<AbortController | null>(null);
 	const reportPreparation = useRef<AbortController | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
+	const [viewedReport, setViewedReport] = useState<string | null>(null);
 	const cache = useQueryClient();
 	const latest = useRef(draft);
 	latest.current = draft;
 	const lifetime = useRef(0);
 	useEffect(() => {
 		lifetime.current++;
-		setPreparingPv(false);
 		setPreparingReport(false);
-		setRecoveredPvRun(null);
 		return () => {
-			pvPreparation.current?.abort();
-			pvPreparation.current = null;
 			reportPreparation.current?.abort();
 			reportPreparation.current = null;
 			lifetime.current++;
@@ -218,38 +210,57 @@ export default function Configurator({
 	});
 	const admitted =
 		client.isCurrentScope(session.query_scope) && !session.claim_pending;
+	async function readHistoryPage(cursor: RunPage["next"], signal: AbortSignal) {
+		return readRunPage(
+			await client.query(
+				"projects/runs",
+				{
+					schema_version: 1,
+					project_id: project.id,
+					page_size: session.runtime.limits.max_page_size,
+					before_created_at: cursor?.before_created_at ?? null,
+					before_id: cursor?.before_id ?? null,
+				},
+				session.query_scope,
+				signal,
+			),
+			project.id,
+		);
+	}
 	const history = useQuery({
 		queryKey: [session.query_scope, "configurator-history", project.id],
 		enabled: admitted,
-		queryFn: async ({ signal }) =>
-			readRunPage(
-				await client.query(
-					"projects/runs",
-					{
-						schema_version: 1,
-						project_id: project.id,
-						page_size: session.runtime.limits.max_page_size,
-						before_created_at: null,
-						before_id: null,
-					},
-					session.query_scope,
-					signal,
-				),
-				project.id,
-			),
+		queryFn: ({ signal }) => readHistoryPage(null, signal),
 	});
+	const firstCursor = history.data?.next ?? null;
+	const olderHistory = useInfiniteQuery({
+		queryKey: [
+			session.query_scope,
+			"configurator-older-history",
+			project.id,
+			firstCursor,
+		],
+		enabled: false,
+		initialPageParam: firstCursor,
+		queryFn: ({ signal, pageParam }) => readHistoryPage(pageParam, signal),
+		getNextPageParam: (page) => page.next,
+	});
+	const latestRuns = history.data?.items;
 	const choiceInput = draft?.history.current.equipment_candidate;
 	const choice = choiceInput == null ? null : readObject(choiceInput);
 	const selectedSearch =
 		typeof choice?.run_id === "string" ? choice.run_id : null;
 	const newest = (kind: TaskKind) =>
-		history.data?.items.find((item) => item.task_kind === kind)?.id ?? null;
+		latestRuns?.find((item) => item.task_kind === kind)?.id ?? null;
+	const currentSearch = latestRuns?.find(
+		(item) => item.task_kind === SEARCH_TASK && item.is_current,
+	)?.id;
 	const search = useProjectResult(
 		client,
 		session,
 		project.id,
 		SEARCH_TASK,
-		submittedSearch ?? selectedSearch ?? newest(SEARCH_TASK),
+		submittedSearch ?? currentSearch ?? selectedSearch ?? newest(SEARCH_TASK),
 	);
 	const adoptedSearch = useProjectResult(
 		client,
@@ -258,12 +269,30 @@ export default function Configurator({
 		SEARCH_TASK,
 		selectedSearch,
 	);
+	const reportRuns = [
+		...(latestRuns ?? []),
+		...(olderHistory.data?.pages.flatMap((page) => page.items) ?? []),
+	].filter((item) => item.task_kind === REPORT_TASK);
+	const reportId = submittedReport ?? reportRuns?.[0]?.id ?? null;
 	const report = useProjectResult(
 		client,
 		session,
 		project.id,
 		REPORT_TASK,
-		submittedReport ?? newest(REPORT_TASK),
+		reportId,
+	);
+	const earlierReports =
+		reportRuns?.filter(
+			(item) => item.state === "succeeded" && item.id !== reportId,
+		) ?? [];
+	const historicalRunQuery = useProjectResult(
+		client,
+		session,
+		project.id,
+		REPORT_TASK,
+		step === "review" && earlierReports.some((item) => item.id === viewedReport)
+			? viewedReport
+			: null,
 	);
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
@@ -322,14 +351,13 @@ export default function Configurator({
 		else setSubmittedReport(run.id);
 		void history.refetch();
 	}
+	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
 	const blocked =
 		!admitted ||
-		(legacyModels && comparisonInputs === undefined) ||
 		recoveryChecking ||
 		recoveryFailed ||
 		controller.busy ||
 		selecting ||
-		preparingPv ||
 		preparingReport ||
 		operations.busy ||
 		operations.checking ||
@@ -346,16 +374,31 @@ export default function Configurator({
 				latest.current.conflict
 			)
 				return false;
+			let applied = false;
 			const next = update((previous) => {
 				const before = previous.history.current;
+				const legacy = needsComparisonModels(before);
 				const restored =
-					comparisonInputs && needsComparisonModels(before)
+					comparisonInputs && legacy
 						? restoreComparisonModels(before, comparisonInputs)
 						: before;
 				const after = operation(restored);
+				const sameChoice = sameJson(
+					after.equipment_candidate,
+					before.equipment_candidate,
+				);
+				// The adopted run is the source of the original preferences. Do not
+				// discard that reference before recovering them.
+				if (
+					legacy &&
+					!comparisonInputs &&
+					(!sameChoice || !sameEquipmentDemand(restored, after))
+				)
+					return previous;
+				applied = true;
 				if (
 					after.equipment_candidate != null &&
-					sameJson(after.equipment_candidate, before.equipment_candidate) &&
+					sameChoice &&
 					!sameEquipmentDemand(restored, after)
 				) {
 					const { equipment_candidate: _stale, ...inputs } = after;
@@ -364,7 +407,7 @@ export default function Configurator({
 				return editDraft(previous, after);
 			});
 			latest.current = next;
-			return next !== null;
+			return next !== null && applied;
 		},
 		[client, comparisonInputs, session.query_scope, update],
 	);
@@ -377,95 +420,33 @@ export default function Configurator({
 		setStep(next);
 		setNavigationRefused(false);
 	}
-	async function compare(recovered: PlanningRun | null = null) {
-		if (blocked || pvPreparation.current || !latest.current) return;
+	async function compare() {
+		if (blocked || modelsUnavailable || !latest.current) return;
 		setError(null);
-		const request = new AbortController();
-		pvPreparation.current = request;
-		const current = () =>
-			!request.signal.aborted && client.isCurrentScope(session.query_scope);
-		let revision = latest.current.baseline.revision;
-		setPreparingPv(true);
-		try {
-			const query = (
-				path: "assets/read" | "projects/read" | "runs/read",
-				body: JsonObject,
-				signal: AbortSignal,
-			) => client.query(path, body, session.query_scope, signal);
-			const apply = await prepareKnownPvForComparison({
-				inputs: latest.current.history.current,
-				projectId: project.id,
-				query,
-				save: async () => {
-					const saved = await controller.save();
-					if (saved) revision = saved.revision;
-					return saved;
-				},
-				start: async (savedRevision) => {
-					if (recovered?.revision === savedRevision) return recovered;
-					const existing = history.data?.items.find(
-						(item) =>
-							item.task_kind === PVGIS_REFERENCE_TASK &&
-							item.revision === savedRevision &&
-							(item.state === "succeeded" || runPending(item.state)),
-					);
-					if (existing)
-						return readRun(
-							await query(
-								"runs/read",
-								{ schema_version: 1, run_id: existing.id },
-								request.signal,
-							),
-							project.id,
-							existing.id,
-							PVGIS_REFERENCE_TASK,
-						);
-					const reply = await operations.start("runs/pvgis-reference", {
-						expected_revision: savedRevision,
-					});
-					return reply?.path === "runs/pvgis-reference" ? reply.run : undefined;
-				},
-				signal: request.signal,
-			});
-			if (!current()) return;
-			if (apply && !edit(apply))
-				throw new ApiError(409, "preparation_source_changed");
-			const reply = await operations.start("runs/find-equipment", {
-				expected_revision: revision,
-				input_contract: projectInputContract,
-				inputs: authoredDiscoveryInputs(latest.current.history.current),
-			});
-			if (reply?.path === "runs/find-equipment" && current()) {
-				accepted(reply.run);
-				navigate("system");
-			}
-		} catch (cause) {
-			if (!current()) return;
-			if (
-				cause instanceof ApiError &&
-				([401, 403].includes(cause.status) || cause.code === "session_changed")
-			) {
-				recheck();
-				return;
-			}
-			setError(cause);
-			navigate("solar");
-		} finally {
-			if (pvPreparation.current === request) {
-				pvPreparation.current = null;
-				setPreparingPv(false);
-			}
+		const instance = lifetime.current;
+		const reply = await operations.start("runs/find-equipment", {
+			expected_revision: latest.current.baseline.revision,
+			input_contract: projectInputContract,
+			inputs: authoredDiscoveryInputs(latest.current.history.current),
+		});
+		if (
+			reply?.path === "runs/find-equipment" &&
+			instance === lifetime.current &&
+			client.isCurrentScope(session.query_scope)
+		) {
+			accepted(reply.run);
+			navigate("system");
 		}
 	}
-	useEffect(() => {
-		if (!blocked && recoveredPvRun) {
-			setRecoveredPvRun(null);
-			void compare(recoveredPvRun);
-		}
-	});
 
 	async function select(candidate: EquipmentCandidate, run: PlanningRun) {
-		if (blocked || !latest.current || run.project_id !== project.id) return;
+		if (
+			blocked ||
+			modelsUnavailable ||
+			!latest.current ||
+			run.project_id !== project.id
+		)
+			return;
 		setSelecting(true);
 		setError(null);
 		const snapshot = latest.current.history.current,
@@ -550,7 +531,13 @@ export default function Configurator({
 		}
 	}
 	async function generate(logo: string | null) {
-		if (blocked || reportPreparation.current || !latest.current) return;
+		if (
+			blocked ||
+			modelsUnavailable ||
+			reportPreparation.current ||
+			!latest.current
+		)
+			return;
 		setError(null);
 		const request = new AbortController();
 		reportPreparation.current = request;
@@ -807,13 +794,6 @@ export default function Configurator({
 					{__("Preparing planning report…", "linker-tools")}
 				</p>
 			)}
-			{preparingPv &&
-				(reference.model === KNOWN_PV_MODEL ||
-					inputs.geometry !== undefined) && (
-					<p className="sc-card" role="status">
-						{__("Preparing the solar generation profile…", "linker-tools")}
-					</p>
-				)}
 			{Boolean(failure) && (
 				<div className="sc-card" role="alert">
 					<p>
@@ -833,28 +813,16 @@ export default function Configurator({
 										"linker-tools",
 									)
 								: failure instanceof ApiError &&
-									  failure.code === "known_pv_preparation_failed"
+									  failure.fields.some((field) =>
+											/^(?:pvgis_reference|brief\.site\.(?:latitude|longitude))/.test(
+												field,
+											),
+									  )
 									? __(
-											"PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again.",
+											"Complete the site coordinates, array details and PVGIS settings to compare systems.",
 											"linker-tools",
 										)
-									: failure instanceof ApiError &&
-										  failure.code === "known_pv_no_common_period"
-										? __(
-												"The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile.",
-												"linker-tools",
-											)
-										: failure instanceof ApiError &&
-											  [
-													"pvgis_reference_incomplete",
-													"pvgis_reference_site_required",
-													"pvgis_reference_roof_required",
-											  ].includes(failure.code)
-											? __(
-													"Complete the site coordinates, array details and PVGIS settings to compare systems.",
-													"linker-tools",
-												)
-											: energyErrorText(failure)}
+									: energyErrorText(failure)}
 					</p>
 					{legacyModels && (adoptedSearch.error || comparisonSource.error) && (
 						<button
@@ -931,11 +899,13 @@ export default function Configurator({
 							disabled={operations.busy}
 							onClick={() =>
 								void operations.retry(record).then((reply) => {
-									if (reply?.path === "runs/pvgis-reference") {
-										setRecoveredPvRun(reply.run);
-									} else if (reply?.path === "runs/check-equipment") {
+									if (reply?.path === "runs/check-equipment") {
 										navigate("review");
-									} else if (reply && "run" in reply) {
+									} else if (
+										reply &&
+										"run" in reply &&
+										reply.path !== "runs/pvgis-reference"
+									) {
 										accepted(reply.run);
 										navigate(
 											reply.path === "runs/report" ? "review" : "system",
@@ -961,13 +931,13 @@ export default function Configurator({
 									}
 									client={client}
 									scope={session.query_scope}
-									disabled={blocked}
+									disabled={blocked || modelsUnavailable}
 									edit={edit}
 								/>
 							}
 							inputs={inputs}
 							config={config}
-							disabled={blocked}
+							disabled={blocked || modelsUnavailable}
 							edit={edit}
 							next={() =>
 								navigate(
@@ -982,7 +952,7 @@ export default function Configurator({
 							config={config}
 							client={client}
 							session={session}
-							disabled={blocked}
+							disabled={blocked || modelsUnavailable}
 							edit={edit}
 							next={() => navigate("energy")}
 							initialMap={mapPropertyLinks.has(location.hash)}
@@ -1008,6 +978,7 @@ export default function Configurator({
 								recheck={recheck}
 								disabled={blocked}
 								edit={edit}
+								modelsUnavailable={modelsUnavailable}
 								compare={() => void compare()}
 								onValidity={setEnergyValid}
 							/>
@@ -1017,11 +988,12 @@ export default function Configurator({
 						<>
 							{searchRun?.state === "succeeded" && searchRun.result ? (
 								<SystemOptions
+									solarOnly={brief.system_scope === "pv_only"}
 									run={searchRun}
 									client={client}
 									scope={session.query_scope}
 									locale={config.locale}
-									disabled={blocked}
+									disabled={blocked || modelsUnavailable}
 									selectedId={
 										choice?.run_id === searchRun.id
 											? String(choice.candidate_id)
@@ -1045,10 +1017,23 @@ export default function Configurator({
 										<>
 											<p>
 												{searchRun?.state === "failed"
-													? __(
-															"The equipment search could not finish. Your inputs are saved.",
-															"linker-tools",
-														)
+													? searchRun.error?.code ===
+														"comparison_pv_no_common_period"
+														? __(
+																"The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile.",
+																"linker-tools",
+															)
+														: searchRun.error?.code
+																	?.toString()
+																	.startsWith("weather_")
+															? __(
+																	"PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again.",
+																	"linker-tools",
+																)
+															: __(
+																	"The equipment search could not finish. Your inputs are saved.",
+																	"linker-tools",
+																)
 													: __(
 															"Enter your energy needs to compare equipment for this project.",
 															"linker-tools",
@@ -1096,11 +1081,26 @@ export default function Configurator({
 							project={draft.baseline}
 							inputs={inputs}
 							run={reportRun}
+							history={{
+								items: earlierReports,
+								selected: viewedReport,
+								select: setViewedReport,
+								run: historicalRunQuery.data ?? null,
+								reading: historicalRunQuery.isLoading,
+								readFailed: historicalRunQuery.isError,
+								retryRead: () => void historicalRunQuery.refetch(),
+								hasMore: olderHistory.data
+									? olderHistory.hasNextPage
+									: firstCursor !== null,
+								loading: olderHistory.isFetching,
+								loadFailed: olderHistory.isError,
+								loadMore: () => void olderHistory.fetchNextPage(),
+							}}
 							client={client}
 							session={session}
 							operations={operations}
 							locale={config.locale}
-							blocked={blocked}
+							blocked={blocked || modelsUnavailable}
 							current={Boolean(
 								reportRun &&
 								reportRun.revision === draft.baseline.revision &&

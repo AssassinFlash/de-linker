@@ -150,9 +150,24 @@ class PvgisRoofReferenceKernel:
             raise VersionUnavailable(
                 "exact roof reference runtime and dependencies required"
             )
-        self.workspace.blobs.read(str(pinned["runtime_bundle"]))
-        inputs = self.workspace.pinned_inputs(manifest)
+        return self.prepare(
+            lease, control, manifest, self.workspace.pinned_inputs(manifest), pinned
+        )
+
+    def prepare(
+        self,
+        lease: Lease,
+        control: Control,
+        manifest: Object,
+        inputs: Object,
+        pinned: Object,
+    ) -> AssetResult:
+        """Acquire the plan pinned by this evaluation under its existing lease."""
+        manifest_hash = str(lease.request["manifest_sha256"])
+        self.workspace.blobs.read(self.runtime.sha256)
         plan: PvgisReferencePlan | KnownPvPlan
+        parameters = inputs.get("pvgis_reference")
+        known = isinstance(parameters, dict) and parameters.get("model") == KNOWN_MODEL
         basis: Object = {}
         expected: PvgisReferencePlan | KnownPvPlan
         if known:

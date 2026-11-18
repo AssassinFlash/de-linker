@@ -37,6 +37,7 @@ export function authoredCalculationInputs(inputs: JsonObject): JsonObject {
 export function sameEquipmentDemand(
 	left: JsonObject,
 	right: JsonObject,
+	checkGeometry = true,
 ): boolean {
 	const a = authoredCalculationInputs(left),
 		b = authoredCalculationInputs(right);
@@ -55,12 +56,54 @@ export function sameEquipmentDemand(
 			"equipment_demand",
 			"pvgis_reference_setup",
 			"pvgis_reference",
-			"geometry",
+			...(checkGeometry ? ["geometry"] : []),
 			"pv_generation",
 			"pv_preparation",
 			"geometric_pv_preparation",
-		].every((field) => sameJson(a[field] ?? null, b[field] ?? null))
+		].every((field) => sameJson(a[field] ?? null, b[field] ?? null)) &&
+		sameEquipmentModels(a, b)
 	);
+}
+
+/** Compare the choices that filter discovery, independently of adopted hardware. */
+export function sameEquipmentModels(
+	left: JsonObject,
+	right: JsonObject,
+): boolean {
+	function models(inputs: JsonObject, noBattery: boolean) {
+		const setup = equipmentDraft(inputs);
+		const preferences = comparisonModels(setup);
+		const use = isObject(setup.equipment_use) ? setup.equipment_use : {};
+		return {
+			inverter:
+				(use.inverter === "retain" ? setup : preferences).inverter_product_id ??
+				null,
+			battery: noBattery
+				? null
+				: ((use.battery === "retain" ? setup : preferences)
+						.battery_product_id ?? null),
+		};
+	}
+	function active(inputs: JsonObject) {
+		const noBattery =
+			isObject(inputs.brief) && inputs.brief.system_scope === "pv_only";
+		if (!hasPlant(inputs)) return models(inputs, noBattery);
+		const plant = readPlantDraft(inputs);
+		return {
+			units: plant.units.map((unit) => [
+				unit.id,
+				models(unit.inputs, noBattery),
+			]),
+			groups: plant.parallel_groups.map((group) => [
+				group.id,
+				group.controller_use === "retain" ||
+				group.comparison_controller_product_id === undefined
+					? group.controller_product_id
+					: group.comparison_controller_product_id,
+			]),
+		};
+	}
+	return sameJson(active(left), active(right));
 }
 
 /** Match the server's authored discovery snapshot, retaining demand separately

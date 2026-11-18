@@ -1,4 +1,7 @@
-import { sameEquipmentDemand } from "../domain/currentCalculation.ts";
+import {
+	restoreComparisonModels,
+	sameEquipmentDemand,
+} from "../domain/currentCalculation.ts";
 import { sameJson } from "../domain/draft.ts";
 import {
 	GEOMETRIC_PV_MODEL_SERIES,
@@ -140,7 +143,13 @@ export async function configuratorReportSources({
 			await query("runs/inputs", { ...base, run_id: run.id }, signal),
 			run,
 		);
-		if (!sameEquipmentDemand(frozen, inputs))
+		if (
+			!sameEquipmentDemand(
+				restoreComparisonModels(inputs, frozen),
+				frozen,
+				!hasWiring,
+			)
+		)
 			throw new ApiError(409, "equipment_selection_changed");
 	}
 	const revisions = new Map<number, Promise<Project>>();

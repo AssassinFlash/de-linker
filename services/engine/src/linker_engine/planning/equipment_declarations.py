@@ -112,6 +112,46 @@ def restore_comparison_models(inputs: Object, searched: Object) -> Object:
     return recovered
 
 
+def comparison_model_preferences(inputs: Object) -> Json:
+    """Read the active model constraints without comparing the adopted hardware."""
+    brief = inputs.get("brief")
+    no_battery = isinstance(brief, dict) and brief.get("system_scope") == "pv_only"
+
+    def models(declarations: Object) -> Object:
+        setup = declarations.get(
+            "equipment_setup", declarations.get("equipment_selection")
+        )
+        if not isinstance(setup, dict):
+            return {"inverter": None, "battery": None}
+        use, preferences = setup.get("equipment_use"), setup.get("comparison_models")
+        result: Object = {}
+        for part in ("inverter", "battery"):
+            retained = isinstance(use, dict) and use.get(part) == "retain"
+            active = (
+                preferences if isinstance(preferences, dict) and not retained else setup
+            )
+            result[part] = (
+                None
+                if no_battery and part == "battery"
+                else active.get(f"{part}_product_id")
+            )
+        return result
+
+    plant = inputs.get("equipment_plant_setup")
+    if isinstance(plant, dict):
+        return {
+            "units": [
+                [unit["id"], models(cast(Object, unit["inputs"]))]
+                for unit in cast(list[Object], plant["units"])
+            ],
+            "groups": [
+                [group["id"], search_group(group)["controller_product_id"]]
+                for group in cast(list[Object], plant["parallel_groups"])
+            ],
+        }
+    return models(inputs)
+
+
 def compile_discovery_inputs(authored: Object) -> Object:
     inputs = decode_object(encode(authored))
     from .existing_system import unverified_retained_inverter
@@ -327,7 +367,7 @@ def compile_equipment_inputs(inputs: Object, source: ProductSources | None) -> O
                         **{
                             key: value
                             for key, value in group.items()
-                            if key in ParallelGroup.model_fields
+                            if key != "comparison_controller_product_id"
                         },
                         "controller_revision": controller.get("product_revision")
                         if isinstance(controller, dict)

@@ -113,6 +113,51 @@ async function mount(t, props) {
 	return render;
 }
 
+test("solar-only options show the inverter without battery sizing or adjustments", async (t) => {
+	const solar = {
+		...candidates[0],
+		usable_energy_kwh: null,
+		selection: {
+			...selection,
+			battery_product_id: null,
+			modules_per_stack: null,
+			parallel_stacks: null,
+		},
+	};
+	const solarRun = {
+		...run,
+		result: { search: { ...run.result.search, candidates: [solar] } },
+	};
+	await mount(t, {
+		run: solarRun,
+		solarOnly: true,
+		scope: "scope",
+		locale: "en",
+		selectedId: solar.id,
+		comparison: { run: solarRun, candidate: solar },
+		client: {
+			isCurrentScope: () => true,
+			query: async () => ({
+				run_id: run.id,
+				candidate_id: solar.id,
+				assessment_sha256: solar.assessment_sha256,
+				assessment: {
+					...assessment(solar),
+					checks: [],
+					selected_products: [products[0]],
+					provisional_bill_of_materials: [{ product_id: 101, quantity: 1 }],
+				},
+			}),
+		},
+	});
+	assert.match(document.body.textContent, /Inverter model/);
+	assert.match(document.body.textContent, /Compare with the saved version/);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/Usable capacity to confirm|Usable battery capacity|Battery model|Battery stacks|Battery modules per stack/,
+	);
+});
+
 test("system cards use real candidate data, inspect evidence and select without mutating the candidate", async (t) => {
 	const calls = [],
 		selected = [];

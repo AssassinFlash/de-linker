@@ -258,9 +258,14 @@ test("a controller use travels with its group and needs its declared controller"
 		parallel_groups: configured().parallel_groups.map((g) => ({
 			...g,
 			controller_use: "retain" as const,
+			comparison_controller_product_id: null,
 		})),
 	};
 	const draft = readPlantDraft(plantInputs(start(), retained));
+	assert.equal(
+		compilePlantSearch(draft).parallel_groups[0]!.controller_product_id,
+		retained.parallel_groups[0]!.controller_product_id,
+	);
 	assert.equal(draft.parallel_groups[0]!.controller_use, "retain");
 	const compiled = compilePlant(retained, products);
 	assert.equal(compiled.parallel_groups[0]!.controller_use, "retain");

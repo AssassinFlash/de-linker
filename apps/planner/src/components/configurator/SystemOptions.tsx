@@ -253,6 +253,7 @@ function compareFit(
 }
 
 export function SystemOptions({
+	solarOnly,
 	run,
 	client,
 	scope,
@@ -264,6 +265,7 @@ export function SystemOptions({
 	onEditEquipment,
 	onSelect,
 }: {
+	solarOnly: boolean;
 	run: PlanningRun;
 	client: PlannerClient;
 	scope: string;
@@ -808,26 +810,28 @@ export function SystemOptions({
 								))}
 							</select>
 						</label>
-						<label className="sc-field">
-							<span>{__("Sort configurations", "linker-tools")}</span>
-							<select
-								value={order}
-								onChange={(event) => {
-									setOrder(event.currentTarget.value);
-									setPage(0);
-								}}
-							>
-								<option value="fit">
-									{__("Requirements first", "linker-tools")}
-								</option>
-								<option value="capacity-asc">
-									{__("Lowest usable battery capacity", "linker-tools")}
-								</option>
-								<option value="capacity-desc">
-									{__("Highest usable battery capacity", "linker-tools")}
-								</option>
-							</select>
-						</label>
+						{!solarOnly && (
+							<label className="sc-field">
+								<span>{__("Sort configurations", "linker-tools")}</span>
+								<select
+									value={order}
+									onChange={(event) => {
+										setOrder(event.currentTarget.value);
+										setPage(0);
+									}}
+								>
+									<option value="fit">
+										{__("Requirements first", "linker-tools")}
+									</option>
+									<option value="capacity-asc">
+										{__("Lowest usable battery capacity", "linker-tools")}
+									</option>
+									<option value="capacity-desc">
+										{__("Highest usable battery capacity", "linker-tools")}
+									</option>
+								</select>
+							</label>
+						)}
 					</div>
 				</details>
 			)}
@@ -839,10 +843,12 @@ export function SystemOptions({
 						key={item.id}
 					>
 						<h3>{title(item)}</h3>
-						<div className="sc-package-capacity">
-							<strong>{capacity(item)}</strong>
-							<span>{__("Usable battery capacity", "linker-tools")}</span>
-						</div>
+						{!solarOnly && (
+							<div className="sc-package-capacity">
+								<strong>{capacity(item)}</strong>
+								<span>{__("Usable battery capacity", "linker-tools")}</span>
+							</div>
+						)}
 						{systems(item).map(({ id, name, selection }) =>
 							selection.modules_per_stack && selection.parallel_stacks ? (
 								<p key={id}>
@@ -955,6 +961,7 @@ export function SystemOptions({
 					{systems(adjusted).map(({ id, name, selection }, index) => (
 						<div className="sc-fields" key={id}>
 							{adjustmentFields.map((field) => {
+								if (solarOnly && field !== "inverter_product_id") return null;
 								const labels = {
 									inverter_product_id: __("Inverter model", "linker-tools"),
 									battery_product_id: __("Battery model", "linker-tools"),
@@ -1008,7 +1015,7 @@ export function SystemOptions({
 					))}
 					{adjusted.id !== candidate?.id && (
 						<p>
-							{title(adjusted)} · {capacity(adjusted)} ·{" "}
+							{title(adjusted)} · {!solarOnly && `${capacity(adjusted)} · `}
 							{equipmentStatus(adjusted.status)}
 						</p>
 					)}
@@ -1126,13 +1133,15 @@ export function SystemOptions({
 									<td>{title(saved.candidate, savedProducts)}</td>
 									<td>{title(selected)}</td>
 								</tr>
-								<tr>
-									<th scope="row">
-										{__("Usable battery capacity", "linker-tools")}
-									</th>
-									<td>{capacity(saved.candidate)}</td>
-									<td>{capacity(selected)}</td>
-								</tr>
+								{!solarOnly && (
+									<tr>
+										<th scope="row">
+											{__("Usable battery capacity", "linker-tools")}
+										</th>
+										<td>{capacity(saved.candidate)}</td>
+										<td>{capacity(selected)}</td>
+									</tr>
+								)}
 								<tr>
 									<th scope="row">{__("Assessment status", "linker-tools")}</th>
 									<td>{equipmentStatus(saved.candidate.status)}</td>

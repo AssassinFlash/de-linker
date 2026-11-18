@@ -6,6 +6,7 @@ import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
 import { enter, setupDom, until } from "./dom-fixture.mjs";
+import preparation from "./fixtures/index.ts";
 
 test("a storage project continues from its location directly to energy use", async () => {
 	const fixture = setupDom();
@@ -112,6 +113,374 @@ test("a storage project continues from its location directly to energy use", asy
 		);
 	} finally {
 		await fixture.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	}
+});
+
+test("PV comparison submits one command and reopens on the saved equipment search", async () => {
+	const dom = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	window.location.hash = "sc-energy";
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
+	const { emptyScenario } = await import("../src/domain/energyScenario.ts");
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const scope = "3".repeat(64),
+		kind = "search_woo_equipment_v1";
+	const session = {
+		kind: "guest",
+		query_scope: scope,
+		claim_pending: false,
+		runtime: {
+			limits: {
+				max_page_size: 30,
+				max_json_depth: 32,
+				max_body_bytes: 1000000,
+			},
+			models: {},
+		},
+	};
+	let project = structuredClone(knownPv.project),
+		run = null;
+	const scenario = emptyScenario();
+	project.inputs.energy_scenario = {
+		...scenario,
+		controller: "self_consumption_with_reserve_v1",
+		schedule: [
+			{
+				...scenario.schedule[0],
+				mode: "connected",
+				pv_enabled: true,
+				start_utc: "2020-06-01T12:00:00Z",
+				end_utc: "2020-06-01T14:00:00Z",
+			},
+		],
+	};
+	project.inputs.equipment_setup = {
+		...equipmentDraft({}),
+		grid_phase: 3,
+		operating_mode: "grid_connected",
+	};
+	const queries = [],
+		commands = [];
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		query: async (path, body) => {
+			queries.push(path);
+			if (path === "projects/runs") {
+				if (!run) return { items: [], next: null };
+				const { manifest, result, error, ...summary } = run;
+				return {
+					items: [{ ...summary, task_kind: kind, created_at: 1 }],
+					next: null,
+				};
+			}
+			assert.equal(path, "runs/read");
+			assert.equal(body.run_id, run.id);
+			return run;
+		},
+		send: async (path, raw) => {
+			commands.push(path);
+			assert.equal(path, "runs/find-equipment");
+			const command = JSON.parse(raw);
+			assert.deepEqual(
+				command.inputs.pvgis_reference,
+				project.inputs.pvgis_reference,
+			);
+			assert.equal(command.expected_revision, project.revision);
+			project = {
+				...project,
+				inputs: command.inputs,
+				revision: project.revision + 1,
+			};
+			run = {
+				...knownPv.run,
+				revision: project.revision,
+				state: "queued",
+				result: null,
+				result_sha256: null,
+				manifest: {
+					...knownPv.run.manifest,
+					revision: project.revision,
+					input_sha256: project.input_sha256,
+					context: {
+						...knownPv.run.manifest.context,
+						models: { task: kind },
+						parameters: { kind },
+						assets: { "woo.equipment_inputs": "a".repeat(64) },
+					},
+				},
+			};
+			return { schema_version: 1, project, run };
+		},
+	};
+	const store = {
+		read: async () => null,
+		candidates: async () => [],
+		write: async () => {},
+	};
+	let root = createRoot(dom.element),
+		cache = new QueryClient();
+	const render = () =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						project,
+						session,
+						client,
+						store,
+						config: { locale: "en", countries: {} },
+						recheck: () => assert.fail("Unexpected identity change"),
+						close: () => true,
+					}),
+				),
+			),
+		);
+	try {
+		await render();
+		const compare = () =>
+			[...dom.element.querySelectorAll("button")].find(
+				(b) => b.textContent === "Compare systems",
+			);
+		await until(() => compare() && !compare().disabled);
+		await act(async () => compare().click());
+		await until(() =>
+			dom.element.textContent.includes("Finding equipment for your project"),
+		);
+		await act(async () => root.unmount());
+		cache.clear();
+		run = {
+			...run,
+			state: "succeeded",
+			result_sha256: "c".repeat(64),
+			result: {
+				schema: 1,
+				kind,
+				project_id: project.id,
+				revision: run.revision,
+				input_sha256: project.input_sha256,
+				manifest_sha256: run.manifest_sha256,
+				runtime_sha256: run.manifest.context.code_sha256,
+				pinned_assets: run.manifest.context.assets,
+				prepared_asset: knownPv.run.result.prepared_asset,
+				search: {
+					completion: "exhausted_supported_domain",
+					work_used: 1,
+					work_budget: 100,
+					qualified_count: 0,
+					ranking: "not_performed_before_qualification",
+					products: [],
+					candidates: [],
+					coverage: {
+						template: "one_converter_one_external_battery_assembly",
+						gaps: {},
+					},
+				},
+			},
+		};
+		root = createRoot(dom.element);
+		cache = new QueryClient();
+		await render();
+		await until(() =>
+			dom.element.textContent.includes("A system for this project"),
+		);
+		assert.deepEqual(commands, ["runs/find-equipment"]);
+		assert.ok(
+			queries.every((path) => path === "projects/runs" || path === "runs/read"),
+		);
+	} finally {
+		await dom.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	}
+});
+
+test("Review & share downloads earlier PDF and CSV while inquiry stays with the current report", async () => {
+	const dom = setupDom(),
+		scope = "3".repeat(64),
+		{ createRoot } = await import("react-dom/client"),
+		{ QueryClient, QueryClientProvider } =
+			await import("@tanstack/react-query"),
+		{ default: Configurator } =
+			await import("../src/components/configurator/Configurator.tsx"),
+		{ emptyBrief } = await import("../src/domain/brief.ts"),
+		current = structuredClone(preparation.geometric_pv.report_run),
+		earlier = structuredClone(preparation.direct_beam.report_run);
+	for (const record of [
+		earlier,
+		earlier.manifest,
+		earlier.result,
+		earlier.result.prepared_asset,
+		earlier.result.prepared_attachments.bill_of_materials_csv,
+	]) {
+		record.project_id = current.project_id;
+	}
+	for (const run of [current, earlier])
+		run.result.has_report_only_handoff = true;
+	const project = {
+		id: current.project_id,
+		title: "Workshop",
+		revision: current.revision,
+		input_sha256: current.manifest.input_sha256,
+		inputs: { brief: emptyBrief() },
+	};
+	window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+	globalThis.indexedDB = new IDBFactory();
+	const summary = ({
+		id,
+		project_id,
+		revision,
+		manifest_sha256,
+		result_sha256,
+		state,
+		is_current,
+	}) => ({
+		id,
+		project_id,
+		revision,
+		manifest_sha256,
+		result_sha256,
+		state,
+		is_current,
+		created_at: 1700000000 + revision,
+		task_kind: "planning_report_v1",
+	});
+	const currentSummary = summary(current);
+	const newestCalculation = {
+		...currentSummary,
+		id: "a".repeat(32),
+		created_at: currentSummary.created_at + 1,
+		task_kind: "qualify_woo_equipment_v1",
+	};
+	const cursorFor = ({ id, created_at }) => ({
+		before_id: id,
+		before_created_at: created_at,
+	});
+	const downloads = [],
+		requests = [],
+		filenames = [];
+	const client = {
+		isCurrentScope: (s) => s === scope,
+		async query(path, body) {
+			requests.push([path, body]);
+			if (path === "projects/runs") {
+				if (body.before_id === null)
+					return {
+						items: [newestCalculation],
+						next: cursorFor(newestCalculation),
+					};
+				if (body.before_id === newestCalculation.id) {
+					assert.equal(body.before_created_at, newestCalculation.created_at);
+					return { items: [currentSummary], next: cursorFor(currentSummary) };
+				}
+				assert.equal(body.before_id, current.id);
+				assert.equal(body.before_created_at, currentSummary.created_at);
+				return { items: [summary(earlier)], next: null };
+			}
+			if (path === "runs/read")
+				return [current, earlier].find((run) => run.id === body.run_id);
+			if (path === "draft/preview") return new Promise(() => {});
+			throw new Error(path);
+		},
+		async reportPdf(projectId, assetId, queryScope, _signal, sha) {
+			downloads.push(["pdf", projectId, assetId, queryScope, sha]);
+			return new Blob(["pdf"]);
+		},
+		async reportCsv(projectId, assetId, queryScope, sha) {
+			downloads.push(["csv", projectId, assetId, queryScope, sha]);
+			return new Blob(["csv"]);
+		},
+	};
+	const cache = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	const root = createRoot(dom.element);
+	window.HTMLAnchorElement.prototype.click = function () {
+		filenames.push(this.download);
+	};
+	const button = (text, within = dom.element) =>
+		[...within.querySelectorAll("button")].find((node) =>
+			node.textContent.trim().startsWith(text),
+		);
+	try {
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						project,
+						client,
+						session: {
+							kind: "guest",
+							query_scope: scope,
+							claim_pending: false,
+							runtime: {
+								limits: {
+									max_page_size: 1,
+									max_json_depth: 32,
+									max_body_bytes: 1000000,
+								},
+								models: {},
+							},
+						},
+						store: {
+							read: async () => null,
+							candidates: async () => [],
+							write: async () => {},
+						},
+						config: { locale: "en", countries: {} },
+						recheck() {},
+						close: () => true,
+					}),
+				),
+			),
+		);
+		await until(() => button("Earlier calculations"));
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Attach report to inquiry"));
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Revision 2"));
+		await act(async () => button("Revision 2").click());
+		const history = dom.element.querySelector(
+			'section[aria-label="Calculation history"]',
+		);
+		await until(() => history.textContent.includes("Project planning report"));
+		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
+		assert.equal(button("Attach report to inquiry", history), undefined);
+		assert.equal(history.querySelector('input[type="file"]'), null);
+		await act(async () => button("Download PDF", history).click());
+		await act(async () =>
+			button("Download bill of materials (CSV)", history).click(),
+		);
+		await act(async () => button("Download PDF").click());
+		const earlierPdf = earlier.result.prepared_asset,
+			earlierCsv = earlier.result.prepared_attachments.bill_of_materials_csv,
+			currentPdf = current.result.prepared_asset;
+		assert.deepEqual(downloads, [
+			["pdf", project.id, earlierPdf.id, scope, earlierPdf.content_sha256],
+			["csv", project.id, earlierCsv.id, scope, earlierCsv.content_sha256],
+			["pdf", project.id, currentPdf.id, scope, currentPdf.content_sha256],
+		]);
+		assert.deepEqual(filenames, [
+			`linker-planning-${project.id}-r2-en.pdf`,
+			`linker-planning-${project.id}-r2-en.csv`,
+			`linker-planning-${project.id}-r3-de.pdf`,
+		]);
+		await act(async () => button("Attach report to inquiry").click());
+		assert.equal(
+			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
+			current.id,
+		);
+	} finally {
+		await dom.dispose(root);
 		cache.clear();
 		delete globalThis.indexedDB;
 	}
@@ -368,6 +737,10 @@ for (const scenario of [
 			project.inputs.equipment_setup = {
 				...equipmentDraft({}),
 				inverter_product_id: 101,
+				comparison_models: {
+					inverter_product_id: null,
+					battery_product_id: null,
+				},
 			};
 			project.inputs.equipment_candidate = {
 				run_id: "4".repeat(32),

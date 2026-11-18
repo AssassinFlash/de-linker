@@ -15,12 +15,16 @@ from .dc_plant_kernel import DcPlantEnergyKernel
 from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle
 from .energy_comparison import compare_energy_runs, comparison_side
-from .energy_declarations import normalize_authored_inputs
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_condition_inputs import validate_condition_inputs
+from .equipment_declarations import (
+    comparison_model_preferences,
+    normalize_discovery_inputs,
+    restore_comparison_models,
+)
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
@@ -442,35 +446,54 @@ def report_sources(
     ):
         require_retained_inverter(project.inputs, selection=True)
     if isinstance(candidate, dict):
+        use_wiring_check = has_wiring and options.equipment_run_id not in (
+            None,
+            candidate.get("run_id"),
+        )
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
         check_equipment_candidate(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
         run = workspace.run(actor, cast(str, candidate["run_id"]))
-        searched = normalize_authored_inputs(workspace.pinned_inputs(run.manifest))
-        current = normalize_authored_inputs(declared_inputs)
+        searched = normalize_discovery_inputs(workspace.pinned_inputs(run.manifest))
+        current = restore_comparison_models(
+            normalize_discovery_inputs(declared_inputs), searched
+        )
         previous_brief, current_brief = searched.get("brief"), current.get("brief")
-        if any(
-            (previous_brief.get(field) if isinstance(previous_brief, dict) else None)
-            != (current_brief.get(field) if isinstance(current_brief, dict) else None)
-            for field in ("system_scope", "project_use", "site")
-        ) or any(
-            searched.get(field) != current.get(field)
-            for field in (
-                "backup_demand",
-                "existing_system",
-                "energy_scenario",
-                "energy_plant_setup",
-                "profile_selections",
-                "equipment_demand",
-                "pvgis_reference_setup",
-                "pvgis_reference",
-                "geometry",
-                "pv_generation",
-                "pv_preparation",
-                "geometric_pv_preparation",
+        if (
+            any(
+                (
+                    previous_brief.get(field)
+                    if isinstance(previous_brief, dict)
+                    else None
+                )
+                != (
+                    current_brief.get(field)
+                    if isinstance(current_brief, dict)
+                    else None
+                )
+                for field in ("system_scope", "project_use", "site")
             )
+            or any(
+                searched.get(field) != current.get(field)
+                for field in (
+                    "backup_demand",
+                    "existing_system",
+                    "energy_scenario",
+                    "energy_plant_setup",
+                    "profile_selections",
+                    "equipment_demand",
+                    "pvgis_reference_setup",
+                    "pvgis_reference",
+                    *(("geometry",) if not use_wiring_check else ()),
+                    "pv_generation",
+                    "pv_preparation",
+                    "geometric_pv_preparation",
+                )
+            )
+            or comparison_model_preferences(searched)
+            != comparison_model_preferences(current)
         ):
             raise ReportInputsChanged(
                 "report demand differs from the selected candidate"
@@ -1102,6 +1125,14 @@ def report_sources(
                 workspace.blobs,
                 project.revision,
             )
+    layout = project.inputs.get("geometry")
+    if component_list is None and isinstance(layout, dict) and layout.get("arrays"):
+        module_proof = products.module_basis()
+        component_list = saved_roof_components(
+            layout, module_proof, workspace.blobs, project.revision
+        )
+        if component_list["status"] == "available":
+            bases["equipment_pv"] = workspace.blobs.put_object(module_proof)
     historical_bases = {
         name: sha for name, sha in bases.items() if name.startswith("energy.")
     }

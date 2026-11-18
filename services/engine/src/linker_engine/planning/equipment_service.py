@@ -98,11 +98,14 @@ class EquipmentService:
                 discovery = restore_comparison_models(
                     authored, self.workspace.pinned_inputs(run.manifest)
                 )
-            execution = (
-                compile_discovery_inputs(discovery)
-                if operation == "find-equipment"
-                else compile_equipment_inputs(authored, self.kernel.products)
-            )
+            if operation == "find-equipment":
+                from .equipment_search_kernel import EquipmentSearchKernel
+
+                if isinstance(self.kernel, EquipmentSearchKernel):
+                    discovery = self.kernel.comparison_declarations(discovery)
+                execution = compile_discovery_inputs(discovery)
+            else:
+                execution = compile_equipment_inputs(authored, self.kernel.products)
             if operation == "check-equipment" and not {
                 "equipment_selection",
                 "equipment_plant",

@@ -584,6 +584,257 @@ def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_referen
         )
 
 
+@pytest.mark.parametrize("known", [True, False], ids=["known-site", "imported-roof"])
+def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
+    client: TestClient,
+    workspace: Workspace,
+    owner: Actor,
+    engine: Engine,
+    equipment_feed: FixtureObject,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
+    known: bool,
+) -> None:
+    from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
+    from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
+    from linker_engine.planning.equipment_service import EquipmentService
+    from linker_engine.planning.profile_import import ProfileImport
+    from linker_engine.planning.project_input_contracts import KNOWN_PV_INPUT_CONTRACT
+
+    from .test_energy_kernel import PROVENANCE, mapping
+
+    _, products, _, _, _, _ = prepared_dc_fixture_source(
+        equipment_feed, engine, monkeypatch
+    )
+    source = Captures()
+    pv = PvgisRoofReferenceKernel(
+        workspace,
+        products,
+        limits(),
+        max_array_steps=20_000,
+        transport_factory=lambda: source,
+    )
+    search = EquipmentSearchKernel(
+        workspace,
+        products,
+        EquipmentSearchLimits(work_budget=5000),
+        tolerance=TOLERANCE,
+        max_intervals=9000,
+        pvgis_reference=pv,
+    )
+    assert isinstance(client.app, FastAPI)
+    app = create_private_app(
+        workspace,
+        EnergyService(
+            workspace,
+            EnergyKernel(workspace, TOLERANCE, max_intervals=9000),
+            max_attempts=1,
+        ),
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1_000_000, 100_000, 10, 32),
+        product_provider=client.app.state.planning_product_provider,
+        equipment_search=EquipmentService(workspace, search, max_attempts=2),
+        pvgis_reference=PvgisRoofReferenceService(workspace, pv, max_attempts=2),
+    )
+    values = (
+        fixture_inputs(json_object(products.module_basis()))
+        if not known
+        else {
+            "pvgis_reference": {
+                **settings(),
+                "model": "pvgis_5_3_known_ac_reference_v1",
+                "source_note": "Installer's original model settings",
+                "arrays": [
+                    {
+                        "id": "existing",
+                        "peak_power_kwp": 6.4,
+                        "tilt_deg": 31.25,
+                        "azimuth_north_clockwise_deg": 172.5,
+                        "source_note": "Existing module list",
+                    }
+                ],
+            },
+        }
+    )
+    # Use an excluded third roof array to verify that roof power and requests use placed modules only.
+    if not known:
+        excluded = copy.deepcopy(values["geometry"]["arrays"][0])
+        excluded.update(
+            id="excluded",
+            excluded_slots=[f"{r}:{c}" for r in range(2) for c in range(5)],
+        )
+        values["geometry"]["arrays"].append(excluded)
+    values["brief"] = {
+        "schema_version": 1,
+        "project_use": "residential",
+        "system_scope": "new_pv_storage",
+        "site": {
+            "country_code": "NL",
+            "location_label": "Installer site",
+            "latitude": 52.12567,
+            "longitude": 5.12567,
+            "coordinate_basis": "user_entered",
+            "timezone": "Europe/Amsterdam",
+        },
+        "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+        "project_note": "",
+    }
+    with TestClient(app) as browser:
+        create = browser.post(
+            "/projects/create",
+            json={
+                "schema_version": 1,
+                "title": "New comparison",
+                "inputs": {},
+                "key": "compare-project",
+            },
+            headers=headers(owner),
+        )
+        assert create.status_code == 200, create.text
+        project_id = create.json()["id"]
+        load = ProfileImport(Assets(workspace)).csv(
+            owner,
+            project_id,
+            b"time,power\n2020-06-01T12:00:00Z,2\n2020-06-01T13:00:00Z,2\n",
+            mapping("gross_load"),
+            PROVENANCE,
+            key="compare-load",
+        )
+        values.update(
+            profile_selections={
+                "schema_version": 1,
+                "selected": {"gross_load": load.id},
+            },
+            equipment_setup={
+                "schema_version": 1,
+                "grid_phase": 3,
+                "operating_mode": "grid_connected",
+                "pv_dc_kw": 9.0,
+            },
+            energy_scenario={
+                "controller": "self_consumption_with_reserve_v1",
+                "battery": None,
+                "schedule": [
+                    {
+                        "mode": "connected",
+                        "pv_enabled": True,
+                        "start_utc": "2020-06-01T12:00:00Z",
+                        "end_utc": "2020-06-01T14:00:00Z",
+                    }
+                ],
+            },
+        )
+        command = {
+            "schema_version": 1,
+            "project_id": project_id,
+            "expected_revision": 1,
+            "input_contract": KNOWN_PV_INPUT_CONTRACT,
+            "inputs": values,
+            "key": "compare-pv",
+        }
+        reply = browser.post(
+            "/runs/find-equipment", json=command, headers=headers(owner)
+        )
+        assert reply.status_code == 200, reply.text
+        receipt = reply.json()
+        run_id = receipt["run"]["id"]
+        assert receipt["run"]["state"] == "queued"
+        assert receipt["project"]["revision"] == 2
+        assert (
+            "pv_available_ac"
+            not in receipt["project"]["inputs"]["profile_selections"]["selected"]
+        )
+        edited = copy.deepcopy(values)
+        edited["brief"]["site"]["latitude"] = 51.5
+        revision = browser.post(
+            "/projects/revise",
+            json={
+                **command,
+                "expected_revision": 2,
+                "inputs": edited,
+                "key": "edit-while-queued",
+            },
+            headers=headers(owner),
+        )
+        assert revision.status_code == 200, revision.text
+    assert not source.requests
+    registry = ExecutionRegistry(search, pv)
+    worker = Worker(
+        Jobs(workspace),
+        "compare-pv",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    assert worker.run_once()
+    with TestClient(app) as reopened:
+        replay = reopened.post(
+            "/operations/replay/runs/find-equipment",
+            json=command,
+            headers=headers(owner),
+        )
+        assert replay.status_code == 200, replay.text
+        assert replay.json()["result"]["project"] == receipt["project"]
+        assert replay.json()["result"]["run"]["id"] == run_id
+        request = {"schema_version": 1, "run_id": run_id}
+        result = reopened.post(
+            "/runs/read", json=request, headers=headers(owner)
+        ).json()
+        assert result["state"] == "succeeded", result
+        assert result["revision"] == 2
+        assert result["is_current"] is False
+        assert receipt["project"]["inputs"]["equipment_setup"]["pv_dc_kw"] == 9.0
+        frozen = reopened.post(
+            "/runs/inputs",
+            json={**request, "project_id": project_id},
+            headers=headers(owner),
+        )
+        assert frozen.status_code == 200, frozen.text
+        expected_power = (
+            6.4
+            if known
+            else values["geometry"]["module_specs"][0]["stc_power_w"] * 20 / 1000
+        )
+        assert frozen.json()["inputs"]["equipment_requirements"][
+            "pv_dc_kw"
+        ] == pytest.approx(expected_power)
+        assert result["result"]["search"]["demand"]["baseline"]["load_kwh"] == 4
+        assert result["result"]["search"]["demand"]["baseline"]["pv_available_kwh"] > 0
+        prepared = result["result"]["prepared_asset"]
+        assert prepared["purpose"] == (
+            "pvgis_known_ac_reference_profile_v1"
+            if known
+            else "pvgis_roof_ac_reference_profile_v1"
+        )
+        asset = reopened.post(
+            "/assets/read",
+            json={
+                "schema_version": 1,
+                "project_id": project_id,
+                "asset_id": prepared["id"],
+            },
+            headers=headers(owner),
+        )
+        assert asset.status_code == 200, asset.text
+        assert asset.json()["content_sha256"] == prepared["content_sha256"]
+        assert (
+            reopened.post(
+                "/runs/read",
+                json=request,
+                headers=headers(Actor("user", "another-owner")),
+            ).status_code
+            == 404
+        )
+    if known:
+        assert [(r.latitude_deg, r.peak_power_kwp) for r in source.requests] == [
+            (52.12567, 6.4)
+        ]
+    else:
+        module_watts = values["geometry"]["module_specs"][0]["stc_power_w"]
+        assert [r.peak_power_kwp for r in source.requests] == [module_watts / 100] * 2
+
+
 def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     client: TestClient,
     workspace: Workspace,

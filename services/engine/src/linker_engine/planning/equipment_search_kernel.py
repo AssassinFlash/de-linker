@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from .asset_publication import AssetResult
+from .assets import Asset
 from .canonical import Json, Object
+from .comparison_pv import ComparisonPv, comparison_horizon
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_demand import pin_demand_profiles, replay_demand
 from .equipment_kernel import EquipmentKernel
@@ -14,8 +17,11 @@ from .existing_system import unverified_retained_inverter
 from .numerical_tolerance import Tolerance
 from .plant_search_plan import PlantSearchPlan
 from .product_sources import ProductSources
+from .profile_assets import profile_dependencies
 from .profile_demand_bounds import evaluate_bounds, pin_profiles, requested
-from .records import Actor, Context
+from .profile_selections import ProfileSelections
+from .pvgis_reference_kernel import PvgisRoofReferenceKernel
+from .records import Actor, Context, Lease
 from .worker import Control
 from .workspace import Workspace
 
@@ -32,15 +38,29 @@ class EquipmentSearchKernel(EquipmentKernel):
         *,
         tolerance: Tolerance | None = None,
         max_intervals: int | None = None,
+        pvgis_reference: PvgisRoofReferenceKernel | None = None,
     ) -> None:
         super().__init__(workspace, products)
         self.limits = limits
         self.tolerance, self.max_intervals = tolerance, max_intervals
+        self.pv = (
+            ComparisonPv(workspace, products, pvgis_reference)
+            if pvgis_reference
+            else None
+        )
+
+    def comparison_declarations(self, inputs: Object) -> Object:
+        return self.pv.declarations(inputs) if self.pv is not None else inputs
 
     def parameters(self) -> Object:
         return {
             **super().parameters(),
             "work_budget": self.limits.work_budget,
+            **(
+                {"pvgis_execution_keys": list(self.pv.reference.execution_keys())}
+                if self.pv
+                else {}
+            ),
             **(
                 {
                     "demand_interval_budget": self.limits.demand_interval_budget,
@@ -54,12 +74,21 @@ class EquipmentSearchKernel(EquipmentKernel):
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         retained = unverified_retained_inverter(inputs)
-        pinned: dict[str, str] = {}
+        pv_pinned, pending_pv = (
+            self.pv.context(actor, project_id, inputs) if self.pv else ({}, False)
+        )
+        pinned = dict(pv_pinned)
         if retained is not None:
             declared_demand(inputs)
             if baseline_requested(inputs):
-                pinned = self.pin_baseline(
-                    actor, project_id, inputs, baseline_only=True
+                pinned.update(
+                    self.pin_baseline(
+                        actor,
+                        project_id,
+                        inputs,
+                        baseline_only=True,
+                        skip_pv=pending_pv or bool(pv_pinned),
+                    )
                 )
             return Context(
                 self.runtime.sha256,
@@ -81,11 +110,22 @@ class EquipmentSearchKernel(EquipmentKernel):
                     "equipment demand replay budget is not configured",
                     fields=("equipment_demand",),
                 )
-            pinned = pin_demand_profiles(
-                self.workspace, self.products, actor, project_id, inputs
+            pinned.update(
+                pin_demand_profiles(
+                    self.workspace,
+                    self.products,
+                    actor,
+                    project_id,
+                    inputs,
+                    pending_pv=pending_pv,
+                )
             )
         elif requested(inputs):
-            pinned = self.pin_baseline(actor, project_id, inputs)
+            pinned.update(
+                self.pin_baseline(
+                    actor, project_id, inputs, skip_pv=pending_pv or bool(pv_pinned)
+                )
+            )
         basis = self.products.equipment_basis()
         return Context(
             self.runtime.sha256,
@@ -105,6 +145,7 @@ class EquipmentSearchKernel(EquipmentKernel):
         inputs: Object,
         *,
         baseline_only: bool = False,
+        skip_pv: bool = False,
     ) -> dict[str, str]:
         if self.max_intervals is None:
             raise InvalidInput("profile demand interval limit is not configured")
@@ -115,7 +156,58 @@ class EquipmentSearchKernel(EquipmentKernel):
             project_id,
             inputs,
             baseline_only=baseline_only,
+            skip_pv=skip_pv,
         )
+
+    def prepare_inputs(
+        self,
+        lease: Lease,
+        control: Control,
+        manifest: Object,
+        inputs: Object,
+        pinned: Object,
+    ) -> tuple[Object, AssetResult | None]:
+        prepared = None
+        if self.pv is not None and "pvgis_reference.plan" in pinned:
+            prepared = self.pv.reference.prepare(
+                lease, control, manifest, inputs, pinned
+            )
+            publication = prepared.asset
+            asset = Asset(
+                publication.id,
+                publication.project_id,
+                publication.content_sha256,
+                publication.media_type,
+                publication.purpose,
+                publication.metadata_sha256,
+                self.workspace.blobs.object(publication.metadata_sha256),
+            )
+            self.products.check_profile(asset.metadata)
+            pinned.update(
+                profile_dependencies(
+                    asset, "pv_available_ac", inputs, self.workspace.blobs
+                )
+            )
+            raw = inputs.get("profile_selections")
+            selected = ProfileSelections.read(raw).selected if raw is not None else {}
+            inputs = {
+                **inputs,
+                "profile_selections": {
+                    "schema_version": 1,
+                    "selected": {
+                        **{str(role): identity for role, identity in selected.items()},
+                        "pv_available_ac": asset.id,
+                    },
+                },
+            }
+        metadata = pinned.get("pv_available_ac.metadata")
+        if (
+            self.pv is not None
+            and "gross_load.raw" in pinned
+            and isinstance(metadata, str)
+        ):
+            inputs = comparison_horizon(inputs, self.workspace.blobs.object(metadata))
+        return inputs, prepared
 
     def requires_woo_basis(self, inputs: Object) -> bool:
         return unverified_retained_inverter(inputs) is None

@@ -83,13 +83,10 @@ export function compilePlantSearch(draft: PlantDraft): PlantSearchPlan {
 			}),
 		})),
 		parallel_groups: draft.parallel_groups.map(
-			({
-				controller_use: _use,
-				comparison_controller_product_id,
-				...group
-			}) => ({
+			({ controller_use, comparison_controller_product_id, ...group }) => ({
 				...group,
 				controller_product_id:
+					controller_use === "retain" ||
 					comparison_controller_product_id === undefined
 						? group.controller_product_id
 						: comparison_controller_product_id,

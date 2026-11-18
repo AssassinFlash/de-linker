@@ -2632,6 +2632,14 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert wired_run.state == "succeeded", wired_run.error
         wiring = json_object(wired_run.result)["assessment"]["pv_electrical"]
         assert [row["id"] for row in wiring["strings"]] == ["s_a", "s_b"]
+        with pytest.raises(ReportInputsChanged, match="report demand differs"):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                wired,
+                direct.model_copy(update={"equipment_run_id": None}),
+            )
         report = json_object(
             report_sources(
                 workspace,
@@ -2641,6 +2649,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                 direct.model_copy(update={"equipment_run_id": wired_run.id}),
             )
         )
+        assert report["candidate"] is None
         assert report["equipment"]["pv_electrical"] == wiring
         assert any(row["run_id"] == wired_run.id for row in report["source_runs"])
         assert (
@@ -2771,6 +2780,25 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
             "input_contract": SUPPORTED_INPUT_CONTRACTS[-1],
             "key": "check-current-wiring",
         }
+        if plant:
+            malformed = copy.deepcopy(declared)
+            malformed["equipment_plant_setup"]["parallel_groups"] = [
+                {
+                    "id": "shared",
+                    "unit_ids": ["a", "b"],
+                    "controller_product_id": None,
+                    "comparison_controller_product_id": None,
+                    "unknown_setting": True,
+                }
+            ]
+            response = client.post(
+                "/runs/check-equipment",
+                json={**command, "inputs": malformed},
+                headers=headers(owner),
+            )
+            assert response.status_code == 422, response.text
+            assert response.json()["error"]["code"] == "invalid_input"
+            assert not workspace.runs(owner, pid)
         invalid = copy.deepcopy(declared)
         invalid_setup = (
             invalid["equipment_plant_setup"]["units"][1]["inputs"]["equipment_setup"]
@@ -3844,6 +3872,12 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
         assert worker.run_once()
         finished = rig.post("/runs/read", {"run_id": report["id"]})
         assert finished["state"] == "succeeded", finished
+        frozen_report = json_object(
+            workspace.blobs.object(finished["result"]["pinned_assets"]["report.source"])
+        )
+        parts = frozen_report["pv_components"]
+        assert parts["components"][0]["quantity"] == 20
+        assert parts["nameplate_kwp"] == pytest.approx(9.2)
         changed = copy.deepcopy(adopted)
         changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 12
         revised = rig.post(
@@ -4561,7 +4595,8 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         ),
         max_attempts=1,
     )
-    registry = service_registry(energy, None, equipment_search=search)
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(energy, None, equipment_search=search, reports=reports)
     worker = Worker(
         Jobs(workspace),
         "unit-application-search",
@@ -4577,6 +4612,7 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         credential=lambda: TOKEN,
         limits=HttpLimits(100_000, 10_000, 10, 32),
         equipment_search=search,
+        reports=reports,
         product_provider=lambda: loaded,
     )
     setup = {
@@ -4666,6 +4702,34 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
             },
         )
         assert adopted["revision"] == 3
+        options = ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+        )
+        project = workspace.get(owner, pid)
+        assert report_sources(workspace, source, owner, project, options)["candidate"]
+        changed = copy.deepcopy(current)
+        unit = changed["equipment_plant_setup"]["units"][0]["inputs"]["equipment_setup"]
+        unit["comparison_models"] = {
+            "inverter_product_id": None,
+            "battery_product_id": None,
+        }
+        revised = rig.post(
+            "/projects/revise",
+            {
+                "project_id": pid,
+                "expected_revision": 3,
+                "inputs": changed,
+                "input_contract": "authored_equipment_discovery_v1",
+                "key": "change-unit-model-preferences",
+            },
+        )
+        assert revised["revision"] == 4
+        with pytest.raises(ReportInputsChanged):
+            report_sources(workspace, source, owner, workspace.get(owner, pid), options)
 
 
 @pytest.mark.parametrize("shape", ["single", "plant", "legacy"])
@@ -7621,6 +7685,11 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         report = rig.post("/runs/report", report_command)
         assert worker.run_once()
         assert rig.post("/runs/read", {"run_id": report["id"]})["state"] == "succeeded"
+        model_changed = copy.deepcopy(adopted_inputs)
+        model_changed["equipment_setup"]["comparison_models"] = {
+            "inverter_product_id": None,
+            "battery_product_id": candidate["selection"]["battery_product_id"],
+        }
         peak_changed = copy.deepcopy(adopted_inputs)
         peak_changed["energy_scenario"]["schedule"][0]["import_cap_kw"] = 0.25
         load_changed = copy.deepcopy(adopted_inputs)
@@ -7628,7 +7697,11 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             "gross_load", (6, 6, 6, 6), key="updated-load"
         )
         revision = adopted["revision"]
-        for key, changed in (("peak", peak_changed), ("load", load_changed)):
+        for key, changed in (
+            ("models", model_changed),
+            ("peak", peak_changed),
+            ("load", load_changed),
+        ):
             revised = revise(changed, revision, "change-" + key)
             revision = revised["revision"]
             stale = client.post(

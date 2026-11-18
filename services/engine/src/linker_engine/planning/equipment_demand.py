@@ -45,6 +45,8 @@ class EquipmentDemand(Document):
 
 def demand_scenario(
     inputs: Object,
+    *,
+    pending_pv: bool = False,
 ) -> tuple[EquipmentDemand, EnergyInputs, BatteryParameters]:
     try:
         demand = EquipmentDemand.model_validate(inputs.get("equipment_demand"))
@@ -118,7 +120,7 @@ def demand_scenario(
             "gross_load_asset_id": selected.get("gross_load"),
             "critical_load_asset_id": selected.get("critical_load"),
             "pv_available_asset_id": None
-            if pv_disabled
+            if pv_disabled or pending_pv
             else selected.get("pv_available_ac"),
             "aux_ac_asset_id": selected.get("aux_ac")
             if settings.get("aux_ac_kw") is None
@@ -142,9 +144,10 @@ def demand_scenario(
             "terminal_min_kwh": terminal(settings),
         }
     )
-    EnergyInputs.from_project(
-        {**inputs, "energy_replay": scenario.model_dump(mode="json")}
-    )
+    if not pending_pv:
+        EnergyInputs.from_project(
+            {**inputs, "energy_replay": scenario.model_dump(mode="json")}
+        )
     return demand, scenario, parameters
 
 
@@ -154,8 +157,10 @@ def pin_demand_profiles(
     actor: Actor,
     project_id: str,
     inputs: Object,
+    *,
+    pending_pv: bool = False,
 ) -> dict[str, str]:
-    _, scenario, _ = demand_scenario(inputs)
+    _, scenario, _ = demand_scenario(inputs, pending_pv=pending_pv)
     assets = Assets(workspace)
     pinned: dict[str, str] = {}
     for role, asset_id in scenario.profiles().items():

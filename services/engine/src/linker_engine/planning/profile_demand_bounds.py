@@ -136,6 +136,7 @@ def pin_profiles(
     inputs: Object,
     *,
     baseline_only: bool = False,
+    skip_pv: bool = False,
 ) -> dict[str, str]:
     source = inputs.get("profile_selections")
     if source is None:
@@ -151,6 +152,7 @@ def pin_profiles(
     roles: list[ProfileRole] = ["gross_load"] if has_load else []
     if (
         needs_pv
+        and not skip_pv
         and coupling not in ("shared_dc", "plant_shared_dc")
         and "pv_available_ac" in selected
     ):

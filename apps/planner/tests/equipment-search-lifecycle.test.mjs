@@ -236,6 +236,7 @@ async function equipmentApp(
 		pvReference = null,
 		pvFailure = null,
 		legacyInputs = null,
+		legacyUnavailable = false,
 	},
 ) {
 	const fixture = setupDom();
@@ -296,6 +297,7 @@ async function equipmentApp(
 	const requests = [];
 	const reads = [];
 	let frozenInputs = legacyInputs;
+	let comparisonUnavailable = legacyUnavailable;
 	let findAttempts = 0;
 	let lostReceipt = null;
 	let reportRun = null;
@@ -361,6 +363,8 @@ async function equipmentApp(
 				assert.equal(body.project_id, projectId);
 				assert.equal(body.run_id, serverRun.id);
 				if (selectionGate) await selectionGate.promise;
+				if (comparisonUnavailable)
+					throw new ApiError(503, "version_unavailable");
 				return {
 					schema_version: 1,
 					project_id: foreignSelection ? "0".repeat(32) : projectId,
@@ -567,6 +571,9 @@ async function equipmentApp(
 					admittedScope === nextScope &&
 					!document.body.textContent.includes(project.title),
 			);
+		},
+		recoverLegacyInputs() {
+			comparisonUnavailable = false;
 		},
 		project,
 		requests,
@@ -1343,9 +1350,93 @@ for (const multi of [false, true]) {
 	});
 }
 
+test("a failed legacy model read still lets the customer save annual electricity use", async (t) => {
+	const selected = {
+		...savedSetup,
+		inverter_product_id: 101,
+		battery_product_id: 201,
+	};
+	const choice = {
+		run_id: "7".repeat(32),
+		candidate_id: "c".repeat(64),
+		assessment_sha256: "d".repeat(64),
+	};
+	const app = await equipmentApp(t, {
+		projectId: "c".repeat(32),
+		hash: "#sc-energy",
+		legacyInputs: { equipment_setup: savedSetup },
+		legacyUnavailable: true,
+		inputs: { equipment_setup: selected, equipment_candidate: choice },
+	});
+	await untilRun(() => app.button("Try again"));
+	const annual = app.fieldInput("Annual electricity use");
+	assert.ok(annual.matches(":enabled"));
+	assert.ok(app.fieldSelect("Grid connection").matches(":disabled"));
+	await enter(annual, "42");
+	await act(async () => app.button("Save snapshot").click());
+	await untilRun(() =>
+		app.requests.some(({ path }) => path === "projects/revise"),
+	);
+	assert.deepEqual(app.requests.at(-1).body.inputs.equipment_candidate, choice);
+	assert.deepEqual(app.requests.at(-1).body.inputs.equipment_setup, selected);
+	assert.equal(app.requests.at(-1).body.inputs.brief.annual_load.kwh, 42);
+	app.recoverLegacyInputs();
+	await act(async () => app.button("Try again").click());
+	await app.step("Project");
+	const details = document.querySelector(
+		'section[aria-label="System arrangement"] details',
+	);
+	if (!details.open)
+		await act(async () => details.querySelector("summary").click());
+	const inverter = () =>
+		app.fieldSelect("Inverter or integrated storage system");
+	await untilRun(() => inverter()?.matches(":enabled"));
+	assert.equal(inverter().value, "");
+});
+
+test("a saved change to model preferences refuses a new current report from the old choice", async (t) => {
+	const projectId = "c".repeat(32);
+	const selected = makeRun(projectId, "succeeded").result.search.candidates[0]
+		.selection;
+	const { product_revisions: _revisions, ...hardware } = selected;
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+	const app = await equipmentApp(t, {
+		projectId,
+		hash: "#sc-review",
+		legacyInputs: { equipment_setup: savedSetup, brief },
+		inputs: {
+			brief,
+			equipment_setup: {
+				...hardware,
+				comparison_models: {
+					inverter_product_id: 101,
+					battery_product_id: null,
+				},
+			},
+			equipment_selection: selected,
+			equipment_candidate: {
+				run_id: "7".repeat(32),
+				candidate_id: "c".repeat(64),
+				assessment_sha256: "d".repeat(64),
+			},
+		},
+	});
+	await untilRun(() =>
+		app.button("Generate project report")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Generate project report").click());
+	await untilRun(() =>
+		document.body.textContent.includes("Compare systems again"),
+	);
+	assert.deepEqual(app.requests, []);
+});
+
 for (const change of [
 	"purpose",
 	"system scope",
+	"single model preference",
+	"plant model preference",
 	"foreign snapshot",
 	"session scope",
 ]) {
@@ -1353,11 +1444,16 @@ for (const change of [
 		const gate = change === "session scope" ? deferred() : null;
 		const app = await equipmentApp(t, {
 			projectId: "4".repeat(32),
-			hash: "#sc-energy",
+			hash: change === "plant model preference" ? "#sc-project" : "#sc-energy",
 			inputs: { equipment_setup: savedSetup },
 			foreignSelection: change === "foreign snapshot",
 			selectionGate: gate,
 		});
+		if (change === "plant model preference") {
+			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
+			await act(async () => app.button("Multiple systems").click());
+			await app.step("Energy use");
+		}
 		await chooseGoal(app);
 		await compare(app);
 		await untilRun(app.pending);
@@ -1365,7 +1461,21 @@ for (const change of [
 		await untilRun(() =>
 			app.button("Use this configuration")?.matches(":enabled"),
 		);
-		if (change === "purpose") {
+		if (change.endsWith("model preference")) {
+			await app.step("Project");
+			const details = document.querySelector(
+				'section[aria-label="System arrangement"] details',
+			);
+			if (!details.open)
+				await act(async () => details.querySelector("summary").click());
+			await untilRun(() =>
+				app
+					.fieldSelect("Inverter or integrated storage system")
+					?.matches(":enabled"),
+			);
+			await app.updateSelect("Inverter or integrated storage system", "101");
+			await app.step("System");
+		} else if (change === "purpose") {
 			await app.step("Energy use");
 			await app.updateSelect("Purpose", "peak");
 			await app.step("System");

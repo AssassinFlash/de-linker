@@ -107,6 +107,7 @@ export function EnergyDemand({
 	disabled,
 	edit,
 	compare,
+	modelsUnavailable = false,
 	client,
 	session,
 	recheck,
@@ -118,6 +119,7 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
+	modelsUnavailable?: boolean;
 	client: PlannerClient;
 	session: Session;
 	recheck: () => void;
@@ -162,6 +164,7 @@ export function EnergyDemand({
 	) => (
 		<NumberField
 			key={field}
+			disabled={modelsUnavailable && field !== "annual"}
 			label={label}
 			unit={unit}
 			value={value}
@@ -198,6 +201,7 @@ export function EnergyDemand({
 	const selected = readSelections(inputs.profile_selections).selected
 		.gross_load;
 	const blocked = disabled || busy;
+	const demandBlocked = blocked || modelsUnavailable;
 	useEffect(() => {
 		generation.current++;
 		setPreview(null);
@@ -274,7 +278,7 @@ export function EnergyDemand({
 		};
 	}, [selected, projectId, session.query_scope, client]);
 	async function run(action: () => Promise<void>) {
-		if (flight.current || disabled) return;
+		if (flight.current || disabled || modelsUnavailable) return;
 		flight.current = true;
 		setBusy(true);
 		setError("");
@@ -413,7 +417,7 @@ export function EnergyDemand({
 		!needsGridPhase &&
 		backupReady &&
 		invalid.size === 0 &&
-		!blocked;
+		!demandBlocked;
 	const canStandard =
 		pattern !== "" &&
 		brief.annual_load.kwh !== null &&
@@ -446,6 +450,7 @@ export function EnergyDemand({
 						<span>{__("Purpose", "linker-tools")}</span>
 						<select
 							value={goal}
+							disabled={modelsUnavailable}
 							onChange={(event) => {
 								const next = event.currentTarget.value;
 								if (next === "self" || next === "backup" || next === "peak") {
@@ -504,6 +509,7 @@ export function EnergyDemand({
 						<span>{__("Grid connection", "linker-tools")}</span>
 						<select
 							value={String(equipment.grid_phase ?? "")}
+							disabled={modelsUnavailable}
 							onChange={(event) => {
 								const value = event.currentTarget.value;
 								edit((current) =>
@@ -571,7 +577,7 @@ export function EnergyDemand({
 					<button
 						className="sc-button"
 						type="button"
-						disabled={blocked}
+						disabled={demandBlocked}
 						onClick={() => setCsv(!csv)}
 					>
 						{csv
@@ -585,7 +591,7 @@ export function EnergyDemand({
 						"linker-tools",
 					)}
 				</p>
-				<fieldset disabled={blocked}>
+				<fieldset disabled={demandBlocked}>
 					<div className="sc-fields">
 						<label className="sc-field">
 							<span>{__("Time zone", "linker-tools")}</span>
@@ -948,7 +954,7 @@ export function EnergyDemand({
 					<button
 						type="button"
 						className="sc-button"
-						disabled={blocked}
+						disabled={demandBlocked}
 						onClick={() => void run(() => importProfile())}
 					>
 						{__("Retry profile import", "linker-tools")}
@@ -1010,7 +1016,7 @@ export function EnergyDemand({
 							"linker-tools",
 						)}
 					</p>
-					<fieldset disabled={blocked} className="sc-fields">
+					<fieldset disabled={demandBlocked} className="sc-fields">
 						{number(
 							"power",
 							__("Continuous discharge power", "linker-tools"),
