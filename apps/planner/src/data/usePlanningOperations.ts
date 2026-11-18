@@ -236,17 +236,6 @@ export function usePlanningOperations({
 			createdAt: Date.now(),
 			resultId: null,
 		};
-		const removeRecord = () => {
-			if (current())
-				setRecords((rows) =>
-					rows.filter(
-						(row) =>
-							row.scope !== originScope ||
-							row.path !== path ||
-							row.body !== body,
-					),
-				);
-		};
 		setBusy(true);
 		setError(null);
 		setIntent(pending);
@@ -330,10 +319,8 @@ export function usePlanningOperations({
 				throw new ApiError(502, "invalid_energy_receipt");
 			try {
 				await store.acknowledge(originScope, path, body, resultId);
-				if (path !== "battery/scenario") {
+				if (path !== "battery/scenario")
 					await store.clear(originScope, path, body);
-					removeRecord();
-				}
 			} catch {
 				if (current()) setStorageFailed(true);
 			}
@@ -353,8 +340,17 @@ export function usePlanningOperations({
 					if (current()) setStorageFailed(true);
 					return;
 				}
-				removeRecord();
-				if (current()) setIntent(null);
+				if (current()) {
+					setRecords((rows) =>
+						rows.filter(
+							(row) =>
+								row.scope !== originScope ||
+								row.path !== path ||
+								row.body !== body,
+						),
+					);
+					setIntent(null);
+				}
 			};
 			if (
 				cause instanceof ApiError &&

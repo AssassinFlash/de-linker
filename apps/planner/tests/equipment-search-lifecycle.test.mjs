@@ -1141,6 +1141,11 @@ test("a lost comparison receipt blocks another comparison and explicitly replays
 	);
 	assert.equal(searchRequests(app).length, 1);
 	assert.equal(app.button("Compare systems").disabled, true);
+	await app.step("System");
+	assert.doesNotMatch(
+		document.querySelector("main").textContent,
+		/Enter your energy needs/,
+	);
 	await act(async () => app.button("Check previous request").click());
 	await untilRun(app.pending);
 	const [original, replayed] = searchRequests(app).map(({ body }) => body);

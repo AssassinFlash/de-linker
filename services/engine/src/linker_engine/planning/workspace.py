@@ -24,8 +24,10 @@ from .equipment_condition_inputs import validate_condition_inputs
 from .errors import (
     Conflict,
     EvaluationRevisionChanged,
+    InquiryChanged,
     InvalidInput,
     NotFound,
+    PreparedHandoff,
     VersionUnavailable,
 )
 from .execution_control import require_accepting
@@ -173,8 +175,31 @@ class Workspace:
             ).fetchall()
             return [self._project(connection, actor, row["id"]) for row in rows]
 
+    @staticmethod
+    def _inquiry_state(
+        connection: sqlite3.Connection, project_id: str
+    ) -> tuple[bool, int]:
+        row = connection.execute(
+            "SELECT EXISTS(SELECT 1 FROM handoffs WHERE project_id=?), "
+            "COALESCE((SELECT generation FROM inquiry_generations WHERE project_id=?), 0)",
+            (project_id, project_id),
+        ).fetchone()
+        return bool(row[0]), int(row[1])
+
+    def prepared_handoffs(self, actor: Actor, project_id: str) -> Object:
+        with self.database.read() as connection:
+            project_row(connection, actor, project_id, write=True)
+            prepared, generation = self._inquiry_state(connection, project_id)
+            return {"has_handoffs": prepared, "inquiry_generation": generation}
+
     def delete(
-        self, actor: Actor, project_id: str, expected_revision: int, *, key: str
+        self,
+        actor: Actor,
+        project_id: str,
+        expected_revision: int,
+        *,
+        key: str,
+        inquiry_generation: int | None = None,
     ) -> Object:
         positive_integer(expected_revision, "expected revision")
         command = commands.command_hash({"expected_revision": expected_revision}, key)
@@ -196,13 +221,19 @@ class Workspace:
             project = project_row(connection, actor, project_id, write=True)
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
-            if (
+            prepared, generation = self._inquiry_state(connection, project_id)
+            if prepared:
+                if inquiry_generation is None:
+                    raise PreparedHandoff(
+                        "prepared handoff requires a Woo inquiry check"
+                    )
+                if generation != inquiry_generation:
+                    raise InquiryChanged(
+                        "inquiry admission changed since the Woo check"
+                    )
                 connection.execute(
-                    "SELECT 1 FROM handoffs WHERE project_id=?", (project_id,)
-                ).fetchone()
-                is not None
-            ):
-                raise Conflict("project has a handoff")
+                    "DELETE FROM handoffs WHERE project_id=?", (project_id,)
+                )
             now = self.clock()
             connection.execute(
                 "UPDATE jobs SET state='cancelled', updated_at=? "

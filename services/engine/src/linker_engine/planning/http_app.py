@@ -74,6 +74,7 @@ from .http_documents import (
     AssetRead,
     BatteryScenario,
     CertificateRead,
+    CheckedProjectDelete,
     Command,
     CsvImport,
     CsvInspect,
@@ -85,9 +86,11 @@ from .http_documents import (
     GeometryReview,
     HandoffPrepare,
     HandoffRead,
+    InquiryAdmission,
     InstallationReview,
     PlaceLookup,
     PlaceOutline,
+    PreparedHandoffs,
     ProfilePreviewRead,
     ProjectAssistant,
     ProjectCreate,
@@ -755,6 +758,12 @@ def create_private_app(
             key=body.key,
         )
 
+    @app.post("/handoffs/admit-inquiry")
+    def admit_inquiry(body: InquiryAdmission, request: Request) -> Object:
+        return Handoffs(workspace).admit_inquiry(
+            verified_actor(request.scope), body.handoff_id, body.snapshot_sha256
+        )
+
     @app.post("/handoffs/read")
     def read_handoff(body: HandoffRead, request: Request) -> Object:
         return Handoffs(workspace).read(verified_actor(request.scope), body.handoff_id)
@@ -864,6 +873,12 @@ def create_private_app(
             )
         )
 
+    @app.post("/projects/prepared-handoffs")
+    def prepared_handoffs(body: PreparedHandoffs, request: Request) -> Object:
+        return workspace.prepared_handoffs(
+            verified_actor(request.scope, write=True), body.project_id
+        )
+
     @app.post("/projects/delete")
     def delete(body: ProjectDelete, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
@@ -872,6 +887,16 @@ def create_private_app(
             return previous
         return workspace.delete(
             actor, body.project_id, body.expected_revision, key=body.key
+        )
+
+    @app.post("/projects/delete-after-inquiry-check")
+    def checked_delete(body: CheckedProjectDelete, request: Request) -> Object:
+        return workspace.delete(
+            verified_actor(request.scope, write=True),
+            body.project_id,
+            body.expected_revision,
+            key=body.key,
+            inquiry_generation=body.inquiry_generation,
         )
 
     @app.post("/projects/runs")

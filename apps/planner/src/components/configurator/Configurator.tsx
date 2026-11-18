@@ -646,6 +646,18 @@ export default function Configurator({
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
 		...(step === "system" ? [systemRead] : []),
 	].find((query) => query.isError);
+	const confirmedIntent = operations.intent?.resultId
+		? operations.intent
+		: null;
+	const unconfirmed = operations.records.filter(
+		(record) =>
+			!operations.busy &&
+			record.resultId === null &&
+			(operations.storageFailed || record.key !== confirmedIntent?.key),
+	);
+	const awaitingComparison = unconfirmed.some(
+		(record) => record.path === "runs/find-equipment",
+	);
 	const findingEquipment =
 		operations.busy && operations.intent?.path === "runs/find-equipment";
 	const failure =
@@ -894,40 +906,36 @@ export default function Configurator({
 					{__("Finding equipment for your project…", "linker-tools")}
 				</p>
 			)}
-			{operations.records
-				.filter((record) => record.resultId === null && !operations.busy)
-				.map((record) => (
-					<div className="sc-card" key={record.key}>
-						<p>
-							{__(
-								"Confirm the result of your previous request before continuing.",
-								"linker-tools",
-							)}
-						</p>
-						<button
-							className="sc-button"
-							disabled={operations.busy}
-							onClick={() =>
-								void operations.retry(record).then((reply) => {
-									if (reply?.path === "runs/check-equipment") {
-										navigate("review");
-									} else if (
-										reply &&
-										"run" in reply &&
-										reply.path !== "runs/pvgis-reference"
-									) {
-										accepted(reply.run);
-										navigate(
-											reply.path === "runs/report" ? "review" : "system",
-										);
-									}
-								})
-							}
-						>
-							{__("Check previous request", "linker-tools")}
-						</button>
-					</div>
-				))}
+			{unconfirmed.map((record) => (
+				<div className="sc-card" key={record.key}>
+					<p>
+						{__(
+							"Confirm the result of your previous request before continuing.",
+							"linker-tools",
+						)}
+					</p>
+					<button
+						className="sc-button"
+						disabled={operations.busy}
+						onClick={() =>
+							void operations.retry(record).then((reply) => {
+								if (reply?.path === "runs/check-equipment") {
+									navigate("review");
+								} else if (
+									reply &&
+									"run" in reply &&
+									reply.path !== "runs/pvgis-reference"
+								) {
+									accepted(reply.run);
+									navigate(reply.path === "runs/report" ? "review" : "system");
+								}
+							})
+						}
+					>
+						{__("Check previous request", "linker-tools")}
+					</button>
+				</div>
+			))}
 			<div className="sc-layout">
 				<main ref={main} tabIndex={-1} className="sc-main">
 					{activeStep === "project" && (
@@ -996,7 +1004,8 @@ export default function Configurator({
 					)}
 					{activeStep === "system" && (
 						<>
-							{findingEquipment ? null : searchRun?.state === "succeeded" &&
+							{findingEquipment ||
+							awaitingComparison ? null : searchRun?.state === "succeeded" &&
 							  searchRun.result ? (
 								<SystemOptions
 									solarOnly={brief.system_scope === "pv_only"}

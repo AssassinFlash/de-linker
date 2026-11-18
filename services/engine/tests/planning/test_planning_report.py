@@ -758,6 +758,84 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert workspace.blobs.object(report_source_sha) == recorded_source
         assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
 
+        # A preview freezes the report, but only Woo can establish that an
+        # inquiry actually references it. A new submission invalidates a delete
+        # dispatched before its order transaction, even if that RPC arrives late.
+        source = {"schema_version": 1, "project_id": project.id}
+        delete = {**source, "expected_revision": changed.revision, "key": "remove"}
+        initial = client.post("/projects/delete", json=delete, headers=caller_headers())
+        assert initial.status_code == 409
+        assert initial.json()["error"]["code"] == "prepared_handoff"
+        assert (
+            client.post(
+                "/projects/delete",
+                json={**delete, "inquiry_generation": 0},
+                headers=caller_headers(),
+            ).status_code
+            == 422
+        )
+        check = client.post(
+            "/projects/prepared-handoffs", json=source, headers=caller_headers()
+        )
+        assert check.json() == {"has_handoffs": True, "inquiry_generation": 0}
+        admission = {
+            "schema_version": 1,
+            "handoff_id": handoff["id"],
+            "snapshot_sha256": handoff["snapshot_sha256"],
+        }
+        team = {**caller_headers(), "X-Linker-Planner-Principal-Kind": "team"}
+        assert (
+            client.post(
+                "/handoffs/admit-inquiry", json=admission, headers=caller_headers()
+            ).status_code
+            == 404
+        )
+        assert (
+            client.post(
+                "/handoffs/admit-inquiry",
+                json={**admission, "snapshot_sha256": "0" * 64},
+                headers=team,
+            ).status_code
+            == 409
+        )
+        assert client.post(
+            "/handoffs/admit-inquiry", json=admission, headers=team
+        ).json() == {"admitted": True}
+        stale = client.post(
+            "/projects/delete-after-inquiry-check",
+            json={**delete, "inquiry_generation": 0},
+            headers=caller_headers(),
+        )
+        assert (
+            stale.status_code == 409
+            and stale.json()["error"]["code"] == "inquiry_changed"
+        )
+        assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
+        # If the native transaction rolled back, Woo can authorise a fresh
+        # deletion; its receipt is still the original customer intent.
+        latest = client.post(
+            "/projects/prepared-handoffs", json=source, headers=caller_headers()
+        ).json()
+        assert latest["inquiry_generation"] == 1
+        removed = client.post(
+            "/projects/delete-after-inquiry-check",
+            json={**delete, "inquiry_generation": latest["inquiry_generation"]},
+            headers=caller_headers(),
+        )
+        assert removed.status_code == 200 and removed.json()["deleted"] is True
+        assert (
+            client.post(
+                "/projects/delete", json=delete, headers=caller_headers()
+            ).json()
+            == removed.json()
+        )
+        assert (
+            client.post(
+                "/handoffs/admit-inquiry", json=admission, headers=team
+            ).status_code
+            == 404
+        )
+
 
 def test_device_report_keeps_each_documents_result_and_unanswered_device(
     workspace: Workspace,

@@ -311,39 +311,44 @@ test("a changed revision explains itself and the retry is a new command for the 
 	assert.notEqual(deletes[1].key, deletes[0].key);
 });
 
-test("a handoff refusal names the inquiry and keeps the project listed", async (t) => {
-	const store = recordingStore();
-	const mounted = await mount(async (url) => {
-		if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
-		if (String(url).endsWith("/bootstrap")) return response(session());
-		if (String(url).endsWith("/recovery/scopes"))
-			return response({ schema_version: 1, scopes: [], next: null });
-		if (String(url).endsWith("/projects/list"))
-			return response({ items: projects(), next: null });
-		if (String(url).endsWith("/projects/read"))
-			return response({
-				id: "1".repeat(32),
-				title: "Delete me",
-				revision: 1,
-				input_sha256: "2".repeat(64),
-				inputs: {},
-			});
-		if (String(url).endsWith("/projects/delete"))
-			return response({ error: { code: "conflict" } }, 409);
-		throw new Error("unexpected fetch " + String(url));
-	}, store);
-	t.after(() => mounted.dispose());
-	await act(async () => deleteIcon().click());
-	await act(async () => confirmButton().click());
-	await until(() =>
-		document
-			.querySelector('[role="group"][aria-label="Delete this project"]')
-			.textContent.includes(
-				"This project was handed to the Linker team as an inquiry and cannot be deleted.",
-			),
-	);
-	assert.ok(document.body.textContent.includes("Delete me"));
-});
+for (const [code, message] of [
+	[
+		"inquiry_linked",
+		"This project was handed to the Linker team as an inquiry and cannot be deleted.",
+	],
+	["inquiry_changed", "The project could not be deleted."],
+])
+	test(`a ${code} refusal explains the result and keeps the project listed`, async (t) => {
+		const store = recordingStore();
+		const mounted = await mount(async (url) => {
+			if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+			if (String(url).endsWith("/bootstrap")) return response(session());
+			if (String(url).endsWith("/recovery/scopes"))
+				return response({ schema_version: 1, scopes: [], next: null });
+			if (String(url).endsWith("/projects/list"))
+				return response({ items: projects(), next: null });
+			if (String(url).endsWith("/projects/read"))
+				return response({
+					id: "1".repeat(32),
+					title: "Delete me",
+					revision: 1,
+					input_sha256: "2".repeat(64),
+					inputs: {},
+				});
+			if (String(url).endsWith("/projects/delete"))
+				return response({ error: { code } }, 409);
+			throw new Error("unexpected fetch " + String(url));
+		}, store);
+		t.after(() => mounted.dispose());
+		await act(async () => deleteIcon().click());
+		await act(async () => confirmButton().click());
+		await until(() =>
+			document
+				.querySelector('[role="group"][aria-label="Delete this project"]')
+				.textContent.includes(message),
+		);
+		assert.ok(document.body.textContent.includes("Delete me"));
+	});
 
 test("a failed delete recovers with the same request and repeated clicks send one command", async (t) => {
 	const store = recordingStore();
