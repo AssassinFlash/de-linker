@@ -247,6 +247,20 @@ final class InquiryTest extends IntegrationTestCase {
 		if ( 'lost_lock' === $outcome ) {
 			$this->assertInstanceOf( \WP_Error::class, $result );
 			$this->assertFalse( \Linker\Commerce\Planning\ProjectReferences::contains( $handoff['snapshot']['project_id'] ), 'A submitter that lost a project lock must not commit an inquiry.' );
+			$this->assertSame( 'planning_admission_unavailable', $result->get_error_code() );
+			\Linker\Commerce\Protection\FormRecovery::save( 'inquiry', $post + array( 'linker_request_id' => wp_generate_uuid4() ), $result );
+			$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'inquiry', true );
+			$this->assertSame( '', $fields['linker_request_id'] );
+			$this->assertSame( $post['email'], $fields['email'] );
+			$retry = $submit();
+			$this->assertInstanceOf( \WC_Order::class, $retry );
+			$this->later(
+				static function () use ( $retry ): void {
+					$retry->delete( true );
+				}
+			);
+			$this->assertSame( Statuses::RECEIVED, $retry->get_status() );
+			$this->assertSame( array_keys( $draft ), array_keys( \Linker\Commerce\Planning\Context::stored( $retry ) ) );
 			return;
 		}
 		if ( $ok ) {

@@ -66,16 +66,21 @@ final class Sender {
 			)
 		);
 		WC()->cart->calculate_totals();
+		$lock_refused = false;
 		try {
-			$order = \Linker\Commerce\Planning\Context::submit_inquiry( fn ( array $references ) => $this->create( $details, $data, $summary, $context, $references ) );
+			$order = \Linker\Commerce\Planning\Context::submit_inquiry(
+				function ( array $references ) use ( $details, $data, $summary, $context, &$lock_refused ) {
+					return $this->create( $details, $data, $summary, $context, $references, $lock_refused );
+				}
+			);
 			if ( $order instanceof WC_Order ) {
 				\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
 				WC()->cart->empty_cart();
 			}
-			return $order;
 		} catch ( \Throwable $error ) {
-			return $this->unknown();
+			$order = $this->unknown();
 		}
+		return $lock_refused ? \Linker\Commerce\Planning\Context::admission_unavailable() : $order;
 	}
 
 	/**
@@ -86,11 +91,12 @@ final class Sender {
 	 * @param array<string,mixed>|false|null    $summary Selected conversation summary.
 	 * @param array<string,mixed>               $context Related conversation/page.
 	 * @param array<string,array<string,mixed>> $references Admitted frozen reports.
+	 * @param bool                              $lock_refused New order stopped at its pre-save project lock check.
 	 */
-	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references ): WC_Order|WP_Error {
+	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references, bool &$lock_refused ): WC_Order|WP_Error {
 		$prepared_key = '';
 		$transaction  = null;
-		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $references, &$prepared_key, &$transaction ): void {
+		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $references, &$lock_refused, &$prepared_key, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
 			if ( $awaited ) {
@@ -105,7 +111,10 @@ final class Sender {
 			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
 			// Optional summary/provider work has finished before the first native write.
 			$transaction = new NativeTransaction();
+			// Woo converts a thrown pre-save check to checkout-error; releasing a lost lock can then throw again.
+			$lock_refused = 0 === $order->get_id();
 			\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
+			$lock_refused = false;
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
 		try {

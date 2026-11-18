@@ -299,6 +299,11 @@ final class Context {
 		self::$consumed_revisions = array_column( $notes, 'note_revision', 'handoff_id' );
 	}
 
+	/** A definite refusal before Woo writes the inquiry. */
+	public static function admission_unavailable(): WP_Error {
+		return new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+	}
+
 	/**
 	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
@@ -309,7 +314,7 @@ final class Context {
 		if ( array() === $handoffs ) {
 			return $submit( array() );
 		}
-		$retry = new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+		$retry = self::admission_unavailable();
 		if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
 			return $retry;
 		}
