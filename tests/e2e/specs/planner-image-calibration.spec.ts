@@ -21,6 +21,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { seedConsentCookies } from '../lib/consent';
 import {
 	plannerWords,
+	plannerScreenshot,
 	fillSolarProject,
 	compareProject,
 	reopenProject,
@@ -173,6 +174,10 @@ test.describe('native image calibration', () => {
 				await expect(panel).toContainText(num(lang, '0.02'));
 				await expect(panel).toContainText(words.usable);
 				await panel
+					.getByText(words.recordedScale, { exact: true })
+					.scrollIntoViewIfNeeded();
+				await plannerScreenshot(page, `calibrated-${lang}-${width}`);
+				await panel
 					.getByRole('button', { name: words.continue, exact: true })
 					.click();
 
@@ -251,6 +256,8 @@ test.describe('native image calibration', () => {
 				);
 				await expect(source).toContainText(num(lang, '0.05'));
 				await expect(source).toContainText(num(lang, '0.02'));
+				await source.scrollIntoViewIfNeeded();
+				await plannerScreenshot(page, `source-${lang}-${width}`);
 				await deleteOpenProject(page, lang, title);
 			});
 		}
