@@ -233,7 +233,9 @@ export default function Configurator({
 		const target = main.current?.querySelector<HTMLElement>(
 			invalidInput
 				? '[aria-invalid="true"]:not(summary)'
-				: '[aria-invalid="true"]',
+				: missingModules
+					? 'summary[aria-invalid="true"]'
+					: '[aria-invalid="true"]',
 		);
 		for (
 			let details = target?.parentElement?.closest("details");

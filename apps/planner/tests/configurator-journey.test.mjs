@@ -1429,8 +1429,8 @@ for (const scenario of [
 				const other = otherPrompt?.parentElement;
 				if (!editor.open) await act(async () => prompt.click());
 				await act(async () => button("Edit string", editor).click());
-				const clearSelection = async () => {
-					const clear = button("Clear selection", editor);
+				const clearSelection = async (scope = editor) => {
+					const clear = button("Clear selection", scope);
 					await act(async () =>
 						clear.closest("details").querySelector("summary").click(),
 					);
@@ -1490,6 +1490,27 @@ for (const scenario of [
 				assert.equal(picker.hasAttribute("aria-invalid"), false);
 				assert.equal(button("Save string changes", editor).disabled, false);
 				await act(async () => button("Save string changes", editor).click());
+				if (other) {
+					await enter(field("MPPT", editor), "4");
+					const occupiedInput = field("Inverter input", editor);
+					await enter(occupiedInput, "1");
+					assert.equal(occupiedInput.getAttribute("aria-invalid"), "true");
+					await act(async () => button("Edit string", other).click());
+					await clearSelection(other);
+					await act(async () => otherPrompt.click());
+					assert.equal(other.open, false);
+					await act(async () => button("5Review & share").click());
+					assert.equal(window.location.hash, "#sc-solar");
+					const otherPicker = button("Select all available modules", other)
+						.closest("details")
+						.querySelector("summary");
+					assert.ok(
+						document.activeElement === otherPicker,
+						`focus the second array picker, got ${document.activeElement?.labels?.[0]?.querySelector("span")?.textContent.trim() ?? document.activeElement?.tagName}`,
+					);
+					assert.equal(other.open, true);
+					await act(async () => button("Cancel editing", other).click());
+				}
 				await act(async () => button("5Review & share").click());
 			}
 			if (editPeak) {
