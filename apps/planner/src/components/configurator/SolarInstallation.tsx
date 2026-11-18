@@ -30,6 +30,7 @@ import {
 	type CalibrationCommand,
 } from "../design/ImageCalibrationWorkspace.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
+import { SourceMeasurements } from "../design/MapSourceDetails.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
@@ -1826,6 +1827,9 @@ export function SolarInstallation({
 							{geometry.sources.map((source) => (
 								<fieldset key={source.id}>
 									<legend>{source.note}</legend>
+									<dl className="lp-drawing-source">
+										<SourceMeasurements source={source} locale={config.locale} />
+									</dl>
 									<GeometryExportPermission
 										value={source.permissions.export}
 										disabled={

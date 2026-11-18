@@ -7,6 +7,7 @@ import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "j
 import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
 import { emptyBrief } from "../src/domain/brief.ts";
+import { buildCalibration } from "../src/domain/imageCalibration.ts";
 register("./map-library-loader.mjs", import.meta.url);
 
 const aerial = {
@@ -121,6 +122,36 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("reopened roof source shows its declared precision, measurement note and recorded image scale", async (t) => {
+	const geometry = structuredClone(flat);
+	Object.assign(geometry.sources[0], {
+		kind: "user_drawing",
+		rights_basis: "user_attestation",
+		note: "roof-plan.png",
+		spatial_precision_m: 0.05,
+		calibration_note: "Installer checked the second span.",
+		calibration: buildCalibration({
+			view: "horizontal_plan",
+			image: { media_type: "image/png", pixel_width: 800, pixel_height: 800 },
+			controlPoints: { first: [100, 100], second: [400, 100] },
+			knownLength: 6,
+			downslopeBearingDeg: 0,
+			checkPoints: { first: [100, 200], second: [700, 200] },
+			checkLength: 12,
+			checkToleranceRatio: 0.01,
+			pitchDeg: 0,
+			note: "Drawing scale verified.",
+		}),
+	});
+	await mount(t, { brief: emptyBrief(), geometry }, aerial, null, "de");
+	const properties = [...document.querySelectorAll("fieldset")].find(
+		(field) => field.querySelector(":scope > legend")?.textContent === "roof-plan.png",
+	);
+	assert.ok(properties);
+	assert.match(properties.textContent, /0,05/);
+	assert.match(properties.textContent, /Installer checked the second span\./);
+	assert.match(properties.textContent, /0,02 m je Pixel/);
+});
 test("roof overview opens the editor and returns to the recorded layout", async (t) => {
 	const app = await mount(t);
 	assert.ok(document.querySelector("svg.sc-roof-preview"));
