@@ -160,6 +160,16 @@ export class ProtectionClient implements PublicProtection {
 			return prior.promise;
 		}
 		this.reset( action );
+		// Native draft controls can switch surfaces before an old Verify returns.
+		if (
+			action === 'draft_write' &&
+			prior &&
+			prior.container !== container
+		) {
+			prior.container.dispatchEvent(
+				new Event( 'linker:draft-verification-cancelled' )
+			);
+		}
 		const attempt: Attempt = {
 			container,
 			// Preparation, script load and validation each retain their network

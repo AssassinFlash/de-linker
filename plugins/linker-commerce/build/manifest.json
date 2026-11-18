@@ -12,9 +12,9 @@
 		"src/contact-language/index.ts": "67f1a17abc2b104d7e53460a5a743d58df9550ee29f72886cb0fcd6e1d520aed",
 		"src/contact-language/navigation.ts": "663bfa5136a37162b085ce682a077897ab497393cf5222e919fd9d81bebaa253",
 		"src/css.d.ts": "da5bf71d48cf909584a01c80b445f730507068f5b34c920f352e2bfcf0315e4c",
-		"src/protection/client.ts": "dd2e20014ddb776d20a68f9fc75d55a0b11af7387e5a3f0e7921833624e80c82",
-		"src/protection/draft.ts": "812d3fbc40dadd8de511ac55d885d73f8a0acbee47eb0205fa5cf61b326f1abf",
-		"src/protection/forms.ts": "ca390c3db0ceaad51342c5eaf46c40011a7a7156a09f9c97f3854c1a97e7c8dc",
+		"src/protection/client.ts": "a6438b23dabfbbe8625086dd9c746a22fea7485e9660a921499cc3e64f9795e8",
+		"src/protection/draft.ts": "ab39a14127b718e7f658c337dea928718ba35f7be423f2e95cb845ddfe451281",
+		"src/protection/forms.ts": "7273d5835a3db12c3cfd602d09e799be1a16611d70d6a85639ec2240d02b25d2",
 		"src/protection/index.ts": "5a1ff7f2a6c0f4050952e92d06f49d9aa315442b81261557ec2bf7f656321011",
 		"src/protection/messages.ts": "29be08faca73770982a88efb73de891287589de8bbe293c47a7cd49a53483940",
 		"src/protection/types.ts": "6beb09b61b089bc13f82162c7d4ca981b10ce5eb9b5a5895497da6b74f780905",
@@ -25,8 +25,8 @@
 		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
 		"build/contact-language.asset.php": "1b8ea722ca6498f4e6c8704b74f1d16f51ec79e5c3e8d8ba084a0a4259c8aab2",
 		"build/contact-language.js": "90493c7ecec583584ff0bda64b7fbe03eaa89b1ed37ee765b5d204a14b581e11",
-		"build/protection.asset.php": "049ddc3db00aef4c329b37929601f1cba40e0dcc21b25c3f715d3f0eed41bf72",
-		"build/protection.js": "df70db4032f056dd6e202354b651a020aa81c64d4095dd6cfe6ba783cb3168ab",
+		"build/protection.asset.php": "3c97446343ca7443fdaf064404bbe46c595c1cfdc21c300b79a8039a87e3482d",
+		"build/protection.js": "26df097547e518e862a822b638dc55f657f5fbb609bd591773c8f671d1a58e32",
 		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
 		"build/style-accounts.css": "bf3039f48fd4dfb07f9752fe763d29f52eee185031f5217edf999ea6fa62e516"
 	}
