@@ -122,7 +122,7 @@ final class Checkout {
 				'{{promise}}'        => $held ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
 				'{{url}}'            => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
 				'{{action}}'         => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
-				'{{receipt_notice}}' => $held ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( $order instanceof WC_Order && '' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META )
+				'{{receipt_notice}}' => $held ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( $order instanceof WC_Order && 'sent_no_receipt' === \Linker\Commerce\Contact\Handler::receipt_state( $order )
 					? esc_html__( 'We have not sent a confirmation email.', 'linker-commerce' ) : '' ),
 			)
 		);
