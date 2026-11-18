@@ -148,8 +148,11 @@ html[lang^="de"] #tv-contact-v1 p {
 }
 
 #contact-form .linker-contact-card .linker-contact-form .linker-form-input {
-	min-height: var(--proto-control-height);
 	border-radius: var(--proto-input-radius);
+}
+
+#contact-form .linker-contact-card .linker-contact-form :is(input, select).linker-form-input {
+	min-height: var(--proto-control-height);
 }
 
 #contact-form .linker-contact-overline {
