@@ -1422,28 +1422,14 @@ for (const scenario of [
 					assert.equal(add.disabled, false);
 					await act(async () => add.click());
 					await act(async () => button("Edit string", editor).click());
-					await enter(field("MPPT", editor), "3");
-					await act(async () => button("5Review & share").click());
-					assert.equal(window.location.hash, "#sc-solar");
-					assert.ok(
-						[...dom.element.querySelectorAll('[role="alert"]')].some(
-							(alert) =>
-								alert.textContent ===
-								"Save or cancel your string changes before continuing.",
-						),
-					);
-					await act(async () => button("Cancel editing", editor).click());
-					assert.equal(field("MPPT", editor).value, "2");
-					await act(async () => button("Edit string", editor).click());
 					await enter(field("MPPT", editor), "4");
-					await act(async () => button("Save string changes", editor).click());
+					assert.ok(!button("Save string changes", editor));
 					assert.match(editor.textContent, /MPPT 4 · input 1/);
 				}
 				const [prompt, otherPrompt] = editors();
 				const editor = prompt.parentElement;
 				const other = otherPrompt?.parentElement;
 				if (!editor.open) await act(async () => prompt.click());
-				await act(async () => button("Edit string", editor).click());
 				const clearSelection = async (scope = editor) => {
 					const clear = button("Clear selection", scope);
 					await act(async () =>
@@ -1455,11 +1441,6 @@ for (const scenario of [
 				await clearSelection();
 				await act(async () => prompt.click());
 				assert.equal(editor.open, false);
-				assert.equal(button("Save string changes", editor).disabled, true);
-				if (other) {
-					await act(async () => button("Edit string", other).click());
-					await enter(field("MPPT", other), "3");
-				}
 				await act(async () => button("5Review & share").click());
 				assert.equal(window.location.hash, "#sc-solar");
 				assert.equal(editor.open, true);
@@ -1495,7 +1476,6 @@ for (const scenario of [
 				await act(async () => button("Cancel editing", editor).click());
 				assert.match(editor.textContent, /MPPT 4 · input 1/);
 				await act(async () => button("Edit string", editor).click());
-				assert.equal(button("Save string changes", editor).disabled, false);
 				await clearSelection();
 				await act(async () => button("5Review & share").click());
 				assert.equal(picker.closest("details").open, true);
@@ -1503,9 +1483,8 @@ for (const scenario of [
 					button("Select all available modules", editor).click(),
 				);
 				assert.equal(picker.hasAttribute("aria-invalid"), false);
-				assert.equal(button("Save string changes", editor).disabled, false);
-				await act(async () => button("Save string changes", editor).click());
 				if (other) {
+					await act(async () => button("Done editing", editor).click());
 					await enter(field("MPPT", editor), "4");
 					const occupiedInput = field("Inverter input", editor);
 					await enter(occupiedInput, "1");

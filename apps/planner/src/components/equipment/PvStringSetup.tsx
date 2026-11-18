@@ -12,7 +12,7 @@ import { Notice } from "../Notice.tsx";
 import { PvOperatingSetup } from "./PvOperatingSetup.tsx";
 import { PvModuleSelection } from "./PvModuleSelection.tsx";
 
-export type StringEditBlock = "pending" | "selection" | null;
+export type StringEditBlock = "selection" | null;
 
 export function PvStringSetup({
 	draft,
@@ -94,9 +94,10 @@ export function PvStringSetup({
 			),
 		[geometry, poses, locale],
 	);
+	const editingId = editing?.id;
 	useEffect(() => {
-		if (editing) editor.current?.focus();
-	}, [editing]);
+		if (editingId) editor.current?.focus();
+	}, [editingId]);
 	const [fields, setFields] = useState<Record<string, boolean>>({});
 	const validity = useMemo(
 		() =>
@@ -202,23 +203,55 @@ export function PvStringSetup({
 		setBatchSize(null);
 	};
 	const pendingStringChanges =
-		checkedInReport &&
 		editing !== null &&
 		(mppt !== editing.mppt ||
 			port !== editing.input ||
 			JSON.stringify(selected) !== JSON.stringify(editing.module_ids));
+	useEffect(() => {
+		if (
+			!pendingStringChanges ||
+			!canApply ||
+			disabled ||
+			applyFailed ||
+			!plan ||
+			!editing ||
+			mppt === null ||
+			port === null
+		)
+			return;
+		const next = { ...editing, mppt, input: port, module_ids: selected };
+		if (
+			change({
+				...plan,
+				strings: plan.strings.map((s) => (s.id === editing.id ? next : s)),
+			})
+		)
+			setEditing(next);
+		else setApplyFailed(true);
+	}, [
+		pendingStringChanges,
+		canApply,
+		disabled,
+		applyFailed,
+		plan,
+		editing,
+		mppt,
+		port,
+		selected,
+		change,
+	]);
 	const canLeave =
 		!pendingStringChanges &&
 		(controlled || checkedInReport ? fieldsValid : valid);
 	const emptySelection = pendingStringChanges && selected.length === 0;
 	const editBlock: StringEditBlock =
-		!fieldsValid || conflictingInput
-			? null
-			: emptySelection
-				? "selection"
-				: pendingStringChanges && canApply
-					? "pending"
-					: null;
+		fieldsValid &&
+		!conflictingInput &&
+		mppt !== null &&
+		port !== null &&
+		emptySelection
+			? "selection"
+			: null;
 	useEffect(() => {
 		onValidity(canLeave, editBlock);
 		return () => onValidity(true, null);
@@ -354,9 +387,15 @@ export function PvStringSetup({
 							<button
 								type="button"
 								className="lp-text-button"
-								disabled={disabled || editing !== null || !fieldsValid}
+								disabled={
+									disabled ||
+									editing?.id === s.id ||
+									pendingStringChanges ||
+									!fieldsValid
+								}
 								onClick={() => {
-									backup.current = { selected, mppt, port, batchSize };
+									if (!editing)
+										backup.current = { selected, mppt, port, batchSize };
 									setEditing({ ...s, module_ids: [...s.module_ids] });
 									setSelected([...s.module_ids]);
 									setMppt(s.mppt);
@@ -432,7 +471,15 @@ export function PvStringSetup({
 							min={1}
 							value={mppt}
 							locale={locale}
-							onChange={setMppt}
+							onChange={(value) => {
+								setMppt(value);
+								setApplyFailed(false);
+							}}
+							error={
+								editing && mppt === null
+									? __("Enter the MPPT number.", "linker-tools")
+									: null
+							}
 							onValidity={validity.mppt!}
 						/>
 						<NumberField
@@ -442,7 +489,10 @@ export function PvStringSetup({
 							min={1}
 							value={port}
 							locale={locale}
-							onChange={setPort}
+							onChange={(value) => {
+								setPort(value);
+								setApplyFailed(false);
+							}}
 							onValidity={validity.port!}
 							error={
 								conflictingInput
@@ -450,7 +500,9 @@ export function PvStringSetup({
 											"This MPPT and inverter input already has a string. Choose another input or edit its existing string.",
 											"linker-tools",
 										)
-									: null
+									: editing && port === null
+										? __("Enter the inverter input number.", "linker-tools")
+										: null
 							}
 						/>
 					</div>
@@ -487,11 +539,11 @@ export function PvStringSetup({
 							</p>
 						</>
 					)}
-					{selected.length > 0 && count <= selected.length && (
+					{!editing && selected.length > 0 && count <= selected.length && (
 						<p role="status">
 							{sprintf(
 								__(
-									"The first %d selected modules will be saved in this order.",
+									"The first %d selected modules will be added in this order.",
 									"linker-tools",
 								),
 								count,
@@ -533,45 +585,40 @@ export function PvStringSetup({
 						</Notice>
 					)}
 					<div className="lp-energy-submit">
-						<button
-							type="button"
-							className="lp-button lp-button-secondary"
-							disabled={!canApply}
-							onClick={() => {
-								if (!canApply || mppt === null || port === null) return;
-								const string: PvString = {
-									id: editing?.id ?? `s-${crypto.randomUUID()}`,
-									mppt,
-									input: port,
-									module_ids: selected.slice(0, count),
-								};
-								const strings = editing
-									? plan.strings.map((value) =>
-											value.id === editing.id ? string : value,
-										)
-									: [...plan.strings, string];
-								if (!change({ ...plan, strings })) {
-									setApplyFailed(true);
-									return;
-								}
-								if (editing) resetEditor();
-								else {
+						{!editing && (
+							<button
+								type="button"
+								className="lp-button lp-button-secondary"
+								disabled={!canApply}
+								onClick={() => {
+									if (!canApply || mppt === null || port === null) return;
+									const string: PvString = {
+										id: `s-${crypto.randomUUID()}`,
+										mppt,
+										input: port,
+										module_ids: selected.slice(0, count),
+									};
+									const strings = [...plan.strings, string];
+									if (!change({ ...plan, strings })) {
+										setApplyFailed(true);
+										return;
+									}
 									setSelected(selected.slice(count));
 									setApplyFailed(false);
-								}
-							}}
-						>
-							{editing
-								? __("Save string changes", "linker-tools")
-								: __("Add selected modules to string", "linker-tools")}
-						</button>
+								}}
+							>
+								{__("Add selected modules to string", "linker-tools")}
+							</button>
+						)}
 						{editing && (
 							<button
 								type="button"
 								className="lp-text-button"
 								onClick={resetEditor}
 							>
-								{__("Cancel editing", "linker-tools")}
+								{pendingStringChanges || !fieldsValid || staleEdit
+									? __("Cancel editing", "linker-tools")
+									: __("Done editing", "linker-tools")}
 							</button>
 						)}
 						<button
@@ -585,7 +632,7 @@ export function PvStringSetup({
 					<p className="lp-profile-help">
 						{checkedInReport
 							? __(
-									"Generate the project report to check the saved wiring plan.",
+									"Generate the project report to check this wiring plan.",
 									"linker-tools",
 								)
 							: __(

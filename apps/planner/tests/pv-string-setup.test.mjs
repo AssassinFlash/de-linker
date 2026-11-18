@@ -243,20 +243,23 @@ test("editing keeps string identity and its explicit order, and retains changes 
 		"another string's module stays occupied",
 	);
 	await enter(field("MPPT"), "2");
-	assert.equal(button("Save string changes").disabled, true);
+	assert.ok(
+		!button("Save string changes"),
+		"existing strings need no Save step",
+	);
+	assert.deepEqual(r.plan, original);
 	assert.equal(field("Inverter input").getAttribute("aria-invalid"), "true");
 	assert.match(document.body.textContent, /already has a string/);
 	await enter(field("MPPT"), "1");
-	await click(button("Reverse order"));
 	r.api.setAccept(false);
-	await click(button("Save string changes"));
+	await click(button("Reverse order"));
 	assert.deepEqual(r.plan, original);
 	assert.match(document.body.textContent, /selection is still available/);
-	assert.equal(button("Save string changes").disabled, false);
 	r.api.setAccept(true);
-	await click(button("Save string changes"));
+	await enter(field("Inverter input"), "3");
 	assert.deepEqual(r.plan.strings[0], {
 		...original.strings[0],
+		input: 3,
 		module_ids: [...original.strings[0].module_ids].reverse(),
 	});
 	assert.deepEqual(r.plan.strings[1], original.strings[1]);
@@ -268,7 +271,29 @@ test("editing keeps string identity and its explicit order, and retains changes 
 	);
 });
 
-test("cancelling a re-edit restores a staged new string rather than changing saved wiring", async (t) => {
+test("switching directly between existing strings keeps the previous edit and the staged new string", async (t) => {
+	const r = await setup(t, {
+		strings: (modules) => [
+			{ id: "a", mppt: 1, input: 1, module_ids: [modules[0].id] },
+			{ id: "b", mppt: 2, input: 1, module_ids: [modules[1].id] },
+		],
+	});
+	await enter(field("MPPT"), "4");
+	const editButtons = [...document.querySelectorAll("button")].filter(
+		(b) => b.textContent === "Edit string",
+	);
+	await click(editButtons[0]);
+	await enter(field("Inverter input"), "");
+	assert.equal(editButtons[1].disabled, true);
+	await enter(field("Inverter input"), "3");
+	await click(editButtons[1]);
+	assert.equal(document.activeElement.textContent, "Edit string 2");
+	assert.equal(r.plan.strings[0].input, 3);
+	await click(button("Done editing"));
+	assert.equal(field("MPPT").value, "4");
+});
+
+test("returning from an existing string restores the staged new string", async (t) => {
 	const r = await setup(t, {
 		strings: (modules) => [
 			{ id: "keep", mppt: 1, input: 1, module_ids: [modules[0].id] },
@@ -277,11 +302,10 @@ test("cancelling a re-edit restores a staged new string rather than changing sav
 	await click(document.querySelectorAll('input[type="checkbox"]')[1]);
 	await enter(field("MPPT"), "3");
 	await enter(field("Inverter input"), "2");
-	const original = structuredClone(r.plan);
 	await click(button("Edit string"));
-	await click(button("Select all available modules"));
-	await click(button("Cancel editing"));
-	assert.deepEqual(r.plan, original);
+	await enter(field("Inverter input"), "5");
+	await click(button("Done editing"));
+	assert.equal(r.plan.strings[0].input, 5);
 	assert.equal(field("MPPT").value, "3");
 	assert.equal(field("Inverter input").value, "2");
 	assert.equal(
@@ -323,7 +347,7 @@ test("invalid staged quantity stays intact before switching to a saved string", 
 			await enter(field("Modules to add to this string"), "2");
 			assert.equal(button("Edit string").disabled, false);
 			await click(button("Edit string"));
-			await click(button("Cancel editing"));
+			await click(button("Done editing"));
 			assert.equal(field("Modules to add to this string").value, "2");
 		});
 	}
@@ -366,7 +390,8 @@ test("a roof edit cannot silently drop selected modules or rewrite a string chan
 			},
 		})),
 	);
-	assert.equal(button("Save string changes").disabled, true);
+	await enter(field("MPPT"), "3");
+	assert.equal(r.plan.strings[0].mppt, 1);
 	assert.match(document.body.textContent, /changed while you were editing/);
 	await click(button("Cancel editing"));
 	assert.equal(r.plan.strings[0].input, 2);
@@ -475,7 +500,7 @@ test("two inverter editors keep independent selections, destinations and occupie
 	const before = structuredClone(
 		current.history.current.pv_plant_string_plan.units[0],
 	);
-	await click(button("Save string changes"));
+	await act(async () => changeUnit(0));
 	const saved = readPvPlantStringPlan(
 		current.history.current.pv_plant_string_plan,
 	);
@@ -520,7 +545,7 @@ test("removing the edited string or wiring plan leaves no stale destination or e
 	});
 	await click(button("Edit string"));
 	await click(button("Remove string"));
-	assert.equal(button("Save string changes"), undefined);
+	assert.ok(!document.querySelector("h4").textContent.includes("Edit string"));
 	assert.equal(r.plan.strings.length, 0);
 	await enter(field("MPPT"), "4");
 	await enter(field("Inverter input"), "2");
