@@ -17120,3 +17120,80 @@ msgstr "Bearbeitung beenden"
 #: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
 msgid "Generate the project report to check this wiring plan."
 msgstr "Erstellen Sie den Projektbericht, um diesen Verschaltungsplan zu prüfen."
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Products included in your inquiry"
+msgstr "Produkte in Ihrer Anfrage"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Preparing your inquiry…"
+msgstr "Ihre Anfrage wird vorbereitet…"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Sending your inquiry…"
+msgstr "Ihre Anfrage wird gesendet…"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Your inquiry could not be sent."
+msgstr "Ihre Anfrage konnte nicht gesendet werden."
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Review inquiry again"
+msgstr "Anfrage erneut prüfen"
+
+#: ../../apps/planner/src/components/design/GeometryIntake.tsx build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Roof added: %s"
+msgstr "Dachfläche hinzugefügt: %s"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Explore system options"
+msgstr "Anlagenvarianten entdecken"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Compare solar and storage options now, or enter project details below for an equipment comparison."
+msgstr "Vergleichen Sie jetzt PV- und Speicherlösungen. Für einen Gerätevergleich können Sie unten Ihre Projektdaten eingeben."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Compare preliminary options"
+msgstr "Erste Anlagenvarianten vergleichen"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Preliminary options"
+msgstr "Erste Anlagenvarianten"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Choose the direction you want to discuss. System size, grid connection and equipment compatibility still need to be confirmed."
+msgstr "Wählen Sie die Variante, die Sie besprechen möchten. Die Auslegung, der Netzanschluss und die Kompatibilität der Geräte sind noch zu klären."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Plan panels and a battery together to use solar power after sunset. Panel area and electricity use will help size both."
+msgstr "Planen Sie PV-Anlage und Speicher gemeinsam, um Solarstrom auch nach Sonnenuntergang zu nutzen. Die verfügbare Modulfläche und Ihr Stromverbrauch bilden die Grundlage für die Auslegung."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Store surplus power from an existing solar array. The existing inverter determines how a battery can be connected."
+msgstr "Speichern Sie überschüssigen Strom aus Ihrer bestehenden PV-Anlage. Wie sich ein Speicher anschließen lässt, hängt vom vorhandenen Wechselrichter ab."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Generate electricity with solar panels alone. Available panel area and daytime electricity use guide the array size."
+msgstr "Erzeugen Sie Solarstrom mit einer PV-Anlage ohne Speicher. Die verfügbare Modulfläche und Ihr Stromverbrauch tagsüber helfen bei der Auslegung."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Plan a battery without adding solar panels. Electricity use and the charging source guide battery sizing."
+msgstr "Planen Sie einen Speicher ohne zusätzliche PV-Module. Für die Auslegung ist wichtig, wie viel Strom Sie verbrauchen und aus welcher Quelle der Speicher geladen wird."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Choose this option"
+msgstr "Diese Variante wählen"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "The inquiry form could not be loaded."
+msgstr "Das Anfrageformular konnte nicht geladen werden."
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Load inquiry form again"
+msgstr "Anfrageformular erneut laden"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Planned system: %s"
+msgstr "Geplantes System: %s"
