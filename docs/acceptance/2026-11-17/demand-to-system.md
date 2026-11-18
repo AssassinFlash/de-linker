@@ -200,3 +200,5 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 仅报告分支的初稿 `Deselect the planning report` / `Wählen Sie den Planungsbericht ab` 暗示可逐份取消。表单只有一个复选框，定稿在消息中引用其完整标签 `Include planning reports and project notes with this inquiry` / `Planungsberichte und Projektnotizen mit dieser Anfrage senden`，然后请客户重发询盘。
 
 评审站两种语言的访客询盘页和德语无产品留言回执均通过。历史完整快照能在所属账户 Documents 中列出，原订单链接可下载冻结 PDF。其他账户和遭修改的快照均无法下载。生产验收仍沿用原 Rotterdam 项目。
+
+混合版本演练复用一个评审项目 `5f9ea2c74a164fcca37bb55e94cbfa1c`。新 Woo 配旧 Planner 时，删除返回 409，项目可重开。访客提交报告后看到重试提示，邮箱和报告勾选均保留，订单数为 0。切回新 Planner 后重提同一草稿，只生成询盘 8874，成功页提供 95,696 字节的冻结 PDF。HTTP 与 worker 读回同一版本 `eb5b446f1c6bd96dce71378482daf129760a745118e75ff9ba5378b505739e09`。Oslo 修订 8、Utrecht 修订 5。生产恢复点 `archive-20261118T062854Z-f1b360b4` 已验证，含 Rotterdam 与 Amsterdam 的修订 3。
