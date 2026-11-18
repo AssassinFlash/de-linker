@@ -17,11 +17,23 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
+export type CreationDestination = "design" | "equipment" | "energy" | "review";
+function isCreationDestination(
+	value: unknown,
+): value is CreationDestination | null {
+	return (
+		value === null ||
+		value === "design" ||
+		value === "equipment" ||
+		value === "energy" ||
+		value === "review"
+	);
+}
 export interface CreationIntent {
 	readonly key: string;
 	readonly title: string;
 	readonly body: string;
-	readonly destination: "design" | "equipment" | null;
+	readonly destination: CreationDestination | null;
 	readonly createdAt: number;
 }
 export interface ProfileImportIntent {
@@ -164,15 +176,11 @@ export class DraftStore {
 	async writeCreation(
 		scope: string,
 		body: string,
-		destination: "design" | "equipment" | null = null,
+		destination: CreationDestination | null = null,
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
-		if (
-			destination !== null &&
-			destination !== "design" &&
-			destination !== "equipment"
-		)
+		if (!isCreationDestination(destination))
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
 		const transaction = db.transaction(CREATION_INTENTS, "readwrite");
@@ -225,18 +233,14 @@ export class DraftStore {
 		scope: string,
 		oldBody: string,
 		body: string,
-		destination: "design" | "equipment" | null = null,
+		destination: CreationDestination | null = null,
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const oldCommand = validateCreation(oldBody);
 		const command = validateCreation(body);
 		if (oldCommand.key === command.key)
 			throw new Error("creation_intent_conflict");
-		if (
-			destination !== null &&
-			destination !== "design" &&
-			destination !== "equipment"
-		)
+		if (!isCreationDestination(destination))
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
 		const transaction = db.transaction(
@@ -642,11 +646,7 @@ function scanCreations(
 				value.destination === undefined || value.destination === null
 					? null
 					: value.destination;
-			if (
-				destination !== null &&
-				destination !== "design" &&
-				destination !== "equipment"
-			)
+			if (!isCreationDestination(destination))
 				throw new Error("invalid_creation_recovery");
 			bytes += new TextEncoder().encode(value.body).length;
 			if (records.length >= MAX_CREATION_INTENTS || bytes > MAX_RECOVERY_BYTES)

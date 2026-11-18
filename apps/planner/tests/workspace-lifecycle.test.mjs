@@ -666,12 +666,8 @@ test("creation authentication failure rechecks once and explicitly retries the e
 		),
 	);
 	await until(() =>
-		[...document.querySelectorAll("button")].some(
-			(button) =>
-				button.textContent.includes("New project") && !button.disabled,
-		),
+		document.querySelector('input[name="project_title"]')?.matches(":enabled"),
 	);
-	await act(async () => document.querySelector("button").click());
 	await enter(document.querySelector("input"), "Synthetic new project");
 	const before = bootstraps;
 	const submit = () =>

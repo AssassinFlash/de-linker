@@ -212,7 +212,7 @@ export function ProjectDetails({
 					</p>
 				</div>
 			</header>
-			<fieldset className="sc-card" disabled={fieldsDisabled}>
+			<fieldset className="sc-card sc-project-card" disabled={fieldsDisabled}>
 				<div className="sc-fields">
 					{creation && (
 						<label className="sc-field">
@@ -317,29 +317,8 @@ export function ProjectDetails({
 							</option>
 						</select>
 					</label>
-					<label className="sc-field">
-						<span>{__("Site use", "linker-tools")}</span>
-						<select
-							value={brief.project_use ?? ""}
-							onChange={(e) => {
-								const project_use = (e.currentTarget.value ||
-									null) as Brief["project_use"];
-								change((b) => ({ ...b, project_use }));
-							}}
-						>
-							<option value="">{__("Not specified", "linker-tools")}</option>
-							<option value="residential">
-								{__("Residential", "linker-tools")}
-							</option>
-							<option value="commercial">
-								{__("Commercial", "linker-tools")}
-							</option>
-							<option value="industrial">
-								{__("Industrial", "linker-tools")}
-							</option>
-						</select>
-					</label>
-					<label className="sc-field">
+
+					<label className="sc-field sc-wide">
 						<span>{__("Main purpose", "linker-tools")}</span>
 						<select
 							name="project_purpose"
@@ -401,23 +380,49 @@ export function ProjectDetails({
 						</div>
 					</div>
 				)}
-				{mapKey && brief.system_scope !== "storage_only" && (
-					<div className="sc-actions">
-						<button
-							className="sc-button"
-							type="button"
-							disabled={!country || !address.trim()}
-							onClick={() => void locate()}
+				{existingEquipment}
+				<details>
+					<summary>{__("Site details", "linker-tools")}</summary>
+					<label className="sc-field">
+						<span>{__("Site use", "linker-tools")}</span>
+						<select
+							value={brief.project_use ?? ""}
+							onChange={(e) => {
+								const project_use = (e.currentTarget.value ||
+									null) as Brief["project_use"];
+								change((b) => ({ ...b, project_use }));
+							}}
 						>
-							{__("Find site coordinates", "linker-tools")}
-						</button>
-						{brief.site.latitude !== null && brief.site.longitude !== null && (
-							<span>{__("Site coordinates found", "linker-tools")}</span>
-						)}
-					</div>
-				)}
+							<option value="">{__("Not specified", "linker-tools")}</option>
+							<option value="residential">
+								{__("Residential", "linker-tools")}
+							</option>
+							<option value="commercial">
+								{__("Commercial", "linker-tools")}
+							</option>
+							<option value="industrial">
+								{__("Industrial", "linker-tools")}
+							</option>
+						</select>
+					</label>
+					{mapKey && brief.system_scope !== "storage_only" && (
+						<div className="sc-actions">
+							<button
+								className="sc-button"
+								type="button"
+								disabled={!country || !address.trim()}
+								onClick={() => void locate()}
+							>
+								{__("Find site coordinates", "linker-tools")}
+							</button>
+							{brief.site.latitude !== null &&
+								brief.site.longitude !== null && (
+									<span>{__("Site coordinates found", "linker-tools")}</span>
+								)}
+						</div>
+					)}
+				</details>
 			</fieldset>
-			{existingEquipment}
 			{locationError && (
 				<p role="alert">
 					{__(

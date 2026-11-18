@@ -139,6 +139,39 @@ const confirmButton = () =>
 		),
 	].find((button) => button.className.includes("lp-button-danger"));
 
+test("a returning customer enters the project brief and can open saved projects without creating one", async (t) => {
+	const commands = [];
+	const mounted = await mount(async (url, init) => {
+		const path = new URL(url).pathname;
+		if (path.endsWith("/nonce")) return new Response("abcdefghij");
+		if (path.endsWith("/bootstrap")) return response(session());
+		if (path.endsWith("/recovery/scopes"))
+			return response({ schema_version: 1, scopes: [], next: null });
+		if (path.endsWith("/projects/list"))
+			return response({ items: projects(), next: null });
+		if (path.endsWith("/projects/create")) commands.push(init.body);
+		return response({}, 404);
+	}, recordingStore());
+	t.after(() => mounted.dispose());
+	assert.ok(document.querySelector('input[name="project_title"]'));
+	assert.equal(
+		document.querySelector('nav [aria-current="step"]')?.textContent,
+		"1Project",
+	);
+	assert.match(
+		document.querySelector("aside").textContent,
+		/Current configuration/,
+	);
+	assert.ok(deleteIcon().closest("[hidden]"));
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Saved projects")
+			.click(),
+	);
+	assert.equal(deleteIcon().closest("[hidden]"), null);
+	assert.deepEqual(commands, []);
+});
+
 test("a refreshing list waits for the saved revision before offering deletion", async (t) => {
 	const refresh = deferred();
 	let refreshing = false;

@@ -17035,3 +17035,11 @@ msgstr "Für den Bericht ausgewählt"
 #: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
 msgid "Use this calculation in the report"
 msgstr "Diese Berechnung im Bericht verwenden"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Back to project"
+msgstr "Zurück zum Projekt"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Site details"
+msgstr "Standortdetails"

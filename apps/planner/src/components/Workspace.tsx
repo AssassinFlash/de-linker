@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-query";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
-import type { DraftStore } from "../data/DraftStore.ts";
+import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
@@ -71,6 +71,7 @@ export function Workspace({
 	session: Session;
 	recheck: () => void;
 }) {
+	const [showProjects, setShowProjects] = useState(false);
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
@@ -139,6 +140,7 @@ export function Workspace({
 			setSavedSource(null);
 			setBriefSource(null);
 			setSelected(id);
+			setShowProjects(id === null);
 		},
 		[client, session.query_scope],
 	);
@@ -185,10 +187,7 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	function created(
-		project: Project,
-		destination?: "design" | "equipment" | "energy",
-	) {
+	function created(project: Project, destination?: CreationDestination) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
 			[session.query_scope, "project", project.id, session.claim_pending],
@@ -205,7 +204,9 @@ export function Workspace({
 					? "sc-system"
 					: destination === "design"
 						? "sc-solar"
-						: "sc-project",
+						: destination === "review"
+							? "sc-review"
+							: "sc-project",
 		);
 		return true;
 	}
@@ -403,17 +404,27 @@ export function Workspace({
 
 	return (
 		<div className="sc-configurator">
-			<header className="sc-project-heading">
-				<div>
-					<p>{__("Solution Configurator", "linker-tools")}</p>
-					<h1>{__("Your projects", "linker-tools")}</h1>
+			<header className="sc-project-toolbar">
+				<span>{__("Solution Configurator", "linker-tools")}</span>
+				<div className="sc-actions">
+					<button
+						className="sc-button"
+						type="button"
+						aria-controls="sc-saved-projects"
+						aria-expanded={showProjects}
+						onClick={() => setShowProjects(!showProjects)}
+					>
+						{showProjects
+							? __("Back to project", "linker-tools")
+							: __("Saved projects", "linker-tools")}
+					</button>
+					<button className="sc-button" type="button" data-linker-genie-open>
+						{__("Ask Genie", "linker-tools")}
+					</button>
 				</div>
-				<button className="sc-button" type="button" data-linker-genie-open>
-					{__("Ask Genie", "linker-tools")}
-				</button>
 			</header>
-			<div className="sc-main">
-				<div>
+			<div>
+				<div hidden={showProjects}>
 					{savedSource !== null ? (
 						<SavedSolutionStart
 							solutionId={savedSource}
@@ -458,7 +469,6 @@ export function Workspace({
 					) : (
 						<NewProject
 							config={config}
-							openOnLoad={index.isSuccess && !projects.length}
 							entryHints={entryHints}
 							locale={config.locale}
 							session={session}
@@ -496,11 +506,16 @@ export function Workspace({
 						</button>
 					</Notice>
 				)}
-				<section className="sc-card" aria-labelledby="lp-projects-heading">
+				<section
+					id="sc-saved-projects"
+					hidden={!showProjects}
+					className="sc-card"
+					aria-labelledby="lp-projects-heading"
+				>
 					<div className="sc-section-head">
-						<h2 id="lp-projects-heading">
-							{__("Saved projects", "linker-tools")}
-						</h2>
+						<h1 id="lp-projects-heading">
+							{__("Your projects", "linker-tools")}
+						</h1>
 						<button
 							className="sc-button"
 							aria-label={__("Refresh projects", "linker-tools")}
@@ -662,7 +677,7 @@ export function Workspace({
 						</button>
 					)}
 				</section>
-				<footer>
+				<footer hidden={!showProjects}>
 					<p className="sc-muted">
 						{session.kind === "guest"
 							? __(
