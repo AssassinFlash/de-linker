@@ -62,11 +62,13 @@ def closed_document(
             # requires them and does not insert missing arrays/nulls. Fields
             # absent in immutable older reports stay optional.
             optional = {
-                "Report": {"phase_conflicts"},
-                "ReportTable": {"column_weights"},
-            }.get(value.get("title"), set())
+                ("Report", "phase_conflicts"),
+                ("ReportTable", "column_weights"),
+            }
             value["required"] = [
-                key for key in value["properties"] if key not in optional
+                key
+                for key in value["properties"]
+                if (value.get("title"), key) not in optional
             ]
     return value
 
