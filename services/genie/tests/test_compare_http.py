@@ -109,7 +109,15 @@ def test_turn_keeps_model_scope_with_or_without_jev(
                         "conditions": [
                             f"Use the {MODELS[BATTERY]} battery with its control module."
                         ],
-                        "documents": [{"url": f"https://wp.test/{SAJ}.pdf", "page": 3}],
+                        "documents": [
+                            {
+                                "document_id": f"doc-{SAJ}",
+                                "document_revision": f"revision-{SAJ}",
+                                "product_id": SAJ,
+                                "url": f"https://wp.test/{SAJ}.pdf",
+                                "page": 3,
+                            }
+                        ],
                     }
                 ]
             return {"qualified": [row]}
@@ -261,7 +269,9 @@ def test_turn_keeps_model_scope_with_or_without_jev(
             block.get("type") == "cards" and BATTERY in block["product_ids"]
             for block in blocks
         )
-        assert f"https://wp.test/{SAJ}.pdf#page=3" in response.text
+        link = next(block for block in blocks if block.get("type") == "document")
+        assert link["url"] == f"https://wp.test/{SAJ}.pdf#page=3"
+        assert link["evidence_product_id"] == SAJ
         return
     assert "50 A per input" in response.text
     assert f"https://wp.test/{SAJ}.pdf#page=38" in response.text
