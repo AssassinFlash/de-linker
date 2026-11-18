@@ -7800,11 +7800,15 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                     (
                         "Direct solar use 4 kWh",
                         "Additional solar use, upper bound 3 kWh",
+                        "Only surplus solar energy stored during this period counts",
+                        "lossless storage",
                     )
                     if locale == "en"
                     else (
                         "Direkt genutzter Solarstrom 4 kWh",
                         "Zusätzlicher Eigenverbrauch, Obergrenze 3 kWh",
+                        "Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen",
+                        "verlustfreie Speicherung",
                     )
                 )
                 assert all(label in text for label in expected)

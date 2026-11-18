@@ -251,7 +251,9 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 评审项目 `e4502babfc7e41bf9ec3b6e822d26398` 以 8 kWp、正南、30° 的已知光伏系统，配对 OPSD CoSSMic 的 `DE_KN_residential6` 表计负荷和 JRC PVGIS 的模型发电数据。访客沿用输入修订 4，从同一项目生成并下载报告 `e9f37120b8e743eabdd2e590c3bf5733`。报告引用修订 3 的设备比较 `cceb8dba90c04a97b0399d72e4dc7e8a`。
 
-PDF 首页列出 2017-06-19 02:00 至 06-21 08:00 UTC 的 54 小时。用电量 87.638 kWh，模型发电量 100.250 kWh，无储能时直接自用 74.456 kWh、购电 13.182 kWh、外送 25.794 kWh，购电峰值 2.593 kW。采用方案在满电起步、储能无损条件下的额外自用上限为 12.764 kWh。下载的 CSV 与该修订的 Woo 草稿同列 H2-25K-T3 ×1、BC2-HV1 ×1、BU2-5.0-HV1 ×3。CSV 将电表单列为厂商随附、数量待核。
+PDF 首页列出 2017-06-19 02:00 至 06-21 08:00 UTC 的 54 小时。用电量 87.638 kWh，模型发电量 100.250 kWh，无储能时直接自用 74.456 kWh、购电 13.182 kWh、外送 25.794 kWh，购电峰值 2.593 kW。采用方案的额外自用上限为 12.764 kWh。该次 PDF 把初始条件误写为满电。模型从零累计可归于本时段的储存光伏电量，只计时段内存入并交付给负荷的光伏余电，按无损储能计算。下载的 CSV 与该修订的 Woo 草稿同列 H2-25K-T3 ×1、BC2-HV1 ×1、BU2-5.0-HV1 ×3。CSV 将电表单列为厂商随附、数量待核。
+
+自用报告说明的英德初稿均写为期初满电。评审核对 `profile_demand_bounds.py` 的逐时计算，发现满电起步只用于削峰，且把自用写成「期初电池为空」也会混淆现场荷电状态与光伏电量归属。定稿 EN “Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage.” DE „Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze. Die Berechnung setzt eine verlustfreie Speicherung voraus.“
 
 下载后，原访客从 Woo 草稿移除三项设备，草稿数量归零。项目删除返回 HTTP 200，同一访客重开返回 HTTP 404。独立浏览器与临时下载件已回收，卷可用空间增加约 177 MiB，评审站首页返回 HTTP 200。
 

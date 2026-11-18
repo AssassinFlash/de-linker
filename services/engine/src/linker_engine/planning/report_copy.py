@@ -80,8 +80,8 @@ TEXT = {
         "Zusätzlicher Eigenverbrauch, Obergrenze",
     ),
     "self_use_bound_basis": (
-        "The upper bound assumes a full battery at the start and lossless storage. Actual solar use depends on operating settings and storage losses.",
-        "Die Obergrenze setzt einen anfangs voll geladenen Speicher und verlustfreie Speicherung voraus. Der tatsächliche Eigenverbrauch hängt von den Betriebseinstellungen und den Speicherverlusten ab.",
+        "Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage.",
+        "Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze. Die Berechnung setzt eine verlustfreie Speicherung voraus.",
     ),
     "peak_comparison": ("Peak shaving comparison", "Vergleich zur Spitzenlastsenkung"),
     "peak_target": ("Target grid import limit", "Gewünschte Netzbezugsgrenze"),
