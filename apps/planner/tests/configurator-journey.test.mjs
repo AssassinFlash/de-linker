@@ -556,7 +556,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 	}
 });
 
-test("Review & share asks Genie and downloads the chosen report while inquiry stays with the current report", async () => {
+test("Review & inquire asks Genie and downloads the chosen report while the native inquiry uses the current report", async () => {
 	const dom = setupDom(),
 		scope = "3".repeat(64),
 		{ createRoot } = await import("react-dom/client"),
@@ -624,12 +624,36 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 	let activeScope = scope;
 	let wrongProject = false;
 	const saving = deferred();
+	const origin = window.location.origin;
+	const handoff = {
+		schema_version: 1,
+		project_id: project.id,
+		report_run_id: current.id,
+		revision: current.revision,
+		handoff_id: "c".repeat(32),
+		snapshot_sha256: "e".repeat(64),
+		report_only: true,
+		draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+	};
+	const posts = [];
+	window.HTMLFormElement.prototype.submit = function () {
+		posts.push(Object.fromEntries(new window.FormData(this)));
+	};
 	const client = {
+		origin,
 		isCurrentScope: (s) => s === activeScope,
 		async send(path, raw) {
-			assert.equal(path, "projects/revise");
 			const command = JSON.parse(raw);
 			requests.push([path, command]);
+			if (path === "draft/apply")
+				return {
+					...handoff,
+					intent_sha256: "b".repeat(64),
+					items: [],
+					inquiry_cart_hash: "",
+					inquiry_draft_sha256: "f".repeat(64),
+				};
+			assert.equal(path, "projects/revise");
 			await saving.promise;
 			return {
 				...project,
@@ -659,7 +683,19 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 					return wrongProject ? preparation.direct_beam.report_run : earlier;
 				return body.run_id === current.id ? current : undefined;
 			}
-			if (path === "draft/preview") return new Promise(() => {});
+			if (path === "draft/inquiry-preview")
+				return {
+					...handoff,
+					already_present: false,
+					changes: [],
+					draft_sha256: "d".repeat(64),
+					inquiry_lines: [],
+					inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php">
+					<input type="hidden" name="action" value="linker_inquiry">
+					<input type="hidden" name="linker_planner_handoff_id" value="${handoff.handoff_id}">
+					<input type="hidden" name="linker_draft_hash"><input type="hidden" name="linker_planner_draft_sha256">
+					<p>Workshop · input revision 3</p><button type="submit">Send inquiry</button></form>`,
+				};
 			throw new Error(path);
 		},
 		async reportPdf(projectId, assetId, queryScope, _signal, sha) {
@@ -740,7 +776,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			[null],
 		);
 		await act(async () => button("Earlier calculations").click());
-		await until(() => button("Attach report to inquiry"));
+		await until(() => button("Send inquiry"));
 		const context = (opener) => {
 			let detail;
 			const receive = (event) => (detail = event.detail);
@@ -810,16 +846,24 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await act(async () =>
 			button("Download bill of materials (CSV)", history()).click(),
 		);
+		await until(() => button("Send inquiry"));
 		assert.match(
-			button("Attach report to inquiry").closest(".sc-draft-transfer")
-				.textContent,
-			/Your inquiry uses the current report \(revision 3\)\./,
+			button("Send inquiry").form.textContent,
+			/Workshop · input revision 3/,
 		);
-		await act(async () => button("Attach report to inquiry").click());
-		assert.equal(
-			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
-			current.id,
-		);
+		assert.ok(!requests.some(([path]) => path === "draft/apply"));
+		await act(async () => button("Send inquiry").click());
+		await until(() => posts.length === 1);
+		for (const [path, body] of requests.filter(([path]) =>
+			["draft/inquiry-preview", "draft/apply"].includes(path),
+		)) {
+			assert.equal(body.project_id, project.id, path);
+			assert.equal(body.report_run_id, current.id, path);
+			assert.equal(body.expected_revision, 3, path);
+		}
+		assert.equal(posts[0].action, "linker_inquiry");
+		assert.equal(posts[0].linker_planner_handoff_id, handoff.handoff_id);
+		assert.equal(posts[0].linker_planner_draft_sha256, "f".repeat(64));
 
 		await act(async () => button("Close", history()).click());
 		assert.equal(
@@ -907,6 +951,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 
 		await act(async () => root.render(null));
 		cache.clear();
+		const staleRequests = requests.length;
 		project.revision = current.revision + 1;
 		project.input_sha256 = "f".repeat(64);
 		currentSummary.is_current = false;
@@ -914,16 +959,22 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await render("en");
 		await until(() => button("Download PDF", history()));
 		await act(async () => button("Earlier calculations").click());
-		await until(() => button("Attach report to inquiry"));
-		const staleTransfer = button("Attach report to inquiry");
-		assert.equal(staleTransfer.disabled, true);
-		assert.match(
-			staleTransfer.closest(".sc-draft-transfer").textContent,
-			/Generate a report for the current project before attaching it\./,
+		await until(() =>
+			requests
+				.slice(staleRequests)
+				.some(
+					([path, body]) => path === "runs/read" && body.run_id === current.id,
+				),
 		);
-		assert.doesNotMatch(
-			staleTransfer.closest(".sc-draft-transfer").textContent,
-			/Your inquiry uses the current report/,
+		assert.equal(button("Send inquiry"), undefined);
+		await act(async () => button("Close", history()).click());
+		await until(() => dom.element.querySelector("[data-report-outdated]"));
+		assert.ok(button("Download PDF"));
+		assert.equal(button("Send inquiry"), undefined);
+		assert.ok(
+			!requests
+				.slice(staleRequests)
+				.some(([path]) => path.startsWith("draft/")),
 		);
 	} finally {
 		await dom.dispose(root);
