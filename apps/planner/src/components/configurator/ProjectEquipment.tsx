@@ -282,9 +282,9 @@ export function ProjectEquipment({
 		authorized && !catalog.isError && catalog.data?.prepared
 			? catalog.data
 			: undefined;
-	const solarOnly =
-		inputs.brief !== undefined &&
-		readBrief(inputs.brief).system_scope === "pv_only";
+	const scopeOfWork =
+		inputs.brief === undefined ? null : readBrief(inputs.brief).system_scope;
+	const solarOnly = scopeOfWork === "pv_only";
 	const productIds = (
 		plant ? plant.units.map((unit) => unit.inputs) : [inputs]
 	).flatMap((source) => {
@@ -561,6 +561,30 @@ export function ProjectEquipment({
 										}
 									/>
 								</label>
+								{scopeOfWork !== "storage_only" && (
+									<label className="sc-field">
+										<span>
+											{__("Allocated PV nameplate rating", "linker-tools")}{" "}
+											(kWp)
+										</span>
+										<input
+											type="number"
+											min="0"
+											step="any"
+											disabled={!productData}
+											value={String(equipmentDraft(unit.inputs).pv_dc_kw ?? "")}
+											onChange={(event) => {
+												const kw = event.currentTarget.valueAsNumber;
+												if (event.currentTarget.validity.valid)
+													updateUnit(unit.id, {
+														hardware: {
+															pv_dc_kw: Number.isFinite(kw) ? kw : null,
+														},
+													});
+											}}
+										/>
+									</label>
+								)}
 								{declarations(unit.inputs, (hardware) =>
 									updateUnit(unit.id, { hardware }),
 								)}

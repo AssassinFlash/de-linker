@@ -255,6 +255,22 @@ class EnergyInputs(Document):
         return result
 
 
+def project_coupling(inputs: Object) -> Json:
+    if "equipment_plant_setup" in inputs or "equipment_plant" in inputs:
+        plant = inputs.get("energy_plant_setup", inputs.get("energy_plant"))
+        return (
+            plant.get("coupling", "plant_ac")
+            if isinstance(plant, dict)
+            else "undeclared_plant"
+        )
+    single = inputs.get("energy_scenario", inputs.get("energy_replay"))
+    return (
+        single.get("coupling", "independent_ac")
+        if isinstance(single, dict)
+        else "independent_ac"
+    )
+
+
 def storage_only_project(inputs: Object) -> bool:
     brief = inputs.get("brief")
     return isinstance(brief, dict) and brief.get("system_scope") == "storage_only"

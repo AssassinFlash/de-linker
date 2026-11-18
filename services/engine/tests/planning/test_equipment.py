@@ -7550,7 +7550,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             }
             if topology != "undeclared_plant":
                 declarations["energy_plant_setup"] = {"coupling": topology}
-            if topology == "plant_ac":
+            if topology in ("plant_ac", "undeclared_plant"):
                 # Switching to a plant retains the earlier single-system declarations.
                 declarations["energy_scenario"]["coupling"] = "shared_dc"
         elif topology == "shared_dc":
@@ -7652,6 +7652,12 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         assert run["state"] == "succeeded", run
         result = run["result"]["search"]
         assert result["candidates"]
+
+        if topology == "undeclared_plant":
+            for item in result["candidates"]:
+                assert item["demand"]["missing_facts"] == [
+                    "common_ac_meter_and_storage_topology"
+                ]
 
         if roof:
             pins = run["manifest"]["context"]["assets"]

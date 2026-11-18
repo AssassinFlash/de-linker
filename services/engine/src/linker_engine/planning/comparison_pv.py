@@ -8,7 +8,7 @@ from typing import cast
 
 from .assets import Asset, Assets
 from .canonical import Json, Object, digest, encode
-from .energy_inputs import storage_only_project
+from .energy_inputs import project_coupling, storage_only_project
 from .errors import InvalidInput
 from .geometry import panel_poses, read_geometry
 from .product_sources import ProductSources
@@ -137,11 +137,7 @@ class ComparisonPv:
 
 
 def shared_dc(inputs: Object) -> bool:
-    if "equipment_plant_setup" in inputs or "equipment_plant" in inputs:
-        plant = inputs.get("energy_plant_setup", inputs.get("energy_plant"))
-        return isinstance(plant, dict) and plant.get("coupling") == "plant_shared_dc"
-    single = inputs.get("energy_scenario", inputs.get("energy_replay"))
-    return isinstance(single, dict) and single.get("coupling") == "shared_dc"
+    return project_coupling(inputs) in ("shared_dc", "plant_shared_dc")
 
 
 def is_known(setup: Json) -> bool:

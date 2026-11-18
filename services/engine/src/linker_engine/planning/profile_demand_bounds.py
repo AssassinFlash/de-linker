@@ -8,7 +8,7 @@ from typing import cast
 
 from .assets import Assets
 from .canonical import Json, Object
-from .energy_inputs import storage_only_project
+from .energy_inputs import project_coupling, storage_only_project
 from .equipment_evidence import EquipmentEvidence
 from .equipment_fact_resolution import FactContext, FactUse, resolve_fact
 from .equipment_inputs import EquipmentSelection
@@ -41,11 +41,7 @@ def scenario(inputs: Object) -> tuple[Object, str | None, Json]:
     settings = inputs.get("energy_scenario")
     if not isinstance(settings, dict) or settings.get("controller") not in CONTROLLERS:
         settings = plant_setup if isinstance(plant_setup, dict) else {}
-    coupling = (
-        plant_setup.get("coupling", "plant_ac")
-        if isinstance(plant_setup, dict)
-        else settings.get("coupling", "undeclared_plant" if plant else "independent_ac")
-    )
+    coupling = project_coupling(inputs)
     controller = settings.get("controller")
     goal = (
         controller

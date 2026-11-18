@@ -148,6 +148,16 @@ test("existing equipment is declared through the current product data and carrie
 	assert.equal(plant.units[1].inputs.equipment_setup.inverter_product_id, null);
 	assert.ok(button("Single system").disabled);
 	const units = [...document.querySelectorAll("fieldset[data-project-system]")];
+	const capacity = (unit) => field("Allocated PV nameplate rating (kWp)", unit);
+	assert.ok(capacity(units[0]));
+	await enter(capacity(units[0]), "13.8");
+	await enter(capacity(units[1]), "9.2");
+	assert.deepEqual(
+		current().equipment_plant_setup.units.map(
+			(u) => u.inputs.equipment_setup.pv_dc_kw,
+		),
+		[13.8, 9.2],
+	);
 	await enter(field("System name", units[1]), "Annex");
 	assert.equal(current().equipment_plant_setup.units[1].name, "Annex");
 	await act(async () => button("Remove system", units[1]).click());
