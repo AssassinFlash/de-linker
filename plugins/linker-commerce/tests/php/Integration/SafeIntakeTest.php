@@ -345,6 +345,33 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 	}
 
+	/** An unavailable report leaves the review slot available for the customer's retry. */
+	public function test_report_refusal_releases_its_unwritten_review_slot(): void {
+		$report = $this->planning_report();
+		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
+		$prior  = WC()->session->get( $key );
+		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
+		$this->later( static fn () => WC()->session->set( $key, $prior ) );
+		$post   = $this->post() + array(
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+		);
+		$refuse = static fn () => new WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) );
+		add_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
+		try {
+			$result = ( new Handler() )->process( $post );
+		} finally {
+			remove_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
+		}
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'planning_project_deleted', $result->get_error_code() );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
+		unset( $post[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] );
+		$post['linker_request_id'] = wp_generate_uuid4();
+		self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $post ) );
+	}
+
 	/** Forged and wrongly scoped proofs are unverified, never silently normal. */
 	public function test_forged_wrong_scope_and_missing_proofs_all_use_bounded_review(): void {
 		foreach ( array( '', 'forged', 'wrong-scope' ) as $value ) {

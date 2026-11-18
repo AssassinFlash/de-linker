@@ -207,6 +207,17 @@ final class Intake {
 		add_filter( 'linker_commerce_public_business_context', $context );
 		try {
 			$order = $work();
+			if ( $order instanceof WP_Error && in_array( $order->get_error_code(), array( 'planning_project_deleted', 'planning_admission_unavailable' ), true ) ) {
+				// Admission refused before an order was saved. Keep the dispatch charged.
+				$released = IntakeStore::edit(
+					static function ( array &$state ) use ( $id ): array {
+						unset( $state['entries'][ $id ] );
+						IntakeStore::save( $state );
+						return array();
+					}
+				);
+				return $released instanceof WP_Error ? $released : $order;
+			}
 			if ( $order instanceof WC_Order ) {
 				$stored = $order->get_id() > 0 ? BusinessRecord::recover( $id, $fingerprint, $identity->binding(), array( 'outcome' => $order->get_id() ) ) : null;
 				if ( ! $stored instanceof WC_Order ) {
