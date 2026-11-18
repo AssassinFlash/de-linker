@@ -160,7 +160,7 @@ final class Form {
 			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
 			'quantity'           => __( 'Quantity', 'linker-commerce' ),
 			'update'             => __( 'Update solution draft', 'linker-commerce' ),
-			'update-before-send' => __( 'Update the solution draft before sending your inquiry.', 'linker-commerce' ),
+			'update-before-send' => __( 'Check the quantities in your solution draft and try again.', 'linker-commerce' ),
 			'retention-error'    => __( 'Your browser could not save your entries. Stay on this page to avoid losing them.', 'linker-commerce' ),
 		);
 		return esc_html( $words[ $atts['key'] ?? '' ] ?? '' );
