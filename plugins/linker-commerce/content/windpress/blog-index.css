@@ -16,7 +16,8 @@
 #tv-blog-index-v1 .journal-feature-label { padding: var(--proto-space-1) var(--proto-space-2); border-radius: 6px; background: rgba(255,255,255,.16); color: #fff; font-size: .6875rem; font-weight: 600; }
 #tv-blog-index-v1 .journal-feature h2 { max-width: 25ch; margin-top: var(--proto-space-3); color: #fff; font-size: clamp(1.5rem,2.2vw,2rem); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
 #tv-blog-index-v1 .journal-feature .journal-card-meta { color: #e2eeeb; }
-#tv-blog-index-v1 .journal-read { display: inline-flex; align-items: center; gap: var(--proto-space-3); margin-top: var(--proto-space-5); padding: var(--proto-space-2) var(--proto-space-4); border-radius: 8px; background: #fff; color: var(--proto-teal-800); font-size: .8125rem; font-weight: 600; }
+#tv-blog-index-v1 .journal-read { display: inline-flex; align-items: center; gap: var(--proto-space-3); margin-top: var(--proto-space-5); padding: var(--proto-space-2) var(--proto-space-4); border-radius: var(--proto-radius-md); background: var(--proto-canvas-white); color: var(--proto-teal-800); font-size: var(--proto-size-sm); font-weight: 600; }
+#tv-blog-index-v1 .journal-feature:is(:hover,:focus-visible) .journal-read { text-decoration: underline; text-underline-offset: .2em; }
 #tv-blog-index-v1 .journal-tool { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--proto-space-4); margin-top: var(--proto-space-7); padding-top: var(--proto-space-5); border-top: 1px solid var(--proto-neutral-200); font-size: .875rem; }
 #tv-blog-index-v1 .journal-tool a { display: inline-flex; gap: var(--proto-space-3); color: var(--proto-teal-700); font-weight: 600; }
 @media (max-width:639px) {

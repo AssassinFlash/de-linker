@@ -147,6 +147,11 @@ html[lang^="de"] #tv-contact-v1 p {
 	gap: var(--proto-space-3);
 }
 
+#contact-form .linker-contact-card .linker-contact-form .linker-form-input {
+	min-height: var(--proto-control-height);
+	border-radius: var(--proto-input-radius);
+}
+
 #contact-form .linker-contact-overline {
 	font-size: var(--proto-size-micro);
 	font-weight: var(--proto-weight-semibold);
