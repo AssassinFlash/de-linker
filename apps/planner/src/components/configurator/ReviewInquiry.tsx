@@ -38,6 +38,7 @@ export function ReviewInquiry({
 		[attempt, setAttempt] = useState(0),
 		[sending, setSending] = useState(false);
 	const retained = useRef<FormData | null>(null);
+	const staleIntent = useRef<typeof record>(null);
 	const host = useRef<HTMLDivElement>(null),
 		flight = useRef(false);
 	const record = operations.records.find(
@@ -157,15 +158,13 @@ export function ReviewInquiry({
 					if (record.resultId && record.resultId !== receipt.handoffId)
 						throw new Error("invalid_draft_receipt");
 					await operations.acknowledgeReadback(record, receipt.handoffId);
-				} else if (
-					status.state === "not_applied" &&
-					command.expected_draft_sha256 === preview.draftSha256
-				) {
+				} else if (status.state === "not_applied") {
+					if (command.expected_draft_sha256 !== preview.draftSha256) {
+						staleIntent.current = record;
+						throw new ApiError(409, "planning_draft_changed");
+					}
 					const reply = await operations.retry(record);
 					if (reply?.path === "draft/apply") receipt = reply.receipt;
-				} else if (status.state === "not_applied") {
-					await operations.discard(record);
-					throw new ApiError(409, "planning_draft_changed");
 				} else throw new Error("invalid_draft_receipt");
 			} else {
 				const reply = await operations.start("draft/apply", {
@@ -260,7 +259,11 @@ export function ReviewInquiry({
 						<button
 							type="button"
 							className="sc-button"
-							onClick={() => {
+							onClick={async () => {
+								if (staleIntent.current) {
+									await operations.discard(staleIntent.current);
+									staleIntent.current = null;
+								}
 								const form = host.current?.querySelector("form");
 								if (form) retained.current = new window.FormData(form);
 								setPreview(null);

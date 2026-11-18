@@ -140,77 +140,165 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 	assert.deepEqual(revoked, ["blob:report-1", "blob:report-2"]);
 });
 
-test("review submits the reviewed report and contact fields through one native inquiry action", async (t) => {
-	const page = setupDom(),
-		root = createRoot(page.element),
-		value = props();
-	t.after(() => page.dispose(root));
-	value.run.result.has_report_only_handoff = true;
-	const handoff = "b".repeat(32),
-		digest = "e".repeat(64),
-		calls = [],
-		posts = [];
-	value.client.origin = location.origin;
-	value.client.query = async (path, command) => {
-		calls.push(path);
-		return {
-			schema_version: 1,
-			project_id: command.project_id,
-			report_run_id: command.report_run_id,
-			revision: command.expected_revision,
-			handoff_id: handoff,
-			snapshot_sha256: digest,
-			draft_sha256: digest,
-			draft_urls: {
-				en: location.origin + "/en/inquiry",
-				de: location.origin + "/de/anfrage",
-			},
-			report_only: true,
-			already_present: false,
-			changes: [],
-			inquiry_lines: [
-				{
-					product_id: 12,
-					label: "Existing draft inverter",
-					quantity: 2,
-					project_id: null,
+for (const mode of ["new", "applied", "unapplied", "changed"])
+	test(`Review submits or recovers the native inquiry (${mode})`, async (t) => {
+		const page = setupDom(),
+			root = createRoot(page.element),
+			value = props();
+		t.after(() => page.dispose(root));
+		value.run.result.has_report_only_handoff = true;
+		const handoff = "b".repeat(32),
+			digest = "e".repeat(64),
+			calls = [],
+			posts = [];
+		const key = crypto.randomUUID(),
+			record = {
+				path: "draft/apply",
+				key,
+				resultId: null,
+				scope,
+				body: JSON.stringify({
+					schema_version: 1,
+					project_id: value.run.project_id,
+					report_run_id: value.run.id,
+					expected_revision: value.run.revision,
+					expected_draft_sha256: mode === "changed" ? "a".repeat(64) : digest,
+					key,
+				}),
+			};
+		if (mode !== "new") value.operations.records = [record];
+		value.client.send = async (path, body) => {
+			calls.push(path);
+			assert.equal(body, record.body);
+			return mode === "applied"
+				? {
+						schema_version: 1,
+						state: "applied",
+						receipt: {
+							schema_version: 1,
+							project_id: value.run.project_id,
+							report_run_id: value.run.id,
+							revision: value.run.revision,
+							handoff_id: handoff,
+							snapshot_sha256: digest,
+							intent_sha256: digest,
+							report_only: true,
+							items: [],
+							draft_urls: {
+								en: location.origin + "/en",
+								de: location.origin + "/de",
+							},
+							inquiry_cart_hash: "c".repeat(32),
+							inquiry_draft_sha256: "d".repeat(64),
+						},
+					}
+				: { schema_version: 1, state: "not_applied" };
+		};
+		value.operations.acknowledgeReadback = async (item, id) => {
+			assert.equal(item, record);
+			assert.equal(id, handoff);
+		};
+		value.operations.retry = async (item) => {
+			assert.equal(item, record);
+			calls.push("retry");
+			return {
+				path: "draft/apply",
+				receipt: {
+					handoffId: handoff,
+					inquiryCartHash: "c".repeat(32),
+					inquiryDraftSha256: "d".repeat(64),
 				},
-			],
-			inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input name="name" required><input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
+			};
 		};
-	};
-	value.operations.start = async (path, fields) => {
-		calls.push(path);
-		assert.equal(fields.expected_draft_sha256, digest);
-		return {
-			path,
-			receipt: {
-				handoffId: handoff,
-				inquiryCartHash: "c".repeat(32),
-				inquiryDraftSha256: "d".repeat(64),
+		value.operations.discard = async (item) => {
+			assert.equal(item, record);
+			calls.push("discard");
+			value.operations.records = [];
+		};
+		value.client.origin = location.origin;
+		value.client.query = async (path, command) => {
+			calls.push(path);
+			return {
+				schema_version: 1,
+				project_id: command.project_id,
+				report_run_id: command.report_run_id,
+				revision: command.expected_revision,
+				handoff_id: handoff,
+				snapshot_sha256: digest,
+				draft_sha256: digest,
+				draft_urls: {
+					en: location.origin + "/en/inquiry",
+					de: location.origin + "/de/anfrage",
+				},
+				report_only: true,
+				already_present: false,
+				changes: [],
+				inquiry_lines: [
+					{
+						product_id: 12,
+						label: "Existing draft inverter",
+						quantity: 2,
+						project_id: null,
+					},
+				],
+				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input name="name" required><input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
+			};
+		};
+		value.operations.start = async (path, fields) => {
+			calls.push(path);
+			assert.equal(fields.expected_draft_sha256, digest);
+			return {
+				path,
+				receipt: {
+					handoffId: handoff,
+					inquiryCartHash: "c".repeat(32),
+					inquiryDraftSha256: "d".repeat(64),
+				},
+			};
+		};
+		window.HTMLFormElement.prototype.submit = function () {
+			posts.push(Object.fromEntries(new window.FormData(this)));
+		};
+		await act(async () =>
+			root.render(React.createElement(ReviewProposal, value)),
+		);
+		assert.deepEqual(calls, ["draft/inquiry-preview"]);
+		assert.match(page.element.textContent, /Existing draft inverter/);
+		const form = page.element.querySelector("form");
+		await act(async () => button("Send inquiry").click());
+		assert.equal(calls.length, 1);
+		form.elements.name.value = "Installer";
+		await act(async () => button("Send inquiry").click());
+		if (mode === "changed") {
+			assert.deepEqual(calls, ["draft/inquiry-preview", "draft/read"]);
+			assert.equal(posts.length, 0);
+			await act(async () => button("Review inquiry again").click());
+			assert.equal(
+				page.element.querySelector("form").elements.name.value,
+				"Installer",
+			);
+			assert.deepEqual(calls, [
+				"draft/inquiry-preview",
+				"draft/read",
+				"discard",
+				"draft/inquiry-preview",
+			]);
+			return;
+		}
+		assert.deepEqual(calls, [
+			"draft/inquiry-preview",
+			...(mode === "new"
+				? ["draft/apply"]
+				: mode === "applied"
+					? ["draft/read"]
+					: ["draft/read", "retry"]),
+		]);
+		assert.deepEqual(posts, [
+			{
+				name: "Installer",
+				linker_draft_hash: "c".repeat(32),
+				linker_planner_draft_sha256: "d".repeat(64),
+				linker_planner_handoff_id: handoff,
 			},
-		};
-	};
-	window.HTMLFormElement.prototype.submit = function () {
-		posts.push(Object.fromEntries(new window.FormData(this)));
-	};
-	await act(async () =>
-		root.render(React.createElement(ReviewProposal, value)),
-	);
-	assert.deepEqual(calls, ["draft/inquiry-preview"]);
-	assert.match(page.element.textContent, /Existing draft inverter/);
-	const form = page.element.querySelector("form");
-	await act(async () => button("Send inquiry").click());
-	assert.equal(calls.length, 1);
-	form.elements.name.value = "Installer";
-	await act(async () => button("Send inquiry").click());
-	assert.deepEqual(calls, ["draft/inquiry-preview", "draft/apply"]);
-	assert.deepEqual(posts, [
-		{
-			name: "Installer",
-			linker_draft_hash: "c".repeat(32),
-			linker_planner_draft_sha256: "d".repeat(64),
-			linker_planner_handoff_id: handoff,
-		},
-	]);
-});
+		]);
+	});

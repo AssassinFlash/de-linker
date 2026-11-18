@@ -359,10 +359,16 @@ export function usePlanningOperations({
 				recheck();
 				return;
 			}
+			const draftChanged =
+				path === "draft/apply" &&
+				cause instanceof ApiError &&
+				cause.status === 409 &&
+				cause.code === "planning_draft_changed";
 			if (!current()) {
 				if (
 					dispatched &&
-					(isPreMutationInputRefusal(cause) ||
+					(draftChanged ||
+						isPreMutationInputRefusal(cause) ||
 						(cause instanceof ApiError &&
 							cause.status === 409 &&
 							cause.code === "evaluation_revision_changed"))
@@ -383,7 +389,8 @@ export function usePlanningOperations({
 			if (!dispatched) setStorageFailed(true);
 			if (
 				dispatched &&
-				(isPreMutationInputRefusal(cause) ||
+				(draftChanged ||
+					isPreMutationInputRefusal(cause) ||
 					(["battery/scenario", "runs/energy", "runs/calculate"].includes(
 						path,
 					) &&
