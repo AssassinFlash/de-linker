@@ -75,7 +75,20 @@ def test_installed_proforma_rows_are_replaced_in_place_in_both_languages() -> No
         "Garantiebedingungen richten sich nach der Bestellung.",
         "Garantiebedingungen richten sich nach der Proformarechnung.",
     )
-    assert standards.plan_pair(installed_en, installed_de) == (en, de)
+    expected = (
+        installed_en.replace(
+            "Warranty terms follow the Proforma.", "Warranty terms follow the order."
+        ),
+        installed_de.replace(
+            "Garantiebedingungen richten sich nach der Proformarechnung.",
+            "Garantiebedingungen richten sich nach der Bestellung.",
+        ),
+    )
+    updated = standards.plan_pair(installed_en, installed_de)
+    assert updated == expected
+    assert "Stock ships from our warehouse." in updated[0]
+    assert "Aus dem Lager liefern wir ab." in updated[1]
+    assert standards.plan_pair(*updated) == updated
 
 
 def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:

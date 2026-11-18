@@ -59,17 +59,19 @@ DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachp
 </dl>
 </div>"""
 
-PROFORMA_ROWS = {
+INSTALLED_ROWS = {
     "en": EN_MARKUP.replace(
         "Orders ship from our warehouse.", "Stock ships from our warehouse."
-    ).replace(
-        "Warranty terms follow the order.", "Warranty terms follow the Proforma."
     ),
     "de": DE_MARKUP.replace(
         "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
-    ).replace(
-        "Garantiebedingungen richten sich nach der Bestellung.",
+    ),
+}
+WARRANTY_REVISION = {
+    "en": ("Warranty terms follow the Proforma.", "Warranty terms follow the order."),
+    "de": (
         "Garantiebedingungen richten sich nach der Proformarechnung.",
+        "Garantiebedingungen richten sich nach der Bestellung.",
     ),
 }
 
@@ -203,12 +205,15 @@ def plan_page(content: str, language: str) -> str:
     assert_supported_content(markup)
     if '<div class="lk-trade-standards"' in content:
         if content.count('<div class="lk-trade-standards"') == 1:
-            variants = [markup, PROFORMA_ROWS[language]]
-            if language == "en":
-                variants.append(PREVIOUS_EN_MARKUP)
-            for row in variants:
-                if row in content:
-                    return content.replace(row, markup, 1)
+            installed = INSTALLED_ROWS[language]
+            old, new = WARRANTY_REVISION[language]
+            if markup in content or installed in content:
+                return content
+            previous = installed.replace(new, old, 1)
+            if previous in content:
+                return content.replace(previous, installed, 1)
+            if language == "en" and PREVIOUS_EN_MARKUP in content:
+                return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
         raise ValueError(
             "Services standards row changed or is duplicated; inspect the page"
         )
