@@ -2043,7 +2043,8 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( planningEntry.current ) {
 					window.dispatchEvent(
 						new CustomEvent(
-							'linker-genie-planning-context-request'
+							'linker-genie-planning-context-request',
+							{ detail: { opener: detail.opener } }
 						)
 					);
 				} else {

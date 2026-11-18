@@ -561,26 +561,42 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		);
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Attach report to inquiry"));
-		const context = () => {
+		const context = (opener) => {
 			let detail;
 			const receive = (event) => (detail = event.detail);
 			window.addEventListener("linker-genie-planning-context", receive);
 			window.dispatchEvent(
-				new CustomEvent("linker-genie-planning-context-request"),
+				new CustomEvent("linker-genie-planning-context-request", {
+					detail: { opener },
+				}),
 			);
 			window.removeEventListener("linker-genie-planning-context", receive);
 			return detail;
 		};
-		const ask = async (within, revision, runIds) => {
-			const opener = button("Ask Genie", within);
-			assert.ok(opener?.hasAttribute("data-linker-genie-open"));
-			await act(async () => opener.click());
-			const { page, plannerNonce } = context();
+		const assertContext = ({ page, plannerNonce }, revision, runIds) => {
 			assert.equal(page.planning_project_id, project.id);
 			assert.equal(page.planning_revision, revision);
 			assert.deepEqual(page.planning_run_ids, runIds);
 			assert.equal(page.planning_unsaved, false);
 			assert.equal(plannerNonce, "guest-proof");
+		};
+		const ask = async (within, revision, runIds) => {
+			const opener = button("Ask Genie", within);
+			assert.ok(opener?.hasAttribute("data-linker-genie-open"));
+			let openingContext;
+			const capture = (event) => {
+				if (event.target.closest("[data-linker-genie-open]") === opener)
+					openingContext = context(opener);
+			};
+			// The already loaded dock asks for context from the document click capture.
+			document.addEventListener("click", capture, true);
+			try {
+				await act(async () => opener.click());
+			} finally {
+				document.removeEventListener("click", capture, true);
+			}
+			assertContext(openingContext, revision, runIds);
+			assertContext(context(), revision, runIds);
 		};
 		const history = () =>
 			dom.element.querySelector('section[aria-label="Calculation history"]');
@@ -632,7 +648,6 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		);
 		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
 		await ask(button("Download PDF").closest("section"), 3, [current.id]);
-		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
 		await act(async () => button("Download PDF").click());
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Revision 2"));
@@ -642,6 +657,8 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			new URL(languageLink("en").href).searchParams.get("run"),
 			earlier.id,
 		);
+		await ask(history(), 2, [earlier.id]);
+		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
 		await act(async () => button("Revision 2").click());
 		assert.equal(
 			new URL(languageLink("en").href).searchParams.has("run"),

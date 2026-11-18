@@ -330,12 +330,19 @@ export default function Configurator({
 					(run) => run?.id === genieReport?.id && run?.state === "succeeded",
 				)
 			: null;
+	const openReport = viewedReport === null ? reportRun : viewedRun;
 	useGenieContext(
 		draft?.baseline ?? project,
 		session,
-		!genieRun &&
-			(!draft || isDirty(draft) || Boolean(draft.pending || draft.conflict)),
-		{ client, report: genieRun ?? null },
+		!draft || isDirty(draft) || Boolean(draft.pending || draft.conflict),
+		{
+			client,
+			report: genieRun ?? null,
+			openReport:
+				step === "review" && openReport?.state === "succeeded"
+					? openReport
+					: null,
+		},
 	);
 	const adoptedRun = adoptedSearch.data ?? null;
 	const legacyModels = draft
@@ -779,7 +786,7 @@ export default function Configurator({
 						type="button"
 						className="sc-button"
 						data-linker-genie-open
-						data-linker-genie-planning
+						data-linker-genie-planning=""
 						disabled={!admitted}
 						onClick={() => setGenieReport(null)}
 					>

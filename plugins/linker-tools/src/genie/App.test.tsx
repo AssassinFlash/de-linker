@@ -243,20 +243,36 @@ test( 'fresh report URLs carry only the exact saved project and run', () => {
 	).toBeNull();
 } );
 
-test( 'the floating entry drops the report context after Ask Genie', async () => {
+test( 'a warm dock opens the clicked report, while the floating entry drops report context', async () => {
+	const currentRun = 'b'.repeat( 32 );
+	const earlierRun = 'c'.repeat( 32 );
 	const page = {
 		type: 'other',
 		planning_project_id: 'a'.repeat( 32 ),
 		planning_revision: 5,
-		planning_run_ids: [ 'b'.repeat( 32 ) ],
+		planning_run_ids: [ currentRun ],
 		planning_unsaved: false,
 	};
-	const bridge = () =>
+	const historyPage = {
+		...page,
+		planning_revision: 4,
+		planning_run_ids: [ earlierRun ],
+	};
+	let selected = page;
+	const openingRuns: string[] = [];
+	const bridge = ( event: Event ) => {
+		const { opener } = ( event as CustomEvent ).detail ?? {};
+		const run = opener?.getAttribute( 'data-linker-genie-planning' );
+		if ( run ) openingRuns.push( run );
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-planning-context', {
-				detail: { page, plannerNonce: 'planner-proof' },
+				detail: {
+					page: run === earlierRun ? historyPage : selected,
+					plannerNonce: 'planner-proof',
+				},
 			} )
 		);
+	};
 	const open = ( opener: HTMLElement ) =>
 		act( () =>
 			window.dispatchEvent(
@@ -279,7 +295,10 @@ test( 'the floating entry drops the report context after Ask Genie', async () =>
 	} );
 	const reportOpener = document.createElement( 'button' );
 	reportOpener.setAttribute( 'data-linker-genie-open', '' );
-	reportOpener.setAttribute( 'data-linker-genie-planning', '' );
+	reportOpener.setAttribute( 'data-linker-genie-planning', currentRun );
+	const historyOpener = document.createElement( 'button' );
+	historyOpener.setAttribute( 'data-linker-genie-open', '' );
+	historyOpener.setAttribute( 'data-linker-genie-planning', earlierRun );
 	const dockOpener = document.createElement( 'button' );
 	dockOpener.setAttribute( 'data-linker-genie-open', '' );
 	dockOpener.className = 'linker-genie-open';
@@ -296,10 +315,22 @@ test( 'the floating entry drops the report context after Ask Genie', async () =>
 			} )
 		);
 		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+		open( historyOpener );
+		expect( openingRuns ).toEqual( [ currentRun, earlierRun ] );
+		selected = historyPage;
+		await ask( 'Explain this earlier report' );
+		expect( sendTurn ).toHaveBeenNthCalledWith(
+			2,
+			expect.objectContaining( {
+				page: expect.objectContaining( historyPage ),
+				plannerNonce: 'planner-proof',
+			} )
+		);
+		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
 		open( dockOpener );
 		await ask( 'A general product question' );
 		expect( sendTurn ).toHaveBeenNthCalledWith(
-			2,
+			3,
 			expect.objectContaining( {
 				page: config().page,
 				plannerNonce: undefined,

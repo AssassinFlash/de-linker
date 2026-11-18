@@ -249,7 +249,7 @@ function ReportDownloads({
 					type="button"
 					className="sc-button"
 					data-linker-genie-open
-					data-linker-genie-planning
+					data-linker-genie-planning={run.id}
 					disabled={!client.isCurrentScope(scope)}
 					onClick={askGenie}
 				>

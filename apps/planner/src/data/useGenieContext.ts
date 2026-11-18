@@ -11,17 +11,20 @@ export function useGenieContext(
 	selection?: {
 		client: Pick<PlannerClient, "isCurrentScope">;
 		report: { id: string; revision: number } | null;
+		openReport?: { id: string; revision: number } | null;
 	},
 ) {
 	const client = selection?.client;
 	const reportId = selection?.report?.id;
-	const revision = selection?.report?.revision ?? project.revision;
+	const reportRevision = selection?.report?.revision;
+	const openReportId = selection?.openReport?.id;
+	const openReportRevision = selection?.openReport?.revision;
 	useEffect(() => {
 		const clear = () =>
 			window.dispatchEvent(
 				new CustomEvent("linker-genie-planning-context", { detail: null }),
 			);
-		const publish = () => {
+		const publish = (event?: Event) => {
 			const params = new URL(location.href).searchParams;
 			if (
 				client &&
@@ -32,8 +35,28 @@ export function useGenieContext(
 				clear();
 				return;
 			}
+			const opener =
+				event instanceof CustomEvent &&
+				event.type === "linker-genie-planning-context-request"
+					? event.detail?.opener
+					: null;
+			const choice =
+				client && opener instanceof HTMLElement
+					? opener.getAttribute("data-linker-genie-planning")
+					: null;
+			// The warm dock requests context in click capture, before React's onClick.
+			if (choice && choice !== openReportId) {
+				clear();
+				return;
+			}
 			const comparison = client ? null : params.get("compare");
-			const run = client ? reportId : params.get("run");
+			const run = client ? (choice ?? reportId) : params.get("run");
+			const savedReportRevision =
+				choice === null
+					? reportRevision
+					: choice
+						? openReportRevision
+						: undefined;
 			const runs =
 				comparison &&
 				/^[a-f0-9]{32},[a-f0-9]{32}$/.test(comparison) &&
@@ -50,9 +73,9 @@ export function useGenieContext(
 							title: project.title,
 							url: location.href,
 							planning_project_id: project.id,
-							planning_revision: revision,
+							planning_revision: savedReportRevision ?? project.revision,
 							planning_run_ids: runs,
-							planning_unsaved: unsaved,
+							planning_unsaved: savedReportRevision === undefined && unsaved,
 						},
 						// Existing guest CSRF nonce, sent only as a native request header.
 						plannerNonce: session.nonce,
@@ -82,8 +105,11 @@ export function useGenieContext(
 		client,
 		project.id,
 		project.title,
+		project.revision,
 		reportId,
-		revision,
+		reportRevision,
+		openReportId,
+		openReportRevision,
 		session.claim_pending,
 		session.nonce,
 		session.query_scope,
