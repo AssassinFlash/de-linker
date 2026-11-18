@@ -44,6 +44,34 @@ LAZY_CLASSES = (
 DESKTOP_IMAGES = 7
 RAIL_IMAGES = 5
 
+# (Original, previously published, current) descriptions, desktop then mobile.
+ROOF_COPY = {
+    "header-en": (
+        (
+            "Organise the goal, site and existing equipment into a project direction you can keep refining.",
+            "Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout.",
+            "Bring your goal, site and existing equipment into a complete solution with a bill of materials. You can add a roof layout if needed.",
+        ),
+        (
+            "Organise the project direction and keep refining it.",
+            "Configure a complete solution with a bill of materials. The Roof detail step adds the layout.",
+            "Configure a complete solution with a bill of materials. You can add a roof layout if needed.",
+        ),
+    ),
+    "header-de": (
+        (
+            "Organisieren Sie Ziel, Standort und vorhandene Ausrüstung in eine Projektrichtung, die Sie weiter verfeinern können.",
+            "Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf.",
+            "Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Bei Bedarf können Sie die Dachfläche einzeichnen.",
+        ),
+        (
+            "Organisieren Sie die Projektrichtung und verfeinern Sie sie weiter.",
+            "Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf.",
+            "Konfigurieren Sie eine vollständige Lösung mit Stückliste. Bei Bedarf können Sie die Dachfläche einzeichnen.",
+        ),
+    ),
+}
+
 
 def load_script() -> ModuleType:
     """12-site-chrome.py is a script, not an importable module name."""
@@ -97,6 +125,38 @@ def test_a_header_step_leaves_the_shipped_partial_byte_identical(step_key: str) 
 
     assert result == html, "the header step rewrote the shipped partial"
     assert all("data-src" not in change for change in changes)
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("version", [0, 1], ids=["original", "previously-published"])
+def test_header_roof_copy_reaches_the_shipped_partial(
+    step_key: str, version: int
+) -> None:
+    final = HEADER_PARTIALS[step_key].read_text()
+    source = final
+    for descriptions in ROOF_COPY[step_key]:
+        assert source.count(descriptions[2]) == 1
+        source = source.replace(descriptions[2], descriptions[version], 1)
+
+    assert header_step(step_key).planned(source) == final
+
+
+@pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
+@pytest.mark.parametrize("invalid", ["unknown", "duplicated", "mixed"])
+def test_header_rejects_unrecognized_or_ambiguous_roof_copy(
+    step_key: str, invalid: str
+) -> None:
+    final = HEADER_PARTIALS[step_key].read_text()
+    original, previous, current = ROOF_COPY[step_key][0]
+    span = '<span class="tv-tool-desc">{}</span>'
+    malformed = {
+        "unknown": span.format("Unknown planner description."),
+        "duplicated": span.format(current) * 2,
+        "mixed": span.format(original) + span.format(previous),
+    }[invalid]
+
+    with pytest.raises(SystemExit, match=step_key):
+        header_step(step_key).planned(final.replace(span.format(current), malformed, 1))
 
 
 @pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))

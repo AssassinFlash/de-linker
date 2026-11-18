@@ -14,8 +14,8 @@ recorded in docs/acceptance/2026-10-10/12/copy-review.md):
 1. The header partial (EN "header", DE twin): the tools menu keeps two
    cards, Genie ("Genie - Linker's AI assistant" / "Genie – der
    KI-Assistent von Linker") and the Solution Configurator, whose
-   description carries the Roof detail / Dachdetails sentence (the Site
-   Detail card folded in). The Site Detail card and mobile link go; their
+   description explains that drawing a roof layout is optional. The Site
+   Detail card and mobile link go; their
    addresses redirect (plugin code, Redirects.php).
 2. The footer partial's planning panel: Genie and Solution Configurator
    links, the Site Detail link removed, the count badge 04 -> 03.
@@ -79,6 +79,7 @@ import re
 import shlex
 import subprocess
 import sys
+from collections.abc import Sequence
 from typing import Any, overload
 
 # The old tool names that must not survive in any published post body or
@@ -158,7 +159,10 @@ SEO_TITLES: dict[str, tuple[str, str]] = {
 # ---------------------------------------------------------------------------
 # The header partial.
 # ---------------------------------------------------------------------------
-HEADER_EN: list[tuple[str, str]] = [
+# Original, final, and (for the roof descriptions) exact previously published text.
+type LiteralEdit = tuple[str, str] | tuple[str, str, str]
+
+HEADER_EN: list[LiteralEdit] = [
     (
         '<span class="tv-tool-name">Linker Advisor</span>',
         '<span class="tv-tool-name">Genie - Linker\'s AI assistant</span>',
@@ -173,6 +177,7 @@ HEADER_EN: list[tuple[str, str]] = [
     ),
     (
         '<span class="tv-tool-desc">Organise the goal, site and existing equipment into a project direction you can keep refining.</span>',
+        '<span class="tv-tool-desc">Bring your goal, site and existing equipment into a complete solution with a bill of materials. You can add a roof layout if needed.</span>',
         '<span class="tv-tool-desc">Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building\'s layout.</span>',
     ),
     (
@@ -185,6 +190,7 @@ HEADER_EN: list[tuple[str, str]] = [
     ),
     (
         '<span class="tv-mobile-link-desc">Organise the project direction and keep refining it.</span>',
+        '<span class="tv-mobile-link-desc">Configure a complete solution with a bill of materials. You can add a roof layout if needed.</span>',
         '<span class="tv-mobile-link-desc">Configure a complete solution with a bill of materials. The Roof detail step adds the layout.</span>',
     ),
 ]
@@ -194,7 +200,7 @@ HEADER_EN_REMOVE: list[str] = [
     r'<a href="/design-canvas/" class="tv-mobile-link">.*?</a>\s*',
 ]
 
-HEADER_DE: list[tuple[str, str]] = [
+HEADER_DE: list[LiteralEdit] = [
     (
         '<span class="tv-tool-name">Linker Berater</span>',
         '<span class="tv-tool-name">Genie – der KI-Assistent von Linker</span>',
@@ -209,6 +215,7 @@ HEADER_DE: list[tuple[str, str]] = [
     ),
     (
         '<span class="tv-tool-desc">Organisieren Sie Ziel, Standort und vorhandene Ausrüstung in eine Projektrichtung, die Sie weiter verfeinern können.</span>',
+        '<span class="tv-tool-desc">Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Bei Bedarf können Sie die Dachfläche einzeichnen.</span>',
         '<span class="tv-tool-desc">Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf.</span>',
     ),
     (
@@ -221,6 +228,7 @@ HEADER_DE: list[tuple[str, str]] = [
     ),
     (
         '<span class="tv-mobile-link-desc">Organisieren Sie die Projektrichtung und verfeinern Sie sie weiter.</span>',
+        '<span class="tv-mobile-link-desc">Konfigurieren Sie eine vollständige Lösung mit Stückliste. Bei Bedarf können Sie die Dachfläche einzeichnen.</span>',
         '<span class="tv-mobile-link-desc">Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf.</span>',
     ),
 ]
@@ -1089,7 +1097,7 @@ class Step:
         key: str,
         post_id: int,
         english_id: int,
-        pairs: list[tuple[str, str]] | None = None,
+        pairs: Sequence[LiteralEdit] | None = None,
         removes: list[str] | None = None,
         rules: list[tuple[str, str]] | None = None,
         required_rules: list[tuple[str, str]] | None = None,
@@ -1115,18 +1123,29 @@ class Step:
         return self.apply(content, report=lambda message: None)
 
     def apply(self, content: str, report: Any) -> str:
-        for old, new in self.pairs:
-            count = content.count(old)
-            if count == 0:
-                if new in content:
-                    continue  # a re-run: this pair is already in place
-                raise SystemExit(
-                    f"{self.key}: neither old nor new string found: {old[:100]!r}"
-                )
-            if count != 1:
-                raise SystemExit(
-                    f"{self.key}: expected 1x, found {count}x: {old[:100]!r}"
-                )
+        for edit in self.pairs:
+            old, new, *previous = edit
+            if previous:
+                counts = [content.count(text) for text in edit]
+                if sum(counts) != 1:
+                    raise SystemExit(
+                        f"{self.key}: expected exactly one known version of {old[:100]!r}"
+                    )
+                old = edit[counts.index(1)]
+                if old == new:
+                    continue
+            else:
+                count = content.count(old)
+                if count == 0:
+                    if new in content:
+                        continue  # a re-run: this pair is already in place
+                    raise SystemExit(
+                        f"{self.key}: neither old nor new string found: {old[:100]!r}"
+                    )
+                if count != 1:
+                    raise SystemExit(
+                        f"{self.key}: expected 1x, found {count}x: {old[:100]!r}"
+                    )
             content = content.replace(old, new)
             report(f"{self.key}: {self._brief(old)} -> {self._brief(new)}")
         for pattern in self.removes:
@@ -1814,7 +1833,7 @@ def do_verify(wp: WP) -> int:
         for token in stale_tokens(post["post_content"]):
             print(f"FAIL {step.key}: {token} still present")
             ok = False
-        for _old, new in step.pairs:
+        for _old, new, *_previous in step.pairs:
             if new not in post["post_content"]:
                 print(f"FAIL {step.key}: new string missing: {new[:80]!r}")
                 ok = False
