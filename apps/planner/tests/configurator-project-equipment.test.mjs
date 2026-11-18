@@ -193,6 +193,32 @@ test("switching to solar makes excluding backup demand and retained storage an e
 	assert.equal(field("Battery or storage system"), undefined);
 });
 
+test("changing to storage requires confirmation before removing active PV wiring", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const plan = {
+		schema_version: 1,
+		inverter_product_id: 101,
+		minimum_ambient_c: null,
+		temperature_source: null,
+		strings: [{ id: "s", mppt: 1, input: 1, module_ids: ["module_1"] }],
+	};
+	const current = await mount(t, {
+		brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
+		pv_string_plan: plan,
+	});
+	await choose("Planned system", "storage_only");
+	assert.equal(current().brief.system_scope, "new_pv_storage");
+	assert.deepEqual(current().pv_string_plan, plan);
+	await act(async () => button("Keep current system").click());
+	assert.deepEqual(current().pv_string_plan, plan);
+	await choose("Planned system", "storage_only");
+	await act(async () =>
+		button("Switch to storage and remove PV wiring").click(),
+	);
+	assert.equal(current().brief.system_scope, "storage_only");
+	assert.equal(current().pv_string_plan, undefined);
+});
+
 test("a product from an entry link is visible and can be replaced or cleared", async (t) => {
 	const hints = readEntryHints(
 		new URLSearchParams("step=equipment&product_id=101"),

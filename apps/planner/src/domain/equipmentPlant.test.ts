@@ -380,6 +380,30 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	assert.deepEqual(adopted.site, { country_code: "FR" });
 	assert.deepEqual(adopted.equipment_candidate, choice);
 	assert.deepEqual(adopted.equipment_plant, hardware);
+	const wiring = readPvPlantStringPlan({
+		schema_version: 1,
+		units: [
+			{
+				unit_id: hardware.units[0]!.id,
+				inverter_instance_id: null,
+				plan: {
+					schema_version: 1,
+					inverter_product_id: 1,
+					minimum_ambient_c: null,
+					temperature_source: null,
+					strings: [{ id: "s", mppt: 1, input: 1, module_ids: ["ma"] }],
+				},
+			},
+		],
+	});
+	const wired = adoptPlantCandidate(
+		{ ...current, pv_plant_string_plan: wiring },
+		hardware,
+		products,
+		choice,
+	);
+	assert.deepEqual(wired.pv_plant_string_plan, wiring);
+	assert.deepEqual(wired.equipment_candidate, choice);
 	assert.equal(
 		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs).application,
 		"commercial",

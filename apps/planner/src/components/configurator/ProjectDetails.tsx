@@ -91,7 +91,9 @@ export function ProjectDetails({
 }) {
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
-	const [confirmSolar, setConfirmSolar] = useState(false);
+	const [pendingScope, setPendingScope] = useState<
+		"pv_only" | "storage_only" | null
+	>(null);
 	const solarConflict =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs);
 	const [locating, setLocating] = useState(false);
@@ -153,11 +155,18 @@ export function ProjectDetails({
 		}
 	}
 	function changeScope(system_scope: Brief["system_scope"]) {
-		setConfirmSolar(false);
+		setPendingScope(null);
 		edit((current) => {
 			const b =
 				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
-			const amended: JsonObject = { ...current, brief: { ...b, system_scope } };
+			const amended: Record<string, JsonObject[string]> = {
+				...current,
+				brief: { ...b, system_scope },
+			};
+			if (system_scope === "storage_only") {
+				delete amended.pv_string_plan;
+				delete amended.pv_plant_string_plan;
+			}
 			const goal = energyGoal(amended);
 			if (system_scope === "pv_only") {
 				const { equipment_demand: _demand, ...solar } = goal
@@ -284,8 +293,13 @@ export function ProjectDetails({
 							onChange={(e) => {
 								const system_scope = (e.currentTarget.value ||
 									null) as Brief["system_scope"];
-								if (system_scope === "pv_only" && hasStorageToExclude(inputs))
-									setConfirmSolar(true);
+								if (
+									(system_scope === "pv_only" && hasStorageToExclude(inputs)) ||
+									(system_scope === "storage_only" &&
+										(inputs.pv_string_plan != null ||
+											inputs.pv_plant_string_plan != null))
+								)
+									setPendingScope(system_scope);
 								else changeScope(system_scope);
 							}}
 						>
@@ -351,27 +365,34 @@ export function ProjectDetails({
 						</select>
 					</label>
 				</div>
-				{(confirmSolar || solarConflict) && (
+				{(pendingScope || solarConflict) && (
 					<div>
 						<p>
-							{__(
-								"Switching to solar excludes battery equipment and storage requirements, including backup supply.",
-								"linker-tools",
-							)}
+							{pendingScope === "storage_only"
+								? __(
+										"Switching to storage removes the PV wiring plan from this project version.",
+										"linker-tools",
+									)
+								: __(
+										"Switching to solar excludes battery equipment and storage requirements, including backup supply.",
+										"linker-tools",
+									)}
 						</p>
 						<div className="sc-actions">
 							<button
 								type="button"
 								className="sc-button"
-								onClick={() => changeScope("pv_only")}
+								onClick={() => changeScope(pendingScope ?? "pv_only")}
 							>
-								{__("Switch to solar and exclude storage", "linker-tools")}
+								{pendingScope === "storage_only"
+									? __("Switch to storage and remove PV wiring", "linker-tools")
+									: __("Switch to solar and exclude storage", "linker-tools")}
 							</button>
-							{!solarConflict && (
+							{(pendingScope === "storage_only" || !solarConflict) && (
 								<button
 									type="button"
 									className="sc-button"
-									onClick={() => setConfirmSolar(false)}
+									onClick={() => setPendingScope(null)}
 								>
 									{__("Keep current system", "linker-tools")}
 								</button>
@@ -415,7 +436,7 @@ export function ProjectDetails({
 					disabled={
 						disabled ||
 						locating ||
-						confirmSolar ||
+						pendingScope !== null ||
 						solarConflict ||
 						creation?.submitDisabled ||
 						(!creation?.locked &&

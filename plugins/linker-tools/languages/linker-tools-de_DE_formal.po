@@ -214,6 +214,16 @@ msgstr "Nur Photovoltaik"
 msgid "Switching to solar excludes battery equipment and storage requirements, including backup supply."
 msgstr "Wenn Sie zu reiner Photovoltaik wechseln, entfallen die Batterieausstattung und die Anforderungen an den Speicher, einschließlich der Ersatzstromversorgung."
 
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx
+#: build/planner/assets/planner.js
+msgid "Switching to storage removes the PV wiring plan from this project version."
+msgstr "Wenn Sie zu einem reinen Speicherprojekt wechseln, wird der PV-Verschaltungsplan aus dieser Projektversion entfernt."
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx
+#: build/planner/assets/planner.js
+msgid "Switch to storage and remove PV wiring"
+msgstr "Zu Speicher wechseln und PV-Verschaltung entfernen"
+
 #: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
 msgid "Switch to solar and exclude storage"
 msgstr "Zu Photovoltaik ohne Speicher wechseln"
@@ -10739,6 +10749,11 @@ msgstr ""
 "Wählen Sie „Geräte prüfen“, um diesen Verschaltungsplan zu bewerten. "
 "Leerlaufspannung bei Kälte und STC-Prüfungen werden getrennt von den noch "
 "offenen Auslegungsprüfungen angezeigt."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Generate the project report to check the saved wiring plan."
+msgstr "Erstellen Sie den Projektbericht, um den gespeicherten Verschaltungsplan zu prüfen."
 
 #: ../../apps/planner/src/components/equipment/PvStringResult.tsx
 #: build/planner/assets/planner.js

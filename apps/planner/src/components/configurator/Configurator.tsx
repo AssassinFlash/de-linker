@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
@@ -65,13 +65,16 @@ import {
 	comparisonModels,
 	equipmentDraft,
 } from "../../domain/equipment.ts";
+import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
+import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
+import { dropGeometricRoofAc } from "../../domain/profiles.ts";
+import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
 import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
-import { hasPlant } from "../../domain/equipmentPlant.ts";
 import {
 	CandidateMaterials,
 	SystemOptions,
@@ -80,6 +83,8 @@ import {
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
+import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
+import { PvStringSetup } from "../equipment/PvStringSetup.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
@@ -181,8 +186,33 @@ export default function Configurator({
 		id: string;
 		task: SharedDcTask;
 	} | null>(null);
+	const [wiringValidity, setWiringValidity] = useState<Record<string, boolean>>(
+		{},
+	);
+	const wiringInputs = draft?.history.current;
+	const wiringPlant =
+		step === "solar" && wiringInputs && hasPlant(wiringInputs)
+			? readPlantDraft(wiringInputs)
+			: null;
+	const wiringIds = wiringPlant?.units.map((unit) => unit.id).join(",") ?? "";
+	const wiringCallbacks = useMemo(
+		() =>
+			Object.fromEntries(
+				["", ...wiringIds.split(",").filter(Boolean)].map((id) => [
+					id,
+					(valid: boolean) =>
+						setWiringValidity((state) =>
+							state[id] === valid ? state : { ...state, [id]: valid },
+						),
+				]),
+			),
+		[wiringIds],
+	);
+	const wiringValid = (wiringPlant?.units.map((unit) => unit.id) ?? [""]).every(
+		(id) => wiringValidity[id] !== false,
+	);
 	const navigationBlocked =
-		!energyValid || !sharedDcValid || roofEditing || importOpen;
+		!energyValid || !sharedDcValid || !wiringValid || roofEditing || importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
@@ -479,6 +509,13 @@ export default function Configurator({
 			return next !== null && applied;
 		},
 		[client, comparisonInputs, session.query_scope, update],
+	);
+	const editWiring = useCallback(
+		(operation: (inputs: JsonObject) => JsonObject) =>
+			edit((inputs) =>
+				invalidateEnergyReplay(dropGeometricRoofAc(operation(inputs))),
+			),
+		[edit],
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
@@ -826,6 +863,15 @@ export default function Configurator({
 		values.length && values.every((v): v is number => typeof v === "number")
 			? `${number.format(values.reduce((a, b) => a + b, 0))} ${unit}`
 			: "—";
+	const inverterId = equipmentDraft(inputs).inverter_product_id;
+	const plantWiring =
+		wiringPlant && inputs.pv_plant_string_plan != null
+			? readPvPlantStringPlan(inputs.pv_plant_string_plan).units
+			: [];
+	const hasRoofModules =
+		wiringPlant &&
+		inputs.geometry !== undefined &&
+		activePvGeometry(inputs.geometry).arrays.length > 0;
 	const activeStep =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)
 			? "project"
@@ -1119,6 +1165,56 @@ export default function Configurator({
 							disabled={blocked || modelsUnavailable}
 							edit={edit}
 							next={() => navigate("energy")}
+							wiring={
+								wiringPlant
+									? wiringPlant.units.map((unit, index) => {
+											const hasPlan = plantWiring.some(
+												(row) => row.unit_id === unit.id,
+											);
+											if (
+												!hasPlan &&
+												(!hasRoofModules ||
+													typeof equipmentDraft(unit.inputs)
+														.inverter_product_id !== "number")
+											)
+												return null;
+											return (
+												<fieldset className="sc-card" key={unit.id}>
+													<legend>
+														{unit.name ||
+															sprintf(
+																__("System %d", "linker-tools"),
+																index + 1,
+															)}
+													</legend>
+													<PlantPvStringSetup
+														draft={draft}
+														unit={unit}
+														units={wiringPlant.units}
+														edit={editWiring}
+														locale={config.locale}
+														disabled={blocked || modelsUnavailable}
+														onValidity={wiringCallbacks[unit.id]!}
+														checkedInReport
+													/>
+												</fieldset>
+											);
+										})
+									: (typeof inverterId === "number" ||
+											inputs.pv_string_plan != null) && (
+											<PvStringSetup
+												draft={draft}
+												edit={editWiring}
+												inverterId={
+													typeof inverterId === "number" ? inverterId : null
+												}
+												locale={config.locale}
+												disabled={blocked || modelsUnavailable}
+												onValidity={wiringCallbacks[""]!}
+												checkedInReport
+											/>
+										)
+							}
 							initialMap={mapPropertyLinks.has(location.hash)}
 							onEditing={setRoofEditing}
 							geometryImport={{

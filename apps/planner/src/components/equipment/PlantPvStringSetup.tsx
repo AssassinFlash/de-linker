@@ -20,6 +20,7 @@ export function PlantPvStringSetup({
 	locale,
 	disabled,
 	onValidity,
+	checkedInReport = false,
 }: {
 	draft: Draft;
 	unit: PlantUnitDraft;
@@ -28,6 +29,7 @@ export function PlantPvStringSetup({
 	locale: string;
 	disabled: boolean;
 	onValidity: (valid: boolean) => void;
+	checkedInReport?: boolean;
 }) {
 	const plant = useMemo(
 		() =>
@@ -91,6 +93,7 @@ export function PlantPvStringSetup({
 				locale={locale}
 				disabled={disabled}
 				onValidity={onValidity}
+				checkedInReport={checkedInReport}
 				controlled={{
 					plan,
 					scopeLabel: unit.name,

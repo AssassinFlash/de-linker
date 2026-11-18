@@ -230,8 +230,6 @@ export function adoptPlantCandidate(
 	return {
 		...plantInputs(inputs, updated),
 		equipment_plant: prepared,
-		...(inputs.pv_plant_string_plan === undefined && sameJson(prepared, plant)
-			? { equipment_candidate: choice }
-			: {}),
+		...(sameJson(prepared, plant) ? { equipment_candidate: choice } : {}),
 	};
 }

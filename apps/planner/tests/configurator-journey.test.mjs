@@ -262,7 +262,7 @@ test("a storage project continues from its location directly to energy use", asy
 		title: "Workshop",
 		revision: 1,
 		input_sha256: "2".repeat(64),
-		inputs: { brief },
+		inputs: { brief, geometry: flatRoof },
 	};
 	const requests = [];
 	const client = {
@@ -323,6 +323,7 @@ test("a storage project continues from its location directly to energy use", asy
 			fixture.element.textContent.includes("What should the system do?"),
 		);
 		assert.equal(requests.includes("projects/revise"), false);
+		assert.doesNotMatch(fixture.element.textContent, /PV strings and inputs/);
 		assert.equal(
 			fixture.element.textContent.includes("Installation routing"),
 			false,
@@ -895,6 +896,8 @@ for (const scenario of [
 	"matching energy and equipment",
 	"changed energy and equipment",
 	"automatic wiring check",
+	"single-system wiring entered in Solar",
+	"multi-system wiring entered in Solar",
 	"pending wiring check",
 	"completed wiring check",
 	"missing wiring evidence",
@@ -927,7 +930,10 @@ for (const scenario of [
 				models: {},
 			},
 		};
+		const editWiring = scenario.endsWith("wiring entered in Solar");
+		const plantWiring = scenario === "multi-system wiring entered in Solar";
 		const editPeak = scenario === "edited peak target with a saved candidate";
+		if (editWiring) window.location.hash = "sc-solar";
 		if (editPeak) window.location.hash = "sc-energy";
 		let project = structuredClone(knownPv.project);
 		project.revision++;
@@ -1086,7 +1092,24 @@ for (const scenario of [
 				required_usable_kwh: null,
 				required_discharge_ac_kw: null,
 			};
-			project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			if (editWiring) project.inputs.geometry = flatRoof;
+			else project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			if (plantWiring) {
+				const { beginPlant, plantInputs, readPlantDraft } =
+					await import("../src/domain/equipmentPlant.ts");
+				const setup = project.inputs.equipment_setup;
+				const plant = beginPlant(
+					project.inputs,
+					{ id: "east", name: "East" },
+					{ id: "west", name: "West" },
+				);
+				const draft = readPlantDraft(plant);
+				draft.units[1].inputs.equipment_setup = {
+					...setup,
+					inverter_product_id: 102,
+				};
+				project.inputs = plantInputs(plant, draft);
+			}
 			wiringCheck = equipmentRun(
 				"qualify_woo_equipment_v1",
 				project.revision,
@@ -1153,6 +1176,8 @@ for (const scenario of [
 		const client = {
 			isCurrentScope: (s) => s === scope,
 			query: async (path, body) => {
+				if (editWiring && path === "products/current")
+					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
 				if (path === "projects/runs")
 					return {
 						items: runs.map((run) => ({
@@ -1199,7 +1224,7 @@ for (const scenario of [
 			send: async (path, raw) => {
 				const command = JSON.parse(raw);
 				requests.push([path, command]);
-				if (path === "projects/revise" && editPeak) {
+				if (path === "projects/revise" && (editPeak || editWiring)) {
 					project = {
 						...project,
 						revision: project.revision + 1,
@@ -1209,6 +1234,60 @@ for (const scenario of [
 					return project;
 				}
 				if (path === "runs/check-equipment" && wiringCheck) {
+					if (editWiring) {
+						const moduleIds = [
+							"array:0:0",
+							"array:0:1",
+							"array:0:2",
+							"array:1:0",
+							"array:1:1",
+						];
+						if (plantWiring) {
+							assert.equal(command.inputs.pv_string_plan, undefined);
+							assert.deepEqual(
+								command.inputs.pv_plant_string_plan.units.map((unit) => ({
+									id: unit.unit_id,
+									inverter: unit.plan.inverter_product_id,
+									strings: unit.plan.strings.map(({ id, ...string }) => string),
+								})),
+								[
+									{
+										id: "east",
+										inverter: 101,
+										strings: [
+											{ mppt: 2, input: 1, module_ids: moduleIds.slice(0, 2) },
+										],
+									},
+									{
+										id: "west",
+										inverter: 102,
+										strings: [
+											{ mppt: 2, input: 1, module_ids: moduleIds.slice(2) },
+										],
+									},
+								],
+							);
+						} else {
+							assert.deepEqual(
+								command.inputs.pv_string_plan.strings.map(
+									({ id, ...string }) => string,
+								),
+								[{ mppt: 2, input: 1, module_ids: moduleIds }],
+							);
+						}
+						wiringCheck = equipmentRun(
+							"qualify_woo_equipment_v1",
+							project.revision,
+							project.input_sha256,
+							{ assessment: wiringCheck.result.assessment },
+						);
+						queuedCheck = {
+							...wiringCheck,
+							state: "queued",
+							result: null,
+							result_sha256: null,
+						};
+					}
 					assert.deepEqual(command.inputs, project.inputs);
 					runs.unshift(wiringCheck);
 					return {
@@ -1269,6 +1348,51 @@ for (const scenario of [
 					),
 				),
 			);
+			if (editWiring) {
+				const editors = () =>
+					[...dom.element.querySelectorAll("summary")].filter(
+						(s) => s.textContent === "PV strings and inputs",
+					);
+				const button = (text, root = dom.element) =>
+					[...root.querySelectorAll("button")].find(
+						(b) => b.textContent === text,
+					);
+				const field = (text, root) =>
+					[...root.querySelectorAll("label")]
+						.find((l) => l.querySelector("span")?.textContent.trim() === text)
+						?.querySelector("input");
+				await until(() => editors().length === (plantWiring ? 2 : 1));
+				for (const [index, prompt] of editors().entries()) {
+					const editor = prompt.parentElement;
+					await act(async () => prompt.click());
+					await until(
+						() =>
+							button("Set up PV strings", editor) &&
+							!button("Set up PV strings", editor).disabled,
+					);
+					await act(async () => button("Set up PV strings", editor).click());
+					await until(() => button("Select all available modules", editor));
+					await act(async () =>
+						button("Select all available modules", editor).click(),
+					);
+					await enter(field("MPPT", editor), "2");
+					await enter(field("Inverter input", editor), "1");
+					if (plantWiring && index === 0)
+						await enter(field("Modules to add to this string", editor), "2");
+					const add = button("Add selected modules to string", editor);
+					assert.equal(add.disabled, false);
+					await act(async () => add.click());
+					if (!plantWiring) {
+						await act(async () => button("Edit string", editor).click());
+						await enter(field("MPPT", editor), "0");
+						await act(async () => button("5Review & share").click());
+						assert.equal(window.location.hash, "#sc-solar");
+						await act(async () => button("Cancel editing", editor).click());
+						assert.equal(field("MPPT", editor).value, "2");
+					}
+				}
+				await act(async () => button("5Review & share").click());
+			}
 			if (editPeak) {
 				const peak = () =>
 					[...dom.element.querySelectorAll("label")]
@@ -1316,9 +1440,11 @@ for (const scenario of [
 			await until(() => requests.some(([path]) => path === "runs/report"));
 			assert.deepEqual(
 				requests.map(([path]) => path),
-				scenario === "automatic wiring check"
-					? ["runs/check-equipment", "runs/report"]
-					: ["runs/report"],
+				editWiring
+					? ["projects/revise", "runs/check-equipment", "runs/report"]
+					: scenario === "automatic wiring check"
+						? ["runs/check-equipment", "runs/report"]
+						: ["runs/report"],
 			);
 			const report = requests.at(-1)[1];
 			assert.equal(report.expected_revision, project.revision);

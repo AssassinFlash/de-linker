@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlaceImagery } from "../../domain/place.ts";
 import type { Json, JsonObject, Session } from "../../data/protocol.ts";
@@ -66,6 +66,7 @@ export interface SolarInstallationProps {
 	disabled: boolean;
 	edit: (op: (inputs: JsonObject) => JsonObject) => boolean;
 	next: () => void;
+	wiring?: ReactNode;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
 	geometryImport?: {
@@ -127,6 +128,7 @@ export function SolarInstallation({
 	disabled,
 	edit,
 	next,
+	wiring,
 	initialMap = false,
 	onEditing,
 	geometryImport,
@@ -1756,6 +1758,7 @@ export function SolarInstallation({
 					/>
 				)}
 				{error && <p role="alert">{error}</p>}
+				{wiring}
 				<footer className="sc-next">
 					<button type="button" onClick={next}>
 						{__("Continue with energy use", "linker-tools")}

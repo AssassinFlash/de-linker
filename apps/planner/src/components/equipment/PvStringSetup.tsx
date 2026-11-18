@@ -19,6 +19,7 @@ export function PvStringSetup({
 	locale,
 	disabled,
 	onValidity,
+	checkedInReport = false,
 	controlled,
 }: {
 	draft: Draft;
@@ -27,6 +28,7 @@ export function PvStringSetup({
 	locale: string;
 	disabled: boolean;
 	onValidity: (valid: boolean) => void;
+	checkedInReport?: boolean;
 	controlled?: {
 		plan: PvStringPlan | null;
 		change: (plan: PvStringPlan | null) => boolean;
@@ -201,9 +203,13 @@ export function PvStringSetup({
 	};
 	// Invalid local number syntax cannot permit saving/calculating older values.
 	useEffect(() => {
-		onValidity(controlled ? Object.values(fields).every(Boolean) : valid);
+		onValidity(
+			controlled || checkedInReport
+				? Object.values(fields).every(Boolean)
+				: valid,
+		);
 		return () => onValidity(true);
-	}, [valid, onValidity, !!controlled, fields]);
+	}, [valid, onValidity, !!controlled, checkedInReport, fields]);
 	if (!geometry || !poses.length)
 		return plan ? (
 			<section>
@@ -409,7 +415,7 @@ export function PvStringSetup({
 							)}
 						</Notice>
 					)}
-					<div className="lp-scenario-fields">
+					<div className="lp-scenario-fields" key={editing?.id ?? "new"}>
 						<NumberField
 							label="MPPT"
 							unit=""
@@ -567,10 +573,15 @@ export function PvStringSetup({
 						</button>
 					</div>
 					<p className="lp-profile-help">
-						{__(
-							"Check equipment to assess this wiring plan. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
-							"linker-tools",
-						)}
+						{checkedInReport
+							? __(
+									"Generate the project report to check the saved wiring plan.",
+									"linker-tools",
+								)
+							: __(
+									"Check equipment to assess this wiring plan. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
+									"linker-tools",
+								)}
 					</p>
 				</fieldset>
 			)}
