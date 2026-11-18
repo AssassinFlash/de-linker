@@ -795,10 +795,6 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Use this configuration").click());
 	await untilRun(() => location.hash === "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
-	await untilRun(() =>
-		app.button("Generate project report")?.matches(":enabled"),
-	);
-	await act(async () => app.button("Generate project report").click());
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Project");
@@ -854,10 +850,6 @@ for (const purpose of [
 		);
 		await act(async () => app.button("Use this configuration").click());
 		await untilRun(() => location.hash === "#sc-review");
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1273,11 +1265,6 @@ for (const [multi, selection] of [
 		);
 		await act(async () => app.button("Use this configuration").click());
 		await untilRun(() => location.hash === "#sc-review");
-		assert.deepEqual(app.requests.map(({path}) => path), ["runs/find-equipment", "projects/revise"]);
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1295,10 +1282,6 @@ for (const [multi, selection] of [
 			assert.equal(saved.equipment_plant.units.length, 2);
 			if (selection === "derived PV")
 				assert.equal(saved.equipment_plant.requirements.pv_dc_kw, 9.2);
-			assert.equal(
-				saved.equipment_plant.units[1].selection.inverter_product_id,
-				101,
-			);
 		} else {
 			assert.equal(
 				Object.hasOwn(saved.equipment_selection, "equipment_use"),
@@ -1306,6 +1289,15 @@ for (const [multi, selection] of [
 			);
 			assert.equal(saved.equipment_setup.application, "commercial");
 			assert.equal(saved.equipment_selection.application, undefined);
+		}
+		const selections = multi
+			? saved.equipment_plant.units.map((unit) => unit.selection)
+			: [saved.equipment_selection];
+		for (const equipment of selections) {
+			assert.equal(equipment.inverter_product_id, 101);
+			assert.equal(equipment.battery_product_id, 201);
+			assert.equal(equipment.modules_per_stack, 5);
+			assert.equal(equipment.parallel_stacks, 2);
 		}
 		assert.equal(app.requests[2].body.expected_revision, 3);
 		const assertModels = (inputs) => {
