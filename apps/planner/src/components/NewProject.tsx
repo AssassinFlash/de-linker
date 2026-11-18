@@ -360,7 +360,6 @@ export function NewProject({
 			</header>
 			<ConfiguratorSteps
 				active="project"
-				storageOnly={brief.system_scope === "storage_only"}
 				onSelect={(step) => {
 					const form = projectForm.current;
 					if (!form || step === "project") return;
@@ -369,12 +368,7 @@ export function NewProject({
 						'button[type="submit"]',
 					);
 					if (!next || next.disabled) return;
-					requestedStep.current =
-						step === "solar"
-							? "design"
-							: step === "system"
-								? "equipment"
-								: step;
+					requestedStep.current = step === "system" ? "equipment" : "review";
 					form.requestSubmit(next);
 					requestedStep.current = null;
 				}}

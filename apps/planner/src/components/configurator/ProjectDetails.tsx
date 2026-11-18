@@ -72,6 +72,8 @@ export function ProjectDetails({
 	disabled,
 	edit,
 	next,
+	embedded = false,
+	onReady,
 	creation,
 	existingEquipment,
 }: {
@@ -80,6 +82,8 @@ export function ProjectDetails({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	next?: () => void;
+	embedded?: boolean;
+	onReady?: (ready: boolean) => void;
 	creation?: {
 		title: string;
 		changeTitle: (value: string) => void;
@@ -109,6 +113,8 @@ export function ProjectDetails({
 	const address = brief.site.location_label;
 	const mapKey = config.googleMapsApiKey;
 	const fieldsDisabled = disabled || locating || Boolean(creation?.locked);
+	const ready = !locating && pendingScope === null && !solarConflict;
+	useEffect(() => onReady?.(ready), [onReady, ready]);
 	async function locate() {
 		if (fieldsDisabled || !mapKey || !country || !address.trim()) return;
 		setLocating(true);
@@ -434,28 +440,30 @@ export function ProjectDetails({
 			{locating && (
 				<p role="status">{__("Finding the site…", "linker-tools")}</p>
 			)}
-			<footer className="sc-footer">
-				<span />
-				<button
-					className="sc-button sc-primary"
-					type={creation ? "submit" : "button"}
-					disabled={
-						disabled ||
-						locating ||
-						pendingScope !== null ||
-						solarConflict ||
-						creation?.submitDisabled ||
-						(!creation?.locked &&
-							(!brief.system_scope || (creation && !creation.title.trim())))
-					}
-					onClick={next}
-				>
-					{creation?.submitLabel ??
-						(brief.system_scope === "storage_only"
-							? __("Continue with storage", "linker-tools")
-							: __("Continue with solar", "linker-tools"))}
-				</button>
-			</footer>
+			{!embedded && (creation || next) && (
+				<footer className="sc-footer">
+					<span />
+					<button
+						className="sc-button sc-primary"
+						type={creation ? "submit" : "button"}
+						disabled={
+							disabled ||
+							locating ||
+							pendingScope !== null ||
+							solarConflict ||
+							creation?.submitDisabled ||
+							(!creation?.locked &&
+								(!brief.system_scope || (creation && !creation.title.trim())))
+						}
+						onClick={next}
+					>
+						{creation?.submitLabel ??
+							(brief.system_scope === "storage_only"
+								? __("Continue with storage", "linker-tools")
+								: __("Continue with solar", "linker-tools"))}
+					</button>
+				</footer>
+			)}
 		</>
 	);
 }

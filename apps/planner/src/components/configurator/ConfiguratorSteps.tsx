@@ -1,42 +1,38 @@
 import { __ } from "../../i18n.ts";
 
-export type Step = "project" | "solar" | "energy" | "system" | "review";
+type Stage = "project" | "system" | "review";
+export type Step = Stage | "solar" | "energy";
 
 export function ConfiguratorSteps({
 	active,
-	storageOnly,
 	onSelect,
 }: {
 	active: Step;
-	storageOnly: boolean;
-	onSelect?: (step: Step) => void;
+	onSelect?: (step: Stage) => void;
 }) {
-	const steps: [Step, string][] = [
+	const stage = active === "solar" || active === "energy" ? "project" : active;
+	const stages: [Stage, string][] = [
 		["project", __("Project", "linker-tools")],
-		["solar", __("Solar", "linker-tools")],
-		["energy", __("Energy use", "linker-tools")],
-		["system", __("System", "linker-tools")],
-		["review", __("Review & share", "linker-tools")],
+		["system", __("Choose a solution", "linker-tools")],
+		["review", __("Review & inquire", "linker-tools")],
 	];
 	return (
 		<nav
 			className="sc-nav"
 			aria-label={__("Project navigation", "linker-tools")}
 		>
-			{steps
-				.filter(([step]) => step !== "solar" || !storageOnly)
-				.map(([step, label], index) => (
-					<button
-						type="button"
-						key={step}
-						aria-current={active === step ? "step" : undefined}
-						disabled={!onSelect}
-						onClick={() => onSelect?.(step)}
-					>
-						<span className="sc-step-number">{index + 1}</span>
-						{label}
-					</button>
-				))}
+			{stages.map(([step, label], index) => (
+				<button
+					type="button"
+					key={step}
+					aria-current={stage === step ? "step" : undefined}
+					disabled={!onSelect}
+					onClick={() => onSelect?.(step)}
+				>
+					<span className="sc-step-number">{index + 1}</span>
+					{label}
+				</button>
+			))}
 		</nav>
 	);
 }

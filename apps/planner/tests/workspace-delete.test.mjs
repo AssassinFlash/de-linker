@@ -154,6 +154,14 @@ test("a returning customer enters the project brief and can open saved projects 
 	}, recordingStore());
 	t.after(() => mounted.dispose());
 	assert.ok(document.querySelector('input[name="project_title"]'));
+	assert.deepEqual(
+		[
+			...document.querySelectorAll(
+				'nav[aria-label="Project navigation"] button',
+			),
+		].map((button) => button.textContent),
+		["1Project", "2Choose a solution", "3Review & inquire"],
+	);
 	assert.equal(
 		document.querySelector('nav [aria-current="step"]')?.textContent,
 		"1Project",

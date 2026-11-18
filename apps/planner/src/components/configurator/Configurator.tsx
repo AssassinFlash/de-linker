@@ -173,6 +173,7 @@ export default function Configurator({
 	const { draft, update, acknowledgeProject } = controller;
 	const [step, setStep] = useState<Step>(initialStep);
 	const main = useRef<HTMLElement>(null);
+	const [detailsReady, setDetailsReady] = useState(true);
 	const [energyValid, setEnergyValid] = useState(true);
 	const [inputsOpened, setInputsOpened] = useState(
 		() => !["system", "review"].includes(initialStep()),
@@ -220,7 +221,7 @@ export default function Configurator({
 		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
 	const missingModules = wiringStates.includes("selection");
 	const navigationBlocked =
-		invalidInput || missingModules || roofEditing || importOpen;
+		!detailsReady || invalidInput || missingModules || roofEditing || importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
@@ -1022,7 +1023,6 @@ export default function Configurator({
 			</header>
 			<ConfiguratorSteps
 				active={activeStep}
-				storageOnly={brief.system_scope === "storage_only"}
 				onSelect={navigate}
 			/>
 			{navigationRefused &&
@@ -1187,6 +1187,8 @@ export default function Configurator({
 								focusSection={activeStep === "project" ? sectionLink : null}
 								details={
 									<ProjectDetails
+										embedded
+										onReady={setDetailsReady}
 										existingEquipment={
 											<ProjectEquipment
 												inputs={
