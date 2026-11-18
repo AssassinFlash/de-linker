@@ -15,13 +15,17 @@ import {
 } from "../../data/configuratorReportSources.ts";
 import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
-import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import {
+	usePlanningOperations,
+	type PlanningReply,
+} from "../../data/usePlanningOperations.ts";
 import {
 	useInfiniteQuery,
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
 import {
+	readPlanningOperation,
 	readRunInputs,
 	readRun,
 	readRunPage,
@@ -157,6 +161,7 @@ export default function Configurator({
 	recoveryScopes,
 	recoveryChecking = false,
 	recoveryFailed = false,
+	entryComparison,
 }: {
 	project: Project;
 	session: Session;
@@ -168,9 +173,11 @@ export default function Configurator({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryFailed?: boolean;
+	entryComparison?: { inputs: JsonObject; consume: () => void } | undefined;
 }) {
 	const controller = useProjectDraft(project, session, client, store, recheck);
 	const { draft, update, acknowledgeProject } = controller;
+	const entryStarted = useRef(false);
 	const [step, setStep] = useState<Step>(initialStep);
 	const main = useRef<HTMLElement>(null);
 	const [detailsReady, setDetailsReady] = useState(true);
@@ -221,7 +228,11 @@ export default function Configurator({
 		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
 	const missingModules = wiringStates.includes("selection");
 	const navigationBlocked =
-		!detailsReady || invalidInput || missingModules || roofEditing || importOpen;
+		!detailsReady ||
+		invalidInput ||
+		missingModules ||
+		roofEditing ||
+		importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
@@ -620,24 +631,74 @@ export default function Configurator({
 			navigate("review");
 		}
 	}
-	async function compare() {
-		if (blocked || modelsUnavailable || !latest.current || !mayLeave()) return;
-		setError(null);
+	async function showComparison(operation: Promise<PlanningReply | undefined>) {
 		const instance = lifetime.current;
-		const reply = await operations.start("runs/find-equipment", {
-			expected_revision: latest.current.baseline.revision,
-			input_contract: projectInputContract,
-			inputs: authoredDiscoveryInputs(latest.current.history.current),
-		});
-		if (
-			reply?.path === "runs/find-equipment" &&
-			instance === lifetime.current &&
-			client.isCurrentScope(session.query_scope)
-		) {
-			accepted(reply.run);
-			navigate("system");
+		try {
+			const reply = await operation;
+			if (
+				reply?.path === "runs/find-equipment" &&
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			) {
+				accepted(reply.run);
+				openStep("system");
+			}
+		} catch (cause) {
+			if (instance === lifetime.current) setError(cause);
 		}
 	}
+	async function compare() {
+		if (blocked || modelsUnavailable || !mayLeave()) return;
+		return dispatchComparison();
+	}
+	async function dispatchComparison() {
+		if (!latest.current) return;
+		setError(null);
+		await showComparison(
+			operations.start("runs/find-equipment", {
+				expected_revision: latest.current.baseline.revision,
+				input_contract: projectInputContract,
+				inputs: authoredDiscoveryInputs(latest.current.history.current),
+			}),
+		);
+	}
+	useEffect(() => {
+		if (
+			!entryComparison ||
+			entryStarted.current ||
+			!draft ||
+			!admitted ||
+			recoveryChecking ||
+			recoveryFailed ||
+			controller.busy ||
+			controller.recoveries.length ||
+			draft.pending ||
+			draft.conflict ||
+			operations.busy ||
+			operations.checking ||
+			operations.storageFailed ||
+			modelsUnavailable
+		)
+			return;
+		const authored = authoredDiscoveryInputs(entryComparison.inputs);
+		const prior = operations.records.find(
+			(record) =>
+				record.path === "runs/find-equipment" &&
+				sameJson(
+					readPlanningOperation(record.path, record.body).inputs,
+					authored,
+				),
+		);
+		if ((!prior && blocked) || navigationBlocked || !profileGuard.current())
+			return;
+		if (!sameJson(draft.history.current, entryComparison.inputs)) {
+			if (isDirty(draft) || !edit(() => entryComparison.inputs)) return;
+		}
+		entryStarted.current = true;
+		entryComparison.consume();
+		if (prior) void showComparison(operations.retry(prior));
+		else void dispatchComparison();
+	});
 
 	async function select(candidate: EquipmentCandidate, run: PlanningRun) {
 		if (
@@ -721,6 +782,13 @@ export default function Configurator({
 			if (!edit(() => next))
 				throw new ApiError(409, "equipment_selection_changed");
 			setSubmittedSearch(run.id);
+			const saved = await controller.save();
+			if (
+				saved &&
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			)
+				openStep("review");
 		} catch (cause) {
 			if (instance === lifetime.current) {
 				setError(cause);
@@ -1009,10 +1077,7 @@ export default function Configurator({
 					<p>{siteLabel}</p>
 				</div>
 			</header>
-			<ConfiguratorSteps
-				active={activeStep}
-				onSelect={navigate}
-			/>
+			<ConfiguratorSteps active={activeStep} onSelect={navigate} />
 			{navigationRefused &&
 				navigationBlocked &&
 				(!missingModules || invalidInput || roofEditing || importOpen) && (
