@@ -12,7 +12,7 @@ import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
-import { emptyBrief, readBrief } from "../domain/brief.ts";
+import { type Brief, emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
 import { hasPlant } from "../domain/equipmentPlant.ts";
 import { projectInputContract, sameJson } from "../domain/draft.ts";
@@ -24,7 +24,10 @@ import type { EntryHints } from "../domain/entryHints.ts";
 import { formatDecimal } from "../domain/decimal.ts";
 import type { Configuration } from "../data/config.ts";
 import { ConfiguratorSteps } from "./configurator/ConfiguratorSteps.tsx";
-import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
+import {
+	hasStorageToExclude,
+	ProjectDetails,
+} from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
 import { ProjectInputsStep } from "./configurator/ProjectInputsStep.tsx";
 import { SolarInstallation } from "./configurator/SolarInstallation.tsx";
@@ -149,6 +152,11 @@ export function NewProject({
 		return true;
 	}
 	const [detailsReady, setDetailsReady] = useState(true);
+	const [comparingDirections, setComparingDirections] = useState(false);
+	const optionsHeading = useRef<HTMLHeadingElement>(null);
+	useEffect(() => {
+		if (comparingDirections) optionsHeading.current?.focus();
+	}, [comparingDirections]);
 	const [importOpen, setImportOpen] = useState(false);
 	const [roofEditing, setRoofEditing] = useState(false);
 	const provisioned = useRef<Project | null>(null);
@@ -226,7 +234,10 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 	]);
-	async function submit(action: "compare" | "edit") {
+	async function submit(
+		action: "compare" | "edit" | "review",
+		direction?: NonNullable<Brief["system_scope"]>,
+	) {
 		if (
 			sending.current ||
 			checking ||
@@ -237,6 +248,7 @@ export function NewProject({
 			roofEditing ||
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
+				!direction &&
 				(!projectForm.current?.reportValidity() || !brief.system_scope))
 		)
 			return;
@@ -256,12 +268,15 @@ export function NewProject({
 				(!(await briefEntry.flush()) ||
 					lifetime.current !== instance ||
 					!client.isCurrentScope(session.query_scope))
-			)
+			) {
+				if (lifetime.current === instance) setComparingDirections(false);
 				return;
+			}
 			const currentInputs = {
 				...inputs,
 				brief: {
 					...brief,
+					...(direction && { system_scope: direction }),
 					...(briefEntry && { project_note: briefEntry.note }),
 					site: {
 						...brief.site,
@@ -339,6 +354,7 @@ export function NewProject({
 			return project;
 		} catch (error) {
 			if (lifetime.current !== instance) return;
+			setComparingDirections(false);
 			setFailed(true);
 			setInputContractRequired(
 				error instanceof ApiError &&
@@ -412,8 +428,18 @@ export function NewProject({
 			return;
 		void submit("compare");
 	}
+	function openDirections() {
+		if (
+			!locked &&
+			!waitingForProduct &&
+			detailsReady &&
+			projectForm.current?.reportValidity()
+		)
+			setComparingDirections(true);
+	}
 	function continueProject() {
 		if (intent.current) void submit("compare");
+		else if (!brief.system_scope && !provisioned.current) openDirections();
 		else
 			energySection.current
 				?.querySelector<HTMLButtonElement>("footer button.sc-primary")
@@ -433,6 +459,25 @@ export function NewProject({
 	const site = [brief.site.location_label.trim(), country]
 		.filter(Boolean)
 		.join(" · ");
+	const showDirections = comparingDirections && !intent.current;
+	const systemDescriptions = {
+		new_pv_storage: __(
+			"Plan panels and a battery together to use solar power after sunset. Panel area and electricity use will help size both.",
+			"linker-tools",
+		),
+		storage_addition: __(
+			"Store surplus power from an existing solar array. The existing inverter determines how a battery can be connected.",
+			"linker-tools",
+		),
+		pv_only: __(
+			"Generate electricity with solar panels alone. Available panel area and daytime electricity use guide the array size.",
+			"linker-tools",
+		),
+		storage_only: __(
+			"Plan a battery without adding solar panels. Electricity use and the charging source guide battery sizing.",
+			"linker-tools",
+		),
+	};
 	const systemNames = {
 		new_pv_storage: __("Solar and storage", "linker-tools"),
 		storage_addition: __("Storage for existing PV", "linker-tools"),
@@ -448,9 +493,83 @@ export function NewProject({
 					{site && <p>{site}</p>}
 				</div>
 			</header>
-			<ConfiguratorSteps active="project" />
+			<ConfiguratorSteps active={showDirections ? "system" : "project"} />
 			<div className="sc-layout">
-				<div className="sc-main">
+				{showDirections && (
+					<section className="sc-card">
+						<header className="sc-section-head">
+							<div>
+								<h2 ref={optionsHeading} tabIndex={-1}>
+									{__("Preliminary options", "linker-tools")}
+								</h2>
+								<p>
+									{__(
+										"Choose the direction you want to discuss. System size, grid connection and equipment compatibility still need to be confirmed.",
+										"linker-tools",
+									)}
+								</p>
+							</div>
+						</header>
+						<div className="sc-fields">
+							{(Object.keys(systemNames) as (keyof typeof systemNames)[])
+								.filter(
+									(scope) =>
+										(scope !== "pv_only" || !hasStorageToExclude(inputs)) &&
+										(scope !== "storage_only" ||
+											(!inputs.pv_string_plan && !inputs.pv_plant_string_plan)),
+								)
+								.map((scope) => (
+									<article key={scope} className="sc-package">
+										<h3 id={`sc-direction-${scope}`}>{systemNames[scope]}</h3>
+										<p>{systemDescriptions[scope]}</p>
+										<button
+											type="button"
+											className="sc-button sc-primary"
+											disabled={locked}
+											aria-describedby={`sc-direction-${scope}`}
+											onClick={() => void submit("review", scope)}
+										>
+											{__("Choose this option", "linker-tools")}
+										</button>
+									</article>
+								))}
+						</div>
+						<footer className="sc-footer">
+							<button
+								type="button"
+								className="sc-button"
+								disabled={locked}
+								onClick={() => setComparingDirections(false)}
+							>
+								{__("Back to project", "linker-tools")}
+							</button>
+						</footer>
+					</section>
+				)}
+				<div className="sc-main" hidden={showDirections}>
+					{!brief.system_scope && !provisioned.current && !intent.current && (
+						<section className="sc-card">
+							<header className="sc-section-head">
+								<div>
+									<h2>{__("Explore system options", "linker-tools")}</h2>
+									<p>
+										{__(
+											"Compare solar and storage options now, or enter project details below for an equipment comparison.",
+											"linker-tools",
+										)}
+									</p>
+								</div>
+							</header>
+							<button
+								type="button"
+								className="sc-button sc-primary"
+								disabled={locked || !detailsReady || waitingForProduct}
+								onClick={openDirections}
+							>
+								{__("Compare preliminary options", "linker-tools")}
+							</button>
+						</section>
+					)}
 					{entryHints &&
 						!intent.current &&
 						(hasCarriedValues || entryHints.invalid) && (

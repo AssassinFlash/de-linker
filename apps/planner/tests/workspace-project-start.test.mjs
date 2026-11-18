@@ -31,8 +31,12 @@ const session = {
 	},
 };
 
-for (const target of ["compare", "retry", "profile"])
-	test(`project setup retains its inputs when opening saved projects and continuing via ${target}`, async (t) => {
+for (const target of ["preliminary", "compare", "retry", "profile"]) {
+	const name =
+		target === "preliminary"
+			? "A guest can compare preliminary options from a blank project and review their chosen direction"
+			: `project setup retains its inputs when opening saved projects and continuing via ${target}`;
+	test(name, async (t) => {
 		const fixture = setupDom();
 		// The shared fixture opens a project from its URL; this test starts at the
 		// empty index, which is where the one-screen start lives.
@@ -246,6 +250,37 @@ for (const target of ["compare", "retry", "profile"])
 		await mount();
 		const start = () => document.querySelector("form");
 		await until(() => document.querySelector('select[name="system_scope"]'));
+		if (target === "preliminary") {
+			const compare = [...document.querySelectorAll("button")].find(
+				(button) => button.textContent === "Compare preliminary options",
+			);
+			assert.ok(compare, "a first-time guest can compare without any input");
+			await until(() => !compare.disabled);
+			await act(async () => compare.click());
+			const options = [...document.querySelectorAll("article")].filter(
+				(card) =>
+					card.querySelector("button")?.textContent === "Choose this option",
+			);
+			assert.deepEqual(
+				options.map((card) => card.querySelector("h3").textContent),
+				["Solar and storage", "Storage for existing PV", "Solar", "Storage"],
+			);
+			assert.match(options[1].textContent, /existing inverter/i);
+			assert.match(document.body.textContent, /equipment compatibility/i);
+			assert.equal(creates.length, 0);
+			await act(async () => options[1].querySelector("button").click());
+			await until(() => location.hash === "#sc-review");
+			assert.deepEqual(destinations, ["review"]);
+			assert.equal(creates.length, 1);
+			const inputs = JSON.parse(creates[0]).inputs;
+			assert.deepEqual(Object.keys(inputs), ["brief"]);
+			assert.equal(inputs.brief.system_scope, "storage_addition");
+			assert.equal(inputs.brief.project_use, null);
+			assert.equal(inputs.brief.annual_load.kwh, null);
+			assert.equal(inputs.brief.site.country_code, null);
+			assert.equal(searches.length, 0);
+			return;
+		}
 		const reviewStep = () =>
 			[...document.querySelectorAll("nav button")].find((button) =>
 				button.textContent.includes("Review & inquire"),
@@ -399,3 +434,4 @@ for (const target of ["compare", "retry", "profile"])
 			/Choose a solution/,
 		);
 	});
+}
