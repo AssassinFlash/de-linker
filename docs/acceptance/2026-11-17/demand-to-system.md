@@ -178,3 +178,9 @@ Rotterdam 项目的 9 × 6 m 示例屋面已在英语和正式德语的 1440、3
 生产临时项目清空开始日期后，实际计算入口返回 HTTP 422，字段得到焦点及可读更正提示；Undo 后仍为保存版本 5。重新采用共同时间范围并直接计算，新运行 `5dc79351be424c5eaae0ca5ac4474f5f` 完成，输入版本 5、购电量 4,990.56 kWh。该项目 `40242003c8864b88bc21bb357ff993e9` 随后通过 Projects 的删除确认入口移除，列表只余受保护的 Amsterdam 项目。无生产询盘或发信。
 
 收尾：浏览器空间 14 已关闭；临时截图与 PR 正文已删除，实际释放 110,592 字节。末次磁盘已用 2,707,456,335,872 字节，可用 1,288,872,992,768 字节。主工作树约 6.33 GB 保留源码及当前交付记录；review 数据保留 Utrecht 草稿，服务已停；Planner 三份独立恢复归档与明确基线、站点三份数据库快照及服务 current／previous 按既有保留规则继续保存。
+
+## 2026-11-18 · Rotterdam 报告与历史下载
+
+评审站的 Rotterdam solar workshop 在两项合成图纸的导出许可为未知时拒绝生成含屋面清单的新报告。在 Solar 的 Source properties 明确登记两项许可后，提交比较并采用同一逆变器。输入修订 5 的客户预览、PDF 和 CSV 均列出 Trina Solar TSM-460NEG9R.28 × 2，归属项目报价。PDF 的组件表列出每块 460 W、总计 0.92 kWp。系统页的三项均显示已检查条件满足，25 kW 逆变器在同等状态下按商品顺序列在首位。
+
+从 Calculation history 实际下载修订 3 的 PDF 与 CSV。旧 PDF 标记输入修订 3，CSV 包含当时的逆变器与配套电表。保持历史版本展开，执行当前方案的 Add selected products、Confirm changes、View solution draft。Woo 草稿显示 Rotterdam solar workshop · input revision 5、SAJ H2-25K-T3 × 1，并能进入访客询盘。关闭项目页面后，经正式德语入口重开同一项目，仍能读取修订 5 的报告及其语言，390 px 可操作两项合成图纸的导出许可。

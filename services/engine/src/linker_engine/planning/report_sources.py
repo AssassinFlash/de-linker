@@ -9,6 +9,7 @@ from typing import cast
 from .assets import Asset, Assets
 from .canonical import Json, Object
 from .certificate_evidence import certificate_documents
+from .comparison_pv import is_known
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
@@ -1136,6 +1137,11 @@ def report_sources(
         and isinstance(candidate, dict)
         and comparison is None
         and not storage_only_project(project.inputs)
+        and not is_known(
+            project.inputs.get(
+                "pvgis_reference_setup", project.inputs.get("pvgis_reference")
+            )
+        )
         and isinstance(layout, dict)
         and layout.get("arrays")
     ):

@@ -599,6 +599,11 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
     from linker_engine.planning.equipment_service import EquipmentService
     from linker_engine.planning.profile_import import ProfileImport
     from linker_engine.planning.project_input_contracts import KNOWN_PV_INPUT_CONTRACT
+    from linker_engine.planning.report_inputs import ReportOptions
+    from linker_engine.planning.report_sources import (
+        ReportInputsChanged,
+        report_sources,
+    )
 
     from .test_energy_kernel import PROVENANCE, mapping
 
@@ -730,6 +735,9 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             values["pvgis_reference_setup"] = declared
             values["brief"]["system_scope"] = "pv_only"
             values["equipment_setup"]["pv_dc_kw"] = None
+            values["geometry"] = fixture_inputs(json_object(products.module_basis()))[
+                "geometry"
+            ]
             del values["profile_selections"]
         command = {
             "schema_version": 1,
@@ -770,6 +778,36 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             assert candidates
             assert {row["selection"]["pv_dc_kw"] for row in candidates} == {10}
             assert not source.requests
+            selected = candidates[0]
+            adopted = workspace.revise(
+                owner,
+                project_id,
+                2,
+                {
+                    **values,
+                    "equipment_selection": selected["selection"],
+                    "equipment_candidate": {
+                        "run_id": run_id,
+                        "candidate_id": selected["id"],
+                        "assessment_sha256": selected["assessment_sha256"],
+                    },
+                },
+                key="adopt-capacity-only",
+                input_contract=KNOWN_PV_INPUT_CONTRACT,
+            )
+            options = ReportOptions(
+                locale="en",
+                energy_run_id=None,
+                pv_run_id=None,
+                equipment_run_id=None,
+                logo=None,
+            )
+            assert (
+                report_sources(workspace, products, owner, adopted, options)[
+                    "pv_components"
+                ]
+                is None
+            )
             return
         assert (
             "pv_available_ac"
@@ -858,12 +896,6 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             ).status_code
             == 404
         )
-    from linker_engine.planning.report_inputs import ReportOptions
-    from linker_engine.planning.report_sources import (
-        ReportInputsChanged,
-        report_sources,
-    )
-
     candidate = result["result"]["search"]["candidates"][0]
     adopted = workspace.revise(
         owner,
