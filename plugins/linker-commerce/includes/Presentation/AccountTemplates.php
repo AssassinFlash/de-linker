@@ -302,10 +302,15 @@ final class AccountTemplates {
 				if ( ! isset( $items[ $endpoint ] ) ) {
 					continue;
 				}
+				$url    = match ( $endpoint ) {
+					'edit-address'    => wc_get_endpoint_url( 'edit-address', 'billing', wc_get_page_permalink( 'myaccount' ) ),
+					'customer-logout' => linker_commerce_logout_url(),
+					default           => wc_get_account_endpoint_url( $endpoint ),
+				};
 				$links .= $this->fragment(
 					'nav-item',
 					array(
-						'url'     => 'customer-logout' === $endpoint ? linker_commerce_logout_url() : wc_get_account_endpoint_url( $endpoint ),
+						'url'     => $url,
 						'label'   => $items[ $endpoint ],
 						'current' => $this->endpoint_current( $endpoint ),
 						'icon'    => $this->nav_icon( $endpoint ),

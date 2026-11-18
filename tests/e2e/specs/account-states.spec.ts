@@ -713,7 +713,20 @@ for (const language of LANGUAGES) {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
 				await signIn(page, customer, language.account);
-				await page.goto(base() + language.company);
+				const workspace = page.locator('.linker-account-content');
+				if (width === 390) {
+					await workspace
+						.locator('.linker-account-mobile-menu summary')
+						.click();
+				}
+				await workspace
+					.getByRole('link', {
+						name:
+							language.lang === 'en' ? 'Company' : 'Unternehmen',
+						exact: true,
+					})
+					.click();
+				await expect(page).toHaveURL(base() + language.company);
 
 				const save = page.locator('button[name="save_address"]');
 				await expect(save).toBeVisible();
@@ -754,6 +767,19 @@ for (const language of LANGUAGES) {
 					page,
 					`${language.lang}-${width}-company-validation`
 				);
+
+				await page.locator('#billing_first_name').fill('Erika');
+				await page.locator('#billing_last_name').fill('Mustermann');
+				await page.locator('#billing_country').selectOption('DE');
+				await page.locator('#billing_address_1').fill('Triftstraße 5');
+				await page.locator('#billing_postcode').fill('80538');
+				await page.locator('#billing_city').fill('München');
+				await save.click();
+				await expect(
+					page.locator('.woocommerce-message').first()
+				).toBeVisible();
+				await page.goto(base() + language.company);
+				await expect(company).toHaveValue('E2E States GmbH');
 			} finally {
 				await context.close();
 				remove([customer]);
