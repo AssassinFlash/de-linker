@@ -37,7 +37,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 
 1. 核实 8911 上实际运行的旧 Planner 具有上述拒绝行为，留好站点和 Planner 各自的恢复点。在评审站用同一对版本实走：仅转入草稿的项目删除返回冲突且仍能重开；新 Woo 遇到旧 Planner 缺少 `handoffs/admit-inquiry` 时，表单保留草稿、没有已提交询盘，并允许重新提交。切到新 Planner 后，同一草稿重提只产生一份询盘，账户能下载报告。
 2. 保持旧 Planner 运行，从最终 SHA 执行 `just cutover deploy`。确认 live Woo `Sender`、Tools 和前端与候选一致，Web `opcache-reset` 成功，站点 verify 通过。此后新请求使用新 Woo。若站点切换中断，保持旧 Planner，按同批 `resume-deploy` 恢复。
-3. 在 Hostinger 站点账户执行 `LC_ALL=C ps -u "$(id -un)" -o pid=,lstart=,comm=`，记录此时所有承载本站的 `lsphp` 的 PID 和启动时间。让这批进程自然退出，或使用已确认会等待在途请求结束的本站托管排空操作。用同一列表逐项核对原进程均已退出。先确认账户可完整看到本站 Web worker；名单丢失可在已核实的新站点重新采集。`.maintenance` 只能阻止后来进入 WordPress 的请求，维护状态和 Planner 的 `pending=0` 都不能证明此前已进入 Woo 的请求结束。若无法确认排空，保留旧 Planner；超出维护窗口则用 `just cutover rollback-deploy` 恢复站点，让客户继续发送带报告的询盘。
+3. 在 Hostinger 站点账户执行 `LC_ALL=C ps -u "$(id -un)" -o pid=,lstart=,comm=`，记录此时所有承载本站请求的 `lsphp` worker 的 PID 和启动时间。启用 [LiteSpeed ProcessGroup](https://docs.litespeedtech.com/lsws/extapp/php/configuration/modes/) 的站点应同时读取 PPID，用实际派生请求子进程的记录区分管理进程；角色不明的进程计入等待名单。让这批 worker 自然退出，或使用已确认会等待在途请求结束的本站托管排空操作。用同一列表逐项核对原进程均已退出。先确认账户可完整看到本站 Web worker；名单丢失可在已核实的新站点重新采集。`.maintenance` 只能阻止后来进入 WordPress 的请求，维护状态和 Planner 的 `pending=0` 都不能证明此前已进入 Woo 的请求结束。若无法确认排空，保留旧 Planner；超出维护窗口则用 `just cutover rollback-deploy` 恢复站点，让客户继续发送带报告的询盘。
 4. 排空后才执行 `tools/planner/publish/cli.sh <同一完整 Git SHA>`，读回 HTTP、worker 的运行版本和 8911 的就绪状态。生产用已登记的草稿项目读回删除结果，用已有询盘读回删除拒绝及账户报告下载。生产验收不提交询盘、不发信。
 
 启用新版 Planner 后，项目可能已被删除，而客户之前打开的 Woo 草稿仍持有报告引用。此后恢复 Planner 可用 `planner_release.py rollback`，须保留带报告准入检查的 Woo。确认原 Planner 已接管 8911、拒绝删除已有 handoff 的项目。带报告询盘在此期间保留草稿供重试；发布修正后的配套 Planner 后恢复提交。此阶段的站点修复须保留提交检查，否则旧草稿可提交已失效的报告。
