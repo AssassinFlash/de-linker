@@ -5,6 +5,7 @@ import type { MapDrawingTransaction } from "./MapDrawingController.ts";
 export interface MapInteraction {
 	readonly key: string;
 	readonly phase: "collecting" | "staged";
+	readonly requiresAerial?: boolean;
 	readonly vertices: readonly Vec2[];
 	readonly referencePosition: Vec2 | null;
 	readonly append: (point: Vec2) => void;
@@ -17,4 +18,5 @@ export interface MapInteraction {
 export interface ArrayPlacement {
 	readonly roofId: string;
 	readonly place: (point: Vec2) => void;
+	readonly review: () => void;
 }

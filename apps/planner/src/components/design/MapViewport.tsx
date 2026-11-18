@@ -26,7 +26,6 @@ import { drawingBridge } from "../../domain/mapDrawingGeometry.ts";
 import { geographicOnRoof } from "../../domain/geographic.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
-import { revealActionResult } from "../revealActionResult.ts";
 
 export interface MapCamera {
 	centre: [number, number];
@@ -267,6 +266,8 @@ export default function MapViewport({
 	// own position is enough to show the aerial mosaic and let the visitor draw:
 	// never infer north, and never present the mosaic as a survey frame.
 	const available = projection.view !== null || siteCentre !== null;
+	const drawing =
+		interaction?.requiresAerial && (!external || !imagery) ? null : interaction;
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
@@ -681,7 +682,7 @@ export default function MapViewport({
 	}, [readyMap, status, siteOutline]);
 	useEffect(() => {
 		const map = mapRef.current,
-			value = latest.current.interaction;
+			value = drawing;
 		if (!map || map !== readyMap || status !== "ready" || !value || disabled)
 			return;
 		let stopped = false;
@@ -739,8 +740,8 @@ export default function MapViewport({
 		releaseDrawing.current = release;
 		return release;
 	}, [
-		interaction?.key,
-		interaction?.phase,
+		drawing?.key,
+		drawing?.phase,
 		readyMap,
 		status,
 		disabled,
@@ -749,9 +750,9 @@ export default function MapViewport({
 		available,
 	]);
 	useEffect(() => {
-		if (interaction?.phase === "collecting")
-			prefix.current?.update(interaction.vertices);
-	}, [interaction?.vertices, interaction?.phase]);
+		if (drawing?.phase === "collecting")
+			prefix.current?.update(drawing.vertices);
+	}, [drawing?.vertices, drawing?.phase]);
 	useEffect(() => {
 		const map = mapRef.current,
 			point = interaction?.referencePosition;
@@ -881,13 +882,7 @@ export default function MapViewport({
 						<button
 							type="button"
 							className="lp-button lp-button-secondary"
-							onClick={() =>
-								revealActionResult(
-									globalThis.document.querySelector<HTMLElement>(
-										"#lp-array-properties input, #lp-array-properties select",
-									),
-								)
-							}
+							onClick={placement.review}
 						>
 							{__("Review panel layout", "linker-tools")}
 						</button>
@@ -952,21 +947,21 @@ export default function MapViewport({
 			)}
 			<div
 				className="lp-map-surface"
-				data-collecting={interaction?.phase === "collecting" || undefined}
+				data-collecting={drawing?.phase === "collecting" || undefined}
 			>
 				<div className="lp-map-host" ref={host} />
-				{interaction?.phase === "collecting" && (
+				{drawing?.phase === "collecting" && (
 					<span className="lp-map-reticle" aria-hidden="true" />
 				)}
 			</div>
-			{interaction?.phase === "collecting" && (
+			{drawing?.phase === "collecting" && (
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
 					disabled={status !== "ready"}
 					onClick={() => {
 						const centre = mapRef.current?.getCenter();
-						if (centre) interaction.append([centre.lng, centre.lat]);
+						if (centre) drawing.append([centre.lng, centre.lat]);
 					}}
 				>
 					{__("Add corner at map centre", "linker-tools")}

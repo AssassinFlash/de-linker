@@ -47,7 +47,9 @@ import {
 	newMapShapeCommand,
 	readMapPolygon,
 } from "../../domain/mapDrawingGeometry.ts";
+import { canAnchorFirstMapRoof } from "../../domain/mapDrawingBase.ts";
 import type { MapInteraction } from "../../data/mapInteraction.ts";
+import { revealActionResult } from "../revealActionResult.ts";
 import { __ } from "../../i18n.ts";
 
 export interface SolarInstallationProps {
@@ -87,8 +89,21 @@ export function SolarInstallation({
 			? emptyGeometry()
 			: readGeometry(inputs.geometry, policy);
 	const reference = referenceDraft(inputs);
+	const site = readBrief(inputs.brief).site;
+	const siteCentre =
+		site.latitude !== null && site.longitude !== null
+			? ([site.longitude, site.latitude] as const)
+			: null;
+	const mapReferenced =
+		geometry.coordinate_system.anchor !== null &&
+		geometry.coordinate_system.north_reference === "true_north";
+	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
+	const startOnMap =
+		initialMap ||
+		(reference.model !== KNOWN_PV_MODEL &&
+			(siteCentre !== null || mapReferenced));
 	const [mode, setMode] = useState<"known" | "roof">(
-		initialMap || (reference.model !== KNOWN_PV_MODEL && geometry.roofs.length)
+		startOnMap || (reference.model !== KNOWN_PV_MODEL && geometry.roofs.length)
 			? "roof"
 			: "known",
 	);
@@ -108,7 +123,7 @@ export function SolarInstallation({
 	);
 	const [error, setError] = useState("");
 	const [view, setView] = useState<"plan" | "map" | "scene">(
-		initialMap ? "map" : "plan",
+		startOnMap ? "map" : "plan",
 	);
 	const map = view === "map";
 	useEffect(
@@ -116,6 +131,7 @@ export function SolarInstallation({
 		[mode, tool, onEditing],
 	);
 	const camera = useRef<MapCamera | null>(null);
+	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
 	const [drawingKey, setDrawingKey] = useState(() => crypto.randomUUID());
 	const [undo, setUndo] = useState<readonly GeometryDocument[]>([]);
@@ -145,9 +161,6 @@ export function SolarInstallation({
 	const poses = panelPoses(geometry);
 	const summary = moduleSummary(geometry);
 	const blocked = disabled || !client.isCurrentScope(session.query_scope);
-	const mapReferenced =
-		geometry.coordinate_system.anchor !== null &&
-		geometry.coordinate_system.north_reference === "true_north";
 	const numeric = (key: keyof typeof fields) => {
 		const value = fields[key].trim() ? Number(fields[key]) : NaN;
 		if (!Number.isFinite(value))
@@ -341,20 +354,46 @@ export function SolarInstallation({
 						"linker-tools",
 					),
 				);
-			const source = manualSource(
+			const declared = manualSource(
 				id(),
 				fields.source.trim(),
 				fields.source.trim(),
 			);
+			const source = points
+				? { ...declared, kind: "user_drawing" as const }
+				: declared;
+			const frame = geometry.coordinate_system;
+			const coordinateEdit =
+				points && firstMapRoof
+					? {
+							type: "set_coordinate_system" as const,
+							before: frame,
+							value: {
+								...frame,
+								anchor: {
+									longitude_deg: points[0]![0],
+									latitude_deg: points[0]![1],
+									datum: "EPSG:4326" as const,
+									source_id: source.id,
+								},
+								north_reference: "true_north" as const,
+								north_source_id: source.id,
+							},
+						}
+					: null;
 			const identity = {
 				id: id(),
 				name: `${__("Roof", "linker-tools")} ${geometry.roofs.length + 1}`,
 				source_id: source.id,
 			};
+			const sourceEdits = [
+				{ type: "put_source" as const, before: null, value: source },
+				...(coordinateEdit ? [coordinateEdit] : []),
+			];
 			const withSource = applyGeometryCommand(geometry, {
-				type: "put_source",
-				before: null,
-				value: source,
+				type: "group",
+				before: geometry,
+				edits: sourceEdits,
 			});
 			const command: GeometryCommand = points
 				? newMapShapeCommand(
@@ -389,10 +428,7 @@ export function SolarInstallation({
 				commit({
 					type: "group",
 					before: geometry,
-					edits: [
-						{ type: "put_source", before: null, value: source },
-						...edits,
-					],
+					edits: [...sourceEdits, ...edits],
 				})
 			) {
 				select(identity.id);
@@ -503,10 +539,13 @@ export function SolarInstallation({
 		select(null);
 	}
 	const interaction: MapInteraction | null =
-		map && mapReferenced && (tool === "roof" || (tool === "obstacle" && roof))
+		map &&
+		((tool === "roof" && (firstMapRoof || mapReferenced)) ||
+			(tool === "obstacle" && roof && mapReferenced))
 			? {
 					key: drawingKey,
 					phase: "collecting",
+					requiresAerial: tool === "roof" && firstMapRoof,
 					vertices,
 					referencePosition: vertices[0] ?? null,
 					append: (point) =>
@@ -549,6 +588,7 @@ export function SolarInstallation({
 				{unit ? ` (${unit})` : ""}
 			</span>
 			<input
+				ref={key === "rows" ? moduleRows : undefined}
 				type="number"
 				step="any"
 				value={fields[key]}
@@ -649,7 +689,7 @@ export function SolarInstallation({
 		depth = allPoints.length
 			? Math.max(...allPoints.map((p) => p[1])) - minV
 			: 1;
-	const site = readBrief(inputs.brief).site;
+	const placeQuery = site.postal_code || site.location_label;
 	const imagery = useQuery({
 		queryKey: [
 			session.query_scope,
@@ -667,7 +707,7 @@ export function SolarInstallation({
 					"places/lookup",
 					{
 						schema_version: 1,
-						query: site.postal_code || site.location_label,
+						query: placeQuery,
 						...(site.country_code ? { country: site.country_code } : {}),
 					},
 					session.query_scope,
@@ -691,13 +731,12 @@ export function SolarInstallation({
 		queryKey: [
 			session.query_scope,
 			"sc-solar-outline",
-			site.location_label,
+			placeQuery,
 			country,
 			latitude,
 			longitude,
 		],
-		enabled:
-			map && !blocked && imagery.isSuccess && Boolean(site.location_label),
+		enabled: map && !blocked && imagery.isSuccess && Boolean(placeQuery),
 		retry: false,
 		queryFn: async ({ signal }) => {
 			if (
@@ -711,7 +750,7 @@ export function SolarInstallation({
 					"places/outline",
 					{
 						schema_version: 1,
-						query: site.location_label,
+						query: placeQuery,
 						country,
 						latitude,
 						longitude,
@@ -994,15 +1033,16 @@ export function SolarInstallation({
 											)
 										}
 										camera={camera}
-										siteCentre={
-											site.latitude !== null && site.longitude !== null
-												? [site.longitude, site.latitude]
-												: null
-										}
+										siteCentre={siteCentre}
 										interaction={interaction}
 										placement={
 											tool === "modules" && roof && module && mapReferenced
-												? { roofId: roof.id, place: placeModules }
+												? {
+														roofId: roof.id,
+														place: placeModules,
+														review: () =>
+															revealActionResult(moduleRows.current),
+													}
 												: null
 										}
 									/>
@@ -1104,24 +1144,31 @@ export function SolarInstallation({
 												: addObstacle(vertices)
 										}
 									>
-										{__("Finish outline", "linker-tools")}
+										{firstMapRoof && tool === "roof"
+											? __("Confirm roof and map origin", "linker-tools")
+											: __("Finish outline", "linker-tools")}
 									</button>
 								)}
 								<p className="sc-hint">
-									{interaction
+									{interaction?.requiresAerial
 										? __(
-												"Click each corner on the map, then finish the outline.",
+												"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
 												"linker-tools",
 											)
-										: tool === "roof" && !mapReferenced
+										: interaction
 											? __(
-													"Enter the roof dimensions or confirm the map origin to draw on the map.",
+													"Click each corner on the map, then finish the outline.",
 													"linker-tools",
 												)
-											: __(
-													"The plan uses metres in the recorded roof plane.",
-													"linker-tools",
-												)}
+											: tool === "roof" && !mapReferenced
+												? __(
+														"Enter the roof dimensions or confirm the map origin to draw on the map.",
+														"linker-tools",
+													)
+												: __(
+														"The plan uses metres in the recorded roof plane.",
+														"linker-tools",
+													)}
 								</p>
 							</div>
 							<aside className="sc-roof-props">
@@ -1169,7 +1216,8 @@ export function SolarInstallation({
 										"linker-tools",
 									)}
 								</label>
-								{!geometry.coordinate_system.anchor &&
+								{!(map && firstMapRoof) &&
+									!geometry.coordinate_system.anchor &&
 									site.coordinate_basis === "user_entered" &&
 									site.latitude !== null &&
 									site.longitude !== null && (

@@ -16774,6 +16774,14 @@ msgid "Click each corner on the map, then finish the outline."
 msgstr "Klicken Sie nacheinander auf die Eckpunkte auf der Karte und schließen Sie den Umriss ab."
 
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm roof and map origin"
+msgstr "Dach und Kartenursprung bestätigen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Mark each roof corner on the aerial map. The first corner sets the origin with true north."
+msgstr "Markieren Sie die Dachecken im Luftbild. Die erste Ecke legt den Ursprung fest. Die Ausrichtung folgt geografisch Nord."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
 msgid "Enter the roof dimensions or confirm the map origin to draw on the map."
 msgstr "Sie können die Dachmaße eingeben oder den Kartenursprung bestätigen, um auf der Karte zu zeichnen."
 

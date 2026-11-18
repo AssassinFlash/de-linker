@@ -14,7 +14,6 @@ import { requireUvResolution } from "../../domain/geometryNumerics.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { NumberField } from "../NumberField.tsx";
-import { revealActionResult } from "../revealActionResult.ts";
 
 interface View {
 	x: number;
@@ -289,13 +288,7 @@ export function PlanViewport({
 					<button
 						type="button"
 						className="lp-button lp-button-secondary"
-						onClick={() =>
-							revealActionResult(
-								globalThis.document.querySelector<HTMLElement>(
-									"#lp-array-properties input, #lp-array-properties select",
-								),
-							)
-						}
+						onClick={placement.review}
 					>
 						{__("Review panel layout", "linker-tools")}
 					</button>

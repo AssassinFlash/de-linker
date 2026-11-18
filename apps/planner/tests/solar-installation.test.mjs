@@ -1,16 +1,34 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { register } from "node:module";
 import React, { act, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
 import { emptyBrief } from "../src/domain/brief.ts";
+register("./map-library-loader.mjs", import.meta.url);
+
+const aerial = {
+	tiles: ["https://tile.example.test/{z}/{x}/{y}.png"],
+	credit: "Fixture imagery",
+	licence: "Fixture drawing licence",
+	licence_url: "https://tile.example.test/licence",
+};
 
 async function mount(
 	t,
 	initial = { brief: emptyBrief(), geometry: structuredClone(flat) },
 ) {
 	const dom = setupDom();
+	const previousStyle = Object.getOwnPropertyDescriptor(
+		globalThis,
+		"getComputedStyle",
+	);
+	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+	const style = document.createElement("style");
+	style.textContent =
+		".lp-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#112233;--proto-neutral-600:#445566;--proto-teal-700:#007777;--proto-teal-400:#44bbbb;--proto-neutral-100:#eeeeee;}";
+	document.head.append(style);
 	const { createRoot } = await import("react-dom/client");
 	const { SolarInstallation } =
 		await import("../src/components/configurator/SolarInstallation.tsx");
@@ -28,11 +46,11 @@ async function mount(
 			session: { query_scope: "test" },
 			client: {
 				isCurrentScope: () => true,
-				query: async () => ({
-					schema_version: 1,
-					provider: "woocommerce",
-					pv_modules: [],
-				}),
+				query: async (path) => {
+					if (path === "places/lookup") return { imagery: aerial };
+					if (path === "places/outline") return { found: false };
+					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
+				},
 			},
 			disabled: false,
 			edit: (op) => {
@@ -55,6 +73,9 @@ async function mount(
 	t.after(async () => {
 		query.clear();
 		await dom.dispose(root);
+		if (previousStyle)
+			Object.defineProperty(globalThis, "getComputedStyle", previousStyle);
+		else delete globalThis.getComputedStyle;
 	});
 	return {
 		get inputs() {
@@ -126,6 +147,134 @@ test("new solar module details persist known capacity and source without requiri
 	await click("Continue with energy use");
 	assert.equal(app.next, 1);
 });
+test("a project with a located building starts on the aerial map without creating a measurement origin", async (t) => {
+	const brief = emptyBrief();
+	const app = await mount(t, {
+		brief: {
+			...brief,
+			site: {
+				...brief.site,
+				country_code: "DE",
+				location_label: "Karlstraße 1, 80333 München",
+				postal_code: "80333",
+				latitude: 48.145,
+				longitude: 11.566,
+				coordinate_basis: "user_entered",
+			},
+		},
+	});
+	assert.equal(
+		button("Place modules on the roof").getAttribute("aria-pressed"),
+		"true",
+	);
+	assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
+	await until(
+		() =>
+			document.querySelector('[data-map-status="ready"]') &&
+			button("Show aerial map"),
+	);
+	assert.equal(app.inputs.geometry, undefined);
+});
+
+test("the first aerial roof uses the selected roof corner as its confirmed origin", async (t) => {
+	const brief = emptyBrief();
+	const app = await mount(t, {
+		brief: {
+			...brief,
+			site: {
+				...brief.site,
+				country_code: "DE",
+				location_label: "Karlstraße 1, 80333 München",
+				postal_code: "80333",
+				latitude: 48.145,
+				longitude: 11.566,
+				coordinate_basis: "user_entered",
+			},
+		},
+		geometry: {
+			...flat,
+			roofs: [],
+			arrays: [],
+			obstacles: [],
+			keepouts: [],
+			layout_rules: [],
+		},
+	});
+	const { maps } = await import("./map-library-fixture.mjs");
+	const map = () => maps.findLast((value) => !value.removed);
+	await until(
+		() =>
+			button("Show aerial map") &&
+			document.querySelector('[data-map-status="ready"]'),
+	);
+	await click("Draw roof");
+	assert.equal(document.querySelector('[data-collecting="true"]'), null);
+	await click("Show aerial map");
+	await until(() => map().getSource("linker-site-imagery"));
+	async function point(lng, lat) {
+		await act(async () => {
+			for (const type of ["pointerdown", "pointerup"]) {
+				const event = new window.Event(type, { bubbles: true });
+				Object.assign(event, {
+					pointerId: 1,
+					isPrimary: true,
+					button: 0,
+					clientX: 20,
+					clientY: 20,
+				});
+				map().getCanvas().dispatchEvent(event);
+			}
+			map().emit("click", {
+				point: { x: 20, y: 20 },
+				originalEvent: { detail: 1 },
+				lngLat: { lng, lat },
+			});
+		});
+	}
+	for (const [lng, lat] of [
+		[11.56605, 48.14505],
+		[11.5662, 48.14505],
+		[11.5662, 48.14515],
+		[11.56605, 48.14515],
+	])
+		await point(lng, lat);
+	assert.deepEqual(app.inputs.geometry.roofs, []);
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
+	for (const [label, value] of [
+		["Pitch", "0"],
+		["Azimuth", "180"],
+		["Relative roof height", "0"],
+		["Drawing source", "Licensed aerial drawing and installer roof dimensions"],
+	])
+		await enter(input(label), value);
+	await act(async () => document.querySelector(".sc-check input").click());
+	await click("Confirm roof and map origin");
+	const { coordinate_system: frame, roofs, sources } = app.inputs.geometry;
+	assert.equal(roofs.length, 1);
+	assert.equal(frame.anchor.longitude_deg, 11.56605);
+	assert.equal(frame.anchor.latitude_deg, 48.14505);
+	assert.equal(frame.north_reference, "true_north");
+	assert.equal(frame.north_source_id, roofs[0].source_id);
+	assert.equal(
+		sources.find((source) => source.id === frame.north_source_id).permissions
+			.export,
+		"unknown",
+	);
+	await click("Place modules");
+	await click("Review panel layout");
+	assert.ok(
+		document.activeElement === input("Rows"),
+		"panel review should focus the row count",
+	);
+	await enter(input("Rows"), "1");
+	await enter(input("Columns"), "2");
+	await enter(input("Module gap"), "0.05");
+	map().hits = [{ properties: { object_id: roofs[0].id } }];
+	await point(11.56608, 48.14512);
+	assert.equal(app.inputs.geometry.arrays.length, 1);
+	assert.equal(app.inputs.geometry.arrays[0].columns, 2);
+});
+
 test("the solar page records a named map origin only after confirmation", async (t) => {
 	const brief = emptyBrief();
 	const app = await mount(t, {
