@@ -151,22 +151,13 @@ function failureText( failure: InquiryFailure, pageUrl: string ): string {
 				'Add a product to your solution draft or write a message.',
 				'linker-tools'
 			);
-		case 'limited':
-			return __(
-				'Genie cannot send an inquiry right now. Please use the inquiry page.',
-				'linker-tools'
-			);
 		case 'refused':
 			return __(
 				'The inquiry could not be sent. Please check your solution draft on the inquiry page.',
 				'linker-tools'
 			);
+		case 'limited':
 		case 'unavailable':
-			// The same sentence as the limit: either way the page is the way out.
-			return __(
-				'Genie cannot send an inquiry right now. Please use the inquiry page.',
-				'linker-tools'
-			);
 		default:
 			return pageUrl
 				? __(
@@ -182,10 +173,13 @@ function failureText( failure: InquiryFailure, pageUrl: string ): string {
 
 export interface InquiryCardProps {
 	inquiryUrl: string;
+	requestPageUrl?: string;
 	nonce: string;
 	locale: Locale;
 	/** The page the card stands on (kept with the conversation's note). */
 	page?: PageContext;
+	/** Open the native page with this card's current message and owner. */
+	openInquiryPage: ( url: string, message: string ) => boolean;
 	/** The inquiry is with the team: the conversation keeps the sent card. */
 	onSent?: ( inquiry: SentInquiry ) => void;
 	/** Fetch for tests. */
@@ -194,9 +188,11 @@ export interface InquiryCardProps {
 
 export function InquiryCard( {
 	inquiryUrl,
+	requestPageUrl,
 	nonce,
 	locale,
 	page,
+	openInquiryPage,
 	onSent,
 	fetcher,
 }: InquiryCardProps ) {
@@ -206,6 +202,7 @@ export function InquiryCard( {
 	const [ email, setEmail ] = useState( '' );
 	const [ company, setCompany ] = useState( '' );
 	const [ message, setMessage ] = useState( '' );
+	const [ transferFailed, setTransferFailed ] = useState( false );
 	const [ attach, setAttach ] = useState( true );
 	const [ consent, setConsent ] = useState( false );
 	const [ trap, setTrap ] = useState( '' );
@@ -217,6 +214,8 @@ export function InquiryCard( {
 	const messageField = useId();
 	const summaryField = useId();
 	const consentField = useId();
+	// The loaded draft and its edits keep the authority of the card that opened.
+	const openNative = useRef( openInquiryPage );
 	const notify = useRef( onSent );
 	notify.current = onSent;
 
@@ -228,7 +227,6 @@ export function InquiryCard( {
 			}
 			setState( read );
 			if ( ! read ) {
-				setFailure( 'unavailable' );
 				setPhase( 'ready' );
 				return;
 			}
@@ -331,9 +329,40 @@ export function InquiryCard( {
 		return <InquirySent inquiry={ sent } />;
 	}
 
+	if ( 'loading' === phase ) {
+		return (
+			<section className="linker-genie-inquiry">
+				<p className="linker-genie-inquiry__title">
+					{ __( 'Your inquiry', 'linker-tools' ) }
+				</p>
+				<p role="status">{ __( 'One moment…', 'linker-tools' ) }</p>
+			</section>
+		);
+	}
+
+	if ( ! state ) {
+		return (
+			<section className="linker-genie-inquiry">
+				<p role="alert">
+					{ __(
+						'Genie cannot send an inquiry right now. Please use the inquiry page.',
+						'linker-tools'
+					) }
+				</p>
+				{ requestPageUrl && (
+					<a
+						className="linker-genie-inquiry__edit"
+						href={ requestPageUrl }
+					>
+						{ __( 'Open the inquiry page', 'linker-tools' ) }
+					</a>
+				) }
+			</section>
+		);
+	}
+
 	const sending = 'sending' === phase;
-	const loading = 'loading' === phase;
-	const canSend = ! loading && ! sending && ! empty;
+	const canSend = ! sending && ! empty;
 
 	// One live region for the card's life: the move to the sent card is
 	// announced (a region mounted together with its content is not).
@@ -341,7 +370,7 @@ export function InquiryCard( {
 		<section
 			className="linker-genie-inquiry"
 			aria-live="polite"
-			aria-busy={ loading || sending }
+			aria-busy={ sending }
 		>
 			<p className="linker-genie-inquiry__title">
 				{ __( 'Your inquiry', 'linker-tools' ) }
@@ -439,6 +468,27 @@ export function InquiryCard( {
 						<p>{ state?.summary }</p>
 					</details>
 				</div>
+			) : null }
+			{ state.pageUrl ? (
+				<button
+					type="button"
+					className="linker-genie-inquiry__edit"
+					onClick={ () =>
+						setTransferFailed(
+							! openNative.current( state.pageUrl, message )
+						)
+					}
+				>
+					{ __( 'Open the inquiry page', 'linker-tools' ) }
+				</button>
+			) : null }
+			{ transferFailed ? (
+				<p role="alert" className="linker-genie-inquiry__error">
+					{ __(
+						'The project note could not be carried over. Your text is still here.',
+						'linker-tools'
+					) }
+				</p>
 			) : null }
 			{ account ? null : (
 				<div className="linker-genie-inquiry__fields">
@@ -543,18 +593,11 @@ export function InquiryCard( {
 						? __( 'Sending…', 'linker-tools' )
 						: __( 'Send inquiry', 'linker-tools' ) }
 				</button>
-				{ state?.pageUrl ? (
-					<a
-						className="linker-genie-inquiry__edit"
-						href={ state.pageUrl }
-					>
-						{ __( 'Open the inquiry page', 'linker-tools' ) }
-					</a>
-				) : null }
 			</div>
 			<p className="linker-genie-inquiry__promise">
 				{ __( 'We reply within one business day.', 'linker-tools' ) }
 			</p>
+
 			{ failure ? (
 				<p role="alert" className="linker-genie-inquiry__error">
 					{ failureText( failure, state?.pageUrl ?? '' ) }

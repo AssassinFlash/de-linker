@@ -19,7 +19,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { storeClient } from '../configurator/api/store';
-import { rememberInquiry } from '../protection/inquiryHandoff';
+import {
+	cardMessageHandoff,
+	rememberInquiry,
+} from '../protection/inquiryHandoff';
 import type { SentInquiry } from '../genie/api/inquiry';
 import {
 	assistantMessage,
@@ -943,10 +946,13 @@ export function HeroConversation( {
 		<InquirySent inquiry={ currentInquiry } />
 	) : (
 		<InquiryCard
+			key={ turn?.meta?.turn_id ?? turnAt.current }
 			inquiryUrl={ config.inquiryUrl }
+			requestPageUrl={ config.requestPageUrl }
 			nonce={ config.restNonce }
 			locale={ locale }
 			page={ config.page }
+			openInquiryPage={ cardMessageHandoff( draftContext ) }
 			onSent={ inquirySent }
 		/>
 	);

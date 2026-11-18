@@ -94,8 +94,9 @@ afterEach( async () => {
 } );
 const field = () =>
 	screen.getByRole< HTMLTextAreaElement >( 'textbox', { name: 'Ask Genie' } );
-async function mount() {
+async function mount( surface: 'helper' | 'workspace' = 'helper' ) {
 	const mountPoint = document.createElement( 'div' );
+	mountPoint.dataset.surface = surface;
 	mountPoint.dataset.restNonce = 'native-browser-voice-fixture';
 	mountPoint.dataset.requestPageUrl = '/proforma-request/';
 	const ui = render( <App config={ readConfig( mountPoint ) } /> );
@@ -125,6 +126,26 @@ async function startVoice() {
 	);
 	return sessions[ sessions.length - 1 ];
 }
+
+test( 'workspace dictation becomes available with the editable composer', async () => {
+	const mountPoint = document.createElement( 'div' );
+	mountPoint.dataset.surface = 'workspace';
+	mountPoint.dataset.restNonce = 'native-browser-voice-fixture';
+	render( <App config={ readConfig( mountPoint ) } /> );
+	const microphone = screen.getByRole( 'button', { name: 'Dictate' } );
+	expect( field() ).toBeDisabled();
+	expect( microphone ).toBeDisabled();
+	await waitFor( () => expect( microphone ).toBeEnabled() );
+	expect( field() ).toBeEnabled();
+} );
+
+test( 'a workspace visitor can dictate into the composer without sending a turn', async () => {
+	await mount( 'workspace' );
+	await hear( await startVoice(), 'SAJ H2-10K-T3' );
+	expect( field() ).toHaveValue( 'SAJ H2-10K-T3' );
+	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeEnabled();
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
 
 test( 'a native same-owner check before the first voice byte does not discard the accepted editor', async () => {
 	await mount();

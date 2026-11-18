@@ -1,5 +1,6 @@
 /** One explicit fallback navigation carries only the customer's unsent text. */
 import type { GenieConfig } from '../genie/config';
+import type { DraftContext } from '../genie/shared/draftContext';
 import { nativeScope } from '../genie/shared/nativeScope';
 
 const PREFIX = 'linker-genie-inquiry-handoff:v2:';
@@ -12,6 +13,23 @@ interface Handoff {
 	path: string;
 	message: string;
 	expires: number;
+}
+
+/** Bind the displayed confirmation card to its original native identity and thread. */
+export function cardMessageHandoff( context: DraftContext ) {
+	const lease = context.capture();
+	return ( url: string, message: string ) => {
+		if (
+			! lease ||
+			! context.valid( lease ) ||
+			! context.identity?.persistent ||
+			! rememberInquiry( url, message, lease.scope )
+		) {
+			return false;
+		}
+		window.location.assign( url );
+		return true;
+	};
 }
 
 function readRecord( raw: string | null, scope: string ): Handoff | null {

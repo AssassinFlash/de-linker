@@ -14,7 +14,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { storeClient } from '../configurator/api/store';
-import { rememberInquiry } from '../protection/inquiryHandoff';
+import {
+	cardMessageHandoff,
+	rememberInquiry,
+} from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
 import { idsOf, pricesOf, proofsOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
@@ -2171,10 +2174,13 @@ export function App( { config }: { config: GenieConfig } ) {
 		<InquirySent inquiry={ currentInquiry } />
 	) : (
 		<InquiryCard
+			key={ turn?.meta?.turn_id ?? turnAt.current }
 			inquiryUrl={ config.inquiryUrl }
+			requestPageUrl={ config.requestPageUrl }
 			nonce={ config.restNonce }
 			locale={ config.locale }
 			page={ page }
+			openInquiryPage={ cardMessageHandoff( draftContext ) }
 			onSent={ inquirySent }
 		/>
 	);
@@ -2936,6 +2942,10 @@ export function App( { config }: { config: GenieConfig } ) {
 										type="button"
 										className="linker-genie-app__prompt"
 										aria-pressed={ dictating }
+										disabled={
+											! dictating &&
+											draftContext.phase !== 'ready'
+										}
 										onClick={ dictate }
 									>
 										{ dictating
@@ -3254,7 +3264,7 @@ export function App( { config }: { config: GenieConfig } ) {
 										}
 									} }
 								/>
-								{ ! workspace && canDictate ? (
+								{ canDictate ? (
 									<button
 										type="button"
 										className="linker-genie-app__mic"
@@ -3270,6 +3280,10 @@ export function App( { config }: { config: GenieConfig } ) {
 													)
 										}
 										aria-pressed={ dictating }
+										disabled={
+											! dictating &&
+											draftContext.phase !== 'ready'
+										}
 										onClick={ dictate }
 									>
 										<MicIcon />

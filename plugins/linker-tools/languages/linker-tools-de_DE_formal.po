@@ -14620,6 +14620,7 @@ msgstr "Projektnotiz gespeichert."
 #: ../../apps/planner/src/components/ProjectBriefStart.tsx
 #: ../../apps/planner/src/marketing/entries.ts
 #: build/planner/assets/planner.js
+#: src/genie/components/InquiryCard.tsx build/genie.js build/hero.js
 msgid "The project note could not be carried over. Your text is still here."
 msgstr "Die Projektnotiz konnte nicht übernommen werden. Ihr Text ist weiterhin vorhanden."
 

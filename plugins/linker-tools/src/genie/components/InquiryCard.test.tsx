@@ -116,7 +116,11 @@ function route(
 	return { calls, fetcher: fetcher as typeof fetch };
 }
 
-function card( fetcher: typeof fetch, onSent = vi.fn() ) {
+function card(
+	fetcher: typeof fetch,
+	onSent = vi.fn(),
+	openInquiryPage = vi.fn( () => true )
+) {
 	return {
 		onSent,
 		...render(
@@ -125,6 +129,7 @@ function card( fetcher: typeof fetch, onSent = vi.fn() ) {
 				nonce="n"
 				locale="en"
 				onSent={ onSent }
+				openInquiryPage={ openInquiryPage }
 				fetcher={ fetcher }
 			/>
 		),
@@ -145,6 +150,40 @@ async function guestDetails() {
 	);
 }
 
+test( 'the card opens for editing only after the customer’s draft and message arrive', async () => {
+	const { fetcher } = route( [ state() ] );
+	card( fetcher );
+	expect( screen.queryByLabelText( 'Message' ) ).toBeNull();
+	expect( screen.queryByLabelText( 'Name' ) ).toBeNull();
+	expect(
+		screen.queryByText( 'No products in your solution draft.' )
+	).toBeNull();
+	expect( await screen.findByLabelText( 'Message' ) ).toHaveValue(
+		'We need two units this quarter.'
+	);
+} );
+
+test( 'when the draft cannot load the guest can open the native inquiry without editing a false empty draft', async () => {
+	const fetcher = vi.fn( async () => new Response( null, { status: 503 } ) );
+	render(
+		<InquiryCard
+			inquiryUrl={ URL }
+			requestPageUrl="/inquiry/"
+			nonce="n"
+			locale="en"
+			fetcher={ fetcher }
+			openInquiryPage={ () => false }
+		/>
+	);
+	expect(
+		await screen.findByRole( 'link', { name: 'Open the inquiry page' } )
+	).toHaveAttribute( 'href', '/inquiry/' );
+	expect(
+		screen.queryByText( 'No products in your solution draft.' )
+	).toBeNull();
+	expect( screen.queryByLabelText( 'Message' ) ).toBeNull();
+} );
+
 test( 'the card shows every line it will send and the one-business-day promise', async () => {
 	const { fetcher } = route( [ state() ] );
 	card( fetcher );
@@ -158,6 +197,55 @@ test( 'the card shows every line it will send and the one-business-day promise',
 	expect(
 		screen.getByLabelText( 'Attach the conversation summary' )
 	).toBeTruthy();
+} );
+
+test( 'opening the native inquiry page carries the current confirmed message, including later edits', async () => {
+	const { fetcher } = route( [ state() ] );
+	const stage = vi.fn( () => true );
+	card( fetcher, vi.fn(), stage );
+	const link = await screen.findByRole( 'button', {
+		name: 'Open the inquiry page',
+	} );
+	fireEvent.click( link );
+	expect( stage ).toHaveBeenLastCalledWith(
+		state().pageUrl,
+		state().message
+	);
+	fireEvent.change( screen.getByLabelText( 'Message' ), {
+		target: { value: 'Please quote three units instead.' },
+	} );
+	fireEvent.click( link );
+	expect( stage ).toHaveBeenLastCalledWith(
+		state().pageUrl,
+		'Please quote three units instead.'
+	);
+} );
+
+test( 'a card retains the original owner of its loaded message when the parent renders again', async () => {
+	const { fetcher, calls } = route( [ state() ] );
+	const original = vi.fn( () => false );
+	const props = {
+		inquiryUrl: URL,
+		nonce: 'n',
+		locale: 'en' as const,
+		fetcher,
+	};
+	const ui = render(
+		<InquiryCard { ...props } openInquiryPage={ original } />
+	);
+	const field = await screen.findByLabelText( 'Message' );
+	fireEvent.change( field, { target: { value: 'My updated note' } } );
+	const later = vi.fn( () => true );
+	ui.rerender( <InquiryCard { ...props } openInquiryPage={ later } /> );
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'Open the inquiry page' } )
+	);
+	expect( later ).not.toHaveBeenCalled();
+	expect( field ).toHaveValue( 'My updated note' );
+	expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+		'Your text is still here.'
+	);
+	expect( calls.map( ( call ) => call.method ) ).toEqual( [ 'GET' ] );
 } );
 
 test( 'a guest fills name, address and consent, and the send carries the card', async () => {
@@ -187,6 +275,29 @@ test( 'a guest fills name, address and consent, and the send carries the card', 
 		consent: '1',
 		locale: 'en',
 	} );
+} );
+
+test( 'a guest can retry a temporarily refused Send with the existing details and consent', async () => {
+	const unavailable = route( [ state() ], { sent: false }, 503 );
+	const ready = route( [ state() ] );
+	let attempts = 0;
+	const fetcher: typeof fetch = ( url, init ) =>
+		init?.method === 'POST' && attempts++ > 0
+			? ready.fetcher( url, init )
+			: unavailable.fetcher( url, init );
+	card( fetcher );
+	await guestDetails();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Send inquiry' } ) );
+	await screen.findByText(
+		'Sending did not work. Please try again, or use the inquiry page.'
+	);
+	const retry = screen.getByRole( 'button', { name: 'Send inquiry' } );
+	expect( ready.calls ).toHaveLength( 0 );
+	fireEvent.click( retry );
+	await screen.findByText( 'Your inquiry is with the Linker team' );
+	expect( ready.calls[ 0 ].body ).toEqual(
+		unavailable.calls.find( ( call ) => call.method === 'POST' )?.body
+	);
 } );
 
 test( 'a signed-in customer is not asked for details', async () => {
@@ -246,7 +357,7 @@ test( 'an empty draft sends nothing and names the inquiry page', async () => {
 			.hasAttribute( 'disabled' )
 	).toBe( true );
 	expect(
-		screen.getByRole( 'link', { name: 'Open the inquiry page' } )
+		screen.getByRole( 'button', { name: 'Open the inquiry page' } )
 	).toBeTruthy();
 	expect( calls.some( ( call ) => 'POST' === call.method ) ).toBe( false );
 } );
