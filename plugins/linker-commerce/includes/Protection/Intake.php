@@ -216,9 +216,7 @@ final class Intake {
 					$state['entries'][ $id ] = $entry + array( 'creating' => true );
 					IntakeStore::save( $state );
 					return array();
-				},
-				1,
-				true
+				}
 			);
 			if ( $result instanceof WP_Error ) {
 				// Woo wraps checkout exceptions. Preserve the unsaved result for the form.
