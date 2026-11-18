@@ -655,8 +655,14 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$doc = new \DOMDocument();
 		$doc->loadHTML( '<meta charset="UTF-8">' . $html, LIBXML_NOERROR );
 		$xpath = new \DOMXPath( $doc );
-		$post  = array();
-		foreach ( $xpath->query( '//form[contains(@class,"linker-inquiry-form")]//*[self::input or self::textarea or self::select]' ) as $field ) {
+		$form  = '//form[contains(@class,"linker-inquiry-form")]';
+		$owned = '//*[self::input or self::textarea or self::select][not(@disabled) and ((not(@form) and ancestor::form[1][contains(@class,"linker-inquiry-form")]) or @form = ' . $form . '/@id)]';
+		$this->assertSame( 1.0, $xpath->evaluate( 'count(' . $owned . '[@name="linker_draft_hash"])' ) );
+		$fields = $xpath->query( $owned );
+		$this->assertInstanceOf( \DOMNodeList::class, $fields );
+		$post = array();
+		foreach ( $fields as $field ) {
+			$this->assertInstanceOf( \DOMElement::class, $field );
 			$name = $field->getAttribute( 'name' );
 			if ( '' === $name || ( 'checkbox' === $field->getAttribute( 'type' ) && ! $field->hasAttribute( 'checked' ) ) ) {
 				continue;
@@ -672,7 +678,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		return $post;
 	}
 
-	/** The native cart can receive a product selection or a report without products. */
+	/**
+	 * The native cart can receive a product selection or a report without products.
+	 *
+	 * @return array<string,array{bool}>
+	 */
 	public static function reviewed_drafts(): array {
 		return array(
 			'account report' => array( false ),
@@ -687,13 +697,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * @param bool $guest Guest with a product selection, or returning customer with a report.
 	 */
 	public function test_native_inquiry_retry_is_idempotent_and_payload_changes_are_refused( bool $guest ): void {
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
 		if ( $guest ) {
 			$present = static function ( $enabled, $name, $value ): bool {
 				$_COOKIE[ $name ] = $value;
 				return false;
 			};
 			add_filter( 'woocommerce_set_cookie_enabled', $present, 10, 3 );
-			WC()->session->set_customer_session_cookie( true );
+			$session->set_customer_session_cookie( true );
 			remove_filter( 'woocommerce_set_cookie_enabled', $present );
 		} else {
 			$this->as_user( $this->customer()->get_id() );
@@ -743,8 +755,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				),
 			);
 		}
-		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $contexts );
-		WC()->session->save_data();
+		$session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $contexts );
+		$session->save_data();
 		$command = array(
 			'schema_version'    => 1,
 			'project_id'        => $report['snapshot']['project_id'],
@@ -762,12 +774,17 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertSame( $quantities, array_column( $preview['inquiry_lines'], 'quantity' ) );
 		$this->assertSame( $projects, array_column( $preview['inquiry_lines'], 'project_id' ) );
 		$this->assertCount( 3, WC()->cart->get_cart() );
+		$post = $this->inquiry_controls( $preview['inquiry_form_html'] );
+		$this->assertSame( WC()->cart->get_cart_hash(), $post['linker_draft_hash'] );
+		$checkout = $this->inquiry_controls( ( new \Linker\Commerce\Inquiry\Form() )->render() );
+		$this->assertSame( WC()->cart->get_cart_hash(), $checkout['linker_draft_hash'] );
 		$command['expected_draft_sha256'] = $preview['draft_sha256'];
 		$transfer                         = new \Linker\Commerce\Planning\DraftTransfer();
 		$receipt                          = $transfer->apply( null, $command, $report );
-		$this->assertIsArray( $receipt, is_wp_error( $receipt ) ? $receipt->get_error_code() : '' );
-		$this->assertSame( $receipt, $transfer->receipt( null, $command, $report )['receipt'] );
-		$post    = $this->inquiry_controls( $preview['inquiry_form_html'] );
+		$this->assertIsArray( $receipt, is_wp_error( $receipt ) ? $receipt->get_error_message() : '' );
+		$stored = $transfer->receipt( null, $command, $report );
+		$this->assertIsArray( $stored, is_wp_error( $stored ) ? $stored->get_error_message() : '' );
+		$this->assertSame( $receipt, $stored['receipt'] );
 		$contact = $this->post();
 		foreach ( array( 'name', 'email', 'message', 'consent', 'linker_proof' ) as $field ) {
 			$post[ $field ] = $contact[ $field ];
@@ -794,8 +811,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$pending  = ( new Handler() )->process( $post );
 				$original = $_POST;
 				$_POST    = wp_slash( $post );
-				$stop     = static function (): void {
-					throw new \RuntimeException( 'fixture_pending_redirect' );
+				$stop     = static function ( string $location ): string {
+					if ( str_starts_with( $location, home_url() ) ) {
+						throw new \RuntimeException( 'fixture_pending_redirect' );
+					}
+					return $location;
 				};
 				add_filter( 'wp_redirect', $stop );
 				try {
@@ -834,18 +854,24 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$recovery                  = $form->render();
 		$GLOBALS['shortcode_tags'] = $shortcodes;
 		$retry_post                = $this->inquiry_controls( $recovery );
+		$this->assertSame( $receipt['inquiry_cart_hash'], $retry_post['linker_draft_hash'] );
+		$this->assertSame( $receipt['inquiry_draft_sha256'], $retry_post['linker_planner_draft_sha256'] );
 		$this->assertSame( \Linker\Commerce\Inquiry\BillingFields::values( $post ), \Linker\Commerce\Inquiry\BillingFields::values( $retry_post ) );
 		$this->assertSame( \Linker\Commerce\Planning\Context::submission_fingerprint( $post ), \Linker\Commerce\Planning\Context::submission_fingerprint( $retry_post ) );
 		$this->assertEquals( Submission::from_post( $post, false ), Submission::from_post( $retry_post, false ) );
 		$retry = ( new Handler() )->process( $retry_post );
-		$this->assertInstanceOf( WC_Order::class, $retry, is_wp_error( $retry ) ? $retry->get_error_code() : '' );
+		$this->assertInstanceOf( WC_Order::class, $retry, is_wp_error( $retry ) ? $retry->get_error_message() : '' );
 		$this->assertSame( $first->get_id(), $retry->get_id() );
 		$this->assertInstanceOf( WP_Error::class, $pending );
 		$this->assertSame( 'linker_inquiry_pending', $pending->get_error_code() );
 		$this->assertSame( array( str_repeat( 'e', 32 ), $report['id'] ), array_keys( \Linker\Commerce\Planning\Context::stored( $first ) ) );
-		$items = array_values( $first->get_items() );
-		$this->assertSame( array_fill( 0, count( $quantities ), $id ), array_map( static fn ( $item ) => $item->get_product_id(), $items ) );
-		$this->assertSame( $quantities, array_map( static fn ( $item ) => $item->get_quantity(), $items ) );
+		$ordered_quantities = array();
+		foreach ( $first->get_items() as $item ) {
+			$this->assertInstanceOf( \WC_Order_Item_Product::class, $item );
+			$this->assertSame( $id, $item->get_product_id() );
+			$ordered_quantities[] = $item->get_quantity();
+		}
+		$this->assertSame( $quantities, $ordered_quantities );
 		$this->assertSame( 2, $calls );
 		$changed = ( new Handler() )->process( array_replace( $post, array( 'linker_planner_handoff_id' => str_repeat( 'e', 32 ) ) ) );
 		$this->assertInstanceOf( WP_Error::class, $changed );
