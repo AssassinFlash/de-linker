@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
+	private const PATHS = 'inquiry/form|projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -396,6 +396,14 @@ final class Gateway {
 		if ( 'sources/project-brief/stage' === $path ) {
 			$staged = ( new ProjectBriefSource() )->stage( $principal, $command );
 			return is_wp_error( $staged ) ? $staged : new WP_REST_Response( $staged );
+		}
+		if ( 'inquiry/form' === $path ) {
+			if ( 2 !== count( $command ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) ) {
+				return Failure::make( 'input', 422 );
+			}
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce renders the native form for this Woo session.
+			$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'] );
+			return is_array( $form ) ? new WP_REST_Response( $form ) : Failure::make( 'configuration', 503 );
 		}
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );

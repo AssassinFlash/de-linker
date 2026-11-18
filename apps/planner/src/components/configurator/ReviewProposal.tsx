@@ -1,3 +1,4 @@
+import { readBrief } from "../../domain/brief.ts";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { PlanningRun, RunSummary } from "../../data/planningProtocol.ts";
@@ -282,6 +283,7 @@ interface ReportHistory {
 }
 
 export function ReviewProposal({
+	inputs,
 	project,
 	summary,
 	materials,
@@ -400,6 +402,33 @@ export function ReviewProposal({
 				: report.sections.some(
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
+	const preliminaryScope =
+		inputs.brief && Object.keys(inputs).length === 1
+			? readBrief(inputs.brief).system_scope
+			: null;
+	if (preliminaryScope && !selected && !transferable) {
+		const label = {
+			new_pv_storage: __("Solar and storage", "linker-tools"),
+			storage_addition: __("Storage for existing PV", "linker-tools"),
+			pv_only: __("Solar", "linker-tools"),
+			storage_only: __("Storage", "linker-tools"),
+		}[preliminaryScope];
+		const direction = sprintf(__("Planned system: %s", "linker-tools"), label);
+		return (
+			<article className="sc-review">
+				<ReviewInquiry
+					key={`${project.id}:${scope}:${direction}`}
+					direction={direction}
+					client={client}
+					scope={scope}
+					operations={operations}
+					locale={locale}
+					blocked={blocked}
+					recheck={recheck}
+				/>
+			</article>
+		);
+	}
 	const transfer = transferable && run && current && (
 		<ReviewInquiry
 			key={`${run.id}:${scope}`}

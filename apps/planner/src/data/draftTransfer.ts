@@ -188,7 +188,16 @@ export function readInquiryPreview(
 ) {
 	const preview = readDraftPreview(value, command, origin),
 		row = readObject(value);
+	return {
+		...preview,
+		handoffId: String(row.handoff_id),
+		...readInquiryForm(row),
+	};
+}
+export function readInquiryForm(value: unknown) {
+	const row = readObject(value);
 	if (
+		row.schema_version !== 1 ||
 		typeof row.inquiry_form_html !== "string" ||
 		!row.inquiry_form_html.trim() ||
 		!Array.isArray(row.inquiry_lines)
@@ -210,8 +219,6 @@ export function readInquiryPreview(
 		return { label: line.label, quantity: line.quantity };
 	});
 	return {
-		...preview,
-		handoffId: String(row.handoff_id),
 		lines,
 		form: row.inquiry_form_html,
 	};

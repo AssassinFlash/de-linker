@@ -302,3 +302,47 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 			},
 		]);
 	});
+
+test("an installer can send a scope-only inquiry with their own message and original cart", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	value.inputs = { brief: { ...emptyBrief(), system_scope: "pv_only" } };
+	value.project.inputs = value.inputs;
+	value.client.origin = location.origin;
+	const calls = [];
+	value.client.query = async (path) => {
+		calls.push(path);
+		if (calls.length === 1) throw new Error("unavailable");
+		return {
+			schema_version: 1,
+			inquiry_lines: [],
+			inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
+		};
+	};
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	assert.ok(button("Load inquiry form again"));
+	assert.doesNotMatch(page.element.textContent, /could not be sent/);
+	await act(async () => button("Load inquiry form again").click());
+	const form = page.element.querySelector("form");
+	form.querySelector("textarea").value = "Please call me back.";
+	assert.match(page.element.textContent, /Planned system: Solar/);
+	let message;
+	form.addEventListener(
+		"submit",
+		(event) => {
+			if (!event.defaultPrevented)
+				message = new window.FormData(form).get("message");
+			event.preventDefault();
+		},
+		{ once: true },
+	);
+	await act(async () => button("Send inquiry").click());
+	assert.equal(message, "Planned system: Solar\n\nPlease call me back.");
+	assert.deepEqual(calls, ["inquiry/form", "inquiry/form"]);
+	assert.equal(button("Generate project report"), undefined);
+});

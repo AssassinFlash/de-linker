@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError } from "../../data/protocol.ts";
 import {
+	readInquiryForm,
 	readInquiryPreview,
 	readDraftReceipt,
 } from "../../data/draftTransfer.ts";
@@ -16,6 +17,7 @@ import { __, sprintf } from "../../i18n.ts";
 /** The commerce form owns contact validation, proof and the order-received redirect. */
 export function ReviewInquiry({
 	run,
+	direction,
 	client,
 	scope,
 	operations,
@@ -23,7 +25,8 @@ export function ReviewInquiry({
 	blocked,
 	recheck,
 }: {
-	run: PlanningRun;
+	run?: PlanningRun;
+	direction?: string;
 	client: PlannerClient;
 	scope: string;
 	operations: ReturnType<typeof usePlanningOperations>;
@@ -31,10 +34,16 @@ export function ReviewInquiry({
 	blocked: boolean;
 	recheck: () => void;
 }) {
-	const [preview, setPreview] = useState<ReturnType<
-			typeof readInquiryPreview
-		> | null>(null),
-		[error, setError] = useState<unknown>(null),
+	const [preview, setPreview] = useState<
+			| (ReturnType<typeof readInquiryForm> & {
+					transfer: ReturnType<typeof readInquiryPreview> | null;
+			  })
+			| null
+		>(null),
+		[error, setError] = useState<{
+			stage: "load" | "send";
+			cause: unknown;
+		} | null>(null),
 		[attempt, setAttempt] = useState(0),
 		[sending, setSending] = useState(false);
 	const retained = useRef<FormData | null>(null);
@@ -44,24 +53,35 @@ export function ReviewInquiry({
 	const record = operations.records.find(
 		(row) =>
 			row.path === "draft/apply" &&
-			readPlanningOperation(row.path, row.body).report_run_id === run.id,
+			readPlanningOperation(row.path, row.body).report_run_id === run?.id,
 	);
 	useEffect(() => {
 		const request = new AbortController();
-		const command = {
-			schema_version: 1,
-			project_id: run.project_id,
-			report_run_id: run.id,
-			expected_revision: run.revision,
-			lang: locale.startsWith("de") ? "de" : "en",
-			key: crypto.randomUUID(),
-		};
+		const lang = locale.startsWith("de") ? "de" : "en";
+		const command = run
+			? {
+					schema_version: 1,
+					project_id: run.project_id,
+					report_run_id: run.id,
+					expected_revision: run.revision,
+					lang,
+					key: crypto.randomUUID(),
+				}
+			: { schema_version: 1, lang };
 		setError(null);
 		void client
-			.query("draft/inquiry-preview", command, scope, request.signal)
+			.query(
+				run ? "draft/inquiry-preview" : "inquiry/form",
+				command,
+				scope,
+				request.signal,
+			)
 			.then((raw) => {
-				if (!request.signal.aborted && client.isCurrentScope(scope))
-					setPreview(readInquiryPreview(raw, command, client.origin));
+				if (request.signal.aborted || !client.isCurrentScope(scope)) return;
+				if (run) {
+					const transfer = readInquiryPreview(raw, command, client.origin);
+					setPreview({ form: transfer.form, lines: transfer.lines, transfer });
+				} else setPreview({ ...readInquiryForm(raw), transfer: null });
 			})
 			.catch((cause) => {
 				if (request.signal.aborted) return;
@@ -71,10 +91,10 @@ export function ReviewInquiry({
 						cause.code === "session_changed")
 				)
 					recheck();
-				setError(cause);
+				setError({ stage: "load", cause });
 			});
 		return () => request.abort();
-	}, [client, scope, run.project_id, run.id, run.revision, locale, attempt]);
+	}, [client, scope, run?.project_id, run?.id, run?.revision, locale, attempt]);
 	useEffect(() => {
 		const node = host.current;
 		if (!node || !preview) return;
@@ -87,7 +107,7 @@ export function ReviewInquiry({
 			new URL(form.action).origin !== client.origin
 		) {
 			node.replaceChildren();
-			setError(new Error("invalid_inquiry_form"));
+			setError({ stage: "load", cause: new Error("invalid_inquiry_form") });
 			return;
 		}
 		if (retained.current) {
@@ -108,14 +128,39 @@ export function ReviewInquiry({
 			}
 			retained.current = null;
 		}
+		if (direction) {
+			const message = form.elements.namedItem("message");
+			if (!(message instanceof window.HTMLTextAreaElement)) {
+				node.replaceChildren();
+				setError({ stage: "load", cause: new Error("invalid_inquiry_form") });
+				return;
+			}
+			const full = document.createElement("input");
+			full.type = "hidden";
+			full.name = "message";
+			message.removeAttribute("name");
+			if (message.maxLength >= 0)
+				message.maxLength = Math.max(
+					0,
+					message.maxLength - direction.length - 2,
+				);
+			const update = () => {
+				full.value = message.value
+					? `${direction}\n\n${message.value}`
+					: direction;
+			};
+			update();
+			message.addEventListener("input", update);
+			form.addEventListener("submit", update, { capture: true });
+			form.append(full);
+		}
 		form.dispatchEvent(
 			new Event("linker:inquiry-form-mounted", { bubbles: true }),
 		);
 		return () => node.replaceChildren();
-	}, [preview, client.origin]);
+	}, [preview, client.origin, direction]);
 	async function send(event: FormEvent) {
 		if (event.defaultPrevented) return;
-		event.preventDefault();
 		const form = event.target;
 		if (
 			!(form instanceof window.HTMLFormElement) ||
@@ -127,8 +172,12 @@ export function ReviewInquiry({
 			operations.checking ||
 			operations.storageFailed ||
 			!client.isCurrentScope(scope)
-		)
+		) {
+			event.preventDefault();
 			return;
+		}
+		if (!run || !preview.transfer) return;
+		event.preventDefault();
 		flight.current = true;
 		setSending(true);
 		form.inert = true;
@@ -142,7 +191,7 @@ export function ReviewInquiry({
 				!(cart instanceof window.HTMLInputElement) ||
 				!(digest instanceof window.HTMLInputElement) ||
 				!(handoff instanceof window.HTMLInputElement) ||
-				handoff.value !== preview.handoffId
+				handoff.value !== preview.transfer.handoffId
 			)
 				throw new Error("invalid_inquiry_form");
 			let receipt;
@@ -159,7 +208,7 @@ export function ReviewInquiry({
 						throw new Error("invalid_draft_receipt");
 					await operations.acknowledgeReadback(record, receipt.handoffId);
 				} else if (status.state === "not_applied") {
-					if (command.expected_draft_sha256 !== preview.draftSha256) {
+					if (command.expected_draft_sha256 !== preview.transfer.draftSha256) {
 						staleIntent.current = record;
 						throw new ApiError(409, "planning_draft_changed");
 					}
@@ -170,7 +219,7 @@ export function ReviewInquiry({
 				const reply = await operations.start("draft/apply", {
 					report_run_id: run.id,
 					expected_revision: run.revision,
-					expected_draft_sha256: preview.draftSha256,
+					expected_draft_sha256: preview.transfer.draftSha256,
 				});
 				if (reply?.path === "draft/apply") receipt = reply.receipt;
 			}
@@ -188,7 +237,7 @@ export function ReviewInquiry({
 			posted = true;
 		} catch (cause) {
 			if (form.isConnected) {
-				setError(cause);
+				setError({ stage: "send", cause });
 				if (
 					cause instanceof ApiError &&
 					([401, 403].includes(cause.status) ||
@@ -207,6 +256,7 @@ export function ReviewInquiry({
 	return (
 		<section className="sc-card sc-draft-transfer">
 			<h2>{__("Request a quotation", "linker-tools")}</h2>
+			{direction && <p>{direction}</p>}
 			{preview?.lines.length ? (
 				<table className="lp-data-table">
 					<caption>
@@ -228,7 +278,7 @@ export function ReviewInquiry({
 					</tbody>
 				</table>
 			) : null}
-			{preview?.phaseConflicts.map((check, index) => (
+			{preview?.transfer?.phaseConflicts.map((check, index) => (
 				<p key={index}>
 					{check.unit && `${check.unit}: `}
 					{sprintf(
@@ -248,14 +298,17 @@ export function ReviewInquiry({
 			{sending && (
 				<p role="status">{__("Sending your inquiry…", "linker-tools")}</p>
 			)}
-			{Boolean(error) && (
+			{error && (
 				<p role="alert">
-					{__("Your inquiry could not be sent.", "linker-tools")}{" "}
+					{error.stage === "send"
+						? __("Your inquiry could not be sent.", "linker-tools")
+						: __("The inquiry form could not be loaded.", "linker-tools")}{" "}
 					{(!preview ||
+						error.stage === "load" ||
 						(operations.error instanceof ApiError &&
 							operations.error.code === "planning_draft_changed") ||
-						(error instanceof ApiError &&
-							error.code === "planning_draft_changed")) && (
+						(error.cause instanceof ApiError &&
+							error.cause.code === "planning_draft_changed")) && (
 						<button
 							type="button"
 							className="sc-button"
@@ -270,7 +323,9 @@ export function ReviewInquiry({
 								setAttempt((value) => value + 1);
 							}}
 						>
-							{__("Review inquiry again", "linker-tools")}
+							{error.stage === "send"
+								? __("Review inquiry again", "linker-tools")
+								: __("Load inquiry form again", "linker-tools")}
 						</button>
 					)}
 				</p>
