@@ -234,6 +234,7 @@ async function equipmentApp(
 		searchGate = null,
 		findRefusal = null,
 		pvReference = null,
+		effectivePv = null,
 		pvFailure = null,
 		legacyInputs = null,
 		legacyUnavailable = false,
@@ -301,8 +302,7 @@ async function equipmentApp(
 	let findAttempts = 0;
 	let lostReceipt = null;
 	let reportRun = null;
-	let pvRun = null,
-		pvAttempts = 0;
+	const revisions = new Map([[project.revision, structuredClone(project)]]);
 	let serverRun = legacyInputs ? makeRun(projectId, "succeeded") : null,
 		nextScope = session.query_scope,
 		admittedScope = session.query_scope;
@@ -336,14 +336,6 @@ async function equipmentApp(
 		async query(path, body, scope) {
 			assert.equal(scope, admittedScope);
 			reads.push({ path, body, scope });
-			if (
-				path === "assets/read" &&
-				pvRun?.result &&
-				body.asset_id === pvRun.result.prepared_asset.id
-			)
-				return structuredClone(pvRun.result.prepared_asset);
-			if (path === "runs/read" && body.run_id === pvRun?.id)
-				return structuredClone(pvRun);
 			if (path === "products/current") return catalog();
 			if (path === "projects/runs")
 				return {
@@ -411,7 +403,9 @@ async function equipmentApp(
 			if (path === "projects/read") {
 				assert.equal(body.project_id, projectId);
 				if (scope !== session.query_scope) throw new ApiError(404, "not_found");
-				return structuredClone(project);
+				return structuredClone(
+					body.revision == null ? project : revisions.get(body.revision),
+				);
 			}
 			throw new ApiError(404, "not_found");
 		},
@@ -429,32 +423,8 @@ async function equipmentApp(
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
+				revisions.set(project.revision, structuredClone(project));
 				return structuredClone(project);
-			}
-			if (path === "runs/pvgis-reference" && pvReference) {
-				assert.equal(command.expected_revision, project.revision);
-				pvRun = structuredClone(pvReference);
-				if (++pvAttempts === 1 && pvFailure === "provider") {
-					return {
-						...pvRun,
-						state: "failed",
-						result_sha256: null,
-						result: null,
-						error: { code: "weather_provider_unavailable" },
-					};
-				}
-				pvRun.revision = project.revision;
-				pvRun.manifest.revision = project.revision;
-				pvRun.manifest.input_sha256 = project.input_sha256;
-				if (pvRun.result) {
-					pvRun.result.revision = project.revision;
-					pvRun.result.input_sha256 = project.input_sha256;
-					pvRun.result.prepared_asset.metadata.derived_from_revision =
-						project.revision;
-				}
-				if (pvAttempts === 1 && pvFailure === "receipt")
-					throw new ApiError(503, "request_failed");
-				return structuredClone(pvRun);
 			}
 			if (path === "runs/report") {
 				reportRun = makeRun(
@@ -475,6 +445,7 @@ async function equipmentApp(
 				frozenInputs = structuredClone(project.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
+				revisions.set(project.revision, structuredClone(project));
 				serverRun = makeRun(
 					projectId,
 					"queued",
@@ -487,7 +458,7 @@ async function equipmentApp(
 					project: structuredClone(project),
 					run: structuredClone(serverRun),
 				};
-				if (rejectFind) {
+				if (rejectFind || (findAttempts === 1 && pvFailure === "receipt")) {
 					lostReceipt = { body, receipt };
 					throw new ApiError(503, "request_failed");
 				}
@@ -588,13 +559,29 @@ async function equipmentApp(
 				.querySelector("main")
 				?.textContent.includes("Finding equipment for your project"),
 		setServerRun(state) {
+			const previous = serverRun;
 			serverRun = makeRun(
 				projectId,
 				state,
-				project.revision,
-				project.input_sha256,
-				serverRun.manifest.context.parameters.kind,
+				previous.revision,
+				previous.manifest.input_sha256,
+				previous.manifest.context.parameters.kind,
 			);
+			if (state === "failed")
+				serverRun.error = { code: "weather_provider_unavailable" };
+			if (state === "succeeded" && pvReference) {
+				const asset = structuredClone(pvReference.result.prepared_asset);
+				asset.metadata.derived_from_revision = serverRun.revision;
+				serverRun.result.prepared_asset = asset;
+			}
+			if (
+				state === "succeeded" &&
+				effectivePv !== null &&
+				!frozenInputs.equipment_plant_setup
+			) {
+				frozenInputs.equipment_setup.pv_dc_kw = effectivePv;
+				serverRun.result.search.candidates[0].selection.pv_dc_kw = effectivePv;
+			}
 			if (state === "succeeded" && frozenInputs.equipment_plant_setup) {
 				const search = serverRun.result.search;
 				const draft = readPlantDraft(frozenInputs);
@@ -605,7 +592,14 @@ async function equipmentApp(
 						operating_mode: "backup",
 					};
 				}
+				if (effectivePv !== null) {
+					draft.requirements = { ...draft.requirements, pv_dc_kw: effectivePv };
+					frozenInputs.equipment_plant_setup.requirements.pv_dc_kw =
+						effectivePv;
+				}
 				const plan = compilePlantSearch(draft);
+				if (effectivePv !== null)
+					frozenInputs.equipment_plant_requirements = plan;
 				search.coverage = {
 					template: "declared_plant_one_external_assembly_per_converter",
 					gaps: {},
@@ -658,6 +652,7 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 			projectId: knownPv.project.id,
 			hash: "#sc-energy",
 			pvReference: knownPv.run,
+			effectivePv: 6.4,
 			pvFailure,
 			inputs: {
 				...knownPv.project.inputs,
@@ -681,33 +676,22 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 				},
 			},
 		});
-		const compare = () => app.button("Compare systems");
-		await untilRun(() => compare() && !compare().disabled);
-		await act(async () => compare().click());
+		await compare(app);
 		if (pvFailure === "provider") {
-			const solarField = (label) =>
-				[...document.querySelectorAll("label.sc-field")]
-					.find((item) => item.textContent.startsWith(label))
-					?.querySelector("input");
-			await untilRun(
-				() =>
-					location.hash === "#sc-solar" &&
-					solarField("Latitude")?.matches(":enabled"),
+			await untilRun(app.pending);
+			await act(async () => app.setServerRun("failed"));
+			await untilRun(() =>
+				document.body.textContent.includes(
+					"PVGIS could not estimate generation",
+				),
 			);
-			assert.equal(solarField("Latitude").value, "52.12567");
-			assert.match(
-				document.body.textContent,
-				/PVGIS could not estimate generation/,
-			);
-			assert.equal(
-				app.requests.some(({ path }) => path === "runs/find-equipment"),
-				false,
-			);
-			await enter(solarField("Latitude"), "52.1");
-			await enter(solarField("Azimuth"), "180");
+			await app.step("Solar");
+			const latitude = app.fieldInput("Latitude");
+			assert.equal(latitude.value, "52.12567");
+			await enter(latitude, "52.1");
+			await enter(app.fieldInput("Azimuth"), "180");
 			await act(async () => app.button("Continue with energy use").click());
-			await untilRun(() => compare() && !compare().disabled);
-			await act(async () => compare().click());
+			await compare(app);
 		} else if (pvFailure === "receipt") {
 			const check = () => app.button("Check previous request");
 			await untilRun(() => check() && !check().disabled);
@@ -718,32 +702,25 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 		await untilRun(() => document.body.textContent.includes("ESS 5K"));
 		assert.deepEqual(
 			app.requests.map(({ path }) => path),
-			pvFailure === "provider"
-				? [
-						"runs/pvgis-reference",
-						"projects/revise",
-						"runs/pvgis-reference",
-						"runs/find-equipment",
-					]
-				: pvFailure === "receipt"
-					? [
-							"runs/pvgis-reference",
-							"runs/pvgis-reference",
-							"runs/find-equipment",
-						]
-					: ["runs/pvgis-reference", "runs/find-equipment"],
+			pvFailure
+				? ["runs/find-equipment", "runs/find-equipment"]
+				: ["runs/find-equipment"],
 		);
 		if (pvFailure === "receipt")
 			assert.deepEqual(app.requests[0].body, app.requests[1].body);
+		if (pvFailure === "provider") {
+			assert.notEqual(app.requests[0].body.key, app.requests[1].body.key);
+			assert.equal(
+				app.requests[1].body.expected_revision,
+				app.requests[0].body.expected_revision + 1,
+			);
+		}
 		const { inputs } = app.requests.at(-1).body;
-		assert.equal(
-			inputs.profile_selections.selected.pv_available_ac,
-			knownPv.run.result.prepared_asset.id,
-		);
+		assert.equal(inputs.profile_selections.selected.pv_available_ac, undefined);
 		assert.equal(inputs.profile_selections.selected.gross_load, "e".repeat(32));
 		assert.equal(
-			Date.parse(inputs.energy_scenario.schedule[0].start_utc),
-			Date.UTC(2020, 0, 1),
+			inputs.energy_scenario.schedule[0].start_utc,
+			"2019-12-31T23:00:00Z",
 		);
 		if (pvFailure === "provider") {
 			assert.equal(inputs.brief.site.latitude, 52.1);
@@ -769,6 +746,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 		projectId: roof.id,
 		hash: "#sc-project",
 		pvReference: nativePreparation.pvgis_reference_run,
+		effectivePv: 9.2,
 		inputs: {
 			...roof.inputs,
 			equipment_setup: { ...savedSetup, pv_dc_kw: null },
@@ -790,13 +768,13 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	assert.equal(location.hash, "#sc-system");
 	assert.deepEqual(
 		app.requests.map(({ path }) => path),
-		["projects/revise", "runs/pvgis-reference", "runs/find-equipment"],
+		["runs/find-equipment"],
 	);
-	const search = app.requests[2].body;
-	assert.equal(search.inputs.equipment_setup.pv_dc_kw, 9.2);
+	const search = app.requests[0].body;
+	assert.equal(search.inputs.equipment_setup.pv_dc_kw, null);
 	assert.equal(
-		search.inputs.profile_selections.selected.pv_available_ac,
-		nativePreparation.pvgis_reference_run.result.prepared_asset.id,
+		search.inputs.profile_selections?.selected.pv_available_ac,
+		undefined,
 	);
 	await act(async () => app.setServerRun("succeeded"));
 	await untilRun(() =>
@@ -807,6 +785,12 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Review the proposal").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
+	await untilRun(() =>
+		app.button("Generate project report")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Generate project report").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Solar");
 	await act(async () =>
 		document
@@ -823,6 +807,7 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	const app = await equipmentApp(t, {
 		projectId: "6".repeat(32),
 		hash: "#sc-project",
+		effectivePv: 0.92,
 		inputs: {
 			equipment_setup: { ...savedSetup, pv_dc_kw: null },
 			geometry: {
@@ -888,7 +873,11 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		["runs/find-equipment"],
 	);
 	const inputs = app.requests[0].body.inputs;
-	assert.equal(inputs.equipment_setup.pv_dc_kw, 0.92);
+	assert.equal(inputs.equipment_setup.pv_dc_kw, null);
+	await act(async () => app.setServerRun("succeeded"));
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
 	assert.equal(inputs.profile_selections?.selected.pv_available_ac, undefined);
 	assert.equal(inputs.geometry.coordinate_system.anchor, null);
 });
@@ -1156,10 +1145,12 @@ for (const [multi, selection] of [
 	[true, "none"],
 	[true, "battery"],
 	[true, "backup"],
+	[true, "derived PV"],
 ]) {
 	test(`${multi ? "plant" : "single"} ${selection} selection pins the search candidate to the project report`, async (t) => {
 		const app = await equipmentApp(t, {
 			projectId: (multi ? "d" : "c").repeat(32),
+			effectivePv: selection === "derived PV" ? 9.2 : null,
 			hash: "#sc-project",
 			inputs: {
 				equipment_setup: {
@@ -1207,6 +1198,8 @@ for (const [multi, selection] of [
 		});
 		if (multi) {
 			assert.equal(saved.equipment_plant.units.length, 2);
+			if (selection === "derived PV")
+				assert.equal(saved.equipment_plant.requirements.pv_dc_kw, 9.2);
 			assert.equal(
 				saved.equipment_plant.units[1].selection.inverter_product_id,
 				101,

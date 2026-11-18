@@ -147,6 +147,14 @@ test("the solar page records a named map origin only after confirmation", async 
 		await enter(input(label), value);
 	await click("Add rectangular roof");
 	assert.equal(app.inputs.geometry.roofs.length, 1);
+	const permission = document.querySelector('select[name="export"]');
+	assert.ok(permission, "the drawing's report permission can be set on Solar");
+	assert.equal(permission.value, "unknown");
+	await act(async () => {
+		permission.value = "permitted";
+		permission.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(app.inputs.geometry.sources[0].permissions.export, "permitted");
 	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
 	await enter(input("Latitude"), "52.09");
 	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);

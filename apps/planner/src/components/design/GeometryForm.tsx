@@ -320,13 +320,24 @@ export function GeometryNumber({
 
 export function GeometryExportPermission({
 	value = "unknown",
+	onChange,
+	disabled,
 }: {
 	value?: "unknown" | "permitted" | "prohibited";
+	onChange?: (permission: "unknown" | "permitted" | "prohibited") => void;
+	disabled?: boolean;
 }) {
 	return (
 		<label className="lp-field">
 			<span>{__("Permission to export geometry", "linker-tools")}</span>
-			<select name="export" defaultValue={value}>
+			<select
+				name="export"
+				disabled={disabled}
+				{...(onChange ? { value } : { defaultValue: value })}
+				onChange={(event) =>
+					onChange?.(event.currentTarget.value as typeof value)
+				}
+			>
 				<option value="unknown">{__("Unknown", "linker-tools")}</option>
 				<option value="permitted">{__("Permitted", "linker-tools")}</option>
 				<option value="prohibited">{__("Prohibited", "linker-tools")}</option>

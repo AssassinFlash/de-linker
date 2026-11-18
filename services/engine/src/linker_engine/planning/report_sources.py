@@ -724,10 +724,17 @@ def report_sources(
     pv: Object | None = None
     if options.pv_run_id is not None:
         selected_run = workspace.run(actor, options.pv_run_id)
-        roof_ac = (
-            selected_run.result is not None
-            and selected_run.result.get("kind") == PvgisRoofReferenceKernel.kind
+        result = selected_run.result or {}
+        prepared = result.get("prepared_asset")
+        purpose = prepared.get("purpose") if isinstance(prepared, dict) else None
+        pv_choice = project.inputs.get("equipment_candidate")
+        comparison_pv = (
+            result.get("kind") == EquipmentSearchKernel.kind
+            and isinstance(pv_choice, dict)
+            and pv_choice.get("run_id") == selected_run.id
+            and purpose in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE)
         )
+        roof_ac = result.get("kind") == PvgisRoofReferenceKernel.kind or comparison_pv
         geometric = (
             selected_run.result is not None
             and selected_run.result.get("kind") == GEOMETRIC_PV_KIND
@@ -742,6 +749,8 @@ def report_sources(
             options.pv_run_id,
             GEOMETRIC_PV_KIND
             if geometric
+            else EquipmentSearchKernel.kind
+            if comparison_pv
             else PvgisRoofReferenceKernel.kind
             if roof_ac
             else PvReferenceKernel.kind,
@@ -762,11 +771,7 @@ def report_sources(
             )
             if geometric
             else ("pvgis_reference",)
-            if roof_ac
-            and cast(Object, cast(Object, selected_run.result)["prepared_asset"]).get(
-                "purpose"
-            )
-            == KNOWN_AC_PURPOSE
+            if roof_ac and purpose == KNOWN_AC_PURPOSE
             else ("geometry", "pvgis_reference")
             if roof_ac
             else ("geometry", "pv_generation", "pv_preparation", "weather_acquisition"),

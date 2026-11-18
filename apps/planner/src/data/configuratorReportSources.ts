@@ -10,6 +10,7 @@ import {
 import {
 	KNOWN_PV_MODEL,
 	KNOWN_PV_PURPOSE,
+	PVGIS_REFERENCE_PURPOSE,
 	PVGIS_REFERENCE_TASK,
 } from "../domain/pvgisReference.ts";
 import { readSelections } from "../domain/profiles.ts";
@@ -127,6 +128,8 @@ export async function configuratorReportSources({
 			(key) => inputs[key] != null,
 		);
 	const base = { schema_version: 1, project_id: project.id };
+	let pvRun: string | null = null,
+		pvAsset: unknown = null;
 	if (inputs.equipment_candidate != null) {
 		const choice = readObject(inputs.equipment_candidate);
 		const run = readRun(
@@ -151,6 +154,32 @@ export async function configuratorReportSources({
 			)
 		)
 			throw new ApiError(409, "equipment_selection_changed");
+		if (
+			needsPv &&
+			run.state === "succeeded" &&
+			run.result?.prepared_asset != null
+		) {
+			const asset = readObject(run.result.prepared_asset);
+			if (asset.project_id !== project.id)
+				throw new ApiError(502, "run_source_mismatch");
+			const known =
+				readObject(inputs.pvgis_reference ?? {}).model === KNOWN_PV_MODEL;
+			const selectedPv = selected.pv_available_ac ?? selected.pv_reference;
+			if (
+				asset.purpose ===
+					(known ? KNOWN_PV_PURPOSE : PVGIS_REFERENCE_PURPOSE) &&
+				matches(
+					frozen,
+					inputs,
+					known ? ["pvgis_reference"] : ["geometry", "pvgis_reference"],
+				) &&
+				(!known || sameSite(frozen, inputs)) &&
+				(selectedPv == null || selectedPv === asset.id)
+			) {
+				pvRun = run.id;
+				pvAsset = asset.id;
+			}
+		}
 	}
 	const revisions = new Map<number, Promise<Project>>();
 	async function authored(row: RunSummary) {
@@ -196,8 +225,6 @@ export async function configuratorReportSources({
 		);
 	let energyRun: string | null = null,
 		energyPv: unknown = null,
-		pvRun: string | null = null,
-		pvAsset: unknown = null,
 		equipmentRun: string | null = null,
 		pendingWiringCheck: string | null = null;
 	let cursor: { before_created_at: number | null; before_id: string | null } = {

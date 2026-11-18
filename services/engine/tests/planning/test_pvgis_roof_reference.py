@@ -826,6 +826,57 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             ).status_code
             == 404
         )
+    from linker_engine.planning.report_inputs import ReportOptions
+    from linker_engine.planning.report_sources import (
+        ReportInputsChanged,
+        report_sources,
+    )
+
+    candidate = result["result"]["search"]["candidates"][0]
+    adopted = workspace.revise(
+        owner,
+        project_id,
+        3,
+        {
+            **values,
+            "equipment_selection": candidate["selection"],
+            "equipment_candidate": {
+                "run_id": run_id,
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            },
+        },
+        key="adopt-pv-comparison",
+        input_contract=KNOWN_PV_INPUT_CONTRACT,
+    )
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=run_id,
+        equipment_run_id=None,
+        logo=None,
+    )
+    report = report_sources(workspace, products, owner, adopted, options)
+    references = json_object(report)[
+        "pvgis_known_ac_references" if known else "pvgis_roof_ac_references"
+    ]
+    assert references[0]["asset_id"] == prepared["id"]
+    assert references[0]["used_by"][0]["run_id"] == run_id
+    changed = json_object(copy.deepcopy(adopted.inputs))
+    if known:
+        changed["brief"]["site"]["latitude"] = 51.5
+    else:
+        changed["geometry"]["arrays"][0]["excluded_slots"] = ["0:0"]
+    stale = workspace.revise(
+        owner,
+        project_id,
+        adopted.revision,
+        changed,
+        key="edit-adopted-pv",
+        input_contract=KNOWN_PV_INPUT_CONTRACT,
+    )
+    with pytest.raises(ReportInputsChanged):
+        report_sources(workspace, products, owner, stale, options)
     if known:
         assert [(r.latitude_deg, r.peak_power_kwp) for r in source.requests] == [
             (52.12567, 6.4)

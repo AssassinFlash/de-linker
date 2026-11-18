@@ -143,10 +143,18 @@ export function adoptPlantCandidate(
 	const authored = readPlantDraft(inputs);
 	const searchedDraft =
 		searched === inputs ? authored : readPlantDraft(searched);
+	// The frozen whole-plant capacity can be derived from the active PV arrays.
+	const frozenPlan =
+		searched.equipment_plant_requirements === undefined
+			? null
+			: readPlantSearch(searched.equipment_plant_requirements);
 	const draft = {
 		...authored,
 		requirements: {
 			...authored.requirements,
+			...(frozenPlan === null
+				? {}
+				: { pv_dc_kw: frozenPlan.requirements.pv_dc_kw }),
 			...(inputs.backup_demand !== undefined
 				? { operating_mode: "backup" }
 				: {}),

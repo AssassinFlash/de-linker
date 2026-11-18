@@ -24,6 +24,7 @@ import {
 	readGeometryImports,
 } from "../../domain/geometryImports.ts";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
+import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
 import { readObject } from "../../data/readProtocol.ts";
@@ -1439,6 +1440,39 @@ export function SolarInstallation({
 								: __("Solar capacity not entered", "linker-tools")}
 					</p>
 				</div>
+				{mode === "roof" && geometry.sources.length > 0 && (
+					<details className="sc-product-filter">
+						<summary>{__("Source properties", "linker-tools")}</summary>
+						{geometry.sources.map((source) => (
+							<fieldset key={source.id}>
+								<legend>{source.note}</legend>
+								<GeometryExportPermission
+									value={source.permissions.export}
+									disabled={
+										blocked ||
+										Object.hasOwn(
+											readGeometryImports(inputs.geometry_imports).selected,
+											source.id,
+										)
+									}
+									onChange={(permission) =>
+										commit({
+											type: "put_source",
+											before: source,
+											value: {
+												...source,
+												permissions: {
+													...source.permissions,
+													export: permission,
+												},
+											},
+										})
+									}
+								/>
+							</fieldset>
+						))}
+					</details>
+				)}
 				{geometryImport && (
 					<GeometryIntake
 						geometry={geometry}
