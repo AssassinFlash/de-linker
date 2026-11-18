@@ -17,6 +17,10 @@ from .wire_numbers import check_wire_numbers
 from .workspace import Workspace
 
 
+class HandoffNotFound(NotFound):
+    code = "handoff_not_found"
+
+
 class HandoffRevisionChanged(Conflict):
     code = "handoff_revision_changed"
 
@@ -389,7 +393,12 @@ class Handoffs:
         if actor.kind != "team":
             raise NotFound("project handoff not found")
         with self.workspace.database.transaction() as connection:
-            handoff = self._read(connection, actor, handoff_id)
+            try:
+                handoff = self._read(connection, actor, handoff_id)
+            except NotFound as exc:
+                raise HandoffNotFound(
+                    "the inquiry's prepared report was removed"
+                ) from exc
             if handoff["snapshot_sha256"] != snapshot_sha256:
                 raise Conflict("the inquiry report reference changed")
             connection.execute(

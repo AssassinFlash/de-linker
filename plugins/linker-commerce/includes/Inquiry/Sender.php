@@ -113,6 +113,7 @@ final class Sender {
 				}
 			);
 			if ( $problem instanceof WP_Error ) {
+				$transaction->rollback();
 				return $problem;
 			}
 			\Linker\Commerce\Planning\Context::consume_captured_notes( $order );

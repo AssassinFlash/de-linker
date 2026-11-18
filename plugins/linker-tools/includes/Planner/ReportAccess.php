@@ -120,5 +120,4 @@ final class ReportAccess {
 		}
 		return new Principal( 'team', 'wp:' . get_current_blog_id() . ':inquiry:' . $order_id );
 	}
-
 }

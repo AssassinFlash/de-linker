@@ -24,13 +24,13 @@ final class FormRecovery {
 	}
 
 	/**
-	 * The journal already holds this UUID for different input, so the form must
-	 * not offer it again: every resubmit would be refused as changed input.
+	 * A changed payload or a confirmed planning rollback needs a new request ID.
+	 * The dispatched receipt still occupies the previous one.
 	 *
 	 * @param WP_Error|null $error Native result, never a client-supplied state.
 	 */
 	public static function superseded( ?WP_Error $error ): bool {
-		return null !== $error && 'linker_admission_payload_changed' === $error->get_error_code();
+		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'planning_project_deleted', 'planning_admission_unavailable' ), true );
 	}
 
 	/**

@@ -829,12 +829,9 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             ).json()
             == removed.json()
         )
-        assert (
-            client.post(
-                "/handoffs/admit-inquiry", json=admission, headers=team
-            ).status_code
-            == 404
-        )
+        missing = client.post("/handoffs/admit-inquiry", json=admission, headers=team)
+        assert missing.status_code == 404
+        assert missing.json()["error"]["code"] == "handoff_not_found"
 
 
 def test_device_report_keeps_each_documents_result_and_unanswered_device(

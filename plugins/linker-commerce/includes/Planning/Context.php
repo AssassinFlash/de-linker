@@ -312,9 +312,9 @@ final class Context {
 			$commit();
 			return null;
 		}
-		$entries    = self::stored( $order );
-		$captured   = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
-		$retry      = new WP_Error( 'planning_context_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+		$entries  = self::stored( $order );
+		$captured = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		$retry    = new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 		if ( array() === $entries || $entries !== $captured ) {
 			return $retry;
 		}

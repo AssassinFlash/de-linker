@@ -74,7 +74,7 @@ final class InquiryTest extends IntegrationTestCase {
 		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
 		wc_load_cart();
 		WC()->cart->empty_cart();
-		$handoff = array(
+		$handoff                         = array(
 			'schema_version'  => 1,
 			'id'              => str_repeat( 'b', 32 ),
 			'snapshot_sha256' => str_repeat( 'c', 64 ),
@@ -97,24 +97,24 @@ final class InquiryTest extends IntegrationTestCase {
 				'items'                => array(),
 			),
 		);
-		$other = $handoff;
-		$other['id'] = str_repeat( 'd', 32 );
+		$other                           = $handoff;
+		$other['id']                     = str_repeat( 'd', 32 );
 		$other['snapshot']['project_id'] = str_repeat( '1', 32 );
-		$draft = array(
+		$draft                           = array(
 			$handoff['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $handoff ),
 			$other['id']   => \Linker\Commerce\Planning\DraftTransfer::native_context( $other ),
 		);
-		$product = $this->product( '100' );
+		$product                         = $this->product( '100' );
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
 		$base = static fn () => 'https://planner.example.test';
 		add_filter( 'pre_option_linker_planner_url', $base );
 		$this->later( static fn () => remove_filter( 'pre_option_linker_planner_url', $base ) );
 		global $wpdb;
-		$locks = array_map( static fn ( $entry ) => 'linker-assessment-' . md5( $wpdb->dbname . '/' . $wpdb->prefix . '/planning-project:' . $entry['snapshot']['project_id'] ), $draft );
-		$held = static function () use ( $locks, $wpdb ): array {
+		$locks  = array_map( static fn ( $entry ) => 'linker-assessment-' . md5( $wpdb->dbname . '/' . $wpdb->prefix . '/planning-project:' . $entry['snapshot']['project_id'] ), $draft );
+		$held   = static function () use ( $locks, $wpdb ): array {
 			return array_values( array_map( static fn ( $name ) => (int) $wpdb->get_var( $wpdb->prepare( 'SELECT IS_USED_LOCK(%s) = CONNECTION_ID()', $name ) ), $locks ) );
 		};
-		$calls = array();
+		$calls  = array();
 		$engine = static function ( $previous, $args, $url ) use ( $outcome, $held, &$calls ) {
 			if ( 'https://planner.example.test/handoffs/admit-inquiry' !== $url ) {
 				return $previous;
@@ -128,7 +128,7 @@ final class InquiryTest extends IntegrationTestCase {
 		};
 		add_filter( 'pre_http_request', $engine, 10, 3 );
 		$this->later( static fn () => remove_filter( 'pre_http_request', $engine, 10 ) );
-		$at_commit = null;
+		$at_commit      = null;
 		$observe_commit = static function ( $sql ) use ( &$at_commit, $held, &$calls ) {
 			if ( 'COMMIT' === $sql && $calls && null === $at_commit ) {
 				$at_commit = $held();
@@ -139,18 +139,27 @@ final class InquiryTest extends IntegrationTestCase {
 		$this->later( static fn () => remove_filter( 'query', $observe_commit ) );
 		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, $draft );
 		$post       = array(
-			'name'                                      => 'Maria Weber',
-			'email'                                     => 'maria@example.test',
-			'consent'                                   => '1',
-			\Linker\Commerce\Planning\Context::PRESENT_FIELD   => '1',
-			\Linker\Commerce\Planning\Context::INCLUDE_FIELD   => '1',
+			'name'    => 'Maria Weber',
+			'email'   => 'maria@example.test',
+			'consent' => '1',
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
 			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array_column( $draft, 'snapshot_sha256', 'id' ),
 		);
 		$submission = Submission::from_post( $post, false );
 		$this->assertInstanceOf( Submission::class, $submission );
 		\Linker\Commerce\Planning\Context::inquiry_notes_section();
 		$this->assertSame( array(), $calls );
-		$result = \Linker\Commerce\Planning\Context::with_submission( $post, static fn () => ( new Sender() )->request( $submission, array(), false ) );
+		$submit = static fn () => \Linker\Commerce\Planning\Context::with_submission( $post, static fn () => ( new Sender() )->request( $submission, array(), false ) );
+		if ( 'outer_transaction' === $outcome ) {
+			$result = \Linker\Commerce\Mail\NativeTransaction::run( $submit );
+			$this->assertInstanceOf( \WP_Error::class, $result );
+			$this->assertSame( 'checkout-error', $result->get_error_code() );
+			$this->assertSame( array(), $calls );
+			$this->assertSame( $draft, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ) );
+			return;
+		}
+		$result = $submit();
 		if ( $result instanceof \WC_Order ) {
 			$this->later( static fn () => $result->delete( true ) );
 		}
@@ -179,7 +188,7 @@ final class InquiryTest extends IntegrationTestCase {
 			$this->assertTrue( WC()->cart->is_empty() );
 		} else {
 			$this->assertInstanceOf( \WP_Error::class, $result );
-			$this->assertSame( 'handoff_not_found' === $outcome ? 'planning_project_deleted' : 'planning_context_unavailable', $result->get_error_code() );
+			$this->assertSame( 'handoff_not_found' === $outcome ? 'planning_project_deleted' : 'planning_admission_unavailable', $result->get_error_code() );
 			$this->assertSame( $draft, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ) );
 			$this->assertSame( 1, WC()->cart->get_cart_contents_count() );
 			$this->assertNull( $at_commit );
@@ -196,6 +205,7 @@ final class InquiryTest extends IntegrationTestCase {
 			'frozen reports' => array( 'admitted' ),
 			'deleted report' => array( 'handoff_not_found' ),
 			'old endpoint'   => array( 'not_found' ),
+			'external owner' => array( 'outer_transaction' ),
 		);
 	}
 

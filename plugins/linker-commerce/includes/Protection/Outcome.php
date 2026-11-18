@@ -50,6 +50,9 @@ final class Outcome {
 		'linker_draft_changed'                => array( self::REFUSED, 'invalid' ),
 		// The inquiry door's read-only draft check, before admission reserves.
 		'planning_context_unavailable'        => array( self::REFUSED, 'invalid' ),
+		// The native inquiry transaction rolled back before the form may retry.
+		'planning_project_deleted'            => array( self::REFUSED, 'invalid' ),
+		'planning_admission_unavailable'      => array( self::REFUSED, 'invalid' ),
 		// The reviewed project notes drifted before the admission reserved a write.
 		'linker_project_notes_changed'        => array( self::REFUSED, 'invalid' ),
 		'linker_contact_invalid'              => array( self::REFUSED, 'invalid' ),

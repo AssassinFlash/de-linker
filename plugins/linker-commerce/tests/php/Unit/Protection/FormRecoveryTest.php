@@ -59,7 +59,16 @@ final class FormRecoveryTest extends TestCase {
 		$this->assertTrue( FormRecovery::after_error( new WP_Error( 'linker_unrecognized_fixture', 'fixture' ) ) );
 	}
 
-	/** Only the journal's changed-input refusal makes the stored UUID unusable. */
+	/** Failed admission rolled back the order and already used the submitted request ID. */
+	public function test_planning_admission_refusal_starts_a_new_request(): void {
+		foreach ( array( 'planning_project_deleted', 'planning_admission_unavailable' ) as $code ) {
+			$error = new WP_Error( $code, 'fixture' );
+			$this->assertFalse( FormRecovery::after_error( $error ) );
+			$this->assertTrue( FormRecovery::superseded( $error ) );
+		}
+	}
+
+	/** The journal's changed-input refusal makes the stored UUID unusable. */
 	public function test_only_changed_input_supersedes_the_recovered_uuid(): void {
 		$this->assertTrue( FormRecovery::superseded( new WP_Error( 'linker_admission_payload_changed', 'fixture' ) ) );
 		$this->assertFalse( FormRecovery::superseded( null ) );
