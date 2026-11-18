@@ -8,7 +8,7 @@ import {
 	readPvPlantStringPlan,
 } from "../../domain/pvPlantStrings.ts";
 import type { PlantUnitDraft } from "../../domain/equipmentPlant.ts";
-import { PvStringSetup } from "./PvStringSetup.tsx";
+import { PvStringSetup, type StringEditBlock } from "./PvStringSetup.tsx";
 import { Notice } from "../Notice.tsx";
 import { __, sprintf } from "../../i18n.ts";
 
@@ -28,7 +28,7 @@ export function PlantPvStringSetup({
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
 	locale: string;
 	disabled: boolean;
-	onValidity: (canLeave: boolean, pendingSave: boolean) => void;
+	onValidity: (canLeave: boolean, editBlock: StringEditBlock) => void;
 	checkedInReport?: boolean;
 }) {
 	const plant = useMemo(

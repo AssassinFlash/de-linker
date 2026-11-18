@@ -244,6 +244,7 @@ test("editing keeps string identity and its explicit order, and retains changes 
 	);
 	await enter(field("MPPT"), "2");
 	assert.equal(button("Save string changes").disabled, true);
+	assert.equal(field("Inverter input").getAttribute("aria-invalid"), "true");
 	assert.match(document.body.textContent, /already has a string/);
 	await enter(field("MPPT"), "1");
 	await click(button("Reverse order"));

@@ -249,6 +249,8 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 同一 Leiden 访客在修订 4 下载五页 PDF。冻结报告 `988491bebcc241fe9cb41883a60a4c6c` 引用修订 3 采用的设备比较 `7142052e6a8c4ae48ac52867d4ebae0c` 和修订 4 的接线检查 `5676d2b420d645cba3d2be1c62e8ec54`。接线行列出 MPPT 2、输入 1、10 块组件，STC 工作电压为 454 V。设计最低温度未填写，冷态开路电压一栏显示「—」。
 
+**清空串组组件后的提示审校。** 初稿 “Select at least one module.” / „Wählen Sie mindestens ein Modul aus.“ 只说明数量。安装商还可以取消编辑并保留已保存的串组。定稿关联到该逆变器的阵列选择器。EN “Select at least one module for this string or cancel editing.” DE „Wählen Sie mindestens ein Modul für diesen String aus oder brechen Sie die Bearbeitung ab.“
+
 ### 保留旧逆变器并增购储能
 
 评审项目 `79c24839c37843039476062e9b0c6215` 的修订 3 在英德冻结 PDF 中均列出 SAJ H2-25K-T3 ×1 为现场保留设备。德语报告写明「bleibt am Standort, keine Beschaffung」。客户确认后，Woo 草稿列出 SAJ B2-10.0-HV1 电池 ×1、SAJ BC2-HV1 控制器 ×1，均关联该项目的修订 3。在德语入口重开仍可查看项目和采购数量，并可生成德语 PDF。

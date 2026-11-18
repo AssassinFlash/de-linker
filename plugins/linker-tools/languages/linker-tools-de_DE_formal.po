@@ -4254,6 +4254,10 @@ msgstr ""
 "werden."
 
 #: build/planner/assets/planner.js
+msgid "Select at least one module for this string or cancel editing."
+msgstr "Wählen Sie mindestens ein Modul für diesen String aus oder brechen Sie die Bearbeitung ab."
+
+#: build/planner/assets/planner.js
 msgid "Save or cancel your string changes before continuing."
 msgstr "Speichern oder verwerfen Sie Ihre Änderungen am String, bevor Sie fortfahren."
 

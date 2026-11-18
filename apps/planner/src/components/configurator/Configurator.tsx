@@ -84,7 +84,10 @@ import {
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
-import { PvStringSetup } from "../equipment/PvStringSetup.tsx";
+import {
+	PvStringSetup,
+	type StringEditBlock,
+} from "../equipment/PvStringSetup.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
@@ -187,7 +190,7 @@ export default function Configurator({
 		task: SharedDcTask;
 	} | null>(null);
 	const [wiringValidity, setWiringValidity] = useState<
-		Record<string, "ready" | "invalid" | "pending">
+		Record<string, "ready" | "invalid" | NonNullable<StringEditBlock>>
 	>({});
 	const wiringInputs = draft?.history.current;
 	const wiringPlant =
@@ -200,12 +203,8 @@ export default function Configurator({
 			Object.fromEntries(
 				["", ...wiringIds.split(",").filter(Boolean)].map((id) => [
 					id,
-					(canLeave: boolean, pendingSave: boolean) => {
-						const status = canLeave
-							? "ready"
-							: pendingSave
-								? "pending"
-								: "invalid";
+					(canLeave: boolean, editBlock: StringEditBlock) => {
+						const status = canLeave ? "ready" : (editBlock ?? "invalid");
 						setWiringValidity((state) =>
 							state[id] === status ? state : { ...state, [id]: status },
 						);
@@ -219,8 +218,10 @@ export default function Configurator({
 	);
 	const invalidInput =
 		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
+	const missingModules = wiringStates.includes("selection");
 	const navigationBlocked =
 		invalidInput ||
+		missingModules ||
 		wiringStates.includes("pending") ||
 		roofEditing ||
 		importOpen;
@@ -229,7 +230,18 @@ export default function Configurator({
 			return false;
 		if (!navigationBlocked) return true;
 		setNavigationRefused(true);
-		main.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+		const target = main.current?.querySelector<HTMLElement>(
+			invalidInput
+				? '[aria-invalid="true"]:not(summary)'
+				: '[aria-invalid="true"]',
+		);
+		for (
+			let details = target?.parentElement?.closest("details");
+			details;
+			details = details.parentElement?.closest("details")
+		)
+			details.open = true;
+		target?.focus();
 		return false;
 	}
 	const lastStep = useRef(step);
@@ -987,24 +999,26 @@ export default function Configurator({
 					</button>
 				))}
 			</nav>
-			{navigationRefused && navigationBlocked && (
-				<p role="alert">
-					{roofEditing || importOpen
-						? __(
-								"Finish or cancel roof editing before leaving this workspace.",
-								"linker-tools",
-							)
-						: invalidInput
+			{navigationRefused &&
+				navigationBlocked &&
+				(!missingModules || invalidInput || roofEditing || importOpen) && (
+					<p role="alert">
+						{roofEditing || importOpen
 							? __(
-									"Correct the highlighted input before leaving this project.",
+									"Finish or cancel roof editing before leaving this workspace.",
 									"linker-tools",
 								)
-							: __(
-									"Save or cancel your string changes before continuing.",
-									"linker-tools",
-								)}
-				</p>
-			)}
+							: invalidInput
+								? __(
+										"Correct the highlighted input before leaving this project.",
+										"linker-tools",
+									)
+								: __(
+										"Save or cancel your string changes before continuing.",
+										"linker-tools",
+									)}
+					</p>
+				)}
 			{preparingReport && activeStep === "review" && (
 				<p className="sc-card" role="status">
 					{__("Preparing planning report…", "linker-tools")}
