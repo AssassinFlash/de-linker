@@ -220,7 +220,7 @@ final class Intake {
 			);
 			if ( $result instanceof WP_Error ) {
 				// Woo wraps checkout exceptions. Preserve the unsaved result for the form.
-				$refusal = 'linker_intake_full' === $result->get_error_code() ? $result : \Linker\Commerce\Planning\Context::admission_unavailable();
+				$refusal = 'linker_intake_full' === $result->get_error_code() ? $result : new WP_Error( 'linker_review_unavailable', BusinessCapacity::message() );
 				throw new CapacityFull( $refusal ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The form escapes the structured native refusal.
 			}
 		};

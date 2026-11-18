@@ -30,7 +30,7 @@ final class FormRecovery {
 	 * @param WP_Error|null $error Native result, never a client-supplied state.
 	 */
 	public static function superseded( ?WP_Error $error ): bool {
-		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'linker_intake_full', 'planning_project_deleted', 'planning_admission_unavailable' ), true );
+		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'linker_intake_full', 'linker_review_unavailable', 'planning_project_deleted', 'planning_admission_unavailable' ), true );
 	}
 
 	/**

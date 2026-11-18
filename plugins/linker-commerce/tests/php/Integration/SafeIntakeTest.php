@@ -345,8 +345,26 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 	}
 
-	/** A refused report needs no review-slot cleanup even while another writer holds the capacity lock. */
-	public function test_report_refusal_releases_its_unwritten_review_slot(): void {
+	/**
+	 * Report outcomes while another inquiry holds the review lock.
+	 *
+	 * @return array<string,array{bool,string}>
+	 */
+	public static function competing_review_writer(): array {
+		return array(
+			'deleted report'  => array( false, 'planning_project_deleted' ),
+			'admitted report' => array( true, 'linker_review_unavailable' ),
+		);
+	}
+
+	/**
+	 * The customer can retry a pre-save refusal while another writer has the capacity lock.
+	 *
+	 * @dataProvider competing_review_writer
+	 * @param bool   $admitted Planner accepted the report.
+	 * @param string $expected Refusal shown to the customer.
+	 */
+	public function test_report_refusal_releases_its_unwritten_review_slot( bool $admitted, string $expected ): void {
 		$report = $this->planning_report();
 		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
 		$prior  = WC()->session->get( $key );
@@ -359,9 +377,9 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
 		$lock   = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'intake-capacity' );
-		$refuse = static function () use ( $peer, $lock ) {
+		$refuse = static function () use ( $peer, $lock, $admitted ) {
 			self::assertSame( '1', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s, 0)', $lock ) ) );
-			return new WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) );
+			return $admitted ? true : new WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) );
 		};
 		add_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
 		try {
@@ -371,7 +389,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			$peer->close();
 		}
 		self::assertInstanceOf( WP_Error::class, $result );
-		self::assertSame( 'planning_project_deleted', $result->get_error_code() );
+		self::assertSame( $expected, $result->get_error_code() );
+		self::assertTrue( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
 		$receipts = json_decode( (string) get_option( Ledger::OPTION ), true )['receipts'];
 		self::assertSame( 'dispatched', $receipts[ $post['linker_request_id'] ]['status'] );
@@ -381,7 +400,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 
 	/** Another customer can take the last review slot while Planner admits the report. */
-	public function test_review_slot_filled_during_report_admission_allows_fresh_attempt(): void {
+	public function test_review_slot_filled_during_report_admission_refuses_before_save(): void {
 		$report = $this->planning_report();
 		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
 		$prior  = WC()->session->get( $key );
