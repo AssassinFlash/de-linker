@@ -237,6 +237,12 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 伦敦和奥斯陆的访客各自上传 PNG，确认图纸派生和留存许可，用两段 12 m 的标尺校准后描绘四个屋角。两个项目在修订 2 重开时均保留图纸来源、许可和约 0.02 m/像素的比例，地理锚点为空。在各自屋面布置 2 × 2 块组件后保存，修订 3 重开时阵列仍关联对应屋面。两地验证的是客户授权图纸路径。公共航拍描绘的实走记录见上方慕尼黑案例。
 
+随后在伦敦、奥斯陆分别从 Solar 打开 Copernicus 查看层，覆盖 EN／正式 DE、1440／390 共八组。授权前图源请求均为零，授权后能看到带 EEA 署名的影像。点按图层未采集屋角，撤回后连续缩放两次，请求数均未增加。伦敦访客撤回后用自己的图纸完成标定，重开修订 2 读回 0.02 m/像素。
+
+**查看型航拍文案审校。** 初稿方向是告诉客户图层只供查看。仅说明用途不足以决定是否加载第三方影像，授权按钮旁还需点明接收方和发出的数据。英德定稿分别为 “This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider.” 和 „Dieses Luftbild dient nur zur Ansicht. Wenn Sie es anzeigen, erhält der Anbieter Ihre IP-Adresse und den angezeigten Kartenausschnitt.“
+
+**单机相数提示审校。** 初稿用 “The selected inverter has … grid phase(s)” 描述设备。评审发现客户还需知道项目要求几相以及能否发起工程询盘。转入草稿前和 Woo 草稿内沿用同一句定稿，两个占位符分别取冻结检查中的设备相数和要求相数。EN “Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.” DE „Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration.“
+
 ### 保留旧逆变器并增购储能
 
 评审项目 `79c24839c37843039476062e9b0c6215` 的修订 3 在英德冻结 PDF 中均列出 SAJ H2-25K-T3 ×1 为现场保留设备。德语报告写明「bleibt am Standort, keine Beschaffung」。客户确认后，Woo 草稿列出 SAJ B2-10.0-HV1 电池 ×1、SAJ BC2-HV1 控制器 ×1，均关联该项目的修订 3。在德语入口重开仍可查看项目和采购数量，并可生成德语 PDF。
