@@ -652,7 +652,42 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	public function test_native_inquiry_retry_is_idempotent_and_payload_changes_are_refused(): void {
 		$product = $this->product( '125' );
 		WC()->cart->add_to_cart( $product->get_id(), 2 );
-		$post  = $this->post();
+		$this->as_user( $this->customer()->get_id() );
+		$report = $this->planning_report();
+		WC()->session->set( \Linker\Commerce\Planning\DraftTransfer::CONTEXTS, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
+		$post     = $this->post() + array(
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+		);
+		$endpoint = static fn () => 'https://planner.example.test';
+		add_filter( 'pre_option_linker_planner_url', $endpoint );
+		$this->later(
+			static function () use ( $endpoint ): void {
+				remove_filter( 'pre_option_linker_planner_url', $endpoint );
+			}
+		);
+		$calls   = 0;
+		$pending = null;
+		$admit   = static function ( $previous, $args, $url ) use ( $post, &$calls, &$pending ) {
+			if ( 'https://planner.example.test/handoffs/admit-inquiry' !== $url ) {
+				return $previous;
+			}
+			if ( 1 === ++$calls ) {
+				$pending = ( new Handler() )->process( $post );
+			}
+			return array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => '{"admitted":true}',
+			);
+		};
+		add_filter( 'pre_http_request', $admit, 10, 3 );
+		$this->later(
+			static function () use ( $admit ): void {
+				remove_filter( 'pre_http_request', $admit );
+			}
+		);
 		$first = ( new Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $first );
 		$this->later(
@@ -665,6 +700,10 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$retry = ( new Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $retry );
 		$this->assertSame( $first->get_id(), $retry->get_id() );
+		$this->assertInstanceOf( WP_Error::class, $pending );
+		$this->assertSame( 'linker_inquiry_pending', $pending->get_error_code() );
+		$this->assertSame( array( $report['id'] ), array_keys( \Linker\Commerce\Planning\Context::stored( $first ) ) );
+		$this->assertSame( 1, $calls );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'message' => 'Different submission.' ) ) ) );
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'c', 32 );

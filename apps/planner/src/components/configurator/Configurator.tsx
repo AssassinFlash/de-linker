@@ -255,13 +255,16 @@ export default function Configurator({
 	const currentSearch = latestRuns?.find(
 		(item) => item.task_kind === SEARCH_TASK && item.is_current,
 	)?.id;
+	const searchId =
+		submittedSearch ?? currentSearch ?? selectedSearch ?? newest(SEARCH_TASK);
 	const search = useProjectResult(
 		client,
 		session,
 		project.id,
 		SEARCH_TASK,
-		submittedSearch ?? currentSearch ?? selectedSearch ?? newest(SEARCH_TASK),
+		searchId,
 	);
+	const systemRead = searchId ? search : history;
 	const adoptedSearch = useProjectResult(
 		client,
 		session,
@@ -639,8 +642,26 @@ export default function Configurator({
 		system: __("System", "linker-tools"),
 		review: __("Review & share", "linker-tools"),
 	};
+	const failedRead = [
+		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
+		...(step === "system" ? [systemRead] : []),
+	].find((query) => query.isError);
+	const confirmedIntent = operations.intent?.resultId
+		? operations.intent
+		: null;
+	const unconfirmed = operations.records.filter(
+		(record) =>
+			!operations.busy &&
+			record.resultId === null &&
+			(operations.storageFailed || record.key !== confirmedIntent?.key),
+	);
+	const awaitingComparison = unconfirmed.some(
+		(record) => record.path === "runs/find-equipment",
+	);
+	const findingEquipment =
+		operations.busy && operations.intent?.path === "runs/find-equipment";
 	const failure =
-		(legacyModels ? (adoptedSearch.error ?? comparisonSource.error) : null) ??
+		failedRead?.error ??
 		error ??
 		operations.error ??
 		history.error ??
@@ -824,14 +845,10 @@ export default function Configurator({
 										)
 									: energyErrorText(failure)}
 					</p>
-					{legacyModels && (adoptedSearch.error || comparisonSource.error) && (
+					{failedRead && (
 						<button
 							className="sc-button"
-							onClick={() =>
-								void (adoptedSearch.error
-									? adoptedSearch.refetch()
-									: comparisonSource.refetch())
-							}
+							onClick={() => void failedRead.refetch()}
 						>
 							{__("Try again", "linker-tools")}
 						</button>
@@ -884,40 +901,41 @@ export default function Configurator({
 					{__("Restore local changes", "linker-tools")}
 				</button>
 			))}
-			{operations.records
-				.filter((record) => record.resultId === null)
-				.map((record) => (
-					<div className="sc-card" key={record.key}>
-						<p>
-							{__(
-								"Confirm the result of your previous request before continuing.",
-								"linker-tools",
-							)}
-						</p>
-						<button
-							className="sc-button"
-							disabled={operations.busy}
-							onClick={() =>
-								void operations.retry(record).then((reply) => {
-									if (reply?.path === "runs/check-equipment") {
-										navigate("review");
-									} else if (
-										reply &&
-										"run" in reply &&
-										reply.path !== "runs/pvgis-reference"
-									) {
-										accepted(reply.run);
-										navigate(
-											reply.path === "runs/report" ? "review" : "system",
-										);
-									}
-								})
-							}
-						>
-							{__("Check previous request", "linker-tools")}
-						</button>
-					</div>
-				))}
+			{findingEquipment && (
+				<p className="sc-card" role="status">
+					{__("Finding equipment for your project…", "linker-tools")}
+				</p>
+			)}
+			{unconfirmed.map((record) => (
+				<div className="sc-card" key={record.key}>
+					<p>
+						{__(
+							"Confirm the result of your previous request before continuing.",
+							"linker-tools",
+						)}
+					</p>
+					<button
+						className="sc-button"
+						disabled={operations.busy}
+						onClick={() =>
+							void operations.retry(record).then((reply) => {
+								if (reply?.path === "runs/check-equipment") {
+									navigate("review");
+								} else if (
+									reply &&
+									"run" in reply &&
+									reply.path !== "runs/pvgis-reference"
+								) {
+									accepted(reply.run);
+									navigate(reply.path === "runs/report" ? "review" : "system");
+								}
+							})
+						}
+					>
+						{__("Check previous request", "linker-tools")}
+					</button>
+				</div>
+			))}
 			<div className="sc-layout">
 				<main ref={main} tabIndex={-1} className="sc-main">
 					{activeStep === "project" && (
@@ -986,7 +1004,9 @@ export default function Configurator({
 					)}
 					{activeStep === "system" && (
 						<>
-							{searchRun?.state === "succeeded" && searchRun.result ? (
+							{findingEquipment ||
+							awaitingComparison ? null : searchRun?.state === "succeeded" &&
+							  searchRun.result ? (
 								<SystemOptions
 									solarOnly={brief.system_scope === "pv_only"}
 									run={searchRun}
@@ -1004,7 +1024,11 @@ export default function Configurator({
 									onEditEquipment={() => navigate("project")}
 									onSelect={select}
 								/>
-							) : (
+							) : !searchRun && systemRead.isPending ? (
+								<p className="sc-card" role="status">
+									{__("Reading saved calculation results…", "linker-tools")}
+								</p>
+							) : !searchRun && systemRead.isError ? null : (
 								<section className="sc-card">
 									{searchRun && runPending(searchRun.state) ? (
 										<p role="status">

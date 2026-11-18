@@ -345,6 +345,153 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 	}
 
+	/**
+	 * Report outcomes while another inquiry holds the review lock.
+	 *
+	 * @return array<string,array{bool,string}>
+	 */
+	public static function competing_review_writer(): array {
+		return array(
+			'deleted report'  => array( false, 'planning_project_deleted' ),
+			'admitted report' => array( true, 'linker_review_unavailable' ),
+		);
+	}
+
+	/**
+	 * The customer can retry a pre-save refusal while another writer has the capacity lock.
+	 *
+	 * @dataProvider competing_review_writer
+	 * @param bool   $admitted Planner accepted the report.
+	 * @param string $expected Refusal shown to the customer.
+	 */
+	public function test_report_refusal_releases_its_unwritten_review_slot( bool $admitted, string $expected ): void {
+		$report = $this->planning_report();
+		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
+		$prior  = WC()->session->get( $key );
+		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
+		$this->later( static fn () => WC()->session->set( $key, $prior ) );
+		$post   = $this->post() + array(
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+		);
+		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$lock   = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'intake-capacity' );
+		$refuse = static function () use ( $peer, $lock, $admitted ) {
+			self::assertSame( '1', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s, 0)', $lock ) ) );
+			return $admitted ? true : new WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) );
+		};
+		add_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
+		try {
+			$result = ( new Handler() )->process( $post );
+		} finally {
+			remove_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
+			$peer->close();
+		}
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( $expected, $result->get_error_code() );
+		self::assertTrue( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
+		$receipts = json_decode( (string) get_option( Ledger::OPTION ), true )['receipts'];
+		self::assertSame( 'dispatched', $receipts[ $post['linker_request_id'] ]['status'] );
+		unset( $post[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] );
+		$post['linker_request_id'] = wp_generate_uuid4();
+		self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $post ) );
+	}
+
+	/** Another customer can take the last review slot while Planner admits the report. */
+	public function test_review_slot_filled_during_report_admission_refuses_before_save(): void {
+		$report = $this->planning_report();
+		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
+		$prior  = WC()->session->get( $key );
+		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
+		$this->later( static fn () => WC()->session->set( $key, $prior ) );
+		$post  = $this->post();
+		$id    = $post['linker_request_id'];
+		$post += array(
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+		);
+		$fill  = static function (): bool {
+			self::assertIsArray(
+				IntakeStore::edit(
+					static function ( array &$state ): array {
+						$state['entries'] = array_fill( 0, IntakeStore::CAPACITY['verification'], array( 'lane' => 'verification' ) );
+						IntakeStore::save( $state );
+						return array();
+					}
+				)
+			);
+			return true;
+		};
+		add_filter( 'linker_tools_planning_admit_inquiry', $fill, PHP_INT_MAX );
+		try {
+			$result = ( new Handler() )->process( $post );
+		} finally {
+			remove_filter( 'linker_tools_planning_admit_inquiry', $fill, PHP_INT_MAX );
+		}
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'linker_intake_full', $result->get_error_code() );
+		self::assertTrue( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) );
+		self::assertArrayNotHasKey( $id, get_option( IntakeStore::OPTION )['entries'] );
+	}
+
+	/** The verified form can retry into its last business slot after losing a report lock. */
+	public function test_lost_report_lock_preserves_last_ordinary_slot(): void {
+		$limit = \Linker\Commerce\Protection\BusinessCapacity::LIMITS['ordinary']['count'];
+		$used  = array_fill(
+			0,
+			$limit - 1,
+			array(
+				'pool'  => 'ordinary',
+				'order' => 0,
+				'bytes' => 1,
+			)
+		);
+		update_option(
+			IntakeStore::OPTION,
+			array(
+				'entries'               => array(),
+				'campaign_count'        => 0,
+				'business'              => $used,
+				'business_dispositions' => array(),
+			),
+			false
+		);
+		$report = $this->planning_report();
+		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
+		$prior  = WC()->session->get( $key );
+		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
+		$this->later( static fn () => WC()->session->set( $key, $prior ) );
+		$include = array(
+			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
+			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
+			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
+		);
+		$admit   = static function () use ( $report ): bool {
+			global $wpdb;
+			$name = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'planning-project:' . $report['snapshot']['project_id'] );
+			self::assertSame( '1', $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ) );
+			return true;
+		};
+		add_filter( 'linker_tools_planning_admit_inquiry', $admit, PHP_INT_MAX );
+		try {
+			$result = ( new Handler() )->process( $this->post( true ) + $include );
+		} finally {
+			remove_filter( 'linker_tools_planning_admit_inquiry', $admit, PHP_INT_MAX );
+		}
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'planning_admission_unavailable', $result->get_error_code() );
+		self::assertSame( $used, get_option( IntakeStore::OPTION )['business'] );
+		add_filter( 'linker_tools_planning_admit_inquiry', '__return_true', PHP_INT_MAX );
+		try {
+			self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $this->post( true ) + $include ) );
+		} finally {
+			remove_filter( 'linker_tools_planning_admit_inquiry', '__return_true', PHP_INT_MAX );
+		}
+	}
+
 	/** Forged and wrongly scoped proofs are unverified, never silently normal. */
 	public function test_forged_wrong_scope_and_missing_proofs_all_use_bounded_review(): void {
 		foreach ( array( '', 'forged', 'wrong-scope' ) as $value ) {

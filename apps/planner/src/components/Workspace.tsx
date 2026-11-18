@@ -286,11 +286,11 @@ export function Workspace({
 					return;
 				}
 				if (error.status === 409) {
-					// The single conflict code covers a changed revision and a
-					// handoff refusal; the current row discriminates them. Neither
-					// attempt mutated anything, so the next one is a new command
-					// carrying the revision the refreshed list now shows.
 					setDeleteRetry(null);
+					if (error.code === "inquiry_linked") {
+						setDeleteFailure({ id: item.id, kind: "handoff" });
+						return;
+					}
 					try {
 						const current = readProject(
 							await client.query(
@@ -305,7 +305,7 @@ export function Workspace({
 						);
 						setDeleteFailure({
 							id: item.id,
-							kind: current.revision === item.revision ? "handoff" : "changed",
+							kind: current.revision === item.revision ? "failed" : "changed",
 						});
 					} catch {
 						setDeleteFailure({ id: item.id, kind: "failed" });

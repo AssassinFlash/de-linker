@@ -251,9 +251,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 			);
 		await until(() => compare() && !compare().disabled);
 		await act(async () => compare().click());
-		await until(() =>
-			dom.element.textContent.includes("Finding equipment for your project"),
-		);
+		await until(() => window.location.hash === "#sc-system");
 		await act(async () => root.unmount());
 		cache.clear();
 		run = {

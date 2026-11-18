@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Account\Documents;
+use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Planning\ReportDownload;
 use Linker\Commerce\Products\Publication;
@@ -131,6 +134,46 @@ final class PlanningReportDownloadTest extends IntegrationTestCase {
 		$this->assertSame( self::PDF, $response->get_data() );
 		$this->assertSame( 'application/pdf', $response->get_headers()['Content-Type'] ?? '' );
 		$this->assertCount( 1, $this->reads );
+	}
+
+	/** An existing inquiry's full handoff still links its owner to the frozen PDF. */
+	public function test_legacy_handoff_is_listed_and_downloadable_for_its_inquiry(): void {
+		$owner                      = $this->customer();
+		$other                      = $this->customer();
+		$order                      = $this->inquiry( $owner, null );
+		$handoff                    = $this->handoff( self::PDF );
+		$handoff['snapshot_sha256'] = Publication::revision( $handoff['snapshot'] );
+		$id                         = $handoff['id'];
+		$entry                      = array(
+			'handoff'            => $handoff,
+			'included_items'     => array( 1 => 1 ),
+			'quantities_changed' => false,
+		);
+		$order->update_meta_data( Context::META, json_encode( array( $id => $entry ), JSON_THROW_ON_ERROR ) );
+		$order->save();
+
+		$documents = new Documents( new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '' ), '' );
+		$this->assertSame( array(), $documents->for_customer( $other->get_id() ) );
+		$this->as_user( $other->get_id() );
+		$this->assertSame( 404, $this->dispatch( $order->get_id(), $id )->get_status() );
+		$this->as_user( $owner->get_id() );
+		$this->assertSame( self::PDF, $this->dispatch( $order->get_id(), $id )->get_data() );
+		$listed = $documents->for_customer( $owner->get_id() );
+		$this->assertCount( 1, $listed );
+		$this->assertSame( 'Design report: Roof plan', $listed[0]['title'] );
+		$this->assertSame( $this->address( $order->get_id(), $id, $order->get_order_key() ), $listed[0]['url'] );
+
+		$this->handoffs[ $order->get_id() ] = $handoff;
+		$this->engine( $order, $id, self::PDF );
+		$response = $this->download( $order->get_id(), $id, $order->get_order_key() );
+		$this->assertSame( 200, $response['status'] );
+		$this->assertSame( self::PDF, $response['body'] );
+
+		$entry['handoff']['snapshot']['title'] = 'Changed after capture';
+		$order->update_meta_data( Context::META, json_encode( array( $id => $entry ), JSON_THROW_ON_ERROR ) );
+		$order->save();
+		$this->assertSame( array(), $documents->for_customer( $owner->get_id() ) );
+		$this->assertSame( 404, $this->dispatch( $order->get_id(), $id )->get_status() );
 	}
 
 	/**

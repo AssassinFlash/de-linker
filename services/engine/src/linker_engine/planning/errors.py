@@ -40,6 +40,14 @@ class Conflict(PlanningError):
     code = "conflict"
 
 
+class PreparedHandoff(Conflict):
+    code = "prepared_handoff"
+
+
+class InquiryChanged(Conflict):
+    code = "inquiry_changed"
+
+
 class EvaluationRevisionChanged(Conflict):
     """A new evaluation was refused before writing a run or receipt."""
 

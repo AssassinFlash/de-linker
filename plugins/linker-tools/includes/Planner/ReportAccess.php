@@ -23,6 +23,7 @@ final class ReportAccess {
 	/** Register the server-only Commerce seam. */
 	public function register(): void {
 		add_filter( 'linker_tools_planning_report_content', array( $this, 'read' ), 10, 3 );
+		add_filter( 'linker_tools_planning_admit_inquiry', array( $this, 'admit' ), 10, 2 );
 	}
 
 	/**
@@ -34,22 +35,16 @@ final class ReportAccess {
 	 */
 	public function read( mixed $previous, array $reference, int $order_id ): string|WP_Error {
 		unset( $previous );
-		$order = wc_get_order( $order_id );
-		if ( ! $order instanceof \WC_Order || ! class_exists( \Linker\Commerce\Planning\Context::class ) ) {
-			return Failure::make( 'unavailable', 503 );
+		$principal = $this->inquiry_principal( $reference, $order_id );
+		if ( $principal instanceof WP_Error ) {
+			return $principal;
 		}
-		$stored = \Linker\Commerce\Planning\Context::stored( $order );
-		$id     = $reference['handoff_id'] ?? null;
-		if ( ! is_string( $id ) || ( $stored[ $id ]['reference'] ?? null ) !== $reference ) {
-			return Failure::make( 'identity', 403 );
-		}
-		$principal = new Principal( 'team', 'wp:' . get_current_blog_id() . ':inquiry:' . $order_id );
-		$handoff   = $this->transport->object(
+		$handoff = $this->transport->object(
 			$principal,
 			'handoffs/read',
 			array(
 				'schema_version' => 1,
-				'handoff_id'     => $id,
+				'handoff_id'     => $reference['handoff_id'],
 			)
 		);
 		if ( is_wp_error( $handoff ) ) {
@@ -77,5 +72,51 @@ final class ReportAccess {
 			return Failure::make( 'unavailable', 503 );
 		}
 		return $reply['body'];
+	}
+
+	/**
+	 * Fence pending deletes against the exact handoff being committed by Commerce.
+	 *
+	 * @param mixed               $previous Earlier service adapter.
+	 * @param array<string,mixed> $reference Frozen reference from the current server-owned Woo draft.
+	 */
+	public function admit( mixed $previous, array $reference ): true|WP_Error {
+		unset( $previous );
+		$principal = ( new NativeIdentity() )->inquiry_submitter();
+		if ( $principal instanceof WP_Error ) {
+			return $principal;
+		}
+		$reply = $this->transport->object(
+			$principal,
+			'handoffs/admit-inquiry',
+			array(
+				'schema_version'  => 1,
+				'handoff_id'      => $reference['handoff_id'],
+				'snapshot_sha256' => $reference['snapshot_sha256'],
+			)
+		);
+		if ( $reply instanceof WP_Error ) {
+			return $reply;
+		}
+		return true === ( $reply['admitted'] ?? null ) ? true : Failure::make( 'invalid_reply', 502 );
+	}
+
+	/**
+	 * Limit team operations to the frozen reference on the native order.
+	 *
+	 * @param array<string,mixed> $reference Server-stored compact context.
+	 * @param int                 $order_id Authorised inquiry.
+	 */
+	private function inquiry_principal( array $reference, int $order_id ): Principal|WP_Error {
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof \WC_Order || ! class_exists( \Linker\Commerce\Planning\Context::class ) ) {
+			return Failure::make( 'unavailable', 503 );
+		}
+		$stored = \Linker\Commerce\Planning\Context::stored( $order );
+		$id     = $reference['handoff_id'] ?? null;
+		if ( ! is_string( $id ) || ( $stored[ $id ]['reference'] ?? null ) !== $reference ) {
+			return Failure::make( 'identity', 403 );
+		}
+		return new Principal( 'team', 'wp:' . get_current_blog_id() . ':inquiry:' . $order_id );
 	}
 }

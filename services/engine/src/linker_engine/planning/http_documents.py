@@ -289,10 +289,17 @@ class EquipmentFind(ProjectRevise):
         return normalize_discovery_inputs(value) if isinstance(value, dict) else value
 
 
-class ProjectDelete(Command):
+class PreparedHandoffs(Command):
     project_id: Id
+
+
+class ProjectDelete(PreparedHandoffs):
     expected_revision: Revision
     key: Key
+
+
+class CheckedProjectDelete(ProjectDelete):
+    inquiry_generation: Annotated[int, Field(strict=True, ge=0)]
 
 
 class ProjectRuns(Command):
@@ -363,6 +370,10 @@ class HandoffPrepare(Command):
 
 class HandoffRead(Command):
     handoff_id: Id
+
+
+class InquiryAdmission(HandoffRead):
+    snapshot_sha256: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
 
 
 class WeatherAssetsRead(Command):

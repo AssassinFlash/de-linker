@@ -17,6 +17,10 @@ from .wire_numbers import check_wire_numbers
 from .workspace import Workspace
 
 
+class HandoffNotFound(NotFound):
+    code = "handoff_not_found"
+
+
 class HandoffRevisionChanged(Conflict):
     code = "handoff_revision_changed"
 
@@ -382,6 +386,28 @@ class Handoffs:
                 now,
             )
             return self._read(connection, actor, handoff_id)
+
+    def admit_inquiry(
+        self, actor: Actor, handoff_id: str, snapshot_sha256: str
+    ) -> Object:
+        if actor.kind == "team":
+            raise NotFound("project handoff not found")
+        with self.workspace.database.transaction() as connection:
+            try:
+                handoff = self._read(connection, actor, handoff_id)
+            except NotFound as exc:
+                raise HandoffNotFound(
+                    "the inquiry's prepared report was removed"
+                ) from exc
+            if handoff["snapshot_sha256"] != snapshot_sha256:
+                raise Conflict("the inquiry report reference changed")
+            connection.execute(
+                "INSERT INTO inquiry_generations (project_id,generation) "
+                "SELECT project_id,1 FROM handoffs WHERE id=? "
+                "ON CONFLICT(project_id) DO UPDATE SET generation=generation+1",
+                (handoff_id,),
+            )
+            return {"admitted": True}
 
     def read(self, actor: Actor, handoff_id: str) -> Object:
         with self.workspace.database.read() as connection:

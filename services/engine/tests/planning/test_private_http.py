@@ -3199,7 +3199,7 @@ def test_project_delete_keeps_the_revision_guard_and_handoff_refusal(
     )
     assert stale.status_code == 409
     assert stale.json()["error"]["code"] == "conflict"
-    # A handoff protects its inquiry from deletion, exactly like the domain layer.
+    # An existing frozen handoff requires an authoritative Woo lookup.
     second = rig.create("delete-with-handoff")
     run_id = "e" * 32
     with rig.workspace.database.transaction() as connection:
@@ -3225,7 +3225,7 @@ def test_project_delete_keeps_the_revision_guard_and_handoff_refusal(
         headers=headers(),
     )
     assert refused.status_code == 409
-    assert refused.json()["error"]["code"] == "conflict"
+    assert refused.json()["error"]["code"] == "prepared_handoff"
     read = rig.client.post(
         "/projects/read",
         json={"schema_version": 1, "project_id": second},

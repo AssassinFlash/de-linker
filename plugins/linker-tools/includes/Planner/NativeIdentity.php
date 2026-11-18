@@ -80,6 +80,31 @@ final class NativeIdentity {
 				'session'   => $token,
 			);
 		}
+		$id = $this->confirmed_guest();
+		if ( $id instanceof WP_Error ) {
+			return $id;
+		}
+		if ( false === wp_verify_nonce( (string) $request->get_header( 'x-linker-planner-nonce' ), self::NONCE_ACTION ) ) {
+			return Failure::make( 'guest_nonce', 403 );
+		}
+		return array(
+			'principal' => new Principal( 'guest', self::guest_subject( $id ) ),
+			'session'   => $id,
+		);
+	}
+
+	/** Current owner at a Commerce door that has already authorized the submission. */
+	public function inquiry_submitter(): Principal|WP_Error {
+		$user = get_current_user_id();
+		if ( $user > 0 ) {
+			return new Principal( 'user', self::user_subject( $user ) );
+		}
+		$id = $this->confirmed_guest();
+		return $id instanceof WP_Error ? $id : new Principal( 'guest', self::guest_subject( $id ) );
+	}
+
+	/** Woo guest ID bound to a presented signed cookie and a live session row. */
+	private function confirmed_guest(): string|WP_Error {
 		// Core deliberately downgrades cookie-auth requests without a REST nonce
 		// to user zero. Never reinterpret that logged-in browser as a guest.
 		if ( false !== wp_validate_auth_cookie( '', 'logged_in' ) ) {
@@ -93,13 +118,7 @@ final class NativeIdentity {
 		if ( null === $proof || $proof['id'] !== $session->get_customer_id() || $this->row_expiry( $proof['id'] ) <= time() ) {
 			return Failure::make( 'guest_cookie', 401 );
 		}
-		if ( false === wp_verify_nonce( (string) $request->get_header( 'x-linker-planner-nonce' ), self::NONCE_ACTION ) ) {
-			return Failure::make( 'guest_nonce', 403 );
-		}
-		return array(
-			'principal' => new Principal( 'guest', self::guest_subject( $proof['id'] ) ),
-			'session'   => $proof['id'],
-		);
+		return $proof['id'];
 	}
 
 	/**
