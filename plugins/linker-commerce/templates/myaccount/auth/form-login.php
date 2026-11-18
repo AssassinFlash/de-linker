@@ -115,9 +115,16 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 					?>
 
 				</form>
+				<form method="post" action="<?php echo esc_url( wc_lostpassword_url() ); ?>" data-account-reset hidden>
+					<input type="hidden" name="user_login" />
+					<input type="hidden" name="wc_reset_password" value="true" />
+					<?php wp_nonce_field( 'lost_password', 'woocommerce-lost-password-nonce', false ); ?>
+					<?php do_action( 'woocommerce_lostpassword_form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native Woo reset protections. ?>
+					<button type="submit" class="linker-auth-btn is-ghost"><?php esc_html_e( 'Reset password', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. ?></button>
+				</form>
 				<p class="linker-auth-links">
 					<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
-					<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php esc_html_e( 'Lost your password?', 'woocommerce' ); ?></a>
+					<a data-account-reset-link href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php esc_html_e( 'Lost your password?', 'woocommerce' ); ?></a>
 					<?php if ( $registration && '' !== $register_url ) : ?>
 						<a href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'No partner account yet?', 'linker-commerce' ); ?> <strong><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></strong></a>
 					<?php endif; ?>

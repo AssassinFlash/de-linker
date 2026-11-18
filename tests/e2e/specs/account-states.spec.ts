@@ -311,6 +311,13 @@ for (const language of LANGUAGES) {
 				const gate = page.locator('.linker-account-status');
 				await expect(gate).toBeVisible();
 				await expect(gate).toContainText(language.pendingTitle);
+				const newInquiry = page.getByRole('link', {
+					name: language.lang === 'de' ? 'Neue Anfrage' : 'New inquiry',
+					exact: true,
+				});
+				await newInquiry.click();
+				await expect(page.locator('form.linker-inquiry-form')).toBeVisible();
+				await page.goBack();
 				await expect(
 					page
 						.locator(

@@ -20,6 +20,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import { instance, wp, REPO_ROOT } from '../lib/instance';
 import { seedConsentCookies } from '../lib/consent';
+import { mark, since } from '../lib/mail';
 
 // The CookieYes banner covers the reset card until answered; pre-seed the
 // consent cookies so every goto starts from an answered banner.
@@ -149,16 +150,13 @@ for (const { locale, account, lost } of LOCALES) {
 				height: width === 390 ? 844 : 900,
 			});
 			const login = createCustomer(Date.now(), locale);
-			await page.goto(url(lost));
-			const field = page.locator(
-				'input#user_login, input[name="user_login"]'
-			);
-			await expect(
-				field.first(),
-				'the reset form asks for the account'
-			).toBeVisible();
-			await field.first().fill(login);
-			await page.locator('button[type="submit"]').first().click();
+			wp(['user', 'meta', 'update', login, 'locale', locale === 'de' ? 'de_DE_formal' : 'en_US']);
+			await page.goto(url(account));
+			await page.locator('#username').fill(login);
+			const before = mark();
+			await page
+				.getByRole('button', { name: /Reset password|Passwort zurücksetzen/i })
+				.click();
 			await page.waitForLoadState('load');
 			await expect(
 				page.locator('.woocommerce-message, .woocommerce-info').first(),
@@ -170,25 +168,19 @@ for (const { locale, account, lost } of LOCALES) {
 			).toHaveCount(0);
 			await shot(page, `${locale}-lost-password`);
 
-			// The link the mail carries, opened for real. The key is the account's
-			// own (get_password_reset_key through WP-CLI) and the fixture is the
-			// account this test just created — never a made-up key the chain would
-			// only have to reject.
-			const id = wp(['user', 'get', login, '--field=ID']).trim();
-			if (!/^\d+$/.test(id)) {
-				throw new Error(`the fixture account has no id: ${id}`);
-			}
-			const key = wp([
-				'eval',
-				`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
-			]).trim();
-			expect(key, 'the fixture account carries a reset key').not.toBe('');
-
-			await page.goto(
-				url(
-					`${lost}?show-reset-form=true&key=${encodeURIComponent(key)}&id=${id}`
-				)
-			);
+			// Follow this request's mail; generating a second key invalidates the first.
+			const resetLink = () => {
+				const message = since(before).find(
+					(mail) => mail.html.includes(login) && mail.html.includes('key=')
+				);
+				return message?.html
+					.match(/href="([^"]*\bkey=[^"]*)"/i)?.[1]
+					?.replace(/&amp;/g, '&');
+			};
+			await expect.poll(() => Boolean(resetLink()), { timeout: 60_000 }).toBe(true);
+			const address = new URL(resetLink()!);
+			expect(address.origin).toBe(new URL(instance().url).origin);
+			await page.goto(address.href);
 			await page.waitForLoadState('load');
 
 			// The redesigned card, with Woo's own hidden credentials inside it.
@@ -212,7 +204,7 @@ for (const { locale, account, lost } of LOCALES) {
 			await expect(
 				page.locator('input[name="reset_key"]'),
 				'the key from the link rides along'
-			).toHaveValue(key);
+			).toHaveValue(address.searchParams.get('key')!);
 			await expect(
 				page.locator('input[name="reset_login"]'),
 				'the login from the link rides along'

@@ -180,6 +180,8 @@ final class AccountTemplates {
 			}
 		} elseif ( 'open-url' === $key ) {
 			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
+		} elseif ( 'inquiry-url' === $key ) {
+			return esc_url( wc_get_checkout_url() );
 		} elseif ( 'products-url' === $key ) {
 			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
 		} elseif ( 'configurator-url' === $key ) {
@@ -462,6 +464,7 @@ final class AccountTemplates {
 			'menu'            => __( 'Account menu', 'linker-commerce' ),
 			'overview'        => __( 'Overview', 'linker-commerce' ),
 			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
+			'new-inquiry'     => __( 'New inquiry', 'linker-commerce' ),
 			'all'             => __( 'All inquiries', 'linker-commerce' ),
 			'open'            => __( 'Open inquiries', 'linker-commerce' ),
 			'status'          => __( 'Status', 'linker-commerce' ),

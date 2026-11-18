@@ -10,6 +10,22 @@
 	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
 	const submittingButtons = new WeakMap();
 
+	// The native reset request needs the account identifier, never the sign-in password.
+	const reset = document.querySelector( 'form[data-account-reset]' );
+	if ( reset ) {
+		const username = document.querySelector( 'form.login [name="username"]' );
+		reset.addEventListener( 'submit', ( event ) => {
+			if ( ! username.reportValidity() ) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				return;
+			}
+			reset.elements.user_login.value = username.value;
+		}, true );
+		reset.hidden = false;
+		document.querySelector( '[data-account-reset-link]' ).hidden = true;
+	}
+
 	// The inquiry and Woo draft are separate forms. Unsaved edits and in-flight
 	// writes must both stop the inquiry from sending the previous server lines.
 	const inquiry = document.querySelector( '.linker-inquiry' );
