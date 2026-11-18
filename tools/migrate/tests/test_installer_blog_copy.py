@@ -88,6 +88,65 @@ def test_backup_example_shapes_both_articles_and_excerpts() -> None:
         copy.plan_pair(PAIR, {**final, "excerpts": before["excerpts"]})
 
 
+PAIRING = (552, 6885)
+OLD_CTA = (
+    '<a href="/product-category/residential-storage/res-batteries/">Explore compatible batteries</a>',
+    '<a href="/product-category/residential-storage/res-batteries/">Kompatible Batteriespeicher entdecken</a>',
+)
+FINAL_CTA = (
+    '<a href="/product-category/home-storage/">Explore home storage</a>',
+    '<a href="/de/produkt-kategorie/heimspeicher/">Heimspeicher entdecken</a>',
+)
+
+
+def pairing_snapshot(
+    *, revised: bool, links: tuple[str, str] = OLD_CTA
+) -> dict[str, Any]:
+    return {
+        "pages": {
+            str(post_id): "\n".join([*(edit[int(revised)] for edit in edits), link])
+            for post_id, edits, link in zip(
+                PAIRING, copy.REVISIONS[PAIRING], links, strict=True
+            )
+        },
+        "metadata": {"552": {}, "6885": {}},
+        "current": revised,
+    }
+
+
+@pytest.mark.parametrize(
+    "revised", [False, True], ids=["production-original", "review-previous"]
+)
+def test_pairing_articles_link_to_home_storage_in_their_own_language(
+    revised: bool,
+) -> None:
+    before = pairing_snapshot(revised=revised)
+    result = copy.plan_pair(PAIRING, before)
+    assert result is not None
+    expected = pairing_snapshot(revised=True, links=FINAL_CTA)
+    for change in result["changes"]:
+        key = str(change["id"])
+        assert change["before"] == before["pages"][key]
+        assert change["after"] == expected["pages"][key]
+    assert copy.plan_pair(PAIRING, expected) is None
+    with pytest.raises(ValueError, match="translation baseline"):
+        copy.plan_pair(PAIRING, {**expected, "current": False})
+
+
+def test_pairing_rejects_partial_or_unrecognized_category_links() -> None:
+    with pytest.raises(ValueError, match="partial"):
+        copy.plan_pair(
+            PAIRING, pairing_snapshot(revised=True, links=(FINAL_CTA[0], OLD_CTA[1]))
+        )
+    with pytest.raises(ValueError, match="partial"):
+        copy.plan_pair(PAIRING, pairing_snapshot(revised=False, links=FINAL_CTA))
+    for bad in (OLD_CTA[0] * 2, '<a href="/shop/">Explore compatible batteries</a>'):
+        with pytest.raises(ValueError, match="552.*ambiguous"):
+            copy.plan_pair(
+                PAIRING, pairing_snapshot(revised=True, links=(bad, OLD_CTA[1]))
+            )
+
+
 def test_changed_excerpt_blocks_the_pair() -> None:
     before = backup_snapshot()
     before["excerpts"]["6887"] = "Nach der Prüfung redaktionell geändert."

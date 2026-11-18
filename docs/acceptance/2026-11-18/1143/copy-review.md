@@ -83,6 +83,16 @@
 | 家用储能与自用 559 / 6899 | 去掉 50–70% 外送和超过 80% 自用的固定比率。 | 用电时段与 PV 出力决定电量重叠。发生停电时，备电回路和 PV 能否继续供电也受设备及接线影响。 | 比较同一家庭有无储能，按时间匹配发电与负荷，并纳入可用容量、充放电能力和损耗。备电段只讲项目实际接入的回路。 |
 | 工商业削峰 560 / 6901 | 保留 500 → 350 kW、150 kW / 300 kWh，估算单个计费时段的费用影响。 | 满额削峰要区分电池输出功率、区间送出能量和可用容量。一个区间变低不足以证明账单峰值降低。Netze BW 同时列有年度与月度费率，不能预设按月，也没有通用备电时长。 | 例中持续一刻钟须输出 150 kW、送出 37.5 kWh。若实际费率取最高一刻钟均值且整个计价周期的峰值由 500 降至 350 kW，费用差为 150 kW 乘当期同一功率单价。备电按可同时运行的负荷、目标时长与预留能量计算。 |
 
+### 552 / 6885 家储入口
+
+**原句。** 两篇均链接到旧电池分类，按钮分别为 `Explore compatible batteries` 和 `Kompatible Batteriespeicher entdecken`。
+
+**初稿。** 改用两语家储分类，按钮分别写 `Explore home storage` 和 `Heimspeicher entdecken`。
+
+**质询。** 旧分类 202 无德语配对，公开访问跳到英文家储分类。正式英德分类 450 / 613 互为配对，均返回 HTTP 200。按钮应说明客户将打开家储分类，具体设备能否配对仍由文章中的厂家兼容表判定。
+
+**定稿。** 采用初稿，英文链接 `/product-category/home-storage/`，德文链接 `/de/produkt-kategorie/heimspeicher/`。
+
 原始依据
 
 - AC/DC 耦合与自用率模型使用 HTW Berlin 的系统实测及负荷假设。[Stromspeicher-Inspektion 2026](https://solar.htw-berlin.de/studien/stromspeicher-inspektion-2026/) · [Unabhängigkeitsrechner FAQ](https://solar.htw-berlin.de/faq-unabhaengigkeitsrechner/)

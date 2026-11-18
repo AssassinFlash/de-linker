@@ -217,6 +217,17 @@ REVISIONS = {
     ),
 }
 
+HOME_STORAGE_LINKS = {
+    552: (
+        '<a href="/product-category/residential-storage/res-batteries/">Explore compatible batteries</a>',
+        '<a href="/product-category/home-storage/">Explore home storage</a>',
+    ),
+    6885: (
+        '<a href="/product-category/residential-storage/res-batteries/">Kompatible Batteriespeicher entdecken</a>',
+        '<a href="/de/produkt-kategorie/heimspeicher/">Heimspeicher entdecken</a>',
+    ),
+}
+
 EXCERPT_REVISIONS = {
     553: (
         "A step-by-step method for calculating battery storage capacity based on daily load curves, backup duration targets, and depth-of-discharge constraints.",
@@ -233,6 +244,7 @@ def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] 
     """Apply the reviewed fragments only if both articles match the same version."""
     changes = []
     versions: set[str] = set()
+    link_versions: set[str] = set()
     for post_id, revisions in zip(ids, REVISIONS[ids], strict=True):
         key = str(post_id)
         before = after = snapshot["pages"][key]
@@ -247,6 +259,18 @@ def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] 
                 raise ValueError(
                     f"Article {post_id} has an ambiguous body fragment: {original}"
                 )
+        if post_id in HOME_STORAGE_LINKS:
+            original, final = HOME_STORAGE_LINKS[post_id]
+            counts = before.count(original), before.count(final)
+            if counts == (1, 0):
+                after = after.replace(original, final, 1)
+                link_versions.add("original")
+            elif counts == (0, 1):
+                link_versions.add("final")
+            else:
+                raise ValueError(
+                    f"Article {post_id} has an ambiguous home-storage link"
+                )
         change = {"id": post_id, "before": before, "after": after}
         if post_id in EXCERPT_REVISIONS:
             original, final = EXCERPT_REVISIONS[post_id]
@@ -259,9 +283,13 @@ def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] 
                 raise ValueError(f"Article {post_id} has an unreviewed excerpt")
             change.update(before_excerpt=excerpt, after_excerpt=final)
         changes.append(change)
-    if len(versions) > 1:
+    if (
+        len(versions) > 1
+        or len(link_versions) > 1
+        or (versions == {"original"} and link_versions == {"final"})
+    ):
         raise ValueError(f"Pair {ids} contains a partial revision of the reviewed copy")
-    if versions == {"final"}:
+    if versions == {"final"} and link_versions != {"original"}:
         if not snapshot["current"]:
             raise ValueError(
                 f"Pair {ids} has final copy but a stale translation baseline"
