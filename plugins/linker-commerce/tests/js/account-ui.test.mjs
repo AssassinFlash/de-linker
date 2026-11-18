@@ -168,7 +168,7 @@ function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-t
  const dom=new JSDOM(`<div class="linker-inquiry">
  <form class="linker-inquiry-form" data-inquiry-context="${context}"><input type="hidden" name="linker_inquiry_nonce" value="${nonce}"><input type="hidden" name="linker_inquiry_retained" value="${retained?'1':'0'}">
  <textarea name="message"></textarea><details class="linker-inquiry-details" ${closed?'':'open'}><summary><small>${defaultName} · ${defaultEmail}</small></summary><input name="name" value="${defaultName}"><input name="email" type="email" value="${defaultEmail}"><input name="company"></details><input type="checkbox" name="consent">
- <p data-inquiry-draft-pending hidden role="status">Update the solution draft before sending your inquiry.</p>
+ <p data-inquiry-draft-pending hidden role="status">Check the quantities in your solution draft and try again.</p>
  <p data-inquiry-retention-error hidden role="alert" tabindex="-1">Your browser could not keep your entries.</p>
  <button type="submit">Send inquiry</button></form>
  <aside><form class="woocommerce-cart-form"><input class="qty" name="cart[line][qty]" type="number" min="0" step="1" value="1"><button type="submit" name="update_cart">Update solution draft</button></form>
@@ -181,57 +181,185 @@ function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-t
  return {win,form,draft:win.document.querySelector('.woocommerce-cart-form'),send:form.querySelector('button'),field:(name)=>form.querySelector(`[name="${name}"]`)};
 }
 
-test('standalone draft blocks stale continuation until native readback, preserving the inquiry edit bridge',async()=>{
- const dom=new JSDOM(`<div id="tv-storefront-cart">
- <p id="draft-pending" data-inquiry-draft-pending role="status" tabindex="-1" hidden>Update the solution draft before sending your inquiry.</p>
- <form class="woocommerce-cart-form"><input class="qty" name="cart[line][qty]" type="number" min="0" step="1" value="1"><button name="update_cart">Update solution draft</button></form>
- <div class="wc-proceed-to-checkout"><a href="/proforma-request/">Send inquiry</a></div></div>`,{runScripts:'outside-only',url:'https://example.test/cart/'});
- const win=dom.window;const kept='existing inquiry entries';win.sessionStorage.setItem('linker-inquiry-edit',kept);win.eval(script);
- const draft=win.document.querySelector('form'),quantity=draft.querySelector('.qty'),link=win.document.querySelector('a'),notice=win.document.querySelector('[role="status"]');
- const activate=()=>{const event=new win.MouseEvent('click',{bubbles:true,cancelable:true});link.dispatchEvent(event);return event;};
- assert.equal(win.sessionStorage.getItem('linker-inquiry-edit'),kept);
- assert.equal(link.getAttribute('aria-disabled'),'false');
- for(const value of ['2','0','']){
-  quantity.value=value;quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
-  assert.equal(link.getAttribute('aria-disabled'),'true');assert.equal(notice.hidden,false);
-  assert.equal(activate().defaultPrevented,true);assert.equal(win.document.activeElement.name,'update_cart');
- }
- quantity.value='1';quantity.dispatchEvent(new win.Event('change',{bubbles:true}));
- assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);
- draft.classList.add('processing');draft.querySelector('button').disabled=true;await Promise.resolve();assert.equal(activate().defaultPrevented,true,'native processing also blocks continuation');assert.equal(notice.hidden,false);assert.equal(win.document.activeElement,notice,'a disabled update action focuses its visible status instead');draft.querySelector('button').disabled=false;
- quantity.value='2';draft.classList.remove('processing');await Promise.resolve();assert.equal(link.getAttribute('aria-disabled'),'true','a failed native update keeps the edit blocked');
- const replacement=draft.cloneNode(true);replacement.querySelector('.qty').setAttribute('value','2');draft.replaceWith(replacement);await Promise.resolve();
- assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);assert.equal(link.getAttribute('aria-describedby'),'draft-pending');
- // Avoid jsdom navigation while proving that the release guard allows the saved readback.
- let allowed=false;win.document.addEventListener('click',event=>{allowed=!event.defaultPrevented;event.preventDefault();});activate();assert.equal(allowed,true);
+test('a valid edit submits the native update once, then sends the inquiry once after Woo confirms the quantity', async () => {
+ const {win, form, draft, send} = inquiryDraft();
+ const quantity = draft.querySelector('.qty');
+ quantity.value = '3';
+ quantity.dispatchEvent(new win.Event('input', {bubbles:true}));
+ assert.equal(send.disabled, false);
+ const updates = [];
+ draft.addEventListener('submit', event => {
+  event.preventDefault();
+  updates.push([event.submitter.name, new win.FormData(draft).get(quantity.name)]);
+  draft.classList.add('processing');
+ });
+ let inquiries = 0;
+ form.addEventListener('submit', event => {
+  if (!event.defaultPrevented) inquiries++;
+  event.preventDefault();
+ });
+ send.click();
+ submit(form);
+ assert.deepEqual(updates, [['update_cart', '3']]);
+ assert.equal(inquiries, 0);
+ const replacement = draft.cloneNode(true);
+ replacement.classList.remove('processing');
+ replacement.querySelector('.qty').defaultValue = '3';
+ draft.replaceWith(replacement);
+ await Promise.resolve();
+ assert.equal(inquiries, 1);
+ submit(form);
+ assert.equal(inquiries, 1);
  win.close();
 });
 
-test('unsaved inquiry quantities block sending, and reverting them restores sending',()=>{
- const {win,form,draft,send}=inquiryDraft();
- const quantity=draft.querySelector('.qty');
- assert.equal(send.disabled,false);
- quantity.value='0';quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
- assert.equal(send.disabled,true,'the inquiry must not send the previous server quantity');
- assert.equal(submit(form).defaultPrevented,true);
- assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,false);
- quantity.value='1';quantity.dispatchEvent(new win.Event('change',{bubbles:true}));
- assert.equal(send.disabled,false,'reverting is not a pending edit');
- assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,true);
+test('replacing the inquiry cart carries Woo’s current draft identity with the next native inquiry POST', () => {
+ const markup = readFileSync(new URL('../../content/livecanvas/inquiry/form.html', import.meta.url), 'utf8');
+ const {window:win} = new JSDOM(markup.replaceAll('{{draft-hash}}', 'initial'));
+ const form = win.document.querySelector('.linker-inquiry-form');
+ const cart = win.document.querySelector('.woocommerce-cart-form');
+ const refreshed = new JSDOM(markup.replaceAll('{{draft-hash}}', 'saved')).window.document.querySelector('.woocommerce-cart-form');
+ cart.replaceWith(refreshed);
+ assert.deepEqual(new win.FormData(form).getAll('linker_draft_hash'), ['saved']);
+ assert.equal(new win.FormData(refreshed).has('linker_draft_hash'), false);
+ win.close();
 });
 
-test('native draft failure stays blocked until retry replaces the quantity fragment',async()=>{
- const {win,form,draft,send}=inquiryDraft();
- const quantity=draft.querySelector('.qty');
- quantity.value='2';quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
- draft.classList.add('processing');await Promise.resolve();
- assert.equal(send.disabled,true);
- draft.classList.remove('processing');await Promise.resolve();
- assert.equal(send.disabled,true,'a failed update must not make old lines sendable');
- const replacement=draft.cloneNode(true);replacement.querySelector('.qty').setAttribute('value','2');
- draft.replaceWith(replacement);await Promise.resolve();
- assert.equal(send.disabled,false,'Woo now returned the saved quantity');
- assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,true);
+test('standalone continuation validates the field and follows the original link after Woo removes the last row', async () => {
+ const dom = new JSDOM(`<div id="tv-storefront-cart"><p data-inquiry-draft-pending hidden></p>
+  <form class="woocommerce-cart-form"><input class="qty" type="number" min="0" max="5" step="1" name="cart[line][qty]" value="1"><button type="submit" name="update_cart">Update</button></form>
+  <div class="wc-proceed-to-checkout"><a href="#inquiry">Continue</a></div></div>`, {runScripts:'outside-only', url:'https://example.test/cart/'});
+ const win = dom.window;
+ win.sessionStorage.setItem('linker-inquiry-edit', 'kept');
+ win.eval(script);
+ const form = win.document.querySelector('form'), qty = form.querySelector('.qty'), link = win.document.querySelector('a');
+ let updates = 0;
+ form.addEventListener('submit', event => { event.preventDefault(); updates++; form.classList.add('processing'); });
+ for (const value of ['', '-1', '1.5', '6']) {
+  qty.value = value;
+  link.click();
+  assert.equal(win.document.activeElement, qty);
+  assert.equal(updates, 0);
+  assert.equal(win.location.hash, '');
+ }
+ qty.value = '0';
+ link.click();
+ link.click();
+ assert.equal(updates, 1);
+ assert.equal(win.location.hash, '');
+ form.outerHTML = '<section class="wc-empty-cart-message"></section>';
+ link.remove();
+ await Promise.resolve();
+ assert.equal(win.location.hash, '#inquiry');
+ assert.equal(win.sessionStorage.getItem('linker-inquiry-edit'), 'kept');
+ win.close();
+});
+
+test('Woo rejection retains the edit and inquiry entries for a retry from Send', async () => {
+ const {win, form, draft, field, send} = inquiryDraft();
+ field('message').value = 'Please quote these units.';
+ const updates = [];
+ let inquiries = 0;
+ win.document.addEventListener('submit', event => {
+  if (event.target.matches('.woocommerce-cart-form')) {
+   updates.push(new win.FormData(event.target).get('cart[line][qty]'));
+   event.target.classList.add('processing');
+  } else if (!event.defaultPrevented) inquiries++;
+  event.preventDefault();
+ });
+ draft.querySelector('.qty').value = '4';
+ send.click();
+ const replacement = draft.cloneNode(true);
+ replacement.classList.remove('processing');
+ replacement.querySelector('.qty').value = '1';
+ replacement.querySelector('button').disabled = true; // Woo disables Update on a refreshed form.
+ draft.replaceWith(replacement);
+ await Promise.resolve();
+ assert.equal(inquiries, 0);
+ assert.equal(replacement.querySelector('.qty').value, '4');
+ assert.equal(replacement.querySelector('button').disabled, false);
+ assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden, false);
+ send.click();
+ assert.deepEqual(updates, ['4', '4']);
+ replacement.classList.remove('processing');
+ await Promise.resolve();
+ assert.equal(inquiries, 0, 'a transport failure must leave the inquiry on screen');
+ assert.equal(send.disabled, false);
+ assert.equal(field('message').value, 'Please quote these units.');
+ win.close();
+});
+
+test('changing a quantity during draft verification cancels the earlier Send intent', async () => {
+ const {win, form, draft, send} = inquiryDraft();
+ const qty = draft.querySelector('.qty');
+ draft.addEventListener('submit', event => event.preventDefault());
+ let inquiries = 0;
+ form.addEventListener('submit', event => { if (!event.defaultPrevented) inquiries++; event.preventDefault(); });
+ qty.value = '3';
+ send.click();
+ qty.value = '4';
+ qty.dispatchEvent(new win.Event('input', {bubbles:true}));
+ const replacement = draft.cloneNode(true);
+ replacement.querySelector('.qty').defaultValue = '3';
+ replacement.querySelector('.qty').value = '3';
+ draft.replaceWith(replacement);
+ await Promise.resolve();
+ assert.equal(inquiries, 0);
+ assert.equal(replacement.querySelector('.qty').value, '4');
+ win.close();
+});
+
+test('a quantity invalidated during verification can be corrected and sent', async () => {
+ const {win, form, draft, send} = inquiryDraft();
+ const qty = draft.querySelector('.qty');
+ let updates = 0, inquiries = 0;
+ draft.addEventListener('submit', event => { updates++; event.preventDefault(); });
+ form.addEventListener('submit', event => { if (!event.defaultPrevented) inquiries++; event.preventDefault(); });
+ qty.value = '3';
+ send.click();
+ qty.value = '';
+ draft.requestSubmit(draft.querySelector('button'));
+ assert.equal(updates, 1, 'native validity stopped the verified submission');
+ qty.value = '4';
+ send.click();
+ assert.equal(updates, 2, 'correcting the field allows a new attempt');
+ const replacement = draft.cloneNode(true);
+ replacement.querySelector('.qty').defaultValue = '4';
+ draft.replaceWith(replacement);
+ await Promise.resolve();
+ assert.equal(inquiries, 1);
+ win.close();
+});
+
+test('reverting a quantity while verification is pending still waits for Woo readback', async () => {
+ const {win, form, draft, send} = inquiryDraft();
+ const qty = draft.querySelector('.qty');
+ let updates = 0, inquiries = 0;
+ draft.addEventListener('submit', event => { updates++; event.preventDefault(); });
+ form.addEventListener('submit', event => { if (!event.defaultPrevented) inquiries++; event.preventDefault(); });
+ qty.value = '3';
+ send.click();
+ send.click();
+ qty.value = '1';
+ submit(form);
+ assert.equal(inquiries, 0);
+ assert.equal(updates, 1);
+ const widget = win.document.createElement('div');
+ draft.append(widget);
+ widget.dispatchEvent(new win.CustomEvent('linker:protection', {bubbles:true, detail:{action:'draft_write', state:'failed'}}));
+ qty.value = '2';
+ send.click();
+ assert.equal(updates, 2, 'the customer can retry after a failed challenge');
+ win.close();
+});
+
+test('optional inquiry verification marks the final native submission in flight', () => {
+ const {win, form} = inquiryDraft();
+ form.insertAdjacentHTML('beforeend', '<input type="hidden" data-linker-protected-action="inquiry">');
+ win.linkerPublicProtectionConfig = {mode:'enforce', businessVerification:'optional'};
+ assert.equal(submit(form).defaultPrevented, false);
+ assert.equal(submit(form).defaultPrevented, true);
+ win.close();
 });
 
 test('editing the draft preserves fields once across nonce ticks, within the authentication context',()=>{

@@ -80,10 +80,24 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 		await expect(
 			entries.getByRole('link', { name: pageCopy.create, exact: true })
 		).toHaveAttribute('href', instance().url + pageCopy.register);
-		await expect(page.locator('.sf-cart-btn')).toHaveCount(2);
+		const request = REQUESTS[locale as keyof typeof REQUESTS];
+		const inquire = entries.getByRole('link', {
+			name: request.title,
+			exact: true,
+		});
+		await expect(inquire).toHaveAttribute(
+			'href',
+			instance().url + request.path
+		);
 		// The retired batch import is neither a button nor a promise (GAP-11).
 		await expect(body).not.toContainText('item-number');
 		await expect(body).not.toContainText('Artikelnummern');
+		const reject = page.getByRole('button', {
+			name: /^(Reject all|Alle ablehnen)$/,
+		});
+		if (await reject.isVisible()) await reject.click();
+		await inquire.click();
+		await expect(page.locator('.linker-inquiry-form')).toBeVisible();
 	});
 }
 

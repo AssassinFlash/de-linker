@@ -2497,8 +2497,8 @@ msgid "Update solution draft"
 msgstr "Lösungsentwurf aktualisieren"
 
 #: includes/Inquiry/Form.php:163
-msgid "Update the solution draft before sending your inquiry."
-msgstr "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
+msgid "Check the quantities in your solution draft and try again."
+msgstr "Prüfen Sie die Mengen in Ihrem Lösungsentwurf und versuchen Sie es erneut."
 
 #: includes/Inquiry/Form.php:164
 msgid ""

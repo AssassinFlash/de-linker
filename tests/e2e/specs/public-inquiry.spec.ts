@@ -271,29 +271,19 @@ for (const language of ['en', 'de']) {
 							'pending'
 						);
 						expect(pending.mail).toHaveLength(0);
-						if (capped) {
-							// The first page cannot fabricate a no-receipt claim
-							// for the contact door: under enforce the receipt
-							// budget decides at the assessment handoff, so the
-							// contact door shows its plain sent copy; the
-							// request page names the deferred no-receipt notice.
-							// Assert the notice element itself — visible, with
-							// its own rendered text normalized (soft hyphens
-							// come from the browser, not the source string).
+						if (door === 'request') {
+							// Receipt eligibility is undecided until assessment completes.
+							await expect(
+								page.locator('.linker-receipt-notice')
+							).toBeEmpty();
+						} else if (capped) {
 							const notice =
 								language === 'de'
-									? door === 'contact'
-										? 'Vielen Dank. Ihre Nachricht liegt beim Linker-Team.'
-										: 'Es wurde keine Bestätigungs-E-Mail versendet.'
-									: door === 'contact'
-										? 'Thank you. Your message is with the Linker team.'
-										: 'We have not sent a confirmation email.';
-							const noticeElement =
-								door === 'contact'
-									? page
-											.locator('.linker-form-success p')
-											.first()
-									: page.locator('p.linker-receipt-notice');
+									? 'Vielen Dank. Ihre Nachricht liegt beim Linker-Team.'
+									: 'Thank you. Your message is with the Linker team.';
+							const noticeElement = page
+								.locator('.linker-form-success p')
+								.first();
 							await expect(noticeElement).toBeVisible({
 								timeout: 60_000,
 							});

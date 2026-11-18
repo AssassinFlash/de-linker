@@ -276,7 +276,6 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
 
 @media (max-width: 640px) {
   body #linker-products.sf-products .wb-title { font-size: 30px; }
-  body #linker-products.sf-products .wb-scope { display: none; }
   body #linker-products.sf-products .wb-bar { gap: 18px; }
   body #linker-products.sf-products .wb-metarow { margin-bottom: 16px; }
   body #linker-products.sf-products .product-grid { grid-template-columns: 1fr; }

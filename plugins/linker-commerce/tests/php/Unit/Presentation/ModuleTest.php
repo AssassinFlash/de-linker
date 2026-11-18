@@ -33,6 +33,38 @@ use WP_Mock\Matcher\AnyInstance;
  */
 final class ModuleTest extends TestCase {
 
+	/** Core prefixes these exact destination paths with the site's home directory. */
+	public function test_speculative_navigation_skips_only_the_localized_cart_and_checkout(): void {
+		WP_Mock::userFunction( 'home_url' )->with( '/' )->andReturn( 'https://example.test/store/' );
+		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'cart' )->andReturn( 21 );
+		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'checkout' )->andReturn( 30 );
+		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 21 )->andReturn(
+			array(
+				'en' => 20,
+				'de' => 21,
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 30 )->andReturn(
+			array(
+				'en' => 30,
+				'de' => 31,
+			)
+		);
+		foreach ( array(
+			20 => 'draft/',
+			21 => 'de/entwurf/',
+			30 => 'ask/',
+			31 => 'de/anfrage/',
+		) as $id => $path ) {
+			WP_Mock::userFunction( 'get_permalink' )->with( $id )->andReturn( 'https://example.test/store/' . $path );
+		}
+		$module = new Module( new Shortcodes(), new LoginGate(), new WindPress() );
+		self::assertEqualsCanonicalizing(
+			array( '/existing/', '/draft/', '/de/entwurf/', '/ask/', '/de/anfrage/' ),
+			$module->exclude_draft_destinations( array( '/existing/' ) )
+		);
+	}
+
 	/** The standalone native draft also receives the saved-quantity guard. */
 	public function test_cart_loads_account_interactions(): void {
 		WP_Mock::userFunction( 'is_account_page' )->andReturn( false );
@@ -115,6 +147,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_account_scripts' ) );
 		WP_Mock::expectActionAdded( 'linker_tools_planner_form_assets', array( $module, 'enqueue_form_script' ) );
+		WP_Mock::expectFilterAdded( 'wp_speculation_rules_href_exclude_paths', array( $module, 'exclude_draft_destinations' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( \Linker\Commerce\Presentation\LegalNavigation::class, 'enqueue' ) );
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );

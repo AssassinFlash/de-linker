@@ -83,6 +83,16 @@ export function connectDraftLinks(): void {
 			status.textContent = verificationPendingText( 'checking' );
 			link.insertAdjacentElement( 'afterend', widget );
 			widget.insertAdjacentElement( 'afterend', status );
+			let cancelled = false;
+			widget.addEventListener(
+				'linker:draft-verification-cancelled',
+				() => {
+					cancelled = true;
+					widget.remove();
+					status.remove();
+					busy.delete( link );
+				}
+			);
 			widget.addEventListener(
 				'linker:protection',
 				( protectionEvent ) => {
@@ -101,6 +111,9 @@ export function connectDraftLinks(): void {
 					'draft_write',
 					widget
 				);
+				if ( cancelled ) {
+					return;
+				}
 				if ( ! proof ) {
 					throw new Error( 'verification_unavailable' );
 				}
@@ -132,9 +145,13 @@ export function connectDraftLinks(): void {
 					form.submit();
 				}
 			} catch {
-				status.textContent = verificationFailedText();
+				if ( ! cancelled ) {
+					status.textContent = verificationFailedText();
+				}
 			} finally {
-				busy.delete( link );
+				if ( ! cancelled ) {
+					busy.delete( link );
+				}
 			}
 		},
 		true

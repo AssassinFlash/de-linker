@@ -44,6 +44,10 @@ export function connectForms( root: ParentNode = document ): void {
 		}
 		let submitting = false;
 		let verified = false;
+		let formAttempt = 0;
+		const cart =
+			action === 'draft_write' &&
+			form.classList.contains( 'woocommerce-cart-form' );
 		const requiresVerification = () =>
 			window.linkerPublicProtectionConfig?.mode === 'enforce' &&
 			! (
@@ -67,24 +71,49 @@ export function connectForms( root: ParentNode = document ): void {
 				status.hidden = true;
 			}
 		} );
-		const warm = () => {
+		if ( cart ) {
+			widget.addEventListener(
+				'linker:draft-verification-cancelled',
+				() => {
+					formAttempt++;
+					submitting = false;
+					widget.hidden = true;
+					status.hidden = true;
+					status.textContent = '';
+				}
+			);
+		}
+		const warm = ( event: Event ) => {
+			// Cart links own their verification; only form controls warm this widget.
+			if (
+				cart &&
+				! (
+					event.target instanceof Element &&
+					event.target.closest( 'input, button, select, textarea' ) &&
+					! widget.contains( event.target )
+				)
+			) {
+				return;
+			}
+			form.removeEventListener( event.type, warm );
 			if (
 				requiresVerification() &&
 				marker.dataset.linkerProtectionRecovery !== 'true'
 			) {
 				widget.hidden = false;
-				window.linkerPublicProtection?.warm( action, widget ).then(
-					() => {
-						widget.hidden = true;
-					},
-					() => {
+				const attempt = formAttempt;
+				const hideWarmWidget = () => {
+					if ( formAttempt === attempt ) {
 						widget.hidden = true;
 					}
-				);
+				};
+				window.linkerPublicProtection
+					?.warm( action, widget )
+					.then( hideWarmWidget, hideWarmWidget );
 			}
 		};
-		form.addEventListener( 'focusin', warm, { once: true } );
-		form.addEventListener( 'pointerdown', warm, { once: true } );
+		form.addEventListener( 'focusin', warm );
+		form.addEventListener( 'pointerdown', warm );
 		// Woo's quantity Enter handler calls AJAX directly, bypassing submit.
 		form.addEventListener(
 			'keypress',
@@ -152,6 +181,7 @@ export function connectForms( root: ParentNode = document ): void {
 					return;
 				}
 				submitting = true;
+				const attempt = formAttempt;
 				status.hidden = false;
 				widget.hidden = false;
 				status.textContent = verificationPendingText(
@@ -171,6 +201,9 @@ export function connectForms( root: ParentNode = document ): void {
 					await new Promise< void >( ( resolve ) =>
 						setTimeout( resolve, 0 )
 					);
+					if ( formAttempt !== attempt ) {
+						return;
+					}
 					widget.hidden = true;
 					proof.value = token;
 					if (
@@ -192,11 +225,15 @@ export function connectForms( root: ParentNode = document ): void {
 					form.dataset.linkerProtectionVerified = 'true';
 					form.requestSubmit( button );
 				} catch {
-					failed();
+					if ( formAttempt === attempt ) {
+						failed();
+					}
 				} finally {
-					verified = false;
-					delete form.dataset.linkerProtectionVerified;
-					submitting = false;
+					if ( formAttempt === attempt ) {
+						verified = false;
+						delete form.dataset.linkerProtectionVerified;
+						submitting = false;
+					}
 				}
 			},
 			{ capture: true }

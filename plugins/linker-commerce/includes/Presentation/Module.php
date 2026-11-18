@@ -61,6 +61,32 @@ final class Module {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
 		add_action( 'linker_tools_planner_form_assets', array( $this, 'enqueue_form_script' ) );
+		add_filter( 'wp_speculation_rules_href_exclude_paths', array( $this, 'exclude_draft_destinations' ) );
+	}
+
+	/**
+	 * A prefetched cart or inquiry can predate the quantity change made by the click.
+	 * Core wants paths relative to home, not absolute permalinks or URL prefixes.
+	 *
+	 * @param string[] $paths Existing exclusions.
+	 * @return string[]
+	 */
+	public function exclude_draft_destinations( array $paths ): array {
+		$home = home_url( '/' );
+		foreach ( array( 'cart', 'checkout' ) as $page ) {
+			$id = wc_get_page_id( $page );
+			if ( $id <= 0 ) {
+				continue;
+			}
+			$translations = function_exists( 'pll_get_post_translations' ) ? pll_get_post_translations( $id ) : array();
+			foreach ( array_unique( array_merge( array( $id ), $translations ) ) as $page_id ) {
+				$url = get_permalink( $page_id );
+				if ( is_string( $url ) && str_starts_with( $url, $home ) ) {
+					$paths[] = '/' . substr( $url, strlen( $home ) );
+				}
+			}
+		}
+		return $paths;
 	}
 
 	/**

@@ -96,6 +96,7 @@ final class Form {
 			$fields = do_shortcode( self::fields_template() );
 			$fields = preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => 'privacy' === $token[1] ? esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy', $language ) ) : $this->value( array( 'key' => $token[1] ) ), $fields ) ?? '';
 			return '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
+				. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
 				. ( null === $handoff ? '' : self::planner_fields( $handoff['id'], '' ) )
 				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff ) . $fields . '</form>';
 		} finally {
@@ -110,6 +111,9 @@ final class Form {
 	 */
 	public function value( $atts = array() ): string {
 		$key      = (string) ( $atts['key'] ?? '' );
+		if ( 'draft-hash' === $key ) {
+			return esc_attr( $this->flash['fields']['linker_draft_hash'] ?? WC()->cart->get_cart_hash() );
+		}
 		$customer = new WC_Customer( get_current_user_id() );
 		$previous = (array) ( $this->flash['fields'] ?? array() );
 		$name     = trim( $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() );
@@ -184,7 +188,6 @@ final class Form {
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( $previous['linker_draft_hash'] ?? WC()->cart->get_cart_hash() ) . '" />'
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
 	}
 
@@ -220,7 +223,7 @@ final class Form {
 			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
 			'quantity'           => __( 'Quantity', 'linker-commerce' ),
 			'update'             => __( 'Update solution draft', 'linker-commerce' ),
-			'update-before-send' => __( 'Update the solution draft before sending your inquiry.', 'linker-commerce' ),
+			'update-before-send' => __( 'Check the quantities in your solution draft and try again.', 'linker-commerce' ),
 			'retention-error'    => __( 'Your browser could not save your entries. Stay on this page to avoid losing them.', 'linker-commerce' ),
 		);
 		return esc_html( $words[ $atts['key'] ?? '' ] ?? '' );
