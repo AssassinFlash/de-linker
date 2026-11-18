@@ -263,7 +263,9 @@ test( 'a warm dock opens the clicked report, while the floating entry drops repo
 	const bridge = ( event: Event ) => {
 		const { opener } = ( event as CustomEvent ).detail ?? {};
 		const run = opener?.getAttribute( 'data-linker-genie-planning' );
-		if ( run ) openingRuns.push( run );
+		if ( run ) {
+			openingRuns.push( run );
+		}
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-planning-context', {
 				detail: {
