@@ -184,3 +184,11 @@ Rotterdam 项目的 9 × 6 m 示例屋面已在英语和正式德语的 1440、3
 评审站的 Rotterdam solar workshop 在两项合成图纸的导出许可为未知时拒绝生成含屋面清单的新报告。在 Solar 的 Source properties 明确登记两项许可后，提交比较并采用同一逆变器。输入修订 5 的客户预览、PDF 和 CSV 均列出 Trina Solar TSM-460NEG9R.28 × 2，归属项目报价。PDF 的组件表列出每块 460 W、总计 0.92 kWp。系统页的三项均显示已检查条件满足，25 kW 逆变器在同等状态下按商品顺序列在首位。
 
 从 Calculation history 实际下载修订 3 的 PDF 与 CSV。旧 PDF 标记输入修订 3，CSV 包含当时的逆变器与配套电表。保持历史版本展开，执行当前方案的 Add selected products、Confirm changes、View solution draft。Woo 草稿显示 Rotterdam solar workshop · input revision 5、SAJ H2-25K-T3 × 1，并能进入访客询盘。关闭项目页面后，经正式德语入口重开同一项目，仍能读取修订 5 的报告及其语言，390 px 可操作两项合成图纸的导出许可。
+
+## 2026-11-18 · 生产发布与客户验收
+
+PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https://github.com/AssassinFlash/de-linker/actions/runs/44224151926) 通过，合并提交 `0c5a9909a` 与候选 `cb4330bd6` 的树相同。Planner 恢复点为 `~/de-linker-data/planner-production/archive-20261118T025419Z-f1b360b4`，轮换后保留三份。HTTP 与 worker 已切换到 `fc0b7473562f362336d8fc06cb42f04866b1b5ed3d63f4f520d64c81b3b1ec50`。原生 status 返回 ready、draining=false、pending=0，HTTP 监听 8911。站点批次 `20261118T030056975036Z-0c5a9909a` 的数据库快照 `db-20261118T030103Z.sql.gz` 为 8,188,967 字节。首次 present 因生产 CSS 仍旧而停止。WindPress 重编后同批 resume 的 verify 与 archive 通过，发布记录已清除。公网实际提供的 planner.js、Configurator 和 planner-core 与合并提交逐字节一致。
+
+临时访客项目 `Goal 1132 release acceptance`（`acd2ca3897f543d1be9d1c93cb73e23f`）以 Rotterdam、10 kWp、三相输入直接比较，保存修订 2。采用 SAJ HS2-10K-T2-X 后生成修订 3 报告，实际下载的 PDF、Woo 草稿和询盘表单均列出逆变器与 Chint DTSU666 各一件。客户可从正式德语入口重开，手机显示冻结报告的语言为英语。Amsterdam 只读打开时仍为修订 3。未提交生产询盘或发信。批准的生产测试账户 53 现有规划询盘报告与已保存方案报告数均为零，登录后下载冻结报告仍缺该账户的测试文件。
+
+访客通过商品行 Remove 清空测试草稿，表单显示可无产品留言。此后临时项目删除入口仍提示已交接询盘并拒绝删除。正常比较请求在等待回执时短暂要求客户确认上一请求；刚重开已选方案时，System 在历史结果加载完成前提示先填需求。两项按本次操作复现处理。主线保留上述唯一生产临时项目供修复读回。两条修复线各使用一份隔离工作树（`agent-a5865b673a3c2a637` 和 `agent-a27c1cf90d7b85960`），各自独立依赖，整合后由主线回收。
