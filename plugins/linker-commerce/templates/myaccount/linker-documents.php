@@ -1,6 +1,6 @@
 <?php
 /**
- * Account page "Documents": Proforma invoices and design reports.
+ * Account page "Documents": Quotations and design reports.
  *
  * A theme may override it as woocommerce/myaccount/linker-documents.php.
  *
@@ -12,7 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( array() === $documents ) : ?>
-	<p class="linker-empty"><?php esc_html_e( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ); ?></p>
+	<p class="linker-empty"><?php esc_html_e( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ); ?></p>
 	<?php
 	return;
 endif;

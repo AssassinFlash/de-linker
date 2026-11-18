@@ -26,7 +26,7 @@ final class ContactCard {
 	public function __construct( private readonly Options $options ) {}
 
 	/**
-	 * Prints the card; runs on linker_account_after_content, after the page's content.
+	 * Prints the card above the account endpoint content.
 	 * The frame is the workspace's own panel (ticket #184, the owner-accepted
 	 * prototype's contact card): a heading with its rule, then the line — the
 	 * team's mailbox with the prototype's own letter mark, and the stored name

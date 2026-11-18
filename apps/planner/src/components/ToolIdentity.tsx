@@ -20,7 +20,7 @@ export function ToolIdentity() {
 				<div>
 					<p>
 						{__(
-							"Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.",
+							"You can reopen saved projects and restore available drafts.",
 							"linker-tools",
 						)}
 					</p>
