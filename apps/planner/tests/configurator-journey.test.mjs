@@ -1255,14 +1255,14 @@ for (const scenario of [
 										id: "east",
 										inverter: 101,
 										strings: [
-											{ mppt: 2, input: 1, module_ids: moduleIds.slice(0, 2) },
+											{ mppt: 4, input: 1, module_ids: moduleIds.slice(0, 2) },
 										],
 									},
 									{
 										id: "west",
 										inverter: 102,
 										strings: [
-											{ mppt: 2, input: 1, module_ids: moduleIds.slice(2) },
+											{ mppt: 4, input: 1, module_ids: moduleIds.slice(2) },
 										],
 									},
 								],
@@ -1272,7 +1272,7 @@ for (const scenario of [
 								command.inputs.pv_string_plan.strings.map(
 									({ id, ...string }) => string,
 								),
-								[{ mppt: 2, input: 1, module_ids: moduleIds }],
+								[{ mppt: 4, input: 1, module_ids: moduleIds }],
 							);
 						}
 						wiringCheck = equipmentRun(
@@ -1382,6 +1382,16 @@ for (const scenario of [
 					const add = button("Add selected modules to string", editor);
 					assert.equal(add.disabled, false);
 					await act(async () => add.click());
+					await act(async () => button("Edit string", editor).click());
+					await enter(field("MPPT", editor), "3");
+					await act(async () => button("5Review & share").click());
+					assert.equal(window.location.hash, "#sc-solar");
+					await act(async () => button("Cancel editing", editor).click());
+					assert.equal(field("MPPT", editor).value, "2");
+					await act(async () => button("Edit string", editor).click());
+					await enter(field("MPPT", editor), "4");
+					await act(async () => button("Save string changes", editor).click());
+					assert.match(editor.textContent, /MPPT 4 · input 1/);
 					if (!plantWiring) {
 						await act(async () => button("Edit string", editor).click());
 						await enter(field("MPPT", editor), "0");

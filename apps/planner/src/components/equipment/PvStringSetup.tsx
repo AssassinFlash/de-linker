@@ -201,15 +201,21 @@ export function PvStringSetup({
 		setPort(null);
 		setBatchSize(null);
 	};
-	// Invalid local number syntax cannot permit saving/calculating older values.
+	const pendingStringChanges =
+		checkedInReport &&
+		editing !== null &&
+		(mppt !== editing.mppt ||
+			port !== editing.input ||
+			JSON.stringify(selected) !== JSON.stringify(editing.module_ids));
+	const canLeave =
+		!pendingStringChanges &&
+		(controlled || checkedInReport
+			? Object.values(fields).every(Boolean)
+			: valid);
 	useEffect(() => {
-		onValidity(
-			controlled || checkedInReport
-				? Object.values(fields).every(Boolean)
-				: valid,
-		);
+		onValidity(canLeave);
 		return () => onValidity(true);
-	}, [valid, onValidity, !!controlled, checkedInReport, fields]);
+	}, [canLeave, onValidity]);
 	if (!geometry || !poses.length)
 		return plan ? (
 			<section>
