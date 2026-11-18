@@ -170,7 +170,7 @@ test.describe('native image calibration', () => {
 					.locator('[name="check_length"]')
 					.fill(num(lang, '9.6'));
 				await expect(panel).toContainText(words.recordedScale);
-				await expect(panel).toContainText('0.02');
+				await expect(panel).toContainText(num(lang, '0.02'));
 				await expect(panel).toContainText(words.usable);
 				await panel
 					.getByRole('button', { name: words.continue, exact: true })
@@ -250,6 +250,7 @@ test.describe('native image calibration', () => {
 					'Synthetic calibration fixture; not a survey'
 				);
 				await expect(source).toContainText(num(lang, '0.05'));
+				await expect(source).toContainText(num(lang, '0.02'));
 				await deleteOpenProject(page, lang, title);
 			});
 		}
