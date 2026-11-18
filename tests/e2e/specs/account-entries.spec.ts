@@ -422,7 +422,21 @@ for (const locale of ['en', 'de'] as const) {
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(instance().url + home);
 			await rejectCookies(page);
-			const create = page.locator('#tv-header-v2 .linker-create-account:visible');
+			const direct = page.locator(
+				'#tv-header-v2 .linker-create-account:visible'
+			);
+			await direct.click();
+			await expect(page).toHaveURL(
+				instance().url + account + (locale === 'de' ? 'registrieren/' : 'register/')
+			);
+			await expect(page.locator('form.register')).toBeVisible();
+			await page.goBack();
+			if (width === 1440) await page.locator('.tv-b2b-acct-btn').click();
+			else await page.locator('#tv-mobile-toggle').click();
+			const scope = page.locator(
+				width === 1440 ? '.tv-b2b-acct-menu' : '#tv-mobile-panel'
+			);
+			const create = scope.locator('.linker-create-account');
 			await expect(create).toBeVisible();
 			await expect(create).toHaveAttribute(
 				'href',
