@@ -102,10 +102,13 @@ def test_native_preparation_and_guarded_recovery(tmp_path: Path) -> None:
 
     # A later real Woo edit must block recovery, leaving that edit intact.
     edited = json.loads(loaded["raw"])
-    edited["max_battery_charge_a"]["qualifier"]["scope"] = "synthetic_later_edit"
+    edited["max_battery_charge_a"]["value"] = "60"
     edited_raw = json.dumps(edited, ensure_ascii=False, separators=(",", ":"))
     set_h2(edited_raw)
     try:
+        drift_preview = run("preview", tmp_path / "drift.json")
+        assert drift_preview.returncode != 0
+        assert "4107/max_battery_charge_a/value" in drift_preview.stderr
         rejected = run("rollback")
         assert rejected.returncode != 0
         assert "Concurrent edit" in rejected.stderr

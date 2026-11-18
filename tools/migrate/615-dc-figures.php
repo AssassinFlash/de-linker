@@ -81,7 +81,7 @@ try {
 					}
 					$existing = $raw[ $field ] ?? null;
 					$matches  = is_array( $existing );
-					foreach ( $change['set'] as $name => $value ) {
+					foreach ( $change['set'] + ( $change['expect'] ?? array() ) as $name => $value ) {
 						$matches = $matches && ( $existing[ $name ] ?? null ) === $value;
 					}
 					if ( $matches ) {
