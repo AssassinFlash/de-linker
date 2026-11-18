@@ -236,6 +236,13 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			$_GET           = $before_handoff;
 			$this->assertStringContainsString( 'linker-form-success', $pending_html );
 			$this->assertStringContainsString( 'We have not sent a confirmation email.', $pending_html );
+		} else {
+			$this->assertSame( 'assessment_pending', $orders[0]->get_meta( '_linker_receipt_skipped' ) );
+			ob_start();
+			( new \Linker\Commerce\Inquiry\Checkout() )->next_steps( $orders[0]->get_id() );
+			$pending_html = (string) ob_get_clean();
+			$this->assertStringContainsString( 'Inquiry received', $pending_html );
+			$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $pending_html );
 		}
 		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
