@@ -17,7 +17,7 @@ import {
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { __, sprintf } from "../../i18n.ts";
-import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
+import { ReviewInquiry } from "./ReviewInquiry.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
 function ReportContent({ section }: { section: ReportSection }) {
@@ -400,42 +400,19 @@ export function ReviewProposal({
 				: report.sections.some(
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
-	const transfer = transferable && run && (
-		<section className="sc-card sc-draft-transfer">
-			<h2>{__("Request a quotation", "linker-tools")}</h2>
-			{selected && current && (
-				<p>
-					{sprintf(
-						__(
-							"Your inquiry uses the current report (revision %d).",
-							"linker-tools",
-						),
-						run.revision,
-					)}
-				</p>
-			)}
-			{!reportOnly && (
-				<p className="sc-muted">
-					{__(
-						"The selected equipment and project details are included.",
-						"linker-tools",
-					)}
-				</p>
-			)}
-			<DraftTransferButton
-				key={`${run.id}:${scope}`}
-				run={run}
-				client={client}
-				scope={scope}
-				operations={operations}
-				reportOnly={reportOnly}
-				current={current}
-				blocked={blocked}
-				locale={locale}
-				recheck={recheck}
-			/>
-		</section>
+	const transfer = transferable && run && current && (
+		<ReviewInquiry
+			key={`${run.id}:${scope}`}
+			run={run}
+			client={client}
+			scope={scope}
+			operations={operations}
+			locale={locale}
+			blocked={blocked}
+			recheck={recheck}
+		/>
 	);
+
 	return (
 		<article className="sc-review">
 			<header className="sc-section-head">
@@ -457,6 +434,7 @@ export function ReviewProposal({
 					)}
 				</p>
 			)}
+			{!selected && transfer}
 			{!selected && (!report || !current) && summary}
 			{!selected && !report && materials}
 			{!selected && !report && (
@@ -568,7 +546,6 @@ export function ReviewProposal({
 							</ReportDownloads>
 							<ReportPreview report={report} />
 						</section>
-						{transfer}
 					</div>
 				</>
 			)}

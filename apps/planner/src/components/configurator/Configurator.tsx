@@ -485,7 +485,7 @@ export default function Configurator({
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
-	const actionBlocked =
+	const projectBlocked =
 		!admitted ||
 		recoveryChecking ||
 		recoveryFailed ||
@@ -496,8 +496,9 @@ export default function Configurator({
 		operations.checking ||
 		operations.storageFailed ||
 		controller.recoveries.length > 0 ||
-		Boolean(draft?.conflict) ||
-		operations.records.some((r) => r.resultId === null);
+		Boolean(draft?.conflict);
+	const actionBlocked =
+		projectBlocked || operations.records.some((r) => r.resultId === null);
 	const blocked = actionBlocked || Boolean(draft?.pending);
 	const edit = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject): boolean => {
@@ -894,6 +895,27 @@ export default function Configurator({
 			}
 		}
 	}
+	const inquiryRevision = useRef<string | null>(null);
+	useEffect(() => {
+		if (
+			step !== "review" ||
+			viewedReport !== null ||
+			!draft ||
+			!choice ||
+			blocked ||
+			modelsUnavailable ||
+			!history.isSuccess ||
+			(reportId && !report.isSuccess) ||
+			(reportRun &&
+				reportRun.revision === draft.baseline.revision &&
+				!isDirty(draft))
+		)
+			return;
+		const revision = `${project.id}:${draft.baseline.revision}:${choice.candidate_id}`;
+		if (inquiryRevision.current === revision) return;
+		inquiryRevision.current = revision;
+		void generate(null);
+	});
 	if (!draft)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
 	const inputs = draft.history.current;
@@ -1262,8 +1284,7 @@ export default function Configurator({
 									/>
 								}
 								solar={
-									brief.system_scope !== "storage_only" &&
-									(brief.system_scope || sectionLink === "solar") ? (
+									brief.system_scope !== "storage_only" ? (
 										<SolarInstallation
 											inputs={inputs}
 											config={config}
@@ -1337,64 +1358,62 @@ export default function Configurator({
 									) : null
 								}
 								energy={
-									brief.system_scope || sectionLink === "energy" ? (
-										<EnergyDemand
-											projectId={project.id}
-											inputs={inputs}
-											locale={config.locale}
-											client={client}
-											session={session}
-											recheck={recheck}
-											disabled={blocked}
-											edit={edit}
-											modelsUnavailable={modelsUnavailable}
-											embedded
-											compare={() => void compare()}
-											onValidity={setEnergyValid}
-										>
-											{hasPlant(inputs) &&
-												brief.system_scope !== "storage_only" &&
-												brief.system_scope !== "pv_only" && (
-													<SharedDcEnergy
-														draft={draft}
-														locale={config.locale}
-														client={client}
-														session={session}
-														store={store}
-														disabled={
-															actionBlocked || modelsUnavailable || !energyValid
-														}
-														active={activeStep === "project"}
-														edit={edit}
-														save={controller.save}
-														openEquipment={() => navigate("project")}
-														openDesign={() => navigate("solar")}
-														onValidity={setSharedDcValid}
-														registerProfileGuard={registerProfileGuard}
-														recoveryScopes={recoveryScopes}
-														recoveryChecking={recoveryChecking}
-														recheck={recheck}
-														runs={[
-															...(latestRuns ?? []),
-															...(olderHistory.data?.pages.flatMap(
-																(page) => page.items,
-															) ?? []),
-														]}
-														moreRuns={
-															(olderHistory.data
-																? olderHistory.hasNextPage
-																: firstCursor) && !olderHistory.isFetching
-																? () => void olderHistory.fetchNextPage()
-																: undefined
-														}
-														submitted={submittedDc}
-														start={(path) => void startSharedDc(path)}
-														generateComparison={generateComparison}
-														operationError={error ?? operations.error}
-													/>
-												)}
-										</EnergyDemand>
-									) : null
+									<EnergyDemand
+										projectId={project.id}
+										inputs={inputs}
+										locale={config.locale}
+										client={client}
+										session={session}
+										recheck={recheck}
+										disabled={blocked}
+										edit={edit}
+										modelsUnavailable={modelsUnavailable}
+										embedded
+										compare={() => void compare()}
+										onValidity={setEnergyValid}
+									>
+										{hasPlant(inputs) &&
+											brief.system_scope !== "storage_only" &&
+											brief.system_scope !== "pv_only" && (
+												<SharedDcEnergy
+													draft={draft}
+													locale={config.locale}
+													client={client}
+													session={session}
+													store={store}
+													disabled={
+														actionBlocked || modelsUnavailable || !energyValid
+													}
+													active={activeStep === "project"}
+													edit={edit}
+													save={controller.save}
+													openEquipment={() => navigate("project")}
+													openDesign={() => navigate("solar")}
+													onValidity={setSharedDcValid}
+													registerProfileGuard={registerProfileGuard}
+													recoveryScopes={recoveryScopes}
+													recoveryChecking={recoveryChecking}
+													recheck={recheck}
+													runs={[
+														...(latestRuns ?? []),
+														...(olderHistory.data?.pages.flatMap(
+															(page) => page.items,
+														) ?? []),
+													]}
+													moreRuns={
+														(olderHistory.data
+															? olderHistory.hasNextPage
+															: firstCursor) && !olderHistory.isFetching
+															? () => void olderHistory.fetchNextPage()
+															: undefined
+													}
+													submitted={submittedDc}
+													start={(path) => void startSharedDc(path)}
+													generateComparison={generateComparison}
+													operationError={error ?? operations.error}
+												/>
+											)}
+									</EnergyDemand>
 								}
 							/>
 						</div>
@@ -1577,7 +1596,19 @@ export default function Configurator({
 							session={session}
 							operations={operations}
 							locale={config.locale}
-							blocked={actionBlocked || modelsUnavailable}
+							blocked={
+								projectBlocked ||
+								modelsUnavailable ||
+								operations.records.some(
+									(record) =>
+										record.resultId === null &&
+										!(
+											record.path === "draft/apply" &&
+											readPlanningOperation(record.path, record.body)
+												.report_run_id === reportRun?.id
+										),
+								)
+							}
 							current={Boolean(
 								reportRun &&
 								reportRun.revision === draft.baseline.revision &&

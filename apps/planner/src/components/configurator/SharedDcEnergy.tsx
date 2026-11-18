@@ -116,6 +116,13 @@ export function SharedDcEnergy({
 	const [pvValid, setPvValid] = useState(true);
 	const valid = formValid && weatherValid && pvValid;
 	useEffect(() => onValidity(valid), [valid, onValidity]);
+	useEffect(
+		() => () => {
+			onValidity(true);
+			registerProfileGuard(() => true);
+		},
+		[onValidity, registerProfileGuard],
+	);
 	const [sourceEditor, setSourceEditor] = useState<"weather" | "pv" | null>(
 		null,
 	);
@@ -278,7 +285,8 @@ export function SharedDcEnergy({
 		setAdopting(true);
 		try {
 			if (
-				adopted !== run.id && !edit((snapshot) => {
+				adopted !== run.id &&
+				!edit((snapshot) => {
 					if (!sameEnergyReportInputs(basis.inputs, snapshot))
 						throw new ApiError(409, "scenario_changed");
 					return { ...snapshot, shared_dc_energy_run_id: run.id };

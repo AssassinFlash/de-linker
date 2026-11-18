@@ -4,6 +4,8 @@ import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 
 export interface DraftReceipt {
+	readonly inquiryCartHash?: string;
+	readonly inquiryDraftSha256?: string;
 	readonly handoffId: string;
 	readonly snapshotSha256: string;
 	readonly projectId: string;
@@ -74,7 +76,17 @@ export function readDraftReceipt(
 		ids.add(item.id);
 	}
 	const destinations = readUrls(urls, origin);
+	const cart = row.inquiry_cart_hash,
+		fingerprint = row.inquiry_draft_sha256;
+	if (
+		(cart !== undefined || fingerprint !== undefined) &&
+		((cart !== "" && !hash(cart, 32)) || !hash(fingerprint, 64))
+	)
+		fail();
 	return {
+		...(typeof cart === "string" && typeof fingerprint === "string"
+			? { inquiryCartHash: cart, inquiryDraftSha256: fingerprint }
+			: {}),
 		handoffId: String(row.handoff_id),
 		snapshotSha256: String(row.snapshot_sha256),
 		projectId: String(row.project_id),
@@ -166,5 +178,41 @@ export function readDraftPreview(
 		changes,
 		alreadyPresent: row.already_present,
 		urls: readUrls(readObject(row.draft_urls), origin),
+	};
+}
+
+export function readInquiryPreview(
+	value: unknown,
+	command: JsonObject,
+	origin: string,
+) {
+	const preview = readDraftPreview(value, command, origin),
+		row = readObject(value);
+	if (
+		typeof row.inquiry_form_html !== "string" ||
+		!row.inquiry_form_html.trim() ||
+		!Array.isArray(row.inquiry_lines)
+	)
+		fail();
+	const lines = row.inquiry_lines.map((value) => {
+		const line = readObject(value);
+		if (
+			!count(line.product_id) ||
+			!line.product_id ||
+			typeof line.quantity !== "number" ||
+			!Number.isFinite(line.quantity) ||
+			line.quantity <= 0 ||
+			typeof line.label !== "string" ||
+			!line.label.trim() ||
+			(line.project_id !== null && !hash(line.project_id, 32))
+		)
+			fail();
+		return { label: line.label, quantity: line.quantity };
+	});
+	return {
+		...preview,
+		handoffId: String(row.handoff_id),
+		lines,
+		form: row.inquiry_form_html,
 	};
 }
