@@ -207,4 +207,76 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 生产站点批次 `20261118T072900863919Z-9585fadb5` 的数据库快照 `db-20261118T072907Z.sql.gz` 为 8,217,255 字节。Web 缓存重置、verify 和 archive 成功。线上 Woo、Tools 关键文件和公网实际提供的三个配置器模块均与合并版逐字节一致。切换时记录的三个请求 worker 均已自然退出。
 
-同一提交的 Planner 发布成功，release `50a26650a7e51d18cefdc5ae1d4567bfb26b9790f2a1656a1d10a529a6d7d51d` 的原生 status 读回 HTTP 与 worker 运行身份一致，worker PID 70242、`draining=false`、`pending=0`。生产 Rotterdam 和 Amsterdam 的数据库读回均为修订 3。Rotterdam 所属访客的浏览器空间 69 已不在任务空间列表，其生产删除仍待原访客会话验收。账户 53 仍缺获权下载的规划报告。#1132 保持开放。
+同一提交的 Planner 发布成功，release `50a26650a7e51d18cefdc5ae1d4567bfb26b9790f2a1656a1d10a529a6d7d51d` 的原生 status 读回 HTTP 与 worker 运行身份一致，worker PID 70242、`draining=false`、`pending=0`。生产 Rotterdam 和 Amsterdam 的数据库读回均为修订 3。随后原访客从 Projects 删除 Rotterdam，Amsterdam 保留修订 3。批准账户 53 从 Saved solutions 重开项目，在 Review & share 下载修订 20 的德语报告，实得 88,258 字节、12 页。[访客操作回执](https://github.com/AssassinFlash/de-linker/issues/1132#issuecomment-6972663396) · [账户下载回执](https://github.com/AssassinFlash/de-linker/issues/1132#issuecomment-6972909263)
+
+### 账户工作台上线
+
+[账户工作台](https://github.com/AssassinFlash/de-linker/pull/1145) 随生产批次 `20261118T094939928468Z-0eec71183` 上线。数据库快照 `db-20261118T094946Z.sql.gz` 为 8,331,604 字节。WindPress 更新至 `1794995640`，同批 `resume-deploy` 完成 verify 和 archive。公网返回的 `Configurator-Dz4yIfz0.js` 共 255,297 字节，与合并提交逐字节相同。
+
+通过 User Switching 进入批准测试账户，总览显示联系人和三个快捷入口。询盘列表显示金额，可打开既有询盘详情。保存方案和文件入口均打开对应账户页。英文桌面显示三张并排的入口卡片。切换到正式德语后，390 px 手机视口内容宽 390 px，底栏的“Gespeicherte Lösungen”按完整单词换行。
+
+### 评审站备电询盘的客户与销售读回
+
+访客为保留的 7.5 kW 逆变器填写 3 kW 备电负荷、2 小时时长。从比较页生成报告并附到询盘，Woo 收到询盘 8951，报告关联存在，新增商品为零。客户在成功页下载了 PDF。销售从 Woo 的 Edit inquiry 打开这条记录，最初看不到项目名和附件。接入现有报告展示后，同一后台页面显示项目名和 Download PDF，下载返回 HTTP 200、`application/pdf`、95,687 字节。
+
+### 评审站商用削峰报告
+
+访客项目 `22efbecfa1db4f2d931a0d7a21934db3` 比较并采用方案后，在修订 3 下载了英文报告 `f664bf5d0f144603b7e677217727e55d` 和德文报告 `fe52fb747ddd4cb7b8a6d0bc8e3e0d0d`。两份 PDF 均列出客户购电上限 190 kW、无储能峰值 194.1 kW 和乐观下界 140.1 kW。结论分别为 “Further checks required” 和 “Weitere Prüfung erforderlich”。
+
+### Eindhoven 多系统备电报告与 Woo 草稿
+
+同一访客重开项目 `38ce052e221c4aa6b9c55edf180ab53b`，用修订 4 比较并重新采用 45 kWh 方案。修订 5 保留候选引用，报告 `bb62612f714f4170a24e69f1d37117df` 返回 HTTP 200。下载的 PDF（127,735 字节）和 CSV（9,771 字节）均列出 H2-25K-T3 ×1、H2-20K-T3 ×1、BC2-HV1 ×2、BU2-5.0-HV1 ×10。访客确认后，Woo 方案草稿的四行均关联输入修订 5。报告把 40 kWh 损耗前需求、45 kWh 可用容量和 30.72 kW 备电功率上限分别列出，实际备电时长仍需核查。
+
+### 历史报告和航拍来源
+
+评审站项目 `8c9006678960480691ca718017e14ceb` 的当前修订为 3。从历史链接选中修订 2 的报告后，切到正式德语仍下载修订 2 的英文 PDF，报告列出的需求为 3 kW。报告内的 Genie 请求带修订 2 和运行 `0c0ff1c86abe484e8817bc1b9708eb17`，关闭后从普通浮动入口发问，请求不含项目、修订或报告。两次请求均返回 HTTP 200。询盘卡说明将使用当前报告的修订。候选 `81ea79931` 上，另一访客在同一页面先从修订 3 的报告打开 Genie，再从修订 2 的历史报告打开。两个打开动作的首次同步回执分别绑定 `12963cde2a3244e4816d497e30c88578`（修订 3）和 `4d6d597816be41d3a860f88b5bf33a9a`（修订 2）。
+
+慕尼黑访客项目 `7e12455d9ffa4389ac8bde9b13e808ff` 授权前未请求巴伐利亚航拍瓦片，授权后显示建筑、道路和树木。撤回同意后无法落点，重新授权后绘制四个屋角并保存。修订 2 的屋面记录保留 Bayerische Vermessungsverwaltung 署名、CC BY 4.0 许可证及其链接，导出权限为 `unknown`。
+
+### 英国和挪威的客户图纸
+
+伦敦和奥斯陆的访客各自上传 PNG，确认图纸派生和留存许可，用两段 12 m 的标尺校准后描绘四个屋角。两个项目在修订 2 重开时均保留图纸来源、许可和约 0.02 m/像素的比例，地理锚点为空。在各自屋面布置 2 × 2 块组件后保存，修订 3 重开时阵列仍关联对应屋面。两地验证的是客户授权图纸路径。公共航拍描绘的实走记录见上方慕尼黑案例。
+
+随后在伦敦、奥斯陆分别从 Solar 打开 Copernicus 查看层，覆盖 EN／正式 DE、1440／390 共八组。授权前图源请求均为零，授权后能看到带 EEA 署名的影像。点按图层未采集屋角，撤回后连续缩放两次，请求数均未增加。伦敦访客撤回后用自己的图纸完成标定，重开修订 2 读回 0.02 m/像素。
+
+**查看型航拍文案审校。** 初稿方向是告诉客户图层只供查看。仅说明用途不足以决定是否加载第三方影像，授权按钮旁还需点明接收方和发出的数据。英德定稿分别为 “This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider.” 和 „Dieses Luftbild dient nur zur Ansicht. Wenn Sie es anzeigen, erhält der Anbieter Ihre IP-Adresse und den angezeigten Kartenausschnitt.“
+
+**单机相数提示审校。** 初稿用 “The selected inverter has … grid phase(s)” 描述设备。评审发现客户还需知道项目要求几相以及能否发起工程询盘。转入草稿前和 Woo 草稿内沿用同一句定稿，两个占位符分别取冻结检查中的设备相数和要求相数。EN “Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.” DE „Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration.“
+
+**串组编辑提示审校。** 初稿让客户纠正高亮输入。单机和多机中，把已保存串组的 MPPT 从 2 改为有效值 3 后，没有输入错误，下一步是保存或取消这次编辑。英语定稿为 “Save or cancel your string changes before continuing.” 德语定稿为 „Speichern oder verwerfen Sie Ihre Änderungen am String, bevor Sie fortfahren.“
+
+评审访客项目 `8e203e11d5c84c2eaabe8dd7bc1d4cb9` 用 10 块 460 Wp 组件核对了这条提示。英语桌面和正式德语手机入口均能看到保存与取消操作。访客取消后恢复到 MPPT 1，随后保存到 MPPT 2、输入 1。项目修订 2 保留了全部 10 块组件。
+
+同一 Leiden 访客在修订 4 下载五页 PDF。冻结报告 `988491bebcc241fe9cb41883a60a4c6c` 引用修订 3 采用的设备比较 `7142052e6a8c4ae48ac52867d4ebae0c` 和修订 4 的接线检查 `5676d2b420d645cba3d2be1c62e8ec54`。接线行列出 MPPT 2、输入 1、10 块组件，STC 工作电压为 454 V。设计最低温度未填写，冷态开路电压一栏显示「—」。
+
+**清空串组组件后的提示审校。** 初稿 “Select at least one module.” / „Wählen Sie mindestens ein Modul aus.“ 只说明数量。安装商还可以取消编辑并保留已保存的串组。定稿关联到该逆变器的阵列选择器。EN “Select at least one module for this string or cancel editing.” DE „Wählen Sie mindestens ein Modul für diesen String aus oder brechen Sie die Bearbeitung ab.“
+
+**从有串组的项目切到纯储能。** Delft 访客在修订 2 保存了 5 块组件的串组。取消切换保留光储范围，确认切换后进入 Energy use。比较请求为 `storage_only`，单机和多机串组计划均已解除。修订 4 的冻结报告 `28cf3c36441f418aa7f8988441fba981` 共 5 页，列出 13.5 kWh、逆变器和电表各 1 件、BU2 电池模块 3 件。PDF 中没有 PV 接线表。该短期项目已从访客入口删除。
+
+**汉堡两款逆变器的评审站资料。** H2-25K-T3 和 H2-30K-T3-DE 的电池端口数来自所附 EN BEU 数据表第 2 页。手册第 38 页给出两个型号的最大充放电电流 `2 × 50 A`，第 43 页标出 BAT1、BAT2。评审站 `engineering-feed` 已按端口和方向返回每口 50 A 的上限。评审引擎重新加载 Woo 修订 `b87bd47f` 后通过工程就绪确认。汉堡原访客的 `products/current` 返回 HTTP 200，发布修订与已加载修订一致，两个型号均返回 BAT1、BAT2。主线为这次资料写入保留 `cutover-20261118-1340` 和一份 `1132-review-h2-ports.json` 定点回滚回执，至该批生产验收完成后按实例保留规则回收。
+
+### 保留旧逆变器并增购储能
+
+评审项目 `79c24839c37843039476062e9b0c6215` 的修订 3 在英德冻结 PDF 中均列出 SAJ H2-25K-T3 ×1 为现场保留设备。德语报告写明「bleibt am Standort, keine Beschaffung」。客户确认后，Woo 草稿列出 SAJ B2-10.0-HV1 电池 ×1、SAJ BC2-HV1 控制器 ×1，均关联该项目的修订 3。在德语入口重开仍可查看项目和采购数量，并可生成德语 PDF。
+
+### 从冻结报告核对设备数量和依据
+
+评审 Genie 对话 8959 的第 21 轮读取修订 3 的冻结报告 `8b7538fbf7e24ccda2a589bafff6df90`。答复列出 SAJ HS2-10K-T2-X 和 Chint DTSU666 各一件，供货范围均为 `Selected equipment`。额定输出 10 kW 引自数据手册第 2 页，电表要求引自 SAJ 配置说明第 5.1 节、第 32–33 页。该轮返回 HTTP 200，使用配套知识索引 `20261118T111543Z-186258000`。
+
+### 已知光伏容量和实测用电
+
+主线负责评审引擎切换。在 `/Users/chesterjohn/de-linker-local/review/planner/` 保留本次切换前的一份 `runtime-releases/d55b283964cc760742dc8ba8346b59eedfee0ffd14b6a33ae0ec7c1bd536490d` 可执行版本，并滚动更新 `workspace.before-shared-backup.sqlite`。用于康斯坦茨访客报告验收期间恢复原服务，读回后按实例保留规则回收。
+
+评审项目 `e4502babfc7e41bf9ec3b6e822d26398` 以 8 kWp、正南、30° 的已知光伏系统，配对 OPSD CoSSMic 的 `DE_KN_residential6` 表计负荷和 JRC PVGIS 的模型发电数据。访客沿用输入修订 4，从同一项目生成并下载报告 `e9f37120b8e743eabdd2e590c3bf5733`。报告引用修订 3 的设备比较 `cceb8dba90c04a97b0399d72e4dc7e8a`。
+
+PDF 首页列出 2017-06-19 02:00 至 06-21 08:00 UTC 的 54 小时。用电量 87.638 kWh，模型发电量 100.250 kWh，无储能时直接自用 74.456 kWh、购电 13.182 kWh、外送 25.794 kWh，购电峰值 2.593 kW。采用方案的额外自用上限为 12.764 kWh。该次 PDF 把初始条件误写为满电。模型从零累计可归于本时段的储存光伏电量，只计时段内存入并交付给负荷的光伏余电，按无损储能计算。下载的 CSV 与该修订的 Woo 草稿同列 H2-25K-T3 ×1、BC2-HV1 ×1、BU2-5.0-HV1 ×3。CSV 将电表单列为厂商随附、数量待核。
+
+自用报告说明的英德初稿均写为期初满电。评审核对 `profile_demand_bounds.py` 的逐时计算，发现满电起步只用于削峰，且把自用写成「期初电池为空」也会混淆现场荷电状态与光伏电量归属。定稿 EN “Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage.” DE „Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze. Die Berechnung setzt eine verlustfreie Speicherung voraus.“
+
+下载后，原访客从 Woo 草稿移除三项设备，草稿数量归零。项目删除返回 HTTP 200，同一访客重开返回 HTTP 404。独立浏览器与临时下载件已回收，卷可用空间增加约 177 MiB，评审站首页返回 HTTP 200。
+
+### 替换屋面图纸和撤销标定
+
+评审包 `Configurator-DCuyPnr0.js` 的访客项目 `27a892b5eced4a6987c83a64b2eca1cd` 在英语入口撤销标定，保存并重开修订 3。项目恢复安装商声明的 6 kWp、25°、正南，保留标定后修改的纬度 53.08° 和损耗率 12%。
+
+在德语手机入口用图 B 替换图 A 时，图 B 的声明起初为空，导出权限为未知。访客填入图 B 的许可后保存修订 5。同一屋面保留原 ID 与原点，改为引用图 B。图 A 允许导出，图 B 只允许描绘和保存，禁止导出。

@@ -110,7 +110,10 @@ async function mount(t, initial) {
 }
 
 test("existing equipment is declared through the current product data and carried into named systems", async (t) => {
-	const current = await mount(t, {});
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const current = await mount(t, {
+		equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 4 },
+	});
 	await until(() =>
 		field("Inverter or integrated storage system")?.querySelector(
 			'option[value="101"]',
@@ -148,6 +151,20 @@ test("existing equipment is declared through the current product data and carrie
 	assert.equal(plant.units[1].inputs.equipment_setup.inverter_product_id, null);
 	assert.ok(button("Single system").disabled);
 	const units = [...document.querySelectorAll("fieldset[data-project-system]")];
+	const capacity = (unit) => field("Allocated PV nameplate rating (kWp)", unit);
+	assert.ok(capacity(units[0]));
+	await enter(capacity(units[0]), "13.8");
+	await enter(capacity(units[1]), "9.2");
+	assert.deepEqual(
+		current().equipment_plant_setup.units.map(
+			(u) => u.inputs.equipment_setup.pv_dc_kw,
+		),
+		[13.8, 9.2],
+	);
+	const total = field("Total PV nameplate rating (kWp)");
+	assert.equal(total?.value, "4");
+	await enter(total, "23");
+	assert.equal(current().equipment_plant_setup.requirements.pv_dc_kw, 23);
 	await enter(field("System name", units[1]), "Annex");
 	assert.equal(current().equipment_plant_setup.units[1].name, "Annex");
 	await act(async () => button("Remove system", units[1]).click());
@@ -191,6 +208,35 @@ test("switching to solar makes excluding backup demand and retained storage an e
 		equipment_use: { inverter: "retain", battery: "new" },
 	});
 	assert.equal(field("Battery or storage system"), undefined);
+});
+
+test("changing to storage requires confirmation before removing active PV wiring", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const plan = {
+		schema_version: 1,
+		inverter_product_id: 101,
+		minimum_ambient_c: null,
+		temperature_source: null,
+		strings: [{ id: "s", mppt: 1, input: 1, module_ids: ["module_1"] }],
+	};
+	const current = await mount(t, {
+		brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
+		pv_string_plan: plan,
+		shared_dc_energy_run_id: "b".repeat(32),
+	});
+	await choose("Planned system", "storage_only");
+	assert.equal(current().brief.system_scope, "new_pv_storage");
+	assert.deepEqual(current().pv_string_plan, plan);
+	await act(async () => button("Keep current system").click());
+	assert.deepEqual(current().pv_string_plan, plan);
+	assert.equal(current().shared_dc_energy_run_id, "b".repeat(32));
+	await choose("Planned system", "storage_only");
+	await act(async () =>
+		button("Switch to storage and remove PV wiring").click(),
+	);
+	assert.equal(current().brief.system_scope, "storage_only");
+	assert.equal(current().pv_string_plan, undefined);
+	assert.equal(current().shared_dc_energy_run_id, undefined);
 });
 
 test("a product from an entry link is visible and can be replaced or cleared", async (t) => {

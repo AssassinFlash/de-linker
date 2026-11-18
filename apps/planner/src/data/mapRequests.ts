@@ -15,16 +15,15 @@ function parseAerialOrigins(aerialOrigins: readonly string[]): Set<string> {
 
 export class MapRequestScope {
 	private active = true;
-	private readonly external: boolean;
+	private readonly street: boolean;
 	private aerial: Set<string>;
 
 	/**
-	 * @param external whether the visitor allowed external map services
-	 * @param aerialOrigins origins of the site's aerial mosaic, exactly as the
-	 * server named them. An empty set leaves only the style provider reachable.
+	 * @param street whether the visitor allowed OpenFreeMap
+	 * @param aerialOrigins the consented mosaic origins, exactly as the server named them
 	 */
-	constructor(external: boolean, aerialOrigins: readonly string[] = []) {
-		this.external = external;
+	constructor(street: boolean, aerialOrigins: readonly string[] = []) {
+		this.street = street;
 		this.aerial = parseAerialOrigins(aerialOrigins);
 	}
 
@@ -37,12 +36,14 @@ export class MapRequestScope {
 	/** MapLibre invokes this boundary for worker tiles as well as main-thread
 	 * resources. It is a request policy, not a claim that a packet was sent. */
 	readonly transform = (url: string) => {
-		if (!this.active || !this.external)
-			throw new Error("map_request_not_authorized");
+		if (!this.active) throw new Error("map_request_not_authorized");
 		const target = new URL(url);
 		if (target.username || target.password)
 			throw new Error("map_resource_origin_not_authorized");
-		if (target.origin !== ORIGIN && !this.aerial.has(target.origin))
+		if (
+			!(this.street && target.origin === ORIGIN) &&
+			!this.aerial.has(target.origin)
+		)
 			throw new Error("map_resource_origin_not_authorized");
 		// The pinned library supports same-origin/include. Every granted origin
 		// here is cross-origin to Linker, so same-origin sends no credentials.

@@ -139,6 +139,43 @@ const confirmButton = () =>
 		),
 	].find((button) => button.className.includes("lp-button-danger"));
 
+test("a refreshing list waits for the saved revision before offering deletion", async (t) => {
+	const refresh = deferred();
+	let refreshing = false;
+	const mounted = await mount(async (url) => {
+		const path = new URL(url).pathname;
+		if (path.endsWith("/nonce")) return new Response("abcdefghij");
+		if (path.endsWith("/bootstrap")) return response(session());
+		if (path.endsWith("/recovery/scopes"))
+			return response({ schema_version: 1, scopes: [], next: null });
+		if (path.endsWith("/projects/list")) {
+			const items = projects();
+			if (refreshing) {
+				await refresh.promise;
+				items[0].revision = 3;
+			}
+			return response({ items, next: null });
+		}
+		throw new Error("unexpected fetch " + path);
+	}, recordingStore());
+	t.after(() => mounted.dispose());
+	refreshing = true;
+	await act(async () =>
+		document.querySelector('button[aria-label="Refresh projects"]').click(),
+	);
+	await act(async () => deleteIcon().click());
+	const showedStaleConfirmation = Boolean(confirmButton());
+	await act(async () => refresh.resolve());
+	assert.equal(showedStaleConfirmation, false);
+	await until(() => !deleteIcon().disabled);
+	await act(async () => deleteIcon().click());
+	assert.match(
+		document.querySelector('[role="group"][aria-label="Delete this project"]')
+			.textContent,
+		/at revision 3/,
+	);
+});
+
 test("an owned project is deleted behind an explicit confirm, one request, and the list refreshes", async (t) => {
 	const store = recordingStore();
 	store.creations.push({

@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { readPlaceImagery } from "../../domain/place.ts";
-import type { PointerEvent as ReactPointerEvent } from "react";
-import { useEffect, useRef, useState } from "react";
-import type { JsonObject, Session } from "../../data/protocol.ts";
+import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
+import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { PlaceImagery } from "../../domain/place.ts";
+import type { Json, JsonObject, Session } from "../../data/protocol.ts";
+import { sameJson } from "../../domain/draft.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
@@ -23,6 +25,10 @@ import {
 	attachGeometryImport,
 	readGeometryImports,
 } from "../../domain/geometryImports.ts";
+import {
+	ImageCalibrationWorkspace,
+	type CalibrationCommand,
+} from "../design/ImageCalibrationWorkspace.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
@@ -47,7 +53,9 @@ import {
 	newMapShapeCommand,
 	readMapPolygon,
 } from "../../domain/mapDrawingGeometry.ts";
+import { canAnchorFirstMapRoof } from "../../domain/mapDrawingBase.ts";
 import type { MapInteraction } from "../../data/mapInteraction.ts";
+import { revealActionResult } from "../revealActionResult.ts";
 import { __ } from "../../i18n.ts";
 
 export interface SolarInstallationProps {
@@ -58,6 +66,7 @@ export interface SolarInstallationProps {
 	disabled: boolean;
 	edit: (op: (inputs: JsonObject) => JsonObject) => boolean;
 	next: () => void;
+	wiring?: ReactNode;
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
 	geometryImport?: {
@@ -69,6 +78,47 @@ export interface SolarInstallationProps {
 		recoveryChecking?: boolean | undefined;
 	};
 }
+interface ReferenceChange {
+	before: JsonObject;
+	after: PvgisReferenceDraft;
+}
+type SolarUndo =
+	| { geometry: GeometryDocument }
+	| {
+			calibration: CalibrationCommand;
+			hadGeometry: boolean;
+			reference: ReferenceChange | null;
+	  };
+const referenceKeys = [
+	"pvgis_reference_setup",
+	"pvgis_reference",
+	"inactive_known_pv_arrays",
+] as const;
+
+function restoreKnownReference(
+	current: JsonObject,
+	{ before, after }: ReferenceChange,
+): JsonObject {
+	const active = referenceDraft(current);
+	if (active.model !== after.model) throw new Error("solar_reference_changed");
+	if (!sameJson(active, after)) {
+		// Keep shared settings edited after tracing, and recompile for the known arrays.
+		const known = referenceDraft(before);
+		return referenceInputs(current, {
+			...active,
+			model: KNOWN_PV_MODEL,
+			...(known.arrays === undefined ? {} : { arrays: known.arrays }),
+		});
+	}
+	const restored: Record<string, Json> = { ...current };
+	for (const key of referenceKeys) {
+		const value = before[key];
+		if (value === undefined) delete restored[key];
+		else restored[key] = value;
+	}
+	return restored;
+}
+
 const id = () => "solar_" + crypto.randomUUID();
 export function SolarInstallation({
 	inputs,
@@ -78,6 +128,7 @@ export function SolarInstallation({
 	disabled,
 	edit,
 	next,
+	wiring,
 	initialMap = false,
 	onEditing,
 	geometryImport,
@@ -87,8 +138,21 @@ export function SolarInstallation({
 			? emptyGeometry()
 			: readGeometry(inputs.geometry, policy);
 	const reference = referenceDraft(inputs);
+	const site = readBrief(inputs.brief).site;
+	const siteCentre =
+		site.latitude !== null && site.longitude !== null
+			? ([site.longitude, site.latitude] as const)
+			: null;
+	const mapReferenced =
+		geometry.coordinate_system.anchor !== null &&
+		geometry.coordinate_system.north_reference === "true_north";
+	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
+	const startOnMap =
+		initialMap ||
+		(reference.model !== KNOWN_PV_MODEL &&
+			(siteCentre !== null || mapReferenced));
 	const [mode, setMode] = useState<"known" | "roof">(
-		initialMap || (reference.model !== KNOWN_PV_MODEL && geometry.roofs.length)
+		startOnMap || (reference.model !== KNOWN_PV_MODEL && geometry.roofs.length)
 			? "roof"
 			: "known",
 	);
@@ -108,17 +172,34 @@ export function SolarInstallation({
 	);
 	const [error, setError] = useState("");
 	const [view, setView] = useState<"plan" | "map" | "scene">(
-		initialMap ? "map" : "plan",
+		startOnMap ? "map" : "plan",
 	);
 	const map = view === "map";
-	useEffect(
-		() => onEditing?.(mode === "roof" && tool !== "select"),
-		[mode, tool, onEditing],
+	const [calibrationOpen, setCalibrationOpen] = useState(false);
+	const [importOpen, setImportOpen] = useState(false);
+	const reportImportActivity = geometryImport?.onActivity;
+	const geometryImportActivity = useCallback(
+		(open: boolean) => {
+			setImportOpen(open);
+			reportImportActivity?.(open);
+		},
+		[reportImportActivity],
 	);
+	useEffect(() => {
+		onEditing?.(calibrationOpen || (mode === "roof" && tool !== "select"));
+		return () => onEditing?.(false);
+	}, [calibrationOpen, mode, tool, onEditing]);
 	const camera = useRef<MapCamera | null>(null);
+	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
+	const [readyAerial, setReadyAerial] = useState<PlaceImagery | null>(null);
+	const tracedAerial = useRef<PlaceImagery | null>(null);
+	const canConfirmAerial =
+		readyAerial &&
+		tracedAerial.current &&
+		imagerySourceKey(readyAerial) === imagerySourceKey(tracedAerial.current);
 	const [drawingKey, setDrawingKey] = useState(() => crypto.randomUUID());
-	const [undo, setUndo] = useState<readonly GeometryDocument[]>([]);
+	const [undo, setUndo] = useState<readonly SolarUndo[]>([]);
 	const [fields, setFields] = useState({
 		width: "",
 		depth: "",
@@ -145,9 +226,6 @@ export function SolarInstallation({
 	const poses = panelPoses(geometry);
 	const summary = moduleSummary(geometry);
 	const blocked = disabled || !client.isCurrentScope(session.query_scope);
-	const mapReferenced =
-		geometry.coordinate_system.anchor !== null &&
-		geometry.coordinate_system.north_reference === "true_north";
 	const numeric = (key: keyof typeof fields) => {
 		const value = fields[key].trim() ? Number(fields[key]) : NaN;
 		if (!Number.isFinite(value))
@@ -159,21 +237,44 @@ export function SolarInstallation({
 			);
 		return value;
 	};
-	function commit(command: GeometryCommand) {
+	function commit(
+		editCommand: GeometryCommand | { calibration: CalibrationCommand },
+	) {
 		if (blocked) return false;
+		const calibration =
+			"calibration" in editCommand ? editCommand.calibration : null;
+		const command =
+			"calibration" in editCommand ? editCommand.calibration : editCommand;
+		let entry: SolarUndo | undefined;
 		try {
 			const ok = edit((current) => {
 				const before =
 					current.geometry === undefined
 						? emptyGeometry()
 						: readGeometry(current.geometry, policy);
-				return {
+				const updated = {
 					...invalidateEnergyReplay(current),
 					geometry: readObject(applyGeometryCommand(before, command)),
 				};
+				const switchesReference =
+					calibration && referenceDraft(current).model === KNOWN_PV_MODEL;
+				const nextInputs = switchesReference
+					? roofReferenceInputs(updated)
+					: updated;
+				entry = calibration
+					? {
+							calibration,
+							hadGeometry: current.geometry !== undefined,
+							reference: switchesReference
+								? { before: current, after: referenceDraft(nextInputs) }
+								: null,
+						}
+					: { geometry: before };
+				return nextInputs;
 			});
-			if (ok) {
-				setUndo((previous) => [...previous, geometry]);
+			if (ok && entry) {
+				const applied = entry;
+				setUndo((previous) => [...previous, applied]);
 				setError("");
 			}
 			return ok;
@@ -185,6 +286,64 @@ export function SolarInstallation({
 				),
 			);
 			return false;
+		}
+	}
+	function undoRoofEdit() {
+		const previous = undo.at(-1);
+		if (blocked || !previous) return;
+		let restoredMode: "known" | null = null;
+		try {
+			const ok = edit((current) => {
+				const next = { ...invalidateEnergyReplay(current) };
+				if ("geometry" in previous)
+					return { ...next, geometry: readObject(previous.geometry) };
+
+				const [source, roof] = previous.calibration.edits;
+				const currentGeometry = readGeometry(current.geometry, policy);
+				if (
+					!sameJson(
+						currentGeometry.sources.find((item) => item.id === source.value.id),
+						source.value,
+					) ||
+					!sameJson(
+						currentGeometry.roofs.find((item) => item.id === roof.value.id),
+						roof.value,
+					)
+				)
+					throw new Error("geometry_object_changed");
+				const restored = applyGeometryCommand(currentGeometry, {
+					type: "group",
+					edits: [
+						roof.before
+							? { type: "put_roof", before: roof.value, value: roof.before }
+							: {
+									type: "delete_roof",
+									id: roof.value.id,
+									expected_dependents: [],
+								},
+						{ type: "delete_object", id: source.value.id },
+					],
+				});
+				if (!previous.hadGeometry && sameJson(restored, emptyGeometry()))
+					delete next.geometry;
+				else next.geometry = readObject(restored);
+				if (!previous.reference) return next;
+				const restoredInputs = restoreKnownReference(next, previous.reference);
+				if (referenceDraft(restoredInputs).model === KNOWN_PV_MODEL)
+					restoredMode = "known";
+				return restoredInputs;
+			});
+			if (!ok) return;
+			setUndo(undo.slice(0, -1));
+			setError("");
+			if (restoredMode) setMode(restoredMode);
+		} catch {
+			setError(
+				__(
+					"This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.",
+					"linker-tools",
+				),
+			);
 		}
 	}
 	function chooseModule(spec: ModuleSpec) {
@@ -333,28 +492,63 @@ export function SolarInstallation({
 		}
 	}
 	function addRoof(points?: readonly Vec2[]) {
+		const aerialTrace = points && firstMapRoof;
+		const aerial = aerialTrace ? tracedAerial.current : null;
+		if (aerialTrace && !canConfirmAerial) return;
 		try {
-			if (!confirmed || !fields.source.trim())
+			if (!confirmed || (!aerial && !fields.source.trim()))
 				throw new Error(
 					__(
 						"Confirm the drawing source before adding a roof.",
 						"linker-tools",
 					),
 				);
-			const source = manualSource(
-				id(),
-				fields.source.trim(),
-				fields.source.trim(),
-			);
+			const declared = aerial
+				? {
+						...manualSource(
+							id(),
+							aerial.credit,
+							`${aerial.licence} (${aerial.licence_url})`,
+						),
+						reference_url: aerial.licence_url,
+						rights_basis: "referenced_licence" as const,
+					}
+				: manualSource(id(), fields.source.trim(), fields.source.trim());
+			const source = points
+				? { ...declared, kind: "user_drawing" as const }
+				: declared;
+			const frame = geometry.coordinate_system;
+			const coordinateEdit =
+				points && firstMapRoof
+					? {
+							type: "set_coordinate_system" as const,
+							before: frame,
+							value: {
+								...frame,
+								anchor: {
+									longitude_deg: points[0]![0],
+									latitude_deg: points[0]![1],
+									datum: "EPSG:4326" as const,
+									source_id: source.id,
+								},
+								north_reference: "true_north" as const,
+								north_source_id: source.id,
+							},
+						}
+					: null;
 			const identity = {
 				id: id(),
 				name: `${__("Roof", "linker-tools")} ${geometry.roofs.length + 1}`,
 				source_id: source.id,
 			};
+			const sourceEdits = [
+				{ type: "put_source" as const, before: null, value: source },
+				...(coordinateEdit ? [coordinateEdit] : []),
+			];
 			const withSource = applyGeometryCommand(geometry, {
-				type: "put_source",
-				before: null,
-				value: source,
+				type: "group",
+				before: geometry,
+				edits: sourceEdits,
 			});
 			const command: GeometryCommand = points
 				? newMapShapeCommand(
@@ -389,10 +583,7 @@ export function SolarInstallation({
 				commit({
 					type: "group",
 					before: geometry,
-					edits: [
-						{ type: "put_source", before: null, value: source },
-						...edits,
-					],
+					edits: [...sourceEdits, ...edits],
 				})
 			) {
 				select(identity.id);
@@ -502,14 +693,28 @@ export function SolarInstallation({
 		);
 		select(null);
 	}
-	const interaction: MapInteraction | null =
-		map && mapReferenced && (tool === "roof" || (tool === "obstacle" && roof))
+	const mapDrawing: MapInteraction | null =
+		map &&
+		((tool === "roof" && (firstMapRoof || mapReferenced)) ||
+			(tool === "obstacle" && roof && mapReferenced))
 			? {
 					key: drawingKey,
 					phase: "collecting",
+					requiresAerial: tool === "roof" && firstMapRoof,
 					vertices,
 					referencePosition: vertices[0] ?? null,
-					append: (point) =>
+					append: (point) => {
+						if (tool === "roof" && firstMapRoof) {
+							if (!readyAerial) return;
+							const previousSource = tracedAerial.current;
+							if (
+								previousSource &&
+								imagerySourceKey(previousSource) !==
+									imagerySourceKey(readyAerial)
+							)
+								setVertices([]);
+							tracedAerial.current = readyAerial;
+						}
 						setVertices((previous) => {
 							if (
 								previous.length >= policy.max_vertices ||
@@ -519,7 +724,8 @@ export function SolarInstallation({
 							)
 								return previous;
 							return [...previous, point];
-						}),
+						});
+					},
 					transaction: (change) => {
 						try {
 							const last = change.steps.at(-1);
@@ -534,6 +740,7 @@ export function SolarInstallation({
 				}
 			: null;
 	function startTool(value: typeof tool) {
+		tracedAerial.current = null;
 		setTool(value);
 		setVertices([]);
 		setDrawingKey(crypto.randomUUID());
@@ -549,6 +756,7 @@ export function SolarInstallation({
 				{unit ? ` (${unit})` : ""}
 			</span>
 			<input
+				ref={key === "rows" ? moduleRows : undefined}
 				type="number"
 				step="any"
 				value={fields[key]}
@@ -649,7 +857,7 @@ export function SolarInstallation({
 		depth = allPoints.length
 			? Math.max(...allPoints.map((p) => p[1])) - minV
 			: 1;
-	const site = readBrief(inputs.brief).site;
+	const placeQuery = site.postal_code || site.location_label;
 	const imagery = useQuery({
 		queryKey: [
 			session.query_scope,
@@ -667,7 +875,7 @@ export function SolarInstallation({
 					"places/lookup",
 					{
 						schema_version: 1,
-						query: site.postal_code || site.location_label,
+						query: placeQuery,
 						...(site.country_code ? { country: site.country_code } : {}),
 					},
 					session.query_scope,
@@ -676,6 +884,7 @@ export function SolarInstallation({
 			);
 			return {
 				imagery: readPlaceImagery(reply.imagery),
+				viewingImagery: readPlaceImagery(reply.viewing_imagery),
 				latitude: reply.latitude,
 				longitude: reply.longitude,
 				country: reply.country_code,
@@ -684,6 +893,9 @@ export function SolarInstallation({
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
 	});
+	const viewingImagery = imagery.data?.viewingImagery ?? null;
+	const viewOnly = !imagery.data?.imagery && viewingImagery !== null;
+	const interaction = viewOnly ? null : mapDrawing;
 	const latitude = site.latitude ?? imagery.data?.latitude,
 		longitude = site.longitude ?? imagery.data?.longitude,
 		country = site.country_code ?? imagery.data?.country;
@@ -691,13 +903,12 @@ export function SolarInstallation({
 		queryKey: [
 			session.query_scope,
 			"sc-solar-outline",
-			site.location_label,
+			placeQuery,
 			country,
 			latitude,
 			longitude,
 		],
-		enabled:
-			map && !blocked && imagery.isSuccess && Boolean(site.location_label),
+		enabled: map && !blocked && imagery.isSuccess && Boolean(placeQuery),
 		retry: false,
 		queryFn: async ({ signal }) => {
 			if (
@@ -711,7 +922,7 @@ export function SolarInstallation({
 					"places/outline",
 					{
 						schema_version: 1,
-						query: site.location_label,
+						query: placeQuery,
 						country,
 						latitude,
 						longitude,
@@ -746,7 +957,22 @@ export function SolarInstallation({
 					)}
 				</p>
 			</header>
-			<fieldset disabled={blocked}>
+			<ImageCalibrationWorkspace
+				geometry={geometry}
+				roofId={null}
+				locale={config.locale}
+				disabled={blocked || importOpen || vertices.length > 0}
+				onActivity={setCalibrationOpen}
+				commit={(command) => {
+					if (!commit({ calibration: command })) return false;
+					setMode("roof");
+					setView("plan");
+					startTool("select");
+					select(command.edits[1].value.id);
+					return true;
+				}}
+			/>
+			<fieldset disabled={blocked || calibrationOpen}>
 				<div className="sc-option-row">
 					{(["known", "roof"] as const).map((value) => (
 						<button
@@ -916,17 +1142,7 @@ export function SolarInstallation({
 									<button
 										type="button"
 										disabled={!undo.length}
-										onClick={() => {
-											const previous = undo.at(-1);
-											if (
-												previous &&
-												edit((current) => ({
-													...invalidateEnergyReplay(current),
-													geometry: readObject(previous),
-												}))
-											)
-												setUndo(undo.slice(0, -1));
-										}}
+										onClick={undoRoofEdit}
 									>
 										{__("Undo", "linker-tools")}
 									</button>
@@ -978,7 +1194,9 @@ export function SolarInstallation({
 								{map ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
-										imagery={imagery.data?.imagery ?? null}
+										imagery={imagery.data?.imagery ?? viewingImagery}
+										viewOnly={viewOnly}
+										onAerialReady={setReadyAerial}
 										siteOutline={outline.data ?? null}
 										document={geometry}
 										poses={poses}
@@ -994,15 +1212,16 @@ export function SolarInstallation({
 											)
 										}
 										camera={camera}
-										siteCentre={
-											site.latitude !== null && site.longitude !== null
-												? [site.longitude, site.latitude]
-												: null
-										}
+										siteCentre={siteCentre}
 										interaction={interaction}
 										placement={
 											tool === "modules" && roof && module && mapReferenced
-												? { roofId: roof.id, place: placeModules }
+												? {
+														roofId: roof.id,
+														place: placeModules,
+														review: () =>
+															revealActionResult(moduleRows.current),
+													}
 												: null
 										}
 									/>
@@ -1098,30 +1317,43 @@ export function SolarInstallation({
 								{interaction && vertices.length >= 3 && (
 									<button
 										type="button"
+										disabled={interaction.requiresAerial && !canConfirmAerial}
 										onClick={() =>
 											tool === "roof"
 												? addRoof(vertices)
 												: addObstacle(vertices)
 										}
 									>
-										{__("Finish outline", "linker-tools")}
+										{firstMapRoof && tool === "roof"
+											? __("Confirm roof and map origin", "linker-tools")
+											: __("Finish outline", "linker-tools")}
 									</button>
 								)}
 								<p className="sc-hint">
-									{interaction
+									{map && viewOnly
 										? __(
-												"Click each corner on the map, then finish the outline.",
+												"Use the plan view or a roof image you have permission to use to create the layout.",
 												"linker-tools",
 											)
-										: tool === "roof" && !mapReferenced
+										: interaction?.requiresAerial
 											? __(
-													"Enter the roof dimensions or confirm the map origin to draw on the map.",
+													"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
 													"linker-tools",
 												)
-											: __(
-													"The plan uses metres in the recorded roof plane.",
-													"linker-tools",
-												)}
+											: interaction
+												? __(
+														"Click each corner on the map, then finish the outline.",
+														"linker-tools",
+													)
+												: tool === "roof" && !mapReferenced
+													? __(
+															"Enter the roof dimensions or confirm the map origin to draw on the map.",
+															"linker-tools",
+														)
+													: __(
+															"The plan uses metres in the recorded roof plane.",
+															"linker-tools",
+														)}
 								</p>
 							</div>
 							<aside className="sc-roof-props">
@@ -1151,7 +1383,12 @@ export function SolarInstallation({
 								<label className="sc-field">
 									<span>{__("Drawing source", "linker-tools")}</span>
 									<input
-										value={fields.source}
+										value={
+											map && firstMapRoof && tool === "roof"
+												? (readyAerial?.credit ?? "")
+												: fields.source
+										}
+										readOnly={map && firstMapRoof && tool === "roof"}
 										onChange={(e) => {
 											const value = e.currentTarget.value;
 											setFields((previous) => ({ ...previous, source: value }));
@@ -1169,7 +1406,8 @@ export function SolarInstallation({
 										"linker-tools",
 									)}
 								</label>
-								{!geometry.coordinate_system.anchor &&
+								{!(map && firstMapRoof) &&
+									!geometry.coordinate_system.anchor &&
 									site.coordinate_basis === "user_entered" &&
 									site.latitude !== null &&
 									site.longitude !== null && (
@@ -1484,7 +1722,7 @@ export function SolarInstallation({
 						locale={config.locale}
 						recheck={geometryImport.recheck}
 						disabled={blocked || tool !== "select"}
-						onActivity={geometryImport.onActivity}
+						onActivity={geometryImportActivity}
 						attach={(before, asset) => {
 							try {
 								if (
@@ -1520,6 +1758,7 @@ export function SolarInstallation({
 					/>
 				)}
 				{error && <p role="alert">{error}</p>}
+				{wiring}
 				<footer className="sc-next">
 					<button type="button" onClick={next}>
 						{__("Continue with energy use", "linker-tools")}

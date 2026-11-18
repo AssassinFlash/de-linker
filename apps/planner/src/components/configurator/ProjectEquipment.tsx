@@ -282,9 +282,9 @@ export function ProjectEquipment({
 		authorized && !catalog.isError && catalog.data?.prepared
 			? catalog.data
 			: undefined;
-	const solarOnly =
-		inputs.brief !== undefined &&
-		readBrief(inputs.brief).system_scope === "pv_only";
+	const scopeOfWork =
+		inputs.brief === undefined ? null : readBrief(inputs.brief).system_scope;
+	const solarOnly = scopeOfWork === "pv_only";
 	const productIds = (
 		plant ? plant.units.map((unit) => unit.inputs) : [inputs]
 	).flatMap((source) => {
@@ -367,6 +367,28 @@ export function ProjectEquipment({
 			factoryEquipment(equipmentDraft(amended), productData!.assemblies),
 		);
 	}
+	const capacityField = (
+		label: string,
+		setup: JsonObject,
+		change: (kw: number | null) => void,
+	) =>
+		scopeOfWork !== "storage_only" && (
+			<label className="sc-field">
+				<span>{label} (kWp)</span>
+				<input
+					type="number"
+					min="0"
+					step="any"
+					disabled={disabled || !productData}
+					value={String(setup.pv_dc_kw ?? "")}
+					onChange={(event) => {
+						const input = event.currentTarget;
+						if (input.validity.valid)
+							change(input.value === "" ? null : input.valueAsNumber);
+					}}
+				/>
+			</label>
+		);
 	const declarations = (
 		source: JsonObject,
 		change: (patch: JsonObject) => void,
@@ -542,6 +564,18 @@ export function ProjectEquipment({
 				) : null}
 				{plant ? (
 					<>
+						{capacityField(
+							__("Total PV nameplate rating", "linker-tools"),
+							plant.requirements,
+							(pv_dc_kw) =>
+								update((current) => {
+									const draft = readPlantDraft(current);
+									return plantInputs(current, {
+										...draft,
+										requirements: { ...draft.requirements, pv_dc_kw },
+									});
+								}),
+						)}
 						{plant.units.map((unit, index) => (
 							<fieldset
 								key={unit.id}
@@ -561,6 +595,11 @@ export function ProjectEquipment({
 										}
 									/>
 								</label>
+								{capacityField(
+									__("Allocated PV nameplate rating", "linker-tools"),
+									equipmentDraft(unit.inputs),
+									(pv_dc_kw) => updateUnit(unit.id, { hardware: { pv_dc_kw } }),
+								)}
 								{declarations(unit.inputs, (hardware) =>
 									updateUnit(unit.id, { hardware }),
 								)}

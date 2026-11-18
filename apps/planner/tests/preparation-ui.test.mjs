@@ -2170,7 +2170,11 @@ for (const locale of ["en-US", "de-DE"])
 			})),
 		};
 		project.inputs.pv_plant_string_plan = wiring;
-		project.inputs.equipment_candidate = { id: "old" };
+		project.inputs.equipment_candidate = {
+			run_id: "a".repeat(32),
+			candidate_id: "b".repeat(64),
+			assessment_sha256: "c".repeat(64),
+		};
 		project.inputs.installation = {
 			schema_version: 1,
 			geometry_sha256: null,
@@ -2250,7 +2254,10 @@ for (const locale of ["en-US", "de-DE"])
 			),
 			wiring.units[1],
 		);
-		assert.equal(current.history.current.equipment_candidate, undefined);
+		assert.deepEqual(
+			current.history.current.equipment_candidate,
+			project.inputs.equipment_candidate,
+		);
 		await act(async () => {
 			binding.value = "";
 			binding.dispatchEvent(new window.Event("change", { bubbles: true }));

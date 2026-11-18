@@ -22,6 +22,7 @@ export class Map {
 		this.events = new globalThis.Map();
 		this.sources = new globalThis.Map();
 		this.layers = new globalThis.Map();
+		this.style = { tileManagers: {} };
 		this.canvas = document.createElement("canvas");
 		options.container.append(this.canvas);
 		this.centre = options.center;
@@ -47,6 +48,10 @@ export class Map {
 		this.events.get(name)?.delete(callback);
 	}
 	emit(name, event) {
+		const manager = this.style.tileManagers[event?.sourceId];
+		if (name === "sourcedataloading" && manager && event.tile) {
+			manager.tiles.set(event.tile, event.tile);
+		}
 		for (const callback of this.events.get(name) ?? []) callback(event);
 	}
 	addControl() {}
@@ -72,6 +77,16 @@ export class Map {
 		return this.sources.get(id);
 	}
 	addSource(id, source) {
+		if (source.type === "raster") {
+			const tiles = new globalThis.Map();
+			this.style.tileManagers[id] = {
+				tiles,
+				loaded: () =>
+					[...tiles.values()].every(({ state }) => state !== "loading"),
+				getIds: () => [...tiles.keys()],
+				getTileByID: (key) => tiles.get(key),
+			};
+		}
 		this.sources.set(id, {
 			...source,
 			setData(data) {

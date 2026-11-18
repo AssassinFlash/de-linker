@@ -5,7 +5,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any, Literal, cast
 
-from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
+from linker_engine.models import (
+    Report,
+    ReportPhaseConflict,
+    ReportRow,
+    ReportSection,
+    ReportTable,
+)
 
 from .canonical import Object
 from .certificate_report import certificate_sections
@@ -36,6 +42,7 @@ from .report_pvlib import pvlib_sections
 def build_report(source: Object) -> Report:
     locale = cast(Literal["en", "de"], source["locale"])
     sections: list[ReportSection] = []
+    phase_conflicts: list[ReportPhaseConflict] = []
 
     def row(key: str, value: Any, href: str | None = None) -> ReportRow:
         return ReportRow(
@@ -201,6 +208,83 @@ def build_report(source: Object) -> Report:
     geometric_pv = source.get("geometric_pv_references")
     if isinstance(geometric_pv, list):
         sections.extend(geometric_pv_sections(geometric_pv, locale))
+
+    self_use = source.get("self_use_comparison")
+    if isinstance(self_use, dict):
+        baseline = cast(Object, self_use["baseline"])
+        upper = self_use["upper_kwh"]
+        rows = [
+            row(
+                "retained_profile_period",
+                f"{self_use['horizon_start_utc']} – {self_use['horizon_end_utc']}",
+            )
+        ]
+        rows.extend(
+            row(label, number(value, locale, unit))
+            for label, key, unit in (
+                ("retained_profile_load", "load_kwh", "kWh"),
+                ("generation", "pv_available_kwh", "kWh"),
+                ("retained_profile_direct_pv", "direct_pv_use_kwh", "kWh"),
+                ("retained_profile_import", "grid_import_kwh", "kWh"),
+                ("export", "grid_export_kwh", "kWh"),
+                ("retained_profile_peak", "peak_grid_import_kw", "kW"),
+            )
+            if (value := baseline[key]) is not None
+        )
+        if upper is not None:
+            rows.append(row("self_use_upper", number(upper, locale, "kWh")))
+        sections.append(
+            ReportSection(
+                id="self-consumption-comparison",
+                title=text("self_use_comparison", locale),
+                paragraphs=[text("self_use_bound_basis", locale)]
+                if upper is not None
+                else [],
+                rows=rows,
+            )
+        )
+
+    peak_comparison = source.get("peak_comparison")
+    if isinstance(peak_comparison, dict):
+        sections.append(
+            ReportSection(
+                id="peak-shaving-comparison",
+                title=text("peak_comparison", locale),
+                paragraphs=[text("peak_bound_basis", locale)]
+                if peak_comparison["lower_bound_kw"] is not None
+                else [],
+                rows=[
+                    row(
+                        "peak_target",
+                        f"{period['start_utc']} – {period['end_utc']}: "
+                        + number(period["import_cap_kw"], locale, "kW"),
+                    )
+                    for period in cast(
+                        list[Object], peak_comparison.get("target_periods", [])
+                    )
+                ]
+                + [
+                    row(label, number(value, locale, "kW"))
+                    for label, field in (
+                        ("peak_target", "target_kw"),
+                        ("retained_profile_peak", "baseline_kw"),
+                        ("peak_optimistic_bound", "lower_bound_kw"),
+                    )
+                    if (value := peak_comparison[field]) is not None
+                ]
+                + [
+                    row(
+                        "peak_result",
+                        text(
+                            "violated"
+                            if peak_comparison["status"] == "violated"
+                            else "unresolved",
+                            locale,
+                        ),
+                    )
+                ],
+            )
+        )
 
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
@@ -408,6 +492,23 @@ def build_report(source: Object) -> Report:
         sections.extend(grid_sections)
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
             semantic_id = str(check.get("semantic_id", check["id"]))
+            actual, required = check["actual"], check["required"]
+            if (
+                semantic_id == "grid_phase"
+                and check["status"] == "violated"
+                and type(actual) is int
+                and actual in (1, 3)
+                and type(required) is int
+                and required in (1, 3)
+                and actual != required
+            ):
+                phase_conflicts.append(
+                    ReportPhaseConflict(
+                        unit=check.get("unit_name"),
+                        actual=cast(Literal[1, 3], actual),
+                        required=cast(Literal[1, 3], required),
+                    )
+                )
             if isinstance(source.get("energy_equipment"), dict) and check["id"] in {
                 "scenario_operating_mode",
                 "scenario_parameter_basis",
@@ -1475,4 +1576,5 @@ def build_report(source: Object) -> Report:
         generated_at=str(source["generated_at"]),
         locale=locale,
         sections=sections,
+        phase_conflicts=phase_conflicts,
     )

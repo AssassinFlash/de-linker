@@ -676,6 +676,20 @@ def create_private_app(
         if not query:
             raise NotFound("place not found")
         found = geo.lookup(query, body.country)
+        country = (
+            found.country if found else body.country.upper() if body.country else None
+        )
+        editing = (
+            imagery.for_editing(country, found.iso_region if found else None)
+            if country
+            else None
+        )
+        # Keep viewing pixels separate from the editing source consumed by the design tools.
+        viewing = imagery.for_viewing(country) if country and editing is None else None
+        layers = {
+            "imagery": _imagery_reply(editing),
+            "viewing_imagery": _imagery_reply(viewing),
+        }
         if found is None:
             # A postcode several countries write the same way is not a failure
             # of the visitor's input; the screen asks for the country instead of
@@ -690,9 +704,7 @@ def create_private_app(
                 # A street address resolved by the browser's Google geocoder
                 # need not exist in the postal table. Its saved coordinates
                 # still need the selected country's aerial layer.
-                "imagery": _imagery_reply(
-                    imagery.for_editing(body.country.upper()) if body.country else None
-                ),
+                **layers,
             }
         return {
             "schema_version": 1,
@@ -705,12 +717,7 @@ def create_private_app(
             "region": found.region,
             "timezone": found.timezone,
             "attribution": geo.ATTRIBUTION,
-            # A German place is served by its state's mosaic, everything else by
-            # its country's; both answer null where none is recorded, and the map
-            # then keeps its plain background instead of requesting a broken tile.
-            "imagery": _imagery_reply(
-                imagery.for_editing(found.country, found.iso_region)
-            ),
+            **layers,
         }
 
     @app.post("/places/outline")

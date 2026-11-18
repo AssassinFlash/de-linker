@@ -12,6 +12,8 @@ import { Notice } from "../Notice.tsx";
 import { PvOperatingSetup } from "./PvOperatingSetup.tsx";
 import { PvModuleSelection } from "./PvModuleSelection.tsx";
 
+export type StringEditBlock = "pending" | "selection" | null;
+
 export function PvStringSetup({
 	draft,
 	edit,
@@ -19,6 +21,7 @@ export function PvStringSetup({
 	locale,
 	disabled,
 	onValidity,
+	checkedInReport = false,
 	controlled,
 }: {
 	draft: Draft;
@@ -26,7 +29,8 @@ export function PvStringSetup({
 	inverterId: number | null;
 	locale: string;
 	disabled: boolean;
-	onValidity: (valid: boolean) => void;
+	onValidity: (canLeave: boolean, editBlock: StringEditBlock) => void;
+	checkedInReport?: boolean;
 	controlled?: {
 		plan: PvStringPlan | null;
 		change: (plan: PvStringPlan | null) => boolean;
@@ -107,10 +111,9 @@ export function PvStringSetup({
 			),
 		[],
 	);
+	const fieldsValid = Object.values(fields).every(Boolean);
 	const valid =
-		!plan ||
-		(plan.inverter_product_id === inverterId &&
-			Object.values(fields).every(Boolean));
+		!plan || (plan.inverter_product_id === inverterId && fieldsValid);
 	const assigned = new Map<string, string>();
 	plan?.strings.forEach((string, index) => {
 		if (string.id !== editing?.id)
@@ -180,7 +183,6 @@ export function PvStringSetup({
 			if (controlled) return controlled.change(value);
 			return edit((inputs) => {
 				const next = { ...inputs };
-				delete next.equipment_candidate;
 				if (value) next.pv_string_plan = value;
 				else delete next.pv_string_plan;
 				return next;
@@ -199,11 +201,28 @@ export function PvStringSetup({
 		setPort(null);
 		setBatchSize(null);
 	};
-	// Invalid local number syntax cannot permit saving/calculating older values.
+	const pendingStringChanges =
+		checkedInReport &&
+		editing !== null &&
+		(mppt !== editing.mppt ||
+			port !== editing.input ||
+			JSON.stringify(selected) !== JSON.stringify(editing.module_ids));
+	const canLeave =
+		!pendingStringChanges &&
+		(controlled || checkedInReport ? fieldsValid : valid);
+	const emptySelection = pendingStringChanges && selected.length === 0;
+	const editBlock: StringEditBlock =
+		!fieldsValid || conflictingInput
+			? null
+			: emptySelection
+				? "selection"
+				: pendingStringChanges && canApply
+					? "pending"
+					: null;
 	useEffect(() => {
-		onValidity(controlled ? Object.values(fields).every(Boolean) : valid);
-		return () => onValidity(true);
-	}, [valid, onValidity, !!controlled, fields]);
+		onValidity(canLeave, editBlock);
+		return () => onValidity(true, null);
+	}, [canLeave, editBlock, onValidity]);
 	if (!geometry || !poses.length)
 		return plan ? (
 			<section>
@@ -335,11 +354,7 @@ export function PvStringSetup({
 							<button
 								type="button"
 								className="lp-text-button"
-								disabled={
-									disabled ||
-									editing !== null ||
-									!Object.values(fields).every(Boolean)
-								}
+								disabled={disabled || editing !== null || !fieldsValid}
 								onClick={() => {
 									backup.current = { selected, mppt, port, batchSize };
 									setEditing({ ...s, module_ids: [...s.module_ids] });
@@ -409,7 +424,7 @@ export function PvStringSetup({
 							)}
 						</Notice>
 					)}
-					<div className="lp-scenario-fields">
+					<div className="lp-scenario-fields" key={editing?.id ?? "new"}>
 						<NumberField
 							label="MPPT"
 							unit=""
@@ -429,21 +444,22 @@ export function PvStringSetup({
 							locale={locale}
 							onChange={setPort}
 							onValidity={validity.port!}
+							error={
+								conflictingInput
+									? __(
+											"This MPPT and inverter input already has a string. Choose another input or edit its existing string.",
+											"linker-tools",
+										)
+									: null
+							}
 						/>
 					</div>
-					{conflictingInput && (
-						<Notice error>
-							{__(
-								"This MPPT and inverter input already has a string. Choose another input or edit its existing string.",
-								"linker-tools",
-							)}
-						</Notice>
-					)}
 					<PvModuleSelection
 						geometry={geometry}
 						poses={poses}
 						labels={labels}
 						selected={selected}
+						missingSelection={emptySelection}
 						assigned={assigned}
 						disabled={disabled}
 						change={(ids) => {
@@ -567,10 +583,15 @@ export function PvStringSetup({
 						</button>
 					</div>
 					<p className="lp-profile-help">
-						{__(
-							"Check equipment to assess this wiring plan. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
-							"linker-tools",
-						)}
+						{checkedInReport
+							? __(
+									"Generate the project report to check the saved wiring plan.",
+									"linker-tools",
+								)
+							: __(
+									"Check equipment to assess this wiring plan. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks.",
+									"linker-tools",
+								)}
 					</p>
 				</fieldset>
 			)}

@@ -182,6 +182,14 @@ test("available modules identify their actual array even when rows and columns r
 
 test("96 modules can be assigned in explicit groups while the customer chooses every MPPT input", async (t) => {
 	const r = await setup(t, { rows: 8, columns: 12 });
+	const choice = {
+		run_id: "a".repeat(32),
+		candidate_id: "b".repeat(64),
+		assessment_sha256: "c".repeat(64),
+	};
+	await act(async () =>
+		r.api.alter((inputs) => ({ ...inputs, equipment_candidate: choice })),
+	);
 	await click(button("Select all available modules"));
 	await enter(field("Modules to add to this string"), "16");
 	await enter(field("MPPT"), "1");
@@ -205,6 +213,7 @@ test("96 modules can be assigned in explicit groups while the customer chooses e
 		assert.equal(button("Add selected modules to string").disabled, true);
 	}
 	assert.equal(new Set(r.plan.strings.flatMap((s) => s.module_ids)).size, 96);
+	assert.deepEqual(r.api.draft.history.current.equipment_candidate, choice);
 });
 
 test("editing keeps string identity and its explicit order, and retains changes when applying is refused", async (t) => {
@@ -235,6 +244,7 @@ test("editing keeps string identity and its explicit order, and retains changes 
 	);
 	await enter(field("MPPT"), "2");
 	assert.equal(button("Save string changes").disabled, true);
+	assert.equal(field("Inverter input").getAttribute("aria-invalid"), "true");
 	assert.match(document.body.textContent, /already has a string/);
 	await enter(field("MPPT"), "1");
 	await click(button("Reverse order"));

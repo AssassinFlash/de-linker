@@ -8,7 +8,7 @@ import {
 	readPvPlantStringPlan,
 } from "../../domain/pvPlantStrings.ts";
 import type { PlantUnitDraft } from "../../domain/equipmentPlant.ts";
-import { PvStringSetup } from "./PvStringSetup.tsx";
+import { PvStringSetup, type StringEditBlock } from "./PvStringSetup.tsx";
 import { Notice } from "../Notice.tsx";
 import { __, sprintf } from "../../i18n.ts";
 
@@ -20,6 +20,7 @@ export function PlantPvStringSetup({
 	locale,
 	disabled,
 	onValidity,
+	checkedInReport = false,
 }: {
 	draft: Draft;
 	unit: PlantUnitDraft;
@@ -27,7 +28,8 @@ export function PlantPvStringSetup({
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
 	locale: string;
 	disabled: boolean;
-	onValidity: (valid: boolean) => void;
+	onValidity: (canLeave: boolean, editBlock: StringEditBlock) => void;
+	checkedInReport?: boolean;
 }) {
 	const plant = useMemo(
 		() =>
@@ -91,6 +93,7 @@ export function PlantPvStringSetup({
 				locale={locale}
 				disabled={disabled}
 				onValidity={onValidity}
+				checkedInReport={checkedInReport}
 				controlled={{
 					plan,
 					scopeLabel: unit.name,

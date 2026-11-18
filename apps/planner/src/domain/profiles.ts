@@ -278,6 +278,16 @@ export function readInspection(
 	}
 	return item as unknown as CsvInspection;
 }
+export function matchesProfileRole(
+	role: ProfileRole,
+	asset: ProfileAsset,
+	preview: ProfilePreview,
+): boolean {
+	return role === "pv_reference"
+		? asset.purpose === "pvlib_reference_profile_v1" &&
+				preview.measurement === "pv_available_ac"
+		: preview.measurement === role;
+}
 export function readPreview(
 	value: unknown,
 	asset: ProfileAsset,

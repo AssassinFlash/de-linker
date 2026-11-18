@@ -1,3 +1,5 @@
+import { useId } from "react";
+import { Notice } from "../Notice.tsx";
 import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
 import { __, sprintf } from "../../i18n.ts";
 
@@ -6,6 +8,7 @@ export function PvModuleSelection({
 	geometry,
 	poses,
 	selected,
+	missingSelection,
 	labels,
 	assigned,
 	disabled,
@@ -14,11 +17,16 @@ export function PvModuleSelection({
 	geometry: GeometryDocument;
 	poses: readonly PanelPose[];
 	selected: string[];
+	missingSelection: boolean;
 	labels: ReadonlyMap<string, string>;
 	assigned: ReadonlyMap<string, string>;
 	disabled: boolean;
 	change: (ids: string[]) => void;
 }) {
+	const hintId = useId();
+	const firstAvailableArray = missingSelection
+		? (poses.find((pose) => !assigned.has(pose.id)) ?? poses[0])?.array_id
+		: undefined;
 	const byId = new Map(poses.map((p) => [p.id, p]));
 	const select = (modules: readonly PanelPose[]) =>
 		change([
@@ -58,6 +66,16 @@ export function PvModuleSelection({
 					"linker-tools",
 				)}
 			</p>
+			{missingSelection && (
+				<Notice error>
+					<p id={hintId}>
+						{__(
+							"Select at least one module for this string or cancel editing.",
+							"linker-tools",
+						)}
+					</p>
+				</Notice>
+			)}
 			{geometry.arrays.map((array, index) => {
 				const modules = poses.filter((p) => p.array_id === array.id);
 				const free = modules.filter((p) => !assigned.has(p.id));
@@ -69,7 +87,14 @@ export function PvModuleSelection({
 				);
 				return (
 					<details key={array.id}>
-						<summary>{arrayLabel}</summary>
+						<summary
+							aria-invalid={array.id === firstAvailableArray || undefined}
+							aria-describedby={
+								array.id === firstAvailableArray ? hintId : undefined
+							}
+						>
+							{arrayLabel}
+						</summary>
 						<p>
 							{sprintf(
 								__("Roof: %s", "linker-tools"),

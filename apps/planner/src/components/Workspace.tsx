@@ -143,8 +143,9 @@ export function Workspace({
 		[client, session.query_scope],
 	);
 	const pageSize = Math.min(30, session.runtime.limits.max_page_size); // UI page policy, not total project capacity.
+	const indexKey = [session.query_scope, "projects", session.claim_pending];
 	const index = useInfiniteQuery({
-		queryKey: [session.query_scope, "projects", session.claim_pending],
+		queryKey: indexKey,
 		initialPageParam: null as JsonObject | null,
 		queryFn: async ({ pageParam, signal }) =>
 			readProjectPage(
@@ -561,8 +562,12 @@ export function Workspace({
 												__("Delete project %s", "linker-tools"),
 												item.title,
 											)}
-											disabled={deleteBusy}
+											disabled={deleteBusy || index.isRefetching}
 											onClick={() => {
+												if (
+													cache.isFetching({ queryKey: indexKey, exact: true })
+												)
+													return;
 												setConfirmingDelete(item.id);
 												setDeleteRetry(null);
 												setDeleteFailure(null);

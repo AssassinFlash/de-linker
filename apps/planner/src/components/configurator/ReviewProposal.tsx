@@ -108,6 +108,7 @@ function ReportDownloads({
 	client,
 	scope,
 	recheck,
+	askGenie,
 	children,
 }: {
 	run: PlanningRun;
@@ -115,6 +116,7 @@ function ReportDownloads({
 	client: PlannerClient;
 	scope: string;
 	recheck: () => void;
+	askGenie: () => void;
 	children?: ReactNode;
 }) {
 	const [busy, setBusy] = useState(false),
@@ -243,6 +245,16 @@ function ReportDownloads({
 						{__("Download PV string intervals (CSV)", "linker-tools")}
 					</button>
 				)}
+				<button
+					type="button"
+					className="sc-button"
+					data-linker-genie-open
+					data-linker-genie-planning={run.id}
+					disabled={!client.isCurrentScope(scope)}
+					onClick={askGenie}
+				>
+					{__("Ask Genie", "linker-tools")}
+				</button>
 				{children}
 			</div>
 			{error && (
@@ -257,10 +269,11 @@ function ReportDownloads({
 interface ReportHistory {
 	items: readonly RunSummary[];
 	selected: string | null;
-	select: (id: string) => void;
+	select: (id: string | null) => void;
 	run: PlanningRun | null;
 	reading: boolean;
 	readFailed: boolean;
+	unavailable: boolean;
 	retryRead: () => void;
 	hasMore: boolean;
 	loading: boolean;
@@ -279,6 +292,7 @@ export function ReviewProposal({
 	blocked,
 	current,
 	generate,
+	askGenie,
 	recheck,
 }: {
 	project: Project;
@@ -292,10 +306,12 @@ export function ReviewProposal({
 	blocked: boolean;
 	current: boolean;
 	generate: (logo: string | null) => void;
+	askGenie: (run: PlanningRun) => void;
 	recheck: () => void;
 }) {
 	const scope = session.query_scope;
 	const report = run?.result ? reportFromRun(run) : null;
+	const selected = history?.selected != null;
 	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
 	const [logo, setLogo] = useState<string | null>(null),
@@ -393,7 +409,7 @@ export function ReviewProposal({
 					</p>
 				</div>
 			</header>
-			{run && !current && (
+			{!selected && run && !current && (
 				<p className="sc-card sc-muted" role="status" data-report-outdated="">
 					{__(
 						"This report describes an earlier version of the project.",
@@ -401,7 +417,7 @@ export function ReviewProposal({
 					)}
 				</p>
 			)}
-			{!report && (
+			{!selected && !report && (
 				<section className="sc-card">
 					<h2>{__("Project report", "linker-tools")}</h2>
 					<p>{project.title}</p>
@@ -427,7 +443,7 @@ export function ReviewProposal({
 					</div>
 				</section>
 			)}
-			{report && run && (
+			{!selected && report && run && (
 				<>
 					<section className="sc-card" lang={report.locale}>
 						<h2>{report.title}</h2>
@@ -492,6 +508,7 @@ export function ReviewProposal({
 							client={client}
 							scope={scope}
 							recheck={recheck}
+							askGenie={() => askGenie(run)}
 						>
 							<button
 								type="button"
@@ -508,34 +525,9 @@ export function ReviewProposal({
 						</ReportDownloads>
 						<ReportPreview report={report} />
 					</section>
-					{transferable && (
-						<section className="sc-card sc-draft-transfer">
-							<h2>{__("Request a quotation", "linker-tools")}</h2>
-							{!reportOnly && (
-								<p className="sc-muted">
-									{__(
-										"The selected equipment and project details are included.",
-										"linker-tools",
-									)}
-								</p>
-							)}
-							<DraftTransferButton
-								key={`${run.id}:${scope}`}
-								run={run}
-								client={client}
-								scope={scope}
-								operations={operations}
-								reportOnly={reportOnly}
-								current={current}
-								blocked={blocked}
-								locale={locale}
-								recheck={recheck}
-							/>
-						</section>
-					)}
 				</>
 			)}
-			{history && (history.items.length > 0 || history.hasMore) && (
+			{history && (selected || history.items.length > 0 || history.hasMore) && (
 				<section
 					className="sc-card"
 					aria-label={__("Calculation history", "linker-tools")}
@@ -549,7 +541,9 @@ export function ReviewProposal({
 								key={item.id}
 								aria-pressed={history.selected === item.id}
 								disabled={!client.isCurrentScope(scope)}
-								onClick={() => history.select(item.id)}
+								onClick={() =>
+									history.select(history.selected === item.id ? null : item.id)
+								}
 							>
 								{sprintf(__("Revision %d", "linker-tools"), item.revision)}
 								{" · "}
@@ -559,6 +553,16 @@ export function ReviewProposal({
 								}).format(item.created_at * 1000)}
 							</button>
 						))}
+						{selected && (
+							<button
+								type="button"
+								className="sc-button"
+								disabled={!client.isCurrentScope(scope)}
+								onClick={() => history.select(null)}
+							>
+								{__("Close", "linker-tools")}
+							</button>
+						)}
 						{history.hasMore && (
 							<button
 								type="button"
@@ -581,6 +585,14 @@ export function ReviewProposal({
 					{history.reading && (
 						<p role="status">
 							{__("Reading the saved calculation…", "linker-tools")}
+						</p>
+					)}
+					{selected && history.unavailable && (
+						<p role="alert">
+							{__(
+								"The saved calculation details could not be verified for this response.",
+								"linker-tools",
+							)}
 						</p>
 					)}
 					{history.readFailed && (
@@ -610,10 +622,47 @@ export function ReviewProposal({
 								client={client}
 								scope={scope}
 								recheck={recheck}
+								askGenie={() => askGenie(earlierRun)}
 							/>
 							<ReportPreview report={earlierReport} />
 						</>
 					)}
+				</section>
+			)}
+			{transferable && run && (
+				<section className="sc-card sc-draft-transfer">
+					<h2>{__("Request a quotation", "linker-tools")}</h2>
+					{selected && current && (
+						<p>
+							{sprintf(
+								__(
+									"Your inquiry uses the current report (revision %d).",
+									"linker-tools",
+								),
+								run.revision,
+							)}
+						</p>
+					)}
+					{!reportOnly && (
+						<p className="sc-muted">
+							{__(
+								"The selected equipment and project details are included.",
+								"linker-tools",
+							)}
+						</p>
+					)}
+					<DraftTransferButton
+						key={`${run.id}:${scope}`}
+						run={run}
+						client={client}
+						scope={scope}
+						operations={operations}
+						reportOnly={reportOnly}
+						current={current}
+						blocked={blocked}
+						locale={locale}
+						recheck={recheck}
+					/>
 				</section>
 			)}
 		</article>

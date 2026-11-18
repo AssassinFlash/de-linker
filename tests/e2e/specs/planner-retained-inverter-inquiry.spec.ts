@@ -20,9 +20,6 @@ test('a first guest sends a retained-inverter report without adding any products
 		exact: true,
 	});
 	if (await reject.isVisible()) await reject.click();
-	await workspace
-		.getByRole('button', { name: 'New project', exact: true })
-		.click();
 	page.setDefaultTimeout(15_000);
 	const project = page.getByRole('form', { name: 'New project' });
 	await project.getByLabel('Project name').fill(title);

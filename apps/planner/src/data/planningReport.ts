@@ -41,6 +41,7 @@ export interface PlanningReport {
 	generated_at: string;
 	locale: "en" | "de";
 	sections: ReportSection[];
+	phase_conflicts?: { unit: string | null; actual: 1 | 3; required: 1 | 3 }[];
 }
 /** A frozen report keeps its own language; only the surrounding UI follows the site. */
 export function reportLanguageDiffers(
@@ -100,7 +101,7 @@ function pvgisSourceReference(sectionId: string, url: URL): boolean {
 		requestKeys = tmy ? pvgisTmyRequestKeys : pvgisRequestKeys,
 		keys = [...url.searchParams.keys()];
 	return (
-		(tmy || /^pvgis-roof-reference-[0-9]+$/.test(sectionId)) &&
+		(tmy || /^pvgis-(?:roof|known)-reference-[0-9]+$/.test(sectionId)) &&
 		url.origin === "https://re.jrc.ec.europa.eu" &&
 		url.pathname === (tmy ? "/api/v5_3/tmy" : "/api/v5_3/seriescalc") &&
 		!url.username &&

@@ -1,12 +1,248 @@
 import energyFixture from "./fixtures/energy-run.json" with { type: "json" };
 import replay from "./fixtures/energy-inputs.json" with { type: "json" };
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
+import flatRoof from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
-import { enter, setupDom, until } from "./dom-fixture.mjs";
+import { deferred, enter, setupDom, until } from "./dom-fixture.mjs";
 import preparation from "./fixtures/index.ts";
+
+test("draft confirmation shows the frozen phase conflict and still lets the customer continue", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { DraftTransferButton } =
+		await import("../src/components/energy/DraftTransferButton.tsx");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const origin = window.location.origin;
+	const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+	const applied = [];
+	let phaseConflict = { actual: 1, required: 3 };
+	let reportOnly = false;
+	let phaseConflicts;
+	const client = {
+		origin,
+		isCurrentScope: () => true,
+		async query(path, command) {
+			assert.equal(path, "draft/preview");
+			assert.equal(command.report_run_id, run.id);
+			return {
+				schema_version: 1,
+				project_id: run.project_id,
+				report_run_id: run.id,
+				revision: run.revision,
+				handoff_id: "c".repeat(32),
+				draft_sha256: "d".repeat(64),
+				snapshot_sha256: "e".repeat(64),
+				already_present: false,
+				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+				...(reportOnly
+					? { changes: [], report_only: true }
+					: {
+							changes: [
+								{
+									product_id: 1,
+									label: "GoodWe inverter",
+									before: 0,
+									after: 1,
+								},
+							],
+						}),
+				...(phaseConflict === undefined
+					? {}
+					: { phase_conflict: phaseConflict }),
+				...(phaseConflicts === undefined
+					? {}
+					: { phase_conflicts: phaseConflicts }),
+			};
+		},
+	};
+	const operations = {
+		records: [],
+		async start(...args) {
+			applied.push(args);
+		},
+	};
+	const render = (key, locale = "en") =>
+		act(async () =>
+			root.render(
+				React.createElement(DraftTransferButton, {
+					key,
+					run,
+					client,
+					operations,
+					scope: "owned",
+					current: true,
+					blocked: false,
+					locale,
+					reportOnly,
+					recheck() {},
+				}),
+			),
+		);
+	const button = (text) =>
+		[...dom.element.querySelectorAll("button")].find(
+			(item) => item.textContent.trim() === text,
+		);
+	await render("conflict");
+	await act(async () =>
+		button("Add selected products to solution draft").click(),
+	);
+	assert.match(
+		dom.element.textContent,
+		/Grid phase mismatch\. Selected inverter: 1\. Project requirement: 3\. You can send an inquiry to discuss the configuration\./,
+	);
+	await act(async () => button("Confirm changes").click());
+	assert.deepEqual(applied, [
+		[
+			"draft/apply",
+			{
+				expected_revision: 3,
+				report_run_id: run.id,
+				expected_draft_sha256: "d".repeat(64),
+			},
+		],
+	]);
+
+	phaseConflict = undefined;
+	await render("without-conflict");
+	await act(async () =>
+		button("Add selected products to solution draft").click(),
+	);
+	assert.doesNotMatch(dom.element.textContent, /Grid phase mismatch/);
+	assert.equal(button("Confirm changes").disabled, false);
+
+	const { default: catalog } = await import(
+		"../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+		{ with: { type: "json" } }
+	);
+	window.wp.i18n.__ = (message) =>
+		catalog.locale_data.messages[message]?.[0] ?? message;
+	phaseConflict = { actual: 1, required: 3 };
+	await render("formal-german", "de");
+	const add = button("Ausgewählte Produkte zum Lösungsentwurf hinzufügen");
+	assert.ok(add);
+	await act(async () => add.click());
+	assert.match(
+		dom.element.textContent,
+		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
+	);
+	assert.equal(button("Änderungen bestätigen").disabled, false);
+	phaseConflict = undefined;
+	phaseConflicts = [
+		{ unit: "Depot · East", actual: 1, required: 3 },
+		{ unit: "West", actual: 1, required: 3 },
+	];
+	await render("multi-inverter-de", "de");
+	await act(async () =>
+		button("Ausgewählte Produkte zum Lösungsentwurf hinzufügen").click(),
+	);
+	for (const unit of ["Depot · East", "West"])
+		assert.ok(
+			dom.element.textContent.includes(
+				`${unit}: Die Phasenanzahl passt nicht zum Projekt.`,
+			),
+		);
+
+	window.wp.i18n.__ = (message) => message;
+	reportOnly = true;
+	await render("report-only");
+	await act(async () => button("Attach report to inquiry").click());
+	assert.match(dom.element.textContent, /Depot · East: Grid phase mismatch/);
+	assert.match(dom.element.textContent, /West: Grid phase mismatch/);
+	await act(async () => button("Attach report to inquiry").click());
+	assert.equal(applied.length, 2);
+});
+
+test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
+	const dom = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const scope = "3".repeat(64);
+	const cache = new QueryClient();
+	const root = createRoot(dom.element);
+	const project = {
+		id: "1".repeat(32),
+		title: "Roof capacity",
+		revision: 1,
+		input_sha256: "2".repeat(64),
+	};
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+	const session = {
+		kind: "guest",
+		query_scope: scope,
+		claim_pending: false,
+		runtime: { limits: { max_page_size: 30 }, models: {} },
+	};
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		query: async (path) => {
+			assert.equal(path, "projects/runs");
+			return { items: [], next: null };
+		},
+	};
+	const store = {
+		read: async () => null,
+		candidates: async () => [],
+		write: async () => {},
+	};
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	});
+	const capacity = () =>
+		[...dom.element.querySelectorAll("dt")].find(
+			(item) => item.textContent === "Solar capacity",
+		)?.nextElementSibling?.textContent;
+	const allExcluded = {
+		...flatRoof,
+		arrays: flatRoof.arrays.map((array) => ({
+			...array,
+			excluded_slots: ["0:0", "0:1", "0:2", "1:0", "1:1", "1:2"],
+		})),
+	};
+	for (const [inputs, expected] of [
+		[{ geometry: flatRoof }, "2.5 kWp"],
+		[{ geometry: allExcluded }, "—"],
+		[{}, "—"],
+		[
+			{
+				geometry: flatRoof,
+				pvgis_reference: knownPv.project.inputs.pvgis_reference,
+			},
+			"6.4 kWp",
+		],
+	]) {
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						key: expected + Boolean(inputs.geometry),
+						project: { ...project, inputs: { brief, ...inputs } },
+						session,
+						client,
+						store,
+						config: { locale: "en", countries: {} },
+						recheck: () => assert.fail("Unexpected identity change"),
+						close: () => true,
+					}),
+				),
+			),
+		);
+		await until(() => capacity() !== undefined);
+		assert.equal(capacity(), expected);
+	}
+});
 
 test("a storage project continues from its location directly to energy use", async () => {
 	const fixture = setupDom();
@@ -46,7 +282,7 @@ test("a storage project continues from its location directly to energy use", asy
 		title: "Workshop",
 		revision: 1,
 		input_sha256: "2".repeat(64),
-		inputs: { brief },
+		inputs: { brief, geometry: flatRoof },
 	};
 	const requests = [];
 	const client = {
@@ -107,6 +343,7 @@ test("a storage project continues from its location directly to energy use", asy
 			fixture.element.textContent.includes("What should the system do?"),
 		);
 		assert.equal(requests.includes("projects/revise"), false);
+		assert.doesNotMatch(fixture.element.textContent, /PV strings and inputs/);
 		assert.equal(
 			fixture.element.textContent.includes("Installation routing"),
 			false,
@@ -300,7 +537,7 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 	}
 });
 
-test("Review & share downloads earlier PDF and CSV while inquiry stays with the current report", async () => {
+test("Review & share asks Genie and downloads the chosen report while inquiry stays with the current report", async () => {
 	const dom = setupDom(),
 		scope = "3".repeat(64),
 		{ createRoot } = await import("react-dom/client"),
@@ -329,7 +566,8 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 		input_sha256: current.manifest.input_sha256,
 		inputs: { brief: emptyBrief() },
 	};
-	window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+	const deepLink = `?project=${project.id}&run=${earlier.id}#lp-calculations`;
+	window.history.replaceState(null, "", deepLink);
 	globalThis.indexedDB = new IDBFactory();
 	const summary = ({
 		id,
@@ -364,8 +602,23 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 	const downloads = [],
 		requests = [],
 		filenames = [];
+	let activeScope = scope;
+	let wrongProject = false;
+	const saving = deferred();
 	const client = {
-		isCurrentScope: (s) => s === scope,
+		isCurrentScope: (s) => s === activeScope,
+		async send(path, raw) {
+			assert.equal(path, "projects/revise");
+			const command = JSON.parse(raw);
+			requests.push([path, command]);
+			await saving.promise;
+			return {
+				...project,
+				revision: project.revision + 1,
+				input_sha256: "d".repeat(64),
+				inputs: command.inputs,
+			};
+		},
 		async query(path, body) {
 			requests.push([path, body]);
 			if (path === "projects/runs") {
@@ -382,8 +635,11 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 				assert.equal(body.before_created_at, currentSummary.created_at);
 				return { items: [summary(earlier)], next: null };
 			}
-			if (path === "runs/read")
-				return [current, earlier].find((run) => run.id === body.run_id);
+			if (path === "runs/read") {
+				if (body.run_id === earlier.id)
+					return wrongProject ? preparation.direct_beam.report_run : earlier;
+				return body.run_id === current.id ? current : undefined;
+			}
 			if (path === "draft/preview") return new Promise(() => {});
 			throw new Error(path);
 		},
@@ -407,58 +663,168 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 		[...within.querySelectorAll("button")].find((node) =>
 			node.textContent.trim().startsWith(text),
 		);
-	try {
-		await act(async () =>
+	const { useSiteIntegration } =
+		await import("../src/data/useSiteIntegration.ts");
+	document.querySelector("header").innerHTML =
+		'<a hreflang="de" lang="de" href="/de/konfigurator/">Deutsch</a><a hreflang="en" lang="en" href="/solution-configurator/">English</a>';
+	function Workspace({ locale }) {
+		useSiteIntegration(project.id);
+		return React.createElement(Configurator, {
+			project,
+			client,
+			session: {
+				kind: "guest",
+				query_scope: scope,
+				nonce: "guest-proof",
+				claim_pending: false,
+				runtime: {
+					limits: {
+						max_page_size: 1,
+						max_json_depth: 32,
+						max_body_bytes: 1000000,
+					},
+					models: {},
+				},
+			},
+			store: {
+				read: async () => null,
+				candidates: async () => [],
+				write: async () => {},
+			},
+			config: { locale, countries: {} },
+			recheck() {},
+			close: () => true,
+		});
+	}
+	const render = (locale, key = locale) =>
+		act(async () =>
 			root.render(
 				React.createElement(
 					QueryClientProvider,
 					{ client: cache },
-					React.createElement(Configurator, {
-						project,
-						client,
-						session: {
-							kind: "guest",
-							query_scope: scope,
-							claim_pending: false,
-							runtime: {
-								limits: {
-									max_page_size: 1,
-									max_json_depth: 32,
-									max_body_bytes: 1000000,
-								},
-								models: {},
-							},
-						},
-						store: {
-							read: async () => null,
-							candidates: async () => [],
-							write: async () => {},
-						},
-						config: { locale: "en", countries: {} },
-						recheck() {},
-						close: () => true,
-					}),
+					React.createElement(Workspace, { locale, key }),
 				),
 			),
 		);
-		await until(() => button("Earlier calculations"));
+	try {
+		await render("en");
+		await until(() => {
+			const history = dom.element.querySelector(
+				'section[aria-label="Calculation history"]',
+			);
+			return history?.textContent.includes("Project planning report");
+		});
+		assert.deepEqual(
+			requests
+				.filter(([path]) => path === "projects/runs")
+				.map(([, body]) => body.before_id),
+			[null],
+		);
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Attach report to inquiry"));
+		const context = (opener) => {
+			let detail;
+			const receive = (event) => (detail = event.detail);
+			window.addEventListener("linker-genie-planning-context", receive);
+			window.dispatchEvent(
+				new CustomEvent("linker-genie-planning-context-request", {
+					detail: { opener },
+				}),
+			);
+			window.removeEventListener("linker-genie-planning-context", receive);
+			return detail;
+		};
+		const assertContext = ({ page, plannerNonce }, revision, runIds) => {
+			assert.equal(page.planning_project_id, project.id);
+			assert.equal(page.planning_revision, revision);
+			assert.deepEqual(page.planning_run_ids, runIds);
+			assert.equal(page.planning_unsaved, false);
+			assert.equal(plannerNonce, "guest-proof");
+		};
+		const ask = async (within, revision, runIds) => {
+			const opener = button("Ask Genie", within);
+			assert.ok(opener?.hasAttribute("data-linker-genie-open"));
+			let openingContext;
+			const capture = (event) => {
+				if (event.target.closest("[data-linker-genie-open]") === opener)
+					openingContext = context(opener);
+			};
+			// The already loaded dock asks for context from the document click capture.
+			document.addEventListener("click", capture, true);
+			try {
+				await act(async () => opener.click());
+			} finally {
+				document.removeEventListener("click", capture, true);
+			}
+			assertContext(openingContext, revision, runIds);
+			assertContext(context(), revision, runIds);
+		};
+		const history = () =>
+			dom.element.querySelector('section[aria-label="Calculation history"]');
+		const languageLink = (lang) =>
+			document.querySelector(`header a[hreflang="${lang}"]`);
+		await ask(history(), 2, [earlier.id]);
+		assert.equal(
+			document.getElementById("lp-calculations").contains(history()),
+			true,
+		);
+		assert.equal(
+			dom.element.textContent.includes("Projektplanungsbericht"),
+			false,
+		);
+		activeScope = "4".repeat(64);
+		assert.equal(context(), null);
+		activeScope = scope;
+		window.history.replaceState(null, "", `?project=${"f".repeat(32)}`);
+		assert.equal(context(), null);
+		window.history.replaceState(null, "", deepLink);
+		assert.equal(
+			new URL(languageLink("de").href).searchParams.get("run"),
+			earlier.id,
+		);
+		window.history.replaceState(null, "", languageLink("de").href);
+		await render("de");
+		await until(() => button("Download PDF", history()));
+		await ask(history(), 2, [earlier.id]);
+		assert.equal(history().querySelector('input[type="file"]'), null);
+		await act(async () => button("Download PDF", history()).click());
+		await act(async () =>
+			button("Download bill of materials (CSV)", history()).click(),
+		);
+		assert.match(
+			button("Attach report to inquiry").closest(".sc-draft-transfer")
+				.textContent,
+			/Your inquiry uses the current report \(revision 3\)\./,
+		);
+		await act(async () => button("Attach report to inquiry").click());
+		assert.equal(
+			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
+			current.id,
+		);
+
+		await act(async () => button("Close", history()).click());
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.has("run"),
+			false,
+		);
+		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
+		await ask(button("Download PDF").closest("section"), 3, [current.id]);
+		await act(async () => button("Download PDF").click());
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Revision 2"));
 		await act(async () => button("Revision 2").click());
-		const history = dom.element.querySelector(
-			'section[aria-label="Calculation history"]',
+		assert.equal(button("Revision 2").getAttribute("aria-pressed"), "true");
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.get("run"),
+			earlier.id,
 		);
-		await until(() => history.textContent.includes("Project planning report"));
-		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
-		assert.equal(button("Attach report to inquiry", history), undefined);
-		assert.equal(history.querySelector('input[type="file"]'), null);
-		await act(async () => button("Download PDF", history).click());
-		await act(async () =>
-			button("Download bill of materials (CSV)", history).click(),
+		await ask(history(), 2, [earlier.id]);
+		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
+		await act(async () => button("Revision 2").click());
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.has("run"),
+			false,
 		);
-		await act(async () => button("Download PDF").click());
 		const earlierPdf = earlier.result.prepared_asset,
 			earlierCsv = earlier.result.prepared_attachments.bill_of_materials_csv,
 			currentPdf = current.result.prepared_asset;
@@ -472,10 +838,68 @@ test("Review & share downloads earlier PDF and CSV while inquiry stays with the 
 			`linker-planning-${project.id}-r2-en.csv`,
 			`linker-planning-${project.id}-r3-de.pdf`,
 		]);
-		await act(async () => button("Attach report to inquiry").click());
-		assert.equal(
-			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
-			current.id,
+
+		await act(async () => root.render(null));
+		cache.clear();
+		wrongProject = true;
+		window.history.replaceState(null, "", deepLink);
+		await render("en");
+		await until(() => button("Refresh calculation status", history()));
+		assert.equal(button("Download PDF"), undefined);
+		assert.equal(button("Ask Genie", history()), undefined);
+		await act(async () => button("Close", history()).click());
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Download PDF"));
+
+		await act(async () => root.render(null));
+		cache.clear();
+		wrongProject = false;
+		window.history.replaceState(null, "", `?project=${project.id}#sc-project`);
+		await render("en");
+		await until(() => dom.element.querySelector('[name="location_label"]'));
+		await enter(dom.element.querySelector('[name="location_label"]'), "Berlin");
+		await act(async () => button("Save snapshot").click());
+		await until(() => requests.some(([path]) => path === "projects/revise"));
+		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
+			(node) => node.textContent.includes("Review & share"),
+		);
+		await act(async () => step.click());
+		for (let page = 0; page < 2; page++) {
+			await until(
+				() =>
+					!button("Earlier calculations")?.disabled &&
+					button("Earlier calculations"),
+			);
+			await act(async () => button("Earlier calculations").click());
+		}
+		await until(() => button("Revision 2", history()));
+		await act(async () => button("Revision 2", history()).click());
+		await until(() => button("Ask Genie", history()));
+		await ask(history(), 2, [earlier.id]);
+		await act(async () => saving.resolve());
+		await until(() => dom.element.textContent.includes("Saved · revision 4"));
+		assertContext(context(), 2, [earlier.id]);
+		await ask(dom.element.querySelector(".sc-project-heading"), 4, []);
+
+		await act(async () => root.render(null));
+		cache.clear();
+		project.revision = current.revision + 1;
+		project.input_sha256 = "f".repeat(64);
+		currentSummary.is_current = false;
+		window.history.replaceState(null, "", deepLink);
+		await render("en");
+		await until(() => button("Download PDF", history()));
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Attach report to inquiry"));
+		const staleTransfer = button("Attach report to inquiry");
+		assert.equal(staleTransfer.disabled, true);
+		assert.match(
+			staleTransfer.closest(".sc-draft-transfer").textContent,
+			/Generate a report for the current project before attaching it\./,
+		);
+		assert.doesNotMatch(
+			staleTransfer.closest(".sc-draft-transfer").textContent,
+			/Your inquiry uses the current report/,
 		);
 	} finally {
 		await dom.dispose(root);
@@ -492,6 +916,8 @@ for (const scenario of [
 	"matching energy and equipment",
 	"changed energy and equipment",
 	"automatic wiring check",
+	"single-system wiring entered in Solar",
+	"multi-system wiring entered in Solar",
 	"pending wiring check",
 	"completed wiring check",
 	"missing wiring evidence",
@@ -524,7 +950,10 @@ for (const scenario of [
 				models: {},
 			},
 		};
+		const editWiring = scenario.endsWith("wiring entered in Solar");
+		const plantWiring = scenario === "multi-system wiring entered in Solar";
 		const editPeak = scenario === "edited peak target with a saved candidate";
+		if (editWiring) window.location.hash = "sc-solar";
 		if (editPeak) window.location.hash = "sc-energy";
 		let project = structuredClone(knownPv.project);
 		project.revision++;
@@ -683,7 +1112,24 @@ for (const scenario of [
 				required_usable_kwh: null,
 				required_discharge_ac_kw: null,
 			};
-			project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			if (editWiring) project.inputs.geometry = flatRoof;
+			else project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			if (plantWiring) {
+				const { beginPlant, plantInputs, readPlantDraft } =
+					await import("../src/domain/equipmentPlant.ts");
+				const setup = project.inputs.equipment_setup;
+				const plant = beginPlant(
+					project.inputs,
+					{ id: "east", name: "East" },
+					{ id: "west", name: "West" },
+				);
+				const draft = readPlantDraft(plant);
+				draft.units[1].inputs.equipment_setup = {
+					...setup,
+					inverter_product_id: 102,
+				};
+				project.inputs = plantInputs(plant, draft);
+			}
 			wiringCheck = equipmentRun(
 				"qualify_woo_equipment_v1",
 				project.revision,
@@ -750,6 +1196,8 @@ for (const scenario of [
 		const client = {
 			isCurrentScope: (s) => s === scope,
 			query: async (path, body) => {
+				if (editWiring && path === "products/current")
+					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
 				if (path === "projects/runs")
 					return {
 						items: runs.map((run) => ({
@@ -796,7 +1244,7 @@ for (const scenario of [
 			send: async (path, raw) => {
 				const command = JSON.parse(raw);
 				requests.push([path, command]);
-				if (path === "projects/revise" && editPeak) {
+				if (path === "projects/revise" && (editPeak || editWiring)) {
 					project = {
 						...project,
 						revision: project.revision + 1,
@@ -806,6 +1254,64 @@ for (const scenario of [
 					return project;
 				}
 				if (path === "runs/check-equipment" && wiringCheck) {
+					if (editWiring) {
+						const moduleIds = [
+							"array:0:0",
+							"array:0:1",
+							"array:0:2",
+							"array:1:0",
+							"array:1:1",
+						];
+						if (plantWiring) {
+							assert.equal(command.inputs.pv_string_plan, undefined);
+							assert.deepEqual(
+								command.inputs.pv_plant_string_plan.units
+									.toSorted((a, b) => a.unit_id.localeCompare(b.unit_id))
+									.map((unit) => ({
+										id: unit.unit_id,
+										inverter: unit.plan.inverter_product_id,
+										strings: unit.plan.strings.map(
+											({ id, ...string }) => string,
+										),
+									})),
+								[
+									{
+										id: "east",
+										inverter: 101,
+										strings: [
+											{ mppt: 4, input: 1, module_ids: moduleIds.slice(0, 2) },
+										],
+									},
+									{
+										id: "west",
+										inverter: 102,
+										strings: [
+											{ mppt: 4, input: 1, module_ids: moduleIds.slice(2) },
+										],
+									},
+								],
+							);
+						} else {
+							assert.deepEqual(
+								command.inputs.pv_string_plan.strings.map(
+									({ id, ...string }) => string,
+								),
+								[{ mppt: 4, input: 1, module_ids: moduleIds }],
+							);
+						}
+						wiringCheck = equipmentRun(
+							"qualify_woo_equipment_v1",
+							project.revision,
+							project.input_sha256,
+							{ assessment: wiringCheck.result.assessment },
+						);
+						queuedCheck = {
+							...wiringCheck,
+							state: "queued",
+							result: null,
+							result_sha256: null,
+						};
+					}
 					assert.deepEqual(command.inputs, project.inputs);
 					runs.unshift(wiringCheck);
 					return {
@@ -866,6 +1372,147 @@ for (const scenario of [
 					),
 				),
 			);
+			if (editWiring) {
+				const editors = () =>
+					[...dom.element.querySelectorAll("summary")].filter(
+						(s) => s.textContent === "PV strings and inputs",
+					);
+				const button = (text, root = dom.element) =>
+					[...root.querySelectorAll("button")].find(
+						(b) => b.textContent === text,
+					);
+				const field = (text, root) =>
+					[...root.querySelectorAll("label")]
+						.find((l) => l.querySelector("span")?.textContent.trim() === text)
+						?.querySelector("input");
+				await until(() => editors().length === (plantWiring ? 2 : 1));
+				for (const [index, prompt] of editors().entries()) {
+					const editor = prompt.parentElement;
+					await act(async () => prompt.click());
+					await until(
+						() =>
+							button("Set up PV strings", editor) &&
+							!button("Set up PV strings", editor).disabled,
+					);
+					await act(async () => button("Set up PV strings", editor).click());
+					await until(() => button("Select all available modules", editor));
+					await act(async () =>
+						button("Select all available modules", editor).click(),
+					);
+					await enter(field("MPPT", editor), "2");
+					await enter(field("Inverter input", editor), "1");
+					if (plantWiring && index === 0)
+						await enter(field("Modules to add to this string", editor), "2");
+					const add = button("Add selected modules to string", editor);
+					assert.equal(add.disabled, false);
+					await act(async () => add.click());
+					await act(async () => button("Edit string", editor).click());
+					await enter(field("MPPT", editor), "3");
+					await act(async () => button("5Review & share").click());
+					assert.equal(window.location.hash, "#sc-solar");
+					assert.ok(
+						[...dom.element.querySelectorAll('[role="alert"]')].some(
+							(alert) =>
+								alert.textContent ===
+								"Save or cancel your string changes before continuing.",
+						),
+					);
+					await act(async () => button("Cancel editing", editor).click());
+					assert.equal(field("MPPT", editor).value, "2");
+					await act(async () => button("Edit string", editor).click());
+					await enter(field("MPPT", editor), "4");
+					await act(async () => button("Save string changes", editor).click());
+					assert.match(editor.textContent, /MPPT 4 · input 1/);
+				}
+				const [prompt, otherPrompt] = editors();
+				const editor = prompt.parentElement;
+				const other = otherPrompt?.parentElement;
+				if (!editor.open) await act(async () => prompt.click());
+				await act(async () => button("Edit string", editor).click());
+				const clearSelection = async (scope = editor) => {
+					const clear = button("Clear selection", scope);
+					await act(async () =>
+						clear.closest("details").querySelector("summary").click(),
+					);
+					assert.equal(clear.closest("details").open, true);
+					await act(async () => clear.click());
+				};
+				await clearSelection();
+				await act(async () => prompt.click());
+				assert.equal(editor.open, false);
+				assert.equal(button("Save string changes", editor).disabled, true);
+				if (other) {
+					await act(async () => button("Edit string", other).click());
+					await enter(field("MPPT", other), "3");
+				}
+				await act(async () => button("5Review & share").click());
+				assert.equal(window.location.hash, "#sc-solar");
+				assert.equal(editor.open, true);
+				const picker = button("Select all available modules", editor)
+					.closest("details")
+					.querySelector("summary");
+				assert.ok(
+					document.activeElement === picker,
+					"focus the array in the cleared string's editor",
+				);
+				assert.equal(
+					document.getElementById(picker.getAttribute("aria-describedby"))
+						?.textContent,
+					"Select at least one module for this string or cancel editing.",
+				);
+				const mppt = field("MPPT", other ?? editor);
+				await enter(mppt, "0");
+				await act(async () => button("5Review & share").click());
+				assert.equal(window.location.hash, "#sc-solar");
+				assert.ok(
+					document.activeElement === mppt,
+					"focus the invalid MPPT before the empty selection",
+				);
+				assert.ok(
+					[...dom.element.querySelectorAll('[role="alert"]')].some(
+						(alert) =>
+							alert.textContent ===
+							"Correct the highlighted input before leaving this project.",
+					),
+				);
+				if (other)
+					await act(async () => button("Cancel editing", other).click());
+				await act(async () => button("Cancel editing", editor).click());
+				assert.match(editor.textContent, /MPPT 4 · input 1/);
+				await act(async () => button("Edit string", editor).click());
+				assert.equal(button("Save string changes", editor).disabled, false);
+				await clearSelection();
+				await act(async () => button("5Review & share").click());
+				assert.equal(picker.closest("details").open, true);
+				await act(async () =>
+					button("Select all available modules", editor).click(),
+				);
+				assert.equal(picker.hasAttribute("aria-invalid"), false);
+				assert.equal(button("Save string changes", editor).disabled, false);
+				await act(async () => button("Save string changes", editor).click());
+				if (other) {
+					await enter(field("MPPT", editor), "4");
+					const occupiedInput = field("Inverter input", editor);
+					await enter(occupiedInput, "1");
+					assert.equal(occupiedInput.getAttribute("aria-invalid"), "true");
+					await act(async () => button("Edit string", other).click());
+					await clearSelection(other);
+					await act(async () => otherPrompt.click());
+					assert.equal(other.open, false);
+					await act(async () => button("5Review & share").click());
+					assert.equal(window.location.hash, "#sc-solar");
+					const otherPicker = button("Select all available modules", other)
+						.closest("details")
+						.querySelector("summary");
+					assert.ok(
+						document.activeElement === otherPicker,
+						`focus the second array picker, got ${document.activeElement?.labels?.[0]?.querySelector("span")?.textContent.trim() ?? document.activeElement?.tagName}`,
+					);
+					assert.equal(other.open, true);
+					await act(async () => button("Cancel editing", other).click());
+				}
+				await act(async () => button("5Review & share").click());
+			}
 			if (editPeak) {
 				const peak = () =>
 					[...dom.element.querySelectorAll("label")]
@@ -913,9 +1560,11 @@ for (const scenario of [
 			await until(() => requests.some(([path]) => path === "runs/report"));
 			assert.deepEqual(
 				requests.map(([path]) => path),
-				scenario === "automatic wiring check"
-					? ["runs/check-equipment", "runs/report"]
-					: ["runs/report"],
+				editWiring
+					? ["projects/revise", "runs/check-equipment", "runs/report"]
+					: scenario === "automatic wiring check"
+						? ["runs/check-equipment", "runs/report"]
+						: ["runs/report"],
 			);
 			const report = requests.at(-1)[1];
 			assert.equal(report.expected_revision, project.revision);

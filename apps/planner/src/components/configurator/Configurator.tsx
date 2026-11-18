@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
@@ -11,7 +11,9 @@ import {
 import {
 	configuratorReportSources,
 	hasReportWiring,
+	sharedDcReportRun,
 } from "../../data/configuratorReportSources.ts";
+import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import {
@@ -31,7 +33,9 @@ import {
 	type RunPage,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
-import { REPORT_TASK } from "../../data/planningReport.ts";
+import { REPORT_TASK, type ReportOptions } from "../../data/planningReport.ts";
+import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
+import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
 import {
@@ -48,6 +52,7 @@ import {
 	sameJson,
 } from "../../domain/draft.ts";
 import {
+	authoredCalculationInputs,
 	authoredDiscoveryInputs,
 	needsComparisonModels,
 	restoreComparisonModels,
@@ -60,11 +65,16 @@ import {
 	comparisonModels,
 	equipmentDraft,
 } from "../../domain/equipment.ts";
+import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
+import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
+import { dropGeometricRoofAc } from "../../domain/profiles.ts";
+import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
+import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
 import {
 	CandidateMaterials,
 	SystemOptions,
@@ -73,8 +83,15 @@ import {
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
+import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
+import {
+	PvStringSetup,
+	type StringEditBlock,
+} from "../equipment/PvStringSetup.tsx";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
+import { moduleSummary } from "../../domain/panelPoses.ts";
+import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
@@ -163,12 +180,70 @@ export default function Configurator({
 	const [roofEditing, setRoofEditing] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const [navigationRefused, setNavigationRefused] = useState(false);
-	const navigationBlocked = !energyValid || roofEditing || importOpen;
+	const [sharedDcValid, setSharedDcValid] = useState(true);
+	const profileGuard = useRef<() => boolean>(() => true);
+	const registerProfileGuard = useCallback((guard: () => boolean) => {
+		profileGuard.current = guard;
+	}, []);
+	const [submittedDc, setSubmittedDc] = useState<{
+		id: string;
+		task: SharedDcTask;
+	} | null>(null);
+	const [wiringValidity, setWiringValidity] = useState<
+		Record<string, "ready" | "invalid" | NonNullable<StringEditBlock>>
+	>({});
+	const wiringInputs = draft?.history.current;
+	const wiringPlant =
+		step === "solar" && wiringInputs && hasPlant(wiringInputs)
+			? readPlantDraft(wiringInputs)
+			: null;
+	const wiringIds = wiringPlant?.units.map((unit) => unit.id).join(",") ?? "";
+	const wiringCallbacks = useMemo(
+		() =>
+			Object.fromEntries(
+				["", ...wiringIds.split(",").filter(Boolean)].map((id) => [
+					id,
+					(canLeave: boolean, editBlock: StringEditBlock) => {
+						const status = canLeave ? "ready" : (editBlock ?? "invalid");
+						setWiringValidity((state) =>
+							state[id] === status ? state : { ...state, [id]: status },
+						);
+					},
+				]),
+			),
+		[wiringIds],
+	);
+	const wiringStates = (wiringPlant?.units.map((unit) => unit.id) ?? [""]).map(
+		(id) => wiringValidity[id],
+	);
+	const invalidInput =
+		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
+	const missingModules = wiringStates.includes("selection");
+	const navigationBlocked =
+		invalidInput ||
+		missingModules ||
+		wiringStates.includes("pending") ||
+		roofEditing ||
+		importOpen;
 	function mayLeave() {
-		if (!client.isCurrentScope(session.query_scope)) return false;
+		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
+			return false;
 		if (!navigationBlocked) return true;
 		setNavigationRefused(true);
-		main.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+		const target = main.current?.querySelector<HTMLElement>(
+			invalidInput
+				? '[aria-invalid="true"]:not(summary)'
+				: missingModules
+					? 'summary[aria-invalid="true"]'
+					: '[aria-invalid="true"]',
+		);
+		for (
+			let details = target?.parentElement?.closest("details");
+			details;
+			details = details.parentElement?.closest("details")
+		)
+			details.open = true;
+		target?.focus();
 		return false;
 	}
 	const lastStep = useRef(step);
@@ -185,7 +260,11 @@ export default function Configurator({
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
-	const [viewedReport, setViewedReport] = useState<string | null>(null);
+	const [viewedReport, setViewedReport] = useState(() => {
+		const params = new URL(location.href).searchParams;
+		return params.get("project") === project.id ? params.get("run") : null;
+	});
+	const [genieReportId, setGenieReportId] = useState<string | null>(null);
 	const cache = useQueryClient();
 	const latest = useRef(draft);
 	latest.current = draft;
@@ -288,17 +367,51 @@ export default function Configurator({
 		reportRuns?.filter(
 			(item) => item.state === "succeeded" && item.id !== reportId,
 		) ?? [];
+	const viewedReportId =
+		viewedReport !== null && /^[a-f0-9]{32}$/.test(viewedReport)
+			? viewedReport
+			: null;
 	const historicalRunQuery = useProjectResult(
 		client,
 		session,
 		project.id,
 		REPORT_TASK,
-		step === "review" && earlierReports.some((item) => item.id === viewedReport)
-			? viewedReport
-			: null,
+		step === "review" ? viewedReportId : null,
 	);
+	const viewedRun = admitted ? (historicalRunQuery.data ?? null) : null;
+	function selectReport(id: string | null) {
+		const url = new URL(location.href);
+		if (!admitted || url.searchParams.get("project") !== project.id) return;
+		setGenieReportId(null);
+		setViewedReport(id);
+		if (id === null) url.searchParams.delete("run");
+		else url.searchParams.set("run", id);
+		url.searchParams.delete("compare");
+		url.searchParams.delete("energy_view");
+		replacePlannerLocation(url);
+	}
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
+	const genieRun =
+		step === "review" && genieReportId !== null
+			? [reportRun, viewedRun].find(
+					(run) => run?.id === genieReportId && run.state === "succeeded",
+				)
+			: null;
+	const openReport = viewedReport === null ? reportRun : viewedRun;
+	useGenieContext(
+		draft?.baseline ?? project,
+		session,
+		!draft || isDirty(draft) || Boolean(draft.pending || draft.conflict),
+		{
+			client,
+			report: genieRun ?? null,
+			openReport:
+				step === "review" && openReport?.state === "succeeded"
+					? openReport
+					: null,
+		},
+	);
 	const adoptedRun = adoptedSearch.data ?? null;
 	const legacyModels = draft
 		? needsComparisonModels(draft.history.current)
@@ -345,13 +458,21 @@ export default function Configurator({
 	);
 	function accepted(run: PlanningRun) {
 		const task = runTask(run);
-		if (task !== SEARCH_TASK && task !== REPORT_TASK) return;
+		if (
+			task !== SEARCH_TASK &&
+			task !== REPORT_TASK &&
+			task !== DC_PLANT_ENERGY_TASK &&
+			task !== WEATHER_TASK &&
+			task !== PV_TASK
+		)
+			return;
 		cache.setQueryData(
 			[session.query_scope, "configurator-result", project.id, task, run.id],
 			run,
 		);
 		if (task === SEARCH_TASK) setSubmittedSearch(run.id);
-		else setSubmittedReport(run.id);
+		else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
@@ -414,14 +535,70 @@ export default function Configurator({
 		},
 		[client, comparisonInputs, session.query_scope, update],
 	);
+	const editWiring = useCallback(
+		(operation: (inputs: JsonObject) => JsonObject) =>
+			edit((inputs) =>
+				invalidateEnergyReplay(dropGeometricRoofAc(operation(inputs))),
+			),
+		[edit],
+	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
+		setGenieReportId(null);
 		const url = new URL(location.href);
 		url.hash = "sc-" + next;
 		replacePlannerLocation(url);
 		if (next === "energy") setEnergyOpened(true);
 		setStep(next);
 		setNavigationRefused(false);
+	}
+	async function startSharedDc(
+		path: "runs/calculate" | "runs/weather" | "runs/pv",
+	) {
+		if (
+			blocked ||
+			modelsUnavailable ||
+			!latest.current ||
+			!profileGuard.current()
+		)
+			return;
+		const instance = lifetime.current;
+		setError(null);
+		try {
+			const current = latest.current;
+			if (path === "runs/pv") checkPvWeather(current.baseline.inputs);
+			const reply = await operations.start(path, {
+				expected_revision: current.baseline.revision,
+				...(path === "runs/calculate"
+					? {
+							input_contract: projectInputContract,
+							inputs: authoredCalculationInputs(current.history.current),
+						}
+					: {}),
+			});
+			if (reply && "run" in reply && instance === lifetime.current && admitted)
+				accepted(reply.run);
+		} catch (cause) {
+			if (
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			)
+				setError(cause);
+		}
+	}
+	async function generateComparison(options: ReportOptions) {
+		if (blocked || !latest.current || isDirty(latest.current)) return;
+		const reply = await operations.start("runs/report", {
+			expected_revision: latest.current.baseline.revision,
+			options,
+		});
+		if (
+			reply?.path === "runs/report" &&
+			client.isCurrentScope(session.query_scope)
+		) {
+			accepted(reply.run);
+			navigate("review");
+		}
 	}
 	async function compare() {
 		if (blocked || modelsUnavailable || !latest.current) return;
@@ -559,6 +736,8 @@ export default function Configurator({
 					signal: request.signal,
 				});
 			if (!current()) return;
+			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
+				throw new ApiError(409, "report_inputs_changed");
 			if (hasReportWiring(saved.inputs) && !sources.equipment_run_id) {
 				const readCheck = async (id: string) =>
 					readRun(
@@ -687,6 +866,12 @@ export default function Configurator({
 	const pvSizes = pvArrays?.length
 		? pvArrays.map((a) => a.peak_power_kwp)
 		: selectedUnits.map((u) => u.pv_dc_kw);
+	const roofModules =
+		brief.system_scope !== "storage_only" &&
+		!pvSizes.some((size) => size != null) &&
+		inputs.geometry !== undefined
+			? moduleSummary(activePvGeometry(inputs.geometry).geometry)
+			: null;
 	const assessment = selectedDetail.data;
 	const assessments = assessment?.systems
 		? (assessment.systems as JsonObject[]).map((u) => readObject(u.assessment))
@@ -703,6 +888,15 @@ export default function Configurator({
 		values.length && values.every((v): v is number => typeof v === "number")
 			? `${number.format(values.reduce((a, b) => a + b, 0))} ${unit}`
 			: "—";
+	const inverterId = equipmentDraft(inputs).inverter_product_id;
+	const plantWiring =
+		wiringPlant && inputs.pv_plant_string_plan != null
+			? readPvPlantStringPlan(inputs.pv_plant_string_plan).units
+			: [];
+	const hasRoofModules =
+		wiringPlant &&
+		inputs.geometry !== undefined &&
+		activePvGeometry(inputs.geometry).arrays.length > 0;
 	const activeStep =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)
 			? "project"
@@ -730,6 +924,16 @@ export default function Configurator({
 											draft.baseline.revision,
 										)}
 					</span>
+					<button
+						type="button"
+						className="sc-button"
+						data-linker-genie-open
+						data-linker-genie-planning=""
+						disabled={!admitted}
+						onClick={() => setGenieReportId(null)}
+					>
+						{__("Ask Genie", "linker-tools")}
+					</button>
 					<button
 						className="sc-button"
 						disabled={
@@ -797,19 +1001,26 @@ export default function Configurator({
 					</button>
 				))}
 			</nav>
-			{navigationRefused && navigationBlocked && (
-				<p role="alert">
-					{roofEditing || importOpen
-						? __(
-								"Finish or cancel roof editing before leaving this workspace.",
-								"linker-tools",
-							)
-						: __(
-								"Correct the highlighted input before leaving this project.",
-								"linker-tools",
-							)}
-				</p>
-			)}
+			{navigationRefused &&
+				navigationBlocked &&
+				(!missingModules || invalidInput || roofEditing || importOpen) && (
+					<p role="alert">
+						{roofEditing || importOpen
+							? __(
+									"Finish or cancel roof editing before leaving this workspace.",
+									"linker-tools",
+								)
+							: invalidInput
+								? __(
+										"Correct the highlighted input before leaving this project.",
+										"linker-tools",
+									)
+								: __(
+										"Save or cancel your string changes before continuing.",
+										"linker-tools",
+									)}
+					</p>
+				)}
 			{preparingReport && activeStep === "review" && (
 				<p className="sc-card" role="status">
 					{__("Preparing planning report…", "linker-tools")}
@@ -927,7 +1138,15 @@ export default function Configurator({
 									reply.path !== "runs/pvgis-reference"
 								) {
 									accepted(reply.run);
-									navigate(reply.path === "runs/report" ? "review" : "system");
+									if (reply.path === "runs/report") navigate("review");
+									else if (reply.path === "runs/find-equipment")
+										navigate("system");
+									else if (
+										reply.path === "runs/calculate" ||
+										reply.path === "runs/weather" ||
+										reply.path === "runs/pv"
+									)
+										navigate("energy");
 								}
 							})
 						}
@@ -937,7 +1156,12 @@ export default function Configurator({
 				</div>
 			))}
 			<div className="sc-layout">
-				<main ref={main} tabIndex={-1} className="sc-main">
+				<main
+					id={activeStep === "review" ? "lp-calculations" : undefined}
+					ref={main}
+					tabIndex={-1}
+					className="sc-main"
+				>
 					{activeStep === "project" && (
 						<ProjectDetails
 							existingEquipment={
@@ -973,6 +1197,56 @@ export default function Configurator({
 							disabled={blocked || modelsUnavailable}
 							edit={edit}
 							next={() => navigate("energy")}
+							wiring={
+								wiringPlant
+									? wiringPlant.units.map((unit, index) => {
+											const hasPlan = plantWiring.some(
+												(row) => row.unit_id === unit.id,
+											);
+											if (
+												!hasPlan &&
+												(!hasRoofModules ||
+													typeof equipmentDraft(unit.inputs)
+														.inverter_product_id !== "number")
+											)
+												return null;
+											return (
+												<fieldset className="sc-card" key={unit.id}>
+													<legend>
+														{unit.name ||
+															sprintf(
+																__("System %d", "linker-tools"),
+																index + 1,
+															)}
+													</legend>
+													<PlantPvStringSetup
+														draft={draft}
+														unit={unit}
+														units={wiringPlant.units}
+														edit={editWiring}
+														locale={config.locale}
+														disabled={blocked || modelsUnavailable}
+														onValidity={wiringCallbacks[unit.id]!}
+														checkedInReport
+													/>
+												</fieldset>
+											);
+										})
+									: (typeof inverterId === "number" ||
+											inputs.pv_string_plan != null) && (
+											<PvStringSetup
+												draft={draft}
+												edit={editWiring}
+												inverterId={
+													typeof inverterId === "number" ? inverterId : null
+												}
+												locale={config.locale}
+												disabled={blocked || modelsUnavailable}
+												onValidity={wiringCallbacks[""]!}
+												checkedInReport
+											/>
+										)
+							}
 							initialMap={mapPropertyLinks.has(location.hash)}
 							onEditing={setRoofEditing}
 							geometryImport={{
@@ -1000,6 +1274,45 @@ export default function Configurator({
 								compare={() => void compare()}
 								onValidity={setEnergyValid}
 							/>
+							{hasPlant(inputs) &&
+								brief.system_scope !== "storage_only" &&
+								brief.system_scope !== "pv_only" && (
+									<SharedDcEnergy
+										draft={draft}
+										locale={config.locale}
+										client={client}
+										session={session}
+										store={store}
+										disabled={blocked || modelsUnavailable || !energyValid}
+										active={activeStep === "energy"}
+										edit={edit}
+										save={controller.save}
+										openEquipment={() => navigate("project")}
+										openDesign={() => navigate("solar")}
+										onValidity={setSharedDcValid}
+										registerProfileGuard={registerProfileGuard}
+										recoveryScopes={recoveryScopes}
+										recoveryChecking={recoveryChecking}
+										recheck={recheck}
+										runs={[
+											...(latestRuns ?? []),
+											...(olderHistory.data?.pages.flatMap(
+												(page) => page.items,
+											) ?? []),
+										]}
+										moreRuns={
+											(olderHistory.data
+												? olderHistory.hasNextPage
+												: firstCursor) && !olderHistory.isFetching
+												? () => void olderHistory.fetchNextPage()
+												: undefined
+										}
+										submitted={submittedDc}
+										start={(path) => void startSharedDc(path)}
+										generateComparison={generateComparison}
+										operationError={error ?? operations.error}
+									/>
+								)}
 						</div>
 					)}
 					{activeStep === "system" && (
@@ -1108,10 +1421,19 @@ export default function Configurator({
 							history={{
 								items: earlierReports,
 								selected: viewedReport,
-								select: setViewedReport,
-								run: historicalRunQuery.data ?? null,
-								reading: historicalRunQuery.isLoading,
+								select: selectReport,
+								run: viewedRun,
+								reading:
+									historicalRunQuery.isLoading ||
+									Boolean(viewedRun && runPending(viewedRun.state)),
 								readFailed: historicalRunQuery.isError,
+								unavailable:
+									viewedReportId === null ||
+									Boolean(
+										viewedRun &&
+										viewedRun.state !== "succeeded" &&
+										!runPending(viewedRun.state),
+									),
 								retryRead: () => void historicalRunQuery.refetch(),
 								hasMore: olderHistory.data
 									? olderHistory.hasNextPage
@@ -1131,6 +1453,7 @@ export default function Configurator({
 								!isDirty(draft),
 							)}
 							generate={(logo) => void generate(logo)}
+							askGenie={(run) => setGenieReportId(run.id)}
 							recheck={recheck}
 						/>
 					)}
@@ -1145,7 +1468,12 @@ export default function Configurator({
 							{brief.system_scope !== "storage_only" && (
 								<div>
 									<dt>{__("Solar capacity", "linker-tools")}</dt>
-									<dd>{total(pvSizes, "kWp")}</dd>
+									<dd>
+										{total(
+											roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
+											"kWp",
+										)}
+									</dd>
 								</div>
 							)}
 							{brief.system_scope !== "pv_only" && (

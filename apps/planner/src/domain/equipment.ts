@@ -253,9 +253,14 @@ export function compileEquipment(
 	const {
 		application: _demand,
 		comparison_models: _filters,
+		equipment_use,
 		...hardware
 	} = setup;
-	const value = { ...hardware, product_revisions: revisions };
+	const value = {
+		...hardware,
+		...(equipment_use == null ? {} : { equipment_use }),
+		product_revisions: revisions,
+	};
 	return readEquipmentSelection(value);
 }
 

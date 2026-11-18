@@ -387,6 +387,13 @@ class ProductSources:
                     "choose a Woo-maintained or declared reference module before adding product facts"
                 )
         if pv_changed and "pv_generation" in inputs:
+            if basis is None:
+                selected = PvGenerationParameters.read(inputs["pv_generation"]).modules
+                woo_ids = {
+                    m.id for m in geometry.module_specs if m.source.woo is not None
+                }
+                if any(item.module_spec_id in woo_ids for item in selected):
+                    basis = self.module_basis()
             self.check_pv_inputs(inputs, basis)
 
     def check_installation(self, inputs: Object, previous: Object) -> None:

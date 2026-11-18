@@ -35,8 +35,10 @@ final class ModuleTest extends TestCase {
 		foreach ( array( array( 'linker_commerce_planning_draft_apply', \Linker\Commerce\Planning\DraftTransfer::class, 'apply', 3 ), array( 'linker_commerce_planning_draft_preview', \Linker\Commerce\Planning\DraftPreview::class, 'read', 3 ), array( 'linker_commerce_planning_draft_read', \Linker\Commerce\Planning\DraftTransfer::class, 'receipt', 3 ), array( 'woocommerce_get_item_data', \Linker\Commerce\Planning\Context::class, 'item_data', 2 ) ) as [ $hook, $class, $method, $args ] ) {
 			WP_Mock::expectFilterAdded( $hook, array( new WP_Mock\Matcher\AnyInstance( $class ), $method ), 10, $args ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
 		}
+		$this->expect_action_on_any( 'woocommerce_before_cart', \Linker\Commerce\Planning\Context::class, 'cart_phase_notices' );
 		$this->expect_action_on_any( 'woocommerce_checkout_create_order_line_item', \Linker\Commerce\Planning\Context::class, 'line', 10, 3 );
 		$this->expect_action_on_any( 'woocommerce_order_details_after_order_table', \Linker\Commerce\Planning\Context::class, 'render' );
+		$this->expect_action_on_any( 'woocommerce_admin_order_data_after_order_details', \Linker\Commerce\Planning\Context::class, 'render' );
 		$this->expect_action_on_any( 'woocommerce_email_after_order_table', \Linker\Commerce\Planning\Context::class, 'email', 10, 3 );
 		$this->expect_action_on_any( 'woocommerce_cart_emptied', \Linker\Commerce\Planning\Context::class, 'emptied' );
 		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Planning\ReportDownload::class, 'register' );

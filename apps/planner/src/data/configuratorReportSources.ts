@@ -14,6 +14,7 @@ import {
 	PVGIS_REFERENCE_TASK,
 } from "../domain/pvgisReference.ts";
 import { readAsset, readSelections } from "../domain/profiles.ts";
+import { DC_PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
 import {
 	RUN_OPERATIONS,
 	readRun,
@@ -86,6 +87,38 @@ function sameSite(a: JsonObject, b: JsonObject) {
 	);
 }
 
+function isSharedDcSetup(inputs: JsonObject): boolean {
+	return (
+		readObject(inputs.energy_plant_setup ?? {}).coupling === "plant_shared_dc"
+	);
+}
+
+export function sameEnergyReportInputs(
+	previous: JsonObject,
+	inputs: JsonObject,
+): boolean {
+	return (
+		scope(previous) === scope(inputs) &&
+		(!isSharedDcSetup(inputs) || sameSite(previous, inputs)) &&
+		matches(previous, inputs, [
+			...energy,
+			...equipmentEvidence,
+			...pvDependencies,
+			"energy_replay",
+			"energy_plant",
+		])
+	);
+}
+
+export function sharedDcReportRun(inputs: JsonObject): string | null {
+	const id = inputs.shared_dc_energy_run_id;
+	return isSharedDcSetup(inputs) &&
+		typeof id === "string" &&
+		/^[a-f0-9]{32}$/.test(id)
+		? id
+		: null;
+}
+
 export async function configuratorReportSources({
 	project,
 	pageSize,
@@ -120,6 +153,7 @@ export async function configuratorReportSources({
 	const canUseRetained =
 		!hasWiring &&
 		readObject(inputs.existing_system ?? {}).keep_inverter === true;
+	const adoptedDc = sharedDcReportRun(inputs);
 	const needsEnergy = [
 		"energy_scenario",
 		"energy_plant_setup",
@@ -127,6 +161,9 @@ export async function configuratorReportSources({
 		"energy_plant",
 	].some((key) => inputs[key] != null);
 	const selected = readSelections(inputs.profile_selections).selected;
+	const selectedPv = isSharedDcSetup(inputs)
+		? selected.pv_reference
+		: (selected.pv_available_ac ?? selected.pv_reference);
 	const needsPv =
 		scope(inputs) !== "storage_only" &&
 		["pvgis_reference", "pv_generation", "geometric_pv_preparation"].some(
@@ -296,27 +333,30 @@ export async function configuratorReportSources({
 				continue;
 			}
 			if (needsEnergy && !energyRun && isEnergyTask(kind)) {
-				const previous = (await authored(row)).inputs;
 				if (
-					scope(previous) !== scope(inputs) ||
-					!matches(previous, inputs, [
-						...energy,
-						...equipmentEvidence,
-						...pvDependencies,
-					])
+					adoptedDc !== null &&
+					(kind !== DC_PLANT_ENERGY_TASK || row.id !== adoptedDc)
 				)
 					continue;
+				const previous = (await authored(row)).inputs;
+				if (!sameEnergyReportInputs(previous, inputs)) continue;
 				const execution = await frozen(row);
+				if (adoptedDc !== null && execution.energy_plant == null)
+					throw new ApiError(502, "run_source_mismatch");
 				const joint = execution.energy_plant != null;
 				const scenario = readObject(
 					execution[joint ? "energy_plant" : "energy_replay"],
 				);
-				if (!matches(previous, inputs, ["energy_replay", "energy_plant"]))
-					continue;
 				const pv =
 					scenario.coupling === "plant_shared_dc"
 						? scenario.pv_reference_asset_id
 						: scenario.pv_available_asset_id;
+				if (
+					adoptedDc !== null &&
+					(scenario.coupling !== "plant_shared_dc" ||
+						(pv ?? null) !== (selected.pv_reference ?? null))
+				)
+					throw new ApiError(502, "run_source_mismatch");
 				if (pv != null && !sameSite(previous, inputs)) continue;
 				energyRun = row.id;
 				energyPv = pv;
@@ -396,11 +436,7 @@ export async function configuratorReportSources({
 					])
 				)
 					continue;
-				if (
-					(selected.pv_available_ac ?? selected.pv_reference) != null &&
-					(selected.pv_available_ac ?? selected.pv_reference) !== asset.id
-				)
-					continue;
+				if (selectedPv != null && selectedPv !== asset.id) continue;
 				pvRun = row.id;
 				pvAsset = asset.id;
 			}

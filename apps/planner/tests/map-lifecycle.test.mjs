@@ -161,7 +161,7 @@ test("map view requires consent, releases provider requests on withdrawal, and p
 	);
 });
 
-test("late-arriving imagery inserts beneath the site outline and updates its request grant across countries", async (t) => {
+test("late imagery needs its own grant and changing providers revokes it", async (t) => {
 	const fixture = setupDom();
 	const previous = new globalThis.Map();
 	for (const name of ["MutationObserver", "getComputedStyle"]) {
@@ -179,7 +179,7 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 	const { default: MapViewport } =
 		await import("../src/components/design/MapViewport.tsx");
 	const { emptyGeometry } = await import("../src/domain/geometryCommands.ts");
-	const { maps } = await import("./map-library-fixture.mjs");
+	const { maps, behavior } = await import("./map-library-fixture.mjs");
 	const root = createRoot(fixture.element);
 	t.after(async () => {
 		await fixture.dispose(root);
@@ -222,15 +222,24 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	const live = activeMap(maps);
 	assert.ok(live.getLayer("linker-site-outline"));
-	await renderWith({
+	const first = {
 		tiles: [
 			"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox={bbox-epsg-3857}",
 		],
 		credit: "European Union, Copernicus Land Monitoring Service (EEA)",
 		licence: "Copernicus VHR Image Mosaic viewing service",
 		licence_url: "https://land.copernicus.eu/en/products/european-image-mosaic",
-	});
-	const order = [...live.layers.keys()];
+	};
+	await renderWith(first);
+	assert.equal(activeMap(maps).getSource("linker-site-imagery"), undefined);
+	assert.throws(
+		() => live.options.transformRequest(first.tiles[0]),
+		/not_authorized/,
+	);
+	await act(async () => button("Show aerial map").click());
+	await until(() => activeMap(maps)?.getSource("linker-site-imagery"));
+	const firstMap = activeMap(maps);
+	const order = [...firstMap.layers.keys()];
 	assert.deepEqual(order.slice(0, 2), [
 		"linker-site-imagery",
 		"linker-site-outline",
@@ -239,34 +248,65 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 		order.indexOf("linker-map-roof") > order.indexOf("linker-site-outline"),
 	);
 	assert.equal(
-		live.options.transformRequest(
+		firstMap.options.transformRequest(
 			"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox=0,0,1,1",
 		).credentials,
 		"same-origin",
 	);
-	await renderWith({
+	const second = {
 		tiles: [
 			"https://de-linker.com/wp-json/linker/v1/imagery/it?bbox={bbox-epsg-3857}",
 		],
 		credit: "Ministero dell'Ambiente e della Sicurezza Energetica (PCN)",
 		licence: "Open data, Geoportale Nazionale",
 		licence_url: "https://www.pcn.minambiente.it/",
-	});
+	};
+	await renderWith(second);
+	assert.equal(firstMap.removals, 1);
+	assert.throws(
+		() => firstMap.options.transformRequest(first.tiles[0]),
+		/not_authorized/,
+	);
+	assert.equal(activeMap(maps).getSource("linker-site-imagery"), undefined);
+	assert.throws(
+		() => activeMap(maps).options.transformRequest(second.tiles[0]),
+		/not_authorized/,
+	);
+	await act(async () => button("Show aerial map").click());
+	await until(() => activeMap(maps)?.getSource("linker-site-imagery"));
+	const secondMap = activeMap(maps);
 	assert.throws(
 		() =>
-			live.options.transformRequest(
+			secondMap.options.transformRequest(
 				"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox=0,0,1,1",
 			),
 		/not_authorized/,
 	);
 	assert.equal(
-		live.options.transformRequest(
+		secondMap.options.transformRequest(
 			"https://de-linker.com/wp-json/linker/v1/imagery/it?bbox=1022900,5694800,1023200,5695100",
 		).credentials,
 		"same-origin",
 	);
 	assert.match(
-		live.getSource("linker-site-imagery").attribution,
+		secondMap.getSource("linker-site-imagery").attribution,
 		/Ministero dell'Ambiente/,
+	);
+	await act(async () => button("Hide aerial map").click());
+	behavior.autoLoad = false;
+	t.after(() => {
+		behavior.autoLoad = true;
+	});
+	await act(async () => button("Show aerial map").click());
+	const pending = activeMap(maps);
+	await act(async () => {
+		document.dispatchEvent(new window.Event("wp_listen_for_consent_change"));
+		pending.emit("load");
+	});
+	assert.equal(pending.removals, 1);
+	assert.equal(pending.getSource("linker-site-imagery"), undefined);
+	assert.throws(
+		() => pending.options.transformRequest(second.tiles[0]),
+		/not_authorized/,
 	);
 });

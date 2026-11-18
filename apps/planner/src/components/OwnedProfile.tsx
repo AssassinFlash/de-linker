@@ -8,7 +8,11 @@ import type {
 	ProfileAsset,
 	ProfilePreview,
 } from "../domain/profiles.ts";
-import { readAsset, readPreview } from "../domain/profiles.ts";
+import {
+	matchesProfileRole,
+	readAsset,
+	readPreview,
+} from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
 import { ProfileError } from "./ProfileError.tsx";
 import { ProfileReview } from "./ProfileReview.tsx";
@@ -81,15 +85,7 @@ export function OwnedProfile({
 					),
 					asset,
 				);
-				if (
-					expectedRole &&
-					preview.measurement !== expectedRole &&
-					!(
-						expectedRole === "pv_reference" &&
-						asset.purpose === "pvlib_reference_profile_v1" &&
-						preview.measurement === "pv_available_ac"
-					)
-				)
+				if (expectedRole && !matchesProfileRole(expectedRole, asset, preview))
 					throw new ApiError(502, "profile_role_mismatch");
 				recoveringSession.current = false;
 				return { asset, preview };

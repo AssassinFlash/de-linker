@@ -8,7 +8,7 @@ from typing import cast
 
 from .assets import Asset, Assets
 from .canonical import Json, Object, digest, encode
-from .energy_inputs import storage_only_project
+from .energy_inputs import project_coupling, storage_only_project
 from .errors import InvalidInput
 from .geometry import panel_poses, read_geometry
 from .product_sources import ProductSources
@@ -38,6 +38,9 @@ class ComparisonPv:
         self.reference = reference
 
     def declarations(self, inputs: Object) -> Object:
+        if shared_dc(inputs):
+            # Only the declared DC hardware demand belongs to these converters.
+            return inputs
         brief = inputs.get("brief")
         if not isinstance(brief, dict) or brief.get("system_scope") not in (
             "new_pv_storage",
@@ -67,7 +70,7 @@ class ComparisonPv:
     def context(
         self, actor: Actor, project_id: str, inputs: Object
     ) -> tuple[dict[str, str], bool]:
-        if storage_only_project(inputs):
+        if storage_only_project(inputs) or shared_dc(inputs):
             return {}, False
         raw = inputs.get("profile_selections")
         selected = ProfileSelections.read(raw).selected if raw is not None else {}
@@ -102,15 +105,7 @@ class ComparisonPv:
                 "complete the PVGIS reference settings",
                 fields=("pvgis_reference_setup",),
             )
-        single = inputs.get("energy_scenario", inputs.get("energy_replay"))
-        plant = inputs.get("energy_plant_setup", inputs.get("energy_plant"))
-        if (
-            isinstance(single, dict)
-            and single.get("coupling") == "shared_dc"
-            or isinstance(plant, dict)
-            and plant.get("coupling") == "plant_shared_dc"
-            or "pv_reference" in selected
-        ):
+        if "pv_reference" in selected:
             raise InvalidInput(
                 "an AC reference cannot replace the selected DC PV source",
                 fields=("profile_selections.selected.pv_reference",),
@@ -139,6 +134,10 @@ class ComparisonPv:
         return asset.metadata.get("geometry_sha256") == digest(
             encode(inputs.get("geometry"))
         )
+
+
+def shared_dc(inputs: Object) -> bool:
+    return project_coupling(inputs) in ("shared_dc", "plant_shared_dc")
 
 
 def is_known(setup: Json) -> bool:

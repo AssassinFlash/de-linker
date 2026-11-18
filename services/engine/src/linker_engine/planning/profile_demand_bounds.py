@@ -8,7 +8,7 @@ from typing import cast
 
 from .assets import Assets
 from .canonical import Json, Object
-from .energy_inputs import storage_only_project
+from .energy_inputs import project_coupling, storage_only_project
 from .equipment_evidence import EquipmentEvidence
 from .equipment_fact_resolution import FactContext, FactUse, resolve_fact
 from .equipment_inputs import EquipmentSelection
@@ -41,11 +41,7 @@ def scenario(inputs: Object) -> tuple[Object, str | None, Json]:
     settings = inputs.get("energy_scenario")
     if not isinstance(settings, dict) or settings.get("controller") not in CONTROLLERS:
         settings = plant_setup if isinstance(plant_setup, dict) else {}
-    coupling = (
-        plant_setup.get("coupling", "plant_ac")
-        if isinstance(plant_setup, dict)
-        else settings.get("coupling", "undeclared_plant" if plant else "independent_ac")
-    )
+    coupling = project_coupling(inputs)
     controller = settings.get("controller")
     goal = (
         controller
@@ -166,6 +162,26 @@ def pin_profiles(
     return pinned
 
 
+def peak_targets(
+    schedule: list[tuple[Interval, bool, float | None, bool]],
+) -> Object:
+    caps = {cap for _, _, cap, _ in schedule}
+    if len(caps) == 1:
+        return {"peak_target_kw": next(iter(caps))}
+    return {
+        "peak_target_kw": None,
+        "peak_target_periods": [
+            {
+                "start_utc": interval.start.isoformat(),
+                "end_utc": interval.end.isoformat(),
+                "import_cap_kw": cap,
+            }
+            for interval, _, cap, _ in schedule
+            if cap is not None
+        ],
+    }
+
+
 def evaluate_bounds(
     workspace: Workspace,
     products: ProductSources,
@@ -268,6 +284,8 @@ def evaluate_bounds(
         "interval_count": len(frames),
         "baseline": baseline,
     }
+    if controller == CONTROLLERS[1]:
+        profile_summary.update(peak_targets(schedule))
     control.checkpoint()
     if basis is None:
         search["demand"] = profile_summary

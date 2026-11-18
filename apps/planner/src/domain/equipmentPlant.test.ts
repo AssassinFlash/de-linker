@@ -69,13 +69,17 @@ test("plant strings keep independent ports and other units across edits, prepara
 	const inputs = {
 		...start(),
 		pv_plant_string_plan: wiring,
-		equipment_candidate: { id: "stale" },
+		equipment_candidate: {
+			run_id: "a".repeat(32),
+			candidate_id: "b".repeat(64),
+			assessment_sha256: "c".repeat(64),
+		},
 	};
 	const updated = changePvPlantStringUnit(inputs, "a", {
 		...a,
 		plan: { ...a.plan, minimum_ambient_c: -15 },
 	});
-	assert.equal(updated.equipment_candidate, undefined);
+	assert.deepEqual(updated.equipment_candidate, inputs.equipment_candidate);
 	assert.deepEqual(
 		readPvPlantStringPlan(updated.pv_plant_string_plan).units.find(
 			(u) => u.unit_id === "b",
@@ -348,6 +352,8 @@ test("plant search prepares demand without hardware and adopts one whole candida
 		})),
 	};
 	const hardware = compilePlant(complete, products);
+	// The search worker omits equipment_use when no procurement intent was set.
+	for (const unit of hardware.units) delete unit.selection.equipment_use;
 	const unselected = {
 		...complete,
 		units: complete.units.map((unit) => ({
@@ -378,6 +384,30 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	assert.deepEqual(adopted.site, { country_code: "FR" });
 	assert.deepEqual(adopted.equipment_candidate, choice);
 	assert.deepEqual(adopted.equipment_plant, hardware);
+	const wiring = readPvPlantStringPlan({
+		schema_version: 1,
+		units: [
+			{
+				unit_id: hardware.units[0]!.id,
+				inverter_instance_id: null,
+				plan: {
+					schema_version: 1,
+					inverter_product_id: 1,
+					minimum_ambient_c: null,
+					temperature_source: null,
+					strings: [{ id: "s", mppt: 1, input: 1, module_ids: ["ma"] }],
+				},
+			},
+		],
+	});
+	const wired = adoptPlantCandidate(
+		{ ...current, pv_plant_string_plan: wiring },
+		hardware,
+		products,
+		choice,
+	);
+	assert.deepEqual(wired.pv_plant_string_plan, wiring);
+	assert.deepEqual(wired.equipment_candidate, choice);
 	assert.equal(
 		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs).application,
 		"commercial",

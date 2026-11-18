@@ -167,7 +167,16 @@ export function DesignEditor({
 	const placement = useMemo<ArrayPlacement | null>(
 		() =>
 			form?.kind === "array" && form.roofId
-				? { roofId: form.roofId, place: setArrayPosition }
+				? {
+						roofId: form.roofId,
+						place: setArrayPosition,
+						review: () =>
+							revealActionResult(
+								document.querySelector<HTMLElement>(
+									"#lp-array-properties input, #lp-array-properties select",
+								),
+							),
+					}
 				: null,
 		[form],
 	);

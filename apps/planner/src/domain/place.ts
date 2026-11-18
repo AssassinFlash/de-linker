@@ -33,6 +33,15 @@ export interface PlaceImagery extends JsonObject {
 	readonly licence_url: string;
 }
 
+export function imagerySourceKey(mosaic: PlaceImagery): string {
+	return JSON.stringify([
+		mosaic.tiles,
+		mosaic.credit,
+		mosaic.licence,
+		mosaic.licence_url,
+	]);
+}
+
 export function readPlaceImagery(value: unknown): PlaceImagery | null {
 	if (value === null || value === undefined) return null;
 	const data = readObject(value);

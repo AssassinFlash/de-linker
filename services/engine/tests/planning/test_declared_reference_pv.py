@@ -183,6 +183,9 @@ def test_the_woo_module_path_is_unchanged(tmp_path: Path) -> None:
         {**cast(Object, template["parameters"]), "module_spec_id": "module"}
     ]
     with frozen_publication():
+        products.check_project(
+            {"geometry": geometry, "pv_generation": parameters}, {"geometry": geometry}
+        )
         ProductSources.check_roof_inputs({"geometry": geometry}, basis)
         ProductSources.check_pv_inputs(
             {"geometry": geometry, "pv_generation": parameters}, basis

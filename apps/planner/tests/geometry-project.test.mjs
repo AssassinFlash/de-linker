@@ -256,7 +256,7 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	assert.deepEqual(outlines, [
 		{
 			schema_version: 1,
-			query: "Synthetic address",
+			query: "50667",
 			country: "DE",
 			latitude: 50.94,
 			longitude: 6.96,

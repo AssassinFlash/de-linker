@@ -214,6 +214,16 @@ msgstr "Nur Photovoltaik"
 msgid "Switching to solar excludes battery equipment and storage requirements, including backup supply."
 msgstr "Wenn Sie zu reiner Photovoltaik wechseln, entfallen die Batterieausstattung und die Anforderungen an den Speicher, einschließlich der Ersatzstromversorgung."
 
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx
+#: build/planner/assets/planner.js
+msgid "Switching to storage removes the PV wiring plan from this project version."
+msgstr "Wenn Sie zu einem reinen Speicherprojekt wechseln, wird der PV-Verschaltungsplan aus dieser Projektversion entfernt."
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx
+#: build/planner/assets/planner.js
+msgid "Switch to storage and remove PV wiring"
+msgstr "Zu Speicher wechseln und PV-Verschaltung entfernen"
+
 #: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
 msgid "Switch to solar and exclude storage"
 msgstr "Zu Photovoltaik ohne Speicher wechseln"
@@ -821,7 +831,12 @@ msgstr ""
 msgid "Click the roof of the building in the aerial image."
 msgstr "Klicken Sie im Luftbild auf das Dach des Gebäudes."
 
-#: build/genie.js:16 build/hero.js
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Your inquiry uses the current report (revision %d)."
+msgstr "Für Ihre Anfrage wird der aktuelle Bericht (Revision %d) verwendet."
+
+#: build/genie.js:16 build/hero.js build/planner/assets/planner.js
 msgid "Close"
 msgstr "Schließen"
 
@@ -4237,6 +4252,14 @@ msgstr ""
 "Die Koordinatenauflösung liegt außerhalb des numerischen "
 "Unterstützungsbereichs dieser Prüfung. Die Planung kann weiterhin korrigiert "
 "werden."
+
+#: build/planner/assets/planner.js
+msgid "Select at least one module for this string or cancel editing."
+msgstr "Wählen Sie mindestens ein Modul für diesen String aus oder brechen Sie die Bearbeitung ab."
+
+#: build/planner/assets/planner.js
+msgid "Save or cancel your string changes before continuing."
+msgstr "Speichern oder verwerfen Sie Ihre Änderungen am String, bevor Sie fortfahren."
 
 #: build/planner/assets/planner.js:1
 msgid "Correct the highlighted input before leaving this project."
@@ -10735,6 +10758,11 @@ msgstr ""
 "Leerlaufspannung bei Kälte und STC-Prüfungen werden getrennt von den noch "
 "offenen Auslegungsprüfungen angezeigt."
 
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Generate the project report to check the saved wiring plan."
+msgstr "Erstellen Sie den Projektbericht, um den gespeicherten Verschaltungsplan zu prüfen."
+
 #: ../../apps/planner/src/components/equipment/PvStringResult.tsx
 #: build/planner/assets/planner.js
 msgid "PV wiring plan"
@@ -13119,7 +13147,7 @@ msgstr "In diesem gespeicherten Ergebnis nicht erfasst"
 msgid "Open saved result"
 msgstr "Gespeichertes Ergebnis öffnen"
 
-#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js build/planner/assets/planner.js
 msgid "The saved calculation details could not be verified for this response."
 msgstr "Die Angaben zur gespeicherten Berechnung konnten für diese Antwort nicht geprüft werden."
 
@@ -15522,6 +15550,16 @@ msgstr "Luftbildkarte ausblenden"
 msgid "Show aerial map"
 msgstr "Luftbildkarte anzeigen"
 
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider."
+msgstr "Dieses Luftbild dient nur zur Ansicht. Wenn Sie es anzeigen, erhält der Anbieter Ihre IP-Adresse und den angezeigten Kartenausschnitt."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx
+#: build/planner/assets/planner.js
+msgid "Use the plan view or a roof image you have permission to use to create the layout."
+msgstr "Nutzen Sie die Planansicht oder ein Dachbild, für das Sie die Nutzungsrechte haben."
+
 #: ../../apps/planner/src/components/design/SceneViewport.tsx
 #: build/planner/assets/planner.js
 msgid "Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane."
@@ -16768,6 +16806,14 @@ msgid "Click each corner on the map, then finish the outline."
 msgstr "Klicken Sie nacheinander auf die Eckpunkte auf der Karte und schließen Sie den Umriss ab."
 
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm roof and map origin"
+msgstr "Dach und Kartenursprung bestätigen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Mark each roof corner on the aerial map. The first corner sets the origin with true north."
+msgstr "Markieren Sie die Dachecken im Luftbild. Die erste Ecke legt den Ursprung fest. Die Ausrichtung folgt geografisch Nord."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
 msgid "Enter the roof dimensions or confirm the map origin to draw on the map."
 msgstr "Sie können die Dachmaße eingeben oder den Kartenursprung bestätigen, um auf der Karte zu zeichnen."
 
@@ -16811,6 +16857,12 @@ msgstr "Bestätigen Sie das Wechselrichtermodell, um die Kompatibilität mit Bat
 #: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js
 msgid "You can continue with the existing inverter. Confirm its model to check equipment compatibility."
 msgstr "Sie können mit dem vorhandenen Wechselrichter weiterplanen. Bestätigen Sie das Modell, um die Gerätekompatibilität zu prüfen."
+
+#. translators: 1: inverter phase count, 2: required grid phase count.
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration."
+msgstr "Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration."
 
 #: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
 msgid "Attach report to inquiry"
@@ -16959,3 +17011,27 @@ msgstr "Obergrenze der Ersatzstromleistung"
 #: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
 msgid "Confirm shared backup transfer, starting charge and discharge losses."
 msgstr "Prüfen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste."
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Shared DC energy flows"
+msgstr "Energieflüsse bei DC-Kopplung"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Set up shared DC energy flows"
+msgstr "DC-gekoppelte Energieflüsse einrichten"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Optional"
+msgstr "Optional"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Use the prepared roof PV source for DC groups. Upload a separate interval profile for any additional AC generation."
+msgstr "Verwenden Sie das berechnete Dach-PV-Profil für die DC-Gruppen. Laden Sie für zusätzliche AC-Erzeugung ein separates Zeitreihenprofil hoch."
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Selected for the report"
+msgstr "Für den Bericht ausgewählt"
+
+#: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
+msgid "Use this calculation in the report"
+msgstr "Diese Berechnung im Bericht verwenden"

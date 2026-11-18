@@ -85,6 +85,7 @@ final class DraftPreview {
 		if ( $report_only && array() === $replace ) {
 			$present = isset( Context::report_only_contexts()[ $handoff['id'] ] );
 		}
+		$phase_conflicts = Context::phase_conflicts( $snapshot );
 		return array(
 			'schema_version'  => 1,
 			'project_id'      => $snapshot['project_id'],
@@ -97,6 +98,7 @@ final class DraftPreview {
 			'already_present' => $present,
 			'draft_urls'      => DraftTransfer::urls( $report_only ),
 			...( $report_only ? array( 'report_only' => true ) : array() ),
+			...( array() !== $phase_conflicts ? array( 'phase_conflicts' => $phase_conflicts ) : array() ),
 		);
 	}
 

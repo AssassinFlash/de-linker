@@ -15,10 +15,7 @@ import type {
 	RoofFace,
 	Vec2,
 } from "../../domain/geometry.ts";
-import type {
-	GeometryCommand,
-	GeometryEdit,
-} from "../../domain/geometryCommands.ts";
+import type { GeometryEdit } from "../../domain/geometryCommands.ts";
 import {
 	buildCalibration,
 	measurementStatus,
@@ -33,6 +30,14 @@ import { formatDecimal } from "../../domain/decimal.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __, sprintf } from "../../i18n.ts";
+
+export type CalibrationCommand = {
+	type: "group";
+	edits: readonly [
+		Extract<GeometryEdit, { type: "put_source" }>,
+		Extract<GeometryEdit, { type: "put_roof" }>,
+	];
+};
 
 const MEDIA = ["image/png", "image/jpeg", "image/webp"] as const;
 /** The written summary the record carries until the final step replaces it. */
@@ -132,7 +137,7 @@ export function ImageCalibrationWorkspace({
 	locale: string;
 	disabled: boolean;
 	onActivity: (open: boolean) => void;
-	commit: (command: GeometryCommand) => boolean;
+	commit: (command: CalibrationCommand) => boolean;
 }) {
 	const [open, setOpen] = useState(false),
 		[step, setStep] = useState(0),
@@ -160,10 +165,6 @@ export function ImageCalibrationWorkspace({
 		target === "new"
 			? null
 			: (geometry.roofs.find((roof) => roof.id === target) ?? null);
-	const targetSource = targetRoof
-		? (geometry.sources.find((source) => source.id === targetRoof.source_id) ??
-			null)
-		: null;
 	useEffect(() => {
 		onActivity(open);
 		return () => onActivity(false);
@@ -352,6 +353,7 @@ export function ImageCalibrationWorkspace({
 			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 		>("input,textarea,select") ?? []) {
 			if (input.type === "file") continue;
+			input.setCustomValidity("");
 			if (
 				input.required &&
 				(input instanceof window.HTMLInputElement && input.type === "checkbox"
@@ -478,16 +480,20 @@ export function ImageCalibrationWorkspace({
 				minV = Math.min(...ring.map(([, v]) => v));
 			const boundary = ring.map(([u, v]) => [u - minU, v - minV] as const);
 			const name = targetRoof ? targetRoof.name : values.text("roof").trim();
-			const source = targetSource ?? {
+			const source = {
 				id: "source_" + crypto.randomUUID().replaceAll("-", ""),
 				kind: "user_drawing" as const,
 				note: values.text("source"),
-				rights_note: "",
+				rights_note: values.text("rights"),
 				reference_url: null,
 				reference_sha256: null,
 				acquired_at_utc: null,
-				spatial_precision_m: null,
-				calibration_note: "",
+				spatial_precision_m: values.number("precision", {
+					optional: true,
+					min: 0,
+				}),
+				calibration,
+				calibration_note: values.text("note"),
 				rights_basis: "user_attestation" as const,
 				permissions: {
 					derive: "permitted" as const,
@@ -515,24 +521,8 @@ export function ImageCalibrationWorkspace({
 				boundary_uv: boundary,
 				holes_uv: targetRoof?.holes_uv ?? [],
 			};
-			const edits: GeometryEdit[] = [
-				{
-					type: "put_source",
-					before: targetSource,
-					value: {
-						...source,
-						note: targetSource ? source.note : values.text("source"),
-						rights_note: targetSource
-							? source.rights_note
-							: values.text("rights"),
-						spatial_precision_m: values.number("precision", {
-							optional: true,
-							min: 0,
-						}),
-						calibration,
-						calibration_note: values.text("note"),
-					},
-				},
+			const edits: CalibrationCommand["edits"] = [
+				{ type: "put_source", before: null, value: source },
 				{ type: "put_roof", before: targetRoof, value: roof },
 			];
 			if (commit({ type: "group", edits })) close();
@@ -970,7 +960,11 @@ export function ImageCalibrationWorkspace({
 								</dl>
 							)}
 						</div>
-						<div data-calibration-step="2" hidden={step !== 2}>
+						<div
+							key={drawing?.url}
+							data-calibration-step="2"
+							hidden={step !== 2}
+						>
 							<label className="lp-field">
 								<span>
 									{__("Measurement or drawing reference", "linker-tools")}
@@ -983,71 +977,60 @@ export function ImageCalibrationWorkspace({
 									defaultValue={DEFAULT_NOTE}
 								/>
 							</label>
-							{!targetSource && (
-								<>
-									<label className="lp-field">
-										<span>{__("Source reference", "linker-tools")}</span>
-										<textarea
-											name="source"
-											rows={3}
-											maxLength={4096}
-											required
-											defaultValue={drawing?.name ?? ""}
-										/>
-									</label>
-									<label className="lp-field">
-										<span>
-											{__("Permission or licence basis", "linker-tools")}
-										</span>
-										<textarea
-											name="rights"
-											rows={3}
-											maxLength={4096}
-											required
-										/>
-									</label>
-									<label className="lp-field">
-										<span>
-											{__("Declared spatial precision", "linker-tools")}
-											<small>m</small>
-										</span>
-										<input
-											name="precision"
-											inputMode="decimal"
-											autoComplete="off"
-										/>
-										<small>
-											{__(
-												"0 or greater. An empty field means unknown. This is a source claim, separate from the scale arithmetic.",
-												"linker-tools",
-											)}
-										</small>
-									</label>
-									<label className="lp-field">
-										<span>
-											{__("Permission to export geometry", "linker-tools")}
-										</span>
-										<select name="export" defaultValue="unknown">
-											<option value="unknown">
-												{__("Unknown", "linker-tools")}
-											</option>
-											<option value="permitted">
-												{__("Permitted", "linker-tools")}
-											</option>
-											<option value="prohibited">
-												{__("Prohibited", "linker-tools")}
-											</option>
-										</select>
-									</label>
-									<label className="lp-geometry-check">
-										<input name="retention" type="checkbox" required />
-										{__(
-											"I have permission to use this drawing, derive the roof outline from it and keep the calibration with the project.",
-											"linker-tools",
-										)}
-									</label>
-								</>
-							)}
+							<label className="lp-field">
+								<span>{__("Source reference", "linker-tools")}</span>
+								<textarea
+									name="source"
+									rows={3}
+									maxLength={4096}
+									required
+									defaultValue={drawing?.name ?? ""}
+								/>
+							</label>
+							<label className="lp-field">
+								<span>{__("Permission or licence basis", "linker-tools")}</span>
+								<textarea name="rights" rows={3} maxLength={4096} required />
+							</label>
+							<label className="lp-field">
+								<span>
+									{__("Declared spatial precision", "linker-tools")}
+									<small>m</small>
+								</span>
+								<input
+									name="precision"
+									inputMode="decimal"
+									autoComplete="off"
+								/>
+								<small>
+									{__(
+										"0 or greater. An empty field means unknown. This is a source claim, separate from the scale arithmetic.",
+										"linker-tools",
+									)}
+								</small>
+							</label>
+							<label className="lp-field">
+								<span>
+									{__("Permission to export geometry", "linker-tools")}
+								</span>
+								<select name="export" defaultValue="unknown">
+									<option value="unknown">
+										{__("Unknown", "linker-tools")}
+									</option>
+									<option value="permitted">
+										{__("Permitted", "linker-tools")}
+									</option>
+									<option value="prohibited">
+										{__("Prohibited", "linker-tools")}
+									</option>
+								</select>
+							</label>
+							<label className="lp-geometry-check">
+								<input name="retention" type="checkbox" required />
+								{__(
+									"I have permission to use this drawing, derive the roof outline from it and keep the calibration with the project.",
+									"linker-tools",
+								)}
+							</label>
 							{calibration && (
 								<dl className="lp-field-summary lp-import-review">
 									<div>

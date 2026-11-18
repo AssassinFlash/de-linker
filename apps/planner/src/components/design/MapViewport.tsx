@@ -1,10 +1,18 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+	useEffect,
+	useId,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { RefObject } from "react";
 import { Map as MapLibreMap, AttributionControl, Marker } from "maplibre-gl";
 import type {
 	FilterSpecification,
 	GeoJSONSource,
 	MapMouseEvent,
+	MapSourceDataEvent,
 	StyleSpecification,
 } from "maplibre-gl";
 import type {
@@ -12,6 +20,7 @@ import type {
 	PanelPose,
 	Vec2,
 } from "../../domain/geometry.ts";
+import { imagerySourceKey } from "../../domain/place.ts";
 import type { PlaceImagery } from "../../domain/place.ts";
 import { geographicMapGeometry } from "../../domain/mapGeometry.ts";
 import { MapRequestScope } from "../../data/mapRequests.ts";
@@ -26,7 +35,6 @@ import { drawingBridge } from "../../domain/mapDrawingGeometry.ts";
 import { geographicOnRoof } from "../../domain/geographic.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
-import { revealActionResult } from "../revealActionResult.ts";
 
 export interface MapCamera {
 	centre: [number, number];
@@ -42,8 +50,7 @@ const LAYERS = KINDS.map((kind) => `linker-map-${kind}`);
 // Official public style, checked in the Apify provider dossier. It is never
 // requested until the visitor explicitly asks to load this external service.
 const STREET_STYLE = "https://tiles.openfreemap.org/styles/liberty";
-// The official aerial mosaic sits under the project geometry, drawn only after
-// the visitor agrees to external services, on the same rule as the street style.
+// The selected aerial mosaic has a separate grant from the street style.
 const IMAGERY_SOURCE = "linker-site-imagery";
 const IMAGERY_LAYER = "linker-site-imagery";
 // The mapped building at the site, drawn dashed until the visitor adopts it.
@@ -58,20 +65,14 @@ function selectedFilter(selected: string | null): FilterSpecification {
 	];
 }
 
-function aerialOriginsOf(mosaic: PlaceImagery | null | undefined): string[] {
-	return (mosaic?.tiles ?? [])
-		.map((tile) => {
-			try {
-				return new URL(tile).origin;
-			} catch {
-				return "";
-			}
-		})
-		.filter(Boolean);
-}
-
-function imagerySignatureOf(mosaic: PlaceImagery): string {
-	return `${mosaic.tiles.join("\n")}\n${mosaic.credit} — ${mosaic.licence}`;
+function aerialOriginsOf(mosaic: PlaceImagery | null): string[] {
+	const tile = mosaic?.tiles[0];
+	if (!tile) return [];
+	try {
+		return [new URL(tile).origin];
+	} catch {
+		return [];
+	}
 }
 
 function imageryBeforeLayer(map: MapLibreMap): string | undefined {
@@ -121,10 +122,12 @@ export default function MapViewport({
 	openReferences,
 	camera,
 	imagery = null,
+	viewOnly = false,
+	onAerialReady,
 	siteCentre = null,
 	siteOutline = null,
-	interaction = null,
-	placement = null,
+	interaction: mapInteraction = null,
+	placement: arrayPlacement = null,
 }: {
 	document: GeometryDocument;
 	poses: readonly PanelPose[];
@@ -137,6 +140,8 @@ export default function MapViewport({
 	placement?: ArrayPlacement | null;
 	/** The official aerial mosaic for this site, or null where none exists. */
 	imagery?: PlaceImagery | null;
+	viewOnly?: boolean;
+	onAerialReady?: (source: PlaceImagery | null) => void;
 	/** The declared site position, so the mosaic is visible before geometry exists. */
 	siteCentre?: readonly [number, number] | null;
 	/** The mapped building outline at the site, drawn as the starting point. */
@@ -153,19 +158,21 @@ export default function MapViewport({
 		}[];
 	} | null;
 }) {
+	const interaction = viewOnly ? null : mapInteraction;
+	const placement = viewOnly ? null : arrayPlacement;
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
 		releaseExternal = useRef<(() => void) | null>(null),
-		[external, setExternal] = useState(false),
+		[grant, setGrant] = useState<string | null>(null),
 		[attempt, setAttempt] = useState(0),
 		[status, setStatus] = useState<"loading" | "ready" | "failed">("loading"),
+		[readyAerialMap, setReadyAerialMap] = useState<MapLibreMap | null>(null),
 		[readyMap, setReadyMap] = useState<MapLibreMap | null>(null),
 		[resourceFailure, setResourceFailure] = useState(false),
+		[aerialFailure, setAerialFailure] = useState(false),
 		[failure, setFailure] = useState<string | null>(null),
 		label = useId();
 	const releaseDrawing = useRef<(() => void) | null>(null),
-		requestsRef = useRef<MapRequestScope | null>(null),
-		imagerySignature = useRef<string | null>(null),
 		prefix = useRef<MapPrefixController | null>(null),
 		pickGate = useRef(new MapPickGate());
 	const heightMarker = useRef<Marker | null>(null);
@@ -236,10 +243,22 @@ export default function MapViewport({
 			});
 		else map.jumpTo({ center: [...view.centre], zoom: 17 });
 	}
+	const offeredSource = imagery?.tiles.length
+		? imagerySourceKey(imagery)
+		: STREET_STYLE;
+	const external = grant === offeredSource;
+	const street = external && offeredSource === STREET_STYLE;
+	const aerial = external && !street ? grant : null;
+	useLayoutEffect(() => {
+		if (grant !== null && grant !== offeredSource) {
+			releaseExternal.current?.();
+			setGrant(null);
+		}
+	}, [grant, offeredSource]);
 	useEffect(() => {
 		const stopExternal = () => {
 			releaseExternal.current?.();
-			setExternal(false);
+			setGrant(null);
 		};
 		globalThis.document.addEventListener(
 			"cookieyes_consent_update",
@@ -267,21 +286,34 @@ export default function MapViewport({
 	// own position is enough to show the aerial mosaic and let the visitor draw:
 	// never infer north, and never present the mosaic as a survey frame.
 	const available = projection.view !== null || siteCentre !== null;
+	const readyImagery =
+		available &&
+		aerial &&
+		status === "ready" &&
+		readyMap &&
+		readyMap === readyAerialMap &&
+		readyMap === mapRef.current
+			? imagery
+			: null;
+	const editableImagery = viewOnly ? null : readyImagery;
+	useLayoutEffect(() => {
+		onAerialReady?.(editableImagery);
+		return () => onAerialReady?.(null);
+	}, [onAerialReady, editableImagery]);
+	const drawing =
+		interaction?.requiresAerial && !readyImagery ? null : interaction;
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
 		let initialized = false;
 		let map: MapLibreMap | null = null;
 		let resize: ResizeObserver | null = null;
-		// The mosaic's origins come from the server's answer, not from a style.
-		const requests = new MapRequestScope(
-			external,
-			aerialOriginsOf(latest.current.imagery),
-		);
-		requestsRef.current = requests;
-		imagerySignature.current = null;
+		const mosaic = aerial ? latest.current.imagery : null;
+		const requests = new MapRequestScope(street, aerialOriginsOf(mosaic));
+		setReadyAerialMap(null);
 		setStatus("loading");
 		setResourceFailure(false);
+		setAerialFailure(false);
 		setFailure(null);
 		try {
 			const style = getComputedStyle(host.current);
@@ -317,12 +349,9 @@ export default function MapViewport({
 				centre: [...(latest.current.siteCentre ?? [0, 0])],
 			};
 			const saved = camera.current;
-			const hasImagery = Boolean(
-				latest.current.imagery && latest.current.imagery.tiles.length > 0,
-			);
 			map = new MapLibreMap({
 				container: host.current,
-				style: external && !hasImagery ? STREET_STYLE : ownStyle,
+				style: street ? STREET_STYLE : ownStyle,
 				transformRequest: requests.transform,
 				center: saved?.centre ?? [...view.centre],
 				zoom: saved?.zoom ?? 19,
@@ -407,24 +436,8 @@ export default function MapViewport({
 					siteOutlineBeforeLayer(current),
 				);
 			}
-			function updateImagery() {
-				const mosaic = latest.current.imagery;
-				requests.setAerialOrigins(aerialOriginsOf(mosaic));
-				if (!external || !mosaic || mosaic.tiles.length === 0) {
-					if (current.getLayer(IMAGERY_LAYER))
-						current.removeLayer(IMAGERY_LAYER);
-					if (current.getSource(IMAGERY_SOURCE))
-						current.removeSource(IMAGERY_SOURCE);
-					imagerySignature.current = null;
-					return;
-				}
-				const signature = imagerySignatureOf(mosaic);
-				if (current.getSource(IMAGERY_SOURCE)) {
-					if (imagerySignature.current === signature) return;
-					if (current.getLayer(IMAGERY_LAYER))
-						current.removeLayer(IMAGERY_LAYER);
-					current.removeSource(IMAGERY_SOURCE);
-				}
+			function installImagery() {
+				if (!mosaic) return;
 				// Under the site outline and project geometry so both stay legible on top.
 				const before = imageryBeforeLayer(current);
 				current.addSource(IMAGERY_SOURCE, {
@@ -442,7 +455,6 @@ export default function MapViewport({
 					},
 					before,
 				);
-				imagerySignature.current = signature;
 			}
 			function updateOverlay() {
 				if (disposed) return;
@@ -485,7 +497,7 @@ export default function MapViewport({
 			const ready = () => {
 				if (disposed) return;
 				try {
-					updateImagery();
+					installImagery();
 					updateSiteOutline();
 					updateOverlay();
 					if (!saved) fit(current);
@@ -515,10 +527,27 @@ export default function MapViewport({
 					.find((feature) => typeof feature.properties?.object_id === "string");
 				if (hit) latest.current.select(hit.properties!.object_id as string);
 			};
+			// MapLibre counts errored tiles as settled and silently handles HTTP 404s.
+			// Inspect the in-view raster tiles after the renderer paints the frame.
+			const aerialTileLoading = ({ sourceId, tile }: MapSourceDataEvent) => {
+				if (sourceId === IMAGERY_SOURCE && tile) setReadyAerialMap(null);
+			};
+			const aerialIdle = () => {
+				if (!current.getSource(IMAGERY_SOURCE)) return;
+				const manager = current.style.tileManagers[IMAGERY_SOURCE];
+				if (!manager?.loaded()) return;
+				const tiles = manager.getIds();
+				const loaded =
+					tiles.length > 0 &&
+					tiles.every((id) => manager.getTileByID(id)?.state === "loaded");
+				setReadyAerialMap(loaded ? current : null);
+				setAerialFailure(!loaded);
+			};
 			const resourceError = (event: { error: Error }) => {
 				if (!disposed) {
 					setFailure(failureDiagnostic("resource", event.error));
 					setResourceFailure(true);
+					if (mosaic) setReadyAerialMap(null);
 					if (!initialized) setStatus("failed");
 				}
 			};
@@ -528,6 +557,10 @@ export default function MapViewport({
 					setStatus("failed");
 				}
 			};
+			if (mosaic) {
+				current.on("sourcedataloading", aerialTileLoading);
+				current.on("idle", aerialIdle);
+			}
 			current.on("load", ready);
 			const beginPointer = (event: PointerEvent) => {
 				if (current.getCanvas().contains(event.target as Node))
@@ -544,14 +577,11 @@ export default function MapViewport({
 			const release = () => {
 				if (disposed) return;
 				disposed = true;
+				requests.release();
 				// Drawing adapters need their map sources/layers to exist at stop.
-				// Their public disposal reports failures without preventing remove.
 				releaseDrawing.current?.();
 				heightMarker.current?.remove();
 				heightMarker.current = null;
-				requests.release();
-				if (requestsRef.current === requests) requestsRef.current = null;
-				imagerySignature.current = null;
 				resize?.disconnect();
 				if (initialized) {
 					const centre = current.getCenter();
@@ -561,6 +591,10 @@ export default function MapViewport({
 						bearing: current.getBearing(),
 						pitch: current.getPitch(),
 					};
+				}
+				if (mosaic) {
+					current.off("sourcedataloading", aerialTileLoading);
+					current.off("idle", aerialIdle);
 				}
 				current.off("load", ready);
 				current.off("click", pick);
@@ -573,7 +607,7 @@ export default function MapViewport({
 				// remove() cancels outstanding resources and owns worker/GL cleanup.
 				current.remove();
 			};
-			if (external) releaseExternal.current = release;
+			if (street || aerial) releaseExternal.current = release;
 			return () => {
 				if (releaseExternal.current === release) releaseExternal.current = null;
 				release();
@@ -582,53 +616,13 @@ export default function MapViewport({
 			setFailure(failureDiagnostic("initialization", error));
 			disposed = true;
 			requests.release();
-			if (requestsRef.current === requests) requestsRef.current = null;
-			imagerySignature.current = null;
 			resize?.disconnect();
 			map?.remove();
 			mapRef.current = null;
 			host.current?.replaceChildren();
 			setStatus("failed");
 		}
-	}, [available, external, attempt, camera]);
-	// The place resolves after the map is ready, so the mosaic is added on its
-	// own rather than only at load. The same visitor consent gates it.
-	useEffect(() => {
-		const map = mapRef.current;
-		if (!map || map !== readyMap || status !== "ready") return;
-		requestsRef.current?.setAerialOrigins(aerialOriginsOf(imagery));
-		if (!external || !imagery || imagery.tiles.length === 0) {
-			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
-			if (map.getSource(IMAGERY_SOURCE)) map.removeSource(IMAGERY_SOURCE);
-			imagerySignature.current = null;
-			return;
-		}
-		const signature = imagerySignatureOf(imagery);
-		if (map.getSource(IMAGERY_SOURCE)) {
-			if (imagerySignature.current === signature) return;
-			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
-			map.removeSource(IMAGERY_SOURCE);
-		}
-		map.addSource(IMAGERY_SOURCE, {
-			type: "raster",
-			tiles: [...imagery.tiles],
-			tileSize: 256,
-			attribution: `${imagery.credit} — ${imagery.licence}`,
-		});
-		map.addLayer(
-			{
-				id: IMAGERY_LAYER,
-				type: "raster",
-				source: IMAGERY_SOURCE,
-				paint: { "raster-opacity": 1 },
-			},
-			imageryBeforeLayer(map),
-		);
-		imagerySignature.current = signature;
-		// `readyMap` changes identity whenever the visitor's consent rebuilds the
-		// map, so the mosaic is applied to the new instance even when the place
-		// answer arrived before the rebuild.
-	}, [external, imagery, readyMap, status]);
+	}, [available, aerial, street, attempt, camera]);
 	useEffect(() => {
 		// The outline arrives after the map is ready, like the mosaic.
 		const map = mapRef.current;
@@ -681,7 +675,7 @@ export default function MapViewport({
 	}, [readyMap, status, siteOutline]);
 	useEffect(() => {
 		const map = mapRef.current,
-			value = latest.current.interaction;
+			value = drawing;
 		if (!map || map !== readyMap || status !== "ready" || !value || disabled)
 			return;
 		let stopped = false;
@@ -739,8 +733,8 @@ export default function MapViewport({
 		releaseDrawing.current = release;
 		return release;
 	}, [
-		interaction?.key,
-		interaction?.phase,
+		drawing?.key,
+		drawing?.phase,
 		readyMap,
 		status,
 		disabled,
@@ -749,9 +743,9 @@ export default function MapViewport({
 		available,
 	]);
 	useEffect(() => {
-		if (interaction?.phase === "collecting")
-			prefix.current?.update(interaction.vertices);
-	}, [interaction?.vertices, interaction?.phase]);
+		if (drawing?.phase === "collecting")
+			prefix.current?.update(drawing.vertices);
+	}, [drawing?.vertices, drawing?.phase]);
 	useEffect(() => {
 		const map = mapRef.current,
 			point = interaction?.referencePosition;
@@ -834,6 +828,14 @@ export default function MapViewport({
 						: __("Project geometry", "linker-tools")}
 				</span>
 			</div>
+			{viewOnly && (
+				<p className="lp-profile-help" id={`${label}-viewing`}>
+					{__(
+						"This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			<div
 				className="lp-map-toolbar"
 				role="group"
@@ -842,10 +844,11 @@ export default function MapViewport({
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
+					aria-describedby={viewOnly ? `${label}-viewing` : undefined}
 					aria-pressed={external}
 					onClick={() => {
 						if (external) releaseExternal.current?.();
-						setExternal(!external);
+						setGrant(external ? null : offeredSource);
 					}}
 				>
 					{imagery
@@ -881,13 +884,7 @@ export default function MapViewport({
 						<button
 							type="button"
 							className="lp-button lp-button-secondary"
-							onClick={() =>
-								revealActionResult(
-									globalThis.document.querySelector<HTMLElement>(
-										"#lp-array-properties input, #lp-array-properties select",
-									),
-								)
-							}
+							onClick={placement.review}
 						>
 							{__("Review panel layout", "linker-tools")}
 						</button>
@@ -930,10 +927,15 @@ export default function MapViewport({
 					{__("North up", "linker-tools")}
 				</button>
 			</div>
-			{status === "loading" && (
+			{(status === "loading" ||
+				(aerial &&
+					!readyImagery &&
+					!resourceFailure &&
+					!aerialFailure &&
+					status !== "failed")) && (
 				<p role="status">{__("Loading map…", "linker-tools")}</p>
 			)}
-			{(status === "failed" || resourceFailure) && (
+			{(status === "failed" || resourceFailure || aerialFailure) && (
 				<Notice error>
 					<p>
 						{__(
@@ -952,21 +954,21 @@ export default function MapViewport({
 			)}
 			<div
 				className="lp-map-surface"
-				data-collecting={interaction?.phase === "collecting" || undefined}
+				data-collecting={drawing?.phase === "collecting" || undefined}
 			>
 				<div className="lp-map-host" ref={host} />
-				{interaction?.phase === "collecting" && (
+				{drawing?.phase === "collecting" && (
 					<span className="lp-map-reticle" aria-hidden="true" />
 				)}
 			</div>
-			{interaction?.phase === "collecting" && (
+			{drawing?.phase === "collecting" && (
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
 					disabled={status !== "ready"}
 					onClick={() => {
 						const centre = mapRef.current?.getCenter();
-						if (centre) interaction.append([centre.lng, centre.lat]);
+						if (centre) drawing.append([centre.lng, centre.lat]);
 					}}
 				>
 					{__("Add corner at map centre", "linker-tools")}

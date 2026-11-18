@@ -9,7 +9,7 @@ from typing import cast
 from .assets import Asset, Assets
 from .canonical import Json, Object
 from .certificate_evidence import certificate_documents
-from .comparison_pv import is_known
+from .comparison_pv import is_known, roof_power
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
@@ -49,6 +49,8 @@ from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
+from .profile_demand_bounds import MODEL as PROFILE_BOUNDS_MODEL
+from .profile_demand_bounds import peak_targets, periods
 from .profile_selections import ProfileSelections
 from .pv_preparation import PvReferenceKernel
 from .pv_profile_preparation import PROFILE_PURPOSE as PVLIB_PURPOSE
@@ -416,6 +418,8 @@ def report_sources(
         return run
 
     assessment: Object | None = None
+    peak_comparison: Object | None = None
+    self_use_comparison: Object | None = None
     frozen_certificates: Object | None = None
     equipment_source_run: Run | None = None
     equipment_source_inputs: Object | None = None
@@ -446,22 +450,55 @@ def report_sources(
         options.equipment_run_id is not None and retained_comparison is None
     ):
         require_retained_inverter(project.inputs, selection=True)
+    use_wiring_check = False
     if isinstance(candidate, dict):
-        use_wiring_check = has_wiring and options.equipment_run_id not in (
+        separate_equipment = options.equipment_run_id not in (
             None,
             candidate.get("run_id"),
         )
+        if separate_equipment and not has_wiring:
+            raise InvalidInput(
+                "report equipment differs from the adopted project candidate"
+            )
+        use_wiring_check = separate_equipment
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
         check_equipment_candidate(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
         run = workspace.run(actor, cast(str, candidate["run_id"]))
+        assert run.result is not None
         searched = normalize_discovery_inputs(workspace.pinned_inputs(run.manifest))
         current = restore_comparison_models(
             normalize_discovery_inputs(declared_inputs), searched
         )
         previous_brief, current_brief = searched.get("brief"), current.get("brief")
+        if use_wiring_check and searched.get("geometry") != current.get("geometry"):
+            prepared = run.result.get("prepared_asset")
+            if (
+                isinstance(prepared, dict)
+                and prepared.get("purpose") == ROOF_AC_PURPOSE
+            ):
+                raise ReportInputsChanged(
+                    "report roof differs from the comparison PV reference"
+                )
+            context = cast(Object, run.manifest["context"])
+            if (
+                run.result.get("pv_capacity_basis") != "declared_hardware"
+                and "resolved_inputs" in _pinned_assets(run)
+                and "pvgis_execution_keys" in cast(Object, context["parameters"])
+                and isinstance(previous_brief, dict)
+                and previous_brief.get("system_scope") in ("new_pv_storage", "pv_only")
+                and not is_known(
+                    searched.get(
+                        "pvgis_reference_setup", searched.get("pvgis_reference")
+                    )
+                )
+                and roof_power(searched) != roof_power(current)
+            ):
+                raise ReportInputsChanged(
+                    "report roof capacity differs from the equipment comparison"
+                )
         if (
             any(
                 (
@@ -499,23 +536,44 @@ def report_sources(
             raise ReportInputsChanged(
                 "report demand differs from the selected candidate"
             )
-        if options.equipment_run_id not in (None, candidate.get("run_id")):
-            if not has_wiring:
-                raise InvalidInput(
-                    "report equipment differs from the adopted project candidate"
-                )
-            # The dedicated check below must match the saved equipment and
-            # wiring. Cite that run for the report; the project keeps its choice.
-            candidate = None
-    if isinstance(candidate, dict):
-        run = workspace.run(actor, cast(str, candidate["run_id"]))
-        assert run.result is not None
         equipment_source_run = run
         equipment_source_inputs = workspace.pinned_inputs(run.manifest)
         detail = EquipmentCandidateStore(workspace).read(
             actor, run.id, cast(str, candidate["candidate_id"])
         )
         assessment = cast(Object, detail["assessment"])
+        search = cast(Object, run.result["search"])
+        summary = search.get("demand")
+        if isinstance(summary, dict) and summary.get("model") == PROFILE_BOUNDS_MODEL:
+            selected_option = next(
+                item
+                for item in cast(list[Object], search["candidates"])
+                if item["id"] == candidate["candidate_id"]
+            )
+            bounds = cast(Object, selected_option["demand"])
+            baseline = cast(Object, summary["baseline"])
+            if summary.get("controller") == "self_consumption_with_reserve_v1":
+                self_use_comparison = {
+                    "horizon_start_utc": summary["horizon_start_utc"],
+                    "horizon_end_utc": summary["horizon_end_utc"],
+                    "baseline": baseline,
+                    "upper_kwh": bounds["additional_pv_use_upper_kwh"],
+                }
+            elif summary.get("controller") == "peak_shaving_with_reserve_v1":
+                # Older comparisons may have only a scalar, or null for varying caps.
+                targets = summary
+                if (
+                    targets.get("peak_target_kw") is None
+                    and "peak_target_periods" not in targets
+                ):
+                    targets = peak_targets(periods(equipment_source_inputs))
+                peak_comparison = {
+                    "target_kw": targets.get("peak_target_kw"),
+                    "target_periods": targets.get("peak_target_periods", []),
+                    "baseline_kw": baseline["peak_grid_import_kw"],
+                    "lower_bound_kw": bounds["peak_import_lower_bound_kw"],
+                    "status": bounds["status"],
+                }
         sources.append(
             {
                 "run_id": run.id,
@@ -549,8 +607,10 @@ def report_sources(
                 raise ReportInputsChanged(
                     "report candidate PV source dependencies have changed"
                 )
-        bases["equipment"] = pinned["woo.equipment_inputs"]
-    elif retained_comparison is not None and options.equipment_run_id is not None:
+        bases["comparison_equipment.adopted" if use_wiring_check else "equipment"] = (
+            pinned["woo.equipment_inputs"]
+        )
+    if retained_comparison is not None and options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentSearchKernel.kind, ())
         for role in ("gross_load", "pv_available_ac"):
             name = f"{role}.metadata"
@@ -566,7 +626,9 @@ def report_sources(
                     bases["energy_equipment"] = workspace.blobs.put_object(
                         equipment_basis
                     )
-    elif options.equipment_run_id is not None:
+    elif options.equipment_run_id is not None and (
+        not isinstance(candidate, dict) or use_wiring_check
+    ):
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ("backup_demand",))
         previous = workspace.pinned_inputs(run.manifest)
         equipment_source_run = run
@@ -1269,6 +1331,7 @@ def report_sources(
                 **(
                     {"candidate_id": candidate["candidate_id"]}
                     if isinstance(candidate, dict)
+                    and equipment_source_run.id == candidate["run_id"]
                     else {}
                 ),
             }
@@ -1308,6 +1371,12 @@ def report_sources(
             else {}
         ),
         "candidate": candidate,
+        **({"peak_comparison": peak_comparison} if peak_comparison is not None else {}),
+        **(
+            {"self_use_comparison": self_use_comparison}
+            if self_use_comparison is not None
+            else {}
+        ),
         "equipment": assessment,
         "installation": installation,
         "energy": energy,
