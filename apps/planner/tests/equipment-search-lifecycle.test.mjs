@@ -405,7 +405,8 @@ async function equipmentApp(
 					},
 				};
 			}
-			if (path === "projects/list") return { items: [{...project, updated_at: 1}], next:null };
+			if (path === "projects/list")
+				return { items: [{ ...project, updated_at: 1 }], next: null };
 			if (path === "projects/read") {
 				assert.equal(body.project_id, projectId);
 				if (scope !== session.query_scope) throw new ApiError(404, "not_found");
@@ -508,7 +509,8 @@ async function equipmentApp(
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
-				(node.textContent === text || node.getAttribute("aria-label") === text) &&
+				(node.textContent === text ||
+					node.getAttribute("aria-label") === text) &&
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
@@ -740,7 +742,10 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 }
 
 async function openDetails(label) {
-	const summary = () => [...document.querySelectorAll("summary")].find((node) => node.textContent.trim() === label && !node.closest("[hidden]"));
+	const summary = () =>
+		[...document.querySelectorAll("summary")].find(
+			(node) => node.textContent.trim() === label && !node.closest("[hidden]"),
+		);
 	await until(summary);
 	if (!summary().parentElement.open) await act(async () => summary().click());
 }

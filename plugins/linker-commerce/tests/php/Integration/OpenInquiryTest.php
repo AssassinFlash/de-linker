@@ -91,7 +91,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		);
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		if ( $result instanceof \WC_Order ) {
-			$this->later( static fn () => $result->delete( true ) );
+			$this->later(
+				static function () use ( $result ): void {
+					$result->delete( true );
+				}
+			);
 		}
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertSame( 'linker_draft_changed', $result->get_error_code() );

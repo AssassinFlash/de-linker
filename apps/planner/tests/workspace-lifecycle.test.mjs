@@ -57,12 +57,22 @@ async function startProjectCreation(title) {
 	await until(() => document.querySelector(name));
 	const titleInput = document.querySelector(name);
 	const naming = titleInput.closest("details");
-	if (naming && !naming.open) await act(async () => naming.querySelector("summary").click());
+	if (naming && !naming.open)
+		await act(async () => naming.querySelector("summary").click());
 	await enter(titleInput, title);
-	await choose(document.querySelector('select[name="system_scope"]'), "storage_only");
-	await choose(document.querySelector('select[name="project_purpose"]'), "self");
+	await choose(
+		document.querySelector('select[name="system_scope"]'),
+		"storage_only",
+	);
+	await choose(
+		document.querySelector('select[name="project_purpose"]'),
+		"self",
+	);
 	const grid = [...document.querySelectorAll("label")]
-		.find((label) => label.querySelector("span")?.textContent.trim() === "Grid connection")
+		.find(
+			(label) =>
+				label.querySelector("span")?.textContent.trim() === "Grid connection",
+		)
 		.querySelector("select");
 	await choose(grid, "3");
 	await until(() => button("Compare systems")?.matches(":enabled"));
@@ -682,7 +692,10 @@ test("creation authentication failure rechecks once and explicitly retries the e
 			!document.querySelector("form").parentElement.hidden,
 	);
 	assert.equal(creates, 1); // No automatic mutation replay after reauthentication.
-	assert.equal(document.querySelector('input[name="project_title"]').value, "Synthetic new project");
+	assert.equal(
+		document.querySelector('input[name="project_title"]').value,
+		"Synthetic new project",
+	);
 	await act(async () => button("Retry project creation").click());
 	await until(() => created !== null);
 	assert.equal(creates, 2);
@@ -1227,7 +1240,10 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	assert.notEqual(records[0].body, dead);
 	assert.equal(records[0].title, "Deleted project");
 	assert.equal(records[0].createdAt, 1);
-	assert.equal(document.querySelector('input[name="project_title"]').value, "Deleted project");
+	assert.equal(
+		document.querySelector('input[name="project_title"]').value,
+		"Deleted project",
+	);
 	await act(async () => button("Retry project creation").click());
 	await until(() => created !== null);
 	assert.equal(bodies.length, 2);
