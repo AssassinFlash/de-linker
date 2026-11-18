@@ -17043,3 +17043,80 @@ msgstr "Zurück zum Projekt"
 #: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
 msgid "Site details"
 msgstr "Standortdetails"
+
+#: ../../apps/planner/src/components/configurator/ConfiguratorSteps.tsx build/planner/assets/planner.js:1
+msgid "Choose a solution"
+msgstr "Lösung wählen"
+
+#: ../../apps/planner/src/components/configurator/ConfiguratorSteps.tsx build/planner/assets/planner.js:1
+msgid "Review & inquire"
+msgstr "Prüfen und anfragen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Project name (optional)"
+msgstr "Projektname (optional)"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Project summary"
+msgstr "Projektübersicht"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Detailed energy calculations"
+msgstr "Detaillierte Energieberechnungen"
+
+#: ../../apps/planner/src/components/configurator/ProjectInputsStep.tsx build/planner/assets/planner.js:1
+msgid "Solar installation and roof layout"
+msgstr "PV-Anlage und Dachbelegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Quantity, power and orientation"
+msgstr "Anzahl, Leistung und Ausrichtung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Roof outline, obstacles and layout"
+msgstr "Dachumriss, Hindernisse und Modulbelegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Open roof layout"
+msgstr "Dachbelegung öffnen"
+
+#: ../../apps/planner/src/components/energy/PvSetup.tsx build/planner/assets/planner.js:1
+msgid "Calculate PV"
+msgstr "PV-Ertrag berechnen"
+
+#: ../../apps/planner/src/components/energy/WeatherSetup.tsx build/planner/assets/planner.js:1
+msgid "Request weather"
+msgstr "Wetterdaten abrufen"
+
+#: ../../apps/planner/src/components/ProfileCurve.tsx build/planner/assets/planner.js:1
+msgid "Load profile · visible intervals"
+msgstr "Lastprofil · sichtbare Zeitintervalle"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx build/planner/assets/planner.js:1
+msgid "The profile is selected in the open draft."
+msgstr "Dieses Profil ist für den aktuellen Entwurf ausgewählt."
+
+#: ../../apps/planner/src/components/design/GeometryIntake.tsx build/planner/assets/planner.js:1
+msgid "Imported roof is in the current design."
+msgstr "Die importierte Dachfläche ist im aktuellen Entwurf enthalten."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
+msgid "Enter the MPPT number."
+msgstr "Geben Sie die MPPT-Nummer ein."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
+msgid "Enter the inverter input number."
+msgstr "Geben Sie die Nummer des Wechselrichtereingangs ein."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
+#, javascript-format
+msgid "The first %d selected modules will be added in this order."
+msgstr "Die ersten %d ausgewählten Module werden in dieser Reihenfolge hinzugefügt."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
+msgid "Done editing"
+msgstr "Bearbeitung beenden"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx build/planner/assets/planner.js:1
+msgid "Generate the project report to check this wiring plan."
+msgstr "Erstellen Sie den Projektbericht, um diesen Verschaltungsplan zu prüfen."
