@@ -93,6 +93,10 @@
 
 **定稿。** 采用初稿，英文链接 `/product-category/home-storage/`，德文链接 `/de/produkt-kategorie/heimspeicher/`。
 
+**评审站只读核对。** WordPress 原生读取确认 552 / 6885 互为配对，英文源的翻译基线为 `current=true`。实际英文章按钮仍为 `Explore compatible batteries`，指向旧分类路径。实际德文章按钮仍为 `Kompatible Batteriespeicher entdecken`，公开 HTML 的链接已指向德文家储分类，存储正文仍使用旧分类路径。
+
+**目标分类与待应用差异。** 单独请求两条正式分类 URL 均返回 HTTP 200。英文页标题为 `Home Storage`，页面语言为 `en-US`。德文页标题为 `Heimspeicher`，页面语言为 `de-DE`。两页均显示 `SAJ BC2-HV1`，商品链接使用各自语种。迁移预览只替换两篇存储正文中的分类链接及按钮文字。`cutover-20261118-1213` 早于两篇当前评审正文，无法精确恢复当前状态。本轮仅完成只读核对，两个 CTA 待应用，点击验收待执行。
+
 原始依据
 
 - AC/DC 耦合与自用率模型使用 HTW Berlin 的系统实测及负荷假设。[Stromspeicher-Inspektion 2026](https://solar.htw-berlin.de/studien/stromspeicher-inspektion-2026/) · [Unabhängigkeitsrechner FAQ](https://solar.htw-berlin.de/faq-unabhaengigkeitsrechner/)
