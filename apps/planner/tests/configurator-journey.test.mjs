@@ -1546,8 +1546,10 @@ for (const scenario of [
 				[...dom.element.querySelectorAll("button")].find(
 					(button) => button.textContent === "Generate project report",
 				);
-			await until(() => generate() && !generate().disabled);
-			await act(async () => generate().click());
+			if (scenario !== "current retained inverter") {
+				await until(() => generate() && !generate().disabled);
+				await act(async () => generate().click());
+			}
 			if (scenario === "missing wiring evidence") {
 				await until(() =>
 					dom.element.textContent.includes(

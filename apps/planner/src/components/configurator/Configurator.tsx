@@ -895,13 +895,23 @@ export default function Configurator({
 			}
 		}
 	}
+	const retainedSelection =
+		draft &&
+		searchRun?.state === "succeeded" &&
+		searchRun.result?.retained_inverter &&
+		searchRun.revision === draft.baseline.revision &&
+		searchRun.manifest.input_sha256 === draft.baseline.input_sha256 &&
+		!isDirty(draft)
+			? searchRun.id
+			: null;
+	const reviewSelection = choice?.candidate_id ?? retainedSelection;
 	const inquiryRevision = useRef<string | null>(null);
 	useEffect(() => {
 		if (
 			step !== "review" ||
 			viewedReport !== null ||
 			!draft ||
-			!choice ||
+			!reviewSelection ||
 			blocked ||
 			modelsUnavailable ||
 			!history.isSuccess ||
@@ -911,7 +921,7 @@ export default function Configurator({
 				!isDirty(draft))
 		)
 			return;
-		const revision = `${project.id}:${draft.baseline.revision}:${choice.candidate_id}`;
+		const revision = `${project.id}:${draft.baseline.revision}:${reviewSelection}`;
 		if (inquiryRevision.current === revision) return;
 		inquiryRevision.current = revision;
 		void generate(null);
@@ -1498,17 +1508,7 @@ export default function Configurator({
 								</button>
 								<button
 									className="sc-button sc-primary"
-									disabled={
-										blocked ||
-										(!choice &&
-											!(
-												searchRun?.state === "succeeded" &&
-												searchRun.result?.retained_inverter &&
-												searchRun.manifest.input_sha256 ===
-													draft.baseline.input_sha256 &&
-												sameJson(inputs, draft.baseline.inputs)
-											))
-									}
+									disabled={blocked || !reviewSelection}
 									onClick={() => navigate("review")}
 								>
 									{__("Review the proposal", "linker-tools")}
