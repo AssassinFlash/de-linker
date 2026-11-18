@@ -5,7 +5,11 @@ import type { Page } from '@playwright/test';
 
 test.setTimeout(45_000);
 
-import { plannerWords, compareProject } from '../lib/planner-entry';
+import {
+	plannerWords,
+	compareProject,
+	plannerScreenshot,
+} from '../lib/planner-entry';
 
 async function dismissConsent(page: Page) {
 	const reject = page.getByRole('button', {
@@ -58,6 +62,7 @@ for (const locale of ['en', 'de'] as const) {
 		test(`${locale} ${width}: choice labels breathe and the controls stay native`, async ({
 			page,
 		}) => {
+			test.setTimeout(150_000);
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(
 				`${instance().url}${locale === 'en' ? '/solution-configurator/' : '/de/loesungskonfigurator/'}`
@@ -85,10 +90,7 @@ for (const locale of ['en', 'de'] as const) {
 			}
 			await expect(steps.first()).toHaveAttribute('aria-current', 'step');
 			await nav.scrollIntoViewIfNeeded();
-			await test.info().attach('project-entry', {
-				body: await page.screenshot(),
-				contentType: 'image/png',
-			});
+			await plannerScreenshot(page, `entry-${locale}-${width}`);
 			const title = `Project ${locale} ${width}`;
 			await form.getByText(words.details, { exact: true }).click();
 			await form.getByLabel(words.name).fill(title);

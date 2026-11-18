@@ -1,4 +1,14 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { join, basename } from 'node:path';
+import { REPO_ROOT } from './instance';
+
+export async function plannerScreenshot(page: Page, name: string) {
+	const spec = basename(test.info().file, '.spec.ts');
+	const path = join(REPO_ROOT, '.scratch/e2e-shots', spec, `${name}.png`);
+	await page.evaluate(() => document.fonts.ready.then(() => undefined));
+	await page.screenshot({ path, animations: 'disabled' });
+	await test.info().attach(name, { path, contentType: 'image/png' });
+}
 
 export const plannerWords = {
 	en: {
@@ -64,14 +74,15 @@ export async function reopenProject(page: Page, lang: Lang, title: string) {
 		page.getByRole('heading', { name: title, level: 1 })
 	).toBeVisible();
 	// A reload reads the persisted project even when the list reopened a cached copy.
-	const [request] = await Promise.all([
-		page.waitForRequest('**/rpc/projects/read'),
+	const [read] = await Promise.all([
+		page.waitForResponse('**/rpc/projects/read'),
 		page.reload(),
 	]);
 	await expect(
 		page.getByRole('heading', { name: title, level: 1 })
 	).toBeVisible();
-	const response = await page.request.fetch(request);
+	expect(read.ok()).toBe(true);
+	const response = await page.request.fetch(read.request());
 	expect(response.ok()).toBe(true);
 	return response.json();
 }

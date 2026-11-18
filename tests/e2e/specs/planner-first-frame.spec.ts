@@ -37,7 +37,22 @@ test('de: the initial project form is German while the catalog load is delayed',
 		'New project'
 	);
 
+	const firstForm = page.evaluate(
+		() =>
+			new Promise<string | null>((resolve) => {
+				const root = document.querySelector('[data-linker-planner]')!;
+				const observer = new MutationObserver(() => {
+					const form = root.querySelector('form[aria-label]');
+					if (form) {
+						observer.disconnect();
+						resolve(form.getAttribute('aria-label'));
+					}
+				});
+				observer.observe(root, { childList: true, subtree: true });
+			})
+	);
 	release();
+	expect(await firstForm).toBe('Neues Projekt');
 	const form = page.getByRole('form', { name: 'Neues Projekt', exact: true });
 	await expect(form.getByLabel('Geplantes System')).toBeVisible({
 		timeout: 120_000,

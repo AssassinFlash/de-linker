@@ -238,13 +238,18 @@ test.describe('native image calibration', () => {
 					])
 				);
 				await page
+					.getByText(plannerWords[lang].roof, { exact: true })
+					.click();
+				await page
 					.getByText(words.sourceProperties, { exact: true })
 					.click();
-				await expect(
-					page.getByRole('group', {
-						name: 'roof-plan-calibration.png',
-					})
-				).toBeVisible();
+				const source = page.getByRole('group', {
+					name: 'roof-plan-calibration.png',
+				});
+				await expect(source).toContainText(
+					'Synthetic calibration fixture; not a survey'
+				);
+				await expect(source).toContainText(num(lang, '0.05'));
 				await deleteOpenProject(page, lang, title);
 			});
 		}

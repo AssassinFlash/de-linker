@@ -21,6 +21,7 @@ import { seedConsentCookies } from '../lib/consent';
 import { instance, wp } from '../lib/instance';
 import {
 	compareProject,
+	reopenProject,
 	plannerWords,
 	startSolarProject,
 } from '../lib/planner-entry';
@@ -198,17 +199,26 @@ for (const lang of ['en', 'de'] as const) {
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
 		);
 
-		// Project creation must preserve the note without deriving address or load from it.
-		const created = page.waitForResponse('**/rpc/projects/create');
 		await startSolarProject(page, lang, 'Unstructured note');
-		const response = await created;
-		expect(response.ok()).toBe(true);
-		expect(response.request().postDataJSON().inputs.brief).toMatchObject({
+		const { inputs } = await reopenProject(page, lang, 'Unstructured note');
+		expect(inputs.brief).toMatchObject({
 			project_note:
 				'Please quote 99 kWp and 45000 kWh for our workshop in Munich',
 			site: { location_label: '' },
 			annual_load: { kwh: null },
 		});
+		await expect(
+			page.getByLabel(
+				lang === 'en' ? 'Town or site' : 'Ort oder Standort'
+			)
+		).toHaveValue('');
+		await expect(
+			page.getByLabel(
+				lang === 'en'
+					? 'Annual electricity use'
+					: 'Jährlicher Stromverbrauch'
+			)
+		).toHaveValue('');
 	});
 
 	test(`${lang}: a failed note save keeps the text and retries on its own`, async ({

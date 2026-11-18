@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { seedConsentCookies } from '../lib/consent';
 import { instance, wp } from '../lib/instance';
+import { plannerScreenshot } from '../lib/planner-entry';
 
 const labels = {
 	en: {
@@ -41,7 +41,7 @@ for (const lang of ['en', 'de'] as const) {
 			const { url } = instance();
 			expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 			const words = labels[lang];
-			await seedConsentCookies(context);
+			expect(await context.cookies()).toEqual([]);
 			await page.setViewportSize({
 				width,
 				height: width === 390 ? 844 : 900,
@@ -57,20 +57,16 @@ for (const lang of ['en', 'de'] as const) {
 						.getByRole('heading', { name, exact: true })
 				).toBeVisible();
 			const chosen = words.directions[1];
-			const card = page
-				.getByRole('article')
-				.filter({
-					has: page.getByRole('heading', {
-						name: chosen,
-						exact: true,
-					}),
-				});
-			await test
-				.info()
-				.attach('preliminary-solutions', {
-					body: await page.screenshot(),
-					contentType: 'image/png',
-				});
+			const card = page.getByRole('article').filter({
+				has: page.getByRole('heading', {
+					name: chosen,
+					exact: true,
+				}),
+			});
+			await plannerScreenshot(
+				page,
+				`preliminary-solutions-${lang}-${width}`
+			);
 			await card
 				.getByRole('button', { name: words.choose, exact: true })
 				.click();
@@ -81,12 +77,10 @@ for (const lang of ['en', 'de'] as const) {
 				.filter({ hasText: chosen })
 				.innerText();
 			expect(direction).toContain(chosen);
-			await test
-				.info()
-				.attach('review-and-inquire', {
-					body: await page.screenshot(),
-					contentType: 'image/png',
-				});
+			await plannerScreenshot(
+				page,
+				`review-and-inquire-${lang}-${width}`
+			);
 			const email = `e2e-preliminary-${Date.now()}@example.test`;
 			await form.locator('[name="name"]').fill('E2E First Guest');
 			await form.locator('[name="email"]').fill(email);
@@ -99,12 +93,7 @@ for (const lang of ['en', 'de'] as const) {
 			await expect(page.locator('.linker-form-success')).toBeVisible({
 				timeout: 60_000,
 			});
-			await test
-				.info()
-				.attach('inquiry-received', {
-					body: await page.screenshot(),
-					contentType: 'image/png',
-				});
+			await plannerScreenshot(page, `inquiry-received-${lang}-${width}`);
 			const result = JSON.parse(
 				wp([
 					'eval',
