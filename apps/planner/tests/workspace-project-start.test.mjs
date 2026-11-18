@@ -31,12 +31,21 @@ const session = {
 	},
 };
 
-for (const target of ["preliminary", "saved", "compare", "retry", "profile"]) {
+for (const target of [
+	"preliminary",
+	"saved",
+	"compare",
+	"retry",
+	"profile",
+	"csv",
+]) {
 	const saved = target === "saved";
+	const csv = "time;power\n2026-01-01T00:00Z;4\n";
 	const name =
 		{
 			preliminary:
 				"A guest can compare preliminary options from a blank project and review their chosen direction",
+			csv: "a fresh PV project can import a CSV with an invalid coordinate and compare after correction",
 			saved:
 				"An account owner can reopen a Genie equipment list and carry the original quantities into the project",
 		}[target] ??
@@ -159,7 +168,28 @@ for (const target of ["preliminary", "saved", "compare", "retry", "profile"]) {
 						source_sha256: "a".repeat(64),
 					};
 				}
-				if (path === "profiles/standard" || path === "assets/read") {
+				if (path === "profiles/inspect" || path === "profiles/csv") {
+					assert.equal(body.project_id, projectId);
+					assert.equal(
+						Buffer.from(body.content_base64, "base64").toString(),
+						csv,
+					);
+					if (path === "profiles/inspect")
+						return {
+							schema_version: 1,
+							evaluation_scope: "csv_structure_only",
+							content_sha256: "a".repeat(64),
+							delimiter: ";",
+							columns: ["time", "power"],
+							record_count: 1,
+							rows: [{ line: 2, cells: ["2026-01-01T00:00Z", "4"] }],
+							rows_truncated: false,
+						};
+					assert.equal(body.source_label, "meter.csv");
+				}
+				if (
+					["profiles/csv", "profiles/standard", "assets/read"].includes(path)
+				) {
 					assert.equal(body.project_id, projectId);
 					return {
 						id: "2".repeat(32),
@@ -417,6 +447,66 @@ for (const target of ["preliminary", "saved", "compare", "retry", "profile"]) {
 				(el) => el.textContent === name,
 			);
 		assert.equal(creates.length, 0);
+		if (target === "csv") {
+			await choose(
+				document.querySelector('[name="system_scope"]'),
+				"new_pv_storage",
+			);
+			const field = (label) =>
+				[...document.querySelectorAll("label")]
+					.find((el) =>
+						el.querySelector("span")?.textContent.trim().startsWith(label),
+					)
+					?.querySelector("input,select,textarea");
+			const openSection = async (title) => {
+				const summary = [...document.querySelectorAll("summary")].find(
+					(el) => el.textContent === title,
+				);
+				await act(async () => summary.click());
+			};
+			await openSection("Solar installation and roof layout");
+			await openSection("Solar generation estimate");
+			const latitude = field("Latitude");
+			await enter(latitude, "1.234,5");
+			assert.equal(button("Compare systems").disabled, true);
+			await openSection("Electricity use over time");
+			await act(async () => button("Import CSV").click());
+			await enter(
+				document.querySelector('input[placeholder="Europe/Berlin"]'),
+				"Europe/Oslo",
+			);
+			const file = new File([csv], "meter.csv", { type: "text/csv" });
+			await act(async () => {
+				const input = field("CSV file");
+				Object.defineProperty(input, "files", { value: [file] });
+				input.dispatchEvent(new window.Event("change", { bubbles: true }));
+			});
+			await until(() => !button("Read CSV columns").disabled);
+			await act(async () => button("Read CSV columns").click());
+			await until(() => field("Timestamp column"));
+			for (const [label, value] of [
+				["Timestamp column", "time"],
+				["Consumption column", "power"],
+				["Values represent", "interval_average_kw"],
+				["Timestamp marks", "start"],
+				["Decimal separator", "."],
+				["Data source", "measured"],
+			])
+				await choose(field(label), value);
+			await enter(field("Interval length"), "15");
+			await enter(
+				field("Source and permission to store privately"),
+				"My meter readings",
+			);
+			assert.equal(button("Use CSV consumption").disabled, false);
+			await act(async () => button("Use CSV consumption").click());
+			await until(() => !field("Timestamp column"));
+			assert.equal(field("Latitude"), latitude);
+			assert.equal(latitude.value, "1.234,5");
+			assert.equal(button("Compare systems").disabled, true);
+			assert.equal(searches.length, 0);
+			await enter(latitude, "59,91");
+		}
 		if (target === "profile") {
 			const panel = [...document.querySelectorAll("summary")].find(
 				(el) => el.textContent === "Electricity use over time",
@@ -462,13 +552,21 @@ for (const target of ["preliminary", "saved", "compare", "retry", "profile"]) {
 		assert.ok(
 			destinations.every(
 				(destination) =>
-					destination === (target === "profile" ? "edit" : "compare"),
+					destination ===
+					(["csv", "profile"].includes(target) ? "edit" : "compare"),
 			),
 		);
 		assert.equal(searches.length, 1);
 		assert.equal(JSON.parse(creates[0]).inputs.brief.annual_load.kwh, 6400);
 		assert.equal(searches[0].inputs.equipment_setup.grid_phase, 3);
 		assert.equal(accepted.title, "Oslo");
+		if (target === "csv") {
+			assert.equal(
+				searches[0].inputs.profile_selections.selected.gross_load,
+				"2".repeat(32),
+			);
+			assert.equal(searches[0].inputs.brief.site.latitude, 59.91);
+		}
 		if (target === "profile") {
 			assert.equal(searches[0].inputs.brief.annual_load.kwh, 7100);
 			assert.equal(

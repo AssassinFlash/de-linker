@@ -513,6 +513,14 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 		await enter(latitude, "1.234,5");
 		assert.equal(latitude.value, "1.234,5");
 		assert.equal(compare().disabled, true);
+		assert.doesNotMatch(
+			dom.element.textContent,
+			/You can compare equipment now/,
+		);
+		assert.match(
+			compare().closest("footer").textContent,
+			/Check the project coordinates/,
+		);
 		await act(async () =>
 			latitude.dispatchEvent(
 				new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),

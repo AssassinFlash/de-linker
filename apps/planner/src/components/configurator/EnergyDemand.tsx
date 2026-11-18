@@ -112,7 +112,7 @@ export function EnergyDemand({
 	disabled,
 	edit,
 	compare,
-	compareDisabled = false,
+	coordinatesInvalid = false,
 	back,
 	embedded = false,
 	children,
@@ -128,7 +128,7 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
-	compareDisabled?: boolean;
+	coordinatesInvalid?: boolean;
 	back?: () => void;
 	embedded?: boolean;
 	children?: React.ReactNode;
@@ -466,6 +466,7 @@ export function EnergyDemand({
 	const needsGridPhase =
 		equipment.grid_phase === null && !retainsUnverifiedInverter(inputs);
 	const canCompare =
+		!coordinatesInvalid &&
 		Boolean(goal) &&
 		(!solarOnly || goal !== "backup") &&
 		!needsGridPhase &&
@@ -1161,6 +1162,9 @@ export function EnergyDemand({
 				)}
 			</>
 			<footer className="sc-footer">
+				{coordinatesInvalid && (
+					<p>{__("Check the project coordinates.", "linker-tools")}</p>
+				)}
 				{back && (
 					<button className="sc-button" type="button" onClick={back}>
 						{__("Back", "linker-tools")}
@@ -1169,7 +1173,7 @@ export function EnergyDemand({
 				<button
 					type="button"
 					className="sc-button sc-primary"
-					disabled={compareDisabled || !canCompare}
+					disabled={!canCompare}
 					onClick={compare}
 				>
 					{__("Compare systems", "linker-tools")}

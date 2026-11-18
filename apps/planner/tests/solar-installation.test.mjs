@@ -186,6 +186,32 @@ test("site coordinates keep pasted notation and leave mixed or out-of-range valu
 	assert.equal(app.inputs.brief.site.latitude, 48.17);
 	assert.equal(app.inputs.brief.site.longitude, null);
 });
+test("an anchored roof keeps unfinished site coordinates available across roof modes", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.coordinate_system.anchor = {
+		datum: "EPSG:4326",
+		latitude_deg: 51.5,
+		longitude_deg: -0.12,
+		source_id: geometry.sources[0].id,
+	};
+	await mount(t, { brief: emptyBrief(), geometry });
+	await click("Use module details");
+	await enter(input("Latitude"), "1.234,5");
+	await click("Place modules on the roof");
+	assert.equal(button("Continue with energy use").disabled, true);
+	assert.equal(input("Latitude").value, "1.234,5");
+	await click("Use module details");
+	assert.equal(input("Latitude").value, "1.234,5");
+	await click("Place modules on the roof");
+	for (const raw of ["5", "51", "51,", "51,5"])
+		await enter(input("Latitude"), raw);
+	assert.equal(button("Continue with energy use").disabled, false);
+	await click("Use module details");
+	await click("Place modules on the roof");
+	assert.equal(document.querySelector('input[aria-invalid="true"]'), null);
+	await click("Use module details");
+	assert.equal(input("Latitude").value, "51.5");
+});
 test("new solar module details persist known capacity and source without requiring a roof", async (t) => {
 	const app = await mount(t);
 	await click("Use module details");

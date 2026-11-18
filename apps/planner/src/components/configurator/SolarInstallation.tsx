@@ -164,10 +164,13 @@ export function SolarInstallation({
 	);
 	const [latitudeValid, setLatitudeValid] = useState(true);
 	const [longitudeValid, setLongitudeValid] = useState(true);
+	const coordinatesValid = latitudeValid && longitudeValid;
+	const [keepCoordinateFields, setKeepCoordinateFields] = useState(false);
 	const showCoordinates =
-		mode === "known" || !geometry.coordinate_system.anchor;
-	const coordinatesValid =
-		!showCoordinates || (latitudeValid && longitudeValid);
+		mode === "known" ||
+		!geometry.coordinate_system.anchor ||
+		keepCoordinateFields ||
+		!coordinatesValid;
 	useEffect(() => {
 		onCoordinateValidity?.(coordinatesValid);
 		return () => onCoordinateValidity?.(true);
@@ -1020,6 +1023,7 @@ export function SolarInstallation({
 									(value === "known" || reference.model === KNOWN_PV_MODEL)
 								)
 									referenceChange({}, value);
+								setKeepCoordinateFields(value === "roof" && !coordinatesValid);
 								setMode(value);
 							}}
 						>

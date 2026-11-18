@@ -246,7 +246,7 @@ export function NewProject({
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
 			!detailsReady ||
-			!coordinatesValid ||
+			(action === "compare" && !coordinatesValid) ||
 			roofEditing ||
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
@@ -858,7 +858,7 @@ export function NewProject({
 											!detailsReady
 										}
 										edit={edit}
-										compareDisabled={!coordinatesValid}
+										coordinatesInvalid={!coordinatesValid}
 										compare={compare}
 										client={client}
 										session={session}

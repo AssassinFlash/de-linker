@@ -1384,7 +1384,7 @@ export default function Configurator({
 										edit={edit}
 										modelsUnavailable={modelsUnavailable}
 										embedded
-										compareDisabled={!coordinatesValid}
+										coordinatesInvalid={!coordinatesValid}
 										compare={() => void compare()}
 										onValidity={setEnergyValid}
 									>
