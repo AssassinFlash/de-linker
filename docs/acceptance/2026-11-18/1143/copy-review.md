@@ -95,7 +95,7 @@
 
 **评审站只读核对。** WordPress 原生读取确认 552 / 6885 互为配对，英文源的翻译基线为 `current=true`。实际英文章按钮仍为 `Explore compatible batteries`，指向旧分类路径。实际德文章按钮仍为 `Kompatible Batteriespeicher entdecken`，公开 HTML 的链接已指向德文家储分类，存储正文仍使用旧分类路径。
 
-**目标分类与待应用差异。** 单独请求两条正式分类 URL 均返回 HTTP 200。英文页标题为 `Home Storage`，页面语言为 `en-US`。德文页标题为 `Heimspeicher`，页面语言为 `de-DE`。两页均显示 `SAJ BC2-HV1`，商品链接使用各自语种。迁移预览只替换两篇存储正文中的分类链接及按钮文字。`cutover-20261118-1213` 早于两篇当前评审正文，无法精确恢复当前状态。本轮仅完成只读核对，两个 CTA 待应用，点击验收待执行。
+**评审站应用。** `cutover-20261118-1328` 数据库备份包含 552 和 6885 写入前的完整正文。配对事务在每篇文章中各替换一个分类链接及按钮文字，保存后两篇正文与定稿逐字一致，翻译基线为 `current=true`。两个分类入口分别返回 HTTP 200，标题为 `Home Storage`（`en-US`）和 `Heimspeicher`（`de-DE`），均列出 `SAJ BC2-HV1`。从文章点击新按钮的浏览器验收待完成。
 
 原始依据
 
