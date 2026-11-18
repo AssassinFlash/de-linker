@@ -46,7 +46,7 @@ import {
 	type PvgisReferenceDraft,
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
-import { readBrief } from "../../domain/brief.ts";
+import { emptyBrief, readBrief } from "../../domain/brief.ts";
 import { LazySceneViewport } from "../design/LazySceneViewport.tsx";
 import { LazyMapViewport } from "../design/LazyMapViewport.tsx";
 import type { MapCamera } from "../design/MapViewport.tsx";
@@ -144,7 +144,9 @@ export function SolarInstallation({
 			? emptyGeometry()
 			: readGeometry(inputs.geometry, policy);
 	const reference = referenceDraft(inputs);
-	const site = readBrief(inputs.brief).site;
+	const site = (
+		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief)
+	).site;
 	const siteCentre =
 		site.latitude !== null && site.longitude !== null
 			? ([site.longitude, site.latitude] as const)
@@ -449,7 +451,8 @@ export function SolarInstallation({
 	) {
 		if (blocked) return;
 		edit((current) => {
-			const brief = readBrief(current.brief);
+			const brief =
+				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
 			const site = { ...brief.site, [key]: value };
 			return {
 				...invalidateEnergyReplay(current),
@@ -468,7 +471,6 @@ export function SolarInstallation({
 	}
 	function confirmMapReference() {
 		try {
-			const site = readBrief(inputs.brief).site;
 			if (
 				site.coordinate_basis !== "user_entered" ||
 				site.latitude === null ||

@@ -167,7 +167,8 @@ test("roof overview opens the editor and returns to the recorded layout", async 
 	assert.deepEqual(app.inputs.geometry, flat);
 });
 test("site coordinates keep pasted notation and leave mixed or out-of-range values available for correction", async (t) => {
-	const app = await mount(t);
+	const app = await mount(t, { geometry: structuredClone(flat) });
+	assert.equal(app.inputs.brief, undefined);
 	const latitude = input("Latitude"),
 		longitude = input("Longitude");
 	await enter(latitude, "48.1689");

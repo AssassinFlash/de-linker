@@ -25,7 +25,7 @@ async function configurator(t, callbacks = {}) {
 	const project = structuredClone(fixture.project);
 	delete project.inputs.energy_plant;
 	callbacks.setup?.(project);
-	window.history.replaceState(null, "", `?project=${project.id}#sc-energy`);
+	window.history.replaceState(null, "", `?project=${project.id}`);
 	const scope = "3".repeat(64);
 	const session = {
 		kind: "guest",
@@ -68,11 +68,7 @@ async function configurator(t, callbacks = {}) {
 			await act(async () => root.unmount());
 			root = createRoot(dom.element);
 			cache.clear();
-			window.history.replaceState(
-				null,
-				"",
-				`?project=${snapshot.id}#sc-energy`,
-			);
+			window.history.replaceState(null, "", `?project=${snapshot.id}`);
 		}
 		await act(async () =>
 			root.render(
@@ -81,7 +77,7 @@ async function configurator(t, callbacks = {}) {
 					{ client: cache },
 					React.createElement(Configurator, {
 						project: snapshot,
-						config: { locale: "en" },
+						config: { locale: "en", countries: {} },
 						session,
 						client,
 						store,
@@ -91,6 +87,13 @@ async function configurator(t, callbacks = {}) {
 				),
 			),
 		);
+		const calculations = () =>
+			[...dom.element.querySelectorAll("summary")].find(
+				(node) => node.textContent === "Detailed energy calculations",
+			);
+		await until(calculations);
+		await act(async () => calculations().click());
+		assert.ok(calculations().parentElement.open);
 	}
 	await render();
 	const button = (text) =>
@@ -442,7 +445,7 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 			"No differences are shown because the comparison conditions differ or are incomplete.",
 		),
 	);
-	await ui.click("Review & share");
+	await ui.click("Review & inquire");
 	await ui.click("Generate project report");
 	await until(() => reports.length === 1);
 	assert.equal(reports[0].energy_run_id, fixture.run.id);
@@ -452,7 +455,7 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 	await enter(ui.input("PV conversion group"), "dc-b");
 	await ui.click("Saved calculations");
 	assert.equal(ui.button("Use this calculation in the report"), undefined);
-	await ui.click("Review & share");
+	await ui.click("Review & inquire");
 	await ui.click("Generate project report");
 	await until(() =>
 		ui.dom.element.textContent.includes(
