@@ -90,9 +90,15 @@ for (const lang of ['en', 'de'] as const) {
 			await form
 				.getByRole('button', { name: words.send, exact: true })
 				.click();
-			await expect(page.locator('.linker-form-success')).toBeVisible({
-				timeout: 60_000,
-			});
+			await expect(
+				page.getByRole('status').getByRole('heading', {
+					name:
+						lang === 'en'
+							? 'Inquiry received'
+							: 'Anfrage eingegangen',
+					exact: true,
+				})
+			).toBeVisible({ timeout: 60_000 });
 			await plannerScreenshot(page, `inquiry-received-${lang}-${width}`);
 			const result = JSON.parse(
 				wp([
@@ -109,7 +115,7 @@ for (const lang of ['en', 'de'] as const) {
 				customer: 0,
 				status: 'inquiry-received',
 				items: 0,
-				note: `${direction}\n\n${words.message}`,
+				note: `${direction}\r\n\r\n${words.message}`,
 			});
 		});
 	}
