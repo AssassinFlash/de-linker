@@ -691,12 +691,11 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 					"PVGIS could not estimate generation",
 				),
 			);
-			await app.step("Solar");
+			await app.step("Project");
 			const latitude = app.fieldInput("Latitude");
 			assert.equal(latitude.value, "52.12567");
 			await enter(latitude, "52.1");
 			await enter(app.fieldInput("Azimuth"), "180");
-			await act(async () => app.button("Continue with energy use").click());
 			await compare(app);
 		} else if (pvFailure === "receipt") {
 			const check = () => app.button("Check previous request");
@@ -758,16 +757,13 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 			equipment_setup: { ...savedSetup, pv_dc_kw: null },
 		},
 	});
-	await untilRun(() => app.button("Continue with solar")?.matches(":enabled"));
-	await act(async () => app.button("Continue with solar").click());
-	assert.equal(location.hash, "#sc-solar");
+	await untilRun(() => app.fieldInput("Calendar year")?.matches(":enabled"));
+	assert.equal(location.hash, "#sc-project");
 	assert.equal(app.fieldInput("Calendar year").value, "2020");
 	assert.match(
 		document.querySelector(".sc-solar-total").textContent,
 		/20 placed modules · 9.2 kWp/,
 	);
-	await act(async () => app.button("Continue with energy use").click());
-	assert.equal(location.hash, "#sc-energy");
 	await chooseGoal(app);
 	await compare(app);
 	await untilRun(app.pending);
@@ -797,7 +793,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Generate project report").click());
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
-	await app.step("Solar");
+	await app.step("Project");
 	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
@@ -806,7 +802,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	);
 	await act(async () => app.button("Remove selected").click());
 	await act(async () => app.button("Close").click());
-	await app.step("System");
+	await app.step("Choose a solution");
 	assert.equal(Boolean(app.button("Selected")), false);
 	assert.equal(app.button("Review the proposal").disabled, true);
 });
@@ -836,7 +832,6 @@ for (const purpose of [
 		});
 		await untilRun(() => app.fieldInput("Roof pitch")?.matches(":enabled"));
 		await enter(app.fieldInput("Roof pitch"), "40");
-		await act(async () => app.button("Continue with energy use").click());
 		await chooseGoal(app);
 		await compare(app);
 		await untilRun(app.pending);
@@ -894,7 +889,6 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	await app.updateSelect("Planned system", "pv_only");
 	if (app.button("Switch to solar and exclude storage"))
 		await click("Switch to solar and exclude storage");
-	await click("Continue with solar");
 	await click("Place modules on the roof");
 	const module =
 		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
@@ -930,7 +924,6 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		document.querySelector(".sc-solar-total").textContent,
 		/2 placed modules · 0.92 kWp/,
 	);
-	await click("Continue with energy use");
 	await chooseGoal(app);
 	await compare(app);
 	await until(
@@ -982,9 +975,6 @@ for (const multi of [false, true]) {
 					: {}),
 			},
 		});
-		await untilRun(() =>
-			app.button("Continue with storage")?.matches(":enabled"),
-		);
 		if (multi) {
 			await until(() => app.button("Multiple systems")?.matches(":enabled"));
 			await act(async () => app.button("Multiple systems").click());
@@ -1001,7 +991,6 @@ for (const multi of [false, true]) {
 				3,
 			);
 		}
-		await act(async () => app.button("Continue with storage").click());
 		await chooseGoal(app);
 		assert.equal(app.fieldSelect("Grid connection").value, "");
 		assert.equal(app.button("Compare systems").disabled, true);
@@ -1146,7 +1135,7 @@ test("a lost comparison receipt blocks another comparison and explicitly replays
 	);
 	assert.equal(searchRequests(app).length, 1);
 	assert.equal(app.button("Compare systems").disabled, true);
-	await app.step("System");
+	await app.step("Choose a solution");
 	assert.doesNotMatch(
 		document.querySelector("main").textContent,
 		/Enter your energy needs/,
@@ -1258,7 +1247,6 @@ for (const [multi, selection] of [
 		});
 		await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 		if (multi) await act(async () => app.button("Multiple systems").click());
-		await app.step("Energy use");
 		await chooseGoal(app, selection === "backup" ? "backup" : "self");
 		if (selection === "backup") {
 			await enter(app.fieldInput("Backup load"), "5");
@@ -1334,7 +1322,7 @@ for (const [multi, selection] of [
 				100,
 			);
 		}
-		await app.step("Energy use");
+		await app.step("Project");
 		await compare(app);
 		await untilRun(
 			() =>
@@ -1359,7 +1347,6 @@ for (const [multi, selection] of [
 				"",
 			);
 			await app.updateSelect("Inverter or integrated storage system", "101");
-			await app.step("Energy use");
 			await compare(app);
 			await untilRun(() => searchRequests(app).length === 3);
 			const edited = searchRequests(app).at(-1).body.inputs;
@@ -1426,7 +1413,6 @@ for (const multi of [false, true]) {
 		await untilRun(() => field()?.matches(":enabled"));
 		assert.equal(field().value, "");
 		await app.updateSelect("Inverter or integrated storage system", "101");
-		await app.step("Energy use");
 		await chooseGoal(app);
 		await compare(app);
 		await untilRun(() => searchRequests(app).length === 1);
@@ -1469,7 +1455,7 @@ for (const adopted of [true, false]) {
 		await untilRun(() =>
 			document.querySelector('nav[aria-label="Project navigation"]'),
 		);
-		await app.step("System");
+		await app.step("Choose a solution");
 		const empty = /Enter your energy needs/;
 		assert.doesNotMatch(document.querySelector("main").textContent, empty);
 		assert.equal(
@@ -1636,7 +1622,6 @@ for (const change of [
 		if (change === "plant model preference") {
 			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 			await act(async () => app.button("Multiple systems").click());
-			await app.step("Energy use");
 		}
 		await chooseGoal(app);
 		await compare(app);
@@ -1658,15 +1643,15 @@ for (const change of [
 					?.matches(":enabled"),
 			);
 			await app.updateSelect("Inverter or integrated storage system", "101");
-			await app.step("System");
+			await app.step("Choose a solution");
 		} else if (change === "purpose") {
-			await app.step("Energy use");
+			await app.step("Project");
 			await app.updateSelect("Purpose", "peak");
-			await app.step("System");
+			await app.step("Choose a solution");
 		} else if (change === "system scope") {
 			await app.step("Project");
 			await app.updateSelect("Planned system", "storage_only");
-			await app.step("System");
+			await app.step("Choose a solution");
 		}
 		await act(async () => app.button("Use this configuration").click());
 		if (gate) {

@@ -94,7 +94,7 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { ApiError } = await import("../src/data/protocol.ts");
-	const brief = emptyBrief();
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
 	brief.annual_load.kwh = 10;
 	const project = {
 		id: "1".repeat(32),
@@ -234,7 +234,6 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 
 test("same identity rechecks retain delayed edits and invalid raw numeric text", async (t) => {
 	const app = await workspaceFixture(t, "delayed");
-	await act(async () => nav("Energy use").click());
 	await enter(app.annual(), "19");
 	await until(() => app.commits.length === 1);
 	const reads = app.reads();
@@ -285,7 +284,7 @@ for (const hash of [
 				location.pathname + location.search + hash,
 			);
 		});
-		assert.equal(nav("Solar").getAttribute("aria-current"), "step");
+		assert.equal(nav("Project").getAttribute("aria-current"), "step");
 		assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
 		await until(() => button("Coordinate references"));
 		assert.match(
@@ -294,30 +293,29 @@ for (const hash of [
 		);
 	});
 
-test("a storage-only project reaches Energy use, System and Review without a roof step", async (t) => {
+test("a storage-only project shows energy demand and reaches solutions and review without a roof step", async (t) => {
 	await workspaceFixture(t, "available");
 	await choose(
 		document.querySelector("select[name=system_scope]"),
 		"storage_only",
 	);
 	assert.equal(nav("Solar"), undefined);
-	await act(async () => button("Continue with storage").click());
-	assert.equal(location.hash, "#sc-energy");
-	await act(async () => nav("System").click());
+	assert.ok(document.querySelector("#sc-energy"));
+	assert.equal(document.querySelector("#sc-solar"), null);
+	await act(async () => nav("Choose a solution").click());
 	assert.equal(location.hash, "#sc-system");
-	await act(async () => nav("Review & share").click());
+	await act(async () => nav("Review & inquire").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
 });
 
 test("step changes retain the energy input and undo history and protect unfinished edits", async (t) => {
 	const app = await workspaceFixture(t, "available");
-	await act(async () => nav("Energy use").click());
 	const annual = app.annual();
 	await enter(annual, "25");
-	await act(async () => nav("Solar").click());
+	await act(async () => nav("Choose a solution").click());
 	assert.ok(annual.closest("[hidden]"));
-	await act(async () => nav("Energy use").click());
+	await act(async () => nav("Project").click());
 	assert.equal(app.annual(), annual);
 	assert.equal(annual.value, "25");
 	await act(async () =>
@@ -325,8 +323,8 @@ test("step changes retain the energy input and undo history and protect unfinish
 	);
 	assert.equal(annual.value, "10");
 	await enter(annual, "1,");
-	await act(async () => nav("Project").click());
-	assert.equal(location.hash, "#sc-energy");
+	await act(async () => nav("Choose a solution").click());
+	assert.equal(location.hash, "#sc-project");
 	assert.equal(annual.value, "1,");
 	assert.ok(
 		document.body.textContent.includes("Correct the highlighted input"),
@@ -336,19 +334,18 @@ test("step changes retain the energy input and undo history and protect unfinish
 			new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
 		),
 	);
-	await act(async () => nav("Solar").click());
 	await act(async () => button("Place modules on the roof").click());
 	await act(async () => button("Open roof layout").click());
 	await act(async () => button("Draw roof").click());
-	await act(async () => nav("Project").click());
-	assert.equal(location.hash, "#sc-solar");
+	await act(async () => nav("Choose a solution").click());
+	assert.equal(location.hash, "#sc-project");
 	assert.ok(
 		document.body.textContent.includes("Finish or cancel roof editing"),
 	);
 	await act(async () => button("Select / move").click());
 	await act(async () => button("Close").click());
-	await act(async () => nav("Project").click());
-	assert.equal(location.hash, "#sc-project");
+	await act(async () => nav("Choose a solution").click());
+	assert.equal(location.hash, "#sc-system");
 });
 
 test("failed storage and a failed revalidation keep the open workspace editable behind a retryable notice", async (t) => {

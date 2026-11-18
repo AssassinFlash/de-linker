@@ -259,7 +259,7 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 	);
 });
 
-test("a storage project continues from its location directly to energy use", async () => {
+test("a storage project includes location and energy demand on one stage", async () => {
 	const fixture = setupDom();
 	globalThis.indexedDB = new IDBFactory();
 	const { createRoot } = await import("react-dom/client");
@@ -347,13 +347,8 @@ test("a storage project continues from its location directly to energy use", asy
 			[...navigation.querySelectorAll("button")].map((b) =>
 				b.textContent.replace(/^\d+/, ""),
 			),
-			["Project", "Energy use", "System", "Review & share"],
+			["Project", "Choose a solution", "Review & inquire"],
 		);
-		const next = [...fixture.element.querySelectorAll("button")].find(
-			(b) => b.textContent === "Continue with storage",
-		);
-		await until(() => !next.disabled);
-		await act(async () => next.click());
 		await until(() =>
 			fixture.element.textContent.includes("What should the system do?"),
 		);
@@ -876,7 +871,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await act(async () => button("Projects").click());
 		await until(() => requests.some(([path]) => path === "projects/revise"));
 		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
-			(node) => node.textContent.includes("Review & share"),
+			(node) => node.textContent.includes("Review & inquire"),
 		);
 		await act(async () => step.click());
 		for (let page = 0; page < 2; page++) {
@@ -1441,7 +1436,7 @@ for (const scenario of [
 				await clearSelection();
 				await act(async () => prompt.click());
 				assert.equal(editor.open, false);
-				await act(async () => button("5Review & share").click());
+				await act(async () => button("3Review & inquire").click());
 				assert.equal(window.location.hash, "#sc-solar");
 				assert.equal(editor.open, true);
 				const picker = button("Select all available modules", editor)
@@ -1458,7 +1453,7 @@ for (const scenario of [
 				);
 				const mppt = field("MPPT", other ?? editor);
 				await enter(mppt, "0");
-				await act(async () => button("5Review & share").click());
+				await act(async () => button("3Review & inquire").click());
 				assert.equal(window.location.hash, "#sc-solar");
 				assert.ok(
 					document.activeElement === mppt,
@@ -1477,7 +1472,7 @@ for (const scenario of [
 				assert.match(editor.textContent, /MPPT 4 · input 1/);
 				await act(async () => button("Edit string", editor).click());
 				await clearSelection();
-				await act(async () => button("5Review & share").click());
+				await act(async () => button("3Review & inquire").click());
 				assert.equal(picker.closest("details").open, true);
 				await act(async () =>
 					button("Select all available modules", editor).click(),
@@ -1493,7 +1488,7 @@ for (const scenario of [
 					await clearSelection(other);
 					await act(async () => otherPrompt.click());
 					assert.equal(other.open, false);
-					await act(async () => button("5Review & share").click());
+					await act(async () => button("3Review & inquire").click());
 					assert.equal(window.location.hash, "#sc-solar");
 					const otherPicker = button("Select all available modules", other)
 						.closest("details")
@@ -1505,7 +1500,7 @@ for (const scenario of [
 					assert.equal(other.open, true);
 					await act(async () => button("Cancel editing", other).click());
 				}
-				await act(async () => button("5Review & share").click());
+				await act(async () => button("3Review & inquire").click());
 			}
 			if (editPeak) {
 				const peak = () =>
