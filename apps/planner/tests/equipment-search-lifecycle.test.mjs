@@ -234,6 +234,7 @@ async function equipmentApp(
 		searchGate = null,
 		findRefusal = null,
 		pvReference = null,
+		selectedPv = null,
 		effectivePv = null,
 		pvFailure = null,
 		legacyInputs = null,
@@ -337,6 +338,8 @@ async function equipmentApp(
 			assert.equal(scope, admittedScope);
 			reads.push({ path, body, scope });
 			if (path === "products/current") return catalog();
+			if (path === "assets/read" && body.asset_id === selectedPv?.id)
+				return structuredClone(selectedPv);
 			if (path === "projects/runs")
 				return {
 					items: serverRun ? [runPageItem(serverRun)] : [],
@@ -802,6 +805,66 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	assert.equal(Boolean(app.button("Selected")), false);
 	assert.equal(app.button("Review the proposal").disabled, true);
 });
+
+for (const purpose of [
+	"pvgis_known_ac_reference_profile_v1",
+	"csv_profile_v1",
+]) {
+	test(`the selected comparison report respects ${purpose}`, async (t) => {
+		const selectedPv = { ...knownPv.run.result.prepared_asset, purpose };
+		const nextPv = structuredClone(knownPv.run);
+		nextPv.result.prepared_asset.id = "1".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId: knownPv.project.id,
+			hash: "#sc-solar",
+			selectedPv,
+			pvReference: nextPv,
+			effectivePv: 6.4,
+			inputs: {
+				...knownPv.project.inputs,
+				equipment_setup: { ...savedSetup, pv_dc_kw: null },
+				profile_selections: {
+					schema_version: 1,
+					selected: { pv_available_ac: selectedPv.id },
+				},
+			},
+		});
+		await untilRun(() => app.fieldInput("Roof pitch")?.matches(":enabled"));
+		await enter(app.fieldInput("Roof pitch"), "40");
+		await act(async () => app.button("Continue with energy use").click());
+		await chooseGoal(app);
+		await compare(app);
+		await untilRun(app.pending);
+		assert.equal(
+			app.requests[0].body.inputs.pvgis_reference.arrays[0].tilt_deg,
+			40,
+		);
+		await act(async () => app.setServerRun("succeeded"));
+		await untilRun(() =>
+			app.button("Use this configuration")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Use this configuration").click());
+		await untilRun(() =>
+			app.button("Review the proposal")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Review the proposal").click());
+		await untilRun(() =>
+			app.button("Generate project report")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Generate project report").click());
+		await untilRun(() =>
+			app.requests.some(({ path }) => path === "runs/report"),
+		);
+		assert.equal(
+			app.requests.at(-1).body.options.pv_run_id,
+			purpose === "csv_profile_v1" ? null : app.serverRunId(),
+		);
+		assert.equal(
+			app.project.inputs.profile_selections.selected.pv_available_ac,
+			selectedPv.id,
+		);
+	});
+}
 
 test("a manually drawn solar-only roof compares its placed capacity without a load profile", async (t) => {
 	const app = await equipmentApp(t, {

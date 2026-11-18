@@ -3562,14 +3562,17 @@ def test_plant_backup_and_preselected_models_reach_candidate_rpc(
         assert backup["status"] == "unresolved"
 
 
+@pytest.mark.parametrize("retained_roof_export", [None, "permitted", "prohibited"])
 def test_backup_candidate_reaches_report_and_bom_without_preparation(
     feed: FixtureObject,
     engine: Engine,
     workspace: Workspace,
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
+    retained_roof_export: str | None,
 ) -> None:
-    from .test_private_http import Rig
+    from .test_private_http import Rig, brief_inputs
+    from .test_pvgis_roof_reference import fixture_inputs
 
     feed, source, loaded, _, _, _ = prepared_dc_fixture_source(
         feed, engine, monkeypatch
@@ -3606,10 +3609,16 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
     with TestClient(app, raise_server_exceptions=False) as client:
         rig = Rig(workspace, ac, client)
         pid = rig.create("backup-report")
-        authored = {
+        authored: FixtureObject = {
             "backup_demand": {"schema_version": 1, "load_kw": 5, "duration_hours": 4},
             "equipment_setup": {"schema_version": 1, "grid_phase": 3},
         }
+        if retained_roof_export is not None:
+            authored.update(brief_inputs("Europe/Berlin"))
+            authored["brief"]["system_scope"] = "storage_only"
+            roof = fixture_inputs(json_object(source.module_basis()))["geometry"]
+            roof["sources"][0]["permissions"]["export"] = retained_roof_export
+            authored["geometry"] = roof
         found = rig.post(
             "/runs/find-equipment",
             {
@@ -3677,6 +3686,8 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
         report_source = json_object(
             workspace.blobs.object(result["pinned_assets"]["report.source"])
         )
+        assert report_source["pv_components"] is None
+        assert "equipment_pv" not in report_source["woo_bases"]
         assert report_source["equipment"] == detail["assessment"]
         assert any(
             row.get("candidate_id") == candidate["id"]
@@ -3732,7 +3743,16 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
         assert stale_report.json()["error"]["code"] == "report_inputs_changed"
 
 
-@pytest.mark.parametrize("external_pv", [False, True])
+@pytest.mark.parametrize(
+    ("external_pv", "declared_module", "export"),
+    [
+        (False, False, "permitted"),
+        (True, False, "permitted"),
+        (True, True, "permitted"),
+        (True, False, "prohibited"),
+        (True, True, "unknown"),
+    ],
+)
 def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
     feed: FixtureObject,
     engine: Engine,
@@ -3740,6 +3760,8 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
     external_pv: bool,
+    declared_module: bool,
+    export: str,
 ) -> None:
     from linker_engine.planning.assets import Assets
     from linker_engine.planning.profile_import import ProfileImport
@@ -3782,6 +3804,11 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
     with TestClient(app) as client:
         rig = Rig(workspace, ac, client)
         authored = {**project.inputs, **authored_energy(rig, project.id)}
+        authored["geometry"]["sources"][0]["permissions"]["export"] = export
+        if declared_module:
+            from .test_declared_reference_end_to_end import _declared_roof
+
+            authored["geometry"]["module_specs"] = _declared_roof()[0]["module_specs"]
         profiles = ProfileImport(Assets(workspace))
         load = profiles.csv(
             owner,
@@ -3861,6 +3888,29 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
                 "logo": None,
             },
         }
+        current = loaded.publication.read()
+        reference = next(
+            row
+            for row in current["products"]
+            if row.get("engineering_role") == "reference_pv_module"
+        )
+        if declared_module:
+            reference["documents"] = []
+        monkeypatch.setattr(loaded.publication, "read", lambda: current)
+        if export != "permitted":
+            refused = client.post(
+                "/runs/report",
+                json={
+                    "schema_version": 1,
+                    **report_command,
+                    "expected_revision": saved["revision"],
+                    "key": "restricted-roof-export",
+                },
+                headers=headers(owner),
+            )
+            assert refused.status_code == 422, refused.text
+            assert refused.json()["error"]["code"] == "report_source_export_required"
+            return
         report = rig.post(
             "/runs/report",
             {
@@ -3876,8 +3926,28 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
             workspace.blobs.object(finished["result"]["pinned_assets"]["report.source"])
         )
         parts = frozen_report["pv_components"]
-        assert parts["components"][0]["quantity"] == 20
-        assert parts["nameplate_kwp"] == pytest.approx(9.2)
+        if declared_module:
+            assert parts == {
+                "status": "unavailable",
+                "reason": "declared_reference_module",
+            }
+            assert "equipment_pv" not in frozen_report["woo_bases"]
+        else:
+            assert parts["components"][0]["quantity"] == 20
+            assert parts["nameplate_kwp"] == pytest.approx(9.2)
+            reference["documents"] = []
+            refused = client.post(
+                "/runs/report",
+                json={
+                    "schema_version": 1,
+                    **report_command,
+                    "expected_revision": saved["revision"],
+                    "key": "withdrawn-module-document",
+                },
+                headers=headers(owner),
+            )
+            assert refused.status_code == 409, refused.text
+            assert refused.json()["error"]["code"] == "product_evidence_changed"
         changed = copy.deepcopy(adopted)
         changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 12
         revised = rig.post(

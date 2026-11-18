@@ -584,7 +584,7 @@ def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_referen
         )
 
 
-@pytest.mark.parametrize("known", [True, False], ids=["known-site", "imported-roof"])
+@pytest.mark.parametrize("mode", ["known-site", "imported-roof", "capacity-only"])
 def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
     client: TestClient,
     workspace: Workspace,
@@ -592,7 +592,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
     engine: Engine,
     equipment_feed: FixtureObject,  # noqa: F811
     monkeypatch: pytest.MonkeyPatch,
-    known: bool,
+    mode: str,
 ) -> None:
     from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
     from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
@@ -602,6 +602,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
 
     from .test_energy_kernel import PROVENANCE, mapping
 
+    known = mode != "imported-roof"
     _, products, _, _, _, _ = prepared_dc_fixture_source(
         equipment_feed, engine, monkeypatch
     )
@@ -723,6 +724,13 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
                 ],
             },
         )
+        if mode == "capacity-only":
+            declared = values.pop("pvgis_reference")
+            declared["arrays"][0].update(peak_power_kwp=10, tilt_deg=None)
+            values["pvgis_reference_setup"] = declared
+            values["brief"]["system_scope"] = "pv_only"
+            values["equipment_setup"]["pv_dc_kw"] = None
+            del values["profile_selections"]
         command = {
             "schema_version": 1,
             "project_id": project_id,
@@ -739,6 +747,30 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
         run_id = receipt["run"]["id"]
         assert receipt["run"]["state"] == "queued"
         assert receipt["project"]["revision"] == 2
+        if mode == "capacity-only":
+            registry = ExecutionRegistry(search, pv)
+            worker = Worker(
+                Jobs(workspace),
+                "capacity-only",
+                {"evaluate": registry},
+                lease_seconds=30,
+                heartbeat_seconds=1,
+                retry_seconds=1,
+                routing=registry.routing(8),
+            )
+            assert worker.run_once()
+            result = browser.post(
+                "/runs/read",
+                json={"schema_version": 1, "run_id": run_id},
+                headers=headers(owner),
+            ).json()
+            assert result["state"] == "succeeded", result
+            assert "prepared_asset" not in result["result"]
+            candidates = result["result"]["search"]["candidates"]
+            assert candidates
+            assert {row["selection"]["pv_dc_kw"] for row in candidates} == {10}
+            assert not source.requests
+            return
         assert (
             "pv_available_ac"
             not in receipt["project"]["inputs"]["profile_selections"]["selected"]

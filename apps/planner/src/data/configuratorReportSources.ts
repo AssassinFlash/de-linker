@@ -13,7 +13,7 @@ import {
 	PVGIS_REFERENCE_PURPOSE,
 	PVGIS_REFERENCE_TASK,
 } from "../domain/pvgisReference.ts";
-import { readSelections } from "../domain/profiles.ts";
+import { readAsset, readSelections } from "../domain/profiles.ts";
 import {
 	RUN_OPERATIONS,
 	readRun,
@@ -95,7 +95,12 @@ export async function configuratorReportSources({
 	project: Project;
 	pageSize: number;
 	query: (
-		path: "projects/runs" | "projects/read" | "runs/read" | "runs/inputs",
+		path:
+			| "projects/runs"
+			| "projects/read"
+			| "runs/read"
+			| "runs/inputs"
+			| "assets/read",
 		body: JsonObject,
 		signal: AbortSignal,
 	) => Promise<unknown>;
@@ -130,6 +135,17 @@ export async function configuratorReportSources({
 	const base = { schema_version: 1, project_id: project.id };
 	let pvRun: string | null = null,
 		pvAsset: unknown = null;
+	async function isManagedPvgis(id: string) {
+		const asset = readAsset(
+			await query("assets/read", { ...base, asset_id: id }, signal),
+			project.id,
+		);
+		if (asset.id !== id) throw new ApiError(502, "run_source_mismatch");
+		return (
+			asset.purpose === KNOWN_PV_PURPOSE ||
+			asset.purpose === PVGIS_REFERENCE_PURPOSE
+		);
+	}
 	if (inputs.equipment_candidate != null) {
 		const choice = readObject(inputs.equipment_candidate);
 		const run = readRun(
@@ -173,11 +189,16 @@ export async function configuratorReportSources({
 					inputs,
 					known ? ["pvgis_reference"] : ["geometry", "pvgis_reference"],
 				) &&
-				(!known || sameSite(frozen, inputs)) &&
-				(selectedPv == null || selectedPv === asset.id)
+				(!known || sameSite(frozen, inputs))
 			) {
-				pvRun = run.id;
-				pvAsset = asset.id;
+				const canUsePrepared =
+					selectedPv == null ||
+					selectedPv === asset.id ||
+					(selected.pv_reference == null && (await isManagedPvgis(selectedPv)));
+				if (canUsePrepared) {
+					pvRun = run.id;
+					pvAsset = asset.id;
+				}
 			}
 		}
 	}

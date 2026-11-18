@@ -1441,36 +1441,38 @@ export function SolarInstallation({
 					</p>
 				</div>
 				{mode === "roof" && geometry.sources.length > 0 && (
-					<details className="sc-product-filter">
+					<details className="sc-card sc-product-filter">
 						<summary>{__("Source properties", "linker-tools")}</summary>
-						{geometry.sources.map((source) => (
-							<fieldset key={source.id}>
-								<legend>{source.note}</legend>
-								<GeometryExportPermission
-									value={source.permissions.export}
-									disabled={
-										blocked ||
-										Object.hasOwn(
-											readGeometryImports(inputs.geometry_imports).selected,
-											source.id,
-										)
-									}
-									onChange={(permission) =>
-										commit({
-											type: "put_source",
-											before: source,
-											value: {
-												...source,
-												permissions: {
-													...source.permissions,
-													export: permission,
+						<div className="sc-fields">
+							{geometry.sources.map((source) => (
+								<fieldset key={source.id}>
+									<legend>{source.note}</legend>
+									<GeometryExportPermission
+										value={source.permissions.export}
+										disabled={
+											blocked ||
+											Object.hasOwn(
+												readGeometryImports(inputs.geometry_imports).selected,
+												source.id,
+											)
+										}
+										onChange={(permission) =>
+											commit({
+												type: "put_source",
+												before: source,
+												value: {
+													...source,
+													permissions: {
+														...source.permissions,
+														export: permission,
+													},
 												},
-											},
-										})
-									}
-								/>
-							</fieldset>
-						))}
+											})
+										}
+									/>
+								</fieldset>
+							))}
+						</div>
 					</details>
 				)}
 				{geometryImport && (

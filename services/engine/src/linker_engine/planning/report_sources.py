@@ -15,7 +15,7 @@ from .dc_plant_kernel import DcPlantEnergyKernel
 from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle
 from .energy_comparison import compare_energy_runs, comparison_side
-from .energy_inputs import EnergyInputs
+from .energy_inputs import EnergyInputs, storage_only_project
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
@@ -1131,13 +1131,23 @@ def report_sources(
                 project.revision,
             )
     layout = project.inputs.get("geometry")
-    if component_list is None and isinstance(layout, dict) and layout.get("arrays"):
-        module_proof = products.module_basis()
+    if (
+        component_list is None
+        and isinstance(candidate, dict)
+        and comparison is None
+        and not storage_only_project(project.inputs)
+        and isinstance(layout, dict)
+        and layout.get("arrays")
+    ):
         component_list = saved_roof_components(
-            layout, module_proof, workspace.blobs, project.revision
+            layout, products.module_basis, workspace.blobs, project.revision
         )
-        if component_list["status"] == "available":
-            bases["equipment_pv"] = workspace.blobs.put_object(module_proof)
+        component_dependencies = component_list.get("dependencies")
+        if (
+            isinstance(component_dependencies, dict)
+            and "woo_module" in component_dependencies
+        ):
+            bases["equipment_pv"] = component_dependencies["woo_module"]
     historical_bases = {
         name: sha for name, sha in bases.items() if name.startswith("energy.")
     }

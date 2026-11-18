@@ -44,12 +44,8 @@ class ComparisonPv:
             "pv_only",
         ):
             return inputs
-        parameters = inputs.get("pvgis_reference")
-        if isinstance(parameters, dict) and parameters.get("model") == KNOWN_MODEL:
-            arrays = cast(list[Object], parameters["arrays"])
-            power = math.fsum(cast(float, a["peak_power_kwp"]) for a in arrays)
-        else:
-            power = roof_power(inputs)
+        setup = inputs.get("pvgis_reference_setup", inputs.get("pvgis_reference"))
+        power = known_capacity(setup) if is_known(setup) else roof_power(inputs)
         if not power:
             return inputs
         plant = inputs.get("equipment_plant_setup")
@@ -82,7 +78,7 @@ class ComparisonPv:
         )
         parameters = inputs.get("pvgis_reference")
         setup = inputs.get("pvgis_reference_setup", parameters)
-        known = isinstance(setup, dict) and setup.get("model") == KNOWN_MODEL
+        known = is_known(setup)
         placed = not known and roof_power(inputs) > 0
         managed = asset is not None and asset.purpose in (KNOWN_PURPOSE, ROOF_PURPOSE)
         if asset is not None and not managed:
@@ -92,8 +88,7 @@ class ComparisonPv:
             ), False
         brief = inputs.get("brief")
         if (
-            not known
-            and placed
+            (placed or known and parameters is None and known_capacity(setup) > 0)
             and asset is None
             and "gross_load" not in selected
             and isinstance(brief, dict)
@@ -144,6 +139,25 @@ class ComparisonPv:
         return asset.metadata.get("geometry_sha256") == digest(
             encode(inputs.get("geometry"))
         )
+
+
+def is_known(setup: Json) -> bool:
+    return isinstance(setup, dict) and setup.get("model") == KNOWN_MODEL
+
+
+def known_capacity(setup: Json) -> float:
+    arrays = setup.get("arrays") if isinstance(setup, dict) else None
+    if not isinstance(arrays, list) or not arrays:
+        return 0
+    powers = [a.get("peak_power_kwp") if isinstance(a, dict) else None for a in arrays]
+    if any(
+        type(power) not in (int, float)
+        or not math.isfinite(cast(float, power))
+        or cast(float, power) <= 0
+        for power in powers
+    ):
+        return 0
+    return math.fsum(cast(list[float], powers))
 
 
 def roof_power(inputs: Object) -> float:
