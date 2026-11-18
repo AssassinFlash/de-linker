@@ -192,10 +192,7 @@ export default function Configurator({
 		const params = new URL(location.href).searchParams;
 		return params.get("project") === project.id ? params.get("run") : null;
 	});
-	const [genieReport, setGenieReport] = useState<{
-		id: string;
-		projectRevision: number;
-	} | null>(null);
+	const [genieReportId, setGenieReportId] = useState<string | null>(null);
 	const cache = useQueryClient();
 	const latest = useRef(draft);
 	latest.current = draft;
@@ -313,7 +310,7 @@ export default function Configurator({
 	function selectReport(id: string | null) {
 		const url = new URL(location.href);
 		if (!admitted || url.searchParams.get("project") !== project.id) return;
-		setGenieReport(null);
+		setGenieReportId(null);
 		setViewedReport(id);
 		if (id === null) url.searchParams.delete("run");
 		else url.searchParams.set("run", id);
@@ -324,10 +321,9 @@ export default function Configurator({
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
 	const genieRun =
-		step === "review" &&
-		genieReport?.projectRevision === draft?.baseline.revision
+		step === "review" && genieReportId !== null
 			? [reportRun, viewedRun].find(
-					(run) => run?.id === genieReport?.id && run?.state === "succeeded",
+					(run) => run?.id === genieReportId && run.state === "succeeded",
 				)
 			: null;
 	const openReport = viewedReport === null ? reportRun : viewedRun;
@@ -461,7 +457,7 @@ export default function Configurator({
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
-		setGenieReport(null);
+		setGenieReportId(null);
 		const url = new URL(location.href);
 		url.hash = "sc-" + next;
 		replacePlannerLocation(url);
@@ -788,7 +784,7 @@ export default function Configurator({
 						data-linker-genie-open
 						data-linker-genie-planning=""
 						disabled={!admitted}
-						onClick={() => setGenieReport(null)}
+						onClick={() => setGenieReportId(null)}
 					>
 						{__("Ask Genie", "linker-tools")}
 					</button>
@@ -1207,12 +1203,7 @@ export default function Configurator({
 								!isDirty(draft),
 							)}
 							generate={(logo) => void generate(logo)}
-							askGenie={(run) =>
-								setGenieReport({
-									id: run.id,
-									projectRevision: draft.baseline.revision,
-								})
-							}
+							askGenie={(run) => setGenieReportId(run.id)}
 							recheck={recheck}
 						/>
 					)}

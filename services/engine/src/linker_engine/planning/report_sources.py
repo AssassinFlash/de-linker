@@ -419,6 +419,7 @@ def report_sources(
 
     assessment: Object | None = None
     peak_comparison: Object | None = None
+    self_use_comparison: Object | None = None
     frozen_certificates: Object | None = None
     equipment_source_run: Run | None = None
     equipment_source_inputs: Object | None = None
@@ -521,11 +522,7 @@ def report_sources(
         assessment = cast(Object, detail["assessment"])
         search = cast(Object, run.result["search"])
         summary = search.get("demand")
-        if (
-            isinstance(summary, dict)
-            and summary.get("model") == PROFILE_BOUNDS_MODEL
-            and summary.get("controller") == "peak_shaving_with_reserve_v1"
-        ):
+        if isinstance(summary, dict) and summary.get("model") == PROFILE_BOUNDS_MODEL:
             selected_option = next(
                 item
                 for item in cast(list[Object], search["candidates"])
@@ -533,16 +530,24 @@ def report_sources(
             )
             bounds = cast(Object, selected_option["demand"])
             baseline = cast(Object, summary["baseline"])
-            # Older comparisons carry the declared limit only in their pinned inputs.
-            target = summary.get("peak_target_kw")
-            if "peak_target_kw" not in summary:
-                target = uniform_peak_target(periods(equipment_source_inputs))
-            peak_comparison = {
-                "target_kw": target,
-                "baseline_kw": baseline["peak_grid_import_kw"],
-                "lower_bound_kw": bounds["peak_import_lower_bound_kw"],
-                "status": bounds["status"],
-            }
+            if summary.get("controller") == "self_consumption_with_reserve_v1":
+                self_use_comparison = {
+                    "horizon_start_utc": summary["horizon_start_utc"],
+                    "horizon_end_utc": summary["horizon_end_utc"],
+                    "baseline": baseline,
+                    "upper_kwh": bounds["additional_pv_use_upper_kwh"],
+                }
+            elif summary.get("controller") == "peak_shaving_with_reserve_v1":
+                # Older comparisons carry the limit only in their pinned inputs.
+                target = summary.get("peak_target_kw")
+                if "peak_target_kw" not in summary:
+                    target = uniform_peak_target(periods(equipment_source_inputs))
+                peak_comparison = {
+                    "target_kw": target,
+                    "baseline_kw": baseline["peak_grid_import_kw"],
+                    "lower_bound_kw": bounds["peak_import_lower_bound_kw"],
+                    "status": bounds["status"],
+                }
         sources.append(
             {
                 "run_id": run.id,
@@ -1336,6 +1341,11 @@ def report_sources(
         ),
         "candidate": candidate,
         **({"peak_comparison": peak_comparison} if peak_comparison is not None else {}),
+        **(
+            {"self_use_comparison": self_use_comparison}
+            if self_use_comparison is not None
+            else {}
+        ),
         "equipment": assessment,
         "installation": installation,
         "energy": energy,

@@ -244,3 +244,13 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 ### 从冻结报告核对设备数量和依据
 
 评审 Genie 对话 8959 的第 21 轮读取修订 3 的冻结报告 `8b7538fbf7e24ccda2a589bafff6df90`。答复列出 SAJ HS2-10K-T2-X 和 Chint DTSU666 各一件，供货范围均为 `Selected equipment`。额定输出 10 kW 引自数据手册第 2 页，电表要求引自 SAJ 配置说明第 5.1 节、第 32–33 页。该轮返回 HTTP 200，使用配套知识索引 `20261118T111543Z-186258000`。
+
+### 已知光伏容量和实测用电
+
+主线负责评审引擎切换。在 `/Users/chesterjohn/de-linker-local/review/planner/` 保留本次切换前的一份 `runtime-releases/d55b283964cc760742dc8ba8346b59eedfee0ffd14b6a33ae0ec7c1bd536490d` 可执行版本，并滚动更新 `workspace.before-shared-backup.sqlite`。用于康斯坦茨访客报告验收期间恢复原服务，读回后按实例保留规则回收。
+
+评审项目 `e4502babfc7e41bf9ec3b6e822d26398` 以 8 kWp、正南、30° 的已知光伏系统，配对 OPSD CoSSMic 的 `DE_KN_residential6` 表计负荷和 JRC PVGIS 的模型发电数据。访客沿用输入修订 4，从同一项目生成并下载报告 `e9f37120b8e743eabdd2e590c3bf5733`。报告引用修订 3 的设备比较 `cceb8dba90c04a97b0399d72e4dc7e8a`。
+
+PDF 首页列出 2017-06-19 02:00 至 06-21 08:00 UTC 的 54 小时。用电量 87.638 kWh，模型发电量 100.250 kWh，无储能时直接自用 74.456 kWh、购电 13.182 kWh、外送 25.794 kWh，购电峰值 2.593 kW。采用方案在满电起步、储能无损条件下的额外自用上限为 12.764 kWh。下载的 CSV 与该修订的 Woo 草稿同列 H2-25K-T3 ×1、BC2-HV1 ×1、BU2-5.0-HV1 ×3。CSV 将电表单列为厂商随附、数量待核。
+
+下载后，原访客从 Woo 草稿移除三项设备，草稿数量归零。项目删除返回 HTTP 200，同一访客重开返回 HTTP 404。独立浏览器与临时下载件已回收，卷可用空间增加约 177 MiB，评审站首页返回 HTTP 200。

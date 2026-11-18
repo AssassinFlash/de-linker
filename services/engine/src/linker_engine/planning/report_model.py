@@ -202,6 +202,41 @@ def build_report(source: Object) -> Report:
     if isinstance(geometric_pv, list):
         sections.extend(geometric_pv_sections(geometric_pv, locale))
 
+    self_use = source.get("self_use_comparison")
+    if isinstance(self_use, dict):
+        baseline = cast(Object, self_use["baseline"])
+        upper = self_use["upper_kwh"]
+        rows = [
+            row(
+                "retained_profile_period",
+                f"{self_use['horizon_start_utc']} – {self_use['horizon_end_utc']}",
+            )
+        ]
+        rows.extend(
+            row(label, number(value, locale, unit))
+            for label, key, unit in (
+                ("retained_profile_load", "load_kwh", "kWh"),
+                ("generation", "pv_available_kwh", "kWh"),
+                ("retained_profile_direct_pv", "direct_pv_use_kwh", "kWh"),
+                ("retained_profile_import", "grid_import_kwh", "kWh"),
+                ("export", "grid_export_kwh", "kWh"),
+                ("retained_profile_peak", "peak_grid_import_kw", "kW"),
+            )
+            if (value := baseline[key]) is not None
+        )
+        if upper is not None:
+            rows.append(row("self_use_upper", number(upper, locale, "kWh")))
+        sections.append(
+            ReportSection(
+                id="self-consumption-comparison",
+                title=text("self_use_comparison", locale),
+                paragraphs=[text("self_use_bound_basis", locale)]
+                if upper is not None
+                else [],
+                rows=rows,
+            )
+        )
+
     peak_comparison = source.get("peak_comparison")
     if isinstance(peak_comparison, dict):
         sections.append(

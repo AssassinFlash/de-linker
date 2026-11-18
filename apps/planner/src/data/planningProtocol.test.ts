@@ -456,6 +456,12 @@ test("report output keeps serialized fields mandatory and old column layout opti
 	assert.doesNotThrow(() =>
 		readPlanningReport({ ...report, sections: [pvgisSection] }),
 	);
+	assert.doesNotThrow(() =>
+		readPlanningReport({
+			...report,
+			sections: [{ ...pvgisSection, id: "pvgis-known-reference-0" }],
+		}),
+	);
 	// Frozen original request from the native Paris weather-based PV reference.
 	const tmyHref =
 		"https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=48.8566&lon=2.3522&startyear=2014&endyear=2023&usehorizon=0&outputformat=json";

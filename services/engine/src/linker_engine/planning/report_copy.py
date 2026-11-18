@@ -71,6 +71,18 @@ TEXT = {
         "Grid import peak without storage",
         "Netzbezugsspitze ohne Speicher",
     ),
+    "self_use_comparison": (
+        "Solar self-consumption comparison",
+        "Vergleich zum PV-Eigenverbrauch",
+    ),
+    "self_use_upper": (
+        "Additional solar use, upper bound",
+        "Zusätzlicher Eigenverbrauch, Obergrenze",
+    ),
+    "self_use_bound_basis": (
+        "The upper bound assumes a full battery at the start and lossless storage. Actual solar use depends on operating settings and storage losses.",
+        "Die Obergrenze setzt einen anfangs voll geladenen Speicher und verlustfreie Speicherung voraus. Der tatsächliche Eigenverbrauch hängt von den Betriebseinstellungen und den Speicherverlusten ab.",
+    ),
     "peak_comparison": ("Peak shaving comparison", "Vergleich zur Spitzenlastsenkung"),
     "peak_target": ("Target grid import limit", "Gewünschte Netzbezugsgrenze"),
     "peak_optimistic_bound": (

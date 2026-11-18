@@ -100,7 +100,7 @@ function pvgisSourceReference(sectionId: string, url: URL): boolean {
 		requestKeys = tmy ? pvgisTmyRequestKeys : pvgisRequestKeys,
 		keys = [...url.searchParams.keys()];
 	return (
-		(tmy || /^pvgis-roof-reference-[0-9]+$/.test(sectionId)) &&
+		(tmy || /^pvgis-(?:roof|known)-reference-[0-9]+$/.test(sectionId)) &&
 		url.origin === "https://re.jrc.ec.europa.eu" &&
 		url.pathname === (tmy ? "/api/v5_3/tmy" : "/api/v5_3/seriescalc") &&
 		!url.username &&

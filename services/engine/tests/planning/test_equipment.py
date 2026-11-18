@@ -7715,10 +7715,13 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             == accepted["run"]["id"]
         )
         assert len(workspace.runs(owner, pid)) == 1
-        if not peak or standard:
+        if standard:
             return
         candidate = next(
-            c for c in result["candidates"] if c["demand"]["status"] == "bounded"
+            c
+            for c in result["candidates"]
+            if c["demand"]["status"] == "bounded"
+            and (peak or c["demand"]["additional_pv_use_upper_kwh"] == 3)
         )
         adopted_inputs = {
             **accepted["project"]["inputs"],
@@ -7792,6 +7795,20 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 " ".join(page.extract_text().split())
                 for page in PdfReader(io.BytesIO(pdf_bytes)).pages
             )
+            if not peak:
+                expected = (
+                    (
+                        "Direct solar use 4 kWh",
+                        "Additional solar use, upper bound 3 kWh",
+                    )
+                    if locale == "en"
+                    else (
+                        "Direkt genutzter Solarstrom 4 kWh",
+                        "Zusätzlicher Eigenverbrauch, Obergrenze 3 kWh",
+                    )
+                )
+                assert all(label in text for label in expected)
+                continue
             bound = str(candidate["demand"]["peak_import_lower_bound_kw"])
             if locale == "de":
                 bound = bound.replace(".", ",")

@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
 import React, { act } from "react";
-import { enter, setupDom, until } from "./dom-fixture.mjs";
+import { deferred, enter, setupDom, until } from "./dom-fixture.mjs";
 import preparation from "./fixtures/index.ts";
 
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
@@ -456,8 +456,21 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		filenames = [];
 	let activeScope = scope;
 	let wrongProject = false;
+	const saving = deferred();
 	const client = {
 		isCurrentScope: (s) => s === activeScope,
+		async send(path, raw) {
+			assert.equal(path, "projects/revise");
+			const command = JSON.parse(raw);
+			requests.push([path, command]);
+			await saving.promise;
+			return {
+				...project,
+				revision: project.revision + 1,
+				input_sha256: "d".repeat(64),
+				inputs: command.inputs,
+			};
+		},
 		async query(path, body) {
 			requests.push([path, body]);
 			if (path === "projects/runs") {
@@ -688,6 +701,36 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		await act(async () => button("Close", history()).click());
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Download PDF"));
+
+		await act(async () => root.render(null));
+		cache.clear();
+		wrongProject = false;
+		window.history.replaceState(null, "", `?project=${project.id}#sc-project`);
+		await render("en");
+		await until(() => dom.element.querySelector('[name="location_label"]'));
+		await enter(dom.element.querySelector('[name="location_label"]'), "Berlin");
+		await act(async () => button("Save snapshot").click());
+		await until(() => requests.some(([path]) => path === "projects/revise"));
+		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
+			(node) => node.textContent.includes("Review & share"),
+		);
+		await act(async () => step.click());
+		for (let page = 0; page < 2; page++) {
+			await until(
+				() =>
+					!button("Earlier calculations")?.disabled &&
+					button("Earlier calculations"),
+			);
+			await act(async () => button("Earlier calculations").click());
+		}
+		await until(() => button("Revision 2", history()));
+		await act(async () => button("Revision 2", history()).click());
+		await until(() => button("Ask Genie", history()));
+		await ask(history(), 2, [earlier.id]);
+		await act(async () => saving.resolve());
+		await until(() => dom.element.textContent.includes("Saved · revision 4"));
+		assertContext(context(), 2, [earlier.id]);
+		await ask(dom.element.querySelector(".sc-project-heading"), 4, []);
 	} finally {
 		await dom.dispose(root);
 		cache.clear();
