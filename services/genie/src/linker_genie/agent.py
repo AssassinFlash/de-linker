@@ -506,14 +506,31 @@ def _ability_runner(
             if name == "linker/size-hint"
             else without_class_text(name, with_tool_lang(name, arguments, locale))
         )
-        if allowed and set(product_ids(sent)).difference(allowed):
+        pairing_search = name == "linker/search-products" and str(
+            (sent or {}).get("with_pairings")
+        ).lower() in {"true", "1"}
+        if allowed and (
+            set(product_ids(sent)).difference(allowed)
+            or (pairing_search and not (prepared and prepared.discover_pairings))
+        ):
             return _OUTSIDE_PRODUCT_SUBJECT
         try:
             payload, gathered = client.record(name, sent, user_context, locale)
         except AbilityError as error:
             _note_call_failure(prepared, error, prefix=name)
             raise
-        if allowed and gathered.product_ids.difference(allowed):
+        # A permitted pairing search may discover linked batteries, but its
+        # searched inverter rows must still be the customer's subjects.
+        returned = (
+            {
+                row["product_id"]
+                for row in payload.get("qualified", ())
+                if "product_id" in row
+            }
+            if allowed and pairing_search
+            else gathered.product_ids
+        )
+        if allowed and returned.difference(allowed):
             return _OUTSIDE_PRODUCT_SUBJECT
         budget.parts.append(gathered)
         return payload

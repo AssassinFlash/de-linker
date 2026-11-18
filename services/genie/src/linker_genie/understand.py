@@ -17,6 +17,7 @@ an answer without the documents it needed must not ship (#257).
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
@@ -62,6 +63,16 @@ from linker_genie.vision import See
 
 logger = logging.getLogger("linker_genie")
 
+# The ordinary pairing tool can discover another product when the customer
+# actually asks for a partner, even if Jev did not classify the turn.
+_PAIRING_ASK = re.compile(
+    r"\b(?:which|what)\s+(?:batter(?:y|ies)|inverters?)\s+"
+    r"(?:fits?|pairs?\s+with|works?\s+with|(?:is|are)\s+compatible\s+with)\b"
+    r"|\bwelch\w*\s+(?:Batterie\w*|Speicher\w*|Wechselrichter)\s+"
+    r"(?:passt|passen|(?:ist|sind)\s+kompatibel)\b",
+    re.IGNORECASE,
+)
+
 
 class Reader(Protocol):
     def read(
@@ -101,6 +112,7 @@ class Prepared:
     # the turn's clock. None when the layer did not time itself.
     timing: timing.Timing | None = None
     product_scope: tuple[int, ...] = ()
+    discover_pairings: bool = False
 
     @property
     def calls_made(self) -> int:
@@ -362,6 +374,8 @@ class Understander:
             readings=fresh,
             timing=clock,
             product_scope=subject.ids if scoped else (),
+            discover_pairings=route.name == "products"
+            and bool(_PAIRING_ASK.search(message)),
         )
         _run_calls(prepared, request, client, self._search, self._pages, clock)
         _add_readings(
