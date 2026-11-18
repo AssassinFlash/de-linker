@@ -35,7 +35,7 @@ final class Application {
 		'Guest workspace',
 		'Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.',
 		'Linker brings your inputs into an editable project for solar and storage planning.',
-		'Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.',
+		'You can reopen saved projects and restore available drafts.',
 		'Loading projects…',
 		'More projects',
 		'New project',

@@ -5373,14 +5373,8 @@ msgstr ""
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/ToolIdentity.tsx
-msgid ""
-"Linker provides the project workflow and editing tools. Your inputs and "
-"design stay together in the same project, with controls for saving changes "
-"and restoring available drafts."
-msgstr ""
-"Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre "
-"Angaben und der Entwurf bleiben im selben Projekt; dort können Sie "
-"Änderungen speichern und verfügbare Arbeitsstände wiederherstellen."
+msgid "You can reopen saved projects and restore available drafts."
+msgstr "Gespeicherte Projekte können Sie erneut öffnen und vorhandene Entwürfe wiederherstellen."
 
 #: build/planner/assets/planner.js
 msgid "Load"
