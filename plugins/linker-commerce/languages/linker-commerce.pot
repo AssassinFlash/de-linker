@@ -829,7 +829,7 @@ msgid "What can we help with?"
 msgstr ""
 
 #: includes/Contact/Form.php:160
-msgid "Tell us what you need. We’ll use the email below for your reply."
+msgid "Tell us what you need."
 msgstr ""
 
 #: includes/Contact/Form.php:168
@@ -846,7 +846,7 @@ msgid "This is about"
 msgstr ""
 
 #: includes/Contact/Form.php:178
-msgid "Where can we reply?"
+msgid "Your contact details"
 msgstr ""
 
 #: includes/Contact/Form.php:180
@@ -855,7 +855,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: includes/Contact/Form.php:182 includes/Inquiry/Form.php:151
+#: includes/Contact/Form.php:182
+msgid "Email address"
+msgstr ""
+
+#: includes/Inquiry/Form.php:151
 msgid "Reply email"
 msgstr ""
 
@@ -881,8 +885,7 @@ msgid "Send message"
 msgstr ""
 
 #: includes/Contact/Form.php:199
-msgid ""
-"Your message goes to the Linker team. We reply to the address you give here."
+msgid "The Linker team replies within one business day."
 msgstr ""
 
 #: includes/Contact/Form.php:247

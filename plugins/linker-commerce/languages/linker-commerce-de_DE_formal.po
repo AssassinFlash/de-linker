@@ -894,10 +894,8 @@ msgid "What can we help with?"
 msgstr "Wie können wir helfen?"
 
 #: includes/Contact/Form.php:160
-msgid "Tell us what you need. We’ll use the email below for your reply."
-msgstr ""
-"Beschreiben Sie Ihr Anliegen. Für die Antwort verwenden wir die unten "
-"angegebene E-Mail-Adresse."
+msgid "Tell us what you need."
+msgstr "Beschreiben Sie Ihr Anliegen."
 
 #: includes/Contact/Form.php:168
 msgid "Your question"
@@ -913,8 +911,8 @@ msgid "This is about"
 msgstr "Es geht um"
 
 #: includes/Contact/Form.php:178
-msgid "Where can we reply?"
-msgstr "Wohin dürfen wir antworten?"
+msgid "Your contact details"
+msgstr "Ihre Kontaktdaten"
 
 #: includes/Contact/Form.php:180
 #: includes/Inquiry/Assessment/EvidenceView.php:55
@@ -922,7 +920,11 @@ msgstr "Wohin dürfen wir antworten?"
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:182 includes/Inquiry/Form.php:151
+#: includes/Contact/Form.php:182
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: includes/Inquiry/Form.php:151
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
@@ -950,11 +952,8 @@ msgid "Send message"
 msgstr "Nachricht senden"
 
 #: includes/Contact/Form.php:199
-msgid ""
-"Your message goes to the Linker team. We reply to the address you give here."
-msgstr ""
-"Ihre Nachricht geht an das Linker-Team. Wir antworten an die Adresse, die "
-"Sie hier angeben."
+msgid "The Linker team replies within one business day."
+msgstr "Das Linker-Team antwortet innerhalb eines Arbeitstags."
 
 #: includes/Contact/Form.php:247
 msgid "Product guidance"

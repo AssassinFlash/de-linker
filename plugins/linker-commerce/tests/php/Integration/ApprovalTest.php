@@ -241,11 +241,10 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * The three customer emails speak the sentences the copy review finalized
-	 * (docs/acceptance/2026-10-11/73/copy-review.md, §4–§6), each in the
-	 * customer's own language: a German customer reads German bodies, an
-	 * English one English bodies. The .eml renders in the acceptance directory
-	 * are the same check on the instance's captured mail.
+	 * Customer emails use the approved, restricted and rejected copy in the
+	 * customer's language. The #1143 revisions to the approved and rejected
+	 * bodies are in docs/acceptance/2026-11-18/1143/copy-review.md. The restricted
+	 * body follows docs/acceptance/2026-10-11/73/copy-review.md, §5.
 	 */
 	public function test_the_customer_emails_speak_the_finalized_copy(): void {
 		$approved = $this->approval_mail_body( 'de_DE_formal', Approval::APPROVED );
