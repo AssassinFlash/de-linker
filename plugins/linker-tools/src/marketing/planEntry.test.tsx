@@ -219,3 +219,86 @@ test( 'Enter plans once; Shift and composing Enter stay in the field', async () 
 	);
 	await vi.waitFor( () => expect( navigations ).toHaveLength( 1 ) );
 } );
+
+test( 'return reads the owner’s current note and continues with its revision, even across languages', async () => {
+	const id = 'f'.repeat( 32 );
+	const revision = 'b'.repeat( 64 );
+	const updated = 'Revised from the configurator\nKeep this second line';
+	history.replaceState( null, '', '/de/fuer-installateur/?brief=' + id );
+	try {
+		const writes: Record< string, unknown >[] = [];
+		stageReply = ( body ) => {
+			if ( body.text ) {
+				writes.push( body );
+			}
+			return {
+				schema_version: 1,
+				brief_id: id,
+				revision,
+				text: body.text ?? updated,
+				source_path: body.source_path ?? '/for-installer/',
+				scope: SCOPE,
+			};
+		};
+		const field = bind();
+		await vi.waitFor( () =>
+			expect( field.value ).toContain( 'Revised from the configurator' )
+		);
+		document.querySelector< HTMLAnchorElement >( '.lk-btn-query' )!.click();
+		await vi.waitFor( () => expect( writes ).toHaveLength( 1 ) );
+		expect( writes[ 0 ] ).toMatchObject( {
+			brief_id: id,
+			expected_revision: revision,
+			text: updated,
+		} );
+	} finally {
+		history.replaceState( null, '', '/' );
+	}
+} );
+
+test( 'return preserves an installer draft edited since its handoff', async () => {
+	const id = 'f'.repeat( 32 );
+	history.replaceState( null, '', '/for-installer/?brief=' + id );
+	try {
+		sessionStorage.setItem(
+			PROJECT_BRIEF_KEY,
+			JSON.stringify( {
+				v: 1,
+				id,
+				text: 'New installer edit',
+				revision: 'b'.repeat( 64 ),
+				sourcePath: '/for-installer/',
+				contextScope: SCOPE,
+				confirmed: {},
+				pendingEdit: true,
+			} )
+		);
+		const field = bind();
+		await vi.waitFor( () =>
+			expect( field.value ).toBe( 'New installer edit' )
+		);
+		expect( fetch ).toHaveBeenCalledTimes( 1 );
+	} finally {
+		history.replaceState( null, '', '/' );
+	}
+} );
+test( 'a restored browser-history page reloads the note under its current owner', async () => {
+	const field = bind();
+	field.value = 'Original';
+	document.querySelector< HTMLAnchorElement >( '.lk-btn-query' )!.click();
+	await vi.waitFor( () => expect( navigations ).toHaveLength( 1 ) );
+	stageReply = ( body ) => ( {
+		schema_version: 1,
+		brief_id: body.brief_id,
+		text: 'Edited in the configurator',
+		revision: 'a'.repeat( 64 ),
+		source_path: '/for-installer/',
+		scope: SCOPE,
+	} );
+	window.dispatchEvent(
+		new PageTransitionEvent( 'pageshow', { persisted: true } )
+	);
+	await vi.waitFor( () =>
+		expect( field.value ).toBe( 'Edited in the configurator' )
+	);
+} );

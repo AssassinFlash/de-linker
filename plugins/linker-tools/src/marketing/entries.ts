@@ -14,6 +14,7 @@ import {
 	UNSTAGED_BRIEF_ID,
 	clearProjectBrief,
 	readProjectBrief,
+	loadStagedBrief,
 	stageProjectBrief,
 	writeProjectBrief,
 	type ProjectBriefV1,
@@ -275,19 +276,80 @@ export function bindMarketingEntries(
 			scope = next;
 			return next;
 		};
-		void verify()
-			.then( ( current ) => {
-				if ( ! live || field.value ) {
-					return;
-				}
-				const stored = readProjectBrief( current );
+		let edits = 0;
+		let restoredValue: string | null = null;
+		const show = ( record: ProjectBriefV1 ) => {
+			staged = record;
+			field.value = record.text;
+			// A single-line installer input strips line breaks. An untouched
+			// return must still submit the original multi-line project note.
+			restoredValue = field.value;
+		};
+		const requested = new URL( location.href ).searchParams.get( 'brief' );
+		let loadingBrief = Boolean( requested );
+		const restore = async ( fromHistory = false ) => {
+			const generation = edits;
+			const current = await verify( fromHistory );
+			if ( ! live || generation !== edits || field.value ) {
+				return;
+			}
+			const stored = readProjectBrief( current );
+			const id = requested ?? ( fromHistory ? stored?.id : undefined );
+			if (
+				! id ||
+				! /^[a-f0-9]{32}$/.test( id ) ||
+				id === UNSTAGED_BRIEF_ID ||
+				stored?.pendingEdit ||
+				( stored && stored.id !== id )
+			) {
 				if ( stored ) {
-					field.value = stored.text;
-					staged = stored;
+					show( stored );
 				}
-			} )
-			.catch( () => undefined );
+				return;
+			}
+			const latest = await loadStagedBrief( config, id );
+			if (
+				! live ||
+				generation !== edits ||
+				latest.contextScope !== current ||
+				scope !== current
+			) {
+				return;
+			}
+			latest.confirmed = stored?.confirmed ?? {};
+			show( latest );
+			if ( ! writeProjectBrief( latest ) ) {
+				throw new Error( 'project-brief-storage' );
+			}
+		};
+		const restoreEntry = ( fromHistory = false ) => {
+			loadingBrief = fromHistory || Boolean( requested );
+			void restore( fromHistory )
+				.catch( () => {
+					if ( live && loadingBrief ) {
+						status.className = 'linker-genie-app__error';
+						status.textContent = __(
+							'The project note could not be opened.',
+							'linker-tools'
+						);
+					}
+				} )
+				.finally( () => {
+					loadingBrief = false;
+				} );
+		};
+		restoreEntry();
+		const onPageShow = ( event: PageTransitionEvent ) => {
+			if ( event.persisted ) {
+				field.value = '';
+				staged = null;
+				restoredValue = null;
+				restoreEntry( true );
+			}
+		};
 		const onInput = () => {
+			edits++;
+			restoredValue = null;
 			status.textContent = '';
 			status.className = 'screen-reader-text';
 			if ( ! scope ) {
@@ -302,6 +364,7 @@ export function bindMarketingEntries(
 			if ( Array.from( value ).length <= MAX_PROJECT_BRIEF_LENGTH ) {
 				const draft: ProjectBriefV1 = {
 					v: 1,
+					pendingEdit: true,
 					id: staged?.id ?? UNSTAGED_BRIEF_ID,
 					text: value,
 					sourcePath: location.pathname || '/for-installer/',
@@ -316,7 +379,10 @@ export function bindMarketingEntries(
 			if ( preparing || ! field.value.trim() ) {
 				return;
 			}
-			const snapshot = field.value;
+			const snapshot =
+				staged && restoredValue === field.value
+					? staged.text
+					: field.value;
 			if ( Array.from( snapshot ).length > MAX_PROJECT_BRIEF_LENGTH ) {
 				status.className = 'linker-genie-app__error';
 				status.textContent = __(
@@ -325,13 +391,18 @@ export function bindMarketingEntries(
 				);
 				return;
 			}
+			edits++;
 			preparing = true;
 			let handed = false;
 			planLink?.setAttribute( 'aria-busy', 'true' );
 			try {
+				const origin = staged;
 				const current = await verify();
 				if ( ! live ) {
 					return;
+				}
+				if ( origin && origin.contextScope !== current ) {
+					throw new Error( 'project-brief-scope' );
 				}
 				const record = await stageProjectBrief( config, {
 					text: snapshot,
@@ -381,7 +452,7 @@ export function bindMarketingEntries(
 		};
 		const onPlanClick = ( event: Event ) => {
 			if ( ! field.value.trim() ) {
-				if ( preparing ) {
+				if ( preparing || loadingBrief ) {
 					event.preventDefault();
 				}
 				return;
@@ -411,12 +482,14 @@ export function bindMarketingEntries(
 			void deliverPlan();
 		};
 		field.addEventListener( 'input', onInput );
+		window.addEventListener( 'pageshow', onPageShow );
 		window.addEventListener( 'keydown', onPlanKey, { capture: true } );
 		planLink?.addEventListener( 'click', onPlanClick );
 		return () => {
 			live = false;
 			delete field.dataset.geniePlanBound;
 			field.removeEventListener( 'input', onInput );
+			window.removeEventListener( 'pageshow', onPageShow );
 			window.removeEventListener( 'keydown', onPlanKey, {
 				capture: true,
 			} );

@@ -22,6 +22,7 @@ export interface ProjectBriefV1 {
 	contextScope: string;
 	revision: string;
 	confirmed: Partial< SizeHintFields >;
+	pendingEdit?: true;
 }
 
 type Config = Pick< GenieConfig, 'restUrl' | 'restNonce' >;
@@ -203,6 +204,39 @@ export async function stageProjectBrief(
 	if ( input.expectedRevision && input.briefId !== UNSTAGED_BRIEF_ID ) {
 		payload.expected_revision = input.expectedRevision;
 	}
+	const record = await transferBrief( config, payload );
+	if (
+		record.text !== input.text ||
+		record.sourcePath !== input.sourcePath ||
+		( payload.brief_id && record.id !== payload.brief_id )
+	) {
+		throw new Error( 'project-brief-readback' );
+	}
+	record.confirmed = input.confirmed ?? {};
+	if ( ! writeProjectBrief( record ) ) {
+		throw new Error( 'project-brief-storage' );
+	}
+	return record;
+}
+
+export async function loadStagedBrief(
+	config: Config,
+	id: string
+): Promise< ProjectBriefV1 > {
+	const record = await transferBrief( config, {
+		schema_version: 1,
+		brief_id: id,
+		tab: ensureTabToken(),
+	} );
+	if ( record.id !== id ) {
+		throw new Error( 'project-brief-readback' );
+	}
+	return record;
+}
+async function transferBrief(
+	config: Config,
+	payload: Record< string, unknown >
+): Promise< ProjectBriefV1 > {
 	const response = await fetch(
 		`${ config.restUrl }linker-ai/v1/genie/project-brief`,
 		{
@@ -230,8 +264,8 @@ export async function stageProjectBrief(
 		! /^[a-f0-9]{32}$/.test( data.brief_id ) ||
 		typeof data.revision !== 'string' ||
 		! /^[a-f0-9]{64}$/.test( data.revision ) ||
-		data.text !== input.text ||
-		data.source_path !== input.sourcePath ||
+		typeof data.text !== 'string' ||
+		! validPath( data.source_path ) ||
 		typeof data.scope !== 'string' ||
 		! /^[a-f0-9]{64}$/.test( data.scope )
 	) {
@@ -244,10 +278,10 @@ export async function stageProjectBrief(
 		sourcePath: data.source_path,
 		contextScope: data.scope,
 		revision: data.revision,
-		confirmed: input.confirmed ?? {},
+		confirmed: {},
 	};
-	if ( ! writeProjectBrief( record ) ) {
-		throw new Error( 'project-brief-storage' );
+	if ( ! isProjectBrief( record ) ) {
+		throw new Error( 'project-brief-readback' );
 	}
 	return record;
 }

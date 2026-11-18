@@ -147,7 +147,7 @@ final class EntryContext {
 	}
 
 	/**
-	 * Stage a customer project note under the verified native principal/Woo session.
+	 * Read or stage a customer project note under the verified native principal/Woo session.
 	 *
 	 * @param WP_REST_Request $request Current request.
 	 * @return WP_REST_Response|WP_Error
@@ -169,11 +169,18 @@ final class EntryContext {
 		if ( null !== $tab && ( ! is_string( $tab ) || 1 !== preg_match( '/\A[0-9a-f-]{36}\z/', $tab ) ) ) {
 			return Failure::make( 'project_brief_input', 422 );
 		}
-		$context = ( new NativeIdentity() )->bootstrap( $request );
+		$reading = ! array_key_exists( 'text', $command );
+		$context = ( new NativeIdentity() )->bootstrap( $request, $reading );
 		if ( is_wp_error( $context ) ) {
 			return $context;
 		}
-		$staged = ( new ProjectBriefSource() )->stage( $context['principal'], $command );
+		$briefs = new ProjectBriefSource();
+		if ( $reading ) {
+			unset( $command['tab'] );
+			$staged = $briefs->read( $context['principal'], $command );
+		} else {
+			$staged = $briefs->stage( $context['principal'], $command );
+		}
 		if ( is_wp_error( $staged ) ) {
 			return $staged;
 		}
