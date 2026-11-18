@@ -15527,6 +15527,16 @@ msgstr "Luftbildkarte ausblenden"
 msgid "Show aerial map"
 msgstr "Luftbildkarte anzeigen"
 
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider."
+msgstr "Dieses Luftbild dient nur zur Ansicht. Wenn Sie es anzeigen, erhält der Anbieter Ihre IP-Adresse und den angezeigten Kartenausschnitt."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx
+#: build/planner/assets/planner.js
+msgid "Use the plan view or a roof image you have permission to use to create the layout."
+msgstr "Nutzen Sie die Planansicht oder ein Dachbild, für das Sie die Nutzungsrechte haben."
+
 #: ../../apps/planner/src/components/design/SceneViewport.tsx
 #: build/planner/assets/planner.js
 msgid "Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane."

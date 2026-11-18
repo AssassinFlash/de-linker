@@ -4,6 +4,7 @@ import { register } from "node:module";
 import React, { act, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
+import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
 import { emptyBrief } from "../src/domain/brief.ts";
 register("./map-library-loader.mjs", import.meta.url);
@@ -14,13 +15,26 @@ const aerial = {
 	licence: "Fixture drawing licence",
 	licence_url: "https://tile.example.test/licence",
 };
+const viewing = {
+	tiles: ["https://image.discomap.eea.europa.eu/image?bbox={bbox-epsg-3857}"],
+	credit: "European Union, Copernicus Land Monitoring Service (EEA)",
+	licence: "Copernicus VHR Image Mosaic viewing service",
+	licence_url:
+		"https://land.copernicus.eu/en/products/european-image-mosaic/very-high-resolution-image-mosaic-2021-true-colour-2m",
+};
 
 async function mount(
 	t,
 	initial = { brief: emptyBrief(), geometry: structuredClone(flat) },
 	placeImagery = aerial,
+	viewingImagery = null,
+	locale = "en",
 ) {
 	const dom = setupDom();
+	if (locale === "de") {
+		window.wp.i18n.__ = (message) =>
+			plannerGerman.locale_data.messages[message]?.[0] ?? message;
+	}
 	const previousStyle = Object.getOwnPropertyDescriptor(
 		globalThis,
 		"getComputedStyle",
@@ -43,12 +57,13 @@ async function mount(
 		const [inputs, setInputs] = useState(current);
 		return React.createElement(SolarInstallation, {
 			inputs,
-			config: { locale: "en", mapModuleUrl: null },
+			config: { locale, mapModuleUrl: null },
 			session: { query_scope: "test" },
 			client: {
 				isCurrentScope: () => true,
 				query: async (path) => {
-					if (path === "places/lookup") return { imagery: placeImagery };
+					if (path === "places/lookup")
+						return { imagery: placeImagery, viewing_imagery: viewingImagery };
 					if (path === "places/outline") return { found: false };
 					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
 				},
@@ -438,6 +453,169 @@ test("undoing image calibration restores known PV inputs and keeps later project
 	assert.equal(app.inputs.brief.site.latitude, 52.12567);
 	assert.equal(
 		button("Use module details").getAttribute("aria-pressed"),
+		"true",
+	);
+});
+
+test("Solar can show and withdraw a viewing mosaic without acquiring geometry", async (t) => {
+	const brief = emptyBrief();
+	const otherOrigin = "https://other.example.test/19/1/2.png";
+	const official = { ...viewing, tiles: [...viewing.tiles, otherOrigin] };
+	const geometry = structuredClone(flat);
+	const sourceId = geometry.sources[0].id;
+	Object.assign(geometry.coordinate_system, {
+		anchor: {
+			datum: "EPSG:4326",
+			longitude_deg: -0.12,
+			latitude_deg: 51.5,
+			source_id: sourceId,
+		},
+		north_reference: "true_north",
+		north_source_id: sourceId,
+	});
+	const app = await mount(
+		t,
+		{
+			brief: {
+				...brief,
+				site: {
+					...brief.site,
+					country_code: "GB",
+					location_label: "London",
+					latitude: 51.5,
+					longitude: -0.12,
+				},
+			},
+			geometry,
+		},
+		null,
+		official,
+	);
+	const { maps } = await import("./map-library-fixture.mjs");
+	const map = () => maps.findLast((value) => !value.removed);
+	const tileUrl = official.tiles[0].replace("{bbox-epsg-3857}", "1,2,3,4");
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	assert.throws(
+		() => map().options.transformRequest(tileUrl),
+		/not_authorized/,
+	);
+	assert.equal(map().getSource("linker-site-imagery"), undefined);
+	await click("Show aerial map");
+	await until(() => map().getSource("linker-site-imagery"));
+	const viewer = map();
+	assert.equal(viewer.options.transformRequest(tileUrl).url, tileUrl);
+	for (const other of [
+		otherOrigin,
+		"https://tiles.openfreemap.org/styles/liberty",
+		tileUrl.replace(".europa.eu/", ".europa.eu.other.test/"),
+		tileUrl.replace(".europa.eu/", ".europa.eu:8443/"),
+	])
+		assert.throws(
+			() => viewer.options.transformRequest(other),
+			/not_authorized/,
+		);
+	assert.match(
+		document.querySelector(".lp-map-provider").textContent,
+		/Copernicus Land Monitoring Service/,
+	);
+	assert.equal(
+		document.querySelector(".lp-map-provider a").href,
+		official.licence_url,
+	);
+	await act(async () => {
+		const tile = { state: "loading" };
+		viewer.emit("sourcedataloading", { sourceId: "linker-site-imagery", tile });
+		tile.state = "loaded";
+		viewer.emit("idle");
+	});
+	for (const tool of ["Draw roof", "Obstacle", "Place modules"]) {
+		await click(tool);
+		assert.equal(document.querySelector('[data-collecting="true"]'), null);
+		assert.equal(document.querySelector('[data-array-placement="true"]'), null);
+		assert.doesNotMatch(
+			document.body.textContent,
+			/Add corner at map centre|Place panels at map centre|Finish outline/,
+		);
+		await act(async () => {
+			viewer
+				.getCanvas()
+				.dispatchEvent(
+					new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+				);
+			for (const type of ["pointerdown", "pointerup"]) {
+				const event = new window.Event(type, { bubbles: true });
+				Object.assign(event, {
+					pointerId: 1,
+					isPrimary: true,
+					button: 0,
+					clientX: 20,
+					clientY: 20,
+				});
+				viewer.getCanvas().dispatchEvent(event);
+			}
+			viewer.hits = [{ properties: { object_id: geometry.roofs[0].id } }];
+			viewer.emit("click", {
+				point: { x: 20, y: 20 },
+				originalEvent: { detail: 1 },
+				lngLat: { lng: -0.12, lat: 51.5 },
+			});
+		});
+		assert.deepEqual(app.inputs.geometry, geometry);
+	}
+	assert.equal(button("Calibrate a roof image").disabled, false);
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
+	assert.equal(viewer.removed, true);
+	assert.throws(
+		() => viewer.options.transformRequest(tileUrl),
+		/not_authorized/,
+	);
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	assert.equal(button("Show aerial map").getAttribute("aria-pressed"), "false");
+	await click("Show aerial map");
+	await until(() => map().getSource("linker-site-imagery"));
+	const shownAgain = map();
+	await click("Hide aerial map");
+	assert.equal(shownAgain.removed, true);
+	assert.throws(
+		() => shownAgain.options.transformRequest(tileUrl),
+		/not_authorized/,
+	);
+});
+
+test("German Solar explains viewing consent and the customer drawing path", async (t) => {
+	const brief = emptyBrief();
+	await mount(
+		t,
+		{
+			brief: {
+				...brief,
+				site: {
+					...brief.site,
+					country_code: "NO",
+					location_label: "Oslo",
+					latitude: 59.9139,
+					longitude: 10.7522,
+				},
+			},
+		},
+		null,
+		viewing,
+		"de",
+	);
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	assert.match(
+		document.body.textContent,
+		/Dieses Luftbild dient nur zur Ansicht\./,
+	);
+	assert.match(
+		document.body.textContent,
+		/Nutzen Sie die Planansicht oder ein Dachbild/,
+	);
+	await click("Luftbildkarte anzeigen");
+	assert.equal(
+		button("Luftbildkarte ausblenden").getAttribute("aria-pressed"),
 		"true",
 	);
 });

@@ -147,28 +147,24 @@ def _google_satellite() -> Imagery | None:
     )
 
 
+def for_viewing(country: str) -> Imagery | None:
+    """The official Copernicus viewing mosaic without a Google tile session."""
+    entry = _catalogue().get("copernicus_vhr")
+    if entry is not None and country in entry["countries"]:
+        return _build(entry)
+    return None
+
+
 def for_state(state: str) -> Imagery | None:
-    catalogue = _catalogue()
-    states: dict[str, Any] = catalogue["states"]
-    copernicus: dict[str, Any] | None = catalogue.get("copernicus_vhr")
-    copernicus_countries = (
-        set(copernicus.get("countries", ())) if copernicus is not None else set()
-    )
-    if (
-        state not in states
-        and state not in geo.countries()
-        and state not in copernicus_countries
-    ):
+    states: dict[str, Any] = _catalogue()["states"]
+    viewing = for_viewing(state)
+    if state not in states and state not in geo.countries() and viewing is None:
         return None
     google = _google_satellite()
     if google is not None:
         return google
     entry = states.get(state)
-    if entry is not None:
-        return _build(entry)
-    if copernicus is not None and state in copernicus_countries:
-        return _build(copernicus)
-    return None
+    return _build(entry) if entry is not None else viewing
 
 
 def for_country(country: str) -> Imagery | None:

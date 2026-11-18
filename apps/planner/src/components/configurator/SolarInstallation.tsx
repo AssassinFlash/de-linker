@@ -691,7 +691,7 @@ export function SolarInstallation({
 		);
 		select(null);
 	}
-	const interaction: MapInteraction | null =
+	const mapDrawing: MapInteraction | null =
 		map &&
 		((tool === "roof" && (firstMapRoof || mapReferenced)) ||
 			(tool === "obstacle" && roof && mapReferenced))
@@ -882,6 +882,7 @@ export function SolarInstallation({
 			);
 			return {
 				imagery: readPlaceImagery(reply.imagery),
+				viewingImagery: readPlaceImagery(reply.viewing_imagery),
 				latitude: reply.latitude,
 				longitude: reply.longitude,
 				country: reply.country_code,
@@ -890,6 +891,9 @@ export function SolarInstallation({
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
 	});
+	const viewingImagery = imagery.data?.viewingImagery ?? null;
+	const viewOnly = !imagery.data?.imagery && viewingImagery !== null;
+	const interaction = viewOnly ? null : mapDrawing;
 	const latitude = site.latitude ?? imagery.data?.latitude,
 		longitude = site.longitude ?? imagery.data?.longitude,
 		country = site.country_code ?? imagery.data?.country;
@@ -1188,7 +1192,8 @@ export function SolarInstallation({
 								{map ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
-										imagery={imagery.data?.imagery ?? null}
+										imagery={imagery.data?.imagery ?? viewingImagery}
+										viewOnly={viewOnly}
 										onAerialReady={setReadyAerial}
 										siteOutline={outline.data ?? null}
 										document={geometry}
@@ -1323,25 +1328,30 @@ export function SolarInstallation({
 									</button>
 								)}
 								<p className="sc-hint">
-									{interaction?.requiresAerial
+									{map && viewOnly
 										? __(
-												"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
+												"Use the plan view or a roof image you have permission to use to create the layout.",
 												"linker-tools",
 											)
-										: interaction
+										: interaction?.requiresAerial
 											? __(
-													"Click each corner on the map, then finish the outline.",
+													"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
 													"linker-tools",
 												)
-											: tool === "roof" && !mapReferenced
+											: interaction
 												? __(
-														"Enter the roof dimensions or confirm the map origin to draw on the map.",
+														"Click each corner on the map, then finish the outline.",
 														"linker-tools",
 													)
-												: __(
-														"The plan uses metres in the recorded roof plane.",
-														"linker-tools",
-													)}
+												: tool === "roof" && !mapReferenced
+													? __(
+															"Enter the roof dimensions or confirm the map origin to draw on the map.",
+															"linker-tools",
+														)
+													: __(
+															"The plan uses metres in the recorded roof plane.",
+															"linker-tools",
+														)}
 								</p>
 							</div>
 							<aside className="sc-roof-props">

@@ -65,16 +65,14 @@ function selectedFilter(selected: string | null): FilterSpecification {
 	];
 }
 
-function aerialOriginsOf(mosaic: PlaceImagery | null | undefined): string[] {
-	return (mosaic?.tiles ?? [])
-		.map((tile) => {
-			try {
-				return new URL(tile).origin;
-			} catch {
-				return "";
-			}
-		})
-		.filter(Boolean);
+function aerialOriginsOf(mosaic: PlaceImagery | null): string[] {
+	const tile = mosaic?.tiles[0];
+	if (!tile) return [];
+	try {
+		return [new URL(tile).origin];
+	} catch {
+		return [];
+	}
 }
 
 function imageryBeforeLayer(map: MapLibreMap): string | undefined {
@@ -124,11 +122,12 @@ export default function MapViewport({
 	openReferences,
 	camera,
 	imagery = null,
+	viewOnly = false,
 	onAerialReady,
 	siteCentre = null,
 	siteOutline = null,
-	interaction = null,
-	placement = null,
+	interaction: mapInteraction = null,
+	placement: arrayPlacement = null,
 }: {
 	document: GeometryDocument;
 	poses: readonly PanelPose[];
@@ -141,6 +140,7 @@ export default function MapViewport({
 	placement?: ArrayPlacement | null;
 	/** The official aerial mosaic for this site, or null where none exists. */
 	imagery?: PlaceImagery | null;
+	viewOnly?: boolean;
 	onAerialReady?: (source: PlaceImagery | null) => void;
 	/** The declared site position, so the mosaic is visible before geometry exists. */
 	siteCentre?: readonly [number, number] | null;
@@ -158,6 +158,8 @@ export default function MapViewport({
 		}[];
 	} | null;
 }) {
+	const interaction = viewOnly ? null : mapInteraction;
+	const placement = viewOnly ? null : arrayPlacement;
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
 		releaseExternal = useRef<(() => void) | null>(null),
@@ -293,10 +295,11 @@ export default function MapViewport({
 		readyMap === mapRef.current
 			? imagery
 			: null;
+	const editableImagery = viewOnly ? null : readyImagery;
 	useLayoutEffect(() => {
-		onAerialReady?.(readyImagery);
+		onAerialReady?.(editableImagery);
 		return () => onAerialReady?.(null);
-	}, [onAerialReady, readyImagery]);
+	}, [onAerialReady, editableImagery]);
 	const drawing =
 		interaction?.requiresAerial && !readyImagery ? null : interaction;
 	useEffect(() => {
@@ -825,6 +828,14 @@ export default function MapViewport({
 						: __("Project geometry", "linker-tools")}
 				</span>
 			</div>
+			{viewOnly && (
+				<p className="lp-profile-help" id={`${label}-viewing`}>
+					{__(
+						"This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			<div
 				className="lp-map-toolbar"
 				role="group"
@@ -833,6 +844,7 @@ export default function MapViewport({
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
+					aria-describedby={viewOnly ? `${label}-viewing` : undefined}
 					aria-pressed={external}
 					onClick={() => {
 						if (external) releaseExternal.current?.();

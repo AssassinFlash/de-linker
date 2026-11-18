@@ -124,7 +124,8 @@ def test_address_lookup_keeps_country_imagery_without_inventing_a_position(
     )
     countries: list[str] = []
 
-    def country_layer(country: str) -> Imagery:
+    def country_layer(country: str, iso_region: str | None = None) -> Imagery:
+        assert iso_region is None
         countries.append(country)
         return layer
 
@@ -165,9 +166,33 @@ def test_place_lookup_uses_open_editing_layers_even_with_google_configured(
         assert host in str(layer["tiles"])
         assert layer["licence"] == "CC BY 4.0"
 
-    viewing_only = rig.post("/places/lookup", {"query": "M1 1AE", "country": "GB"})
-    assert viewing_only["found"] is True
-    assert viewing_only["imagery"] is None
+        assert reply.get("viewing_imagery") is None
+
+    for query, country, found in (
+        ("SW1A 1AA", "GB", True),
+        ("0150", "NO", True),
+        ("A street address outside the postal table", "GB", False),
+    ):
+        reply = rig.post("/places/lookup", {"query": query, "country": country})
+        assert reply["found"] is found
+        assert reply["imagery"] is None
+        layer = json_object(reply["viewing_imagery"])
+        assert str(layer["tiles"][0]).startswith(
+            "https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/"
+            "VHR2021_WM/ImageServer/exportImage?"
+        )
+        assert (
+            layer["credit"]
+            == "European Union, Copernicus Land Monitoring Service (EEA)"
+        )
+        assert layer["licence_url"] == (
+            "https://land.copernicus.eu/en/products/european-image-mosaic/"
+            "very-high-resolution-image-mosaic-2021-true-colour-2m"
+        )
+
+    no_mosaic = rig.post("/places/lookup", {"query": "01001", "country": "UA"})
+    assert no_mosaic["imagery"] is None
+    assert no_mosaic.get("viewing_imagery") is None
 
 
 def test_geometry_import_has_owned_original_receipt_and_separate_project_save(

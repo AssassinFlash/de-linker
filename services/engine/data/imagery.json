@@ -225,7 +225,7 @@
   "template": "https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=jpgpng&f=image",
   "credit": "European Union, Copernicus Land Monitoring Service (EEA)",
   "licence": "Copernicus VHR Image Mosaic viewing service",
-  "licence_url": "https://land.copernicus.eu/en/products/european-image-mosaic",
+  "licence_url": "https://land.copernicus.eu/en/products/european-image-mosaic/very-high-resolution-image-mosaic-2021-true-colour-2m",
   "countries": [
    "AD",
    "AL",
