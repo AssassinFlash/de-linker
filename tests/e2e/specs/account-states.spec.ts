@@ -187,7 +187,7 @@ function makeOwner(tag: string): { owner: Owner; other: Customer } {
 				`update_user_meta( $id, 'linker_approval_status', 'approved' );` +
 				`update_user_meta( $b, 'linker_approval_status', 'approved' );` +
 				`$order = wc_create_order( array( 'customer_id' => $id ) );` +
-				`$order->add_product( wc_get_product( ${PRODUCT} ), 1 );` +
+				`wp_set_current_user( $id ); $order->add_product( wc_get_product( ${PRODUCT} ), 1 );` +
 				`$order->set_status( 'inquiry-received' );` +
 				`$order->calculate_totals( false ); $order->save();` +
 				`$solution = wp_insert_post( array( 'post_type' => 'linker_solution', 'post_status' => 'private', 'post_author' => $id, 'post_title' => 'E2E saved solution' ) );` +
@@ -587,7 +587,7 @@ for (const language of LANGUAGES) {
 				}
 				const amount = row.locator('.linker-account-row-amount');
 				await expect(amount).toContainText(`${amountLabel}:`);
-				await expect(amount).toContainText(/[0-9]/);
+				await expect(amount).toContainText(/[1-9]/);
 				await expect(
 					page.locator('.linker-account-empty'),
 					'a populated list shows no empty state'
@@ -602,7 +602,9 @@ for (const language of LANGUAGES) {
 					`${language.lang === 'de' ? 'anfrage' : 'inquiry'}/${owner.order}/`
 				);
 				const pill = row.locator('.linker-account-pill');
-				await pill.scrollIntoViewIfNeeded();
+				await pill.evaluate((el) =>
+					el.scrollIntoView({ block: 'center', behavior: 'instant' })
+				);
 				const status = await pill.boundingBox();
 				expect(status).not.toBeNull();
 				await page.mouse.click(
