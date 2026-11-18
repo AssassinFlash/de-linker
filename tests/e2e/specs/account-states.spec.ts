@@ -534,7 +534,33 @@ for (const language of LANGUAGES) {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
 				await signIn(page, owner, language.account);
-				await page.goto(base() + language.inquiries);
+				const contact = page.getByRole('region', {
+					name:
+						language.lang === 'de'
+							? 'Ihre Ansprechperson'
+							: 'Your contact person',
+				});
+				const shortcuts = page.locator('.linker-account-shortcuts');
+				await expect(contact).toBeVisible();
+				await expect(
+					contact.locator('a[href^="mailto:"]')
+				).toBeVisible();
+				await expect(shortcuts.getByRole('link')).toHaveCount(3);
+				for (const path of [
+					language.inquiries,
+					language.solutions,
+					language.documents,
+				]) {
+					await expect(
+						shortcuts.locator(`a[href$="${path}"]`)
+					).toBeVisible();
+				}
+				expect((await contact.boundingBox())!.y).toBeLessThan(
+					(await shortcuts.boundingBox())!.y
+				);
+
+				const inquiries = base() + language.inquiries;
+				await page.goto(inquiries);
 
 				const row = page.locator(`[data-inquiry="${owner.order}"]`);
 				await expect(
@@ -550,9 +576,18 @@ for (const language of LANGUAGES) {
 				await expect(
 					row.locator('.linker-account-row-number')
 				).toHaveText(`#${owner.order}`);
-				await expect(
-					row.locator('.linker-account-row-amount')
-				).toContainText(/[0-9]/);
+				const amountLabel =
+					language.lang === 'de' ? 'Betrag' : 'Amount';
+				if (width === 1440) {
+					await expect(
+						page
+							.locator('.linker-account-inquiry-columns')
+							.getByText(amountLabel, { exact: true })
+					).toBeVisible();
+				}
+				const amount = row.locator('.linker-account-row-amount');
+				await expect(amount).toContainText(`${amountLabel}:`);
+				await expect(amount).toContainText(/[0-9]/);
 				await expect(
 					page.locator('.linker-account-empty'),
 					'a populated list shows no empty state'
@@ -563,21 +598,29 @@ for (const language of LANGUAGES) {
 					`${language.lang}-${width}-inquiries-populated`
 				);
 
-				// The row's own action opens the inquiry it names (consumer
-				// read-back: the list's link is the record the customer owns).
-				const view = row.locator('.linker-account-row-view');
-				const href = await view.getAttribute('href');
-				expect(href).toContain(
-					language.lang === 'de'
-						? `/anfrage/${owner.order}/`
-						: `/inquiry/${owner.order}/`
+				const detail = new RegExp(
+					`${language.lang === 'de' ? 'anfrage' : 'inquiry'}/${owner.order}/`
 				);
-				await view.click();
-				await expect(page).toHaveURL(
-					new RegExp(
-						`${language.lang === 'de' ? 'anfrage' : 'inquiry'}/${owner.order}/`
-					)
+				const pill = row.locator('.linker-account-pill');
+				await pill.scrollIntoViewIfNeeded();
+				const status = await pill.boundingBox();
+				expect(status).not.toBeNull();
+				await page.mouse.click(
+					status!.x + status!.width / 2,
+					status!.y + status!.height / 2
 				);
+				await expect(page).toHaveURL(detail);
+
+				await page.goto(inquiries);
+				const number = row.locator('.linker-account-row-number');
+				await number.focus();
+				await expect(number).toBeFocused();
+				await page.keyboard.press('Enter');
+				await expect(page).toHaveURL(detail);
+
+				await page.goto(inquiries);
+				await row.locator('.linker-account-row-view').click();
+				await expect(page).toHaveURL(detail);
 				await expect(
 					page.locator('.linker-account-main')
 				).toContainText(`#${owner.order}`);

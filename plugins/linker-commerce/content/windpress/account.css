@@ -441,6 +441,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-inquiry-columns { display: none; }
 .linker-account .linker-account-inquiry-list { padding: 0; }
 .linker-account .linker-account-inquiry {
+	position: relative;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	grid-template-areas: "subject subject" "status date" "amount action";
@@ -450,11 +451,13 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-inquiry:is(:hover, :focus-within) { background: var(--proto-neutral-50); }
 .linker-account .linker-account-inquiry .linker-account-row-main { grid-area: subject; overflow-wrap: anywhere; }
 .linker-account .linker-account-inquiry .linker-account-row-number { width: fit-content; color: var(--proto-teal-800); }
+.linker-account .linker-account-inquiry .linker-account-row-number::after { content: ""; position: absolute; inset: 0; }
 .linker-account .linker-account-inquiry .linker-account-row-count { margin-top: 3px; }
 .linker-account .linker-account-inquiry .linker-account-pill { grid-area: status; justify-self: start; }
 .linker-account .linker-account-inquiry .linker-account-row-date { grid-area: date; justify-self: end; text-align: end; }
 .linker-account .linker-account-inquiry .linker-account-row-amount { grid-area: amount; }
 .linker-account .linker-account-inquiry .linker-account-row-view {
+	position: relative;
 	display: inline-flex;
 	grid-area: action;
 	align-items: center;

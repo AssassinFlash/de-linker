@@ -171,6 +171,8 @@ final class AccountTemplates {
 			$user  = wp_get_current_user();
 			$name  = '' !== (string) $user->first_name ? (string) $user->first_name : (string) $user->display_name;
 			$value = 'customer-initials' === $key ? mb_strtoupper( mb_substr( $name, 0, 1 ) ) : $name;
+		} elseif ( 'amount-label' === $key && '' !== ( $this->row['total'] ?? '' ) ) {
+			$value = __( 'Amount', 'linker-commerce' ) . ': ';
 		} elseif ( 'page-title' === $key ) {
 			$value = is_wc_endpoint_url() ? WC()->query->get_endpoint_title( WC()->query->get_current_endpoint() ) : __( 'Overview', 'linker-commerce' );
 			if ( is_wc_endpoint_url( 'orders' ) && in_array( $this->selected_status(), $this->statuses(), true ) ) {
@@ -235,14 +237,6 @@ final class AccountTemplates {
 				break;
 			case 'pagination':
 				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
-				break;
-			case 'after-content':
-				// Every signed-in customer keeps the workspace's contact person.
-				$user_id = get_current_user_id();
-				if ( $user_id > 0 ) {
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Account module's existing contact slot.
-					do_action( 'linker_account_after_content' );
-				}
 				break;
 		}
 		return (string) ob_get_clean();

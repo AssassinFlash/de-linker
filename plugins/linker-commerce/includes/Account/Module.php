@@ -57,7 +57,7 @@ final class Module {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
 		$this->status_notice->register();
-		add_action( 'linker_account_after_content', array( $this->contact, 'render' ) );
+		add_action( 'woocommerce_account_content', array( $this->contact, 'render' ), 6 );
 		$this->auth->register();
 		$this->admin_access->register();
 
