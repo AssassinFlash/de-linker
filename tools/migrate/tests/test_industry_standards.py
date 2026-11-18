@@ -64,17 +64,19 @@ def test_the_previous_english_accessible_name_is_upgraded_without_a_second_row()
     assert standards.plan_page(upgraded, "en") == upgraded
 
 
+def installed_row(language: str) -> str:
+    return (
+        Path(__file__).parent / "fixtures" / f"services-warranty-{language}.html"
+    ).read_text()
+
+
+def services_page(row: str) -> str:
+    return f'<div id="service-redesign">{row}<div class="service-ledger"></div></div>'
+
+
 def test_installed_proforma_rows_are_replaced_in_place_in_both_languages() -> None:
-    en, de = standards.plan_pair(page(), page())
-    installed_en = en.replace(
-        "Orders ship from our warehouse.", "Stock ships from our warehouse."
-    ).replace("Warranty terms follow the order.", "Warranty terms follow the Proforma.")
-    installed_de = de.replace(
-        "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
-    ).replace(
-        "Garantiebedingungen richten sich nach der Bestellung.",
-        "Garantiebedingungen richten sich nach der Proformarechnung.",
-    )
+    installed_en = services_page(installed_row("en"))
+    installed_de = services_page(installed_row("de"))
     expected = (
         installed_en.replace(
             "Warranty terms follow the Proforma.", "Warranty terms follow the order."
@@ -88,7 +90,18 @@ def test_installed_proforma_rows_are_replaced_in_place_in_both_languages() -> No
     assert updated == expected
     assert "Stock ships from our warehouse." in updated[0]
     assert "Aus dem Lager liefern wir ab." in updated[1]
+    assert all(text.count('class="lk-trade-standards"') == 1 for text in updated)
     assert standards.plan_pair(*updated) == updated
+
+
+def test_duplicate_or_edited_installed_rows_are_not_overwritten() -> None:
+    row = installed_row("en")
+    for unexpected in (
+        row + row,
+        row.replace("Stock ships from our warehouse.", "New delivery wording."),
+    ):
+        with pytest.raises(ValueError, match="changed or is duplicated"):
+            standards.plan_page(services_page(unexpected), "en")
 
 
 def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
