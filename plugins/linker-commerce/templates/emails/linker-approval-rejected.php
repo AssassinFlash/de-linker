@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
-<p><?php esc_html_e( 'We cannot approve your Linker partner account. Signing in therefore stays closed.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'Your Linker partner account was not approved. You cannot sign in with this account.', 'linker-commerce' ); ?></p>
 <?php if ( '' !== $reason ) : ?>
 	<p><strong><?php esc_html_e( 'Our reason:', 'linker-commerce' ); ?></strong><br /><?php echo esc_html( $reason ); ?></p>
 <?php endif; ?>

@@ -46,7 +46,7 @@ if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
 printf( esc_html__( 'Thank you for your inquiry %s.', 'linker-commerce' ), esc_html( '#' . $order->get_order_number() ) );
 ?>
 </p>
-<p><?php esc_html_e( 'We reply within one business day.', 'linker-commerce' ); ?> <?php esc_html_e( 'The Linker team will reply to the email address you provided.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'We reply within one business day to the email address you provided.', 'linker-commerce' ); ?></p>
 <?php
 if ( 0 === $order->get_customer_id() ) {
 	printf( '<p><a href="%s">%s</a></p>', esc_url( \Linker\Commerce\Inquiry\AccountLink::url( $order ) ), esc_html__( 'Create an account with this email to see net prices after approval and track your inquiry.', 'linker-commerce' ) );

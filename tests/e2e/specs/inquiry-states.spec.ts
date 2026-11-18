@@ -81,7 +81,8 @@ const LANGUAGES: Language[] = [
 		gate: 'Please log in to your account to view this inquiry.',
 		verify: /To view this page, you must either login or verify the email address associated with the order\./,
 		success: 'Inquiry received',
-		promise: 'We reply within one business day.',
+		promise:
+			'We reply within one business day to the email address you provided.',
 	},
 	{
 		lang: 'de',
@@ -95,7 +96,8 @@ const LANGUAGES: Language[] = [
 		gate: 'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.',
 		verify: /Um diese Seite anzuzeigen, müssen Sie sich entweder anmelden oder die E-Mail-Adresse verifizieren, die mit der Bestellung verknüpft ist\./,
 		success: 'Anfrage eingegangen',
-		promise: 'Wir antworten innerhalb eines Arbeitstags.',
+		promise:
+			'Sie erhalten innerhalb eines Arbeitstags eine Antwort an die angegebene E-Mail-Adresse.',
 	},
 ];
 

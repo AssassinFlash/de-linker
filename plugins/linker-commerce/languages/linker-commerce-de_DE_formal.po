@@ -894,10 +894,8 @@ msgid "What can we help with?"
 msgstr "Wie können wir helfen?"
 
 #: includes/Contact/Form.php:160
-msgid "Tell us what you need. We’ll use the email below for your reply."
-msgstr ""
-"Beschreiben Sie Ihr Anliegen. Für die Antwort verwenden wir die unten "
-"angegebene E-Mail-Adresse."
+msgid "Tell us what you need."
+msgstr "Beschreiben Sie Ihr Anliegen."
 
 #: includes/Contact/Form.php:168
 msgid "Your question"
@@ -913,8 +911,8 @@ msgid "This is about"
 msgstr "Es geht um"
 
 #: includes/Contact/Form.php:178
-msgid "Where can we reply?"
-msgstr "Wohin dürfen wir antworten?"
+msgid "Your contact details"
+msgstr "Ihre Kontaktdaten"
 
 #: includes/Contact/Form.php:180
 #: includes/Inquiry/Assessment/EvidenceView.php:55
@@ -922,7 +920,11 @@ msgstr "Wohin dürfen wir antworten?"
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:182 includes/Inquiry/Form.php:151
+#: includes/Contact/Form.php:182
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: includes/Inquiry/Form.php:151
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
@@ -950,11 +952,8 @@ msgid "Send message"
 msgstr "Nachricht senden"
 
 #: includes/Contact/Form.php:199
-msgid ""
-"Your message goes to the Linker team. We reply to the address you give here."
-msgstr ""
-"Ihre Nachricht geht an das Linker-Team. Wir antworten an die Adresse, die "
-"Sie hier angeben."
+msgid "The Linker team replies within one business day."
+msgstr "Das Linker-Team antwortet innerhalb eines Arbeitstags."
 
 #: includes/Contact/Form.php:247
 msgid "Product guidance"
@@ -2375,8 +2374,7 @@ msgstr "Anfrage eingegangen"
 msgid "Inquiry saved for review"
 msgstr "Anfrage zur Prüfung gespeichert"
 
-#: includes/Inquiry/Checkout.php:122 includes/Inquiry/Form.php:156
-#: templates/emails/linker-inquiry-received.php:49
+#: includes/Inquiry/Form.php:156
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
@@ -2388,10 +2386,12 @@ msgstr "Konto mit dieser E-Mail-Adresse erstellen"
 msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
-#: includes/Inquiry/Checkout.php:125
+#: includes/Inquiry/Checkout.php:122
 #: templates/emails/linker-inquiry-received.php:49
-msgid "The Linker team will reply to the email address you provided."
-msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
+msgid "We reply within one business day to the email address you provided."
+msgstr ""
+"Sie erhalten innerhalb eines Arbeitstags eine Antwort an die angegebene "
+"E-Mail-Adresse."
 
 #: includes/Inquiry/Checkout.php:126
 msgid "You can also email sales@de-linker.com and quote this inquiry number."
@@ -6373,12 +6373,11 @@ msgstr "Ihr Partner-Konto bei Linker ist freigegeben."
 
 #: templates/emails/linker-approval-approved.php:24
 msgid ""
-"Net prices are now shown with every product. Add the systems you need to "
-"your solution draft, and request the Proforma when the draft is ready."
+"You can now see net prices where available. You can send your solution "
+"draft as an inquiry."
 msgstr ""
-"Die Nettopreise werden jetzt zu jedem Produkt angezeigt. Legen Sie die "
-"benötigten Systeme in Ihren Lösungsentwurf und fordern Sie die "
-"Proformarechnung an, wenn er fertig ist."
+"Sie sehen jetzt die verfügbaren Nettopreise. Ihren Lösungsentwurf können "
+"Sie als Anfrage senden."
 
 #: templates/emails/linker-approval-approved.php:28
 msgid "Your account"
@@ -6386,11 +6385,11 @@ msgstr "Ihr Konto"
 
 #: templates/emails/linker-approval-rejected.php:23
 msgid ""
-"We cannot approve your Linker partner account. Signing in therefore stays "
-"closed."
+"Your Linker partner account was not approved. You cannot sign in with "
+"this account."
 msgstr ""
-"Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung "
-"bleibt deshalb geschlossen."
+"Ihr Partner-Konto bei Linker wurde abgelehnt. Sie können sich mit diesem "
+"Konto nicht anmelden."
 
 #: templates/emails/linker-approval-rejected.php:27
 msgid "If you have questions, write to sales@de-linker.com."

@@ -71,33 +71,37 @@
 		// Lock both rows before checking their source, so concurrent saves wait.
 		$locked = array();
 		foreach ( $ids as $id ) {
-			$locked[ $id ] = $wpdb->get_var( $wpdb->prepare( 'SELECT post_content FROM %i WHERE ID = %d FOR UPDATE', $wpdb->posts, $id ) );
+			$locked[ $id ] = $wpdb->get_row( $wpdb->prepare( 'SELECT post_content, post_excerpt, post_type FROM %i WHERE ID = %d FOR UPDATE', $wpdb->posts, $id ) );
 			clean_post_cache( $id );
 		}
 		foreach ( $payload['changes'] as $change ) {
-			if ( $locked[ $change['id'] ] !== $change['before'] ) {
+			$row = $locked[ $change['id'] ];
+			if ( ! $row || $row->post_content !== $change['before'] || ( isset( $payload['post_type'] ) && $row->post_type !== $payload['post_type'] ) ) {
 				throw new RuntimeException( 'Page changed since backup; nothing written.' );
+			}
+			if ( isset( $change['before_excerpt'] ) && $row->post_excerpt !== $change['before_excerpt'] ) {
+				throw new RuntimeException( 'Article excerpt changed since backup; nothing written.' );
 			}
 		}
 		foreach ( $payload['changes'] as $change ) {
-			if ( $change['before'] === $change['after'] ) {
+			if ( $change['before'] === $change['after'] && ( $change['before_excerpt'] ?? null ) === ( $change['after_excerpt'] ?? null ) ) {
 				continue;
 			}
-			$result = wp_update_post(
-				array(
-					'ID'           => (int) $change['id'],
-					'post_content' => wp_slash( $change['after'] ),
-				),
-				true,
-				false
+			$values = array(
+				'ID'           => (int) $change['id'],
+				'post_content' => $change['after'],
 			);
+			if ( isset( $change['after_excerpt'] ) ) {
+				$values['post_excerpt'] = $change['after_excerpt'];
+			}
+			$result = wp_update_post( wp_slash( $values ), true, false );
 			if ( is_wp_error( $result ) ) {
 				throw new RuntimeException( $result->get_error_message() );
 			}
 			$written[] = $change;
 			clean_post_cache( (int) $change['id'] );
 			$saved = get_post( (int) $change['id'] );
-			if ( ! $saved instanceof WP_Post || $saved->post_content !== $change['after'] ) {
+			if ( ! $saved instanceof WP_Post || $saved->post_content !== $change['after'] || ( isset( $change['after_excerpt'] ) && $saved->post_excerpt !== $change['after_excerpt'] ) ) {
 				throw new RuntimeException( 'Saved page differs from the planned bytes.' );
 			}
 		}

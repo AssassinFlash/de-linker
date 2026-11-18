@@ -21,10 +21,10 @@ use Linker\Commerce\Settings\Options;
  * contact-form/; the captures `contact-en-1440-live.png`, `contact-de-1440-
  * live.png`, `contact-en-390-live.png` and `contact-de-390-live.png` of the
  * 2026-10-12/13 rounds): the same blocks in the same order, the same fields,
- * and the card's words — with the three the #68 review had already settled
- * kept as it settled them (the button, the consent sentence and the line
- * under it; docs/acceptance/2026-10-15/contact-card/copy-review.md §1 says
- * why the live's own three are not taken back). Its colours are not carried
+ * and the card's words. The consent and button copy follow the #68 review.
+ * The #1143 updates to the lead, contact details and response promise are
+ * recorded in docs/acceptance/2026-11-18/1143/copy-review.md.
+ * Its colours are not carried
  * over — the site's tokens are (AGENTS.md §2, 2026-10-11: the site's palette
  * is the current one) — and neither is the retired runtime that rendered it:
  * this form posts to admin-post.php, keeps its meaning without JavaScript,
@@ -157,7 +157,7 @@ final class Form {
 		$html .= '<div class="linker-contact-head">';
 		$html .= '<span class="linker-contact-overline">' . esc_html__( 'CONTACT LINKER', 'linker-commerce' ) . '</span>';
 		$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
-		$html .= '<p>' . esc_html__( 'Tell us what you need. We’ll use the email below for your reply.', 'linker-commerce' ) . '</p>';
+		$html .= '<p>' . esc_html__( 'Tell us what you need.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 
 		$html .= LanguageDraft::notice();
@@ -175,11 +175,11 @@ final class Form {
 		$html .= '</div>';
 
 		$html .= '<div class="linker-contact-reply">';
-		$html .= '<h3>' . esc_html__( 'Where can we reply?', 'linker-commerce' ) . '</h3>';
+		$html .= '<h3>' . esc_html__( 'Your contact details', 'linker-commerce' ) . '</h3>';
 		$html .= '<div class="linker-form-fields">';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span>' . esc_html__( 'Name', 'linker-commerce' ) . '</span>'
 			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-name" type="text" name="name" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="name" required /></label>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span>' . esc_html__( 'Reply email', 'linker-commerce' ) . '</span>'
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span>' . esc_html__( 'Email address', 'linker-commerce' ) . '</span>'
 			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
 		$html .= '</div>';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span>' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
@@ -196,7 +196,7 @@ final class Form {
 		}
 		$html .= '</span></label>';
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
-			. '<p class="linker-form-note">' . esc_html__( 'Your message goes to the Linker team. We reply to the address you give here.', 'linker-commerce' ) . '</p></div>';
+			. '<p class="linker-form-note">' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';
 
 		$html .= '</form>';

@@ -129,10 +129,31 @@ body #linker-products.sf-products .filter-option.active { color: var(--shop-teal
 body #linker-products.sf-products .rail-help { background: #eaedf0; border-radius: 7px; padding: 17px; margin-top: 22px; }
 body #linker-products.sf-products .rail-help p { font-size: 11px; line-height: 1.65; }
 body #linker-products.sf-products .rail-help-btn { background: var(--shop-ink); font-size: 11px; border-radius: 4px; }
-body #linker-products.sf-products .wb-strip { gap: 14px; margin-bottom: 20px; min-height: 44px; }
-body #linker-products.sf-products .wbcount { font-size: 11px; }
-body #linker-products.sf-products .wbchip { min-height: 40px; background: #e9ecf0; color: var(--shop-ink); border-radius: 999px; }
-body #linker-products.sf-products #sort-select { border-radius: 10px; font-size: 11px; min-height: 44px; }
+body #linker-products.sf-products .wb-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--proto-space-3);
+  margin-bottom: 20px;
+  min-height: var(--proto-control-height);
+}
+body #linker-products.sf-products .wb-strip > .wbc {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--proto-space-2);
+}
+body #linker-products.sf-products .wb-strip > .wbc:empty { display: none; }
+body #linker-products.sf-products .wb-strip > .wbc > :is(.wbchip, .wbclear) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--proto-control-height);
+  min-block-size: var(--proto-control-height);
+}
+body #linker-products.sf-products .wbcount { font-size: .8125rem; }
+body #linker-products.sf-products .wbchip { background: #e9ecf0; color: var(--shop-ink); border-radius: 999px; }
+body #linker-products.sf-products #sort-select { border-radius: 10px; font-size: .8125rem; min-height: var(--proto-control-height); }
 body #linker-products.sf-products .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: start; }
 body #linker-products.sf-products .sf-card {
   background: white;
