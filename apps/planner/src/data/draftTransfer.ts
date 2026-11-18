@@ -216,7 +216,14 @@ export function readInquiryForm(value: unknown) {
 			(line.project_id !== null && !hash(line.project_id, 32))
 		)
 			fail();
-		return { label: line.label, quantity: line.quantity };
+		return {
+			label: line.label,
+			quantity: line.quantity,
+			projectTitle:
+				line.project_id !== null && typeof line.project_title === "string"
+					? line.project_title
+					: null,
+		};
 	});
 	return {
 		lines,

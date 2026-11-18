@@ -403,7 +403,10 @@ export function ReviewProposal({
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
 	const preliminaryScope =
-		inputs.brief && Object.keys(inputs).length === 1
+		inputs.brief &&
+		Object.keys(inputs).every(
+			(key) => key === "brief" || key === "saved_solution_reference",
+		)
 			? readBrief(inputs.brief).system_scope
 			: null;
 	if (preliminaryScope && !selected && !transferable) {

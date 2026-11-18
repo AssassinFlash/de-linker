@@ -239,9 +239,17 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 						label: "Existing draft inverter",
 						quantity: 2,
 						project_id: null,
+						project_title: null,
+					},
+					{
+						product_id: 12,
+						label: "Existing draft inverter",
+						quantity: 3,
+						project_id: "f".repeat(32),
+						project_title: "Warehouse roof",
 					},
 				],
-				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input name="name" required><input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
+				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input name="name" required>${mode === "changed" ? `<input type="checkbox" name="linker_include_project_notes" value="1" checked><input name="billing_city" value="Berlin"><select name="billing_country"><option>DE</option><option>NL</option></select><input type="hidden" name="linker_project_note_revisions[project]" value="${calls.length}">` : ""}<input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
 			};
 		};
 		value.operations.start = async (path, fields) => {
@@ -263,11 +271,25 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 			root.render(React.createElement(ReviewProposal, value)),
 		);
 		assert.deepEqual(calls, ["draft/inquiry-preview"]);
-		assert.match(page.element.textContent, /Existing draft inverter/);
+		const rows = page.element.querySelectorAll(".sc-draft-transfer tbody tr");
+		assert.deepEqual(
+			Array.from(rows, (row) =>
+				Array.from(row.cells, (cell) => cell.textContent),
+			),
+			[
+				["Existing draft inverter", "Solution draft", "2"],
+				["Existing draft inverter", "Warehouse roof", "3"],
+			],
+		);
 		const form = page.element.querySelector("form");
 		await act(async () => button("Send inquiry").click());
 		assert.equal(calls.length, 1);
 		form.elements.name.value = "Installer";
+		if (mode === "changed") {
+			form.elements.linker_include_project_notes.checked = false;
+			form.elements.billing_city.value = "Utrecht";
+			form.elements.billing_country.value = "NL";
+		}
 		await act(async () => button("Send inquiry").click());
 		if (mode === "changed") {
 			assert.deepEqual(calls, ["draft/inquiry-preview", "draft/read"]);
@@ -283,6 +305,12 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 				"discard",
 				"draft/inquiry-preview",
 			]);
+			await act(async () => button("Send inquiry").click());
+			assert.equal(posts.length, 1);
+			assert.equal(posts[0].linker_include_project_notes, undefined);
+			assert.equal(posts[0].billing_city, "Utrecht");
+			assert.equal(posts[0].billing_country, "NL");
+			assert.equal(posts[0]["linker_project_note_revisions[project]"], "4");
 			return;
 		}
 		assert.deepEqual(calls, [
@@ -303,46 +331,85 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 		]);
 	});
 
-test("an installer can send a scope-only inquiry with their own message and original cart", async (t) => {
-	const page = setupDom(),
-		root = createRoot(page.element),
-		value = props(null);
-	t.after(() => page.dispose(root));
-	const { emptyBrief } = await import("../src/domain/brief.ts");
-	value.inputs = { brief: { ...emptyBrief(), system_scope: "pv_only" } };
-	value.project.inputs = value.inputs;
-	value.client.origin = location.origin;
-	const calls = [];
-	value.client.query = async (path) => {
-		calls.push(path);
-		if (calls.length === 1) throw new Error("unavailable");
-		return {
-			schema_version: 1,
-			inquiry_lines: [],
-			inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
+for (const saved of [false, true])
+	test(`an installer can send a preliminary direction with the original cart (saved Genie solution: ${saved})`, async (t) => {
+		const page = setupDom(),
+			root = createRoot(page.element),
+			value = props(null);
+		t.after(() => page.dispose(root));
+		const { emptyBrief } = await import("../src/domain/brief.ts");
+		value.inputs = {
+			brief: {
+				...emptyBrief(),
+				system_scope: saved ? "storage_addition" : "pv_only",
+			},
 		};
-	};
-	await act(async () =>
-		root.render(React.createElement(ReviewProposal, value)),
-	);
-	assert.ok(button("Load inquiry form again"));
-	assert.doesNotMatch(page.element.textContent, /could not be sent/);
-	await act(async () => button("Load inquiry form again").click());
-	const form = page.element.querySelector("form");
-	form.querySelector("textarea").value = "Please call me back.";
-	assert.match(page.element.textContent, /Planned system: Solar/);
-	let message;
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!event.defaultPrevented)
-				message = new window.FormData(form).get("message");
-			event.preventDefault();
-		},
-		{ once: true },
-	);
-	await act(async () => button("Send inquiry").click());
-	assert.equal(message, "Planned system: Solar\n\nPlease call me back.");
-	assert.deepEqual(calls, ["inquiry/form", "inquiry/form"]);
-	assert.equal(button("Generate project report"), undefined);
-});
+		if (saved)
+			value.inputs.saved_solution_reference = {
+				schema_version: 1,
+				authority: "historical_user_input",
+				solution_id: 45,
+				title: "Saved equipment",
+				kind: "genie",
+				input: {},
+				source_sha256: "a".repeat(64),
+				recorded_items: [
+					{ product_id: 4107, quantity: 2 },
+					{ product_id: 1946, quantity: 4 },
+				],
+			};
+		value.project.inputs = value.inputs;
+		value.client.origin = location.origin;
+		const calls = [];
+		value.client.query = async (path) => {
+			calls.push(path);
+			if (calls.length === 1) throw new Error("unavailable");
+			return {
+				schema_version: 1,
+				inquiry_lines: saved
+					? [
+							{
+								product_id: 12,
+								label: "Draft inverter",
+								quantity: 1,
+								project_id: null,
+								project_title: null,
+							},
+						]
+					: [],
+				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
+			};
+		};
+		await act(async () =>
+			root.render(React.createElement(ReviewProposal, value)),
+		);
+		assert.ok(button("Load inquiry form again"));
+		assert.doesNotMatch(page.element.textContent, /could not be sent/);
+		await act(async () => button("Load inquiry form again").click());
+		const form = page.element.querySelector("form");
+		form.querySelector("textarea").value = "Please call me back.";
+		const direction = saved
+			? "Planned system: Storage for existing PV"
+			: "Planned system: Solar";
+		assert.ok(page.element.textContent.includes(direction));
+		assert.deepEqual(
+			Array.from(page.element.querySelectorAll("tbody tr"), (row) =>
+				Array.from(row.cells, (cell) => cell.textContent),
+			),
+			saved ? [["Draft inverter", "1"]] : [],
+		);
+		let message;
+		form.addEventListener(
+			"submit",
+			(event) => {
+				if (!event.defaultPrevented)
+					message = new window.FormData(form).get("message");
+				event.preventDefault();
+			},
+			{ once: true },
+		);
+		await act(async () => button("Send inquiry").click());
+		assert.equal(message, `${direction}\n\nPlease call me back.`);
+		assert.deepEqual(calls, ["inquiry/form", "inquiry/form"]);
+		assert.equal(button("Generate project report"), undefined);
+	});

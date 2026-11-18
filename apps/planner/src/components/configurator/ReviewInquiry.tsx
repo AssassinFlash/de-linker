@@ -14,6 +14,26 @@ import {
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { __, sprintf } from "../../i18n.ts";
 
+function customerFields(form: HTMLFormElement) {
+	return Array.from(form.elements).filter(
+		(
+			field,
+		): field is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
+			((field instanceof window.HTMLInputElement && field.type !== "hidden") ||
+				field instanceof window.HTMLSelectElement ||
+				field instanceof window.HTMLTextAreaElement) &&
+			(field.name.startsWith("billing_") ||
+				[
+					"name",
+					"email",
+					"company",
+					"message",
+					"consent",
+					"linker_include_project_notes",
+				].includes(field.name)),
+	);
+}
+
 /** The commerce form owns contact validation, proof and the order-received redirect. */
 export function ReviewInquiry({
 	run,
@@ -46,7 +66,7 @@ export function ReviewInquiry({
 		} | null>(null),
 		[attempt, setAttempt] = useState(0),
 		[sending, setSending] = useState(false);
-	const retained = useRef<FormData | null>(null);
+	const retained = useRef<Map<string, string | boolean> | null>(null);
 	const staleIntent = useRef<typeof record>(null);
 	const host = useRef<HTMLDivElement>(null),
 		flight = useRef(false);
@@ -111,20 +131,14 @@ export function ReviewInquiry({
 			return;
 		}
 		if (retained.current) {
-			for (const name of ["name", "email", "company", "message", "consent"]) {
-				const field = form.elements.namedItem(name),
-					previous = retained.current.get(name);
+			for (const field of customerFields(form)) {
+				const previous = retained.current.get(field.name);
 				if (
 					field instanceof window.HTMLInputElement &&
-					field.type === "checkbox"
+					typeof previous === "boolean"
 				)
-					field.checked = previous === field.value;
-				else if (
-					(field instanceof window.HTMLInputElement ||
-						field instanceof window.HTMLTextAreaElement) &&
-					typeof previous === "string"
-				)
-					field.value = previous;
+					field.checked = previous;
+				else if (typeof previous === "string") field.value = previous;
 			}
 			retained.current = null;
 		}
@@ -253,6 +267,7 @@ export function ReviewInquiry({
 			}
 		}
 	}
+	const showSource = preview?.lines.some((line) => line.projectTitle !== null);
 	return (
 		<section className="sc-card sc-draft-transfer">
 			<h2>{__("Request a quotation", "linker-tools")}</h2>
@@ -265,6 +280,7 @@ export function ReviewInquiry({
 					<thead>
 						<tr>
 							<th>{__("Product", "linker-tools")}</th>
+							{showSource && <th>{__("Source", "linker-tools")}</th>}
 							<th>{__("Quantity", "linker-tools")}</th>
 						</tr>
 					</thead>
@@ -272,6 +288,11 @@ export function ReviewInquiry({
 						{preview.lines.map((line, index) => (
 							<tr key={index}>
 								<td>{line.label}</td>
+								{showSource && (
+									<td>
+										{line.projectTitle ?? __("Solution draft", "linker-tools")}
+									</td>
+								)}
 								<td>{line.quantity}</td>
 							</tr>
 						))}
@@ -318,7 +339,16 @@ export function ReviewInquiry({
 									staleIntent.current = null;
 								}
 								const form = host.current?.querySelector("form");
-								if (form) retained.current = new window.FormData(form);
+								if (form)
+									retained.current = new Map(
+										customerFields(form).map((field) => [
+											field.name,
+											field instanceof window.HTMLInputElement &&
+											field.type === "checkbox"
+												? field.checked
+												: field.value,
+										]),
+									);
 								setPreview(null);
 								setAttempt((value) => value + 1);
 							}}
