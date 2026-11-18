@@ -474,7 +474,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 		() =>
 			saved &&
 			document.body.textContent.includes(
-				"The roof import is included in the saved project.",
+				"Roof added: " + asset.metadata.geometry_import_options.roof_name,
 			),
 	);
 	await until(() => local?.baseline.revision === 2);

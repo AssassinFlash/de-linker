@@ -23,7 +23,7 @@ import { GeometryImportSettings } from "./GeometryImportSettings.tsx";
 import { PlanViewport } from "./PlanViewport.tsx";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 
 /** Preparing a source and adding it to project history are separate actions. */
 export function GeometryIntake({
@@ -43,7 +43,7 @@ export function GeometryIntake({
 	store,
 }: {
 	geometry: GeometryDocument;
-	projectId: string;
+	projectId: string | (() => Promise<string>);
 	session: Session;
 	client: PlannerClient;
 	locale: string;
@@ -71,7 +71,11 @@ export function GeometryIntake({
 			useState<GeometryImportCommand | null>(null),
 		[reading, setReading] = useState(false),
 		[error, setError] = useState<string | null>(null),
-		[applied, setApplied] = useState<string | null>(null);
+		[applied, setApplied] = useState<{ id: string; name: string } | null>(null),
+		[provisioned, setProvisioned] = useState<string | null>(null),
+		[preparingProject, setPreparingProject] = useState(false);
+	const queued = useRef<GeometryImportCommand | null>(null);
+	const resolvedId = typeof projectId === "string" ? projectId : provisioned;
 	const id = useId(),
 		form = useRef<HTMLFormElement>(null),
 		heading = useRef<HTMLHeadingElement>(null),
@@ -80,7 +84,7 @@ export function GeometryIntake({
 		focusStep = useRef(false),
 		restoreTrigger = useRef(false);
 	const flow = useGeometryImport({
-		projectId,
+		projectId: resolvedId,
 		session,
 		client,
 		recheck,
@@ -171,7 +175,7 @@ export function GeometryIntake({
 		setOpen(true);
 	}
 	function close() {
-		if (reading || (flow.busy && !flow.durable)) return;
+		if (reading || preparingProject || (flow.busy && !flow.durable)) return;
 		readSequence.current++;
 		flow.dismiss();
 		setRecovery(null);
@@ -296,10 +300,20 @@ export function GeometryIntake({
 				),
 			);
 	}
+	// Provisioning can also rerender the caller with its new ID. Dispatch only
+	// once the journal hook belongs to that project, not its previous render.
+	useEffect(() => {
+		const request = queued.current;
+		if (!request || !resolvedId) return;
+		queued.current = null;
+		setPreparingProject(false);
+		if (request.project_id === resolvedId && admitted)
+			void flow.prepare(request).catch(fieldError);
+	});
 	async function submit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setError(null);
-		if (reading || flow.busy || frozen || !admitted) return;
+		if (reading || preparingProject || flow.busy || frozen || !admitted) return;
 		try {
 			const values = new GeometryValues(event.currentTarget, locale);
 			if (!checkStep(step, values)) return;
@@ -310,9 +324,8 @@ export function GeometryIntake({
 			for (let index = 0; index < 3; index++)
 				if (!checkStep(index, values)) return;
 			if (!choice || !reference || !aligned) return;
-			const request: GeometryImportCommand = {
+			const request: Omit<GeometryImportCommand, "project_id"> = {
 				schema_version: 1,
-				project_id: projectId,
 				content_base64: content,
 				key: crypto.randomUUID(),
 				options: {
@@ -346,7 +359,24 @@ export function GeometryIntake({
 				},
 			};
 			focusStep.current = true;
-			await flow.prepare(request);
+			if (typeof projectId === "function" && !resolvedId) {
+				setPreparingProject(true);
+				const sequence = readSequence.current;
+				try {
+					const id = await projectId();
+					if (
+						sequence !== readSequence.current ||
+						!client.isCurrentScope(session.query_scope)
+					)
+						return;
+					queued.current = { ...request, project_id: id };
+					setProvisioned(id);
+				} catch (cause) {
+					setPreparingProject(false);
+					throw cause;
+				}
+			} else if (resolvedId)
+				await flow.prepare({ ...request, project_id: resolvedId });
 		} catch (cause) {
 			fieldError(cause);
 		}
@@ -371,17 +401,9 @@ export function GeometryIntake({
 				>
 					{__("Import roof geometry", "linker-tools")}
 				</button>
-				{applied && currentAssetIds.includes(applied) && (
+				{applied && currentAssetIds.includes(applied.id) && (
 					<span role="status">
-						{confirmedAssetIds.includes(applied)
-							? __(
-									"The roof import is included in the saved project.",
-									"linker-tools",
-								)
-							: __(
-									"Imported roof is in the current design.",
-									"linker-tools",
-								)}
+						{sprintf(__("Roof added: %s", "linker-tools"), applied.name)}
 					</span>
 				)}
 			</div>
@@ -548,7 +570,15 @@ export function GeometryIntake({
 									)}
 								</Notice>
 							)}
-							<fieldset disabled={reading || flow.busy || !!frozen || !aligned}>
+							<fieldset
+								disabled={
+									reading ||
+									preparingProject ||
+									flow.busy ||
+									!!frozen ||
+									!aligned
+								}
+							>
 								<div hidden={step !== 0}>
 									<label className="lp-field">
 										<span id={id + "-file"}>
@@ -663,7 +693,10 @@ export function GeometryIntake({
 								onClick={() => {
 									if (!client.isCurrentScope(session.query_scope)) return;
 									if (attach(snapshot, asset)) {
-										setApplied(asset.id);
+										setApplied({
+											id: asset.id,
+											name: asset.geometry.roofs[0]!.name,
+										});
 										close();
 									} else
 										setError(
@@ -676,19 +709,15 @@ export function GeometryIntake({
 							>
 								{__("Add roof to current design", "linker-tools")}
 							</button>
-							<p className="lp-profile-help">
-								{__(
-									"One editable roof face is added as a single step in project history. You can undo this addition in the open design.",
-									"linker-tools",
-								)}
-							</p>
 						</div>
 					)}
 					<div className="lp-inline-actions">
 						<button
 							type="button"
 							className="lp-button lp-button-secondary"
-							disabled={reading || (flow.busy && !flow.durable)}
+							disabled={
+								reading || preparingProject || (flow.busy && !flow.durable)
+							}
 							onClick={close}
 						>
 							{__("Close import", "linker-tools")}

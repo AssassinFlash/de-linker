@@ -37,7 +37,7 @@ export function useGeometryImport({
 	confirmedAssetIds,
 	store = geometryImportStore,
 }: {
-	projectId: string;
+	projectId: string | null;
 	session: Session;
 	client: PlannerClient;
 	recheck: () => void;
@@ -72,6 +72,11 @@ export function useGeometryImport({
 	}, [projectId, session.query_scope]);
 	useEffect(() => {
 		if (!admitted || recoveryChecking) return;
+		if (projectId === null) {
+			setRecords([]);
+			setChecking(false);
+			return;
+		}
 		let active = true;
 		const instance = lifetime.current;
 		const current = () =>
@@ -138,6 +143,7 @@ export function useGeometryImport({
 		if (flight.current || !client.isCurrentScope(session.query_scope)) return;
 		const command = readGeometryImportCommand(JSON.parse(body));
 		if (
+			projectId === null ||
 			command.project_id !== projectId ||
 			!JSON.parse(scopeKey).includes(originScope)
 		)

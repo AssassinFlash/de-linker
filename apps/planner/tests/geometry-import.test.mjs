@@ -69,6 +69,7 @@ async function rig(
 		replyStatus = 200,
 		previousScope = null,
 		intake = false,
+		importProject = projectId,
 		locale = "en-GB",
 	} = {},
 ) {
@@ -134,7 +135,7 @@ async function rig(
 	let activity = false;
 	const attachments = [];
 	let props = {
-		projectId,
+		projectId: importProject,
 		session,
 		client,
 		recheck: () => {
@@ -154,7 +155,7 @@ async function rig(
 				onActivity: (open) => {
 					activity = open;
 				},
-				currentAssetIds: [],
+				currentAssetIds: attachments.map(({ prepared }) => prepared.id),
 				attach: (before, prepared) => {
 					attachments.push({ before, prepared });
 					return true;
@@ -382,6 +383,60 @@ async function click(label) {
 	assert.ok(button(label), label);
 	await act(async () => button(label).click());
 }
+
+test("a fresh project prepares a real roof only after source consent, and retains the file if project creation fails", async (t) => {
+	let attempts = 0;
+	const receipt = deferred();
+	const resolveProject = async () => {
+		attempts++;
+		if (attempts === 1) throw new Error("project_create_unconfirmed");
+		return receipt.promise;
+	};
+	const fixture = await rig(t, { intake: true, importProject: resolveProject });
+	await click("Import roof geometry");
+	await chooseFixtureFile();
+	const options = asset.metadata.geometry_import_options;
+	await enter(field("roof"), options.roof_name);
+	await click("Continue");
+	await enter(field("pitch"), "36.86989764584402");
+	await enter(field("bearing"), "0");
+	await enter(field("height"), "5");
+	await enter(field("basis"), options.plane.basis_note);
+	await click("Continue");
+	await enter(field("source"), options.source.label);
+	await enter(field("rights"), options.source.rights_note);
+	field("export").value = "permitted";
+	await click("Prepare roof preview");
+	assert.equal(attempts, 0);
+	await act(async () => field("retention").click());
+	await click("Prepare roof preview");
+	assert.equal(attempts, 1);
+	assert.deepEqual(fixture.uploads, []);
+	assert.equal(field("source").value, options.source.label);
+	await click("Prepare roof preview");
+	await until(() => attempts === 2);
+	assert.equal(button("Close import").disabled, true);
+	await fixture.render({ projectId });
+	await act(async () => receipt.resolve(projectId));
+	await until(() => fixture.uploads.length === 1);
+	const body = JSON.parse(fixture.uploads[0]);
+	assert.equal(body.project_id, projectId);
+	assert.equal(body.content_base64, source.toString("base64"));
+	await until(
+		() =>
+			button("Add roof to current design") &&
+			!button("Add roof to current design").disabled,
+	);
+	await click("Add roof to current design");
+	await fixture.render();
+	assert.equal(
+		fixture.attachments[0].prepared.geometry.roofs[0].holes_uv.length,
+		1,
+	);
+	assert.ok(
+		document.body.textContent.includes("Roof added: " + options.roof_name),
+	);
+});
 
 test("guided import retains raw locale input and source holes across Back and a typed refusal", async (t) => {
 	const fixture = await rig(t, {

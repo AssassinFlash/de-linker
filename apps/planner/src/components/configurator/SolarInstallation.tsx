@@ -71,7 +71,7 @@ export interface SolarInstallationProps {
 	initialMap?: boolean;
 	onEditing?: (editing: boolean) => void;
 	geometryImport?: {
-		projectId: string;
+		projectId: string | (() => Promise<string>);
 		recheck: () => void;
 		confirmedInputs: JsonObject;
 		onActivity: (open: boolean) => void;
