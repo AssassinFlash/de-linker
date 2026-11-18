@@ -752,7 +752,9 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         )
         monkeypatch.setattr(service, "page_reader", lambda: SimpleNamespace(read=None))
 
-        def generate_with_model(tools: Abilities, **kwargs: Any) -> Callable:
+        def generate_with_model(
+            tools: Abilities, **kwargs: Any
+        ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
             generate = make_generate(
                 tools, model=FunctionModel(respond), search=search, **kwargs
             )
