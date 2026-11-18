@@ -144,6 +144,18 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(row).toContainText('H2-10K-T3');
 			await expect(row).toContainText('1 × ');
 
+			const configurator = row.getByRole('link', {
+				name:
+					locale === 'de'
+						? 'Lösungskonfigurator öffnen'
+						: 'Open the Solution Configurator',
+			});
+			await expect(configurator).toBeVisible();
+			await expect(configurator).toHaveAttribute(
+				'href',
+				new RegExp(`[?&]saved_solution=${payload.id}(?:&|$)`)
+			);
+
 			// And returns it to the solution draft.
 			await row.getByRole('button', { name: words.addToDraft }).click();
 			// The draft's own page opens: the German endpoint segment is
