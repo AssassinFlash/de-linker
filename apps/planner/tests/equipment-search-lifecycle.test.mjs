@@ -232,6 +232,7 @@ async function equipmentApp(
 		foreignSelection = false,
 		selectionGate = null,
 		searchGate = null,
+		readGate = null,
 		findRefusal = null,
 		pvReference = null,
 		selectedPv = null,
@@ -337,6 +338,7 @@ async function equipmentApp(
 		async query(path, body, scope) {
 			assert.equal(scope, admittedScope);
 			reads.push({ path, body, scope });
+			if (path === readGate?.path) await readGate.wait();
 			if (path === "products/current") return catalog();
 			if (path === "assets/read" && body.asset_id === selectedPv?.id)
 				return structuredClone(selectedPv);
@@ -1167,8 +1169,28 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	});
 	await until(() => searchRequests(app).length === 1);
 	assert.equal(app.button("Compare systems").disabled, true);
-	await act(async () => gate.resolve());
-	await untilRun(app.pending);
+	assert.ok(!app.button("Check previous request"));
+	assert.doesNotMatch(
+		document.body.textContent,
+		/Confirm the result of your previous request/,
+	);
+	assert.ok(
+		[...document.querySelectorAll('[role="status"]')].some(
+			(node) => node.textContent === "Finding equipment for your project…",
+		),
+	);
+	let prompted = false;
+	const observer = new MutationObserver(() => {
+		if (app.button("Check previous request")) prompted = true;
+	});
+	observer.observe(document.body, { childList: true, subtree: true });
+	try {
+		await act(async () => gate.resolve());
+		await untilRun(app.pending);
+	} finally {
+		observer.disconnect();
+	}
+	assert.equal(prompted, false);
 	assert.equal(window.location.hash, "#sc-system");
 	assert.equal(searchRequests(app).length, 1);
 	assert.equal(
@@ -1403,6 +1425,59 @@ for (const multi of [false, true]) {
 			inverter_product_id: 101,
 			battery_product_id: null,
 		});
+	});
+}
+
+for (const adopted of [true, false]) {
+	test(`System waits for ${adopted ? "the adopted comparison" : "project history"} and can retry a failed read`, async (t) => {
+		const gate = deferred();
+		let fail = true;
+		const app = await equipmentApp(t, {
+			projectId: "c".repeat(32),
+			hash: "#sc-project",
+			legacyInputs: adopted ? { equipment_setup: savedSetup } : null,
+			inputs: adopted
+				? {
+						equipment_candidate: {
+							run_id: "7".repeat(32),
+							candidate_id: "c".repeat(64),
+							assessment_sha256: "d".repeat(64),
+						},
+					}
+				: {},
+			readGate: {
+				path: adopted ? "runs/read" : "projects/runs",
+				wait: async () => {
+					await gate.promise;
+					if (fail) throw new Error("read failed");
+				},
+			},
+		});
+		await untilRun(() =>
+			document.querySelector('nav[aria-label="Project navigation"]'),
+		);
+		await app.step("System");
+		const empty = /Enter your energy needs/;
+		assert.doesNotMatch(document.querySelector("main").textContent, empty);
+		assert.equal(
+			document.querySelector('main [role="status"]').textContent,
+			"Reading saved calculation results…",
+		);
+		await act(async () => gate.resolve());
+		await untilRun(() => app.button("Try again"));
+		assert.ok(document.querySelector('[role="alert"]'));
+		assert.doesNotMatch(document.querySelector("main").textContent, empty);
+		fail = false;
+		await act(async () => app.button("Try again").click());
+		if (adopted) {
+			await untilRun(() => app.button("Selected"));
+			assert.match(option().textContent, /ESS 5K/);
+		} else {
+			await untilRun(() =>
+				empty.test(document.querySelector("main").textContent),
+			);
+		}
+		assert.deepEqual(app.requests, []);
 	});
 }
 
