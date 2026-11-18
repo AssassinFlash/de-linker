@@ -198,65 +198,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	await until(() => button("Load street map"));
 	await click("Draw roof");
 	assert.equal(button("Calibrate a roof image").disabled, false);
-	await click("Calibrate a roof image");
-	const form = document.querySelector(".lp-import-panel form");
-	const fileInput = form.querySelector(
-		'input[type="file"][accept*="image/png"]',
-	);
-	assert.ok(fileInput);
-	const originalCreate = globalThis.createImageBitmap;
-	globalThis.createImageBitmap = async () => ({
-		width: 800,
-		height: 600,
-		close() {},
-	});
-	t.after(() => {
-		globalThis.createImageBitmap = originalCreate;
-	});
-	const file = new Blob([new Uint8Array([137, 80, 78, 71])], {
-		type: "image/png",
-	});
-	Object.defineProperty(file, "name", { value: "roof-plan.png" });
-	Object.defineProperty(fileInput, "files", { value: [file] });
-	await act(async () =>
-		fileInput.dispatchEvent(new window.Event("change", { bubbles: true })),
-	);
-	assert.match(form.textContent, /roof-plan\.png/);
-	const mark = async (x, y) => {
-		const svg = form.querySelector(".lp-plan-svg");
-		svg.getBoundingClientRect = () => ({
-			left: 0,
-			top: 0,
-			width: 800,
-			height: 600,
-		});
-		await act(async () =>
-			svg.dispatchEvent(
-				new window.MouseEvent("click", {
-					bubbles: true,
-					clientX: x,
-					clientY: y,
-				}),
-			),
-		);
-	};
-	await click("Continue");
-	await mark(100, 500);
-	await mark(700, 500);
-	await enter(form.elements.namedItem("length"), "12");
-	await click("Check span (0 of 2)");
-	await mark(100, 100);
-	await mark(700, 100);
-	await enter(form.elements.namedItem("check_length"), "12");
-	await click("Continue");
-	await click("Roof outline (0 points)");
-	for (const point of [
-		[100, 100],
-		[700, 100],
-		[700, 500],
-		[100, 500],
-	])
-		await mark(...point);
+	const form = await traceRoofImage(t, "roof-plan.png");
 	form.elements.namedItem("source").value = "roof-plan.png";
 	form.elements.namedItem("rights").value =
 		"Owner drawing with permission to retain and derive";
@@ -283,6 +225,221 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	assert.equal(sources[0].rights_basis, "user_attestation");
 	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
 	assert.equal(button("Select / move").getAttribute("aria-pressed"), "true");
+});
+
+async function traceRoofImage(t, image, roofId, length = "12") {
+	await click("Calibrate a roof image");
+	const form = document.querySelector(".lp-import-panel form");
+	if (roofId) {
+		const target = form.elements.namedItem("target");
+		await act(async () => {
+			target.value = roofId;
+			target.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	const fileInput = form.querySelector(
+		'input[type="file"][accept*="image/png"]',
+	);
+	assert.ok(fileInput);
+	const originalCreate = globalThis.createImageBitmap;
+	globalThis.createImageBitmap = async () => ({
+		width: 800,
+		height: 600,
+		close() {},
+	});
+	t.after(() => {
+		globalThis.createImageBitmap = originalCreate;
+	});
+	const file = new Blob([new Uint8Array([137, 80, 78, 71])], {
+		type: "image/png",
+	});
+	Object.defineProperty(file, "name", { value: image });
+	Object.defineProperty(fileInput, "files", { value: [file] });
+	await act(async () =>
+		fileInput.dispatchEvent(new window.Event("change", { bubbles: true })),
+	);
+	assert.equal(form.querySelector(".lp-file-name").textContent, image);
+	const mark = async (x, y) => {
+		const svg = form.querySelector(".lp-plan-svg");
+		svg.getBoundingClientRect = () => ({
+			left: 0,
+			top: 0,
+			width: 800,
+			height: 600,
+		});
+		await act(async () =>
+			svg.dispatchEvent(
+				new window.MouseEvent("click", {
+					bubbles: true,
+					clientX: x,
+					clientY: y,
+				}),
+			),
+		);
+	};
+	await click("Continue");
+	await mark(100, 500);
+	await mark(700, 500);
+	await enter(form.elements.namedItem("length"), length);
+	await click("Check span (0 of 2)");
+	await mark(100, 100);
+	await mark(700, 100);
+	await enter(form.elements.namedItem("check_length"), length);
+	await click("Continue");
+	await click("Roof outline (0 points)");
+	for (const point of [
+		[100, 100],
+		[700, 100],
+		[700, 500],
+		[100, 500],
+	])
+		await mark(...point);
+	return form;
+}
+
+async function declareDrawing(form, image, rights, exportPermission) {
+	form.elements.namedItem("source").value = image;
+	form.elements.namedItem("rights").value = rights;
+	form.elements.namedItem("export").value = exportPermission;
+}
+
+test("replacing and recalibrating a roof requires permission for the selected drawing and preserves shared sources", async (t) => {
+	const original = structuredClone(flat);
+	original.sources[0] = {
+		...original.sources[0],
+		kind: "user_drawing",
+		note: "Provider aerial imagery",
+		rights_note: "Provider licence",
+		rights_basis: "referenced_licence",
+		reference_url: "https://example.com/licence",
+	};
+	original.coordinate_system = {
+		...original.coordinate_system,
+		north_reference: "true_north",
+		north_source_id: "survey",
+		anchor: {
+			latitude_deg: 51.5,
+			longitude_deg: -0.12,
+			source_id: "survey",
+			datum: "EPSG:4326",
+		},
+	};
+	original.roofs.push({
+		...original.roofs[0],
+		id: "other_roof",
+		origin_enu: [30, -20, 4],
+	});
+	const app = await mount(t, { brief: emptyBrief(), geometry: original });
+	let form = await traceRoofImage(t, "owner-plan.png", "roof");
+	await click("Add roof to current design");
+	assert.deepEqual(
+		app.inputs.geometry,
+		original,
+		"replacement needs fresh permission",
+	);
+	await declareDrawing(
+		form,
+		"Owner plan",
+		"Owner permits derivation and retention",
+		"prohibited",
+	);
+	await act(async () => form.elements.namedItem("retention").click());
+	await click("Add roof to current design");
+	const replaced = app.inputs.geometry;
+	const roof = replaced.roofs.find(({ id }) => id === "roof");
+	const source = replaced.sources.find(({ id }) => id === roof.source_id);
+	assert.equal(source.rights_basis, "user_attestation");
+	assert.equal(source.reference_url, null);
+	assert.equal(source.permissions.export, "prohibited");
+	assert.deepEqual(
+		replaced.sources.find(({ id }) => id === "survey"),
+		original.sources[0],
+	);
+	assert.deepEqual(
+		replaced.roofs.find(({ id }) => id === "other_roof"),
+		original.roofs[1],
+	);
+	assert.deepEqual(roof.origin_enu, original.roofs[0].origin_enu);
+	assert.deepEqual(replaced.coordinate_system, original.coordinate_system);
+	assert.deepEqual(replaced.arrays, original.arrays);
+
+	form = await traceRoofImage(t, "owner-plan.png", "roof", "15");
+	await click("Add roof to current design");
+	assert.deepEqual(
+		app.inputs.geometry,
+		replaced,
+		"reselected image needs fresh permission",
+	);
+	await declareDrawing(form, "Owner plan", source.rights_note, "prohibited");
+	await act(async () => form.elements.namedItem("retention").click());
+	await click("Add roof to current design");
+	const recalibrated = app.inputs.geometry;
+	const recalibratedRoof = recalibrated.roofs.find(({ id }) => id === "roof");
+	assert.equal(
+		recalibrated.sources.find(({ id }) => id === recalibratedRoof.source_id)
+			.calibration.m_per_pixel,
+		0.025,
+	);
+	assert.equal(recalibratedRoof.id, roof.id);
+	assert.deepEqual(
+		recalibrated.roofs.find(({ id }) => id === "other_roof"),
+		original.roofs[1],
+	);
+});
+
+test("undoing image calibration restores known PV inputs and keeps later project and PV settings edits", async (t) => {
+	const known = {
+		schema_version: 1,
+		model: "pvgis_5_3_known_ac_reference_v1",
+		radiation_database: "PVGIS-ERA5",
+		year: 2020,
+		pv_technology: "crystSi",
+		mounting_place: "free",
+		system_loss_percent: 14,
+		use_terrain_horizon: true,
+		source_note: "Commissioning report",
+		arrays: [
+			{
+				id: "original_array",
+				peak_power_kwp: 6,
+				tilt_deg: 25,
+				azimuth_north_clockwise_deg: 180,
+				source_note: "Installer's module list",
+			},
+		],
+	};
+	const app = await mount(t, {
+		brief: emptyBrief(),
+		pvgis_reference_setup: known,
+		pvgis_reference: known,
+	});
+	const form = await traceRoofImage(t, "roof-plan.png");
+	declareDrawing(form, "Roof plan", "Use permitted", "unknown");
+	await act(async () => form.elements.namedItem("retention").click());
+	await click("Add roof to current design");
+	assert.equal(app.inputs.geometry.roofs.length, 1);
+	assert.equal(
+		app.inputs.pvgis_reference_setup.model,
+		"pvgis_5_3_roof_ac_reference_v1",
+	);
+	await enter(input("Latitude"), "52.12567");
+	await enter(input("System loss"), "12");
+	await click("Undo");
+	assert.deepEqual(app.inputs.pvgis_reference_setup, {
+		...known,
+		system_loss_percent: 12,
+	});
+	assert.equal(app.inputs.geometry, undefined);
+	assert.deepEqual(
+		app.inputs.pvgis_reference,
+		app.inputs.pvgis_reference_setup,
+	);
+	assert.equal(app.inputs.inactive_known_pv_arrays, undefined);
+	assert.equal(app.inputs.brief.site.latitude, 52.12567);
+	assert.equal(
+		button("Use module details").getAttribute("aria-pressed"),
+		"true",
+	);
 });
 
 test("the first aerial roof uses the selected roof corner as its confirmed origin", async (t) => {

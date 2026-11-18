@@ -3,7 +3,8 @@ import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlaceImagery } from "../../domain/place.ts";
-import type { JsonObject, Session } from "../../data/protocol.ts";
+import type { Json, JsonObject, Session } from "../../data/protocol.ts";
+import { sameJson } from "../../domain/draft.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
@@ -24,7 +25,10 @@ import {
 	attachGeometryImport,
 	readGeometryImports,
 } from "../../domain/geometryImports.ts";
-import { ImageCalibrationWorkspace } from "../design/ImageCalibrationWorkspace.tsx";
+import {
+	ImageCalibrationWorkspace,
+	type CalibrationCommand,
+} from "../design/ImageCalibrationWorkspace.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
@@ -73,6 +77,47 @@ export interface SolarInstallationProps {
 		recoveryChecking?: boolean | undefined;
 	};
 }
+interface ReferenceChange {
+	before: JsonObject;
+	after: PvgisReferenceDraft;
+}
+type SolarUndo =
+	| { geometry: GeometryDocument }
+	| {
+			calibration: CalibrationCommand;
+			hadGeometry: boolean;
+			reference: ReferenceChange | null;
+	  };
+const referenceKeys = [
+	"pvgis_reference_setup",
+	"pvgis_reference",
+	"inactive_known_pv_arrays",
+] as const;
+
+function restoreKnownReference(
+	current: JsonObject,
+	{ before, after }: ReferenceChange,
+): JsonObject {
+	const active = referenceDraft(current);
+	if (active.model !== after.model) throw new Error("solar_reference_changed");
+	if (!sameJson(active, after)) {
+		// Keep shared settings edited after tracing, and recompile for the known arrays.
+		const known = referenceDraft(before);
+		return referenceInputs(current, {
+			...active,
+			model: KNOWN_PV_MODEL,
+			...(known.arrays === undefined ? {} : { arrays: known.arrays }),
+		});
+	}
+	const restored: Record<string, Json> = { ...current };
+	for (const key of referenceKeys) {
+		const value = before[key];
+		if (value === undefined) delete restored[key];
+		else restored[key] = value;
+	}
+	return restored;
+}
+
 const id = () => "solar_" + crypto.randomUUID();
 export function SolarInstallation({
 	inputs,
@@ -152,7 +197,7 @@ export function SolarInstallation({
 		tracedAerial.current &&
 		imagerySourceKey(readyAerial) === imagerySourceKey(tracedAerial.current);
 	const [drawingKey, setDrawingKey] = useState(() => crypto.randomUUID());
-	const [undo, setUndo] = useState<readonly GeometryDocument[]>([]);
+	const [undo, setUndo] = useState<readonly SolarUndo[]>([]);
 	const [fields, setFields] = useState({
 		width: "",
 		depth: "",
@@ -190,8 +235,15 @@ export function SolarInstallation({
 			);
 		return value;
 	};
-	function commit(command: GeometryCommand, useRoofReference = false) {
+	function commit(
+		editCommand: GeometryCommand | { calibration: CalibrationCommand },
+	) {
 		if (blocked) return false;
+		const calibration =
+			"calibration" in editCommand ? editCommand.calibration : null;
+		const command =
+			"calibration" in editCommand ? editCommand.calibration : editCommand;
+		let entry: SolarUndo | undefined;
 		try {
 			const ok = edit((current) => {
 				const before =
@@ -202,13 +254,25 @@ export function SolarInstallation({
 					...invalidateEnergyReplay(current),
 					geometry: readObject(applyGeometryCommand(before, command)),
 				};
-				return useRoofReference &&
-					referenceDraft(current).model === KNOWN_PV_MODEL
+				const switchesReference =
+					calibration && referenceDraft(current).model === KNOWN_PV_MODEL;
+				const nextInputs = switchesReference
 					? roofReferenceInputs(updated)
 					: updated;
+				entry = calibration
+					? {
+							calibration,
+							hadGeometry: current.geometry !== undefined,
+							reference: switchesReference
+								? { before: current, after: referenceDraft(nextInputs) }
+								: null,
+						}
+					: { geometry: before };
+				return nextInputs;
 			});
-			if (ok) {
-				setUndo((previous) => [...previous, geometry]);
+			if (ok && entry) {
+				const applied = entry;
+				setUndo((previous) => [...previous, applied]);
 				setError("");
 			}
 			return ok;
@@ -220,6 +284,64 @@ export function SolarInstallation({
 				),
 			);
 			return false;
+		}
+	}
+	function undoRoofEdit() {
+		const previous = undo.at(-1);
+		if (blocked || !previous) return;
+		let restoredMode: "known" | null = null;
+		try {
+			const ok = edit((current) => {
+				const next = { ...invalidateEnergyReplay(current) };
+				if ("geometry" in previous)
+					return { ...next, geometry: readObject(previous.geometry) };
+
+				const [source, roof] = previous.calibration.edits;
+				const currentGeometry = readGeometry(current.geometry, policy);
+				if (
+					!sameJson(
+						currentGeometry.sources.find((item) => item.id === source.value.id),
+						source.value,
+					) ||
+					!sameJson(
+						currentGeometry.roofs.find((item) => item.id === roof.value.id),
+						roof.value,
+					)
+				)
+					throw new Error("geometry_object_changed");
+				const restored = applyGeometryCommand(currentGeometry, {
+					type: "group",
+					edits: [
+						roof.before
+							? { type: "put_roof", before: roof.value, value: roof.before }
+							: {
+									type: "delete_roof",
+									id: roof.value.id,
+									expected_dependents: [],
+								},
+						{ type: "delete_object", id: source.value.id },
+					],
+				});
+				if (!previous.hadGeometry && sameJson(restored, emptyGeometry()))
+					delete next.geometry;
+				else next.geometry = readObject(restored);
+				if (!previous.reference) return next;
+				const restoredInputs = restoreKnownReference(next, previous.reference);
+				if (referenceDraft(restoredInputs).model === KNOWN_PV_MODEL)
+					restoredMode = "known";
+				return restoredInputs;
+			});
+			if (!ok) return;
+			setUndo(undo.slice(0, -1));
+			setError("");
+			if (restoredMode) setMode(restoredMode);
+		} catch {
+			setError(
+				__(
+					"This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.",
+					"linker-tools",
+				),
+			);
 		}
 	}
 	function chooseModule(spec: ModuleSpec) {
@@ -836,14 +958,11 @@ export function SolarInstallation({
 				disabled={blocked || importOpen || vertices.length > 0}
 				onActivity={setCalibrationOpen}
 				commit={(command) => {
-					if (!commit(command, true)) return false;
+					if (!commit({ calibration: command })) return false;
 					setMode("roof");
 					setView("plan");
 					startTool("select");
-					if (command.type === "group") {
-						const roof = command.edits.find((edit) => edit.type === "put_roof");
-						if (roof?.type === "put_roof") select(roof.value.id);
-					}
+					select(command.edits[1].value.id);
 					return true;
 				}}
 			/>
@@ -1017,17 +1136,7 @@ export function SolarInstallation({
 									<button
 										type="button"
 										disabled={!undo.length}
-										onClick={() => {
-											const previous = undo.at(-1);
-											if (
-												previous &&
-												edit((current) => ({
-													...invalidateEnergyReplay(current),
-													geometry: readObject(previous),
-												}))
-											)
-												setUndo(undo.slice(0, -1));
-										}}
+										onClick={undoRoofEdit}
 									>
 										{__("Undo", "linker-tools")}
 									</button>
