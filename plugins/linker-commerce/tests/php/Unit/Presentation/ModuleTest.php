@@ -38,9 +38,24 @@ final class ModuleTest extends TestCase {
 		WP_Mock::userFunction( 'home_url' )->with( '/' )->andReturn( 'https://example.test/store/' );
 		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'cart' )->andReturn( 21 );
 		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'checkout' )->andReturn( 30 );
-		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 21 )->andReturn( array( 'en' => 20, 'de' => 21 ) );
-		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 30 )->andReturn( array( 'en' => 30, 'de' => 31 ) );
-		foreach ( array( 20 => 'draft/', 21 => 'de/entwurf/', 30 => 'ask/', 31 => 'de/anfrage/' ) as $id => $path ) {
+		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 21 )->andReturn(
+			array(
+				'en' => 20,
+				'de' => 21,
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 30 )->andReturn(
+			array(
+				'en' => 30,
+				'de' => 31,
+			)
+		);
+		foreach ( array(
+			20 => 'draft/',
+			21 => 'de/entwurf/',
+			30 => 'ask/',
+			31 => 'de/anfrage/',
+		) as $id => $path ) {
 			WP_Mock::userFunction( 'get_permalink' )->with( $id )->andReturn( 'https://example.test/store/' . $path );
 		}
 		$module = new Module( new Shortcodes(), new LoginGate(), new WindPress() );
