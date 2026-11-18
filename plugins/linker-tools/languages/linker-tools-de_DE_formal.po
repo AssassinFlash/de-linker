@@ -17146,6 +17146,10 @@ msgstr "Anfrage erneut prüfen"
 msgid "Roof added: %s"
 msgstr "Dachfläche hinzugefügt: %s"
 
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Solution draft"
+msgstr "Lösungsentwurf"
+
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
 msgid "Explore system options"
 msgstr "Anlagenvarianten entdecken"
