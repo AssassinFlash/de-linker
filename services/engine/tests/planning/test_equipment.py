@@ -7314,6 +7314,7 @@ def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() 
         ("self_consumption_with_reserve_v1", False, "wired_single"),
         ("self_consumption_with_reserve_v1", False, "plant_ac"),
         ("self_consumption_with_reserve_v1", False, "plant_shared_dc"),
+        ("self_consumption_with_reserve_v1", False, "plant_shared_dc_ac_branch"),
         ("self_consumption_with_reserve_v1", False, "shared_dc"),
         ("peak_shaving_with_reserve_v1", False, "shared_dc"),
         ("self_consumption_with_reserve_v1", False, "undeclared_plant"),
@@ -7339,8 +7340,14 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
 
     from .test_private_http import Rig, standard_profile_command
     from .test_pv_generation import geometry
+    from .test_pv_profile import import_pv, project_with_roof
     from .test_pvgis_roof_reference import limits as reference_limits
+    from .test_pvgis_roof_reference import settings as roof_settings
 
+    ac_branch = topology == "plant_shared_dc_ac_branch"
+    if ac_branch:
+        topology = "plant_shared_dc"
+    dc = topology in ("shared_dc", "plant_shared_dc")
     wired = topology in ("wired_single", "plant_ac")
     peak = controller.startswith("peak")
     inverter = next(row for row in feed["products"] if row["id"] == 4107)
@@ -7375,7 +7382,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             pvgis_reference=PvgisRoofReferenceKernel(
                 workspace, source, reference_limits(), max_array_steps=20_000
             )
-            if wired
+            if wired or dc
             else None,
         ),
         max_attempts=1,
@@ -7408,7 +7415,8 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         rig = Rig(workspace, ac, client)
-        pid = rig.create("profile-bounds")
+        roof = project_with_roof(workspace, owner) if dc and not peak else None
+        pid = roof.id if roof else rig.create("profile-bounds")
 
         def csv_profile(
             role: Literal["gross_load", "pv_available_ac"],
@@ -7542,6 +7550,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             }
             if topology != "undeclared_plant":
                 declarations["energy_plant_setup"] = {"coupling": topology}
+            if topology == "plant_ac":
+                # Switching to a plant retains the earlier single-system declarations.
+                declarations["energy_scenario"]["coupling"] = "shared_dc"
         elif topology == "shared_dc":
             declarations["energy_scenario"]["coupling"] = topology
             selected.pop("pv_available_ac", None)
@@ -7616,6 +7627,24 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             assert reply.status_code == 404, reply.json()
             assert workspace.get(owner, pid).revision == 1
             return
+        if roof:
+            declarations.update(roof.inputs)
+            declarations["brief"] = {
+                **incomplete_brief(),
+                "system_scope": "new_pv_storage",
+            }
+            if topology == "plant_shared_dc":
+                declarations["pvgis_reference"] = roof_settings()
+            selected["pv_reference"] = import_pv(workspace, owner, roof).id
+            if not ac_branch:
+                selected.pop("pv_available_ac", None)
+            if topology == "plant_shared_dc":
+                plant_setup = declarations["equipment_plant_setup"]
+                plant_setup["requirements"]["pv_dc_kw"] = 4
+                for unit in plant_setup["units"]:
+                    unit["inputs"]["equipment_setup"]["pv_dc_kw"] = 2
+            else:
+                declarations["equipment_setup"]["pv_dc_kw"] = 4
         accepted = rig.post("/runs/find-equipment", command)
         assert accepted["project"]["inputs"] == declarations
         assert worker.run_once()
@@ -7623,6 +7652,35 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         assert run["state"] == "succeeded", run
         result = run["result"]["search"]
         assert result["candidates"]
+
+        if roof:
+            pins = run["manifest"]["context"]["assets"]
+            assert "gross_load.raw" in pins
+            assert not any(
+                key.startswith(("pv_available_ac.", "pvgis_reference.")) for key in pins
+            )
+            baseline = result["demand"]["baseline"]
+            assert baseline["load_kwh"] == 8
+            assert all(
+                value is None for name, value in baseline.items() if name != "load_kwh"
+            )
+            for item in result["candidates"]:
+                if topology == "plant_shared_dc":
+                    assert item["plant"]["requirements"]["pv_dc_kw"] == 4
+                    assert [
+                        (
+                            unit["id"],
+                            unit["selection"]["pv_dc_kw"],
+                            unit["selection"]["inverter_product_id"],
+                        )
+                        for unit in item["plant"]["units"]
+                    ] == [("east", 2, 4107), ("west", 2, 4107)]
+                else:
+                    assert item["selection"]["pv_dc_kw"] == 4
+                assert item["demand"]["missing_facts"] == [
+                    "project_pv_output_through_assigned_dc_converters"
+                ]
+                assert item["demand"]["peak_import_lower_bound_kw"] is None
 
         def verify_wired_report(candidate: FixtureObject) -> None:
             from linker_engine.planning.geometry import panel_poses, read_geometry
@@ -7946,6 +8004,14 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 assert worker.run_once()
                 completed = rig.post("/runs/read", {"run_id": report["id"]})
                 assert completed["state"] == "succeeded", completed
+                frozen = json_object(
+                    workspace.blobs.object(
+                        completed["manifest"]["context"]["assets"]["report.source"]
+                    )
+                )
+                retained = frozen["self_use_comparison"]
+                assert retained["baseline"] == result["demand"]["baseline"]
+                assert retained["upper_kwh"] is None
                 pdf = completed["result"]["prepared_asset"]
                 csv = completed["result"]["prepared_attachments"][
                     "bill_of_materials_csv"
@@ -7962,6 +8028,13 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                     )
                     assert response.status_code == 200
                     assert response.content
+                    if asset == pdf:
+                        text = " ".join(
+                            " ".join(page.extract_text().split())
+                            for page in PdfReader(io.BytesIO(response.content)).pages
+                        )
+                        assert "Electricity use 8 kWh" in text
+                        assert "Additional solar use, upper bound" not in text
             return
         baseline = result["demand"]["baseline"]
         if standard:
