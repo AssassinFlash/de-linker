@@ -144,8 +144,15 @@ body #linker-products.sf-products .wb-strip > .wbc {
   gap: var(--proto-space-2);
 }
 body #linker-products.sf-products .wb-strip > .wbc:empty { display: none; }
+body #linker-products.sf-products .wb-strip > .wbc > :is(.wbchip, .wbclear) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--proto-control-height);
+  min-block-size: var(--proto-control-height);
+}
 body #linker-products.sf-products .wbcount { font-size: .8125rem; }
-body #linker-products.sf-products .wbchip { min-height: 40px; background: #e9ecf0; color: var(--shop-ink); border-radius: 999px; }
+body #linker-products.sf-products .wbchip { background: #e9ecf0; color: var(--shop-ink); border-radius: 999px; }
 body #linker-products.sf-products #sort-select { border-radius: 10px; font-size: .8125rem; min-height: var(--proto-control-height); }
 body #linker-products.sf-products .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: start; }
 body #linker-products.sf-products .sf-card {
