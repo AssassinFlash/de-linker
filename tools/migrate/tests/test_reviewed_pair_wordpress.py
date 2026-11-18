@@ -1,7 +1,6 @@
 """Native paired content/baseline transaction tests, opt-in on an owned local site.
 
-Only newly created private fixture pages are written, then deleted. Existing
-pages and production are never changed. An unavailable model client throws if
+Only newly created private fixture posts or pages are written, then deleted. An unavailable model client throws if
 called; all intended baseline adoption uses the native reviewed-copy API.
 """
 
@@ -46,17 +45,21 @@ def php(source: str) -> dict[str, Any]:
 
 
 @pytest.fixture
-def pages() -> Any:
+def pages(request: pytest.FixtureRequest) -> Any:
     site = php(
         "echo '@@fixture@@'.wp_json_encode(['home'=>home_url(),'root'=>ABSPATH]);"
     )
     assert urlsplit(site["home"]).hostname in {"localhost", "127.0.0.1"}
     assert Path(site["root"]).resolve().is_relative_to(Path.home() / "de-linker-local")
-    created = php(r"""
+    post_type = getattr(request, "param", "page")
+    title = '#1143 blog pair fixture ' if post_type == 'post' else 'Reviewed pair fixture '
+    created = php(
+        "$type=" + json.dumps(post_type) + ";$title=" + json.dumps(title) + ";" + r"""
 $ids=[];
 foreach(['en','de'] as $lang){
-    $id=wp_insert_post(wp_slash(['post_type'=>'page','post_status'=>'private',
-        'post_title'=>'Reviewed pair fixture '.$lang,
+    $id=wp_insert_post(wp_slash(['post_type'=>$type,'post_status'=>'private',
+        'post_title'=>$title.$lang,
+        'post_excerpt'=>'Original excerpt '.$lang.'.',
         'post_content'=>'<p>Original '.$lang.'. \\u003c \\s+</p>']),true,false);
     if(is_wp_error($id))throw new RuntimeException('Fixture insert failed');
     pll_set_post_language($id,$lang);$ids[]=$id;
@@ -79,6 +82,8 @@ echo '@@fixture@@'.wp_json_encode(['ids'=>$ids]);
             "echo '@@fixture@@'.wp_json_encode(['left'=>array_values(array_filter($ids,'get_post'))]);"
         )
         assert result["left"] == []
+        if post_type == "post":
+            print(f"Removed private blog fixtures: {ids}")
 
 
 @pytest.mark.parametrize(
@@ -263,3 +268,66 @@ echo '@@fixture@@'.wp_json_encode(['error'=>$error,'injected'=>$injected,'blocke
             "metadata_race",
         }:
             assert result["injected"] is True
+
+
+@pytest.mark.parametrize("pages", ["post"], indirect=True)
+def test_native_blog_pair_saves_excerpts_and_restores_copy(pages: list[int]) -> None:
+    def rejected(payload: dict[str, Any]) -> str:
+        source = base64.b64encode(pair.render(payload).encode()).decode()
+        result = php(
+            f"try{{eval(base64_decode('{source}'));$error='';}}"
+            "catch(Throwable $e){$error=$e->getMessage();}"
+            "echo '@@fixture@@'.wp_json_encode(['error'=>$error]);"
+        )
+        return str(result["error"])
+
+    assert "expected post type" in rejected(
+        {"mode": "read", "changes": [{"id": post_id} for post_id in pages]}
+    )
+    before = pair.read(WP, *pages, post_type="post")
+    changes = [
+        {
+            "id": post_id,
+            "before": before["pages"][str(post_id)],
+            "after": f"<p>Reviewed {lang}.</p>",
+            "before_excerpt": before["excerpts"][str(post_id)],
+            "after_excerpt": f"Reviewed excerpt {lang}.",
+        }
+        for post_id, lang in zip(pages, ("en", "de"), strict=True)
+    ]
+    payload = {
+        "mode": "adopt",
+        "post_type": "post",
+        "changes": changes,
+        "metadata_before": before["metadata"],
+    }
+    stale = [changes[0], {**changes[1], "before_excerpt": "Stale excerpt."}]
+    assert "excerpt changed since backup" in rejected({**payload, "changes": stale})
+    assert pair.read(WP, *pages, post_type="post") == before
+
+    receipt = pair.invoke(WP, payload)
+    observed = pair.read(WP, *pages, post_type="post")
+    assert observed["pages"] == {str(c["id"]): c["after"] for c in changes}
+    assert observed["excerpts"] == {str(c["id"]): c["after_excerpt"] for c in changes}
+    assert observed["metadata"] == receipt["expected_metadata"]
+    assert observed["current"] is True
+    pair.invoke(
+        WP,
+        {
+            "mode": "restore",
+            "post_type": "post",
+            "changes": [
+                {
+                    "id": c["id"],
+                    "before": c["after"],
+                    "after": c["before"],
+                    "before_excerpt": c["after_excerpt"],
+                    "after_excerpt": c["before_excerpt"],
+                }
+                for c in changes
+            ],
+            "metadata_before": observed["metadata"],
+            "metadata_restore": before["metadata"],
+        },
+    )
+    assert pair.read(WP, *pages, post_type="post") == before

@@ -68,3 +68,26 @@
 - **初稿。** 给链接加「Produkt ansehen」和商品名称，沿用英文图片描述。
 - **质询。** Woo 在缩略图过滤器之后生成链接，原生可访问名称取图像 `alt`。一条本地化的同义描述可以同时保留识别目的地的型号和图像内容。适用范围为德语 Woo 草稿中的这两条现有描述，其他附件及原语种仍从原数据渲染。
 - **定稿。** `SAJ B2-10.0-HV1: drei weiße Module auf einem grauen Sockel` / `SAJ BC2-HV1: Steuermodul oben auf dem B2-Stapel`。在 `de_DE_formal` 用真实商品和 Woo 原生购物车模板核对，图片地址保持原值。评审站加载候选插件后，访客从两个德语商品页加购，在 Lösungsentwurf 中按上述图片名称均能找到对应商品链接。Chromium 整页回归通过。
+
+## 安装商博客
+
+551–560 与十篇德语孪生以评审站 WordPress 原文为准。下表列出七对确有工程选型误导的文章。逐句英德原文和独立撰写的定稿见 [博客迁移](../../../../tools/migrate/installer-blog-copy.py) 对应 ID，553 / 6887 的摘要也同步改为按负荷与运行时段定容。
+
+| 文章 EN / DE | 初稿处理 | 对抗评审 | 定稿 |
+|---|---|---|---|
+| 混合逆变器与 AC 耦合 551 / 6883 | 将效率比较从耦合方式改为设备实测。 | 删除转换次数与效率结果之间的必然因果，同时说明共用 AC 布线与监测控制的区别。保留新装和改造各自的选型价值。 | DC 耦合充电省去先转 AC 的步骤。AC 耦合改造可利用已有 PV 逆变器。比较时看预期负荷下的系统实测效率，并计入第二台逆变器的调试。 |
+| 逆变器与电池配对 552 / 6885 | 将电池优先的开机顺序改为设备说明书指引。 | GoodWe ET 与 SAJ H2 手册的开机顺序不同。电池品牌、总线名称或固定电压分类也不能确认具体机型组合获准使用。 | 让型号、模块数、电压窗口、通信接口和固件回到兼容表与安装说明，保留交接前的读数及充放电测试。 |
+| 家用备电定容 553 / 6887 | 按停电时段算 kWh，同时沿用 5 → 4.5 kWh 的 LFP 例子。 | 按 24 小时均摊掩盖停电时段的实际用电。SAJ 的 90% 与 Pylontech 的 95% 是不同机型规格。铭牌可用能量也不能直接视作停电时送到负荷的能量。 | 分开校核同时负荷和启动峰值。假设四小时平均负荷 0.3 kW，回路需 1.2 kWh。将 5 → 4.5 kWh 明确归于 SAJ B2-5.0-HV5，并写出起始荷电状态、限值和损耗。卡片摘要同步。扩容按选定电池及逆变器的允许模块数执行。 |
+| 室内外储能 554 / 6889 | 将通用防护等级和温度标称改成按型号核对。 | SAJ B2 的充电起点为 0 °C、放电起点为 −10 °C，已与原文统一的 −20 °C 不符。SAJ B2 也支持落地安装。IP 等级无法独立说明所有安装条件。 | 保留室内通风、间距和摆位价值。室外段写选用厂商明确支持相应环境的型号，核对现场暴露条件和充放电各自的温度范围。 |
+| 光储调试 555 / 6891 | 采用产品手册的开机顺序，保留调试检查项。 | 不在通用文章中复述某套设备的开关步骤。兼容文档对不同设备组合列出不同固件条件。 | 按安装组合的说明书开机、设定固件、核对读数并做功能测试，实际并网参数和限发值按项目条件执行。 |
+| 家用储能与自用 559 / 6899 | 去掉 50–70% 外送和超过 80% 自用的固定比率。 | 用电时段与 PV 出力决定电量重叠。发生停电时，备电回路和 PV 能否继续供电也受设备及接线影响。 | 比较同一家庭有无储能，按时间匹配发电与负荷，并纳入可用容量、充放电能力和损耗。备电段只讲项目实际接入的回路。 |
+| 工商业削峰 560 / 6901 | 保留 500 → 350 kW、150 kW / 300 kWh，估算单个计费时段的费用影响。 | 满额削峰要区分电池输出功率、区间送出能量和可用容量。一个区间变低不足以证明账单峰值降低。Netze BW 同时列有年度与月度费率，不能预设按月，也没有通用备电时长。 | 例中持续一刻钟须输出 150 kW、送出 37.5 kWh。若实际费率取最高一刻钟均值且整个计价周期的峰值由 500 降至 350 kW，费用差为 150 kW 乘当期同一功率单价。备电按可同时运行的负荷、目标时长与预留能量计算。 |
+
+原始依据
+
+- AC/DC 耦合与自用率模型使用 HTW Berlin 的系统实测及负荷假设。[Stromspeicher-Inspektion 2026](https://solar.htw-berlin.de/studien/stromspeicher-inspektion-2026/) · [Unabhängigkeitsrechner FAQ](https://solar.htw-berlin.de/faq-unabhaengigkeitsrechner/)
+- 开机次序与固件条件采用所售相关设备的原厂资料。[GoodWe ET / ET Plus / BT §7.2](https://de-linker.com/wp-content/uploads/2026/09/goodwe-et-et-plus-bt-user-manual-en.pdf) · [SAJ H2 §5.1](https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf) · [GoodWe EMEA 兼容表](https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf)
+- 备电按关键负荷和停电时段，电池用实际产品的可用容量。SAJ B2 数据表也给出充放电温度和安装方式。[REopt Module 6](https://www.nlr.gov/reopt/curriculum/videos/reopt-lite-tutorial-module-6-text) · [SAJ B2 数据表](https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf) · [Pylontech Force H3 数据表](https://de-linker.com/wp-content/uploads/2026/09/Pylontech_Force-H3_Datenblatt_DE-SD-260507.pdf)
+- 示例的一刻钟为明确假设。当地实际计费应看适用费率的量价合同。[Netze BW 2026 费率表 1、3](https://assets.cdn.netze-bw.de/xytfb1vrn7of/7eQvxehZzn3ECbR9rALmyD/ecc795b9dcd666ce1f53d9d04362a321/netzentgelte-strom-netze-bw-gmbh-2026.pdf) · [Netze BW 2026 规则 §4.1.1 及年度最大需量定义](https://assets.cdn.netze-bw.de/xytfb1vrn7of/2xbvzba27IJwe250rd5DmE/f7821823df3bf261de1e55a472b35db2/regelungen-fuer-die-nutzung-des-stromverteilnetzes-2026.pdf)
+
+评审站已对七对原文及两条摘要运行只读差异预览。迁移离线套件 389 项通过，33 项按环境跳过。`c222` 私有文章夹具验证了错误类型拒绝、摘要冲突时整对无改动，以及正文、摘要与德语基线的同事务保存和恢复。两轮夹具 9149–9152 均已删除并读回确认。发布前按现有恢复流程备份，并在封面替代文本处理完成后重新读取配对及翻译基线，再应用并读回七对文章。

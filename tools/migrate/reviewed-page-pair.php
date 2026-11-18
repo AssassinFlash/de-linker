@@ -27,13 +27,25 @@ use Linker\I18n\Woo\Projection;
 	}
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- JSON transport only, never executable data.
 	$pair = json_decode( base64_decode( '__REVIEWED_PAIR_PAYLOAD__' ), true, 512, JSON_THROW_ON_ERROR );
-	if ( 2 !== count( $pair['changes'] ) ) {
-		throw new RuntimeException( 'Exactly two explicit pages are required.' );
+	$post_type = $pair['post_type'] ?? 'page';
+	if ( ! in_array( $post_type, array( 'page', 'post' ), true ) || 2 !== count( $pair['changes'] ) ) {
+		throw new RuntimeException( 'Exactly two explicit pages or two explicit blog posts are required.' );
 	}
 	$en = (int) $pair['changes'][0]['id'];
 	$de = (int) $pair['changes'][1]['id'];
 	if ( $en === $de || 'en' !== pll_get_post_language( $en ) || 'de' !== pll_get_post_language( $de ) || (int) pll_get_post( $en, 'de' ) !== $de ) {
-		throw new RuntimeException( 'Expected the explicit English/German page pair.' );
+		throw new RuntimeException( 'Expected the explicit English/German pair.' );
+	}
+	$pages    = array();
+	$excerpts = array();
+	foreach ( array( $en, $de ) as $id ) {
+		clean_post_cache( $id );
+		$post = get_post( $id );
+		if ( ! $post instanceof WP_Post || $post_type !== $post->post_type ) {
+			throw new RuntimeException( 'The reviewed object does not have the expected post type.' );
+		}
+		$pages[ $id ]    = $post->post_content;
+		$excerpts[ $id ] = $post->post_excerpt;
 	}
 	if ( 'InnoDB' !== $wpdb->get_var( $wpdb->prepare( 'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s', $wpdb->postmeta ) ) ) {
 		throw new RuntimeException( 'Transactional translation metadata is required.' );
@@ -76,30 +88,24 @@ use Linker\I18n\Woo\Projection;
 	$rules      = Rules::load( WP_PLUGIN_DIR . '/linker-i18n/data' );
 	$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, $client, new Validator( $rules ), $twins, $links );
 	if ( 'read' === $pair['mode'] ) {
-		$pages = array();
-		foreach ( array( $en, $de ) as $id ) {
-			clean_post_cache( $id );
-			$post = get_post( $id );
-			if ( ! $post instanceof WP_Post || 'page' !== $post->post_type ) {
-				throw new RuntimeException( 'The reviewed page no longer exists.' );
-			}
-			$pages[ $id ] = $post->post_content;
-		}
-		echo '@@reviewed-pair@@' . wp_json_encode(
-			array(
-				'home'     => home_url(),
-				'pages'    => $pages,
-				'metadata' => $read(),
-				'current'  => $translator->current( State::POST, $en ),
-			)
+		$snapshot = array(
+			'home'     => home_url(),
+			'pages'    => $pages,
+			'metadata' => $read(),
+			'current'  => $translator->current( State::POST, $en ),
 		);
+		if ( 'post' === $post_type ) {
+			$snapshot['excerpts'] = $excerpts;
+		}
+		echo '@@reviewed-pair@@' . wp_json_encode( $snapshot );
 		return;
 	}
 	if ( ! in_array( $pair['mode'], array( 'adopt', 'restore' ), true ) ) {
 		throw new RuntimeException( 'Unknown reviewed pair operation.' );
 	}
-	$en_changed = $pair['changes'][0]['before'] !== $pair['changes'][0]['after'];
-	$de_changed = $pair['changes'][1]['before'] !== $pair['changes'][1]['after'];
+	$changed    = static fn( array $change ): bool => $change['before'] !== $change['after'] || ( $change['before_excerpt'] ?? null ) !== ( $change['after_excerpt'] ?? null );
+	$en_changed = $changed( $pair['changes'][0] );
+	$de_changed = $changed( $pair['changes'][1] );
 	if ( ! $en_changed && ! $de_changed ) {
 		throw new RuntimeException( 'A write requires at least one reviewed page to change.' );
 	}
@@ -147,14 +153,14 @@ use Linker\I18n\Woo\Projection;
 			$locked = true;
 		}
 	};
-	$adopt          = static function ( int $id ) use ( $en, $de, $pair, $keys, $read, $translator, &$adopted, &$expected ): void {
+	$adopt          = static function ( int $id ) use ( $en, $de, $post_type, $pair, $keys, $read, $translator, &$adopted, &$expected ): void {
 		if ( $id !== $de ) {
 			return;
 		}
 		foreach ( $pair['changes'] as $change ) {
 			clean_post_cache( (int) $change['id'] );
 			$post = get_post( (int) $change['id'] );
-			if ( ! $post instanceof WP_Post || 'page' !== $post->post_type || $post->post_content !== $change['after'] ) {
+			if ( ! $post instanceof WP_Post || $post_type !== $post->post_type || $post->post_content !== $change['after'] || ( isset( $change['after_excerpt'] ) && $post->post_excerpt !== $change['after_excerpt'] ) ) {
 				throw new RuntimeException( 'Both reviewed texts must precede baseline adoption.' );
 			}
 		}
