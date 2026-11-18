@@ -20,6 +20,20 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def test_about_registration_cards_open_the_localized_business_signup() -> None:
+    before = (
+        '<a class="row" href="/my-account/"><span class="no">03</span><span class="row-body"><strong>Create a partner account</strong></span></a>',
+        '<a class="row" href="/de/mein-konto/"><span class="no">03</span><span class="row-body"><strong>Partnerkonto erstellen</strong></span></a>',
+    )
+    portal = '<a href="/my-account/">Partner Portal</a>'
+    after = controls.plan_pair("about_registration", portal + before[0], before[1])
+    assert after == (
+        portal + before[0].replace("/my-account/", "/my-account/register/"),
+        before[1].replace("/de/mein-konto/", "/de/mein-konto/registrieren/"),
+    )
+    assert controls.plan_pair("about_registration", *after) == after
+
+
 def thank_you_pair() -> tuple[str, str]:
     """Actual relevant fragments, without copying either full WordPress page."""
     en = """the contact page and the full project request both reach the same colleague.
