@@ -103,8 +103,7 @@ final class CheckoutTest extends TestCase {
 		ob_start();
 		$checkout->next_steps();
 		$html = (string) ob_get_clean();
-		$this->assertStringContainsString( 'We reply within one business day.', $html );
-		$this->assertStringContainsString( 'reply to the email address', $html );
+		$this->assertStringContainsString( 'We reply within one business day to the email address you provided.', $html );
 		$this->assertStringContainsString( 'linker-inquiry-success woocommerce-message', $html );
 		$this->assertStringContainsString( 'href="http://site/my-account/inquiries/"', $html );
 		$this->assertStringContainsString( 'View inquiries', $html );

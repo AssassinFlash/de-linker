@@ -251,11 +251,11 @@ final class ApprovalTest extends IntegrationTestCase {
 		$approved = $this->approval_mail_body( 'de_DE_formal', Approval::APPROVED );
 		$this->assertStringContainsString( 'Ihr Partner-Konto bei Linker ist freigegeben.', $approved );
 		$this->assertStringContainsString(
-			'Die Nettopreise werden jetzt zu jedem Produkt angezeigt. Legen Sie die benötigten Systeme in Ihren Lösungsentwurf und fordern Sie die Proformarechnung an, wenn er fertig ist.',
+			'Sie sehen jetzt die verfügbaren Nettopreise. Ihren Lösungsentwurf können Sie als Anfrage senden.',
 			$approved
 		);
 		$this->assertStringContainsString( 'Zu den Produkten', $approved, 'The link reuses the existing term.' );
-		$this->assertStringNotContainsString( 'Net prices are now shown', $approved, 'No English sentence in a German body.' );
+		$this->assertStringNotContainsString( 'You can now see net prices where available', $approved, 'No English sentence in a German body.' );
 
 		$restricted = $this->approval_mail_body( 'de_DE_formal', Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->assertStringContainsString( 'Ihr Partner-Konto ist vorerst eingeschränkt.', $restricted );
@@ -267,14 +267,14 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'Schreiben Sie uns, und wir sehen uns Ihr Konto erneut an.', $restricted );
 
 		$rejected = $this->approval_mail_body( 'de_DE_formal', Approval::REJECTED, 'Das Konto konnte nicht verifiziert werden.' );
-		$this->assertStringContainsString( 'Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung bleibt deshalb geschlossen.', $rejected );
+		$this->assertStringContainsString( 'Ihr Partner-Konto bei Linker wurde abgelehnt. Sie können sich mit diesem Konto nicht anmelden.', $rejected );
 		$this->assertStringContainsString( 'Unser Grund:', $rejected );
 		$this->assertStringContainsString( 'Bei Fragen schreiben Sie an sales@de-linker.com.', $rejected );
 
 		$approved_en = $this->approval_mail_body( 'en_US', Approval::APPROVED );
 		$this->assertStringContainsString( 'Your Linker partner account is approved.', $approved_en );
 		$this->assertStringContainsString(
-			'Net prices are now shown with every product. Add the systems you need to your solution draft, and request the Proforma when the draft is ready.',
+			'You can now see net prices where available. You can send your solution draft as an inquiry.',
 			$approved_en
 		);
 
@@ -288,7 +288,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'Write to us and we will look at your account again.', $restricted_en );
 
 		$rejected_en = $this->approval_mail_body( 'en_US', Approval::REJECTED, 'We could not verify the business.' );
-		$this->assertStringContainsString( 'We cannot approve your Linker partner account. Signing in therefore stays closed.', $rejected_en );
+		$this->assertStringContainsString( 'Your Linker partner account was not approved. You cannot sign in with this account.', $rejected_en );
 		$this->assertStringContainsString( 'If you have questions, write to sales@de-linker.com.', $rejected_en );
 	}
 

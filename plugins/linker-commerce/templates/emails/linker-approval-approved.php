@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p><?php esc_html_e( 'Your Linker partner account is approved.', 'linker-commerce' ); ?></p>
-<p><?php esc_html_e( 'Net prices are now shown with every product. Add the systems you need to your solution draft, and request the Proforma when the draft is ready.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'You can now see net prices where available. You can send your solution draft as an inquiry.', 'linker-commerce' ); ?></p>
 <p>
 	<a class="link" href="<?php echo esc_url( (string) wc_get_page_permalink( 'shop' ) ); ?>"><?php esc_html_e( 'Browse products', 'linker-commerce' ); ?></a>
 	&nbsp;&bull;&nbsp;

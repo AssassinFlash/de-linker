@@ -2375,8 +2375,7 @@ msgstr "Anfrage eingegangen"
 msgid "Inquiry saved for review"
 msgstr "Anfrage zur Prüfung gespeichert"
 
-#: includes/Inquiry/Checkout.php:122 includes/Inquiry/Form.php:156
-#: templates/emails/linker-inquiry-received.php:49
+#: includes/Inquiry/Form.php:156
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
@@ -2388,10 +2387,12 @@ msgstr "Konto mit dieser E-Mail-Adresse erstellen"
 msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
-#: includes/Inquiry/Checkout.php:125
+#: includes/Inquiry/Checkout.php:122
 #: templates/emails/linker-inquiry-received.php:49
-msgid "The Linker team will reply to the email address you provided."
-msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
+msgid "We reply within one business day to the email address you provided."
+msgstr ""
+"Sie erhalten innerhalb eines Arbeitstags eine Antwort an die angegebene "
+"E-Mail-Adresse."
 
 #: includes/Inquiry/Checkout.php:126
 msgid "You can also email sales@de-linker.com and quote this inquiry number."
@@ -6373,12 +6374,11 @@ msgstr "Ihr Partner-Konto bei Linker ist freigegeben."
 
 #: templates/emails/linker-approval-approved.php:24
 msgid ""
-"Net prices are now shown with every product. Add the systems you need to "
-"your solution draft, and request the Proforma when the draft is ready."
+"You can now see net prices where available. You can send your solution "
+"draft as an inquiry."
 msgstr ""
-"Die Nettopreise werden jetzt zu jedem Produkt angezeigt. Legen Sie die "
-"benötigten Systeme in Ihren Lösungsentwurf und fordern Sie die "
-"Proformarechnung an, wenn er fertig ist."
+"Sie sehen jetzt die verfügbaren Nettopreise. Ihren Lösungsentwurf können "
+"Sie als Anfrage senden."
 
 #: templates/emails/linker-approval-approved.php:28
 msgid "Your account"
@@ -6386,11 +6386,11 @@ msgstr "Ihr Konto"
 
 #: templates/emails/linker-approval-rejected.php:23
 msgid ""
-"We cannot approve your Linker partner account. Signing in therefore stays "
-"closed."
+"Your Linker partner account was not approved. You cannot sign in with "
+"this account."
 msgstr ""
-"Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung "
-"bleibt deshalb geschlossen."
+"Ihr Partner-Konto bei Linker wurde abgelehnt. Sie können sich mit diesem "
+"Konto nicht anmelden."
 
 #: templates/emails/linker-approval-rejected.php:27
 msgid "If you have questions, write to sales@de-linker.com."

@@ -2179,8 +2179,7 @@ msgstr ""
 msgid "Inquiry saved for review"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:122 includes/Inquiry/Form.php:156
-#: templates/emails/linker-inquiry-received.php:49
+#: includes/Inquiry/Form.php:156
 msgid "We reply within one business day."
 msgstr ""
 
@@ -2192,9 +2191,9 @@ msgstr ""
 msgid "View inquiries"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:125
+#: includes/Inquiry/Checkout.php:122
 #: templates/emails/linker-inquiry-received.php:49
-msgid "The Linker team will reply to the email address you provided."
+msgid "We reply within one business day to the email address you provided."
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:126
@@ -5846,8 +5845,8 @@ msgstr ""
 
 #: templates/emails/linker-approval-approved.php:24
 msgid ""
-"Net prices are now shown with every product. Add the systems you need to "
-"your solution draft, and request the Proforma when the draft is ready."
+"You can now see net prices where available. You can send your solution "
+"draft as an inquiry."
 msgstr ""
 
 #: templates/emails/linker-approval-approved.php:28
@@ -5856,8 +5855,8 @@ msgstr ""
 
 #: templates/emails/linker-approval-rejected.php:23
 msgid ""
-"We cannot approve your Linker partner account. Signing in therefore stays "
-"closed."
+"Your Linker partner account was not approved. You cannot sign in with "
+"this account."
 msgstr ""
 
 #: templates/emails/linker-approval-rejected.php:27
