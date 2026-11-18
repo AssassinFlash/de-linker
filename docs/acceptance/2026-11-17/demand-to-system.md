@@ -251,6 +251,10 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 **清空串组组件后的提示审校。** 初稿 “Select at least one module.” / „Wählen Sie mindestens ein Modul aus.“ 只说明数量。安装商还可以取消编辑并保留已保存的串组。定稿关联到该逆变器的阵列选择器。EN “Select at least one module for this string or cancel editing.” DE „Wählen Sie mindestens ein Modul für diesen String aus oder brechen Sie die Bearbeitung ab.“
 
+**从有串组的项目切到纯储能。** Delft 访客在修订 2 保存了 5 块组件的串组。取消切换保留光储范围，确认切换后进入 Energy use。比较请求为 `storage_only`，单机和多机串组计划均已解除。修订 4 的冻结报告 `28cf3c36441f418aa7f8988441fba981` 共 5 页，列出 13.5 kWh、逆变器和电表各 1 件、BU2 电池模块 3 件。PDF 中没有 PV 接线表。该短期项目已从访客入口删除。
+
+**汉堡两款逆变器的评审站资料。** H2-25K-T3 和 H2-30K-T3-DE 的电池端口数来自所附 EN BEU 数据表第 2 页。手册第 38 页给出两个型号的最大充放电电流 `2 × 50 A`，第 43 页标出 BAT1、BAT2。评审站 `engineering-feed` 已按端口和方向返回每口 50 A 的上限。评审引擎重新加载 Woo 修订 `b87bd47f` 后通过工程就绪确认。汉堡原访客的 `products/current` 返回 HTTP 200，发布修订与已加载修订一致，两个型号均返回 BAT1、BAT2。主线为这次资料写入保留 `cutover-20261118-1340` 和一份 `1132-review-h2-ports.json` 定点回滚回执，至该批生产验收完成后按实例保留规则回收。
+
 ### 保留旧逆变器并增购储能
 
 评审项目 `79c24839c37843039476062e9b0c6215` 的修订 3 在英德冻结 PDF 中均列出 SAJ H2-25K-T3 ×1 为现场保留设备。德语报告写明「bleibt am Standort, keine Beschaffung」。客户确认后，Woo 草稿列出 SAJ B2-10.0-HV1 电池 ×1、SAJ BC2-HV1 控制器 ×1，均关联该项目的修订 3。在德语入口重开仍可查看项目和采购数量，并可生成德语 PDF。
