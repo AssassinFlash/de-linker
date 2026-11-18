@@ -449,8 +449,9 @@ def _from_product(
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
         raw_figures = payload.get("figures")
+        documents = payload.get("documents") or []
         if isinstance(raw_figures, dict):
-            _add_figures(gathered, product_id, raw_figures, locale)
+            _add_figures(gathered, product_id, raw_figures, documents, locale)
         _add_commerce(
             gathered,
             product_id,
@@ -461,7 +462,7 @@ def _from_product(
         )
         # The product's hosted documents (datasheet, manual): linkable as
         # document blocks `pID.document.N`, never as a URL in the text (#233).
-        for index, document in enumerate(payload.get("documents") or []):
+        for index, document in enumerate(documents):
             if not isinstance(document, dict):
                 continue
             url = document.get("url")
@@ -1079,7 +1080,11 @@ def _from_handoff(
 
 
 def _add_figures(
-    gathered: TurnFacts, product_id: int, figures: dict[str, Any], locale: str
+    gathered: TurnFacts,
+    product_id: int,
+    figures: dict[str, Any],
+    documents: list[Any],
+    locale: str,
 ) -> None:
     """The datasheet figures get-product returns (n_mppt, max_pv_input_v, …).
 
@@ -1104,6 +1109,46 @@ def _add_figures(
         unit = figure.get("unit")
         rendered = f"{value} {unit}" if isinstance(unit, str) and unit else value
         gathered.add(Fact(id=fact_id, value=rendered, source="datasheet-figures"))
+        citation = figure.get("citation")
+        if isinstance(citation, dict):
+            url = citation.get("url")
+            page = citation.get("page")
+            if isinstance(url, str) and url and type(page) is int and page > 0:
+                ref = f"{fact_id}.source"
+                primary = _document(citation, url, page)
+                gathered.documents[ref] = primary
+                supporting = [ref]
+                if figure.get("qualifier"):
+                    for evidence in _figure_evidence(figure, documents):
+                        if (evidence.url, evidence.page) != (url, page):
+                            extra_ref = f"{ref}.{len(supporting)}"
+                            gathered.documents[extra_ref] = evidence
+                            supporting.append(extra_ref)
+                gathered.supporting_documents[fact_id] = tuple(supporting)
+
+
+def _figure_evidence(figure: dict[str, Any], documents: list[Any]) -> list[Document]:
+    """Resolve compound evidence only against the product's published documents."""
+    by_id = {
+        document.get("document_id"): document
+        for document in documents
+        if isinstance(document, dict) and isinstance(document.get("document_id"), str)
+    }
+    refs = figure.get("evidence_refs")
+    if not isinstance(refs, list):
+        return []
+    evidence = []
+    for ref in refs:
+        if not isinstance(ref, str):
+            continue
+        document_id, _, page = ref.rpartition(":p")
+        if document_id not in by_id or not re.fullmatch(r"[1-9][0-9]*", page):
+            continue
+        document = by_id[document_id]
+        url = document.get("url")
+        if isinstance(url, str) and url:
+            evidence.append(_document(document, url, int(page)))
+    return evidence
 
 
 def _document(document: dict[str, Any], url: str, page: Any) -> Document:

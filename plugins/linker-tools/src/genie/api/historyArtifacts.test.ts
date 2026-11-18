@@ -63,6 +63,7 @@ const permission = {
 		{
 			document_id: 'doc',
 			document_revision: 'revision-1',
+			product_ids: [ 1, 2, 3573 ],
 			url: PDF.split( '#' )[ 0 ],
 		},
 	],
@@ -471,6 +472,67 @@ test.each( [ undefined, 'false', true ] )(
 		expect( restored.turn?.blocks[ 1 ] ).toMatchObject( { prices: [] } );
 	}
 );
+
+test( 'reopening a shared PDF checks the cited product, including translated product and figure refs', async () => {
+	const document = {
+		type: 'document' as const,
+		document_id: 'doc',
+		document_revision: 'revision-1',
+		url: PDF.replace( '#page=1', '#page=38' ),
+		label: 'Historical manual · p. 38',
+	};
+	const refs = [
+		'p1179.max_battery_charge_a.source',
+		'p1179.battery.charge.source.1',
+		'p1179.document.0',
+		'p91179.max_battery_charge_a.source',
+		'p91181.battery.charge.source.1',
+		'p1181.document.0',
+		'p91181.max_battery_charge_a.source',
+		'p8181.max_battery_charge_a.source',
+		'c99',
+		'compat.document.1179.0',
+		'compat.document.0',
+	];
+	const manifest = {
+		...permission,
+		products: [
+			{ product_id: 1179, published_locale_ids: [ 1179, 91179 ] },
+			{ product_id: 1181, published_locale_ids: [ 1181, 91181 ] },
+		],
+		documents: [ { ...permission.documents[ 0 ], product_ids: [ 1181 ] } ],
+	};
+	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => ( {
+		ok: true,
+		json: async () =>
+			String( url ).endsWith( '/publication/manifest' )
+				? manifest
+				: {
+						...product,
+						product_id: Number(
+							new URL( String( url ), PDF ).searchParams.get(
+								'input[product_id]'
+							)
+						),
+						model: 'Current model',
+					},
+	} ) ) as unknown as typeof fetch;
+	const restored = await restoreArtifacts(
+		{ meta: null, blocks: refs.map( ( ref ) => ( { ...document, ref } ) ) },
+		{ ...context, locale: 'de' },
+		'n',
+		fetcher
+	);
+	expect( restored.blocks ).toMatchObject( [
+		...Array( 4 ).fill( { url: null, label: document.label } ),
+		...Array( 3 ).fill( {
+			url: document.url,
+			label: 'Current model · Datasheet (EN) · S. 38',
+		} ),
+		{ url: null, label: document.label },
+		...Array( 3 ).fill( { url: document.url } ),
+	] );
+} );
 
 test( 'a shared series PDF is attributed to the document ref product rather than the first card', async () => {
 	const turn = {

@@ -153,10 +153,11 @@ def _hydrate_priced(
             replacements[marker] = value
             return marker
 
-        if facts.qualifications:
-            # Rehydrate from the exact original placeholders. Only the
-            # qualified placeholder occurrence and its appended source quote
-            # are masked; equal values from other facts stay visible to seal.
+        if facts.qualifications or any(
+            ref in facts.facts and facts.facts[ref].source == "datasheet-figures"
+            for ref in facts.supporting_documents
+        ):
+            # Protect the exact cited figure occurrence through the final seal.
             protected = hydrate(completed, facts, expected, qualified_mask=token)
             protected, _, _ = fill(protected, priced_facts)
         else:

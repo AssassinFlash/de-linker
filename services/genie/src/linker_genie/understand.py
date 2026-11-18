@@ -100,6 +100,7 @@ class Prepared:
     # This layer's own phase timings (#336, timing.py); the app adopts them into
     # the turn's clock. None when the layer did not time itself.
     timing: timing.Timing | None = None
+    product_scope: tuple[int, ...] = ()
 
     @property
     def calls_made(self) -> int:
@@ -342,8 +343,25 @@ class Understander:
                     reasons=("verified saved material explanation",),
                 )
         log.update(route.as_log())
+        # A catalog-wide recommendation or a pairing can discover products that
+        # were not named. A model lookup and a technical comparison use the
+        # resolved subject, including a current page the question refers to.
+        scoped = route.name in ("documents", "compare") or (
+            route.name == "products"
+            and any(model.product_ids for model in route.named_models)
+            and (
+                reading is None
+                or reading.intent not in ("find_products", "pairing_compatibility")
+            )
+            and not any(call.arguments.get("extreme") for call in route.calls)
+        )
         prepared = Prepared(
-            route=route, log=log, reading=reading, readings=fresh, timing=clock
+            route=route,
+            log=log,
+            reading=reading,
+            readings=fresh,
+            timing=clock,
+            product_scope=subject.ids if scoped else (),
         )
         _run_calls(prepared, request, client, self._search, self._pages, clock)
         _add_readings(

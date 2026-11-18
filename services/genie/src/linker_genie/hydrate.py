@@ -193,8 +193,13 @@ def hydrate(
         for ref in block.refs
         if ref in facts.qualifications
     )
+    figure_sources = _figure_source_refs(output, facts)
+    figure_pages = {
+        (facts.documents[ref].url, facts.documents[ref].page) for ref in figure_sources
+    }
     emitted: set[tuple[str, str]] = set()
-    for block in [*output.blocks, *cited_documents(output, facts)]:
+    figure_links = [DocumentBlock(ref=ref) for ref in figure_sources]
+    for block in [*output.blocks, *figure_links, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
             text = fill(
                 block.text,
@@ -236,10 +241,23 @@ def hydrate(
                 continue
             key = (
                 document.url,
-                document.page if block.ref in condition_refs | parameter_refs else None,
+                document.page
+                if block.ref in condition_refs | parameter_refs
+                or (document.url, document.page) in figure_pages
+                else None,
             )
             if key in links:
                 index, first, pages = links[key]
+                previous = blocks[index]
+                if (
+                    block.ref in figure_sources
+                    and isinstance(previous, DocumentBlock)
+                    and previous.ref not in figure_sources
+                ):
+                    # Keep the figure's provenance when the model also links this page.
+                    first = document
+                    blocks[index] = block
+                    links[key] = (index, first, pages)
             else:
                 index, first, pages = len(blocks), document, []
                 blocks.append(block)
@@ -255,6 +273,20 @@ def hydrate(
         else:
             blocks.append(block)
     return output.model_copy(update={"blocks": blocks})
+
+
+def _figure_source_refs(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    return [
+        ref
+        for block in output.blocks
+        if isinstance(block, (TextBlock, HandoffBlock))
+        for fact_id in PLACEHOLDER.findall(
+            block.text if isinstance(block, TextBlock) else block.summary
+        )
+        if (fact := _lookup(facts, fact_id)) is not None
+        if fact.source == "datasheet-figures"
+        for ref in facts.supporting_documents.get(fact.id, ())
+    ]
 
 
 def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]:
@@ -466,6 +498,12 @@ def fill(
             if unit and after and after.strip() == unit.group(1):
                 return value
             return value + after
+        if (
+            qualified_mask is not None
+            and fact.source == "datasheet-figures"
+            and fact.id in facts.supporting_documents
+        ):
+            return qualified_mask(fact.value) + after
         unit_word = _unit(match.group(1)) if fact.source == "selection-facts" else None
         following = text[match.start(2) :].lstrip().lower()
         if unit_word and not following.startswith(unit_word.lower()):

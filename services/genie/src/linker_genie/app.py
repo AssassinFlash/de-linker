@@ -318,7 +318,13 @@ def _compute_turn(
     )
     try:
         result, service_block = _answer(
-            body, prepared, request, commerce, clock, abilities=abilities
+            body,
+            prepared,
+            request,
+            commerce,
+            clock,
+            abilities=abilities,
+            publication=original_permission,
         )
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         with timing.phase(clock, timing.LOG):
@@ -517,6 +523,7 @@ def _answer(
     clock: timing.Timing | None = None,
     *,
     abilities: Abilities,
+    publication: Snapshot | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); a short-code clarification (route.answer); a scripted
@@ -727,7 +734,11 @@ def _answer(
             None,
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        abilities, prepared=prepared, pages=page_reader().read, clock=clock
+        abilities,
+        prepared=prepared,
+        pages=page_reader().read,
+        clock=clock,
+        publication=publication,
     )
     # The same list the model tools append to during `generate` (inside
     # `run`). A tuple taken here would miss a search-products 500 the model
