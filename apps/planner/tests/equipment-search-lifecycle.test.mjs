@@ -154,7 +154,6 @@ function makeRun(
 								pv_dc_kw: 200,
 								required_usable_kwh: 61.4,
 								required_discharge_ac_kw: 100,
-								equipment_use: null,
 								product_revisions: {
 									101: "6".repeat(64),
 									201: "6".repeat(64),
@@ -239,6 +238,7 @@ async function equipmentApp(
 		effectivePv = null,
 		pvFailure = null,
 		legacyInputs = null,
+		savedRun = legacyInputs ? makeRun(projectId, "succeeded") : null,
 		legacyUnavailable = false,
 	},
 ) {
@@ -305,7 +305,7 @@ async function equipmentApp(
 	let lostReceipt = null;
 	let reportRun = null;
 	const revisions = new Map([[project.revision, structuredClone(project)]]);
-	let serverRun = legacyInputs ? makeRun(projectId, "succeeded") : null,
+	let serverRun = savedRun,
 		nextScope = session.query_scope,
 		admittedScope = session.query_scope;
 	const store = {
@@ -1295,7 +1295,10 @@ for (const [multi, selection] of [
 				101,
 			);
 		} else {
-			assert.equal(saved.equipment_selection.equipment_use, null);
+			assert.equal(
+				Object.hasOwn(saved.equipment_selection, "equipment_use"),
+				false,
+			);
 			assert.equal(saved.equipment_setup.application, "commercial");
 			assert.equal(saved.equipment_selection.application, undefined);
 		}
@@ -1485,6 +1488,44 @@ for (const adopted of [true, false]) {
 		assert.deepEqual(app.requests, []);
 	});
 }
+
+test("a retrofit with selected equipment keeps the drawn solar capacity when the comparison has no PV rating", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { default: geometry } = await import(
+		"../../../fixtures/planning/geometry-flat.json",
+		{ with: { type: "json" } }
+	);
+	const projectId = "c".repeat(32);
+	const run = makeRun(projectId, "succeeded");
+	const candidate = run.result.search.candidates[0];
+	candidate.selection.pv_dc_kw = null;
+	const app = await equipmentApp(t, {
+		projectId,
+		hash: "#sc-system",
+		savedRun: run,
+		inputs: {
+			brief: { ...emptyBrief(), system_scope: "storage_addition" },
+			geometry,
+			equipment_setup: {
+				...candidate.selection,
+				comparison_models: {
+					inverter_product_id: null,
+					battery_product_id: null,
+				},
+			},
+			equipment_candidate: {
+				run_id: run.id,
+				candidate_id: candidate.id,
+				assessment_sha256: candidate.assessment_sha256,
+			},
+		},
+	});
+	await untilRun(() => app.button("Selected"));
+	const capacity = [...document.querySelectorAll("dt")].find(
+		(label) => label.textContent === "Solar capacity",
+	);
+	assert.equal(capacity.nextElementSibling.textContent, "2.5 kWp");
+});
 
 test("a failed legacy model read still lets the customer save annual electricity use", async (t) => {
 	const selected = {

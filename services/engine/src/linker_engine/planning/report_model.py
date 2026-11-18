@@ -202,6 +202,38 @@ def build_report(source: Object) -> Report:
     if isinstance(geometric_pv, list):
         sections.extend(geometric_pv_sections(geometric_pv, locale))
 
+    peak_comparison = source.get("peak_comparison")
+    if isinstance(peak_comparison, dict):
+        sections.append(
+            ReportSection(
+                id="peak-shaving-comparison",
+                title=text("peak_comparison", locale),
+                paragraphs=[text("peak_bound_basis", locale)]
+                if peak_comparison["lower_bound_kw"] is not None
+                else [],
+                rows=[
+                    row(label, number(value, locale, "kW"))
+                    for label, field in (
+                        ("peak_target", "target_kw"),
+                        ("retained_profile_peak", "baseline_kw"),
+                        ("peak_optimistic_bound", "lower_bound_kw"),
+                    )
+                    if (value := peak_comparison[field]) is not None
+                ]
+                + [
+                    row(
+                        "peak_result",
+                        text(
+                            "violated"
+                            if peak_comparison["status"] == "violated"
+                            else "unresolved",
+                            locale,
+                        ),
+                    )
+                ],
+            )
+        )
+
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
         selected = {

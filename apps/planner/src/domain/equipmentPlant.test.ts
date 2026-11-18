@@ -348,6 +348,8 @@ test("plant search prepares demand without hardware and adopts one whole candida
 		})),
 	};
 	const hardware = compilePlant(complete, products);
+	// The search worker omits equipment_use when no procurement intent was set.
+	for (const unit of hardware.units) delete unit.selection.equipment_use;
 	const unselected = {
 		...complete,
 		units: complete.units.map((unit) => ({

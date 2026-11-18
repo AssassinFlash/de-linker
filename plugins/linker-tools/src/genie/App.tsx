@@ -247,6 +247,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// before React has re-rendered, and the first turn must carry it too.
 	const [ page, setPage ] = useState< PageContext >( config.page );
 	const pageRef = useRef( config.page );
+	const planningEntry = useRef( true );
 	const plannerNonce = useRef< string | undefined >( undefined );
 	const plannerProofEpoch = useRef( 0 );
 	const savedSourceRead = useRef< Awaited<
@@ -305,13 +306,15 @@ export function App( { config }: { config: GenieConfig } ) {
 				Number.isSafeInteger( next.planning_revision ) &&
 				next.planning_revision > 0
 			) {
-				pageRef.current = next;
 				plannerProofEpoch.current += 1;
 				plannerNonce.current =
 					typeof detail.plannerNonce === 'string'
 						? detail.plannerNonce
 						: undefined;
-				setPage( next );
+				if ( planningEntry.current ) {
+					pageRef.current = next;
+					setPage( next );
+				}
 			}
 		};
 		window.addEventListener( 'linker-genie-planning-context', receive );
@@ -1250,7 +1253,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						locale: config.locale,
 						messages: next,
 						page: postedPage,
-						plannerNonce: plannerNonce.current,
+						plannerNonce: planningEntry.current
+							? plannerNonce.current
+							: undefined,
 						uploads,
 						onOperation: ( operationId ) => {
 							if ( ! draftContext.owns( lease ) ) {
@@ -1431,7 +1436,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					locale: config.locale,
 					messages: next,
 					page: postedPage,
-					plannerNonce: plannerNonce.current,
+					plannerNonce: planningEntry.current
+						? plannerNonce.current
+						: undefined,
 					uploads: payload.uploads,
 					onOperation: ( operationId ) => {
 						if ( ! draftContext.owns( lease ) ) {
@@ -2029,6 +2036,21 @@ export function App( { config }: { config: GenieConfig } ) {
 				} >
 			 ).detail;
 			rememberOpener( detail?.opener );
+			if ( detail?.opener instanceof Element ) {
+				planningEntry.current = detail.opener.hasAttribute(
+					'data-linker-genie-planning'
+				);
+				if ( planningEntry.current ) {
+					window.dispatchEvent(
+						new CustomEvent(
+							'linker-genie-planning-context-request'
+						)
+					);
+				} else {
+					pageRef.current = config.page;
+					setPage( config.page );
+				}
+			}
 			if (
 				! open &&
 				! detail?.entry &&
@@ -2091,6 +2113,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		handOverSolution,
 		receiveEntry,
 		rememberOpener,
+		config.page,
 		open,
 	] );
 

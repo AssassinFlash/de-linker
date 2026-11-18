@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 import pytest
@@ -687,6 +688,136 @@ def test_bom_questions_read_the_exact_planning_project(
 
     assert page.planning_project_id is not None
     assert [call.ability for call in routed.calls] == [planning.NAME]
+
+
+def test_frozen_bom_question_keeps_supply_scope_separate_from_accessory_evidence() -> (
+    None
+):
+    from linker_genie.agent import _user_prompt
+    from linker_genie.understand import Prepared
+
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        revision=3,
+        matches_view_revision=True,
+        is_current=True,
+        rows=[
+            {"label": "Required accessory: Result", "value": "Chint DTSU666"},
+            {
+                "label": "Components and manufacturer conditions",
+                "value": "SAJ's Configuration Instructions V1.0 set up the Chint DTSU666 as the three-phase meter of the H2, HS2 and HS3 systems (section 5.1, PDF pp. 32–33).",
+            },
+            *[
+                {
+                    "label": "Provisional bill of materials",
+                    "value": {
+                        "Quantity": "1 pc",
+                        "Product": product,
+                        "Reference": reference,
+                        "Supply scope": "Selected equipment",
+                    },
+                }
+                for product, reference in (
+                    ("SAJ HS2-10K-T2-X", "DLK-SAJ-HS210KT2X"),
+                    ("Chint DTSU666", "DLK-CHINT-DTSU666"),
+                )
+            ],
+        ],
+    )
+    # Producer rows retained in review conversation 8957, turn 18.
+    raw["rows"] = [
+        {"label": "equipment_setup.accessory_product_ids[0]", "value": 2281},
+        {"label": "equipment_setup.inverter_product_id", "value": "1,182"},
+    ]
+    raw["adopted_equipment"] = {
+        "rows": [
+            {"label": "checks[0].facts[0].source.page", "value": "2"},
+            {"label": "checks[0].facts[0].source.product_id", "value": "1,182"},
+            {"label": "checks[3].actual", "value": "10 kW"},
+            {"label": "checks[4].actual", "value": "2,281"},
+            {"label": "checks[4].id", "value": "required_accessory:2281"},
+            {"label": "checks[4].reason", "value": "manufacturer_required_component"},
+            {"label": "checks[4].status", "value": "satisfied"},
+            {"label": "provisional_bill_of_materials[1].product_id", "value": "2,281"},
+            {"label": "selected_products[1].product_id", "value": "2,281"},
+            {"label": "selected_products[1].sku", "value": "DLK-CHINT-DTSU666"},
+        ]
+    }
+    question = (
+        "Which items and quantities does this frozen planning report list in its "
+        "bill of materials, and what is the source?"
+    )
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [{"role": "user", "content": question}],
+            "locale": "en",
+            "page_context": page.model_dump(),
+        }
+    )
+    route = with_page(
+        Route("documents"), page, True, False, Subject((), {}, {}), question
+    )
+    payload, gathered = planning.record(raw, page)
+    prompt = _user_prompt(
+        request,
+        None,
+        Prepared(
+            route=route,
+            facts=gathered,
+            results=[{"name": planning.NAME, "arguments": {}, "result": payload}],
+        ),
+    )
+
+    assert planning.NAME in [call.ability for call in route.calls]
+    model_text = planning.model_view(payload)["text"]
+    bom_rows = [
+        line
+        for line in model_text.splitlines()
+        if line.startswith("Provisional bill of materials: {")
+    ]
+    assert len(bom_rows) == 2
+    assert all('"Supply scope": "Selected equipment"' in row for row in bom_rows)
+    assert (
+        "product_id" not in model_text and "required_accessory:2281" not in model_text
+    )
+    assert {"2281", "2,281", "1,182"}.isdisjoint(payload["figures"].values())
+    assert {"2281", "2,281", "1,182"}.isdisjoint(
+        fact.value
+        for fact in gathered.facts.values()
+        if fact.id.startswith("planning.n")
+    )
+    assert "manufacturer_required_component" in model_text
+    assert "satisfied" in model_text
+    assert "matches_view_revision=True; is_current=True" in model_text
+    assert gathered.product_ids == set() and gathered.documents == {}
+
+    def read_line(line: str) -> str:
+        return fill(re.sub(r"\[(n\d+)=[^\]]+\]", r"{fact:planning.\1}", line), gathered)
+
+    assert '"Quantity": "1 pc"' in read_line(
+        next(row for row in bom_rows if "DTSU666" in row)
+    )
+    assert '"Reference": "DLK-CHINT-DTSU666"' in model_text
+    assert '"Product": "SAJ HS2-10K-T2-X"' in model_text
+    lines = [read_line(line) for line in model_text.splitlines()]
+    assert "checks[0].facts[0].source.page: 2" in lines
+    assert "checks[3].actual: 10 kW" in lines
+    assert any("section 5.1, PDF pp. 32–33" in line for line in lines)
+    assert "Required accessory: Result: Chint" in model_text
+    assert (
+        "Components and manufacturer conditions: SAJ's Configuration Instructions"
+        in model_text
+    )
+    assert (
+        "use the report's own bill-of-materials rows for its quantities and Supply scope labels"
+        in prompt
+    )
+    assert (
+        "attribute manufacturer requirements and required-accessory checks to their own report sections"
+        in prompt
+    )
 
 
 def test_boss_does_not_trigger_the_bom_route() -> None:

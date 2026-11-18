@@ -418,7 +418,8 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		input_sha256: current.manifest.input_sha256,
 		inputs: { brief: emptyBrief() },
 	};
-	window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+	const deepLink = `?project=${project.id}&run=${earlier.id}#lp-calculations`;
+	window.history.replaceState(null, "", deepLink);
 	globalThis.indexedDB = new IDBFactory();
 	const summary = ({
 		id,
@@ -454,6 +455,7 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		requests = [],
 		filenames = [];
 	let activeScope = scope;
+	let wrongProject = false;
 	const client = {
 		isCurrentScope: (s) => s === activeScope,
 		async query(path, body) {
@@ -472,8 +474,11 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 				assert.equal(body.before_created_at, currentSummary.created_at);
 				return { items: [summary(earlier)], next: null };
 			}
-			if (path === "runs/read")
-				return [current, earlier].find((run) => run.id === body.run_id);
+			if (path === "runs/read") {
+				if (body.run_id === earlier.id)
+					return wrongProject ? preparation.direct_beam.report_run : earlier;
+				return body.run_id === current.id ? current : undefined;
+			}
 			if (path === "draft/preview") return new Promise(() => {});
 			throw new Error(path);
 		},
@@ -497,42 +502,63 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 		[...within.querySelectorAll("button")].find((node) =>
 			node.textContent.trim().startsWith(text),
 		);
-	try {
-		await act(async () =>
+	const { useSiteIntegration } =
+		await import("../src/data/useSiteIntegration.ts");
+	document.querySelector("header").innerHTML =
+		'<a hreflang="de" lang="de" href="/de/konfigurator/">Deutsch</a><a hreflang="en" lang="en" href="/solution-configurator/">English</a>';
+	function Workspace({ locale }) {
+		useSiteIntegration(project.id);
+		return React.createElement(Configurator, {
+			project,
+			client,
+			session: {
+				kind: "guest",
+				query_scope: scope,
+				nonce: "guest-proof",
+				claim_pending: false,
+				runtime: {
+					limits: {
+						max_page_size: 1,
+						max_json_depth: 32,
+						max_body_bytes: 1000000,
+					},
+					models: {},
+				},
+			},
+			store: {
+				read: async () => null,
+				candidates: async () => [],
+				write: async () => {},
+			},
+			config: { locale, countries: {} },
+			recheck() {},
+			close: () => true,
+		});
+	}
+	const render = (locale, key = locale) =>
+		act(async () =>
 			root.render(
 				React.createElement(
 					QueryClientProvider,
 					{ client: cache },
-					React.createElement(Configurator, {
-						project,
-						client,
-						session: {
-							kind: "guest",
-							query_scope: scope,
-							nonce: "guest-proof",
-							claim_pending: false,
-							runtime: {
-								limits: {
-									max_page_size: 1,
-									max_json_depth: 32,
-									max_body_bytes: 1000000,
-								},
-								models: {},
-							},
-						},
-						store: {
-							read: async () => null,
-							candidates: async () => [],
-							write: async () => {},
-						},
-						config: { locale: "en", countries: {} },
-						recheck() {},
-						close: () => true,
-					}),
+					React.createElement(Workspace, { locale, key }),
 				),
 			),
 		);
-		await until(() => button("Earlier calculations"));
+	try {
+		await render("en");
+		await until(() => {
+			const history = dom.element.querySelector(
+				'section[aria-label="Calculation history"]',
+			);
+			return history?.textContent.includes("Project planning report");
+		});
+		assert.deepEqual(
+			requests
+				.filter(([path]) => path === "projects/runs")
+				.map(([, body]) => body.before_id),
+			[null],
+		);
 		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Attach report to inquiry"));
 		const context = () => {
@@ -556,33 +582,71 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			assert.equal(page.planning_unsaved, false);
 			assert.equal(plannerNonce, "guest-proof");
 		};
-		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
-		await ask(button("Download PDF").closest("section"), 3, [current.id]);
-		await act(async () => button("Earlier calculations").click());
-		await until(() => button("Revision 2"));
-		await act(async () => button("Revision 2").click());
-		const history = dom.element.querySelector(
-			'section[aria-label="Calculation history"]',
+		const history = () =>
+			dom.element.querySelector('section[aria-label="Calculation history"]');
+		const languageLink = (lang) =>
+			document.querySelector(`header a[hreflang="${lang}"]`);
+		await ask(history(), 2, [earlier.id]);
+		assert.equal(
+			document.getElementById("lp-calculations").contains(history()),
+			true,
 		);
-		await until(() => history.textContent.includes("Project planning report"));
-		assert.deepEqual(context().page.planning_run_ids, []);
-		await ask(history, 2, [earlier.id]);
+		assert.equal(
+			dom.element.textContent.includes("Projektplanungsbericht"),
+			false,
+		);
 		activeScope = "4".repeat(64);
 		assert.equal(context(), null);
 		activeScope = scope;
 		window.history.replaceState(null, "", `?project=${"f".repeat(32)}`);
 		assert.equal(context(), null);
-		window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+		window.history.replaceState(null, "", deepLink);
+		assert.equal(
+			new URL(languageLink("de").href).searchParams.get("run"),
+			earlier.id,
+		);
+		window.history.replaceState(null, "", languageLink("de").href);
+		await render("de");
+		await until(() => button("Download PDF", history()));
+		await ask(history(), 2, [earlier.id]);
+		assert.equal(history().querySelector('input[type="file"]'), null);
+		await act(async () => button("Download PDF", history()).click());
+		await act(async () =>
+			button("Download bill of materials (CSV)", history()).click(),
+		);
+		assert.match(
+			button("Attach report to inquiry").closest(".sc-draft-transfer")
+				.textContent,
+			/Your inquiry uses the current report \(revision 3\)\./,
+		);
+		await act(async () => button("Attach report to inquiry").click());
+		assert.equal(
+			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
+			current.id,
+		);
+
+		await act(async () => button("Close", history()).click());
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.has("run"),
+			false,
+		);
+		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
 		await ask(button("Download PDF").closest("section"), 3, [current.id]);
 		await ask(dom.element.querySelector(".sc-project-heading"), 3, []);
-		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
-		assert.equal(button("Attach report to inquiry", history), undefined);
-		assert.equal(history.querySelector('input[type="file"]'), null);
-		await act(async () => button("Download PDF", history).click());
-		await act(async () =>
-			button("Download bill of materials (CSV)", history).click(),
-		);
 		await act(async () => button("Download PDF").click());
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Revision 2"));
+		await act(async () => button("Revision 2").click());
+		assert.equal(button("Revision 2").getAttribute("aria-pressed"), "true");
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.get("run"),
+			earlier.id,
+		);
+		await act(async () => button("Revision 2").click());
+		assert.equal(
+			new URL(languageLink("en").href).searchParams.has("run"),
+			false,
+		);
 		const earlierPdf = earlier.result.prepared_asset,
 			earlierCsv = earlier.result.prepared_attachments.bill_of_materials_csv,
 			currentPdf = current.result.prepared_asset;
@@ -596,11 +660,17 @@ test("Review & share asks Genie and downloads the chosen report while inquiry st
 			`linker-planning-${project.id}-r2-en.csv`,
 			`linker-planning-${project.id}-r3-de.pdf`,
 		]);
-		await act(async () => button("Attach report to inquiry").click());
-		assert.equal(
-			requests.find(([path]) => path === "draft/preview")[1].report_run_id,
-			current.id,
-		);
+		await act(async () => root.render(null));
+		cache.clear();
+		wrongProject = true;
+		window.history.replaceState(null, "", deepLink);
+		await render("en");
+		await until(() => button("Refresh calculation status", history()));
+		assert.equal(button("Download PDF"), undefined);
+		assert.equal(button("Ask Genie", history()), undefined);
+		await act(async () => button("Close", history()).click());
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Download PDF"));
 	} finally {
 		await dom.dispose(root);
 		cache.clear();

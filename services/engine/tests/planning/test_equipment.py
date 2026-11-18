@@ -7,6 +7,7 @@ pair contract. Synthetic publication identities are never runtime product data.
 from __future__ import annotations
 
 import copy
+import io
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -21,6 +22,7 @@ from conftest import (
     publication_manifest,
 )
 from fastapi.testclient import TestClient
+from pypdf import PdfReader
 
 from linker_engine.engine import Engine
 from linker_engine.planning.canonical import Object, digest, encode
@@ -7693,6 +7695,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 and c["selection"]["battery_product_id"] == 2090
             }
             if peak:
+                assert result["demand"]["peak_target_kw"] == 0.5
                 assert baseline["peak_grid_import_kw"] == 4
                 assert options[13.5]["status"] == "violated"
                 assert options[13.5]["peak_import_lower_bound_kw"] == 0.625
@@ -7752,9 +7755,52 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
                 "logo": None,
             },
         }
-        report = rig.post("/runs/report", report_command)
-        assert worker.run_once()
-        assert rig.post("/runs/read", {"run_id": report["id"]})["state"] == "succeeded"
+        for locale, labels in (
+            (
+                "en",
+                (
+                    "Target grid import limit",
+                    "Grid import peak without storage",
+                    "Grid import peak, optimistic lower bound",
+                    "Further checks required",
+                ),
+            ),
+            (
+                "de",
+                (
+                    "Gewünschte Netzbezugsgrenze",
+                    "Netzbezugsspitze ohne Speicher",
+                    "Optimistische Untergrenze der Netzbezugsspitze",
+                    "Weitere Prüfung erforderlich",
+                ),
+            ),
+        ):
+            report = rig.post(
+                "/runs/report",
+                {
+                    **report_command,
+                    "key": f"report-current-peak-{locale}",
+                    "options": {**report_command["options"], "locale": locale},
+                },
+            )
+            assert worker.run_once()
+            completed = rig.post("/runs/read", {"run_id": report["id"]})
+            assert completed["state"] == "succeeded"
+            pdf_asset = completed["result"]["prepared_asset"]
+            pdf_bytes = workspace.blobs.read(pdf_asset["content_sha256"])
+            text = " ".join(
+                " ".join(page.extract_text().split())
+                for page in PdfReader(io.BytesIO(pdf_bytes)).pages
+            )
+            bound = str(candidate["demand"]["peak_import_lower_bound_kw"])
+            if locale == "de":
+                bound = bound.replace(".", ",")
+            assert f"{labels[0]} {'0.5' if locale == 'en' else '0,5'} kW" in text
+            assert f"{labels[1]} 4 kW" in text
+            assert (
+                f"{labels[2]} {bound.removesuffix('.0').removesuffix(',0')} kW" in text
+            )
+            assert labels[3] in text
         model_changed = copy.deepcopy(adopted_inputs)
         model_changed["equipment_setup"]["comparison_models"] = {
             "inverter_product_id": None,

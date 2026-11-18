@@ -206,6 +206,50 @@ def frozen_plant_report_source() -> FixtureObject:
     return source
 
 
+@pytest.mark.parametrize(
+    ("locale", "rows"),
+    [
+        (
+            "en",
+            (
+                "Target grid import limit 190 kW",
+                "Grid import peak without storage 194.1 kW",
+                "Grid import peak, optimistic lower bound 140.1 kW",
+                "Peak shaving assessment Further checks required",
+            ),
+        ),
+        (
+            "de",
+            (
+                "Gewünschte Netzbezugsgrenze 190 kW",
+                "Netzbezugsspitze ohne Speicher 194,1 kW",
+                "Optimistische Untergrenze der Netzbezugsspitze 140,1 kW",
+                "Bewertung der Spitzenlastsenkung Weitere Prüfung erforderlich",
+            ),
+        ),
+    ],
+)
+def test_peak_comparison_pdf_labels_customer_target_and_optimistic_evidence(
+    locale: str, rows: tuple[str, ...]
+) -> None:
+    source = frozen_ac_report_source()
+    source.update(
+        locale=locale,
+        peak_comparison={
+            "target_kw": 190,
+            "baseline_kw": 194.1,
+            "lower_bound_kw": 140.1,
+            "status": "bounded",
+        },
+    )
+    written = " ".join(
+        " ".join(page.extract_text().split())
+        for page in PdfReader(io.BytesIO(pdf.render(build_report(source)))).pages
+    )
+    for row in rows:
+        assert row in written
+
+
 @pytest.mark.parametrize("plant", [False, True])
 @pytest.mark.parametrize(
     ("locale", "strategy", "plant_strategy"),

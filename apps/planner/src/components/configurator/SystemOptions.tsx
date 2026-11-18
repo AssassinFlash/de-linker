@@ -757,6 +757,12 @@ export function SystemOptions({
 									: "—"}
 							</dd>
 						</div>
+						{typeof demand.peak_target_kw === "number" && (
+							<div>
+								<dt>{__("Target grid import limit", "linker-tools")}</dt>
+								<dd>{format(demand.peak_target_kw)} kW</dd>
+							</div>
+						)}
 						<div>
 							<dt>{__("Grid import peak without storage", "linker-tools")}</dt>
 							<dd>

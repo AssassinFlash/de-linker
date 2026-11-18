@@ -231,6 +231,42 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 			});
 		});
 	}
+	assert.equal(
+		Boolean(document.querySelector('[data-collecting="true"]')),
+		false,
+	);
+	await point(11.566, 48.145);
+	await act(async () => {
+		const current = map();
+		const good = { state: "loading" },
+			bad = { state: "loading" };
+		for (const tile of [good, bad])
+			current.emit("sourcedataloading", {
+				sourceId: "linker-site-imagery",
+				tile,
+			});
+		good.state = "loaded";
+		bad.state = "errored";
+		current.emit("idle");
+	});
+	assert.equal(document.querySelector('[data-collecting="true"]'), null);
+	assert.ok(button("Retry loading map"));
+	await click("Retry loading map");
+	const finishAerial = async () => {
+		await until(() => map().getSource("linker-site-imagery"));
+		await act(async () => {
+			const current = map();
+			const tile = { state: "loading" };
+			current.emit("sourcedataloading", {
+				sourceId: "linker-site-imagery",
+				tile,
+			});
+			tile.state = "loaded";
+			current.emit("idle");
+		});
+	};
+	await finishAerial();
+	assert.ok(document.querySelector('[data-collecting="true"]'));
 	for (const [lng, lat] of [
 		[11.56605, 48.14505],
 		[11.5662, 48.14505],
@@ -244,10 +280,17 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 		["Pitch", "0"],
 		["Azimuth", "180"],
 		["Relative roof height", "0"],
-		["Drawing source", "Licensed aerial drawing and installer roof dimensions"],
 	])
 		await enter(input(label), value);
 	await act(async () => document.querySelector(".sc-check input").click());
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
+	assert.equal(button("Confirm roof and map origin").disabled, true);
+	await click("Confirm roof and map origin");
+	assert.deepEqual(app.inputs.geometry.roofs, []);
+	await click("Show aerial map");
+	await finishAerial();
 	await click("Confirm roof and map origin");
 	const { coordinate_system: frame, roofs, sources } = app.inputs.geometry;
 	assert.equal(roofs.length, 1);
@@ -255,11 +298,15 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	assert.equal(frame.anchor.latitude_deg, 48.14505);
 	assert.equal(frame.north_reference, "true_north");
 	assert.equal(frame.north_source_id, roofs[0].source_id);
-	assert.equal(
-		sources.find((source) => source.id === frame.north_source_id).permissions
-			.export,
-		"unknown",
-	);
+	const source = sources.find((source) => source.id === frame.north_source_id);
+	assert.equal(source.note, aerial.credit);
+	assert.equal(source.rights_note, `${aerial.licence} (${aerial.licence_url})`);
+	assert.equal(source.reference_url, aerial.licence_url);
+	assert.deepEqual(source.permissions, {
+		derive: "permitted",
+		retain: "permitted",
+		export: "unknown",
+	});
 	await click("Place modules");
 	await click("Review panel layout");
 	assert.ok(

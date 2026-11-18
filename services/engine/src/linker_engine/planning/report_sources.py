@@ -49,6 +49,8 @@ from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
+from .profile_demand_bounds import MODEL as PROFILE_BOUNDS_MODEL
+from .profile_demand_bounds import periods, uniform_peak_target
 from .profile_selections import ProfileSelections
 from .pv_preparation import PvReferenceKernel
 from .pv_profile_preparation import PROFILE_PURPOSE as PVLIB_PURPOSE
@@ -416,6 +418,7 @@ def report_sources(
         return run
 
     assessment: Object | None = None
+    peak_comparison: Object | None = None
     frozen_certificates: Object | None = None
     equipment_source_run: Run | None = None
     equipment_source_inputs: Object | None = None
@@ -516,6 +519,30 @@ def report_sources(
             actor, run.id, cast(str, candidate["candidate_id"])
         )
         assessment = cast(Object, detail["assessment"])
+        search = cast(Object, run.result["search"])
+        summary = search.get("demand")
+        if (
+            isinstance(summary, dict)
+            and summary.get("model") == PROFILE_BOUNDS_MODEL
+            and summary.get("controller") == "peak_shaving_with_reserve_v1"
+        ):
+            selected_option = next(
+                item
+                for item in cast(list[Object], search["candidates"])
+                if item["id"] == candidate["candidate_id"]
+            )
+            bounds = cast(Object, selected_option["demand"])
+            baseline = cast(Object, summary["baseline"])
+            # Older comparisons carry the declared limit only in their pinned inputs.
+            target = summary.get("peak_target_kw")
+            if "peak_target_kw" not in summary:
+                target = uniform_peak_target(periods(equipment_source_inputs))
+            peak_comparison = {
+                "target_kw": target,
+                "baseline_kw": baseline["peak_grid_import_kw"],
+                "lower_bound_kw": bounds["peak_import_lower_bound_kw"],
+                "status": bounds["status"],
+            }
         sources.append(
             {
                 "run_id": run.id,
@@ -1308,6 +1335,7 @@ def report_sources(
             else {}
         ),
         "candidate": candidate,
+        **({"peak_comparison": peak_comparison} if peak_comparison is not None else {}),
         "equipment": assessment,
         "installation": installation,
         "energy": energy,

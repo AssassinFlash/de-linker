@@ -207,4 +207,28 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 生产站点批次 `20261118T072900863919Z-9585fadb5` 的数据库快照 `db-20261118T072907Z.sql.gz` 为 8,217,255 字节。Web 缓存重置、verify 和 archive 成功。线上 Woo、Tools 关键文件和公网实际提供的三个配置器模块均与合并版逐字节一致。切换时记录的三个请求 worker 均已自然退出。
 
-同一提交的 Planner 发布成功，release `50a26650a7e51d18cefdc5ae1d4567bfb26b9790f2a1656a1d10a529a6d7d51d` 的原生 status 读回 HTTP 与 worker 运行身份一致，worker PID 70242、`draining=false`、`pending=0`。生产 Rotterdam 和 Amsterdam 的数据库读回均为修订 3。Rotterdam 所属访客的浏览器空间 69 已不在任务空间列表，其生产删除仍待原访客会话验收。账户 53 仍缺获权下载的规划报告。#1132 保持开放。
+同一提交的 Planner 发布成功，release `50a26650a7e51d18cefdc5ae1d4567bfb26b9790f2a1656a1d10a529a6d7d51d` 的原生 status 读回 HTTP 与 worker 运行身份一致，worker PID 70242、`draining=false`、`pending=0`。生产 Rotterdam 和 Amsterdam 的数据库读回均为修订 3。随后原访客从 Projects 删除 Rotterdam，Amsterdam 保留修订 3。批准账户 53 从 Saved solutions 重开项目，在 Review & share 下载修订 20 的德语报告，实得 88,258 字节、12 页。[访客操作回执](https://github.com/AssassinFlash/de-linker/issues/1132#issuecomment-6972663396) · [账户下载回执](https://github.com/AssassinFlash/de-linker/issues/1132#issuecomment-6972909263)
+
+### 账户工作台上线
+
+[账户工作台](https://github.com/AssassinFlash/de-linker/pull/1145) 随生产批次 `20261118T094939928468Z-0eec71183` 上线。数据库快照 `db-20261118T094946Z.sql.gz` 为 8,331,604 字节。WindPress 更新至 `1794995640`，同批 `resume-deploy` 完成 verify 和 archive。公网返回的 `Configurator-Dz4yIfz0.js` 共 255,297 字节，与合并提交逐字节相同。
+
+通过 User Switching 进入批准测试账户，总览显示联系人和三个快捷入口。询盘列表显示金额，可打开既有询盘详情。保存方案和文件入口均打开对应账户页。英文桌面显示三张并排的入口卡片。切换到正式德语后，390 px 手机视口内容宽 390 px，底栏的“Gespeicherte Lösungen”按完整单词换行。
+
+### 评审站备电询盘的客户与销售读回
+
+访客为保留的 7.5 kW 逆变器填写 3 kW 备电负荷、2 小时时长。从比较页生成报告并附到询盘，Woo 收到询盘 8951，报告关联存在，新增商品为零。客户在成功页下载了 PDF。销售从 Woo 的 Edit inquiry 打开这条记录，最初看不到项目名和附件。接入现有报告展示后，同一后台页面显示项目名和 Download PDF，下载返回 HTTP 200、`application/pdf`、95,687 字节。
+
+### 评审站商用削峰报告
+
+访客项目 `22efbecfa1db4f2d931a0d7a21934db3` 比较并采用方案后，在修订 3 下载了英文报告 `f664bf5d0f144603b7e677217727e55d` 和德文报告 `fe52fb747ddd4cb7b8a6d0bc8e3e0d0d`。两份 PDF 均列出客户购电上限 190 kW、无储能峰值 194.1 kW 和乐观下界 140.1 kW。结论分别为 “Further checks required” 和 “Weitere Prüfung erforderlich”。
+
+### Eindhoven 多系统备电报告与 Woo 草稿
+
+同一访客重开项目 `38ce052e221c4aa6b9c55edf180ab53b`，用修订 4 比较并重新采用 45 kWh 方案。修订 5 保留候选引用，报告 `bb62612f714f4170a24e69f1d37117df` 返回 HTTP 200。下载的 PDF（127,735 字节）和 CSV（9,771 字节）均列出 H2-25K-T3 ×1、H2-20K-T3 ×1、BC2-HV1 ×2、BU2-5.0-HV1 ×10。访客确认后，Woo 方案草稿的四行均关联输入修订 5。报告把 40 kWh 损耗前需求、45 kWh 可用容量和 30.72 kW 备电功率上限分别列出，实际备电时长仍需核查。
+
+### 历史报告和航拍来源
+
+评审站项目 `8c9006678960480691ca718017e14ceb` 的当前修订为 3。从历史链接选中修订 2 的报告后，切到正式德语仍下载修订 2 的英文 PDF，报告列出的需求为 3 kW。报告内的 Genie 请求带修订 2 和运行 `0c0ff1c86abe484e8817bc1b9708eb17`，关闭后从普通浮动入口发问，请求不含项目、修订或报告。两次请求均返回 HTTP 200。询盘卡说明将使用当前报告的修订。
+
+慕尼黑访客项目 `7e12455d9ffa4389ac8bde9b13e808ff` 授权前未请求巴伐利亚航拍瓦片，授权后显示建筑、道路和树木。撤回同意后无法落点，重新授权后绘制四个屋角并保存。修订 2 的屋面记录保留 Bayerische Vermessungsverwaltung 署名、CC BY 4.0 许可证及其链接，导出权限为 `unknown`。

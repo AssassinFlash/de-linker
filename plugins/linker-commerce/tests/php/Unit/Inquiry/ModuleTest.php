@@ -37,6 +37,7 @@ final class ModuleTest extends TestCase {
 		}
 		$this->expect_action_on_any( 'woocommerce_checkout_create_order_line_item', \Linker\Commerce\Planning\Context::class, 'line', 10, 3 );
 		$this->expect_action_on_any( 'woocommerce_order_details_after_order_table', \Linker\Commerce\Planning\Context::class, 'render' );
+		$this->expect_action_on_any( 'woocommerce_admin_order_data_after_order_details', \Linker\Commerce\Planning\Context::class, 'render' );
 		$this->expect_action_on_any( 'woocommerce_email_after_order_table', \Linker\Commerce\Planning\Context::class, 'email', 10, 3 );
 		$this->expect_action_on_any( 'woocommerce_cart_emptied', \Linker\Commerce\Planning\Context::class, 'emptied' );
 		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Planning\ReportDownload::class, 'register' );

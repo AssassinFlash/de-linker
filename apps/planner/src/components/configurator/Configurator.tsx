@@ -188,7 +188,10 @@ export default function Configurator({
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
-	const [viewedReport, setViewedReport] = useState<string | null>(null);
+	const [viewedReport, setViewedReport] = useState(() => {
+		const params = new URL(location.href).searchParams;
+		return params.get("project") === project.id ? params.get("run") : null;
+	});
 	const [genieReport, setGenieReport] = useState<{
 		id: string;
 		projectRevision: number;
@@ -295,21 +298,35 @@ export default function Configurator({
 		reportRuns?.filter(
 			(item) => item.state === "succeeded" && item.id !== reportId,
 		) ?? [];
+	const viewedReportId =
+		viewedReport !== null && /^[a-f0-9]{32}$/.test(viewedReport)
+			? viewedReport
+			: null;
 	const historicalRunQuery = useProjectResult(
 		client,
 		session,
 		project.id,
 		REPORT_TASK,
-		step === "review" && earlierReports.some((item) => item.id === viewedReport)
-			? viewedReport
-			: null,
+		step === "review" ? viewedReportId : null,
 	);
+	const viewedRun = admitted ? (historicalRunQuery.data ?? null) : null;
+	function selectReport(id: string | null) {
+		const url = new URL(location.href);
+		if (!admitted || url.searchParams.get("project") !== project.id) return;
+		setGenieReport(null);
+		setViewedReport(id);
+		if (id === null) url.searchParams.delete("run");
+		else url.searchParams.set("run", id);
+		url.searchParams.delete("compare");
+		url.searchParams.delete("energy_view");
+		replacePlannerLocation(url);
+	}
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
 	const genieRun =
 		step === "review" &&
 		genieReport?.projectRevision === draft?.baseline.revision
-			? [reportRun, historicalRunQuery.data].find(
+			? [reportRun, viewedRun].find(
 					(run) => run?.id === genieReport?.id && run?.state === "succeeded",
 				)
 			: null;
@@ -711,7 +728,7 @@ export default function Configurator({
 		: selectedUnits.map((u) => u.pv_dc_kw);
 	const roofModules =
 		brief.system_scope !== "storage_only" &&
-		!pvSizes.length &&
+		!pvSizes.some((size) => size != null) &&
 		inputs.geometry !== undefined
 			? moduleSummary(activePvGeometry(inputs.geometry).geometry)
 			: null;
@@ -762,6 +779,7 @@ export default function Configurator({
 						type="button"
 						className="sc-button"
 						data-linker-genie-open
+						data-linker-genie-planning
 						disabled={!admitted}
 						onClick={() => setGenieReport(null)}
 					>
@@ -974,7 +992,12 @@ export default function Configurator({
 				</div>
 			))}
 			<div className="sc-layout">
-				<main ref={main} tabIndex={-1} className="sc-main">
+				<main
+					id={activeStep === "review" ? "lp-calculations" : undefined}
+					ref={main}
+					tabIndex={-1}
+					className="sc-main"
+				>
 					{activeStep === "project" && (
 						<ProjectDetails
 							existingEquipment={
@@ -1145,13 +1168,19 @@ export default function Configurator({
 							history={{
 								items: earlierReports,
 								selected: viewedReport,
-								select: (id) => {
-									setGenieReport(null);
-									setViewedReport(id);
-								},
-								run: historicalRunQuery.data ?? null,
-								reading: historicalRunQuery.isLoading,
+								select: selectReport,
+								run: viewedRun,
+								reading:
+									historicalRunQuery.isLoading ||
+									Boolean(viewedRun && runPending(viewedRun.state)),
 								readFailed: historicalRunQuery.isError,
+								unavailable:
+									viewedReportId === null ||
+									Boolean(
+										viewedRun &&
+										viewedRun.state !== "succeeded" &&
+										!runPending(viewedRun.state),
+									),
 								retryRead: () => void historicalRunQuery.refetch(),
 								hasMore: olderHistory.data
 									? olderHistory.hasNextPage

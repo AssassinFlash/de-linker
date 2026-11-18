@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
+import type { PlaceImagery } from "../../domain/place.ts";
 import type { GeometryDocument, Source, Vec2 } from "../../domain/geometry.ts";
 import type { MapRoofFields } from "../../domain/mapRoofDraft.ts";
 import type { MapFeatureFields } from "../../domain/mapFeatureDraft.ts";
@@ -100,6 +101,7 @@ export function MapDrawingWorkspace({
 		recoveryChecking,
 	});
 	const { drawing, active } = journal;
+	const [readyAerial, setReadyAerial] = useState<PlaceImagery | null>(null);
 	const [error, setError] = useState<string | null>(null),
 		[invalidField, setInvalidField] = useState<string | null>(null),
 		[busy, setBusy] = useState(false),
@@ -134,12 +136,13 @@ export function MapDrawingWorkspace({
 	} catch {
 		geographicReady = false;
 	}
+	const firstMapRoof = canAnchorFirstMapRoof(geometry);
 	const canStartDrawing =
 		!mapProps.disabled &&
 		!journal.checking &&
 		!journal.storageFailed &&
 		(geographicReady ||
-			(canAnchorFirstMapRoof(geometry) && mapProps.siteCentre != null));
+			(firstMapRoof && mapProps.siteCentre != null && readyAerial !== null));
 	useEffect(() => {
 		onActivity(active || busy || (journal.writing && drawing !== null));
 		return () => onActivity(false);
@@ -159,6 +162,7 @@ export function MapDrawingWorkspace({
 		[geometry, projectId, session.query_scope, mapProps.selected],
 	);
 	function begin(input: Parameters<typeof journal.begin>[0]) {
+		if (input.kind === "new_roof" && !canStartDrawing) return;
 		setError(null);
 		setInvalidField(null);
 		setUnchanged(false);
@@ -166,7 +170,7 @@ export function MapDrawingWorkspace({
 			if (!journal.begin(input)) return;
 			const started = journal.latest.current;
 			if (input.kind === "new_roof" && started?.schema_version === 1) {
-				const imagery = mapProps.imagery;
+				const imagery = readyAerial;
 				void journal
 					.update({
 						...started,
@@ -250,10 +254,18 @@ export function MapDrawingWorkspace({
 				},
 			});
 	}
+	const matchesAerial =
+		drawing?.schema_version === 1 &&
+		readyAerial !== null &&
+		drawing.fields.source === readyAerial.credit &&
+		drawing.fields.rights ===
+			`${readyAerial.licence} (${readyAerial.licence_url})`;
+	const requiresAerial = firstMapRoof && drawing?.schema_version === 1;
 	const interaction: MapInteraction | null =
-		active && drawing && !stale && !busy
+		active && drawing && !stale && !busy && (!requiresAerial || matchesAerial)
 			? {
 					key: drawing.key,
+					requiresAerial,
 					phase: drawing.phase,
 					vertices: drawing.vertices,
 					referencePosition:
@@ -1071,6 +1083,7 @@ export function MapDrawingWorkspace({
 				{...mapProps}
 				document={previewGeometry ?? geometry}
 				interaction={interaction}
+				onAerialReady={setReadyAerial}
 			/>
 			{active &&
 				drawing &&

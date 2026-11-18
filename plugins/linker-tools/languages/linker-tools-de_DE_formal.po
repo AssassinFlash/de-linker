@@ -821,7 +821,12 @@ msgstr ""
 msgid "Click the roof of the building in the aerial image."
 msgstr "Klicken Sie im Luftbild auf das Dach des Gebäudes."
 
-#: build/genie.js:16 build/hero.js
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Your inquiry uses the current report (revision %d)."
+msgstr "Für Ihre Anfrage wird der aktuelle Bericht (Revision %d) verwendet."
+
+#: build/genie.js:16 build/hero.js build/planner/assets/planner.js
 msgid "Close"
 msgstr "Schließen"
 
@@ -13125,7 +13130,7 @@ msgstr "In diesem gespeicherten Ergebnis nicht erfasst"
 msgid "Open saved result"
 msgstr "Gespeichertes Ergebnis öffnen"
 
-#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js build/planner/assets/planner.js
 msgid "The saved calculation details could not be verified for this response."
 msgstr "Die Angaben zur gespeicherten Berechnung konnten für diese Antwort nicht geprüft werden."
 

@@ -20,6 +20,7 @@ final class Module {
 		add_filter( 'woocommerce_get_item_data', array( $context, 'item_data' ), 10, 2 );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $context, 'line' ), 10, 3 );
 		add_action( 'woocommerce_order_details_after_order_table', array( $context, 'render' ) );
+		add_action( 'woocommerce_admin_order_data_after_order_details', array( $context, 'render' ) );
 		add_action( 'woocommerce_email_after_order_table', array( $context, 'email' ), 10, 3 );
 		add_action( 'woocommerce_cart_emptied', array( $context, 'emptied' ) );
 		add_action( 'rest_api_init', array( new ReportDownload(), 'register' ) );

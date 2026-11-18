@@ -41,6 +41,9 @@ RULE = (
     "If unavailable, say the project could not be read in this session; do not guess its data or owner. "
     "A queued/failed job has no numerical result. A provisional bill of materials is never a "
     "complete BOS or final installation materials list, even when the source is not truncated. "
+    "When describing a saved bill of materials, use the report's own bill-of-materials rows "
+    "for its quantities and Supply scope labels. Separately attribute manufacturer requirements "
+    "and required-accessory checks to their own report sections. "
     "Project-entered installation names may be anonymized. Never infer that a name is absent "
     "from the original report because it is not visible here; if the exact label matters, "
     "say it cannot be verified from the available information. Explain recorded quantities "
@@ -265,6 +268,10 @@ def material_answer(raw: Any, page: PageContext, language: str) -> str:
     return "\n".join(lines)
 
 
+_PRODUCT_ID_FIELD = re.compile(r"(?:^|[._])product_ids?(?:\[\d+\])?$")
+_ACCESSORY_CHECK_ID = re.compile(r"(?:^|\.)checks\[\d+\]\.id$")
+
+
 def view(raw: Any, page: PageContext) -> dict[str, Any]:
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
         return {"error": "unavailable"}
@@ -305,16 +312,35 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
     def append_rows(rows: Any) -> None:
         if not isinstance(rows, list):
             return
+        # A required-accessory check's actual value is a Woo ID. Normal check
+        # actuals are engineering figures and still belong in the model input.
+        accessory_checks = {
+            row["label"].removesuffix(".id")
+            for row in rows
+            if isinstance(row, dict)
+            and isinstance(row.get("label"), str)
+            and _ACCESSORY_CHECK_ID.search(row["label"])
+            and isinstance(row.get("value"), str)
+            and re.fullmatch(r"required_accessory:\d+", row["value"])
+        }
         for row in rows:
             if not isinstance(row, dict) or not isinstance(row.get("label"), str):
                 continue
+            label = row["label"]
+            parent, _, field = label.rpartition(".")
+            if _PRODUCT_ID_FIELD.search(label) or (
+                parent in accessory_checks and field == "actual"
+            ):
+                continue
             value = row.get("value")
+            if parent in accessory_checks and field == "id":
+                value = "required_accessory"
             rendered = (
                 value
                 if isinstance(value, str)
                 else json.dumps(value, ensure_ascii=False)
             )
-            line = f"{row['label']}: {rendered}"
+            line = f"{label}: {rendered}"
             if row.get("undefined_reason"):
                 line += f"; undefined_reason={row['undefined_reason']}"
             if not append_line(line):

@@ -243,6 +243,76 @@ test( 'fresh report URLs carry only the exact saved project and run', () => {
 	).toBeNull();
 } );
 
+test( 'the floating entry drops the report context after Ask Genie', async () => {
+	const page = {
+		type: 'other',
+		planning_project_id: 'a'.repeat( 32 ),
+		planning_revision: 5,
+		planning_run_ids: [ 'b'.repeat( 32 ) ],
+		planning_unsaved: false,
+	};
+	const bridge = () =>
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-planning-context', {
+				detail: { page, plannerNonce: 'planner-proof' },
+			} )
+		);
+	const open = ( opener: HTMLElement ) =>
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-open', {
+					detail: { opener },
+				} )
+			)
+		);
+	const ask = async ( content: string ) => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: content },
+		} );
+		await act( async () =>
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
+		);
+	};
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [ { type: 'text', text: 'An answer', refs: [] } ],
+	} );
+	const reportOpener = document.createElement( 'button' );
+	reportOpener.setAttribute( 'data-linker-genie-open', '' );
+	reportOpener.setAttribute( 'data-linker-genie-planning', '' );
+	const dockOpener = document.createElement( 'button' );
+	dockOpener.setAttribute( 'data-linker-genie-open', '' );
+	dockOpener.className = 'linker-genie-open';
+	window.addEventListener( 'linker-genie-planning-context-request', bridge );
+	try {
+		await renderOwned( <App config={ config() } /> );
+		open( reportOpener );
+		await ask( 'Explain this report' );
+		expect( sendTurn ).toHaveBeenNthCalledWith(
+			1,
+			expect.objectContaining( {
+				page: expect.objectContaining( page ),
+				plannerNonce: 'planner-proof',
+			} )
+		);
+		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+		open( dockOpener );
+		await ask( 'A general product question' );
+		expect( sendTurn ).toHaveBeenNthCalledWith(
+			2,
+			expect.objectContaining( {
+				page: config().page,
+				plannerNonce: undefined,
+			} )
+		);
+	} finally {
+		window.removeEventListener(
+			'linker-genie-planning-context-request',
+			bridge
+		);
+	}
+} );
+
 test( 'a refused saved-report question can be copied and opened in a fresh report tab', async () => {
 	const original = window.location.href;
 	const project = 'a'.repeat( 32 );

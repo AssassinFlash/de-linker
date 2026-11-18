@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { readPlaceImagery } from "../../domain/place.ts";
+import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import type { PlaceImagery } from "../../domain/place.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -133,6 +134,12 @@ export function SolarInstallation({
 	const camera = useRef<MapCamera | null>(null);
 	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
+	const [readyAerial, setReadyAerial] = useState<PlaceImagery | null>(null);
+	const tracedAerial = useRef<PlaceImagery | null>(null);
+	const canConfirmAerial =
+		readyAerial &&
+		tracedAerial.current &&
+		imagerySourceKey(readyAerial) === imagerySourceKey(tracedAerial.current);
 	const [drawingKey, setDrawingKey] = useState(() => crypto.randomUUID());
 	const [undo, setUndo] = useState<readonly GeometryDocument[]>([]);
 	const [fields, setFields] = useState({
@@ -346,19 +353,28 @@ export function SolarInstallation({
 		}
 	}
 	function addRoof(points?: readonly Vec2[]) {
+		const aerialTrace = points && firstMapRoof;
+		const aerial = aerialTrace ? tracedAerial.current : null;
+		if (aerialTrace && !canConfirmAerial) return;
 		try {
-			if (!confirmed || !fields.source.trim())
+			if (!confirmed || (!aerial && !fields.source.trim()))
 				throw new Error(
 					__(
 						"Confirm the drawing source before adding a roof.",
 						"linker-tools",
 					),
 				);
-			const declared = manualSource(
-				id(),
-				fields.source.trim(),
-				fields.source.trim(),
-			);
+			const declared = aerial
+				? {
+						...manualSource(
+							id(),
+							aerial.credit,
+							`${aerial.licence} (${aerial.licence_url})`,
+						),
+						reference_url: aerial.licence_url,
+						rights_basis: "referenced_licence" as const,
+					}
+				: manualSource(id(), fields.source.trim(), fields.source.trim());
 			const source = points
 				? { ...declared, kind: "user_drawing" as const }
 				: declared;
@@ -548,7 +564,18 @@ export function SolarInstallation({
 					requiresAerial: tool === "roof" && firstMapRoof,
 					vertices,
 					referencePosition: vertices[0] ?? null,
-					append: (point) =>
+					append: (point) => {
+						if (tool === "roof" && firstMapRoof) {
+							if (!readyAerial) return;
+							const previousSource = tracedAerial.current;
+							if (
+								previousSource &&
+								imagerySourceKey(previousSource) !==
+									imagerySourceKey(readyAerial)
+							)
+								setVertices([]);
+							tracedAerial.current = readyAerial;
+						}
 						setVertices((previous) => {
 							if (
 								previous.length >= policy.max_vertices ||
@@ -558,7 +585,8 @@ export function SolarInstallation({
 							)
 								return previous;
 							return [...previous, point];
-						}),
+						});
+					},
 					transaction: (change) => {
 						try {
 							const last = change.steps.at(-1);
@@ -573,6 +601,7 @@ export function SolarInstallation({
 				}
 			: null;
 	function startTool(value: typeof tool) {
+		tracedAerial.current = null;
 		setTool(value);
 		setVertices([]);
 		setDrawingKey(crypto.randomUUID());
@@ -1018,6 +1047,7 @@ export function SolarInstallation({
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
 										imagery={imagery.data?.imagery ?? null}
+										onAerialReady={setReadyAerial}
 										siteOutline={outline.data ?? null}
 										document={geometry}
 										poses={poses}
@@ -1138,6 +1168,7 @@ export function SolarInstallation({
 								{interaction && vertices.length >= 3 && (
 									<button
 										type="button"
+										disabled={interaction.requiresAerial && !canConfirmAerial}
 										onClick={() =>
 											tool === "roof"
 												? addRoof(vertices)
@@ -1198,7 +1229,12 @@ export function SolarInstallation({
 								<label className="sc-field">
 									<span>{__("Drawing source", "linker-tools")}</span>
 									<input
-										value={fields.source}
+										value={
+											map && firstMapRoof && tool === "roof"
+												? (readyAerial?.credit ?? "")
+												: fields.source
+										}
+										readOnly={map && firstMapRoof && tool === "roof"}
 										onChange={(e) => {
 											const value = e.currentTarget.value;
 											setFields((previous) => ({ ...previous, source: value }));

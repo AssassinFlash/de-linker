@@ -488,10 +488,20 @@ test("an address-centred empty project can trace its first roof and show it on t
 			licence_url: "https://creativecommons.org/licenses/by/4.0/",
 		},
 	});
+	assert.equal(typeof r.map().options.style, "object");
+	assert.equal(Boolean(button("Start roof drawing").disabled), true);
+	await r.click("Show aerial map");
 	const map = r.map();
-	assert.equal(typeof map.options.style, "object");
 	assert.deepEqual(map.getSource("linker-project-geometry").data.features, []);
-	assert.equal(button("Start roof drawing").disabled, false);
+	assert.equal(Boolean(button("Start roof drawing").disabled), true);
+	await act(async () => {
+		const tile = { state: "loading" };
+		map.emit("sourcedataloading", { sourceId: "linker-site-imagery", tile });
+		tile.state = "loaded";
+		map.emit("sourcedata", { sourceId: "linker-site-imagery", tile });
+		map.emit("idle");
+	});
+	assert.equal(Boolean(button("Start roof drawing").disabled), false);
 	await r.click("Start roof drawing");
 	await until(() => r.active);
 	await r.point(6.96, 50.94);
@@ -552,6 +562,10 @@ test("an address-centred empty project can trace its first roof and show it on t
 	assert.equal(
 		map.getSource("linker-project-geometry").data.features.length,
 		1,
+	);
+	assert.equal(
+		r.geometry.sources[0].rights_note,
+		"CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
 	);
 	assert.equal(r.geometry.sources[0].permissions.export, "unknown");
 	assert.equal(r.geometry.sources[0].spatial_precision_m, null);

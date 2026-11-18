@@ -3,6 +3,7 @@ import test from "node:test";
 import React, { act } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupDom, until, enter } from "./dom-fixture.mjs";
+import german from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 
 const selection = {
 	schema_version: 1,
@@ -572,14 +573,15 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 			basis:
 				"optimistic_full_initial_storage_lossless_upper_bound_not_dispatch",
 			additional_pv_use_upper_kwh: 3,
-			peak_import_lower_bound_kw: 1,
+			peak_import_lower_bound_kw: 140.1,
 			missing_facts: [],
 			source_facts: [],
 		},
 	};
 	const demand = {
 		model: "profile_physical_bounds_v1",
-		controller: "self_consumption_with_reserve_v1",
+		controller: "peak_shaving_with_reserve_v1",
+		peak_target_kw: 190,
 		horizon_start_utc: "2020-01-01T00:00:00+00:00",
 		horizon_end_utc: "2020-01-01T04:00:00+00:00",
 		baseline: {
@@ -588,8 +590,8 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 			direct_pv_use_kwh: 4,
 			grid_import_kwh: 4,
 			grid_export_kwh: 4,
-			peak_grid_import_kw: 2,
-			over_target_kwh: 0,
+			peak_grid_import_kw: 194.1,
+			over_target_kwh: 1.025,
 		},
 	};
 	const client = {
@@ -603,7 +605,7 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 			};
 		},
 	};
-	await mount(t, {
+	const props = {
 		run: {
 			...run,
 			result: {
@@ -616,7 +618,8 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 		disabled: false,
 		selectedId: null,
 		onSelect: async () => {},
-	});
+	};
+	const render = await mount(t, props);
 	assert.match(
 		document.querySelector(".sc-package").textContent,
 		/Additional solar use, upper bound/,
@@ -626,10 +629,40 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 		document.querySelector(".sc-package").textContent,
 		/Grid import peak, lower bound/,
 	);
+	assert.match(document.body.textContent, /Target grid import limit\s*190 kW/);
+	assert.match(
+		document.body.textContent,
+		/Grid import peak without storage\s*194\.1 kW/,
+	);
+	assert.match(document.querySelector(".sc-package").textContent, /140\.1 kW/);
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Further checks required/,
+	);
 	assert.match(document.body.textContent, /2020/);
 	assert.match(document.body.textContent, /lossless/);
 	assert.match(document.body.textContent, /full battery/);
 	assert.equal(document.body.textContent.includes("simulated savings"), false);
+
+	window.wp.i18n.__ = (message) =>
+		german.locale_data.messages[message]?.[0] ?? message;
+	await render({ ...props, locale: "de-DE" });
+	assert.match(
+		document.body.textContent,
+		/Gewünschte Netzbezugsgrenze\s*190 kW/,
+	);
+	assert.match(
+		document.body.textContent,
+		/Netzbezugsspitze ohne Speicher\s*194,1 kW/,
+	);
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Untergrenze der Netzbezugsspitze:\s*140,1 kW/,
+	);
+	assert.match(
+		document.querySelector(".sc-package").textContent,
+		/Weitere Prüfung erforderlich/,
+	);
 });
 
 test("retaining an unverified inverter shows the measured baseline without a candidate", async (t) => {

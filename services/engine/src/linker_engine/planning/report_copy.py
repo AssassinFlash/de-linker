@@ -71,6 +71,17 @@ TEXT = {
         "Grid import peak without storage",
         "Netzbezugsspitze ohne Speicher",
     ),
+    "peak_comparison": ("Peak shaving comparison", "Vergleich zur Spitzenlastsenkung"),
+    "peak_target": ("Target grid import limit", "Gewünschte Netzbezugsgrenze"),
+    "peak_optimistic_bound": (
+        "Grid import peak, optimistic lower bound",
+        "Optimistische Untergrenze der Netzbezugsspitze",
+    ),
+    "peak_result": ("Peak shaving assessment", "Bewertung der Spitzenlastsenkung"),
+    "peak_bound_basis": (
+        "The lower bound assumes a full battery at the start and lossless storage. Confirm the achievable peak with a simulation using the actual operating settings.",
+        "Die Untergrenze setzt einen zu Beginn voll geladenen Speicher ohne Speicherverluste voraus. Prüfen Sie die erreichbare Netzbezugsspitze mit einer Simulation anhand der tatsächlichen Betriebseinstellungen.",
+    ),
     "existing_system_declared": ("Customer declaration", "Kundenangabe"),
     "pvgis_known_title": (
         "PVGIS AC reference from declared PV details",
