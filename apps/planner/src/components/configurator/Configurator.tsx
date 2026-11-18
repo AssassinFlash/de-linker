@@ -186,9 +186,9 @@ export default function Configurator({
 		id: string;
 		task: SharedDcTask;
 	} | null>(null);
-	const [wiringValidity, setWiringValidity] = useState<Record<string, boolean>>(
-		{},
-	);
+	const [wiringValidity, setWiringValidity] = useState<
+		Record<string, "ready" | "invalid" | "pending">
+	>({});
 	const wiringInputs = draft?.history.current;
 	const wiringPlant =
 		step === "solar" && wiringInputs && hasPlant(wiringInputs)
@@ -200,19 +200,30 @@ export default function Configurator({
 			Object.fromEntries(
 				["", ...wiringIds.split(",").filter(Boolean)].map((id) => [
 					id,
-					(valid: boolean) =>
+					(canLeave: boolean, pendingSave: boolean) => {
+						const status = canLeave
+							? "ready"
+							: pendingSave
+								? "pending"
+								: "invalid";
 						setWiringValidity((state) =>
-							state[id] === valid ? state : { ...state, [id]: valid },
-						),
+							state[id] === status ? state : { ...state, [id]: status },
+						);
+					},
 				]),
 			),
 		[wiringIds],
 	);
-	const wiringValid = (wiringPlant?.units.map((unit) => unit.id) ?? [""]).every(
-		(id) => wiringValidity[id] !== false,
+	const wiringStates = (wiringPlant?.units.map((unit) => unit.id) ?? [""]).map(
+		(id) => wiringValidity[id],
 	);
+	const invalidInput =
+		!energyValid || !sharedDcValid || wiringStates.includes("invalid");
 	const navigationBlocked =
-		!energyValid || !sharedDcValid || !wiringValid || roofEditing || importOpen;
+		invalidInput ||
+		wiringStates.includes("pending") ||
+		roofEditing ||
+		importOpen;
 	function mayLeave() {
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
@@ -983,10 +994,15 @@ export default function Configurator({
 								"Finish or cancel roof editing before leaving this workspace.",
 								"linker-tools",
 							)
-						: __(
-								"Correct the highlighted input before leaving this project.",
-								"linker-tools",
-							)}
+						: invalidInput
+							? __(
+									"Correct the highlighted input before leaving this project.",
+									"linker-tools",
+								)
+							: __(
+									"Save or cancel your string changes before continuing.",
+									"linker-tools",
+								)}
 				</p>
 			)}
 			{preparingReport && activeStep === "review" && (

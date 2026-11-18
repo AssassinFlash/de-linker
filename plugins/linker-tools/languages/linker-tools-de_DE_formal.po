@@ -4253,6 +4253,10 @@ msgstr ""
 "Unterstützungsbereichs dieser Prüfung. Die Planung kann weiterhin korrigiert "
 "werden."
 
+#: build/planner/assets/planner.js
+msgid "Save or cancel your string changes before continuing."
+msgstr "Speichern oder verwerfen Sie Ihre Änderungen am String, bevor Sie fortfahren."
+
 #: build/planner/assets/planner.js:1
 msgid "Correct the highlighted input before leaving this project."
 msgstr ""

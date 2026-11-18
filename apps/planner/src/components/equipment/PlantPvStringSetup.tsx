@@ -28,7 +28,7 @@ export function PlantPvStringSetup({
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
 	locale: string;
 	disabled: boolean;
-	onValidity: (valid: boolean) => void;
+	onValidity: (canLeave: boolean, pendingSave: boolean) => void;
 	checkedInReport?: boolean;
 }) {
 	const plant = useMemo(

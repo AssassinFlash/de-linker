@@ -27,7 +27,7 @@ export function PvStringSetup({
 	inverterId: number | null;
 	locale: string;
 	disabled: boolean;
-	onValidity: (valid: boolean) => void;
+	onValidity: (canLeave: boolean, pendingSave: boolean) => void;
 	checkedInReport?: boolean;
 	controlled?: {
 		plan: PvStringPlan | null;
@@ -212,10 +212,11 @@ export function PvStringSetup({
 		(controlled || checkedInReport
 			? Object.values(fields).every(Boolean)
 			: valid);
+	const pendingSave = pendingStringChanges && canApply;
 	useEffect(() => {
-		onValidity(canLeave);
-		return () => onValidity(true);
-	}, [canLeave, onValidity]);
+		onValidity(canLeave, pendingSave);
+		return () => onValidity(true, false);
+	}, [canLeave, pendingSave, onValidity]);
 	if (!geometry || !poses.length)
 		return plan ? (
 			<section>

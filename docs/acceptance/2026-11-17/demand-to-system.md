@@ -243,6 +243,8 @@ PR [1139](https://github.com/AssassinFlash/de-linker/pull/1139) 的 [CI](https:/
 
 **单机相数提示审校。** 初稿用 “The selected inverter has … grid phase(s)” 描述设备。评审发现客户还需知道项目要求几相以及能否发起工程询盘。转入草稿前和 Woo 草稿内沿用同一句定稿，两个占位符分别取冻结检查中的设备相数和要求相数。EN “Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.” DE „Die Phasenanzahl passt nicht zum Projekt. Der ausgewählte Wechselrichter hat %1$d, das Projekt erfordert %2$d. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration.“
 
+**串组编辑提示审校。** 初稿让客户纠正高亮输入。单机和多机中，把已保存串组的 MPPT 从 2 改为有效值 3 后，没有输入错误，下一步是保存或取消这次编辑。英语定稿为 “Save or cancel your string changes before continuing.” 德语定稿为 „Speichern oder verwerfen Sie Ihre Änderungen am String, bevor Sie fortfahren.“
+
 ### 保留旧逆变器并增购储能
 
 评审项目 `79c24839c37843039476062e9b0c6215` 的修订 3 在英德冻结 PDF 中均列出 SAJ H2-25K-T3 ×1 为现场保留设备。德语报告写明「bleibt am Standort, keine Beschaffung」。客户确认后，Woo 草稿列出 SAJ B2-10.0-HV1 电池 ×1、SAJ BC2-HV1 控制器 ×1，均关联该项目的修订 3。在德语入口重开仍可查看项目和采购数量，并可生成德语 PDF。

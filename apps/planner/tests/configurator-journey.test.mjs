@@ -1386,6 +1386,13 @@ for (const scenario of [
 					await enter(field("MPPT", editor), "3");
 					await act(async () => button("5Review & share").click());
 					assert.equal(window.location.hash, "#sc-solar");
+					assert.ok(
+						[...dom.element.querySelectorAll('[role="alert"]')].some(
+							(alert) =>
+								alert.textContent ===
+								"Save or cancel your string changes before continuing.",
+						),
+					);
 					await act(async () => button("Cancel editing", editor).click());
 					assert.equal(field("MPPT", editor).value, "2");
 					await act(async () => button("Edit string", editor).click());
