@@ -87,7 +87,7 @@ async function mount(handler, store) {
 			),
 		),
 	);
-	await until(() => document.querySelector(".lp-project-entry"));
+	await until(() => document.querySelector('[role="listitem"]'));
 	return {
 		fixture,
 		client,
@@ -130,12 +130,14 @@ const response = (value, status = 200) =>
 	});
 
 const deleteIcon = () =>
-	document.querySelectorAll("button.lp-project-delete")[0];
+	document.querySelectorAll('button[aria-label^="Delete project "]')[0];
 
 const confirmButton = () =>
-	[...document.querySelectorAll(".lp-delete-confirm button")].find((button) =>
-		button.className.includes("lp-button-danger"),
-	);
+	[
+		...document.querySelectorAll(
+			'[role="group"][aria-label="Delete this project"] button',
+		),
+	].find((button) => button.className.includes("lp-button-danger"));
 
 test("an owned project is deleted behind an explicit confirm, one request, and the list refreshes", async (t) => {
 	const store = recordingStore();
@@ -169,20 +171,19 @@ test("an owned project is deleted behind an explicit confirm, one request, and t
 	}, store);
 	t.after(() => mounted.dispose());
 	// The secondary entry is a sibling of the row button, never nested.
-	assert.equal(
-		document.querySelector(".lp-project-entry-row button button"),
-		null,
-	);
+	assert.equal(document.querySelector('[role="listitem"] button button'), null);
 	await act(async () => deleteIcon().click());
-	await until(() => document.querySelector(".lp-delete-confirm"));
+	await until(() =>
+		document.querySelector('[role="group"][aria-label="Delete this project"]'),
+	);
 	assert.ok(
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes('Delete the project "Delete me" at revision 1?'),
 	);
 	assert.ok(
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes("revision 1"),
 	);
 	const before = lists;
@@ -192,7 +193,12 @@ test("an owned project is deleted behind an explicit confirm, one request, and t
 	assert.equal(deletes[0].project_id, "1".repeat(32));
 	assert.equal(deletes[0].expected_revision, 1);
 	assert.match(deletes[0].key, /^[a-f0-9-]{36}$/);
-	await until(() => !document.querySelector(".lp-delete-confirm"));
+	await until(
+		() =>
+			!document.querySelector(
+				'[role="group"][aria-label="Delete this project"]',
+			),
+	);
 	assert.ok(document.body.textContent.includes("Keep me"));
 	assert.deepEqual(store.cleared, [
 		{
@@ -223,10 +229,12 @@ test("an unknown 404 is a delete failure, not proof that another session removed
 	await act(async () => confirmButton().click());
 	await until(() =>
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			?.textContent.includes("The project could not be deleted."),
 	);
-	assert.ok(document.querySelector(".lp-delete-confirm"));
+	assert.ok(
+		document.querySelector('[role="group"][aria-label="Delete this project"]'),
+	);
 	assert.ok(document.body.textContent.includes("Delete me"));
 	assert.equal(deletes.length, 1);
 });
@@ -274,23 +282,29 @@ test("a changed revision explains itself and the retry is a new command for the 
 	}, store);
 	t.after(() => mounted.dispose());
 	await act(async () => deleteIcon().click());
-	await until(() => document.querySelector(".lp-delete-confirm"));
+	await until(() =>
+		document.querySelector('[role="group"][aria-label="Delete this project"]'),
+	);
 	await act(async () => confirmButton().click());
 	await until(() =>
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes("This project changed before it could be deleted."),
 	);
 	assert.equal(confirmations, 1);
 	// A key is bound to one command, so the retry cannot repeat the refused one.
 	await until(() =>
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes("at revision 2?"),
 	);
 	await act(async () => confirmButton().click());
 	await until(
-		() => deletes.length === 2 && !document.querySelector(".lp-delete-confirm"),
+		() =>
+			deletes.length === 2 &&
+			!document.querySelector(
+				'[role="group"][aria-label="Delete this project"]',
+			),
 	);
 	assert.equal(deletes[0].expected_revision, 1);
 	assert.equal(deletes[1].expected_revision, 2);
@@ -323,7 +337,7 @@ test("a handoff refusal names the inquiry and keeps the project listed", async (
 	await act(async () => confirmButton().click());
 	await until(() =>
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes(
 				"This project was handed to the Linker team as an inquiry and cannot be deleted.",
 			),
@@ -370,12 +384,16 @@ test("a failed delete recovers with the same request and repeated clicks send on
 	await act(async () => gate.resolve());
 	await until(() =>
 		document
-			.querySelector(".lp-delete-confirm")
+			.querySelector('[role="group"][aria-label="Delete this project"]')
 			.textContent.includes("The project could not be deleted."),
 	);
 	await act(async () => confirmButton().click());
 	await until(
-		() => deletes.length === 2 && !document.querySelector(".lp-delete-confirm"),
+		() =>
+			deletes.length === 2 &&
+			!document.querySelector(
+				'[role="group"][aria-label="Delete this project"]',
+			),
 	);
 	assert.equal(deletes[1].key, deletes[0].key);
 });

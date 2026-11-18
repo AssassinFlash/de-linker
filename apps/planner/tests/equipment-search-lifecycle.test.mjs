@@ -1,16 +1,16 @@
-import { PlannerClient } from "../src/data/PlannerClient.ts";
+import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
+import nativePreparation from "./fixtures/preparation-flow-darwin-arm64.json" with { type: "json" };
 import { authoredDiscoveryInputs } from "../src/domain/currentCalculation.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
 import React, { act } from "react";
-import { setupDom, until } from "./dom-fixture.mjs";
-import { environmentManager } from "@tanstack/react-query";
+import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
+import { environmentManager, focusManager } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
 register("./map-library-loader.mjs", import.meta.url);
 
 const SEARCH_TASK = "search_woo_equipment_v1";
-const EQUIPMENT_TASK = "qualify_woo_equipment_v1";
 
 function makeSession() {
 	return {
@@ -154,6 +154,7 @@ function makeRun(
 								pv_dc_kw: 200,
 								required_usable_kwh: 61.4,
 								required_discharge_ac_kw: 100,
+								equipment_use: null,
 								product_revisions: {
 									101: "6".repeat(64),
 									201: "6".repeat(64),
@@ -206,31 +207,6 @@ function makeRun(
 		result: search,
 		error: null,
 	};
-	if (kind === EQUIPMENT_TASK && succeeded)
-		run.result = {
-			schema: 1,
-			kind,
-			project_id: projectId,
-			revision,
-			input_sha256: inputSha,
-			manifest_sha256: run.manifest_sha256,
-			runtime_sha256: "4".repeat(64),
-			pinned_assets: run.manifest.context.assets,
-			assessment: {
-				equipment_status: "satisfied",
-				overall_status: "unresolved",
-				checks: [],
-				provisional_bill_of_materials: [],
-				selected_products: [
-					{ product_id: 101, model: "ESS 5K", brand: "Linker" },
-				],
-				country_assessment: {
-					country_code: null,
-					reason: "versioned_country_rules_required",
-					status: "unresolved",
-				},
-			},
-		};
 	return run;
 }
 
@@ -253,11 +229,30 @@ async function equipmentApp(
 		inputs,
 		hash,
 		rejectFind = false,
-		validatePhase = false,
-		validateHardware = false,
+		foreignSelection = false,
+		selectionGate = null,
+		searchGate = null,
+		findRefusal = null,
+		pvReference = null,
+		selectedPv = null,
+		effectivePv = null,
+		pvFailure = null,
+		legacyInputs = null,
+		legacyUnavailable = false,
 	},
 ) {
 	const fixture = setupDom();
+	const priorIndexedDB = Object.getOwnPropertyDescriptor(
+		globalThis,
+		"indexedDB",
+	);
+	t.after(() => {
+		environmentManager.setIsServer(() => typeof window === "undefined");
+		focusManager.setFocused(undefined);
+		if (priorIndexedDB)
+			Object.defineProperty(globalThis, "indexedDB", priorIndexedDB);
+		else delete globalThis.indexedDB;
+	});
 	// jsdom loads after module evaluation, so query-core's module-level isServer
 	// const stays true and would disable refetchInterval scheduling entirely.
 	environmentManager.setIsServer(() => false);
@@ -288,8 +283,10 @@ async function equipmentApp(
 		await import("../src/components/SessionBoundary.tsx");
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { readPlantDraft } = await import("../src/domain/equipmentPlant.ts");
+	const { compilePlantSearch } = await import("../src/domain/plantSearch.ts");
 	const { ApiError } = await import("../src/data/protocol.ts");
-	const brief = emptyBrief();
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
 	brief.annual_load.kwh = 10;
 	const project = {
 		id: projectId,
@@ -300,7 +297,15 @@ async function equipmentApp(
 	};
 	const session = makeSession();
 	const requests = [];
-	let serverRun = null,
+	const reads = [];
+	let frozenInputs = legacyInputs;
+	let comparisonUnavailable = legacyUnavailable;
+	let findAttempts = 0;
+	let lostReceipt = null;
+	let reportRun = null;
+	const revisions = new Map([[project.revision, structuredClone(project)]]);
+	let serverRun = legacyInputs ? makeRun(projectId, "succeeded") : null,
+		nextScope = session.query_scope,
 		admittedScope = session.query_scope;
 	const store = {
 		async read() {
@@ -314,28 +319,59 @@ async function equipmentApp(
 		},
 		async write() {},
 	};
-	let client = {
+	const client = {
 		origin: location.origin,
 		invalidate() {
 			admittedScope = null;
 		},
 		async bootstrap() {
-			admittedScope = session.query_scope;
-			return session;
+			admittedScope = nextScope;
+			return { ...session, query_scope: nextScope };
+		},
+		async probeScope() {
+			return nextScope;
 		},
 		isCurrentScope(scope) {
 			return scope === admittedScope;
 		},
-		async query(path) {
+		async query(path, body, scope) {
+			assert.equal(scope, admittedScope);
+			reads.push({ path, body, scope });
 			if (path === "products/current") return catalog();
+			if (path === "assets/read" && body.asset_id === selectedPv?.id)
+				return structuredClone(selectedPv);
 			if (path === "projects/runs")
 				return {
 					items: serverRun ? [runPageItem(serverRun)] : [],
 					next: null,
 				};
-			if (path === "runs/read") return structuredClone(serverRun);
+			if (path === "runs/read") {
+				assert.equal(
+					body.run_id,
+					(body.run_id === reportRun?.id ? reportRun : serverRun)?.id,
+				);
+				return structuredClone(
+					body.run_id === reportRun?.id ? reportRun : serverRun,
+				);
+			}
+			if (path === "runs/inputs") {
+				assert.equal(body.project_id, projectId);
+				assert.equal(body.run_id, serverRun.id);
+				if (selectionGate) await selectionGate.promise;
+				if (comparisonUnavailable)
+					throw new ApiError(503, "version_unavailable");
+				return {
+					schema_version: 1,
+					project_id: foreignSelection ? "0".repeat(32) : projectId,
+					run_id: serverRun.id,
+					manifest_sha256: serverRun.manifest_sha256,
+					inputs: structuredClone(frozenInputs),
+				};
+			}
 			if (path === "equipment/candidates/read") {
 				const candidate = serverRun.result.search.candidates[0];
+				assert.equal(body.run_id, serverRun.id);
+				assert.equal(body.candidate_id, candidate.id);
 				return {
 					run_id: serverRun.id,
 					candidate_id: candidate.id,
@@ -367,122 +403,73 @@ async function equipmentApp(
 					},
 				};
 			}
-			if (path === "projects/read") return structuredClone(project);
+			if (path === "projects/read") {
+				assert.equal(body.project_id, projectId);
+				if (scope !== session.query_scope) throw new ApiError(404, "not_found");
+				return structuredClone(
+					body.revision == null ? project : revisions.get(body.revision),
+				);
+			}
 			throw new ApiError(404, "not_found");
 		},
-		async send(path, body) {
+		async send(path, body, scope) {
+			assert.equal(scope, admittedScope);
 			const command = JSON.parse(body);
 			requests.push({ path, body: command });
+			assert.equal(command.project_id, projectId);
+			if (path === "runs/find-equipment" && lostReceipt) {
+				assert.equal(body, lostReceipt.body);
+				return structuredClone(lostReceipt.receipt);
+			}
+			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
+				revisions.set(project.revision, structuredClone(project));
 				return structuredClone(project);
 			}
-			if (path === "runs/find-equipment" || path === "runs/check-equipment") {
-				if (rejectFind) throw new ApiError(503, "request_failed");
+			if (path === "runs/report") {
+				reportRun = makeRun(
+					projectId,
+					"queued",
+					project.revision,
+					project.input_sha256,
+					"planning_report_v1",
+				);
+				reportRun.id = "8".repeat(32);
+				return structuredClone(reportRun);
+			}
+			if (path === "runs/find-equipment") {
+				if (++findAttempts === 1 && findRefusal)
+					throw new ApiError(422, "invalid_input", null, null, findRefusal);
+				if (searchGate) await searchGate.promise;
 				project.inputs = authoredDiscoveryInputs(command.inputs);
+				frozenInputs = structuredClone(project.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
+				revisions.set(project.revision, structuredClone(project));
 				serverRun = makeRun(
 					projectId,
 					"queued",
 					project.revision,
 					project.input_sha256,
-					path === "runs/check-equipment" ? EQUIPMENT_TASK : SEARCH_TASK,
+					SEARCH_TASK,
 				);
-				return {
+				const receipt = {
 					schema_version: 1,
 					project: structuredClone(project),
 					run: structuredClone(serverRun),
 				};
+				if (rejectFind || (findAttempts === 1 && pvFailure === "receipt")) {
+					lostReceipt = { body, receipt };
+					throw new ApiError(503, "request_failed");
+				}
+				return receipt;
 			}
 			throw new ApiError(404, "not_found");
 		},
 	};
-	if (validatePhase || validateHardware) {
-		const adapter = client;
-		const jsonReply = (body, status = 200) =>
-			new Response(JSON.stringify(body), {
-				status,
-				headers: { "Content-Type": "application/json" },
-			});
-		client = new PlannerClient({
-			baseUrl: location.origin + "/api/",
-			nonceUrl: location.origin + "/nonce",
-			origin: location.origin,
-			fetch: async (url, request) => {
-				const path = new URL(url).pathname;
-				if (path === "/nonce") return new Response("abcdefghij");
-				if (path.endsWith("/bootstrap")) return jsonReply(session);
-				const operation = path.split("/rpc/")[1],
-					command = JSON.parse(request.body);
-				if (operation === "runs/check-equipment" && validateHardware) {
-					const plant = command.inputs.equipment_plant_setup;
-					const index = plant.units.findIndex(
-						(unit) => unit.inputs.equipment_setup.inverter_product_id === null,
-					);
-					if (index >= 0) {
-						requests.push({ path: operation, body: command });
-						return jsonReply(
-							{
-								error: {
-									code: "invalid_input",
-									fields: [
-										`equipment_plant_setup.units[${index}].inputs.equipment_setup.inverter_product_id`,
-									],
-								},
-							},
-							422,
-						);
-					}
-				}
-				if (operation === "runs/find-equipment") {
-					const plant = command.inputs.equipment_plant_setup;
-					const phase = plant
-						? plant.requirements.grid_phase
-						: command.inputs.equipment_setup.grid_phase;
-					if (phase === null) {
-						requests.push({ path: operation, body: command });
-						const fields = plant
-							? [
-									{
-										path: [
-											"body",
-											"inputs",
-											"equipment_plant_setup",
-											"requirements",
-											"grid_phase",
-										],
-										kind: "literal_error",
-									},
-								]
-							: ["equipment_setup.grid_phase"];
-						return jsonReply({ error: { code: "invalid_input", fields } }, 422);
-					}
-				}
-				try {
-					return jsonReply(
-						await (["runs/find-equipment", "runs/check-equipment"].includes(
-							operation,
-						)
-							? adapter.send(operation, request.body)
-							: adapter.query(operation, command)),
-					);
-				} catch (error) {
-					return jsonReply(
-						{
-							error: {
-								code: error.code ?? "request_failed",
-								fields: error.fields,
-							},
-						},
-						error.status ?? 500,
-					);
-				}
-			},
-		});
-	}
 	const config = {
 		baseUrl: location.origin + "/api/",
 		nonceUrl: location.origin + "/nonce",
@@ -522,35 +509,121 @@ async function equipmentApp(
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
-	const fieldInput = (label) =>
-		[...document.querySelectorAll("input")].find((input) =>
-			document
-				.getElementById(input.getAttribute("aria-labelledby"))
-				?.textContent.includes(label),
-		);
-	const fieldSelect = (label) =>
-		[...document.querySelectorAll("label.lp-field")]
-			.find((node) => node.querySelector("span")?.textContent.includes(label))
-			?.querySelector("select");
+	const field = (label, tag) =>
+		[...document.querySelectorAll("label")]
+			.find(
+				(node) =>
+					node.querySelector("span")?.textContent.trim().startsWith(label) &&
+					!node.closest("[hidden]"),
+			)
+			?.querySelector(tag);
+	const fieldInput = (label) => field(label, "input");
+	const fieldSelect = (label) => field(label, "select");
+	async function updateSelect(label, value) {
+		const select = fieldSelect(label);
+		assert.ok(select, `Expected ${label} select`);
+		await act(async () => {
+			select.value = value;
+			select.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	async function step(label) {
+		const item = [
+			...document.querySelectorAll(
+				'nav[aria-label="Project navigation"] button',
+			),
+		].find((node) => node.textContent.replace(/^\d+/, "").trim() === label);
+		assert.ok(item, `Expected the ${label} step`);
+		await act(async () => item.click());
+	}
 	return {
-		root,
-		fixture,
-		client,
+		async switchScope() {
+			nextScope = "9".repeat(64);
+			await act(async () => window.dispatchEvent(new window.Event("focus")));
+			await until(
+				() =>
+					admittedScope === nextScope &&
+					!document.body.textContent.includes(project.title),
+			);
+		},
+		recoverLegacyInputs() {
+			comparisonUnavailable = false;
+		},
 		project,
 		requests,
+		reads,
+		step,
+		updateSelect,
 		fieldInput,
 		fieldSelect,
 		button,
-		runHeading: () =>
-			document.querySelector(".lp-run-result h3")?.textContent ?? null,
+		pending: () =>
+			document
+				.querySelector("main")
+				?.textContent.includes("Finding equipment for your project"),
 		setServerRun(state) {
+			const previous = serverRun;
 			serverRun = makeRun(
 				projectId,
 				state,
-				project.revision,
-				project.input_sha256,
-				serverRun.manifest.context.parameters.kind,
+				previous.revision,
+				previous.manifest.input_sha256,
+				previous.manifest.context.parameters.kind,
 			);
+			if (state === "failed")
+				serverRun.error = { code: "weather_provider_unavailable" };
+			if (state === "succeeded" && pvReference) {
+				const asset = structuredClone(pvReference.result.prepared_asset);
+				asset.metadata.derived_from_revision = serverRun.revision;
+				serverRun.result.prepared_asset = asset;
+			}
+			if (
+				state === "succeeded" &&
+				effectivePv !== null &&
+				!frozenInputs.equipment_plant_setup
+			) {
+				frozenInputs.equipment_setup.pv_dc_kw = effectivePv;
+				serverRun.result.search.candidates[0].selection.pv_dc_kw = effectivePv;
+			}
+			if (state === "succeeded" && frozenInputs.equipment_plant_setup) {
+				const search = serverRun.result.search;
+				const draft = readPlantDraft(frozenInputs);
+				const backup = frozenInputs.backup_demand;
+				if (backup) {
+					draft.requirements = {
+						...draft.requirements,
+						operating_mode: "backup",
+					};
+				}
+				if (effectivePv !== null) {
+					draft.requirements = { ...draft.requirements, pv_dc_kw: effectivePv };
+					frozenInputs.equipment_plant_setup.requirements.pv_dc_kw =
+						effectivePv;
+				}
+				const plan = compilePlantSearch(draft);
+				if (effectivePv !== null)
+					frozenInputs.equipment_plant_requirements = plan;
+				search.coverage = {
+					template: "declared_plant_one_external_assembly_per_converter",
+					gaps: {},
+					plan,
+				};
+				const { selection, ...candidate } = search.candidates[0];
+				search.candidates = [
+					{
+						...candidate,
+						plant: {
+							schema_version: 1,
+							requirements: plan.requirements,
+							units: plan.units.map(({ id, name, requirements }) => {
+								const { application: _application, ...demand } = requirements;
+								return { id, name, selection: { ...selection, ...demand } };
+							}),
+							parallel_groups: [],
+						},
+					},
+				];
+			}
 		},
 		serverRunId: () => serverRun?.id ?? null,
 	};
@@ -568,536 +641,958 @@ async function untilRun(predicate) {
 	throw new Error("Expected run state was not reached");
 }
 
-for (const multi of [false, true]) {
-	test(`${multi ? "plant" : "single"} manually chosen hardware is checked once from current inputs and offered to the report`, async (t) => {
+for (const pvFailure of [null, "provider", "receipt"]) {
+	const description =
+		pvFailure === "receipt"
+			? "resumes the acknowledged earlier request"
+			: pvFailure === "provider"
+				? "allows site and orientation corrections before retry"
+				: "continues through one comparison to a system option";
+	test(`known PV ${description}`, async (t) => {
+		const { emptyScenario } = await import("../src/domain/energyScenario.ts");
+		const scenario = emptyScenario();
 		const app = await equipmentApp(t, {
-			projectId: (multi ? "d" : "c").repeat(32),
-			hash: "#lp-equipment",
-			inputs: { equipment_setup: { ...savedSetup, inverter_product_id: 101 } },
+			projectId: knownPv.project.id,
+			hash: "#sc-energy",
+			pvReference: knownPv.run,
+			effectivePv: 6.4,
+			pvFailure,
+			inputs: {
+				...knownPv.project.inputs,
+				equipment_setup: { ...savedSetup, pv_dc_kw: null },
+				profile_selections: {
+					schema_version: 1,
+					selected: { gross_load: "e".repeat(32) },
+				},
+				energy_scenario: {
+					...scenario,
+					controller: "self_consumption_with_reserve_v1",
+					schedule: [
+						{
+							...scenario.schedule[0],
+							mode: "connected",
+							pv_enabled: true,
+							start_utc: "2019-12-31T23:00:00Z",
+							end_utc: "2020-12-31T23:00:00Z",
+						},
+					],
+				},
+			},
 		});
-		await untilRun(
-			() =>
-				app.button("Multiple systems") &&
-				!app.button("Multiple systems").disabled,
-		);
-		if (multi) {
-			await act(async () => app.button("Multiple systems").click());
-			await until(() => app.button("System 2"));
-			await act(async () => app.button("System 2").click());
-			const inverter = [...document.querySelectorAll("label")]
-				.find(
-					(node) =>
-						!node.closest("[hidden]") &&
-						node.querySelector("span")?.textContent ===
-							"Inverter or integrated storage system",
-				)
-				.querySelector("select");
-			await act(async () => {
-				inverter.value = "101";
-				inverter.dispatchEvent(new window.Event("change", { bubbles: true }));
-			});
-		}
-		await untilRun(
-			() =>
-				app.button("Check equipment") &&
-				!app.button("Check equipment").disabled,
-		);
-		await act(async () => app.button("Check equipment").click());
-		await untilRun(() => app.runHeading() === "Queued");
-		const writes = app.requests.filter((row) => row.path !== "projects/read");
-		assert.deepEqual(
-			writes.map((row) => row.path),
-			["runs/check-equipment"],
-		);
-		const captured = writes[0].body.inputs;
-		assert.equal(
-			multi
-				? captured.equipment_plant_setup.units.length
-				: captured.equipment_setup.inverter_product_id,
-			multi ? 2 : 101,
-		);
-		assert.equal(captured.energy_replay, undefined);
-		assert.equal(captured.equipment_plant_requirements, undefined);
-		app.setServerRun("succeeded");
-		await untilRun(() => app.runHeading() === "Equipment check complete");
-		assert.equal(app.button("Planning report").disabled, false);
-		await act(async () => app.button("Planning report").click());
-		assert.ok(
-			app.fieldSelect("Equipment checks"),
-			"the native report equipment selector is visible",
-		);
-		await untilRun(() =>
-			app
-				.fieldSelect("Equipment checks")
-				?.querySelector(`option[value="${app.serverRunId()}"]`),
-		);
-		const option = app.fieldSelect("Equipment checks");
-		assert.equal(option.disabled, false);
-		await act(async () => {
-			option.value = app.serverRunId();
-			option.dispatchEvent(new window.Event("change", { bubbles: true }));
-		});
-		assert.equal(option.value, app.serverRunId());
-	});
-}
-
-test("a check refusal opens the named plant unit and targets its missing inverter", async (t) => {
-	const app = await equipmentApp(t, {
-		projectId: "e".repeat(32),
-		hash: "#lp-equipment",
-		validateHardware: true,
-		inputs: { equipment_setup: { ...savedSetup, inverter_product_id: 101 } },
-	});
-	await untilRun(
-		() =>
-			app.button("Multiple systems") &&
-			!app.button("Multiple systems").disabled,
-	);
-	await act(async () => app.button("Multiple systems").click());
-	await untilRun(
-		() =>
-			app.button("Check equipment") && !app.button("Check equipment").disabled,
-	);
-	await act(async () => app.button("Check equipment").click());
-	const path =
-		"equipment_plant_setup.units[1].inputs.equipment_setup.inverter_product_id";
-	const field = () =>
-		[...document.querySelectorAll("select")].find((node) => node.name === path);
-	await until(
-		() =>
-			field()?.getAttribute("aria-invalid") === "true" &&
-			document.activeElement?.getAttribute("name") === path,
-	);
-	assert.equal(field().closest("[hidden]"), null);
-	assert.equal(app.button("System 2").getAttribute("aria-pressed"), "true");
-	assert.match(
-		document.getElementById(field().getAttribute("aria-describedby"))
-			.textContent,
-		/Choose an inverter/,
-	);
-	await act(async () => {
-		field().value = "101";
-		field().dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	await until(() => field().getAttribute("aria-invalid") !== "true");
-	await act(async () => app.button("Check equipment").click());
-	await untilRun(() => app.runHeading() === "Queued");
-	assert.equal(
-		app.requests.filter((row) => row.path === "runs/check-equipment").length,
-		2,
-	);
-});
-
-for (const multi of [false, true]) {
-	test(`${multi ? "plant" : "single"} unanswered grid phase receives a visible correction target and corrected submit`, async (t) => {
-		const app = await equipmentApp(t, {
-			projectId: (multi ? "b" : "a").repeat(32),
-			hash: "#lp-equipment",
-			validatePhase: true,
-			inputs: { equipment_setup: { ...savedSetup, grid_phase: null } },
-		});
-		const searchText = multi
-			? "Find equipment for these systems"
-			: "Find equipment combinations";
-		await untilRun(
-			() =>
-				app.button("Multiple systems") &&
-				!app.button("Multiple systems").disabled,
-		);
-		if (multi) await act(async () => app.button("Multiple systems").click());
-		await untilRun(
-			() => app.button(searchText) && !app.button(searchText).disabled,
-		);
-		await act(async () => app.button(searchText).click());
-		const phase = () =>
-			[...document.querySelectorAll("select")].find(
-				(field) =>
-					field.name ===
-					(multi
-						? "equipment_plant_setup.requirements.grid_phase"
-						: "equipment_setup.grid_phase"),
+		await compare(app);
+		if (pvFailure === "provider") {
+			await untilRun(app.pending);
+			await act(async () => app.setServerRun("failed"));
+			await untilRun(() =>
+				document.body.textContent.includes(
+					"PVGIS could not estimate generation",
+				),
 			);
-		await until(
-			() =>
-				phase()?.getAttribute("aria-invalid") === "true" &&
-				document.activeElement?.getAttribute("name") === phase()?.name,
+			await app.step("Solar");
+			const latitude = app.fieldInput("Latitude");
+			assert.equal(latitude.value, "52.12567");
+			await enter(latitude, "52.1");
+			await enter(app.fieldInput("Azimuth"), "180");
+			await act(async () => app.button("Continue with energy use").click());
+			await compare(app);
+		} else if (pvFailure === "receipt") {
+			const check = () => app.button("Check previous request");
+			await untilRun(() => check() && !check().disabled);
+			await act(async () => check().click());
+		}
+		await untilRun(() => app.serverRunId() !== null);
+		await act(async () => app.setServerRun("succeeded"));
+		await untilRun(() => document.body.textContent.includes("ESS 5K"));
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			pvFailure
+				? ["runs/find-equipment", "runs/find-equipment"]
+				: ["runs/find-equipment"],
 		);
-		assert.equal(document.activeElement?.getAttribute("name"), phase().name);
-		const message = document.getElementById(
-			phase().getAttribute("aria-describedby"),
-		);
-		assert.match(message.textContent, /single-phase or three-phase/);
+		if (pvFailure === "receipt")
+			assert.deepEqual(app.requests[0].body, app.requests[1].body);
+		if (pvFailure === "provider") {
+			assert.notEqual(app.requests[0].body.key, app.requests[1].body.key);
+			assert.equal(
+				app.requests[1].body.expected_revision,
+				app.requests[0].body.expected_revision + 1,
+			);
+		}
+		const { inputs } = app.requests.at(-1).body;
+		assert.equal(inputs.profile_selections.selected.pv_available_ac, undefined);
+		assert.equal(inputs.profile_selections.selected.gross_load, "e".repeat(32));
 		assert.equal(
-			document.body.textContent.includes("equipment_setup.grid_phase"),
-			false,
+			inputs.energy_scenario.schedule[0].start_utc,
+			"2019-12-31T23:00:00Z",
 		);
-		const mode = app.fieldSelect("Choose an operating mode");
-		await act(async () => {
-			mode.value = "backup";
-			mode.dispatchEvent(new window.Event("change", { bubbles: true }));
-		});
-		assert.equal(
-			phase().getAttribute("aria-invalid"),
-			"true",
-			"editing another field must retain this correction",
-		);
-		await act(async () => {
-			phase().value = "3";
-			phase().dispatchEvent(new window.Event("change", { bubbles: true }));
-		});
-		await until(() => phase().getAttribute("aria-invalid") !== "true");
-		await act(async () => app.button(searchText).click());
-		await untilRun(() => app.runHeading() === "Queued");
-		assert.equal(
-			app.requests.filter((row) => row.path === "runs/find-equipment").length,
-			2,
-		);
-		assert.equal(
-			app.requests.some((row) => row.path === "projects/revise"),
-			false,
-		);
+		if (pvFailure === "provider") {
+			assert.equal(inputs.brief.site.latitude, 52.1);
+			assert.equal(
+				inputs.pvgis_reference.arrays[0].azimuth_north_clockwise_deg,
+				180,
+			);
+		}
 	});
 }
 
-test("energy intake directs an unknown-size customer to equipment without requiring device parameters", async (t) => {
-	const { emptyBrief } = await import("../src/domain/brief.ts");
+async function compare(app) {
+	await untilRun(() => app.button("Compare systems")?.matches(":enabled"));
+	await act(async () => app.button("Compare systems").click());
+}
+async function chooseGoal(app, goal = "self") {
+	await until(() => app.fieldSelect("Purpose"));
+	await app.updateSelect("Purpose", goal);
+}
+test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
+	const roof = nativePreparation.pvgis_reference_project;
 	const app = await equipmentApp(t, {
-		projectId: "1".repeat(32),
-		hash: "#lp-load",
-		inputs: { brief: { ...emptyBrief(), system_scope: "storage_only" } },
-	});
-	await untilRun(() => app.fieldSelect("Operating goal"));
-	assert.ok(!app.fieldSelect("Operating goal").closest("[hidden]"));
-	assert.ok(app.button("Choose equipment"));
-	assert.ok(
-		app.fieldInput("Usable stored energy").closest("[hidden]"),
-		"device parameters are outside the initial Operation chapter",
-	);
-	await act(async () => app.button("01Storage").click());
-	assert.ok(!app.fieldInput("Usable stored energy").closest("[hidden]"));
-	await act(async () => app.button("03Operation").click());
-	await act(async () => {
-		const goal = app.fieldSelect("Operating goal");
-		goal.value = "backup";
-		goal.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	await act(async () => app.button("Choose equipment").click());
-	await untilRun(() => app.button("Find equipment combinations"));
-	assert.equal(app.fieldSelect("Choose an operating mode").value, "backup");
-	assert.equal(app.requests.length, 0);
-});
-
-test("unknown storage size stays optional and is saved as unknown for equipment discovery", async (t) => {
-	const { emptyBrief } = await import("../src/domain/brief.ts");
-	const app = await equipmentApp(t, {
-		projectId: "1".repeat(32),
-		hash: "#lp-equipment",
+		projectId: roof.id,
+		hash: "#sc-project",
+		pvReference: nativePreparation.pvgis_reference_run,
+		effectivePv: 9.2,
 		inputs: {
-			brief: { ...emptyBrief(), system_scope: "storage_only" },
-			equipment_setup: {
-				...emptySetup,
-				grid_phase: 3,
-				operating_mode: "grid_connected",
-			},
+			...roof.inputs,
+			equipment_setup: { ...savedSetup, pv_dc_kw: null },
 		},
 	});
-	await untilRun(
-		() =>
-			app.button("Find equipment combinations") &&
-			!app.button("Find equipment combinations").disabled,
+	await untilRun(() => app.button("Continue with solar")?.matches(":enabled"));
+	await act(async () => app.button("Continue with solar").click());
+	assert.equal(location.hash, "#sc-solar");
+	assert.equal(app.fieldInput("Calendar year").value, "2020");
+	assert.match(
+		document.querySelector(".sc-solar-total").textContent,
+		/20 placed modules · 9.2 kWp/,
 	);
-	const known = app.fieldInput("Required usable energy").closest("details");
-	assert.ok(known, "known sizing is an optional disclosure");
-	assert.equal(known.open, false);
-	await act(async () => app.button("Find equipment combinations").click());
-	await untilRun(() =>
-		app.requests.some((request) => request.path === "runs/find-equipment"),
-	);
-	const saved = app.requests.find(
-		(request) => request.path === "runs/find-equipment",
-	).body.inputs;
-	assert.equal(saved.equipment_setup.required_usable_kwh, null);
-	assert.equal(saved.equipment_setup.required_discharge_ac_kw, null);
-	assert.equal(
-		app.requests.some((request) => request.path === "projects/revise"),
-		false,
-	);
-	assert.equal(
-		app.requests.find((request) => request.path === "runs/find-equipment").body
-			.expected_revision,
-		1,
-	);
-	assert.equal(
-		document.body.textContent.includes("Enter the search requirements first."),
-		false,
-	);
-});
-
-test("multiple systems discover from current named demand without a prepared hardware plan", async (t) => {
-	const app = await equipmentApp(t, {
-		projectId: "8".repeat(32),
-		hash: "#lp-equipment",
-		inputs: { equipment_setup: { ...savedSetup, application: "commercial" } },
-	});
-	await untilRun(
-		() =>
-			app.button("Multiple systems") &&
-			!app.button("Multiple systems").disabled,
-	);
-	await act(async () => app.button("Multiple systems").click());
-	await untilRun(
-		() =>
-			app.button("Find equipment for these systems") &&
-			!app.button("Find equipment for these systems").disabled,
-	);
-	assert.equal(app.button("Prepare multi-system plan"), undefined);
-	await act(async () => app.button("Find equipment for these systems").click());
-	await untilRun(() => app.runHeading() === "Queued");
-	const request = app.requests.find(
-		(row) => row.path === "runs/find-equipment",
-	);
-	assert.equal(request.body.expected_revision, 1);
-	assert.equal(request.body.inputs.equipment_plant_setup.units.length, 2);
-	assert.equal(
-		request.body.inputs.equipment_plant_setup.units[0].inputs.equipment_setup
-			.application,
-		"commercial",
-	);
-	assert.equal("equipment_plant_requirements" in request.body.inputs, false);
-	assert.equal(
-		app.requests.some((row) => row.path === "projects/revise"),
-		false,
-	);
-});
-
-test("an unconfirmed discovery retains its original request for explicit retry", async (t) => {
-	const app = await equipmentApp(t, {
-		projectId: "7".repeat(32),
-		hash: "#lp-equipment",
-		rejectFind: true,
-		inputs: {
-			equipment_setup: {
-				...emptySetup,
-				grid_phase: 3,
-				operating_mode: "grid_connected",
-			},
-		},
-	});
-	await untilRun(
-		() =>
-			app.button("Find equipment combinations") &&
-			!app.button("Find equipment combinations").disabled,
-	);
-	await act(async () => app.button("Find equipment combinations").click());
-	await untilRun(() => app.button("Retry original calculation request"));
+	await act(async () => app.button("Continue with energy use").click());
+	assert.equal(location.hash, "#sc-energy");
+	await chooseGoal(app);
+	await compare(app);
+	await untilRun(app.pending);
+	assert.equal(location.hash, "#sc-system");
 	assert.deepEqual(
-		app.requests.map((request) => request.path),
+		app.requests.map(({ path }) => path),
 		["runs/find-equipment"],
 	);
-	assert.equal(app.button("Find equipment combinations").disabled, true);
+	const search = app.requests[0].body;
+	assert.equal(search.inputs.equipment_setup.pv_dc_kw, null);
+	assert.equal(
+		search.inputs.profile_selections?.selected.pv_available_ac,
+		undefined,
+	);
+	await act(async () => app.setServerRun("succeeded"));
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Review the proposal")?.matches(":enabled"));
+	await act(async () => app.button("Review the proposal").click());
+	assert.equal(location.hash, "#sc-review");
+	assert.ok(document.querySelector(".sc-review"));
+	await untilRun(() =>
+		app.button("Generate project report")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Generate project report").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
+	await app.step("Solar");
+	await act(async () =>
+		document
+			.querySelector(".lp-panel-shape")
+			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
+	);
+	await act(async () => app.button("Remove selected").click());
+	await app.step("System");
+	assert.equal(Boolean(app.button("Selected")), false);
+	assert.equal(app.button("Review the proposal").disabled, true);
 });
 
-test("storage-only equipment keeps known kW/kWh requirements without PV fields in single and multiple systems", async (t) => {
+for (const purpose of [
+	"pvgis_known_ac_reference_profile_v1",
+	"csv_profile_v1",
+]) {
+	test(`the selected comparison report respects ${purpose}`, async (t) => {
+		const selectedPv = { ...knownPv.run.result.prepared_asset, purpose };
+		const nextPv = structuredClone(knownPv.run);
+		nextPv.result.prepared_asset.id = "1".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId: knownPv.project.id,
+			hash: "#sc-solar",
+			selectedPv,
+			pvReference: nextPv,
+			effectivePv: 6.4,
+			inputs: {
+				...knownPv.project.inputs,
+				equipment_setup: { ...savedSetup, pv_dc_kw: null },
+				profile_selections: {
+					schema_version: 1,
+					selected: { pv_available_ac: selectedPv.id },
+				},
+			},
+		});
+		await untilRun(() => app.fieldInput("Roof pitch")?.matches(":enabled"));
+		await enter(app.fieldInput("Roof pitch"), "40");
+		await act(async () => app.button("Continue with energy use").click());
+		await chooseGoal(app);
+		await compare(app);
+		await untilRun(app.pending);
+		assert.equal(
+			app.requests[0].body.inputs.pvgis_reference.arrays[0].tilt_deg,
+			40,
+		);
+		await act(async () => app.setServerRun("succeeded"));
+		await untilRun(() =>
+			app.button("Use this configuration")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Use this configuration").click());
+		await untilRun(() =>
+			app.button("Review the proposal")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Review the proposal").click());
+		await untilRun(() =>
+			app.button("Generate project report")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Generate project report").click());
+		await untilRun(() =>
+			app.requests.some(({ path }) => path === "runs/report"),
+		);
+		assert.equal(
+			app.requests.at(-1).body.options.pv_run_id,
+			purpose === "csv_profile_v1" ? null : app.serverRunId(),
+		);
+		assert.equal(
+			app.project.inputs.profile_selections.selected.pv_available_ac,
+			selectedPv.id,
+		);
+	});
+}
+
+test("a manually drawn solar-only roof compares its placed capacity without a load profile", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "6".repeat(32),
+		hash: "#sc-project",
+		effectivePv: 0.92,
+		inputs: {
+			equipment_setup: { ...savedSetup, pv_dc_kw: null },
+			geometry: {
+				...(await import("../src/domain/geometryCommands.ts")).emptyGeometry(),
+				module_specs:
+					nativePreparation.pvgis_reference_project.inputs.geometry
+						.module_specs,
+			},
+		},
+	});
+	const click = async (label) => {
+		await until(() => app.button(label)?.matches(":enabled"));
+		await act(async () => app.button(label).click());
+	};
+	await untilRun(() => app.fieldSelect("Planned system")?.matches(":enabled"));
+	await app.updateSelect("Planned system", "pv_only");
+	if (app.button("Switch to solar and exclude storage"))
+		await click("Switch to solar and exclude storage");
+	await click("Continue with solar");
+	await click("Place modules on the roof");
+	const module =
+		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
+	await untilRun(() =>
+		app.fieldSelect("PV module")?.querySelector(`option[value="${module.id}"]`),
+	);
+	await app.updateSelect("PV module", module.id);
+	for (const [label, value] of [
+		["Width", "8"],
+		["Depth", "5"],
+		["Pitch", "25"],
+		["Azimuth", "180"],
+		["Relative roof height", "3"],
+		["Origin east / U", "0"],
+		["Origin north / V", "0"],
+		["Drawing source", "Installer site plan"],
+	])
+		await enter(app.fieldInput(label), value);
+	await act(async () => document.querySelector(".sc-check input").click());
+	await click("Add rectangular roof");
+	for (const [label, value] of [
+		["Rows", "1"],
+		["Columns", "2"],
+		["Module gap", "0.05"],
+		["Origin east / U", "1"],
+		["Origin north / V", "1"],
+	])
+		await enter(app.fieldInput(label), value);
+	await click("Place module group");
+	assert.match(
+		document.querySelector(".sc-solar-total").textContent,
+		/2 placed modules · 0.92 kWp/,
+	);
+	await click("Continue with energy use");
+	await chooseGoal(app);
+	await compare(app);
+	await until(
+		() =>
+			app.pending() ||
+			document.querySelector(".sc-configurator > [role=alert]"),
+	);
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["runs/find-equipment"],
+	);
+	const inputs = app.requests[0].body.inputs;
+	assert.equal(inputs.equipment_setup.pv_dc_kw, null);
+	await act(async () => app.setServerRun("succeeded"));
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	assert.equal(inputs.profile_selections?.selected.pv_available_ac, undefined);
+	assert.equal(inputs.geometry.coordinate_system.anchor, null);
+});
+
+const option = () => document.querySelector(".sc-package");
+const searchRequests = (app) =>
+	app.requests.filter(({ path }) => path === "runs/find-equipment");
+
+for (const multi of [false, true]) {
+	test(`${multi ? "multiple systems" : "single system"} requests require phase and preserve named authored demand`, async (t) => {
+		const { emptyBrief } = await import("../src/domain/brief.ts");
+		const app = await equipmentApp(t, {
+			projectId: (multi ? "a" : "b").repeat(32),
+			hash: "#sc-project",
+			inputs: {
+				brief: { ...emptyBrief(), system_scope: "storage_only" },
+				equipment_setup: {
+					...savedSetup,
+					pv_dc_kw: 0,
+					grid_phase: null,
+					application: "commercial",
+				},
+				...(multi
+					? {
+							equipment_demand: {
+								schema_version: 1,
+								initial_usable_fraction: 0.5,
+								max_unserved_load_kwh: 0,
+								source_note: "Previous single-system starting charge",
+							},
+						}
+					: {}),
+			},
+		});
+		await untilRun(() =>
+			app.button("Continue with storage")?.matches(":enabled"),
+		);
+		if (multi) {
+			await until(() => app.button("Multiple systems")?.matches(":enabled"));
+			await act(async () => app.button("Multiple systems").click());
+			const names = [...document.querySelectorAll("label")]
+				.filter((label) => label.textContent.includes("System name"))
+				.map((label) => label.querySelector("input"));
+			assert.equal(names.length, 2);
+			await enter(names[1], "Workshop");
+			await act(async () => app.button("Add system").click());
+			assert.equal(
+				[...document.querySelectorAll("button")].filter(
+					(button) => button.textContent === "Remove system",
+				).length,
+				3,
+			);
+		}
+		await act(async () => app.button("Continue with storage").click());
+		await chooseGoal(app);
+		assert.equal(app.fieldSelect("Grid connection").value, "");
+		assert.equal(app.button("Compare systems").disabled, true);
+		assert.equal(app.fieldInput("Usable storage capacity").value, "61.4");
+		assert.equal(app.fieldInput("Continuous discharge power").value, "100");
+		assert.equal(app.fieldInput("PV array"), undefined);
+		await act(async () => app.button("Compare systems").click());
+		assert.equal(app.requests.length, 0);
+		await app.updateSelect("Grid connection", "3");
+		await compare(app);
+		await untilRun(app.pending);
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["runs/find-equipment"],
+		);
+		const { expected_revision, inputs } = searchRequests(app)[0].body;
+		assert.equal(expected_revision, 1);
+		assert.equal(inputs.equipment_plant_requirements, undefined);
+		assert.equal(inputs.equipment_demand, undefined);
+		const requirements = multi
+			? inputs.equipment_plant_setup.requirements
+			: inputs.equipment_setup;
+		assert.equal(requirements.grid_phase, 3);
+		assert.equal(requirements.pv_dc_kw, 0);
+		assert.equal(requirements.required_usable_kwh, 61.4);
+		assert.equal(requirements.required_discharge_ac_kw, 100);
+		if (multi) {
+			const units = inputs.equipment_plant_setup.units;
+			assert.deepEqual(
+				units.map((unit) => unit.name),
+				["System 1", "Workshop", "System 3"],
+			);
+			assert.equal(units[0].inputs.equipment_setup.application, "commercial");
+			assert.equal(units[1].inputs.equipment_setup.required_usable_kwh, null);
+		} else assert.equal(requirements.application, "commercial");
+	});
+}
+
+test("commercial backup compares direct demand while leaving device parameters unknown", async (t) => {
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const app = await equipmentApp(t, {
 		projectId: "1".repeat(32),
-		hash: "#lp-equipment",
+		hash: "#sc-energy",
 		inputs: {
-			brief: { ...emptyBrief(), system_scope: "storage_only" },
-			equipment_setup: { ...savedSetup, pv_dc_kw: 0 },
-			equipment_requirements: { ...savedRequirements, pv_dc_kw: 0 },
+			brief: {
+				...emptyBrief(),
+				project_use: "commercial",
+				system_scope: "storage_only",
+			},
+			equipment_setup: { ...emptySetup, grid_phase: 3 },
 		},
 	});
-	await untilRun(
-		() =>
-			app.button("Find equipment combinations") &&
-			!app.button("Find equipment combinations").disabled,
-	);
-	assert.equal(app.fieldInput("PV array"), undefined);
-	assert.equal(app.fieldInput("Required usable energy").value, "61.4");
-	await act(async () => app.button("Multiple systems").click());
-	await until(() => app.button("Add system"));
-	assert.equal(app.fieldInput("Total PV nameplate rating"), undefined);
-	assert.equal(app.fieldInput("Total required usable energy").value, "61.4");
-	await act(async () => app.button("Add system").click());
-	assert.equal(
-		[...document.querySelectorAll("button")].filter(
-			(b) => b.textContent === "Remove system",
-		).length,
-		3,
-	);
+	await chooseGoal(app, "backup");
+	assert.equal(app.button("Compare systems").disabled, true);
+	await enter(app.fieldInput("Backup load"), "5");
+	await enter(app.fieldInput("Required duration"), "4");
+	assert.match(document.body.textContent, /20 kWh/);
+	const optional = app.fieldInput("Usable storage capacity").closest("details");
+	assert.equal(optional.open, false);
+	assert.equal(app.fieldInput("Usable storage capacity").value, "");
+	assert.equal(app.fieldInput("Continuous discharge power").value, "");
+	assert.doesNotMatch(document.body.textContent, /Commercial storage sizing/);
+	await compare(app);
+	await untilRun(app.pending);
+	const [{ path, body }] = app.requests;
+	assert.equal(path, "runs/find-equipment");
+	assert.equal(app.requests.length, 1);
+	assert.equal(body.expected_revision, 1);
+	assert.deepEqual(body.inputs.backup_demand, {
+		schema_version: 1,
+		load_kw: 5,
+		duration_hours: 4,
+	});
+	assert.equal(body.inputs.equipment_setup.operating_mode, "backup");
+	assert.equal(body.inputs.equipment_setup.required_usable_kwh, null);
+	assert.equal(body.inputs.equipment_setup.required_discharge_ac_kw, null);
+	assert.equal(body.inputs.profile_selections, undefined);
+	assert.equal(body.inputs.energy_scenario.battery.usable_window_kwh, null);
 });
 
-test("equipment search keeps the declared application and shows results without a manual refresh", async (t) => {
+test("changing the purpose drops backup demand before the next comparison", async (t) => {
 	const app = await equipmentApp(t, {
-		projectId: "1".repeat(32),
+		projectId: "2".repeat(32),
+		hash: "#sc-energy",
 		inputs: {
 			equipment_setup: savedSetup,
-			equipment_requirements: {
-				...savedRequirements,
-				application: "commercial",
-			},
+			backup_demand: { schema_version: 1, load_kw: 5, duration_hours: 4 },
 		},
-		hash: "#lp-equipment",
 	});
-	await untilRun(() => app.button("Find equipment combinations"));
-	const search = () => app.button("Find equipment combinations");
-	await untilRun(() => search() && !search().disabled);
-	await act(async () => search().click());
-	// The accepted reply seeds the queued run; the workspace must switch to
-	// the saved-calculations view on its own.
-	await untilRun(() => app.runHeading() === "Queued");
-	app.setServerRun("running");
-	await untilRun(
-		() => app.runHeading() === "Searching for equipment combinations…",
-	);
-	app.setServerRun("succeeded");
-	await untilRun(() => app.runHeading() === "Equipment search finished");
-	const option = [...document.querySelectorAll("option")].find((node) =>
-		node.textContent.includes("Linker ESS 5K + Linker Battery HV"),
-	);
-	assert.ok(option, "expected the found combination to be listed");
-	assert.match(option.textContent, /Usable battery capacity: 80 kWh/);
-	assert.doesNotMatch(option.textContent, /100 kWh/);
-	assert.match(
-		document.body.textContent,
-		/Combinations assessed[^]*1/,
-		"expected one assessed combination",
-	);
+	await until(() => app.fieldInput("Backup load"));
+	assert.equal(app.fieldInput("Backup load").value, "5");
+	await app.updateSelect("Purpose", "peak");
+	await enter(app.fieldInput("Target grid import limit"), "13");
+	await compare(app);
+	await untilRun(app.pending);
+	const { inputs } = searchRequests(app)[0].body;
+	assert.equal(inputs.backup_demand, undefined);
 	assert.equal(
-		new URL(window.location.href).searchParams.get("run"),
-		app.serverRunId(),
-		"expected the finished run to be selected in the URL",
+		inputs.energy_scenario.controller,
+		"peak_shaving_with_reserve_v1",
 	);
+	assert.equal(inputs.energy_scenario.schedule[0].import_cap_kw, 13);
+	assert.equal(inputs.energy_scenario.initial_inventory.grid_kwh, null);
 });
 
-test("adopting a combination retains its report reference when default procurement was stored as null", async (t) => {
+test("a pre-mutation refusal leaves comparison editable and a corrected request gets a new key", async (t) => {
 	const app = await equipmentApp(t, {
-		projectId: "1".repeat(32),
-		hash: "#lp-equipment",
-		inputs: {
-			equipment_setup: { ...savedSetup, equipment_use: null },
-			equipment_requirements: savedRequirements,
-		},
+		projectId: "e".repeat(32),
+		hash: "#sc-energy",
+		inputs: { equipment_setup: savedSetup },
+		findRefusal: ["equipment_setup.grid_phase"],
 	});
-	await untilRun(
-		() =>
-			app.button("Find equipment combinations") &&
-			!app.button("Find equipment combinations").disabled,
-	);
-	await act(async () => app.button("Find equipment combinations").click());
-	await untilRun(() => app.runHeading() === "Queued");
-	app.setServerRun("succeeded");
-	await untilRun(
-		() =>
-			app.button("Use this combination in the project") &&
-			!app.button("Use this combination in the project").disabled,
-	);
-	await act(async () =>
-		app.button("Use this combination in the project").click(),
-	);
-	await untilRun(() => app.fieldInput("Usable stored energy")?.value === "80");
-	assert.equal(window.location.hash, "#lp-calculations");
-	assert.equal(
-		new URL(window.location.href).searchParams.get("energy_view"),
-		"scenario",
-	);
-	assert.ok(app.button("03Operation").getAttribute("aria-current") === "step");
-	await act(async () => app.button("01Storage").click());
-	assert.ok(
-		!app.fieldInput("Usable stored energy").closest("[hidden]"),
-		"adopted storage parameters are in the active chapter",
-	);
-	await act(async () => app.button("Save project").click());
+	await chooseGoal(app);
+	await compare(app);
 	await untilRun(() =>
-		app.requests.some((request) => request.path === "projects/revise"),
+		document.body.textContent.includes(
+			"Review the equipment requirements below",
+		),
 	);
-	const saved = app.requests
-		.filter((request) => request.path === "projects/revise")
-		.at(-1).body.inputs;
-	assert.equal(saved.equipment_candidate?.candidate_id, "c".repeat(64));
-	assert.equal(saved.equipment_selection.equipment_use, null);
-	assert.equal(saved.equipment_setup.application, "commercial");
-	assert.equal("application" in saved.equipment_selection, false);
+	assert.equal(app.button("Check previous request"), undefined);
+	await app.updateSelect("Grid connection", "1");
+	await compare(app);
+	await untilRun(app.pending);
+	const [first, second] = searchRequests(app).map(({ body }) => body);
+	assert.notEqual(first.key, second.key);
+	assert.equal(first.expected_revision, second.expected_revision);
+	assert.equal(second.inputs.equipment_setup.grid_phase, 1);
+	assert.doesNotMatch(document.body.textContent, /equipment_setup\.grid_phase/);
 });
 
-test("explicit unknown setup fields stay unknown after reopen beside legacy demand", async (t) => {
+test("a lost comparison receipt blocks another comparison and explicitly replays the original request", async (t) => {
 	const app = await equipmentApp(t, {
-		projectId: "9".repeat(32),
-		inputs: {
-			// An authored null must not display an older prepared value.
-			equipment_setup: emptySetup,
-			equipment_requirements: savedRequirements,
-		},
-		hash: "#lp-equipment",
+		projectId: "7".repeat(32),
+		hash: "#sc-energy",
+		inputs: { equipment_setup: savedSetup },
+		rejectFind: true,
 	});
-	await untilRun(() => app.button("Find equipment combinations"));
-	await untilRun(() => app.fieldInput("Required usable energy"));
-	assert.equal(app.fieldInput("PV array").value, "");
-	assert.equal(app.fieldInput("Required usable energy").value, "");
-	assert.equal(
-		app.fieldInput("Required continuous AC discharge power").value,
-		"",
+	await chooseGoal(app);
+	await compare(app);
+	await untilRun(() =>
+		app.button("Check previous request")?.matches(":enabled"),
 	);
-	assert.equal(app.fieldSelect("Choose an operating mode").value, "");
-	assert.equal(app.fieldSelect("Grid connection").value, "");
-	assert.equal(app.fieldSelect("Application").value, "commercial");
-	const search = () => app.button("Find equipment combinations");
-	await untilRun(() => search() && !search().disabled);
-	assert.ok(!search().disabled, "expected the search button enabled");
+	assert.equal(searchRequests(app).length, 1);
+	assert.equal(app.button("Compare systems").disabled, true);
+	await act(async () => app.button("Check previous request").click());
+	await untilRun(app.pending);
+	const [original, replayed] = searchRequests(app).map(({ body }) => body);
+	assert.deepEqual(replayed, original);
+	assert.equal(searchRequests(app).length, 2);
+	assert.equal(app.project.revision, 2);
 });
 
-test("requirements-only projects still backfill the form", async (t) => {
-	const app = await equipmentApp(t, {
-		projectId: "5".repeat(32),
-		inputs: { equipment_requirements: savedRequirements },
-		hash: "#lp-equipment",
-	});
-	await untilRun(() => app.fieldInput("Required usable energy"));
-	assert.equal(app.fieldInput("PV array").value, "200");
-	assert.equal(app.fieldInput("Required usable energy").value, "61.4");
-	assert.equal(
-		app.fieldInput("Required continuous AC discharge power").value,
-		"100",
-	);
-	assert.equal(
-		app.fieldSelect("Choose an operating mode").value,
-		"grid_connected",
-	);
-	assert.equal(app.fieldSelect("Grid connection").value, "3");
-});
-
-test("a backgrounded tab keeps polling the search to completion", async (t) => {
+test("a comparison dispatches once, polls in the background, and renders partial options", async (t) => {
+	const gate = deferred();
 	const app = await equipmentApp(t, {
 		projectId: "6".repeat(32),
+		hash: "#sc-energy",
 		inputs: {
 			equipment_setup: savedSetup,
 			equipment_requirements: savedRequirements,
 		},
-		hash: "#lp-equipment",
+		searchGate: gate,
 	});
-	await untilRun(() => app.button("Find equipment combinations"));
-	const search = () => app.button("Find equipment combinations");
-	await untilRun(() => search() && !search().disabled);
-	await act(async () => search().click());
-	await untilRun(() => app.runHeading() === "Queued");
-	// Hide the document like a user switching tabs mid-search. The interval
-	// must keep refetching (refetchIntervalInBackground) instead of freezing
-	// on "Searching for equipment combinations…" until the tab is focused.
+	await chooseGoal(app);
+	await untilRun(() => app.button("Compare systems")?.matches(":enabled"));
+	const submit = app.button("Compare systems");
+	await act(async () => {
+		submit.click();
+		submit.click();
+	});
+	await until(() => searchRequests(app).length === 1);
+	assert.equal(app.button("Compare systems").disabled, true);
+	await act(async () => gate.resolve());
+	await untilRun(app.pending);
+	assert.equal(window.location.hash, "#sc-system");
+	assert.equal(searchRequests(app).length, 1);
+	assert.equal(
+		searchRequests(app)[0].body.inputs.equipment_setup.application,
+		"commercial",
+	);
 	Object.defineProperty(document, "visibilityState", {
 		value: "hidden",
 		configurable: true,
 	});
-	window.dispatchEvent(new window.Event("visibilitychange"));
-	app.setServerRun("succeeded");
+	await act(async () => focusManager.setFocused(false));
 	try {
-		await untilRun(() => app.runHeading() === "Equipment search finished");
+		app.setServerRun("succeeded");
+		await untilRun(option);
+		assert.match(option().textContent, /Linker ESS 5K \+ Linker Battery HV/);
+		assert.match(option().textContent, /80 kWh/);
+		assert.doesNotMatch(option().textContent, /100 kWh/);
+		assert.match(
+			document.querySelector("main").textContent,
+			/Search incomplete: some configurations remain unchecked/,
+		);
+		assert.ok(
+			app.reads.some(
+				({ path, body }) =>
+					path === "runs/read" && body.run_id === app.serverRunId(),
+			),
+		);
 	} finally {
 		delete document.visibilityState;
+		await act(async () => focusManager.setFocused(undefined));
 	}
-	assert.equal(
-		app.runHeading(),
-		"Equipment search finished",
-		"expected the finished run while the tab stays hidden",
-	);
 });
+
+for (const [multi, selection] of [
+	[false, "none"],
+	[false, "battery"],
+	[true, "none"],
+	[true, "battery"],
+	[true, "backup"],
+	[true, "derived PV"],
+]) {
+	test(`${multi ? "plant" : "single"} ${selection} selection pins the search candidate to the project report`, async (t) => {
+		const app = await equipmentApp(t, {
+			projectId: (multi ? "d" : "c").repeat(32),
+			effectivePv: selection === "derived PV" ? 9.2 : null,
+			hash: "#sc-project",
+			inputs: {
+				equipment_setup: {
+					...savedSetup,
+					...(selection === "battery" ? { battery_product_id: 201 } : {}),
+					equipment_use: null,
+				},
+				equipment_requirements: savedRequirements,
+			},
+		});
+		await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
+		if (multi) await act(async () => app.button("Multiple systems").click());
+		await app.step("Energy use");
+		await chooseGoal(app, selection === "backup" ? "backup" : "self");
+		if (selection === "backup") {
+			await enter(app.fieldInput("Backup load"), "5");
+			await enter(app.fieldInput("Required duration"), "4");
+		}
+		await compare(app);
+		await untilRun(app.pending);
+		app.setServerRun("succeeded");
+		await untilRun(() =>
+			app.button("Use this configuration")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Use this configuration").click());
+		await untilRun(() => app.button("Selected"));
+		assert.equal(app.requests.length, 1);
+		await act(async () => app.button("Review the proposal").click());
+		await untilRun(() =>
+			app.button("Generate project report")?.matches(":enabled"),
+		);
+		await act(async () => app.button("Generate project report").click());
+		await untilRun(() =>
+			app.requests.some(({ path }) => path === "runs/report"),
+		);
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["runs/find-equipment", "projects/revise", "runs/report"],
+		);
+		const saved = app.requests[1].body.inputs;
+		assert.deepEqual(saved.equipment_candidate, {
+			run_id: app.serverRunId(),
+			candidate_id: "c".repeat(64),
+			assessment_sha256: "d".repeat(64),
+		});
+		if (multi) {
+			assert.equal(saved.equipment_plant.units.length, 2);
+			if (selection === "derived PV")
+				assert.equal(saved.equipment_plant.requirements.pv_dc_kw, 9.2);
+			assert.equal(
+				saved.equipment_plant.units[1].selection.inverter_product_id,
+				101,
+			);
+		} else {
+			assert.equal(saved.equipment_selection.equipment_use, null);
+			assert.equal(saved.equipment_setup.application, "commercial");
+			assert.equal(saved.equipment_selection.application, undefined);
+		}
+		assert.equal(app.requests[2].body.expected_revision, 3);
+		const assertModels = (inputs) => {
+			const rows = multi
+				? inputs.equipment_plant_setup.units.map(
+						(u) => u.inputs.equipment_setup,
+					)
+				: [inputs.equipment_setup];
+			rows.forEach((row, index) =>
+				assert.deepEqual(row.comparison_models, {
+					inverter_product_id: null,
+					battery_product_id:
+						selection === "battery" && index === 0 ? 201 : null,
+				}),
+			);
+		};
+		assertModels(saved);
+		if (selection === "backup") {
+			assert.equal(
+				saved.equipment_plant.requirements.required_discharge_ac_kw,
+				100,
+			);
+			assert.equal(saved.backup_demand.load_kw, 5);
+			assert.equal(
+				saved.equipment_plant.units[0].selection.required_discharge_ac_kw,
+				100,
+			);
+		}
+		await app.step("Energy use");
+		await compare(app);
+		await untilRun(
+			() =>
+				app.requests.filter(({ path }) => path === "runs/find-equipment")
+					.length === 2,
+		);
+		const again = app.requests.at(-1).body.inputs;
+		assertModels(again);
+		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
+		if (selection === "none") {
+			await app.step("Project");
+			const declarations = document.querySelector("details");
+			if (!declarations.open)
+				await act(async () => declarations.querySelector("summary").click());
+			await untilRun(() =>
+				app
+					.fieldSelect("Inverter or integrated storage system")
+					?.querySelector('option[value="101"]'),
+			);
+			assert.equal(
+				app.fieldSelect("Inverter or integrated storage system").value,
+				"",
+			);
+			await app.updateSelect("Inverter or integrated storage system", "101");
+			await app.step("Energy use");
+			await compare(app);
+			await untilRun(() => searchRequests(app).length === 3);
+			const edited = searchRequests(app).at(-1).body.inputs;
+			const unit = multi
+				? edited.equipment_plant_setup.units[0].inputs
+				: edited;
+			assert.deepEqual(unit.equipment_setup.comparison_models, {
+				inverter_product_id: 101,
+				battery_product_id: null,
+			});
+		}
+	});
+}
+
+for (const multi of [false, true]) {
+	test(`${multi ? "plant" : "single"} legacy equipment edit keeps the other comparison class open`, async (t) => {
+		const setup = { ...savedSetup, operating_mode: "grid_connected" };
+		const unit = (equipment) => ({
+			id: "main",
+			name: "Main",
+			inputs: { equipment_setup: equipment },
+		});
+		const declared = (equipment) =>
+			multi
+				? {
+						equipment_plant_setup: {
+							schema_version: 1,
+							requirements: { ...savedRequirements },
+							units: [unit(equipment)],
+							parallel_groups: [],
+						},
+					}
+				: { equipment_setup: equipment };
+		const legacy = declared(setup);
+		const adopted = declared({
+			...setup,
+			inverter_product_id: 101,
+			battery_product_id: 201,
+			modules_per_stack: 5,
+			parallel_stacks: 2,
+		});
+		const app = await equipmentApp(t, {
+			projectId: (multi ? "d" : "c").repeat(32),
+			hash: "#sc-project",
+			legacyInputs: legacy,
+			inputs: {
+				...adopted,
+				equipment_candidate: {
+					run_id: "7".repeat(32),
+					candidate_id: "c".repeat(64),
+					assessment_sha256: "d".repeat(64),
+				},
+			},
+		});
+		const field = () =>
+			app.fieldSelect("Inverter or integrated storage system");
+		const details = () =>
+			document.querySelector(
+				'section[aria-label="System arrangement"] details',
+			);
+		await untilRun(details);
+		if (!details().open)
+			await act(async () => details().querySelector("summary").click());
+		await untilRun(() => field()?.matches(":enabled"));
+		assert.equal(field().value, "");
+		await app.updateSelect("Inverter or integrated storage system", "101");
+		await app.step("Energy use");
+		await chooseGoal(app);
+		await compare(app);
+		await untilRun(() => searchRequests(app).length === 1);
+		const inputs = searchRequests(app)[0].body.inputs;
+		const equipment = multi
+			? inputs.equipment_plant_setup.units[0].inputs.equipment_setup
+			: inputs.equipment_setup;
+		assert.deepEqual(equipment.comparison_models, {
+			inverter_product_id: 101,
+			battery_product_id: null,
+		});
+	});
+}
+
+test("a failed legacy model read still lets the customer save annual electricity use", async (t) => {
+	const selected = {
+		...savedSetup,
+		inverter_product_id: 101,
+		battery_product_id: 201,
+	};
+	const choice = {
+		run_id: "7".repeat(32),
+		candidate_id: "c".repeat(64),
+		assessment_sha256: "d".repeat(64),
+	};
+	const app = await equipmentApp(t, {
+		projectId: "c".repeat(32),
+		hash: "#sc-energy",
+		legacyInputs: { equipment_setup: savedSetup },
+		legacyUnavailable: true,
+		inputs: { equipment_setup: selected, equipment_candidate: choice },
+	});
+	await untilRun(() => app.button("Try again"));
+	const annual = app.fieldInput("Annual electricity use");
+	assert.ok(annual.matches(":enabled"));
+	assert.ok(app.fieldSelect("Grid connection").matches(":disabled"));
+	await enter(annual, "42");
+	await act(async () => app.button("Save snapshot").click());
+	await untilRun(() =>
+		app.requests.some(({ path }) => path === "projects/revise"),
+	);
+	assert.deepEqual(app.requests.at(-1).body.inputs.equipment_candidate, choice);
+	assert.deepEqual(app.requests.at(-1).body.inputs.equipment_setup, selected);
+	assert.equal(app.requests.at(-1).body.inputs.brief.annual_load.kwh, 42);
+	app.recoverLegacyInputs();
+	await act(async () => app.button("Try again").click());
+	await app.step("Project");
+	const details = document.querySelector(
+		'section[aria-label="System arrangement"] details',
+	);
+	if (!details.open)
+		await act(async () => details.querySelector("summary").click());
+	const inverter = () =>
+		app.fieldSelect("Inverter or integrated storage system");
+	await untilRun(() => inverter()?.matches(":enabled"));
+	assert.equal(inverter().value, "");
+});
+
+test("a saved change to model preferences refuses a new current report from the old choice", async (t) => {
+	const projectId = "c".repeat(32);
+	const selected = makeRun(projectId, "succeeded").result.search.candidates[0]
+		.selection;
+	const { product_revisions: _revisions, ...hardware } = selected;
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+	const app = await equipmentApp(t, {
+		projectId,
+		hash: "#sc-review",
+		legacyInputs: { equipment_setup: savedSetup, brief },
+		inputs: {
+			brief,
+			equipment_setup: {
+				...hardware,
+				comparison_models: {
+					inverter_product_id: 101,
+					battery_product_id: null,
+				},
+			},
+			equipment_selection: selected,
+			equipment_candidate: {
+				run_id: "7".repeat(32),
+				candidate_id: "c".repeat(64),
+				assessment_sha256: "d".repeat(64),
+			},
+		},
+	});
+	await untilRun(() =>
+		app.button("Generate project report")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Generate project report").click());
+	await untilRun(() =>
+		document.body.textContent.includes("Compare systems again"),
+	);
+	assert.deepEqual(app.requests, []);
+});
+
+for (const change of [
+	"purpose",
+	"system scope",
+	"single model preference",
+	"plant model preference",
+	"foreign snapshot",
+	"session scope",
+]) {
+	test(`selection refuses a ${change} change without saving a candidate`, async (t) => {
+		const gate = change === "session scope" ? deferred() : null;
+		const app = await equipmentApp(t, {
+			projectId: "4".repeat(32),
+			hash: change === "plant model preference" ? "#sc-project" : "#sc-energy",
+			inputs: { equipment_setup: savedSetup },
+			foreignSelection: change === "foreign snapshot",
+			selectionGate: gate,
+		});
+		if (change === "plant model preference") {
+			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
+			await act(async () => app.button("Multiple systems").click());
+			await app.step("Energy use");
+		}
+		await chooseGoal(app);
+		await compare(app);
+		await untilRun(app.pending);
+		app.setServerRun("succeeded");
+		await untilRun(() =>
+			app.button("Use this configuration")?.matches(":enabled"),
+		);
+		if (change.endsWith("model preference")) {
+			await app.step("Project");
+			const details = document.querySelector(
+				'section[aria-label="System arrangement"] details',
+			);
+			if (!details.open)
+				await act(async () => details.querySelector("summary").click());
+			await untilRun(() =>
+				app
+					.fieldSelect("Inverter or integrated storage system")
+					?.matches(":enabled"),
+			);
+			await app.updateSelect("Inverter or integrated storage system", "101");
+			await app.step("System");
+		} else if (change === "purpose") {
+			await app.step("Energy use");
+			await app.updateSelect("Purpose", "peak");
+			await app.step("System");
+		} else if (change === "system scope") {
+			await app.step("Project");
+			await app.updateSelect("Planned system", "storage_only");
+			await app.step("System");
+		}
+		await act(async () => app.button("Use this configuration").click());
+		if (gate) {
+			await untilRun(() =>
+				app.reads.some(({ path }) => path === "runs/inputs"),
+			);
+			await app.switchScope();
+			await act(async () => gate.resolve());
+			assert.equal(app.button("Use this configuration"), undefined);
+			assert.equal(app.button("Check previous request"), undefined);
+		} else {
+			await untilRun(() =>
+				document.body.textContent.includes(
+					"This configuration could not be selected",
+				),
+			);
+			assert.equal(app.button("Review the proposal").disabled, true);
+		}
+		assert.equal(app.button("Selected"), undefined);
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["runs/find-equipment"],
+		);
+	});
+}
+
+for (const authored of [false, true]) {
+	test(`${authored ? "explicit nulls override" : "unanswered setup inherits"} historical requirements`, async (t) => {
+		const app = await equipmentApp(t, {
+			projectId: "5".repeat(32),
+			hash: "#sc-energy",
+			inputs: {
+				equipment_requirements: savedRequirements,
+				...(authored ? { equipment_setup: emptySetup } : {}),
+			},
+		});
+		await until(() => app.fieldInput("Usable storage capacity"));
+		assert.equal(
+			app.fieldInput("Usable storage capacity").value,
+			authored ? "" : "61.4",
+		);
+		assert.equal(
+			app.fieldInput("Continuous discharge power").value,
+			authored ? "" : "100",
+		);
+		assert.equal(app.fieldSelect("Grid connection").value, authored ? "" : "3");
+		await chooseGoal(app);
+		if (authored) await app.updateSelect("Grid connection", "3");
+		await compare(app);
+		await untilRun(app.pending);
+		const { equipment_setup: setup } = searchRequests(app)[0].body.inputs;
+		assert.equal(setup.pv_dc_kw, authored ? null : 200);
+		assert.equal(setup.required_usable_kwh, authored ? null : 61.4);
+		assert.equal(setup.required_discharge_ac_kw, authored ? null : 100);
+		assert.equal(setup.application, "commercial");
+	});
+}

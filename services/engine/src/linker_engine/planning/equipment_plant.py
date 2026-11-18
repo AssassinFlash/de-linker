@@ -127,10 +127,34 @@ def matches_setup(plant: EquipmentPlant, setup: Object) -> bool:
         )
         if actual != prepared:
             return False
-    return groups == [
+    return [
+        {
+            key: val
+            for key, val in group.items()
+            if key != "comparison_controller_product_id"
+        }
+        if isinstance(group, dict)
+        else group
+        for group in groups
+    ] == [
         g.model_dump(mode="json", exclude={"controller_revision"})
         for g in plant.parallel_groups
     ]
+
+
+def search_group(group: Object) -> Object:
+    return {
+        **{
+            key: value
+            for key, value in group.items()
+            if key != "comparison_controller_product_id"
+        },
+        "controller_product_id": group.get(
+            "comparison_controller_product_id", group.get("controller_product_id")
+        )
+        if group.get("controller_use") != "retain"
+        else group.get("controller_product_id"),
+    }
 
 
 class EquipmentPlant(Document):

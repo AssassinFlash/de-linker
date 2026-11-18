@@ -10,8 +10,10 @@ import {
 	referenceDraft,
 	referenceInputs,
 	referenceRoof,
+	referenceSite,
 	REFERENCE_DATABASES,
 	REFERENCE_TECHNOLOGIES,
+	KNOWN_PV_MODEL,
 } from "../../domain/pvgisReference.ts";
 import type { PvgisReferenceDraft } from "../../domain/pvgisReference.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -46,8 +48,7 @@ export function PvgisReferenceSetup({
 	openDesign: (() => void) | undefined;
 	supported: boolean;
 }) {
-	const catalog = useModuleTemplates(client, scope, active),
-		inputs = draft.history.current;
+	const inputs = draft.history.current;
 	const parsed = useMemo(() => {
 		try {
 			return referenceDraft(inputs);
@@ -78,6 +79,16 @@ export function PvgisReferenceSetup({
 		onValidity(invalid.length === 0);
 		return () => onValidity(true);
 	}, [invalid, onValidity]);
+	const known = parsed?.model === KNOWN_PV_MODEL;
+	const catalog = useModuleTemplates(client, scope, active && !known);
+	const site = useMemo(() => {
+		try {
+			return referenceSite(inputs);
+		} catch {
+			return null;
+		}
+	}, [inputs.brief]);
+	const siteReady = site !== null;
 	const currentModules =
 		!!roof &&
 		roof.arrays.every((array) => {
@@ -120,7 +131,7 @@ export function PvgisReferenceSetup({
 			</p>
 			<p>
 				{__(
-					"The calculation sends the roof location, array power and orientation, and the model choices below to the European Commission's PVGIS service. Your project title and private note are not sent.",
+					"The calculation sends the project location, array power and orientation, and the model choices below to the European Commission's PVGIS service. Your project title and source notes are not sent.",
 					"linker-tools",
 				)}
 			</p>
@@ -147,6 +158,182 @@ export function PvgisReferenceSetup({
 				</Notice>
 			) : (
 				<fieldset disabled={disabled}>
+					<label className="lp-field">
+						<span>{__("PV details source", "linker-tools")}</span>
+						<select
+							value={known ? "known" : "roof"}
+							onChange={(event) =>
+								edit((current) => {
+									const { arrays: _arrays, ...settings } =
+										referenceDraft(current);
+									return referenceInputs(
+										current,
+										event.currentTarget.value === "known"
+											? {
+													...settings,
+													model: KNOWN_PV_MODEL,
+													arrays: [
+														{
+															id: "array_1",
+															peak_power_kwp: null,
+															tilt_deg: null,
+															azimuth_north_clockwise_deg: null,
+															source_note: "",
+														},
+													],
+												}
+											: {
+													...settings,
+													model: "pvgis_5_3_roof_ac_reference_v1",
+												},
+									);
+								})
+							}
+						>
+							<option value="roof">
+								{__("Included roof modules", "linker-tools")}
+							</option>
+							<option value="known">
+								{__("Known PV details without a roof drawing", "linker-tools")}
+							</option>
+						</select>
+					</label>
+					{known && (
+						<>
+							<p>
+								{__(
+									"This AC reference uses your declared PV power and orientation at the project location. Enter the source of the PV details and system-loss assumption.",
+									"linker-tools",
+								)}
+							</p>
+							<p>
+								{siteReady
+									? `${site?.latitude}, ${site?.longitude} · ${site?.location_label}`
+									: __(
+											"Enter the project coordinates in Site before calculating known PV generation.",
+											"linker-tools",
+										)}
+							</p>
+							{parsed.arrays?.map((array, index) => {
+								const update = (patch: JsonObject) =>
+									edit((current) => {
+										const value = referenceDraft(current);
+										return referenceInputs(current, {
+											...value,
+											arrays: value.arrays!.map((a, i) =>
+												i === index ? { ...a, ...patch } : a,
+											),
+										});
+									});
+								return (
+									<fieldset key={array.id} className="lp-scenario-block">
+										<legend>
+											{sprintf(__("PV plane %d", "linker-tools"), index + 1)}
+										</legend>
+										<div className="lp-geometry-fields">
+											<ScenarioNumber
+												field={array.id + "-power"}
+												label={__("Declared PV power", "linker-tools")}
+												unit="kWp"
+												locale={locale}
+												min={0}
+												value={array.peak_power_kwp}
+												report={report}
+												onChange={(peak_power_kwp) =>
+													update({ peak_power_kwp })
+												}
+											/>
+											<ScenarioNumber
+												field={array.id + "-tilt"}
+												label={__("Tilt", "linker-tools")}
+												unit="°"
+												locale={locale}
+												min={0}
+												max={90}
+												value={array.tilt_deg}
+												report={report}
+												onChange={(tilt_deg) => update({ tilt_deg })}
+											/>
+											<ScenarioNumber
+												field={array.id + "-azimuth"}
+												label={__("Azimuth from true north", "linker-tools")}
+												unit="°"
+												locale={locale}
+												min={0}
+												max={360}
+												value={array.azimuth_north_clockwise_deg}
+												report={report}
+												onChange={(azimuth_north_clockwise_deg) =>
+													update({ azimuth_north_clockwise_deg })
+												}
+											/>
+											<label className="lp-field">
+												<span>
+													{__("PV details source note", "linker-tools")}
+												</span>
+												<textarea
+													value={array.source_note}
+													maxLength={4096}
+													onChange={(event) =>
+														update({ source_note: event.currentTarget.value })
+													}
+												/>
+											</label>
+										</div>
+										{parsed.arrays!.length > 1 && (
+											<button
+												type="button"
+												className="lp-text-button"
+												onClick={() => {
+													edit((current) => {
+														const value = referenceDraft(current);
+														return referenceInputs(current, {
+															...value,
+															arrays: value.arrays!.filter(
+																(a) => a.id !== array.id,
+															),
+														});
+													});
+													setInvalid((previous) =>
+														previous.filter(
+															(key) => !key.startsWith(array.id + "-"),
+														),
+													);
+												}}
+											>
+												{__("Remove PV plane", "linker-tools")}
+											</button>
+										)}
+									</fieldset>
+								);
+							})}
+							<button
+								type="button"
+								className="lp-text-button"
+								onClick={() =>
+									edit((current) => {
+										const value = referenceDraft(current);
+										return referenceInputs(current, {
+											...value,
+											arrays: [
+												...value.arrays!,
+												{
+													id:
+														"array_" + crypto.randomUUID().replaceAll("-", ""),
+													peak_power_kwp: null,
+													tilt_deg: null,
+													azimuth_north_clockwise_deg: null,
+													source_note: "",
+												},
+											],
+										});
+									})
+								}
+							>
+								{__("Add PV plane", "linker-tools")}
+							</button>
+						</>
+					)}
 					<div className="lp-geometry-fields">
 						<label className="lp-field">
 							<span>{__("Radiation database", "linker-tools")}</span>
@@ -272,7 +459,12 @@ export function PvgisReferenceSetup({
 						</label>
 						<label className="lp-field">
 							<span>
-								{__("Private assumption note (optional)", "linker-tools")}
+								{known
+									? __(
+											"Source of location and system-loss assumptions",
+											"linker-tools",
+										)
+									: __("Private assumption note (optional)", "linker-tools")}
 							</span>
 							<textarea
 								rows={2}
@@ -290,25 +482,26 @@ export function PvgisReferenceSetup({
 					</div>
 				</fieldset>
 			)}
-			{roof ? (
-				<div className="lp-scenario-sources">
-					<PvgisRoofFacts geometry={roof.geometry} locale={locale} />
-					<p>
+			{!known &&
+				(roof ? (
+					<div className="lp-scenario-sources">
+						<PvgisRoofFacts geometry={roof.geometry} locale={locale} />
+						<p>
+							{__(
+								"Array power and orientation are taken from the modules included in your roof design. You can change them in the roof design.",
+								"linker-tools",
+							)}
+						</p>
+					</div>
+				) : (
+					<Notice>
 						{__(
-							"Array power and orientation are taken from the modules included in your roof design. You can change them in the roof design.",
+							"Choose modules and add a location and north reference in the roof design before calculating.",
 							"linker-tools",
 						)}
-					</p>
-				</div>
-			) : (
-				<Notice>
-					{__(
-						"Choose modules and add a location and north reference in the roof design before calculating.",
-						"linker-tools",
-					)}
-				</Notice>
-			)}
-			{catalog.error && (
+					</Notice>
+				))}
+			{!known && catalog.error && (
 				<Notice error>
 					<p>{__("Module data could not be loaded.", "linker-tools")}</p>
 					<button
@@ -320,7 +513,7 @@ export function PvgisReferenceSetup({
 					</button>
 				</Notice>
 			)}
-			{openDesign && (
+			{openDesign && !known && (
 				<button type="button" className="lp-text-button" onClick={openDesign}>
 					{__("Review roof design", "linker-tools")}
 				</button>
@@ -329,7 +522,7 @@ export function PvgisReferenceSetup({
 				<p>
 					{isDirty(draft) || draft.pending
 						? __(
-								"Save the roof and reference choices before starting this calculation.",
+								"Save the PV details and reference choices before starting this calculation.",
 								"linker-tools",
 							)
 						: sprintf(
@@ -348,8 +541,7 @@ export function PvgisReferenceSetup({
 						actionsDisabled ||
 						!supported ||
 						!complete ||
-						!roof ||
-						!currentModules ||
+						(known ? !siteReady : !roof || !currentModules) ||
 						invalid.length > 0 ||
 						isDirty(draft) ||
 						!!draft.pending ||

@@ -192,6 +192,12 @@ export function readReportResult(
 		throw new ApiError(502, "invalid_planning_report");
 	readPlanningReport(result.report);
 	if (
+		result.has_report_only_handoff !== undefined &&
+		(result.has_report_only_handoff !== true ||
+			result.has_draft_items !== false)
+	)
+		throw new ApiError(502, "invalid_planning_report");
+	if (
 		result.materials_sha256 !== undefined ||
 		result.prepared_attachments !== undefined
 	) {

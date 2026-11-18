@@ -1,0 +1,45 @@
+{
+  "$defs": {
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "name": {
+      "maxLength": 256,
+      "title": "Name",
+      "type": "string"
+    },
+    "inverter_power_kw": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Inverter Power Kw"
+    },
+    "keep_inverter": {
+      "title": "Keep Inverter",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "inverter_power_kw",
+    "keep_inverter"
+  ],
+  "title": "ExistingSystem",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

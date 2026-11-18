@@ -3,6 +3,94 @@
 from __future__ import annotations
 
 TEXT = {
+    "plant_backup_runtime": (
+        "Whole-site backup",
+        "Ersatzstrom für den gesamten Standort",
+    ),
+    "plant_backup_load": ("Backup load", "Ersatzstromlast"),
+    "plant_backup_duration": ("Required duration", "Erforderliche Dauer"),
+    "plant_backup_load_energy": (
+        "Backup load energy before losses",
+        "Energiebedarf für Ersatzstrom vor Verlusten",
+    ),
+    "plant_backup_power_ceiling": (
+        "Backup power upper bound",
+        "Obergrenze der Ersatzstromleistung",
+    ),
+    "plant_backup_storage": ("Usable battery capacity", "Nutzbare Batteriekapazität"),
+    "plant_backup_open": (
+        "Confirm shared backup transfer, starting charge and discharge losses.",
+        "Bestätigen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste.",
+    ),
+    "existing_system": ("Existing system", "Bestandsanlage"),
+    "existing_inverter_power": (
+        "Declared inverter power",
+        "Angegebene Wechselrichterleistung",
+    ),
+    "existing_inverter_keep": (
+        "Inverter to be retained",
+        "Wechselrichter soll erhalten bleiben",
+    ),
+    "existing_inverter_open": (
+        "Confirm the inverter model to check battery, grid and backup compatibility.",
+        "Bestätigen Sie das Wechselrichtermodell, um die Kompatibilität mit Batterie, Netz und Notstrom zu prüfen.",
+    ),
+    "declared_project_requirements": (
+        "Declared project requirements",
+        "Angegebene Projektanforderungen",
+    ),
+    "declared_pv_power": ("Installed PV power", "Installierte PV-Leistung"),
+    "declared_usable_storage": (
+        "Required usable storage",
+        "Erforderliche nutzbare Speicherkapazität",
+    ),
+    "declared_discharge_power": (
+        "Required discharge power",
+        "Erforderliche Entladeleistung",
+    ),
+    "declared_grid_phase": ("Grid phases", "Netzphasen"),
+    "declared_operating_mode": ("Operating mode", "Betriebsart"),
+    "declared_backup": ("Backup", "Ersatzstrom"),
+    "pending_battery": ("Battery", "Batterie"),
+    "pending_battery_compatibility": (
+        "Confirm battery compatibility and quantity.",
+        "Bestätigen Sie die Batteriekompatibilität und Stückzahl.",
+    ),
+    "retained_energy_baseline": (
+        "Energy use without new storage",
+        "Energieverbrauch ohne neuen Speicher",
+    ),
+    "retained_profile_period": ("Profile period (UTC)", "Profilzeitraum (UTC)"),
+    "retained_profile_load": ("Electricity use", "Stromverbrauch"),
+    "retained_profile_direct_pv": ("Direct solar use", "Direkt genutzter Solarstrom"),
+    "retained_profile_import": (
+        "Grid import without storage",
+        "Netzbezug ohne Speicher",
+    ),
+    "retained_profile_peak": (
+        "Grid import peak without storage",
+        "Netzbezugsspitze ohne Speicher",
+    ),
+    "existing_system_declared": ("Customer declaration", "Kundenangabe"),
+    "pvgis_known_title": (
+        "PVGIS AC reference from declared PV details",
+        "PVGIS-AC-Referenz aus Projektangaben",
+    ),
+    "pvgis_known_scope": (
+        "Customer-declared location, PV power and orientation; JRC PVGIS modelled AC generation including the stated system losses. Device-specific performance and equipment approval require separate assessment.",
+        "Standort, PV-Leistung und Ausrichtung beruhen auf Kundenangaben. JRC PVGIS modelliert die AC-Erzeugung einschließlich der angegebenen Systemverluste. Gerätespezifische Leistung und Gerätefreigabe erfordern eine gesonderte Prüfung.",
+    ),
+    "pvgis_known_site": ("Project location", "Projektstandort"),
+    "pvgis_known_power": ("Declared PV power", "Angegebene PV-Leistung"),
+    "pvgis_known_tilt": ("Tilt", "Neigung"),
+    "pvgis_known_azimuth": (
+        "Azimuth from true north",
+        "Azimut bezogen auf geografisch Nord",
+    ),
+    "pvgis_known_note": (
+        "Source of declared PV details",
+        "Quelle der angegebenen PV-Daten",
+    ),
     "geometric_pv_series_tracker": (
         "Tracker / input / modules",
         "Tracker / Eingang / Module",

@@ -1,4 +1,5 @@
 import pvOnlyPlantJson from "../../tests/fixtures/plant-pv-only-energy-run.json" with { type: "json" };
+import { readEquipmentSearchResult } from "./equipmentSearch.ts";
 import { readEquipmentAssessment } from "./readEquipmentResult.ts";
 import { readDcParameters } from "../domain/dcEnergy.ts";
 import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
@@ -31,6 +32,144 @@ import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 
 import { readRunInputs } from "./planningProtocol.ts";
+
+test("equipment results accept neutral ranking and retain historical ranking labels", () => {
+	const pinned = { "woo.equipment_inputs": "a".repeat(64) };
+	const manifest = {
+		input_sha256: "b".repeat(64),
+		context: { code_sha256: "c".repeat(64), assets: pinned },
+	};
+	const run = {
+		project_id: "d".repeat(32),
+		revision: 1,
+		manifest_sha256: "e".repeat(64),
+	};
+	for (const ranking of [
+		"unresolved_then_product_and_module_count",
+		"dc_ac_proximity_then_unresolved_then_product_and_module_count",
+		"not_performed_before_qualification",
+	]) {
+		const result = {
+			schema: 1,
+			kind: "search_woo_equipment_v1",
+			project_id: run.project_id,
+			revision: run.revision,
+			input_sha256: manifest.input_sha256,
+			manifest_sha256: run.manifest_sha256,
+			runtime_sha256: manifest.context.code_sha256,
+			pinned_assets: pinned,
+			search: {
+				completion: "exhausted_supported_domain",
+				work_used: 0,
+				work_budget: 1,
+				candidates: [],
+				products: [],
+				qualified_count: 0,
+				coverage: {
+					template: "one_converter_one_external_battery_assembly",
+					gaps: {},
+				},
+				ranking,
+			},
+		};
+		assert.equal(readEquipmentSearchResult(result, run, manifest), result);
+		const demand = {
+			model: "single_ac_equipment_demand_v1",
+			completion: "complete",
+			interval_count: 3,
+			work_used: 0,
+			work_budget: 100,
+		};
+		const compared = { ...result, search: { ...result.search, demand } };
+		assert.equal(readEquipmentSearchResult(compared, run, manifest), compared);
+		const candidate = {
+			id: "f".repeat(64),
+			assessment_sha256: "a".repeat(64),
+			status: "unresolved",
+			violated_checks: 0,
+			unresolved_checks: 1,
+			selection: {
+				schema_version: 1,
+				inverter_product_id: 1,
+				battery_product_id: 2,
+				modules_per_stack: 1,
+				parallel_stacks: 1,
+				accessory_product_ids: [],
+				grid_phase: 3,
+				operating_mode: "grid_connected",
+				pv_dc_kw: 0,
+				required_usable_kwh: null,
+				required_discharge_ac_kw: null,
+				product_revisions: { "1": "a".repeat(64), "2": "b".repeat(64) },
+			},
+			demand: {
+				status: "satisfied",
+				reason: "target_met",
+				metrics: {
+					unserved_load_kwh: 0,
+					maximum_interval_average_import_kw: 2,
+					stored_initial: { pv_kwh: 0, grid_kwh: 0, initial_unknown_kwh: 5 },
+				},
+				equipment: null,
+			},
+		};
+		const withCandidate = {
+			...compared,
+			search: { ...compared.search, candidates: [candidate] },
+		};
+		assert.equal(
+			readEquipmentSearchResult(withCandidate, run, manifest),
+			withCandidate,
+		);
+		for (const invalid of [
+			undefined,
+			{},
+			{ pv_kwh: 0, grid_kwh: 0, initial_unknown_kwh: -1 },
+		]) {
+			assert.throws(
+				() =>
+					readEquipmentSearchResult(
+						{
+							...withCandidate,
+							search: {
+								...withCandidate.search,
+								candidates: [
+									{
+										...candidate,
+										demand: {
+											...candidate.demand,
+											metrics: {
+												...candidate.demand.metrics,
+												stored_initial: invalid,
+											},
+										},
+									},
+								],
+							},
+						},
+						run,
+						manifest,
+					),
+				"candidate adoption requires valid frozen starting inventory",
+			);
+		}
+		assert.throws(
+			() =>
+				readEquipmentSearchResult(
+					{
+						...compared,
+						search: {
+							...compared.search,
+							demand: { ...demand, work_used: 101 },
+						},
+					},
+					run,
+					manifest,
+				),
+			"a truncated demand calculation cannot exceed its stated work budget",
+		);
+	}
+});
 
 test("source input replies belong to the selected immutable run", () => {
 	const inputs = { energy_replay: { battery_parameters_asset_id: "owned" } };

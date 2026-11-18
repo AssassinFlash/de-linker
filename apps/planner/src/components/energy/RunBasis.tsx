@@ -78,7 +78,9 @@ export function RunBasis({
 				const profiles: [
 					import("../../domain/profiles.ts").ProfileRole | "pv_available_dc",
 					string,
-				][] = [["gross_load", selected.gross_load_asset_id]];
+				][] = selected.gross_load_asset_id
+					? [["gross_load", selected.gross_load_asset_id]]
+					: [];
 				if (selected.aux_ac_asset_id)
 					profiles.push(["aux_ac", selected.aux_ac_asset_id]);
 				if (selected.pv_available_asset_id)

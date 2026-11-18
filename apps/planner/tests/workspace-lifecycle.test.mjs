@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
 import React, { act } from "react";
+import { IDBFactory } from "fake-indexeddb";
 import {
 	QueryClient,
 	QueryClientProvider,
@@ -32,45 +33,44 @@ const session = {
 	},
 };
 
-async function startRoofCreation(t, title) {
-	const originalFetch = globalThis.fetch;
-	globalThis.fetch = async () =>
-		new Response(
-			JSON.stringify({
-				places: [
-					{
-						formattedAddress: title,
-						addressComponents: [{ shortText: "NO", types: ["country"] }],
-						location: { latitude: 59.91, longitude: 10.75 },
-					},
-				],
-			}),
-			{ headers: { "Content-Type": "application/json" } },
-		);
-	t.after(() => {
-		globalThis.fetch = originalFetch;
-	});
-	await until(() => document.querySelector(".lp-roof-start"));
-	await act(async () => {
-		const select = document.querySelector(".lp-roof-start select");
-		select.value = "NO";
+const siteInput = () => document.querySelector('input[name="location_label"]');
+const editor = () =>
+	document.querySelector(".sc-project-heading")?.parentElement;
+const button = (label, area = document) =>
+	[...area.querySelectorAll("button")].find(
+		(node) => node.textContent.trim() === label,
+	);
+const nav = (label) =>
+	[...document.querySelectorAll(".sc-nav button")].find(
+		(node) => node.textContent.trim().replace(/^\d+/, "") === label,
+	);
+const choose = (select, value) =>
+	act(async () => {
+		select.value = value;
 		select.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	await enter(document.querySelector(".lp-roof-start input"), title);
-	await until(() => !document.querySelector(".lp-roof-entry button").disabled);
-	await act(async () =>
-		document
-			.querySelector(".lp-roof-entry")
-			.dispatchEvent(
-				new window.Event("submit", { bubbles: true, cancelable: true }),
-			),
+
+async function startProjectCreation(title) {
+	const name = 'input[name="project_title"]';
+	await until(() => document.querySelector(name));
+	await enter(document.querySelector(name), title);
+	const form = document.querySelector(name).form;
+	await choose(
+		form.querySelector('select[name="system_scope"]'),
+		"new_pv_storage",
 	);
+	await until(
+		() =>
+			button("Continue with solar") && !button("Continue with solar").disabled,
+	);
+	await act(async () => button("Continue with solar").click());
 }
 
 async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const fixture = setupDom();
 	const browserGlobals = new Map();
 	const browserValues = {
+		indexedDB: new IDBFactory(),
 		MutationObserver: window.MutationObserver,
 		getComputedStyle: window.getComputedStyle.bind(window),
 		requestAnimationFrame: (callback) =>
@@ -153,7 +153,14 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		isCurrentScope(scope) {
 			return scope === admittedScope;
 		},
-		async query() {
+		async query(path) {
+			if (path === "projects/runs" || path === "projects/list")
+				return { items: [], next: null };
+			if (path === "equipment/module-templates")
+				return { items: [], next: null };
+			if (path === "recovery/scopes")
+				return { schema_version: 1, scopes: [], next: null };
+			assert.equal(path, "projects/read");
 			if (nextSession.query_scope !== session.query_scope)
 				throw new ApiError(404, "not_found");
 			return structuredClone(project);
@@ -191,12 +198,12 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 			),
 		),
 	);
-	await until(() => document.querySelector("textarea"));
+	await until(editor);
 	const annual = () =>
 		[...document.querySelectorAll("input")].find((input) =>
 			document
 				.getElementById(input.getAttribute("aria-labelledby"))
-				?.textContent.includes("Annual consumption"),
+				?.textContent.includes("Annual electricity use"),
 		);
 	return {
 		annual,
@@ -210,11 +217,7 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		async recheck(event = "focus") {
 			const before = probes;
 			await act(async () => window.dispatchEvent(new window.Event(event)));
-			await until(
-				() =>
-					probes > before &&
-					!document.querySelector(".lp-project").parentElement.hidden,
-			);
+			await until(() => probes > before && !editor().parentElement.hidden);
 		},
 		startCheck() {
 			gate = deferred();
@@ -229,16 +232,14 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 
 test("same identity rechecks retain delayed edits and invalid raw numeric text", async (t) => {
 	const app = await workspaceFixture(t, "delayed");
+	await act(async () => nav("Energy use").click());
 	await enter(app.annual(), "19");
 	await until(() => app.commits.length === 1);
 	const reads = app.reads();
 	await app.recheck();
 	assert.equal(app.annual().value, "19");
 	assert.equal(app.reads(), reads);
-	assert.equal(
-		document.querySelector(".lp-save-state").textContent,
-		"Unsaved changes",
-	);
+	assert.equal(app.commits.length, 1);
 	await act(async () => {
 		for (const commit of app.commits.splice(0)) commit();
 	});
@@ -247,10 +248,7 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 	await app.recheck("online");
 	assert.equal(app.annual().value, "1,");
 	assert.equal(app.annual().getAttribute("aria-invalid"), "true");
-	assert.equal(
-		document.querySelector(".lp-save-state").textContent,
-		"Input needs attention",
-	);
+	assert.equal(button("Save snapshot").disabled, true);
 	await act(async () =>
 		[...document.querySelectorAll("button")]
 			.find((button) => button.textContent === "Projects")
@@ -285,183 +283,88 @@ for (const hash of [
 				location.pathname + location.search + hash,
 			);
 		});
-		assert.equal(
-			document.querySelector(".lp-project").dataset.workspace,
-			"design",
-		);
-		assert.equal(document.querySelector(".lp-design-panel").hidden, false);
-		assert.ok(document.querySelector("#lp-overview").closest("[hidden]"));
-		const map = [...document.querySelectorAll("button")].find(
-			(node) => node.textContent === "Map",
-		);
-		assert.equal(map.getAttribute("aria-pressed"), "true");
-		await until(() => document.querySelector(".lp-map-workspace"));
+		assert.equal(nav("Solar").getAttribute("aria-current"), "step");
+		assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
+		await until(() => button("Coordinate references"));
 		assert.match(
-			document.querySelector(".lp-map-workspace").textContent,
-			/Map drawing/,
+			document.querySelector(".sc-solar").textContent,
+			/The map needs a geographic origin/,
 		);
 	});
 
-test("a storage-only project continues from project details to energy, system and report without a roof step", async (t) => {
+test("a storage-only project reaches Energy use, System and Review without a roof step", async (t) => {
 	await workspaceFixture(t, "available");
-	await act(async () =>
-		document.querySelector('nav a[href="#lp-site"]').click(),
+	await choose(
+		document.querySelector("select[name=system_scope]"),
+		"storage_only",
 	);
-	const plannedSystem = document.querySelector(
-		'select[aria-labelledby$="-system"]',
-	);
-	await act(async () => {
-		plannedSystem.value = "storage_only";
-		plannedSystem.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	assert.equal(document.querySelector('nav a[href="#lp-design"]').hidden, true);
-	const next = () => document.querySelector(".lp-project-next button");
-	assert.match(next().textContent, /Continue to energy use/);
-	await act(async () => next().click());
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"energy",
-	);
-	assert.equal(
-		new URL(location.href).searchParams.get("energy_view"),
-		"scenario",
-	);
-	await act(async () => next().click());
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"equipment",
-	);
-	const installation = [
-		...document.querySelectorAll('a[href="#lp-installation"]'),
-	].find((link) => !link.closest("[hidden]"));
-	assert.ok(installation, "system exposes installation details");
-	await act(async () => installation.click());
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"installation",
-	);
-	await act(async () =>
-		document.querySelector('nav a[href="#lp-equipment"]').click(),
-	);
-	await act(async () => next().click());
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"calculations",
-	);
-	assert.equal(
-		new URL(location.href).searchParams.get("energy_view"),
-		"reports",
-	);
+	assert.equal(nav("Solar"), undefined);
+	await act(async () => button("Continue with storage").click());
+	assert.equal(location.hash, "#sc-energy");
+	await act(async () => nav("System").click());
+	assert.equal(location.hash, "#sc-system");
+	await act(async () => nav("Review & share").click());
+	assert.equal(location.hash, "#sc-review");
+	assert.ok(document.querySelector(".sc-review"));
 });
 
-test("project sections retain input nodes, values and undo history", async (t) => {
+test("step changes retain the energy input and undo history and protect unfinished edits", async (t) => {
 	const app = await workspaceFixture(t, "available");
-	const nav = (label) =>
-		[...document.querySelectorAll('nav[aria-label="Project sections"] a')].find(
-			(link) => link.textContent.trim() === label,
-		);
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"overview",
-	);
-	assert.equal(document.querySelector("#lp-site").hidden, true);
-	assert.equal(document.querySelector(".lp-design-panel").hidden, true);
 	await act(async () => nav("Energy use").click());
-	assert.equal(document.querySelector("#lp-load").hidden, false);
-	assert.equal(nav("Energy use").getAttribute("aria-current"), "page");
 	const annual = app.annual();
 	await enter(annual, "25");
 	await act(async () => nav("Solar").click());
-	assert.equal(document.querySelector("#lp-load").hidden, true);
-	assert.equal(document.querySelector(".lp-design-panel").hidden, false);
-	assert.equal(annual, app.annual());
+	assert.ok(annual.closest("[hidden]"));
 	await act(async () => nav("Energy use").click());
-	assert.equal(app.annual().value, "25");
+	assert.equal(app.annual(), annual);
+	assert.equal(annual.value, "25");
 	await act(async () =>
-		document.querySelector('button[aria-label="Undo"]').click(),
+		button("Undo", document.querySelector(".sc-project-heading")).click(),
 	);
-	assert.equal(app.annual().value, "10");
-	const mobileSelect = document.querySelector(
-		'select[aria-label="Project sections"]',
-	);
-	await act(async () => {
-		mobileSelect.value = "site";
-		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	assert.equal(document.querySelector(".lp-project").dataset.workspace, "site");
-	assert.equal(document.activeElement.id, "lp-brief-use");
-	await act(async () => nav("Energy use").click());
-	await enter(app.annual(), "1,");
-	await act(async () => {
-		mobileSelect.value = "site";
-		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"energy",
-	);
-	assert.equal(app.annual().value, "1,");
-	assert.equal(mobileSelect.value, "energy");
+	assert.equal(annual.value, "10");
+	await enter(annual, "1,");
+	await act(async () => nav("Project").click());
+	assert.equal(location.hash, "#sc-energy");
+	assert.equal(annual.value, "1,");
 	assert.ok(
 		document.body.textContent.includes("Correct the highlighted input"),
 	);
 	await act(async () =>
-		app
-			.annual()
-			.dispatchEvent(
-				new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-			),
+		annual.dispatchEvent(
+			new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+		),
 	);
 	await act(async () => nav("Solar").click());
-	await act(async () =>
-		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent.trim() === "Add roof face")
-			.click(),
-	);
-	assert.equal(
-		document.querySelector(".lp-save-state").textContent,
-		"Roof editing in progress",
-	);
-	assert.ok(
-		!document.body.textContent.includes("Correct the highlighted input"),
-	);
-	await act(async () => {
-		mobileSelect.value = "site";
-		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	assert.equal(mobileSelect.value, "design");
+	await act(async () => button("Place modules on the roof").click());
+	await act(async () => button("Draw roof").click());
+	await act(async () => nav("Project").click());
+	assert.equal(location.hash, "#sc-solar");
 	assert.ok(
 		document.body.textContent.includes("Finish or cancel roof editing"),
 	);
-	await act(async () =>
-		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent.trim() === "Cancel properties")
-			.click(),
-	);
-	assert.ok(
-		!document.body.textContent.includes("Finish or cancel roof editing"),
-	);
+	await act(async () => button("Select / move").click());
+	await act(async () => nav("Project").click());
+	assert.equal(location.hash, "#sc-project");
 });
 
 test("failed storage and a failed revalidation keep the open workspace editable behind a retryable notice", async (t) => {
 	const app = await workspaceFixture(t, "unavailable");
-	await enter(document.querySelector("textarea"), "UNSAVED SYNTHETIC NOTE");
+	await enter(siteInput(), "UNSAVED SYNTHETIC NOTE");
 	await until(() =>
-		document.body.textContent.includes("Browser recovery is unavailable"),
+		document.body.textContent.includes(
+			"The project could not be saved or recovered",
+		),
 	);
 	const gate = app.startCheck();
 	const seen = app.probes();
 	await act(async () => window.dispatchEvent(new window.Event("focus")));
 	await until(() => app.probes() > seen);
-	const wrapper = document.querySelector(".lp-project").parentElement;
+	const wrapper = editor().parentElement;
 	// Stale-while-revalidate: the confirmed workspace stays visible and
 	// interactive while the probe is in flight.
 	assert.equal(wrapper.hidden, false);
 	assert.equal(wrapper.hasAttribute("inert"), false);
-	assert.equal(
-		document.querySelector("textarea").value,
-		"UNSAVED SYNTHETIC NOTE",
-	);
+	assert.equal(siteInput().value, "UNSAVED SYNTHETIC NOTE");
 	await act(async () => gate.reject(new Error("synthetic_offline")));
 	await until(() =>
 		document.body.textContent.includes(
@@ -473,17 +376,16 @@ test("failed storage and a failed revalidation keep the open workspace editable 
 	assert.ok(
 		!document.body.textContent.includes("Your workspace could not be opened"),
 	);
-	assert.equal(
-		document.querySelector("textarea").value,
-		"UNSAVED SYNTHETIC NOTE",
-	);
+	assert.equal(siteInput().value, "UNSAVED SYNTHETIC NOTE");
 	assert.ok(
-		document.body.textContent.includes("Browser recovery is unavailable"),
+		document.body.textContent.includes(
+			"The project could not be saved or recovered",
+		),
 	);
 	const retry = app.startCheck();
 	await act(async () =>
 		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent === "Try again")
+			.findLast((button) => button.textContent === "Try again")
 			.click(),
 	);
 	await act(async () => retry.resolve());
@@ -494,20 +396,17 @@ test("failed storage and a failed revalidation keep the open workspace editable 
 			),
 	);
 	assert.equal(wrapper.hidden, false);
-	assert.equal(
-		document.querySelector("textarea").value,
-		"UNSAVED SYNTHETIC NOTE",
-	);
+	assert.equal(siteInput().value, "UNSAVED SYNTHETIC NOTE");
 });
 
 test("a confirmed different identity removes the former editor and does not grant its project", async (t) => {
 	const app = await workspaceFixture(t, "available");
-	await enter(document.querySelector("textarea"), "PRIVATE SYNTHETIC DRAFT");
+	await enter(siteInput(), "PRIVATE SYNTHETIC DRAFT");
 	const gate = app.startCheck();
 	const seen = app.probes();
 	await act(async () => window.dispatchEvent(new window.Event("focus")));
 	await until(() => app.probes() > seen);
-	const wrapper = document.querySelector(".lp-project").parentElement;
+	const wrapper = editor().parentElement;
 	// The gate appears only after the probe confirms the change, never while
 	// the same-identity workspace is merely being rechecked.
 	assert.equal(wrapper.hidden, false);
@@ -518,18 +417,18 @@ test("a confirmed different identity removes the former editor and does not gran
 			"This project could not be opened in the current session",
 		),
 	);
-	assert.equal(document.querySelector("textarea"), null);
+	assert.equal(siteInput(), null);
 	assert.ok(!document.body.textContent.includes("PRIVATE SYNTHETIC DRAFT"));
 	assert.equal(wrapper.hidden, false);
 });
 
 test("same-scope revalidation causes zero disruption", async (t) => {
 	const app = await workspaceFixture(t, "available");
-	await enter(document.querySelector("textarea"), "WORK IN PROGRESS");
-	const wrapper = document.querySelector(".lp-project").parentElement;
-	const scroller = document.querySelector(".lp-project");
+	await enter(siteInput(), "WORK IN PROGRESS");
+	const wrapper = editor().parentElement;
+	const scroller = editor();
 	scroller.scrollTop = 240;
-	const textarea = document.querySelector("textarea");
+	const textarea = siteInput();
 	const gate = app.startCheck();
 	const seen = app.probes();
 	Object.defineProperty(document, "visibilityState", {
@@ -555,7 +454,7 @@ test("same-scope revalidation causes zero disruption", async (t) => {
 		});
 		assert.equal(app.probes() - seen, 1);
 		// No remount, no flicker, no scroll reset, no status chrome.
-		assert.ok(document.querySelector("textarea") === textarea);
+		assert.ok(siteInput() === textarea);
 		assert.equal(scroller.scrollTop, 240);
 		assert.equal(wrapper.hidden, false);
 		assert.ok(!document.body.textContent.includes("Opening your workspace"));
@@ -633,7 +532,7 @@ test("a confirmed scope change removes content with zero residue", async (t) => 
 	);
 });
 
-test("the actual project bar is observed after asynchronous draft opening and on resize", async (t) => {
+test("the native site header is measured on resize and before revealing a result", async (t) => {
 	let height = 72;
 	const observers = new Set();
 	const app = await workspaceFixture(t, "available", (fixture) => {
@@ -643,11 +542,7 @@ test("the actual project bar is observed after asynchronous draft opening and on
 			{
 				configurable: true,
 				get() {
-					return this.id === "lc-header"
-						? 88
-						: this.classList.contains("lp-project-bar")
-							? height
-							: 0;
+					return this.id === "lc-header" ? height : 0;
 				},
 			},
 		);
@@ -667,22 +562,17 @@ test("the actual project bar is observed after asynchronous draft opening and on
 		};
 	});
 	const root = app.fixture.element;
-	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "88px");
-	assert.equal(root.style.getPropertyValue("--lp-project-bar-height"), "72px");
+	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "72px");
 	height = 108;
 	for (const observer of observers)
-		if (
-			[...observer.targets].some((target) =>
-				target.classList.contains("lp-project-bar"),
-			)
-		)
+		if ([...observer.targets].some((target) => target.id === "lc-header"))
 			observer.callback();
-	assert.equal(root.style.getPropertyValue("--lp-project-bar-height"), "108px");
+	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "108px");
 	// An explicit reveal can run before ResizeObserver/effect delivery, as it
 	// does while a saved calculation opens after a route reload.
 	height = 144;
 	root.style.removeProperty("--lp-site-header-height");
-	const target = root.querySelector("button");
+	const target = button("Projects", root);
 	let measuredAtScroll;
 	target.scrollIntoView = () => {
 		measuredAtScroll = [
@@ -693,7 +583,7 @@ test("the actual project bar is observed after asynchronous draft opening and on
 	const { revealActionResult } =
 		await import("../src/components/revealActionResult.ts");
 	assert.equal(revealActionResult(target), true);
-	assert.deepEqual(measuredAtScroll, ["88px", "144px"]);
+	assert.deepEqual(measuredAtScroll, ["144px", "0px"]);
 	assert.ok(document.activeElement === target);
 	assert.equal(target.hasAttribute("tabindex"), false);
 	const heading = document.createElement("h3");
@@ -907,14 +797,14 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 					),
 				),
 			);
-			await startRoofCreation(t, oldAck.title);
+			await startProjectCreation(oldAck.title);
 			await until(() => reached);
 			nextSession = newSession;
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
 			await until(
 				() =>
 					currentScope === newSession.query_scope &&
-					!document.querySelector(".lp-workspace").parentElement.hidden,
+					!document.querySelector(".sc-configurator").parentElement.hidden,
 			);
 			assert.equal(location.search, "");
 			await act(async () => gate.resolve());
@@ -1065,23 +955,20 @@ test("native confirmation fences pending creation, revision and navigation befor
 				),
 			);
 			if (opening) {
-				await until(() => document.querySelector("textarea"));
-				await enter(
-					[...document.querySelectorAll("textarea")].at(-1),
-					"Synthetic local edit",
-				);
+				await until(() => siteInput());
+				await enter(siteInput(), "Synthetic local edit");
 				await until(() => editStored);
 				closing = stage === "close";
 				await act(async () =>
 					[...document.querySelectorAll("button")]
 						.find(
 							(button) =>
-								button.textContent === (closing ? "Projects" : "Save project"),
+								button.textContent === (closing ? "Projects" : "Save snapshot"),
 						)
 						.click(),
 				);
 			} else {
-				await startRoofCreation(t, oldAck.title);
+				await startProjectCreation(oldAck.title);
 			}
 			await until(() => reached);
 			const clear = cache.clear.bind(cache);
@@ -1235,7 +1122,7 @@ test("a selected project waits for a pending guest claim before reading and open
 			.find((button) => button.textContent === "Check session")
 			.click(),
 	);
-	await until(() => document.querySelector("textarea"));
+	await until(() => siteInput());
 	assert.equal(readCalls, 1);
 });
 
@@ -1245,12 +1132,13 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	// The deleted project's own creation command is the one stored intent.
 	const dead = JSON.stringify({
 		schema_version: 1,
 		title: "Deleted project",
-		inputs: { brief: { schema_version: 1 } },
+		inputs: { brief: emptyBrief() },
 		key: "11111111-1111-4111-8111-111111111111",
 	});
 	let bodies = [];
@@ -1363,7 +1251,7 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	await until(() => created !== null);
 	assert.equal(bodies.length, 2);
 	assert.equal(bodies[1].title, "Deleted project");
-	assert.deepEqual(bodies[1].inputs, { brief: { schema_version: 1 } });
+	assert.deepEqual(bodies[1].inputs, { brief: emptyBrief() });
 	assert.notEqual(bodies[1].key, "11111111-1111-4111-8111-111111111111");
 	assert.deepEqual(replacements, [
 		[session.query_scope, dead, records[0].body, null],
@@ -1377,11 +1265,12 @@ test("an unknown creation 404 stays a retry failure instead of rekeying a live r
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	const dead = JSON.stringify({
 		schema_version: 1,
 		title: "Live project",
-		inputs: { brief: { schema_version: 1 } },
+		inputs: { brief: emptyBrief() },
 		key: "44444444-4444-4444-8444-444444444444",
 	});
 	const records = [

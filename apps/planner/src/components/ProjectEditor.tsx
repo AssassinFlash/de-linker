@@ -17,14 +17,7 @@ import type { DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { useProjectDraft } from "../data/useProjectDraft.ts";
 import { useProjectBar } from "../data/useProjectBar.ts";
-import {
-	editDraft,
-	isDirty,
-	keepLocalAgainst,
-	redoDraft,
-	undoDraft,
-	useRemote,
-} from "../domain/draft.ts";
+import { editDraft, isDirty, redoDraft, undoDraft } from "../domain/draft.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { readSelections } from "../domain/profiles.ts";
 import { __, sprintf } from "../i18n.ts";
@@ -130,7 +123,7 @@ export function workspaceFromHash(inputs: JsonObject): ProjectWorkspace {
 			// The editor reports unsupported input formats in its existing notice.
 		}
 	}
-	return "overview";
+	return "site";
 }
 
 export function ProjectEditor({
@@ -170,6 +163,7 @@ export function ProjectEditor({
 		recovered,
 		recoveries,
 		restore,
+		resolveConflict,
 	} = useProjectDraft(project, session, client, store, recheck);
 	// Map imagery is independent of postcode geocoding. A selected full address
 	// already has its exact centre stored in the brief.
@@ -651,17 +645,6 @@ export function ProjectEditor({
 							aria-label={__("Project sections", "linker-tools")}
 						>
 							<a
-								href="#lp-overview"
-								aria-current={workspace === "overview" ? "page" : undefined}
-								onClick={(event) => {
-									event.preventDefault();
-									chooseWorkspace("overview");
-								}}
-							>
-								<Icon name="overview" />
-								{__("Overview", "linker-tools")}
-							</a>
-							<a
 								href="#lp-site"
 								aria-current={workspace === "site" ? "page" : undefined}
 								onClick={(event) => {
@@ -717,18 +700,6 @@ export function ProjectEditor({
 								<Icon name="report" />
 								{__("Review & share", "linker-tools")}
 							</a>
-							<a
-								className="lp-nav-secondary"
-								href="#lp-installation"
-								aria-current={workspace === "installation" ? "page" : undefined}
-								onClick={(event) => {
-									event.preventDefault();
-									chooseWorkspace("installation");
-								}}
-							>
-								<Icon name="route" />
-								{__("Installation routing", "linker-tools")}
-							</a>
 						</nav>
 						<label className="lp-mobile-chapters">
 							<span>{__("Project sections", "linker-tools")}</span>
@@ -743,9 +714,6 @@ export function ProjectEditor({
 									)
 								}
 							>
-								<option value="overview">
-									{__("Overview", "linker-tools")}
-								</option>
 								<option value="site">{__("Project", "linker-tools")}</option>
 								{brief.system_scope !== "storage_only" && (
 									<option value="design">{__("Solar", "linker-tools")}</option>
@@ -758,9 +726,6 @@ export function ProjectEditor({
 								</option>
 								<option value="calculations">
 									{__("Review & share", "linker-tools")}
-								</option>
-								<option value="installation">
-									{__("Installation routing", "linker-tools")}
 								</option>
 							</select>
 						</label>
@@ -864,13 +829,15 @@ export function ProjectEditor({
 							<div className="lp-inline-actions">
 								<button
 									className="lp-button"
-									onClick={() => update(keepLocalAgainst)}
+									disabled={busy}
+									onClick={() => void resolveConflict("local")}
 								>
 									{__("Keep open changes", "linker-tools")}
 								</button>
 								<button
 									className="lp-button lp-button-secondary"
-									onClick={() => update(useRemote)}
+									disabled={busy}
+									onClick={() => void resolveConflict("saved")}
 								>
 									{__("Use saved revision", "linker-tools")}
 								</button>
@@ -901,12 +868,16 @@ export function ProjectEditor({
 							config={config}
 							onValidity={setBriefValid}
 							onChange={(next) =>
-								update((previous) =>
-									editDraft(previous, {
-										...previous.history.current,
+								update((previous) => {
+									const { equipment_demand, ...rest } =
+										previous.history.current;
+									return editDraft(previous, {
+										...(next.system_scope === "pv_only"
+											? rest
+											: previous.history.current),
 										brief: readBrief(next),
-									}),
-								)
+									});
+								})
 							}
 						/>
 						<details

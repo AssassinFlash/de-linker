@@ -7,6 +7,7 @@ component into a sale product, string design or mounting qualification.
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
@@ -16,7 +17,7 @@ from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .geometry import panel_poses, read_geometry
-from .geometry_documents import GeometryDocument, ModuleSpec
+from .geometry_documents import GeometryDocument
 from .product_sources import ProductSources
 from .pv_parameters import PvGenerationParameters
 from .pv_profile_artifacts import model_dependencies
@@ -191,7 +192,10 @@ def pv_components(
 
 
 def saved_roof_components(
-    geometry_json: Json, proof: Object, blobs: Blobs, revision: int
+    geometry_json: Json,
+    proof: Object | Callable[[], Object],
+    blobs: Blobs,
+    revision: int,
 ) -> Object:
     """Equipment-only reports use the exact roof checked by that saved result."""
     geometry = read_geometry(geometry_json)
@@ -217,7 +221,7 @@ def _require_export_permission(geometry: GeometryDocument) -> None:
 
 def _components(
     geometry: GeometryDocument,
-    proof: Object,
+    proof: Object | Callable[[], Object],
     blobs: Blobs,
     revision: Json,
     *,
@@ -232,15 +236,12 @@ def _components(
         if pose.included:
             included.setdefault(pose.array_id, []).append(pose.id)
     specifications = {module.id: module for module in geometry.module_specs}
-    components: dict[str, Object] = {}
-    for array in geometry.arrays:
-        identifier = array.id
-        if identifier not in included or (
-            selected is not None and identifier not in selected
-        ):
-            continue
-        identities = included[identifier]
-        module: ModuleSpec = specifications[array.module_spec_id]
+    arrays = [
+        (array.id, specifications[array.module_spec_id])
+        for array in geometry.arrays
+        if array.id in included and (selected is None or array.id in selected)
+    ]
+    for _, module in arrays:
         if module.source.woo is None:
             # A declared planning reference has no product record to link, by
             # design. Reporting that as a failed link would invent a claim the
@@ -251,6 +252,12 @@ def _components(
                 else "no_woo_module_proof"
             )
             return {"status": "unavailable", "reason": reason}
+    if arrays and callable(proof):
+        proof = proof()
+    components: dict[str, Object] = {}
+    for identifier, module in arrays:
+        assert module.source.woo is not None and not callable(proof)
+        identities = included[identifier]
         try:
             ProductSources._check_module(module, proof)
         except InvalidInput as error:
@@ -283,8 +290,7 @@ def _components(
             for line in components.values()
         )
         / 1000,
-        "dependencies": {
-            **dependencies,
-            "woo_module": blobs.put_object(proof),
-        },
+        "dependencies": dependencies
+        if callable(proof)
+        else {**dependencies, "woo_module": blobs.put_object(proof)},
     }

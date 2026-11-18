@@ -88,7 +88,9 @@ test("a transient authentication refusal recovers native reads without replaying
 			),
 		),
 	);
-	await until(() => document.body.textContent.includes("Project workspace"));
+	await until(() =>
+		document.body.textContent.includes("No saved projects yet."),
+	);
 	await act(async () => gate.resolve());
 	await until(
 		() =>
@@ -96,7 +98,7 @@ test("a transient authentication refusal recovers native reads without replaying
 			discoveryCalls >= 2 &&
 			client.isCurrentScope(session.query_scope) &&
 			[...document.querySelectorAll("button")].some(
-				(x) => x.textContent === "Open roof map",
+				(x) => x.textContent === "Continue with solar",
 			),
 	);
 	assert.equal(
@@ -198,7 +200,11 @@ for (const status of [401, 503])
 		);
 		const retry = () =>
 			[...document.querySelectorAll("button")].find(
-				(x) => x.textContent === "Try again",
+				(x) =>
+					x.textContent === "Try again" &&
+					x
+						.closest('[role="alert"]')
+						?.textContent.includes("Unconfirmed project creations"),
 			);
 		await until(() => retry() && (status === 503 || discoveryCalls >= 2));
 		for (let i = 0; i < 8; i++)
@@ -233,7 +239,7 @@ for (const status of [401, 503])
 				client.isCurrentScope(session.query_scope) &&
 				!retry() &&
 				[...document.querySelectorAll("button")].some(
-					(x) => x.textContent === "Open roof map",
+					(x) => x.textContent === "Continue with solar",
 				),
 		);
 		assert.equal(bootstraps, status === 401 ? 4 : 1);

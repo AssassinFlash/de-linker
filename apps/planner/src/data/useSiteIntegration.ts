@@ -11,6 +11,11 @@ import {
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 
 const workspaceHashes = new Set([
+	"#sc-project",
+	"#sc-solar",
+	"#sc-energy",
+	"#sc-system",
+	"#sc-review",
 	"#lp-overview",
 	"#lp-site",
 	"#lp-brief-use",

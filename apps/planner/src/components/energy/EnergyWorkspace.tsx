@@ -59,6 +59,7 @@ import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { usePlanningRuns } from "../../data/usePlanningRuns.ts";
 import {
 	readPlanningOperation,
+	readRunInputs,
 	runPending,
 	runTask,
 } from "../../data/planningProtocol.ts";
@@ -79,6 +80,7 @@ import {
 	equipmentDraft,
 	changeEquipment,
 	checkRetainedEquipment,
+	comparisonModels,
 	compileEquipment,
 } from "../../domain/equipment.ts";
 import {
@@ -132,6 +134,18 @@ import {
 	checkPvWeather,
 	readSolarSetup,
 } from "../../domain/solarSetup.ts";
+
+function requireUnchangedDemand(inputs: JsonObject, frozenInputs: JsonObject) {
+	const current = authoredDiscoveryInputs(inputs);
+	const frozen = authoredDiscoveryInputs(frozenInputs);
+	if (
+		isStorageOnly(current) !== isStorageOnly(frozen) ||
+		["energy_scenario", "profile_selections", "equipment_demand"].some(
+			(key) => !sameJson(current[key] ?? null, frozen[key] ?? null),
+		)
+	)
+		throw new ApiError(409, "equipment_selection_changed");
+}
 
 export function EnergyWorkspace({
 	draft,
@@ -708,6 +722,21 @@ export function EnergyWorkspace({
 				session.query_scope,
 			),
 		);
+		const demandInputs = candidate.demand?.metrics
+			? readRunInputs(
+					await client.query(
+						"runs/inputs",
+						{
+							schema_version: 1,
+							project_id: projectId,
+							run_id: selectedRun.id,
+						},
+						session.query_scope,
+					),
+					selectedRun,
+				)
+			: null;
+		if (demandInputs) requireUnchangedDemand(snapshot, demandInputs);
 		if (
 			!client.isCurrentScope(session.query_scope) ||
 			instance !== lifetime.current
@@ -749,7 +778,10 @@ export function EnergyWorkspace({
 					] as const
 				).map((key) => [key, candidate.selection[key]]),
 			);
-			next = changeEquipment(snapshot, patch);
+			next = changeEquipment(snapshot, {
+				...patch,
+				comparison_models: comparisonModels(equipmentDraft(snapshot)),
+			});
 			try {
 				const selection = compileEquipment(
 					equipmentDraft(next),
@@ -778,6 +810,7 @@ export function EnergyWorkspace({
 		const applied = edit((inputs) => {
 			if (!sameJson(equipmentContext(inputs), original))
 				throw new ApiError(409, "equipment_selection_changed");
+			if (demandInputs) requireUnchangedDemand(inputs, demandInputs);
 			const updated = applyEquipmentContext(inputs, replacement);
 			if (
 				!isPlantCandidate(candidate) &&
@@ -787,6 +820,24 @@ export function EnergyWorkspace({
 					updated.energy_scenario === undefined
 						? emptyScenario()
 						: readScenarioDraft(updated.energy_scenario);
+				if (demandInputs && candidate.demand?.metrics) {
+					const initial = readObject(candidate.demand.metrics.stored_initial);
+					return scenarioInputs(updated, {
+						...scenario,
+						battery: {
+							...scenario.battery,
+							usable_window_kwh: candidate.usable_energy_kwh,
+						},
+						initial_inventory: {
+							pv_kwh: initial.pv_kwh as number,
+							grid_kwh: initial.grid_kwh as number,
+							initial_unknown_kwh: initial.initial_unknown_kwh as number,
+							source_note: readObject(demandInputs.equipment_demand)
+								.source_note as string,
+						},
+						battery_binding: null,
+					});
+				}
 				return scenarioInputs(
 					updated,
 					useEquipmentCapacity(scenario, candidate.usable_energy_kwh),
@@ -1006,7 +1057,9 @@ export function EnergyWorkspace({
 								)
 							: ["pv_available_ac"];
 				return [
-					"gross_load",
+					...(value.schedule.some((period) => period.mode !== "outage")
+						? ["gross_load" as const]
+						: []),
 					...pvRoles,
 					...(value.aux_ac_kw == null ? ["aux_ac" as const] : []),
 					...(value.schedule.some((period) => period.mode === "outage")
@@ -1627,6 +1680,10 @@ export function EnergyWorkspace({
 										)
 											.filter(
 												(role) =>
+													(role !== "gross_load" ||
+														currentSetup.schedule.some(
+															(period) => period.mode !== "outage",
+														)) &&
 													(!pvInactive ||
 														(role !== "pv_available_ac" &&
 															role !== "pv_reference")) &&

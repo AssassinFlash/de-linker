@@ -267,6 +267,55 @@ final class ProjectNotesTest extends TestCase {
 		$this->assertFalse( $excluded );
 	}
 
+	/** A report attachment alone is sufficient and remains privately downloadable. */
+	public function test_report_only_inquiry_keeps_the_report_without_products_or_a_note(): void {
+		$handoff                                     = $this->handoff( '' );
+		$handoff['snapshot']['kind']                 = 'planning_report_only_v1';
+		$handoff['snapshot']['publication']          = null;
+		$handoff['snapshot']['items']                = array();
+		$handoff['snapshot']['input_sha256']         = str_repeat( '2', 64 );
+		$handoff['snapshot']['report_source_sha256'] = str_repeat( '3', 64 );
+		$handoff['snapshot']['report_sha256']        = str_repeat( '4', 64 );
+		$handoff['snapshot_sha256']                  = Publication::revision( $handoff['snapshot'] );
+		$this->session[ DraftTransfer::CONTEXTS ]    = array( $handoff['id'] => DraftTransfer::native_context( $handoff ) );
+		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
+		$this->assertStringContainsString( 'Planning report', Context::inquiry_notes_section() );
+		$this->assertFalse( Context::has_included_notes(), 'A sender without a reviewed inquiry form cannot include the report.' );
+		$order  = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items' ) )->getMock();
+		$stored = array();
+		$order->method( 'get_items' )->willReturn( array() );
+		$order->method( 'update_meta_data' )->willReturnCallback(
+			static function ( string $key, string $value ) use ( &$stored ): void {
+				$stored[ $key ] = $value;
+			}
+		);
+		$order->method( 'get_meta' )->willReturnCallback(
+			static function ( string $key ) use ( &$stored ): string {
+				return $stored[ $key ] ?? '';
+			}
+		);
+		$post = array(
+			Context::PRESENT_FIELD   => '1',
+			Context::INCLUDE_FIELD   => '1',
+			Context::REVISIONS_FIELD => array( $handoff['id'] => Context::note_revision( $handoff ) ),
+		);
+		Context::with_submission(
+			$post,
+			function () use ( $order ): void {
+				$this->assertTrue( Context::has_included_notes() );
+				$this->assertNull( Context::preflight() );
+				( new Context() )->capture( $order );
+			}
+		);
+		$this->assertSame( Context::reference( $handoff ), Context::stored( $order )[ $handoff['id'] ]['reference'] );
+		$this->assertSame( array(), Context::stored_notes( $order ) );
+		Context::consume_captured_notes( $order );
+		$this->assertSame( array(), Context::session_notes() );
+	}
+
 	/** The reviewed inclusion choice is part of the admission fingerprint. */
 	public function test_submission_fingerprint_covers_inclusion_and_revisions(): void {
 		$included = Context::submission_fingerprint(

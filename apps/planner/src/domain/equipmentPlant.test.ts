@@ -258,9 +258,14 @@ test("a controller use travels with its group and needs its declared controller"
 		parallel_groups: configured().parallel_groups.map((g) => ({
 			...g,
 			controller_use: "retain" as const,
+			comparison_controller_product_id: null,
 		})),
 	};
 	const draft = readPlantDraft(plantInputs(start(), retained));
+	assert.equal(
+		compilePlantSearch(draft).parallel_groups[0]!.controller_product_id,
+		retained.parallel_groups[0]!.controller_product_id,
+	);
 	assert.equal(draft.parallel_groups[0]!.controller_use, "retain");
 	const compiled = compilePlant(retained, products);
 	assert.equal(compiled.parallel_groups[0]!.controller_use, "retain");
@@ -457,6 +462,67 @@ test("plant search prepares demand without hardware and adopts one whole candida
 		adoptPlantCandidate(
 			plantInputs(current, changed),
 			hardware,
+			products,
+			choice,
+		),
+	);
+});
+
+test("whole-site backup adopts a plant with unanswered unit sizing", () => {
+	const base = configured();
+	const draft = {
+		...base,
+		requirements: { ...base.requirements, required_discharge_ac_kw: null },
+		units: base.units.map((unit) => ({
+			...unit,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(unit.inputs),
+					required_usable_kwh: null,
+					required_discharge_ac_kw: null,
+				},
+			},
+		})),
+	};
+	const backup = { schema_version: 1, load_kw: 7, duration_hours: 6 };
+	const current = { ...plantInputs(original, draft), backup_demand: backup };
+	const candidate = compilePlant(
+		{
+			...draft,
+			requirements: {
+				...draft.requirements,
+				operating_mode: "backup",
+				application: null,
+			},
+		},
+		products,
+	);
+	const choice = {
+		run_id: "a".repeat(32),
+		candidate_id: "b".repeat(64),
+		assessment_sha256: "c".repeat(64),
+	};
+	const adopted = adoptPlantCandidate(current, candidate, products, choice);
+	assert.deepEqual(adopted.backup_demand, backup);
+	assert.deepEqual(adopted.equipment_candidate, choice);
+	assert.deepEqual(adopted.equipment_plant, candidate);
+	assert.equal(
+		readPlantDraft(adopted).requirements.required_discharge_ac_kw,
+		null,
+	);
+	assert.equal(
+		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs)
+			.required_discharge_ac_kw,
+		null,
+	);
+	const changed = {
+		...draft,
+		requirements: { ...draft.requirements, required_discharge_ac_kw: 8 },
+	};
+	assert.throws(() =>
+		adoptPlantCandidate(
+			{ ...plantInputs(original, changed), backup_demand: backup },
+			candidate,
 			products,
 			choice,
 		),

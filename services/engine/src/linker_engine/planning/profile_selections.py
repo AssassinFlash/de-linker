@@ -13,6 +13,7 @@ from .errors import InvalidInput, VersionUnavailable
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .power_series import Measurement
 from .pv_profile import PURPOSE
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_AC_PURPOSE
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .records import Actor
 
@@ -53,6 +54,7 @@ def check_profile_selections(
         elif asset.purpose in {
             "pvgis_system_profile_v1",
             ROOF_AC_PURPOSE,
+            KNOWN_AC_PURPOSE,
             GEOMETRIC_PV_PURPOSE,
         }:
             if measurement != "pv_available_ac":

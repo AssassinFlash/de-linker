@@ -210,6 +210,22 @@ msgstr "Photovoltaik und Speicher"
 msgid "Solar only"
 msgstr "Nur Photovoltaik"
 
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Switching to solar excludes battery equipment and storage requirements, including backup supply."
+msgstr "Wenn Sie zu reiner Photovoltaik wechseln, entfallen die Batterieausstattung und die Anforderungen an den Speicher, einschließlich der Ersatzstromversorgung."
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Switch to solar and exclude storage"
+msgstr "Zu Photovoltaik ohne Speicher wechseln"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Keep current system"
+msgstr "Bisherige Planung beibehalten"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "You can compare equipment now. Add a load profile to compare energy use over time."
+msgstr "Sie können die Geräte bereits vergleichen. Fügen Sie ein Lastprofil hinzu, um den Energieverbrauch im Zeitverlauf zu vergleichen."
+
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
 msgid "Add storage to an existing system"
 msgstr "Bestehende Anlage um einen Speicher erweitern"
@@ -2156,6 +2172,7 @@ msgstr "Bisherigen Entwurf wiederherstellen"
 msgid "Result"
 msgstr "Ergebnis"
 
+#: build/planner/assets/planner.js:1
 #: src/configurator/roof/RoofStep.tsx:430 build/configurator.js
 msgid "Roof"
 msgstr "Dach"
@@ -2657,7 +2674,7 @@ msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
 msgid "Three-phase"
 msgstr "Dreiphasig"
 
-#: src/configurator/roof/RoofStep.tsx:537 build/configurator.js
+#: src/configurator/roof/RoofStep.tsx:537 build/configurator.js build/planner/assets/planner.js:1
 msgid "Tilt"
 msgstr "Neigung"
 
@@ -15686,3 +15703,1265 @@ msgstr "Moduldetails"
 #: build/configurator.js
 msgid "Enter a postcode using letters, numbers, spaces or hyphens."
 msgstr "Geben Sie die Postleitzahl mit Buchstaben, Ziffern, Leerzeichen oder Bindestrichen ein."
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:75 build/planner/assets/planner.js:1
+msgid "Compare against energy needs"
+msgstr "Mit dem Energiebedarf vergleichen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:81 build/planner/assets/planner.js:1
+msgid "The comparison uses the periods and load in Energy use and the efficiency and power settings in Storage. Usable capacity comes from each equipment combination."
+msgstr "Der Vergleich verwendet die Zeiträume und die Last unter „Strombedarf“ sowie die Wirkungsgrad- und Leistungseinstellungen unter „Speicher“. Die nutzbare Kapazität ergibt sich aus der jeweiligen Gerätekombination."
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:89 build/planner/assets/planner.js:1
+msgid "Initial usable capacity"
+msgstr "Anfangs nutzbarer Anteil der Speicherkapazität"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:106 build/planner/assets/planner.js:1
+msgid "Allowed unserved load"
+msgstr "Zulässiger ungedeckter Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:131 build/planner/assets/planner.js:1
+msgid "Enter the initial usable capacity, allowed unserved load and source note to compare energy needs."
+msgstr "Geben Sie für den Vergleich mit dem Energiebedarf den anfangs nutzbaren Anteil der Speicherkapazität, den zulässigen ungedeckten Energiebedarf und einen Hinweis zur Quelle an."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:203 build/planner/assets/planner.js:1
+msgid "Demand results"
+msgstr "Ergebnisse des Bedarfsvergleichs"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:211 build/planner/assets/planner.js:1
+msgid "All combinations"
+msgstr "Alle Kombinationen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:214 build/planner/assets/planner.js:1
+msgid "Meets the declared demand"
+msgstr "Deckt den angegebenen Bedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:217 build/planner/assets/planner.js:1
+msgid "Does not meet the declared demand"
+msgstr "Deckt den angegebenen Bedarf nicht"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:220 build/planner/assets/planner.js:1
+msgid "Demand not assessed"
+msgstr "Bedarfsdeckung nicht geprüft"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:228 build/planner/assets/planner.js:1
+msgid "Demand comparison is incomplete. Some combinations have not been simulated."
+msgstr "Der Bedarfsvergleich ist unvollständig. Einige Kombinationen wurden noch nicht simuliert."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:291 build/planner/assets/planner.js:1
+msgid "Energy demand comparison"
+msgstr "Vergleich mit dem Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:300 build/planner/assets/planner.js:1
+msgid "Documented usable capacity is missing for this combination."
+msgstr "Für diese Kombination fehlt eine belegte nutzbare Kapazität."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:303 build/planner/assets/planner.js:1
+msgid "This combination was not simulated because the comparison limit was reached."
+msgstr "Diese Kombination wurde nicht simuliert, weil die Grenze für den Vergleich erreicht wurde."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:306 build/planner/assets/planner.js:1
+msgid "This simulation did not meet the declared storage, reserve or end-state constraints."
+msgstr "Diese Simulation erfüllte die angegebenen Vorgaben für Speicher, Reserve oder Endzustand nicht."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:310 build/planner/assets/planner.js:1
+msgid "Unserved load"
+msgstr "Ungedeckter Energiebedarf"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:320 build/planner/assets/planner.js:1
+msgid "Maximum interval-average grid import"
+msgstr "Höchster mittlerer Netzbezug je Zeitintervall"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:340 build/planner/assets/planner.js:1
+msgid "Equipment evidence remains unresolved for the simulated operating conditions."
+msgstr "Die Eignung der Geräte für die simulierten Betriebsbedingungen ist anhand der vorliegenden Nachweise noch nicht geklärt."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:350 build/planner/assets/planner.js:1
+msgid "The simulated operating conditions exceed the equipment evidence. Review the power and capacity assumptions."
+msgstr "Die simulierten Betriebsbedingungen liegen außerhalb der durch die Gerätenachweise belegten Grenzen. Prüfen Sie die Annahmen zu Leistung und Kapazität."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:347 build/planner/assets/planner.js:1
+msgid "The project inputs have changed since this comparison. Run the equipment search again before using its energy assumptions."
+msgstr "Die Projektangaben haben sich seit diesem Vergleich geändert. Starten Sie die Gerätesuche erneut, bevor Sie die Energieannahmen aus diesem Vergleich übernehmen."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx build/planner/assets/planner.js:1
+msgid "No combinations match this demand filter."
+msgstr "Keine Kombination entspricht diesem Bedarfsfilter."
+
+#: build/planner/assets/planner.js:1
+msgid "Add PV plane"
+msgstr "PV-Fläche hinzufügen"
+
+#: build/planner/assets/planner.js:1
+msgid "Azimuth from true north"
+msgstr "Azimut bezogen auf geografisch Nord"
+
+#: build/planner/assets/planner.js:1
+msgid "Declared PV power"
+msgstr "Angegebene PV-Leistung"
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the project coordinates in Site before calculating known PV generation."
+msgstr "Tragen Sie unter Standort die Projektkoordinaten ein, bevor Sie die Erzeugung anhand bekannter PV-Daten berechnen."
+
+#: build/planner/assets/planner.js:1
+msgid "Included roof modules"
+msgstr "Im Dachentwurf enthaltene Module"
+
+#: build/planner/assets/planner.js:1
+msgid "Known PV details without a roof drawing"
+msgstr "Bekannte PV-Daten ohne Dachzeichnung"
+
+#: build/planner/assets/planner.js:1
+msgid "PV details source"
+msgstr "Grundlage der PV-Daten"
+
+#: build/planner/assets/planner.js:1
+msgid "PV details source note"
+msgstr "Quelle der PV-Daten"
+
+#: build/planner/assets/planner.js:1
+msgid "PV plane %d"
+msgstr "PV-Fläche %d"
+
+#: build/planner/assets/planner.js:1
+msgid "Remove PV plane"
+msgstr "PV-Fläche entfernen"
+
+#: build/planner/assets/planner.js:1
+msgid "Save the PV details and reference choices before starting this calculation."
+msgstr "Speichern Sie die PV-Daten und Referenzeinstellungen, bevor Sie diese Berechnung starten."
+
+#: build/planner/assets/planner.js:1
+msgid "Source of location and system-loss assumptions"
+msgstr "Quelle der Standortangaben und Annahmen zu Systemverlusten"
+
+#: build/planner/assets/planner.js:1
+msgid "The calculation sends the project location, array power and orientation, and the model choices below to the European Commission's PVGIS service. Your project title and source notes are not sent."
+msgstr "Die Berechnung übermittelt den Projektstandort, Leistung und Ausrichtung der PV-Flächen sowie die folgenden Modelleinstellungen an den PVGIS-Dienst der Europäischen Kommission. Ihr Projekttitel und Ihre Quellenangaben werden nicht übermittelt."
+
+#: build/planner/assets/planner.js:1
+msgid "The source request, location or PV details have changed. A source matching the current inputs is required."
+msgstr "Quellenanfrage, Standort oder PV-Daten haben sich geändert. Sie benötigen eine Quelle, die zu den aktuellen Eingaben passt."
+
+#: build/planner/assets/planner.js:1
+msgid "This AC reference uses your declared PV power and orientation at the project location. Enter the source of the PV details and system-loss assumption."
+msgstr "Diese AC-Referenz verwendet Ihre Angaben zu PV-Leistung und Ausrichtung am Projektstandort. Geben Sie die Quellen der PV-Daten und der Annahme zu Systemverlusten an."
+
+#: build/planner/assets/planner.js:1
+msgid "This reference requires an AC scenario. Change the topology or explicitly remove its DC PV input before selecting it. Your existing selections remain unchanged."
+msgstr "Diese Referenz erfordert ein AC-Szenario. Ändern Sie die Topologie oder entfernen Sie den zugehörigen DC-PV-Eingang ausdrücklich, bevor Sie die Referenz auswählen. Ihre bisherige Auswahl bleibt erhalten."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Ready to discuss"
+msgstr "Bereit für das Projektgespräch"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The selected configuration stays with the report and inquiry."
+msgstr "Bericht und Anfrage enthalten die gewählte Konfiguration."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Project report"
+msgstr "Projektbericht"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The report could not be generated. Please try again."
+msgstr "Der Bericht konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Generate project report"
+msgstr "Projektbericht erstellen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Project inputs, layout, equipment and selection basis."
+msgstr "Projektangaben, Anlagenaufbau, Geräte und Auswahlgrundlagen."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Generate report in German"
+msgstr "Bericht auf Deutsch erstellen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Generate report in English"
+msgstr "Bericht auf Englisch erstellen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Update project report"
+msgstr "Projektbericht aktualisieren"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Preview report"
+msgstr "Berichtsvorschau"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Request a quotation"
+msgstr "Angebot anfragen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The selected equipment and project details are included."
+msgstr "Die Anfrage enthält die gewählten Geräte und die Projektangaben."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Unable to use this profile"
+msgstr "Dieses Lastprofil konnte nicht übernommen werden"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "The profile request failed. Please try again."
+msgstr "Das Lastprofil konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "What should the system do?"
+msgstr "Was soll die Anlage leisten?"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "The purpose determines which information matters."
+msgstr "Je nach Ziel sind unterschiedliche Angaben erforderlich."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Purpose"
+msgstr "Ziel"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Use more solar on site"
+msgstr "Mehr Solarstrom selbst nutzen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Reduce peak demand"
+msgstr "Lastspitzen senken"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Single phase"
+msgstr "Einphasig"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Three phase"
+msgstr "Dreiphasig"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Target grid import limit"
+msgstr "Gewünschte Netzbezugsgrenze"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Backup sizing starts with the loads that must keep running."
+msgstr "Für die Ersatzstromauslegung zählt, welche Verbraucher bei einem Stromausfall weiterlaufen müssen."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Backup load"
+msgstr "Ersatzstromlast"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Required duration"
+msgstr "Gewünschte Dauer"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Load energy before system losses"
+msgstr "Energiebedarf der Verbraucher ohne Systemverluste"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Electricity use over time"
+msgstr "Stromverbrauch im Zeitverlauf"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Use a typical profile"
+msgstr "Typisches Lastprofil verwenden"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Import CSV"
+msgstr "CSV importieren"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "A load profile adds the timing of consumption. Annual electricity use alone does not determine storage size."
+msgstr "Ein Lastprofil zeigt, wann Strom verbraucht wird. Der Jahresstromverbrauch allein reicht für die Speicherauslegung nicht aus."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Typical use"
+msgstr "Typische Nutzung"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Choose a template"
+msgstr "Vorlage auswählen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Household"
+msgstr "Haushalt"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "General business"
+msgstr "Gewerbe allgemein"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Business hours, weekdays"
+msgstr "Werktags zu Geschäftszeiten"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Evening business"
+msgstr "Gewerbe mit Abendbetrieb"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Continuous operation"
+msgstr "Durchgehender Betrieb"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Retail"
+msgstr "Einzelhandel"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Bakery"
+msgstr "Bäckerei"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Weekend business"
+msgstr "Gewerbe mit Wochenendbetrieb"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Household (2025)"
+msgstr "Haushalt (2025)"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Business (2025)"
+msgstr "Gewerbe (2025)"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Agriculture (2025)"
+msgstr "Landwirtschaft (2025)"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "BDEW/VDEW templates use the German calendar and are scaled to your annual consumption. For other sites, use them as an explicit template or import local meter data."
+msgstr "BDEW/VDEW-Lastprofile basieren auf dem deutschen Kalender und werden auf Ihren Jahresverbrauch skaliert. An Standorten außerhalb Deutschlands dienen sie als Vorlage. Alternativ können Sie lokale Zählerdaten importieren."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Use this load profile"
+msgstr "Lastprofil übernehmen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "CSV file"
+msgstr "CSV-Datei"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Read CSV columns"
+msgstr "CSV-Spalten einlesen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "readings found"
+msgstr "gefundene Messwerte"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Consumption column"
+msgstr "Verbrauchsspalte"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Choose a column"
+msgstr "Spalte auswählen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Values represent"
+msgstr "Einheit der Messwerte"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Choose a unit"
+msgstr "Einheit auswählen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Timestamp marks"
+msgstr "Zeitstempel kennzeichnet"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Interval start"
+msgstr "Intervallbeginn"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Interval end"
+msgstr "Intervallende"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Interval length"
+msgstr "Intervalllänge"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Decimal separator"
+msgstr "Dezimaltrennzeichen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Data source"
+msgstr "Datenquelle"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Meter readings"
+msgstr "Zählermesswerte"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Modelled data"
+msgstr "Modelldaten"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Synthetic data"
+msgstr "Synthetische Daten"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Source name"
+msgstr "Name der Quelle"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Source and permission to store privately"
+msgstr "Quelle und Erlaubnis zur privaten Speicherung"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Import total site consumption, rather than net grid import. Use ISO timestamps with UTC offsets for repeated daylight-saving hours. The original data and gaps are preserved."
+msgstr "Für den Import ist der gesamte Standortverbrauch maßgeblich. Der Netto-Netzbezug ist dafür ungeeignet. Bei der doppelten Stunde während der Zeitumstellung sind ISO-Zeitstempel mit UTC-Offset erforderlich. Originaldaten und Datenlücken bleiben erhalten."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Use CSV consumption"
+msgstr "Verbrauchsdaten übernehmen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Loading consumption data…"
+msgstr "Verbrauchsdaten werden geladen…"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Retry profile import"
+msgstr "Profilimport erneut versuchen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "readings"
+msgstr "Messwerte"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "gaps in the source data"
+msgstr "Lücken in den Quelldaten"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "View readings"
+msgstr "Messwerte ansehen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Interval start (UTC)"
+msgstr "Intervallbeginn (UTC)"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Required power and capacity already known?"
+msgstr "Leistung und Kapazität bereits bekannt?"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "These optional values set minimum requirements for equipment comparison. Leave unknown values blank."
+msgstr "Diese optionalen Angaben legen die Mindestanforderungen für den Gerätevergleich fest. Unbekannte Werte können Sie freilassen."
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Continuous discharge power"
+msgstr "Kontinuierliche Entladeleistung"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Usable storage capacity"
+msgstr "Nutzbare Speicherkapazität"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Compare systems"
+msgstr "Systeme vergleichen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "What is the project?"
+msgstr "Was planen Sie?"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Start with the location and what is already known."
+msgstr "Standort und vorhandene Angaben bilden die Grundlage für die Planung."
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Choose a country"
+msgstr "Land auswählen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Town or site"
+msgstr "Ort oder Standort"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Main purpose"
+msgstr "Hauptziel"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "The location could not be found. Check the country and address, then try again."
+msgstr "Der Standort wurde nicht gefunden. Prüfen Sie Land und Adresse und versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Finding the site…"
+msgstr "Standort wird gesucht…"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Continue with storage"
+msgstr "Weiter zum Speicher"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Continue with solar"
+msgstr "Weiter zur PV-Anlage"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Product identity not recorded"
+msgstr "Produkt nicht eindeutig erfasst"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Additional solar use, upper bound"
+msgstr "Obergrenze für zusätzlichen Solarstrom-Eigenverbrauch"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Grid import peak, lower bound"
+msgstr "Untergrenze der Netzbezugsspitze"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "The peak target exceeds this configuration's optimistic physical limit."
+msgstr "Selbst unter günstigen Annahmen kann diese Konfiguration die gewünschte Netzbezugsgrenze nicht einhalten."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Demand bounds could not be established for this configuration."
+msgstr "Für diese Konfiguration konnten die möglichen Grenzen der Bedarfsdeckung nicht ermittelt werden."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Retained on site"
+msgstr "Vor Ort weiterverwendet"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Replacement equipment"
+msgstr "Ersatzgerät"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "New equipment"
+msgstr "Neugerät"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Quantity to confirm"
+msgstr "Menge noch zu klären"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+#, php-format
+msgid "Source, page %d"
+msgstr "Quelle, Seite %d"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Sign in or refresh your session to view these configurations."
+msgstr "Melden Sie sich an oder erneuern Sie Ihre Sitzung, um diese Konfigurationen anzusehen."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "The system search did not finish. Review your requirements and try again."
+msgstr "Die Systemsuche wurde nicht abgeschlossen. Prüfen Sie Ihre Anforderungen und versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Finding equipment configurations for your project…"
+msgstr "Gerätekombinationen für Ihr Projekt werden gesucht…"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "A system for this project"
+msgstr "Ein System für Ihr Projekt"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Compare the equipment, then choose a configuration."
+msgstr "Vergleichen Sie die Geräte und wählen Sie eine Konfiguration."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Search incomplete: some configurations remain unchecked."
+msgstr "Die Suche ist unvollständig. Einige Konfigurationen wurden noch nicht geprüft."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Your demand profile"
+msgstr "Ihr Lastprofil"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Profile period (UTC)"
+msgstr "Zeitraum des Lastprofils (UTC)"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Electricity use"
+msgstr "Stromverbrauch"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Direct solar use"
+msgstr "Direkter Solarstrom-Eigenverbrauch"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Grid import without storage"
+msgstr "Netzbezug ohne Speicher"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Grid import peak without storage"
+msgstr "Netzbezugsspitze ohne Speicher"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "These optimistic bounds assume a full battery at the start and lossless storage. Actual operation depends on the remaining equipment and operating checks."
+msgstr "Diese Grenzen gelten unter günstigen Annahmen: Die Batterie ist zu Beginn voll und der Speicher arbeitet verlustfrei. Für den tatsächlichen Betrieb stehen weitere Geräte- und Betriebsprüfungen aus."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Find a product"
+msgstr "Produkt suchen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Assessment status"
+msgstr "Prüfstatus"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "All configurations"
+msgstr "Alle Konfigurationen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Usable capacity to confirm"
+msgstr "Nutzbare Kapazität noch zu klären"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "View equipment and evidence"
+msgstr "Geräte und Nachweise ansehen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "No configurations match these filters."
+msgstr "Keine Konfiguration entspricht diesen Filtern."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "No configurations were found using the available product data."
+msgstr "Mit den verfügbaren Produktdaten wurde keine Konfiguration gefunden."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Configurations"
+msgstr "Konfigurationen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "More configurations"
+msgstr "Weitere Konfigurationen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Loading equipment and evidence…"
+msgstr "Geräte und Nachweise werden geladen…"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "The equipment details could not be loaded."
+msgstr "Die Gerätedetails konnten nicht geladen werden."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Bill of materials"
+msgstr "Stückliste"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Selection basis and documents"
+msgstr "Auswahlgrundlagen und Dokumente"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Country and grid requirements require separate assessment."
+msgstr "Landes- und Netzanschlussanforderungen sind gesondert zu prüfen."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "This configuration could not be selected. Try again."
+msgstr "Diese Konfiguration konnte nicht übernommen werden. Bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Selected"
+msgstr "Ausgewählt"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Selecting…"
+msgstr "Konfiguration wird übernommen…"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Use this configuration"
+msgstr "Konfiguration übernehmen"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Your project"
+msgstr "Ihr Projekt"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Save snapshot"
+msgstr "Projektstand speichern"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Project navigation"
+msgstr "Projektnavigation"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The project has changed. Compare systems again to update the choices."
+msgstr "Das Projekt wurde geändert. Ein erneuter Systemvergleich aktualisiert die Auswahl."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The wiring check could not finish. Review the equipment and PV strings, then generate the report again."
+msgstr "Die Prüfung der PV-Verschaltung konnte nicht abgeschlossen werden. Prüfen Sie die Geräte und PV-Strings und erstellen Sie den Bericht erneut."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "This action could not be completed. Your project inputs are retained."
+msgstr "Der Vorgang konnte nicht abgeschlossen werden. Ihre Projektangaben bleiben erhalten."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The project could not be saved or recovered. Keep this page open and try again."
+msgstr "Das Projekt konnte nicht gespeichert oder wiederhergestellt werden. Lassen Sie diese Seite geöffnet und versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "This project was changed elsewhere. Choose which inputs to continue with."
+msgstr "Das Projekt wurde an anderer Stelle geändert. Wählen Sie den Stand, mit dem Sie weiterarbeiten möchten."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Keep my changes"
+msgstr "Meine Änderungen behalten"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Use saved project"
+msgstr "Gespeicherten Stand verwenden"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Restore local changes"
+msgstr "Lokale Änderungen wiederherstellen"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Confirm the result of your previous request before continuing."
+msgstr "Prüfen Sie das Ergebnis des vorherigen Vorgangs, bevor Sie fortfahren."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Check previous request"
+msgstr "Vorherigen Vorgang prüfen"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Finding equipment for your project…"
+msgstr "Geräte für Ihr Projekt werden gesucht…"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The equipment search could not finish. Your inputs are saved."
+msgstr "Die Gerätesuche wurde nicht abgeschlossen. Ihre Angaben sind gespeichert."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Enter your energy needs to compare equipment for this project."
+msgstr "Ihre Angaben zum Energiebedarf bilden die Grundlage für den Gerätevergleich."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Review the proposal"
+msgstr "Lösungsvorschlag prüfen"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Current configuration"
+msgstr "Aktuelle Konfiguration"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "View parts list"
+msgstr "Stückliste ansehen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Enter the dimensions, orientation and source for this drawing."
+msgstr "Für die Zeichnung sind Maße, Ausrichtung und Quelle erforderlich."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "This edit could not be applied. Check the selected roof and dimensions."
+msgstr "Die Änderung konnte nicht übernommen werden. Prüfen Sie die ausgewählte Dachfläche und die Maße."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm the drawing source before setting the map reference."
+msgstr "Bestätigen Sie die Zeichnungsquelle, bevor Sie den Kartenbezug festlegen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the project coordinates."
+msgstr "Prüfen Sie die Projektkoordinaten."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm the drawing source before adding a roof."
+msgstr "Bestätigen Sie die Zeichnungsquelle, bevor Sie eine Dachfläche hinzufügen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the roof inputs."
+msgstr "Prüfen Sie die Angaben zur Dachfläche."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the obstacle inputs."
+msgstr "Prüfen Sie die Angaben zum Hindernis."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Module group"
+msgstr "Modulgruppe"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Modules follow the roof plane at the declared spacing."
+msgstr "Die Module liegen mit dem angegebenen Abstand in der Dachebene."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the module group inputs."
+msgstr "Prüfen Sie die Angaben zur Modulgruppe."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the drawn outline."
+msgstr "Prüfen Sie den gezeichneten Umriss."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "The drawing could not be updated."
+msgstr "Die Zeichnung konnte nicht aktualisiert werden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Define the solar installation"
+msgstr "PV-Anlage erfassen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "A roof layout or the module details can provide the starting point."
+msgstr "Sie können mit der Dachbelegung oder den Moduldaten beginnen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Use module details"
+msgstr "Moduldaten verwenden"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Place modules on the roof"
+msgstr "Module auf dem Dach platzieren"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "PV module"
+msgstr "PV-Modul"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Number of modules"
+msgstr "Anzahl der Module"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Solar capacity"
+msgstr "PV-Leistung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Azimuth (north = 0°)"
+msgstr "Azimut (Nord = 0°)"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Source of module details"
+msgstr "Quelle der Moduldaten"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Select / move"
+msgstr "Auswählen / verschieben"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Draw roof"
+msgstr "Dachfläche zeichnen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Place modules"
+msgstr "Module platzieren"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Aerial map"
+msgstr "Luftbildkarte"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm the geographic origin and true-north basis in the project before drawing on the map."
+msgstr "Für die Zeichnung auf der Karte müssen der geografische Ursprung und die Ausrichtung nach geografisch Nord im Projekt bestätigt sein."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Editable roof plan"
+msgstr "Bearbeitbarer Dachplan"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Finish outline"
+msgstr "Umriss abschließen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "The plan uses metres in the recorded roof plane. Project origin and north references are retained."
+msgstr "Die Maße im Plan beziehen sich auf die erfasste Dachebene und sind in Metern angegeben. Projektursprung und Nordbezug bleiben erhalten."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof"
+msgstr "Ausgewählte Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Choose a roof"
+msgstr "Dachfläche auswählen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Width"
+msgstr "Breite"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Depth"
+msgstr "Tiefe"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Pitch"
+msgstr "Dachneigung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Azimuth"
+msgstr "Azimut"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Relative roof height"
+msgstr "Relative Dachhöhe"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Origin east / U"
+msgstr "Ursprung in Ostrichtung (U)"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Origin north / V"
+msgstr "Ursprung in Nordrichtung (V)"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "I confirm these dimensions and permission to use this drawing."
+msgstr "Ich bestätige die Maße und die Berechtigung, diese Zeichnung zu verwenden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Add rectangular roof"
+msgstr "Rechteckige Dachfläche hinzufügen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Obstacle height above roof"
+msgstr "Höhe des Hindernisses über der Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Module gap"
+msgstr "Modulabstand"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Place module group"
+msgstr "Modulgruppe platzieren"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Remove selected"
+msgstr "Auswahl entfernen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Move selected"
+msgstr "Auswahl verschieben"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Rotate selected"
+msgstr "Auswahl drehen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "placed modules"
+msgstr "platzierte Module"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Solar capacity not entered"
+msgstr "PV-Leistung fehlt noch"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Continue with energy use"
+msgstr "Weiter zum Energiebedarf"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "No saved projects yet."
+msgstr "Sie haben noch keine gespeicherten Projekte."
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Open project"
+msgstr "Projekt öffnen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Find site coordinates"
+msgstr "Standortkoordinaten suchen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDetails.tsx build/planner/assets/planner.js:1
+msgid "Site coordinates found"
+msgstr "Standortkoordinaten gefunden"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Product from the link is unavailable"
+msgstr "Das verlinkte Produkt ist nicht verfügbar"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Preparing the solar generation profile…"
+msgstr "PV-Erzeugungsprofil wird erstellt…"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again."
+msgstr "PVGIS konnte den PV-Ertrag nicht abschätzen. Prüfen Sie die Standortkoordinaten, die Ausrichtung der PV-Module und die PVGIS-Einstellungen. Starten Sie anschließend den Systemvergleich erneut."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile."
+msgstr "Das Jahr des PV-Erzeugungsprofils überschneidet sich zeitlich nicht mit dem Lastprofil. Wählen Sie im Schritt Photovoltaik ein passendes Jahr oder ändern Sie das Lastprofil."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Complete the site coordinates, array details and PVGIS settings to compare systems."
+msgstr "Ergänzen Sie die Standortkoordinaten, die Angaben zur PV-Anlage und die PVGIS-Einstellungen für den Systemvergleich."
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Inverter power"
+msgstr "Wechselrichterleistung"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Check the profile columns, units and time interval, then try again."
+msgstr "Prüfen Sie die Spalten, Einheiten und Intervalllänge des Lastprofils und versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Saved product unavailable"
+msgstr "Gespeichertes Produkt nicht verfügbar"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Inverter use"
+msgstr "Umgang mit dem Wechselrichter"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Battery use"
+msgstr "Umgang mit der Batterie"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Modules per stack"
+msgstr "Batteriemodule je Stack"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Parallel stacks"
+msgstr "Parallel geschaltete Stacks"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "There is an existing system"
+msgstr "Eine Anlage ist bereits vorhanden"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Existing system name"
+msgstr "Bezeichnung der vorhandenen Anlage"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Existing inverter power (kW)"
+msgstr "Leistung des vorhandenen Wechselrichters (kW)"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Keep the existing inverter"
+msgstr "Vorhandenen Wechselrichter beibehalten"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "To keep the existing inverter, select its model and choose Keep existing under equipment details before comparing systems."
+msgstr "Wenn der vorhandene Wechselrichter weiterverwendet werden soll, wählen Sie vor dem Systemvergleich das Modell und in den Gerätedetails die Option „Vorhandenes behalten“."
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Selected products"
+msgstr "Ausgewählte Produkte"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Loading product data…"
+msgstr "Produktdaten werden geladen…"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "Equipment and system arrangement"
+msgstr "Geräte und Systemaufbau"
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "To switch to a single system, keep one system and resolve its wiring and coordination groups."
+msgstr "Für den Wechsel zu einem Einzelsystem lassen Sie ein System bestehen und passen Sie die zugehörige Verschaltung und die Koordinierungsgruppen an."
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
+msgid "This system arrangement could not be changed."
+msgstr "Der Systemaufbau konnte nicht geändert werden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Solar generation estimate"
+msgstr "Geschätzte PV-Erzeugung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Compare systems uses JRC PVGIS to estimate AC generation from the location, array details and settings below. Energy comparisons use the period covered by both the solar and energy use profiles."
+msgstr "Für den Systemvergleich schätzt JRC PVGIS die AC-Erzeugung anhand des Standorts, der Anlagendaten und der folgenden Einstellungen. Der Energievergleich berücksichtigt den gemeinsamen Zeitraum von PV-Erzeugungsprofil und Lastprofil."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Choose a radiation database"
+msgstr "Strahlungsdatenbank auswählen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Mounting place"
+msgstr "Montageart"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Choose the mounting place"
+msgstr "Montageart auswählen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Freestanding or ventilated"
+msgstr "Freistehend oder hinterlüftet"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Building-integrated"
+msgstr "Gebäudeintegriert"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "System loss (%)"
+msgstr "Systemverluste (%)"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Source of the model settings"
+msgstr "Quelle der Modellannahmen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Click each corner on the map, then finish the outline."
+msgstr "Klicken Sie nacheinander auf die Eckpunkte auf der Karte und schließen Sie den Umriss ab."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Enter the roof dimensions or confirm the map origin to draw on the map."
+msgstr "Sie können die Dachmaße eingeben oder den Kartenursprung bestätigen, um auf der Karte zu zeichnen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "The plan uses metres in the recorded roof plane."
+msgstr "Die Maße im Plan beziehen sich auf die erfasste Dachebene und sind in Metern angegeben."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Confirm site coordinates as map origin and use true north"
+msgstr "Standortkoordinaten als Kartenursprung und geografisch Nord als Bezug übernehmen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+#, php-format
+msgid "%1$d stacks × %2$d battery modules"
+msgstr "%1$d Stacks mit je %2$d Batteriemodulen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Compare the equipment, then adjust the configuration."
+msgstr "Vergleichen Sie die Gerätekombinationen und passen Sie Ihre Auswahl an."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Installed PV power"
+msgstr "Installierte PV-Leistung"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Required usable storage"
+msgstr "Erforderliche nutzbare Speicherkapazität"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Required discharge power"
+msgstr "Erforderliche Entladeleistung"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Declared project requirements"
+msgstr "Angegebene Projektanforderungen"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Confirm the inverter model to check battery, grid and backup compatibility."
+msgstr "Bestätigen Sie das Wechselrichtermodell, um die Kompatibilität mit Batterie, Netz und Notstrom zu prüfen."
+
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js
+msgid "You can continue with the existing inverter. Confirm its model to check equipment compatibility."
+msgstr "Sie können mit dem vorhandenen Wechselrichter weiterplanen. Bestätigen Sie das Modell, um die Gerätekompatibilität zu prüfen."
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "Attach report to inquiry"
+msgstr "Bericht an Anfrage anhängen"
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "Report ready to include with your inquiry."
+msgstr "Der Bericht ist zur Anfrage hinzugefügt."
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "Continue to inquiry"
+msgstr "Weiter zur Anfrage"
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "Generate a report for the current project before attaching it."
+msgstr "Erstellen Sie einen Bericht zum aktuellen Projekt, bevor Sie ihn anhängen."
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "Attaching report…"
+msgstr "Bericht wird angehängt …"
+
+#: build/planner/assets/planner.js:1
+msgid "%d battery module"
+msgstr "%d Batteriemodul"
+
+#: build/planner/assets/planner.js:1
+msgid "%d battery modules"
+msgstr "%d Batteriemodule"
+
+#: build/planner/assets/planner.js:1
+msgid "%d stack"
+msgstr "%d Batteriestapel"
+
+#: build/planner/assets/planner.js:1
+msgid "%d stacks"
+msgstr "%d Batteriestapel"
+
+#: build/planner/assets/planner.js:1
+msgid "%s kWh below the backup load energy"
+msgstr "%s kWh unter dem Energiebedarf der Ersatzstromlast"
+
+#: build/planner/assets/planner.js:1
+msgid "%s kWh capacity margin before losses"
+msgstr "%s kWh Kapazitätsreserve vor Verlusten"
+
+#: build/planner/assets/planner.js:1
+msgid "Adjust configuration"
+msgstr "Konfiguration anpassen"
+
+#: build/planner/assets/planner.js:1
+msgid "Backup duration to confirm"
+msgstr "Ersatzstromdauer noch zu prüfen"
+
+#: build/planner/assets/planner.js:1
+msgid "Backup load energy before losses"
+msgstr "Energiebedarf der Ersatzstromlast vor Verlusten"
+
+#: build/planner/assets/planner.js:1
+msgid "Battery model"
+msgstr "Batteriemodell"
+
+#: build/planner/assets/planner.js:1
+msgid "Battery stacks"
+msgstr "Batteriestapel"
+
+#: build/planner/assets/planner.js:1
+msgid "Compare with the saved version"
+msgstr "Mit dem Vergleichsstand vergleichen"
+
+#: build/planner/assets/planner.js:1
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#: build/planner/assets/planner.js:1
+msgid "Current"
+msgstr "Aktuell"
+
+#: build/planner/assets/planner.js:1
+msgid "Edit equipment and system count"
+msgstr "Geräte und Systemanzahl bearbeiten"
+
+#: build/planner/assets/planner.js:1
+msgid "Highest usable battery capacity"
+msgstr "Nutzbare Speicherkapazität absteigend"
+
+#: build/planner/assets/planner.js:1
+msgid "Installation details"
+msgstr "Installationsdetails"
+
+#: build/planner/assets/planner.js:1
+msgid "Inverter model"
+msgstr "Wechselrichtermodell"
+
+#: build/planner/assets/planner.js:1
+msgid "Inverters"
+msgstr "Wechselrichter"
+
+#: build/planner/assets/planner.js:1
+msgid "Lowest usable battery capacity"
+msgstr "Nutzbare Speicherkapazität aufsteigend"
+
+#: build/planner/assets/planner.js:1
+msgid "None of the configurations found has been confirmed to meet all project requirements."
+msgstr "Für keine der gefundenen Konfigurationen ist bestätigt, dass sie alle Projektanforderungen erfüllt."
+
+#: build/planner/assets/planner.js:1
+msgid "Requirements first"
+msgstr "Nach Anforderungserfüllung"
+
+#: build/planner/assets/planner.js:1
+msgid "Save a comparison"
+msgstr "Vergleichsstand sichern"
+
+#: build/planner/assets/planner.js:1
+msgid "Saved version"
+msgstr "Vergleichsstand"
+
+#: build/planner/assets/planner.js:1
+msgid "Selected equipment"
+msgstr "Ausgewählte Geräte"
+
+#: build/planner/assets/planner.js:1
+msgid "Sort configurations"
+msgstr "Konfigurationen sortieren"
+
+#: build/planner/assets/planner.js:1
+msgid "Use saved version"
+msgstr "Vergleichsstand übernehmen"
+
+#: build/planner/assets/planner.js:1
+msgid "Use this adjustment"
+msgstr "Anpassung übernehmen"
+
+#: build/planner/assets/planner.js:1
+msgid "Which loads must keep running, and for how long?"
+msgstr "Welche Verbraucher müssen weiterlaufen und für wie lange?"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Whole-site backup"
+msgstr "Ersatzstrom für den gesamten Standort"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Backup power upper bound"
+msgstr "Obergrenze der Ersatzstromleistung"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Confirm shared backup transfer, starting charge and discharge losses."
+msgstr "Prüfen Sie die gemeinsame Ersatzstromumschaltung, den anfänglichen Ladezustand und die Entladeverluste."

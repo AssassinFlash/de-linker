@@ -53,7 +53,22 @@ test("project setup retains entered information when the saved-project index ref
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 
 	let listed = [];
+	const creates = [];
+	let accepted;
 	const client = {
+		async send(path, body) {
+			assert.equal(path, "projects/create");
+			creates.push(body);
+			const command = JSON.parse(body);
+			accepted = {
+				id: projectId,
+				revision: 1,
+				title: command.title,
+				inputs: command.inputs,
+				input_sha256: "2".repeat(64),
+			};
+			return accepted;
+		},
 		invalidate() {},
 		async bootstrap() {
 			return session;
@@ -71,6 +86,8 @@ test("project setup retains entered information when the saved-project index ref
 		},
 	};
 	const store = {
+		async writeCreation() {},
+		async clearCreation() {},
 		async readCreations() {
 			return [];
 		},
@@ -117,7 +134,7 @@ test("project setup retains entered information when the saved-project index ref
 			),
 		),
 	);
-	const start = () => document.querySelector(".lp-new-project");
+	const start = () => document.querySelector("form");
 	await until(() => document.querySelector('select[name="system_scope"]'));
 	await act(async () => {
 		const scope = document.querySelector('select[name="system_scope"]');
@@ -144,7 +161,7 @@ test("project setup retains entered information when the saved-project index ref
 		);
 	await act(async () => refresh().click());
 	await until(
-		() => document.querySelectorAll(".lp-project-entry").length === 1,
+		() => document.querySelectorAll('[role="listitem"]').length === 1,
 	);
 	assert.ok(start());
 	assert.equal(
@@ -154,5 +171,25 @@ test("project setup retains entered information when the saved-project index ref
 	assert.equal(
 		document.querySelector('select[name="system_scope"]').value,
 		"storage_only",
+	);
+	const purpose = document.querySelector('select[name="project_purpose"]');
+	assert.ok(purpose, "purpose belongs to the initial Project page");
+	await act(async () => {
+		purpose.value = "backup";
+		purpose.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	const next = [...document.querySelectorAll("button")].find(
+		(item) => item.textContent === "Continue with storage",
+	);
+	await act(async () => {
+		next.click();
+		next.click();
+	});
+	await until(() => location.hash === "#sc-energy");
+	assert.equal(creates.length, 1);
+	assert.equal(accepted.inputs.backup_demand.load_kw, null);
+	assert.equal(accepted.title, "Oslo storage");
+	await until(() =>
+		document.body.textContent.includes("What should the system do?"),
 	);
 });

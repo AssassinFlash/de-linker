@@ -8,9 +8,8 @@ from pydantic import ValidationError
 
 from .canonical import Json, Object, decode_object, encode
 from .energy_declarations import normalize_authored_inputs, object_value
-from .energy_inputs import storage_only_project
 from .equipment_inputs import EquipmentSelection, EquipmentUse
-from .equipment_plant import EquipmentPlant, ParallelGroup, PlantUnit
+from .equipment_plant import EquipmentPlant, ParallelGroup, PlantUnit, search_group
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
 from .plant_search_plan import PlantSearchPlan, SearchGroup
@@ -72,52 +71,110 @@ def normalize_discovery_inputs(inputs: Object) -> Object:
     return result
 
 
-def _requirements(
-    setup: Object,
-    *,
-    path: str,
-    connection: EquipmentRequirements | None = None,
-    storage_only: bool,
-) -> EquipmentRequirements:
-    values = {key: setup.get(key) for key in EquipmentRequirements.model_fields}
-    if connection is not None:
-        values.update(
-            grid_phase=connection.grid_phase, operating_mode=connection.operating_mode
+def restore_comparison_models(inputs: Object, searched: Object) -> Object:
+    """Earlier adoption copied candidate IDs over the original model choices."""
+    recovered = decode_object(encode(inputs))
+
+    def restore(source: Object, previous: Object) -> None:
+        setup, earlier = source.get("equipment_setup"), previous.get("equipment_setup")
+        if isinstance(setup, dict) and "comparison_models" not in setup:
+            if not isinstance(earlier, dict):
+                earlier = cast(Object, previous.get("equipment_selection", {}))
+            setup["comparison_models"] = earlier.get(
+                "comparison_models",
+                {
+                    key: earlier.get(key)
+                    for key in ("inverter_product_id", "battery_product_id")
+                },
+            )
+
+    plant, prior = (
+        recovered.get("equipment_plant_setup"),
+        searched.get("equipment_plant_setup"),
+    )
+    if isinstance(plant, dict) and isinstance(prior, dict):
+        for member_type in ("units", "parallel_groups"):
+            members = {row["id"]: row for row in cast(list[Object], prior[member_type])}
+            for member in cast(list[Object], plant[member_type]):
+                earlier = members.get(member["id"])
+                if earlier is None:
+                    continue
+                if member_type == "units":
+                    restore(
+                        cast(Object, member["inputs"]), cast(Object, earlier["inputs"])
+                    )
+                elif "comparison_controller_product_id" not in member:
+                    member["comparison_controller_product_id"] = search_group(earlier)[
+                        "controller_product_id"
+                    ]
+    elif not isinstance(plant, dict):
+        restore(recovered, searched)
+    return recovered
+
+
+def comparison_model_preferences(inputs: Object) -> Json:
+    """Read the active model constraints without comparing the adopted hardware."""
+    brief = inputs.get("brief")
+    no_battery = isinstance(brief, dict) and brief.get("system_scope") == "pv_only"
+
+    def models(declarations: Object) -> Object:
+        setup = declarations.get(
+            "equipment_setup", declarations.get("equipment_selection")
         )
-    if storage_only:
-        values["pv_dc_kw"] = 0
-    try:
-        return EquipmentRequirements.model_validate(values)
-    except ValidationError as error:
-        fields = tuple(
-            path + "." + ".".join(str(part) for part in item["loc"])
-            for item in error.errors()
-        )
-        raise InvalidInput(
-            "complete the declared equipment demand", fields=fields
-        ) from error
+        if not isinstance(setup, dict):
+            return {"inverter": None, "battery": None}
+        use, preferences = setup.get("equipment_use"), setup.get("comparison_models")
+        result: Object = {}
+        for part in ("inverter", "battery"):
+            retained = isinstance(use, dict) and use.get(part) == "retain"
+            active = (
+                preferences if isinstance(preferences, dict) and not retained else setup
+            )
+            result[part] = (
+                None
+                if no_battery and part == "battery"
+                else active.get(f"{part}_product_id")
+            )
+        return result
+
+    plant = inputs.get("equipment_plant_setup")
+    if isinstance(plant, dict):
+        return {
+            "units": [
+                [unit["id"], models(cast(Object, unit["inputs"]))]
+                for unit in cast(list[Object], plant["units"])
+            ],
+            "groups": [
+                [group["id"], search_group(group)["controller_product_id"]]
+                for group in cast(list[Object], plant["parallel_groups"])
+            ],
+        }
+    return models(inputs)
 
 
 def compile_discovery_inputs(authored: Object) -> Object:
     inputs = decode_object(encode(authored))
-    storage_only = storage_only_project(inputs)
+    from .existing_system import unverified_retained_inverter
+
+    if unverified_retained_inverter(inputs) is not None:
+        return inputs
     raw = inputs.get("equipment_plant_setup")
     if not isinstance(raw, dict):
         setup = object_value(
             inputs.get("equipment_setup"), "equipment demand declarations"
         )
-        inputs["equipment_requirements"] = _requirements(
+        inputs["equipment_requirements"] = EquipmentRequirements.effective(
             setup,
             path="equipment_setup",
-            storage_only=storage_only,
+            inputs=inputs,
         ).model_dump(mode="json")
         return inputs
-    common = _requirements(
+    common = EquipmentRequirements.effective(
         object_value(raw.get("requirements"), "plant connection demand"),
         path="equipment_plant_setup.requirements",
-        storage_only=storage_only,
+        inputs=inputs,
+        whole_plant=True,
     )
-    raw["requirements"] = common.model_dump(mode="json")
     units, groups = raw.get("units"), raw.get("parallel_groups")
     if not isinstance(units, list) or not isinstance(groups, list):
         raise InvalidInput("declare the named plant systems and their groups")
@@ -128,11 +185,11 @@ def compile_discovery_inputs(authored: Object) -> Object:
         setup = object_value(
             declarations.get("equipment_setup"), "system demand declarations"
         )
-        demand = _requirements(
+        demand = EquipmentRequirements.effective(
             setup,
             path=f"equipment_plant_setup.units[{index}].inputs.equipment_setup",
             connection=common,
-            storage_only=storage_only,
+            inputs=inputs,
         )
         requests.append(
             {
@@ -149,7 +206,7 @@ def compile_discovery_inputs(authored: Object) -> Object:
                 Object,
                 {
                     key: value
-                    for key, value in group.items()
+                    for key, value in search_group(group).items()
                     if key in SearchGroup.model_fields
                 },
             )
@@ -307,7 +364,11 @@ def compile_equipment_inputs(inputs: Object, source: ProductSources | None) -> O
             groups.append(
                 ParallelGroup.read(
                     {
-                        **group,
+                        **{
+                            key: value
+                            for key, value in group.items()
+                            if key != "comparison_controller_product_id"
+                        },
                         "controller_revision": controller.get("product_revision")
                         if isinstance(controller, dict)
                         else None,

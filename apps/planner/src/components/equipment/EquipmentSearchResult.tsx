@@ -50,11 +50,16 @@ export function EquipmentSearchResult({
 		]),
 	);
 	const [selected, setSelected] = useState<string | null>(null),
-		[busy, setBusy] = useState(false);
+		[busy, setBusy] = useState(false),
+		[demandFilter, setDemandFilter] = useState("all");
+	const visibleCandidates = candidates.filter(
+		(item) => demandFilter === "all" || item.demand?.status === demandFilter,
+	);
 	const adoptedId =
 		projectCandidate?.run_id === run.id ? projectCandidate.candidate_id : null;
 	const candidate =
-		candidates.find((c) => c.id === (selected ?? adoptedId)) ?? candidates[0];
+		visibleCandidates.find((c) => c.id === (selected ?? adoptedId)) ??
+		visibleCandidates[0];
 	const alreadyAdopted = candidate?.id === adoptedId;
 	const plantSearch =
 		search &&
@@ -193,13 +198,51 @@ export function EquipmentSearchResult({
 								)}
 							</Notice>
 						)}
-						<div className="lp-work-grid lp-equipment-candidate-picker">
-							{candidates.length === 0 ? (
+						{search.demand !== undefined && (
+							<label className="lp-field">
+								<span>{__("Demand results", "linker-tools")}</span>
+								<select
+									value={demandFilter}
+									onChange={(event) =>
+										setDemandFilter(event.currentTarget.value)
+									}
+								>
+									<option value="all">
+										{__("All combinations", "linker-tools")}
+									</option>
+									<option value="satisfied">
+										{__("Meets the declared demand", "linker-tools")}
+									</option>
+									<option value="violated">
+										{__("Does not meet the declared demand", "linker-tools")}
+									</option>
+									<option value="unresolved">
+										{__("Demand not assessed", "linker-tools")}
+									</option>
+								</select>
+							</label>
+						)}
+						{search.demand !== undefined &&
+							readObject(search.demand).completion === "budget_exhausted" && (
 								<Notice>
 									{__(
-										"No combinations were found using the available documented configurations.",
+										"Demand comparison is incomplete. Some combinations have not been simulated.",
 										"linker-tools",
 									)}
+								</Notice>
+							)}
+						<div className="lp-work-grid lp-equipment-candidate-picker">
+							{visibleCandidates.length === 0 ? (
+								<Notice>
+									{candidates.length > 0
+										? __(
+												"No combinations match this demand filter.",
+												"linker-tools",
+											)
+										: __(
+												"No combinations were found using the available documented configurations.",
+												"linker-tools",
+											)}
 								</Notice>
 							) : (
 								<label className="lp-field lp-work-main">
@@ -212,11 +255,11 @@ export function EquipmentSearchResult({
 									>
 										{["satisfied", "unresolved", "violated"]
 											.filter((status) =>
-												candidates.some((c) => c.status === status),
+												visibleCandidates.some((c) => c.status === status),
 											)
 											.map((status) => (
 												<optgroup key={status} label={equipmentStatus(status)}>
-													{candidates
+													{visibleCandidates
 														.filter((c) => c.status === status)
 														.map((c) => (
 															<option key={c.id} value={c.id}>
@@ -248,6 +291,91 @@ export function EquipmentSearchResult({
 								</div>
 							)}
 						</div>
+						{candidate?.demand && (
+							<section className="lp-work-panel">
+								<h4>{__("Energy demand comparison", "linker-tools")}</h4>
+								<p>
+									{candidate.demand.status === "satisfied"
+										? __("Meets the declared demand", "linker-tools")
+										: candidate.demand.status === "violated"
+											? __("Does not meet the declared demand", "linker-tools")
+											: __("Demand not assessed", "linker-tools")}
+								</p>
+								{candidate.demand.reason ===
+									"usable_energy_not_established" && (
+									<p>
+										{__(
+											"Documented usable capacity is missing for this combination.",
+											"linker-tools",
+										)}
+									</p>
+								)}
+								{candidate.demand.reason === "work_budget_exhausted" && (
+									<p>
+										{__(
+											"This combination was not simulated because the comparison limit was reached.",
+											"linker-tools",
+										)}
+									</p>
+								)}
+								{candidate.demand.reason === "scenario_not_feasible" && (
+									<p>
+										{__(
+											"This simulation did not meet the declared storage, reserve or end-state constraints.",
+											"linker-tools",
+										)}
+									</p>
+								)}
+								{candidate.demand.metrics && (
+									<dl className="lp-field-summary">
+										<dt>{__("Unserved load", "linker-tools")}</dt>
+										<dd>
+											{new Intl.NumberFormat(locale, {
+												maximumFractionDigits: 3,
+											}).format(
+												candidate.demand.metrics.unserved_load_kwh as number,
+											)}{" "}
+											kWh
+										</dd>
+										<dt>
+											{__(
+												"Maximum interval-average grid import",
+												"linker-tools",
+											)}
+										</dt>
+										<dd>
+											{new Intl.NumberFormat(locale, {
+												maximumFractionDigits: 3,
+											}).format(
+												candidate.demand.metrics
+													.maximum_interval_average_import_kw as number,
+											)}{" "}
+											kW
+										</dd>
+									</dl>
+								)}
+								{candidate.demand.equipment &&
+									readObject(candidate.demand.equipment.assessment)
+										.overall_status === "unresolved" && (
+										<p>
+											{__(
+												"Equipment evidence remains unresolved for the simulated operating conditions.",
+												"linker-tools",
+											)}
+										</p>
+									)}
+								{candidate.demand.equipment &&
+									readObject(candidate.demand.equipment.assessment)
+										.overall_status === "violated" && (
+										<Notice error>
+											{__(
+												"The simulated operating conditions exceed the equipment evidence. Review the power and capacity assumptions.",
+												"linker-tools",
+											)}
+										</Notice>
+									)}
+							</section>
+						)}
 						{detail.error && (
 							<Notice error>
 								{__(

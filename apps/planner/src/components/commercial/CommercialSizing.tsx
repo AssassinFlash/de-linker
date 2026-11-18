@@ -273,12 +273,12 @@ export function CommercialSizing({
 					<label className="lp-field">
 						<span>{__("Postcode of the site", "linker-tools")}</span>
 						<input
-							inputMode="numeric"
-							maxLength={5}
+							inputMode="text"
+							maxLength={12}
 							value={plz}
 							onChange={(event) => {
 								typedPlz.current = true;
-								setPlz(event.currentTarget.value.trim());
+								setPlz(event.currentTarget.value);
 							}}
 						/>
 					</label>

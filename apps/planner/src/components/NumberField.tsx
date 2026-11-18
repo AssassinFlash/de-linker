@@ -49,6 +49,7 @@ export function NumberField({
 	onValidity,
 	name,
 	error,
+	disabled = false,
 }: {
 	label: string;
 	value: number | null;
@@ -62,6 +63,7 @@ export function NumberField({
 	onValidity: (valid: boolean) => void;
 	name?: string;
 	error?: string | null;
+	disabled?: boolean;
 }) {
 	const id = useId();
 	const [text, setText] = useState(formatDecimal(value, locale));
@@ -111,6 +113,7 @@ export function NumberField({
 			<input
 				id={id}
 				name={name}
+				disabled={disabled}
 				type="text"
 				inputMode={integer ? "numeric" : "decimal"}
 				autoComplete="off"

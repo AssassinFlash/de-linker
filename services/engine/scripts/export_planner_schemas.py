@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from linker_engine.models import Report
+from linker_engine.planning.backup_demand import BackupDemand
 from linker_engine.planning.dc_energy_parameters import (
     DcLossScenario,
     DcPreparedParameters,
@@ -20,6 +21,8 @@ from linker_engine.planning.direct_beam_inputs import DirectBeamTaskInputs
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
 from linker_engine.planning.equipment_condition_inputs import EquipmentConditionInputs
 from linker_engine.planning.equipment_plant import EquipmentPlant
+from linker_engine.planning.equipment_requirements import DeclaredEquipmentRequirements
+from linker_engine.planning.existing_system import ExistingSystem
 from linker_engine.planning.geometric_pv_inputs import (
     GeometricPvInputs,
     GeometricPvLimits,
@@ -30,6 +33,7 @@ from linker_engine.planning.plant_search_plan import PlantSearchPlan
 from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.pv_string_inputs import PvPlantStringPlan
+from linker_engine.planning.pvgis_known_inputs import KnownPvInputs
 from linker_engine.planning.pvgis_reference_inputs import PvgisReferenceInputs
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.weather_inputs import WeatherAcquisitionInputs
@@ -79,6 +83,7 @@ def documents() -> dict[str, str]:
         )
         + "\n"
         for name, model in (
+            ("backup-demand", BackupDemand),
             ("battery-parameters", BatteryParameters),
             ("dc-loss-scenario", DcLossScenario),
             ("dc-prepared-parameters", DcPreparedParameters),
@@ -89,10 +94,13 @@ def documents() -> dict[str, str]:
             ("geometric-pv", GeometricPvInputs),
             ("geometric-pv-limits", GeometricPvLimits),
             ("pvgis-roof-reference", PvgisReferenceInputs),
+            ("pvgis-known-reference", KnownPvInputs),
             ("planning-report", Report),
             ("planning-report-options", ReportOptions),
             ("installation", InstallationInputs),
             ("equipment-plant", EquipmentPlant),
+            ("existing-system", ExistingSystem),
+            ("declared-equipment-requirements", DeclaredEquipmentRequirements),
             ("pv-plant-string-plan", PvPlantStringPlan),
             ("equipment-condition-inputs", EquipmentConditionInputs),
             ("plant-energy-inputs", PlantEnergyInputs),

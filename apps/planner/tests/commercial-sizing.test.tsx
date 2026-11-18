@@ -40,7 +40,7 @@ const session = {
 	},
 };
 
-function draft(projectUse) {
+function draft(projectUse, country = null) {
 	return beginDraft({
 		id: projectId,
 		title: "Commercial sizing",
@@ -52,6 +52,7 @@ function draft(projectUse) {
 				project_use: projectUse,
 				site: {
 					...emptyBrief().site,
+					country_code: country,
 					location_label: "80331 München",
 				},
 				annual_load: {
@@ -119,110 +120,134 @@ async function mount(element, node) {
 	return root;
 }
 
-test("the panel sends the profile and the target peak, then shows a sized system", async () => {
-	const body = setupDom();
-	globalThis.indexedDB = new IDBFactory();
-	const calls = [];
-	const client = new PlannerClient({
-		baseUrl: "https://fixture.invalid/wp-json/linker/v1/planner",
-		nonceUrl:
-			"https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce",
-		origin: "https://fixture.invalid",
-		fetch: async (input, init) => {
-			const url = String(input instanceof URL ? input.href : input);
-			if (url.includes("action=rest-nonce"))
-				return new Response("abcdefghij", { status: 200 });
-			if (url.endsWith("/bootstrap"))
-				return new Response(JSON.stringify(session), {
+for (const [country, postcode] of [
+	["DE", "80331"],
+	["GB", "SW1A 1AA"],
+	["NL", "9401 AB"],
+	["PT", "3750-000"],
+]) {
+	test(`the panel sends the complete ${country} postcode, profile and target peak, then shows a sized system`, async () => {
+		const body = setupDom();
+		globalThis.indexedDB = new IDBFactory();
+		const calls = [];
+		const client = new PlannerClient({
+			baseUrl: "https://fixture.invalid/wp-json/linker/v1/planner",
+			nonceUrl:
+				"https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce",
+			origin: "https://fixture.invalid",
+			fetch: async (input, init) => {
+				const url = String(input instanceof URL ? input.href : input);
+				if (url.includes("action=rest-nonce"))
+					return new Response("abcdefghij", { status: 200 });
+				if (url.endsWith("/bootstrap"))
+					return new Response(JSON.stringify(session), {
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					});
+				calls.push({
+					path: url.slice(url.indexOf("/rpc/") + 5),
+					command: JSON.parse(String(init?.body ?? "{}")),
+				});
+				return new Response(JSON.stringify(sized), {
 					status: 200,
 					headers: { "Content-Type": "application/json" },
 				});
-			calls.push({
-				path: url.slice(url.indexOf("/rpc/") + 5),
-				command: JSON.parse(String(init?.body ?? "{}")),
+			},
+		});
+		await client.bootstrap();
+		const root = await mount(
+			body.element,
+			<CommercialSizing
+				draft={draft("commercial", country)}
+				client={client}
+				session={session}
+				locale="en-US"
+				active
+				disabled={false}
+				onError={() => {}}
+			/>,
+		);
+		try {
+			// The postcode and the annual consumption come from the project brief;
+			// the grid capacity and the target peak are this panel's own inputs.
+			const postcodeInput = Array.from(body.element.querySelectorAll("label"))
+				.find((label) => label.textContent === "Postcode of the site")!
+				.querySelector("input")!;
+			assert.equal(postcodeInput.value, "80331");
+			assert.notEqual(postcodeInput.inputMode, "numeric");
+			assert.ok(
+				postcodeInput.maxLength < 0 ||
+					postcodeInput.maxLength >= postcode.length,
+			);
+			await enter(postcodeInput, "");
+			for (const character of postcode) {
+				const typed = postcodeInput.value + character;
+				await enter(postcodeInput, typed);
+				assert.equal(
+					postcodeInput.value,
+					typed,
+					"each character stays editable",
+				);
+			}
+			assert.equal(postcodeInput.value, postcode);
+			const numbers = Array.from(
+				body.element.querySelectorAll('input[inputmode="decimal"]'),
+			);
+			const annual = numbers.find((input) => input.value === "380000");
+			assert.ok(annual, "the brief's annual consumption is offered");
+			await enter(numbers[numbers.indexOf(annual!) - 1], "150");
+			await enter(numbers[numbers.indexOf(annual!) + 1], "119");
+			await enter(numbers[numbers.indexOf(annual!) + 2], "70");
+
+			const picker = body.element.querySelector('input[type="file"]');
+			assert.ok(picker);
+			Object.defineProperty(picker!, "files", {
+				value: [file(profile())],
+				configurable: true,
 			});
-			return new Response(JSON.stringify(sized), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
+			await act(async () => {
+				picker!.dispatchEvent(new Event("change", { bubbles: true }));
 			});
-		},
+			await until(() => document.body.textContent?.includes("intervals read"));
+
+			await act(async () => {
+				body.element
+					.querySelector<HTMLButtonElement>('button[type="submit"]')!
+					.click();
+			});
+			await until(() => body.element.textContent?.includes("Sized storage"));
+
+			const call = calls.find((entry) => entry.path === "design/commercial");
+			assert.ok(call, "the commercial design route is called");
+			assert.equal(call!.command.target_peak_kw, 70);
+			assert.equal(call!.command.grid_connection_kva, 150);
+			assert.equal(call!.command.plz, postcode);
+			assert.equal(call!.command.country, country);
+			assert.equal(call!.command.locale, "en");
+			assert.deepEqual(call!.command.goals, ["peak_shaving"]);
+			assert.equal(
+				String(call!.command.load_profile_csv).split("\n").length,
+				2880,
+				"every interval reaches the engine",
+			);
+			assert.ok(
+				String(call!.command.load_profile_csv)
+					.split("\n")
+					.every((line) => /^\d+(?:\.\d+)?$/.test(line)),
+				"the values arrive as the engine reads them",
+			);
+			const text = body.element.textContent ?? "";
+			assert.ok(
+				text.includes("GW125/261-ESA-LCN-G10"),
+				"the sized system is shown",
+			);
+			assert.ok(text.includes("443.2"), "the sized usable energy is shown");
+		} finally {
+			await act(async () => root.unmount());
+			await body.dispose({ unmount: async () => {} });
+		}
 	});
-	await client.bootstrap();
-	const root = await mount(
-		body.element,
-		<CommercialSizing
-			draft={draft("commercial")}
-			client={client}
-			session={session}
-			locale="en-US"
-			active
-			disabled={false}
-			onError={() => {}}
-		/>,
-	);
-	try {
-		// The postcode and the annual consumption come from the project brief;
-		// the grid capacity and the target peak are this panel's own inputs.
-		assert.equal(
-			body.element.querySelector('input[inputmode="numeric"]')?.value,
-			"80331",
-		);
-		const numbers = Array.from(
-			body.element.querySelectorAll('input[inputmode="decimal"]'),
-		);
-		const annual = numbers.find((input) => input.value === "380000");
-		assert.ok(annual, "the brief's annual consumption is offered");
-		await enter(numbers[numbers.indexOf(annual!) - 1], "150");
-		await enter(numbers[numbers.indexOf(annual!) + 1], "119");
-		await enter(numbers[numbers.indexOf(annual!) + 2], "70");
-
-		const picker = body.element.querySelector('input[type="file"]');
-		assert.ok(picker);
-		Object.defineProperty(picker!, "files", {
-			value: [file(profile())],
-			configurable: true,
-		});
-		await act(async () => {
-			picker!.dispatchEvent(new Event("change", { bubbles: true }));
-		});
-		await until(() => document.body.textContent?.includes("intervals read"));
-
-		await act(async () => {
-			body.element
-				.querySelector<HTMLButtonElement>('button[type="submit"]')!
-				.click();
-		});
-		await until(() => body.element.textContent?.includes("Sized storage"));
-
-		const call = calls.find((entry) => entry.path === "design/commercial");
-		assert.ok(call, "the commercial design route is called");
-		assert.equal(call!.command.target_peak_kw, 70);
-		assert.equal(call!.command.grid_connection_kva, 150);
-		assert.equal(call!.command.plz, "80331");
-		assert.equal(call!.command.locale, "en");
-		assert.deepEqual(call!.command.goals, ["peak_shaving"]);
-		assert.equal(
-			String(call!.command.load_profile_csv).split("\n").length,
-			2880,
-			"every interval reaches the engine",
-		);
-		assert.ok(
-			String(call!.command.load_profile_csv)
-				.split("\n")
-				.every((line) => /^\d+(?:\.\d+)?$/.test(line)),
-			"the values arrive as the engine reads them",
-		);
-		const text = body.element.textContent ?? "";
-		assert.ok(
-			text.includes("GW125/261-ESA-LCN-G10"),
-			"the sized system is shown",
-		);
-		assert.ok(text.includes("443.2"), "the sized usable energy is shown");
-	} finally {
-		await act(async () => root.unmount());
-		await body.dispose({ unmount: async () => {} });
-	}
-});
+}
 
 test("a residential project never sees the commercial panel", async () => {
 	const body = setupDom();
@@ -412,7 +437,12 @@ test("the panel sends nothing until the inputs the engine requires are there", a
 		);
 		await enter(numbers[0], "150"); // grid capacity
 		await enter(numbers[1], "380000"); // annual consumption
-		await enter(element.querySelector('input[inputmode="numeric"]'), "80331");
+		await enter(
+			Array.from(element.querySelectorAll("label"))
+				.find((label) => label.textContent === "Postcode of the site")!
+				.querySelector("input"),
+			"80331",
+		);
 		const picker = element.querySelector('input[type="file"]');
 		Object.defineProperty(picker!, "files", {
 			value: [file(profile())],

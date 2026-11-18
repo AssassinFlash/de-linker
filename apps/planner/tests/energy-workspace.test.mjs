@@ -19,6 +19,7 @@ import {
 	undoDraft,
 	redoDraft,
 	isDirty,
+	projectInputContract,
 } from "../src/domain/draft.ts";
 import { authoredCalculationInputs } from "../src/domain/currentCalculation.ts";
 import { equipmentDraft } from "../src/domain/equipment.ts";
@@ -1063,10 +1064,7 @@ for (const joint of [false, true])
 				"Edited before calculation",
 			);
 			assert.equal(mutations[0].command.expected_revision, 1);
-			assert.equal(
-				mutations[0].command.input_contract,
-				"authored_equipment_discovery_v1",
-			);
+			assert.equal(mutations[0].command.input_contract, projectInputContract);
 			assert.equal(isDirty(rig.draft), false);
 			if (joint) assert.ok(rig.draft.history.current.equipment_plant_setup);
 			assert.equal("energy_replay" in rig.draft.history.current, false);

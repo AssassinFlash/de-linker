@@ -10,6 +10,7 @@ from .power_series import PowerSeries
 from .profiles import read_profile
 from .pv_profile import PURPOSE, frozen_reference_profile
 from .pvgis_import import PvgisParseLimits
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_AC_PURPOSE
 from .pvgis_profile import PvgisInterpretation, pvgis_profile
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import prepared_reference_profile
@@ -37,7 +38,7 @@ def frozen_profile(
         if timezone_sha256 is not None or "csv_mapping" in metadata:
             raise VersionUnavailable("mixed profile formats are not supported")
         return frozen_reference_profile(blobs, raw_sha256, metadata)
-    if metadata.get("profile_type") == ROOF_AC_PURPOSE:
+    if metadata.get("profile_type") in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE):
         if timezone_sha256 is not None:
             raise VersionUnavailable("mixed profile formats are not supported")
         return prepared_reference_profile(blobs, raw_sha256, metadata)

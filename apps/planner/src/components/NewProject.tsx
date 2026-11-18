@@ -6,19 +6,20 @@ import type { DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
-import { emptyBrief } from "../domain/brief.ts";
-import type { Brief } from "../domain/brief.ts";
-import { projectInputContract } from "../domain/draft.ts";
+import { emptyBrief, readBrief } from "../domain/brief.ts";
+import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
+import { hasPlant } from "../domain/equipmentPlant.ts";
+import { projectInputContract, sameJson } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
-import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
 import { useEquipmentProducts } from "../data/equipmentProducts.ts";
 import { entryInputs, placedProduct } from "../domain/entryHints.ts";
 import type { EntryHints } from "../domain/entryHints.ts";
 import { formatDecimal } from "../domain/decimal.ts";
 import type { Configuration } from "../data/config.ts";
-import { geocodeAddress } from "../data/googleMaps.ts";
-import { RoofStart } from "./RoofStart.tsx";
+import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
+import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
+import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
 
 export function NewProject({
 	session,
@@ -33,13 +34,16 @@ export function NewProject({
 	initialProject = null,
 	cancelled,
 	locale = "en",
-	roofStart,
+	config,
 	openOnLoad = false,
 }: {
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
-	created: (project: Project, destination?: "design" | "equipment") => boolean;
+	created: (
+		project: Project,
+		destination?: "design" | "equipment" | "energy",
+	) => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
@@ -48,21 +52,13 @@ export function NewProject({
 	initialProject?: { title: string; inputs: JsonObject } | null;
 	cancelled?: () => void;
 	locale?: string;
-	roofStart?: Configuration;
+	config?: Configuration;
 	openOnLoad?: boolean;
 }) {
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
-	const [systemScope, setSystemScope] =
-		useState<Brief["system_scope"]>("new_pv_storage");
-	const [solarEntry, setSolarEntry] = useState("roof");
-	const [country, setCountry] = useState("");
-	const [address, setAddress] = useState("");
-	const [addressFailure, setAddressFailure] = useState<
-		"not_found" | "unavailable" | null
-	>(null);
 	const [useHints, setUseHints] = useState(true);
 	const [title, setTitle] = useState(initialProject?.title ?? "");
 	const [busy, setBusy] = useState(false);
@@ -70,28 +66,85 @@ export function NewProject({
 	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
-	const [productBlocked, setProductBlocked] = useState<
-		"load" | "preparing" | "place" | null
-	>(null);
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
 		Boolean(entryHints?.productId),
 	);
+	const [draft, setDraft] = useState<JsonObject | null>(null);
+	const [carriedProduct, setCarriedProduct] = useState(true);
+	const [recoveredInputs, setRecoveredInputs] = useState<JsonObject | null>(
+		null,
+	);
+	const proposed = catalog.data?.prepared
+		? catalog.data.products.find((item) => item.id === entryHints?.productId)
+		: undefined;
+	const product = proposed ? placedProduct([proposed], proposed.id) : null;
+	const seed =
+		initialProject?.inputs ??
+		(entryHints && useHints
+			? entryInputs(
+					entryHints,
+					__(
+						"Values carried from a tool link. Review them for this project.",
+						"linker-tools",
+					),
+					__(
+						"Backup supply requested; accessories may be considered.",
+						"linker-tools",
+					),
+				)
+			: { brief: emptyBrief() });
+	const seedBrief =
+		seed.brief === undefined ? emptyBrief() : readBrief(seed.brief);
+	const initialInputs = {
+		...seed,
+		brief: {
+			...seedBrief,
+			system_scope: seedBrief.system_scope ?? "new_pv_storage",
+		},
+	};
+	const seeded =
+		useHints && entryHints?.backup && entryHints.backup !== "none"
+			? changeEnergyGoal(initialInputs, "backup")
+			: initialInputs;
+	const draftInputs = draft ?? seeded;
+	const inputs: JsonObject =
+		recoveredInputs ??
+		(product && useHints && carriedProduct && !hasPlant(draftInputs)
+			? withProduct(draftInputs, product)
+			: draftInputs);
+	const brief =
+		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
+	function edit(operation: (inputs: JsonObject) => JsonObject) {
+		if (busy || intent.current || !client.isCurrentScope(session.query_scope))
+			return false;
+		const changed = operation(inputs);
+		if (
+			product &&
+			useHints &&
+			carriedProduct &&
+			changed.equipment_setup !== inputs.equipment_setup
+		)
+			setCarriedProduct(false);
+		setDraft(changed);
+		return true;
+	}
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
 	const intentScope = useRef(session.query_scope);
 	const destination = useRef<"design" | "equipment" | null>(null);
 	const lifetime = useRef(0);
+	const sending = useRef(false);
 	const openWork = useRef(false);
 	openWork.current = Boolean(
-		intent.current ||
-		country ||
-		address ||
-		(title && title !== initialProject?.title),
+		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
+	const waitingForProduct = Boolean(
+		!intent.current && useHints && entryHints?.productId && catalog.isPending,
+	);
 	const hasCarriedValues =
 		entryHints &&
 		[
@@ -102,16 +155,6 @@ export function NewProject({
 			entryHints.postalCode,
 			entryHints.productId,
 		].some((v) => v !== null);
-	const standardEntry = Boolean(roofStart && !initialProject && !entryHints);
-	const roofEntry = Boolean(
-		roofStart &&
-		!initialProject &&
-		((standardEntry &&
-			systemScope !== "storage_only" &&
-			solarEntry === "roof") ||
-			(entryHints?.roof && !entryHints.invalid && !hasCarriedValues)),
-	);
-	const needsAddress = roofEntry && !intent.current;
 	useEffect(() => {
 		if (openOnLoad && !openedOnLoad.current) {
 			openedOnLoad.current = true;
@@ -142,6 +185,7 @@ export function NewProject({
 				intentScope.current = records[0]!.scope;
 				destination.current = records[0]!.destination;
 				setTitle(records[0]!.title);
+				setRecoveredInputs(readObject(JSON.parse(records[0]!.body).inputs));
 				setOpen(true);
 				setFailed(true);
 			})
@@ -164,148 +208,49 @@ export function NewProject({
 	]);
 	async function submit() {
 		if (
-			busy ||
+			sending.current ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
-			(needsAddress ? !country || !address.trim() : !title.trim())
+			waitingForProduct ||
+			!client.isCurrentScope(session.query_scope) ||
+			(!intent.current && (!title.trim() || !brief.system_scope))
 		)
 			return;
 		const instance = lifetime.current;
 		if (!intent.current) intentScope.current = session.query_scope;
 		const originScope = intentScope.current;
 
+		sending.current = true;
 		setBusy(true);
 		setFailed(false);
 		setProjectGone(false);
 		setInputContractRequired(false);
-		setAddressFailure(null);
 		try {
-			let roofInputs: JsonObject | null = null;
-			let projectTitle = title.trim();
-			if (needsAddress) {
-				let place;
-				try {
-					if (!roofStart?.googleMapsApiKey)
-						throw new Error("google_maps_unavailable");
-					place = await geocodeAddress(
-						roofStart.googleMapsApiKey,
-						address,
-						country,
-						roofStart.locale,
-					);
-				} catch {
-					if (lifetime.current === instance) setAddressFailure("unavailable");
-					return;
-				}
-				if (lifetime.current !== instance) return;
-				if (!place) {
-					setAddressFailure("not_found");
-					return;
-				}
-				const brief = emptyBrief();
-				roofInputs = {
-					brief: {
-						...brief,
-						...(standardEntry ? { system_scope: systemScope } : {}),
-						site: {
-							...brief.site,
-							country_code: country,
-							location_label: place.formattedAddress,
-							postal_code: place.postcode,
-							latitude: place.lat,
-							longitude: place.lng,
-							coordinate_basis: "user_entered",
+			if (!intent.current) {
+				intent.current = wire(
+					{
+						schema_version: 1,
+						input_contract: projectInputContract,
+						title: title.trim(),
+						inputs: {
+							...inputs,
+							brief: {
+								...brief,
+								site: {
+									...brief.site,
+									location_label: brief.site.location_label.trim(),
+								},
+							},
 						},
+						key: crypto.randomUUID(),
 					},
-				};
-				// Project names already use the 256-character limit in this form.
-				projectTitle = Array.from(place.formattedAddress)
-					.slice(0, 256)
-					.join("");
-				setTitle(projectTitle);
+					session.runtime.limits.max_json_depth,
+					session.runtime.limits.max_body_bytes,
+				);
+				destination.current =
+					brief.system_scope === "storage_only" ? null : "design";
 			}
-			const requestedProduct = entryHints?.productId ?? null;
-			const wantsProduct =
-				!selectedRequest &&
-				!initialProject &&
-				useHints &&
-				requestedProduct !== null;
-			let placed: ReturnType<typeof placedProduct> = null;
-			if (wantsProduct) {
-				const fresh = await catalog.refetch();
-				if (lifetime.current !== instance) return;
-				if (!client.isCurrentScope(session.query_scope)) {
-					setFailed(true);
-					return;
-				}
-				if (fresh.error || !fresh.data) {
-					setProductBlocked("load");
-					return;
-				}
-				if (!fresh.data.prepared) {
-					setProductBlocked("preparing");
-					return;
-				}
-				placed = placedProduct(fresh.data.products, requestedProduct);
-				if (!placed) {
-					setProductBlocked("place");
-					return;
-				}
-				setProductBlocked(null);
-			}
-			intent.current ??= wire(
-				{
-					schema_version: 1,
-					input_contract: projectInputContract,
-					title: projectTitle,
-					inputs:
-						roofInputs ??
-						(initialProject && useHints
-							? initialProject.inputs
-							: entryHints && useHints
-								? entryInputs(
-										entryHints,
-										__(
-											"Values carried from a tool link. Review them for this project.",
-											"linker-tools",
-										),
-										__(
-											"Backup supply requested; accessories may be considered.",
-											"linker-tools",
-										),
-										placed,
-									)
-								: {
-										brief: {
-											...emptyBrief(),
-											...(standardEntry
-												? {
-														system_scope: systemScope,
-														site: {
-															...emptyBrief().site,
-															country_code: country || null,
-														},
-													}
-												: {}),
-										},
-									}),
-					key: crypto.randomUUID(),
-				},
-				session.runtime.limits.max_json_depth,
-				session.runtime.limits.max_body_bytes,
-			);
-			if (selectedRequest === undefined)
-				destination.current = roofEntry
-					? "design"
-					: entryHints?.equipment ||
-						  (standardEntry &&
-								systemScope !== "storage_only" &&
-								solarEntry === "known")
-						? "equipment"
-						: entryHints?.roof
-							? "design"
-							: null;
 			await store
 				.writeCreation(originScope, intent.current, destination.current)
 				.catch(() => {
@@ -327,7 +272,18 @@ export function NewProject({
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
 			if (lifetime.current !== instance) return;
-			if (!created(project, destination.current ?? undefined)) {
+			const createdBrief =
+				project.inputs.brief === undefined
+					? null
+					: readBrief(project.inputs.brief);
+			if (
+				!created(
+					project,
+					createdBrief?.system_scope === "storage_only"
+						? "energy"
+						: (destination.current ?? undefined),
+				)
+			) {
 				setFailed(true);
 				return;
 			}
@@ -335,6 +291,8 @@ export function NewProject({
 			destination.current = null;
 			setOpen(false);
 			setTitle("");
+			setDraft(null);
+			setRecoveredInputs(null);
 		} catch (error) {
 			if (lifetime.current !== instance) return;
 			setFailed(true);
@@ -382,6 +340,7 @@ export function NewProject({
 				setProjectGone(true);
 			}
 		} finally {
+			sending.current = false;
 			if (lifetime.current === instance) setBusy(false);
 		}
 	}
@@ -389,142 +348,171 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	const proposed =
-		catalog.data?.products.find((item) => item.id === entryHints?.productId) ??
-		null;
-	const proposedField = proposed
-		? (placedProduct([proposed], proposed.id)?.field ?? null)
-		: null;
 	if (!open)
 		return (
 			<button
-				className="lp-button"
+				className="sc-button sc-primary"
 				disabled={checking || recoveryChecking || recoveryDiscoveryFailed}
 				onClick={() => setOpen(true)}
 			>
-				<Icon name="plus" />
 				{__("New project", "linker-tools")}
 			</button>
 		);
 	return (
 		<form
-			className={roofEntry ? "lp-new-project lp-roof-entry" : "lp-new-project"}
+			className="sc-main"
+			aria-label={__("New project", "linker-tools")}
 			onSubmit={(event) => {
 				event.preventDefault();
 				void submit();
 			}}
 		>
-			{entryHints && !selectedRequest && !roofEntry && (
-				<Notice>
-					<p>
-						{initialProject
-							? __(
-									"Review these saved inputs before creating a new project. The original solution stays available. After creating the project, select equipment using current product data and run a new calculation.",
-									"linker-tools",
-								)
-							: entryHints.productId !== null
-								? __(
-										"This product is a starting point for the project. Creating the project does not confirm that the products work together.",
-										"linker-tools",
-									)
-								: entryHints.roof && !hasCarriedValues
+			{entryHints &&
+				!intent.current &&
+				(hasCarriedValues || entryHints.invalid) && (
+					<Notice>
+						<dl className="sc-fields">
+							{entryHints.annualKwh !== null && (
+								<div>
+									<dt>
+										{__("Annual electricity consumption", "linker-tools")}
+									</dt>
+									<dd>{formatDecimal(entryHints.annualKwh, locale)} kWh</dd>
+								</div>
+							)}
+							{entryHints.pvKw !== null && (
+								<div>
+									<dt>{__("PV array", "linker-tools")}</dt>
+									<dd>{formatDecimal(entryHints.pvKw, locale)} kWp</dd>
+								</div>
+							)}
+							{entryHints.phase !== null && (
+								<div>
+									<dt>{__("Grid connection", "linker-tools")}</dt>
+									<dd>
+										{entryHints.phase === 3
+											? __("Three-phase", "linker-tools")
+											: __("Single-phase", "linker-tools")}
+									</dd>
+								</div>
+							)}
+							{entryHints.backup !== null && (
+								<div>
+									<dt>{__("Backup supply", "linker-tools")}</dt>
+									<dd>
+										{entryHints.backup === "none"
+											? __("Not needed", "linker-tools")
+											: __("Requested", "linker-tools")}
+									</dd>
+								</div>
+							)}
+							{entryHints.postalCode !== null && (
+								<div>
+									<dt>{__("Postal code", "linker-tools")}</dt>
+									<dd>{entryHints.postalCode}</dd>
+								</div>
+							)}
+							{entryHints.productId !== null && (
+								<div>
+									<dt>
+										{product?.field === "inverter"
+											? __(
+													"Inverter or integrated storage system",
+													"linker-tools",
+												)
+											: product?.field === "battery"
+												? __("Battery or storage system", "linker-tools")
+												: product?.field === "accessory"
+													? __("Additional products", "linker-tools")
+													: __("Use current product data", "linker-tools")}
+									</dt>
+									<dd>
+										{proposed
+											? `${proposed.brand} ${proposed.model}`.trim()
+											: catalog.isPending
+												? __("Loading product data…", "linker-tools")
+												: __(
+														"Product from the link is unavailable",
+														"linker-tools",
+													)}
+									</dd>
+								</div>
+							)}
+						</dl>
+						{entryHints.invalid && (
+							<p>
+								{initialProject
 									? __(
-											"Create a project to start the roof design.",
+											"Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.",
 											"linker-tools",
 										)
 									: __(
-											"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+											"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
 											"linker-tools",
 										)}
-					</p>
-					<dl className="lp-field-summary">
-						{entryHints.annualKwh !== null && (
-							<div>
-								<dt>{__("Annual electricity consumption", "linker-tools")}</dt>
-								<dd>{formatDecimal(entryHints.annualKwh, locale)} kWh</dd>
-							</div>
+							</p>
 						)}
-						{entryHints.pvKw !== null && (
-							<div>
-								<dt>{__("PV array", "linker-tools")}</dt>
-								<dd>{formatDecimal(entryHints.pvKw, locale)} kWp</dd>
-							</div>
-						)}
-						{entryHints.phase !== null && (
-							<div>
-								<dt>{__("Grid connection", "linker-tools")}</dt>
-								<dd>
-									{entryHints.phase === 3
-										? __("Three-phase", "linker-tools")
-										: __("Single-phase", "linker-tools")}
-								</dd>
-							</div>
-						)}
-						{entryHints.backup !== null && (
-							<div>
-								<dt>{__("Backup supply", "linker-tools")}</dt>
-								<dd>
-									{entryHints.backup === "none"
-										? __("Not needed", "linker-tools")
-										: __("Requested", "linker-tools")}
-								</dd>
-							</div>
-						)}
-						{entryHints.postalCode !== null && (
-							<div>
-								<dt>{__("Postal code", "linker-tools")}</dt>
-								<dd>{entryHints.postalCode}</dd>
-							</div>
-						)}
-						{entryHints.productId !== null && (
-							<div>
-								<dt>
-									{proposedField === "inverter"
-										? __(
-												"Inverter or integrated storage system",
+						{!intent.current && hasCarriedValues && (
+							<label className="lp-checkbox">
+								<input
+									type="checkbox"
+									checked={useHints}
+									onChange={(e) => {
+										setUseHints(e.currentTarget.checked);
+										const next = e.currentTarget.checked;
+										const hintInputs = entryInputs(
+											entryHints,
+											__(
+												"Values carried from a tool link. Review them for this project.",
 												"linker-tools",
-											)
-										: proposedField === "battery"
-											? __("Battery or storage system", "linker-tools")
-											: proposedField === "accessory"
-												? __("Additional products", "linker-tools")
-												: __("Use current product data", "linker-tools")}
-								</dt>
-								<dd>
-									{proposed
-										? `${proposed.brand} ${proposed.model}`.trim()
-										: String(entryHints.productId)}
-								</dd>
-							</div>
+											),
+											__(
+												"Backup supply requested; accessories may be considered.",
+												"linker-tools",
+											),
+											product,
+										);
+										const hintBrief = readBrief(hintInputs.brief);
+										const empty = emptyBrief();
+										const currentBrief = readBrief(inputs.brief);
+										const matchedBrief = next ? empty : hintBrief;
+										const replacement = next ? hintBrief : empty;
+										const edited = {
+											...inputs,
+											brief: {
+												...currentBrief,
+												site: {
+													...currentBrief.site,
+													location_label:
+														currentBrief.site.location_label ===
+														matchedBrief.site.location_label
+															? replacement.site.location_label
+															: currentBrief.site.location_label,
+												},
+												annual_load: sameJson(
+													currentBrief.annual_load,
+													matchedBrief.annual_load,
+												)
+													? replacement.annual_load
+													: currentBrief.annual_load,
+												project_note:
+													currentBrief.project_note ===
+													matchedBrief.project_note
+														? replacement.project_note
+														: currentBrief.project_note,
+											},
+										};
+										setDraft(reviseCarriedEquipment(edited, hintInputs, next));
+										setCarriedProduct(next);
+									}}
+								/>
+								{__("Use these values for the new project", "linker-tools")}
+							</label>
 						)}
-					</dl>
-					{entryHints.invalid && (
-						<p>
-							{initialProject
-								? __(
-										"Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.",
-										"linker-tools",
-									)
-								: __(
-										"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
-										"linker-tools",
-									)}
-						</p>
-					)}
-					{!intent.current && hasCarriedValues && (
-						<label className="lp-checkbox">
-							<input
-								type="checkbox"
-								checked={useHints}
-								onChange={(e) => setUseHints(e.currentTarget.checked)}
-							/>
-							{__("Use these values for the new project", "linker-tools")}
-						</label>
-					)}
-				</Notice>
-			)}
+					</Notice>
+				)}
 			{requests.length > 1 && (
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Unconfirmed project creations", "linker-tools")}</span>
 					<select
 						disabled={busy}
@@ -539,6 +527,7 @@ export function NewProject({
 							intentScope.current = request.scope;
 							destination.current = request.destination;
 							setTitle(request.title);
+							setRecoveredInputs(readObject(JSON.parse(request.body).inputs));
 							setFailed(true);
 						}}
 					>
@@ -550,169 +539,49 @@ export function NewProject({
 					</select>
 				</label>
 			)}
-			{standardEntry && !intent.current && (
-				<div className="lp-project-start-options">
-					<label className="lp-field">
-						<span>{__("Planned system", "linker-tools")}</span>
-						<select
-							name="system_scope"
-							value={systemScope ?? ""}
-							disabled={busy}
-							onChange={(event) =>
-								setSystemScope(
-									event.currentTarget.value as Brief["system_scope"],
-								)
-							}
-						>
-							<option value="new_pv_storage">
-								{__("Solar and storage", "linker-tools")}
-							</option>
-							<option value="pv_only">
-								{__("Solar only", "linker-tools")}
-							</option>
-							<option value="storage_addition">
-								{__("Add storage to an existing system", "linker-tools")}
-							</option>
-							<option value="storage_only">
-								{__("Storage only", "linker-tools")}
-							</option>
-						</select>
-					</label>
-					{!roofEntry && roofStart && (
-						<label className="lp-field">
-							<span>{__("Country", "linker-tools")}</span>
-							<select
-								name="country"
-								value={country}
-								disabled={busy}
-								autoComplete="country"
-								onChange={(event) => setCountry(event.currentTarget.value)}
-							>
-								<option value="">
-									{__("Select a country", "linker-tools")}
-								</option>
-								{Object.entries(roofStart.countries)
-									.sort((a, b) => a[1].localeCompare(b[1], roofStart.locale))
-									.map(([code, name]) => (
-										<option key={code} value={code}>
-											{name}
-										</option>
-									))}
-							</select>
-						</label>
-					)}
-					{systemScope !== "storage_only" && (
-						<label className="lp-field">
-							<span>{__("Solar layout", "linker-tools")}</span>
-							<select
-								name="solar_entry"
-								value={solarEntry}
-								disabled={busy}
-								onChange={(event) => setSolarEntry(event.currentTarget.value)}
-							>
-								<option value="roof">
-									{__("Plan on the map", "linker-tools")}
-								</option>
-								<option value="known">
-									{__("I already have the solar details", "linker-tools")}
-								</option>
-							</select>
-						</label>
-					)}
-				</div>
-			)}
-			{needsAddress && roofStart ? (
-				<RoofStart
-					config={roofStart}
-					country={country}
-					address={address}
-					disabled={busy}
-					changeCountry={(value) => {
-						setCountry(value);
-						setAddressFailure(null);
-					}}
-					changeAddress={(value) => {
-						setAddress(value);
-						setAddressFailure(null);
-					}}
-				/>
-			) : (
-				<label className="lp-field">
-					<span>{__("Project name", "linker-tools")}</span>
-					<input
-						name="project_title"
-						autoFocus
-						required
-						maxLength={256}
-						value={title}
-						readOnly={Boolean(intent.current)}
-						onChange={(event) => setTitle(event.currentTarget.value)}
-					/>
-				</label>
-			)}
-			<div className="lp-inline-actions">
-				<button
-					className="lp-button"
-					disabled={
-						busy ||
-						checking ||
-						recoveryChecking ||
-						recoveryDiscoveryFailed ||
-						(needsAddress ? !country || !address.trim() : !title.trim())
-					}
-				>
-					{busy
-						? __("Creating…", "linker-tools")
+			<ProjectDetails
+				inputs={inputs}
+				config={config ?? { locale, countries: {} }}
+				disabled={
+					busy ||
+					checking ||
+					recoveryChecking ||
+					recoveryDiscoveryFailed ||
+					!admitted
+				}
+				edit={edit}
+				creation={{
+					title,
+					changeTitle: setTitle,
+					locked: Boolean(intent.current),
+					submitDisabled: waitingForProduct,
+					...(busy
+						? { submitLabel: __("Creating…", "linker-tools") }
 						: failed
-							? __("Retry project creation", "linker-tools")
-							: roofEntry
-								? __("Open roof map", "linker-tools")
-								: __("Create project", "linker-tools")}
+							? { submitLabel: __("Retry project creation", "linker-tools") }
+							: {}),
+				}}
+				existingEquipment={
+					config && (
+						<ProjectEquipment
+							inputs={inputs}
+							client={client}
+							scope={session.query_scope}
+							disabled={busy || Boolean(intent.current)}
+							edit={edit}
+						/>
+					)
+				}
+			/>
+			{cancelled && !intent.current && (
+				<button
+					className="sc-button"
+					type="button"
+					disabled={busy}
+					onClick={cancelled}
+				>
+					{__("Cancel", "linker-tools")}
 				</button>
-				{!intent.current && (
-					<button
-						className="lp-text-button"
-						type="button"
-						disabled={busy}
-						onClick={() => {
-							setOpen(false);
-							cancelled?.();
-						}}
-					>
-						{__("Cancel", "linker-tools")}
-					</button>
-				)}
-			</div>
-			{addressFailure && (
-				<Notice error>
-					{addressFailure === "not_found"
-						? __(
-								"We could not find that address in the selected country. Check the address or try a nearby postcode.",
-								"linker-tools",
-							)
-						: __(
-								"Address search is unavailable right now. Your details are still here; please try again.",
-								"linker-tools",
-							)}
-				</Notice>
-			)}
-			{productBlocked === "load" && (
-				<Notice error>
-					{__("Product data could not be loaded.", "linker-tools")}
-				</Notice>
-			)}
-			{productBlocked === "preparing" && (
-				<Notice>
-					{__("Current product data is being prepared.", "linker-tools")}
-				</Notice>
-			)}
-			{productBlocked === "place" && (
-				<Notice error>
-					{__(
-						"This product is not available for planning, so no project was created from it.",
-						"linker-tools",
-					)}
-				</Notice>
 			)}
 			{failed && (
 				<Notice error>
@@ -742,4 +611,84 @@ export function NewProject({
 			)}
 		</form>
 	);
+}
+
+function withProduct(
+	inputs: JsonObject,
+	product: NonNullable<ReturnType<typeof placedProduct>>,
+): JsonObject {
+	const setup = equipmentDraft(inputs);
+	if (product.field === "accessory") {
+		const ids = setup.accessory_product_ids as readonly number[];
+		return ids.includes(product.id)
+			? inputs
+			: changeEquipment(inputs, {
+					accessory_product_ids: [...ids, product.id],
+				});
+	}
+	const field =
+		product.field === "inverter" ? "inverter_product_id" : "battery_product_id";
+	return setup[field] === null
+		? changeEquipment(inputs, { [field]: product.id })
+		: inputs;
+}
+
+function reviseCarriedEquipment(
+	inputs: JsonObject,
+	hints: JsonObject,
+	include: boolean,
+): JsonObject {
+	if (
+		inputs.equipment_plant_setup !== undefined ||
+		inputs.equipment_plant !== undefined ||
+		hints.equipment_setup === undefined
+	)
+		return inputs;
+	const current = equipmentDraft(inputs);
+	const carried = equipmentDraft(hints);
+	const blank = equipmentDraft({});
+	const from = include ? blank : carried;
+	const to = include ? carried : blank;
+	const fields = [
+		"pv_dc_kw",
+		"grid_phase",
+		"inverter_product_id",
+		"battery_product_id",
+		"accessory_product_ids",
+	] as const;
+	const patch = Object.fromEntries(
+		fields
+			.filter(
+				(field) =>
+					sameJson(current[field], from[field]) &&
+					!sameJson(from[field], to[field]),
+			)
+			.map((field) => [field, to[field]!]),
+	);
+	let updated = Object.keys(patch).length
+		? changeEquipment(inputs, patch)
+		: inputs;
+	if (carried.operating_mode === "backup") {
+		if (include && !energyGoal(updated))
+			updated = changeEnergyGoal(updated, "backup");
+		if (
+			!include &&
+			energyGoal(updated) === "backup" &&
+			sameJson(updated.backup_demand, {
+				schema_version: 1,
+				load_kw: null,
+				duration_hours: null,
+			})
+		) {
+			const { backup_demand, energy_scenario, ...rest } = updated;
+			updated = changeEquipment(rest, { operating_mode: null });
+		}
+	} else if (
+		carried.operating_mode === "grid_connected" &&
+		!energyGoal(updated) &&
+		current.operating_mode === from.operating_mode
+	) {
+		updated = changeEquipment(updated, { operating_mode: to.operating_mode! });
+	}
+	return updated;
 }

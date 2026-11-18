@@ -72,7 +72,8 @@ export interface ProfileAsset extends JsonObject {
 		| "pvgis_system_profile_v1"
 		| "pvlib_reference_profile_v1"
 		| "geometric_pv_reference_profile_v1"
-		| "pvgis_roof_ac_reference_profile_v1";
+		| "pvgis_roof_ac_reference_profile_v1"
+		| "pvgis_known_ac_reference_profile_v1";
 	readonly metadata: JsonObject;
 }
 export interface CsvInspection {
@@ -238,6 +239,7 @@ export function readAsset(value: unknown, projectId: string): ProfileAsset {
 			"pvlib_reference_profile_v1",
 			"geometric_pv_reference_profile_v1",
 			"pvgis_roof_ac_reference_profile_v1",
+			"pvgis_known_ac_reference_profile_v1",
 		].includes(String(item.purpose))
 	)
 		throw new ApiError(502, "invalid_profile_reply");

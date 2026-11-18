@@ -273,6 +273,11 @@ class ReportKernel:
                     and not _fully_retained(line)
                     for line in cast(list[Object], materials["lines"])
                 ),
+                **(
+                    {"has_report_only_handoff": True}
+                    if "retained_inverter" in source
+                    else {}
+                ),
                 "source_runs": source["source_runs"],
                 "equipment_candidate": source["candidate"],
                 "dependencies": dependencies,

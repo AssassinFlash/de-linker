@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Planning;
 
-use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Products\Publication;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -100,10 +99,24 @@ final class Context {
 	}
 
 	/**
+	 * Reports attached to the native draft independently of cart items.
+	 *
+	 * @return array<string,array<string,mixed>>
+	 */
+	public static function report_only_contexts(): array {
+		$stored = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
+		return array_filter(
+			$stored,
+			static fn ( $handoff, $id ): bool => is_string( $id ) && self::valid( $handoff, $id ) && DraftTransfer::report_only( $handoff['snapshot'] ),
+			ARRAY_FILTER_USE_BOTH
+		);
+	}
+
+	/**
 	 * Resolve valid project notes in the current Woo session, including notes
 	 * whose product lines were subsequently removed from the cart.
 	 *
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string}>
+	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	public static function session_notes(): array {
 		// WC()->session is null outside a request that loaded the native cart.
@@ -116,9 +129,10 @@ final class Context {
 			if ( ! is_string( $id ) || ! self::valid( $handoff, $id ) ) {
 				continue;
 			}
-			$snapshot = $handoff['snapshot'];
-			$note     = self::project_note( $snapshot );
-			if ( '' === $note ) {
+			$snapshot    = $handoff['snapshot'];
+			$note        = self::project_note( $snapshot );
+			$report_only = DraftTransfer::report_only( $snapshot );
+			if ( '' === $note && ! $report_only ) {
 				continue;
 			}
 			$project_id                = (string) $snapshot['project_id'];
@@ -129,6 +143,7 @@ final class Context {
 				'revision'      => (int) $snapshot['revision'],
 				'note_revision' => self::note_revision( $handoff ),
 				'text'          => $note,
+				...( $report_only ? array( 'report_only' => true ) : array() ),
 			);
 		}
 		$result = array();
@@ -154,13 +169,8 @@ final class Context {
 				return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
 			}
 		}
-		foreach ( $active as $handoff ) {
-			$error = ( new DesignProof() )->current_error(
-				array(
-					'kind'        => 'planning_products_v1',
-					'publication' => $handoff['snapshot']['publication'],
-				)
-			);
+		foreach ( array_intersect_key( self::report_only_contexts(), self::included_notes() ) + $active as $handoff ) {
+			$error = DraftTransfer::publication_error( $handoff['snapshot'] );
 			if ( $error instanceof WP_Error ) {
 				return $error;
 			}
@@ -182,16 +192,21 @@ final class Context {
 		if ( array() === $notes ) {
 			return '';
 		}
-		$included = ! ( isset( $previous[ self::PRESENT_FIELD ] ) && '1' === $previous[ self::PRESENT_FIELD ] && '1' !== ( $previous[ self::INCLUDE_FIELD ] ?? '' ) );
-		$html     = '<fieldset class="linker-inquiry-project-notes">';
-		$html    .= '<legend>' . esc_html__( 'Your project note', 'linker-commerce' ) . '</legend>';
-		$html    .= '<input type="hidden" name="' . esc_attr( self::PRESENT_FIELD ) . '" value="1" />';
-		$html    .= '<label class="linker-form-consent"><input type="checkbox" name="' . esc_attr( self::INCLUDE_FIELD ) . '" value="1"' . ( $included ? ' checked' : '' ) . ' /><span>' . esc_html__( 'Include project notes with this inquiry', 'linker-commerce' ) . '</span></label>';
+		$included      = ! ( isset( $previous[ self::PRESENT_FIELD ] ) && '1' === $previous[ self::PRESENT_FIELD ] && '1' !== ( $previous[ self::INCLUDE_FIELD ] ?? '' ) );
+		$has_report    = array() !== array_filter( $notes, static fn ( array $note ): bool => ! empty( $note['report_only'] ) );
+		$html          = '<fieldset class="linker-inquiry-project-notes">';
+		$html         .= '<legend>' . ( $has_report ? esc_html__( 'Planning report', 'linker-commerce' ) : esc_html__( 'Your project note', 'linker-commerce' ) ) . '</legend>';
+		$html         .= '<input type="hidden" name="' . esc_attr( self::PRESENT_FIELD ) . '" value="1" />';
+		$html         .= '<label class="linker-form-consent"><input type="checkbox" name="' . esc_attr( self::INCLUDE_FIELD ) . '" value="1"' . ( $included ? ' checked' : '' ) . ' /><span>' . ( $has_report ? esc_html__( 'Include planning reports and project notes with this inquiry', 'linker-commerce' ) : esc_html__( 'Include project notes with this inquiry', 'linker-commerce' ) ) . '</span></label>';
+		$has_note_text = false;
 		foreach ( $notes as $id => $note ) {
-			$html .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
-			$html .= '<div class="linker-inquiry-project-note"><p><strong>' . esc_html( self::label( $note ) ) . '</strong></p><p>' . nl2br( esc_html( $note['text'] ) ) . '</p></div>';
+			$has_note_text = $has_note_text || '' !== $note['text'];
+			$html         .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
+			$html         .= '<div class="linker-inquiry-project-note"><p><strong>' . esc_html( self::label( $note ) ) . '</strong></p><p>' . nl2br( esc_html( $note['text'] ) ) . '</p></div>';
 		}
-		$html .= '<p class="linker-form-note">' . esc_html__( 'This note is not used in the calculation.', 'linker-commerce' ) . '</p>';
+		if ( $has_note_text ) {
+			$html .= '<p class="linker-form-note">' . esc_html__( 'This note is not used in the calculation.', 'linker-commerce' ) . '</p>';
+		}
 		$html .= '</fieldset>';
 		return $html;
 	}
@@ -256,6 +271,14 @@ final class Context {
 				'quantities_changed' => Publication::revision( $planned ) !== Publication::revision( $actual ),
 			);
 		}
+		$notes = self::included_notes();
+		foreach ( array_intersect_key( self::report_only_contexts(), $notes ) as $id => $handoff ) {
+			$contexts[ $id ] = array(
+				'reference'          => self::reference( $handoff ),
+				'included_items'     => array(),
+				'quantities_changed' => false,
+			);
+		}
 		if ( array() !== $contexts ) {
 			// A compact reference fits HPOS TEXT. The full report/proof remains
 			// in its immutable planner record; strings also avoid CPT array slashing.
@@ -265,21 +288,15 @@ final class Context {
 			}
 			$order->update_meta_data( self::META, $encoded );
 		}
-		$notes = self::included_notes();
-		if ( array() !== $notes ) {
-			$encoded_notes = wp_json_encode( $notes, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		$note_texts = array_filter( $notes, static fn ( array $note ): bool => '' !== $note['text'] );
+		if ( array() !== $note_texts ) {
+			$encoded_notes = wp_json_encode( $note_texts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 			if ( ! is_string( $encoded_notes ) || strlen( $encoded_notes ) > self::MAX_META_BYTES ) {
 				throw new \RuntimeException( 'planning_inquiry_context_unavailable' );
 			}
 			$order->update_meta_data( self::NOTES_META, $encoded_notes );
-			$revisions = array();
-			foreach ( $notes as $id => $note ) {
-				$revisions[ $id ] = $note['note_revision'];
-			}
-			self::$consumed_revisions = $revisions;
-		} else {
-			self::$consumed_revisions = array();
 		}
+		self::$consumed_revisions = array_column( $notes, 'note_revision', 'handoff_id' );
 	}
 
 	/**
@@ -305,7 +322,7 @@ final class Context {
 				continue;
 			}
 			$note = self::project_note( $handoff['snapshot'] );
-			if ( '' === $note ) {
+			if ( '' === $note && ! DraftTransfer::report_only( $handoff['snapshot'] ) ) {
 				continue;
 			}
 			$current_revision = self::note_revision( $handoff );
@@ -335,6 +352,9 @@ final class Context {
 		foreach ( array( 'project_id', 'title', 'revision', 'input_sha256', 'report_run_id', 'report_source_sha256', 'report_sha256', 'pdf', 'items' ) as $field ) {
 			$reference[ $field ] = $snapshot[ $field ];
 		}
+		if ( DraftTransfer::report_only( $snapshot ) ) {
+			$reference['report_only'] = true;
+		}
 		$reference['reference_sha256'] = Publication::revision( $reference );
 		return $reference;
 	}
@@ -363,7 +383,7 @@ final class Context {
 	 * Historical project notes included with an authorised native inquiry.
 	 *
 	 * @param WC_Order $order Authorised native inquiry.
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string}>
+	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	public static function stored_notes( WC_Order $order ): array {
 		$raw    = $order->get_meta( self::NOTES_META );
@@ -442,6 +462,9 @@ final class Context {
 	 */
 	public static function note_revision( array $handoff ): string {
 		$snapshot = $handoff['snapshot'];
+		if ( DraftTransfer::report_only( $snapshot ) ) {
+			return $handoff['snapshot_sha256'];
+		}
 		return hash(
 			'sha256',
 			(string) $handoff['id'] . '|' . (string) $snapshot['project_id'] . '|' . (string) $snapshot['revision'] . '|' . self::project_note( $snapshot )
@@ -506,7 +529,7 @@ final class Context {
 					continue;
 				}
 				$note = self::project_note( $handoff['snapshot'] );
-				if ( '' !== $note ) {
+				if ( '' !== $note || DraftTransfer::report_only( $handoff['snapshot'] ) ) {
 					$rev = self::note_revision( $handoff );
 					if ( ! isset( self::$consumed_revisions[ $id ] ) || ! hash_equals( self::$consumed_revisions[ $id ], $rev ) ) {
 						$retained[ $id ] = $handoff;
@@ -561,13 +584,17 @@ final class Context {
 	/**
 	 * Resolve the project notes included by the current submission.
 	 *
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string}>
+	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	private static function included_notes(): array {
 		if ( null !== self::$submission_post && '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' !== ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
 			return array();
 		}
-		return self::session_notes();
+		$notes = self::session_notes();
+		if ( '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' === ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
+			return $notes;
+		}
+		return array_filter( $notes, static fn ( array $note ): bool => ! isset( $note['report_only'] ) );
 	}
 
 	/**
@@ -654,7 +681,7 @@ final class Context {
 			}
 		}
 		$pdf = $value['pdf'];
-		if ( ! is_string( $pdf['asset_id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $pdf['asset_id'] ) || ! is_string( $pdf['sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $pdf['sha256'] ) || 'application/pdf' !== ( $pdf['media_type'] ?? null ) || ! array_is_list( $value['items'] ) || array() === $value['items'] ) {
+		if ( ! is_string( $pdf['asset_id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $pdf['asset_id'] ) || ! is_string( $pdf['sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $pdf['sha256'] ) || 'application/pdf' !== ( $pdf['media_type'] ?? null ) || ! array_is_list( $value['items'] ) || ( array() === $value['items'] ) !== ( true === ( $value['report_only'] ?? false ) ) ) {
 			return false;
 		}
 		foreach ( $value['items'] as $item ) {

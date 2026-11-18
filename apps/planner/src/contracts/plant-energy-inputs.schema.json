@@ -169,7 +169,14 @@
       "type": "string"
     },
     "gross_load_asset_id": {
-      "$ref": "#/$defs/Identifier"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "critical_load_asset_id": {
       "anyOf": [

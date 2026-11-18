@@ -12,9 +12,11 @@ import {
 	acknowledgeSave,
 	beginDraft,
 	isDirty,
+	keepLocalAgainst,
 	markConflict,
 	prepareSave,
 	sameJson,
+	useRemote,
 } from "../domain/draft.ts";
 import type { Project, Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
@@ -41,6 +43,8 @@ export function useProjectDraft(
 		[],
 	);
 	const latest = useRef<Draft | null>(null);
+	const recoverySource = useRef<RecoveryCandidate | null>(null);
+	const resolving = useRef(false);
 	const active = useRef(true);
 	const writes = useRef<Promise<void>>(Promise.resolve());
 	const cache = useQueryClient();
@@ -105,9 +109,9 @@ export function useProjectDraft(
 					);
 					if (!mounted) return;
 					if (candidates.length === 1) {
+						recoverySource.current = candidates[0]!;
 						next = markConflict(candidates[0]!.draft, project);
 						setRecovered(true);
-						void persist(next);
 					} else setRecoveries(candidates);
 				}
 				latest.current = next;
@@ -129,9 +133,58 @@ export function useProjectDraft(
 
 	function restore(candidate: RecoveryCandidate): void {
 		if (!recoveries.includes(candidate)) return;
-		update(() => markConflict(candidate.draft, project));
+		if (!client.isCurrentScope(session.query_scope)) return;
+		const next = markConflict(candidate.draft, project);
+		recoverySource.current = candidate;
+		latest.current = next;
+		setDraft(next);
 		setRecoveries([]);
 		setRecovered(true);
+	}
+
+	async function resolveConflict(choice: "local" | "saved"): Promise<void> {
+		const previous = latest.current;
+		const isCurrent = () =>
+			active.current &&
+			!session.claim_pending &&
+			latest.current === previous &&
+			client.isCurrentScope(session.query_scope);
+		if (!previous?.conflict || busy || resolving.current || !isCurrent())
+			return;
+		const resolve = choice === "local" ? keepLocalAgainst : useRemote;
+		const next = resolve(previous);
+		resolving.current = true;
+		setBusy(true);
+		try {
+			let source = recoverySource.current;
+			if (!source) {
+				// Match a conflict copied into the current slot by an older editor.
+				const candidates = await store.candidates(session.query_scope, project);
+				const matches = candidates.filter(({ draft }) =>
+					sameJson({ ...draft, conflict: previous.conflict }, previous),
+				);
+				if (matches.length === 1) source = matches[0]!;
+			}
+			if (!isCurrent()) return;
+			if (source)
+				await store.resolveRecovery(
+					session.query_scope,
+					next,
+					source,
+					isCurrent,
+				);
+			else await persist(next);
+			if (!isCurrent()) return;
+			recoverySource.current = null;
+			latest.current = next;
+			setDraft(next);
+			setRecoveryFailed(false);
+		} catch {
+			if (isCurrent()) setRecoveryFailed(true);
+		} finally {
+			resolving.current = false;
+			if (active.current) setBusy(false);
+		}
 	}
 
 	useEffect(() => {
@@ -273,6 +326,9 @@ export function useProjectDraft(
 	);
 
 	async function flush(): Promise<boolean> {
+		if (resolving.current) return false;
+		// Until the customer chooses, the prior record already holds these edits.
+		if (recoverySource.current) return true;
 		// Keep editing responsive while storage commits; closing waits for the
 		// latest snapshot, including edits made during an earlier IDB write.
 		while (latest.current) {
@@ -300,5 +356,6 @@ export function useProjectDraft(
 		recovered,
 		recoveries,
 		restore,
+		resolveConflict,
 	};
 }

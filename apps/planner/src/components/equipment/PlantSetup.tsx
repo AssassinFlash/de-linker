@@ -545,10 +545,18 @@ export function PlantSetup(props: Props) {
 													if (g.id !== group.id) return g;
 													// Clearing the controller drops any intent
 													// declared for it; picking one keeps it.
-													const { controller_use: _declared, ...rest } = g;
+													const {
+														controller_use: _declared,
+														comparison_controller_product_id: _filter,
+														...rest
+													} = g;
 													return id === null
 														? { ...rest, controller_product_id: null }
-														: { ...g, controller_product_id: id };
+														: {
+																...g,
+																controller_product_id: id,
+																comparison_controller_product_id: id,
+															};
 												}),
 											}));
 										}}

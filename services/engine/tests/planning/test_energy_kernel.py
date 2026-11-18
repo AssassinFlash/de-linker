@@ -815,14 +815,12 @@ def test_missing_critical_profile_is_an_error_not_gross_load_in_disguise(
     object_field(project.inputs, "energy_replay")["critical_load_asset_id"] = None
     workspace.revise(owner, project.id, 2, project.inputs, key="missing-critical")
     kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
-    run = EnergyService(workspace, kernel, max_attempts=1).evaluate(
-        owner, project.id, 3, key="run"
-    )
-    assert worker(workspace, kernel).run_once()
-    assert workspace.run(owner, run.id).error == {
-        "code": "invalid_input",
-        "retryable": False,
-    }
+    with pytest.raises(InvalidInput) as refused:
+        EnergyService(workspace, kernel, max_attempts=1).evaluate(
+            owner, project.id, 3, key="run"
+        )
+    assert refused.value.public_fields == ("energy_replay.critical_load_asset_id",)
+    assert not workspace.runs(owner, project.id)
 
 
 def test_interval_resource_limit_is_explicit_and_never_changes_the_data(

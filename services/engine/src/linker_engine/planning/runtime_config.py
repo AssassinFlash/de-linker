@@ -251,12 +251,16 @@ class RuntimeConfig(Document):
     ) -> EquipmentService | None:
         if self.equipment_search is None:
             return None
+        reference = self.pvgis_reference_service(workspace, products=products)
         return EquipmentService(
             workspace,
             EquipmentSearchKernel(
                 workspace,
                 products or ProductSources(worker_product_provider),
                 self.equipment_search,
+                tolerance=Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+                max_intervals=self.max_intervals,
+                pvgis_reference=reference.kernel if reference is not None else None,
             ),
             max_attempts=self.max_attempts,
         )

@@ -38,7 +38,9 @@ class EquipmentCandidateStore:
         run = self.workspace.run(actor, run_id)
         if not run.result or run.result.get("kind") != "search_woo_equipment_v1":
             raise NotFound("equipment search result not found")
-        search = cast(Object, run.result["search"])
+        search = run.result.get("search")
+        if not isinstance(search, dict):
+            raise NotFound("equipment candidates not found for this run")
         candidates = cast(list[Object], search["candidates"])
         row = next((row for row in candidates if row["id"] == candidate_id), None)
         if row is None:

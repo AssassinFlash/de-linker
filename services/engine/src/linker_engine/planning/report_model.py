@@ -92,6 +92,109 @@ def build_report(source: Object) -> Report:
             )
         )
 
+    existing = source.get("existing_system")
+    if isinstance(existing, dict):
+        from .existing_system import retained_inverter_declared
+
+        existing_rows = []
+        if existing["name"]:
+            existing_rows.append(row("existing_system", existing["name"]))
+        if existing["inverter_power_kw"] is not None:
+            existing_rows.append(
+                row(
+                    "existing_inverter_power",
+                    number(existing["inverter_power_kw"], locale, "kW"),
+                )
+            )
+        existing_paragraphs = [text("existing_system_declared", locale)]
+        if existing["keep_inverter"]:
+            existing_paragraphs.append(text("existing_inverter_keep", locale))
+            if not retained_inverter_declared(source, selection=True):
+                existing_paragraphs.append(text("existing_inverter_open", locale))
+        sections.append(
+            ReportSection(
+                id="existing-system",
+                title=text("existing_system", locale),
+                paragraphs=existing_paragraphs,
+                rows=existing_rows,
+            )
+        )
+
+    retained = source.get("retained_inverter")
+    if isinstance(retained, dict):
+
+        def demand_rows(requirements: Object) -> list[ReportRow]:
+            return [
+                row(label, number(value, locale, unit))
+                for label, field, unit in (
+                    ("declared_pv_power", "pv_dc_kw", "kWp"),
+                    ("declared_usable_storage", "required_usable_kwh", "kWh"),
+                    ("declared_discharge_power", "required_discharge_ac_kw", "kW"),
+                )
+                if (value := requirements.get(field)) is not None
+            ] + [
+                row(label, value)
+                for label, value in (
+                    ("declared_grid_phase", requirements.get("grid_phase")),
+                    (
+                        "declared_operating_mode",
+                        text(
+                            "grid_connected"
+                            if requirements.get("operating_mode") == "grid_connected"
+                            else "declared_backup",
+                            locale,
+                        )
+                        if requirements.get("operating_mode")
+                        else None,
+                    ),
+                )
+                if value is not None
+            ]
+
+        sections.append(
+            ReportSection(
+                id="declared-equipment-demand",
+                title=text("declared_project_requirements", locale),
+                rows=demand_rows(cast(Object, retained["requirements"])),
+            )
+        )
+        for index, declared_unit in enumerate(
+            cast(list[Object], retained.get("units", []))
+        ):
+            sections.append(
+                ReportSection(
+                    id=f"declared-equipment-demand-{index + 1}",
+                    title=cast(str, declared_unit["name"]),
+                    rows=demand_rows(cast(Object, declared_unit["requirements"])),
+                )
+            )
+
+        profile = retained.get("profile_baseline")
+        if isinstance(profile, dict):
+            metrics = cast(Object, profile["baseline"])
+            sections.append(
+                ReportSection(
+                    id="retained-energy-baseline",
+                    title=text("retained_energy_baseline", locale),
+                    rows=[
+                        row(
+                            "retained_profile_period",
+                            f"{profile['horizon_start_utc']} – {profile['horizon_end_utc']}",
+                        )
+                    ]
+                    + [
+                        row(label, number(value, locale, unit))
+                        for label, field, unit in (
+                            ("retained_profile_load", "load_kwh", "kWh"),
+                            ("retained_profile_direct_pv", "direct_pv_use_kwh", "kWh"),
+                            ("retained_profile_import", "grid_import_kwh", "kWh"),
+                            ("retained_profile_peak", "peak_grid_import_kw", "kW"),
+                        )
+                        if (value := metrics.get(field)) is not None
+                    ],
+                )
+            )
+
     direct_beam = source.get("direct_beam")
     if isinstance(direct_beam, dict):
         sections.extend(direct_beam_sections(direct_beam, locale))
@@ -397,9 +500,37 @@ def build_report(source: Object) -> Report:
                         ),
                     )
                 )
+            plant_backup = check["id"] == "plant:backup_runtime"
+            if plant_backup:
+                for label, values, field, suffix_unit in (
+                    ("plant_backup_load", check["required"], "load_kw", "kW"),
+                    ("plant_backup_duration", check["required"], "duration_hours", "h"),
+                    (
+                        "plant_backup_load_energy",
+                        check["required"],
+                        "ac_load_energy_kwh",
+                        "kWh",
+                    ),
+                    (
+                        "plant_backup_power_ceiling",
+                        check["actual"],
+                        "discharge_upper_bound_kw",
+                        "kW",
+                    ),
+                    (
+                        "plant_backup_storage",
+                        check["actual"],
+                        "usable_energy_kwh",
+                        "kWh",
+                    ),
+                ):
+                    if (value := values.get(field)) is not None:
+                        rows.append(row(label, number(value, locale, suffix_unit)))
             paragraphs: list[str] = (
                 [text(check["reason"], locale)] if check["reason"] in TEXT else []
             )
+            if plant_backup and check["status"] == "unresolved":
+                paragraphs.append(text("plant_backup_open", locale))
             derivation = check.get("derivation")
             if isinstance(derivation, dict):
                 factors = cast(list[float], derivation["factors"])
@@ -458,7 +589,11 @@ def build_report(source: Object) -> Report:
                         )
                     )
                     seen.add((doc["url"], doc.get("page")))
-            check_title = check_label(semantic_id, locale)
+            check_title = (
+                text("plant_backup_runtime", locale)
+                if plant_backup
+                else check_label(semantic_id, locale)
+            )
             suffix = semantic_id.partition(":")[2]
             if suffix in string_numbers:
                 check_title = f"{text('pv_string', locale)} {string_numbers[suffix]} · {check_title}"
@@ -481,6 +616,8 @@ def build_report(source: Object) -> Report:
                 ReportSection(
                     id=f"check-controller-network-{index}"
                     if semantic_id == "plant_controller_network_count"
+                    else "plant-backup-runtime"
+                    if plant_backup
                     else f"check-{index}",
                     title=check_title,
                     rows=rows,
@@ -892,6 +1029,83 @@ def build_report(source: Object) -> Report:
                     paragraphs=reference_paragraphs,
                     rows=reference_rows,
                     table=reference_table,
+                )
+            )
+    known_references = source.get("pvgis_known_ac_references")
+    if isinstance(known_references, list):
+        for index, known_reference in enumerate(cast(list[Object], known_references)):
+            parameters = cast(Object, known_reference["parameters"])
+            site = cast(Object, known_reference["site"])
+            summary = cast(Object, known_reference["profile_summary"])
+            known_rows = [
+                ReportRow(
+                    label=text("pvgis_known_site", locale),
+                    value=f"{site['latitude']}, {site['longitude']} · {site['location_label']}",
+                ),
+                row("pvgis_calendar_year", parameters["year"]),
+                row("pvgis_radiation_database", parameters["radiation_database"]),
+                row("pvgis_reference_technology", parameters["pv_technology"]),
+                row(
+                    "pvgis_mounting_type",
+                    text("pvgis_mounting_" + str(parameters["mounting_place"]), locale),
+                ),
+                row(
+                    "pvgis_system_loss",
+                    percent(parameters["system_loss_percent"], locale),
+                ),
+                row(
+                    "pvgis_terrain_horizon",
+                    text(
+                        "pvgis_horizon_included"
+                        if parameters["use_terrain_horizon"]
+                        else "pvgis_horizon_omitted",
+                        locale,
+                    ),
+                ),
+                row("pvgis_reference_note", parameters["source_note"]),
+                row("pvgis_ac_energy", number(summary["energy_kwh"], locale, "kWh")),
+                row("period", f"{summary['start_utc']} – {summary['end_utc']}"),
+            ]
+            known_rows.extend(
+                row(
+                    "comparison_" + str(use["comparison_role"])
+                    if "comparison_role" in use
+                    else "pvgis_source_run",
+                    f"{use['run_id']} / {use['revision']}",
+                )
+                for use in cast(list[Object], known_reference["used_by"])
+            )
+            for array in cast(list[Object], known_reference["arrays"]):
+                known_rows.extend(
+                    [
+                        row(
+                            "pvgis_known_power",
+                            number(array["peak_power_kwp"], locale, "kWp"),
+                        ),
+                        row("pvgis_known_tilt", number(array["tilt_deg"], locale, "°")),
+                        row(
+                            "pvgis_known_azimuth",
+                            number(array["azimuth_north_clockwise_deg"], locale, "°"),
+                        ),
+                        row("pvgis_known_note", array["source_note"]),
+                        row(
+                            "pvgis_array_source",
+                            array["id"],
+                            str(
+                                cast(
+                                    Object,
+                                    cast(Object, array["source_document"])["capture"],
+                                )["requested_url"]
+                            ),
+                        ),
+                    ]
+                )
+            sections.append(
+                ReportSection(
+                    id=f"pvgis-known-reference-{index}",
+                    title=text("pvgis_known_title", locale),
+                    paragraphs=[text("pvgis_known_scope", locale)],
+                    rows=known_rows,
                 )
             )
     energy = source.get("energy")

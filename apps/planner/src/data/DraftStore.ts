@@ -343,31 +343,51 @@ export class DraftStore {
 	}
 
 	async write(scope: string, draft: Draft): Promise<void> {
-		const projectId = draft.baseline.id;
-		const record: StoredDraft = {
-			schema_version: 1,
-			key: storageKey(scope, projectId),
-			scope,
-			project_id: projectId,
-			draft: {
-				...draft,
-				history: {
-					...draft.history,
-					past: draft.history.past.slice(-MAX_RECOVERY_HISTORY),
-					future: draft.history.future.slice(0, MAX_RECOVERY_HISTORY),
-				},
-			},
-			updated_at: Date.now(), // Local recovery ordering, never a server revision/time.
-		};
-		if (
-			new TextEncoder().encode(JSON.stringify(record)).length >
-			MAX_RECOVERY_BYTES
-		)
-			throw new Error("recovery_storage_limit");
+		const record = draftRecord(scope, draft);
 		const db = await this.open();
 		const transaction = db.transaction(STORE, "readwrite");
 		const committed = complete(transaction);
 		transaction.objectStore(STORE).put(record);
+		await committed;
+	}
+
+	/** Resolve only the prior record shown for this authorized project. */
+	async resolveRecovery(
+		scope: string,
+		draft: Draft,
+		candidate: RecoveryCandidate,
+		isCurrent: () => boolean,
+	): Promise<void> {
+		const record = draftRecord(scope, draft);
+		const projectId = record.project_id;
+		const key = storageKey(candidate.scope, projectId);
+		if (scope === candidate.scope || candidate.draft.baseline.id !== projectId)
+			throw new Error("invalid_recovery_scope");
+		const db = await this.open();
+		if (!isCurrent()) throw new Error("recovery_scope_changed");
+		const transaction = db.transaction(STORE, "readwrite");
+		const committed = complete(transaction);
+		const store = transaction.objectStore(STORE);
+		const read = store.get(key);
+		read.onsuccess = () => {
+			try {
+				if (
+					!isCurrent() ||
+					read.result?.updated_at !== candidate.updatedAt ||
+					!sameJson(
+						decodeDraft(read.result, candidate.scope, projectId),
+						candidate.draft,
+					)
+				) {
+					transaction.abort();
+					return;
+				}
+				store.put(record);
+				store.delete(key);
+			} catch {
+				transaction.abort();
+			}
+		};
 		await committed;
 	}
 
@@ -644,6 +664,30 @@ function scanCreations(
 			);
 		}
 	};
+}
+
+function draftRecord(scope: string, draft: Draft): StoredDraft {
+	const projectId = draft.baseline.id;
+	const record: StoredDraft = {
+		schema_version: 1,
+		key: storageKey(scope, projectId),
+		scope,
+		project_id: projectId,
+		draft: {
+			...draft,
+			history: {
+				...draft.history,
+				past: draft.history.past.slice(-MAX_RECOVERY_HISTORY),
+				future: draft.history.future.slice(0, MAX_RECOVERY_HISTORY),
+			},
+		},
+		updated_at: Date.now(), // Local recovery ordering, never a server revision/time.
+	};
+	if (
+		new TextEncoder().encode(JSON.stringify(record)).length > MAX_RECOVERY_BYTES
+	)
+		throw new Error("recovery_storage_limit");
+	return record;
 }
 
 function storageKey(scope: string, projectId: string): string {

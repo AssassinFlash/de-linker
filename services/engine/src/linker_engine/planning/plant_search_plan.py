@@ -14,6 +14,7 @@ from .equipment_plant import (
     EquipmentPlant,
     Identity,
     assert_plant_exclusivity,
+    search_group,
 )
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
@@ -78,12 +79,20 @@ class PlantSearchPlan(Document):
         raw = inputs.get("equipment_plant_setup")
         if not isinstance(raw, dict):
             raise InvalidInput("plant search requires an editable demand plan")
-        requirements = EquipmentRequirements.read(raw.get("requirements"))
+        raw_requirements = raw.get("requirements")
+        if not isinstance(raw_requirements, dict):
+            raise InvalidInput("plant search requires connection demand")
+        requirements = EquipmentRequirements.effective(
+            raw_requirements,
+            inputs=inputs,
+            path="equipment_plant_setup.requirements",
+            whole_plant=True,
+        )
         units = raw.get("units")
         if not isinstance(units, list):
             raise InvalidInput("plant search requires named systems")
         projected: list[Json] = []
-        for raw_unit in units:
+        for index, raw_unit in enumerate(units):
             if not isinstance(raw_unit, dict) or not isinstance(
                 raw_unit.get("inputs"), dict
             ):
@@ -94,24 +103,32 @@ class PlantSearchPlan(Document):
             )
             if not isinstance(setup, dict):
                 raise InvalidInput("plant search needs each system demand")
-            values = {key: setup.get(key) for key in EquipmentRequirements.model_fields}
-            values.update(
-                grid_phase=requirements.grid_phase,
-                operating_mode=requirements.operating_mode,
+            demand = EquipmentRequirements.effective(
+                setup,
+                inputs=inputs,
+                path=f"equipment_plant_setup.units[{index}].inputs.equipment_setup",
+                connection=requirements,
             )
             projected.append(
                 {
                     "id": raw_unit.get("id"),
                     "name": raw_unit.get("name"),
-                    "requirements": values,
+                    "requirements": demand.model_dump(mode="json"),
                 }
             )
+        groups = raw.get("parallel_groups")
+        if not isinstance(groups, list) or not all(
+            isinstance(group, dict) for group in groups
+        ):
+            raise InvalidInput("plant search requires parallel group declarations")
         current = cls.read(
             {
                 "schema_version": raw.get("schema_version"),
                 "requirements": requirements.model_dump(mode="json"),
                 "units": projected,
-                "parallel_groups": raw.get("parallel_groups"),
+                "parallel_groups": [
+                    search_group(cast(Object, group)) for group in groups
+                ],
             }
         )
         if current != prepared:

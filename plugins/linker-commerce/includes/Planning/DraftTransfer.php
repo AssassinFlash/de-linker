@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Planning;
 
 use Linker\Commerce\Account\AtomicSolutionDraft;
+use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\NativeTransaction;
 use Linker\Commerce\Products\Publication;
@@ -80,7 +81,7 @@ final class DraftTransfer {
 		if ( ! is_array( $snapshot ) ) {
 			return false;
 		}
-		if ( 1 !== ( $handoff['schema_version'] ?? null ) || 1 !== ( $snapshot['schema_version'] ?? null ) || 'planning_products_v1' !== ( $snapshot['kind'] ?? null ) ) {
+		if ( 1 !== ( $handoff['schema_version'] ?? null ) || 1 !== ( $snapshot['schema_version'] ?? null ) || ! in_array( $snapshot['kind'] ?? null, array( 'planning_products_v1', 'planning_report_only_v1' ), true ) ) {
 			return false;
 		}
 		if ( ! is_string( $handoff['id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $handoff['id'] ) ) {
@@ -97,9 +98,34 @@ final class DraftTransfer {
 		if ( ! is_int( $snapshot['revision'] ?? null ) || $snapshot['revision'] < 1 ) {
 			return false;
 		}
+		if ( self::report_only( $snapshot ) && array() !== ( $snapshot['items'] ?? null ) ) {
+			return false;
+		}
 		return ( null === $project_id || $snapshot['project_id'] === $project_id )
 			&& ( null === $report_run_id || $snapshot['report_run_id'] === $report_run_id )
 			&& ( null === $revision || $snapshot['revision'] === $revision );
+	}
+
+	/**
+	 * Whether the frozen report contains no procurement lines.
+	 *
+	 * @param array<string,mixed> $snapshot Frozen report snapshot.
+	 */
+	public static function report_only( array $snapshot ): bool {
+		return 'planning_report_only_v1' === ( $snapshot['kind'] ?? null );
+	}
+
+	/**
+	 * Revalidate any actual publication dependencies retained by the report.
+	 *
+	 * @param array<string,mixed> $snapshot Frozen report snapshot.
+	 * @phpstan-impure Reads current publication on each invocation.
+	 */
+	public static function publication_error( array $snapshot ): ?WP_Error {
+		if ( self::report_only( $snapshot ) && array_key_exists( 'publication', $snapshot ) && null === $snapshot['publication'] ) {
+			return null;
+		}
+		return ( new DesignProof() )->current_error( $snapshot );
 	}
 
 	/**
@@ -144,6 +170,7 @@ final class DraftTransfer {
 	 * @param array<string,mixed> $command Original intent.
 	 * @param array<string,mixed> $handoff Owned receipt.
 	 * @return array<string,mixed>|WP_Error
+	 * @throws \RuntimeException If the reviewed cart cannot be updated.
 	 */
 	private function write( array $command, array $handoff ): array|WP_Error {
 		$session  = $this->native_session();
@@ -157,11 +184,11 @@ final class DraftTransfer {
 		if ( isset( $receipts[ $key ] ) ) {
 			$known = $receipts[ $key ];
 			$this->stop_autosave();
-			return is_array( $known ) && ( $known['intent_sha256'] ?? null ) === $intent && ( $known['handoff_id'] ?? null ) === $handoff['id'] ? array_replace( $known, array( 'draft_urls' => self::urls() ) ) : self::failure( 'planning_transfer_changed', 409 );
+			return is_array( $known ) && ( $known['intent_sha256'] ?? null ) === $intent && ( $known['handoff_id'] ?? null ) === $handoff['id'] ? array_replace( $known, array( 'draft_urls' => self::urls( self::report_only( $handoff['snapshot'] ) ) ) ) : self::failure( 'planning_transfer_changed', 409 );
 		}
 		// Woo may have loaded this request before another transfer finished. Do
 		// not overwrite that newer native draft or import arbitrary session fields.
-		if ( Publication::revision( maybe_unserialize( $fresh['cart'] ?? array() ) ) !== Publication::revision( $session->get( 'cart', array() ) ) || Publication::revision( $receipts ) !== Publication::revision( $session->get( self::RECEIPTS, array() ) ) ) {
+		if ( Publication::revision( maybe_unserialize( $fresh['cart'] ?? array() ) ) !== Publication::revision( $session->get( 'cart', array() ) ) || Publication::revision( $receipts ) !== Publication::revision( $session->get( self::RECEIPTS, array() ) ) || Publication::revision( maybe_unserialize( $fresh[ self::CONTEXTS ] ?? array() ) ) !== Publication::revision( $session->get( self::CONTEXTS, array() ) ) ) {
 			$this->stop_autosave();
 			return self::failure( 'planning_draft_changed', 409 );
 		}
@@ -169,25 +196,53 @@ final class DraftTransfer {
 			$this->stop_autosave();
 			return self::failure( 'planning_draft_changed', 409 );
 		}
-		$snapshot = $handoff['snapshot'];
-		$lines    = array_map(
+		$snapshot     = $handoff['snapshot'];
+		$report_only  = self::report_only( $snapshot );
+		$lines        = array_map(
 			static fn ( array $item ): array => array(
 				'product'  => array( 'id' => $item['product_id'] ),
 				'quantity' => $item['quantity'],
 			),
 			$snapshot['items']
 		);
-		$design   = array(
+		$design       = array(
 			'kind'        => 'planning_products_v1',
 			'publication' => $snapshot['publication'],
 			'selected'    => array( 'lines' => $lines ),
 		);
-		$scope    = null;
+		$scope        = null;
+		$restore_cart = null;
 		try {
-			$scope = new NativeTransaction();
-			$items = ( new AtomicSolutionDraft() )->add( $design, array( self::LINE_META => $handoff['id'] ), DraftPreview::replacement_keys( $snapshot['project_id'], $handoff['id'] ) );
+			$scope   = new NativeTransaction();
+			$replace = DraftPreview::replacement_keys( $snapshot['project_id'], $handoff['id'] );
+			if ( $report_only ) {
+				$items = self::publication_error( $snapshot ) ?? array();
+				if ( is_array( $items ) && array() !== $replace ) {
+					$cart         = WC()->cart;
+					$before       = $cart->get_cart();
+					$removed      = $cart->get_removed_cart_contents();
+					$totals       = $cart->get_totals();
+					$restore_cart = static function () use ( $cart, $before, $removed, $totals ): void {
+						$cart->set_cart_contents( $before );
+						$cart->set_removed_cart_contents( $removed );
+						$cart->set_totals( $totals );
+					};
+					foreach ( $replace as $cart_key ) {
+						if ( ! $cart->remove_cart_item( $cart_key ) ) {
+							throw new \RuntimeException( 'planning_draft_changed' );
+						}
+					}
+					$cart->calculate_totals();
+					$items = self::publication_error( $snapshot ) ?? array();
+				}
+			} else {
+				$items = ( new AtomicSolutionDraft() )->add( $design, array( self::LINE_META => $handoff['id'] ), $replace );
+			}
 			if ( is_wp_error( $items ) ) {
 				$scope->rollback();
+				if ( null !== $restore_cart ) {
+					$restore_cart();
+				}
 				$this->stop_autosave();
 				return $items;
 			}
@@ -208,16 +263,25 @@ final class DraftTransfer {
 				'revision'        => $snapshot['revision'],
 				'items'           => $items,
 				'command'         => $command,
-				'draft_urls'      => self::urls(),
+				'draft_urls'      => self::urls( $report_only ),
 			);
-			$receipts[ $key ]           = $result;
+			if ( $report_only ) {
+				$result['report_only'] = true;
+			}
+			$receipts[ $key ] = $result;
 			$session->set( self::CONTEXTS, $contexts );
 			$session->set( self::RECEIPTS, $receipts );
+			if ( $report_only ) {
+				$session->set_customer_session_cookie( true );
+			}
 			$session->save_data();
 			$saved  = $this->fresh();
 			$stored = maybe_unserialize( $saved[ self::RECEIPTS ] ?? array() );
 			if ( ! is_array( $stored ) || ( $stored[ $key ] ?? null ) !== $result ) {
 				$scope->rollback();
+				if ( null !== $restore_cart ) {
+					$restore_cart();
+				}
 				$this->stop_autosave();
 				return self::failure( 'planning_transfer_unconfirmed', 503 );
 			}
@@ -227,6 +291,9 @@ final class DraftTransfer {
 			if ( $scope instanceof NativeTransaction ) {
 				try {
 					$scope->rollback();
+					if ( null !== $restore_cart ) {
+						$restore_cart();
+					}
 				} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- The original commit can be unknown; do not compensate on another connection.
 				}
 			}
@@ -237,11 +304,12 @@ final class DraftTransfer {
 
 	/** Both destinations come from the native translated Woo page pairing.
 	 *
+	 * @param bool $report_only Whether the destination is the inquiry form.
 	 * @return array<string,string>
 	 * @throws \RuntimeException A translated native page is missing.
 	 */
-	public static function urls(): array {
-		$page   = (int) get_option( 'woocommerce_cart_page_id' );
+	public static function urls( bool $report_only = false ): array {
+		$page   = (int) get_option( $report_only ? 'woocommerce_checkout_page_id' : 'woocommerce_cart_page_id' );
 		$result = array();
 		foreach ( array( 'en', 'de' ) as $language ) {
 			$twin = \Linker\Commerce\Presentation\PageUrls::twin( $page, $language );
@@ -278,7 +346,7 @@ final class DraftTransfer {
 		if ( ! is_array( $known ) || ( $known['intent_sha256'] ?? null ) !== Publication::revision( $command ) || ( $known['handoff_id'] ?? null ) !== ( $handoff['id'] ?? null ) ) {
 			return self::failure( 'planning_transfer_changed', 409 );
 		}
-		$known['draft_urls'] = self::urls();
+		$known['draft_urls'] = self::urls( self::report_only( $handoff['snapshot'] ) );
 		return array(
 			'schema_version' => 1,
 			'state'          => 'applied',

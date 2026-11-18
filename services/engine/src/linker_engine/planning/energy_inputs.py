@@ -171,7 +171,7 @@ class EnergyInputs(Document):
         }
     )
     schema_version: SchemaVersion
-    gross_load_asset_id: Identifier
+    gross_load_asset_id: Identifier | None
     critical_load_asset_id: Identifier | None
     pv_available_asset_id: Identifier | None
     aux_ac_asset_id: Identifier | None
@@ -191,6 +191,17 @@ class EnergyInputs(Document):
 
     @model_validator(mode="after")
     def physical_boundary(self) -> Self:
+        if self.gross_load_asset_id is None and any(
+            p.mode == "connected" for p in self.schedule
+        ):
+            raise ValueError("grid-connected periods require a total site load profile")
+        if self.critical_load_asset_id is None and any(
+            p.mode == "outage" for p in self.schedule
+        ):
+            raise InvalidInput(
+                "outage periods require a critical-load profile",
+                fields=("energy_replay.critical_load_asset_id",),
+            )
         if (self.aux_ac_asset_id is None) == (self.aux_ac_kw is None):
             raise ValueError(
                 "select either an auxiliary profile or explicit constant AC auxiliary demand"
@@ -230,9 +241,9 @@ class EnergyInputs(Document):
         return scenario
 
     def profiles(self) -> dict[str, str]:
-        result = {
-            "gross_load": self.gross_load_asset_id,
-        }
+        result = {}
+        if self.gross_load_asset_id is not None:
+            result["gross_load"] = self.gross_load_asset_id
         if self.aux_ac_asset_id is not None:
             result["aux_ac"] = self.aux_ac_asset_id
         if self.pv_available_asset_id is not None:

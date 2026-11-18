@@ -486,6 +486,23 @@ test("editing settings or source selection invalidates the effective replay but 
 	);
 });
 
+test("switching to shared DC removes single-AC demand while preserving the declared scenario", () => {
+	const original = {
+		energy_scenario: scenario(),
+		equipment_demand: {
+			schema_version: 1,
+			initial_usable_fraction: 0.5,
+			max_unserved_load_kwh: 0,
+			source_note: "Measured charge",
+		},
+	};
+	const dc = { ...scenario(), coupling: "shared_dc" as const };
+	const changed = scenarioInputs(original, dc);
+	assert.equal(Object.hasOwn(changed, "equipment_demand"), false);
+	assert.deepEqual(changed.energy_scenario, dc);
+	assert.ok(original.equipment_demand);
+});
+
 test("the shared negative contract fixtures fail in the browser without coercion", () => {
 	for (const item of invalidJson) {
 		const value: Record<string, unknown> = {

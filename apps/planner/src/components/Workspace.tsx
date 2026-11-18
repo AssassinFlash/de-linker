@@ -29,12 +29,7 @@ import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
-// The editor is the only screen that carries the whole workbench (energy,
-// design, equipment panels). It is loaded when a project is opened, so the
-// project list the visitor lands on does not wait for it. Measured
-// 2026-11-14: the initial chunk was 1,447,770 bytes and the editor's own
-// subtree is over 3,900 lines of components.
-const ProjectEditor = lazy(() => import("./ProjectEditor.tsx"));
+const Configurator = lazy(() => import("./configurator/Configurator.tsx"));
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
@@ -189,7 +184,10 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	function created(project: Project, destination?: "design" | "equipment") {
+	function created(
+		project: Project,
+		destination?: "design" | "equipment" | "energy",
+	) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
 			[session.query_scope, "project", project.id, session.claim_pending],
@@ -200,11 +198,13 @@ export function Workspace({
 		});
 		select(
 			project.id,
-			destination === "equipment"
-				? "lp-equipment"
-				: destination === "design"
-					? "lp-design"
-					: "lp-site",
+			destination === "energy"
+				? "sc-energy"
+				: destination === "equipment"
+					? "sc-system"
+					: destination === "design"
+						? "sc-solar"
+						: "sc-project",
 		);
 		return true;
 	}
@@ -341,7 +341,7 @@ export function Workspace({
 					</p>
 				}
 			>
-				<ProjectEditor
+				<Configurator
 					key={session.query_scope + ":" + selected}
 					project={project.data}
 					client={client}
@@ -366,8 +366,8 @@ export function Workspace({
 				/>
 			</Suspense>
 		) : (
-			<div className="lp-page">
-				<button className="lp-text-button" onClick={() => select(null)}>
+			<div className="sc-configurator">
+				<button className="sc-button" onClick={() => select(null)}>
 					{__("Back to projects", "linker-tools")}
 				</button>
 				{session.claim_pending ? (
@@ -378,7 +378,7 @@ export function Workspace({
 								"linker-tools",
 							)}
 						</p>
-						<button className="lp-button" onClick={recheck}>
+						<button className="sc-button" onClick={recheck}>
 							{__("Check session", "linker-tools")}
 						</button>
 					</Notice>
@@ -390,7 +390,7 @@ export function Workspace({
 								"linker-tools",
 							)}
 						</p>
-						<button className="lp-button" onClick={recheck}>
+						<button className="sc-button" onClick={recheck}>
 							{__("Check session", "linker-tools")}
 						</button>
 					</Notice>
@@ -401,104 +401,76 @@ export function Workspace({
 		);
 
 	return (
-		<div className="lp-workspace">
-			<header className="lp-workspace-masthead">
-				<div className="lp-workspace-masthead-inner">
-					<div className="lp-workspace-brand">
-						<span className="lp-nav-mark" aria-hidden="true">
-							L
-						</span>
-						<strong>{__("Solution Configurator", "linker-tools")}</strong>
-					</div>
-					<div className="lp-workspace-masthead-actions">
-						<span className="lp-rail-session">
-							{session.kind === "guest"
-								? __("Guest workspace", "linker-tools")
-								: __("Account workspace", "linker-tools")}
-						</span>
-						<button
-							className="lp-rail-help"
-							type="button"
-							data-linker-genie-open
-						>
-							<Icon name="sparkle" />
-							{__("Ask Genie", "linker-tools")}
-						</button>
-					</div>
+		<div className="sc-configurator">
+			<header className="sc-project-heading">
+				<div>
+					<p>{__("Solution Configurator", "linker-tools")}</p>
+					<h1>{__("Your projects", "linker-tools")}</h1>
 				</div>
+				<button className="sc-button" type="button" data-linker-genie-open>
+					{__("Ask Genie", "linker-tools")}
+				</button>
 			</header>
-			<div className="lp-page">
-				<header className="lp-workspace-header">
-					<div>
-						<span className="lp-eyebrow">
-							{__("Solution Configurator", "linker-tools")}
-						</span>
-						<h1>{__("Your projects", "linker-tools")}</h1>
-						<p>
-							{__(
-								"Plan solar and storage systems, then prepare a solution for your inquiry.",
-								"linker-tools",
-							)}
-						</p>
-					</div>
-					<div className="lp-workspace-start">
-						{savedSource !== null ? (
-							<SavedSolutionStart
-								solutionId={savedSource}
-								dismiss={() => {
-									const url = new URL(location.href);
-									url.searchParams.delete("saved_solution");
-									replacePlannerLocation(url);
-									setSavedSource(null);
-								}}
-								locale={config.locale}
-								session={session}
-								client={client}
-								store={store}
-								created={created}
-								recheck={recheck}
-								recoveryScopes={recovery.data}
-								recoveryChecking={recovery.isFetching}
-								recoveryDiscoveryFailed={recovery.isError}
-							/>
-						) : briefSource !== null ? (
-							<ProjectBriefStart
-								briefId={briefSource}
-								entryHints={entryHints}
-								dismiss={() => {
-									const url = new URL(location.href);
-									url.searchParams.delete("brief");
-									replacePlannerLocation(url);
-									setBriefSource(null);
-								}}
-								locale={config.locale}
-								session={session}
-								client={client}
-								store={store}
-								created={created}
-								recheck={recheck}
-								recoveryScopes={recovery.data}
-								recoveryChecking={recovery.isFetching}
-								recoveryDiscoveryFailed={recovery.isError}
-							/>
-						) : (
-							<NewProject
-								roofStart={config}
-								openOnLoad={index.isSuccess && !projects.length}
-								entryHints={entryHints}
-								locale={config.locale}
-								session={session}
-								client={client}
-								store={store}
-								created={created}
-								recheck={recheck}
-								recoveryScopes={recovery.data}
-								recoveryChecking={recovery.isFetching}
-								recoveryDiscoveryFailed={recovery.isError}
-							/>
-						)}
-					</div>
-				</header>
+			<div className="sc-main">
+				<div>
+					{savedSource !== null ? (
+						<SavedSolutionStart
+							solutionId={savedSource}
+							config={config}
+							dismiss={() => {
+								const url = new URL(location.href);
+								url.searchParams.delete("saved_solution");
+								replacePlannerLocation(url);
+								setSavedSource(null);
+							}}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					) : briefSource !== null ? (
+						<ProjectBriefStart
+							briefId={briefSource}
+							config={config}
+							entryHints={entryHints}
+							dismiss={() => {
+								const url = new URL(location.href);
+								url.searchParams.delete("brief");
+								replacePlannerLocation(url);
+								setBriefSource(null);
+							}}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					) : (
+						<NewProject
+							config={config}
+							openOnLoad={index.isSuccess && !projects.length}
+							entryHints={entryHints}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					)}
+				</div>
 				{recovery.isError && (
 					<Notice error>
 						<p>
@@ -507,7 +479,7 @@ export function Workspace({
 								"linker-tools",
 							)}
 						</p>
-						<button className="lp-text-button" onClick={retryRecovery}>
+						<button className="sc-button" onClick={retryRecovery}>
 							{__("Try again", "linker-tools")}
 						</button>
 					</Notice>
@@ -518,21 +490,18 @@ export function Workspace({
 							"Projects from the guest session are still being linked to your account.",
 							"linker-tools",
 						)}
-						<button className="lp-text-button" onClick={recheck}>
+						<button className="sc-button" onClick={recheck}>
 							{__("Check session", "linker-tools")}
 						</button>
 					</Notice>
 				)}
-				<section
-					className="lp-project-index"
-					aria-labelledby="lp-projects-heading"
-				>
-					<div className="lp-index-heading">
+				<section className="sc-card" aria-labelledby="lp-projects-heading">
+					<div className="sc-section-head">
 						<h2 id="lp-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
 						<button
-							className="lp-icon-button"
+							className="sc-button"
 							aria-label={__("Refresh projects", "linker-tools")}
 							disabled={index.isFetching}
 							onClick={() => {
@@ -548,81 +517,64 @@ export function Workspace({
 					{index.isError && (
 						<Notice error>
 							<p>{__("Saved projects could not be loaded.", "linker-tools")}</p>
-							<button className="lp-button" onClick={recheck}>
+							<button className="sc-button" onClick={recheck}>
 								{__("Try again", "linker-tools")}
 							</button>
 						</Notice>
 					)}
 					{!index.isPending && !index.isError && !projects.length && (
-						<div className="lp-empty">
-							<Icon name="layers" width="36" height="36" />
-							<h3>{__("Project workspace", "linker-tools")}</h3>
-							<p>
-								{__(
-									"A project can start with the information already available. Roof drawing is optional.",
-									"linker-tools",
-								)}
-							</p>
-						</div>
+						<p className="sc-muted">
+							{__("No saved projects yet.", "linker-tools")}
+						</p>
 					)}
-					{projects.length > 0 && (
-						<div className="lp-project-columns" aria-hidden="true">
-							<span>{__("Project", "linker-tools")}</span>
-							<span>{__("Last updated", "linker-tools")}</span>
-							<span>{__("Revision", "linker-tools")}</span>
-						</div>
-					)}
-					<div className="lp-project-rows" role="list">
+					<div role="list">
 						{projects.map((item) => (
-							<div className="lp-project-entry" role="listitem" key={item.id}>
-								<div className="lp-project-entry-row">
-									<button
-										className="lp-project-row"
-										onClick={() => select(item.id)}
-									>
-										<span className="lp-project-row-name">
-											<span className="lp-project-row-icon">
-												<Icon name="folder" />
-											</span>
-											<strong>{item.title}</strong>
-										</span>
-										<time
-											dateTime={new Date(item.updated_at * 1000).toISOString()}
+							<div role="listitem" key={item.id}>
+								<div className="sc-section-head">
+									<div>
+										<h3 id={`sc-project-${item.id}`}>{item.title}</h3>
+										<p className="sc-muted">
+											{__("Last updated", "linker-tools")}{" "}
+											<time
+												dateTime={new Date(
+													item.updated_at * 1000,
+												).toISOString()}
+											>
+												{new Intl.DateTimeFormat(config.locale, {
+													dateStyle: "medium",
+												}).format(new Date(item.updated_at * 1000))}
+											</time>
+										</p>
+									</div>
+									<div className="sc-actions">
+										<button
+											className="sc-button"
+											type="button"
+											onClick={() => select(item.id)}
 										>
-											<span className="lp-row-label">
-												{__("Last updated", "linker-tools")}{" "}
-											</span>
-											{new Intl.DateTimeFormat(config.locale, {
-												dateStyle: "medium",
-											}).format(new Date(item.updated_at * 1000))}
-										</time>
-										<small className="lp-project-revision">
-											{sprintf(
-												__("Revision %d", "linker-tools"),
-												item.revision,
+											{__("Open project", "linker-tools")}
+										</button>
+										<button
+											className="sc-button"
+											type="button"
+											aria-label={sprintf(
+												__("Delete project %s", "linker-tools"),
+												item.title,
 											)}
-										</small>
-										<Icon name="arrow" />
-									</button>
-									<button
-										className="lp-icon-button lp-project-delete"
-										aria-label={sprintf(
-											__("Delete project %s", "linker-tools"),
-											item.title,
-										)}
-										disabled={deleteBusy}
-										onClick={() => {
-											setConfirmingDelete(item.id);
-											setDeleteRetry(null);
-											setDeleteFailure(null);
-										}}
-									>
-										<Icon name="trash" />
-									</button>
+											disabled={deleteBusy}
+											onClick={() => {
+												setConfirmingDelete(item.id);
+												setDeleteRetry(null);
+												setDeleteFailure(null);
+											}}
+										>
+											<Icon name="trash" />
+										</button>
+									</div>
 								</div>
 								{confirmingDelete === item.id && (
 									<div
-										className="lp-delete-confirm"
+										className="sc-card"
 										role="group"
 										aria-label={__("Delete this project", "linker-tools")}
 									>
@@ -642,9 +594,9 @@ export function Workspace({
 												"linker-tools",
 											)}
 										</p>
-										<div className="lp-inline-actions">
+										<div className="sc-actions">
 											<button
-												className="lp-button lp-button-danger"
+												className="sc-button lp-button-danger"
 												disabled={deleteBusy}
 												onClick={() => {
 													void remove(item);
@@ -657,7 +609,7 @@ export function Workspace({
 														: __("Delete project", "linker-tools")}
 											</button>
 											<button
-												className="lp-text-button"
+												className="sc-button"
 												disabled={deleteBusy}
 												onClick={() => {
 													setConfirmingDelete(null);
@@ -695,7 +647,7 @@ export function Workspace({
 					</div>
 					{index.hasNextPage && (
 						<button
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={index.isFetchingNextPage}
 							onClick={() => {
 								void index.fetchNextPage();
@@ -705,9 +657,8 @@ export function Workspace({
 						</button>
 					)}
 				</section>
-				<footer className="lp-workspace-footnote">
-					<Icon name="check" />
-					<p>
+				<footer>
+					<p className="sc-muted">
 						{session.kind === "guest"
 							? __(
 									"Guest projects are available in this browser session. Signing in links them to the account.",

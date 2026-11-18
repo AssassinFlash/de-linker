@@ -9,26 +9,34 @@ from typing import cast
 from .assets import Asset, Assets
 from .canonical import Json, Object
 from .certificate_evidence import certificate_documents
+from .comparison_pv import is_known
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
 from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle
 from .energy_comparison import compare_energy_runs, comparison_side
-from .energy_inputs import EnergyInputs
+from .energy_inputs import EnergyInputs, storage_only_project
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_condition_inputs import validate_condition_inputs
+from .equipment_declarations import (
+    comparison_model_preferences,
+    normalize_discovery_inputs,
+    restore_comparison_models,
+)
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
+from .equipment_search_kernel import EquipmentSearchKernel
 from .errors import (
     InvalidInput,
     ProductEvidenceChanged,
     ReportSourceExportRequired,
     VersionUnavailable,
 )
+from .existing_system import require_retained_inverter, unverified_retained_inverter
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
@@ -41,8 +49,10 @@ from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
+from .profile_selections import ProfileSelections
 from .pv_preparation import PvReferenceKernel
 from .pv_profile_preparation import PROFILE_PURPOSE as PVLIB_PURPOSE
+from .pvgis_known_inputs import PROFILE_PURPOSE as KNOWN_AC_PURPOSE
 from .pvgis_reference_kernel import PvgisRoofReferenceKernel
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import prepared_reference_profile, reference_bundle
@@ -134,13 +144,29 @@ def report_sources(
                     },
                 },
             )
+    retained_comparison: Object | None = None
     if options.equipment_run_id is not None:
         checked = workspace.run(actor, options.equipment_run_id)
         if checked.project_id != project.id:
             raise InvalidInput("report equipment check must belong to this project")
+        if checked.result is not None and isinstance(
+            checked.result.get("retained_inverter"), dict
+        ):
+            if (
+                checked.manifest["input_sha256"] != project.input_sha256
+                or unverified_retained_inverter(declared_inputs) is None
+            ):
+                raise ReportInputsChanged(
+                    "the retained-inverter comparison differs from the saved project"
+                )
+            retained_comparison = cast(Object, checked.result["retained_inverter"])
         context = checked.manifest.get("context")
         pinned = context.get("assets") if isinstance(context, dict) else None
-        if isinstance(pinned, dict) and "resolved_inputs" in pinned:
+        if (
+            retained_comparison is None
+            and isinstance(pinned, dict)
+            and "resolved_inputs" in pinned
+        ):
             authored = workspace.get(
                 actor, project.id, revision=checked.revision
             ).inputs
@@ -184,6 +210,7 @@ def report_sources(
     bases: dict[str, Json] = {}
     labels: list[str] = []
     roof_references: dict[str, Object] = {}
+    known_references: dict[str, Object] = {}
     pvlib_references: dict[tuple[str, str | None], Object] = {}
     geometric_pv_references: dict[str, Object] = {}
     # One request resolves the same retained witness for the selected PV
@@ -261,6 +288,37 @@ def report_sources(
     def roof_reference(
         asset: Asset, run: Run, binding: str, *, comparison_role: str | None = None
     ) -> None:
+        if asset.purpose == KNOWN_AC_PURPOSE:
+            prepared_reference_profile(
+                workspace.blobs, asset.content_sha256, asset.metadata, documents
+            )
+            bundle = reference_bundle(
+                workspace.blobs, asset.content_sha256, asset.metadata, documents
+            )
+            reference = known_references.setdefault(
+                asset.metadata_sha256,
+                {
+                    "asset_id": asset.id,
+                    "content_sha256": asset.content_sha256,
+                    "metadata_sha256": asset.metadata_sha256,
+                    "parameters": bundle["parameters"],
+                    "site": bundle["site"],
+                    "profile_summary": asset.metadata["interpretation"],
+                    "arrays": cast(Object, bundle["manifest"])["arrays"],
+                    "dependencies": asset.metadata["dependencies"],
+                    "basis": "customer_declared",
+                    "used_by": [],
+                },
+            )
+            cast(list[Json], reference["used_by"]).append(
+                {
+                    "run_id": run.id,
+                    "revision": run.revision,
+                    "binding": binding,
+                    **({"comparison_role": comparison_role} if comparison_role else {}),
+                }
+            )
+            return
         require_profile_proof(asset)
         # Read the retained output and its original proof, never a current
         # product snapshot or a second provider/model calculation. The report's
@@ -375,17 +433,72 @@ def report_sources(
         )
     )
     assert_plant_exclusivity(project.inputs)
-    candidate = None if comparison_only else project.inputs.get("equipment_candidate")
+    candidate = (
+        None
+        if comparison_only or retained_comparison is not None
+        else project.inputs.get("equipment_candidate")
+    )
     has_wiring = any(
         project.inputs.get(key) is not None
         for key in ("pv_string_plan", "pv_plant_string_plan")
     )
+    if isinstance(candidate, dict) or (
+        options.equipment_run_id is not None and retained_comparison is None
+    ):
+        require_retained_inverter(project.inputs, selection=True)
     if isinstance(candidate, dict):
+        use_wiring_check = has_wiring and options.equipment_run_id not in (
+            None,
+            candidate.get("run_id"),
+        )
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
         check_equipment_candidate(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
+        run = workspace.run(actor, cast(str, candidate["run_id"]))
+        searched = normalize_discovery_inputs(workspace.pinned_inputs(run.manifest))
+        current = restore_comparison_models(
+            normalize_discovery_inputs(declared_inputs), searched
+        )
+        previous_brief, current_brief = searched.get("brief"), current.get("brief")
+        if (
+            any(
+                (
+                    previous_brief.get(field)
+                    if isinstance(previous_brief, dict)
+                    else None
+                )
+                != (
+                    current_brief.get(field)
+                    if isinstance(current_brief, dict)
+                    else None
+                )
+                for field in ("system_scope", "project_use", "site")
+            )
+            or any(
+                searched.get(field) != current.get(field)
+                for field in (
+                    "backup_demand",
+                    "existing_system",
+                    "energy_scenario",
+                    "energy_plant_setup",
+                    "profile_selections",
+                    "equipment_demand",
+                    "pvgis_reference_setup",
+                    "pvgis_reference",
+                    *(("geometry",) if not use_wiring_check else ()),
+                    "pv_generation",
+                    "pv_preparation",
+                    "geometric_pv_preparation",
+                )
+            )
+            or comparison_model_preferences(searched)
+            != comparison_model_preferences(current)
+        ):
+            raise ReportInputsChanged(
+                "report demand differs from the selected candidate"
+            )
         if options.equipment_run_id not in (None, candidate.get("run_id")):
             if not has_wiring:
                 raise InvalidInput(
@@ -417,9 +530,44 @@ def report_sources(
             }
         )
         pinned = _pinned_assets(run)
+        if "pv_available_ac.raw" in pinned:
+            profiles = ProfileSelections.read(
+                project.inputs.get("profile_selections")
+            ).selected
+            asset = Assets(workspace).get(
+                actor, project.id, profiles["pv_available_ac"]
+            )
+            try:
+                bindings = profile_dependencies(
+                    asset, "pv_available_ac", project.inputs, workspace.blobs
+                )
+            except InvalidInput as error:
+                raise ReportInputsChanged(
+                    "report candidate PV source differs from the saved project"
+                ) from error
+            if any(pinned.get(name) != sha for name, sha in bindings.items()):
+                raise ReportInputsChanged(
+                    "report candidate PV source dependencies have changed"
+                )
         bases["equipment"] = pinned["woo.equipment_inputs"]
+    elif retained_comparison is not None and options.equipment_run_id is not None:
+        run = owned(options.equipment_run_id, EquipmentSearchKernel.kind, ())
+        for role in ("gross_load", "pv_available_ac"):
+            name = f"{role}.metadata"
+            sha = _pinned_assets(run).get(name)
+            if isinstance(sha, str):
+                metadata = workspace.blobs.object(sha)
+                provenance(metadata)
+                module_basis = metadata.get("woo_module_inputs")
+                if isinstance(module_basis, dict):
+                    bases[f"energy.{name}"] = workspace.blobs.put_object(module_basis)
+                equipment_basis = metadata.get("woo_equipment_inputs")
+                if isinstance(equipment_basis, dict):
+                    bases["energy_equipment"] = workspace.blobs.put_object(
+                        equipment_basis
+                    )
     elif options.equipment_run_id is not None:
-        run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
+        run = owned(options.equipment_run_id, EquipmentKernel.kind, ("backup_demand",))
         previous = workspace.pinned_inputs(run.manifest)
         equipment_source_run = run
         equipment_source_inputs = previous
@@ -528,7 +676,7 @@ def report_sources(
                 )
             if asset.purpose == GEOMETRIC_PV_PURPOSE:
                 geometric_reference(asset, run, role)
-            elif asset.purpose == ROOF_AC_PURPOSE:
+            elif asset.purpose in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE):
                 roof_reference(asset, run, role)
                 component_list = pv_components(
                     workspace.blobs,
@@ -577,10 +725,17 @@ def report_sources(
     pv: Object | None = None
     if options.pv_run_id is not None:
         selected_run = workspace.run(actor, options.pv_run_id)
-        roof_ac = (
-            selected_run.result is not None
-            and selected_run.result.get("kind") == PvgisRoofReferenceKernel.kind
+        result = selected_run.result or {}
+        prepared = result.get("prepared_asset")
+        purpose = prepared.get("purpose") if isinstance(prepared, dict) else None
+        pv_choice = project.inputs.get("equipment_candidate")
+        comparison_pv = (
+            result.get("kind") == EquipmentSearchKernel.kind
+            and isinstance(pv_choice, dict)
+            and pv_choice.get("run_id") == selected_run.id
+            and purpose in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE)
         )
+        roof_ac = result.get("kind") == PvgisRoofReferenceKernel.kind or comparison_pv
         geometric = (
             selected_run.result is not None
             and selected_run.result.get("kind") == GEOMETRIC_PV_KIND
@@ -595,6 +750,8 @@ def report_sources(
             options.pv_run_id,
             GEOMETRIC_PV_KIND
             if geometric
+            else EquipmentSearchKernel.kind
+            if comparison_pv
             else PvgisRoofReferenceKernel.kind
             if roof_ac
             else PvReferenceKernel.kind,
@@ -614,6 +771,8 @@ def report_sources(
                 ),
             )
             if geometric
+            else ("pvgis_reference",)
+            if roof_ac and purpose == KNOWN_AC_PURPOSE
             else ("geometry", "pvgis_reference")
             if roof_ac
             else ("geometry", "pv_generation", "pv_preparation", "weather_acquisition"),
@@ -655,7 +814,7 @@ def report_sources(
         elif roof_ac:
             asset = Assets(workspace).get(actor, project.id, str(prepared_pv["id"]))
             if (
-                asset.purpose != ROOF_AC_PURPOSE
+                asset.purpose not in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE)
                 or asset.content_sha256 != prepared_pv.get("content_sha256")
                 or asset.metadata_sha256 != prepared_pv.get("metadata_sha256")
                 or asset.metadata != prepared_pv.get("metadata")
@@ -666,9 +825,10 @@ def report_sources(
             )
             provenance(asset.metadata)
             roof_reference(asset, run, "pv_available_ac")
-            bases["pv"] = workspace.blobs.put_object(
-                cast(Object, asset.metadata["woo_module_inputs"])
-            )
+            if asset.purpose == ROOF_AC_PURPOSE:
+                bases["pv"] = workspace.blobs.put_object(
+                    cast(Object, asset.metadata["woo_module_inputs"])
+                )
         else:
             asset = Assets(workspace).get(actor, project.id, str(prepared_pv["id"]))
             if (
@@ -737,6 +897,7 @@ def report_sources(
                 asset = Assets(workspace).get(actor, project.id, asset_id)
                 if asset.purpose not in (
                     ROOF_AC_PURPOSE,
+                    KNOWN_AC_PURPOSE,
                     PVLIB_PURPOSE,
                     GEOMETRIC_PV_PURPOSE,
                 ):
@@ -755,7 +916,7 @@ def report_sources(
                         role,
                         comparison_role="baseline" if index == 0 else "candidate",
                     )
-                elif asset.purpose == ROOF_AC_PURPOSE:
+                elif asset.purpose in (ROOF_AC_PURPOSE, KNOWN_AC_PURPOSE):
                     roof_reference(
                         asset,
                         side.run,
@@ -970,6 +1131,29 @@ def report_sources(
                 workspace.blobs,
                 project.revision,
             )
+    layout = project.inputs.get("geometry")
+    if (
+        component_list is None
+        and isinstance(candidate, dict)
+        and comparison is None
+        and not storage_only_project(project.inputs)
+        and not is_known(
+            project.inputs.get(
+                "pvgis_reference_setup", project.inputs.get("pvgis_reference")
+            )
+        )
+        and isinstance(layout, dict)
+        and layout.get("arrays")
+    ):
+        component_list = saved_roof_components(
+            layout, products.module_basis, workspace.blobs, project.revision
+        )
+        component_dependencies = component_list.get("dependencies")
+        if (
+            isinstance(component_dependencies, dict)
+            and "woo_module" in component_dependencies
+        ):
+            bases["equipment_pv"] = component_dependencies["woo_module"]
     historical_bases = {
         name: sha for name, sha in bases.items() if name.startswith("energy.")
     }
@@ -994,6 +1178,11 @@ def report_sources(
     if component_list is not None and component_list.get("status") == "available":
         for name, sha in cast(Object, component_list["dependencies"]).items():
             dependencies[f"pv_components.{name}"] = sha
+    for index, reference in enumerate(known_references.values()):
+        dependencies[f"pvgis_known.{index}.manifest"] = reference["content_sha256"]
+        dependencies[f"pvgis_known.{index}.metadata"] = reference["metadata_sha256"]
+        for name, sha in cast(Object, reference["dependencies"]).items():
+            dependencies[f"pvgis_known.{index}.{name}"] = sha
     for index, reference in enumerate(roof_references.values()):
         dependencies[f"pvgis_reference.{index}.manifest"] = reference["content_sha256"]
         dependencies[f"pvgis_reference.{index}.metadata"] = reference["metadata_sha256"]
@@ -1090,7 +1279,16 @@ def report_sources(
         "input_sha256": project.input_sha256,
         "title": project.title,
         "brief": None if comparison_only else project.inputs.get("brief"),
-        "equipment_selection": project.inputs.get("equipment_selection"),
+        **(
+            {"existing_system": project.inputs["existing_system"]}
+            if not comparison_only and "existing_system" in project.inputs
+            else {}
+        ),
+        "equipment_selection": (
+            project.inputs.get("equipment_selection")
+            if retained_comparison is None
+            else None
+        ),
         **(
             {
                 "equipment_condition_inputs": condition_inputs,
@@ -1101,7 +1299,12 @@ def report_sources(
         ),
         **(
             {"equipment_plant": project.inputs["equipment_plant"]}
-            if "equipment_plant" in project.inputs
+            if retained_comparison is None and "equipment_plant" in project.inputs
+            else {}
+        ),
+        **(
+            {"retained_inverter": retained_comparison}
+            if retained_comparison is not None
             else {}
         ),
         "candidate": candidate,
@@ -1115,6 +1318,11 @@ def report_sources(
         "pv_components": component_list,
         "pv": pv,
         **({"direct_beam": direct_beam} if direct_beam is not None else {}),
+        **(
+            {"pvgis_known_ac_references": list(known_references.values())}
+            if known_references
+            else {}
+        ),
         **(
             {"pvgis_roof_ac_references": list(roof_references.values())}
             if roof_references

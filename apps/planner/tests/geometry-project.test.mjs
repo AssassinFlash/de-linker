@@ -9,10 +9,8 @@ import { setupDom, until, enter } from "./dom-fixture.mjs";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { geometryImportStore } from "../src/data/GeometryImportStore.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
-import {
-	ProjectEditor,
-	workspaceFromHash,
-} from "../src/components/ProjectEditor.tsx";
+import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
+import { workspaceFromHash } from "../src/components/ProjectEditor.tsx";
 
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -90,12 +88,12 @@ test("saved roof projects reopen in design while energy projects and explicit ro
 	);
 	assert.equal(
 		workspaceFromHash({ brief: { ...brief, system_scope: "storage_only" } }),
-		"overview",
+		"site",
 	);
-	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "overview");
-	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "overview");
+	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "site");
+	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "site");
 	location.hash = "#lp-overview";
-	assert.equal(workspaceFromHash({ brief }), "overview");
+	assert.equal(workspaceFromHash({ brief }), "site");
 	location.hash = "#lp-load";
 	assert.equal(workspaceFromHash({ brief }), "energy");
 });
@@ -119,6 +117,9 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	document.head.append(css);
 	const { createRoot } = await import("react-dom/client");
 	const { maps } = await import("./map-library-fixture.mjs");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
+	location.hash = "#lp-map-roof-properties";
 	const geometry = JSON.parse(
 		readFileSync(
 			new URL(
@@ -150,7 +151,11 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 		},
 	};
 	const before = structuredClone(project.inputs);
-	const session = { query_scope: "3".repeat(64), kind: "guest" };
+	const session = {
+		query_scope: "3".repeat(64),
+		kind: "guest",
+		runtime: { limits: { max_page_size: 20 } },
+	};
 	const imagery = {
 		tiles: ["https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}"],
 		credit: "Synthetic imagery provider",
@@ -163,6 +168,8 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	const client = {
 		isCurrentScope: (scope) => scope === session.query_scope,
 		async query(path, command) {
+			if (path === "projects/runs") return { items: [], next: null };
+			if (path === "products/current") return { items: [] };
 			if (path === "places/lookup") {
 				lookups.push(command);
 				if (lookups.length === 1) throw new Error("Synthetic lookup failure");
@@ -204,7 +211,7 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 			React.createElement(
 				QueryClientProvider,
 				{ client: cache },
-				React.createElement(ProjectEditor, {
+				React.createElement(Configurator, {
 					project,
 					session,
 					client,
@@ -216,8 +223,7 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 			),
 		),
 	);
-	const retry = () =>
-		document.querySelector('.lp-design-panel > [role="alert"] button');
+	const retry = () => document.querySelector('.sc-solar [role="alert"] button');
 	await until(
 		() => retry() && document.querySelector('[data-map-status="ready"]'),
 	);
@@ -270,7 +276,9 @@ test("import joins one project history step, guards navigation, and a confirmed 
 		value: new IDBFactory(),
 		configurable: true,
 	});
-	location.hash = "#lp-design";
+	location.hash = "#sc-solar";
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
 	const { createRoot } = await import("react-dom/client");
 	const asset = JSON.parse(
 			readFileSync(
@@ -292,7 +300,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 		title: "Synthetic import workflow",
 		revision: 1,
 		input_sha256: "1".repeat(64),
-		inputs: { brief: emptyBrief() },
+		inputs: { ...knownPv.project.inputs },
 	};
 	const session = {
 		schema_version: 1,
@@ -350,6 +358,8 @@ test("import joins one project history step, guards navigation, and a confirmed 
 			const path = new URL(url).pathname;
 			if (path === "/nonce") return new Response("abcdefghij");
 			if (path.endsWith("/bootstrap")) return json(session);
+			if (path.endsWith("/projects/runs"))
+				return json({ items: [], next: null });
 			if (path.endsWith("/geometry/import")) {
 				assert.equal(init.body, original);
 				return json(asset);
@@ -390,7 +400,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 			React.createElement(
 				QueryClientProvider,
 				{ client: cache },
-				React.createElement(ProjectEditor, {
+				React.createElement(Configurator, {
 					project,
 					session,
 					client,
@@ -402,19 +412,18 @@ test("import joins one project history step, guards navigation, and a confirmed 
 			),
 		),
 	);
-	await until(() =>
-		button(asset.metadata.geometry_import_options.source.label),
+	await until(
+		() =>
+			button(asset.metadata.geometry_import_options.source.label) &&
+			!button(asset.metadata.geometry_import_options.source.label).closest(
+				"fieldset[disabled]",
+			),
 	);
 	await click(asset.metadata.geometry_import_options.source.label);
-	assert.equal(button("Save project").disabled, true);
-	await act(async () =>
-		document.querySelector('nav a[href="#lp-site"]').click(),
-	);
-	assert.equal(
-		document.querySelector(".lp-project").dataset.workspace,
-		"design",
-	);
-	assert.ok(document.querySelector(".lp-navigation-refusal"));
+	assert.equal(button("Save snapshot").disabled, true);
+	await act(async () => document.querySelector(".sc-nav button").click());
+	assert.equal(location.hash, "#sc-solar");
+	assert.match(document.body.textContent, /Finish or cancel roof editing/);
 	await click("Check or retry this upload");
 	await until(
 		() =>
@@ -426,6 +435,15 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	assert.equal(local.history.past.length, 1);
 	assert.equal(local.history.current.geometry.roofs[0].holes_uv.length, 1);
 	assert.equal(
+		local.history.current.pvgis_reference_setup.model,
+		"pvgis_5_3_roof_ac_reference_v1",
+	);
+	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
+	assert.equal(
+		local.history.current.pvgis_reference.model,
+		"pvgis_5_3_roof_ac_reference_v1",
+	);
+	assert.equal(
 		local.history.current.geometry_imports.selected[
 			asset.metadata.geometry_import.geometry.sources[0].id
 		],
@@ -435,7 +453,17 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	await until(() => local?.history.current.geometry === undefined);
 	await click("Redo");
 	await until(() => local?.history.current.geometry?.roofs.length === 1);
-	await click("Save project");
+	await click("Use module details");
+	await until(
+		() => local?.history.current.pvgis_reference_setup?.arrays?.length,
+	);
+	assert.deepEqual(
+		local.history.current.pvgis_reference_setup.arrays,
+		knownPv.project.inputs.pvgis_reference.arrays,
+	);
+	await click("Place modules on the roof");
+	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
+	await click("Save snapshot");
 	await until(
 		() =>
 			saved &&
@@ -444,7 +472,6 @@ test("import joins one project history step, guards navigation, and a confirmed 
 			),
 	);
 	await until(() => local?.baseline.revision === 2);
-	await until(() => document.body.textContent.includes("Saved · revision 2"));
 	assert.deepEqual(saved.inputs, local.history.current);
 	await until(() => !document.querySelector(".lp-geometry-intake details"));
 	assert.deepEqual(

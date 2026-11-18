@@ -33,7 +33,13 @@ type InputContract = Literal[
     "nullable_equipment_requirements_v1",
     "authored_energy_calculation_v1",
     "authored_equipment_discovery_v1",
+    "known_pv_ac_reference_v1",
+    "backup_demand_v1",
+    "existing_system_v1",
 ]
+EXISTING_SYSTEM_INPUT_CONTRACT: InputContract = "existing_system_v1"
+BACKUP_DEMAND_INPUT_CONTRACT: InputContract = "backup_demand_v1"
+KNOWN_PV_INPUT_CONTRACT: InputContract = "known_pv_ac_reference_v1"
 AUTHORED_EQUIPMENT_INPUT_CONTRACT: InputContract = "authored_equipment_discovery_v1"
 AUTHORED_ENERGY_INPUT_CONTRACT: InputContract = "authored_energy_calculation_v1"
 NULLABLE_EQUIPMENT_INPUT_CONTRACT: InputContract = "nullable_equipment_requirements_v1"
@@ -87,12 +93,28 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     NULLABLE_EQUIPMENT_INPUT_CONTRACT,
     AUTHORED_ENERGY_INPUT_CONTRACT,
     AUTHORED_EQUIPMENT_INPUT_CONTRACT,
+    KNOWN_PV_INPUT_CONTRACT,
+    BACKUP_DEMAND_INPUT_CONTRACT,
+    EXISTING_SYSTEM_INPUT_CONTRACT,
 )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    if "existing_system" in inputs:
+        required.append(EXISTING_SYSTEM_INPUT_CONTRACT)
+    if "backup_demand" in inputs:
+        required.append(BACKUP_DEMAND_INPUT_CONTRACT)
+    if any(
+        isinstance(reference, Mapping)
+        and reference.get("model") == "pvgis_5_3_known_ac_reference_v1"
+        for reference in (
+            inputs.get("pvgis_reference"),
+            inputs.get("pvgis_reference_setup"),
+        )
+    ):
+        required.append(KNOWN_PV_INPUT_CONTRACT)
     equipment_sources = [inputs]
     plant_setup = inputs.get("equipment_plant_setup")
     if isinstance(plant_setup, Mapping):

@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "PositiveDemand": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "load_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveDemand"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "duration_hours": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveDemand"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "load_kw",
+    "duration_hours"
+  ],
+  "title": "BackupDemand",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

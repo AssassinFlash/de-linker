@@ -20,6 +20,9 @@
     "energy_operating_modes_v1",
     "nullable_equipment_requirements_v1",
     "authored_energy_calculation_v1",
-    "authored_equipment_discovery_v1"
+    "authored_equipment_discovery_v1",
+    "known_pv_ac_reference_v1",
+    "backup_demand_v1",
+    "existing_system_v1"
   ]
 }

@@ -7,11 +7,15 @@ from typing import Literal
 from .assets import Assets
 from .canonical import Object
 from .direct_beam_weather import check_direct_beam
-from .equipment_candidate_choice import check_equipment_candidate
+from .equipment_candidate_choice import (
+    EquipmentCandidateChoice,
+    check_equipment_candidate,
+)
 from .equipment_declarations import (
     compile_discovery_inputs,
     compile_equipment_inputs,
     normalize_discovery_inputs,
+    restore_comparison_models,
 )
 from .equipment_kernel import EquipmentKernel
 from .errors import InvalidInput
@@ -85,11 +89,23 @@ class EquipmentService:
         authored = normalize_discovery_inputs(inputs)
 
         def resolve() -> Context:
-            execution = (
-                compile_discovery_inputs(authored)
-                if operation == "find-equipment"
-                else compile_equipment_inputs(authored, self.kernel.products)
-            )
+            discovery = authored
+            if operation == "find-equipment" and "equipment_candidate" in authored:
+                choice = EquipmentCandidateChoice.read(authored["equipment_candidate"])
+                run = self.workspace.run(actor, choice.run_id)
+                if run.project_id != project_id:
+                    raise InvalidInput("candidate must belong to this project")
+                discovery = restore_comparison_models(
+                    authored, self.workspace.pinned_inputs(run.manifest)
+                )
+            if operation == "find-equipment":
+                from .equipment_search_kernel import EquipmentSearchKernel
+
+                if isinstance(self.kernel, EquipmentSearchKernel):
+                    discovery = self.kernel.comparison_declarations(discovery)
+                execution = compile_discovery_inputs(discovery)
+            else:
+                execution = compile_equipment_inputs(authored, self.kernel.products)
             if operation == "check-equipment" and not {
                 "equipment_selection",
                 "equipment_plant",

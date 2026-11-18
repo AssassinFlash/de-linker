@@ -11,7 +11,7 @@ test("a deferred close completes across a same-scope revalidation without being 
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 	// Prepare the lazy editor before timing close/revalidation behavior; module
 	// compilation on concurrent CI workers is part of fixture setup.
-	await import("../src/components/ProjectEditor.tsx");
+	await import("../src/components/configurator/Configurator.tsx");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const session = {
@@ -74,6 +74,8 @@ test("a deferred close completes across a same-scope revalidation without being 
 			if (String(url).endsWith("/recovery/scopes"))
 				return response({ schema_version: 1, scopes: [], next: null });
 			if (String(url).endsWith("/projects/read")) return response(project);
+			if (String(url).endsWith("/projects/runs"))
+				return response({ items: [], next: null });
 			assert.ok(String(url).endsWith("/projects/list"));
 			return response({ items: [], next: null });
 		},
@@ -124,8 +126,11 @@ test("a deferred close completes across a same-scope revalidation without being 
 			),
 		),
 	);
-	await until(() => document.querySelector("textarea"));
-	await enter(document.querySelector("textarea"), "SYNTHETIC UNSAVED NOTE");
+	await until(() => document.querySelector("input[name=location_label]"));
+	await enter(
+		document.querySelector("input[name=location_label]"),
+		"SYNTHETIC UNSAVED NOTE",
+	);
 	const projects = () =>
 		[...document.querySelectorAll("button")].find(
 			(button) => button.textContent === "Projects",
@@ -140,7 +145,7 @@ test("a deferred close completes across a same-scope revalidation without being 
 	// One light probe runs; the confirmed workspace keeps its admission and
 	// visibility, so the pending close is never refused by the revalidation.
 	assert.equal(
-		document.querySelector(".lp-project").parentElement.hidden,
+		document.querySelector(".sc-project-heading").parentElement.hidden,
 		false,
 	);
 	assert.equal(client.isCurrentScope(session.query_scope), true);
@@ -150,8 +155,8 @@ test("a deferred close completes across a same-scope revalidation without being 
 	await until(
 		() =>
 			client.isCurrentScope(session.query_scope) &&
-			document.querySelector(".lp-workspace") &&
-			!document.querySelector(".lp-project"),
+			document.querySelector(".sc-configurator") &&
+			document.querySelector("#lp-projects-heading"),
 	);
 	assert.ok(document.body.textContent.includes("Your projects"));
 	assert.equal(location.search, "");

@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "Identifier": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "KnownPvArray": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "peak_power_kwp": {
+          "exclusiveMinimum": 0,
+          "title": "Peak Power Kwp",
+          "type": "number"
+        },
+        "tilt_deg": {
+          "maximum": 90,
+          "minimum": 0,
+          "title": "Tilt Deg",
+          "type": "number"
+        },
+        "azimuth_north_clockwise_deg": {
+          "exclusiveMaximum": 360,
+          "minimum": 0,
+          "title": "Azimuth North Clockwise Deg",
+          "type": "number"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Note"
+        }
+      },
+      "required": [
+        "id",
+        "peak_power_kwp",
+        "tilt_deg",
+        "azimuth_north_clockwise_deg",
+        "source_note"
+      ],
+      "title": "KnownPvArray",
+      "type": "object"
+    },
+    "Note": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "radiation_database": {
+      "enum": [
+        "PVGIS-ERA5",
+        "PVGIS-SARAH3"
+      ],
+      "title": "Radiation Database",
+      "type": "string"
+    },
+    "year": {
+      "maximum": 9998,
+      "minimum": 1,
+      "title": "Year",
+      "type": "integer"
+    },
+    "pv_technology": {
+      "enum": [
+        "crystSi",
+        "crystSi2025",
+        "CIS",
+        "CdTe"
+      ],
+      "title": "Pv Technology",
+      "type": "string"
+    },
+    "mounting_place": {
+      "enum": [
+        "free",
+        "building"
+      ],
+      "title": "Mounting Place",
+      "type": "string"
+    },
+    "system_loss_percent": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "System Loss Percent",
+      "type": "number"
+    },
+    "use_terrain_horizon": {
+      "title": "Use Terrain Horizon",
+      "type": "boolean"
+    },
+    "model": {
+      "const": "pvgis_5_3_known_ac_reference_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "source_note": {
+      "$ref": "#/$defs/Note"
+    },
+    "arrays": {
+      "items": {
+        "$ref": "#/$defs/KnownPvArray"
+      },
+      "minItems": 1,
+      "title": "Arrays",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "radiation_database",
+    "year",
+    "pv_technology",
+    "mounting_place",
+    "system_loss_percent",
+    "use_terrain_horizon",
+    "model",
+    "source_note",
+    "arrays"
+  ],
+  "title": "KnownPvInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

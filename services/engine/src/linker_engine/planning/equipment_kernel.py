@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import cast
 
+from .asset_publication import AssetResult
 from .canonical import Object
 from .certificate_evidence import certificate_documents
 from .certificate_sources import inspect_report_certificates
@@ -13,6 +14,7 @@ from .equipment_conditions import review_device_conditions
 from .equipment_inputs import EquipmentSelection
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
+from .existing_system import require_retained_inverter
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
 from .records import Actor, Context, Lease
@@ -44,6 +46,7 @@ class EquipmentKernel:
         )
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
+        require_retained_inverter(inputs, selection=True)
         basis = self.products.equipment_basis()
         if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
             from .equipment_plant import EquipmentPlant
@@ -80,7 +83,7 @@ class EquipmentKernel:
             self.parameters(),
         )
 
-    def __call__(self, lease: Lease, control: Control) -> Object:
+    def __call__(self, lease: Lease, control: Control) -> Object | AssetResult:
         control.checkpoint()
         sha = lease.request.get("manifest_sha256")
         if not isinstance(sha, str):
@@ -96,14 +99,20 @@ class EquipmentKernel:
             or pinned.get("runtime_bundle") != self.runtime.sha256
         ):
             raise VersionUnavailable("equipment runtime bundle is missing")
-        proof = pinned.get("woo.equipment_inputs")
-        if not isinstance(proof, str):
-            raise VersionUnavailable("equipment publication proof is missing")
-        basis = self.workspace.blobs.object(proof)
-        self.products.confirm_basis(basis, require_reference=False)
         inputs = self.workspace.pinned_inputs(manifest)
-        output = self.compute(inputs, basis, control)
-        if "equipment_condition_inputs" in inputs:
+        basis: Object = {}
+        if self.requires_woo_basis(inputs):
+            proof = pinned.get("woo.equipment_inputs")
+            if not isinstance(proof, str):
+                raise VersionUnavailable("equipment publication proof is missing")
+            basis = self.workspace.blobs.object(proof)
+            self.products.confirm_basis(basis, require_reference=False)
+        execution_assets = dict(pinned)
+        inputs, prepared = self.prepare_inputs(
+            lease, control, manifest, inputs, execution_assets
+        )
+        output = self.compute(inputs, basis, control, pinned=execution_assets)
+        if "equipment_condition_inputs" in inputs and "assessment" in output:
             evidence = certificate_documents(basis, cast(Object, output["assessment"]))
             source: Object = {"certificates": evidence}
             originals = inspect_report_certificates(
@@ -112,8 +121,9 @@ class EquipmentKernel:
             evidence["condition_review"] = review_device_conditions(inputs, evidence)
             output.update(certificates=evidence, dependencies=originals)
         control.checkpoint()
-        self.products.confirm_basis(basis, require_reference=False)
-        return {
+        if self.requires_woo_basis(inputs):
+            self.products.confirm_basis(basis, require_reference=False)
+        result: Object = {
             "schema": 1,
             "kind": self.kind,
             "project_id": manifest["project_id"],
@@ -124,8 +134,33 @@ class EquipmentKernel:
             "pinned_assets": pinned,
             **output,
         }
+        if prepared is not None:
+            return AssetResult(
+                {
+                    **result,
+                    "profile_summary": prepared.result["profile_summary"],
+                    "dependencies": prepared.result["dependencies"],
+                },
+                prepared.asset,
+            )
+        return result
 
-    def compute(self, inputs: Object, basis: Object, control: Control) -> Object:
+    def prepare_inputs(
+        self,
+        lease: Lease,
+        control: Control,
+        manifest: Object,
+        inputs: Object,
+        pinned: Object,
+    ) -> tuple[Object, AssetResult | None]:
+        return inputs, None
+
+    def requires_woo_basis(self, inputs: Object) -> bool:
+        return True
+
+    def compute(
+        self, inputs: Object, basis: Object, control: Control, *, pinned: Object
+    ) -> Object:
         if "equipment_plant" in inputs:
             from .plant_assessment import assess_plant
 

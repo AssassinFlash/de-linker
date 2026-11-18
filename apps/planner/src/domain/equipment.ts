@@ -17,8 +17,8 @@ export function factoryEquipment(
 	const assembly = assemblies[String(setup.battery_product_id)];
 	return assembly?.sales_unit_kind === "battery_system" &&
 		assembly.fixed_modules_per_stack !== null
-		? { ...setup, modules_per_stack: assembly.fixed_modules_per_stack }
-		: setup;
+		? { modules_per_stack: assembly.fixed_modules_per_stack }
+		: {};
 }
 
 /** Procurement intent per primary device; absent or null means new. */
@@ -86,6 +86,7 @@ const EQUIPMENT_SETUP_FIELDS = [
 	"required_usable_kwh",
 	"required_discharge_ac_kw",
 	"equipment_use",
+	"comparison_models",
 ] as const;
 
 /** Customer demand travels with the authored setup, never the physical selection. */
@@ -192,13 +193,41 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 		equipment_use: null,
 	};
 }
+const modelFields = ["inverter_product_id", "battery_product_id"] as const;
+
+export function comparisonModels(setup: JsonObject): JsonObject {
+	return (
+		(setup.comparison_models as JsonObject | undefined) ?? {
+			inverter_product_id: setup.inverter_product_id ?? null,
+			battery_product_id: setup.battery_product_id ?? null,
+		}
+	);
+}
+
 export function changeEquipment(
 	inputs: JsonObject,
 	patch: JsonObject,
 ): JsonObject {
+	const setup = equipmentDraft(inputs);
+	const models = comparisonModels(setup);
 	const next: Record<string, Json> = {
 		...inputs,
-		equipment_setup: { ...equipmentDraft(inputs), ...patch },
+		equipment_setup: {
+			...setup,
+			...(setup.comparison_models === undefined
+				? {}
+				: {
+						comparison_models: {
+							...models,
+							...Object.fromEntries(
+								modelFields
+									.filter((key) => Object.hasOwn(patch, key))
+									.map((key) => [key, patch[key]!]),
+							),
+						},
+					}),
+			...patch,
+		},
 	};
 	delete next.equipment_selection;
 	delete next.equipment_candidate;
@@ -221,7 +250,11 @@ export function compileEquipment(
 		if (!product) throw new ApiError(409, "product_evidence_changed");
 		revisions[String(product.id)] = product.product_revision;
 	}
-	const { application: _demand, ...hardware } = setup;
+	const {
+		application: _demand,
+		comparison_models: _filters,
+		...hardware
+	} = setup;
 	const value = { ...hardware, product_revisions: revisions };
 	return readEquipmentSelection(value);
 }
