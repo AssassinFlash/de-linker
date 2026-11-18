@@ -7,6 +7,17 @@ import { ReviewProposal } from "../src/components/configurator/ReviewProposal.ts
 import fixture from "./fixtures/index.ts";
 
 const scope = "a".repeat(64);
+
+function reflectNamedFormAction(t) {
+	// jsdom omits the browser's named-property lookup for HTMLFormElement.
+	const native = Object.getOwnPropertyDescriptor(
+		window.HTMLFormElement.prototype,
+		"action",
+	);
+	t.mock.getter(window.HTMLFormElement.prototype, "action", function () {
+		return this.elements.namedItem("action") ?? native.get.call(this);
+	});
+}
 function props(run = structuredClone(fixture.geometric_pv.report_run)) {
 	if (run) run.result.has_draft_items = false;
 	return {
@@ -146,6 +157,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 			root = createRoot(page.element),
 			value = props();
 		t.after(() => page.dispose(root));
+		reflectNamedFormAction(t);
 		value.run.result.has_report_only_handoff = true;
 		const handoff = "b".repeat(32),
 			digest = "e".repeat(64),
@@ -249,7 +261,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 						project_title: "Warehouse roof",
 					},
 				],
-				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input name="name" required>${mode === "changed" ? `<input type="checkbox" name="linker_include_project_notes" value="1" checked><input name="billing_city" value="Berlin"><select name="billing_country"><option>DE</option><option>NL</option></select><input type="hidden" name="linker_project_note_revisions[project]" value="${calls.length}">` : ""}<input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
+				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="action" value="linker_inquiry"><input name="name" required>${mode === "changed" ? `<input type="checkbox" name="linker_include_project_notes" value="1" checked><input name="billing_city" value="Berlin"><select name="billing_country"><option>DE</option><option>NL</option></select><input type="hidden" name="linker_project_note_revisions[project]" value="${calls.length}">` : ""}<input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
 			};
 		};
 		value.operations.start = async (path, fields) => {
@@ -323,6 +335,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 		]);
 		assert.deepEqual(posts, [
 			{
+				action: "linker_inquiry",
 				name: "Installer",
 				linker_draft_hash: "c".repeat(32),
 				linker_planner_draft_sha256: "d".repeat(64),
@@ -337,6 +350,7 @@ for (const saved of [false, true])
 			root = createRoot(page.element),
 			value = props(null);
 		t.after(() => page.dispose(root));
+		reflectNamedFormAction(t);
 		const { emptyBrief } = await import("../src/domain/brief.ts");
 		value.inputs = {
 			brief: {
@@ -363,7 +377,12 @@ for (const saved of [false, true])
 		const calls = [];
 		value.client.query = async (path) => {
 			calls.push(path);
-			if (calls.length === 1) throw new Error("unavailable");
+			const action =
+				calls.length === 1
+					? saved
+						? "https://["
+						: "https://example.invalid/wp-admin/admin-post.php"
+					: "/wp-admin/admin-post.php";
 			return {
 				schema_version: 1,
 				inquiry_lines: saved
@@ -377,7 +396,7 @@ for (const saved of [false, true])
 							},
 						]
 					: [],
-				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
+				inquiry_form_html: `<form method="post" action="${action}"><input type="hidden" name="action" value="linker_inquiry"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
 			};
 		};
 		await act(async () =>

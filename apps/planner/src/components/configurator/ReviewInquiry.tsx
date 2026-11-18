@@ -121,10 +121,13 @@ export function ReviewInquiry({
 		// This fragment comes from the same-origin commerce form renderer.
 		node.innerHTML = preview.form;
 		const form = node.querySelector("form");
+		const action = form?.getAttribute("action")?.trim();
+		const target = action ? URL.parse(action, node.baseURI) : null;
 		if (
 			!form ||
 			form.method !== "post" ||
-			new URL(form.action).origin !== client.origin
+			target?.origin !== client.origin ||
+			!target.pathname.endsWith("/wp-admin/admin-post.php")
 		) {
 			node.replaceChildren();
 			setError({ stage: "load", cause: new Error("invalid_inquiry_form") });
