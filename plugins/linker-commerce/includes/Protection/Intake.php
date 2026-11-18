@@ -72,15 +72,16 @@ final class Intake {
 		if ( ! is_string( $json ) || strlen( $json ) > self::MAX_BYTES || ( 'inquiry' === $action && WC()->cart->get_cart_contents_count() > 0 && count( WC()->cart->get_cart() ) > self::MAX_LINES ) ) {
 			return new WP_Error( 'linker_intake_size', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) );
 		}
-		$result = self::problem( new WP_Error( 'linker_intake_busy' ) );
+		$defer_slot = 'verification' === $lane && 'inquiry' === $action && array() !== \Linker\Commerce\Planning\Context::submitted_handoffs();
+		$result     = self::problem( new WP_Error( 'linker_intake_busy' ) );
 		// Only this logical request stays locked across its native/model work.
 		// The site-wide capacity mutex covers reservation and binding separately.
 		try {
 			Lock::run(
 				'intake-write-' . $id,
-				static function () use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work, &$result ): void {
+				static function () use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work, $defer_slot, &$result ): void {
 					$result = IntakeStore::edit(
-						static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners ): WC_Order|WP_Error|array {
+						static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $defer_slot ): WC_Order|WP_Error|array {
 							$ledger = new Ledger();
 							$entry  = $state['entries'][ $id ] ?? null;
 							if ( is_array( $entry ) ) {
@@ -142,7 +143,7 @@ final class Intake {
 									return self::grouped( $id );
 								}
 							}
-							$state['entries'][ $id ] = array(
+							$entry = array(
 								'lane'        => $lane,
 								'action'      => $action,
 								'order'       => 0,
@@ -151,16 +152,22 @@ final class Intake {
 								'at'          => time(),
 								'owners'      => array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ),
 							);
-							IntakeStore::save( $state );
+							if ( ! $defer_slot ) {
+								$state['entries'][ $id ] = $entry;
+								IntakeStore::save( $state );
+							}
 							$sent = $ledger->dispatch( $id, $fingerprint );
 							if ( is_wp_error( $sent ) ) {
 								return self::problem( $sent );
 							}
-							return self::begin( $state, $id, $lane );
+							return $defer_slot ? array(
+								'write_lane' => $lane,
+								'entry'      => $entry,
+							) : self::begin( $state, $id, $lane );
 						}
 					);
 					if ( is_array( $result ) && isset( $result['write_lane'] ) ) {
-						$result = self::write( (string) $result['write_lane'], $id, $fingerprint, $identity, $work );
+						$result = self::write( (string) $result['write_lane'], $id, $fingerprint, $identity, $work, $result['entry'] ?? null );
 					}
 				},
 				0,
@@ -194,29 +201,44 @@ final class Intake {
 	 * @param string                          $fingerprint Semantic HMAC.
 	 * @param Identity                        $identity Native subject.
 	 * @param callable(): (WC_Order|WP_Error) $work Native writer.
+	 * @param array<string,mixed>|null        $entry Review slot to take after report admission.
 	 * @return WC_Order|WP_Error
 	 */
-	private static function write( string $lane, string $id, string $fingerprint, Identity $identity, callable $work ): WC_Order|WP_Error {
+	private static function write( string $lane, string $id, string $fingerprint, Identity $identity, callable $work, ?array $entry ): WC_Order|WP_Error {
+		$refusal = null;
+		$reserve = null === $entry ? null : static function () use ( $entry, $lane, $id, &$refusal ): void {
+			$result = IntakeStore::edit(
+				static function ( array &$state ) use ( $entry, $lane, $id ): array|WP_Error {
+					$used = count( array_filter( $state['entries'], static fn ( array $record ): bool => $record['lane'] === $lane ) );
+					if ( $used >= IntakeStore::CAPACITY[ $lane ] ) {
+						return self::full();
+					}
+					$state['entries'][ $id ] = $entry + array( 'creating' => true );
+					IntakeStore::save( $state );
+					return array();
+				},
+				1,
+				true
+			);
+			if ( $result instanceof WP_Error ) {
+				// Woo wraps checkout exceptions. Preserve the unsaved result for the form.
+				$refusal = 'linker_intake_full' === $result->get_error_code() ? $result : \Linker\Commerce\Planning\Context::admission_unavailable();
+				throw new CapacityFull( $refusal ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The form escapes the structured native refusal.
+			}
+		};
 		$context = static fn (): array => array(
-			'enforced'    => true,
-			'id'          => $id,
-			'fingerprint' => $fingerprint,
-			'binding'     => $identity->binding(),
-			'intake'      => $lane,
+			'enforced'       => true,
+			'id'             => $id,
+			'fingerprint'    => $fingerprint,
+			'binding'        => $identity->binding(),
+			'intake'         => $lane,
+			'reserve_review' => $reserve,
 		);
 		add_filter( 'linker_commerce_public_business_context', $context );
 		try {
 			$order = $work();
-			if ( $order instanceof WP_Error && in_array( $order->get_error_code(), array( 'planning_project_deleted', 'planning_admission_unavailable' ), true ) ) {
-				// Admission refused before an order was saved. Keep the dispatch charged.
-				$released = IntakeStore::edit(
-					static function ( array &$state ) use ( $id ): array {
-						unset( $state['entries'][ $id ] );
-						IntakeStore::save( $state );
-						return array();
-					}
-				);
-				return $released instanceof WP_Error ? $released : $order;
+			if ( $refusal instanceof WP_Error ) {
+				return $refusal;
 			}
 			if ( $order instanceof WC_Order ) {
 				$stored = $order->get_id() > 0 ? BusinessRecord::recover( $id, $fingerprint, $identity->binding(), array( 'outcome' => $order->get_id() ) ) : null;
@@ -260,6 +282,9 @@ final class Intake {
 			return false;
 		}
 		$lane = (string) $context['intake'];
+		if ( isset( $context['reserve_review'] ) ) {
+			$context['reserve_review']();
+		}
 		$data = array(
 			'lane' => $lane,
 			'at'   => time(),

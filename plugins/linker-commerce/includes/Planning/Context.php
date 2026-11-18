@@ -304,13 +304,21 @@ final class Context {
 		return new WP_Error( 'planning_admission_unavailable', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 	}
 
+	/** Frozen handoffs the current inquiry will submit, keyed by handoff ID.
+	 *
+	 * @return array<string,array<string,mixed>>
+	 */
+	public static function submitted_handoffs(): array {
+		return self::active() + array_intersect_key( self::report_only_contexts(), self::included_notes() );
+	}
+
 	/**
 	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
 	 * @param callable(array<string,array<string,mixed>>):(WC_Order|WP_Error) $submit Native order writer.
 	 */
 	public static function submit_inquiry( callable $submit ): WC_Order|WP_Error {
-		$handoffs = self::active() + array_intersect_key( self::report_only_contexts(), self::included_notes() );
+		$handoffs = self::submitted_handoffs();
 		if ( array() === $handoffs ) {
 			return $submit( array() );
 		}

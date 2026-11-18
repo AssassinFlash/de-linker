@@ -99,6 +99,15 @@ final class Sender {
 		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $references, &$lock_refused, &$prepared_key, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
+			if ( array() !== $references ) {
+				// The form has no provider work. Its business/review slot joins Woo's first save.
+				if ( ! $awaited ) {
+					$transaction = new NativeTransaction();
+				}
+				$lock_refused = 0 === $order->get_id();
+				\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
+				$lock_refused = false;
+			}
 			if ( $awaited ) {
 				$this->prepare( $order, $details, 'inquiry', $context, true );
 				$this->attach_summary( $order, $summary );
@@ -110,11 +119,11 @@ final class Sender {
 			}
 			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
 			// Optional summary/provider work has finished before the first native write.
-			$transaction = new NativeTransaction();
-			// Woo converts a thrown pre-save check to checkout-error; releasing a lost lock can then throw again.
-			$lock_refused = 0 === $order->get_id();
-			\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
-			$lock_refused = false;
+			if ( null === $transaction ) {
+				$transaction = new NativeTransaction();
+				// Provider work can lose the connection. Its prior dispatch remains charged.
+				\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
+			}
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
 		try {
