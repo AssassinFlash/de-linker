@@ -71,6 +71,41 @@ test("review shows the report's actual BOM and supports generation before a repo
 	assert.equal(generated, 1);
 });
 
+test("site installation requirements have their own section alongside equipment and panel layout", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element);
+	t.after(() => page.dispose(root));
+	const value = props(),
+		report = value.run.result.report;
+	const base = report.sections.find((section) => section.id === "bom");
+	const solar = report.sections.find(
+		(section) => section.id === "pv-components",
+	);
+	report.sections = [
+		base,
+		{
+			...base,
+			id: "site-materials",
+			title: "Site installation materials",
+			table: {
+				columns: ["Quantity", "Requirement"],
+				rows: [["4", "Mounting rails"]],
+			},
+		},
+		solar,
+	];
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const areas = [...document.querySelectorAll(".sc-report-table")].filter(
+		(section) => !section.closest("dialog"),
+	);
+	assert.deepEqual(
+		areas.map((section) => section.getAttribute("aria-label")),
+		[base.title, "Site installation materials", solar.title],
+	);
+	assert.match(areas[1].textContent, /Mounting rails/);
+});
 for (const historical of [false, true]) {
 	test(
 		"a panel-only " +

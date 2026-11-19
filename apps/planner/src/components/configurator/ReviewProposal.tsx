@@ -29,7 +29,7 @@ import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
 function isReportItemSection(section: ReportSection) {
-	return section.id === "bom" || section.id === "pv-components";
+	return ["bom", "site-materials", "pv-components"].includes(section.id);
 }
 
 function ReportContent({ section }: { section: ReportSection }) {
