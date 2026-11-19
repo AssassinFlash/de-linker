@@ -826,7 +826,11 @@ def create_private_app(
         if page_size > limits.max_page_size:
             raise InvalidInput("project page exceeds deployment limit")
         return project_page(
-            workspace, verified_actor(request.scope), page_size, body.after
+            workspace,
+            verified_actor(request.scope),
+            page_size,
+            body.after,
+            body.title_query,
         )
 
     @app.post("/projects/read")

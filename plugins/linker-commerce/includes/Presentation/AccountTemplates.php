@@ -151,7 +151,20 @@ final class AccountTemplates {
 		$previous  = $this->row;
 		$this->row = $row;
 		try {
-			return do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' ) );
+			$content = Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' );
+			if ( 'overview' === $name ) {
+				$content = str_replace( '{{project-search-url}}', $this->field( array( 'key' => 'configurator-url' ) ), $content );
+			}
+			if ( 'overview' === $name || 'inquiries' === $name ) {
+				$content = strtr(
+					$content,
+					array(
+						'{{inquiry-search-url}}' => $this->url( array( 'endpoint' => 'orders' ) ),
+						'{{inquiry-number}}'     => esc_attr( $this->inquiry_number() ),
+					)
+				);
+			}
+			return do_shortcode( $content );
 		} finally {
 			$this->row = $previous;
 		}
@@ -182,6 +195,8 @@ final class AccountTemplates {
 			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
 		} elseif ( 'products-url' === $key ) {
 			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
+		} elseif ( 'projects-url' === $key ) {
+			$value = add_query_arg( array( 'projects' => '1' ), $this->translated_page_url( 'solution-configurator' ) );
 		} elseif ( 'configurator-url' === $key ) {
 			$value = $this->translated_page_url( 'solution-configurator' );
 			if ( isset( $this->row['project-id'] ) ) {
@@ -190,14 +205,14 @@ final class AccountTemplates {
 				$value = add_query_arg( array( 'saved_solution' => (int) $this->row['id'] ), $value );
 			}
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
-			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
+			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() && '' === $this->inquiry_number() ) ? 'page' : 'false';
 		}
 		if ( in_array( $key, array( 'icon', 'total', 'items', 'nonce', 'remove-nonce', 'tiles', 'rows' ), true ) ) {
 			// 'icon' is fixed markup from nav_icon()/document_icon(), never request
 			// data; the allowlist carries the SVG elements either way.
 			return in_array( $key, array( 'nonce', 'remove-nonce' ), true ) ? (string) $value : wp_kses( (string) $value, self::allowed_html() );
 		}
-		return in_array( $key, array( 'url', 'open-url', 'products-url', 'configurator-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
+		return in_array( $key, array( 'url', 'open-url', 'products-url', 'configurator-url', 'projects-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
 	}
 
 	/**
@@ -269,23 +284,28 @@ final class AccountTemplates {
 		$items = wc_get_account_menu_items();
 		$html  = '';
 		$type  = $atts['type'] ?? '';
-		if ( in_array( $type, array( 'mobile', 'shortcuts' ), true ) ) {
-			$endpoints = 'mobile' === $type
-				? array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' )
-				: array( 'orders', 'saved-solutions', 'documents' );
+		if ( in_array( $type, array( 'mobile', 'shortcuts', 'settings' ), true ) ) {
+			$endpoints = match ( $type ) {
+				'mobile'    => array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' ),
+				'settings'  => $this->nav_groups()['account'],
+				'shortcuts' => array( 'saved-solutions', 'orders', 'documents' ),
+			};
 			foreach ( $endpoints as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
-					$current = 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ? 'page' : $this->endpoint_current( $endpoint );
+					$current = $this->endpoint_current( $endpoint );
 					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
 						$current = 'page';
 					}
+					$label = match ( true ) {
+						'mobile' === $type && 'edit-account' === $endpoint  => __( 'Account', 'linker-commerce' ),
+						'shortcuts' === $type && 'documents' === $endpoint => __( 'Quotations and documents', 'linker-commerce' ),
+						default                                           => $items[ $endpoint ],
+					};
 					$html .= $this->fragment(
 						'nav-item',
 						array(
-							// The tab bar's four entries carry no sign-out; that
-							// lives in the sidebar and the header menu.
-							'url'     => wc_get_account_endpoint_url( $endpoint ),
-							'label'   => 'edit-account' === $endpoint ? __( 'Account', 'linker-commerce' ) : $items[ $endpoint ],
+							'url'     => 'customer-logout' === $endpoint ? linker_commerce_logout_url() : wc_get_account_endpoint_url( $endpoint ),
+							'label'   => $label,
 							'current' => $current,
 							'icon'    => $this->nav_icon( $endpoint ),
 						)
@@ -447,6 +467,9 @@ final class AccountTemplates {
 		if ( 'dashboard' === $endpoint ) {
 			return is_wc_endpoint_url() ? 'false' : 'page';
 		}
+		if ( 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ) {
+			return 'page';
+		}
 		return is_wc_endpoint_url( $endpoint ) ? 'page' : 'false';
 	}
 
@@ -457,41 +480,49 @@ final class AccountTemplates {
 	 */
 	public function text( $atts = array() ): string {
 		$labels = array(
-			'welcome'         => __( 'Welcome back', 'linker-commerce' ),
-			'workspace'       => __( 'Your account workspace', 'linker-commerce' ),
-			'menu'            => __( 'Account menu', 'linker-commerce' ),
-			'overview'        => __( 'Overview', 'linker-commerce' ),
-			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
-			'all'             => __( 'All inquiries', 'linker-commerce' ),
-			'open'            => __( 'Open inquiries', 'linker-commerce' ),
-			'status'          => __( 'Status', 'linker-commerce' ),
-			'number'          => __( 'Inquiry', 'linker-commerce' ),
-			'date'            => __( 'Date', 'linker-commerce' ),
-			'amount'          => __( 'Amount', 'linker-commerce' ),
-			'actions'         => __( 'Actions', 'linker-commerce' ),
-			'view'            => __( 'View', 'linker-commerce' ),
-			'document'        => __( 'Document', 'linker-commerce' ),
-			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
-			'saved'           => __( 'Saved on', 'linker-commerce' ),
-			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
-			'recalculate'     => __( 'This saved solution needs a new calculation before it can be added to your solution draft.', 'linker-commerce' ),
-			'remove'          => __( 'Remove', 'linker-commerce' ),
-			'keep-solution'   => __( 'Keep solution', 'linker-commerce' ),
-			'remove-question' => __( 'Remove this saved solution?', 'linker-commerce' ),
-			'remove-solution' => __( 'Remove solution', 'linker-commerce' ),
-			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
-			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
-			'browse'          => __( 'Browse products', 'linker-commerce' ),
-			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
-			'projects'        => __( 'Projects', 'linker-commerce' ),
-			'projects-error'  => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
-			'empty-documents' => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
-			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
-			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
-			'view-all'        => __( 'View all', 'linker-commerce' ),
-			'documents'       => __( 'Documents', 'linker-commerce' ),
+			'welcome'          => __( 'Welcome back', 'linker-commerce' ),
+			'my-account'       => __( 'My account', 'linker-commerce' ),
+			'account-settings' => __( 'Account settings', 'linker-commerce' ),
+			'find-project'     => __( 'Find a saved project', 'linker-commerce' ),
+			'project-name'     => __( 'Project name', 'linker-commerce' ),
+			'all-projects'     => __( 'All projects', 'linker-commerce' ),
+			'search'           => __( 'Search', 'linker-commerce' ),
+			'menu'             => __( 'Account menu', 'linker-commerce' ),
+			'overview'         => __( 'Overview', 'linker-commerce' ),
+			'inquiries'        => __( 'Inquiries', 'linker-commerce' ),
+			'find-inquiry'     => __( 'Find an inquiry', 'linker-commerce' ),
+			'inquiry-number'   => __( 'Inquiry number', 'linker-commerce' ),
+			'no-match'         => __( 'No matching inquiries.', 'linker-commerce' ),
+			'all'              => __( 'All inquiries', 'linker-commerce' ),
+			'open'             => __( 'Open inquiries', 'linker-commerce' ),
+			'status'           => __( 'Status', 'linker-commerce' ),
+			'number'           => __( 'Inquiry', 'linker-commerce' ),
+			'date'             => __( 'Date', 'linker-commerce' ),
+			'amount'           => __( 'Amount', 'linker-commerce' ),
+			'actions'          => __( 'Actions', 'linker-commerce' ),
+			'view'             => __( 'View', 'linker-commerce' ),
+			'document'         => __( 'Document', 'linker-commerce' ),
+			'download'         => __( 'Download (PDF)', 'linker-commerce' ),
+			'saved'            => __( 'Saved on', 'linker-commerce' ),
+			'add'              => __( 'Add to solution draft', 'linker-commerce' ),
+			'recalculate'      => __( 'This saved solution needs a new calculation before it can be added to your solution draft.', 'linker-commerce' ),
+			'remove'           => __( 'Remove', 'linker-commerce' ),
+			'keep-solution'    => __( 'Keep solution', 'linker-commerce' ),
+			'remove-question'  => __( 'Remove this saved solution?', 'linker-commerce' ),
+			'remove-solution'  => __( 'Remove solution', 'linker-commerce' ),
+			'report'           => __( 'Design report (PDF)', 'linker-commerce' ),
+			'previous'         => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'next'             => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'empty'            => __( 'No inquiries yet.', 'linker-commerce' ),
+			'browse'           => __( 'Browse products', 'linker-commerce' ),
+			'configurator'     => __( 'Open the Solution Configurator', 'linker-commerce' ),
+			'projects'         => __( 'Projects', 'linker-commerce' ),
+			'projects-error'   => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
+			'empty-documents'  => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-solutions'  => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
+			'recent'           => __( 'Recent inquiries', 'linker-commerce' ),
+			'view-all'         => __( 'View all', 'linker-commerce' ),
+			'documents'        => __( 'Documents', 'linker-commerce' ),
 		);
 			return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
 	}
@@ -545,7 +576,7 @@ final class AccountTemplates {
 						$html .= $this->fragment( 'inquiry-card', $this->order_row( $order ) );
 					}
 				}
-				return '' === $html ? $this->fragment( 'empty-inquiries' ) : $html;
+				return '' === $html ? $this->fragment( '' === $this->inquiry_number() ? 'empty-inquiries' : 'inquiry-no-results' ) : $html;
 			case 'summary':
 				$order = $this->args['order'] ?? null;
 				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
@@ -709,19 +740,19 @@ final class AccountTemplates {
 		foreach ( array_slice( $this->documents()->for_customer( $customer ), 0, 3 ) as $document ) {
 			$documents .= $this->fragment( 'document-row', $this->document_row( $document ) );
 		}
-		return $this->fragment( 'tiles', array( 'tiles' => $tiles ) )
-			. $this->fragment(
-				'recent',
-				array(
-					'rows' => '' === $recent ? $this->fragment( 'empty' ) : $recent,
-				)
+		return $this->fragment(
+			'recent',
+			array(
+				'rows' => '' === $recent ? $this->fragment( 'empty' ) : $recent,
 			)
+		)
 			. $this->fragment(
 				'documents-entry',
 				array(
 					'rows' => '' === $documents ? $this->fragment( 'empty-documents' ) : $documents,
 				)
-			);
+			)
+			. $this->fragment( 'tiles', array( 'tiles' => $tiles ) );
 	}
 
 	/**
@@ -822,6 +853,13 @@ final class AccountTemplates {
 	 * @return array<string, mixed>
 	 */
 	public function orders_query( array $query ): array {
+		$number = $this->inquiry_number();
+		if ( '' !== $number ) {
+			// The receipt's number is the native Woo order ID on this site.
+			// Woo translates post__in to its HPOS id filter and keeps customer scope.
+			$id                = ltrim( $number, '#' );
+			$query['post__in'] = array( ctype_digit( $id ) ? (int) $id : 0 );
+		}
 		if ( $this->open_only() ) {
 			$query['status'] = array( Statuses::RECEIVED, Statuses::QUOTATION );
 		} else {
@@ -831,6 +869,12 @@ final class AccountTemplates {
 			}
 		}
 		return $query;
+	}
+
+	/** Customer-entered inquiry number from the receipt. */
+	private function inquiry_number(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only search.
+		return isset( $_GET['inquiry_number'] ) && is_string( $_GET['inquiry_number'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['inquiry_number'] ) ) ) : '';
 	}
 
 	/** Read-only list selection, never an action or a mutation. */

@@ -9,6 +9,7 @@ import {
 	revealHashTarget,
 } from "./measurePlannerChrome.ts";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
+import { projectTitleSearch } from "./projectIndex.ts";
 
 const workspaceHashes = new Set([
 	"#sc-project",
@@ -50,6 +51,13 @@ export function projectLanguageUrl(
 		throw new Error("invalid_project_reference");
 	if (id) target.searchParams.set("project", id);
 	else target.searchParams.delete("project");
+	target.searchParams.delete("projects");
+	target.searchParams.delete("project_search");
+	if (page.searchParams.get("projects") === "1") {
+		target.searchParams.set("projects", "1");
+		const query = projectTitleSearch(page.searchParams.get("project_search"));
+		if (query) target.searchParams.set("project_search", query);
+	}
 	target.searchParams.delete("run");
 	target.searchParams.delete("compare");
 	target.searchParams.delete("energy_view");

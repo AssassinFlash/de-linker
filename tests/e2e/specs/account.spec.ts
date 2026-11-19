@@ -18,8 +18,14 @@ import { expect, test, type Page } from '@playwright/test';
 /**
  * Internal dependencies
  */
-import { instance, wp, REPO_ROOT } from '../lib/instance';
+import {
+	applyTurnstileProfile,
+	instance,
+	wp,
+	REPO_ROOT,
+} from '../lib/instance';
 import { seedConsentCookies } from '../lib/consent';
+import { mark, since } from '../lib/mail';
 
 // The CookieYes banner covers the reset card until answered; pre-seed the
 // consent cookies so every goto starts from an answered banner.
@@ -76,6 +82,14 @@ function createCustomer(stamp: number, locale: string): string {
 		throw new Error(`user create did not return an id: ${id}`);
 	}
 	wp(['user', 'meta', 'update', id, 'linker_approval_status', 'approved']);
+	wp([
+		'user',
+		'meta',
+		'update',
+		id,
+		'locale',
+		locale === 'de' ? 'de_DE_formal' : 'en_US',
+	]);
 	return login;
 }
 
@@ -103,6 +117,83 @@ async function signIn(
 	);
 }
 
+/** Read the customer's actual reset email, after the local mail worker runs. */
+async function resetEmailLink(email: string, submitted: number): Promise<URL> {
+	let address = '';
+	await expect
+		.poll(
+			() => {
+				wp([
+					'action-scheduler',
+					'run',
+					'--hooks=linker_commerce_mail_attempt',
+					'--batches=1',
+					'--quiet',
+				]);
+				for (const message of since(submitted)) {
+					if (!message.to.includes(email)) continue;
+					address =
+						(message.html || message.body)
+							.replace(/&(?:amp|#0*38);/g, '&')
+							.match(
+								/https?:\/\/[^\s"'<>]*[?&]key=[^\s"'<>]+/
+							)?.[0] ?? '';
+					if (address) return true;
+				}
+				return false;
+			},
+			{
+				timeout: 90_000,
+				message: 'the reset email arrives for this customer',
+			}
+		)
+		.toBe(true);
+	return new URL(address);
+}
+
+/** Keep snapshot traffic outside this local run's real admission and mail windows. */
+function isolateVisitorBudgets(): () => void {
+	const localOnly = String.raw`
+		if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+			throw new RuntimeException( 'A local WordPress mail sink is required.' );
+		}
+	`;
+	const snapshot = wp([
+		'eval',
+		localOnly +
+			String.raw`
+			$prior = array();
+			foreach ( array(
+				\Linker\Commerce\Mail\Throttle::OPTION,
+				\Linker\Commerce\Mail\OptionBudgetLedger::OPTION,
+				\Linker\Commerce\Protection\Ledger::OPTION
+			) as $name ) {
+				wp_cache_delete( $name, 'options' );
+				$prior[$name] = get_option( $name, null );
+				delete_option( $name );
+			}
+			echo base64_encode( serialize( $prior ) );
+		`,
+	]);
+	return () => {
+		wp([
+			'eval',
+			localOnly +
+				`
+				$prior = unserialize( base64_decode( '${snapshot}' ), array( 'allowed_classes' => false ) );
+				foreach ( $prior as $name => $value ) {
+					wp_cache_delete( $name, 'options' );
+					if ( null === $value ) {
+						delete_option( $name );
+					} else {
+						update_option( $name, $value, false );
+					}
+				}
+			`,
+		]);
+	};
+}
+
 const LOCALES = [
 	{
 		locale: 'en',
@@ -115,6 +206,244 @@ const LOCALES = [
 		lost: '/de/mein-konto/lost-password/',
 	},
 ] as const;
+
+test.describe('first-time account and recovery journeys', () => {
+	let restoreProtection: (() => void) | undefined;
+	let restoreBudgets: (() => void) | undefined;
+	test.beforeAll(() => {
+		restoreProtection = applyTurnstileProfile(instance().name, 'optional');
+		restoreBudgets = isolateVisitorBudgets();
+	});
+	test.afterAll(() => {
+		try {
+			restoreBudgets?.();
+		} finally {
+			restoreProtection?.();
+		}
+	});
+
+	for (const { locale, account, lost } of LOCALES) {
+		for (const width of [1440, 390]) {
+			test(`${locale}-${width}: a first visitor opens registration, enters company and person details, and gets their account`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				const email = `e2e-first-account-${locale}-${width}-${Date.now()}@example.test`;
+				await page.goto(url(locale === 'de' ? '/de/' : '/'));
+				await page
+					.locator('.hero-ops .linker-create-account:visible')
+					.click();
+
+				const register = page.locator('form[data-linker-register]');
+				await expect(register).toHaveAttribute('data-active-step', '1');
+				await page
+					.locator('#billing_company')
+					.pressSequentially('Review Solar GmbH', { delay: 100 });
+				await page
+					.locator(
+						'label.radio[for="linker_customer_role_installer"]'
+					)
+					.click();
+				await page.locator('#billing_country').selectOption('DE');
+				await page
+					.locator('#linker_company_website')
+					.fill('review-solar.example');
+				await shot(page, `${locale}-${width}-register-company`);
+				await register
+					.getByRole('button', {
+						name: locale === 'de' ? 'Weiter' : 'Continue',
+					})
+					.click();
+
+				await expect(register).toHaveAttribute('data-active-step', '2');
+				await page.fill('#billing_first_name', 'Maria');
+				await page.fill('#billing_last_name', 'Musterfrau');
+				await page
+					.locator('#reg_email')
+					.pressSequentially(email, { delay: 50 });
+				await page.fill('#reg_password', PASSWORD);
+				await shot(page, `${locale}-${width}-register-person`);
+				await page.locator('button[name="register"]').click();
+				await expect(page).toHaveURL(url(account));
+				await expect(page.locator('body')).toHaveClass(/\blogged-in\b/);
+				await expect(register).toHaveCount(0);
+				await shot(page, `${locale}-${width}-register-confirmation`);
+			});
+
+			test(`${locale}-${width}: the lost-password request answers and its link opens the new-password card`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				const login = createCustomer(Date.now(), locale);
+				await page.goto(url(account));
+				const recovery = page.getByRole('link', {
+					name: /lost your password|passwort vergessen/i,
+				});
+				await expect(recovery).toBeInViewport();
+				const request = page.getByRole('region', {
+					name:
+						locale === 'de'
+							? 'Passwort zurücksetzen'
+							: 'Reset your password',
+				});
+				const endpoint = new URL(
+					(await request.locator('form').getAttribute('action')) ??
+						'',
+					url(account)
+				);
+				expect(endpoint.pathname).toBe(
+					locale === 'de' ? account + 'passwort-zuruecksetzen/' : lost
+				);
+				await expect(request.getByRole('textbox')).toBeVisible();
+				await request
+					.getByRole('textbox')
+					.fill(`${login}@example.test`);
+				await shot(page, `${locale}-${width}-reset-request`);
+				const submitted = mark();
+				await request
+					.getByRole('button', {
+						name:
+							locale === 'de'
+								? 'Link zum Zurücksetzen senden'
+								: 'Send reset link',
+					})
+					.click();
+				await page.waitForLoadState('load');
+				await expect(
+					page.getByRole('heading', {
+						name:
+							locale === 'de'
+								? 'Prüfen Sie Ihr E-Mail-Postfach'
+								: 'Check your email',
+					}),
+					'the request is answered'
+				).toBeVisible();
+				await expect(
+					page.locator('.linker-auth-card .woocommerce-message')
+				).toContainText(
+					locale === 'de'
+						? 'Ihre Anfrage zum Zurücksetzen des Passworts ist eingegangen.'
+						: 'Password reset requested.'
+				);
+				await expect(
+					page.locator('.woocommerce-error'),
+					'an existing account is not refused'
+				).toHaveCount(0);
+				await shot(page, `${locale}-${width}-lost-password`);
+
+				const resetLink = await resetEmailLink(
+					`${login}@example.test`,
+					submitted
+				);
+				expect(resetLink.origin).toBe(new URL(url(account)).origin);
+				expect(resetLink.pathname).toBe(endpoint.pathname);
+				await page.goto(resetLink.href);
+				await page.waitForLoadState('load');
+
+				// The redesigned card, with Woo's own hidden credentials inside it.
+				const card = page.locator(
+					'.linker-auth-inner--solo .linker-auth-card'
+				);
+				await expect(
+					card,
+					'the reset link lands on the card, not on bare WooCommerce markup'
+				).toBeVisible();
+				await expect(
+					card.locator('h1'),
+					'the card titles the new password'
+				).toHaveText(
+					locale === 'de'
+						? 'Wählen Sie ein neues Passwort'
+						: 'Choose a new password'
+				);
+				await expect(page.locator('#password_1')).toBeVisible();
+				await expect(page.locator('#password_2')).toBeVisible();
+				await expect(
+					page.locator('input[name="reset_key"]'),
+					'the key from the link rides along'
+				).not.toHaveValue('');
+				await expect(
+					page.locator('input[name="reset_login"]'),
+					'the login from the link rides along'
+				).toHaveValue(login);
+				await expect(
+					page.locator(
+						'input[name="woocommerce-reset-password-nonce"]'
+					),
+					'the form posts with WooCommerce own nonce'
+				).not.toHaveValue('');
+				await shot(page, `${locale}-${width}-reset-form`);
+
+				// A password below the site's minimum never leaves the page: the meter
+				// is WooCommerce's own (min_password_strength 3) and it holds the form's
+				// button. There is no server-side strength gate to reach — WooCommerce
+				// refuses nothing weaker than the empty string.
+				await page.fill('#password_1', 'abc');
+				await page.fill('#password_2', 'abc');
+				await expect(
+					page.locator(
+						'form.woocommerce-ResetPassword button[type="submit"]'
+					),
+					'WooCommerce own meter holds a weak password on the page'
+				).toBeDisabled();
+
+				// Two different passwords: the chain's own line names the mismatch and
+				// the form stays put (no round trip, no lost key).
+				await page.fill('#password_1', NEW_PASSWORD);
+				await page.fill('#password_2', `${NEW_PASSWORD}x`);
+				const setPassword = page.getByRole('button', {
+					name:
+						locale === 'de'
+							? 'Neues Passwort speichern'
+							: 'Set new password',
+				});
+				await setPassword.click();
+				await expect(
+					page.locator('[data-password-mismatch]'),
+					'the mismatch is named under the field it belongs to'
+				).toBeVisible();
+				await expect(page).toHaveURL(/show-reset-form/);
+				await shot(page, `${locale}-${width}-reset-mismatch`);
+
+				// The real save: the same card resets the password, WooCommerce's own
+				// confirmation opens the sign-in card, and the new password signs in —
+				// the whole chain, with the account this test created.
+				await page.fill('#password_2', NEW_PASSWORD);
+				await setPassword.click();
+				await page.waitForLoadState('load');
+				await expect(
+					page
+						.locator('.woocommerce-message, .woocommerce-info')
+						.first(),
+					'the reset is confirmed on the sign-in card'
+				).toBeVisible();
+				await expect(page.locator('#username')).toBeVisible();
+				await shot(page, `${locale}-${width}-reset-done`);
+
+				await page.goto(url(locale === 'de' ? '/de/' : '/'));
+				await page
+					.locator(`.hero-ops a[href$="${account}"]:visible`)
+					.click();
+				await expect(page).toHaveURL(url(account));
+				await page.fill('#username', login);
+				await page.fill('#password', NEW_PASSWORD);
+				await page.locator('button[name="login"]').focus();
+				await page.keyboard.press('Enter');
+				await page.waitForLoadState('load');
+				await expect(
+					page.locator('a[href*="action=logout"]'),
+					'the password the reset saved is the one that signs in'
+				).not.toHaveCount(0);
+			});
+		}
+	}
+});
 
 for (const { locale, account, lost } of LOCALES) {
 	test(`${locale}: a wrong password is refused with the form's own error`, async ({
@@ -140,138 +469,6 @@ for (const { locale, account, lost } of LOCALES) {
 		await shot(page, `${locale}-wrong-password`);
 	});
 
-	for (const width of [1440, 390]) {
-		test(`${locale}-${width}: the lost-password request answers and its link opens the new-password card`, async ({
-			page,
-		}) => {
-			await page.setViewportSize({
-				width,
-				height: width === 390 ? 844 : 900,
-			});
-			const login = createCustomer(Date.now(), locale);
-			await page.goto(url(lost));
-			const field = page.locator(
-				'input#user_login, input[name="user_login"]'
-			);
-			await expect(
-				field.first(),
-				'the reset form asks for the account'
-			).toBeVisible();
-			await field.first().fill(login);
-			await page.locator('button[type="submit"]').first().click();
-			await page.waitForLoadState('load');
-			await expect(
-				page.locator('.woocommerce-message, .woocommerce-info').first(),
-				'the request is answered'
-			).toBeVisible();
-			await expect(
-				page.locator('.woocommerce-error'),
-				'an existing account is not refused'
-			).toHaveCount(0);
-			await shot(page, `${locale}-lost-password`);
-
-			// The link the mail carries, opened for real. The key is the account's
-			// own (get_password_reset_key through WP-CLI) and the fixture is the
-			// account this test just created — never a made-up key the chain would
-			// only have to reject.
-			const id = wp(['user', 'get', login, '--field=ID']).trim();
-			if (!/^\d+$/.test(id)) {
-				throw new Error(`the fixture account has no id: ${id}`);
-			}
-			const key = wp([
-				'eval',
-				`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
-			]).trim();
-			expect(key, 'the fixture account carries a reset key').not.toBe('');
-
-			await page.goto(
-				url(
-					`${lost}?show-reset-form=true&key=${encodeURIComponent(key)}&id=${id}`
-				)
-			);
-			await page.waitForLoadState('load');
-
-			// The redesigned card, with Woo's own hidden credentials inside it.
-			const card = page.locator(
-				'.linker-auth-inner--solo .linker-auth-card'
-			);
-			await expect(
-				card,
-				'the reset link lands on the card, not on bare WooCommerce markup'
-			).toBeVisible();
-			await expect(
-				card.locator('h1'),
-				'the card titles the new password'
-			).toHaveText(
-				locale === 'de'
-					? 'Wählen Sie ein neues Passwort'
-					: 'Choose a new password'
-			);
-			await expect(page.locator('#password_1')).toBeVisible();
-			await expect(page.locator('#password_2')).toBeVisible();
-			await expect(
-				page.locator('input[name="reset_key"]'),
-				'the key from the link rides along'
-			).toHaveValue(key);
-			await expect(
-				page.locator('input[name="reset_login"]'),
-				'the login from the link rides along'
-			).toHaveValue(login);
-			await expect(
-				page.locator('input[name="woocommerce-reset-password-nonce"]'),
-				'the form posts with WooCommerce own nonce'
-			).not.toHaveValue('');
-			await shot(page, `${locale}-reset-form`);
-
-			// A password below the site's minimum never leaves the page: the meter
-			// is WooCommerce's own (min_password_strength 3) and it holds the form's
-			// button. There is no server-side strength gate to reach — WooCommerce
-			// refuses nothing weaker than the empty string.
-			await page.fill('#password_1', 'abc');
-			await page.fill('#password_2', 'abc');
-			await expect(
-				page.locator(
-					'form.woocommerce-ResetPassword button[type="submit"]'
-				),
-				'WooCommerce own meter holds a weak password on the page'
-			).toBeDisabled();
-
-			// Two different passwords: the chain's own line names the mismatch and
-			// the form stays put (no round trip, no lost key).
-			await page.fill('#password_1', NEW_PASSWORD);
-			await page.fill('#password_2', `${NEW_PASSWORD}x`);
-			await page.locator('button[type="submit"]').click();
-			await expect(
-				page.locator('[data-password-mismatch]'),
-				'the mismatch is named under the field it belongs to'
-			).toBeVisible();
-			await expect(page).toHaveURL(/show-reset-form/);
-			await shot(page, `${locale}-reset-mismatch`);
-
-			// The real save: the same card resets the password, WooCommerce's own
-			// confirmation opens the sign-in card, and the new password signs in —
-			// the whole chain, with the account this test created.
-			await page.fill('#password_2', NEW_PASSWORD);
-			await page.locator('button[type="submit"]').click();
-			await page.waitForLoadState('load');
-			await expect(
-				page.locator('.woocommerce-message, .woocommerce-info').first(),
-				'the reset is confirmed on the sign-in card'
-			).toBeVisible();
-			await expect(page.locator('#username')).toBeVisible();
-			await shot(page, `${locale}-reset-done`);
-
-			await page.fill('#username', login);
-			await page.fill('#password', NEW_PASSWORD);
-			await page.locator('button[name="login"]').focus();
-			await page.keyboard.press('Enter');
-			await page.waitForLoadState('load');
-			await expect(
-				page.locator('a[href*="action=logout"]'),
-				'the password the reset saved is the one that signs in'
-			).not.toHaveCount(0);
-		});
-	}
 	for (const width of [1440, 390]) {
 		test(`${locale}-${width}: a wrong or spent reset key never offers the new-password form`, async ({
 			page,

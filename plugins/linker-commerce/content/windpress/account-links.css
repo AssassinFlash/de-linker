@@ -305,3 +305,21 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 .linker-genie-app__document>svg{flex-shrink:0;color:#737373}
 .linker-genie-app__document>span:last-child{margin-left:auto;padding-left:4px;color:#737373}
 .linker-genie-app .linker-genie-app__document:hover{border-color:#bdbdbd;background:#f5f5f5}
+
+.hero-ops .hero-ops-register:empty { display: none; }
+.hero-ops .hero-ops-register .linker-create-account {
+	display: inline-flex;
+	align-items: center;
+	min-height: 34px;
+	color: inherit;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+	.hero-ops .hero-ops-mobile:has(.hero-ops-register .linker-create-account) { flex-wrap: wrap; }
+	.hero-ops .hero-ops-actions { flex-wrap: wrap; }
+	.hero-ops .hero-ops-register .linker-create-account { min-height: 44px; }
+}

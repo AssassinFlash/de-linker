@@ -102,6 +102,8 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 							<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
 							<input class="woocommerce-form__input woocommerce-form__input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever" /> <span><?php esc_html_e( 'Remember me', 'woocommerce' ); ?></span>
 						</label>
+						<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
+						<a href="#linker-auth-reset"><?php esc_html_e( 'Lost your password?', 'woocommerce' ); ?></a>
 					</p>
 					<p class="form-row linker-auth-submit">
 						<?php wp_nonce_field( 'woocommerce-login', 'woocommerce-login-nonce' ); ?>
@@ -115,13 +117,19 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 					?>
 
 				</form>
-				<p class="linker-auth-links">
-					<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
-					<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php esc_html_e( 'Lost your password?', 'woocommerce' ); ?></a>
-					<?php if ( $registration && '' !== $register_url ) : ?>
-						<a href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'No partner account yet?', 'linker-commerce' ); ?> <strong><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></strong></a>
-					<?php endif; ?>
-				</p>
+				<?php if ( $registration && '' !== $register_url ) : ?>
+					<p class="linker-auth-submit linker-auth-create">
+						<a class="linker-auth-btn is-ghost" href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></a>
+					</p>
+				<?php endif; ?>
+				<section class="linker-auth-recovery" aria-labelledby="linker-auth-reset">
+					<h2 id="linker-auth-reset"><?php esc_html_e( 'Reset your password', 'linker-commerce' ); ?></h2>
+					<p><?php esc_html_e( 'We’ll email you a link to set a new password.', 'linker-commerce' ); ?></p>
+					<?php
+					$reset_url = wp_lostpassword_url();
+					require __DIR__ . '/password-request-form.php';
+					?>
+				</section>
 			</section>
 
 		</div>

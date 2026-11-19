@@ -18,7 +18,11 @@ import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
-import { readProjectPage } from "../data/projectIndex.ts";
+import {
+	MAX_PROJECT_TITLE_LENGTH,
+	projectTitleSearch,
+	readProjectPage,
+} from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
 import { pendingInquiryRevision } from "../data/inquiryRecovery.ts";
 import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
@@ -86,6 +90,15 @@ export function Workspace({
 	recheck: () => void;
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
+	const projectIndex =
+		new URL(location.href).searchParams.get("projects") === "1";
+	const [titleQuery, setTitleQuery] = useState(() =>
+		projectIndex
+			? projectTitleSearch(
+					new URL(location.href).searchParams.get("project_search"),
+				)
+			: "",
+	);
 	const [route, setRoute] = useState(() => location.hash.slice(1));
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
@@ -192,7 +205,12 @@ export function Workspace({
 		[client, session.query_scope],
 	);
 	const pageSize = Math.min(30, session.runtime.limits.max_page_size); // UI page policy, not total project capacity.
-	const indexKey = [session.query_scope, "projects", session.claim_pending];
+	const indexKey = [
+		session.query_scope,
+		"projects",
+		session.claim_pending,
+		titleQuery,
+	];
 	const index = useInfiniteQuery({
 		queryKey: indexKey,
 		initialPageParam: null as JsonObject | null,
@@ -200,7 +218,12 @@ export function Workspace({
 			readProjectPage(
 				await client.query(
 					"projects/list",
-					{ schema_version: 1, page_size: pageSize, after: pageParam },
+					{
+						schema_version: 1,
+						page_size: pageSize,
+						after: pageParam,
+						...(titleQuery && { title_query: titleQuery }),
+					},
 					session.query_scope,
 					signal,
 				),
@@ -507,6 +530,7 @@ export function Workspace({
 		</Notice>
 	);
 	const firstVisitComparison =
+		!projectIndex &&
 		route === "sc-preliminary-options" &&
 		savedSource === null &&
 		briefSource === null &&
@@ -559,7 +583,7 @@ export function Workspace({
 			</header>
 			<div className="sc-main">
 				<div>
-					{savedSource !== null ? (
+					{projectIndex ? null : savedSource !== null ? (
 						<SavedSolutionStart
 							solutionId={savedSource}
 							config={config}
@@ -645,6 +669,39 @@ export function Workspace({
 							<Icon name="refresh" />
 						</button>
 					</div>
+					{projectIndex && (
+						<form
+							className="sc-actions sc-project-search"
+							role="search"
+							onSubmit={(event) => {
+								event.preventDefault();
+								const name = new FormData(event.currentTarget).get(
+									"project_search",
+								);
+								const query = projectTitleSearch(
+									typeof name === "string" ? name : null,
+								);
+								const url = new URL(location.href);
+								if (query) url.searchParams.set("project_search", query);
+								else url.searchParams.delete("project_search");
+								replacePlannerLocation(url);
+								setTitleQuery(query);
+							}}
+						>
+							<label className="sc-field">
+								{__("Project name", "linker-tools")}
+								<input
+									name="project_search"
+									type="search"
+									maxLength={MAX_PROJECT_TITLE_LENGTH}
+									defaultValue={titleQuery}
+								/>
+							</label>
+							<button className="sc-button" type="submit">
+								{__("Search projects", "linker-tools")}
+							</button>
+						</form>
+					)}
 					{index.isPending && (
 						<p role="status">{__("Loading projects…", "linker-tools")}</p>
 					)}
@@ -657,8 +714,10 @@ export function Workspace({
 						</Notice>
 					)}
 					{!index.isPending && !index.isError && !projects.length && (
-						<p className="sc-muted">
-							{__("No saved projects yet.", "linker-tools")}
+						<p className="sc-muted" role="status">
+							{titleQuery
+								? __("No matching projects.", "linker-tools")
+								: __("No saved projects yet.", "linker-tools")}
 						</p>
 					)}
 					<div role="list">

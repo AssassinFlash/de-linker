@@ -11,22 +11,34 @@ from .workspace import Workspace
 
 
 def project_page(
-    workspace: Workspace, actor: Actor, size: int, after: Cursor | None
+    workspace: Workspace,
+    actor: Actor,
+    size: int,
+    after: Cursor | None,
+    title_query: str = "",
 ) -> Object:
     positive_integer(size, "project page size")
+    conditions = ["p.owner=?"]
     parameters: list[str | float | int] = [actor.key]
-    position = ""
+    if title := title_query.strip().casefold():
+        conditions.append("instr(project_title_fold(p.title), ?) > 0")
+        parameters.append(title)
     if after is not None:
-        position = " AND (p.updated_at < ? OR (p.updated_at = ? AND p.id < ?))"
+        conditions.append("(p.updated_at < ? OR (p.updated_at = ? AND p.id < ?))")
         parameters.extend((after.updated_at, after.updated_at, after.id))
     parameters.append(size + 1)
     with workspace.database.read() as connection:
         active_actor(connection, actor)
+        if title:
+            # SQLite's built-in case folding only handles ASCII.
+            connection.create_function(
+                "project_title_fold", 1, str.casefold, deterministic=True
+            )
         rows = connection.execute(
             "SELECT p.id, p.title, p.revision, p.updated_at, r.input_sha256 "
             "FROM projects p JOIN revisions r ON r.project_id=p.id AND r.number=p.revision "
-            "WHERE p.owner=?"
-            + position
+            "WHERE "
+            + " AND ".join(conditions)
             + " ORDER BY p.updated_at DESC, p.id DESC LIMIT ?",
             parameters,
         ).fetchall()

@@ -44,6 +44,28 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
     assert controls.plan_pair("home_configurator", *expected) == expected
 
 
+def test_home_account_adds_one_registration_entry_per_visible_layout() -> None:
+    def home(path: str, label: str) -> str:
+        return (
+            UNCHANGED
+            + f'<a href="{path}">{label}</a>\n'
+            + f'<a href="{path}" class="hero-ops-portal"><span>{label}</span></a>\n'
+        )
+
+    old = (
+        home("/my-account/", "Trade Portal"),
+        home("/de/mein-konto/", "Handelsportal"),
+    )
+    current = controls.plan_pair("home_account", *old)
+    hook = '<span class="hero-ops-register">[linker_create_account]</span>'
+    for before, after in zip(old, current, strict=True):
+        assert after.count(hook) == 2
+        assert after.replace(hook, "") == before
+    assert controls.plan_pair("home_account", *current) == current
+    with pytest.raises(ValueError, match="Partially changed homepage account pair"):
+        controls.plan_pair("home_account", old[0], current[1])
+
+
 def thank_you_pair() -> tuple[str, str]:
     """Actual relevant fragments, without copying either full WordPress page."""
     en = """the contact page and the full project request both reach the same colleague.

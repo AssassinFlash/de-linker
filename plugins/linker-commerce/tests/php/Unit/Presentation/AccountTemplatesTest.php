@@ -147,6 +147,27 @@ final class AccountTemplatesTest extends TestCase {
 		}
 	}
 
+	/** An exact lookup reaches an older order without widening Woo's customer scope. */
+	public function test_inquiry_number_search_preserves_customer_and_paging(): void {
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => $value ) );
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
+		$adapter = new AccountTemplates();
+		$query   = array(
+			'customer' => 5,
+			'page'     => 1,
+			'paginate' => true,
+		);
+
+		try {
+			$_GET['inquiry_number'] = ' #7541 ';
+			$this->assertSame( $query + array( 'post__in' => array( 7541 ) ), $adapter->orders_query( $query ) );
+			$_GET['inquiry_number'] = '7541x';
+			$this->assertSame( $query + array( 'post__in' => array( 0 ) ), $adapter->orders_query( $query ) );
+		} finally {
+			unset( $_GET['inquiry_number'] );
+		}
+	}
+
 	/** Native page links retain selection instead of silently widening on page two. */
 	public function test_pagination_keeps_selected_state(): void {
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => $value ) );

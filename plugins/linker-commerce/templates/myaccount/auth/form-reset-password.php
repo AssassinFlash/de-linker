@@ -38,7 +38,7 @@ $auth_notices = (string) ob_get_clean();
 				<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 					<label for="password_1"><?php esc_html_e( 'New password', 'linker-commerce' ); ?>&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text"><?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?><?php esc_html_e( 'Required', 'woocommerce' ); ?></span></label>
 					<input type="password" class="woocommerce-Input woocommerce-Input--text input-text" name="password_1" id="password_1" autocomplete="new-password" required aria-required="true" />
-					<span class="linker-auth-hint"><?php esc_html_e( 'Use at least 8 characters with a mix of letters, numbers and symbols.', 'linker-commerce' ); ?></span>
+					<span class="linker-auth-hint"><?php esc_html_e( 'Use a long, unique password.', 'linker-commerce' ); ?></span>
 				</p>
 				<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 					<label for="password_2"><?php esc_html_e( 'Re-enter new password', 'linker-commerce' ); ?>&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text"><?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?><?php esc_html_e( 'Required', 'woocommerce' ); ?></span></label>
@@ -56,8 +56,7 @@ $auth_notices = (string) ob_get_clean();
 
 				<p class="woocommerce-form-row form-row linker-auth-submit">
 					<input type="hidden" name="wc_reset_password" value="true" />
-					<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
-					<button type="submit" class="woocommerce-Button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>" value="<?php esc_attr_e( 'Save', 'woocommerce' ); ?>"><span><?php esc_html_e( 'Save', 'woocommerce' ); ?></span></button>
+					<button type="submit" class="woocommerce-Button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>"><span><?php esc_html_e( 'Set new password', 'linker-commerce' ); ?></span></button>
 				</p>
 
 				<?php wp_nonce_field( 'reset_password', 'woocommerce-reset-password-nonce' ); ?>

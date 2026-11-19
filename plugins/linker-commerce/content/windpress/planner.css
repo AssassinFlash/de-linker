@@ -1117,6 +1117,8 @@
   .sc-configurator .sc-option span { display: block; margin-top: 5px; color: var(--proto-neutral-500); font-size: 13px; font-weight: 400; }
   .sc-configurator .sc-option[aria-pressed="true"] { background: var(--proto-teal-50); color: var(--proto-teal-800); border-color: var(--proto-accent); }
   .sc-configurator .sc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .sc-configurator .sc-actions.sc-project-search { align-items: flex-end; margin-bottom: 20px; }
+  .sc-configurator .sc-project-search label { flex: 0 1 360px; }
   .sc-configurator .sc-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; line-height: 1.55; text-align: center; text-decoration: none; transition: background var(--proto-duration) var(--proto-ease); }
   .sc-configurator .sc-button:hover:enabled { background: var(--proto-teal-50); }
   .sc-configurator .sc-primary { background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); }
