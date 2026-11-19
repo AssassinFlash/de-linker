@@ -126,3 +126,58 @@ for (const lang of ['en', 'de'] as const) {
 		});
 	}
 }
+
+test('keeps the selection and inquiry edits while changing language and returning to the comparison', async ({
+	page,
+}) => {
+	const { url } = instance();
+	const direction = 1;
+	const changedDirection = 3;
+	const note = 'I would like to discuss storage.';
+	const form = page.locator('form.linker-inquiry-form');
+	const compare = (name: string, action: string) =>
+		page
+			.getByRole('article')
+			.filter({
+				has: page.getByRole('heading', { name, exact: true }),
+			})
+			.getByRole('button', { name: action, exact: true });
+
+	await page.goto(url + '/');
+	await page
+		.getByRole('link', {
+			name: 'Open the Solution Configurator',
+			exact: true,
+		})
+		.click();
+	await compare(labels.en.directions[direction], labels.en.choose).click();
+	await expect(form).toBeVisible();
+	await form.locator('textarea:visible').fill(note);
+	const projectReference = form.locator(
+		'[name="linker_preliminary_project"]'
+	);
+	const selected = await projectReference.inputValue();
+	await page
+		.locator('header')
+		.getByRole('link', { name: 'DE', exact: true })
+		.click();
+	await expect(page).toHaveURL(
+		/\/de\/loesungskonfigurator\/.*#sc-preliminary-review$/
+	);
+	await expect(
+		form.getByRole('button', { name: labels.de.send, exact: true })
+	).toBeVisible();
+	await expect(form.locator('textarea:visible')).toHaveValue(note);
+	await expect(projectReference).toHaveValue(selected);
+
+	await page
+		.getByRole('button', { name: 'Auswahl ändern', exact: true })
+		.click();
+	await compare(
+		labels.de.directions[changedDirection],
+		labels.de.choose
+	).click();
+	await expect(form.locator('textarea:visible')).toHaveValue(note);
+	const [id, revision] = selected.split(':');
+	await expect(projectReference).toHaveValue(`${id}:${Number(revision) + 1}`);
+});
