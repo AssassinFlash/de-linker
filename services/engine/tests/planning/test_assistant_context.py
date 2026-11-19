@@ -1178,13 +1178,9 @@ def test_report_omits_comparison_location_and_private_note(
     cited_section = next(
         item for item in cited_report.sections if item.id == "pvgis-roof-reference-0"
     )
-    citation_row = next(
-        row for row in cited_section.rows if row.value == "Cited module"
+    assert all(
+        row.href != "https://example.invalid/module.pdf" for row in cited_section.rows
     )
-    assert citation_row.label == (
-        text("source", other_locale) + " · " + text("page", other_locale) + " 2"
-    )
-    assert citation_row.href == "https://example.invalid/module.pdf"
     assert any(
         row.label == text("pv_components_capacity", other_locale)
         for row in cited_section.rows

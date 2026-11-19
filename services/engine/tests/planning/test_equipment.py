@@ -64,6 +64,7 @@ from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
 from .conftest import FixtureObject, json_object, mapping_role
+from .panel_fixture import panel_basis, panel_parameters
 from .test_brief import incomplete_brief
 from .test_energy_kernel import BATTERY, TOLERANCE, create_scenario
 from .test_energy_kernel import worker as energy_worker
@@ -1426,7 +1427,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     )
     layout = geometry()
     module_id = layout["module_specs"][0]["id"]
-    module_basis = json_object(source.module_basis())["module"]
+    module_basis = panel_parameters()
     layout["module_specs"] = [{**module_basis["specification"], "id": module_id}]
     parameter_data = parameter_document()
     parameter_data["modules"] = [
@@ -1500,7 +1501,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         "parameters_sha256": digest(
             encode(json_object(project.inputs)["pv_generation"])
         ),
-        "woo_module_inputs": json_object(source.module_basis()),
+        "woo_module_inputs": panel_basis(),
         "dependencies": {
             "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
             "pv_model_witness": workspace.blobs.put(generated.witness_json),
@@ -1527,7 +1528,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     roof_parts = json_object(
         saved_roof_components(
             layout,
-            json_object(source.module_basis()),
+            panel_basis(),
             workspace.blobs,
             project.revision,
         )
@@ -1983,77 +1984,18 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     assert workspace.get(owner, project.id) == snapshot
 
 
-def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
-    feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    loaded = SimpleNamespace(
-        engine=replace(engine, products=Products.from_feed(feed)),
-        publication=Publication(feed),
-        version="fixture",
-    )
-    withdrawn = False
-    loads = 0
-    reads = 0
-
-    def load() -> SimpleNamespace:
-        nonlocal loads
-        loads += 1
-        return loaded
-
-    def current(self: Publication) -> FixtureObject:
-        nonlocal reads
-        reads += 1
-        manifest = publication_manifest(self.feed)
-        for row in manifest["products"]:
-            row["ready"]["engineering"] = True
-        if withdrawn:
-            manifest["products"] = [
-                row
-                for row in manifest["products"]
-                if row.get("engineering_role") != "reference_pv_module"
-            ]
-        return manifest
-
-    monkeypatch.setattr(Publication, "read", current)
-    source = ProductSources(load)
-    proof = json_object(source.module_basis())
-    proof["publication"]["compatibility_revision"] = "0" * 64
-    source.confirm_basis(proof)
-    electrical = json_object(source.electrical_module_basis())
-    source.confirm_basis(electrical)
-    changed_electrical = copy.deepcopy(electrical)
-    changed_electrical["electrical_product"]["figures"]["voc_v"]["value"] = 1
+def test_historic_product_panel_proof_is_retired() -> None:
+    source = ProductSources(lambda: pytest.fail("no Woo read for a retired panel"))
     with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed_electrical)
-    changed = copy.deepcopy(proof)
-    changed["module"]["parameters"]["gamma_pdc_per_c"] = -0.01
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed)
-    changed = copy.deepcopy(proof)
-    changed["publication"]["documents"][0]["blob_sha256"] = "0" * 64
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed)
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(proof)
-
-    withdrawn = False
-    loads = reads = 0
-    source.confirm_bases([(proof, True), (electrical, True), (electrical, False)])
-    assert (loads, reads) == (1, 1)
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_bases([(proof, True)])
-    assert (loads, reads) == (2, 2)
-    withdrawn = False
-    source.confirm_bases([(electrical, False)])
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_bases([(electrical, False)])
-    assert (loads, reads) == (4, 4)
-    with pytest.raises(VersionUnavailable, match="pinned Woo product proof"):
-        source.confirm_bases([({}, False)])
-    assert (loads, reads) == (4, 4)
+        source.confirm_basis(
+            {
+                "schema_version": 1,
+                "publication": {
+                    "reference_inputs": [{"reference_input_id": "retired"}]
+                },
+            }
+        )
+    source.confirm_basis(panel_basis())
 
 
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
@@ -2766,7 +2708,7 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
         product_provider=lambda: loaded,
     )
     layout = geometry()
-    module = json_object(source.electrical_module_basis())["module"]
+    module = panel_parameters()
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -3668,7 +3610,7 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
         if retained_roof_export is not None:
             authored.update(brief_inputs("Europe/Berlin"))
             authored["brief"]["system_scope"] = "storage_only"
-            roof = fixture_inputs(json_object(source.module_basis()))["geometry"]
+            roof = fixture_inputs()["geometry"]
             roof["sources"][0]["permissions"]["export"] = retained_roof_export
             authored["geometry"] = roof
         found = rig.post(
@@ -7657,7 +7599,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         }
         if wired:
             layout = geometry()
-            module = json_object(source.electrical_module_basis())["module"]
+            module = panel_parameters()
             layout["module_specs"] = [{**module["specification"], "id": "module"}]
             layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
             declarations.update(

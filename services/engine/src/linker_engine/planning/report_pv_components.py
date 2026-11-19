@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
-from .declared_module import is_declared_reference
+from .declared_module import is_declared_reference, panel_label
 from .errors import InvalidInput, ReportSourceExportRequired, VersionUnavailable
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
@@ -241,36 +241,32 @@ def _components(
         for array in geometry.arrays
         if array.id in included and (selected is None or array.id in selected)
     ]
-    for _, module in arrays:
-        if module.source.woo is None:
-            # A declared planning reference has no product record to link, by
-            # design. Reporting that as a failed link would invent a claim the
-            # customer never made.
-            reason = (
-                "declared_reference_module"
-                if is_declared_reference(module)
-                else "no_woo_module_proof"
-            )
-            return {"status": "unavailable", "reason": reason}
-    if arrays and callable(proof):
-        proof = proof()
     components: dict[str, Object] = {}
     for identifier, module in arrays:
-        assert module.source.woo is not None and not callable(proof)
         identities = included[identifier]
-        try:
-            ProductSources._check_module(module, proof)
-        except InvalidInput as error:
-            raise VersionUnavailable(
-                "the saved PV module differs from its Woo proof"
-            ) from error
-        key = module.source.woo.reference_input_id
+        if module.source.woo is not None:
+            if callable(proof):
+                proof = proof()
+            try:
+                ProductSources._check_module(module, proof)
+            except InvalidInput as error:
+                raise VersionUnavailable(
+                    "the saved PV module differs from its frozen source"
+                ) from error
+        elif not is_declared_reference(module):
+            return {"status": "unavailable", "reason": "no_woo_module_proof"}
+        key = module.id
         if key not in components:
             components[key] = {
-                "model": module.model,
+                "module_spec_id": key,
+                "model": panel_label(
+                    module.stc_power_w, module.length_m, module.width_m
+                ),
                 "quantity": 0,
                 "stc_power_w": module.stc_power_w,
-                "source": module.source.model_dump(mode="json"),
+                "length_m": module.length_m,
+                "width_m": module.width_m,
+                "source": {"kind": "design_parameters", "basis": "saved_project"},
                 "array_ids": [],
                 "module_ids": [],
             }
@@ -291,6 +287,6 @@ def _components(
         )
         / 1000,
         "dependencies": dependencies
-        if callable(proof)
+        if callable(proof) or proof.get("kind") == "project_panel_parameters"
         else {**dependencies, "woo_module": blobs.put_object(proof)},
     }

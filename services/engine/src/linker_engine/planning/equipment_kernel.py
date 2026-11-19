@@ -61,7 +61,7 @@ class EquipmentKernel:
             inputs.get("pv_string_plan") is not None
             or inputs.get("pv_plant_string_plan") is not None
         ):
-            basis["pv_module_inputs"] = self.products.electrical_module_basis()
+            basis["pv_module_inputs"] = self.products.roof_basis(inputs)
             # Validate object identities before queueing, then evaluate again
             # against this exact proof inside the durable worker.
             from .pv_string_assessment import assess_pv_strings

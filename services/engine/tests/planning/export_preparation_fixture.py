@@ -77,6 +77,7 @@ from linker_engine.planning.weather_status import weather_status
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import Clock
+from .panel_fixture import panel_basis, panel_parameters
 from .test_energy_kernel import BATTERY, TOLERANCE
 from .test_energy_kernel import PROVENANCE as SYNTHETIC
 from .test_geometric_pv import scenario as geometric_scenario
@@ -304,9 +305,9 @@ def _weather_and_pv(workspace: Workspace, owner: Actor) -> Object:
 def _pvgis_reference(
     workspace: Workspace, owner: Actor, products: ProductSources
 ) -> Object:
-    basis = products.module_basis()
+    basis = panel_basis()
     assert isinstance(basis, dict)
-    values = reference_inputs(basis)
+    values = reference_inputs()
     project = workspace.create(
         owner, "Synthetic multi-array reference", values, key="reference"
     )
@@ -357,7 +358,7 @@ def known_reference_capture() -> Object:
                     "project_note": "",
                 },
                 "pvgis_reference": {
-                    **reference_inputs(products.module_basis())["pvgis_reference"],
+                    **reference_inputs()["pvgis_reference"],
                     "model": "pvgis_5_3_known_ac_reference_v1",
                     "source_note": "Commissioning report for location and system losses",
                     "arrays": [
@@ -403,7 +404,7 @@ def known_reference_capture() -> Object:
 def _direct_beam(
     workspace: Workspace, owner: Actor, products: ProductSources
 ) -> Object:
-    template = cast(Object, products.module_basis()["module"])
+    template = cast(Object, panel_parameters())
     roof = geometry()
     identifier = roof["module_specs"][0]["id"]
     roof["module_specs"] = [
@@ -523,7 +524,7 @@ def _direct_beam(
 def _geometric_pv(
     workspace: Workspace, owner: Actor, products: ProductSources
 ) -> Object:
-    template = cast(Object, products.module_basis()["module"])
+    template = cast(Object, panel_parameters())
     roof, parameters = geometry(), parameter_document()
     roof["module_specs"] = [{**cast(Object, template["specification"]), "id": "module"}]
     roof["arrays"][0].update(rows=1, columns=1, excluded_slots=[])

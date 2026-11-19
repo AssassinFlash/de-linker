@@ -304,12 +304,11 @@ def project_materials(source: Object) -> Object:
     if isinstance(pv, dict) and pv.get("status") == "available":
         for part in cast(list[Object], pv["components"]):
             citation = cast(Object, part["source"])
-            woo = cast(Object, citation["woo"])
             lines.append(
                 {
-                    "id": f"pv:{woo['reference_input_id']}",
+                    "id": f"pv:{part['module_spec_id']}",
                     "handling": "pv_reference",
-                    "product_id": woo["product_id"],
+                    "product_id": None,
                     "model": part["model"],
                     "quantity": part["quantity"],
                     "unit": "piece",

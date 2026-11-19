@@ -852,16 +852,6 @@ def build_report(source: Object) -> Report:
                     number(pv_parts["nameplate_kwp"], locale, "kWp"),
                 )
             )
-            for component in components:
-                citation = cast(Object, component["source"])
-                part_rows.append(
-                    ReportRow(
-                        label=text("source", locale)
-                        + f" · {text('page', locale)} {citation['page']}",
-                        value=str(component["model"]),
-                        href=cast(str, citation["url"]),
-                    )
-                )
             part_table = ReportTable(
                 columns=[
                     text("quantity", locale),
@@ -1090,16 +1080,6 @@ def build_report(source: Object) -> Report:
                             number(reference_parts["nameplate_kwp"], locale, "kWp"),
                         )
                     )
-                    for component in components:
-                        citation = cast(Object, component["source"])
-                        reference_rows.append(
-                            ReportRow(
-                                label=text("source", locale)
-                                + f" · {text('page', locale)} {citation['page']}",
-                                value=str(component["model"]),
-                                href=cast(str, citation["url"]),
-                            )
-                        )
                     reference_table = ReportTable(
                         columns=[
                             text(key, locale)

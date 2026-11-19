@@ -61,13 +61,8 @@ def test_a_tier_module_is_its_own_basis_and_needs_no_product() -> None:
     ProductSources.check_declared_reference(module)
 
 
-def test_a_tier_without_its_own_coefficient_is_refused() -> None:
-    module = tier_module(gamma=None)
-    assert ProductSources.declared_reference(module)
-    with pytest.raises(InvalidInput) as raised:
-        ProductSources.check_declared_reference(module)
-    assert "gamma_pdc_per_c" in str(raised.value)
-    assert raised.value.code == "invalid_input"
+def test_layout_accepts_a_panel_without_temperature_coefficient() -> None:
+    ProductSources.check_declared_reference(tier_module(gamma=None))
 
 
 def test_a_note_without_the_marker_is_not_a_tier() -> None:

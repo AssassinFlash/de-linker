@@ -406,13 +406,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
     loaded = provider()
     manifest = publication_manifest(loaded.publication.feed)
     chosen = manifest["products"][0]
-    reference = next(
-        row
-        for row in manifest["products"]
-        if row.get("engineering_role") == "reference_pv_module"
-    )
     chosen["ready"]["engineering"] = True
-    reference["ready"]["engineering"] = True
     calls = 0
     mode = "current"
 
@@ -443,75 +437,50 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
         assert reply.status_code == 200, reply.text
         assert reply.headers["cache-control"] == "no-store, private"
         result = reply.json()
-        template = result["pv_modules"][0]
-        specification = template["specification"]
-        assert specification["stc_power_w"] == 460
-        assert specification["width_m"] == 1.134
-        assert template["parameters"]["gamma_pdc_per_c"] == -0.0029
-        assert specification["source"]["woo"]["product_id"] == reference["product_id"]
+        assert not {"pv_modules", "references", "module_diagnostics"}.intersection(
+            result
+        )
         assert [row["id"] for row in result["products"]] == [chosen["product_id"]]
-        assert [row["canonical_product_id"] for row in result["references"]] == [
-            reference["product_id"]
-        ]
         assert result["prepared"] is True
         assert (
             result["loaded_source_revision"]
             == loaded.publication.feed["source_revision"]
         )
         assert result["publication"]["products"] == [
-            {key: row[key] for key in ("product_id", "product_revision")}
-            for row in (chosen, reference)
+            {key: chosen[key] for key in ("product_id", "product_revision")}
         ]
+        from .panel_fixture import panel_parameters
+
         geometry = json.loads(
             (
                 Path(__file__).resolve().parents[4]
                 / "fixtures/planning/geometry-flat.json"
             ).read_text()
         )
-        geometry["module_specs"] = [
-            {**specification, "id": geometry["module_specs"][0]["id"]}
-        ]
+        spec = panel_parameters()["specification"]
+        geometry["module_specs"] = [{**spec, "id": geometry["module_specs"][0]["id"]}]
         create = {
             "schema_version": 1,
-            "title": "Woo-bound fixture",
+            "title": "Customer panel project",
             "inputs": {"geometry": geometry},
-            "key": "woo-create",
+            "key": "panel-create",
         }
         created = private.post("/projects/create", json=create, headers=headers())
         assert created.status_code == 200, created.text
         changed = json.loads(json.dumps(create["inputs"]))
         changed["geometry"]["module_specs"][0]["stc_power_w"] += 1
-        refused = private.post(
+        amended = private.post(
             "/projects/revise",
             json={
                 "schema_version": 1,
                 "project_id": created.json()["id"],
                 "expected_revision": 1,
                 "inputs": changed,
-                "key": "fake-woo-figure",
+                "key": "panel-change",
             },
             headers=headers(),
         )
-        assert refused.status_code == 422
-        stale = json.loads(json.dumps(create["inputs"]))
-        stale["geometry"]["module_specs"][0]["source"]["woo"]["product_revision"] = (
-            "f" * 64
-        )
-        refused = private.post(
-            "/projects/revise",
-            json={
-                "schema_version": 1,
-                "project_id": created.json()["id"],
-                "expected_revision": 1,
-                "inputs": stale,
-                "key": "old-woo-revision",
-            },
-            headers=headers(),
-        )
-        assert (
-            refused.status_code == 409
-            and refused.json()["error"]["code"] == "product_evidence_changed"
-        )
+        assert amended.status_code == 200, amended.text
         mode = "unavailable"
         replay = private.post("/projects/create", json=create, headers=headers())
         assert replay.status_code == 200 and replay.json() == created.json()

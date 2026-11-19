@@ -75,6 +75,8 @@ class ReportWiringCheckRequired(ReportInputsChanged):
 
 def renew_module_permission(previous: Object, current: Object) -> Object:
     """Renew permission only when every frozen module fact and citation matches."""
+    if previous.get("kind") == "project_panel_parameters" and current == previous:
+        return previous
     if previous.get("schema_version") != 1 or not isinstance(
         previous.get("module"), dict
     ):
@@ -1208,7 +1210,10 @@ def report_sources(
         and layout.get("arrays")
     ):
         component_list = saved_roof_components(
-            layout, products.module_basis, workspace.blobs, project.revision
+            layout,
+            products.roof_basis(project.inputs),
+            workspace.blobs,
+            project.revision,
         )
         component_dependencies = component_list.get("dependencies")
         if (
@@ -1223,7 +1228,7 @@ def report_sources(
         current_module = (
             workspace.blobs.object(cast(str, bases["pv"]))
             if "pv" in bases
-            else products.module_basis()
+            else products.roof_basis(project.inputs)
         )
         for name, sha in historical_bases.items():
             current = renew_module_permission(

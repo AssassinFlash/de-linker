@@ -46,6 +46,7 @@ from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
 from .conftest import Clock, FixtureObject, json_object
+from .panel_fixture import panel_parameters
 from .test_energy_kernel import TOLERANCE, create_scenario
 from .test_private_http import TOKEN, headers
 from .test_pv_profile import LIMITS, PROVENANCE, annual_scenario, project_with_roof
@@ -74,7 +75,7 @@ def pv_task(
     )
     inputs = dict(project.inputs)
     if products is not None:
-        template = cast(Object, json_object(products.module_basis())["module"])
+        template = cast(Object, panel_parameters())
         geometry = cast(Object, inputs["geometry"])
         identifier = str(cast(list[Object], geometry["module_specs"])[0]["id"])
         geometry["module_specs"] = [

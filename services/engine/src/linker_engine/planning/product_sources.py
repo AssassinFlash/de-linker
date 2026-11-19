@@ -17,7 +17,6 @@ from ..publication import (
     Publication,
     PublicationChanged,
     PublicationUnavailable,
-    ReferenceEvidenceUnavailable,
     View,
 )
 from .battery_assembly import battery_assembly
@@ -37,7 +36,6 @@ from .errors import Conflict, InvalidInput, ProductEvidenceChanged, VersionUnava
 from .geometry_documents import GeometryDocument, ModuleSource, ModuleSpec
 from .pv_parameters import PvGenerationParameters, PvModuleParameters
 from .pv_profile_preparation import PROFILE_PURPOSE
-from .woo_module import module_template
 
 
 class ProductProvider(Protocol):
@@ -107,59 +105,6 @@ class _Confirmation:
 class ProductSources:
     def __init__(self, load: Callable[[], ProductProvider]) -> None:
         self.load = load
-
-    def module_basis(self) -> Object:
-        return self._module_basis(electrical=False)
-
-    def electrical_module_basis(self) -> Object:
-        return self._module_basis(electrical=True)
-
-    def _module_basis(
-        self, *, electrical: bool, confirmation: _Confirmation | None = None
-    ) -> Object:
-        """Freeze only the used reference, not unrelated sales candidates."""
-        confirmation = confirmation or _Confirmation(self.load)
-        try:
-            loaded = confirmation.provider()
-            view = loaded.publication.reference_view(
-                loaded.engine, current=confirmation.manifest()
-            )
-            identity = view.dependencies["reference_inputs"][0]["reference_input_id"]
-            raw = next(
-                row
-                for row in loaded.publication.feed["overlay"]
-                if row["id"] == identity
-            )
-            result = decode_object(
-                encode(
-                    {
-                        "schema_version": 1,
-                        "publication": view.dependencies,
-                        "module": module_template(raw),
-                        **({"electrical_product": raw} if electrical else {}),
-                    }
-                )
-            )
-            loaded.publication.confirm(
-                view,
-                require_reference=True,
-                require_prepared=True,
-                current=confirmation.manifest(),
-            )
-            return result
-        except (PublicationChanged, ReferenceEvidenceUnavailable) as error:
-            raise ProductEvidenceChanged("current Woo module data changed") from error
-        except (
-            PublicationUnavailable,
-            FeedError,
-            OSError,
-            KeyError,
-            ValueError,
-            RuntimeError,
-        ) as error:
-            raise VersionUnavailable(
-                "current Woo module data is unavailable"
-            ) from error
 
     def equipment_basis(self, *, include_cables: bool = False) -> Object:
         """Freeze the whole current candidate pool and its scoped pair claims."""
@@ -251,6 +196,8 @@ class ProductSources:
         require_reference: bool,
         confirmation: _Confirmation | None = None,
     ) -> None:
+        if basis == {"kind": "project_panel_parameters", "schema_version": 1}:
+            return
         scope = basis.get("publication")
         if basis.get("schema_version") != 1 or not isinstance(scope, dict):
             raise VersionUnavailable("pinned Woo product proof is missing")
@@ -262,37 +209,10 @@ class ProductSources:
                 require_reference=True,
                 confirmation=confirmation,
             )
-        if require_reference and set(basis) == {
-            "schema_version",
-            "publication",
-            "module",
-        } | ({"electrical_product"} if "electrical_product" in basis else set()):
-            # PV preparation uses only this reference component. A sales
-            # compatibility update must not invalidate unchanged module output.
-            # Obtain a fresh native permission/preparation proof, then require
-            # exact component, document and reference identities. Retained
-            # profile bytes and their original publication proof stay intact.
-            current = self._module_basis(
-                electrical="electrical_product" in basis,
-                confirmation=confirmation,
+        if scope.get("reference_inputs"):
+            raise ProductEvidenceChanged(
+                "the retained panel product has been withdrawn"
             )
-            current_scope = cast(Object, current["publication"])
-            if (
-                set(scope) != set(current_scope)
-                or basis["module"] != current["module"]
-                or basis.get("electrical_product") != current.get("electrical_product")
-                or any(
-                    scope.get(key) != current_scope.get(key)
-                    for key in (
-                        "engineering_contract",
-                        "products",
-                        "documents",
-                        "reference_inputs",
-                    )
-                )
-            ):
-                raise ProductEvidenceChanged("current Woo module data changed")
-            return
         try:
             loaded = confirmation.provider()
             if (
@@ -304,7 +224,6 @@ class ProductSources:
                 )
             loaded.publication.confirm(
                 View(loaded.engine, scope),
-                require_reference=require_reference,
                 require_prepared=True,
                 current=confirmation.manifest(),
             )
@@ -372,29 +291,10 @@ class ProductSources:
         ]
         if not edited and not (pv_changed and "pv_generation" in inputs):
             return
-        # A project may be built entirely from declared planning references, so
-        # the Woo publication is read only once a selected module needs it.
-        basis: Object | None = None
         for module in edited:
-            if module.source.woo is not None:
-                if basis is None:
-                    basis = self.module_basis()
-                self._check_module(module, basis)
-            elif is_declared_reference(module):
-                check_declared_module(module)
-            else:
-                raise InvalidInput(
-                    "choose a Woo-maintained or declared reference module before adding product facts"
-                )
+            check_declared_module(module)
         if pv_changed and "pv_generation" in inputs:
-            if basis is None:
-                selected = PvGenerationParameters.read(inputs["pv_generation"]).modules
-                woo_ids = {
-                    m.id for m in geometry.module_specs if m.source.woo is not None
-                }
-                if any(item.module_spec_id in woo_ids for item in selected):
-                    basis = self.module_basis()
-            self.check_pv_inputs(inputs, basis)
+            self.check_pv_inputs(inputs)
 
     def check_installation(self, inputs: Object, previous: Object) -> None:
         from .installation_inputs import InstallationInputs
@@ -508,16 +408,8 @@ class ProductSources:
             self.confirm_basis(basis, require_reference=False)
 
     def roof_basis(self, inputs: Object) -> Object:
-        """Current included roof identity without requiring a detailed PV model.
-
-        The frozen Woo proof is still read and pinned: it is the publication's
-        reference input, which exists whether or not a given roof places a
-        product module. The per-module check below is what decides whether a
-        declared tier is compared with it at all.
-        """
-        basis = self.module_basis()
-        self.check_roof_inputs(inputs, basis)
-        return basis
+        self.check_roof_inputs(inputs)
+        return {"schema_version": 1, "kind": "project_panel_parameters"}
 
     @staticmethod
     def declared_reference(module: ModuleSpec) -> bool:
@@ -530,14 +422,7 @@ class ProductSources:
 
     @staticmethod
     def check_roof_inputs(inputs: Object, basis: Object | None = None) -> None:
-        """The same geometry/fact identity check also reads frozen historical proofs.
-
-        A roof module is either the Woo-maintained reference (identity checked
-        against the current publication, as before) or a declared planning
-        reference: Linker does not sell PV modules, so the configurator lets the
-        visitor pick a generic size/power tier. That tier records its own
-        numbers under ``declared_reference`` and is never a product claim.
-        """
+        """Check project declarations or an immutable earlier calculation with its frozen evidence."""
         from .geometry import panel_poses, read_geometry
 
         geometry = read_geometry(inputs.get("geometry"))
@@ -558,9 +443,8 @@ class ProductSources:
                 check_declared_module(module)
 
     def pv_basis(self, inputs: Object) -> Object:
-        basis = self.module_basis()
-        self.check_pv_inputs(inputs, basis)
-        return basis
+        self.check_pv_inputs(inputs)
+        return {"schema_version": 1, "kind": "project_panel_parameters"}
 
     @staticmethod
     def check_pv_inputs(inputs: Object, basis: Object | None = None) -> None:
@@ -627,30 +511,9 @@ class ProductSources:
     def current(self) -> Object:
         try:
             loaded = self.load()
-            view = loaded.publication.prepared_view(
-                loaded.engine, include_reference=True, include_cables=True
-            )
+            view = loaded.publication.prepared_view(loaded.engine, include_cables=True)
             ids = {product.id for product in view.engine.products.products}
-            reference_ids = {
-                row["reference_input_id"]
-                for row in view.dependencies["reference_inputs"]
-            }
             feed = loaded.publication.feed
-            references = [row for row in feed["overlay"] if row["id"] in reference_ids]
-            templates: list[Json] = []
-            diagnostics: list[Json] = []
-            for row in references:
-                try:
-                    templates.append(module_template(row))
-                except (VersionUnavailable, ValueError, KeyError) as error:
-                    diagnostics.append(
-                        {
-                            "product_id": row["canonical_product_id"],
-                            "reference_input_id": row["id"],
-                            "code": "module_projection_unavailable",
-                            "reason": str(error),
-                        }
-                    )
             compiled = {
                 str(row["canonical_product_id"]): compile_product(row)
                 for row in feed["products"]
@@ -692,7 +555,6 @@ class ProductSources:
                             for pid, row in compiled.items()
                             if (assembly := battery_assembly(row)) is not None
                         },
-                        "references": references,
                         "cable_references": [
                             row
                             for row in feed["overlay"]
@@ -703,8 +565,6 @@ class ProductSources:
                             }
                             in view.dependencies["products"]
                         ],
-                        "pv_modules": templates,
-                        "module_diagnostics": diagnostics,
                     }
                 )
             )

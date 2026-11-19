@@ -41,7 +41,8 @@ from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
-from .conftest import FixtureObject, json_object
+from .conftest import FixtureObject
+from .panel_fixture import panel_parameters
 from .test_energy_kernel import TOLERANCE
 from .test_private_http import TOKEN, headers
 from .test_pv_generation import geometry
@@ -75,7 +76,7 @@ def test_owned_frozen_weather_runs_only_in_worker_and_fails_closed_on_source_or_
     monkeypatch.setattr(Publication, "read", current)
     assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
-    template = cast(Object, json_object(products.module_basis())["module"])
+    template = cast(Object, panel_parameters())
     roof = geometry()
     identifier = roof["module_specs"][0]["id"]
     roof["module_specs"] = [

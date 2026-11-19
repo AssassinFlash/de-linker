@@ -27,7 +27,6 @@ from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.errors import (
     InvalidInput,
     LeaseLost,
-    ProductEvidenceChanged,
 )
 from linker_engine.planning.execution_registry import ExecutionRegistry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
@@ -64,6 +63,7 @@ from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
 from .conftest import Clock, FixtureObject, json_object
+from .panel_fixture import panel_basis, panel_parameters
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import feed as equipment_feed  # noqa: F401
 from .test_equipment import prepared_dc_fixture_source
@@ -163,9 +163,9 @@ class Captures:
         )
 
 
-def fixture_inputs(basis: FixtureObject) -> FixtureObject:
+def fixture_inputs() -> FixtureObject:
     layout = geometry()
-    layout["module_specs"] = [{**basis["module"]["specification"], "id": "module"}]
+    layout["module_specs"] = [{**panel_parameters()["specification"], "id": "module"}]
     first = layout["arrays"][0]
     first.update(rows=2, columns=5, excluded_slots=[], mount_tilt_deg=10)
     second = copy.deepcopy(first)
@@ -184,8 +184,8 @@ def prepared_reference_fixture(
     export_permission: str = "permitted",
 ) -> tuple[Project, Asset]:
     """Reuse the exact producer artifact for consumer tests, without a PV replay."""
-    basis = json_object(products.module_basis())
-    values = fixture_inputs(basis)
+    basis = panel_basis()
+    values = fixture_inputs()
     values["geometry"]["sources"][0]["permissions"]["export"] = export_permission
     project = workspace.create(
         owner, "Synthetic reference consumer", values, key="reference-consumer"
@@ -642,7 +642,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
         pvgis_reference=PvgisRoofReferenceService(workspace, pv, max_attempts=2),
     )
     values = (
-        fixture_inputs(json_object(products.module_basis()))
+        fixture_inputs()
         if not known
         else {
             "pvgis_reference": {
@@ -735,9 +735,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             values["pvgis_reference_setup"] = declared
             values["brief"]["system_scope"] = "pv_only"
             values["equipment_setup"]["pv_dc_kw"] = None
-            values["geometry"] = fixture_inputs(json_object(products.module_basis()))[
-                "geometry"
-            ]
+            values["geometry"] = fixture_inputs()["geometry"]
             del values["profile_selections"]
         command = {
             "schema_version": 1,
@@ -974,8 +972,8 @@ def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     monkeypatch.setattr(Publication, "read", current)
     assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
-    basis = json_object(products.module_basis())
-    values = fixture_inputs(basis)
+    basis = panel_basis()
+    values = fixture_inputs()
     assert "source_note" not in values["pvgis_reference"]
     assert PvgisReferenceInputs.read(values["pvgis_reference"]).source_note is None
     for optional_note in (None, "", " \t\n"):
@@ -1010,8 +1008,7 @@ def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     assert _canonical_derived_angle(30.000000000000007) == 30.000000000000007
     tampered = copy.deepcopy(values)
     tampered["geometry"]["module_specs"][0]["stc_power_w"] += 1
-    with pytest.raises(InvalidInput):
-        kernel.context(tampered)
+    assert kernel.context(tampered) != kernel.context(values)
     service = PvgisRoofReferenceService(workspace, kernel, max_attempts=1)
     energy = EnergyService(
         workspace,
@@ -1195,8 +1192,7 @@ def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     with pytest.raises(LeaseLost):
         journal.retain(0, invalid_original)
     withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        products.check_profile(asset.metadata)
+    products.check_profile(asset.metadata)
     assert (
         prepared_reference_profile(
             workspace.blobs, asset.content_sha256, asset.metadata

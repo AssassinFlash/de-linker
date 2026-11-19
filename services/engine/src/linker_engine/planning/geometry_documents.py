@@ -181,6 +181,17 @@ class ModuleSource(Document):
         return self
 
 
+class PanelElectricalParameters(Document):
+    voc_v: Positive | None = None
+    vmpp_v: Positive | None = None
+    isc_a: Positive | None = None
+    impp_a: Positive | None = None
+    max_system_voltage_v: Positive | None = None
+    alpha_isc_pct_per_c: Number | None = None
+    beta_voc_pct_per_c: Number | None = None
+    cell_technology: Text | None = None
+
+
 class ModuleSpec(Document):
     id: Identifier
     model: Text
@@ -189,11 +200,8 @@ class ModuleSpec(Document):
     thickness_m: Positive
     stc_power_w: Positive
     source: ModuleSource
-    # A declared planning reference (a generic size/power tier the visitor
-    # picked) carries its own temperature coefficient, because no Woo product
-    # backs it. Woo-selected modules leave this null and read the coefficient
-    # from the published module parameters instead.
     gamma_pdc_per_c: Number | None = None
+    electrical: PanelElectricalParameters | None = None
 
 
 class PanelArray(Document):

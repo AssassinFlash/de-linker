@@ -1,14 +1,8 @@
-"""A roof module the customer will supply, declared instead of published.
-
-Linker sells energy storage, not PV modules, so a roof layout may use a generic
-size/power tier rather than a Woo-maintained reference component. Such a module
-is a planning assumption: it carries its own temperature coefficient under a
-stable note marker and has no product, revision, document or manufacturer
-claim. Nothing here may turn it into a product fact.
-"""
+"""Project-supplied solar panel dimensions, ratings and calculation inputs."""
 
 from __future__ import annotations
 
+from .canonical import Object
 from .errors import InvalidInput
 from .geometry_documents import ModuleSpec
 from .pv_parameters import PvModuleParameters
@@ -26,13 +20,7 @@ def is_declared_reference(module: ModuleSpec) -> bool:
 
 
 def check_declared_module(module: ModuleSpec) -> None:
-    """Refuse a tier that cannot carry its own unshaded PV reference model.
-
-    Geometry already bounds the positive dimensions, thickness and STC power.
-    The coefficient is the one number the PVWatts model reads from the module
-    when no published product supplies it, so an absent or non-negative value
-    is refused instead of silently borrowing the Woo reference figure.
-    """
+    """Validate the declared layout identity. Thermal calculations also need gamma."""
     if module.source.woo is not None:
         raise InvalidInput("declared_module_woo_bound: a product module is not a tier")
     if not is_declared_reference(module):
@@ -44,14 +32,7 @@ def check_declared_module(module: ModuleSpec) -> None:
             "declared_module_source_kind: a declared reference is not a datasheet"
         )
     coefficient = module.gamma_pdc_per_c
-    if coefficient is None:
-        raise InvalidInput(
-            "declared_module_gamma_missing: a declared reference needs its own gamma_pdc_per_c"
-        )
-    # PVWatts expects the fractional relative change per degree, which is
-    # negative for every crystalline module; zero or positive would overstate
-    # output rather than describe the assumption.
-    if not coefficient < 0:
+    if coefficient is not None and coefficient >= 0:
         raise InvalidInput(
             "declared_module_gamma_invalid: gamma_pdc_per_c must be a negative fraction"
         )
@@ -60,9 +41,47 @@ def check_declared_module(module: ModuleSpec) -> None:
 def declared_module_basis(module: ModuleSpec) -> PvModuleParameters:
     """The module's own declared parameters, never the published reference."""
     check_declared_module(module)
-    assert module.gamma_pdc_per_c is not None
+    if module.gamma_pdc_per_c is None:
+        raise InvalidInput(
+            "declared_module_gamma_missing: supply the temperature coefficient for this calculation"
+        )
     return PvModuleParameters(
         module_spec_id=module.id,
         gamma_pdc_per_c=module.gamma_pdc_per_c,
         source=module.source,
     )
+
+
+def panel_label(power: float, length: float, width: float) -> str:
+    """Language-independent project label from the recorded values."""
+    return f"PV {power:g} Wp · {length * 1000:g} × {width * 1000:g} mm"
+
+
+def electrical_facts(module: ModuleSpec) -> Object:
+    if module.electrical is None:
+        return {}
+    facts: Object = {}
+    source: Object = {"kind": "user_declared", "module_spec_id": module.id}
+    for key, value in module.electrical.model_dump(exclude_none=True).items():
+        if key == "cell_technology":
+            facts[key] = {
+                "status": "text_evidence",
+                "raw_value": value,
+                "source": source,
+            }
+            continue
+        coefficient = key.endswith("_pct_per_c")
+        facts[key] = {
+            "status": "typed",
+            "shape": "scalar",
+            "raw_value": str(value),
+            "quantity": "temperature_coefficient"
+            if coefficient
+            else "voltage"
+            if key.endswith("_v")
+            else "current",
+            "value": value / 100 if coefficient else value,
+            "unit": "%/°C" if coefficient else "V" if key.endswith("_v") else "A",
+            "source": source,
+        }
+    return facts

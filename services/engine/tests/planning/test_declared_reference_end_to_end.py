@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import cast
 
 from linker_engine.planning.canonical import Object, encode
-from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.geometry import read_geometry
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.pv_preparation import (
@@ -23,6 +22,7 @@ from linker_engine.planning.workspace import Workspace
 
 from .conftest import FixtureObject, json_object
 from .export_preparation_fixture import frozen_publication, product_sources
+from .panel_fixture import panel_basis
 from .test_pv_generation import parameter_document
 from .test_pv_profile import LIMITS, project_with_roof
 from .test_pvgis_tmy import capture, interpretation, raw, request
@@ -163,89 +163,6 @@ def test_a_declared_reference_roof_prepares_a_pv_reference(tmp_path: Path) -> No
         assert module.gamma_pdc_per_c == -0.0034
 
 
-def test_the_woo_roof_still_prepares_and_still_binds_the_product(
-    tmp_path: Path,
-) -> None:
-    """Regression guard on the unchanged path, at the same level."""
-    from linker_engine.planning.assets import Assets
-    from linker_engine.planning.pv_source import PvSource
-    from linker_engine.planning.weather_import import WeatherImport
-    from linker_engine.planning.workspace import Workspace
-
-    workspace = Workspace(tmp_path / "private")
-    owner = Actor("user", "wordpress:17")
-    products = product_sources(tmp_path)
-    with frozen_publication():
-        project = project_with_roof(workspace, owner)
-        template = json_object(json_object(products.module_basis())["module"])
-        geometry = cast(Object, project.inputs["geometry"])
-        identifier = str(cast(list[Object], geometry["module_specs"])[0]["id"])
-        geometry["module_specs"] = [
-            {**cast(Object, template["specification"]), "id": identifier}
-        ]
-        parameters = cast(Object, project.inputs["pv_generation"])
-        parameters["modules"] = [
-            {**cast(Object, template["parameters"]), "module_spec_id": identifier}
-        ]
-        source = WeatherImport(Assets(workspace), LIMITS).tmy(
-            owner,
-            project.id,
-            PvSource(
-                raw(),
-                request(),
-                capture(),
-                interpretation(),
-                encode(
-                    {
-                        "label": "Actual public JRC weather; synthetic Woo roof",
-                        "basis": "official_weather_with_synthetic_geometry_and_parameter_fixture",
-                        "rights_basis": "JRC reuse with attribution; fixture authored here",
-                    }
-                ),
-            ),
-            key="weather",
-        )
-        project = workspace.revise(
-            owner,
-            project.id,
-            project.revision,
-            {
-                **project.inputs,
-                "pv_preparation": {
-                    "schema_version": 1,
-                    "weather_asset_id": source.id,
-                },
-            },
-            key="woo-roof",
-        )
-        kernel = PvReferenceKernel(workspace, LIMITS, products=products)
-        run = PvPreparationService(workspace, kernel, max_attempts=2).evaluate(
-            owner, project.id, project.revision, key="prepare-woo"
-        )
-        completed = _drain(workspace, owner, kernel, run.id)
-        assert json_object(completed["prepared_asset"])["id"]
-        assert json_object(completed["profile_summary"])["energy_kwh"] > 0
-        # A coefficient that the product record does not state is still refused.
-        broken = cast(Object, project.inputs["pv_generation"])
-        broken["modules"] = [
-            {
-                **cast(list[Object], broken["modules"])[0],
-                "gamma_pdc_per_c": -0.99,
-            }
-        ]
-        with frozen_publication():
-            with __import__("pytest").raises(InvalidInput):
-                ProductSources.check_pv_inputs(
-                    {"geometry": project.inputs["geometry"], "pv_generation": broken},
-                    products.pv_basis(
-                        {
-                            "geometry": project.inputs["geometry"],
-                            "pv_generation": project.inputs["pv_generation"],
-                        }
-                    ),
-                )
-
-
 def test_declared_reference_module_passes_pv_string_assessment(
     tmp_path: Path,
 ) -> None:
@@ -285,7 +202,7 @@ def test_declared_reference_module_passes_pv_string_assessment(
         basis: Object = {
             "products": feed["products"],
             "compatibility": loaded.engine.compatibility.snapshot(),
-            "pv_module_inputs": products.electrical_module_basis(),
+            "pv_module_inputs": panel_basis(),
         }
         result = json_object(assess_pv_strings(value, basis))
         assert result["assigned_modules"] == len(included_ids)

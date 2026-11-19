@@ -67,6 +67,7 @@ from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
+from .panel_fixture import panel_parameters
 from .test_energy_kernel import BATTERY, TOLERANCE
 from .test_energy_kernel import PROVENANCE as SYNTHETIC
 from .test_geometric_pv import perez_parameters, perez_request, scenario
@@ -334,7 +335,7 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
     monkeypatch.setattr(Publication, "read", current)
     assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
-    template = products.module_basis()["module"]
+    template = panel_parameters()
     assert isinstance(template, dict)
     geo, par = geometry(), parameter_document()
     specification = template["specification"]
@@ -815,8 +816,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     provider = client.app.state.planning_product_provider()
     feed = provider.publication.feed
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
-    basis = products.electrical_module_basis()
-    template = cast(dict[str, Any], basis["module"])
+    template = panel_parameters()
     expanded = mode in ("clear-flat-roof", "budget-tamper")
     pitched = mode == "pitched"
     large = expanded or pitched
