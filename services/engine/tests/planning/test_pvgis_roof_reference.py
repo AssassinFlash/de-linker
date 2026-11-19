@@ -584,7 +584,17 @@ def test_known_pv_without_geometry_uses_site_and_publishes_consumable_ac_referen
         )
 
 
-@pytest.mark.parametrize("mode", ["known-site", "imported-roof", "capacity-only"])
+@pytest.mark.parametrize(
+    "mode",
+    [
+        "known-site",
+        "imported-roof",
+        "capacity-only",
+        "customer-count",
+        "customer-watts",
+        "customer-both-no-coordinates",
+    ],
+)
 def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
     client: TestClient,
     workspace: Workspace,
@@ -598,7 +608,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
     from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
     from linker_engine.planning.equipment_service import EquipmentService
     from linker_engine.planning.profile_import import ProfileImport
-    from linker_engine.planning.project_input_contracts import KNOWN_PV_INPUT_CONTRACT
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
     from linker_engine.planning.report_inputs import ReportOptions
     from linker_engine.planning.report_sources import (
         ReportInputsChanged,
@@ -729,9 +739,29 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
                 ],
             },
         )
-        if mode == "capacity-only":
+        equipment_only = mode == "capacity-only" or mode.startswith("customer-")
+        capacity = (
+            10
+            if mode == "capacity-only"
+            else 6.88
+            if mode == "customer-both-no-coordinates"
+            else None
+        )
+        if equipment_only:
             declared = values.pop("pvgis_reference")
-            declared["arrays"][0].update(peak_power_kwp=10, tilt_deg=None)
+            declared["arrays"][0].update(peak_power_kwp=capacity, tilt_deg=None)
+            if mode.startswith("customer-"):
+                values["known_panel_details"] = {
+                    "count": None if mode == "customer-watts" else 16,
+                    "power_w": None if mode == "customer-count" else 430,
+                    "system_kwp": None,
+                }
+            if mode == "customer-both-no-coordinates":
+                declared["arrays"][0]["tilt_deg"] = 25
+                values["pvgis_reference"] = declared
+                values["brief"]["site"].update(
+                    latitude=None, longitude=None, coordinate_basis="not_provided"
+                )
             values["pvgis_reference_setup"] = declared
             values["brief"]["system_scope"] = "pv_only"
             values["equipment_setup"]["pv_dc_kw"] = None
@@ -741,7 +771,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             "schema_version": 1,
             "project_id": project_id,
             "expected_revision": 1,
-            "input_contract": KNOWN_PV_INPUT_CONTRACT,
+            "input_contract": SUPPORTED_INPUT_CONTRACTS[-1],
             "inputs": values,
             "key": "compare-pv",
         }
@@ -753,7 +783,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
         run_id = receipt["run"]["id"]
         assert receipt["run"]["state"] == "queued"
         assert receipt["project"]["revision"] == 2
-        if mode == "capacity-only":
+        if equipment_only:
             registry = ExecutionRegistry(search, pv)
             worker = Worker(
                 Jobs(workspace),
@@ -774,7 +804,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             assert "prepared_asset" not in result["result"]
             candidates = result["result"]["search"]["candidates"]
             assert candidates
-            assert {row["selection"]["pv_dc_kw"] for row in candidates} == {10}
+            assert {row["selection"]["pv_dc_kw"] for row in candidates} == {capacity}
             assert not source.requests
             selected = candidates[0]
             adopted = workspace.revise(
@@ -791,7 +821,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
                     },
                 },
                 key="adopt-capacity-only",
-                input_contract=KNOWN_PV_INPUT_CONTRACT,
+                input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
             )
             options = ReportOptions(
                 locale="en",
@@ -909,7 +939,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
             },
         },
         key="adopt-pv-comparison",
-        input_contract=KNOWN_PV_INPUT_CONTRACT,
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
     )
     options = ReportOptions(
         locale="en",
@@ -935,7 +965,7 @@ def test_comparison_prepares_pv_and_finishes_after_the_client_disconnects(
         adopted.revision,
         changed,
         key="edit-adopted-pv",
-        input_contract=KNOWN_PV_INPUT_CONTRACT,
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
     )
     with pytest.raises(ReportInputsChanged):
         report_sources(workspace, products, owner, stale, options)
