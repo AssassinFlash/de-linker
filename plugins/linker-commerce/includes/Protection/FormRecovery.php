@@ -13,6 +13,9 @@ use WP_Error;
 
 /** No password, proof, nonce or full transport body is kept. */
 final class FormRecovery {
+	/** The shared native form recovery window follows the proof window. */
+	public const RETENTION_SECONDS = 300;
+
 	/**
 	 * Known native pre-dispatch refusals need a fresh check; every other outcome
 	 * keeps the original UUID recoverable.
@@ -84,7 +87,7 @@ final class FormRecovery {
 		WC()->session->set(
 			'linker_form_recovery_' . $action,
 			array(
-				'until'  => time() + 300,
+				'until'  => time() + self::RETENTION_SECONDS,
 				'fields' => $fields,
 			)
 		);

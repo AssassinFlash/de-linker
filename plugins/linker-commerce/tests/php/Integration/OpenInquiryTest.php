@@ -137,6 +137,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'action'                     => 'linker_inquiry',
 			'linker_preliminary_project' => $project,
 			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
+			'linker_draft_hash'          => WC()->cart->get_cart_hash(),
 			'linker_started'             => $stamp,
 			'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			'name'                       => 'Maria Weber',
@@ -188,6 +189,96 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		);
 		$this->assertSame( '', $order->get_meta( '_linker_preliminary_project' ) );
 		$this->assertSame( 'Please call about my roof.', $order->get_customer_note() );
+	}
+
+	/** The retry can be rendered later under the same browser context only. */
+	public function test_preliminary_retry_survives_checkout_navigation(): void {
+		wc_load_cart();
+		$previous_get = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restore the test request.
+		$tags         = $GLOBALS['shortcode_tags'];
+		$this->later(
+			static function () use ( $previous_get, $tags ): void {
+				$_GET                      = $previous_get;
+				$GLOBALS['shortcode_tags'] = $tags;
+				WC()->session->set( 'linker_inquiry_checkout_retries', null );
+			}
+		);
+		$project = str_repeat( 'b', 32 );
+		$uuid    = wp_generate_uuid4();
+		$form    = new \Linker\Commerce\Inquiry\Form();
+		$form->register();
+		$form->retry(
+			array(
+				'linker_preliminary_project'       => $project . ':5',
+				'linker_request_id'                => $uuid,
+				'linker_inquiry_original_language' => 'en',
+				'linker_recovery_available'        => '1',
+				'linker_draft_hash'                => 'original-draft',
+				'linker_project_notes_present'     => '1',
+				'linker_include_project_notes'     => '1',
+				'linker_project_note_revisions'    => array( 'project_' . $project => '5' ),
+				'message'                          => 'Keep this reply with my project.',
+			),
+			new \WP_Error( 'linker_inquiry_pending', 'Waiting for the earlier inquiry.' ),
+			'en_US',
+			''
+		);
+		$this->assertSame( 1, preg_match( '/name="linker_inquiry_retry" value="([^"]+)"/', $form->render(), $matches ) );
+		$handle = $matches[1] ?? '';
+		$this->assertNotSame( $uuid, $handle );
+		$this->assertStringNotContainsString( 'Keep this reply with my project.', $form->render() );
+		$_GET['linker_inquiry_retry'] = $handle;
+		$retry                        = $form->render();
+		$this->assertStringContainsString( 'Keep this reply with my project.', $retry );
+		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $project . ':5"', $retry );
+		$this->assertStringContainsString( 'name="lang" value="en"', $retry );
+		$this->assertStringContainsString( 'name="linker_draft_hash" value="original-draft"', $retry );
+		$this->assertStringContainsString( 'name="linker_project_note_revisions[project_' . $project . ']" value="5"', $retry );
+		if ( \Linker\Commerce\Protection\Business::enabled() ) {
+			$this->assertStringContainsString( 'name="linker_request_id" value="' . $uuid . '"', $retry );
+		}
+		$this->as_user( $this->customer()->get_id() );
+		$unbound = $form->render();
+		$this->assertStringNotContainsString( 'Keep this reply with my project.', $unbound );
+		$this->assertStringNotContainsString( 'class="linker-inquiry-form"', $unbound );
+	}
+
+	/** A bound project may not fall back to today's cart in a non-enforcing receiver. */
+	public function test_preliminary_refuses_a_changed_draft_without_enforcement(): void {
+		if ( defined( 'LINKER_PUBLIC_PROTECTION_MODE' ) ) {
+			self::markTestSkipped( 'This fixture switches the native admission mode in its PHP process.' );
+		}
+		$previous_mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
+		$this->later(
+			static function () use ( $previous_mode ): void {
+				putenv( false === $previous_mode ? 'LINKER_PUBLIC_PROTECTION_MODE' : 'LINKER_PUBLIC_PROTECTION_MODE=' . $previous_mode ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the isolated PHP fixture environment.
+			}
+		);
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$this->later( static fn () => WC()->cart->empty_cart() );
+		$reviewed = WC()->cart->get_cart_hash();
+		$product  = $this->product( '20' );
+		WC()->cart->add_to_cart( $product->get_id() );
+		$this->assertNotSame( $reviewed, WC()->cart->get_cart_hash() );
+		$project = str_repeat( 'c', 32 ) . ':9';
+		$stamp   = (string) ( time() - 5 );
+		$post    = array(
+			'linker_preliminary_project' => $project,
+			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
+			'linker_draft_hash'          => $reviewed,
+			'linker_started'             => $stamp,
+			'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'name'                       => 'Marta Becker',
+			'email'                      => 'reviewed-project@example.test',
+			'consent'                    => '1',
+		);
+		foreach ( array( 'off', 'observe' ) as $mode ) {
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the isolated PHP fixture environment.
+			$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+			$this->assertInstanceOf( \WP_Error::class, $result );
+			$this->assertSame( 'linker_draft_changed', $result->get_error_code(), $mode );
+		}
 	}
 
 	/** Retired Woo checkout transports cannot bypass the shared public inquiry sender. */
