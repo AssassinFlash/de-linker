@@ -53,7 +53,7 @@
 
 | 原型 | 实现 | 触发 |
 | :--- | :--- | :--- |
-| `gates.html?gate=pending` | 账户各端点内容前的状态卡（badge `Under review`、h2）；Proforma 请求继续开放 | `Approval::PENDING` |
+| `gates.html?gate=pending` | 账户各端点内容之后的状态卡（badge `Under review`、h2）；Proforma 请求继续开放 | `Approval::PENDING` |
 | `gates.html?gate=restricted` | `/proforma-request/`：badge `Access currently limited` + reason notice（`Our reason:` + 团队理由）+ mailto 链接 | `Approval::RESTRICTED` |
 | `gates.html?gate=empty-proforma` | `/proforma-request/`（guest，草稿空）：`Get your Proforma` + Genie pill + 两个动作 | guest 且草稿空 |
 | `gates.html?gate=guest-draft` | `/proforma-request/`（guest，草稿有货）：`Sign in to request your Proforma` + 草稿正文 + `Lost your password?` | guest 且草稿有货 |
