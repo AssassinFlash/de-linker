@@ -1324,9 +1324,6 @@ def _droppable_tokens(text: str) -> list[str]:
 # A second scope assertion can contradict the sourced sentence even in another
 # paragraph or block. Other facts about the ports (count, voltage, protection)
 # can still be answered alongside it.
-_CURRENT_LIMIT = re.compile(
-    r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b", re.I
-)
 _COMBINED_INPUTS = re.compile(
     r"\b(?:shared|split|divided|total|combined)\b[^.!?\n]*\b(?:ports?|inputs?)\b"
     r"|\b(?:both|all) (?:battery )?(?:inputs|ports)\b[^.!?\n]*\b(?:share|combined|together)\b"
@@ -1339,7 +1336,7 @@ _COMBINED_INPUTS = re.compile(
 def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
     """The service writes the entire claim for a qualified input current."""
     failures = []
-    has_qualified_current = False
+    qualified_owners: set[str] = set()
     for block in output.blocks:
         if isinstance(block, TextBlock):
             lines = block.text.splitlines()
@@ -1354,7 +1351,7 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                 fact = _fact_known(facts, fact_id)
                 if fact is None or fact.per_input_current_direction is None:
                     continue
-                has_qualified_current = True
+                qualified_owners.add(fact.id.partition(".")[0])
                 if (
                     not isinstance(block, TextBlock)
                     or line.strip() != f"{{fact:{fact_id}}}"
@@ -1363,14 +1360,44 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                         f"Place {{fact:{fact_id}}} alone on a text line. "
                         "The service writes the complete per-input current sentence."
                     )
-    if has_qualified_current and any(
-        _CURRENT_LIMIT.search(sentence) and _COMBINED_INPUTS.search(sentence)
-        for text in _model_texts(output)
-        for sentence in re.split(r"[.!?\n]", PLACEHOLDER.sub("", text))
-    ):
-        failures.append(
-            "Keep the service-written per-input limit without a second scope assertion."
-        )
+    if qualified_owners:
+        for text in _model_texts(output):
+            # Keep placeholders intact when separating the model's clauses.
+            for clause in re.split(r"[,;\n]|[.!?](?=\s|$)", text):
+                prose = PLACEHOLDER.sub("", clause)
+                scope = _COMBINED_INPUTS.search(prose)
+                if scope is None or not re.search(
+                    r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
+                    r"|^\s*(?:it|er|dieser|dieses)\b|\bshare it\b",
+                    prose,
+                    re.I,
+                ):
+                    continue
+                # Negation must apply to the sharing assertion itself. A later
+                # “not available at each input” does not negate “is shared”.
+                if re.search(
+                    r"\b(?:not|nicht|kein(?:e[nmrs]?)?)\s+(?:a\s+)?$",
+                    prose[: scope.start()],
+                    re.I,
+                ) or re.search(
+                    r"\b(?:not|nicht)\s+(?:share|gemeinsam|zusammen|geteil)",
+                    scope.group(),
+                    re.I,
+                ):
+                    continue
+                owners = {
+                    fact.id.partition(".")[0]
+                    for ref in leftover_placeholders(clause)
+                    if (fact := _fact_known(facts, ref)) is not None
+                    and fact.source == "datasheet-figures"
+                    and fact.id in facts.supporting_documents
+                }
+                if owners and owners.isdisjoint(qualified_owners):
+                    continue
+                failures.append(
+                    "Keep the service-written per-input limit without a second scope assertion."
+                )
+                return failures
     return failures
 
 

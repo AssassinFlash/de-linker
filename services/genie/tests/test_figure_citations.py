@@ -173,6 +173,46 @@ def test_an_indexed_page_and_a_figure_merge_only_for_the_same_evidence_owner(
     assert refs == expected
 
 
+@pytest.mark.parametrize(
+    "clarification",
+    [
+        "The current limit is not shared between the two inputs.",
+        "This is not a shared current limit for both inputs.",
+    ],
+)
+def test_negated_shared_limit_keeps_the_qualified_answer(clarification: str) -> None:
+    prose, _ = answer(
+        "{fact:p1179.max_battery_charge_a}\n" + clarification, product(1179)
+    )
+    assert "50 A per battery input." in prose
+    assert clarification in prose
+
+
+def test_another_models_documented_total_can_follow_a_per_input_limit() -> None:
+    other = collect(
+        "linker/get-product",
+        {
+            "product_id": 1181,
+            "title": "Other inverter",
+            "figures": {
+                "total_current": {
+                    "value": "80",
+                    "unit": "A",
+                    "citation": {"url": DATASHEET, "page": 2},
+                }
+            },
+        },
+    )
+    prose, links = answer(
+        "{fact:p1179.max_battery_charge_a}\nThe other inverter has a total current of {fact:p1181.total_current} for both inputs.",
+        product(1179),
+        other,
+    )
+    assert "50 A per battery input." in prose
+    assert "total current of 80 A for both inputs." in prose
+    assert {link.url for link in links} == {f"{MANUAL}#page=38", f"{DATASHEET}#page=2"}
+
+
 def test_fallback_shows_document_library_without_unconsumed_figure_pages() -> None:
     _, links = answer("{fact:missing}", product(1179))
     assert {link.url for link in links} == {MANUAL, DATASHEET}
@@ -186,6 +226,11 @@ def test_fallback_shows_document_library_without_unconsumed_figure_pages() -> No
             "The total battery charging current is {fact:p1179.max_battery_charge_a}.",
         ),
         ("en", "{fact:p1179.max_battery_charge_a} in total for both inputs."),
+        ("en", "{fact:p1179.max_battery_charge_a}\nBoth inputs share it."),
+        (
+            "de",
+            "{fact:p1179.max_battery_charge_a}\nEr gilt für beide Eingänge zusammen.",
+        ),
         ("de", "Der maximale Entladestrom beträgt {fact:p1179.max_battery_charge_a}."),
         ("de", "{fact:p1179.max_battery_charge_a} für beide Eingänge zusammen."),
         (
