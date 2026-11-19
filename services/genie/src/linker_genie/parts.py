@@ -299,7 +299,9 @@ _CARD_REPLY = re.compile(
 def previous_card_selection(message: str, options: dict[int, int]) -> dict[int, int]:
     message = message.strip()
     if len(options) == 1 and 0 in options.values():
-        count_reply = re.fullmatch(rf"({_COUNT_TOKEN})[.!]?", message, re.I)
+        count_reply = re.fullmatch(
+            rf"({_COUNT_TOKEN})(?:\s+{_QTY_UNIT})?[.!]?", message, re.I
+        )
         if count_reply:
             return dict.fromkeys(options, _card_count(count_reply[1]))
     reply = _CARD_REPLY.fullmatch(message)
