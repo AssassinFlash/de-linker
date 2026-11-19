@@ -60,13 +60,16 @@ for (const lang of ['en', 'de'] as const) {
 				.locator('[name="system_scope"]')
 				.selectOption('storage_addition');
 			await page
-				.getByLabel(fields.purpose, { exact: true })
+				.getByRole('combobox', { name: fields.purpose, exact: true })
 				.selectOption('self');
 			const energy = page.getByRole('region', {
 				name: fields.energy,
 				exact: true,
 			});
-			const grid = energy.getByLabel(fields.grid, { exact: true });
+			const grid = energy.getByRole('combobox', {
+				name: fields.grid,
+				exact: true,
+			});
 			const consumption = energy.getByRole('textbox', {
 				name:
 					lang === 'en'
@@ -111,14 +114,12 @@ for (const lang of ['en', 'de'] as const) {
 						})
 						.click();
 				const direction = words.directions[index === 0 ? 1 : 3];
-				const card = page
-					.getByRole('article')
-					.filter({
-						has: page.getByRole('heading', {
-							name: direction,
-							exact: true,
-						}),
-					});
+				const card = page.getByRole('article').filter({
+					has: page.getByRole('heading', {
+						name: direction,
+						exact: true,
+					}),
+				});
 				await card
 					.getByRole('button', { name: words.choose, exact: true })
 					.click();
