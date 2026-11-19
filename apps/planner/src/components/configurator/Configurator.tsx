@@ -184,7 +184,7 @@ export default function Configurator({
 	entryComparison?:
 		| {
 				inputs: JsonObject;
-				destination?: "compare" | "review";
+				destination?: "compare" | "options" | "review";
 				consume: () => void;
 		  }
 		| undefined;
@@ -699,7 +699,9 @@ export default function Configurator({
 	function openPreliminaryOptions() {
 		if (!preliminaryBlocked && mayLeave()) openStep("preliminary-options");
 	}
-	async function savePreliminaryChoice() {
+	async function savePreliminaryStep(
+		target: "preliminary-options" | "preliminary-review",
+	) {
 		const instance = lifetime.current;
 		const saved = await controller.save();
 		if (
@@ -707,7 +709,7 @@ export default function Configurator({
 			instance === lifetime.current &&
 			client.isCurrentScope(session.query_scope)
 		)
-			openStep("preliminary-review");
+			openStep(target);
 	}
 	function chooseDirection(system_scope: NonNullable<Brief["system_scope"]>) {
 		if (preliminaryBlocked || !mayLeave()) return;
@@ -716,7 +718,7 @@ export default function Configurator({
 				withSystemScope(current, system_scope),
 			)
 		)
-			void savePreliminaryChoice();
+			void savePreliminaryStep("preliminary-review");
 	}
 	async function dispatchComparison() {
 		if (!latest.current) return;
@@ -747,7 +749,10 @@ export default function Configurator({
 			modelsUnavailable
 		)
 			return;
-		if (entryComparison.destination === "review") {
+		if (
+			entryComparison.destination === "review" ||
+			entryComparison.destination === "options"
+		) {
 			if (preliminaryBlocked || !mayLeave()) return;
 			if (
 				!sameJson(draft.history.current, entryComparison.inputs) &&
@@ -756,7 +761,11 @@ export default function Configurator({
 				return;
 			entryStarted.current = true;
 			entryComparison.consume();
-			void savePreliminaryChoice();
+			void savePreliminaryStep(
+				entryComparison.destination === "options"
+					? "preliminary-options"
+					: "preliminary-review",
+			);
 			return;
 		}
 		const authored = authoredDiscoveryInputs(entryComparison.inputs);

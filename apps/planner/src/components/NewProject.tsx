@@ -248,7 +248,7 @@ export function NewProject({
 		recoveryChecking,
 	]);
 	async function submit(
-		action: "compare" | "edit" | "review",
+		action: "compare" | "edit" | "options" | "review",
 		direction?: NonNullable<Brief["system_scope"]>,
 	) {
 		if (
@@ -263,7 +263,8 @@ export function NewProject({
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
 				!direction &&
-				(!projectForm.current?.reportValidity() || !brief.system_scope))
+				(!projectForm.current?.reportValidity() ||
+					(action !== "options" && !brief.system_scope)))
 		)
 			return;
 		const instance = lifetime.current;
@@ -451,7 +452,11 @@ export function NewProject({
 			detailsReady &&
 			projectForm.current?.reportValidity()
 		) {
-			if (!initialProject && !entryHints && !briefEntry) {
+			if (!initialProject && !briefEntry) {
+				if (draft || title.trim() || entryHints) {
+					void submit("options");
+					return;
+				}
 				const url = new URL(location.href);
 				url.hash = "sc-preliminary-options";
 				replacePlannerLocation(url);

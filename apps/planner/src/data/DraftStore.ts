@@ -18,7 +18,7 @@ export interface RecoveryCandidate {
 	readonly updatedAt: number;
 }
 export type CreationDestination =
-	"compare" | "edit" | "design" | "equipment" | "energy" | "review";
+	"compare" | "edit" | "design" | "equipment" | "energy" | "options" | "review";
 function isCreationDestination(
 	value: unknown,
 ): value is CreationDestination | null {
@@ -29,6 +29,7 @@ function isCreationDestination(
 		value === "design" ||
 		value === "equipment" ||
 		value === "energy" ||
+		value === "options" ||
 		value === "review"
 	);
 }

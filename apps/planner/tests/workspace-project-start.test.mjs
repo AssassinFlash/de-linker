@@ -34,6 +34,8 @@ const session = {
 for (const target of [
 	"preliminary",
 	"partial",
+	"carried-language",
+	"edited-language",
 	"saved",
 	"compare",
 	"retry",
@@ -45,6 +47,10 @@ for (const target of [
 	const csv = "time;power\n2026-01-01T00:00Z;4\n";
 	const name =
 		{
+			"carried-language":
+				"A guest can switch language during preliminary comparison and keep the annual use from the entry link",
+			"edited-language":
+				"A guest can switch language during preliminary comparison and keep their site and annual use",
 			partial:
 				"A guest with a site and storage direction can compare without a grid phase",
 			preliminary:
@@ -65,8 +71,14 @@ for (const target of [
 				? "/workspace/?saved_solution=45"
 				: target === "preliminary"
 					? "/workspace/#sc-preliminary-options"
-					: "/workspace/",
+					: target === "carried-language"
+						? "/workspace/?annual_kwh=6400"
+						: "/workspace/",
 		);
+		const languageSwitch = target.endsWith("-language");
+		if (languageSwitch)
+			document.querySelector("header").innerHTML =
+				'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
 		const recordedItems = [
 			{ product_id: 4107, quantity: 2 },
 			{ product_id: 1946, quantity: 4 },
@@ -100,9 +112,10 @@ for (const target of [
 		let accepted;
 		const client = {
 			origin: location.origin,
-			async send(path, body) {
+			async send(path, body, scope) {
+				assert.equal(scope, session.query_scope);
 				const command = JSON.parse(body);
-				if (target === "profile-preliminary" && path === "projects/revise") {
+				if (path === "projects/revise") {
 					assert.equal(command.project_id, projectId);
 					assert.equal(command.expected_revision, accepted.revision);
 					accepted = {
@@ -173,7 +186,7 @@ for (const target of [
 			isCurrentScope(scope) {
 				return scope === session.query_scope;
 			},
-			async query(path, body) {
+			async query(path, body, scope) {
 				if (path === "inquiry/form")
 					return {
 						schema_version: 1,
@@ -269,7 +282,11 @@ for (const target of [
 					return { schema_version: 1, items: listed, next: null };
 				if (path === "projects/runs") return { items: [], next: null };
 				if (path === "runs/read") return run;
-				if (path === "projects/read") return accepted;
+				if (path === "projects/read") {
+					assert.equal(scope, session.query_scope);
+					assert.equal(body.project_id, projectId);
+					return accepted;
+				}
 				throw new Error("unexpected command " + path);
 			},
 		};
@@ -333,6 +350,59 @@ for (const target of [
 		await mount();
 		const start = () => document.querySelector("form");
 		await until(() => document.querySelector('select[name="system_scope"]'));
+		if (languageSwitch) {
+			const button = (name) =>
+				[...document.querySelectorAll("button")].find(
+					(el) => el.textContent === name,
+				);
+			const annual = () =>
+				[...document.querySelectorAll("label")]
+					.find((el) => el.textContent.includes("Annual electricity use"))
+					?.querySelector("input");
+			if (target === "edited-language") {
+				await enter(document.querySelector('[name="location_label"]'), "Oslo");
+				const scope = document.querySelector('[name="system_scope"]');
+				await act(async () => {
+					scope.value = "storage_addition";
+					scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+				});
+				await enter(annual(), "7100");
+			}
+			await until(
+				() =>
+					button("Compare preliminary options") &&
+					!button("Compare preliminary options").disabled,
+			);
+			await act(async () => button("Compare preliminary options").click());
+			await until(() => button("Choose this option"));
+			const href = document.querySelector("a[hreflang]").href;
+			assert.equal(new URL(href).search, `?project=${projectId}`);
+			assert.equal(new URL(href).hash, "#sc-preliminary-options");
+			await act(async () => root.render(null));
+			window.history.replaceState({}, "", href);
+			config.locale = "de-DE";
+			await mount();
+			await until(
+				() => button("Back to project") && !button("Back to project").disabled,
+			);
+			await act(async () => button("Back to project").click());
+			if (target === "edited-language") {
+				assert.equal(
+					document.querySelector('[name="location_label"]').value,
+					"Oslo",
+				);
+				assert.equal(annual().value, "7100");
+			} else {
+				const scope = document.querySelector('[name="system_scope"]');
+				await act(async () => {
+					scope.value = "storage_addition";
+					scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+				});
+				assert.equal(annual().value, "6400");
+			}
+			assert.equal(creates.length, 1);
+			return;
+		}
 		if (target === "preliminary" || target === "partial" || saved) {
 			if (target === "partial") {
 				await enter(document.querySelector('[name="location_label"]'), "Oslo");
@@ -380,10 +450,13 @@ for (const target of [
 			);
 			assert.match(options[1].textContent, /existing inverter/i);
 			assert.match(document.body.textContent, /equipment compatibility/i);
-			assert.equal(creates.length, 0);
+			assert.equal(creates.length, target === "partial" ? 1 : 0);
+			await until(() => !options[1].querySelector("button").disabled);
 			await act(async () => options[1].querySelector("button").click());
 			await until(() => location.hash === "#sc-preliminary-review");
-			assert.deepEqual(destinations, ["review"]);
+			assert.deepEqual(destinations, [
+				target === "partial" ? "options" : "review",
+			]);
 			assert.equal(creates.length, 1);
 			await until(() =>
 				document.querySelector(".sc-draft-transfer form textarea"),
@@ -392,7 +465,7 @@ for (const target of [
 				document.querySelector(".sc-draft-transfer").textContent,
 				/Planned system: Storage for existing PV/,
 			);
-			const inputs = JSON.parse(creates[0]).inputs;
+			const inputs = accepted.inputs;
 			if (target === "partial") {
 				assert.equal(inputs.brief.site.location_label, "Oslo");
 				assert.equal(inputs.equipment_setup.grid_phase, null);
