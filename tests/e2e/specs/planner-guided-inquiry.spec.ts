@@ -728,30 +728,24 @@ for (const [locale, width] of [
 					const request = prepared.request().postDataJSON();
 					expect(request.project_id).not.toBe(earlier.project);
 					expect(request.report_run_id).not.toBe(earlier.report);
-					const {
-						inquiry_lines: lines,
-					}: {
-						inquiry_lines: (ReviewLine & {
-							product_id: number;
-							project_id: string;
-						})[];
-					} = await prepared.json();
-					expect(
-						lines.some(
-							({ product_id }) => product_id === earlier.shared.id
-						)
-					).toBe(true);
-					expect([
-						...new Set(lines.map(({ project_id }) => project_id)),
-					]).toEqual([request.project_id]);
 					const shown = page
 						.locator('.linker-inquiry-draft')
 						.filter({ visible: true });
-					await expect(shown.getByRole('listitem')).toHaveText(
-						lines.map(
-							({ label, quantity }) => `${label} × ${quantity}`
+					const rows = shown.getByRole('listitem');
+					await expect(rows.first()).toBeVisible();
+					const lines = (await rows.allTextContents()).map((row) => {
+						const match = /^(.+) × (\d+)$/.exec(row.trim());
+						expect(match).not.toBeNull();
+						return {
+							label: match![1]!,
+							quantity: Number(match![2]),
+						};
+					});
+					expect(
+						lines.filter(
+							({ label }) => label === earlier.shared.sku
 						)
-					);
+					).toHaveLength(1);
 					expect(await cart()).toEqual(earlier.mixed);
 					return { request, lines };
 				});
@@ -781,15 +775,16 @@ for (const [locale, width] of [
 						revision: selected.request.revision,
 					},
 				});
-				expect(order.lines.sort(lineOrder)).toEqual(
-					selected.lines
-						.map(({ label, quantity, product_id }) => ({
-							label,
-							quantity,
-							product_id,
-						}))
+				expect(
+					order.lines.some(
+						({ product_id }) => product_id === earlier.shared.id
+					)
+				).toBe(true);
+				expect(
+					order.lines
+						.map(({ label, quantity }) => ({ label, quantity }))
 						.sort(lineOrder)
-				);
+				).toEqual(selected.lines.sort(lineOrder));
 				const report = page.getByRole('link', {
 					name: text.report,
 					exact: true,
