@@ -80,9 +80,17 @@ final class DraftTransferEnvelopeTest extends TestCase {
 		\Mockery::mock( 'alias:WC_Cache_Helper' )->shouldReceive( 'get_cache_prefix' )->andReturn( 'native:' );
 		$session = \Mockery::mock( \WC_Session_Handler::class );
 		$session->shouldReceive( 'get_customer_id' )->andReturn( 'owner' );
-		$native          = \Mockery::mock();
-		$native->session = $session;
-		$native->shouldReceive( 'initialize_session' );
+		$native = new class( $session ) {
+			/**
+			 * Bind the native session fixture.
+			 *
+			 * @param \WC_Session_Handler $session Store owned by WooCommerce.
+			 */
+			public function __construct( public \WC_Session_Handler $session ) {}
+
+			/** The session is already ready in this fixture. */
+			public function initialize_session(): void {}
+		};
 		WP_Mock::userFunction( 'WC', array( 'return' => $native ) );
 		$command                     = array( 'key' => 'owned-intent' );
 		$transfer                    = new DraftTransfer();
