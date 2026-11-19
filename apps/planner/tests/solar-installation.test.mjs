@@ -131,6 +131,29 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("German panel choices save the cell technology expected by the electrical calculation", async (t) => {
+	const inputs = { brief: emptyBrief(), geometry: structuredClone(flat) };
+	const app = await mount(t, inputs, aerial, null, "de");
+	await click("Moduldaten bearbeiten");
+	const field = document.querySelector("select[name=panel_cell_technology]");
+	assert.deepEqual(
+		[...field.options].map((o) => [o.label, o.value]),
+		[
+			["Unbekannt", ""],
+			["Monokristallines Silizium", "monocrystalline"],
+			["Polykristallines Silizium", "polycrystalline"],
+		],
+	);
+	await act(async () => {
+		field.value = "polycrystalline";
+		field.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await click("Weiter zum Energiebedarf");
+	assert.equal(
+		app.inputs.geometry.module_specs[0].electrical.cell_technology,
+		"polycrystalline",
+	);
+});
 test("continuing with edited panel settings preserves roof ownership and group quantities", async (t) => {
 	const app = await mount(t);
 	const geometry = app.inputs.geometry;

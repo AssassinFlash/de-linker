@@ -23,6 +23,7 @@
     "authored_equipment_discovery_v1",
     "known_pv_ac_reference_v1",
     "backup_demand_v1",
-    "existing_system_v1"
+    "existing_system_v1",
+    "project_panel_parameters_v1"
   ]
 }

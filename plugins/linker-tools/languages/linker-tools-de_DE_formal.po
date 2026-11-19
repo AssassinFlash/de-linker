@@ -17446,3 +17446,15 @@ msgstr "Diese Maße stammen aus der früheren Dachplanung. Vergleichen Sie sie m
 #: build/planner/assets/planner.js
 msgid "Panel parameters entered for this project"
 msgstr "Für dieses Projekt eingegebene Moduldaten"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Monocrystalline silicon"
+msgstr "Monokristallines Silizium"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Polycrystalline silicon"
+msgstr "Polykristallines Silizium"

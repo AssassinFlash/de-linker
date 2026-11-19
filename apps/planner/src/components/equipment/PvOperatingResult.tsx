@@ -269,19 +269,35 @@ export function PvOperatingResult({
 													<tr key={key}>
 														<th scope="row">{name[key]}</th>
 														<td>
-															{String(f.raw_value)} {String(f.raw_unit ?? "")}
+															{key === "cell_technology" &&
+															f.raw_value === "monocrystalline"
+																? __("Monocrystalline silicon", "linker-tools")
+																: key === "cell_technology" &&
+																	  f.raw_value === "polycrystalline"
+																	? __(
+																			"Polycrystalline silicon",
+																			"linker-tools",
+																		)
+																	: String(f.raw_value ?? f.value ?? "")}{" "}
+															{String(f.raw_unit ?? "")}
 														</td>
 														<td>
-															{s && (
-																<a
-																	href={String(s.url)}
-																	target="_blank"
-																	rel="noreferrer"
-																>
-																	{__("Source document", "linker-tools")} ·{" "}
-																	{String(s.page)}
-																</a>
-															)}
+															{s?.kind === "user_declared"
+																? __(
+																		"Panel parameters entered for this project",
+																		"linker-tools",
+																	)
+																: s &&
+																	typeof s.url === "string" && (
+																		<a
+																			href={String(s.url)}
+																			target="_blank"
+																			rel="noreferrer"
+																		>
+																			{__("Source document", "linker-tools")} ·{" "}
+																			{String(s.page)}
+																		</a>
+																	)}
 														</td>
 													</tr>
 												);

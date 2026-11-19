@@ -538,7 +538,7 @@ for (const lang of ['en', 'de'] as const) {
 			.fill('-0.25');
 		await moduleForm
 			.locator('[name="panel_cell_technology"]')
-			.fill('mono-crystalline silicon');
+			.selectOption('monocrystalline');
 		await moduleForm.locator('button[type="submit"]').click();
 		await page
 			.locator('#lp-design')

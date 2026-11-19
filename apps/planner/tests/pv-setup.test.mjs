@@ -448,3 +448,49 @@ test("German percentage edits retain exact text and decimal separators while sto
 	await enter(control("Charging efficiency"), "57");
 	assert.equal(control("Charging efficiency").value, "57");
 });
+
+test("electrical model sources distinguish project-entered values from actual documents", async (t) => {
+	const page = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(page.element);
+	t.after(() => page.dispose(root));
+	const { PvOperatingResult } =
+		await import("../src/components/equipment/PvOperatingResult.tsx");
+	const url = "https://de-linker.com/equipment.pdf",
+		value = {
+			points: [],
+			conditions: {},
+			model: {
+				status: "available",
+				parameters: {},
+				diagnostics: {},
+				input_facts: {
+					voc_v: {
+						raw_value: "42",
+						raw_unit: "V",
+						source: { kind: "user_declared", module_spec_id: "roof-module" },
+					},
+					vmpp_v: { raw_value: "35", raw_unit: "V", source: { url, page: 3 } },
+				},
+			},
+		};
+	await act(async () =>
+		root.render(
+			React.createElement(PvOperatingResult, {
+				value,
+				strings: [],
+				locale: "en-GB",
+			}),
+		),
+	);
+	const facts = [...document.querySelectorAll("tbody tr")];
+	const declared = facts.find((row) => row.textContent.includes("42 V"));
+	assert.match(
+		declared.textContent,
+		/Panel parameters entered for this project/,
+	);
+	assert.equal(declared.querySelector("a"), null);
+	const doc = facts.find((row) => row.textContent.includes("35 V"));
+	assert.equal(doc.querySelector("a").href, url);
+	assert.match(doc.querySelector("a").textContent, /3/);
+});

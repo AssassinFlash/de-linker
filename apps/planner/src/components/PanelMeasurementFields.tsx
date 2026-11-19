@@ -30,7 +30,11 @@ export function PanelMeasurementFields({
 			</label>
 		);
 	}
-	function electrical(key: keyof PanelElectrical, label: string, unit = "") {
+	function electrical(
+		key: Exclude<keyof PanelElectrical, "cell_technology">,
+		label: string,
+		unit = "",
+	) {
 		return (
 			<label className="sc-field">
 				<span>
@@ -38,8 +42,8 @@ export function PanelMeasurementFields({
 					{unit && " (" + unit + ")"}
 				</span>
 				<input
-					type={key === "cell_technology" ? "text" : "number"}
-					step={key === "cell_technology" ? undefined : "any"}
+					type="number"
+					step="any"
 					name={"panel_" + key}
 					value={fields.electrical?.[key] ?? ""}
 					onChange={(e) =>
@@ -132,7 +136,30 @@ export function PanelMeasurementFields({
 					__("Temperature coefficient of open-circuit voltage", "linker-tools"),
 					"%/°C",
 				)}
-				{electrical("cell_technology", __("Cell technology", "linker-tools"))}
+				<label className="sc-field">
+					<span>{__("Cell technology", "linker-tools")}</span>
+					<select
+						name="panel_cell_technology"
+						value={fields.electrical?.cell_technology ?? ""}
+						onChange={(event) =>
+							change({
+								...fields,
+								electrical: {
+									...fields.electrical,
+									cell_technology: event.currentTarget.value,
+								},
+							})
+						}
+					>
+						<option value="">{__("Unknown", "linker-tools")}</option>
+						<option value="monocrystalline">
+							{__("Monocrystalline silicon", "linker-tools")}
+						</option>
+						<option value="polycrystalline">
+							{__("Polycrystalline silicon", "linker-tools")}
+						</option>
+					</select>
+				</label>
 			</details>
 		</div>
 	);

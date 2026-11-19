@@ -36,7 +36,9 @@ type InputContract = Literal[
     "known_pv_ac_reference_v1",
     "backup_demand_v1",
     "existing_system_v1",
+    "project_panel_parameters_v1",
 ]
+PANEL_PARAMETERS_INPUT_CONTRACT: InputContract = "project_panel_parameters_v1"
 EXISTING_SYSTEM_INPUT_CONTRACT: InputContract = "existing_system_v1"
 BACKUP_DEMAND_INPUT_CONTRACT: InputContract = "backup_demand_v1"
 KNOWN_PV_INPUT_CONTRACT: InputContract = "known_pv_ac_reference_v1"
@@ -96,12 +98,43 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     KNOWN_PV_INPUT_CONTRACT,
     BACKUP_DEMAND_INPUT_CONTRACT,
     EXISTING_SYSTEM_INPUT_CONTRACT,
+    PANEL_PARAMETERS_INPUT_CONTRACT,
 )
+
+
+def _has_panel_parameters(inputs: Mapping[str, object]) -> bool:
+    details = inputs.get("known_panel_details")
+    if isinstance(details, Mapping) and any(
+        details.get(key) is not None for key in ("count", "power_w", "system_kwp")
+    ):
+        return True
+    geometry = inputs.get("geometry")
+    specs = geometry.get("module_specs") if isinstance(geometry, Mapping) else None
+    modules = list(specs) if isinstance(specs, list) else []
+    installation = inputs.get("installation")
+    materials = (
+        installation.get("materials") if isinstance(installation, Mapping) else None
+    )
+    if isinstance(materials, list):
+        modules.extend(
+            basis.get("module")
+            for row in materials
+            if isinstance(row, Mapping)
+            and isinstance(basis := row.get("mounting_quantity_basis"), Mapping)
+        )
+    return any(
+        isinstance(module, Mapping)
+        and isinstance(points := module.get("electrical"), Mapping)
+        and any(value is not None for value in points.values())
+        for module in modules
+    )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    if _has_panel_parameters(inputs):
+        required.append(PANEL_PARAMETERS_INPUT_CONTRACT)
     if "existing_system" in inputs:
         required.append(EXISTING_SYSTEM_INPUT_CONTRACT)
     if "backup_demand" in inputs:
