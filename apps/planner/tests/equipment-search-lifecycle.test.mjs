@@ -1445,10 +1445,16 @@ for (const [multi, selection] of [
 		assertModels(again);
 		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
 		if (selection === "none") {
+			await untilRun(app.pending);
 			await app.step("Project");
-			const declarations = document.querySelector("details");
-			if (!declarations.open)
-				await act(async () => declarations.querySelector("summary").click());
+			const declarations = [
+				...document.querySelectorAll("details > summary"),
+			].find(
+				(summary) => summary.textContent === "Equipment and system arrangement",
+			);
+			assert.ok(declarations, "Expected equipment and system arrangement");
+			if (!declarations.parentElement.open)
+				await act(async () => declarations.click());
 			await untilRun(() =>
 				app
 					.fieldSelect("Inverter or integrated storage system")
