@@ -183,21 +183,14 @@ export function NewProject({
 		setChecking(true);
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
 			.then((records) => {
-				if (
-					!active ||
-					!client.isCurrentScope(session.query_scope) ||
-					!records.length
-				)
-					return;
-				setRequests(records);
-				if (openWork.current) return;
-				intent.current = records[0]!.body;
-				intentScope.current = records[0]!.scope;
-				destination.current = records[0]!.destination;
-				setTitle(records[0]!.title);
-				setRecoveredInputs(readObject(JSON.parse(records[0]!.body).inputs));
-				setOpen(true);
-				setFailed(true);
+				if (!active || !client.isCurrentScope(session.query_scope)) return;
+				const matching = records.filter(
+					(record) =>
+						(record.destination === "preliminary-review") === compareOnLoad,
+				);
+				setRequests(matching);
+				if (openWork.current || !matching[0]) return;
+				restoreCreation(matching[0]);
 			})
 			.catch(() => {
 				if (active) setRecoveryFailed(true);
@@ -215,7 +208,19 @@ export function NewProject({
 		store,
 		recoveryScopes,
 		recoveryChecking,
+		compareOnLoad,
 	]);
+	function restoreCreation(record: ScopedCreation) {
+		intent.current = record.body;
+		intentScope.current = record.scope;
+		destination.current = record.destination;
+		setTitle(record.title);
+		setRecoveredInputs(readObject(JSON.parse(record.body).inputs));
+		setProjectGone(false);
+		setInputContractRequired(false);
+		setOpen(true);
+		setFailed(true);
+	}
 	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
 		if (
 			sending.current ||
@@ -242,11 +247,7 @@ export function NewProject({
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
-						title:
-							title.trim() ||
-							(direction
-								? systemNames()[direction]
-								: __("New project", "linker-tools")),
+						title: title.trim() || __("New project", "linker-tools"),
 						inputs: {
 							...inputs,
 							brief: {
@@ -368,7 +369,45 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	if (compareOnLoad || destination.current === "preliminary-review") {
+	const pendingRequests = requests.length > 1 && (
+		<label className="sc-field">
+			<span>{__("Unconfirmed project creations", "linker-tools")}</span>
+			<select
+				disabled={busy}
+				value={selectedRequest ? intentId(selectedRequest) : ""}
+				onChange={(event) => {
+					const request = requests.find(
+						(candidate) => intentId(candidate) === event.currentTarget.value,
+					);
+					if (!request) return;
+					restoreCreation(request);
+				}}
+			>
+				{requests.map((request, index) => (
+					<option key={intentId(request)} value={intentId(request)}>
+						{index + 1}.{" "}
+						{compareOnLoad ? preliminaryRecoveryLabel(request) : request.title}
+					</option>
+				))}
+			</select>
+		</label>
+	);
+	const failureMessage = projectGone
+		? __(
+				"The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project.",
+				"linker-tools",
+			)
+		: inputContractRequired
+			? __(
+					"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
+					"linker-tools",
+				)
+			: __(
+					"Project creation was not confirmed. Retrying uses the same request.",
+					"linker-tools",
+				);
+
+	if (compareOnLoad) {
 		const disabled =
 			busy ||
 			checking ||
@@ -384,19 +423,15 @@ export function NewProject({
 					disabled={disabled || retry}
 					choose={(direction) => void submit(direction)}
 				/>
+				{pendingRequests}
 				{busy && <p role="status">{__("Creating…", "linker-tools")}</p>}
 				{failed && (
 					<Notice error>
-						<p>
-							{__(
-								"Project creation was not confirmed. Retrying uses the same request.",
-								"linker-tools",
-							)}
-						</p>
+						<p>{failureMessage}</p>
 						<button
 							className="sc-button"
 							type="button"
-							disabled={disabled}
+							disabled={disabled || inputContractRequired}
 							onClick={() => void submit()}
 						>
 							{__("Retry project creation", "linker-tools")}
@@ -577,34 +612,7 @@ export function NewProject({
 						)}
 					</Notice>
 				)}
-			{requests.length > 1 && (
-				<label className="sc-field">
-					<span>{__("Unconfirmed project creations", "linker-tools")}</span>
-					<select
-						disabled={busy}
-						value={selectedRequest ? intentId(selectedRequest) : ""}
-						onChange={(event) => {
-							const request = requests.find(
-								(candidate) =>
-									intentId(candidate) === event.currentTarget.value,
-							);
-							if (!request) return;
-							intent.current = request.body;
-							intentScope.current = request.scope;
-							destination.current = request.destination;
-							setTitle(request.title);
-							setRecoveredInputs(readObject(JSON.parse(request.body).inputs));
-							setFailed(true);
-						}}
-					>
-						{requests.map((request, index) => (
-							<option key={intentId(request)} value={intentId(request)}>
-								{index + 1}. {request.title}
-							</option>
-						))}
-					</select>
-				</label>
-			)}
+			{pendingRequests}
 			<ProjectDetails
 				inputs={inputs}
 				config={config ?? { locale, countries: {} }}
@@ -649,24 +657,8 @@ export function NewProject({
 					{__("Cancel", "linker-tools")}
 				</button>
 			)}
-			{failed && (
-				<Notice error>
-					{projectGone
-						? __(
-								"The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project.",
-								"linker-tools",
-							)
-						: inputContractRequired
-							? __(
-									"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
-									"linker-tools",
-								)
-							: __(
-									"Project creation was not confirmed. Retrying uses the same request.",
-									"linker-tools",
-								)}
-				</Notice>
-			)}
+			{failed && <Notice error>{failureMessage}</Notice>}
+
 			{recoveryFailed && (
 				<Notice error>
 					{__(
@@ -677,6 +669,12 @@ export function NewProject({
 			)}
 		</form>
 	);
+}
+
+function preliminaryRecoveryLabel(record: ScopedCreation): string {
+	const inputs = readObject(JSON.parse(record.body).inputs);
+	const scope = readBrief(inputs.brief ?? emptyBrief()).system_scope;
+	return scope ? systemNames()[scope] : record.title;
 }
 
 function withProduct(

@@ -466,6 +466,19 @@ export function Workspace({
 			</div>
 		);
 
+	const recoveryNotice = recovery.isError && (
+		<Notice error>
+			<p>
+				{__(
+					"Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
+					"linker-tools",
+				)}
+			</p>
+			<button className="sc-button" onClick={retryRecovery}>
+				{__("Try again", "linker-tools")}
+			</button>
+		</Notice>
+	);
 	const firstVisitComparison =
 		route === "sc-preliminary-options" &&
 		savedSource === null &&
@@ -475,6 +488,7 @@ export function Workspace({
 	if (firstVisitComparison)
 		return (
 			<div className="sc-configurator">
+				{recoveryNotice}
 				<NewProject
 					config={config}
 					compareOnLoad
@@ -570,19 +584,7 @@ export function Workspace({
 						/>
 					)}
 				</div>
-				{recovery.isError && (
-					<Notice error>
-						<p>
-							{__(
-								"Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
-								"linker-tools",
-							)}
-						</p>
-						<button className="sc-button" onClick={retryRecovery}>
-							{__("Try again", "linker-tools")}
-						</button>
-					</Notice>
-				)}
+				{recoveryNotice}
 				{session.claim_pending && (
 					<Notice>
 						{__(

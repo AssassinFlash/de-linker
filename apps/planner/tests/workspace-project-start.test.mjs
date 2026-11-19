@@ -416,4 +416,210 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		"Can you help size a battery?",
 	);
 	assert.equal(fixture.element.querySelector('[name="consent"]').checked, true);
+
+	await enter(
+		fixture.element.querySelector('[name="message"]'),
+		"Frage aus der deutschen Ansicht",
+	);
+	await act(async () =>
+		fixture.element.querySelector('[name="consent"]').click(),
+	);
+	await act(async () =>
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pagehide", { persisted: false }),
+		),
+	);
+	window.history.replaceState(
+		null,
+		"",
+		"/workspace/?project=" + projectId + "#sc-preliminary-review",
+	);
+	await act(async () => root.render(null));
+	await render("en");
+	await until(
+		() =>
+			previews.at(-1)?.lang === "en" &&
+			fixture.element.querySelector("form.linker-inquiry-form"),
+	);
+	assert.equal(
+		fixture.element.querySelector('[name="message"]').value,
+		"Frage aus der deutschen Ansicht",
+	);
+	assert.equal(
+		fixture.element.querySelector('[name="consent"]').checked,
+		false,
+	);
+	assert.equal(created[0].title, "New project");
+});
+
+test("signed-in preliminary landing explains a failed recovery read and offers a retry", async (t) => {
+	const fixture = setupDom();
+	history.replaceState(null, "", "/workspace/#sc-preliminary-options");
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const root = createRoot(fixture.element);
+	const cache = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	const style = Object.getOwnPropertyDescriptor(globalThis, "getComputedStyle");
+	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+		if (style) Object.defineProperty(globalThis, "getComputedStyle", style);
+		else delete globalThis.getComputedStyle;
+	});
+	let recoveries = 0;
+	const client = {
+		origin: location.origin,
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path) {
+			if (path === "projects/list")
+				return { schema_version: 1, items: [], next: null };
+			assert.equal(path, "recovery/scopes");
+			if (++recoveries === 1) throw new Error("Recovery scope unavailable");
+			return { schema_version: 1, scopes: [], next: null };
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					session: { ...session, kind: "user" },
+					client,
+					store: {
+						async readCreations() {
+							return [];
+						},
+					},
+					config: {
+						baseUrl: location.origin + "/api/",
+						nonceUrl: "",
+						locale: "en",
+						countries: {},
+					},
+					recheck: () => assert.fail("Unexpected scope invalidation"),
+				}),
+			),
+		),
+	);
+	const retry = () =>
+		Array.from(fixture.element.querySelectorAll("button")).find(
+			(button) => button.textContent === "Try again",
+		);
+	await until(retry);
+	assert.match(
+		fixture.element.textContent,
+		/creations and CSV imports from earlier sessions could not be checked/,
+	);
+	assert.equal(
+		fixture.element.querySelector(".sc-package button").disabled,
+		true,
+	);
+	await act(async () => retry().click());
+	await until(
+		() => !fixture.element.querySelector(".sc-package button").disabled,
+	);
+	assert.equal(recoveries, 2);
+	assert.equal(retry(), undefined);
+});
+
+test("the review restores edited signed-in details and Woo billing controls on a language return", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { ReviewInquiry } =
+		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	const opens = [];
+	const project = { id: projectId, revision: 1 };
+	const client = {
+		origin: location.origin,
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path, command) {
+			assert.equal(path, "inquiry/form");
+			opens.push(command.lang);
+			return {
+				schema_version: 1,
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
+					<input type="hidden" name="linker_preliminary_project" value="${projectId}:1">
+					<details class="linker-inquiry-details">
+						<summary><span>Your reply details <small>Original Name · old@example.test</small></span></summary>
+						<input name="name" value="Original Name"><input name="email" value="old@example.test">
+						<input name="billing_city" value="Berlin"><select name="billing_country">
+							<option value="DE" selected>Germany</option><option value="NL">Netherlands</option>
+						</select>
+					</details>
+					<button type="submit">Send inquiry</button>
+				</form>`,
+				inquiry_lines: [],
+			};
+		},
+	};
+	const render = (locale) =>
+		act(async () =>
+			root.render(
+				React.createElement(ReviewInquiry, {
+					project,
+					direction: "storage_only",
+					client,
+					locale,
+					active: true,
+					scope: session.query_scope,
+					changeSelection() {},
+					recheck() {},
+				}),
+			),
+		);
+	const details = () => fixture.element.querySelector("details");
+	const field = (name) => fixture.element.querySelector(`[name="${name}"]`);
+	await render("en");
+	await until(details);
+	assert.equal(details().open, false);
+	await act(async () => {
+		details().open = true;
+	});
+	await enter(field("name"), "Updated Name");
+	await enter(field("email"), "new@example.test");
+	await enter(field("billing_city"), "Amsterdam");
+	await act(async () => {
+		field("billing_country").value = "NL";
+		field("billing_country").dispatchEvent(
+			new window.Event("change", { bubbles: true }),
+		);
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pagehide", { persisted: true }),
+		);
+	});
+	await act(async () => root.render(null));
+	await render("de");
+	await until(() => opens.at(-1) === "de" && details());
+	assert.equal(details().open, true);
+	assert.equal(
+		details().querySelector("small").textContent,
+		"Updated Name · new@example.test",
+	);
+	assert.equal(field("billing_city").value, "Amsterdam");
+	assert.equal(field("billing_country").value, "NL");
+	assert.equal(field("linker_preliminary_project").value, projectId + ":1");
+
+	const reads = opens.length;
+	await act(async () =>
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pagehide", { persisted: true }),
+		),
+	);
+	assert.equal(details(), null); // Cached pages keep no editable DOM before the ownership check.
+	await act(async () =>
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pageshow", { persisted: true }),
+		),
+	);
+	await until(() => opens.length === reads + 1 && details());
+	assert.equal(field("billing_country").value, "NL");
+	assert.equal(field("name").value, "Updated Name");
 });

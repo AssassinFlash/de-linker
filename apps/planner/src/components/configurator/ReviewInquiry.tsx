@@ -6,34 +6,115 @@ import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { systemNames } from "./PreliminaryOptions.tsx";
 
-function customerFields(form: HTMLFormElement) {
+type CustomerField = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+type CustomerDraft = Map<string, string | boolean>;
+
+const DRAFT_KEY = "linker-preliminary-inquiry";
+const contactFields = [
+	"name",
+	"email",
+	"company",
+	"message",
+	"consent",
+	"linker_include_project_notes",
+];
+
+function customerFields(form: HTMLFormElement): CustomerField[] {
 	return Array.from(form.elements).filter(
-		(field): field is HTMLInputElement | HTMLTextAreaElement =>
-			((field instanceof window.HTMLInputElement && field.type !== "hidden") ||
-				field instanceof window.HTMLTextAreaElement) &&
-			[
-				"name",
-				"email",
-				"company",
-				"message",
-				"consent",
-				"linker_include_project_notes",
-			].includes(field.name),
+		(field): field is CustomerField =>
+			((field instanceof window.HTMLInputElement &&
+				field.type !== "hidden" &&
+				!field.readOnly) ||
+				(field instanceof window.HTMLTextAreaElement && !field.readOnly) ||
+				field instanceof window.HTMLSelectElement) &&
+			!field.disabled &&
+			(contactFields.includes(field.name) || field.name.startsWith("billing_")),
 	);
 }
 
 function readCustomerFields(
 	form: HTMLFormElement,
-): Map<string, string | boolean> {
-	const values = new Map<string, string | boolean>();
+	tracked: CustomerDraft,
+): CustomerDraft {
+	const values: CustomerDraft = new Map();
 	for (const field of customerFields(form)) {
 		if (field instanceof window.HTMLInputElement && field.type === "checkbox") {
-			if (field.checked !== field.defaultChecked)
+			if (tracked.has(field.name) || field.checked !== field.defaultChecked)
 				values.set(field.name, field.checked);
-		} else if (field.value !== field.defaultValue)
-			values.set(field.name, field.value);
+		} else {
+			const defaultValue =
+				field instanceof window.HTMLSelectElement
+					? (
+							Array.from(field.options).find(
+								(option) => option.defaultSelected,
+							) ?? field.options[0]
+						)?.value
+					: field.defaultValue;
+			if (tracked.has(field.name) || field.value !== defaultValue)
+				values.set(field.name, field.value);
+		}
 	}
 	return values;
+}
+
+function restoreCustomerFields(
+	form: HTMLFormElement,
+	values: CustomerDraft,
+): void {
+	for (const field of customerFields(form)) {
+		const previous = values.get(field.name);
+		if (
+			typeof previous === "boolean" &&
+			field instanceof window.HTMLInputElement &&
+			field.type === "checkbox"
+		)
+			field.checked = previous;
+		else if (typeof previous === "string" && field.value !== previous) {
+			if (
+				field instanceof window.HTMLSelectElement &&
+				!Array.from(field.options).some((option) => option.value === previous)
+			)
+				continue;
+			field.value = previous;
+			const details = field.closest("details");
+			if (details) details.open = true;
+		}
+	}
+	if (values.has("name") || values.has("email")) {
+		const name = form.querySelector<HTMLInputElement>('input[name="name"]');
+		const email = form.querySelector<HTMLInputElement>('input[name="email"]');
+		const summary = form.querySelector(".linker-inquiry-details summary small");
+		if (name && email && summary)
+			summary.textContent = `${name.value} · ${email.value}`;
+	}
+}
+
+function takeNavigationDraft(
+	scope: string,
+	projectId: string,
+): CustomerDraft | null {
+	try {
+		const draft = JSON.parse(
+			window.sessionStorage.getItem(DRAFT_KEY) ?? "null",
+		);
+		if (!draft) return null;
+		if (draft.scope === scope && draft.projectId !== projectId) return null;
+		window.sessionStorage.removeItem(DRAFT_KEY);
+		if (
+			draft.scope !== scope ||
+			!draft.fields ||
+			typeof draft.fields !== "object"
+		)
+			return null;
+		return new Map(
+			Object.entries(draft.fields).filter(
+				(entry): entry is [string, string | boolean] =>
+					typeof entry[1] === "string" || typeof entry[1] === "boolean",
+			),
+		);
+	} catch {
+		return null;
+	}
 }
 
 export function ReviewInquiry({
@@ -65,9 +146,40 @@ export function ReviewInquiry({
 	const heading = useRef<HTMLHeadingElement>(null);
 	const projectId = project.id;
 	const revision = project.revision;
-	const retained = useRef(new Map<string, string | boolean>());
-	const recoveryKey = `linker-preliminary-inquiry:${scope}:${projectId}`;
+	const retained = useRef<CustomerDraft>(new Map());
+	const posting = useRef(false);
 	useEffect(() => {
+		// Keep one unfinished navigation draft in this tab. The destination
+		// consumes it only after mounting a form for the same owned project.
+		const save = () => {
+			const form = host.current?.querySelector("form");
+			if (!form || posting.current || !client.isCurrentScope(scope)) return;
+			const values = readCustomerFields(form, retained.current);
+			retained.current = values;
+			if (values.size)
+				window.sessionStorage.setItem(
+					DRAFT_KEY,
+					JSON.stringify({
+						scope,
+						projectId,
+						fields: Object.fromEntries(values),
+					}),
+				);
+		};
+		const onPageHide = (event: PageTransitionEvent) => {
+			try {
+				save();
+			} catch {
+				// Browser Back itself cannot be canceled from pagehide.
+			} finally {
+				if (event.persisted) host.current?.replaceChildren();
+			}
+		};
+		const onPageShow = (event: PageTransitionEvent) => {
+			posting.current = false;
+			// Reauthorize the project before restoring edits in a cached page.
+			if (event.persisted) setAttempt((value) => value + 1);
+		};
 		const saveForLanguage = (event: MouseEvent) => {
 			if (
 				event.defaultPrevented ||
@@ -93,26 +205,22 @@ export function ReviewInquiry({
 				)
 			)
 				return;
-			const form = host.current?.querySelector("form");
-			if (!form) return;
-			const values = readCustomerFields(form);
-			if (!values.size) return;
 			try {
-				window.sessionStorage.setItem(
-					recoveryKey,
-					JSON.stringify({
-						path: target.pathname,
-						fields: Object.fromEntries(values),
-					}),
-				);
+				save();
 			} catch {
 				event.preventDefault();
 				setNavigationFailed(true);
 			}
 		};
 		document.addEventListener("click", saveForLanguage);
-		return () => document.removeEventListener("click", saveForLanguage);
-	}, [projectId, recoveryKey]);
+		window.addEventListener("pagehide", onPageHide);
+		window.addEventListener("pageshow", onPageShow);
+		return () => {
+			document.removeEventListener("click", saveForLanguage);
+			window.removeEventListener("pagehide", onPageHide);
+			window.removeEventListener("pageshow", onPageShow);
+		};
+	}, [client, projectId, scope]);
 	useEffect(() => {
 		if (active) heading.current?.focus();
 	}, [active]);
@@ -120,6 +228,8 @@ export function ReviewInquiry({
 		const node = host.current;
 		if (!node) return;
 		const request = new AbortController();
+		const abort = () => request.abort();
+		window.addEventListener("pagehide", abort, { once: true });
 		setLines(null);
 		setFailed(false);
 		void client
@@ -154,29 +264,9 @@ export function ReviewInquiry({
 					)?.value !== `${projectId}:${revision}`
 				)
 					throw new Error("invalid_inquiry_form");
-				let translated: Record<string, unknown> | undefined;
-				try {
-					const draft = JSON.parse(
-						window.sessionStorage.getItem(recoveryKey) ?? "null",
-					);
-					if (draft?.path === location.pathname) {
-						translated = draft.fields;
-						window.sessionStorage.removeItem(recoveryKey);
-					}
-				} catch {
-					// A draft can carry edits only when the browser allowed its write.
-				}
-				for (const field of customerFields(form)) {
-					const previous =
-						retained.current.get(field.name) ?? translated?.[field.name];
-					if (
-						typeof previous === "boolean" &&
-						field instanceof window.HTMLInputElement &&
-						field.type === "checkbox"
-					)
-						field.checked = previous;
-					else if (typeof previous === "string") field.value = previous;
-				}
+				retained.current =
+					takeNavigationDraft(scope, projectId) ?? retained.current;
+				restoreCustomerFields(form, retained.current);
 				node.replaceChildren(template.content);
 				form.dispatchEvent(
 					new Event("linker:inquiry-form-mounted", { bubbles: true }),
@@ -195,21 +285,13 @@ export function ReviewInquiry({
 				setFailed(true);
 			});
 		return () => {
-			request.abort();
+			window.removeEventListener("pagehide", abort);
+			abort();
 			const form = node.querySelector("form");
-			if (form) retained.current = readCustomerFields(form);
+			if (form) retained.current = readCustomerFields(form, retained.current);
 			node.replaceChildren();
 		};
-	}, [
-		client,
-		scope,
-		projectId,
-		revision,
-		locale,
-		attempt,
-		recheck,
-		recoveryKey,
-	]);
+	}, [client, scope, projectId, revision, locale, attempt, recheck]);
 	return (
 		<section
 			className="sc-main sc-draft-transfer"
@@ -250,6 +332,12 @@ export function ReviewInquiry({
 						ref={host}
 						onSubmit={(event) => {
 							if (!client.isCurrentScope(scope)) event.preventDefault();
+							// Commerce owns the native retry and receipt from this POST.
+							if (!event.defaultPrevented) {
+								posting.current = true;
+								retained.current.clear();
+								takeNavigationDraft(scope, projectId);
+							}
 						}}
 					/>
 					{failed && (
