@@ -2572,7 +2572,6 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         # A customer may keep a previously adopted search result while adding
         # wiring. The matching, completed check must be usable in the report.
         from linker_engine.planning.geometry import panel_poses, read_geometry
-        from linker_engine.planning.woo_module import module_template
 
         from .test_pv_generation import geometry
 
@@ -2581,7 +2580,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             "linker_engine.planning.equipment_kernel.assess_equipment", original
         )
         layout = geometry()
-        module = json_object(module_template(feed["overlay"][0]))
+        module = panel_parameters()
         layout["module_specs"] = [{**module["specification"], "id": "module"}]
         layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
         module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -3882,15 +3881,6 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
                 "logo": None,
             },
         }
-        current = loaded.publication.read()
-        reference = next(
-            row
-            for row in current["products"]
-            if row.get("engineering_role") == "reference_pv_module"
-        )
-        if declared_module:
-            reference["documents"] = []
-        monkeypatch.setattr(loaded.publication, "read", lambda: current)
         if export != "permitted":
             refused = client.post(
                 "/runs/report",
@@ -3920,28 +3910,9 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
             workspace.blobs.object(finished["result"]["pinned_assets"]["report.source"])
         )
         parts = frozen_report["pv_components"]
-        if declared_module:
-            assert parts == {
-                "status": "unavailable",
-                "reason": "declared_reference_module",
-            }
-            assert "equipment_pv" not in frozen_report["woo_bases"]
-        else:
-            assert parts["components"][0]["quantity"] == 20
-            assert parts["nameplate_kwp"] == pytest.approx(9.2)
-            reference["documents"] = []
-            refused = client.post(
-                "/runs/report",
-                json={
-                    "schema_version": 1,
-                    **report_command,
-                    "expected_revision": saved["revision"],
-                    "key": "withdrawn-module-document",
-                },
-                headers=headers(owner),
-            )
-            assert refused.status_code == 409, refused.text
-            assert refused.json()["error"]["code"] == "product_evidence_changed"
+        assert parts["status"] == "available"
+        assert parts["components"][0]["quantity"] == 20
+        assert "equipment_pv" not in frozen_report["woo_bases"]
         changed = copy.deepcopy(adopted)
         changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 12
         revised = rig.post(
@@ -6562,17 +6533,12 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     from linker_engine.planning.geometry import panel_poses, read_geometry
     from linker_engine.planning.pv_string_assessment import assess_pv_strings
     from linker_engine.planning.pv_string_inputs import PvStringPlan
-    from linker_engine.planning.woo_module import module_template
 
     from .test_pv_generation import geometry
 
-    reference = feed["overlay"][0]
-    proof = {
-        "module": json_object(module_template(reference)),
-        "electrical_product": reference,
-    }
+    proof = panel_basis()
     layout = geometry()
-    layout["module_specs"] = [{**proof["module"]["specification"], "id": "module"}]
+    layout["module_specs"] = [{**panel_parameters()["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
     assert len(ids) == 12
@@ -6686,11 +6652,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     standby_value["pv_string_plan"]["strings"][0]["module_ids"] = standby_ids[:20]
     below = json_object(assess_pv_strings(standby_value, standby_basis))
     assert below["standby"]["points"][0]["observation"] == "outside_interval"
-    boundary_basis = copy.deepcopy(standby_basis)
-    boundary_basis["pv_module_inputs"]["electrical_product"]["figures"]["vmpp_v"][
-        "value"
-    ] = 47.5
-    boundary = json_object(assess_pv_strings(standby_value, boundary_basis))
+    boundary_value = copy.deepcopy(standby_value)
+    boundary_value["geometry"]["module_specs"][0]["electrical"]["vmpp_v"] = 47.5
+    boundary = json_object(assess_pv_strings(boundary_value, standby_basis))
     assert boundary["standby"]["points"][0]["voltage_v"] == 950
     assert boundary["standby"]["points"][0]["observation"] == "boundary"
     assert "standby" not in result
@@ -6731,8 +6695,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     )
     assert model["diagnostics"]["stc"]["v_mp"] == pytest.approx(45.4)
     assert model["diagnostics"]["stc"]["i_mp"] == pytest.approx(10.14)
-    assert model["diagnostics"]["noct"]["cell_c_interval"] == [41, 45]
-    assert model["diagnostics"]["noct"]["declared_p_mp_w"] == 352
+    assert "noct" not in model["diagnostics"]
     assert "cells_in_series" not in model["parameters"]
     presentation = build_report(
         {
@@ -6754,7 +6717,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert op_checks["pv_model_applicability"]["status"] == "unresolved"
     assert op_checks["pv_hot_current:1"]["actual"] < op_checks["pv_hot_isc:1"]["actual"]
     invalid_conditions = copy.deepcopy(operating_value)
-    invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 100
+    invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 10
     outside = json_object(assess_equipment(invalid_conditions, basis))["pv_electrical"][
         "operating"
     ]
@@ -6768,7 +6731,8 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     # Reuse the valid fitted result to guard the observed success=True /
     # negative-resistance failure; do not rerun a root for this failure fixture.
     from linker_engine.planning import pv_iv_model
-    from linker_engine.planning.equipment_facts import compile_facts
+    from linker_engine.planning.declared_module import electrical_facts
+    from linker_engine.planning.geometry_documents import ModuleSpec
 
     with monkeypatch.context() as patch:
         patch.setattr(
@@ -6780,7 +6744,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
             ),
         )
         assert (
-            pv_iv_model.derive_iv_model(json_object(compile_facts(reference)))["status"]
+            pv_iv_model.derive_iv_model(
+                electrical_facts(ModuleSpec.read(panel_parameters()["specification"]))
+            )["status"]
             == "unavailable"
         )
     without_target = copy.deepcopy(value)
@@ -6829,13 +6795,11 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         require_input_contract,
     )
     from linker_engine.planning.pv_string_inputs import PvPlantStringPlan
-    from linker_engine.planning.woo_module import module_template
 
     from .test_pv_generation import geometry
 
-    reference = feed["overlay"][0]
     layout = geometry()
-    module = json_object(module_template(reference))
+    module = panel_parameters()
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     mids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -6875,7 +6839,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     basis: FixtureObject = {
         "products": feed["products"],
         "compatibility": engine.compatibility.snapshot(),
-        "pv_module_inputs": {"module": module, "electrical_product": reference},
+        "pv_module_inputs": panel_basis(),
         "publication": {"products": [], "documents": [], "reference_inputs": []},
     }
     with pytest.raises(ProjectInputContractRequired):

@@ -23,7 +23,6 @@ from linker_engine.planning.errors import (
     EvidenceMissing,
     InvalidInput,
     NotFound,
-    ProductEvidenceChanged,
     ProjectInputContractRequired,
     VersionUnavailable,
 )
@@ -663,8 +662,7 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
     )
     withdrawn = True
     assert service.evaluate(owner, project.id, 2, key="full-geometric").id == run.id
-    with pytest.raises(ProductEvidenceChanged):
-        service.evaluate(owner, project.id, 3, key="new-withdrawn")
+    products.check_profile(asset.metadata)
     withdrawn = False
     # Native seam for browser readers: actual completed objects and hashes;
     # no provider originals, runtime bytes or live site/customer claim.

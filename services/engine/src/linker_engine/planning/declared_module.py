@@ -81,7 +81,7 @@ def electrical_facts(module: ModuleSpec) -> Object:
             if key.endswith("_v")
             else "current",
             "value": value / 100 if coefficient else value,
-            "unit": "%/°C" if coefficient else "V" if key.endswith("_v") else "A",
+            "raw_unit": "%/°C" if coefficient else "V" if key.endswith("_v") else "A",
             "source": source,
         }
     return facts

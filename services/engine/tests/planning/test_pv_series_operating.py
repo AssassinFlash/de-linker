@@ -14,15 +14,16 @@ from pvlib import pvsystem
 from scipy.optimize import minimize_scalar  # type: ignore[import-untyped]
 
 from linker_engine.planning.canonical import Json, Object
-from linker_engine.planning.equipment_facts import compile_facts
+from linker_engine.planning.declared_module import electrical_facts
+from linker_engine.planning.geometry_documents import ModuleSpec
 from linker_engine.planning.pv_iv_model import derive_iv_model, model_point
 from linker_engine.planning.pv_series_operating import series_operating_point
 
+from .panel_fixture import panel_basis, panel_parameters
+
 
 def test_fitted_module_series_conditions_follow_the_common_current() -> None:
-    raw = json.loads((Path(__file__).parents[1] / "fixtures/feed.json").read_text())
-    feed = publication_feed(raw, json.loads(SHIPPED_COMPATIBILITY.read_text()))
-    facts = compile_facts(feed["overlay"][0])
+    facts = electrical_facts(ModuleSpec.read(panel_parameters()["specification"]))
     model = derive_iv_model(facts)
     assert model["status"] == "available"
     params = cast(dict[str, Any], model["parameters"])
@@ -80,15 +81,13 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     )
     from linker_engine.planning.geometry import panel_poses, read_geometry
     from linker_engine.planning.model_numbers import canonical_witness_document
-    from linker_engine.planning.woo_module import module_template
 
     from .test_geometric_pv import perez_parameters
     from .test_pv_generation import geometry, weather
 
     raw = json.loads((Path(__file__).parents[1] / "fixtures/feed.json").read_text())
     feed = publication_feed(raw, json.loads(SHIPPED_COMPATIBILITY.read_text()))
-    reference = feed["overlay"][0]
-    template = module_template(reference)
+    template = panel_parameters()
     geo = geometry()
     if pitched:
         geo["roofs"][0]["v_axis_enu"] = [
@@ -142,7 +141,7 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     )
     basis = {
         "products": feed["products"],
-        "pv_module_inputs": {"module": template, "electrical_product": reference},
+        "pv_module_inputs": panel_basis(),
     }
     limits = GeometricPvLimits(
         max_module_steps=20,

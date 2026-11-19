@@ -290,3 +290,32 @@ with numerical library threads set to one and a 60-second exporter deadline.
 Terminate and reap the owned process group on timeout/cancellation. Remove the
 source package and synthetic SQLite/CAS in `finally`, with caller-side cleanup
 and a final absence check. Do not copy a venv or touch live workspaces/services.
+
+## Retained panel designs and reports
+
+Run the candidate’s panel migration against an isolated copy of the private workspace.
+Use the same interpreter, PDF fonts and rendering dependencies as the planner service.
+
+```sh
+python -m linker_engine.planning.panel_migration --workspace "$planner_workspace"
+python -m linker_engine.planning.panel_migration --workspace "$planner_workspace" --apply
+python -m linker_engine.planning.panel_migration --workspace "$planner_workspace"
+```
+
+The first command counts affected revisions, current projects and report files.
+Applying it appends one revision to each current project with a catalog-linked panel.
+Roof measurements, panel assignments, project IDs and ownership carry over. A recorded
+temperature coefficient carries over from the matching project's saved calculation.
+The migration creates new owned report files and records the original ID and byte
+digest on each reissue. An existing inquiry or account link resolves to that reissue.
+Original report bytes, signed handoff snapshots and prior revisions remain in the
+private archive. On the final read, all change counts should be zero. The historical
+revision count continues to describe the retained originals.
+
+For cutover, retain the paired database and blob recovery point described above.
+Drain the planner and stop both HTTP and worker writes. Apply the migration, activate
+the matched planner and cable-only Woo feed, then resume. Before admitting new
+writes, check a retained project's roof, filled positions and owner from its normal
+entry, including its previous report, materials download, inquiry link and Genie.
+Restore the pre-cutover database and blob snapshot with the previous release if the
+cutover verification fails before writes resume.

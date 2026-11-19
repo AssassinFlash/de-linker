@@ -23,8 +23,6 @@ from linker_engine.planning.errors import (
     InvalidInput,
     LeaseLost,
     NotFound,
-    ProductEvidenceChanged,
-    VersionUnavailable,
 )
 from linker_engine.planning.execution_identity import EvaluationRouting
 from linker_engine.planning.execution_registry import ExecutionRegistry
@@ -210,16 +208,12 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
         previously_proven_profile,
     )
     assert worker.run_once()
-    rejected = workspace.run(owner, late.id)
-    assert rejected.state == "failed" and rejected.error == {
-        "code": "product_evidence_changed",
-        "retryable": False,
-    }
-    assert asset_count(workspace, roof.id) == before
-    with pytest.raises(ProductEvidenceChanged):
-        EnergyService(workspace, energy, max_attempts=1).evaluate(
-            owner, roof.id, replay_project.revision, key="new-use-of-withdrawn-profile"
-        )
+    completed = workspace.run(owner, late.id)
+    assert completed.state == "succeeded"
+    assert asset_count(workspace, roof.id) == before + 1
+    EnergyService(workspace, energy, max_attempts=1).evaluate(
+        owner, roof.id, replay_project.revision, key="reuse-project-panel-profile"
+    )
     assert workspace.run(owner, replay.id).result == replay_result
     assert Assets(workspace).get(owner, roof.id, asset.id).metadata == asset.metadata
 
@@ -528,8 +522,10 @@ def test_managed_process_keeps_fixture_pv_outside_production_source_policy(
     project, _, pv_run = pv_task(workspace, owner)
     pv = settings.pv_service(workspace)
     assert pv is not None
-    with pytest.raises(VersionUnavailable):
-        pv.evaluate(owner, project.id, project.revision, key="unconfigured-woo")
+    with pytest.raises(InvalidInput):
+        pv.evaluate(
+            owner, project.id, project.revision, key="missing-project-panel-parameters"
+        )
     energy_project = create_scenario(workspace, owner)
     energy_run = energy.evaluate(
         owner, energy_project.id, energy_project.revision, key="process-energy"

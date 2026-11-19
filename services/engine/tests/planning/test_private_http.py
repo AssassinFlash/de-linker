@@ -469,6 +469,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
         assert created.status_code == 200, created.text
         changed = json.loads(json.dumps(create["inputs"]))
         changed["geometry"]["module_specs"][0]["stc_power_w"] += 1
+        changed["geometry"]["module_specs"][0]["model"] = "Retired manufacturer panel"
         amended = private.post(
             "/projects/revise",
             json={
@@ -481,6 +482,10 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
             headers=headers(),
         )
         assert amended.status_code == 200, amended.text
+        assert (
+            amended.json()["inputs"]["geometry"]["module_specs"][0]["model"]
+            == "PV 461 Wp · 1762 × 1134 mm"
+        )
         mode = "unavailable"
         replay = private.post("/projects/create", json=create, headers=headers())
         assert replay.status_code == 200 and replay.json() == created.json()

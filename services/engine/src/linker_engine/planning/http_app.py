@@ -111,7 +111,7 @@ from .http_documents import (
 )
 from .http_index import project_page, run_page
 from .http_replay import HttpReplay
-from .http_views import asset_view, project_view, run_view
+from .http_views import asset_view, owned_run_view, project_view, run_view
 from .product_sources import ProductProvider, ProductSources
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
@@ -120,6 +120,7 @@ from .pv_preparation import PvPreparationService, check_pv_preparation
 from .pvgis_reference_service import PvgisRoofReferenceService
 from .records import Actor
 from .report_kernel import ReportService
+from .retained_panels import display_document, project_panels
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .trace_window import TraceWindow
 from .weather_service import WeatherService
@@ -1003,19 +1004,21 @@ def create_private_app(
 
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:
-        return run_view(workspace.run(verified_actor(request.scope), body.run_id))
+        actor = verified_actor(request.scope)
+        return owned_run_view(workspace, actor, workspace.run(actor, body.run_id))
 
     @app.post("/runs/inputs")
     def run_inputs(body: RunInputsRead, request: Request) -> Object:
         run = workspace.run(verified_actor(request.scope), body.run_id)
         if run.project_id != body.project_id:
             raise NotFound("run not found in this project")
+        inputs = workspace.pinned_inputs(run.manifest)
         return {
             "schema_version": 1,
             "project_id": run.project_id,
             "run_id": run.id,
             "manifest_sha256": run.manifest_sha256,
-            "inputs": workspace.pinned_inputs(run.manifest),
+            "inputs": display_document(inputs, project_panels(inputs), inputs=True),
         }
 
     @app.post("/runs/compare")
@@ -1307,16 +1310,18 @@ def create_private_app(
     @app.post("/assets/read")
     def asset_read(body: AssetRead, request: Request) -> Object:
         return asset_view(
-            assets.get(verified_actor(request.scope), body.project_id, body.asset_id)
+            assets.customer_asset(
+                verified_actor(request.scope), body.project_id, body.asset_id
+            )
         )
 
     @app.post("/assets/content")
     def asset_content(body: AssetRead, request: Request) -> Response:
-        content = assets.content(
+        asset = assets.customer_asset(
             verified_actor(request.scope), body.project_id, body.asset_id
         )
         return Response(
-            content,
+            workspace.blobs.read(asset.content_sha256),
             media_type="application/octet-stream",
             headers={"Content-Disposition": f'attachment; filename="{body.asset_id}"'},
         )

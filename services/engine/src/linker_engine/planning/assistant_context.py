@@ -42,6 +42,7 @@ from .records import Actor, Run
 from .report_copy import check_label, text
 from .report_model import build_report
 from .report_numbers import number, percent
+from .retained_panels import display_document, project_panels
 from .workspace import Workspace
 
 # Assistant context resource policies, not numerical/engineering limits.
@@ -1290,11 +1291,17 @@ def assistant_context(
             }
             result["truncated"] = result["truncated"] or len(rows) > remaining
             remaining -= min(remaining, len(rows))
+    panels = project_panels(project.inputs)
     runs: list[Json] = []
     for run_id in run_ids:
         run = workspace.run(actor, run_id)
         if run.project_id != project.id:
             raise InvalidInput("selected result belongs to a different project")
+        if run.revision != project.revision:
+            historical = workspace.get(actor, project.id, revision=run.revision)
+            panels.extend(
+                p for p in project_panels(historical.inputs) if p not in panels
+            )
         source_out: list[Object] = []
         rows = (
             _result_rows(workspace, run, locale, source_out)
@@ -1463,6 +1470,7 @@ def assistant_context(
         if omitted:
             result["truncated"] = True
     result["runs"] = runs
+    result = display_document(result, panels)
     if len(encode(result)) > MAX_TEXT_BYTES:
         # Keep explicit provenance/status and refuse an oversized source, not a partial fact.
         raise InvalidInput("assistant context exceeds its presentation budget")

@@ -33,7 +33,7 @@ from .http_documents import (
     ReportEvaluate,
     StandardProfile,
 )
-from .http_views import asset_view, project_view, run_view
+from .http_views import asset_view, owned_run_view, project_view
 from .project_input_contracts import (
     create_command,
     require_input_contract,
@@ -148,7 +148,7 @@ class HttpReplay:
                             actor, current.project_id, revision=run.revision
                         )
                     ),
-                    "run": run_view(run),
+                    "run": owned_run_view(self.workspace, actor, run),
                 }
         elif path == "projects/delete":
             delete = ProjectDelete.model_validate(value)
@@ -215,10 +215,12 @@ class HttpReplay:
             result = (
                 None
                 if receipt is None
-                else run_view(
+                else owned_run_view(
+                    self.workspace,
+                    actor,
                     self.workspace.run(
                         actor, commands.receipt_string(receipt, "run_id")
-                    )
+                    ),
                 )
             )
         elif path in (
@@ -264,10 +266,12 @@ class HttpReplay:
             result = (
                 None
                 if receipt is None
-                else run_view(
+                else owned_run_view(
+                    self.workspace,
+                    actor,
                     self.workspace.run(
                         actor, commands.receipt_string(receipt, "run_id")
-                    )
+                    ),
                 )
             )
         elif path == "profiles/csv":
