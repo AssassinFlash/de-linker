@@ -186,7 +186,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$handler->checkout_post();
 		$html = $form->render();
 		$this->assertStringContainsString( 'This project is unavailable.', $html );
-		$this->assertSame( 1, preg_match( '/type="checkbox" required name="linker_without_project" value="([^"]+)"/', $html, $choice ) );
+		if ( 1 !== preg_match( '/type="checkbox" required name="linker_without_project" value="([^"]+)"/', $html, $choice ) ) {
+			$this->fail( 'Expected the explicit choice to send without the project.' );
+		}
 		$this->assertStringContainsString( 'value="Maria Weber"', $html );
 		$this->assertStringContainsString( 'Please call about my roof.</textarea>', $html );
 		$this->assertSame(
@@ -201,7 +203,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$order = $handler->process( array( 'linker_without_project' => $choice[1] ) + $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The native handler verifies both nonces.
 		$this->assertInstanceOf( WC_Order::class, $order );
-		$this->later( static fn () => $order->delete( true ) );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
 		$this->assertSame( '', $order->get_meta( '_linker_preliminary_project' ) );
 		$this->assertSame( 'Please call about my roof.', $order->get_customer_note() );
 	}
