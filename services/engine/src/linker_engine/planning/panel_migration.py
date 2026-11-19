@@ -9,7 +9,7 @@ import sqlite3
 import time
 from collections.abc import Sequence
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 from uuid import uuid4
 
 from linker_engine.models import Report
@@ -18,6 +18,7 @@ from linker_engine.pdf import render
 from .canonical import Object
 from .project_materials import materials_csv
 from .report_copy import text
+from .report_model import separate_panel_lists
 from .retained_panels import RetainedPanel, display_document, project_panels
 from .schema import PANEL_ASSET_REISSUES
 from .storage import Blobs
@@ -45,7 +46,21 @@ def _reissue(
     revised_report = display_document(report, panels)
     revised_materials = display_document(materials, panels)
     pdf = row["purpose"] == "planning_report_pdf_v1"
-    if report == revised_report and materials == revised_materials:
+    old_scopes = {
+        "PV reference module · project quotation",
+        "PV-Referenzmodul · Projektangebot",
+    }
+    has_quoted_panels = any(
+        section.get("id") == "bom"
+        and isinstance(section.get("table"), dict)
+        and any(row and row[-1] in old_scopes for row in section["table"]["rows"])
+        for section in cast(list[dict[str, Any]], report.get("sections", []))
+    )
+    if (
+        report == revised_report
+        and materials == revised_materials
+        and not has_quoted_panels
+    ):
         return False
     if not apply:
         return True
@@ -55,6 +70,9 @@ def _reissue(
         if locale == "de"
         else " · Reissued with generic panel parameters"
     )
+    revised_report = separate_panel_lists(
+        Report.model_validate(revised_report), revised_materials
+    ).model_dump(mode="json")
     model_hash = blobs.put_object(revised_report)
     material_hash = blobs.put_object(revised_materials)
     deps.update(report_model=model_hash, materials_model=material_hash)
@@ -155,21 +173,20 @@ def migrate(root: Path, *, apply: bool) -> dict[str, int]:
                         "UPDATE projects SET revision=?,updated_at=? WHERE id=?",
                         (number, now, project["id"]),
                     )
-            if retained:
-                for row in db.execute(
-                    "SELECT * FROM project_assets WHERE project_id=? AND (purpose='planning_report_pdf_v1' OR purpose LIKE 'planning%csv%')",
-                    (project["id"],),
-                ).fetchall():
-                    if row["id"] not in mapped and _reissue(
-                        row, retained, blobs, db, apply
-                    ):
-                        counts[
-                            "reports"
-                            if row["purpose"] == "planning_report_pdf_v1"
-                            else "materials"
-                            if row["purpose"].startswith("planning_materials_csv_")
-                            else "other_attachments"
-                        ] += 1
+            for row in db.execute(
+                "SELECT * FROM project_assets WHERE project_id=? AND (purpose='planning_report_pdf_v1' OR purpose LIKE 'planning%csv%')",
+                (project["id"],),
+            ).fetchall():
+                if row["id"] not in mapped and _reissue(
+                    row, retained, blobs, db, apply
+                ):
+                    counts[
+                        "reports"
+                        if row["purpose"] == "planning_report_pdf_v1"
+                        else "materials"
+                        if row["purpose"].startswith("planning_materials_csv_")
+                        else "other_attachments"
+                    ] += 1
     return counts
 
 

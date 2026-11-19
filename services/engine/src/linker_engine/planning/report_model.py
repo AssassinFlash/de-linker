@@ -24,6 +24,7 @@ from .grid_connection_report import (
 )
 from .installation_report import installation_sections
 from .project_materials import (
+    material_list,
     material_name,
     material_quantity,
     material_reference,
@@ -37,6 +38,139 @@ from .report_numbers import comparison_values, percent
 from .report_numbers import number as number
 from .report_pv_components import pv_components_note
 from .report_pvlib import pvlib_sections
+
+
+def _material_table(
+    lines: list[Object], section_id: str, title: str, locale: str
+) -> ReportSection:
+    material_documents: dict[tuple[str, int, str], ReportRow] = {}
+    for line in lines:
+        origin = line.get("source")
+        citation = origin.get("document") if isinstance(origin, dict) else None
+        if isinstance(citation, dict):
+            url, page = cast(str, citation["url"]), cast(int, citation["page"])
+            source_label = (
+                "material_installation_source"
+                if isinstance(origin, dict)
+                and origin.get("origin") == "_linker_installation_facts"
+                and line["handling"] != "manufacturer_included"
+                else "material_package_source"
+            )
+            material_documents[(url, page, source_label)] = ReportRow(
+                label=f"{text('source', locale)} · {text('page', locale)} {page}",
+                value=text(source_label, locale),
+                href=url,
+            )
+    if all(line.get("basis") == "manufacturer_one_end_mapping" for line in lines):
+        scope_key = "terminal_material_scope"
+    elif all(
+        line["handling"] == "installation_requirement"
+        and line.get("basis") != "manufacturer_one_end_mapping"
+        for line in lines
+    ):
+        scope_key = "installation_scope"
+    else:
+        scope_key = "bom_scope"
+    return ReportSection(
+        id=section_id,
+        title=title,
+        paragraphs=[text(scope_key, locale)] if title == text("bom", locale) else [],
+        rows=list(material_documents.values()),
+        table=ReportTable(
+            columns=[
+                text("quantity", locale),
+                text("product", locale),
+                text("reference", locale),
+                text("material_handling", locale),
+            ],
+            column_weights=[0.6, 1.7, 1, 1.7],
+            rows=[
+                [
+                    material_quantity(line, locale),
+                    material_name(line, locale),
+                    material_reference(line),
+                    material_scope(line, locale),
+                ]
+                for line in lines
+            ],
+        ),
+    )
+
+
+def _material_sections(lines: list[Object], locale: str) -> list[ReportSection]:
+    if not lines:
+        return []
+    panel_types = ("pv_reference", "pv_declared")
+    if not any(line["handling"] in panel_types for line in lines):
+        return [_material_table(lines, "bom", text("bom", locale), locale)]
+    sections = []
+    for section_id, key in (
+        ("bom", "equipment_list"),
+        ("site-materials", "site_material_list"),
+    ):
+        group = [
+            line for line in lines if material_list(line, locale) == text(key, locale)
+        ]
+        if group:
+            sections.append(
+                _material_table(group, section_id, text(key, locale), locale)
+            )
+    return sections
+
+
+def _panel_schedule(
+    sections: list[ReportSection], lines: list[Object], locale: str
+) -> None:
+    panels = [
+        line for line in lines if line["handling"] in ("pv_reference", "pv_declared")
+    ]
+    if not panels:
+        return
+    design = next(
+        (section for section in sections if section.id == "pv-components"), None
+    )
+    if design is None:
+        design = ReportSection(
+            id="pv-components", title=text("pv_components_title", locale)
+        )
+        sections.append(design)
+    design.title = text("pv_components_title", locale)
+    if design.table:
+        design.table.columns[1] = text("panel_parameters", locale)
+    else:
+        design.paragraphs = [
+            text("material_pv_declared", locale)
+            if panels[0]["handling"] == "pv_declared"
+            else text("panel_design_only", locale)
+        ]
+        design.table = ReportTable(
+            columns=[text("quantity", locale), text("panel_parameters", locale)],
+            rows=[
+                [
+                    str(line["quantity"])
+                    if line.get("quantity") is not None
+                    else text("not_defined", locale),
+                    material_name(line, locale),
+                ]
+                for line in panels
+            ],
+        )
+
+
+def separate_panel_lists(report: Report, materials: Object) -> Report:
+    """Reissue only material tables from their original frozen quantities and sources."""
+    lines = cast(list[Object], materials.get("lines", []))
+    if not any(line["handling"] in ("pv_reference", "pv_declared") for line in lines):
+        return report
+    sections = []
+    for section in report.sections:
+        if section.id == "bom":
+            sections.extend(_material_sections(lines, report.locale))
+        else:
+            sections.append(section)
+    _panel_schedule(sections, lines, report.locale)
+    report.sections = sections
+    return report
 
 
 def build_report(source: Object) -> Report:
@@ -772,61 +906,7 @@ def build_report(source: Object) -> Report:
     if not isinstance(materials, dict):
         materials = project_materials(source)
     lines = cast(list[Object], materials["lines"])
-    if lines:
-        material_documents: dict[tuple[str, int, str], ReportRow] = {}
-        for line in lines:
-            origin = line.get("source")
-            citation = origin.get("document") if isinstance(origin, dict) else None
-            if isinstance(citation, dict):
-                url, page = cast(str, citation["url"]), cast(int, citation["page"])
-                source_label = (
-                    "material_installation_source"
-                    if isinstance(origin, dict)
-                    and origin.get("origin") == "_linker_installation_facts"
-                    and line["handling"] != "manufacturer_included"
-                    else "material_package_source"
-                )
-                material_documents[(url, page, source_label)] = ReportRow(
-                    label=f"{text('source', locale)} · {text('page', locale)} {page}",
-                    value=text(source_label, locale),
-                    href=url,
-                )
-        if all(line.get("basis") == "manufacturer_one_end_mapping" for line in lines):
-            scope_key = "terminal_material_scope"
-        elif all(
-            line["handling"] == "installation_requirement"
-            and line.get("basis") != "manufacturer_one_end_mapping"
-            for line in lines
-        ):
-            scope_key = "installation_scope"
-        else:
-            scope_key = "bom_scope"
-        sections.append(
-            ReportSection(
-                id="bom",
-                title=text("bom", locale),
-                paragraphs=[text(scope_key, locale)],
-                rows=list(material_documents.values()),
-                table=ReportTable(
-                    columns=[
-                        text("quantity", locale),
-                        text("product", locale),
-                        text("reference", locale),
-                        text("material_handling", locale),
-                    ],
-                    column_weights=[0.6, 1.7, 1, 1.7],
-                    rows=[
-                        [
-                            material_quantity(line, locale),
-                            material_name(line, locale),
-                            material_reference(line),
-                            material_scope(line, locale),
-                        ]
-                        for line in lines
-                    ],
-                ),
-            )
-        )
+    sections.extend(_material_sections(lines, locale))
 
     pv_parts = source.get("pv_components")
     if isinstance(pv_parts, dict):
@@ -1550,7 +1630,7 @@ def build_report(source: Object) -> Report:
                 cast(Object | None, source.get("certificate_context")),
             )
         )
-    return Report(
+    report = Report(
         title=text("title", locale),
         subtitle=text("subtitle", locale),
         generated_at=str(source["generated_at"]),
@@ -1558,3 +1638,5 @@ def build_report(source: Object) -> Report:
         sections=sections,
         phase_conflicts=phase_conflicts,
     )
+    _panel_schedule(report.sections, lines, locale)
+    return report

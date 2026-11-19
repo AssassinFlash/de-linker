@@ -47,7 +47,8 @@ final class SeriesDownload {
 			return $asset;
 		}
 		$sha = $asset['content_sha256'] ?? null;
-		if ( ( $asset['id'] ?? null ) !== $command['asset_id'] || ( $asset['project_id'] ?? null ) !== $command['project_id'] || 'planning_pv_series_csv_v1' !== ( $asset['purpose'] ?? null ) || 'text/csv' !== ( $asset['media_type'] ?? null ) || ! is_string( $sha ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $sha ) ) {
+		$bound_id = $asset['reissued_from']['id'] ?? ( $asset['id'] ?? null );
+		if ( ( ( $asset['id'] ?? null ) !== $command['asset_id'] && $bound_id !== $command['asset_id'] ) || ( $asset['project_id'] ?? null ) !== $command['project_id'] || 'planning_pv_series_csv_v1' !== ( $asset['purpose'] ?? null ) || 'text/csv' !== ( $asset['media_type'] ?? null ) || ! is_string( $sha ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $sha ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		// WordPress exposes this helper from its admin file API; front-end REST

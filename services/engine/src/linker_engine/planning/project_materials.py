@@ -542,6 +542,13 @@ def project_materials(source: Object) -> Object:
 
 
 def material_name(line: Object, locale: str) -> str:
+    if line["handling"] == "pv_declared":
+        power = line.get("stc_power_w")
+        return (
+            f"{power:g} Wp"
+            if isinstance(power, (float, int))
+            else text("panel_unspecified", locale)
+        )
     if line["handling"] == "pending_battery_selection":
         return text("pending_battery", locale)
     if line["handling"] == "existing_system_declared":
@@ -833,6 +840,22 @@ def _installation_fact_line(
     }
 
 
+def material_list(line: Object, locale: str) -> str:
+    if line["handling"] in ("pv_reference", "pv_declared"):
+        return text("pv_components_title", locale)
+    quantity, retained = line.get("quantity"), line.get("retained_quantity")
+    if (
+        line["handling"] == "woo_product"
+        and type(quantity) is int
+        and type(retained) is int
+        and retained >= quantity
+    ):
+        return text("site_material_list", locale)
+    if line["handling"] in ("woo_product", "manufacturer_included"):
+        return text("equipment_list", locale)
+    return text("site_material_list", locale)
+
+
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
@@ -850,10 +873,16 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 "material_snapshot",
                 "material_assessment",
                 "material_unit",
+                "material_list",
             )
         ]
     )
-    for line in cast(list[Object], materials["lines"]):
+    lines = cast(list[Object], materials["lines"])
+    order = [
+        text(key, locale)
+        for key in ("equipment_list", "site_material_list", "pv_components_title")
+    ]
+    for line in sorted(lines, key=lambda row: order.index(material_list(row, locale))):
         origin = line.get("source")
         comparison = (
             origin.get("manufacturer_comparison") if isinstance(origin, dict) else None
@@ -912,6 +941,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 sha256,
                 assessment,
                 material_unit(line, locale),
+                material_list(line, locale),
             )
         )
     # BOM ensures Excel also recognizes German names as UTF-8.
