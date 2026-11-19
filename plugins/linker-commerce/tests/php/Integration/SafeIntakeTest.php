@@ -351,7 +351,12 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$authorization = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
 		$handler       = new Handler();
 		$post          = $this->post();
-		$order         = $handler->process( $post );
+		$check         = $post + array( 'linker_inquiry_receipt_only' => '1' );
+		$unknown       = $handler->process( $check );
+		self::assertInstanceOf( WP_Error::class, $unknown );
+		self::assertSame( 'linker_inquiry_pending', $unknown->get_error_code() );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
+		$order = $handler->process( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$pending = $this->post();
 		$other   = $handler->process( $pending );
@@ -367,7 +372,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$order->read_meta_data( true );
 		self::assertFalse( NotificationHold::held( $order ) );
 		self::assertSame( array( $pending['linker_request_id'] ), array_keys( get_option( IntakeStore::OPTION )['entries'] ) );
-		$replay = $handler->process( $post );
+		$replay = $handler->process( $check );
 		self::assertInstanceOf( WC_Order::class, $replay );
 		self::assertSame( $order->get_id(), $replay->get_id() );
 		self::assertSame( $state, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() ) );
