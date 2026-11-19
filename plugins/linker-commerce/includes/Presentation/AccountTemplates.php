@@ -254,7 +254,7 @@ final class AccountTemplates {
 	 * Current page is Woo's own endpoint, so the highlight follows the
 	 * request. Pending customers use the same navigation while awaiting prices.
 	 *
-	 * @param array<string, string>|string $atts Optional mobile navigation form.
+	 * @param array<string, string>|string $atts Use shortcuts for the overview links.
 	 */
 	public function nav( $atts = array() ): string {
 		$user_id = get_current_user_id();
@@ -263,31 +263,21 @@ final class AccountTemplates {
 		}
 		$items = wc_get_account_menu_items();
 		$html  = '';
-		$type  = $atts['type'] ?? '';
-		if ( in_array( $type, array( 'mobile', 'shortcuts' ), true ) ) {
-			$endpoints = 'mobile' === $type
-				? array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' )
-				: array( 'orders', 'saved-solutions', 'documents' );
-			foreach ( $endpoints as $endpoint ) {
+		if ( 'shortcuts' === ( $atts['type'] ?? '' ) ) {
+			foreach ( array( 'orders', 'saved-solutions', 'documents' ) as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
-					$current = $this->endpoint_current( $endpoint );
-					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
-						$current = 'page';
-					}
 					$html .= $this->fragment(
 						'nav-item',
 						array(
-							// The tab bar's four entries carry no sign-out; that
-							// lives in the sidebar and the header menu.
 							'url'     => wc_get_account_endpoint_url( $endpoint ),
-							'label'   => 'edit-account' === $endpoint ? __( 'Account', 'linker-commerce' ) : $items[ $endpoint ],
-							'current' => $current,
+							'label'   => $items[ $endpoint ],
+							'current' => $this->endpoint_current( $endpoint ),
 							'icon'    => $this->nav_icon( $endpoint ),
 						)
 					);
 				}
 			}
-			return 'mobile' === $type ? $this->fragment( 'mobile-nav', array( 'items' => $html ) ) : $html;
+			return $html;
 		}
 		foreach ( $this->nav_groups() as $group => $endpoints ) {
 			$links = '';

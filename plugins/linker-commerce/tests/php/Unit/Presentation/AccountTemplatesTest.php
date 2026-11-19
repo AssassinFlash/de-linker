@@ -375,7 +375,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( 'https://example.test/logout/?redirect_to=https%3A%2F%2Fexample.test%2Fmy-account%2F%3Fsigned-out%3Dtrue&_wpnonce=abc', $html );
 		$this->assertStringNotContainsString( 'https://example.test/my-account/customer-logout/', $html );
 		$this->assertStringContainsString( 'aria-current="page"', $html );
-		$this->assertStringContainsString( 'https://example.test/my-account/saved-solutions/', $adapter->nav( array( 'type' => 'mobile' ) ) );
+		$this->assertStringContainsString( 'https://example.test/my-account/saved-solutions/', $adapter->nav( array( 'type' => 'shortcuts' ) ) );
 	}
 
 	/**

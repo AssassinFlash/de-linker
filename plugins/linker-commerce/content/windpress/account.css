@@ -30,6 +30,7 @@ body.woocommerce-account.logged-in .linker-account-page #container-content-accou
 .linker-account .linker-account-avatar { display: grid; place-items: center; flex: none; width: clamp(44px, 4vw, 64px); aspect-ratio: 1; border-radius: var(--proto-radius-lg); background: var(--proto-teal-100); color: var(--proto-teal-900); font-size: clamp(20px, 2vw, 28px); font-weight: 650; }
 .linker-account .linker-account-mast .linker-account-btn.is-primary { background: var(--acct-card); color: var(--proto-ink-deep); }
 .linker-account .linker-account-mast .linker-account-btn.is-primary:hover { background: var(--proto-teal-100); }
+.linker-account .linker-account-mast .linker-account-btn:focus-visible { outline-color: var(--proto-teal-100); }
 
 .linker-account .linker-account-layout {
 	display: grid;

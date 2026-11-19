@@ -2604,12 +2604,7 @@ body.woocommerce-order-received #container-content-page > div {
 	}
 }
 
-/*
- * The logged-in account pages' frame: 1360px on 40px gutters. account.css's
- * full-width shell ties this rule on specificity and loses on import order
- * (this volume comes after it in main.css), so this is the rule that frames
- * the page; account.css owns the inner padding and the working layout.
- */
+/* Default Woo frame. The logged-in workspace sets its own gutters in account.css. */
 
 body.woocommerce-account.logged-in .woocommerce {
 	width: min(1360px, calc(100% - 2rem)) !important;
