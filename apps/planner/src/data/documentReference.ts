@@ -3,12 +3,15 @@ import { readObject } from "./readProtocol.ts";
 
 export function equipmentFactSource(value: unknown) {
 	const source = readObject(value);
-	if (
-		source.kind === "user_declared" &&
-		typeof source.module_spec_id === "string" &&
-		source.module_spec_id.length > 0
-	)
+	if (source.kind === "user_declared") {
+		if (
+			typeof source.module_spec_id !== "string" ||
+			!source.module_spec_id ||
+			Object.keys(source).length !== 2
+		)
+			throw new ApiError(502, "invalid_run_result");
 		return;
+	}
 	documentReference(value, true);
 }
 

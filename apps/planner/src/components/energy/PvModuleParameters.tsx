@@ -1,7 +1,9 @@
 import type { ModuleDraft } from "../../domain/solarSetup.ts";
 import type { ModuleSpec } from "../../domain/geometry.ts";
-import { resolveModuleParameters } from "../../domain/productModules.ts";
-import { sameJson } from "../../domain/draft.ts";
+import {
+	resolveModuleParameters,
+	samePanelParameters,
+} from "../../domain/productModules.ts";
 import { panelLabel } from "../../domain/panelParameters.ts";
 import { formatDecimal, toPercent } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
@@ -27,7 +29,7 @@ export function PvModuleParameters({
 							"linker-tools",
 						)}
 			</h4>
-			{expected && !sameJson(expected, value) ? (
+			{expected && !samePanelParameters(value, expected) ? (
 				<Notice>
 					{__(
 						"Update the parameters to use the coefficient recorded for this panel.",

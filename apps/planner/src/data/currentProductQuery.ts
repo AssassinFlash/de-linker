@@ -1,7 +1,6 @@
 import type { PlannerClient } from "./PlannerClient.ts";
 import { readObject } from "./readProtocol.ts";
 
-/** One scope-bound Woo read serves module and equipment projections. */
 export function currentProductQuery(
 	client: PlannerClient,
 	scope: string,

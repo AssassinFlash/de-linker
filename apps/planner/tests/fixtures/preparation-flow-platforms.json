@@ -4,9 +4,9 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
-			"runtime_sha256": "8288daae9877e72b9b516e2d387c692a4841e43f001abff280d51daaa509dd2e",
-			"canonical_sorted_json_sha256": "c9e12c70104c524bdd9dcbb9b4db488d48d10223e3fcac981580098871644f75",
+			"source_sha256": "5b87e7b785d46a1cea85a31273d9082b2c83d375b3e3660d15ad73c349612a60",
+			"runtime_sha256": "a5223859f57d9fb383f5891b7b132a894ae3dbd7bcaca9418c514a3bfe136049",
+			"canonical_sorted_json_sha256": "52b6a389d9a032f32ae01797b4b3b6ccead23a13579911194b5f107f00722906",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -24,18 +24,18 @@
 				},
 				"libc": ["", ""],
 				"machine": "arm64",
-				"platform": "macOS-26.6.2-arm64-arm-64bit",
+				"platform": "macOS-27.2.1-arm64-arm-64bit",
 				"python": "3.12.15",
 				"python_implementation": "CPython",
 				"sqlite": "3.54.1"
 			},
-			"export_run": "native:darwin-arm64:2026-11-02T04:43:52Z"
+			"export_run": "native:darwin-arm64:2026-11-19T19:02:15Z"
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
-			"runtime_sha256": "bbe8fc09a1ad56e84f5295197c181d1c03dc14ecf14793bb34c0333f5c44d86c",
-			"canonical_sorted_json_sha256": "664ce3556b7af0db4237362b35778a7a2a12f7709407261723a82369f8e4e239",
+			"source_sha256": "5b87e7b785d46a1cea85a31273d9082b2c83d375b3e3660d15ad73c349612a60",
+			"runtime_sha256": "525f8086c52c1da3a442b4691fc28b428a9813c1b6fc7746dbc95bc7c5f4ed00",
+			"canonical_sorted_json_sha256": "f9730adc24ba28172bef9f33635789879d5863ad89b5d32cffd20f0127fe27be",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -53,12 +53,12 @@
 				},
 				"libc": ["glibc", "2.39"],
 				"machine": "x86_64",
-				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+				"platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
 				"python": "3.12.3",
 				"python_implementation": "CPython",
 				"sqlite": "3.45.1"
 			},
-			"export_run": "native:linux-x86_64:2026-11-02T04:44:56Z"
+			"export_run": "native:linux-x86_64:2026-11-19T19:02:35Z"
 		}
 	}
 }

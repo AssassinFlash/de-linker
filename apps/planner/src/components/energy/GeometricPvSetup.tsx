@@ -5,7 +5,10 @@ import type { JsonObject, Session } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useRetainedWeather } from "../../data/useRetainedWeather.ts";
-import { resolveModuleParameters } from "../../domain/productModules.ts";
+import {
+	resolveModuleParameters,
+	samePanelParameters,
+} from "../../domain/productModules.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { readPvStringPlan } from "../../domain/pvStrings.ts";
@@ -167,7 +170,7 @@ export function GeometricPvSetup({
 				(item) => item.id === module.module_spec_id,
 			);
 			const expected = resolveModuleParameters(specification);
-			return !!expected && sameJson(module, expected);
+			return !!expected && samePanelParameters(module, expected);
 		});
 	const binding = owned ? weather.binding.data : undefined,
 		requestMatches =

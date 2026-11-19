@@ -406,7 +406,7 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 	assert.equal(command.inputs.energy_plant, undefined);
 	assert.equal(
 		command.inputs.profile_selections.selected.pv_reference,
-		"aaf3d7056cc04a05ae4171b02fed732f",
+		fixture.project.inputs.profile_selections.selected.pv_reference,
 	);
 	assert.deepEqual(
 		command.inputs.energy_plant_setup.units.map(({ unit_id, settings }) => [

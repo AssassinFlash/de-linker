@@ -418,7 +418,6 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 				return {
 					schema_version: 1,
 					provider: "woocommerce",
-					pv_modules: [fixture.direct_beam.module_template],
 					products: [],
 				};
 			assert.equal(body.project_id, native.project.id);
@@ -749,7 +748,6 @@ test("owned geometric setup saves with the cumulative contract and shows frozen 
 				return {
 					schema_version: 1,
 					provider: "woocommerce",
-					pv_modules: [native.module_template],
 					products: [],
 				};
 			if (path === "runs/read")
@@ -1402,7 +1400,6 @@ test("known PV reference accepts declared planes without a roof and keeps projec
 				schema_version: 1,
 				provider: "woocommerce",
 				products: [],
-				pv_modules: [],
 			};
 		},
 	};
@@ -1620,8 +1617,6 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 		...session,
 		runtime: { ...session.runtime, models: { pvgis_roof_reference: task } },
 	};
-	const template =
-		original.result.prepared_asset.metadata.woo_module_inputs.module;
 	const client = {
 		isCurrentScope: (value) => value === scope,
 		async query(path, body) {
@@ -1630,7 +1625,6 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 				return {
 					schema_version: 1,
 					provider: "woocommerce",
-					pv_modules: [template],
 					products: [],
 				};
 			if (path === "projects/runs") return { items: [], next: null };
@@ -1694,7 +1688,7 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 			(node) =>
 				node.querySelector("h3")?.textContent === "PVGIS annual AC reference",
 		);
-	await until(() => form() && calls.includes("products/current"));
+	await until(() => Boolean(form()));
 	assert.ok(
 		[...form().querySelectorAll("select,input,textarea")]
 			.filter(

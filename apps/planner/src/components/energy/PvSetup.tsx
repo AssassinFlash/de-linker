@@ -14,7 +14,10 @@ import { ApiError } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { PvForm } from "./PvForm.tsx";
-import { resolveModuleParameters } from "../../domain/productModules.ts";
+import {
+	resolveModuleParameters,
+	samePanelParameters,
+} from "../../domain/productModules.ts";
 
 export function PvSetup({
 	draft,
@@ -64,7 +67,7 @@ export function PvSetup({
 					(item) => item.id === module.module_spec_id,
 				);
 				const expected = resolveModuleParameters(spec);
-				return !!expected && sameJson(module, expected);
+				return !!expected && samePanelParameters(module, expected);
 			}) &&
 			sameJson(
 				compilePv(parsed.setup.pv, inputs.geometry),

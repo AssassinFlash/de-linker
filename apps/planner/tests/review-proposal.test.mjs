@@ -40,10 +40,7 @@ test("review shows the report's actual BOM and supports generation before a repo
 	await act(async () =>
 		root.render(React.createElement(ReviewProposal, value)),
 	);
-	assert.match(
-		document.querySelector("table").textContent,
-		/Trina Solar TSM-460NEG9R.28/,
-	);
+	assert.match(document.querySelector("table").textContent, /460 Wp/);
 	assert.ok(document.querySelector("details"));
 	assert.ok(button("Generate report in English"));
 	assert.equal(
@@ -106,6 +103,16 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 	const value = props(),
 		calls = [],
 		revoked = [];
+	const pdf = value.run.result.prepared_asset,
+		csv = value.run.result.prepared_attachments.bill_of_materials_csv;
+	for (const [file, id, sha] of [
+		[pdf, "4", "5"],
+		[csv, "6", "7"],
+	]) {
+		file.reissued_from = { id: file.id, content_sha256: file.content_sha256 };
+		file.id = id.repeat(32);
+		file.content_sha256 = sha.repeat(64);
+	}
 	value.client.reportPdf = async (...args) => {
 		calls.push(["pdf", ...args]);
 		return new Blob(["pdf"]);
@@ -129,8 +136,10 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 		root.render(React.createElement(ReviewProposal, value)),
 	);
 	await act(async () => button("Download PDF").click());
-	assert.equal(calls[0][5], value.run.result.prepared_asset.content_sha256);
+	assert.equal(calls[0][2], pdf.id);
+	assert.equal(calls[0][5], pdf.content_sha256);
 	await act(async () => button("Download bill of materials (CSV)").click());
+	assert.equal(calls[1][2], csv.id);
 	assert.equal(
 		calls[1][4],
 		value.run.result.prepared_attachments.bill_of_materials_csv.content_sha256,
@@ -222,7 +231,7 @@ test("report preview opens the complete pinned report and its original PDF", asy
 	assert.equal(dialog.open, false);
 	await act(async () => button("Preview report").click());
 	assert.equal(dialog.open, true);
-	assert.match(dialog.textContent, /Trina Solar TSM-460NEG9R.28/);
+	assert.match(dialog.textContent, /460 Wp/);
 	assert.deepEqual(requested[0]?.slice(0, 3), [
 		value.run.project_id,
 		asset.id,

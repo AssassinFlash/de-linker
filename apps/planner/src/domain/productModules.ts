@@ -1,3 +1,4 @@
+import { sameJson } from "./draft.ts";
 import type { ModuleSpec } from "./geometry.ts";
 import type { ModuleDraft } from "./solarSetup.ts";
 
@@ -29,4 +30,17 @@ export function resolveModuleParameters(
 			page: null,
 		},
 	};
+}
+
+export function samePanelParameters(
+	value: ModuleDraft,
+	expected: ModuleDraft,
+): boolean {
+	const { woo, ...source } = value.source;
+	return (
+		!woo &&
+		value.module_spec_id === expected.module_spec_id &&
+		value.gamma_pdc_per_c === expected.gamma_pdc_per_c &&
+		sameJson(source, expected.source)
+	);
 }

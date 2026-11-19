@@ -191,10 +191,18 @@ export function SolarInstallation({
 	const savedPanel = geometry.module_specs.find((item) => item.id === moduleId);
 	const [measurements, setMeasurements] = useState(emptyPanelFields);
 	const [editingPanel, setEditingPanel] = useState(false);
-	const module = savedPanel ?? panelSpecification(newPanelId, measurements);
+	const module =
+		savedPanel && !editingPanel
+			? savedPanel
+			: panelSpecification(savedPanel?.id ?? newPanelId, measurements);
 	const known = knownReferenceArrays(inputs)?.[0];
 	const knownPanels = inputs.known_panel_details as
-		{ count?: number | null; power_w?: number | null } | undefined;
+		| {
+				count: number | null;
+				power_w: number | null;
+				system_kwp: number | null;
+		  }
+		| undefined;
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
 	);
@@ -537,7 +545,7 @@ export function SolarInstallation({
 			);
 		}
 	}
-	function knownChange(patch: JsonObject, panels?: JsonObject | null) {
+	function knownChange(patch: JsonObject, panels?: JsonObject) {
 		if (blocked) return;
 		edit((current) => {
 			const draft = referenceDraft(current);
@@ -555,11 +563,26 @@ export function SolarInstallation({
 				arrays: [{ ...first, ...patch }, ...existing.slice(1)],
 			});
 			if (panels === undefined) return next;
-			const result = { ...next };
-			if (panels === null) delete result.known_panel_details;
-			else result.known_panel_details = panels;
-			return result;
+			return { ...next, known_panel_details: panels };
 		});
+	}
+	function panelPowerChange(
+		field: "count" | "power_w" | "system_kwp",
+		value: number | null,
+	) {
+		const details = {
+			count: knownPanels?.count ?? null,
+			power_w: knownPanels?.power_w ?? null,
+			system_kwp: knownPanels
+				? knownPanels.system_kwp
+				: (known?.peak_power_kwp ?? null),
+			[field]: value,
+		};
+		const computed =
+			details.count && details.power_w
+				? (details.count * details.power_w) / 1000
+				: null;
+		knownChange({ peak_power_kwp: details.system_kwp ?? computed }, details);
 	}
 	function roofReferenceInputs(
 		current: JsonObject,
@@ -839,6 +862,17 @@ export function SolarInstallation({
 			);
 		}
 	}
+	function applyPanelChanges() {
+		if (!editingPanel && (savedPanel || !module)) return true;
+		if (
+			!module ||
+			!commit({ type: "put_module", before: savedPanel ?? null, value: module })
+		)
+			return false;
+		setModuleId(module.id);
+		setEditingPanel(false);
+		return true;
+	}
 	function placeModules(point?: Vec2) {
 		try {
 			if (!roof || !module) return;
@@ -865,18 +899,23 @@ export function SolarInstallation({
 			const arrayEdit = { type: "put_array" as const, before: null, value };
 			if (
 				commit(
-					savedPanel
+					savedPanel && !editingPanel
 						? arrayEdit
 						: {
 								type: "group",
 								edits: [
-									{ type: "put_module", before: null, value: module },
+									{
+										type: "put_module",
+										before: savedPanel ?? null,
+										value: module,
+									},
 									arrayEdit,
 								],
 							},
 				)
 			) {
 				setModuleId(module.id);
+				setEditingPanel(false);
 				select(value.id);
 				setTool("select");
 			}
@@ -1196,22 +1235,23 @@ export function SolarInstallation({
 				/>
 			)}
 			{editingPanel && savedPanel && (
-				<button
-					type="button"
-					className="sc-button"
-					disabled={!panelSpecification(savedPanel.id, measurements)}
-					onClick={() => {
-						const updated = panelSpecification(savedPanel.id, measurements);
-						if (
-							updated &&
-							commit({ type: "put_module", before: savedPanel, value: updated })
-						) {
-							setEditingPanel(false);
-						}
-					}}
-				>
-					{__("Apply panel parameters", "linker-tools")}
-				</button>
+				<div className="sc-actions">
+					<button
+						type="button"
+						className="sc-button"
+						disabled={!module}
+						onClick={applyPanelChanges}
+					>
+						{__("Apply panel parameters", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="sc-button"
+						onClick={() => setEditingPanel(false)}
+					>
+						{__("Cancel", "linker-tools")}
+					</button>
+				</div>
 			)}
 		</>
 	);
@@ -1267,7 +1307,8 @@ export function SolarInstallation({
 							}
 							key={value}
 							onClick={() => {
-								if (value === mode) return;
+								if (value === mode || (mode === "roof" && !applyPanelChanges()))
+									return;
 								if (
 									(value === "known" && reference.model !== KNOWN_PV_MODEL) ||
 									(value === "roof" &&
@@ -1313,15 +1354,7 @@ export function SolarInstallation({
 											const power = e.currentTarget.valueAsNumber;
 											const watts =
 												Number.isFinite(power) && power > 0 ? power : null;
-											knownChange(
-												{
-													peak_power_kwp:
-														watts && knownPanels?.count
-															? (watts * knownPanels.count) / 1000
-															: null,
-												},
-												{ power_w: watts, count: knownPanels?.count ?? null },
-											);
+											panelPowerChange("power_w", watts);
 										}}
 									/>
 								</label>
@@ -1337,18 +1370,7 @@ export function SolarInstallation({
 											const n = e.currentTarget.valueAsNumber;
 											const number =
 												Number.isSafeInteger(n) && n > 0 ? n : null;
-											knownChange(
-												{
-													peak_power_kwp:
-														number && knownPanels?.power_w
-															? (number * knownPanels.power_w) / 1000
-															: null,
-												},
-												{
-													count: number,
-													power_w: knownPanels?.power_w ?? null,
-												},
-											);
+											panelPowerChange("count", number);
 										}}
 									/>
 								</label>
@@ -1358,15 +1380,23 @@ export function SolarInstallation({
 										type="number"
 										min="0"
 										step="any"
-										value={known?.peak_power_kwp ?? ""}
+										value={
+											(knownPanels
+												? knownPanels.system_kwp
+												: known?.peak_power_kwp) ?? ""
+										}
+										placeholder={
+											knownPanels?.count &&
+											knownPanels.power_w &&
+											known?.peak_power_kwp
+												? String(known.peak_power_kwp)
+												: undefined
+										}
 										onChange={(e) => {
-											knownChange(
-												{
-													peak_power_kwp: e.currentTarget.value
-														? Number(e.currentTarget.value)
-														: null,
-												},
-												null,
+											const power = e.currentTarget.valueAsNumber;
+											panelPowerChange(
+												"system_kwp",
+												Number.isFinite(power) && power > 0 ? power : null,
 											);
 										}}
 									/>
@@ -1479,6 +1509,7 @@ export function SolarInstallation({
 								vertices.length > 0
 							}
 							onClick={() => {
+								if (!applyPanelChanges()) return;
 								startTool("select");
 								setLayoutOpen(false);
 								window.requestAnimationFrame(() =>
@@ -1651,11 +1682,7 @@ export function SolarInstallation({
 										siteCentre={siteCentre}
 										interaction={interaction}
 										placement={
-											placingOnMap &&
-											roof &&
-											module &&
-											!editingPanel &&
-											mapReferenced
+											placingOnMap && roof && module && mapReferenced
 												? {
 														roofId: roof.id,
 														place: placeModules,
@@ -1947,7 +1974,7 @@ export function SolarInstallation({
 								{!placingOnMap && moduleLayout}
 								<button
 									type="button"
-									disabled={!module || !roof || editingPanel}
+									disabled={!module || !roof}
 									onClick={() => placeModules()}
 								>
 									{__("Place module group", "linker-tools")}
@@ -2269,9 +2296,12 @@ export function SolarInstallation({
 						calibrationOpen ||
 						importOpen ||
 						roofPropertyInvalid ||
+						(editingPanel && !module) ||
 						vertices.length > 0
 					}
-					onClick={next}
+					onClick={() => {
+						if (mode !== "roof" || applyPanelChanges()) next();
+					}}
 				>
 					{__("Continue with energy use", "linker-tools")}
 				</button>
