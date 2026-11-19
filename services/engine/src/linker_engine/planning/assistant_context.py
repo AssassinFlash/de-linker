@@ -70,6 +70,7 @@ _MATERIAL_HANDLING = frozenset(
         "installation_requirement",
         "manufacturer_included",
         "pv_reference",
+        "pv_declared",
         "site_engineering_required",
         "woo_product",
     }
@@ -268,7 +269,23 @@ def _report_materials(
         handling_counts[handling] = handling_counts.get(handling, 0) + 1
         if quantity is None:
             unresolved += 1
+    declaration = next(
+        (
+            line
+            for line in raw_lines
+            if isinstance(line, dict) and line.get("handling") == "pv_declared"
+        ),
+        None,
+    )
     return {
+        **(
+            {
+                "declared_panel_count": declaration.get("quantity"),
+                "declared_panel_stc_power_w": declaration.get("stc_power_w"),
+            }
+            if declaration is not None
+            else {}
+        ),
         "saved_roof_panel_count": _roof_panel_count(
             [
                 row
@@ -1487,6 +1504,13 @@ def assistant_context(
                 )
             )
             if materials is not None:
+                if "declared_panel_count" in materials:
+                    selected_run_view["declared_panel_count"] = materials.pop(
+                        "declared_panel_count"
+                    )
+                    selected_run_view["declared_panel_stc_power_w"] = materials.pop(
+                        "declared_panel_stc_power_w"
+                    )
                 selected_run_view["materials"] = materials
                 installation = source_out[0].get("installation") if source_out else None
                 review = (

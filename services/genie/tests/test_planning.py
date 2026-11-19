@@ -97,7 +97,7 @@ def test_owned_report_panel_count_survives_truncated_display_rows() -> None:
     raw, page = source()
     report = raw["runs"][0]
     report.update(kind="planning_report_v1", saved_roof_panel_count=4, truncated=True)
-    assert planning.saved_panel_count(raw, page) == 4
+    assert planning.saved_panel_count(raw, page) == (4, "layout")
     assert (
         planning.saved_panel_count(
             raw, page.model_copy(update={"planning_run_ids": ["other"]})
@@ -109,14 +109,18 @@ def test_owned_report_panel_count_survives_truncated_display_rows() -> None:
 
 
 @pytest.mark.parametrize(
-    ("locale", "count", "expected"),
+    ("locale", "count", "count_key", "expected"),
     [
-        ("en", 4, "contains 4 solar panels"),
-        ("de", 1, "enthält 1 PV-Modul."),
+        ("en", 4, "saved_roof_panel_count", "contains 4 solar panels"),
+        ("en", 16, "declared_panel_count", "You entered 16 solar panels"),
+        ("de", 16, "declared_panel_count", "haben Sie 16 PV-Module angegeben"),
+        ("en", 430, "declared_panel_stc_power_w", "The panel count is unknown."),
+        ("de", 430, "declared_panel_stc_power_w", "Die Modulanzahl ist offen."),
+        ("de", 1, "saved_roof_panel_count", "enthält 1 PV-Modul."),
     ],
 )
 def test_answer_uses_the_selected_reports_complete_panel_count(
-    locale: str, count: int, expected: str
+    locale: str, count: int, count_key: str, expected: str
 ) -> None:
     from types import SimpleNamespace
 
@@ -124,7 +128,7 @@ def test_answer_uses_the_selected_reports_complete_panel_count(
     from linker_genie.understand import Prepared
 
     raw, page = source()
-    raw["runs"][0].update(kind="planning_report_v1", saved_roof_panel_count=count)
+    raw["runs"][0].update({"kind": "planning_report_v1", count_key: count})
     message = (
         "Wie viele Module sind auf meinem Dach?"
         if locale == "de"

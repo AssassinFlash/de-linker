@@ -86,6 +86,29 @@ def renew_module_permission(previous: Object, current: Object) -> Object:
     return current
 
 
+def _declared_panels(inputs: Object, components: Object | None) -> Object | None:
+    if (
+        isinstance(components, dict) and components.get("status") == "available"
+    ) or storage_only_project(inputs):
+        return None
+    setup = inputs.get("pvgis_reference_setup", inputs.get("pvgis_reference"))
+    details = inputs.get("known_panel_details")
+    if not is_known(setup) or not isinstance(details, dict):
+        return None
+    count, power = details.get("count"), details.get("power_w")
+    if count is not None and (type(count) is not int or count <= 0):
+        raise InvalidInput("the declared panel count must be a positive whole number")
+    if power is not None and (
+        type(power) not in (int, float) or cast(float, power) <= 0
+    ):
+        raise InvalidInput("the declared panel power must be positive")
+    return (
+        {"count": count, "stc_power_w": power}
+        if count is not None or power is not None
+        else None
+    )
+
+
 def report_sources(
     workspace: Workspace,
     products: ProductSources,
@@ -1340,8 +1363,16 @@ def report_sources(
                     else {}
                 ),
             }
+    declared_panels = (
+        None if comparison_only else _declared_panels(declared_inputs, component_list)
+    )
     source: Object = {
         "schema_version": 1,
+        **(
+            {"declared_pv_panels": declared_panels}
+            if declared_panels is not None
+            else {}
+        ),
         "project_id": project.id,
         "revision": project.revision,
         "input_sha256": project.input_sha256,

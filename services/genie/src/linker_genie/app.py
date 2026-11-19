@@ -533,9 +533,24 @@ def _answer(
         and prepared.route.name
         in {"model", "planning_project", "sizing", "documents", "products"}
     ):
-        count = planning.saved_panel_count(body.planning_context, body.page_context)
-        if count is not None:
-            if language == "de":
+        saved_count = planning.saved_panel_count(
+            body.planning_context, body.page_context
+        )
+        if saved_count is not None:
+            count, basis = saved_count
+            if count is None:
+                text = (
+                    "Im gespeicherten Bericht ist die Leistung je Modul angegeben. Die Modulanzahl ist offen."
+                    if language == "de"
+                    else "Your saved report records the power per panel. The panel count is unknown."
+                )
+            elif basis == "declared":
+                text = (
+                    f"Im gespeicherten Bericht haben Sie {count} PV-{'Modul' if count == 1 else 'Module'} angegeben."
+                    if language == "de"
+                    else f"You entered {count} solar {'panel' if count == 1 else 'panels'} in the saved report."
+                )
+            elif language == "de":
                 text = f"Die Dachbelegung im gespeicherten Bericht enthält {count} PV-{'Modul' if count == 1 else 'Module'}."
             else:
                 text = f"The roof layout in your saved report contains {count} solar {'panel' if count == 1 else 'panels'}."

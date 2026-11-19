@@ -319,6 +319,20 @@ def project_materials(source: Object) -> Object:
                     "scope": pv["scope"],
                 }
             )
+    declared_panels = source.get("declared_pv_panels")
+    if isinstance(declared_panels, dict):
+        lines.append(
+            {
+                "id": "pv:declared",
+                "handling": "pv_declared",
+                "product_id": None,
+                "quantity": declared_panels["count"],
+                "stc_power_w": declared_panels["stc_power_w"],
+                "unit": "piece",
+                "basis": "project_declared_panel_parameters",
+                "source": {"kind": "user_declared"},
+            }
+        )
     installation = source.get("installation")
     if isinstance(installation, dict):
         declared = installation.get("material_review")

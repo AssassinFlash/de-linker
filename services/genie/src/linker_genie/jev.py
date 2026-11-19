@@ -196,7 +196,7 @@ class Jev:
                 **questions,
                 "saved_panel_count_question": {
                     "type": "noul",
-                    "instructions": "Can this request be answered in full by stating how many solar panels are already placed on the roof in the selected saved report? A request for a recommendation, potential capacity, a particular array, extra technical details, or an equipment quotation requires a different answer.",
+                    "instructions": "Can this request be answered in full by stating how many solar panels the selected saved report records, with the answer identifying whether the count comes from the roof layout or a customer entry, or stating that the report records only the power per panel? A request for a recommendation, potential capacity, a particular array, extra technical details, or an equipment quotation requires a different answer.",
                 },
             }
         payload = {"model": MODEL, "state": state, "questions": questions}

@@ -63,6 +63,7 @@ _MATERIAL_HANDLING = frozenset(
         "installation_requirement",
         "manufacturer_included",
         "pv_reference",
+        "pv_declared",
         "site_engineering_required",
         "woo_product",
     }
@@ -121,11 +122,20 @@ def _saved_report_run(
     return run
 
 
-def saved_panel_count(raw: Any, page: PageContext) -> int | None:
-    """The complete roof total is independent of the report's paged display rows."""
+def saved_panel_count(raw: Any, page: PageContext) -> tuple[int | None, str] | None:
+    """The selected report distinguishes its placed panels from the customer's count."""
     run = _saved_report_run(raw, page, require_all_rows=False)
-    count = run.get("saved_roof_panel_count") if run else None
-    return count if type(count) is int and count >= 0 else None
+    if run:
+        count = run.get("saved_roof_panel_count")
+        if type(count) is int and count >= 0:
+            return count, "layout"
+        declared = run.get("declared_panel_count")
+        if type(declared) is int and declared > 0:
+            return declared, "declared"
+        watts = run.get("declared_panel_stc_power_w")
+        if type(watts) in (int, float) and watts > 0:
+            return None, "declared"
+    return None
 
 
 def is_material_report(raw: Any, page: PageContext) -> bool:
@@ -386,6 +396,15 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
             and count >= 0
         ):
             lines.append(f"Total panels in the saved roof layout: {count}")
+        if run.get("kind") == "planning_report_v1":
+            declared = run.get("declared_panel_count")
+            if type(declared) is int and declared > 0:
+                lines.append(
+                    f"Customer-entered number of panels in this report: {declared}"
+                )
+            watts = run.get("declared_panel_stc_power_w")
+            if type(watts) in (int, float) and watts > 0:
+                lines.append(f"Customer-entered rated power per panel: {watts:g} Wp")
         materials = run.get("materials")
         if materials is not None:
             handling = (
