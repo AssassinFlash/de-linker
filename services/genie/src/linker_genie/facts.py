@@ -9,8 +9,8 @@ Chunk IDs come from search-knowledge, and so do the figures of each chunk
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass, field, replace
+from typing import Any, Literal
 
 from linker_genie.figures import chunk_of, swap_decimals, tag
 from linker_genie.hs3_evidence import (
@@ -33,6 +33,21 @@ class Fact:
     id: str
     value: str
     source: str
+    qualifier: dict[str, Any] | None = None
+
+    @property
+    def per_input_current_direction(self) -> Literal["charge", "discharge"] | None:
+        qualifier = self.qualifier or {}
+        if (
+            qualifier.get("scope") != "per_battery_port"
+            or qualifier.get("quantity_kind") != "maximum"
+        ):
+            return None
+        if qualifier.get("direction") == "charge":
+            return "charge"
+        if qualifier.get("direction") == "discharge":
+            return "discharge"
+        return None
 
 
 @dataclass(frozen=True)
@@ -67,6 +82,7 @@ class Document:
     title: str
     page: int | None
     evidence: DocumentEvidence | None = None
+    figure_product_id: int | None = None
 
 
 @dataclass(frozen=True)
@@ -1125,6 +1141,13 @@ def _add_figures(
     turn reads `value_de` where the figure has one. A selection fact of the same
     key stays: it is the one search-products filters on.
     """
+    published_by_url = {
+        document["url"]: document
+        for document in documents
+        if isinstance(document, dict)
+        and isinstance(document.get("url"), str)
+        and isinstance(document.get("document_id"), str)
+    }
     for key, figure in figures.items():
         if not isinstance(figure, dict):
             continue
@@ -1139,47 +1162,58 @@ def _add_figures(
             continue
         unit = figure.get("unit")
         rendered = f"{value} {unit}" if isinstance(unit, str) and unit else value
-        gathered.add(Fact(id=fact_id, value=rendered, source="datasheet-figures"))
+        qualifier = figure.get("qualifier")
+        gathered.add(
+            Fact(
+                id=fact_id,
+                value=rendered,
+                source="datasheet-figures",
+                qualifier=qualifier if isinstance(qualifier, dict) else None,
+            )
+        )
         citation = figure.get("citation")
         if isinstance(citation, dict):
             url = citation.get("url")
             page = citation.get("page")
             if isinstance(url, str) and url and type(page) is int and page > 0:
                 ref = f"{fact_id}.source"
-                primary = _document(citation, url, page)
+                published = published_by_url.get(url, {})
+                primary = _document(
+                    citation,
+                    url,
+                    page,
+                    evidence=DocumentEvidence.read(published, product_id),
+                    figure_product_id=product_id,
+                )
                 gathered.documents[ref] = primary
                 supporting = [ref]
-                if figure.get("qualifier"):
-                    for evidence in _figure_evidence(figure, documents):
-                        if (evidence.url, evidence.page) != (url, page):
-                            extra_ref = f"{ref}.{len(supporting)}"
-                            gathered.documents[extra_ref] = evidence
-                            supporting.append(extra_ref)
+                for extra_page in _figure_evidence_pages(
+                    figure, published.get("document_id")
+                ):
+                    if extra_page == page:
+                        continue
+                    extra_ref = f"{ref}.{len(supporting)}"
+                    gathered.documents[extra_ref] = replace(primary, page=extra_page)
+                    supporting.append(extra_ref)
                 gathered.supporting_documents[fact_id] = tuple(supporting)
 
 
-def _figure_evidence(figure: dict[str, Any], documents: list[Any]) -> list[Document]:
-    """Resolve compound evidence only against the product's published documents."""
-    by_id = {
-        document.get("document_id"): document
-        for document in documents
-        if isinstance(document, dict) and isinstance(document.get("document_id"), str)
-    }
+def _figure_evidence_pages(
+    figure: dict[str, Any], document_id: str | None
+) -> list[int]:
+    # Woo checks the primary citation against this PDF's bytes. A reference to a
+    # different document ID carries no such binding, even while it is published.
     refs = figure.get("evidence_refs")
-    if not isinstance(refs, list):
+    if document_id is None or not figure.get("qualifier") or not isinstance(refs, list):
         return []
-    evidence = []
+    pages = []
     for ref in refs:
         if not isinstance(ref, str):
             continue
-        document_id, _, page = ref.rpartition(":p")
-        if document_id not in by_id or not re.fullmatch(r"[1-9][0-9]*", page):
-            continue
-        document = by_id[document_id]
-        url = document.get("url")
-        if isinstance(url, str) and url:
-            evidence.append(_document(document, url, int(page)))
-    return evidence
+        owner, _, page = ref.rpartition(":p")
+        if owner == document_id and re.fullmatch(r"[1-9][0-9]*", page):
+            pages.append(int(page))
+    return pages
 
 
 def _compat_document(document: dict[str, Any], url: str, page: Any) -> Document:
@@ -1197,6 +1231,7 @@ def _document(
     page: Any,
     *,
     evidence: DocumentEvidence | None = None,
+    figure_product_id: int | None = None,
 ) -> Document:
     title = document.get("title")
     return Document(
@@ -1204,6 +1239,7 @@ def _document(
         title=title if isinstance(title, str) and title else _file_name(url),
         page=page if isinstance(page, int) else None,
         evidence=evidence,
+        figure_product_id=figure_product_id,
     )
 
 

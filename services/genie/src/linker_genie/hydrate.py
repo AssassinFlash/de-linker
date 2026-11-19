@@ -160,7 +160,7 @@ def hydrate(
     of a document figure. Callers that omit it keep the output's own language.
 
     Ordinary document blocks become one link per file, with cited pages joined.
-    A used qualified figure's page and every original condition page keep
+    Woo figure pages group by their product. Original chunk conditions keep
     separate links so each opens directly at the relevant source page.
 
     `qualified_mask` is used only during the final seal: it hides the exact
@@ -171,7 +171,9 @@ def hydrate(
     blocks: list[Block] = []
     # Ordinary citations share one file link. A qualification on another page
     # needs its own link, so the reader can open the actual condition directly.
-    links: dict[tuple[str, int | None], tuple[int, Document, list[int]]] = {}
+    links: dict[
+        tuple[str, int | None, int | None], tuple[int, Document, list[int]]
+    ] = {}
     condition_refs = {
         note.chunk_id for notes in _used_qualifications(output, facts) for note in notes
     }
@@ -193,10 +195,13 @@ def hydrate(
         for ref in block.refs
         if ref in facts.qualifications
     )
-    figure_sources = _figure_source_refs(output, facts)
-    figure_pages = {
-        (facts.documents[ref].url, facts.documents[ref].page) for ref in figure_sources
-    }
+    figure_sources = used_figure_sources(output, facts)
+    figure_pages: dict[tuple[str, int | None], set[int | None]] = {}
+    for ref in figure_sources:
+        source = facts.documents[ref]
+        figure_pages.setdefault((source.url, source.page), set()).add(
+            source.figure_product_id
+        )
     emitted: set[tuple[str, str]] = set()
     figure_links = [DocumentBlock(ref=ref) for ref in figure_sources]
     for block in [*output.blocks, *figure_links, *cited_documents(output, facts)]:
@@ -239,13 +244,21 @@ def hydrate(
             document = facts.documents.get(block.ref)
             if document is None:
                 continue
-            key = (
-                document.url,
-                document.page
-                if block.ref in condition_refs | parameter_refs
-                or (document.url, document.page) in figure_pages
-                else None,
+            owner = (
+                document.evidence.product_id
+                if document.evidence
+                else document.figure_product_id
             )
+            page = None
+            if block.ref in condition_refs | parameter_refs:
+                page = document.page
+            elif owner is None:
+                # The same page need not be shown twice when both independently
+                # point to the one product's figure evidence.
+                owners = figure_pages.get((document.url, document.page), set())
+                if len(owners) == 1:
+                    owner = next(iter(owners))
+            key = (document.url, owner, page)
             if key in links:
                 index, first, pages = links[key]
                 previous = blocks[index]
@@ -275,7 +288,8 @@ def hydrate(
     return output.model_copy(update={"blocks": blocks})
 
 
-def _figure_source_refs(output: TurnOutput, facts: TurnFacts) -> list[str]:
+def used_figure_sources(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """Citation refs of the Woo figures actually used in the answer."""
     return [
         ref
         for block in output.blocks
@@ -498,12 +512,11 @@ def fill(
             if unit and after and after.strip() == unit.group(1):
                 return value
             return value + after
-        if (
-            qualified_mask is not None
-            and fact.source == "datasheet-figures"
-            and fact.id in facts.supporting_documents
-        ):
-            return qualified_mask(fact.value) + after
+        if fact.source == "datasheet-figures":
+            value = _qualified_woo_value(fact, locale)
+            if qualified_mask is not None and fact.id in facts.supporting_documents:
+                value = qualified_mask(value)
+            return value + after
         unit_word = _unit(match.group(1)) if fact.source == "selection-facts" else None
         following = text[match.start(2) :].lstrip().lower()
         if unit_word and not following.startswith(unit_word.lower()):
@@ -532,6 +545,16 @@ def fill(
                 rendered = qualified_mask(rendered)
             filled += f"\n\n{label} {rendered}"
     return filled
+
+
+def _qualified_woo_value(fact: Fact, locale: str) -> str:
+    direction = fact.per_input_current_direction
+    if direction is None:
+        return fact.value
+    if locale.startswith("de"):
+        current = "Ladestrom" if direction == "charge" else "Entladestrom"
+        return f"Der maximale {current} beträgt {fact.value} je Batterieeingang."
+    return f"The maximum {direction} current is {fact.value} per battery input."
 
 
 def _quote(note: Qualification) -> str | None:

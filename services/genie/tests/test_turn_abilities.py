@@ -704,13 +704,9 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         other_found = page_comparison or any(
             item["chunk_id"] == other_ref for item in search_result.get("hits", [])
         )
-        text = (
-            "The SAJ inverter has {fact:1179.n_battery_ports} battery inputs. "
-            "The maximum charge current per input is {fact:p1179.max_battery_charge_a} "
-            "and the maximum discharge current per input is {fact:1179.max_battery_discharge_a}."
-        )
-        if port_count:
-            text = "The SAJ inverter has {fact:1179.n_battery_ports} battery inputs."
+        text = "The SAJ inverter has {fact:1179.n_battery_ports} battery inputs."
+        if not port_count:
+            text += "\n\n{fact:p1179.max_battery_charge_a}\n\n{fact:1179.max_battery_discharge_a}"
         prompt = next(
             part.content
             for message in messages
@@ -720,7 +716,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         assert isinstance(prompt, str)
         refs = ["1179"]
         if mixed_claim:
-            text += " The battery input has reverse polarity protection."
+            text += "\n\nThe battery input has reverse polarity protection."
             refs.append(wrong_ref)
         elif (
             not (no_jev or port_count)
@@ -733,9 +729,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
             else [{"type": "document", "ref": manual_excerpt}]
         )
         if other_found:
-            text += (
-                " The GoodWe manual gives the other product's technical specifications."
-            )
+            text += "\n\nThe GoodWe manual gives the other product's technical specifications."
             refs.extend(["6321", other_ref])
             blocks.append({"type": "cards", "product_ids": [1179, 6321]})
         blocks.insert(0, {"type": "text", "text": text, "refs": refs})
@@ -820,8 +814,8 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
     if port_count:
         assert urls == {f"{datasheet}#page=2"}
         return
-    assert "maximum charge current per input is 50 A" in text
-    assert "maximum discharge current per input is 50 A" in text
+    assert "The maximum charge current is 50 A per battery input." in text
+    assert "The maximum discharge current is 50 A per battery input." in text
     if comparison:
         assert set(searches[0]) == ({1279, 6321} if page_comparison else {1179, 6321})
         assert searches[1:] == ([] if page_comparison else [[6321]])
@@ -848,8 +842,12 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
     assert [block["ref"] for block in current_links] == [
         "p1179.max_battery_charge_a.source"
     ]
+    assert current_links[0]["evidence_product_id"] == 1179
+    assert current_links[0]["document_id"] == "doc-0"
+    assert current_links[0]["document_revision"] == "revision-0"
     assert all(block.get("ref") != manual_excerpt for block in blocks)
-    assert f"{manual}#page=43" in urls
+    assert len(current_links) == 1 and current_links[0]["label"].endswith("pp. 38, 43")
+    assert f"{manual}#page=43" not in urls
     assert f"{datasheet}#page=2" in urls
     assert (f"{german_sheet}#page=2" in urls) == mixed_claim
     if mixed_claim:

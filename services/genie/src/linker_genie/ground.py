@@ -326,6 +326,7 @@ def check(
     failures.extend(_not_released_answer_shape(output, facts))
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
+    failures.extend(_qualified_figure_placement(output, facts))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
@@ -1318,6 +1319,34 @@ def _droppable_tokens(text: str) -> list[str]:
                 continue
             tokens.append(token.group())
     return tokens
+
+
+def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """The service writes the entire claim for a qualified input current."""
+    failures = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            lines = block.text.splitlines()
+        elif isinstance(block, HandoffBlock):
+            lines = [block.summary]
+        elif isinstance(block, AskBlock):
+            lines = block.options
+        else:
+            continue
+        for line in lines:
+            for fact_id in leftover_placeholders(line):
+                fact = _fact_known(facts, fact_id)
+                if fact is None or fact.per_input_current_direction is None:
+                    continue
+                if (
+                    not isinstance(block, TextBlock)
+                    or line.strip() != f"{{fact:{fact_id}}}"
+                ):
+                    failures.append(
+                        f"Place {{fact:{fact_id}}} alone on a text line. "
+                        "The service writes the complete per-input current sentence."
+                    )
+    return failures
 
 
 def _model_texts(output: TurnOutput) -> list[str]:
