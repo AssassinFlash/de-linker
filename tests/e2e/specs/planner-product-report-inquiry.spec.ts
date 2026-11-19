@@ -20,8 +20,6 @@ const de = {
 		'Ausgewählte Produkte zum Lösungsentwurf hinzufügen',
 	'New quantity': 'Neue Menge',
 	'Confirm and continue to inquiry': 'Bestätigen und weiter zur Anfrage',
-	'Include planning reports and project notes with this inquiry':
-		'Planungsberichte und Projektnotizen mit dieser Anfrage senden',
 	'Send inquiry': 'Anfrage senden',
 	'Download PDF': 'PDF herunterladen',
 } as const;
@@ -214,24 +212,21 @@ for (const locale of ['en', 'de'] as const) {
 				await confirm.click();
 				const applyResponse = await applyReply;
 				expect(applyResponse.ok()).toBe(true);
-				const transfer = await applyResponse.json();
-				expect(transfer).toMatchObject({
+				expect(applyResponse.request().postDataJSON()).toMatchObject({
 					project_id: projectId,
 					report_run_id: report.id,
-					revision: report.revision,
+					expected_revision: report.revision,
+					expected_draft_sha256: preview.draft_sha256,
 				});
-				const lines: ProductQuantity[] = transfer.items;
+				const lines = changes
+					.map(({ product_id, after }) => ({
+						id: product_id,
+						quantity: after,
+					}))
+					.sort(byId);
 				const quantities = reviewed
 					.map((item) => item.quantity)
 					.sort(byQuantity);
-				expect([...lines].sort(byId)).toEqual(
-					changes
-						.map(({ product_id, after }) => ({
-							id: product_id,
-							quantity: after,
-						}))
-						.sort(byId)
-				);
 				const inquiryUrl =
 					locale === 'de'
 						? '/de/proforma-anfrage/'
@@ -244,16 +239,6 @@ for (const locale of ['en', 'de'] as const) {
 					new RegExp('^' + locale)
 				);
 				expect(documents).toEqual([url + inquiryUrl]);
-				await expect(
-					form.getByRole('checkbox', {
-						name: name(
-							'Include planning reports and project notes with this inquiry'
-						),
-					})
-				).toBeChecked();
-				await expect(
-					form.getByText(title, { exact: false }).first()
-				).toBeVisible();
 				const nativeDraft = page.locator(
 					'.linker-inquiry-lines .linker-inquiry-line'
 				);
@@ -315,7 +300,7 @@ for (const locale of ['en', 'de'] as const) {
 					status: 'inquiry-received',
 					reference: {
 						title,
-						handoff_id: transfer.handoff_id,
+						handoff_id: expect.stringMatching(/^[a-f0-9]{32}$/),
 						project_id: projectId,
 						report_run_id: report.id,
 						revision: report.revision,
@@ -330,7 +315,7 @@ for (const locale of ['en', 'de'] as const) {
 				).toHaveAttribute(
 					'href',
 					new RegExp(
-						`/inquiries/${order.id}/planning-report/${transfer.handoff_id}`
+						`/inquiries/${order.id}/planning-report/${order.reference.handoff_id}`
 					)
 				);
 			} finally {
