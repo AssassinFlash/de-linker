@@ -146,8 +146,8 @@ COUNT_WORDS = {
 }  # fmt: skip
 _COUNT_TOKEN = rf"(?:[0-9]+|{'|'.join(COUNT_WORDS)})"
 _CARD_COUNT_BEFORE = re.compile(
-    rf"(?<![\w.,+/-])({_COUNT_TOKEN})(?:\s*{_QTY_UNIT}\.?)?"
-    r"(?:\s+(?:of(?:\s+the)?|vom|von\s+(?:der|dem|den)))?\s+$",
+    rf"(?<![\w.,+/-])({_COUNT_TOKEN})(?:\s+(?:or|oder)\s+({_COUNT_TOKEN}))?"
+    rf"(?:\s*{_QTY_UNIT}\.?)?(?:\s+(?:of(?:\s+the)?|vom|von\s+(?:der|dem|den)))?\s+$",
     re.I,
 )
 _LEAD_QTY = re.compile(
@@ -273,7 +273,9 @@ def _quantity(value: str) -> int | None:
     return None
 
 
-def _card_count(token: str) -> int:
+def _card_count(token: str, alternative: str | None = None) -> int:
+    if alternative is not None and _card_count(token) != _card_count(alternative):
+        return 0
     if token.casefold() in COUNT_WORDS:
         return COUNT_WORDS[token.casefold()]
     digits = token.lstrip("0")
@@ -298,9 +300,7 @@ def previous_card_selection(message: str, options: dict[int, int]) -> dict[int, 
         return {}
     if reply["count"] is None:
         return options
-    count = _card_count(reply["count"])
-    if reply["other"] and _card_count(reply["other"]) != count:
-        count = 0
+    count = _card_count(reply["count"], reply["other"])
     return dict.fromkeys(options, count)
 
 
@@ -341,7 +341,7 @@ def card_quantities(
             )
             for adjacent in (before, after):
                 if adjacent:
-                    count = _card_count(adjacent[1])
+                    count = _card_count(*adjacent.groups())
                     # Zero keeps a conflicting or out-of-range request unsigned.
                     counts[product_id] = (
                         count
@@ -354,14 +354,20 @@ def card_quantities(
 
     # Each matching candidate offers the requested count as a separate choice.
     category_counts: dict[str, int] = {}
+    category_message = message
+    for phrase in {m.words for m in matches if m.kind in ("brand", "series")}:
+        name = r"[\s-]+".join(re.escape(word) for word in phrase.split())
+        category_message = re.sub(rf"\b{name}\b", " ", category_message, flags=re.I)
     for match in matches:
         if match.kind != "category":
             continue
         noun = re.escape(match.words)
-        for mention in re.finditer(rf"\b(?:hybrid[ -]?)?{noun}\b", message, re.I):
-            before = _CARD_COUNT_BEFORE.search(message[: mention.start()])
+        for mention in re.finditer(
+            rf"\b(?:hybrid[ -]?)?{noun}\b", category_message, re.I
+        ):
+            before = _CARD_COUNT_BEFORE.search(category_message[: mention.start()])
             if before:
-                count = _card_count(before[1])
+                count = _card_count(*before.groups())
                 category_counts[match.value] = (
                     count if category_counts.get(match.value, count) == count else 0
                 )

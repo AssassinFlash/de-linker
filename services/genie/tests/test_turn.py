@@ -405,8 +405,9 @@ def test_product_card_and_actions_use_the_current_request(
     assert card["quantities"] == {"4107": expected}
 
 
+@pytest.mark.parametrize(("quantity", "expected"), [("2", 2), ("2 or 3", 0)])
 def test_customer_can_choose_either_inverter_at_the_requested_count(
-    log: TurnLog, catalog_turn: None
+    log: TurnLog, catalog_turn: None, quantity: str, expected: int
 ) -> None:
     def generate(
         request: TurnRequest, retry: str | None
@@ -424,17 +425,18 @@ def test_customer_can_choose_either_inverter_at_the_requested_count(
     blocks = _blocks(
         _post(
             "choices",
-            "Please prepare a product list with 2 hybrid inverters around 10 kW. I want to save the list to my account.",
+            f"Please prepare a product list with {quantity} hybrid inverters around 10 kW. I want to save the list to my account.",
         )
     )
     assert [b["type"] for b in blocks] == ["text", "cards"]
-    assert blocks[1]["quantities"] == {"6527": 2, "6528": 2}
+    assert blocks[1]["quantities"] == {"6527": expected, "6528": expected}
 
 
 @pytest.mark.parametrize(
     ("language", "message", "previous", "expected"),
     [
         ("en", "2 of those", {6527: 1}, {6527: 2}),
+        ("en", "2 or 3 of those", {6527: 1}, {6527: 0}),
         ("de", "Zwei davon, bitte.", {6528: 1}, {6528: 2}),
         ("en", "Save that one.", {6527: 2, 6528: 2}, {6527: 2, 6528: 2}),
     ],
@@ -466,6 +468,8 @@ def test_follow_up_uses_the_options_actually_shown(
     assert card["product_ids"] == list(expected)
     assert card["quantities"] == {str(pid): count for pid, count in expected.items()}
     assert not any(b["type"] == "parts" for b in blocks)
+    if 0 in expected.values():
+        assert blocks[0]["text"] == "How many units would you like?"
 
 
 def test_explicitly_adding_an_earlier_parts_list_keeps_its_quantities(

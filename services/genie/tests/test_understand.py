@@ -182,6 +182,7 @@ def test_saved_report_weather_uses_only_matching_native_planning_context(
         ("Please save DLK-SAJ-H210KT3 × 3 inverters to my account.", {4107: 3}),
         ("Bitte zwei Stück vom SAJ H2-10K-T3 aufnehmen.", {4107: 2}),
         ("Save SAJ H2-10K-T3 for a 10 kW site.", {4107: 1}),
+        ("Show me EcoFlow OCEAN 2 hybrid inverters.", {}),
         ("Show me the EcoFlow OCEAN 2 HD-P1-6K-S2 inverter.", {6488: 1}),
         ("Please save 3 EcoFlow OCEAN 2 HD-P1-6K-S2 inverters.", {6488: 3}),
         ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", {4107: 0}),
