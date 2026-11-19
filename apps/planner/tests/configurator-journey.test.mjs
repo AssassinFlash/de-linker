@@ -144,7 +144,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
 	);
 	assert.equal(button("Bestätigen und weiter zur Anfrage").disabled, false);
-	assert.equal(button("Änderungen bestätigen").disabled, false);
+	assert.equal(button("Zum Lösungsentwurf hinzufügen").disabled, false);
 	phaseConflict = undefined;
 	phaseConflicts = [
 		{ unit: "Depot · East", actual: 1, required: 3 },
@@ -1159,6 +1159,71 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 			staleTransfer.closest(".sc-draft-transfer").textContent,
 			/Your inquiry uses the current report/,
 		);
+		await act(async () => root.render(null));
+		cache.clear();
+		project.revision = current.revision;
+		project.input_sha256 = current.manifest.input_sha256;
+		currentSummary.is_current = true;
+		const { planningIntentStore } =
+			await import("../src/data/PlanningIntentStore.ts");
+		const body = JSON.stringify({
+			schema_version: 1,
+			project_id: current.project_id,
+			report_run_id: current.id,
+			expected_revision: current.revision,
+			expected_draft_sha256: "d".repeat(64),
+			key: "3909eb85-2936-43a8-8b53-c13114084498",
+		});
+		await planningIntentStore.write(scope, "draft/apply", body);
+		const transfer = [];
+		const priorSend = client.send;
+		client.send = async (path, raw) => {
+			if (path !== "draft/read" && path !== "draft/apply")
+				return priorSend(path, raw);
+			transfer.push(path);
+			assert.equal(raw, body);
+			if (path === "draft/read")
+				return { schema_version: 1, state: "not_applied" };
+			return {
+				schema_version: 1,
+				project_id: current.project_id,
+				report_run_id: current.id,
+				revision: current.revision,
+				handoff_id: "c".repeat(32),
+				intent_sha256: "d".repeat(64),
+				snapshot_sha256: "e".repeat(64),
+				items: [],
+				report_only: true,
+				draft_urls: {
+					en: location.origin + "/inquiry/",
+					de: location.origin + "/de/anfrage/",
+				},
+				inquiry_urls: {
+					en: location.origin + "/inquiry/",
+					de: location.origin + "/de/anfrage/",
+				},
+			};
+		};
+		client.origin = location.origin;
+		const priorQuery = client.query;
+		client.query = (path, command) =>
+			path === "projects/runs"
+				? Promise.resolve({ items: [currentSummary], next: null })
+				: priorQuery(path, command);
+		window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+		await render("en");
+		await until(() => button("Retry transfer"));
+		await until(() => transfer.includes("draft/read"));
+		assert.equal(button("Retry transfer").disabled, false);
+		assert.equal(Boolean(button("Check previous request")), false);
+		await act(async () => button("Retry transfer").click());
+		const inquiryLink = () =>
+			[...dom.element.querySelectorAll("a")].find(
+				(link) => link.textContent === "Continue to inquiry",
+			);
+		await until(inquiryLink);
+		assert.equal(inquiryLink().href, location.origin + "/inquiry/");
+		assert.deepEqual(transfer, ["draft/read", "draft/apply"]);
 	} finally {
 		await dom.dispose(root);
 		cache.clear();
