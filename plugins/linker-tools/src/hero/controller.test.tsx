@@ -519,7 +519,7 @@ test( 'the nameplate button opens a photo picker and sends the picked photo', as
 	click.mockRestore();
 } );
 
-test( 'the attach button opens the file picker and a PDF is sent with the turn', async () => {
+test( 'a customer picks the PDF first, types a question, and sends both once', async () => {
 	const answers = session();
 	await start( answers.session );
 	vi.spyOn( HTMLInputElement.prototype, 'click' ).mockImplementation(
@@ -544,11 +544,16 @@ test( 'the attach button opens the file picker and a PDF is sent with the turn',
 		fireEvent.change( input );
 	} );
 
+	await screen.findByText( 'datasheet.pdf' );
+	expect( answers.send ).not.toHaveBeenCalled();
+	const field = screen.getByRole( 'textbox' );
+	fireEvent.input( field, { target: { value: 'What power does it list?' } } );
+	fireEvent.click( document.querySelector( '.hero-send' )! );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
 	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
 		role: 'user',
-		content: 'Attached: datasheet.pdf',
+		content: 'What power does it list?\nAttached: datasheet.pdf',
 	} );
 	expect( uploads ).toHaveLength( 1 );
 } );
@@ -571,6 +576,9 @@ test( 'a folded hero still sends a picked file after the picker is cleared', asy
 	} );
 
 	expect( live.length ).toBe( 0 );
+	await screen.findByText( 'datasheet.pdf' );
+	expect( answers.send ).not.toHaveBeenCalled();
+	fireEvent.click( document.querySelector( '.hero-send' )! );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
 	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
@@ -625,6 +633,9 @@ test( 'a pick made before the identity lookup settles still sends its file', asy
 	await act( async () => {
 		release();
 	} );
+	await screen.findByText( 'datasheet.pdf' );
+	expect( answers.send ).not.toHaveBeenCalled();
+	fireEvent.keyDown( prompt, { key: 'Enter' } );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
 	const { uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( uploads ).toHaveLength( 1 );
@@ -660,6 +671,9 @@ test( 'a folded hero sends the editor question with the copied file', async () =
 	} );
 
 	expect( live.length ).toBe( 0 );
+	await screen.findByText( 'datasheet.pdf' );
+	expect( answers.send ).not.toHaveBeenCalled();
+	fireEvent.click( document.querySelector( '.hero-send' )! );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
 	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages ).toEqual( [

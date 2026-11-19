@@ -101,7 +101,8 @@ export function startHero(
 	let expandedNow = false;
 	let root: ReturnType< typeof createRoot > | null = null;
 	let bridge: HeroBridge | null = null;
-	let pending: { text: string; files?: ArrayLike< File > } | null = null;
+	let pending: string | null = null;
+	let pendingFiles: File[] = [];
 	let pill: HTMLButtonElement | null = null;
 	let recognition: DictationSession | null = null;
 	// The control that opened the conversation: focus returns to it on close.
@@ -157,6 +158,7 @@ export function startHero(
 		recognition?.stop();
 		recognition = null;
 		pending = null;
+		pendingFiles = [];
 	} );
 	const stopPreserving = context.beforeLeave( () => {
 		if ( ! root ) {
@@ -292,43 +294,35 @@ export function startHero(
 			next.mode( retainedMode );
 			retainedMode = null;
 		}
-		if ( pending ) {
-			const { text, files } = pending;
+		const files = pendingFiles;
+		pendingFiles = [];
+		if ( pending !== null ) {
+			const text = pending;
 			pending = null;
 			next.ask( text, files );
+		} else if ( files.length ) {
+			next.attach( files );
 		}
 	}
 
-	/**
-	 * Opens the conversation and asks one question (or sends picked files).
-	 *
-	 * @param text    The editor's question; empty when the files are the question.
-	 * @param files   Files from the page's picker.
-	 * @param trigger The page's control that started it; focus returns there.
-	 */
-	function runAsk(
-		text: string,
-		files?: ArrayLike< File >,
-		trigger?: HTMLElement
-	): void {
-		if ( ! text.trim() && ! ( files && files.length > 0 ) ) {
+	function runAsk( text: string, trigger: HTMLElement ): void {
+		if ( ! text.trim() && ! heroExpanded( state ) ) {
 			return;
 		}
-		if ( trigger ) {
-			lastTrigger = trigger;
-		}
+		lastTrigger = trigger;
 		update( { type: 'ask' } );
 		if ( bridge ) {
-			bridge.ask( text, files );
-			return;
+			bridge.ask( text );
+		} else {
+			pending = text;
 		}
-		pending = { text, files };
 	}
 
 	/** Folds the conversation back to the resting hero. */
 	function close(): void {
 		context.invalidate();
 		pending = null;
+		pendingFiles = [];
 		retainedMode = null;
 		const trigger = lastTrigger;
 		lastTrigger = null;
@@ -441,7 +435,7 @@ export function startHero(
 			event.keyCode !== 229
 		) {
 			event.preventDefault();
-			runAsk( prompt!.value, undefined, prompt! );
+			runAsk( prompt!.value, prompt! );
 		}
 	}
 
@@ -454,7 +448,7 @@ export function startHero(
 			update( { type: 'ask' } );
 			return;
 		}
-		runAsk( prompt!.value, undefined, sendButton! );
+		runAsk( prompt!.value, sendButton! );
 	}
 
 	function capsuleClick( capsule: Element ): ( event: Event ) => void {
@@ -462,7 +456,6 @@ export function startHero(
 			event.preventDefault();
 			runAsk(
 				( capsule.textContent ?? '' ).trim(),
-				undefined,
 				capsule as HTMLElement
 			);
 		};
@@ -511,21 +504,18 @@ export function startHero(
 
 	function onPickerChange(): void {
 		// FileList is live: clearing the input empties the same object.
-		// Copy the files, and the editor text, before that clear.
-		const question = prompt!.value;
 		const files = picker.files ? Array.from( picker.files ) : [];
 		picker.value = '';
-		// A pick can land while the cold identity lookup is still running (the
-		// composer is disabled, the page's own buttons are not). The files are
-		// the customer's choice and ride once: hold them through the lookup
-		// instead of dropping them, the same way useAttachments does. Dropping
-		// them left the customer with a picker that silently did nothing.
-		if ( context.capture() ) {
-			context.acceptEditor();
+		if ( ! files.length ) {
+			return;
 		}
-		if ( files.length > 0 ) {
-			runAsk( question, files );
+		update( { type: 'ask' } );
+		if ( bridge ) {
+			bridge.attach( files );
+		} else {
+			pendingFiles.push( ...files );
 		}
+		prompt!.focus();
 	}
 
 	function isOutOfSight(): boolean {
