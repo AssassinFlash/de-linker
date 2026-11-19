@@ -7,7 +7,6 @@ import { expect, test, type Page } from '@playwright/test';
 import { instance } from '../lib/instance';
 
 const retiredPanel = /Trina|TSM[-_ ]?(?:45|46)0NEG|Vertex[- ]S\+/i;
-const origin = instance().url;
 
 async function screenshot(page: Page, name: string) {
 	const dir = process.env.LINKER_E2E_SHOTS;
@@ -49,6 +48,7 @@ for (const locale of ['en', 'de'] as const) {
 			test('a listed brand leads to a photographed Woo product', async ({
 				page,
 			}) => {
+				const origin = instance().url;
 				await page.goto(origin + prefix + '/');
 				await menu(
 					page,
@@ -98,12 +98,23 @@ for (const locale of ['en', 'de'] as const) {
 					origin + prefix + '/brand/trina-solar/'
 				);
 				expect(archive?.status()).toBe(404);
+				await page.goto(origin + shop + '?brand=trina-solar');
+				await expect(page.locator('main')).not.toContainText(
+					retiredPanel
+				);
+				const clear = page.locator('main .wbclear:visible').first();
+				await clear.click();
+				await expect(page).toHaveURL(origin + shop);
+				await expect(
+					page.locator('main a:has(img[alt*="GoodWe"])').first()
+				).toBeVisible();
 			});
 
 			for (const entry of ['home', 'workspace'] as const) {
 				test(`Genie explains panel supply and design through ${entry}`, async ({
 					page,
 				}) => {
+					const origin = instance().url;
 					await page.goto(origin + prefix + '/');
 					const question = german
 						? 'Kann ich bei Ihnen Solarmodule bestellen? Wie berücksichtigt der Konfigurator meine Module?'
