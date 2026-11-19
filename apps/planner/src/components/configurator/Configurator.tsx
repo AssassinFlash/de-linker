@@ -174,6 +174,8 @@ export default function Configurator({
 	const { draft, update, acknowledgeProject } = controller;
 	const [step, setStep] = useState<Step>(initialStep);
 	const main = useRef<HTMLElement>(null);
+	const workbench = useRef<HTMLDivElement>(null);
+	const [assessmentPending, setAssessmentPending] = useState(false);
 	const [energyValid, setEnergyValid] = useState(true);
 	const [energyOpened, setEnergyOpened] = useState(() =>
 		["energy", "solar"].includes(initialStep()),
@@ -227,6 +229,7 @@ export default function Configurator({
 		roofEditing ||
 		importOpen;
 	function mayLeave() {
+		if (assessmentPending) return false;
 		if (!client.isCurrentScope(session.query_scope) || !profileGuard.current())
 			return false;
 		if (!navigationBlocked) return true;
@@ -252,7 +255,7 @@ export default function Configurator({
 		if (lastStep.current === step) return;
 		lastStep.current = step;
 		main.current?.focus({ preventScroll: true });
-		main.current?.scrollIntoView?.({ block: "start" });
+		workbench.current?.scrollIntoView?.({ block: "start" });
 	}, [step]);
 	const [error, setError] = useState<unknown>(null);
 	const [selecting, setSelecting] = useState(false);
@@ -905,7 +908,7 @@ export default function Configurator({
 				? "energy"
 				: step;
 	return (
-		<div className="sc-configurator">
+		<div className="sc-configurator sc-project-workbench" ref={workbench}>
 			<ProjectHeading
 				title={project.title}
 				location={siteLabel}
@@ -1335,6 +1338,7 @@ export default function Configurator({
 									comparison={comparison}
 									onSaveComparison={setComparison}
 									onEditEquipment={() => navigate("project")}
+									onSelectionPending={setAssessmentPending}
 									onSelect={select}
 								/>
 							) : !searchRun && systemRead.isPending ? (
@@ -1397,6 +1401,7 @@ export default function Configurator({
 									className="sc-button sc-primary"
 									disabled={
 										blocked ||
+										assessmentPending ||
 										(!choice &&
 											!(
 												searchRun?.state === "succeeded" &&

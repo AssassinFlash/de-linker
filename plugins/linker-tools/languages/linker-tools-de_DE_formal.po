@@ -17215,3 +17215,27 @@ msgstr "Dach und Modulbelegung"
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
 msgid "Use this layout"
 msgstr "Belegung übernehmen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Open report PDF"
+msgstr "Berichts-PDF öffnen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The PDF shows the original layout and any logo saved with this report."
+msgstr "Im PDF sehen Sie das ursprüngliche Layout und das mit dem Bericht gespeicherte Logo, sofern eines hinzugefügt wurde."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The report PDF could not be opened."
+msgstr "Das Berichts-PDF konnte nicht geöffnet werden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof pitch"
+msgstr "Neigung der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof azimuth"
+msgstr "Ausrichtung der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof height"
+msgstr "Höhe der gewählten Dachfläche"

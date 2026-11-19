@@ -898,6 +898,23 @@ test("the solar page records a named map origin only after confirmation", async 
 	assert.equal(app.inputs.geometry.obstacles[0].height_m, 0.5);
 });
 
+test("choosing module details on a saved roof changes the project basis on Continue", async (t) => {
+	const app = await mount(t);
+	assert.equal(
+		button("Place modules on the roof").getAttribute("aria-pressed"),
+		"true",
+	);
+	await click("Use module details");
+	await click("Continue with energy use");
+	assert.equal(app.next, 1);
+	assert.equal(
+		app.inputs.pvgis_reference_setup.model,
+		"pvgis_5_3_known_ac_reference_v1",
+	);
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, null);
+	assert.deepEqual(app.inputs.geometry, flat);
+});
+
 test("drawing the first roof replaces the known calculation basis and Undo restores it", async (t) => {
 	const app = await mount(t, { brief: emptyBrief() });
 	await enter(input("Solar capacity"), "5.5");
@@ -926,6 +943,45 @@ test("drawing the first roof replaces the known calculation basis and Undo resto
 	assert.equal(app.inputs.geometry, undefined);
 	assert.deepEqual(app.inputs.pvgis_reference_setup, known);
 	assert.equal(input("Solar capacity").value, "5.5");
+});
+
+test("selected measured roof properties apply to that roof and Undo restores its previous plane", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.sources[0].kind = "user_measurement";
+	geometry.sources[0].rights_basis = "user_attestation";
+	const app = await mount(t, { brief: emptyBrief(), geometry });
+	await openRoof();
+	const pitch = input("Selected roof pitch");
+	const direction = input("Selected roof azimuth");
+	const height = input("Selected roof height");
+	assert.equal(pitch.value, "0");
+	assert.equal(direction.value, "0");
+	assert.equal(height.value, "4");
+
+	async function change(field, value) {
+		await enter(field, value);
+		await act(async () =>
+			field.dispatchEvent(new window.FocusEvent("focusout", { bubbles: true })),
+		);
+	}
+	await change(pitch, "30");
+	await change(direction, "180");
+	await change(height, "6");
+	const saved = app.inputs.geometry.roofs[0];
+	assert.deepEqual(saved.origin_enu, [10, -20, 6]);
+	assert.ok(
+		saved.u_axis_enu.every((coordinate, i) => coordinate === [-1, 0, 0][i]),
+	);
+	assert.ok(Math.abs(saved.v_axis_enu[2] + 0.5) < 1e-12);
+	assert.deepEqual(saved.boundary_uv, geometry.roofs[0].boundary_uv);
+	assert.deepEqual(app.inputs.geometry.arrays, geometry.arrays);
+
+	await click("Use this layout");
+	await click("Open roof layout");
+	assert.equal(input("Selected roof height").value, "6");
+	await click("Undo");
+	assert.equal(input("Selected roof height").value, "4");
+	assert.deepEqual(app.inputs.geometry.roofs[0].u_axis_enu, saved.u_axis_enu);
 });
 
 test("new roof interaction places moves rotates removes and undoes an actual module group", async (t) => {

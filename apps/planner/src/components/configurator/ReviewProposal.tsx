@@ -1,4 +1,11 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { PlanningRun, RunSummary } from "../../data/planningProtocol.ts";
 import {
@@ -87,19 +94,73 @@ function ReportContent({ section }: { section: ReportSection }) {
 	);
 }
 
-function ReportPreview({ report }: { report: PlanningReport }) {
+function ReportPreview({
+	report,
+	allowed,
+	loadPdf,
+}: {
+	report: PlanningReport;
+	allowed: boolean;
+	loadPdf: (signal: AbortSignal) => Promise<Blob | null>;
+}) {
 	const dialog = useRef<HTMLDialogElement>(null);
+	const request = useRef<AbortController | null>(null);
+	const objectUrl = useRef<string | null>(null);
+	const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+	const [pdfFailed, setPdfFailed] = useState(false);
 	const name = useId();
+
+	const releasePdf = useCallback(() => {
+		request.current?.abort();
+		request.current = null;
+		if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
+		objectUrl.current = null;
+	}, []);
+	useEffect(() => releasePdf, [releasePdf]);
+
+	async function preparePdf() {
+		if (request.current) return;
+		const controller = new AbortController();
+		request.current = controller;
+		setPdfFailed(false);
+		try {
+			const blob = await loadPdf(controller.signal);
+			if (controller.signal.aborted) return;
+			if (blob) {
+				objectUrl.current = URL.createObjectURL(blob);
+				setPdfUrl(objectUrl.current);
+			} else {
+				setPdfFailed(true);
+			}
+		} catch {
+			if (!controller.signal.aborted) setPdfFailed(true);
+		} finally {
+			if (request.current === controller) request.current = null;
+		}
+	}
 	return (
 		<>
 			<button
 				type="button"
 				className="sc-button"
-				onClick={() => dialog.current?.showModal()}
+				disabled={!allowed}
+				onClick={() => {
+					dialog.current?.showModal();
+					void preparePdf();
+				}}
 			>
 				{__("Preview report", "linker-tools")}
 			</button>
-			<dialog ref={dialog} className="sc-report-dialog" aria-labelledby={name}>
+			<dialog
+				ref={dialog}
+				className="sc-report-dialog"
+				aria-labelledby={name}
+				onClose={() => {
+					releasePdf();
+					setPdfUrl(null);
+					setPdfFailed(false);
+				}}
+			>
 				<header className="sc-section-head">
 					<h2 id={name} lang={report.locale}>
 						{report.title}
@@ -112,6 +173,43 @@ function ReportPreview({ report }: { report: PlanningReport }) {
 						{__("Close", "linker-tools")}
 					</button>
 				</header>
+				<div className="sc-report-pdf">
+					{pdfUrl && allowed ? (
+						<>
+							<a
+								className="sc-button"
+								href={pdfUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{__("Open report PDF", "linker-tools")}
+							</a>
+							<p className="sc-muted">
+								{__(
+									"The PDF shows the original layout and any logo saved with this report.",
+									"linker-tools",
+								)}
+							</p>
+						</>
+					) : pdfFailed || !allowed ? (
+						<>
+							<p role="alert">
+								{__("The report PDF could not be opened.", "linker-tools")}
+							</p>
+							{allowed && (
+								<button
+									type="button"
+									className="sc-button"
+									onClick={() => void preparePdf()}
+								>
+									{__("Try again", "linker-tools")}
+								</button>
+							)}
+						</>
+					) : (
+						<p role="status">{__("Preparing PDF…", "linker-tools")}</p>
+					)}
+				</div>
 				<div className="sc-report-preview" lang={report.locale}>
 					<p className="sc-muted">{report.subtitle}</p>
 					{report.sections.map((section) => (
@@ -169,6 +267,32 @@ function ReportDownloads({
 			objectUrl.current = null;
 		};
 	}, [run.id, scope, suspended]);
+	function readPdf(signal: AbortSignal) {
+		const file = readObject(run.result?.prepared_asset);
+		return client.reportPdf(
+			run.project_id,
+			String(file.id),
+			scope,
+			signal,
+			String(file.content_sha256),
+		);
+	}
+	function recheckAccess(cause: unknown) {
+		if (
+			cause instanceof ApiError &&
+			([401, 403].includes(cause.status) || cause.code === "session_changed")
+		)
+			recheck();
+	}
+	async function loadPreviewPdf(signal: AbortSignal) {
+		try {
+			const blob = await readPdf(signal);
+			return client.isCurrentScope(scope) ? blob : null;
+		} catch (cause) {
+			if (!signal.aborted) recheckAccess(cause);
+			throw cause;
+		}
+	}
 	async function download(format: "pdf" | "materials" | "rules" | "series") {
 		if (!run.result || busy || flight.current || !client.isCurrentScope(scope))
 			return;
@@ -192,13 +316,7 @@ function ReportDownloads({
 		try {
 			const blob =
 				format === "pdf"
-					? await client.reportPdf(
-							run.project_id,
-							String(file.id),
-							scope,
-							controller.signal,
-							String(file.content_sha256),
-						)
+					? await readPdf(controller.signal)
 					: await client.reportCsv(
 							run.project_id,
 							String(file.id),
@@ -223,11 +341,7 @@ function ReportDownloads({
 			link.click();
 		} catch (cause) {
 			if (instance !== lifetime.current) return;
-			if (
-				cause instanceof ApiError &&
-				([401, 403].includes(cause.status) || cause.code === "session_changed")
-			)
-				recheck();
+			recheckAccess(cause);
 			if (client.isCurrentScope(scope)) setError(true);
 		} finally {
 			if (flight.current === controller) flight.current = null;
@@ -246,7 +360,12 @@ function ReportDownloads({
 	);
 	const actions = (
 		<>
-			<ReportPreview report={report} />
+			<ReportPreview
+				key={`${run.id}:${scope}`}
+				report={report}
+				allowed={client.isCurrentScope(scope)}
+				loadPdf={loadPreviewPdf}
+			/>
 			<button
 				type="button"
 				className="sc-button"

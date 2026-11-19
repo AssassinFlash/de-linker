@@ -5,6 +5,14 @@ import { instance } from '../lib/instance';
 
 const labels = {
 	en: {
+		roofChoice: 'Place modules on the roof',
+		openRoof: 'Open roof layout',
+		measuredRoof: 'Add a measured roof face',
+		addRoof: 'Add rectangular roof',
+		drawing: 'Drawing source',
+		roofHeight: 'Selected roof height',
+		useLayout: 'Use this layout',
+		knownModules: 'Use module details',
 		path: '/solution-configurator/',
 		start: 'New project',
 		title: 'Project name',
@@ -24,9 +32,22 @@ const labels = {
 		report: 'Generate project report',
 		preview: 'Preview report',
 		download: 'Download PDF',
+		logo: 'Your logo on the PDF (optional)',
+		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
+		projectChapter: /^1\s*Project$/,
+		projectSection: 'What is the project?',
+		solarChapter: /^2\s*Solar$/,
 	},
 	de: {
+		roofChoice: 'Module auf dem Dach platzieren',
+		openRoof: 'Dachbelegung öffnen',
+		measuredRoof: 'Dachfläche nach Aufmaß hinzufügen',
+		addRoof: 'Rechteckige Dachfläche hinzufügen',
+		drawing: 'Grundlage der Zeichnung',
+		roofHeight: 'Höhe der gewählten Dachfläche',
+		useLayout: 'Belegung übernehmen',
+		knownModules: 'Moduldaten verwenden',
 		path: '/de/loesungskonfigurator/',
 		start: 'Neues Projekt',
 		title: 'Projektname',
@@ -46,7 +67,12 @@ const labels = {
 		report: 'Projektbericht erstellen',
 		preview: 'Berichtsvorschau',
 		download: 'PDF herunterladen',
+		logo: 'Ihr Logo im PDF (optional)',
+		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
+		projectChapter: /^1\s*Projekt$/,
+		projectSection: 'Was planen Sie?',
+		solarChapter: /^2\s*Photovoltaik$/,
 	},
 } as const;
 
@@ -55,6 +81,112 @@ async function screen(page: Page, name: string) {
 	const path = test.info().outputPath(name + '.png');
 	await page.screenshot({ path, animations: 'disabled' });
 }
+
+async function importLoadProfile(energy: ReturnType<Page['locator']>) {
+	const intervals = Array.from({ length: 96 }, (_, index) => {
+		const time = new Date(Date.UTC(2026, 0, 20, 0, index * 15));
+		return `${time.toISOString()};${index === 40 ? 8 : 2}`;
+	});
+	await energy
+		.getByRole('button', { name: 'CSV importieren', exact: true })
+		.click();
+	await energy.getByLabel('CSV-Datei').setInputFiles({
+		name: 'privater-lastgang.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from(['Zeit;Last', ...intervals].join('\n')),
+	});
+	await energy.getByLabel('Spaltentrennzeichen').selectOption(';');
+	await energy.getByRole('button', { name: 'CSV-Spalten einlesen' }).click();
+	await energy.getByLabel('Zeitstempelspalte').selectOption('Zeit');
+	await energy.getByLabel('Verbrauchsspalte').selectOption('Last');
+	await energy
+		.getByLabel('Einheit der Messwerte')
+		.selectOption('interval_average_kw');
+	await energy.getByLabel('Zeitstempel kennzeichnet').selectOption('start');
+	await energy.getByLabel('Intervalllänge').fill('15');
+	await energy.getByLabel('Dezimaltrennzeichen').selectOption('.');
+	await energy.getByLabel('Datenquelle').selectOption('synthetic');
+	await energy
+		.getByLabel('Quelle und Erlaubnis zur privaten Speicherung')
+		.fill(
+			'Ein synthetischer Testlastgang für den privaten Projektentwurf.'
+		);
+	await energy
+		.getByRole('button', { name: 'Verbrauchsdaten übernehmen' })
+		.click();
+	const metrics = energy.locator('.sc-demand-metrics');
+	await expect(metrics).toContainText('8 kW');
+	await expect(energy.locator('figure svg')).toBeVisible();
+}
+
+async function adjustRoof(
+	page: Page,
+	workspace: ReturnType<Page['locator']>,
+	lang: keyof typeof labels
+) {
+	const words = labels[lang];
+	await workspace
+		.getByRole('button', { name: words.roofChoice, exact: true })
+		.click();
+	await workspace
+		.getByRole('button', { name: words.openRoof, exact: true })
+		.click();
+	await workspace.getByText(words.measuredRoof, { exact: true }).click();
+	const roof = workspace.locator('.sc-roof-props details[open]');
+	const dimensions =
+		lang === 'en'
+			? [
+					'Width',
+					'Depth',
+					'Pitch',
+					'Azimuth',
+					'Relative roof height',
+					'Origin east / U',
+					'Origin north / V',
+				]
+			: [
+					'Breite',
+					'Tiefe',
+					'Dachneigung',
+					'Azimut',
+					'Relative Dachhöhe',
+					'Ursprung in Ostrichtung (U)',
+					'Ursprung in Nordrichtung (V)',
+				];
+	for (const [index, value] of [
+		'8',
+		'5',
+		'25',
+		'180',
+		'3',
+		'0',
+		'0',
+	].entries())
+		await roof.getByLabel(dimensions[index]!).fill(value);
+	await roof
+		.getByLabel(words.drawing)
+		.fill('Test drawing for the review site');
+	await roof.getByRole('checkbox').check();
+	await roof.getByRole('button', { name: words.addRoof }).click();
+	const height = workspace.getByLabel(words.roofHeight);
+	await expect(height).toHaveValue('3');
+	await height.fill('4');
+	await height.press('Tab');
+	await expect(height).toHaveValue('4');
+	await screen(page, 'roof-layout');
+	await workspace.getByRole('button', { name: words.useLayout }).click();
+	await workspace.getByRole('button', { name: words.openRoof }).click();
+	await expect(height).toHaveValue('4');
+	await workspace.getByRole('button', { name: words.useLayout }).click();
+	await workspace
+		.getByRole('button', { name: words.knownModules, exact: true })
+		.click();
+}
+
+const testLogo = Buffer.from(
+	'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAIAAABChommAAAAFElEQVQY02NUjnRmIASYCKoY9ooA5aIAz5+XSsIAAAAASUVORK5CYII=',
+	'base64'
+);
 
 for (const lang of ['en', 'de'] as const) {
 	for (const width of [390, 1440]) {
@@ -103,12 +235,29 @@ for (const lang of ['en', 'de'] as const) {
 			await expect(navigation).toBeVisible();
 			await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
 			const project = new URL(page.url()).searchParams.get('project');
+			await navigation
+				.getByRole('button', { name: words.projectChapter })
+				.click();
+			await expect(
+				workspace.getByRole('heading', { name: words.projectSection })
+			).toBeVisible();
+			await screen(page, 'project');
+			await navigation
+				.getByRole('button', { name: words.solarChapter })
+				.click();
+			await expect(next).toBeVisible();
 			await screen(page, 'solar');
+			await adjustRoof(page, workspace, lang);
 
 			await next.click();
 			await workspace.getByLabel(words.grid).selectOption('3');
 			await workspace.getByLabel(words.backup).fill('3');
 			await workspace.getByLabel(words.duration).fill('2');
+			if (lang === 'de' && width === 390)
+				await importLoadProfile(workspace.locator('.sc-energy-demand'));
+			await page.evaluate(() =>
+				window.scrollTo({ top: 0, behavior: 'instant' })
+			);
 			await screen(page, 'energy');
 
 			await workspace
@@ -123,18 +272,43 @@ for (const lang of ['en', 'de'] as const) {
 				name: words.review,
 			});
 			await expect(review).toBeEnabled();
+			await page.evaluate(() =>
+				window.scrollTo({ top: 0, behavior: 'instant' })
+			);
 			await screen(page, 'system');
 
 			await review.click();
+			await workspace.getByLabel(words.logo).setInputFiles({
+				name: 'test-logo.png',
+				mimeType: 'image/png',
+				buffer: testLogo,
+			});
 			await workspace.getByRole('button', { name: words.report }).click();
 			const preview = workspace.getByRole('button', {
 				name: words.preview,
 				exact: true,
 			});
 			await expect(preview).toBeVisible({ timeout: 90_000 });
+			await page.evaluate(() =>
+				window.scrollTo({ top: 0, behavior: 'instant' })
+			);
 			await screen(page, 'report-and-inquiry');
 			await preview.click();
-			await expect(workspace.getByRole('dialog')).toBeVisible();
+			const dialog = workspace.getByRole('dialog');
+			await expect(dialog).toBeVisible();
+			const originalPdf = dialog.getByRole('link', {
+				name: words.openPdf,
+			});
+			await expect(originalPdf).toBeVisible();
+			expect(await originalPdf.getAttribute('href')).toMatch(/^blob:/);
+			const originalBytes = await originalPdf.evaluate(
+				async (link: HTMLAnchorElement) =>
+					Array.from(
+						new Uint8Array(
+							await (await fetch(link.href)).arrayBuffer()
+						)
+					)
+			);
 			await screen(page, 'report-preview');
 			await page.keyboard.press('Escape');
 
@@ -144,7 +318,9 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			const path = await (await file).path();
 			expect(path).toBeTruthy();
-			expect(readFileSync(path!).subarray(0, 5).toString()).toBe('%PDF-');
+			const downloaded = readFileSync(path!);
+			expect(downloaded.subarray(0, 5).toString()).toBe('%PDF-');
+			expect(downloaded.equals(Buffer.from(originalBytes))).toBe(true);
 			expect(new URL(page.url()).searchParams.get('project')).toBe(
 				project
 			);

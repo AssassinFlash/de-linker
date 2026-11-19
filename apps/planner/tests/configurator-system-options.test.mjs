@@ -518,7 +518,7 @@ test("save a selected configuration, adjust its assembly and restore the compari
 	assert.equal(snapshots.length, 1);
 	await render({ ...props, comparison: snapshots[0] });
 	await change("Battery modules per stack", "3");
-	await act(async () => button("Use this adjustment").click());
+	await until(() => selected.length > 0);
 	assert.deepEqual(selected, [options[1]]);
 	await render({
 		...props,

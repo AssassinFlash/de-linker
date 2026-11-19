@@ -264,6 +264,7 @@ export function SystemOptions({
 	comparison,
 	onSaveComparison,
 	onEditEquipment,
+	onSelectionPending,
 	onSelect,
 }: {
 	solarOnly: boolean;
@@ -276,6 +277,7 @@ export function SystemOptions({
 	comparison?: SystemComparison | null;
 	onSaveComparison?: (snapshot: SystemComparison) => void;
 	onEditEquipment?: () => void;
+	onSelectionPending?: (pending: boolean) => void;
 	onSelect: (
 		candidate: EquipmentCandidate,
 		source: PlanningRun,
@@ -307,11 +309,6 @@ export function SystemOptions({
 	const [term, setTerm] = useState("");
 	const [page, setPage] = useState(0);
 	const [order, setOrder] = useState("fit");
-	const [adjustment, setAdjustment] = useState<{
-		runId: string;
-		selectedId: string | null;
-		candidateId: string;
-	} | null>(null);
 	const cache = useQueryClient();
 	const [selecting, setSelecting] = useState(false);
 	const [selectionError, setSelectionError] = useState(false);
@@ -324,10 +321,6 @@ export function SystemOptions({
 		) ??
 		selected ??
 		ranked[0];
-	const adjusted =
-		(adjustment?.runId === run.id && adjustment.selectedId === selectedId
-			? candidates.find((item) => item.id === adjustment.candidateId)
-			: undefined) ?? candidate;
 	const saved =
 		comparison?.run.project_id === run.project_id ? comparison : null;
 	const detail = useCandidateAssessment(client, scope, run, candidate);
@@ -518,15 +511,20 @@ export function SystemOptions({
 		)
 			return;
 		setSelecting(true);
+		onSelectionPending?.(true);
 		setSelectionError(false);
 		setPreview({ runId: source.id, candidateId: item.id });
 		try {
 			await cache.fetchQuery(assessmentQuery(client, scope, source, item));
 			if (client.isCurrentScope(scope)) await onSelect(item, source);
 		} catch {
-			if (client.isCurrentScope(scope)) setSelectionError(true);
+			if (client.isCurrentScope(scope)) {
+				setPreview(null);
+				setSelectionError(true);
+			}
 		} finally {
 			setSelecting(false);
+			onSelectionPending?.(false);
 		}
 	}
 	if (!currentScope)
@@ -1016,95 +1014,71 @@ export function SystemOptions({
 							</div>
 						))}
 					</div>
-					{adjusted && (
-						<div className="sc-system-adjustment">
-							<h3>{__("Adjust configuration", "linker-tools")}</h3>
-							{systems(adjusted).map(({ id, name, selection }, index) => (
-								<div className="sc-fields" key={id}>
-									{adjustmentFields.map((field) => {
-										if (solarOnly && field !== "inverter_product_id")
-											return null;
-										const labels = {
-											inverter_product_id: __("Inverter model", "linker-tools"),
-											battery_product_id: __("Battery model", "linker-tools"),
-											modules_per_stack: __(
-												"Battery modules per stack",
-												"linker-tools",
-											),
-											parallel_stacks: __("Battery stacks", "linker-tools"),
-										};
-										const options = adjustmentOptions(
-											ranked,
-											adjusted,
-											index,
-											field,
-										);
-										const model =
-											field === "inverter_product_id" ||
-											field === "battery_product_id";
-										return (
-											<label className="sc-field" key={field}>
-												<span>
-													{name ? `${name} · ${labels[field]}` : labels[field]}
-												</span>
-												<select
-													value={String(selection[field] ?? "")}
-													disabled={disabled || selecting || options.size === 1}
-													onChange={(event) => {
-														const option = options.get(
-															event.currentTarget.value,
-														);
-														if (option)
-															setAdjustment({
-																runId: run.id,
-																selectedId,
-																candidateId: option.id,
-															});
-													}}
-												>
-													{[...options.keys()].map((value) => (
-														<option key={value} value={value}>
-															{value === ""
-																? "—"
-																: model
-																	? productName(products.get(Number(value)))
-																	: format(Number(value))}
-														</option>
-													))}
-												</select>
-											</label>
-										);
-									})}
-								</div>
-							))}
-							{adjusted.id !== candidate?.id && (
-								<p>
-									{title(adjusted)} · {!solarOnly && `${capacity(adjusted)} · `}
-									{equipmentStatus(adjusted.status)}
-								</p>
-							)}
+					<div className="sc-system-adjustment">
+						<h3>{__("Adjust configuration", "linker-tools")}</h3>
+						{systems(candidate).map(({ id, name, selection }, index) => (
+							<div className="sc-fields" key={id}>
+								{adjustmentFields.map((field) => {
+									if (solarOnly && field !== "inverter_product_id") return null;
+									const labels = {
+										inverter_product_id: __("Inverter model", "linker-tools"),
+										battery_product_id: __("Battery model", "linker-tools"),
+										modules_per_stack: __(
+											"Battery modules per stack",
+											"linker-tools",
+										),
+										parallel_stacks: __("Battery stacks", "linker-tools"),
+									};
+									const options = adjustmentOptions(
+										ranked,
+										candidate,
+										index,
+										field,
+									);
+									const model =
+										field === "inverter_product_id" ||
+										field === "battery_product_id";
+									return (
+										<label className="sc-field" key={field}>
+											<span>
+												{name ? `${name} · ${labels[field]}` : labels[field]}
+											</span>
+											<select
+												value={String(selection[field] ?? "")}
+												disabled={disabled || selecting || options.size === 1}
+												onChange={(event) => {
+													const option = options.get(event.currentTarget.value);
+													if (option) void select(option);
+												}}
+											>
+												{[...options.keys()].map((value) => (
+													<option key={value} value={value}>
+														{value === ""
+															? "—"
+															: model
+																? productName(products.get(Number(value)))
+																: format(Number(value))}
+													</option>
+												))}
+											</select>
+										</label>
+									);
+								})}
+							</div>
+						))}
+						{onEditEquipment && (
 							<div className="sc-actions">
 								<button
 									type="button"
 									className="sc-button"
-									disabled={disabled || selecting || adjusted.id === selectedId}
-									onClick={() => void select(adjusted)}
+									disabled={disabled || selecting}
+									onClick={onEditEquipment}
 								>
-									{__("Use this adjustment", "linker-tools")}
+									{__("Edit equipment and system count", "linker-tools")}
 								</button>
-								{onEditEquipment && (
-									<button
-										type="button"
-										className="sc-button"
-										disabled={disabled || selecting}
-										onClick={onEditEquipment}
-									>
-										{__("Edit equipment and system count", "linker-tools")}
-									</button>
-								)}
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 
 					{detail.isPending && (
 						<p role="status" className="sc-muted">

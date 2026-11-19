@@ -255,13 +255,16 @@ sc-package
 sc-package-capacity
 sc-package-status
 sc-preliminary-layout
+sc-preliminary-review
 sc-primary
 sc-product-filter
 sc-project-equipment
 sc-project-heading
+sc-project-workbench
 sc-report-actions
 sc-report-dialog
 sc-report-logo
+sc-report-pdf
 sc-report-preview
 sc-report-table
 sc-review
@@ -274,6 +277,7 @@ sc-roof-props
 sc-roof-tools
 sc-roof-vertex
 sc-section-head
+sc-selected-roof-properties
 sc-sidebar
 sc-solar
 sc-solar-choice-note

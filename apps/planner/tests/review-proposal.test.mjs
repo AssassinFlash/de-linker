@@ -182,12 +182,32 @@ test("an unusable optional logo can be removed and the project report generated"
 	assert.deepEqual(generated, [null]);
 });
 
-test("report preview opens the complete pinned report and can be closed", async (t) => {
+test("report preview opens the complete pinned report and its original PDF", async (t) => {
 	const page = setupDom(),
 		root = createRoot(page.element);
 	t.after(() => page.dispose(root));
+	const value = props(),
+		asset = value.run.result.prepared_asset,
+		file = new Blob(["%PDF-verified"], { type: "application/pdf" }),
+		requested = [],
+		revoked = [];
+	value.client.reportPdf = async (...args) => {
+		requested.push(args);
+		return file;
+	};
+	const create = URL.createObjectURL,
+		revoke = URL.revokeObjectURL;
+	URL.createObjectURL = (blob) => {
+		assert.equal(blob, file);
+		return "blob:https://fixture.invalid/current-report";
+	};
+	URL.revokeObjectURL = (url) => revoked.push(url);
+	t.after(() => {
+		URL.createObjectURL = create;
+		URL.revokeObjectURL = revoke;
+	});
 	await act(async () =>
-		root.render(React.createElement(ReviewProposal, props())),
+		root.render(React.createElement(ReviewProposal, value)),
 	);
 	const dialog = document.querySelector("dialog");
 	assert.ok(dialog);
@@ -197,11 +217,22 @@ test("report preview opens the complete pinned report and can be closed", async 
 	};
 	dialog.close = () => {
 		dialog.open = false;
+		dialog.dispatchEvent(new window.Event("close"));
 	};
 	assert.equal(dialog.open, false);
 	await act(async () => button("Preview report").click());
 	assert.equal(dialog.open, true);
 	assert.match(dialog.textContent, /Trina Solar TSM-460NEG9R.28/);
+	assert.deepEqual(requested[0]?.slice(0, 3), [
+		value.run.project_id,
+		asset.id,
+		scope,
+	]);
+	assert.equal(requested[0][4], asset.content_sha256);
+	const pdfLink = dialog.querySelector("a[target='_blank'][href^='blob:']");
+	assert.equal(pdfLink.textContent, "Open report PDF");
+	assert.equal(pdfLink.rel, "noopener noreferrer");
 	await act(async () => button("Close").click());
 	assert.equal(dialog.open, false);
+	assert.deepEqual(revoked, ["blob:https://fixture.invalid/current-report"]);
 });

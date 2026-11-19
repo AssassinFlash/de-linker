@@ -11,6 +11,7 @@ import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
 import type {
 	GeometryDocument,
 	ModuleSpec,
+	RoofFace,
 	Vec2,
 } from "../../domain/geometry.ts";
 import {
@@ -19,7 +20,12 @@ import {
 	roofDependents,
 } from "../../domain/geometryCommands.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
-import { manualSource, rectangularRoof } from "../../domain/geometryEditing.ts";
+import {
+	manualSource,
+	rectangularRoof,
+	roofPlane,
+} from "../../domain/geometryEditing.ts";
+import { cross } from "../../domain/coordinates.ts";
 import { readGeometry } from "../../domain/validateGeometry.ts";
 import {
 	attachGeometryImport,
@@ -118,6 +124,20 @@ function restoreKnownReference(
 		else restored[key] = value;
 	}
 	return restored;
+}
+
+function roofProperties(roof: RoofFace) {
+	const [east, north, up] = cross(roof.u_axis_enu, roof.v_axis_enu);
+	const horizontal = Math.hypot(east, north);
+	const pitch = (Math.atan2(horizontal, up) * 180) / Math.PI;
+	const bearing = horizontal
+		? Math.atan2(east, north)
+		: Math.atan2(-roof.u_axis_enu[1], roof.u_axis_enu[0]);
+	return {
+		pitch,
+		azimuth: ((bearing * 180) / Math.PI + 360) % 360,
+		height: roof.origin_enu[2],
+	};
 }
 
 const id = () => "solar_" + crypto.randomUUID();
@@ -274,6 +294,16 @@ export function SolarInstallation({
 				geometry.obstacles.some((o) => o.id === selected && o.roof_id === r.id),
 		) ??
 		geometry.roofs[0];
+	const selectedProperties = roof ? roofProperties(roof) : null;
+	const selectedSource = geometry.sources.find(
+		(source) => source.id === roof?.source_id,
+	);
+	const editablePlane =
+		roof?.u_axis_enu[2] === 0 &&
+		roof.v_axis_enu[2] <= 0 &&
+		selectedSource?.kind === "user_measurement" &&
+		selectedSource.reference_sha256 === null &&
+		selectedSource.permissions.derive === "permitted";
 	const poses = panelPoses(geometry);
 	const summary = moduleSummary(geometry);
 	const numeric = (key: keyof typeof fields) => {
@@ -347,6 +377,53 @@ export function SolarInstallation({
 			return false;
 		}
 	}
+	function applyRoofProperty(
+		key: keyof ReturnType<typeof roofProperties>,
+		target: HTMLInputElement,
+	) {
+		if (!roof || !selectedProperties || !editablePlane) return;
+		const value = target.valueAsNumber;
+		const previous = Math.round(selectedProperties[key] * 100) / 100;
+		if (value === previous) {
+			if (target.hasAttribute("aria-invalid")) {
+				target.removeAttribute("aria-invalid");
+				setError("");
+			}
+			return;
+		}
+		if (
+			!Number.isFinite(value) ||
+			(key === "pitch" && (value < 0 || value >= 90)) ||
+			(key === "azimuth" && (value < 0 || value >= 360))
+		) {
+			target.setAttribute("aria-invalid", "true");
+			setError(__("Check the selected roof and dimensions.", "linker-tools"));
+			return;
+		}
+		const { pitch, azimuth } = selectedProperties;
+		const next =
+			key === "height"
+				? {
+						...roof,
+						origin_enu: [
+							roof.origin_enu[0],
+							roof.origin_enu[1],
+							value,
+						] as const,
+					}
+				: {
+						...roof,
+						...roofPlane(
+							key === "pitch" ? value : pitch,
+							key === "azimuth" ? value : azimuth,
+							roof.origin_enu,
+						),
+					};
+		if (commit({ type: "put_roof", before: roof, value: next }))
+			target.removeAttribute("aria-invalid");
+		else target.value = String(previous);
+	}
+
 	function undoRoofEdit() {
 		const previous = undo.at(-1);
 		if (blocked || !previous) return;
@@ -1020,9 +1097,7 @@ export function SolarInstallation({
 							onClick={() => {
 								if (value === mode) return;
 								if (
-									(value === "known" &&
-										known &&
-										reference.model !== KNOWN_PV_MODEL) ||
+									(value === "known" && reference.model !== KNOWN_PV_MODEL) ||
 									(value === "roof" &&
 										geometry.roofs.length > 0 &&
 										reference.model === KNOWN_PV_MODEL)
@@ -1518,62 +1593,128 @@ export function SolarInstallation({
 										))}
 									</select>
 								</label>
-								{field("width", __("Width", "linker-tools"))}
-								{field("depth", __("Depth", "linker-tools"))}
-								{field("pitch", __("Pitch", "linker-tools"), "°")}
-								{field("azimuth", __("Azimuth", "linker-tools"), "°")}
-								{field("height", __("Relative roof height", "linker-tools"))}
-								{field("originU", __("Origin east / U", "linker-tools"))}
-								{field("originV", __("Origin north / V", "linker-tools"))}
-								<label className="sc-field">
-									<span>{__("Drawing source", "linker-tools")}</span>
-									<input
-										value={
-											map && firstMapRoof && tool === "roof"
-												? (readyAerial?.credit ?? "")
-												: fields.source
-										}
-										readOnly={map && firstMapRoof && tool === "roof"}
-										onChange={(e) => {
-											const value = e.currentTarget.value;
-											setFields((previous) => ({ ...previous, source: value }));
-										}}
-									/>
-								</label>
-								<label className="sc-check">
-									<input
-										type="checkbox"
-										checked={confirmed}
-										onChange={(e) => setConfirmed(e.currentTarget.checked)}
-									/>
-									{__(
-										"I confirm these dimensions and permission to use this drawing.",
-										"linker-tools",
-									)}
-								</label>
-								{!(map && firstMapRoof) &&
-									!geometry.coordinate_system.anchor &&
-									site.coordinate_basis === "user_entered" &&
-									site.latitude !== null &&
-									site.longitude !== null && (
-										<button
-											type="button"
-											disabled={!confirmed || !fields.source.trim()}
-											onClick={confirmMapReference}
-										>
-											{__(
-												"Confirm site coordinates as map origin and use true north",
-												"linker-tools",
-											)}
-										</button>
-									)}
-								<button
-									type="button"
-									disabled={!confirmed || !fields.source.trim()}
-									onClick={() => addRoof()}
-								>
-									{__("Add rectangular roof", "linker-tools")}
-								</button>
+								{roof && selectedProperties && (
+									<div className="sc-selected-roof-properties">
+										{(
+											[
+												[
+													"pitch",
+													__("Selected roof pitch", "linker-tools"),
+													"°",
+												],
+												[
+													"azimuth",
+													__("Selected roof azimuth", "linker-tools"),
+													"°",
+												],
+												[
+													"height",
+													__("Selected roof height", "linker-tools"),
+													"m",
+												],
+											] as const
+										).map(([key, label, unit]) => (
+											<label
+												className="sc-field"
+												key={`${roof.id}:${key}:${selectedProperties[key]}`}
+											>
+												<span>
+													{label} ({unit})
+												</span>
+												<input
+													type="number"
+													step="any"
+													defaultValue={
+														Math.round(selectedProperties[key] * 100) / 100
+													}
+													readOnly={!editablePlane}
+													onBlur={(event) =>
+														applyRoofProperty(key, event.currentTarget)
+													}
+													onKeyDown={(event) => {
+														if (event.key === "Escape") {
+															event.stopPropagation();
+															event.currentTarget.value = String(
+																selectedProperties[key],
+															);
+															event.currentTarget.removeAttribute(
+																"aria-invalid",
+															);
+															setError("");
+														} else if (event.key === "Enter") {
+															event.preventDefault();
+															event.currentTarget.blur();
+														}
+													}}
+												/>
+											</label>
+										))}
+									</div>
+								)}
+								<details open={!roof || tool === "roof" || tool === "obstacle"}>
+									<summary>
+										{__("Add a measured roof face", "linker-tools")}
+									</summary>
+									{field("width", __("Width", "linker-tools"))}
+									{field("depth", __("Depth", "linker-tools"))}
+									{field("pitch", __("Pitch", "linker-tools"), "°")}
+									{field("azimuth", __("Azimuth", "linker-tools"), "°")}
+									{field("height", __("Relative roof height", "linker-tools"))}
+									{field("originU", __("Origin east / U", "linker-tools"))}
+									{field("originV", __("Origin north / V", "linker-tools"))}
+									<label className="sc-field">
+										<span>{__("Drawing source", "linker-tools")}</span>
+										<input
+											value={
+												map && firstMapRoof && tool === "roof"
+													? (readyAerial?.credit ?? "")
+													: fields.source
+											}
+											readOnly={map && firstMapRoof && tool === "roof"}
+											onChange={(e) => {
+												const value = e.currentTarget.value;
+												setFields((previous) => ({
+													...previous,
+													source: value,
+												}));
+											}}
+										/>
+									</label>
+									<label className="sc-check">
+										<input
+											type="checkbox"
+											checked={confirmed}
+											onChange={(e) => setConfirmed(e.currentTarget.checked)}
+										/>
+										{__(
+											"I confirm these dimensions and permission to use this drawing.",
+											"linker-tools",
+										)}
+									</label>
+									{!(map && firstMapRoof) &&
+										!geometry.coordinate_system.anchor &&
+										site.coordinate_basis === "user_entered" &&
+										site.latitude !== null &&
+										site.longitude !== null && (
+											<button
+												type="button"
+												disabled={!confirmed || !fields.source.trim()}
+												onClick={confirmMapReference}
+											>
+												{__(
+													"Confirm site coordinates as map origin and use true north",
+													"linker-tools",
+												)}
+											</button>
+										)}
+									<button
+										type="button"
+										disabled={!confirmed || !fields.source.trim()}
+										onClick={() => addRoof()}
+									>
+										{__("Add rectangular roof", "linker-tools")}
+									</button>
+								</details>
 								{field(
 									"obstacleHeight",
 									__("Obstacle height above roof", "linker-tools"),

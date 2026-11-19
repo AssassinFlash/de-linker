@@ -355,7 +355,10 @@ export function ReviewInquiry({
 		};
 	}, [client, scope, projectId, revision, locale, attempt, recheck]);
 	return (
-		<section className="sc-main sc-draft-transfer" hidden={!active}>
+		<section
+			className="sc-main sc-draft-transfer sc-preliminary-review"
+			hidden={!active}
+		>
 			<header className="sc-section-head">
 				<h2 ref={heading} tabIndex={-1}>
 					{__("Review your inquiry", "linker-tools")}
