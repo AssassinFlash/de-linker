@@ -106,6 +106,36 @@ test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
 
+test('en 390: the first Filters tap opens the drawer before the archive footer finishes', async ({
+	page,
+	context,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await seedConsentCookies(context);
+	let releaseFooter: () => void;
+	const slowFooter = new Promise<void>((resolve) => {
+		releaseFooter = resolve;
+	});
+	await page.route('**/product-family.js*', async (route) => {
+		await slowFooter;
+		await route.continue();
+	});
+	try {
+		const loading = page.waitForRequest('**/product-family.js*');
+		await page.goto(instance().url + ARCHIVE.en, { waitUntil: 'commit' });
+		await loading;
+		const filters = page.getByRole('button', { name: /^Filters/ });
+		await filters.click();
+		await expect(filters).toHaveAttribute('aria-expanded', 'true');
+		await expect(
+			page.locator('#sidebar-filters a[href*="brand=goodwe"]').first()
+		).toBeVisible();
+	} finally {
+		releaseFooter!();
+		await page.waitForLoadState('load');
+	}
+});
+
 /**
  * multiple-filters, EN 390: the drawer is the phone's only way to the rail,
  * so the second facet is applied from inside it after the first navigation
