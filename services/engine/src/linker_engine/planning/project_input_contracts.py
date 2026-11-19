@@ -123,10 +123,7 @@ def _has_panel_parameters(inputs: Mapping[str, object]) -> bool:
             and isinstance(basis := row.get("mounting_quantity_basis"), Mapping)
         )
     return any(
-        isinstance(module, Mapping)
-        and isinstance(points := module.get("electrical"), Mapping)
-        and any(value is not None for value in points.values())
-        for module in modules
+        isinstance(module, Mapping) and "electrical" in module for module in modules
     )
 
 

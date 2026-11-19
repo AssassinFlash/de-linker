@@ -42,11 +42,30 @@ def test_old_editors_cannot_overwrite_panel_data(inputs: dict[str, object]) -> N
         require_input_contract(before, after, SUPPORTED_INPUT_CONTRACTS[-1])
 
 
+@pytest.mark.parametrize("electrical", [None, {}, {"voc_v": None}])
+@pytest.mark.parametrize("saved_mounting", [True, False])
+def test_present_electrical_key_requires_a_reader_that_knows_the_field(
+    electrical: object, saved_mounting: bool
+) -> None:
+    module = {"electrical": electrical}
+    inputs = (
+        {
+            "installation": {
+                "materials": [{"mounting_quantity_basis": {"module": module}}]
+            }
+        }
+        if saved_mounting
+        else {"geometry": {"module_specs": [module]}}
+    )
+    assert "project_panel_parameters_v1" in required_contracts(inputs)
+    with pytest.raises(ProjectInputContractRequired):
+        require_input_contract(inputs, {}, "existing_system_v1")
+
+
 def test_existing_layout_and_empty_panel_values_keep_their_editor_floor() -> None:
     cases: list[dict[str, object]] = [
         {"geometry": {"module_specs": [{"stc_power_w": 420}]}},
         {"known_panel_details": {"count": None, "power_w": None, "system_kwp": None}},
-        {"geometry": {"module_specs": [{"electrical": {"voc_v": None}}]}},
     ]
     for inputs in cases:
         assert "project_panel_parameters_v1" not in required_contracts(inputs)
