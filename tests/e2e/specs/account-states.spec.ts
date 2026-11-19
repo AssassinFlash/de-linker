@@ -6,7 +6,7 @@
  *
  * account.spec.ts walks several of these once at 1440 and in English; this
  * file walks them on the phone tier and in German too, because the workspace
- * swaps its sidebar for a bottom tab bar below 1024px (account.css) and
+ * offers one expandable account menu below 1024px (account.css) and
  * linker-i18n rewrites every endpoint slug (`anfragen/`, `dokumente/`,
  * `gespeicherte-loesungen/`, `kontodaten/`, `unternehmen/…`). The records a
  * state needs — a customer, its inquiry, its saved solution — are made
@@ -385,14 +385,30 @@ for (const language of LANGUAGES) {
 					page
 						.locator(
 							width === 390
-								? '.linker-account-bottom-nav'
-								: '.linker-account-nav'
+								? '.linker-account-mobile-menu > summary'
+								: '.linker-account-sidebar'
 						)
 						.first()
 				).toBeVisible();
 				await expect(
 					page.locator('.linker-account-main')
 				).not.toContainText(/€|EUR/);
+
+				await page
+					.getByRole('link', {
+						name:
+							language.lang === 'de'
+								? 'Neue Anfrage'
+								: 'New inquiry',
+						exact: true,
+					})
+					.click();
+				await expect(
+					page.locator('form.linker-inquiry-form')
+				).toBeVisible();
+				await expect(
+					page.locator('form.linker-inquiry-form input[name="lang"]')
+				).toHaveValue(language.lang);
 
 				await page.goto(base() + language.inquiries);
 				const emptyInquiries = page.locator(
@@ -649,7 +665,16 @@ for (const language of LANGUAGES) {
 				await expect(
 					contact.locator('a[href^="mailto:"]')
 				).toBeVisible();
-				await expect(shortcuts.getByRole('link')).toHaveCount(3);
+				await expect(shortcuts.getByRole('link')).toHaveCount(4);
+				await expect(
+					shortcuts.getByRole('link', {
+						name:
+							language.lang === 'de'
+								? 'Alle Projekte'
+								: 'All projects',
+						exact: true,
+					})
+				).toHaveAttribute('href', /[?&]projects=1$/);
 				for (const path of [
 					language.inquiries,
 					language.solutions,
@@ -754,26 +779,28 @@ for (const language of LANGUAGES) {
 				await signIn(page, customer, language.account);
 				const nav = page.locator(
 					width === 390
-						? '.linker-account-bottom-nav'
+						? '.linker-account-mobile-menu'
 						: '.linker-account-sidebar'
 				);
+				if (width === 390) {
+					await nav.locator('summary').click();
+				}
 				await nav.locator(`a[href$="${language.details}"]`).click();
 				await expect(page).toHaveURL(base() + language.details);
 				if (width === 390) {
-					const settings = page.locator(
-						'.linker-account-profile-links'
-					);
+					await nav.locator('summary').click();
 					await expect(
-						settings.locator('a[href*="action=logout"]')
+						nav.locator('a[href*="action=logout"]')
 					).toBeVisible();
 					await expect(
-						settings.getByRole('link', {
+						nav.getByRole('link', {
 							name:
 								language.lang === 'de'
 									? 'Unternehmen'
 									: 'Company',
 						})
 					).toBeVisible();
+					await nav.locator('summary').click();
 				}
 
 				// WooCommerce's own form, under the site's designed card.

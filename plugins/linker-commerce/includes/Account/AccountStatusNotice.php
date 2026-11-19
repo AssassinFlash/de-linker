@@ -26,9 +26,9 @@ final class AccountStatusNotice {
 		private readonly LoginGate $login = new LoginGate()
 	) {}
 
-	/** Adds the status before Woo's endpoint dispatcher (native priority 10). */
+	/** Show account status after the customer's selected Woo endpoint. */
 	public function register(): void {
-		add_action( 'woocommerce_account_content', array( $this, 'render' ), 5 );
+		add_action( 'woocommerce_account_content', array( $this, 'render' ), 20 );
 	}
 
 	/** A pending or restricted account reads its status alongside the normal endpoint content. */

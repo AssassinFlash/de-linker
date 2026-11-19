@@ -1,10 +1,12 @@
 <div class="linker-account-dashboard">
-	<ul class="linker-account-shortcuts">[linker_account_nav type="shortcuts"]</ul>
+	<ul class="linker-account-shortcuts">
+		[linker_account_nav type="shortcuts"]
+		<li><a href="[linker_account_field key='projects-url']"><svg class="linker-account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5h6l2 2h10v13H3V7Z"/></svg><span>[linker_account_text key="all-projects"]</span></a></li>
+	</ul>
 	<div class="linker-account-search-tools">
 		<section class="linker-account-panel linker-account-lookup">
 			<header class="linker-account-panel-heading">
 				<h2 id="linker-account-project-search-title">[linker_account_text key="find-project"]</h2>
-				<a href="[linker_account_field key='projects-url']">[linker_account_text key="all-projects"]</a>
 			</header>
 			<form class="linker-account-panel-body" action="{{project-search-url}}" method="get" role="search" aria-labelledby="linker-account-project-search-title">
 				<input type="hidden" name="projects" value="1">

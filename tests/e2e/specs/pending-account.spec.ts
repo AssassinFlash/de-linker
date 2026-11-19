@@ -198,8 +198,8 @@ for (const language of ['en', 'de'] as const) {
 					page
 						.locator(
 							width === 390
-								? '.linker-account-bottom-nav'
-								: '.linker-account-nav'
+								? '.linker-account-mobile-menu > summary'
+								: '.linker-account-sidebar'
 						)
 						.first()
 				).toBeVisible();
@@ -208,8 +208,9 @@ for (const language of ['en', 'de'] as const) {
 				).not.toContainText(/€|EUR/);
 				await shot(page, `${prefix}-pending-account`);
 				if (width === 390) {
-					const tabs = page.locator('.linker-account-bottom-nav');
-					const saved = tabs.getByRole('link', {
+					const menu = page.locator('.linker-account-mobile-menu');
+					await menu.locator('summary').click();
+					const saved = menu.getByRole('link', {
 						name:
 							language === 'de'
 								? 'Gespeicherte Lösungen'
@@ -220,19 +221,11 @@ for (const language of ['en', 'de'] as const) {
 						throw new Error('Missing saved solutions URL');
 					await saved.click();
 					await expect(page).toHaveURL(savedUrl);
-					await tabs
-						.getByRole('link', {
-							name: language === 'de' ? 'Konto' : 'Account',
-							exact: true,
-						})
-						.click();
-					const settings = page.locator(
-						'.linker-account-profile-links'
-					);
+					await menu.locator('summary').click();
 					await expect(
-						settings.locator('a[href*="action=logout"]')
+						menu.locator('a[href*="action=logout"]')
 					).toBeVisible();
-					const company = settings.getByRole('link', {
+					const company = menu.getByRole('link', {
 						name: language === 'de' ? 'Unternehmen' : 'Company',
 					});
 					const companyUrl = await company.getAttribute('href');

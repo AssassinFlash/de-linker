@@ -1149,12 +1149,15 @@ def test_browser_owner_context_and_schema_coercions_are_not_commands(rig: Rig) -
 
 
 def test_customer_project_title_search_filters_owned_history_before_paging(
-    rig: Rig,
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    older = rig.post(
-        "/projects/create",
-        {"title": "Straße 12 · Norddach", "inputs": {}, "key": "older-roof"},
-    )
+    now = rig.workspace.clock()
+    with monkeypatch.context() as older_clock:
+        older_clock.setattr(rig.workspace, "clock", lambda: now - 1)
+        older = rig.post(
+            "/projects/create",
+            {"title": "Straße 12 · Norddach", "inputs": {}, "key": "older-roof"},
+        )
     for index in range(11):
         rig.create(f"newer-project-{index}")
     newer = rig.post(
