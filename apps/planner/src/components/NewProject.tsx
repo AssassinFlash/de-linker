@@ -45,6 +45,8 @@ export function NewProject({
 	compareOnLoad = false,
 	enterDetails,
 	hidden = false,
+	creationPending = false,
+	beginCreation,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -66,6 +68,8 @@ export function NewProject({
 	compareOnLoad?: boolean;
 	enterDetails?: () => void;
 	hidden?: boolean;
+	creationPending?: boolean;
+	beginCreation?: () => (() => void) | null;
 }) {
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
@@ -229,6 +233,7 @@ export function NewProject({
 	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
 		if (
 			sending.current ||
+			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
@@ -237,6 +242,8 @@ export function NewProject({
 			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
 		)
 			return;
+		const releaseCreation = beginCreation?.();
+		if (releaseCreation === null) return;
 		const instance = lifetime.current;
 		if (!intent.current) intentScope.current = session.query_scope;
 		const originScope = intentScope.current;
@@ -366,6 +373,7 @@ export function NewProject({
 				setProjectGone(true);
 			}
 		} finally {
+			releaseCreation?.();
 			sending.current = false;
 			if (lifetime.current === instance) setBusy(false);
 		}
@@ -416,6 +424,7 @@ export function NewProject({
 	if (compareOnLoad) {
 		const disabled =
 			busy ||
+			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
@@ -442,7 +451,9 @@ export function NewProject({
 					}
 				/>
 				{pendingRequests}
-				{busy && <p role="status">{__("Creating…", "linker-tools")}</p>}
+				{(busy || creationPending) && (
+					<p role="status">{__("Creating…", "linker-tools")}</p>
+				)}
 				{failed && (
 					<Notice error>
 						<p>{failureMessage}</p>
@@ -471,7 +482,12 @@ export function NewProject({
 		return (
 			<button
 				className="sc-button sc-primary"
-				disabled={checking || recoveryChecking || recoveryDiscoveryFailed}
+				disabled={
+					creationPending ||
+					checking ||
+					recoveryChecking ||
+					recoveryDiscoveryFailed
+				}
 				onClick={() => setOpen(true)}
 			>
 				{__("New project", "linker-tools")}
@@ -636,6 +652,7 @@ export function NewProject({
 				config={config ?? { locale, countries: {} }}
 				disabled={
 					busy ||
+					creationPending ||
 					checking ||
 					recoveryChecking ||
 					recoveryDiscoveryFailed ||

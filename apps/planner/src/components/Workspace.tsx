@@ -296,9 +296,21 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
+	const creatingProject = useRef(false);
+	const [creationPending, setCreationPending] = useState(false);
+	function beginCreation() {
+		if (creatingProject.current) return null;
+		creatingProject.current = true;
+		setCreationPending(true);
+		return () => {
+			creatingProject.current = false;
+			setCreationPending(false);
+		};
+	}
 	function created(
 		project: Project,
 		destination?: CreationDestination | "energy",
+		openResult = true,
 	) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -308,18 +320,19 @@ export function Workspace({
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
-		select(
-			project.id,
-			destination === "preliminary-review"
-				? "sc-preliminary-review"
-				: destination === "energy"
-					? "sc-energy"
-					: destination === "equipment"
-						? "sc-system"
-						: destination === "design"
-							? "sc-solar"
-							: "sc-project",
-		);
+		if (openResult)
+			select(
+				project.id,
+				destination === "preliminary-review"
+					? "sc-preliminary-review"
+					: destination === "energy"
+						? "sc-energy"
+						: destination === "equipment"
+							? "sc-system"
+							: destination === "design"
+								? "sc-solar"
+								: "sc-project",
+			);
 		return true;
 	}
 	const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
@@ -584,6 +597,8 @@ export function Workspace({
 			<NewProject
 				config={config}
 				compareOnLoad
+				creationPending={creationPending}
+				beginCreation={beginCreation}
 				enterDetails={() => {
 					const url = new URL(location.href);
 					url.hash = "sc-project";
@@ -661,6 +676,8 @@ export function Workspace({
 					) : (
 						<NewProject
 							hidden={firstVisitComparison}
+							creationPending={creationPending}
+							beginCreation={beginCreation}
 							config={config}
 							openOnLoad={
 								route === "sc-project" || (index.isSuccess && !projects.length)
@@ -670,7 +687,13 @@ export function Workspace({
 							session={session}
 							client={client}
 							store={store}
-							created={created}
+							created={(project, destination) =>
+								created(
+									project,
+									destination,
+									location.hash !== "#sc-preliminary-options",
+								)
+							}
 							recheck={recheck}
 							recoveryScopes={recovery.data}
 							recoveryChecking={recovery.isFetching}

@@ -60,10 +60,12 @@ test("visitors with project data can open setup from the comparison and keep the
 	let listed = [];
 	const creates = [];
 	let accepted;
+	const createResponse = Promise.withResolvers();
 	const client = {
 		async send(path, body) {
 			assert.equal(path, "projects/create");
 			creates.push(body);
+			await createResponse.promise;
 			const command = JSON.parse(body);
 			accepted = {
 				id: projectId,
@@ -72,6 +74,7 @@ test("visitors with project data can open setup from the comparison and keep the
 				inputs: command.inputs,
 				input_sha256: "2".repeat(64),
 			};
+			listed = [{ ...accepted, updated_at: 1763200000 }];
 			return accepted;
 		},
 		invalidate() {},
@@ -234,12 +237,42 @@ test("visitors with project data can open setup from the comparison and keep the
 		next.click();
 		next.click();
 	});
-	await until(() => location.hash === "#sc-energy");
-	assert.equal(creates.length, 1);
+	await until(() => creates.length === 1);
+	try {
+		await act(async () => history.back());
+		const option = () =>
+			document.querySelector(
+				'table[aria-label="Compare system options"] tbody button',
+			);
+		await until(
+			() =>
+				option() &&
+				(option().disabled || location.hash === "#sc-preliminary-options"),
+		);
+		assert.equal(
+			option().disabled,
+			true,
+			"One app session is already creating a project",
+		);
+		await act(async () => option().click());
+		assert.equal(creates.length, 1);
+	} finally {
+		await act(async () => createResponse.resolve());
+	}
+	await until(() => accepted && !setup()?.disabled);
 	assert.equal(accepted.inputs.backup_demand.load_kw, null);
 	assert.equal(accepted.title, "Oslo storage");
+	assert.equal(location.hash, "#sc-preliminary-options");
+	assert.equal(new URL(location.href).searchParams.has("project"), false);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent.trim() === "Projects")
+			.click(),
+	);
 	await until(() =>
-		document.body.textContent.includes("What should the system do?"),
+		document
+			.querySelector('[role="listitem"]')
+			?.textContent.includes("Oslo storage"),
 	);
 });
 
