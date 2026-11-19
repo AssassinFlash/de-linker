@@ -78,6 +78,7 @@ from linker_genie.route import simple_stock
 from linker_genie.schema import (
     MAX_REQUEST_BYTES,
     Block,
+    CardsBlock,
     HandoffBlock,
     PageInvalidate,
     TextBlock,
@@ -456,6 +457,7 @@ def _compute_turn(
             block["document_id"] = document["document_id"]
             block["document_revision"] = document["document_revision"]
     code_made = prepared.route.name in (
+        "card_selection",
         "person",
         "parts",
         "clarify",
@@ -566,6 +568,27 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
+    if prepared.route.name == "card_selection":
+        ids = list(prepared.card_quantities)
+        text = (
+            "Wählen Sie am gewünschten Modell „Lösung speichern“."
+            if language == "de"
+            else "Select Save solution on the model you want."
+        )
+        output = TurnOutput(
+            language=language,
+            blocks=[TextBlock(text=text), CardsBlock(product_ids=ids)],
+        )
+        output, facts, selection_price_failures = fill(output, TurnFacts(), commerce)
+        return TurnResult(
+            output=output,
+            facts=facts,
+            grounded=True,
+            failures=(),
+            fallback=False,
+            attempts=0,
+            price_failures=tuple(selection_price_failures),
+        ), None
     if "verified saved protection explanation" in prepared.route.reasons:
         answer = planning.protection_answer(
             body.planning_context, body.page_context, language

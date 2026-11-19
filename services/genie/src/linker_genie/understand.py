@@ -309,6 +309,15 @@ class Understander:
                 language,
             )
             return prepared
+        selection = parts.previous_card_selection(
+            message, request.previous_card_quantities
+        )
+        if selection and not request.attachments:
+            route = Route("card_selection", no_handoff=True)
+            log.update(route.as_log())
+            return Prepared(
+                route=route, log=log, timing=clock, card_quantities=selection
+            )
         reading: Reading | None = None
         if plate is not None:
             # A nameplate is confirmed before anything else is answered about it, so

@@ -470,6 +470,10 @@ class TurnRequest(Strict):
     messages: list[TurnMessage]
     locale: Locale = "en"
     page_context: PageContext = Field(default_factory=PageContext)
+    # Options on the native thread's immediately preceding answer, before selection.
+    previous_card_quantities: dict[int, Annotated[int, Field(ge=0, le=9999)]] = Field(
+        default_factory=dict, exclude=True
+    )
     # Read by the authenticated native shell; never supplied from the browser.
     # Tool logs retain the bounded tagged facts; do not duplicate the raw snapshot.
     planning_context: dict[str, Any] | None = Field(

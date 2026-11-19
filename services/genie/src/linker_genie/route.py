@@ -331,6 +331,7 @@ _NOT_SEARCHED_HINT = (
 )
 
 RouteName = Literal[
+    "card_selection",
     "nameplate",
     "parts",
     "products",

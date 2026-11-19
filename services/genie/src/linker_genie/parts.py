@@ -144,8 +144,9 @@ COUNT_WORDS = {
     "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7,
     "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12,
 }  # fmt: skip
+_COUNT_TOKEN = rf"(?:[0-9]+|{'|'.join(COUNT_WORDS)})"
 _CARD_COUNT_BEFORE = re.compile(
-    rf"(?<![\w.,+/-])([0-9]+|{'|'.join(COUNT_WORDS)})(?:\s*{_QTY_UNIT}\.?)?"
+    rf"(?<![\w.,+/-])({_COUNT_TOKEN})(?:\s*{_QTY_UNIT}\.?)?"
     r"(?:\s+(?:of(?:\s+the)?|vom|von\s+(?:der|dem|den)))?\s+$",
     re.I,
 )
@@ -272,6 +273,37 @@ def _quantity(value: str) -> int | None:
     return None
 
 
+def _card_count(token: str) -> int:
+    if token.casefold() in COUNT_WORDS:
+        return COUNT_WORDS[token.casefold()]
+    digits = token.lstrip("0")
+    count = int(digits) if 0 < len(digits) <= len(str(MAX_QUANTITY)) else 0
+    return count if count <= MAX_QUANTITY else 0
+
+
+# A standalone selection or quantity reply can reuse only the cards actually shown.
+_CARD_REPLY = re.compile(
+    rf"(?:(?:please|bitte)\s+)?(?:(?:save|add|take|I(?:'d like| want| need)|ich möchte)\s+)?"
+    rf"(?:(?P<count>{_COUNT_TOKEN})(?:\s+(?:or|oder)\s+(?P<other>{_COUNT_TOKEN}))?"
+    rf"(?:\s+{_QTY_UNIT})?\s+(?:of\s+(?:those|these|them|that one|this one)|davon)"
+    r"|that one|this one|den hier|diesen|das hier)"
+    r"(?:\s+(?:speichern|hinzufügen))?(?:,?\s+(?:please|bitte))?[.!]?",
+    re.I,
+)
+
+
+def previous_card_selection(message: str, options: dict[int, int]) -> dict[int, int]:
+    reply = _CARD_REPLY.fullmatch(message.strip())
+    if not options or not reply:
+        return {}
+    if reply["count"] is None:
+        return options
+    count = _card_count(reply["count"])
+    if reply["other"] and _card_count(reply["other"]) != count:
+        count = 0
+    return dict.fromkeys(options, count)
+
+
 def card_quantities(
     message: str, matches: list[Match], vocabulary: Vocabulary
 ) -> dict[int, int]:
@@ -309,15 +341,7 @@ def card_quantities(
             )
             for adjacent in (before, after):
                 if adjacent:
-                    token = adjacent[1].casefold()
-                    count = COUNT_WORDS.get(token)
-                    if count is None:
-                        digits = token.lstrip("0")
-                        count = (
-                            int(digits)
-                            if 0 < len(digits) <= len(str(MAX_QUANTITY))
-                            else 0
-                        )
+                    count = _card_count(adjacent[1])
                     # Zero keeps a conflicting or out-of-range request unsigned.
                     counts[product_id] = (
                         count
@@ -325,7 +349,27 @@ def card_quantities(
                         and counts.get(product_id, count) == count
                         else 0
                     )
-    return {pid: counts.get(pid, 1) for pid in named_ids}
+    if named_ids:
+        return {pid: counts.get(pid, 1) for pid in named_ids}
+
+    # Each matching candidate offers the requested count as a separate choice.
+    category_counts: dict[str, int] = {}
+    for match in matches:
+        if match.kind != "category":
+            continue
+        noun = re.escape(match.words)
+        for mention in re.finditer(rf"\b(?:hybrid[ -]?)?{noun}\b", message, re.I):
+            before = _CARD_COUNT_BEFORE.search(message[: mention.start()])
+            if before:
+                count = _card_count(before[1])
+                category_counts[match.value] = (
+                    count if category_counts.get(match.value, count) == count else 0
+                )
+    return {
+        pid: category_counts[device]
+        for pid, device in vocabulary.device_class.items()
+        if device in category_counts
+    }
 
 
 def _without_quantity(value: str) -> str:

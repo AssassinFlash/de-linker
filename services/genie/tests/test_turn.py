@@ -202,6 +202,69 @@ def test_product_card_and_actions_use_the_current_request(
     assert card["quantities"] == {"4107": expected}
 
 
+def test_customer_can_choose_either_inverter_at_the_requested_count(
+    log: TurnLog, catalog_turn: None
+) -> None:
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        ids = [6527, 6528]
+        return TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="Choose a hybrid inverter.", refs=[str(i) for i in ids]),
+                CardsBlock(product_ids=ids),
+            ],
+        ), TurnFacts(product_ids=set(ids), qualified_ids=set(ids))
+
+    app.state.generate = generate
+    blocks = _blocks(
+        _post(
+            "choices",
+            "Please prepare a product list with 2 hybrid inverters around 10 kW. I want to save the list to my account.",
+        )
+    )
+    assert [b["type"] for b in blocks] == ["text", "cards"]
+    assert blocks[1]["quantities"] == {"6527": 2, "6528": 2}
+
+
+@pytest.mark.parametrize(
+    ("language", "message", "previous", "expected"),
+    [
+        ("en", "2 of those", {6527: 1}, {6527: 2}),
+        ("de", "Zwei davon, bitte.", {6528: 1}, {6528: 2}),
+        ("en", "Save that one.", {6527: 2, 6528: 2}, {6527: 2, 6528: 2}),
+    ],
+)
+def test_follow_up_uses_the_options_actually_shown(
+    log: TurnLog,
+    catalog_turn: None,
+    language: str,
+    message: str,
+    previous: dict[int, int],
+    expected: dict[int, int],
+) -> None:
+    response = TestClient(app, headers=SHELL).post(
+        "/assistant/turn",
+        json={
+            "conversation_id": "choices",
+            "locale": language,
+            "previous_card_quantities": previous,
+            "messages": [
+                {"role": "user", "content": "Inverters"},
+                {"role": "assistant", "content": "Options"},
+                {"role": "user", "content": message},
+            ],
+        },
+    )
+    assert response.status_code == 200
+    blocks = _blocks(response.text)
+    [card] = [b for b in blocks if b["type"] == "cards"]
+    assert card["product_ids"] == list(expected)
+    assert card["quantities"] == {str(pid): count for pid, count in expected.items()}
+    assert not any(b["type"] == "parts" for b in blocks)
+
+
 def test_explicitly_adding_an_earlier_parts_list_keeps_its_quantities(
     log: TurnLog, catalog_turn: None
 ) -> None:
