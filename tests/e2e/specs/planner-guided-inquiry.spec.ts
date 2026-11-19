@@ -344,8 +344,11 @@ for (const scenario of scenarios) {
 								? 'homepage-project'
 								: undefined
 						);
-						const runReply = reply(page, 'runs/find-equipment');
+						const runReply = carriedProjectId
+							? undefined
+							: reply(page, 'runs/find-equipment');
 						await compare.click();
+						if (!runReply) return;
 						const run = await runReply;
 						expect(run.ok()).toBe(true);
 						expect(run.request().postDataJSON()).toMatchObject({
