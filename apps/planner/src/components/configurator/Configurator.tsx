@@ -62,7 +62,7 @@ import {
 	restoreComparisonModels,
 	sameEquipmentDemand,
 } from "../../domain/currentCalculation.ts";
-import { emptyBrief, readBrief } from "../../domain/brief.ts";
+import { emptyBrief, readBrief, type Brief } from "../../domain/brief.ts";
 import {
 	changeEquipment,
 	checkRetainedEquipment,
@@ -76,8 +76,13 @@ import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
-import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
+import {
+	hasStorageToExclude,
+	ProjectDetails,
+	withSystemScope,
+} from "./ProjectDetails.tsx";
 import { ProjectInputsStep } from "./ProjectInputsStep.tsx";
+import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { ConfiguratorSteps, type Step } from "./ConfiguratorSteps.tsx";
 import { EnergyDemand, energyGoal } from "./EnergyDemand.tsx";
 import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
@@ -105,8 +110,11 @@ const mapPropertyLinks = new Set([
 	"#lp-map-ring-properties",
 	"#lp-map-feature-properties",
 ]);
-function initialStep(): Step {
+type Route = Step | "preliminary-options" | "preliminary-review";
+function initialStep(): Route {
 	const hash = location.hash.slice(1);
+	if (hash === "sc-preliminary-options") return "preliminary-options";
+	if (hash === "sc-preliminary-review") return "preliminary-review";
 	if (
 		hash === "sc-solar" ||
 		hash === "lp-design" ||
@@ -173,17 +181,33 @@ export default function Configurator({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryFailed?: boolean;
-	entryComparison?: { inputs: JsonObject; consume: () => void } | undefined;
+	entryComparison?:
+		| {
+				inputs: JsonObject;
+				destination?: "compare" | "review";
+				consume: () => void;
+		  }
+		| undefined;
 }) {
 	const controller = useProjectDraft(project, session, client, store, recheck);
 	const { draft, update, acknowledgeProject } = controller;
 	const entryStarted = useRef(false);
-	const [step, setStep] = useState<Step>(initialStep);
+	const [route, setRoute] = useState<Route>(initialStep);
+	const preliminaryReview = route === "preliminary-review";
+	const step =
+		route === "preliminary-options"
+			? "system"
+			: route === "preliminary-review"
+				? "review"
+				: route;
 	const main = useRef<HTMLElement>(null);
 	const [detailsReady, setDetailsReady] = useState(true);
 	const [energyValid, setEnergyValid] = useState(true);
+	const [comparisonAction, setComparisonAction] = useState<
+		"compare" | "preliminary" | null
+	>(null);
 	const [inputsOpened, setInputsOpened] = useState(
-		() => !["system", "review"].includes(initialStep()),
+		() => step !== "system" && step !== "review",
 	);
 	const [coordinatesValid, setCoordinatesValid] = useState(true);
 	const [roofEditing, setRoofEditing] = useState(false);
@@ -411,7 +435,11 @@ export default function Configurator({
 					(run) => run?.id === genieReportId && run.state === "succeeded",
 				)
 			: null;
-	const openReport = viewedReport === null ? reportRun : viewedRun;
+	const openReport = preliminaryReview
+		? null
+		: viewedReport === null
+			? reportRun
+			: viewedRun;
 	useGenieContext(
 		draft?.baseline ?? project,
 		session,
@@ -567,13 +595,20 @@ export default function Configurator({
 		}
 		openStep(next);
 	}
-	function openStep(next: Step) {
+	function openStep(next: Route) {
 		setGenieReportId(null);
 		const url = new URL(location.href);
+		if (next === "preliminary-review") {
+			setViewedReport(null);
+			url.searchParams.delete("run");
+			url.searchParams.delete("compare");
+			url.searchParams.delete("energy_view");
+		}
 		url.hash = "sc-" + next;
 		replacePlannerLocation(url);
-		if (next !== "system" && next !== "review") setInputsOpened(true);
-		setStep(next);
+		if (next === "project" || next === "solar" || next === "energy")
+			setInputsOpened(true);
+		setRoute(next);
 		setNavigationRefused(false);
 	}
 	async function startSharedDc(
@@ -656,6 +691,33 @@ export default function Configurator({
 		if (blocked || modelsUnavailable || !mayLeave()) return;
 		return dispatchComparison();
 	}
+	const preliminaryBlocked =
+		blocked ||
+		modelsUnavailable ||
+		controller.recoveryFailed ||
+		navigationBlocked;
+	function openPreliminaryOptions() {
+		if (!preliminaryBlocked && mayLeave()) openStep("preliminary-options");
+	}
+	async function savePreliminaryChoice() {
+		const instance = lifetime.current;
+		const saved = await controller.save();
+		if (
+			saved &&
+			instance === lifetime.current &&
+			client.isCurrentScope(session.query_scope)
+		)
+			openStep("preliminary-review");
+	}
+	function chooseDirection(system_scope: NonNullable<Brief["system_scope"]>) {
+		if (preliminaryBlocked || !mayLeave()) return;
+		if (
+			edit(({ equipment_candidate: _previousChoice, ...current }) =>
+				withSystemScope(current, system_scope),
+			)
+		)
+			void savePreliminaryChoice();
+	}
 	async function dispatchComparison() {
 		if (!latest.current) return;
 		setError(null);
@@ -685,6 +747,18 @@ export default function Configurator({
 			modelsUnavailable
 		)
 			return;
+		if (entryComparison.destination === "review") {
+			if (preliminaryBlocked || !mayLeave()) return;
+			if (
+				!sameJson(draft.history.current, entryComparison.inputs) &&
+				(isDirty(draft) || !edit(() => entryComparison.inputs))
+			)
+				return;
+			entryStarted.current = true;
+			entryComparison.consume();
+			void savePreliminaryChoice();
+			return;
+		}
 		const authored = authoredDiscoveryInputs(entryComparison.inputs);
 		const prior = operations.records.find(
 			(record) =>
@@ -913,6 +987,7 @@ export default function Configurator({
 	useEffect(() => {
 		if (
 			step !== "review" ||
+			preliminaryReview ||
 			viewedReport !== null ||
 			!draft ||
 			!reviewSelection ||
@@ -1031,6 +1106,12 @@ export default function Configurator({
 		wiringPlant &&
 		inputs.geometry !== undefined &&
 		activePvGeometry(inputs.geometry).arrays.length > 0;
+	const showDirections =
+		route === "preliminary-options" ||
+		(step === "system" &&
+			!searchId &&
+			history.isSuccess &&
+			comparisonAction === "preliminary");
 	const sectionLink = step === "solar" || step === "energy" ? step : null;
 	const activeStep =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)
@@ -1386,6 +1467,8 @@ export default function Configurator({
 										embedded
 										coordinatesInvalid={!coordinatesValid}
 										compare={() => void compare()}
+										preliminary={openPreliminaryOptions}
+										onComparisonAction={setComparisonAction}
 										onValidity={setEnergyValid}
 									>
 										{hasPlant(inputs) &&
@@ -1434,7 +1517,15 @@ export default function Configurator({
 							/>
 						</div>
 					)}
-					{activeStep === "system" && (
+					{activeStep === "system" && showDirections && (
+						<PreliminaryOptions
+							inputs={inputs}
+							disabled={preliminaryBlocked}
+							choose={chooseDirection}
+							back={() => navigate("project")}
+						/>
+					)}
+					{activeStep === "system" && !showDirections && (
 						<>
 							{findingEquipment ||
 							awaitingComparison ? null : searchRun?.state === "succeeded" &&
@@ -1524,6 +1615,7 @@ export default function Configurator({
 					)}
 					{activeStep === "review" && (
 						<ReviewProposal
+							preliminary={preliminaryReview}
 							project={draft.baseline}
 							inputs={inputs}
 							summary={

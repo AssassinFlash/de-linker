@@ -340,6 +340,13 @@ async function equipmentApp(
 			reads.push({ path, body, scope });
 			if (path === readGate?.path) await readGate.wait();
 			if (path === "products/current") return catalog();
+			if (path === "inquiry/form")
+				return {
+					schema_version: 1,
+					inquiry_lines: [],
+					inquiry_form_html:
+						'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>',
+				};
 			if (path === "assets/read" && body.asset_id === selectedPv?.id)
 				return structuredClone(selectedPv);
 			if (path === "projects/runs")
@@ -488,24 +495,26 @@ async function equipmentApp(
 			else delete globalThis[name];
 		}
 	});
-	await act(async () =>
-		root.render(
-			React.createElement(
-				React.StrictMode,
-				null,
-				React.createElement(SessionBoundary, { client }, (value, recheck) =>
-					React.createElement(Workspace, {
-						key: value.query_scope,
-						session: value,
-						client,
-						store,
-						config,
-						recheck,
-					}),
+	const openWorkspace = (key) =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					React.StrictMode,
+					{ key },
+					React.createElement(SessionBoundary, { client }, (value, recheck) =>
+						React.createElement(Workspace, {
+							key: value.query_scope,
+							session: value,
+							client,
+							store,
+							config,
+							recheck,
+						}),
+					),
 				),
 			),
-		),
-	);
+		);
+	await openWorkspace("open");
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
@@ -542,6 +551,7 @@ async function equipmentApp(
 		await act(async () => item.click());
 	}
 	return {
+		reopen: () => openWorkspace("reopen"),
 		async switchScope() {
 			nextScope = "9".repeat(64);
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -758,6 +768,60 @@ async function chooseGoal(app, goal = "self") {
 	await until(() => app.fieldSelect("Main purpose"));
 	await app.updateSelect("Main purpose", goal);
 }
+test("a saved project keeps its partial inputs and latest edit when choosing a preliminary direction", async (t) => {
+	const projectId = "1".repeat(32);
+	const equipment = { ...emptySetup, required_usable_kwh: 24 };
+	const app = await equipmentApp(t, {
+		projectId,
+		hash: "#sc-project",
+		inputs: { equipment_setup: equipment },
+	});
+	const locationField = () =>
+		document.querySelector('input[name="location_label"]');
+	await until(() => locationField()?.matches(":enabled"));
+	await enter(locationField(), "Harbour warehouse");
+	const compare = () => app.button("Compare preliminary options");
+	assert.ok(
+		compare(),
+		"A project without grid and purpose can compare directions",
+	);
+	await act(async () => compare().click());
+	const cards = [...document.querySelectorAll("article.sc-package")];
+	assert.ok(
+		!cards.some((card) => card.querySelector("h3")?.textContent === "Solar"),
+	);
+	const direction = cards.find(
+		(card) =>
+			card.querySelector("h3")?.textContent === "Storage for existing PV",
+	);
+	assert.ok(direction);
+	await act(async () => direction.querySelector("button").click());
+	await until(() => document.querySelector('.sc-review input[name="message"]'));
+	assert.equal(
+		document.querySelector('.sc-review input[name="message"]').value,
+		"Planned system: Storage for existing PV",
+	);
+	assert.equal(location.hash, "#sc-preliminary-review");
+	assert.equal(new URL(location.href).searchParams.get("project"), projectId);
+	await app.reopen();
+	await until(
+		() =>
+			document.querySelector('.sc-review input[name="message"]')?.value ===
+			"Planned system: Storage for existing PV",
+	);
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["projects/revise"],
+	);
+	assert.equal(app.project.inputs.brief.system_scope, "storage_addition");
+	assert.equal(
+		app.project.inputs.brief.site.location_label,
+		"Harbour warehouse",
+	);
+	assert.equal(app.project.inputs.brief.annual_load.kwh, 10);
+	assert.deepEqual(app.project.inputs.equipment_setup, equipment);
+});
+
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
 	const app = await equipmentApp(t, {
@@ -998,12 +1062,12 @@ for (const multi of [false, true]) {
 		}
 		await chooseGoal(app);
 		assert.equal(app.fieldSelect("Grid connection").value, "");
-		assert.equal(app.button("Compare systems").disabled, true);
+		assert.equal(app.button("Compare systems"), undefined);
+		assert.ok(app.button("Compare preliminary options").matches(":enabled"));
 		await openDetails("Required power and capacity already known?");
 		assert.equal(app.fieldInput("Usable storage capacity").value, "61.4");
 		assert.equal(app.fieldInput("Continuous discharge power").value, "100");
 		assert.equal(app.fieldInput("PV array"), undefined);
-		await act(async () => app.button("Compare systems").click());
 		assert.equal(app.requests.length, 0);
 		await app.updateSelect("Grid connection", "3");
 		await compare(app);
@@ -1050,7 +1114,8 @@ test("commercial backup compares direct demand while leaving device parameters u
 		},
 	});
 	await chooseGoal(app, "backup");
-	assert.equal(app.button("Compare systems").disabled, true);
+	assert.equal(app.button("Compare systems"), undefined);
+	assert.ok(app.button("Compare preliminary options").matches(":enabled"));
 	await enter(app.fieldInput("Backup load"), "5");
 	await enter(app.fieldInput("Required duration"), "4");
 	assert.match(document.body.textContent, /20 kWh/);
@@ -1480,7 +1545,7 @@ for (const adopted of [true, false]) {
 			assert.match(option().textContent, /ESS 5K/);
 		} else {
 			await untilRun(() =>
-				empty.test(document.querySelector("main").textContent),
+				app.button("Choose this option")?.matches(":enabled"),
 			);
 		}
 		assert.deepEqual(app.requests, []);
