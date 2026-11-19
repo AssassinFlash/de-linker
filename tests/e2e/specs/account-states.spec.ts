@@ -548,8 +548,8 @@ for (const language of LANGUAGES) {
 						shortcuts.locator(`a[href$="${path}"]`)
 					).toBeVisible();
 				}
-				expect((await contact.boundingBox())!.y).toBeLessThan(
-					(await shortcuts.boundingBox())!.y
+				expect((await shortcuts.boundingBox())!.y).toBeLessThan(
+					(await contact.boundingBox())!.y
 				);
 
 				const inquiries = base() + language.inquiries;
