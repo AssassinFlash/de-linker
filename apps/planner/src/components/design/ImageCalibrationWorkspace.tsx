@@ -27,7 +27,11 @@ import {
 import type { ImageCalibration } from "../../domain/imageCalibration.ts";
 import { GeometryValues } from "./GeometryForm.tsx";
 import { roofPlane } from "../../domain/geometryEditing.ts";
-import { formatComputedDecimal, formatDecimal } from "../../domain/decimal.ts";
+import {
+	formatComputedDecimal,
+	formatDecimal,
+	toPercent,
+} from "../../domain/decimal.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -234,7 +238,7 @@ export function ImageCalibrationWorkspace({
 
 	function checkDifferencePercent(residual: number): string {
 		return formatComputedDecimal(
-			residual <= RESIDUAL_ABSOLUTE_TOLERANCE ? 0 : residual * 100,
+			residual <= RESIDUAL_ABSOLUTE_TOLERANCE ? 0 : toPercent(residual),
 			locale,
 		);
 	}
