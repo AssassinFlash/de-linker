@@ -26,6 +26,7 @@ import time
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
+from threading import Lock
 from typing import Literal
 from uuid import UUID
 
@@ -124,6 +125,7 @@ logger = logging.getLogger(__name__)
 app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 
 _log: TurnLog | None = None
+_log_lock = Lock()
 _client: AbilityClient | None = None
 _understander: Understander | None = None
 _vocabulary: StoreVocabulary | None = None
@@ -141,9 +143,10 @@ def _log_path() -> Path:
 
 def turn_log() -> TurnLog:
     global _log
-    if _log is None:
-        _log = TurnLog(_log_path())
-    return _log
+    with _log_lock:
+        if _log is None:
+            _log = TurnLog(_log_path())
+        return _log
 
 
 def ability_client() -> AbilityClient:
