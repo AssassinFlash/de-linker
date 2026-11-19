@@ -728,6 +728,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-content .woocommerce-address-fields .button { border-radius: var(--proto-radius-md); box-shadow: none; }
 
 .linker-account .linker-account-field-pair { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
+.linker-account .linker-account-field-pair > .form-row { width: auto; }
 
 @media (min-width: 560px) { .linker-account .linker-account-field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
