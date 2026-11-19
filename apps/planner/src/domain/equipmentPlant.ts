@@ -342,11 +342,16 @@ export function singleSystem(inputs: JsonObject): JsonObject {
 		)
 	)
 		throw incomplete();
+	const setup = equipmentDraft(draft.units[0]!.inputs);
+	const { application, ...requirements } = draft.requirements;
 	const next: Record<string, Json> = {
 		...inputs,
 		equipment_setup: {
-			...equipmentDraft(draft.units[0]!.inputs),
-			...draft.requirements,
+			...setup,
+			...requirements,
+			...(setup.application === undefined && application != null
+				? { application }
+				: {}),
 		},
 	};
 	delete next.pv_plant_string_plan;
