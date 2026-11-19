@@ -16,6 +16,8 @@ Woo 发布在售商品的 SKU、型号、图值、资料和库存。`feed.produc
 
 一次数据清理使用 `tools/migrate/1168-retire-pv-supply.php`。先用 `wp eval-file ... plan` 检查实际商品、订单行、词项归属和文件关联，再按备份规格运行 `apply`。订单引用的商品及其语言配对转为私有。未被订单引用的已核实废弃商品、独占品牌和型号词项、专属测试 PDF 被移除；原厂文件撤销公开权限。再次运行 `plan` 时应无待处理项。
 
+`tools/migrate/1168-genie-panel-history.php` 以同样的 `plan/apply` 命令校正旧报告在 Genie 会话中的历史答复。该脚本只替换助手写入的旧参考型号，将原始记录保存在其所属私有会话。后续转存或转发会话时使用校正过的文本。
+
 线上 feed URL 与 manifest URL 一致。本地快照保留本地 uploads origin，而现有 feed producer 将当前站点 URL 归一为 `https://de-linker.com`；Python 只按 `LINKER_PUBLICATION_URL` 所指定的同一精确 origin 做对应归一，保持路径、query、fragment 不变，且身份/修订/SHA/关联仍须全通过。任意其他主机即使路径或内容相同也不能通过。
 
 原生 Woo 文档可携带 `aliases`（明确托管 URL 列表），图值 `citation.doc` 保留原始来源文件名；schema 与 typed model 明确接收这两项，其他未声明键仍拒绝。文件名只作来源标签，不授予许可。引用允许使用当前同一文档的明确 URL 别名；所有已加载别名仍须属于新读到的许可 URL 集合，资料身份/修订/关联也须有效。producer 将历史语言标签派生为小写双字母、`mul`（明确多语言）或 `und`（未说明/未识别），不改 Woo 原值或其证明；资料类型复用现有产品资料的 EN/DE 映射。报告优先用匹配语言，缺少匹配时保留既有可用资料回退，不将未知语言假定为英文。
