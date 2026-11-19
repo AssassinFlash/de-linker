@@ -6276,3 +6276,9 @@ msgid ""
 "Reply to %s to confirm or adjust this Quotation. We agree on billing and "
 "delivery with you personally."
 msgstr ""
+
+msgid "This project is unavailable. Your contact details and message are still here."
+msgstr ""
+
+msgid "Send my inquiry without this project"
+msgstr ""

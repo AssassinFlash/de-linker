@@ -47,7 +47,7 @@ final class PlannerTaskGatewayTest extends TestCase {
 		foreach ( array( 'profiles/standard', 'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/inputs', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'weather/assets', 'weather/preview', 'runs/pvgis-reference', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'equipment/certificates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution', 'projects/create', 'projects/delete', 'projects/list', 'projects/read', 'projects/revise', 'projects/runs' ) as $path ) {
 			$this->assertSame( 1, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
-		foreach ( array( 'projects/assistant', 'projects/delete-after-inquiry-check', 'projects/prepared-handoffs', 'handoffs/admit-inquiry', 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {
+		foreach ( array( 'projects/assistant', 'projects/delete-after-inquiry-check', 'projects/prepared-handoffs', 'projects/admit-inquiry', 'handoffs/admit-inquiry', 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {
 			$this->assertSame( 0, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
 		$this->assertConditionsMet();

@@ -41,6 +41,111 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 */
 	private NormalMailAuthorizationFixture $authorization;
 
+	/** A failed preliminary POST is rendered for this tab, not consumed by the next checkout visitor. */
+	public function test_preliminary_retry_is_private_to_its_request(): void {
+		wc_load_cart();
+		$previous_post = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restore the test request.
+		$tags          = $GLOBALS['shortcode_tags'];
+		add_filter( 'woocommerce_is_checkout', '__return_true' );
+		$this->later(
+			static function () use ( $previous_post, $tags ): void {
+				$_POST                     = $previous_post;
+				$GLOBALS['shortcode_tags'] = $tags;
+				remove_filter( 'woocommerce_is_checkout', '__return_true' );
+			}
+		);
+		$id      = str_repeat( 'a', 32 );
+		$_POST   = array(
+			'action'                        => 'linker_inquiry',
+			'linker_preliminary_project'    => $id . ':3',
+			'linker_inquiry_nonce'          => wp_create_nonce( 'linker_inquiry:' . $id . ':3' ),
+			'message'                       => 'Please call about my roof.',
+			'linker_project_notes_present'  => '1',
+			'linker_include_project_notes'  => '1',
+			'linker_project_note_revisions' => array( 'project_' . $id => '3' ),
+		);
+		$form    = new \Linker\Commerce\Inquiry\Form();
+		$handler = new \Linker\Commerce\Inquiry\Handler( $form );
+		$form->register();
+		$handler->checkout_post();
+		$html = $form->render();
+		$this->assertStringContainsString( 'Please call about my roof.</textarea>', $html );
+		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $id . ':3"', $html );
+		$this->assertStringContainsString( 'name="linker_project_note_revisions[project_' . $id . ']" value="3"', $html );
+		$this->assertStringNotContainsString( 'name="linker_without_project"', $html );
+		$this->assertNull( WC()->session->get( 'linker_inquiry_fields' ) );
+		$other = new \Linker\Commerce\Inquiry\Form();
+		$other->register();
+		$this->assertStringNotContainsString( 'Please call about my roof.', $other->render() );
+	}
+
+	/** Only an explicit revision refusal offers a new inquiry without that project. */
+	public function test_unavailable_preliminary_requires_explicit_choice(): void {
+		wc_load_cart();
+		$this->as_user( $this->customer()->get_id() );
+		WC()->cart->empty_cart();
+		$previous_post = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restore the test request.
+		$tags          = $GLOBALS['shortcode_tags'];
+		$failure       = 'not_found';
+		$missing       = static function () use ( &$failure ) {
+			return new \WP_Error( 'linker_planner_' . $failure, '', array( 'status' => 404 ) );
+		};
+		add_filter( 'linker_tools_planning_inquiry_note', $missing, 11 );
+		add_filter( 'woocommerce_is_checkout', '__return_true' );
+		$this->later(
+			static function () use ( $missing, $previous_post, $tags ): void {
+				$_POST                     = $previous_post;
+				$GLOBALS['shortcode_tags'] = $tags;
+				remove_filter( 'linker_tools_planning_inquiry_note', $missing, 11 );
+				remove_filter( 'woocommerce_is_checkout', '__return_true' );
+			}
+		);
+		$email   = 'roof-' . self::tag() . '@example.test';
+		$project = str_repeat( '7', 32 ) . ':3';
+		$stamp   = (string) ( time() - 5 );
+		$_POST   = array(
+			'action'                     => 'linker_inquiry',
+			'linker_preliminary_project' => $project,
+			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
+			'linker_started'             => $stamp,
+			'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'name'                       => 'Maria Weber',
+			'message'                    => 'Please call about my roof.',
+			'email'                      => $email,
+			'consent'                    => '1',
+		);
+		$form    = new \Linker\Commerce\Inquiry\Form();
+		$handler = new \Linker\Commerce\Inquiry\Handler( $form );
+		$form->register();
+		$marker = self::newest_mail_job();
+		$handler->checkout_post();
+		$html = $form->render();
+		$this->assertStringNotContainsString( 'name="linker_without_project"', $html );
+		$this->assertStringContainsString( 'Please call about my roof.</textarea>', $html );
+		$failure = 'project_revision_not_found';
+		$handler->checkout_post();
+		$html = $form->render();
+		$this->assertStringContainsString( 'This project is unavailable.', $html );
+		$this->assertSame( 1, preg_match( '/type="checkbox" required name="linker_without_project" value="([^"]+)"/', $html, $choice ) );
+		$this->assertStringContainsString( 'value="Maria Weber"', $html );
+		$this->assertStringContainsString( 'Please call about my roof.</textarea>', $html );
+		$this->assertSame(
+			array(),
+			wc_get_orders(
+				array(
+					'billing_email' => $email,
+					'return'        => 'ids',
+				)
+			)
+		);
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$order = $handler->process( array( 'linker_without_project' => $choice[1] ) + $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The native handler verifies both nonces.
+		$this->assertInstanceOf( WC_Order::class, $order );
+		$this->later( static fn () => $order->delete( true ) );
+		$this->assertSame( '', $order->get_meta( '_linker_preliminary_project' ) );
+		$this->assertSame( 'Please call about my roof.', $order->get_customer_note() );
+	}
+
 	/** Retired Woo checkout transports cannot bypass the shared public inquiry sender. */
 	public function test_alternate_checkout_transports_cannot_create_an_inquiry(): void {
 		$this->as_user( 0 );

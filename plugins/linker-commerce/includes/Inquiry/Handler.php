@@ -11,6 +11,9 @@ namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Mail\LocaleSwitch;
+use Linker\Commerce\Planning\Context;
+use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Protection\Configuration;
 use WC_Order;
 use WP_Error;
 use Linker\Commerce\Protection\Business;
@@ -24,12 +27,27 @@ final class Handler {
 	public const ACTION = 'linker_inquiry';
 	public const NONCE  = 'linker_inquiry_nonce';
 
+	/** Only the current checkout POST's form; never shared between browser requests.
+	 *
+	 * @param Form $form Native form registered for this request.
+	 */
+	public function __construct( private readonly Form $form = new Form() ) {}
+
+	/** Bind preliminary forms to the reviewed revision. Older handlers reject this nonce.
+	 *
+	 * @param string $project Project reference, empty for ordinary and legacy forms.
+	 */
+	public static function nonce_action( string $project ): string {
+		return '' === $project ? self::ACTION : self::ACTION . ':' . $project;
+	}
+
 	/**
 	 * Both guests and account holders use this adapter.
 	 */
 	public function register(): void {
 		add_action( 'admin_post_nopriv_' . self::ACTION, array( $this, 'handle' ) );
 		add_action( 'admin_post_' . self::ACTION, array( $this, 'handle' ) );
+		add_action( 'template_redirect', array( $this, 'checkout_post' ), 1 );
 	}
 
 	/**
@@ -45,10 +63,22 @@ final class Handler {
 		$locale   = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard = new PublicGuard();
-			$nonce = $post[ self::NONCE ] ?? '';
-			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
+			$guard   = new PublicGuard();
+			$nonce   = $post[ self::NONCE ] ?? '';
+			$project = $post[ Context::PROJECT_FIELD ] ?? '';
+			if ( ! is_string( $project ) || ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::nonce_action( $project ) ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
+			}
+			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {
+				if ( ! is_string( $post['linker_without_project'] ) || ! wp_verify_nonce( $post['linker_without_project'], 'linker_without_project:' . $project ) ) {
+					return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
+				}
+				// The customer opted out of this preliminary project, not the rest of the reviewed cart.
+				unset( $post[ Context::PROJECT_FIELD ] );
+				if ( is_array( $post[ Context::REVISIONS_FIELD ] ?? null ) ) {
+					unset( $post[ Context::REVISIONS_FIELD ][ 'project_' . explode( ':', $project, 2 )[0] ] );
+				}
+				$project = '';
 			}
 			$details = Submission::from_post( $post, false );
 			if ( $details instanceof WP_Error ) {
@@ -66,11 +96,31 @@ final class Handler {
 			if ( isset( $post[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) || isset( $post[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ) ) {
 				$payload['project_notes'] = \Linker\Commerce\Planning\Context::submission_fingerprint( $post );
 			}
-			$sender = new Sender();
+			if ( '' !== $project ) {
+				$payload['preliminary_project'] = $project;
+			}
+			$sender  = new Sender();
+			$current = ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft );
+			if ( isset( $post['linker_planner_handoff_id'] ) || isset( $post['linker_planner_draft_sha256'] ) ) {
+				$id                 = $post['linker_planner_handoff_id'] ?? '';
+				$fingerprint        = $post['linker_planner_draft_sha256'] ?? '';
+				$contexts           = Context::active() + Context::report_only_contexts();
+				$payload['planner'] = array(
+					'handoff' => is_string( $id ) ? $id : '',
+					'draft'   => is_string( $fingerprint ) ? $fingerprint : '',
+				);
+				$current            = is_string( $id ) && isset( $contexts[ $id ] )
+					&& is_string( $fingerprint ) && hash_equals( DraftPreview::fingerprint(), $fingerprint )
+					&& hash_equals( WC()->cart->get_cart_hash(), $draft );
+				// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
+				if ( ! $current && 'enforce' !== Configuration::active_mode() ) {
+					return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
+				}
+			}
 			// Conversation summaries belong to the separately reviewed Genie confirmation.
 			return \Linker\Commerce\Planning\Context::with_submission(
 				$post,
-				static fn (): WC_Order|WP_Error => Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) )
+				static fn (): WC_Order|WP_Error => Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), $current, static fn () => $sender->preflight( $details ) )
 			);
 		} finally {
 			$locale->back();
@@ -81,19 +131,46 @@ final class Handler {
 	 * Native form transport, retaining entries on a validation failure.
 	 */
 	public function handle(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Only forwards; process() verifies on the destination.
+		$post = wp_unslash( $_POST );
+		if ( isset( $post[ Context::PROJECT_FIELD ] ) ) {
+			$language = is_string( $post['lang'] ?? null ) ? $post['lang'] : null;
+			// Keep the POST body in this tab. No write, proof consumption or Woo flash before the redirect.
+			wp_safe_redirect( Checkout::request_url( OrderLocale::current( $language ) ), 307 );
+			exit;
+		}
+		$this->submit( $post, false );
+	}
+
+	/** Process a forwarded preliminary form before the native inquiry page renders. */
+	public function checkout_post(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- process() verifies the revision-bound nonce before any inquiry.
+		$post = wp_unslash( $_POST );
+		if ( self::ACTION === ( $post['action'] ?? '' ) && isset( $post[ Context::PROJECT_FIELD ] ) && is_checkout() && ! is_wc_endpoint_url() ) {
+			\Linker\Commerce\Cache\DynamicHtml::forbid( 'preliminary inquiry' );
+			$this->submit( $post, true );
+		}
+	}
+
+	/** Run the native writer exactly once; only ordinary admin-post errors use a redirect and flash.
+	 *
+	 * @param array<string,mixed> $post Unslashed fields.
+	 * @param bool                $on_checkout Already on the inquiry page.
+	 */
+	private function submit( array $post, bool $on_checkout ): void {
 		wc_load_cart();
-     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- process() verifies before every write.
-		$post   = wp_unslash( $_POST );
 		$result = $this->process( $post );
 		if ( $result instanceof WC_Order && $result->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $result );
 		}
 		if ( $result instanceof WC_Order ) {
-			WC()->session->set( 'linker_inquiry_fields', null );
-			WC()->session->set( 'linker_intake_grouped', null );
-			WC()->session->set( 'linker_inquiry_error', null );
-			WC()->session->set( 'linker_inquiry_error_locale', null );
-			wp_safe_redirect( $result->get_checkout_order_received_url() );
+			if ( ! $on_checkout ) {
+				WC()->session->set( 'linker_inquiry_fields', null );
+				WC()->session->set( 'linker_intake_grouped', null );
+				WC()->session->set( 'linker_inquiry_error', null );
+				WC()->session->set( 'linker_inquiry_error_locale', null );
+			}
+			wp_safe_redirect( $result->get_checkout_order_received_url(), $on_checkout ? 303 : 302 );
 		} else {
 			if ( WC()->session instanceof \WC_Session_Handler ) {
 				WC()->session->set_customer_session_cookie( true );
@@ -107,14 +184,45 @@ final class Handler {
 			// A definite refusal returns to fresh verification. Unknown/pending
 			// outcomes may first recover their existing UUID without a new proof.
 			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';
+			$revisions                           = Context::submission_fingerprint( $post )['revisions'];
+			if ( is_string( $post[ Context::PROJECT_FIELD ] ?? null ) && preg_match( '/\A[a-f0-9]{32}:[1-9][0-9]*\z/', $post[ Context::PROJECT_FIELD ] ) ) {
+				$fields[ Context::PROJECT_FIELD ] = $post[ Context::PROJECT_FIELD ];
+			} else {
+				foreach ( array_keys( $revisions ) as $key ) {
+					if ( is_string( $key ) && preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
+						$fields['linker_note_project'] = $match[1];
+						break;
+					}
+				}
+			}
+			if ( isset( $fields[ Context::PROJECT_FIELD ] ) || isset( $fields['linker_note_project'] ) ) {
+				$fields[ Context::REVISIONS_FIELD ] = $revisions;
+				if ( '1' === $fields['linker_recovery_available'] ) {
+					$fields['linker_draft_hash'] = is_string( $post['linker_draft_hash'] ?? null ) ? $post['linker_draft_hash'] : '';
+				}
+			}
+			if ( '1' === $fields['linker_recovery_available'] && isset( $post['linker_planner_handoff_id'], $post['linker_planner_draft_sha256'] ) ) {
+				foreach ( array( 'linker_planner_handoff_id', 'linker_planner_draft_sha256', 'linker_draft_hash' ) as $key ) {
+					$fields[ $key ] = is_string( $post[ $key ] ?? null ) ? sanitize_text_field( $post[ $key ] ) : '';
+				}
+				$fields[ Context::REVISIONS_FIELD ] = $revisions;
+			}
+			$fields['billing'] = BillingFields::values( $post );
 			if ( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) ) {
 				// The journal holds this UUID for other input; a new one is the
 				// only way past the changed-input refusal.
 				$fields['linker_request_id'] = '';
 			}
-			$blocked = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
-			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
+			$blocked  = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+			if ( $on_checkout ) {
+				if ( $blocked || ! isset( $fields[ Context::PROJECT_FIELD ] ) ) {
+					wp_die( esc_html( $result->get_error_message() ), '', array( 'response' => 400 ) );
+				}
+				$this->form->retry( $fields, $result, OrderLocale::current( $language ) );
+				return;
+			}
+			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
 			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );
 			WC()->session->set( 'linker_inquiry_error_locale', OrderLocale::current( $language ) );
 			WC()->session->set( 'linker_intake_grouped', 'linker_intake_grouped' === $result->get_error_code() );

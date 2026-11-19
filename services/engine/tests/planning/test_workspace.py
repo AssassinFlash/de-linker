@@ -624,7 +624,10 @@ def test_delete_is_idempotent_and_preserves_a_shared_input_blob(
     second = workspace.create(owner, "Second", {"load": 1}, key="second")
     assert first.input_sha256 == second.input_sha256
     expected = {"project_id": first.id, "revision": 1, "deleted": True}
-    assert workspace.delete(owner, first.id, 1, key="delete-first") == expected
+    assert (
+        workspace.delete(owner, first.id, 1, key="delete-first", inquiry_generation=0)
+        == expected
+    )
     assert workspace.delete(owner, first.id, 1, key="delete-first") == expected
     assert [project.id for project in workspace.projects(owner)] == [second.id]
     with pytest.raises(NotFound):
@@ -659,7 +662,9 @@ def test_delete_cancels_active_work_and_removes_project_history(
     jobs = Jobs(workspace)
     lease = jobs.claim("worker-a", kinds=("evaluate",), lease_seconds=30)
     assert lease is not None
-    assert workspace.delete(owner, project.id, 1, key="delete") == {
+    assert workspace.delete(
+        owner, project.id, 1, key="delete", inquiry_generation=0
+    ) == {
         "project_id": project.id,
         "revision": 1,
         "deleted": True,
@@ -679,7 +684,10 @@ def test_a_retired_guest_cannot_read_its_own_deletion_receipt(
     deleted = workspace.create(guest, "Deleted project", {}, key="deleted")
     kept = workspace.create(guest, "Claimed project", {}, key="claimed")
     expected = {"project_id": deleted.id, "revision": 1, "deleted": True}
-    assert workspace.delete(guest, deleted.id, 1, key="delete-guest") == expected
+    assert (
+        workspace.delete(guest, deleted.id, 1, key="delete-guest", inquiry_generation=0)
+        == expected
+    )
     # The claim retires the guest for good, including its own receipt key.
     GuestClaims(workspace).claim(guest, owner, key="sign-in")
     with pytest.raises(NotFound):

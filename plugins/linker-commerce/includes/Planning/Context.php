@@ -17,6 +17,8 @@ use WP_Error;
 /** A copied cart field is only a reference to server-owned session context. */
 final class Context {
 	public const META            = '_linker_planning_projects';
+	public const PROJECT_FIELD   = 'linker_preliminary_project';
+	public const PROJECT_META    = '_linker_preliminary_project';
 	public const NOTES_META      = '_linker_planning_notes';
 	public const INCLUDE_FIELD   = 'linker_include_project_notes';
 	public const PRESENT_FIELD   = 'linker_project_notes_present';
@@ -32,6 +34,12 @@ final class Context {
 	 * @var array<string,mixed>|null
 	 */
 	private static ?array $submission_post = null;
+
+	/** Exact preliminary note verified before the native write.
+	 *
+	 * @var array{project_id:string,title:string,revision:int,note_revision:string,text:string,inputs?:array<string,mixed>}|null
+	 */
+	private static ?array $reviewed_note = null;
 
 	/**
 	 * Exact note revisions consumed by the most recent committed inquiry.
@@ -50,11 +58,14 @@ final class Context {
 	 */
 	public static function with_submission( array $post, callable $callback ): mixed {
 		$previous              = self::$submission_post;
+		$previous_note         = self::$reviewed_note;
 		self::$submission_post = $post;
+		self::$reviewed_note   = null;
 		try {
 			return $callback();
 		} finally {
 			self::$submission_post = $previous;
+			self::$reviewed_note   = $previous_note;
 		}
 	}
 
@@ -116,14 +127,19 @@ final class Context {
 	 * Resolve valid project notes in the current Woo session, including notes
 	 * whose product lines were subsequently removed from the cart.
 	 *
+	 * @param array<string,mixed>|null $proposed Optional replacement project shown before a confirmed transfer.
 	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
-	public static function session_notes(): array {
+	public static function session_notes( ?array $proposed = null ): array {
 		// WC()->session is null outside a request that loaded the native cart.
 		if ( ! function_exists( 'WC' ) || null === WC()->session ) {
 			return array();
 		}
-		$stored     = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
+		$stored = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
+		if ( null !== $proposed ) {
+			$stored                    = array_filter( $stored, static fn ( $context ): bool => ( $context['snapshot']['project_id'] ?? null ) !== $proposed['snapshot']['project_id'] );
+			$stored[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
+		}
 		$by_project = array();
 		foreach ( $stored as $id => $handoff ) {
 			if ( ! is_string( $id ) || ! self::valid( $handoff, $id ) ) {
@@ -157,7 +173,7 @@ final class Context {
 	 * Whether the current inquiry submission includes at least one project note.
 	 */
 	public static function has_included_notes(): bool {
-		return array() !== self::included_notes();
+		return isset( self::$reviewed_note['inputs'] ) || array() !== self::included_notes();
 	}
 
 	/** Recheck current source permission and project-note revision consistency before consuming an inquiry attempt. */
@@ -185,12 +201,21 @@ final class Context {
 	/**
 	 * Render the inquiry form's project-notes review and inclusion section.
 	 *
-	 * @param array<string,mixed> $previous Consumed flash fields after a failed POST.
+	 * @param array<string,mixed>      $previous Consumed flash fields after a failed POST.
+	 * @param array<string,mixed>|null $proposed Handoff included in the projected inquiry.
+	 * @param array<string,mixed>|null $note Current owner-verified project note.
 	 */
-	public static function inquiry_notes_section( array $previous = array() ): string {
-		$notes = self::session_notes();
+	public static function inquiry_notes_section( array $previous = array(), ?array $proposed = null, ?array $note = null ): string {
+		$notes   = self::session_notes( $proposed );
+		$project = '';
+		if ( isset( $note['inputs'] ) ) {
+			$project = '<div class="linker-inquiry-project">' . nl2br( esc_html( self::project_summary( $note, isset( $previous[ self::PROJECT_FIELD ] ) ) ) ) . '</div>';
+		}
+		if ( null !== $note && ( ! isset( $note['inputs'] ) || '' !== trim( $note['text'] ) ) ) {
+			$notes[ 'project_' . $note['project_id'] ] = $note;
+		}
 		if ( array() === $notes ) {
-			return '';
+			return $project;
 		}
 		$included      = ! ( isset( $previous[ self::PRESENT_FIELD ] ) && '1' === $previous[ self::PRESENT_FIELD ] && '1' !== ( $previous[ self::INCLUDE_FIELD ] ?? '' ) );
 		$has_report    = array() !== array_filter( $notes, static fn ( array $note ): bool => ! empty( $note['report_only'] ) );
@@ -200,15 +225,18 @@ final class Context {
 		$html         .= '<label class="linker-form-consent"><input type="checkbox" name="' . esc_attr( self::INCLUDE_FIELD ) . '" value="1"' . ( $included ? ' checked' : '' ) . ' /><span>' . ( $has_report ? esc_html__( 'Include planning reports and project notes with this inquiry', 'linker-commerce' ) : esc_html__( 'Include project notes with this inquiry', 'linker-commerce' ) ) . '</span></label>';
 		$has_note_text = false;
 		foreach ( $notes as $id => $note ) {
+			$html .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
+			if ( ! isset( $note['text'] ) ) {
+				continue; // Failed lookup on retry: retain the option to exclude, never display stale text.
+			}
 			$has_note_text = $has_note_text || '' !== $note['text'];
-			$html         .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
 			$html         .= '<div class="linker-inquiry-project-note"><p><strong>' . esc_html( self::label( $note ) ) . '</strong></p><p>' . nl2br( esc_html( $note['text'] ) ) . '</p></div>';
 		}
 		if ( $has_note_text ) {
 			$html .= '<p class="linker-form-note">' . esc_html__( 'This note is not used in the calculation.', 'linker-commerce' ) . '</p>';
 		}
 		$html .= '</fieldset>';
-		return $html;
+		return $project . $html;
 	}
 
 	/**
@@ -234,6 +262,17 @@ final class Context {
 	 * @throws \RuntimeException Frozen native context cannot be encoded.
 	 */
 	public function capture( WC_Order $order ): void {
+		if ( isset( self::$reviewed_note['inputs'] ) ) {
+			$project = self::$reviewed_note;
+			// Woo's native customer note remains readable by previous releases.
+			$message = $order->get_customer_note();
+			$summary = self::project_summary( $project );
+			if ( isset( self::included_notes()[ 'project_' . $project['project_id'] ] ) ) {
+				$summary .= "\n\n" . __( 'Project note from the customer', 'linker-commerce' ) . ': ' . $project['text'];
+			}
+			$order->set_customer_note( $summary . ( '' === $message ? '' : "\n\n" . $message ) );
+			$order->update_meta_data( self::PROJECT_META, $project['project_id'] . ':' . $project['revision'] );
+		}
 		$active = array();
 		foreach ( $order->get_items() as $item ) {
 			if ( ! $item instanceof WC_Order_Item_Product ) {
@@ -288,6 +327,10 @@ final class Context {
 			}
 			$order->update_meta_data( self::META, $encoded );
 		}
+		// Preliminary notes are already frozen in the native note, including for older readers.
+		if ( isset( self::$reviewed_note['inputs'] ) ) {
+			unset( $notes[ 'project_' . self::$reviewed_note['project_id'] ] );
+		}
 		$note_texts = array_filter( $notes, static fn ( array $note ): bool => '' !== $note['text'] );
 		if ( array() !== $note_texts ) {
 			$encoded_notes = wp_json_encode( $note_texts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
@@ -296,7 +339,7 @@ final class Context {
 			}
 			$order->update_meta_data( self::NOTES_META, $encoded_notes );
 		}
-		self::$consumed_revisions = array_column( $notes, 'note_revision', 'handoff_id' );
+		self::$consumed_revisions = array_map( static fn ( array $note ): string => $note['note_revision'], $notes );
 	}
 
 	/** A definite refusal before Woo writes the inquiry. */
@@ -315,23 +358,31 @@ final class Context {
 	/**
 	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
-	 * @param callable(array<string,array<string,mixed>>):(WC_Order|WP_Error) $submit Native order writer.
+	 * @param callable(array<string,array<string,mixed>>,array<int,string>):(WC_Order|WP_Error) $submit Native order writer.
 	 */
 	public static function submit_inquiry( callable $submit ): WC_Order|WP_Error {
 		$handoffs = self::submitted_handoffs();
-		if ( array() === $handoffs ) {
-			return $submit( array() );
+		$project  = isset( self::$reviewed_note['inputs'] ) ? self::$reviewed_note : null;
+		if ( array() === $handoffs && null === $project ) {
+			return $submit( array(), array() );
 		}
 		$retry = self::admission_unavailable();
 		if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
 			return $retry;
 		}
 		$references = array_map( self::reference( ... ), $handoffs );
-		$projects   = array_unique( array_column( $references, 'project_id' ) );
+		$admissions = $references;
+		if ( null !== $project ) {
+			$admissions[] = array(
+				'project_id' => $project['project_id'],
+				'revision'   => $project['revision'],
+			);
+		}
+		$projects = array_unique( array_column( $admissions, 'project_id' ) );
 		sort( $projects, SORT_STRING );
 		$result = $retry;
-		$work   = static function () use ( $references, $submit, &$result ): void {
-			foreach ( $references as $reference ) {
+		$work   = static function () use ( $admissions, $projects, $references, $submit, &$result ): void {
+			foreach ( $admissions as $reference ) {
 				/**
 				 * Admit the server-stored handoff before commit.
 				 *
@@ -340,6 +391,12 @@ final class Context {
 				$admitted = apply_filters( 'linker_tools_planning_admit_inquiry', null, $reference ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
 				if ( true === $admitted ) {
 					continue;
+				}
+				if ( ! isset( $reference['handoff_id'] ) ) {
+					if ( $admitted instanceof WP_Error ) {
+						$result = self::preliminary_refusal( $admitted );
+					}
+					return;
 				}
 				if ( $admitted instanceof WP_Error && 'linker_planner_handoff_not_found' === $admitted->get_error_code() && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
 					$message = ! empty( $reference['report_only'] )
@@ -351,7 +408,7 @@ final class Context {
 				}
 				return;
 			}
-			$result = $submit( $references );
+			$result = $submit( $references, $projects );
 		};
 		foreach ( array_reverse( $projects ) as $project_id ) {
 			$work = static function () use ( $project_id, $work ): void {
@@ -369,6 +426,9 @@ final class Context {
 	 * @param array<string,array<string,mixed>> $references Admitted handoffs by ID.
 	 */
 	public static function matches_admission( WC_Order $order, array $references ): bool {
+		if ( isset( self::$reviewed_note['inputs'] ) && $order->get_meta( self::PROJECT_META ) !== self::$reviewed_note['project_id'] . ':' . self::$reviewed_note['revision'] ) {
+			return false;
+		}
 		$raw = $order->get_meta( self::META );
 		if ( '' === $raw ) {
 			return array() === $references;
@@ -473,7 +533,7 @@ final class Context {
 	 * Historical project notes included with an authorised native inquiry.
 	 *
 	 * @param WC_Order $order Authorised native inquiry.
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
+	 * @return array<string,array{handoff_id?:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	public static function stored_notes( WC_Order $order ): array {
 		$raw    = $order->get_meta( self::NOTES_META );
@@ -483,22 +543,23 @@ final class Context {
 			foreach ( $raw as $id => $entry ) {
 				if (
 					is_string( $id )
-					&& 1 === preg_match( '/\A[a-f0-9]{32}\z/', $id )
 					&& is_array( $entry )
-					&& ( $entry['handoff_id'] ?? null ) === $id
 					&& is_string( $entry['project_id'] ?? null )
 					&& 1 === preg_match( '/\A[a-f0-9]{32}\z/', $entry['project_id'] )
 					&& is_string( $entry['title'] ?? null )
 					&& is_int( $entry['revision'] ?? null )
 					&& $entry['revision'] >= 1
 					&& is_string( $entry['note_revision'] ?? null )
-					&& 1 === preg_match( '/\A[a-f0-9]{64}\z/', $entry['note_revision'] )
+					&& (
+						( 'project_' . $entry['project_id'] === $id && ! isset( $entry['handoff_id'] ) && $entry['note_revision'] === (string) $entry['revision'] )
+						|| ( ( $entry['handoff_id'] ?? null ) === $id && 1 === preg_match( '/\A[a-f0-9]{32}\z/', $id ) && 1 === preg_match( '/\A[a-f0-9]{64}\z/', $entry['note_revision'] ) )
+					)
 					&& is_string( $entry['text'] ?? null )
 					&& '' !== trim( $entry['text'] )
 					&& mb_strlen( $entry['text'], 'UTF-8' ) <= self::MAX_NOTE_LENGTH
 				) {
 					$result[ $id ] = array(
-						'handoff_id'    => $id,
+						...( isset( $entry['handoff_id'] ) ? array( 'handoff_id' => $id ) : array() ),
 						'project_id'    => $entry['project_id'],
 						'title'         => $entry['title'],
 						'revision'      => $entry['revision'],
@@ -726,11 +787,74 @@ final class Context {
 	/**
 	 * Validate submitted project-note revisions against current session notes.
 	 */
+	private static function notes_changed(): WP_Error {
+		return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+	}
+
+	/** Only an owned-revision lookup can distinguish a missing project from a missing service route.
+	 *
+	 * @param WP_Error $error Private planner refusal.
+	 */
+	private static function preliminary_refusal( WP_Error $error ): WP_Error {
+		return 'linker_planner_project_revision_not_found' === $error->get_error_code() && 404 === ( $error->get_error_data()['status'] ?? null )
+			? new WP_Error( 'planning_preliminary_unavailable', __( 'This project is unavailable. Your contact details and message are still here.', 'linker-commerce' ), array( 'status' => 409 ) )
+			: self::admission_unavailable();
+	}
+
+	/** Read a project under the native submitter's ownership.
+	 *
+	 * @param string   $id Selected project ID.
+	 * @param int|null $revision Reviewed revision; legacy note-only forms read the current revision.
+	 * @return array{project_id:string,title:string,revision:int,note_revision:string,text:string,inputs?:array<string,mixed>}|WP_Error|null
+	 */
+	public static function read_selected_note( string $id, ?int $revision = null ): array|WP_Error|null {
+		/** Read the selected project with the native submitter’s identity.
+		 *
+		 * @since 0.3.0
+		 */
+		$note = apply_filters( 'linker_tools_planning_inquiry_note', null, $id, ...( null === $revision ? array() : array( $revision ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
+		if ( $note instanceof WP_Error ) {
+			if ( null !== $revision ) {
+				return self::preliminary_refusal( $note );
+			}
+			return in_array( $note->get_error_data()['status'] ?? null, array( 401, 403, 404 ), true ) ? self::notes_changed() : self::admission_unavailable();
+		}
+		return $note;
+	}
+
+	/** Read a project's immutable inputs using the current submitter's identity.
+	 *
+	 * @param mixed $reference Reviewed project and revision from the form.
+	 * @return array{project_id:string,title:string,revision:int,note_revision:string,text:string,inputs:array<string,mixed>}|WP_Error
+	 */
+	public static function read_preliminary_project( mixed $reference ): array|WP_Error {
+		if ( ! is_string( $reference ) || ! preg_match( '/\A([a-f0-9]{32}):([1-9][0-9]*)\z/', $reference, $match ) ) {
+			return self::notes_changed();
+		}
+		$project = self::read_selected_note( $match[1], (int) $match[2] );
+		if ( $project instanceof WP_Error ) {
+			return $project;
+		}
+		if ( ! isset( $project['inputs']['brief']['system_scope'] ) || $project['project_id'] !== $match[1] || (string) $project['revision'] !== $match[2] ) {
+			return self::notes_changed();
+		}
+		return $project;
+	}
+
+	/** Check every reviewed revision before the first Woo write. */
 	private static function preflight_notes(): ?WP_Error {
 		if ( null === self::$submission_post ) {
 			return null;
 		}
-		$post    = self::$submission_post;
+		$post                = self::$submission_post;
+		self::$reviewed_note = null;
+		if ( isset( $post[ self::PROJECT_FIELD ] ) ) {
+			$project = self::read_preliminary_project( $post[ self::PROJECT_FIELD ] );
+			if ( $project instanceof WP_Error ) {
+				return $project;
+			}
+			self::$reviewed_note = $project;
+		}
 		$present = '1' === ( $post[ self::PRESENT_FIELD ] ?? '' );
 		if ( $present && '1' !== ( $post[ self::INCLUDE_FIELD ] ?? '' ) ) {
 			return null;
@@ -740,12 +864,32 @@ final class Context {
 			return null;
 		}
 		$posted = is_array( $post[ self::REVISIONS_FIELD ] ?? null ) ? $post[ self::REVISIONS_FIELD ] : array();
+		foreach ( array_keys( $posted ) as $key ) {
+			if ( ! is_string( $key ) || ! preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
+				continue;
+			}
+			if ( ! $present || ( null !== self::$reviewed_note && ( ! isset( self::$reviewed_note['inputs'] ) || self::$reviewed_note['project_id'] !== $match[1] ) ) ) {
+				return self::notes_changed();
+			}
+			$note = self::$reviewed_note ?? self::read_selected_note( $match[1] );
+			if ( $note instanceof WP_Error ) {
+				return $note;
+			}
+			if ( null === $note || $note['note_revision'] !== $posted[ $key ] ) {
+				return self::notes_changed();
+			}
+			self::$reviewed_note = $note;
+			$current[ $key ]     = $note;
+		}
+		if ( isset( self::$reviewed_note['inputs'] ) && '' !== trim( self::$reviewed_note['text'] ) ) {
+			$current[ 'project_' . self::$reviewed_note['project_id'] ] = self::$reviewed_note;
+		}
 		if ( count( $posted ) !== count( $current ) ) {
-			return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+			return self::notes_changed();
 		}
 		foreach ( $current as $id => $note ) {
 			if ( ! isset( $posted[ $id ] ) || ! is_string( $posted[ $id ] ) || ! hash_equals( $note['note_revision'], $posted[ $id ] ) ) {
-				return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+				return self::notes_changed();
 			}
 		}
 		return null;
@@ -754,7 +898,7 @@ final class Context {
 	/**
 	 * Resolve the project notes included by the current submission.
 	 *
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
+	 * @return array<string,array{handoff_id?:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	private static function included_notes(): array {
 		if ( null !== self::$submission_post && '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' !== ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
@@ -762,9 +906,75 @@ final class Context {
 		}
 		$notes = self::session_notes();
 		if ( '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' === ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
+			if ( null !== self::$reviewed_note && '' !== trim( self::$reviewed_note['text'] ) ) {
+				$note = self::$reviewed_note;
+				unset( $note['inputs'] );
+				$notes[ 'project_' . $note['project_id'] ] = $note;
+			}
 			return $notes;
 		}
 		return array_filter( $notes, static fn ( array $note ): bool => ! isset( $note['report_only'] ) );
+	}
+
+	/** Sales and the customer see the same facts from the selected input revision.
+	 *
+	 * @param array<string,mixed> $project Owned planner project.
+	 * @param bool                $include_direction Include the direction unless the planner already displays it.
+	 * @throws \UnexpectedValueException The project has no supported preliminary direction.
+	 */
+	private static function project_summary( array $project, bool $include_direction = true ): string {
+		$inputs = $project['inputs'];
+		$brief  = $inputs['brief'];
+		$site   = $brief['site'] ?? array();
+		// phpcs:disable WordPress.WP.I18n.TextDomainMismatch -- Use the configurator's existing EN/DE field labels.
+		$scope = match ( $brief['system_scope'] ) {
+			'new_pv_storage'   => __( 'Solar and storage', 'linker-tools' ),
+			'storage_addition' => __( 'Storage for existing PV', 'linker-tools' ),
+			'storage_only'     => __( 'Storage', 'linker-tools' ),
+			'pv_only'          => __( 'Solar', 'linker-tools' ),
+			default            => throw new \UnexpectedValueException( 'unknown_preliminary_direction' ),
+		};
+		$use = match ( $brief['project_use'] ?? null ) {
+			'residential' => __( 'Residential', 'linker-tools' ),
+			'commercial'  => __( 'Commercial', 'linker-tools' ),
+			'industrial'  => __( 'Industrial', 'linker-tools' ),
+			default       => '',
+		};
+		$scenario = $inputs['energy_scenario'] ?? array();
+		$modes    = array_column( $scenario['schedule'] ?? array(), 'mode' );
+		$purpose  = match ( true ) {
+			isset( $inputs['backup_demand'] ) || in_array( 'outage', $modes, true ) => __( 'Backup supply', 'linker-tools' ),
+			'peak_shaving_with_reserve_v1' === ( $scenario['controller'] ?? '' )   => __( 'Reduce peak demand', 'linker-tools' ),
+			in_array( 'connected', $modes, true )                                   => __( 'Use more solar on site', 'linker-tools' ),
+			default                                                                 => '',
+		};
+		$equipment = $inputs['equipment_plant_setup']['requirements'] ?? $inputs['equipment_plant']['requirements'] ?? $inputs['equipment_setup'] ?? $inputs['equipment_requirements'] ?? array();
+		$facts     = array(
+			__( 'Planned system', 'linker-tools' )         => $include_direction ? $scope : '',
+			__( 'Location', 'linker-tools' )               => implode( ', ', array_filter( array( $site['location_label'] ?? '', $site['postal_code'] ?? '', $site['country_code'] ?? '' ), static fn ( $part ): bool => '' !== $part ) ),
+			__( 'Latitude', 'linker-tools' )               => $site['latitude'] ?? '',
+			__( 'Longitude', 'linker-tools' )              => $site['longitude'] ?? '',
+			__( 'Time zone', 'linker-tools' )              => $site['timezone'] ?? '',
+			__( 'Project type', 'linker-tools' )           => $use,
+			__( 'Annual electricity use', 'linker-tools' ) => isset( $brief['annual_load']['kwh'] ) ? $brief['annual_load']['kwh'] . ' kWh' : '',
+			__( 'Source note', 'linker-tools' )            => $brief['annual_load']['source_note'] ?? '',
+			__( 'Main purpose', 'linker-tools' )           => $purpose,
+			__( 'Grid phases', 'linker-tools' )            => $equipment['grid_phase'] ?? '',
+			__( 'PV array size', 'linker-tools' )          => isset( $equipment['pv_dc_kw'] ) ? $equipment['pv_dc_kw'] . ' kWp' : '',
+			__( 'Continuous discharge power', 'linker-tools' ) => isset( $equipment['required_discharge_ac_kw'] ) ? $equipment['required_discharge_ac_kw'] . ' kW' : '',
+			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $equipment['required_usable_kwh'] . ' kWh' : '',
+			__( 'Backup load', 'linker-tools' )            => isset( $inputs['backup_demand']['load_kw'] ) ? $inputs['backup_demand']['load_kw'] . ' kW' : '',
+			__( 'Required duration', 'linker-tools' )      => isset( $inputs['backup_demand']['duration_hours'] ) ? $inputs['backup_demand']['duration_hours'] . ' h' : '',
+			__( 'Solution draft', 'linker-tools' )         => $inputs['saved_solution_reference']['title'] ?? '',
+		);
+		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch
+		$lines = array( self::label( $project ) );
+		foreach ( $facts as $label => $value ) {
+			if ( '' !== $value ) {
+				$lines[] = $label . ': ' . $value;
+			}
+		}
+		return implode( "\n", $lines );
 	}
 
 	/**

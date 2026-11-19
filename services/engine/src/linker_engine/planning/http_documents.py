@@ -293,6 +293,10 @@ class PreparedHandoffs(Command):
     project_id: Id
 
 
+class ProjectInquiry(PreparedHandoffs):
+    revision: Revision
+
+
 class ProjectDelete(PreparedHandoffs):
     expected_revision: Revision
     key: Key

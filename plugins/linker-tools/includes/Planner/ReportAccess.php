@@ -75,7 +75,7 @@ final class ReportAccess {
 	}
 
 	/**
-	 * Fence pending deletes against the exact handoff being committed by Commerce.
+	 * Fence pending deletes against the exact report or preliminary revision being committed by Commerce.
 	 *
 	 * @param mixed               $previous Earlier service adapter.
 	 * @param array<string,mixed> $reference Frozen reference from the current server-owned Woo draft.
@@ -86,15 +86,15 @@ final class ReportAccess {
 		if ( $principal instanceof WP_Error ) {
 			return $principal;
 		}
-		$reply = $this->transport->object(
-			$principal,
-			'handoffs/admit-inquiry',
-			array(
-				'schema_version'  => 1,
-				'handoff_id'      => $reference['handoff_id'],
-				'snapshot_sha256' => $reference['snapshot_sha256'],
-			)
+		$handoff = isset( $reference['handoff_id'] );
+		$command = $handoff ? array(
+			'handoff_id'      => $reference['handoff_id'],
+			'snapshot_sha256' => $reference['snapshot_sha256'],
+		) : array(
+			'project_id' => $reference['project_id'],
+			'revision'   => $reference['revision'],
 		);
+		$reply   = $this->transport->object( $principal, $handoff ? 'handoffs/admit-inquiry' : 'projects/admit-inquiry', array( 'schema_version' => 1 ) + $command );
 		if ( $reply instanceof WP_Error ) {
 			return $reply;
 		}

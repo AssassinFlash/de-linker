@@ -1,6 +1,6 @@
 <?php
 /**
- * Coordinate deletion of a prepared project with native inquiry submission.
+ * Coordinate project deletion with native inquiry submission.
  *
  * @package Linker\Tools
  */
@@ -12,7 +12,7 @@ namespace Linker\Tools\Planner;
 use Linker\Commerce\Planning\ProjectReferences;
 use WP_Error;
 
-/** Only a private prepared_handoff refusal reaches this branch of an admitted delete. */
+/** Coordinate every admitted delete, including projects without a report. */
 final class ProjectDelete {
 	/**
 	 * Pin the generation before reading Woo. Inquiry submission advances it under
@@ -23,7 +23,7 @@ final class ProjectDelete {
 	 * @param Transport           $transport Private planner RPC.
 	 * @return array{status:int,type:string,body:string}|WP_Error
 	 */
-	public static function prepared( Principal $principal, array $command, Transport $transport ): array|WP_Error {
+	public static function checked( Principal $principal, array $command, Transport $transport ): array|WP_Error {
 		$project = $command['project_id'] ?? null;
 		if ( ! is_string( $project ) || ! class_exists( ProjectReferences::class ) ) {
 			return Failure::make( 'inquiry_unavailable', 503 );
@@ -44,10 +44,22 @@ final class ProjectDelete {
 					if ( is_wp_error( $state ) ) {
 						// A concurrent identical delete may have already committed. The original
 						// owner/key can recover its receipt even after the project disappeared.
-						$reply = 404 === ( $state->get_error_data()['status'] ?? null ) ? $transport->call( $principal, 'projects/delete', (string) wp_json_encode( $command ) ) : $state;
+						$reply = $state;
+						if ( 404 === ( $state->get_error_data()['status'] ?? null ) ) {
+							$receipt = $transport->object( $principal, 'operations/replay/projects/delete', $command );
+							if ( is_wp_error( $receipt ) ) {
+								$reply = $receipt;
+							} elseif ( 'replayed' === ( $receipt['status'] ?? null ) ) {
+								$reply = array(
+									'status' => 200,
+									'type'   => 'application/json',
+									'body'   => (string) wp_json_encode( $receipt['result'] ?? null ),
+								);
+							}
+						}
 						return;
 					}
-					if ( true !== ( $state['has_handoffs'] ?? null ) || ! is_int( $state['inquiry_generation'] ?? null ) || $state['inquiry_generation'] < 0 ) {
+					if ( ! is_int( $state['inquiry_generation'] ?? null ) || $state['inquiry_generation'] < 0 ) {
 						$reply = Failure::make( 'invalid_reply', 502 );
 						return;
 					}

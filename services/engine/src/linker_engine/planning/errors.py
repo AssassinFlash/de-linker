@@ -34,6 +34,10 @@ class NotFound(PlanningError):
     code = "not_found"
 
 
+class ProjectRevisionNotFound(NotFound):
+    code = "project_revision_not_found"
+
+
 class Conflict(PlanningError):
     """A revision, idempotency key or immutable record conflicts."""
 
