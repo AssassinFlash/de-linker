@@ -988,6 +988,11 @@ test("selected measured roof properties apply to that roof and Undo restores its
 	await click("Undo");
 	assert.equal(input("Selected roof height").value, "4");
 	assert.deepEqual(app.inputs.geometry.roofs[0].u_axis_enu, saved.u_axis_enu);
+	await change(input("Selected roof pitch"), "90");
+	await click("Remove selected");
+	assert.equal(app.inputs.geometry.roofs.length, 0);
+	await click("Continue with energy use");
+	assert.equal(app.next, 1);
 });
 
 test("new roof interaction places moves rotates removes and undoes an actual module group", async (t) => {

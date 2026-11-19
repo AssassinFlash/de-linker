@@ -90,6 +90,7 @@ async function importLoadProfile(energy: ReturnType<Page['locator']>) {
 	await energy
 		.getByRole('button', { name: 'CSV importieren', exact: true })
 		.click();
+	await energy.getByLabel('Zeitzone').fill('UTC');
 	await energy.getByLabel('CSV-Datei').setInputFiles({
 		name: 'privater-lastgang.csv',
 		mimeType: 'text/csv',
@@ -198,6 +199,7 @@ for (const lang of ['en', 'de'] as const) {
 			context,
 		}) => {
 			test.setTimeout(300_000);
+			page.setDefaultTimeout(20_000);
 			const words = labels[lang];
 			await page.setViewportSize({
 				width,

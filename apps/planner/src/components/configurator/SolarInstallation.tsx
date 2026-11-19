@@ -300,6 +300,15 @@ export function SolarInstallation({
 		) ??
 		geometry.roofs[0];
 	const selectedProperties = roof ? roofProperties(roof) : null;
+	useEffect(() => {
+		if (
+			roofPropertyInvalid &&
+			!roofPropertiesPanel.current?.querySelector('input[aria-invalid="true"]')
+		) {
+			setRoofPropertyInvalid(false);
+			setError("");
+		}
+	}, [roof, roofPropertyInvalid]);
 	const selectedSource = geometry.sources.find(
 		(source) => source.id === roof?.source_id,
 	);
