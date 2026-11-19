@@ -1,11 +1,21 @@
 /**
  * Current Woo supply and project PV parameters, from a first visitor's entry.
  */
+import { mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { instance } from '../lib/instance';
 
 const retiredPanel = /Trina|TSM[-_ ]?(?:45|46)0NEG|Vertex[- ]S\+/i;
 const origin = instance().url;
+
+async function screenshot(page: Page, name: string) {
+	const dir = process.env.LINKER_E2E_SHOTS;
+	if (dir) {
+		await mkdir(dir, { recursive: true });
+		await page.screenshot({ path: join(dir, name + '.png') });
+	}
+}
 
 async function menu(
 	page: Page,
@@ -74,6 +84,7 @@ for (const locale of ['en', 'de'] as const) {
 							)
 					)
 					.toBeGreaterThan(0);
+				await screenshot(page, `brand-${locale}-${width}`);
 				const product = await card.getAttribute('href');
 				await card.click();
 				expect(page.url()).toBe(product);
@@ -131,8 +142,9 @@ for (const locale of ['en', 'de'] as const) {
 					const meta = /^event: meta\r?\ndata: ([^\n]+)/m.exec(
 						stream
 					);
-					expect(meta).toBeTruthy();
-					expect(JSON.parse(meta![1])).toMatchObject({
+					if (!meta?.[1])
+						throw new Error('Missing Genie turn metadata');
+					expect(JSON.parse(meta[1])).toMatchObject({
 						grounded: true,
 						fallback: false,
 						language: locale,
@@ -149,6 +161,11 @@ for (const locale of ['en', 'de'] as const) {
 							: /power|wattage|dimensions|panel size/i
 					);
 					await expect(answer).not.toContainText(retiredPanel);
+					await expect(answer).not.toContainText(
+						/I (?:will|can) (?:automatically )?(?:transfer|enter) .{0,100}(?:saved project|configurator)|(?:trage ich|ich trage|lese ich).{0,100}(?:trage sie in die Auslegung ein|in Ihr Projekt ein)/i
+					);
+					await answer.scrollIntoViewIfNeeded();
+					await screenshot(page, `genie-${entry}-${locale}-${width}`);
 					await expect(
 						answer.locator(
 							'a[href*="/product/"],a[href*="/produkt/"]'
