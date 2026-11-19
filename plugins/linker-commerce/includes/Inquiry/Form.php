@@ -167,8 +167,11 @@ final class Form {
 				),
 				do_shortcode( self::fields_template() )
 			) ?? '';
+			$replay = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+				? \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS
+				: 0;
 			return do_shortcode( '[linker_inquiry_restriction]' )
-				. '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
+				. '<form class="linker-inquiry-form" data-linker-inquiry-replay-seconds="' . esc_attr( (string) $replay ) . '" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
 				. $this->hidden_fields( $language, $project['project_id'] . ':' . $project['revision'] )
 				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), null, $project ) . $fields . '</form>';
 		} finally {

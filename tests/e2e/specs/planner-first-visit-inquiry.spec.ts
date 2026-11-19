@@ -99,6 +99,15 @@ for (const lang of ['en', 'de'] as const) {
 				.filter({ hasText: chosen })
 				.innerText();
 			expect(direction).toContain(chosen);
+			const summary = page.locator(
+				'.sc-draft-transfer .linker-inquiry-draft'
+			);
+			const formBox = await form.boundingBox();
+			const summaryBox = await summary.boundingBox();
+			expect(formBox).not.toBeNull();
+			expect(summaryBox).not.toBeNull();
+			if (width === 1440) expect(formBox!.x).toBeLessThan(summaryBox!.x);
+			else expect(summaryBox!.y).toBeLessThan(formBox!.y);
 			await screenshot(page, `review-and-inquire-${lang}-${width}`);
 			const email = `e2e-preliminary-${Date.now()}@example.test`;
 			const message = lang === 'de' && width === 390 ? '' : words.message;
@@ -217,4 +226,81 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	const summary = page.locator('.sc-draft-transfer aside');
 	await expect(summary).toContainText('Planned system: Storage');
 	await expect(summary).not.toContainText(labels.en.directions[direction]);
+});
+
+test('back after a lost receipt recovers the original Woo inquiry', async ({
+	page,
+}) => {
+	const { url } = instance();
+	const email = `e2e-preliminary-${Date.now()}@example.test`;
+	const message = 'Please help with my storage project.';
+	await page.goto(url + '/');
+	await page
+		.getByRole('link', {
+			name: 'Open the Solution Configurator',
+			exact: true,
+		})
+		.click();
+	await page
+		.getByRole('article')
+		.filter({
+			has: page.getByRole('heading', {
+				name: 'Storage for existing PV',
+				exact: true,
+			}),
+		})
+		.getByRole('button', { name: labels.en.choose, exact: true })
+		.click();
+	const form = page.locator('form.linker-inquiry-form');
+	await form.locator('[name="name"]').fill('E2E Lost Receipt');
+	await form.locator('[name="email"]').fill(email);
+	await form.locator('textarea:visible').fill(message);
+	await form.locator('[name="consent"]').check();
+	const uuid = await form.locator('[name="linker_request_id"]').inputValue();
+	const receipt = /\/inquiry-received\/(\d+)\//;
+	const adminPost = /\/wp-admin\/admin-post\.php$/;
+	let order: string | undefined;
+	await page.route(
+		adminPost,
+		async (route) => {
+			const response = await route.fetch();
+			order = response.url().match(receipt)?.[1];
+			await route.fulfill({
+				status: 503,
+				contentType: 'text/html',
+				body: '<!doctype html><title>Receipt unavailable</title><h1>Receipt unavailable</h1>',
+			});
+		},
+		{ times: 1 }
+	);
+	await form
+		.getByRole('button', { name: labels.en.send, exact: true })
+		.click();
+	await expect(
+		page.getByRole('heading', { name: 'Receipt unavailable' })
+	).toBeVisible();
+	expect(order).toBeDefined();
+
+	await page.goBack();
+	const recover = form.getByRole('button', {
+		name: 'Check inquiry status',
+		exact: true,
+	});
+	await expect(recover).toBeVisible();
+	await expect(form.locator('[name="linker_request_id"]')).toHaveValue(uuid);
+	await expect(form.locator('textarea:visible')).toHaveValue(message);
+	await recover.click();
+	expect(page.url().match(receipt)?.[1]).toBe(order);
+	await expect(
+		page.getByRole('heading', { name: 'Inquiry received', exact: true })
+	).toBeVisible();
+	await expect(page.locator('.linker-inquiry-success')).toHaveAttribute(
+		'data-linker-received-request',
+		uuid
+	);
+	const orders = wp([
+		'eval',
+		`echo wp_json_encode(wc_get_orders(['billing_email'=>'${email}', 'return'=>'ids']));`,
+	]);
+	expect(JSON.parse(orders)).toEqual([Number(order)]);
 });

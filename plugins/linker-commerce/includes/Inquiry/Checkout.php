@@ -119,6 +119,7 @@ final class Checkout {
 		$html        = strtr(
 			\Linker\Commerce\Presentation\Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/received.html' ),
 			array(
+				'{{request_id}}'     => $preliminary ? esc_attr( (string) $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST ) ) : '',
 				'{{title}}'          => $held && ! $preliminary ? esc_html__( 'Inquiry saved for review', 'linker-commerce' ) : esc_html__( 'Inquiry received', 'linker-commerce' ),
 				'{{promise}}'        => $held ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
 				'{{url}}'            => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
