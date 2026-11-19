@@ -88,6 +88,9 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			const form = page.locator('form.linker-inquiry-form');
 			await expect(form).toBeVisible({ timeout: 90_000 });
+			await expect(
+				form.getByText(/input revision|Eingabeversion/)
+			).toHaveCount(0);
 			const binding = await form
 				.locator('[name="linker_preliminary_project"]')
 				.inputValue();
