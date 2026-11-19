@@ -20,6 +20,7 @@ import {
 	buildCalibration,
 	measurementStatus,
 	pixelToUv,
+	RESIDUAL_ABSOLUTE_TOLERANCE,
 	type CalibrationPoints,
 	type CalibrationView,
 } from "../../domain/imageCalibration.ts";
@@ -231,6 +232,13 @@ export function ImageCalibrationWorkspace({
 		return values.metric("length", { positive: true });
 	}
 
+	function checkDifferencePercent(residual: number): string {
+		return formatComputedDecimal(
+			residual <= RESIDUAL_ABSOLUTE_TOLERANCE ? 0 : residual * 100,
+			locale,
+		);
+	}
+
 	function buildFromFields(values: GeometryValues): ImageCalibration | null {
 		if (!drawing || scalePoints.length !== 2) return null;
 		// Steps before the last carry no source note; the record's own summary is
@@ -431,7 +439,7 @@ export function ImageCalibrationWorkspace({
 							"The second span differs by %s %%. The drawing stays a reference and cannot measure the roof until the points or the length are corrected.",
 							"linker-tools",
 						),
-						(calibration.check!.residual_ratio * 100).toFixed(1),
+						checkDifferencePercent(calibration.check!.residual_ratio),
 					),
 				);
 		}
@@ -950,9 +958,7 @@ export function ImageCalibrationWorkspace({
 											<dd>
 												{sprintf(
 													__("%s %%", "linker-tools"),
-													(calibration.check.residual_ratio * 100).toPrecision(
-														3,
-													),
+													checkDifferencePercent(calibration.check.residual_ratio),
 												)}
 											</dd>
 										</div>

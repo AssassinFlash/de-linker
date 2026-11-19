@@ -167,9 +167,28 @@ test.describe('native image calibration', () => {
 				// The drawing's page-down faces south, so the roof's down-slope
 				// bearing is 180 and the traced page-down edge becomes V.
 				await panel.locator('[name="bearing"]').fill(num(lang, '180'));
+				const checkLength = panel.locator('[name="check_length"]');
+				const difference = panel.getByRole('definition').filter({
+					hasText: '%',
+				});
+				// A 9.6 m span against a declared 10.24 m differs by 6.25%.
+				await checkLength.fill(num(lang, '10.24'));
+				const mismatch = `${num(lang, '6.25')} %`;
+				await expect(difference).toHaveText(mismatch);
+				await difference.scrollIntoViewIfNeeded();
+				await plannerScreenshot(page, `difference-${lang}-${width}`);
 				await panel
-					.locator('[name="check_length"]')
-					.fill(num(lang, '9.6'));
+					.getByRole('button', { name: words.continue, exact: true })
+					.click();
+				await expect(panel.getByRole('alert')).toContainText(mismatch);
+				await panel
+					.getByRole('button', {
+						name: lang === 'de' ? 'Zurück' : 'Back',
+						exact: true,
+					})
+					.click();
+				await checkLength.fill(num(lang, '9.6'));
+				await expect(difference).toHaveText('0 %');
 				await expect(panel).toContainText(words.recordedScale);
 				await expect(panel).toContainText(num(lang, '0.02'));
 				await expect(panel).toContainText(words.usable);
