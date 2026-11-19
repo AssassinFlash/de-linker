@@ -168,8 +168,8 @@ final class AccountTemplates {
 			$value = __( 'Amount', 'linker-commerce' ) . ': ';
 		} elseif ( 'page-title' === $key ) {
 			$value = is_wc_endpoint_url() ? WC()->query->get_endpoint_title( WC()->query->get_current_endpoint() ) : __( 'Overview', 'linker-commerce' );
-			if ( is_wc_endpoint_url( 'orders' ) && in_array( $this->selected_status(), $this->statuses(), true ) ) {
-				$value .= ' · ' . wc_get_order_status_name( $this->selected_status() );
+			if ( is_wc_endpoint_url( 'orders' ) && in_array( self::selected_status(), self::statuses(), true ) ) {
+				$value .= ' · ' . wc_get_order_status_name( self::selected_status() );
 			}
 		} elseif ( 'open-url' === $key ) {
 			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
@@ -185,7 +185,7 @@ final class AccountTemplates {
 				$value = add_query_arg( array( 'saved_solution' => (int) $this->row['id'] ), $value );
 			}
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
-			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
+			$value = ( 'open-current' === $key ? $this->open_only() : '' === self::selected_status() ) ? 'page' : 'false';
 		}
 		if ( in_array( $key, array( 'icon', 'total', 'items', 'nonce', 'remove-nonce', 'tiles', 'rows' ), true ) ) {
 			// 'icon' is fixed markup from nav_icon()/document_icon(), never request
@@ -575,7 +575,7 @@ final class AccountTemplates {
 						'completed'         => $order->has_status( 'completed' ),
 						'cancelled'         => $order->has_status( 'cancelled' ),
 					);
-					foreach ( $this->statuses() as $status ) {
+					foreach ( self::statuses() as $status ) {
 						$current = $order->has_status( $status );
 						$html   .= $this->fragment(
 							'stage',
@@ -681,7 +681,7 @@ final class AccountTemplates {
 		$customer = get_current_user_id();
 		$orders   = $this->overview_orders();
 		$tiles    = '';
-		foreach ( $this->statuses() as $status ) {
+		foreach ( self::statuses() as $status ) {
 			$of_status = array_values( array_filter( $orders, static fn ( WC_Order $order ): bool => $order->has_status( $status ) ) );
 			$tiles    .= $this->fragment(
 				'tile',
@@ -782,7 +782,7 @@ final class AccountTemplates {
 	 *
 	 * @return list<string>
 	 */
-	private function statuses(): array {
+	private static function statuses(): array {
 		return array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed', 'cancelled' );
 	}
 
@@ -817,8 +817,8 @@ final class AccountTemplates {
 		if ( $this->open_only() ) {
 			$query['status'] = array( Statuses::RECEIVED, Statuses::QUOTATION );
 		} else {
-			$status = $this->selected_status();
-			if ( in_array( $status, $this->statuses(), true ) ) {
+			$status = self::selected_status();
+			if ( in_array( $status, self::statuses(), true ) ) {
 				$query['status'] = array( $status );
 			}
 		}
@@ -827,14 +827,14 @@ final class AccountTemplates {
 
 	/** Read-only list selection, never an action or a mutation. */
 	private function open_only(): bool {
-		return 'open' === $this->selected_status();
+		return 'open' === self::selected_status();
 	}
 
-	/** Validated selection shared by the heading, tabs, query and pagination. */
-	private function selected_status(): string {
+	/** Validated inquiry-list selection for the current request. */
+	public static function selected_status(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter.
 		$status = isset( $_GET['inquiry-status'] ) && is_string( $_GET['inquiry-status'] ) ? sanitize_key( wp_unslash( $_GET['inquiry-status'] ) ) : '';
-		return in_array( $status, array_merge( $this->statuses(), array( 'open' ) ), true ) ? $status : '';
+		return in_array( $status, array_merge( self::statuses(), array( 'open' ) ), true ) ? $status : '';
 	}
 
 	/**
@@ -844,7 +844,7 @@ final class AccountTemplates {
 	 */
 	private function page_url( int $page ): string {
 		$url = wc_get_endpoint_url( 'orders', (string) $page );
-		return '' === $this->selected_status() ? $url : add_query_arg( array( 'inquiry-status' => $this->selected_status() ), $url );
+		return '' === self::selected_status() ? $url : add_query_arg( array( 'inquiry-status' => self::selected_status() ), $url );
 	}
 
 	/**

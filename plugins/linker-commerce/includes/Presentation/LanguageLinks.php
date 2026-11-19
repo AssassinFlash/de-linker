@@ -175,7 +175,12 @@ final class LanguageLinks {
 		foreach ( LibraryPage::language_query( wp_unslash( $_GET ) ) as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
+		// Keep the same filter on Woo's inquiry list, without carrying account query args elsewhere.
+		$status = AccountTemplates::selected_status();
+		if ( '' !== $status && \function_exists( 'is_account_page' ) && is_account_page() && is_wc_endpoint_url( 'orders' ) ) {
+			$kept['inquiry-status'] = $status;
+		}
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', 'inquiry-status', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

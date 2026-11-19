@@ -228,6 +228,64 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
+	 * Switching languages keeps only a valid inquiry-list selection on that list.
+	 *
+	 * @dataProvider inquiry_language_urls
+	 * @param string              $source    Current language.
+	 * @param bool                $orders    Whether Woo is showing its orders endpoint.
+	 * @param string|list<string> $selection Requested filter.
+	 * @param string              $kept      Expected query string, including its question mark.
+	 */
+	public function test_language_switch_keeps_only_the_inquiry_list_selection( string $source, bool $orders, string|array $selection, string $kept ): void {
+		$target        = 'en' === $source ? 'de' : 'en';
+		$pages         = array(
+			'en' => '/my-account/',
+			'de' => '/de/mein-konto/',
+		);
+		$ids           = array(
+			'en' => 1037,
+			'de' => 6869,
+		);
+		$endpoints     = array(
+			'en' => 'inquiries/2/',
+			'de' => 'anfragen/2/',
+		);
+		$source_suffix = $orders ? $endpoints[ $source ] : '';
+		$target_suffix = $orders ? $endpoints[ $target ] : '';
+		$this->page( $ids[ $source ], 'http://linker.test' . $pages[ $source ], array( $target => $ids[ $target ] ), $source );
+		$this->permalink( $ids[ $target ], 'http://linker.test' . $pages[ $target ] );
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url' )->with( 'orders' )->andReturn( $orders );
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $value ): string => strtolower( $value ) ) );
+		$query                  = array(
+			'inquiry-status' => $selection,
+			'customer_id'    => '42',
+		);
+		$_GET                   = $query;
+		$_SERVER['REQUEST_URI'] = $pages[ $source ] . $source_suffix . '?' . http_build_query( $query );
+
+		$expected = 'http://linker.test' . $pages[ $target ] . $target_suffix . $kept;
+		$this->filter_returns( 'pll_translation_url', $expected, array( 'http://linker.test' . $pages[ $target ] . $source_suffix . $kept, $target ) );
+		$this->assertSame( $expected, ( new LanguageLinks() )->url( $target ) );
+	}
+
+	/**
+	 * Accepted selections and rejected filters on the account's language links.
+	 *
+	 * @return array<string, array{string, bool, string|list<string>, string}>
+	 */
+	public static function inquiry_language_urls(): array {
+		return array(
+			'open in German'       => array( 'en', true, 'open', '?inquiry-status=open' ),
+			'quotation in English' => array( 'de', true, 'quotation-issued', '?inquiry-status=quotation-issued' ),
+			'completed in German'  => array( 'en', true, 'completed', '?inquiry-status=completed' ),
+			'Woo payment status'   => array( 'en', true, 'pending', '' ),
+			'multiple values'      => array( 'de', true, array( 'open' ), '' ),
+			'not an inquiry list'  => array( 'de', false, 'open', '' ),
+		);
+	}
+
+	/**
 	 * The footer's switcher is the header's implementation: on an English
 	 * account page "Deutsch" opens the German account page, not /de/, and
 	 * "English" stays on the page the visitor is on (AUDIT.md H2).
