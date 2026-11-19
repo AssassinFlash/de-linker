@@ -1,4 +1,3 @@
-bom
 gap-5
 grid
 linker-inquiry
@@ -292,3 +291,5 @@ sc-system-equipment
 sc-system-node
 sc-system-options
 sc-system-overview
+tabular-nums
+whitespace-nowrap
