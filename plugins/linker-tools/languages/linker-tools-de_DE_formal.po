@@ -10040,6 +10040,10 @@ msgid "New quantity"
 msgstr "Neue Menge"
 
 #: build/planner/assets/planner.js
+msgid "Confirm and continue to inquiry"
+msgstr "Bestätigen und weiter zur Anfrage"
+
+#: build/planner/assets/planner.js
 msgid "Confirm changes"
 msgstr "Änderungen bestätigen"
 

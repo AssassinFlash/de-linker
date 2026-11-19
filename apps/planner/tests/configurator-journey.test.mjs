@@ -25,6 +25,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	let reportOnly = false;
 	let reportChanges = [];
 	let phaseConflicts;
+	const inquiryUrls = { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` };
 	const client = {
 		origin,
 		isCurrentScope: () => true,
@@ -41,6 +42,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				snapshot_sha256: "e".repeat(64),
 				already_present: false,
 				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+				inquiry_urls: inquiryUrls,
 				...(reportOnly
 					? { changes: reportChanges, report_only: true }
 					: {
@@ -105,7 +107,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		dom.element.textContent,
 		/Grid phase mismatch\. Selected inverter: 1\. Project requirement: 3\. You can send an inquiry to discuss the configuration\./,
 	);
-	await act(async () => button("Confirm changes").click());
+	assert.equal(applied.length, 0);
+	await act(async () => button("Confirm and continue to inquiry").click());
 	assert.deepEqual(applied, [
 		[
 			"draft/apply",
@@ -140,6 +143,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		dom.element.textContent,
 		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
 	);
+	assert.equal(button("Bestätigen und weiter zur Anfrage").disabled, false);
 	assert.equal(button("Änderungen bestätigen").disabled, false);
 	phaseConflict = undefined;
 	phaseConflicts = [
@@ -163,7 +167,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await act(async () => button("Attach report to inquiry").click());
 	assert.match(dom.element.textContent, /Depot · East: Grid phase mismatch/);
 	assert.match(dom.element.textContent, /West: Grid phase mismatch/);
-	await act(async () => button("Attach report to inquiry").click());
+	assert.equal(applied.length, 1);
+	await act(async () => button("Confirm and continue to inquiry").click());
 	assert.equal(applied.length, 2);
 
 	phaseConflicts = undefined;
@@ -199,6 +204,93 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await act(async () => button("Attach report to inquiry").click());
 	assert.match(dom.element.textContent, /GoodWe inverter/);
 	assert.equal(applied.length, 3);
+});
+
+test("an applied product report resumes at the localized inquiry without another transfer", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { DraftTransferButton } =
+		await import("../src/components/energy/DraftTransferButton.tsx");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const origin = window.location.origin;
+	const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+	const command = {
+		schema_version: 1,
+		project_id: run.project_id,
+		report_run_id: run.id,
+		expected_revision: run.revision,
+		expected_draft_sha256: "d".repeat(64),
+		key: "3909eb85-2936-43a8-8b53-c13114084498",
+	};
+	const record = {
+		path: "draft/apply",
+		body: JSON.stringify(command),
+		key: command.key,
+		resultId: null,
+	};
+	const handoff = "c".repeat(32);
+	const acknowledged = [];
+	const client = {
+		origin,
+		isCurrentScope: () => true,
+		async send(path, body) {
+			assert.equal(path, "draft/read");
+			assert.equal(body, record.body);
+			return {
+				schema_version: 1,
+				state: "applied",
+				receipt: {
+					schema_version: 1,
+					project_id: run.project_id,
+					report_run_id: run.id,
+					revision: run.revision,
+					handoff_id: handoff,
+					intent_sha256: "d".repeat(64),
+					snapshot_sha256: "e".repeat(64),
+					items: [{ id: 1, quantity: 1 }],
+					draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+					inquiry_urls: {
+						en: `${origin}/inquiry/`,
+						de: `${origin}/de/anfrage/`,
+					},
+				},
+			};
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(DraftTransferButton, {
+				client,
+				current: true,
+				blocked: false,
+				locale: "de_DE_formal",
+				operations: {
+					records: [record],
+					async acknowledgeReadback(...args) {
+						acknowledged.push(args);
+					},
+					start() {
+						assert.fail("Recovery attempted another transfer");
+					},
+				},
+				run,
+				scope: "owned",
+				recheck() {},
+			}),
+		),
+	);
+	assert.deepEqual(acknowledged, [[record, handoff]]);
+	assert.deepEqual(
+		[...dom.element.querySelectorAll("a")].map(({ textContent, href }) => [
+			textContent,
+			href,
+		]),
+		[
+			["Continue to inquiry", `${origin}/de/anfrage/`],
+			["View solution draft", `${origin}/de/entwurf/`],
+		],
+	);
 });
 
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {

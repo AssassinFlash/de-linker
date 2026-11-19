@@ -40,9 +40,7 @@ export function DraftTransferButton({
 		[checking, setChecking] = useState(false),
 		[receipt, setReceipt] = useState<DraftReceipt | null>(null),
 		[error, setError] = useState<unknown>(null),
-		[presentUrls, setPresentUrls] = useState<Readonly<
-			Record<"en" | "de", string>
-		> | null>(null);
+		[present, setPresent] = useState<DraftPreview | null>(null);
 	const confirmed = useRef<{ key: string; receipt: DraftReceipt } | null>(null),
 		flight = useRef<AbortController | null>(null),
 		lifetime = useRef(0),
@@ -168,10 +166,10 @@ export function DraftTransferButton({
 			) {
 				const value = readDraftPreview(raw, command, client.origin);
 				if (value.alreadyPresent) {
-					setPresentUrls(value.urls);
+					setPresent(value);
 					setPreview(null);
 				} else {
-					setPresentUrls(null);
+					setPresent(null);
 					setReceipt(null);
 					if (
 						reportOnly &&
@@ -201,7 +199,8 @@ export function DraftTransferButton({
 			}
 		}
 	}
-	async function confirm(preview: DraftPreview) {
+	const language = locale.startsWith("de") ? "de" : "en";
+	async function confirm(preview: DraftPreview, continueToInquiry = false) {
 		if (!transferEnabled.current || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current;
 		const reply = await operations.start("draft/apply", {
@@ -218,9 +217,19 @@ export function DraftTransferButton({
 			setReceipt(reply.receipt);
 			setPreview(null);
 			setError(null);
+			if (
+				continueToInquiry &&
+				transferEnabled.current &&
+				reply.receipt.inquiryUrls
+			)
+				window.location.assign(reply.receipt.inquiryUrls[language]);
 		}
 	}
-	const readyUrls = current ? (receipt?.urls ?? presentUrls) : null;
+	const ready = current ? (receipt ?? present) : null;
+	const readyUrls = ready?.urls;
+	const inquiryUrl =
+		ready?.inquiryUrls?.[language] ??
+		(reportOnly ? readyUrls?.[language] : undefined);
 	const operationError =
 		operations.intent?.path === "draft/apply" &&
 		readPlanningOperation("draft/apply", operations.intent.body)
@@ -262,21 +271,28 @@ export function DraftTransferButton({
 									)}
 						</p>
 					)}
-					<a
-						className="lp-button"
-						href={readyUrls[locale.startsWith("de") ? "de" : "en"]}
-					>
-						{reportOnly
-							? __("Continue to inquiry", "linker-tools")
-							: __("View solution draft", "linker-tools")}
-					</a>
+					{inquiryUrl && (
+						<a className="lp-button" href={inquiryUrl}>
+							{__("Continue to inquiry", "linker-tools")}
+						</a>
+					)}
+					{!reportOnly && (
+						<a
+							className={
+								inquiryUrl ? "lp-button lp-button-secondary" : "lp-button"
+							}
+							href={readyUrls[language]}
+						>
+							{__("View solution draft", "linker-tools")}
+						</a>
+					)}
 					<button
 						type="button"
 						className="lp-button lp-button-secondary"
 						disabled={busy || !current}
 						onClick={() => {
 							setReceipt(null);
-							setPresentUrls(null);
+							setPresent(null);
 							void prepare();
 						}}
 					>
@@ -370,9 +386,23 @@ export function DraftTransferButton({
 									)}
 								</Notice>
 							))}
+							{preview.inquiryUrls && (
+								<button
+									type="button"
+									className="lp-button"
+									disabled={busy || !current || operations.storageFailed}
+									onClick={() => void confirm(preview, true)}
+								>
+									{__("Confirm and continue to inquiry", "linker-tools")}
+								</button>
+							)}
 							<button
 								type="button"
-								className="lp-button"
+								className={
+									preview.inquiryUrls
+										? "lp-button lp-button-secondary"
+										: "lp-button"
+								}
 								disabled={busy || !current || operations.storageFailed}
 								onClick={() => void confirm(preview)}
 							>

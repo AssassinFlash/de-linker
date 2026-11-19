@@ -184,7 +184,7 @@ final class DraftTransfer {
 		if ( isset( $receipts[ $key ] ) ) {
 			$known = $receipts[ $key ];
 			$this->stop_autosave();
-			return is_array( $known ) && ( $known['intent_sha256'] ?? null ) === $intent && ( $known['handoff_id'] ?? null ) === $handoff['id'] ? array_replace( $known, array( 'draft_urls' => self::urls( self::report_only( $handoff['snapshot'] ) ) ) ) : self::failure( 'planning_transfer_changed', 409 );
+			return is_array( $known ) && ( $known['intent_sha256'] ?? null ) === $intent && ( $known['handoff_id'] ?? null ) === $handoff['id'] ? array_replace( $known, self::destinations( self::report_only( $handoff['snapshot'] ) ) ) : self::failure( 'planning_transfer_changed', 409 );
 		}
 		// Woo may have loaded this request before another transfer finished. Do
 		// not overwrite that newer native draft or import arbitrary session fields.
@@ -263,7 +263,7 @@ final class DraftTransfer {
 				'revision'        => $snapshot['revision'],
 				'items'           => $items,
 				'command'         => $command,
-				'draft_urls'      => self::urls( $report_only ),
+				...self::destinations( $report_only ),
 			);
 			if ( $report_only ) {
 				$result['report_only'] = true;
@@ -300,6 +300,20 @@ final class DraftTransfer {
 			$this->stop_autosave();
 			return self::failure( 'planning_transfer_unconfirmed', 503 );
 		}
+	}
+
+	/**
+	 * Links returned to the planner for this native Woo transfer.
+	 *
+	 * @param bool $report_only Whether the report adds no products.
+	 * @return array{draft_urls: array<string,string>, inquiry_urls: array<string,string>}
+	 */
+	public static function destinations( bool $report_only ): array {
+		$inquiry = self::urls( true );
+		return array(
+			'draft_urls'   => $report_only ? $inquiry : self::urls(),
+			'inquiry_urls' => $inquiry,
+		);
 	}
 
 	/** Both destinations come from the native translated Woo page pairing.
@@ -346,7 +360,7 @@ final class DraftTransfer {
 		if ( ! is_array( $known ) || ( $known['intent_sha256'] ?? null ) !== Publication::revision( $command ) || ( $known['handoff_id'] ?? null ) !== ( $handoff['id'] ?? null ) ) {
 			return self::failure( 'planning_transfer_changed', 409 );
 		}
-		$known['draft_urls'] = self::urls( self::report_only( $handoff['snapshot'] ) );
+		$known = array_replace( $known, self::destinations( self::report_only( $handoff['snapshot'] ) ) );
 		return array(
 			'schema_version' => 1,
 			'state'          => 'applied',

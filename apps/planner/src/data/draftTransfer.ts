@@ -10,6 +10,7 @@ export interface DraftReceipt {
 	readonly reportRunId: string;
 	readonly revision: number;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
+	readonly inquiryUrls: Readonly<Record<"en" | "de", string>> | null;
 }
 export interface DraftPreview {
 	readonly draftSha256: string;
@@ -20,6 +21,7 @@ export interface DraftPreview {
 	}[];
 	readonly alreadyPresent: boolean;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
+	readonly inquiryUrls: Readonly<Record<"en" | "de", string>> | null;
 	readonly changes: readonly {
 		readonly productId: number;
 		readonly label: string;
@@ -81,7 +83,13 @@ export function readDraftReceipt(
 		reportRunId: String(row.report_run_id),
 		revision: Number(row.revision),
 		urls: destinations,
+		inquiryUrls: readInquiryUrls(row, origin),
 	};
+}
+function readInquiryUrls(row: JsonObject, origin: string) {
+	return row.inquiry_urls === undefined
+		? null
+		: readUrls(readObject(row.inquiry_urls), origin);
 }
 function readUrls(
 	urls: JsonObject,
@@ -166,6 +174,7 @@ export function readDraftPreview(
 		changes,
 		alreadyPresent: row.already_present,
 		urls: readUrls(readObject(row.draft_urls), origin),
+		inquiryUrls: readInquiryUrls(row, origin),
 	};
 }
 
