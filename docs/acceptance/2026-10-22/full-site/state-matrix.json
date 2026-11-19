@@ -1613,6 +1613,16 @@
       "home_states_20261107": {
         "status": "pass",
         "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-home.jpg"
+        ]
       }
     }
   },
@@ -1640,6 +1650,16 @@
       "home_states_20261107": {
         "status": "pass",
         "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-home.jpg"
+        ]
       }
     }
   },
@@ -1667,6 +1687,16 @@
       "home_states_20261107": {
         "status": "pass",
         "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-home.jpg"
+        ]
       }
     }
   },
@@ -1694,6 +1724,16 @@
       "home_states_20261107": {
         "status": "pass",
         "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-home.jpg"
+        ]
       }
     }
   },
@@ -2424,6 +2464,16 @@
       "product_archive_20261107": {
         "status": "pass",
         "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-detail.jpg"
+        ]
       }
     }
   },
@@ -2452,6 +2502,16 @@
       "product_archive_20261107": {
         "status": "pass",
         "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-detail.jpg"
+        ]
       }
     }
   },
@@ -2480,6 +2540,16 @@
       "product_archive_20261107": {
         "status": "pass",
         "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-detail.jpg"
+        ]
       }
     }
   },
@@ -2508,6 +2578,16 @@
       "product_archive_20261107": {
         "status": "pass",
         "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-detail.jpg"
+        ]
       }
     }
   },
@@ -26364,6 +26444,16 @@
       "configurator_states_20261107": {
         "status": "pass",
         "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-3b426--before-and-after-reopening-chromium/attachments/partial-new-en-1440-2704eaef797e9c114346e014abbcfc0e3a681aca.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-3b426--before-and-after-reopening-chromium/attachments/partial-saved-en-1440-3d0cd5608e510a112705cdef888d3e4967e786d7.png"
+        ]
       }
     }
   },
@@ -26401,6 +26491,17 @@
       "configurator_states_20261107": {
         "status": "pass",
         "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified. The separate EN mobile capture shows the optional message being edited.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-87874--before-and-after-reopening-chromium/attachments/partial-new-en-390-3bced5b7750df2ef1f7909463452eb2642b507a4.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-87874--before-and-after-reopening-chromium/attachments/partial-saved-en-390-2280a248d1cdaeeb1a94bf1aa610fda0bebbad9e.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-en390-visual/message.png"
+        ]
       }
     }
   },
@@ -26438,6 +26539,16 @@
       "configurator_states_20261107": {
         "status": "pass",
         "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-19ee5--before-and-after-reopening-chromium/attachments/partial-new-de-1440-53e4babaa1239618f3d19628d43e0dd96ff287c8.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-19ee5--before-and-after-reopening-chromium/attachments/partial-saved-de-1440-e7502db78020ac750f5a704f750dce16b992e1e8.png"
+        ]
       }
     }
   },
@@ -26475,6 +26586,16 @@
       "configurator_states_20261107": {
         "status": "pass",
         "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-45536--before-and-after-reopening-chromium/attachments/partial-new-de-390-c29fad195d870c1fc6cebc84aa90ac5a1e24e882.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-45536--before-and-after-reopening-chromium/attachments/partial-saved-de-390-15fa0de35159dc8fa89912b4aeaf0dcf5b3f2849.png"
+        ]
       }
     }
   },
@@ -30203,6 +30324,15 @@
       "library_states_20261107": {
         "status": "pass",
         "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -30247,6 +30377,15 @@
       "library_states_20261107": {
         "status": "pass",
         "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -30291,6 +30430,15 @@
       "library_states_20261107": {
         "status": "pass",
         "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -30334,6 +30482,15 @@
       "library_states_20261107": {
         "status": "pass",
         "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -32789,7 +32946,17 @@
     ],
     "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
     "verified_checks": {
-      "consumer_chain": "tests/e2e/specs/planner-brief-chain.spec.ts tests 1+5 (PR #1027-1029 era) - staged note reads back verbatim, stays out of sizing, note-only retry"
+      "consumer_chain": "tests/e2e/specs/planner-brief-chain.spec.ts tests 1+5 (PR #1027-1029 era) - staged note reads back verbatim, stays out of sizing, note-only retry",
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
+      }
     }
   },
   {
@@ -32814,7 +32981,18 @@
       "provenance"
     ],
     "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-    "verified_checks": {}
+    "verified_checks": {
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
+      }
+    }
   },
   {
     "key": "project-brief:source-stage-readback-and-note-scope:de:1440",
@@ -32838,7 +33016,18 @@
       "provenance"
     ],
     "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-    "verified_checks": {}
+    "verified_checks": {
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
+      }
+    }
   },
   {
     "key": "project-brief:source-stage-readback-and-note-scope:de:390",
@@ -32862,7 +33051,18 @@
       "provenance"
     ],
     "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-    "verified_checks": {}
+    "verified_checks": {
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
+      }
+    }
   },
   {
     "key": "project-brief:plan-input-source-default-confirmation:en:1440",

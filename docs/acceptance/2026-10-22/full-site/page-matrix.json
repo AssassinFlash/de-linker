@@ -99,6 +99,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-home.jpg"
+        ]
       }
     },
     "default_body_review_reconciliation": {
@@ -189,6 +199,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-home.jpg"
+        ]
       }
     },
     "default_body_review_reconciliation": {
@@ -2917,6 +2937,16 @@
         "defectAdjudication": null,
         "reviews": 8,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
       }
     }
   },
@@ -2999,6 +3029,16 @@
         "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
         "reviews": 6,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
       }
     }
   },
@@ -3691,6 +3731,15 @@
         "defectAdjudication": null,
         "reviews": 2,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -3791,6 +3840,15 @@
         "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
         "reviews": 0,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -3847,6 +3905,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-detail.jpg"
+        ]
       }
     }
   },
@@ -3902,6 +3970,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-detail.jpg"
+        ]
       }
     }
   },
@@ -12091,6 +12169,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-3b426--before-and-after-reopening-chromium/attachments/partial-new-en-1440-2704eaef797e9c114346e014abbcfc0e3a681aca.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-3b426--before-and-after-reopening-chromium/attachments/partial-saved-en-1440-3d0cd5608e510a112705cdef888d3e4967e786d7.png"
+        ]
       }
     }
   },
@@ -12135,6 +12223,17 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified. The separate EN mobile capture shows the optional message being edited.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-87874--before-and-after-reopening-chromium/attachments/partial-new-en-390-3bced5b7750df2ef1f7909463452eb2642b507a4.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-87874--before-and-after-reopening-chromium/attachments/partial-saved-en-390-2280a248d1cdaeeb1a94bf1aa610fda0bebbad9e.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-en390-visual/message.png"
+        ]
       }
     }
   },
@@ -23878,6 +23977,16 @@
         "defects": 0,
         "reviews": 3,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-1440-first-detail.jpg"
+        ]
       }
     },
     "resolved_findings": {
@@ -23960,6 +24069,16 @@
         "defects": 0,
         "reviews": 0,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/en-390-first-detail.jpg"
+        ]
       }
     }
   },
@@ -24031,6 +24150,16 @@
         "defects": 0,
         "reviews": 3,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-detail.jpg"
+        ]
       }
     },
     "resolved_findings": {
@@ -24107,6 +24236,16 @@
         "defects": 0,
         "reviews": 0,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-detail.jpg"
+        ]
       }
     },
     "current_publication": {
@@ -35228,6 +35367,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-19ee5--before-and-after-reopening-chromium/attachments/partial-new-de-1440-53e4babaa1239618f3d19628d43e0dd96ff287c8.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-19ee5--before-and-after-reopening-chromium/attachments/partial-saved-de-1440-e7502db78020ac750f5a704f750dce16b992e1e8.png"
+        ]
       }
     }
   },
@@ -35272,6 +35421,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_partial_direction": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "276b27806: With partial project data, chose storage for existing PV, reopened the project and chose storage only. Both paths reached the native inquiry form; no inquiry submitted or equipment result verified.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/.last-run.json",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-45536--before-and-after-reopening-chromium/attachments/partial-new-de-390-c29fad195d870c1fc6cebc84aa90ac5a1e24e882.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a76ea1bba0f56958a/tests/e2e/artifacts/partial-276b27806-paired/planner-first-visit-inquir-45536--before-and-after-reopening-chromium/attachments/partial-saved-de-390-15fa0de35159dc8fa89912b4aeaf0dcf5b3f2849.png"
+        ]
       }
     }
   },
@@ -42980,6 +43139,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-first-detail.jpg"
+        ]
       }
     }
   },
@@ -43051,6 +43220,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_first_card": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "From homepage search to the default, unfiltered catalog: first visible card GoodWe GW60K-STS-G10; View product opened the matching localized PDP (HTTP 200). Inspected card and landing viewport only; no cart write.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/first-card.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-card.jpg",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-first-detail.jpg"
+        ]
       }
     },
     "resolved_findings": {
@@ -43598,6 +43777,15 @@
         "defectAdjudication": null,
         "reviews": 2,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -43737,6 +43925,15 @@
         "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
         "reviews": 0,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_faq_from_home": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Opened the minimum-order/delivery answer, switched to Documents and saw a PDF link. Ask Genie opened the panel; no download or chat turn.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-sheet.jpg"
+        ]
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -44302,6 +44499,16 @@
         "defectAdjudication": null,
         "reviews": 8,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
       }
     },
     "resolved_findings": {
@@ -44411,6 +44618,16 @@
         "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
         "reviews": 6,
         "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      },
+      "20261119_installer_note": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-choose.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-review.png",
+          "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/woo-receipts.tsv"
+        ]
       }
     },
     "resolved_findings": {
@@ -46644,6 +46861,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-1440-home.jpg"
+        ]
       }
     },
     "default_body_review_reconciliation": {
@@ -46772,6 +46999,16 @@
         "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
         "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
         "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+      },
+      "20261119_home_resources": {
+        "result": "bounded-local-review",
+        "environment": "review:8889",
+        "scope": "7c1fd53e4: Rejected optional cookies, used the homepage resources row to open the localized FAQ, then returned without a second consent banner. First viewport only.",
+        "evidence": [
+          "/private/tmp/af41-visual-7c1fd53e4/home-faq.json",
+          "/private/tmp/af41-visual-7c1fd53e4/revisit.json",
+          "/private/tmp/af41-visual-7c1fd53e4/de-390-home.jpg"
+        ]
       }
     },
     "default_body_review_reconciliation": {
