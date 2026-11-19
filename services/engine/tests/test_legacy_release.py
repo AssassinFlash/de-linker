@@ -90,8 +90,11 @@ class Machine:
                     }
                     if machine.failure == "loaded" and machine.running == NEW:
                         data["version"] = "wrong-loaded-generation"
-                else:
+                elif self.path == "/geo/plz/10115?country=DE":
                     data = receipt["geo"]
+                else:
+                    self.send_error(404)
+                    return
                 body = json.dumps(data).encode()
                 self.send_response(200)
                 self.send_header("Content-Length", str(len(body)))
@@ -551,7 +554,7 @@ def test_source_archive_uses_one_real_git_blob_batch(
     source = repository / "services/engine"
     source.mkdir(parents=True)
     for name, data in {
-        "data/plz_eu.csv.gz": b"geo",
+        "data/plz_de.csv.gz": b"German postcodes",
         "pyproject.toml": b"project",
         "uv.lock": b"lock",
         "ops/legacy_release.py": (
@@ -581,6 +584,30 @@ def test_source_archive_uses_one_real_git_blob_batch(
     revision = subprocess.check_output(
         ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
     ).strip()
+    previous_revision = revision
+    (source / "data/plz_eu.csv.gz").write_bytes(b"geo")
+    subprocess.run(
+        ["git", "-C", str(repository), "add", "services/engine/data/plz_eu.csv.gz"],
+        check=True,
+    )
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repository),
+            "-c",
+            "user.name=Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "commit",
+            "-qm",
+            "European postcodes",
+        ],
+        check=True,
+    )
+    revision = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
+    ).strip()
     command = ops.command
     calls = []
 
@@ -590,7 +617,7 @@ def test_source_archive_uses_one_real_git_blob_batch(
         return output
 
     monkeypatch.setattr(ops, "command", count)
-    raw = ops.archive(repository, revision, revision)
+    raw = ops.archive(repository, revision, previous_revision)
     assert len([args for args in calls if "cat-file" in args]) == 1
     assert any("--batch" in args for args in calls)
     with tarfile.open(fileobj=io.BytesIO(raw)) as tar:

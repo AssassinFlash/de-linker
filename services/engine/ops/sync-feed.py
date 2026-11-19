@@ -190,6 +190,23 @@ def read_loaded() -> dict[str, Any]:
         return dict(json.load(reply))
 
 
+def wait_for_reader(load: Callable[[], dict[str, Any]]) -> dict[str, Any]:
+    # The legacy release operator allows 45 seconds for scientific imports
+    # before Uvicorn binds. A changed feed restarts that same process.
+    deadline = time.monotonic() + 45
+    other_failures = 0
+    while True:
+        try:
+            return load()
+        except OSError as error:
+            cause = error.reason if isinstance(error, urllib.error.URLError) else error
+            if not isinstance(cause, ConnectionRefusedError):
+                other_failures += 1
+            if other_failures >= 5 or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.5)
+
+
 def job_request(action: str, body: dict[str, Any]) -> dict[str, Any]:
     base = os.environ.get(
         "LINKER_PUBLICATION_JOBS_URL",
@@ -435,14 +452,7 @@ def sync(
                 restarted = restart()
                 if restarted.returncode != 0:
                     raise RuntimeError("engine restart failed")
-                for attempt in range(5):
-                    try:
-                        actual = loaded()
-                        break
-                    except OSError:
-                        if attempt == 4:
-                            raise
-                        time.sleep(0.5)
+                actual = wait_for_reader(loaded)
                 if (
                     actual.get("version") != expected_version
                     or actual.get("source_revision") != manifest["source_revision"]
