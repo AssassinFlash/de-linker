@@ -437,17 +437,24 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         typed = "Send an inquiry"
     elif scenario == "withdrawn-manual-as-list":
         typed = "Here is my parts list."
-        uploads = [upload(raw.replace(b"probe fixture", b"ZZ-90K-T4    "))]
+        manual = raw.replace(
+            b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)",
+            b"SAJ H2-10K-T3".ljust(46),
+        ).replace(b"Battery voltage 180-750 V", b"SAJ ZZ-90K-T4".ljust(25))
+        uploads = [upload(manual)]
     elif scenario == "pasted-mixed-list":
-        typed = "2 x SAJ H2-10K-T3\n1 x SAJ ZZ-90K-T4\n2 x SMA Sunny Boy 5.0"
+        typed = "2 x H2-10K-T3\n1 x ZZ-90K-T4\nSMA Sunny Boy 5.0"
         uploads = []
     elif scenario in {"mixed-list", "continued-mixed-list", "after-mixed-list"}:
         typed = "Here is my parts list."
         list_bytes = raw
         for old, row in [
-            (b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)", b"2 x SAJ H2-10K-T3"),
-            (b"Rated power 10000 W", b"1 x SAJ ZZ-90K-T4"),
-            (b"Battery voltage 180-750 V", b"2 x SMA Sunny Boy 5.0"),
+            (
+                b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)",
+                b"Item | Qty) Tj T* (SAJ H2-10K-T3 | 2",
+            ),
+            (b"Rated power 10000 W", b"SAJ ZZ-90K-T4 | 1"),
+            (b"Battery voltage 180-750 V", b"SMA Sunny Boy 5.0"),
         ]:
             list_bytes = list_bytes.replace(old, row.ljust(len(old)))
         uploads = [upload(list_bytes)]

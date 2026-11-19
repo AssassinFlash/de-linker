@@ -211,16 +211,26 @@ class Understander:
                 }
             )
         plate = _first_nameplate(fresh, vocabulary)
+        typed_statuses = (
+            _text_statuses(message, self._publication)
+            if self._publication and message
+            else {}
+        )
         source = (
             None
             if plate is not None or vocabulary is None
-            else parts.find(request.messages, fresh, request.readings, vocabulary)
+            else parts.find(
+                request.messages,
+                fresh,
+                request.readings,
+                vocabulary,
+                tuple(typed_statuses),
+            )
         )
         unavailable_rows: set[str] = set()
         if self._publication is not None:
             from linker_genie.publication_copy import upload_unavailable
 
-            typed_statuses = self._publication.identify_text(message) if message else {}
             pasted = (
                 source is not None
                 and source.kind == "text"
@@ -571,9 +581,12 @@ def _model_list_rows(
     rows = {
         row.text: names.get(row.text.casefold(), "unknown") for row in source.parsed
     }
-    if "published" in rows.values() and (
-        source.quantified or "unknown" not in rows.values()
-    ):
+    # Only item descriptions go into a parts card. Physical ratings in an
+    # unidentified row belong to the document permission check instead.
+    for row, status in rows.items():
+        if status == "unknown" and parts.has_rating(row):
+            return {}
+    if "published" in rows.values():
         return labels
     return {}
 

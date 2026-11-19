@@ -38,6 +38,7 @@ from itertools import islice
 from typing import Any, Literal
 from xml.etree import ElementTree
 
+from linker_genie.figures import tag
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.schema import (
     AttachmentReading,
@@ -51,6 +52,7 @@ from linker_genie.schema import (
     TurnMessage,
     TurnOutput,
 )
+from linker_genie.source_models import model_pattern
 
 # Rows read of one list. The largest list in the research is 61 items (Taobao's
 # 61-item bill of materials in 10 minutes, docs/research/2026-10-17-ai-assistants/
@@ -376,6 +378,14 @@ def card_quantities(
         for pid, device in vocabulary.device_class.items()
         if device in category_counts
     }
+
+
+def has_rating(text: str) -> bool:
+    """A measured value in a transcribed row, separate from an item's quantity."""
+    return any(
+        any(character.isalpha() or character in "%°℃" for character in value)
+        for value in tag("row", text).figures.values()
+    )
 
 
 def _without_quantity(value: str) -> str:
@@ -712,7 +722,6 @@ class Source:
     since: int
     reading_id: str | None = None
     truncated: bool = False
-    quantified: bool = False
 
 
 def find(
@@ -720,6 +729,7 @@ def find(
     fresh: list[AttachmentReading],
     readings: list[AttachmentReading],
     vocabulary: Vocabulary | None,
+    supplied_models: tuple[str, ...] = (),
 ) -> Source | None:
     """The list this turn is working on, None when the turn is no list turn.
 
@@ -760,8 +770,6 @@ def find(
             rows = parse_text(text)
             if len(rows) >= 2:
                 since = len(messages) - 1
-                lines = [line for line in text.splitlines() if line.strip()]
-                quantified = all(_quantity(line) is not None for line in lines)
                 candidates.append(
                     Source(
                         "photo",
@@ -769,7 +777,6 @@ def find(
                         since,
                         reading.id,
                         rows_truncated(text, rows),
-                        quantified,
                     )
                 )
     if not candidates:
@@ -792,7 +799,7 @@ def find(
         return candidates[-1]
     if not messages or not messages[-1].role == "user":
         return None
-    if looks_like_list(latest, vocabulary):
+    if looks_like_list(latest, vocabulary, supplied_models):
         parsed = parse_text(latest)
         return Source(
             "text",
@@ -899,7 +906,9 @@ def _carried_at(messages: list[TurnMessage], reading: AttachmentReading) -> int:
     return 0
 
 
-def looks_like_list(text: str, vocabulary: Vocabulary) -> bool:
+def looks_like_list(
+    text: str, vocabulary: Vocabulary, supplied_models: tuple[str, ...] = ()
+) -> bool:
     """Whether a pasted message is a parts list, not a question about products.
 
     Two product-bearing lines (or one line that states a quantity and names a
@@ -910,7 +919,13 @@ def looks_like_list(text: str, vocabulary: Vocabulary) -> bool:
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     if not lines:
         return False
-    product_lines = sum(1 for line in lines if _product_words(line, vocabulary))
+    labels = [model_pattern(label) for label in supplied_models]
+    product_lines = sum(
+        1
+        for line in lines
+        if _product_words(line, vocabulary)
+        or any(label.search(line) for label in labels)
+    )
     quantities = sum(1 for line in lines if _quantity(line) is not None)
     if len(lines) >= 2 and product_lines >= 2:
         return quantities >= 1 or bool(_LIST_WORDS.search(text))
