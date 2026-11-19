@@ -28,13 +28,31 @@ const session = {
 	},
 };
 
-test("the home form creates a comparison with the supplied data in a single submit", async (t) => {
+test("the home form creates a comparison with the supplied data in a single submit", (t) =>
+	runHomeComparison(t));
+
+test("a rejected CSV mapping remains editable on the same project after reopening the homepage", (t) =>
+	runHomeComparison(t, "correct"));
+
+test("a customer can explicitly discard the rejected load profile and compare the same project", (t) =>
+	runHomeComparison(t, "discard"));
+
+async function runHomeComparison(t, rejectedProfile) {
+	const rejectFirstMapping = Boolean(rejectedProfile);
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { ApiError } = await import("../src/data/protocol.ts");
+	const { DraftStore } = await import("../src/data/DraftStore.ts");
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	Object.defineProperty(globalThis, "indexedDB", {
+		configurable: true,
+		value: new IDBFactory(),
+	});
 	const commands = [];
+	const mappings = [];
 	const calls = [];
 	const asset = {
 		id: "a".repeat(32),
@@ -79,6 +97,14 @@ test("the home form creates a comparison with the supplied data in a single subm
 				assert.equal(command.mapping.origin, "measured");
 				assert.equal(command.mapping.interval_seconds, 900);
 				assert.equal(command.mapping.value_kind, "interval_average_kw");
+				mappings.push(command);
+				if (command.mapping.value_column === "Incorrect heading") {
+					throw new ApiError(422, "invalid_input", {
+						issue: "headers",
+						line: 1,
+						field: "header",
+					});
+				}
 				assert.equal(command.mapping.value_column, "Load");
 				assert.equal(command.source_label, "workshop-meter.csv");
 				return asset;
@@ -117,42 +143,41 @@ test("the home form creates a comparison with the supplied data in a single subm
 			};
 		},
 	};
-	const store = {
-		async readCreations() {
-			return [];
-		},
-		async writeCreation(_, _body, destination, upload) {
-			assert.equal(destination, "guided-comparison");
-			assert.equal(atob(upload.request.content_base64), csv);
-			assert.deepEqual(calls, []);
-		},
-		async clearCreation() {},
-	};
-	const root = createRoot(fixture.element);
-	t.after(async () => fixture.dispose(root));
-	await act(async () =>
-		root.render(
-			React.createElement(SessionBoundary, { client }, (value, recheck) =>
-				React.createElement(NewProject, {
-					session: value,
-					client,
-					store,
-					recheck,
-					openOnLoad: true,
-					config: { locale: "en", countries: { DE: "Germany" } },
-					homeComparison: { picker: null, savedProject: "", compareSaved() {} },
-					created: (project, destination) => {
-						opened.push([project, destination]);
-						return true;
-					},
-				}),
+	let root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else Reflect.deleteProperty(globalThis, "indexedDB");
+	});
+	const mountHome = () =>
+		act(async () =>
+			root.render(
+				React.createElement(SessionBoundary, { client }, (value, recheck) =>
+					React.createElement(NewProject, {
+						session: value,
+						client,
+						store: new DraftStore(),
+						recheck,
+						openOnLoad: true,
+						config: { locale: "en", countries: { DE: "Germany" } },
+						homeComparison: {
+							picker: null,
+							savedProject: "",
+							compareSaved() {},
+						},
+						created: (project, destination) => {
+							opened.push([project, destination]);
+							return true;
+						},
+					}),
+				),
 			),
-		),
-	);
+		);
 	const findForm = () =>
 		document.querySelector('form[aria-label="Compare project options"]');
+	await mountHome();
 	await until(findForm);
-	const form = findForm();
+	let form = findForm();
 	const title = form.querySelector('[name="project_title"]');
 	await until(() => !title.disabled && !title.closest("fieldset").disabled);
 	function field(name) {
@@ -205,7 +230,10 @@ test("the home form creates a comparison with the supplied data in a single subm
 		"Customer site meter; permission granted.",
 	);
 	await enter(byLabel("Timestamp column"), "Timestamp");
-	await enter(byLabel("Value column"), "Load");
+	await enter(
+		byLabel("Value column"),
+		rejectFirstMapping ? "Incorrect heading" : "Load",
+	);
 	await select("Value meaning and unit", "interval_average_kw");
 	await select("Decimal separator in the file", ".");
 	await select("Interval boundaries", "fixed");
@@ -216,8 +244,38 @@ test("the home form creates a comparison with the supplied data in a single subm
 	const submit = form.querySelector('button[type="submit"]');
 	assert.equal(submit.textContent.trim(), "Compare systems");
 	await act(async () => submit.click());
+	if (rejectFirstMapping) {
+		await until(() => calls.includes("profiles/csv") && !submit.disabled);
+		assert.equal(opened.length, 0);
+		await act(async () => root.unmount());
+		root = createRoot(fixture.element);
+		await mountHome();
+		await until(() =>
+			findForm()?.querySelector('[name="load_profile_source"]'),
+		);
+		form = findForm();
+		assert.equal(byLabel("Value column").value, "Incorrect heading");
+		assert.equal(field("load_profile_source").value, "workshop-meter.csv");
+		if (rejectedProfile === "discard") {
+			const discard = [...form.querySelectorAll("button")].find(
+				(button) => button.textContent === "Compare without this load profile",
+			);
+			assert.ok(discard);
+			await act(async () => discard.click());
+		} else {
+			await enter(byLabel("Value column"), "Load");
+			await act(async () =>
+				form.querySelector('button[type="submit"]').click(),
+			);
+		}
+	}
 	await until(() => opened.length === 1);
-	assert.equal(commands.length, 1);
+	assert.equal(commands.length, rejectFirstMapping ? 2 : 1);
+	if (rejectFirstMapping) {
+		assert.deepEqual(commands[1], commands[0]);
+		if (rejectedProfile === "correct")
+			assert.notEqual(mappings[1].key, mappings[0].key);
+	}
 	assert.equal(commands[0].inputs.brief.site.country_code, "DE");
 	assert.equal(commands[0].inputs.equipment_setup.grid_phase, 3);
 	assert.equal(commands[0].inputs.brief.annual_load.kwh, 7200);
@@ -231,21 +289,29 @@ test("the home form creates a comparison with the supplied data in a single subm
 		source_note: "Surveyed customer array",
 	});
 	assert.deepEqual(calls, [
+		...(rejectFirstMapping ? ["projects/create", "profiles/csv"] : []),
 		"projects/create",
-		"profiles/csv",
-		"profiles/preview",
-		"projects/revise",
+		...(rejectedProfile === "discard"
+			? []
+			: ["profiles/csv", "profiles/preview", "projects/revise"]),
 	]);
 	const [[saved, destination]] = opened;
 	assert.equal(destination, "guided-comparison");
 	assert.equal(saved.id, projectId);
-	assert.equal(saved.revision, 2);
-	assert.equal(saved.inputs.profile_selections.selected.gross_load, asset.id);
+	assert.equal(saved.revision, rejectedProfile === "discard" ? 1 : 2);
+	assert.equal(
+		saved.inputs.profile_selections?.selected.gross_load,
+		rejectedProfile === "discard" ? undefined : asset.id,
+	);
+	assert.deepEqual(
+		await new DraftStore().readCreations(session.query_scope),
+		[],
+	);
 	const [period] = saved.inputs.energy_scenario.schedule;
 	assert.equal(period.import_cap_kw, 5);
-	assert.equal(period.start_utc, startAt);
-	assert.equal(period.end_utc, endAt);
-});
+	assert.equal(period.start_utc, rejectedProfile === "discard" ? "" : startAt);
+	assert.equal(period.end_utc, rejectedProfile === "discard" ? "" : endAt);
+}
 
 test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
 	const fixture = setupDom();

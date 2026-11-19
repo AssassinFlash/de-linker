@@ -1,3 +1,5 @@
+import { readProfileIssue } from "./profileIssue.ts";
+import type { ProfileIssue } from "./profileIssue.ts";
 import { readHomepageProfile } from "./homepageProfile.ts";
 import type { HomepageProfileUpload } from "./homepageProfile.ts";
 import type { Draft, SaveIntent } from "../domain/draft.ts";
@@ -28,6 +30,7 @@ export interface CreationIntent {
 	readonly body: string;
 	readonly destination: CreationDestination | null;
 	readonly profile?: HomepageProfileUpload;
+	readonly profileIssue?: ProfileIssue;
 	readonly createdAt: number;
 }
 export interface ProfileImportIntent {
@@ -172,6 +175,7 @@ export class DraftStore {
 		body: string,
 		destination: CreationDestination | null = null,
 		profile?: HomepageProfileUpload,
+		revision?: { previous: HomepageProfileUpload; issue?: ProfileIssue },
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
@@ -202,24 +206,33 @@ export class DraftStore {
 					if (
 						existing.body !== body ||
 						existing.destination !== destination ||
-						!sameJson(existing.profile, profile)
-					)
+						!sameJson(
+							existing.profile,
+							revision ? revision.previous : profile,
+						) ||
+						(revision && !revision.issue && !existing.profileIssue)
+					) {
 						refuse(new Error("creation_intent_conflict"));
-					return;
+						return;
+					}
+					if (!revision) return;
 				}
 				const bytes = records.reduce(
 					(sum, record) => sum + new TextEncoder().encode(record.body).length,
 					0,
 				);
-
 				const retainedProfileBytes = records.reduce(
-					(sum, record) => sum + creationProfileBytes(record.profile),
+					(sum, record) =>
+						sum +
+						(record === existing ? 0 : creationProfileBytes(record.profile)),
 					0,
 				);
 				if (
 					retainedProfileBytes + profileBytes > MAX_SCOPE_IMPORT_BYTES ||
-					records.length >= MAX_CREATION_INTENTS ||
-					bytes + new TextEncoder().encode(body).length > MAX_RECOVERY_BYTES
+					(!existing &&
+						(records.length >= MAX_CREATION_INTENTS ||
+							bytes + new TextEncoder().encode(body).length >
+								MAX_RECOVERY_BYTES))
 				) {
 					refuse(new Error("recovery_storage_limit"));
 					return;
@@ -230,7 +243,8 @@ export class DraftStore {
 					body,
 					destination,
 					...(profile && { profile }),
-					created_at: Date.now(),
+					...(revision?.issue && { profile_issue: revision.issue }),
+					created_at: existing?.createdAt ?? Date.now(),
 				});
 			},
 			refuse,
@@ -323,6 +337,9 @@ export class DraftStore {
 					body,
 					destination: destination ?? previousDestination,
 					...(previous?.profile && { profile: previous.profile }),
+					...(previous?.profileIssue && {
+						profile_issue: previous.profileIssue,
+					}),
 					created_at: createdAt,
 				});
 			},
@@ -689,7 +706,11 @@ function scanCreations(
 				value.profile === undefined
 					? undefined
 					: readHomepageProfile(value.profile);
-			if (profile && destination !== "guided-comparison")
+			const profileIssue = readProfileIssue(value.profile_issue);
+			if (
+				(profile && destination !== "guided-comparison") ||
+				(value.profile_issue !== undefined && (!profile || !profileIssue))
+			)
 				throw new Error("invalid_creation_recovery");
 			profileBytes += creationProfileBytes(profile);
 			if (profileBytes > MAX_SCOPE_IMPORT_BYTES)
@@ -702,6 +723,7 @@ function scanCreations(
 				body: value.body,
 				destination,
 				...(profile && { profile }),
+				...(profileIssue && { profileIssue }),
 				createdAt: value.created_at,
 			});
 			row.continue();

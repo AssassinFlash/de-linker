@@ -21,6 +21,7 @@ import {
 	emptyHomepageProfile,
 	homepageProfileFile,
 	HomepageLoadProfile,
+	restoreHomepageProfile,
 } from "./configurator/HomepageLoadProfile.tsx";
 import type { HomepageProfileForm } from "./configurator/HomepageLoadProfile.tsx";
 import { hasPlant } from "../domain/equipmentPlant.ts";
@@ -117,7 +118,7 @@ export function NewProject({
 	const profile = useRef<HomepageProfileUpload | undefined>(undefined);
 	const changeProfile = useCallback((patch: Partial<HomepageProfileForm>) => {
 		setProfileForm((current) => ({ ...current, ...patch }));
-		setProfileError("");
+		if (patch.mappingValid === undefined) setProfileError("");
 	}, []);
 	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
 		new Set(),
@@ -277,10 +278,15 @@ export function NewProject({
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
-		profile.current = record.profile;
-		setProfileForm(emptyHomepageProfile());
-		setProfileCorrection(false);
-		setProfileError("");
+		const { profile: savedProfile, profileIssue: issue } = record;
+		profile.current = savedProfile;
+		setProfileForm(
+			savedProfile && issue
+				? restoreHomepageProfile(savedProfile)
+				: emptyHomepageProfile(),
+		);
+		setProfileCorrection(Boolean(issue));
+		setProfileError(issue ? issueLabel(issue.issue) : "");
 		intentScope.current = record.scope;
 		destination.current = record.destination;
 		setTitle(record.title);
@@ -288,9 +294,12 @@ export function NewProject({
 		setProjectGone(false);
 		setInputContractRequired(false);
 		setOpen(true);
-		setFailed(true);
+		setFailed(!issue);
 	}
-	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
+	async function submit(
+		direction?: NonNullable<Brief["system_scope"]>,
+		discardProfile = false,
+	) {
 		if (
 			sending.current ||
 			creationPending ||
@@ -321,14 +330,16 @@ export function NewProject({
 				return;
 			}
 		}
+		const editableProfile =
+			compareAtHome && (!intent.current || profileCorrection);
 		const file =
-			compareAtHome && (!intent.current || profileCorrection)
+			editableProfile && !discardProfile
 				? homepageProfileFile(profileForm)
 				: null;
 		if (
-			compareAtHome &&
-			(!intent.current || profileCorrection) &&
-			profileForm.file &&
+			editableProfile &&
+			!discardProfile &&
+			(profileForm.file || profileCorrection) &&
 			!file
 		) {
 			setProfileError(
@@ -368,10 +379,11 @@ export function NewProject({
 		setInputContractRequired(false);
 		let creationConfirmed = false;
 		try {
-			if (!intent.current || profileCorrection) profile.current = undefined;
+			const previousProfile = profileCorrection ? profile.current : undefined;
+			let nextProfile = editableProfile ? undefined : profile.current;
 			if (file) {
 				try {
-					profile.current = await prepareHomepageProfile(
+					nextProfile = await prepareHomepageProfile(
 						file,
 						session.runtime.limits,
 					);
@@ -424,12 +436,16 @@ export function NewProject({
 					originScope,
 					intent.current,
 					destination.current,
-					profile.current,
+					nextProfile,
+					previousProfile ? { previous: previousProfile } : undefined,
 				)
-				.catch(() => {
+				.catch((error: unknown) => {
 					if (lifetime.current === instance) setRecoveryFailed(true);
+					if (previousProfile) throw error;
 				});
 			if (lifetime.current !== instance) return;
+			profile.current = nextProfile;
+			setProfileCorrection(false);
 			if (!client.isCurrentScope(session.query_scope)) {
 				setFailed(true);
 				return;
@@ -454,10 +470,18 @@ export function NewProject({
 				} catch (error) {
 					if (lifetime.current !== instance) return;
 					if (!(error instanceof ApiError && error.profileIssue)) throw error;
-					await store.clearCreation(originScope, intent.current);
-					profile.current = undefined;
+					const issue = error.profileIssue;
+					await store.writeCreation(
+						originScope,
+						intent.current,
+						destination.current,
+						profile.current,
+						{ previous: profile.current, issue },
+					);
+					if (lifetime.current !== instance) return;
+					setProfileForm(restoreHomepageProfile(profile.current));
 					setProfileCorrection(true);
-					setProfileError(issueLabel(error.profileIssue.issue));
+					setProfileError(issueLabel(issue.issue));
 					return;
 				}
 			}
@@ -669,7 +693,13 @@ export function NewProject({
 	const compareLabel = compareAtHome
 		? __("Compare project options", "linker-tools")
 		: __("New project", "linker-tools");
-	if (homeComparison?.savedProject && !intent.current) {
+	const showSavedPicker =
+		!busy &&
+		!checking &&
+		!recoveryChecking &&
+		!recoveryDiscoveryFailed &&
+		!intent.current;
+	if (homeComparison?.savedProject && showSavedPicker) {
 		return (
 			<form
 				className="sc-main"
@@ -695,7 +725,7 @@ export function NewProject({
 				void submit();
 			}}
 		>
-			{!busy && !intent.current && homeComparison?.picker}
+			{showSavedPicker && homeComparison?.picker}
 			{entryHints &&
 				!intent.current &&
 				(hasCarriedValues || entryHints.invalid) && (
@@ -911,6 +941,9 @@ export function NewProject({
 							locale={locale}
 							disabled={busy || checking || !admitted}
 							change={changeProfile}
+							{...(profileCorrection && {
+								discard: () => void submit(undefined, true),
+							})}
 						/>
 					)
 				}

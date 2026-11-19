@@ -17341,3 +17341,11 @@ msgstr "Die Datei ist leer oder zu groß."
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "The project and load profile could not be confirmed. Try again to resume this request."
 msgstr "Projekt und Lastprofil konnten nicht bestätigt werden. Versuchen Sie es erneut, um die Anfrage fortzusetzen."
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Compare without this load profile"
+msgstr "Ohne dieses Lastprofil vergleichen"
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Your saved CSV is ready. Choose another file to replace it."
+msgstr "Ihre gespeicherte CSV-Datei liegt vor. Wählen Sie eine andere Datei, um sie zu ersetzen."
