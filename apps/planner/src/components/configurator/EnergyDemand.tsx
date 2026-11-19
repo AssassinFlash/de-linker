@@ -112,6 +112,9 @@ export function EnergyDemand({
 	disabled,
 	edit,
 	compare,
+	preliminary,
+	formId,
+	onComparisonAction,
 	coordinatesInvalid = false,
 	back,
 	embedded = false,
@@ -128,6 +131,9 @@ export function EnergyDemand({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
+	preliminary?: () => void;
+	formId?: string;
+	onComparisonAction?: (action: "compare" | "preliminary" | null) => void;
 	coordinatesInvalid?: boolean;
 	back?: () => void;
 	embedded?: boolean;
@@ -465,14 +471,27 @@ export function EnergyDemand({
 	const solarOnly = brief.system_scope === "pv_only";
 	const needsGridPhase =
 		equipment.grid_phase === null && !retainsUnverifiedInverter(inputs);
-	const canCompare =
-		!coordinatesInvalid &&
+	const engineeringReady =
 		Boolean(goal) &&
 		(!solarOnly || goal !== "backup") &&
 		!needsGridPhase &&
-		backupReady &&
+		backupReady;
+	const canCompare =
+		engineeringReady &&
+		!coordinatesInvalid &&
 		invalid.size === 0 &&
 		!demandBlocked;
+	const offerPreliminary =
+		Boolean(preliminary) && (!engineeringReady || modelsUnavailable);
+	const action =
+		offerPreliminary && !blocked && !coordinatesInvalid && invalid.size === 0
+			? "preliminary"
+			: canCompare
+				? "compare"
+				: null;
+	useEffect(() => {
+		onComparisonAction?.(action);
+	}, [action, onComparisonAction]);
 	const canStandard =
 		pattern !== "" &&
 		brief.annual_load.kwh !== null &&
@@ -1171,12 +1190,17 @@ export function EnergyDemand({
 					</button>
 				)}
 				<button
-					type="button"
+					type={formId ? "submit" : "button"}
+					form={formId}
 					className="sc-button sc-primary"
-					disabled={!canCompare}
-					onClick={compare}
+					disabled={!action}
+					onClick={
+						formId ? undefined : offerPreliminary ? preliminary : compare
+					}
 				>
-					{__("Compare systems", "linker-tools")}
+					{offerPreliminary
+						? __("Compare preliminary options", "linker-tools")
+						: __("Compare systems", "linker-tools")}
 				</button>
 			</footer>
 		</div>
