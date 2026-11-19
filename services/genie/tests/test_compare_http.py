@@ -274,8 +274,10 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         assert link["url"] == f"https://wp.test/{SAJ}.pdf#page=3"
         assert link["evidence_product_id"] == SAJ
         return
+    subject = f" for {MODELS[SAJ]}" if compare else ""
     assert any(
-        block.get("text") == "The maximum charge current is 50 A per battery input."
+        block.get("text")
+        == f"The maximum charge current{subject} is 50 A per battery input."
         for block in blocks
     )
     assert f"https://wp.test/{SAJ}.pdf#page=38" in response.text

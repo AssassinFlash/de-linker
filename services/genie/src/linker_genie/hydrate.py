@@ -200,7 +200,7 @@ def hydrate(
     for ref in figure_sources:
         source = facts.documents[ref]
         figure_pages.setdefault((source.url, source.page), set()).add(
-            source.figure_product_id
+            source.citation_owner
         )
     emitted: set[tuple[str, str]] = set()
     figure_links = [DocumentBlock(ref=ref) for ref in figure_sources]
@@ -244,11 +244,7 @@ def hydrate(
             document = facts.documents.get(block.ref)
             if document is None:
                 continue
-            owner = (
-                document.evidence.product_id
-                if document.evidence
-                else document.figure_product_id
-            )
+            owner = document.citation_owner
             page = None
             if block.ref in condition_refs | parameter_refs:
                 page = document.page
@@ -513,7 +509,7 @@ def fill(
                 return value
             return value + after
         if fact.source == "datasheet-figures":
-            value = _qualified_woo_value(fact, locale)
+            value = _qualified_woo_value(fact, locale, len(facts.product_ids) > 1)
             if qualified_mask is not None and fact.id in facts.supporting_documents:
                 value = qualified_mask(value)
             return value + after
@@ -547,14 +543,24 @@ def fill(
     return filled
 
 
-def _qualified_woo_value(fact: Fact, locale: str) -> str:
+def _qualified_woo_value(fact: Fact, locale: str, name_product: bool) -> str:
     direction = fact.per_input_current_direction
     if direction is None:
         return fact.value
     if locale.startswith("de"):
         current = "Ladestrom" if direction == "charge" else "Entladestrom"
-        return f"Der maximale {current} beträgt {fact.value} je Batterieeingang."
-    return f"The maximum {direction} current is {fact.value} per battery input."
+        subject = (
+            f" für {fact.product_label}" if name_product and fact.product_label else ""
+        )
+        return (
+            f"Der maximale {current}{subject} beträgt {fact.value} je Batterieeingang."
+        )
+    subject = (
+        f" for {fact.product_label}" if name_product and fact.product_label else ""
+    )
+    return (
+        f"The maximum {direction} current{subject} is {fact.value} per battery input."
+    )
 
 
 def _quote(note: Qualification) -> str | None:

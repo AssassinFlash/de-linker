@@ -1321,9 +1321,25 @@ def _droppable_tokens(text: str) -> list[str]:
     return tokens
 
 
+# A second scope assertion can contradict the sourced sentence even in another
+# paragraph or block. Other facts about the ports (count, voltage, protection)
+# can still be answered alongside it.
+_CURRENT_LIMIT = re.compile(
+    r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b", re.I
+)
+_COMBINED_INPUTS = re.compile(
+    r"\b(?:shared|split|divided|total|combined)\b[^.!?\n]*\b(?:ports?|inputs?)\b"
+    r"|\b(?:both|all) (?:battery )?(?:inputs|ports)\b[^.!?\n]*\b(?:share|combined|together)\b"
+    r"|\b(?:beide[nr]?|alle[nr]?) (?:batterie)?eingänge[n]?\b[^.!?\n]*\b(?:zusammen|gemeinsam|geteilt)\b"
+    r"|\b(?:geteilt|verteilt|insgesamt|gemeinsam)\b[^.!?\n]*\b(?:batterie)?eingänge[n]?\b",
+    re.I,
+)
+
+
 def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
     """The service writes the entire claim for a qualified input current."""
     failures = []
+    has_qualified_current = False
     for block in output.blocks:
         if isinstance(block, TextBlock):
             lines = block.text.splitlines()
@@ -1338,6 +1354,7 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                 fact = _fact_known(facts, fact_id)
                 if fact is None or fact.per_input_current_direction is None:
                     continue
+                has_qualified_current = True
                 if (
                     not isinstance(block, TextBlock)
                     or line.strip() != f"{{fact:{fact_id}}}"
@@ -1346,6 +1363,14 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                         f"Place {{fact:{fact_id}}} alone on a text line. "
                         "The service writes the complete per-input current sentence."
                     )
+    if has_qualified_current and any(
+        _CURRENT_LIMIT.search(sentence) and _COMBINED_INPUTS.search(sentence)
+        for text in _model_texts(output)
+        for sentence in re.split(r"[.!?\n]", PLACEHOLDER.sub("", text))
+    ):
+        failures.append(
+            "Keep the service-written per-input limit without a second scope assertion."
+        )
     return failures
 
 

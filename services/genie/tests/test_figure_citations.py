@@ -188,6 +188,14 @@ def test_fallback_shows_document_library_without_unconsumed_figure_pages() -> No
         ("en", "{fact:p1179.max_battery_charge_a} in total for both inputs."),
         ("de", "Der maximale Entladestrom beträgt {fact:p1179.max_battery_charge_a}."),
         ("de", "{fact:p1179.max_battery_charge_a} für beide Eingänge zusammen."),
+        (
+            "en",
+            "{fact:p1179.max_battery_charge_a}\nThat limit is shared between both inputs, not available at each input.",
+        ),
+        (
+            "de",
+            "Dieser Grenzwert gilt für beide Eingänge zusammen.\n{fact:p1179.max_battery_charge_a}",
+        ),
     ],
 )
 def test_contradictory_placement_cannot_ship_a_qualified_current(

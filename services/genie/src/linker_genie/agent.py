@@ -875,6 +875,7 @@ def _user_prompt(
         "per_battery_port, place the complete {fact:PRODUCTID.FIELD} on its own "
         "text line, with no other words or punctuation on that line. The service "
         "writes the full sentence with the direction and per-input limit. "
+        "Do not restate or reinterpret that limit elsewhere in the answer. "
         "For a qualified product figure, use its Woo evidence pages as its source. "
         "Include a retrieved chunk in refs only when its passage supports a "
         "separate claim you actually make, including prose without numbers. "

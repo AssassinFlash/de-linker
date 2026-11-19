@@ -34,6 +34,7 @@ class Fact:
     value: str
     source: str
     qualifier: dict[str, Any] | None = None
+    product_label: str | None = None
 
     @property
     def per_input_current_direction(self) -> Literal["charge", "discharge"] | None:
@@ -83,6 +84,10 @@ class Document:
     page: int | None
     evidence: DocumentEvidence | None = None
     figure_product_id: int | None = None
+
+    @property
+    def citation_owner(self) -> int | None:
+        return self.evidence.product_id if self.evidence else self.figure_product_id
 
 
 @dataclass(frozen=True)
@@ -152,7 +157,9 @@ class TurnFacts:
         )
 
 
-def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
+def collect(
+    name: str, payload: Any, locale: str = "en", *, evidence_owner: int | None = None
+) -> TurnFacts:
     """Facts and IDs from one ability JSON body, in the turn's language.
 
     The compatibility contract writes its conditions in pairs (`{en, de}`,
@@ -171,7 +178,7 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     if name.endswith("search-products"):
         _from_search(gathered, payload, locale)
     elif name.endswith("get-product"):
-        _from_product(gathered, payload, locale)
+        _from_product(gathered, payload, locale, evidence_owner)
     elif name.endswith("compare-products"):
         _from_compare(gathered, payload)
     elif name.endswith("check-compatibility"):
@@ -481,7 +488,10 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
 
 
 def _from_product(
-    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+    gathered: TurnFacts,
+    payload: dict[str, Any],
+    locale: str,
+    evidence_owner: int | None,
 ) -> None:
     product_id = payload.get("product_id")
     if isinstance(product_id, int) and product_id > 0:
@@ -492,7 +502,15 @@ def _from_product(
         raw_figures = payload.get("figures")
         documents = payload.get("documents") or []
         if isinstance(raw_figures, dict):
-            _add_figures(gathered, product_id, raw_figures, documents, locale)
+            _add_figures(
+                gathered,
+                product_id,
+                raw_figures,
+                documents,
+                locale,
+                evidence_owner or product_id,
+                payload.get("model") or payload.get("title"),
+            )
         _add_commerce(
             gathered,
             product_id,
@@ -1132,6 +1150,8 @@ def _add_figures(
     figures: dict[str, Any],
     documents: list[Any],
     locale: str,
+    evidence_owner: int,
+    product_label: str | None,
 ) -> None:
     """The datasheet figures get-product returns (n_mppt, max_pv_input_v, …).
 
@@ -1169,6 +1189,7 @@ def _add_figures(
                 value=rendered,
                 source="datasheet-figures",
                 qualifier=qualifier if isinstance(qualifier, dict) else None,
+                product_label=product_label,
             )
         )
         citation = figure.get("citation")
@@ -1182,7 +1203,7 @@ def _add_figures(
                     citation,
                     url,
                     page,
-                    evidence=DocumentEvidence.read(published, product_id),
+                    evidence=DocumentEvidence.read(published, evidence_owner),
                     figure_product_id=product_id,
                 )
                 gathered.documents[ref] = primary

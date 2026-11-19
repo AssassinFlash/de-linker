@@ -537,6 +537,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         "maximum charge and discharge current per input?"
     )
     page_comparison = scenario == "page-comparison"
+    figure_id = 1279 if page_comparison else 1179
     comparison = scenario == "comparison" or page_comparison
     follow_up = scenario == "same-model-follow-up"
     no_jev = scenario == "no-jev"
@@ -559,10 +560,14 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
     jev = None if no_jev else SimpleNamespace(read=lambda *_args: reading)
 
     def hit(ref: str, url: str, page: int, pid: int, text: str) -> dict[str, Any]:
+        document = next(doc for doc in raw["documents"] if doc["url"] == url)
         return {
             "chunk_id": ref,
             "doc_url": url,
             "page": page,
+            "document_id": document["document_id"],
+            "document_revision": document["document_revision"],
+            "evidence_product_id": pid,
             "product_ids": [pid],
             "text": text,
         }
@@ -657,7 +662,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
                         "linker_get_product",
                         {
                             "arguments": {
-                                "product_id": 1179
+                                "product_id": figure_id
                                 if follow_up or no_jev or page_comparison
                                 else 6321
                             },
@@ -698,15 +703,17 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         if follow_up or page_comparison:
             product_result = returns[0].content
             assert isinstance(product_result, dict)
-            assert product_result.get("product_id") == 1179
+            assert product_result.get("product_id") == figure_id
         search_result = returns[-1].content if returns else {}
         assert isinstance(search_result, dict)
         other_found = page_comparison or any(
             item["chunk_id"] == other_ref for item in search_result.get("hits", [])
         )
-        text = "The SAJ inverter has {fact:1179.n_battery_ports} battery inputs."
+        text = (
+            f"The SAJ inverter has {{fact:{figure_id}.n_battery_ports}} battery inputs."
+        )
         if not port_count:
-            text += "\n\n{fact:p1179.max_battery_charge_a}\n\n{fact:1179.max_battery_discharge_a}"
+            text += f"\n\n{{fact:p{figure_id}.max_battery_charge_a}}\n\n{{fact:{figure_id}.max_battery_discharge_a}}"
         prompt = next(
             part.content
             for message in messages
@@ -714,7 +721,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
             if isinstance(part, UserPromptPart)
         )
         assert isinstance(prompt, str)
-        refs = ["1179"]
+        refs = [str(figure_id)]
         if mixed_claim:
             text += "\n\nThe battery input has reverse polarity protection."
             refs.append(wrong_ref)
@@ -731,7 +738,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         if other_found:
             text += "\n\nThe GoodWe manual gives the other product's technical specifications."
             refs.extend(["6321", other_ref])
-            blocks.append({"type": "cards", "product_ids": [1179, 6321]})
+            blocks.append({"type": "cards", "product_ids": [figure_id, 6321]})
         blocks.insert(0, {"type": "text", "text": text, "refs": refs})
         return ModelResponse(
             parts=[ToolCallPart("final_result", {"language": "en", "blocks": blocks})]
@@ -814,13 +821,14 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
     if port_count:
         assert urls == {f"{datasheet}#page=2"}
         return
-    assert "The maximum charge current is 50 A per battery input." in text
-    assert "The maximum discharge current is 50 A per battery input." in text
+    subject = " for SAJ H2-25K-T3" if comparison else ""
+    assert f"The maximum charge current{subject} is 50 A per battery input." in text
+    assert f"The maximum discharge current{subject} is 50 A per battery input." in text
     if comparison:
         assert set(searches[0]) == ({1279, 6321} if page_comparison else {1179, 6321})
         assert searches[1:] == ([] if page_comparison else [[6321]])
         assert f"{goodwe}#page=94" in urls
-        assert any(block.get("product_ids") == [1179, 6321] for block in blocks)
+        assert any(block.get("product_ids") == [figure_id, 6321] for block in blocks)
     else:
         assert all(6321 not in block.get("product_ids", []) for block in blocks)
         assert f"{goodwe}#page=94" not in urls
@@ -840,7 +848,7 @@ def test_named_document_turn_cites_the_evidence_for_its_models(
         block for block in blocks if block.get("url") == f"{manual}#page=38"
     ]
     assert [block["ref"] for block in current_links] == [
-        "p1179.max_battery_charge_a.source"
+        f"p{figure_id}.max_battery_charge_a.source"
     ]
     assert current_links[0]["evidence_product_id"] == 1179
     assert current_links[0]["document_id"] == "doc-0"
