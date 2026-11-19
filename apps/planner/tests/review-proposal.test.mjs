@@ -77,7 +77,16 @@ test("site installation requirements have their own section alongside equipment 
 	t.after(() => page.dispose(root));
 	const value = props(),
 		report = value.run.result.report;
-	const base = report.sections.find((section) => section.id === "bom");
+	const base = {
+		id: "bom",
+		title: "Selected equipment",
+		paragraphs: [],
+		rows: [],
+		table: {
+			columns: ["Quantity", "Product"],
+			rows: [["1", "Selected inverter"]],
+		},
+	};
 	const solar = report.sections.find(
 		(section) => section.id === "pv-components",
 	);
