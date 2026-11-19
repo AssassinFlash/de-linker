@@ -943,8 +943,13 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
 def plan_home_configurator(english: str, german: str) -> tuple[str, str]:
     def update(page: str, path: str) -> tuple[str, str]:
         hero_link = f'data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}'
+        old_link = hero_link + (
+            '?step=roof"' if hero_link + '?step=roof"' in page else '"'
+        )
         return _apply_edits(
-            page, ((hero_link + '?step=roof"', hero_link + '"'),), "Home configurator"
+            page,
+            ((old_link, hero_link + '#sc-preliminary-options"'),),
+            "Home configurator",
         )
 
     en, en_state = update(english, "/solution-configurator/")

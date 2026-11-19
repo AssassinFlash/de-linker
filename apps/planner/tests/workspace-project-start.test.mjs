@@ -61,7 +61,11 @@ for (const target of [
 		window.history.replaceState(
 			{},
 			"",
-			saved ? "/workspace/?saved_solution=45" : "/workspace/",
+			saved
+				? "/workspace/?saved_solution=45"
+				: target === "preliminary"
+					? "/workspace/#sc-preliminary-options"
+					: "/workspace/",
 		);
 		const recordedItems = [
 			{ product_id: 4107, quantity: 2 },
@@ -365,7 +369,8 @@ for (const target of [
 			if (target === "partial") {
 				assert.equal(compare.form, start());
 				await act(async () => start().requestSubmit());
-			} else await act(async () => compare.click());
+			} else if (target !== "preliminary")
+				await act(async () => compare.click());
 			const options = [...document.querySelectorAll("article")].filter(
 				(card) =>
 					card.querySelector("button")?.textContent === "Choose this option",

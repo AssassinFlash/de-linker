@@ -157,10 +157,16 @@ for (const lang of ['en', 'de'] as const) {
 				width,
 				height: width === 390 ? 844 : 900,
 			});
-			await page.goto(url + words.path);
+			await page.goto(url + (lang === 'de' ? '/de/' : '/'));
 			await page
-				.getByRole('button', { name: words.compare, exact: true })
-				.click({ timeout: 15_000 });
+				.getByRole('button', {
+					name: lang === 'de' ? 'Alle ablehnen' : 'Reject all',
+					exact: true,
+				})
+				.click();
+			await page
+				.locator('[data-linker-planner-entry="home-hero"] a')
+				.click();
 			for (const name of words.directions)
 				await expect(
 					page

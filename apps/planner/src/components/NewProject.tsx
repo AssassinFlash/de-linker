@@ -9,6 +9,7 @@ import {
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
+import { replacePlannerLocation } from "../data/plannerLocation.ts";
 import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
@@ -159,7 +160,11 @@ export function NewProject({
 	}
 	const [detailsReady, setDetailsReady] = useState(true);
 	const [comparingDirections, setComparingDirections] = useState(
-		Boolean(briefEntry),
+		() =>
+			Boolean(briefEntry) ||
+			(!initialProject &&
+				!entryHints &&
+				location.hash === "#sc-preliminary-options"),
 	);
 	const projectFormId = useId();
 	const [comparisonAction, setComparisonAction] = useState<
@@ -515,7 +520,14 @@ export function NewProject({
 						inputs={inputs}
 						disabled={locked}
 						choose={(scope) => void submit("review", scope)}
-						back={() => setComparingDirections(false)}
+						back={() => {
+							if (location.hash === "#sc-preliminary-options") {
+								const url = new URL(location.href);
+								url.hash = "";
+								replacePlannerLocation(url);
+							}
+							setComparingDirections(false);
+						}}
 					/>
 				)}
 				<div className="sc-main" hidden={showDirections}>
