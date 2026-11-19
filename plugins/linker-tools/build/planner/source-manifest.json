@@ -51,7 +51,7 @@
     "src/components/design/GeometryImportSettings.tsx": "46be6f7d30710d3caa8e91c02c1127f675bcf32ecc63e03d4e29471aa01c3fab",
     "src/components/design/GeometryIntake.tsx": "078e035cf7d358eab083a87177602816b024feee8084a7630fe5e085db4b648c",
     "src/components/design/Google3DMap.tsx": "9110bd1bbb8a7f255a8eaa34c0837885fdbb309b91fc929e2c363aae66d14425",
-    "src/components/design/ImageCalibrationWorkspace.tsx": "f8e56c657b21989af7ddbc9463a4d4558a85d61ee362da2c477d5a83d3af23f5",
+    "src/components/design/ImageCalibrationWorkspace.tsx": "eceb726046827c456164800cc66fff85cc63f73833198ac0dc6414b295cc6f72",
     "src/components/design/LayoutReviewPanel.tsx": "8b9649009e93c7c113024ce98e6a3483c7e151b746d8cd067e8bdb1b05963b6e",
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
