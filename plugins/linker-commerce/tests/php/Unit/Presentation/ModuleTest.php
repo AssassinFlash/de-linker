@@ -35,7 +35,7 @@ final class ModuleTest extends TestCase {
 
 	/** Core prefixes these exact destination paths with the site's home directory. */
 	public function test_speculative_navigation_skips_only_the_localized_cart_and_checkout(): void {
-		WP_Mock::userFunction( 'home_url' )->with( '/' )->andReturn( 'https://example.test/store/' );
+		WP_Mock::userFunction( 'home_url' )->withNoArgs()->andReturn( 'https://example.test/store' );
 		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'cart' )->andReturn( 21 );
 		WP_Mock::userFunction( 'wc_get_page_id' )->with( 'checkout' )->andReturn( 30 );
 		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 21 )->andReturn(

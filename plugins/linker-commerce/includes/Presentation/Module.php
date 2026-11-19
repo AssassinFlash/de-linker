@@ -72,7 +72,7 @@ final class Module {
 	 * @return string[]
 	 */
 	public function exclude_draft_destinations( array $paths ): array {
-		$home = home_url( '/' );
+		$home = rtrim( home_url(), '/' ) . '/';
 		foreach ( array( 'cart', 'checkout' ) as $page ) {
 			$id = wc_get_page_id( $page );
 			if ( $id <= 0 ) {

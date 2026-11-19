@@ -82,9 +82,9 @@
       },
       {
         "term": "order*",
-        "string": "The first %d selected modules will be saved in this order.",
+        "string": "The first %d selected modules will be added in this order.",
         "count": 1,
-        "justification": "the order modules are saved in"
+        "justification": "the sequence of modules added to a PV string"
       }
     ],
     "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": [
@@ -167,6 +167,12 @@
         "string": "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
         "count": 1,
         "justification": "order of module IDs inside a CSV row"
+      },
+      {
+        "term": "order*",
+        "string": "The first %d selected modules will be added in this order.",
+        "count": 1,
+        "justification": "the sequence of modules added to a PV string"
       },
       {
         "term": "order*",
