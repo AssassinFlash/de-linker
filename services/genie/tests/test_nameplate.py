@@ -323,6 +323,183 @@ def test_the_stream_carries_the_card_and_the_reading(
     log.close()
 
 
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "published",
+        "unknown-file",
+        "withdrawn-history",
+        "withdrawn-file",
+        "unresolved-variant",
+        "contact-filename",
+        "withdrawn-filename",
+        "typed-contact",
+        "de-filename",
+        "published-history-unknown-file",
+    ],
+)
+def test_pdf_text_is_authorized_by_its_own_current_model(
+    vocabulary: Vocabulary,
+    tmp_path: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    scenario: str,
+) -> None:
+    from contextlib import closing
+    from types import SimpleNamespace
+
+    from test_attachments import PROBE_PDF
+    from test_turn_abilities import manifest
+
+    from linker_genie.publication import PublicationClient
+
+    raw = PROBE_PDF.read_bytes()
+
+    def upload(data: bytes) -> dict[str, str]:
+        return {
+            "name": "datasheet.pdf",
+            "type": "application/pdf",
+            "data": base64.b64encode(data).decode(),
+        }
+
+    def woo(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=manifest(4107))
+        if request.url.path.endswith("/validate"):
+            return httpx.Response(200, json={"valid": True})
+        assert request.url.path.endswith("/identify")
+        query = json.loads(request.content)
+        supplied = query.get("text", " ".join(query.get("models", []))).lower()
+        return httpx.Response(
+            200,
+            json={
+                "models": [
+                    {"model": model, "status": status}
+                    for model, status in [
+                        ("H2-10K-T3", "published"),
+                        ("ZZ-90K-T4", "unavailable"),
+                    ]
+                    if model.lower() in supplied
+                ]
+            },
+        )
+
+    uploads = [upload(raw)]
+    history = []
+    if scenario in {"unknown-file", "withdrawn-file"}:
+        label = b"YY-90K-T4" if scenario == "unknown-file" else b"ZZ-90K-T4"
+        uploads.append(upload(raw.replace(b"H2-10K-T3", label)))
+    elif scenario == "withdrawn-history":
+        history = [
+            {
+                "id": "att1",
+                "name": "older.pdf",
+                "kind": "document",
+                "model": "ZZ-90K-T4",
+                "text": "ZZ-90K-T4: 9250 W",
+            }
+        ]
+    elif scenario == "unresolved-variant":
+        uploads = [upload(raw.replace(b" datasheet", b"-X manual "))]
+
+    elif scenario == "published-history-unknown-file":
+        history = [
+            {
+                "id": "att1",
+                "name": "older.pdf",
+                "kind": "document",
+                "text": "SAJ H2-10K-T3 rated power 9250 W",
+            }
+        ]
+        uploads = [upload(raw.replace(b"H2-10K-T3", b"YY-90K-T4"))]
+    typed = "What rated power does this datasheet give for the SAJ H2-10K-T3?"
+    if scenario in {"contact-filename", "de-filename"}:
+        uploads[0]["name"] = "Call me.pdf"
+        typed = ""
+    elif scenario == "withdrawn-filename":
+        uploads[0]["name"] = "ZZ-90K-T4.pdf"
+    elif scenario == "typed-contact":
+        typed = "Call me"
+    prefix = "Anhang" if scenario == "de-filename" else "Attached"
+    message = "\n".join(
+        s for s in [typed, *(f"{prefix}: {u['name']}" for u in uploads)] if s
+    )
+
+    # The turn uses its publication-scoped Store API vocabulary.
+    with (
+        closing(
+            PublicationClient("https://wp.test", httpx.MockTransport(woo))
+        ) as authority,
+        closing(TurnLog(tmp_path / "turns.sqlite")) as log,
+        closing(_abilities([])) as tools,
+    ):
+        monkeypatch.setattr(app_module, "_client", tools)
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(
+            app_module,
+            "_understander",
+            Understander(lambda: vocabulary, None, publication=authority),
+        )
+        monkeypatch.setattr(
+            app_module,
+            "store_vocabulary",
+            lambda: SimpleNamespace(get=lambda _: vocabulary),
+        )
+        monkeypatch.setattr(app_module, "_log", log)
+        monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
+        monkeypatch.setattr(
+            app.state,
+            "generate",
+            lambda *_: (
+                TurnOutput(
+                    language="en",
+                    blocks=[
+                        TextBlock(
+                            text="The rated power is {fact:att1.n2}.", refs=["att1"]
+                        )
+                    ],
+                ),
+                TurnFacts(),
+            ),
+            raising=False,
+        )
+        response = TestClient(app, headers=SHELL).post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "pdf-publication",
+                "messages": [{"role": "user", "content": message}],
+                "attachments": uploads,
+                "readings": history,
+            },
+        )
+    assert response.status_code == 200, response.text
+    events = [
+        (part.splitlines()[0], json.loads(part.splitlines()[1][6:]))
+        for part in response.text.strip().split("\n\n")
+    ]
+    read = [record for kind, record in events if kind == "event: reading"]
+    texts = [
+        record["text"]
+        for kind, record in events
+        if kind == "event: block" and record.get("type") == "text"
+    ]
+    if scenario == "typed-contact":
+        assert events[0][1]["route"] == "person"
+        assert any(record.get("type") == "contact" for _, record in events)
+    elif scenario in {
+        "published",
+        "contact-filename",
+        "de-filename",
+        "withdrawn-filename",
+    }:
+        assert not any(record.get("type") == "contact" for _, record in events)
+        assert any("10000 W" in text for text in texts), response.text
+        assert "Rated power 10000 W" in read[0]["text"]
+    else:
+        assert events[0][1]["route"] == "scripted"
+        assert all(not r["text"] and not r["ratings"] for r in read)
+        assert "10000 W" not in response.text and "9250 W" not in response.text
+
+
 # --- review round 1 of PR #309 -------------------------------------------------
 
 
