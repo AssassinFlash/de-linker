@@ -13,6 +13,7 @@ test.afterEach(() => {
 
 const de = {
 	'Reject all': 'Alle ablehnen',
+	'Enter project details': 'Projektdaten eingeben',
 	'New project': 'Neues Projekt',
 	'Project name': 'Projektname',
 	'Town or site': 'Ort oder Standort',
@@ -61,18 +62,22 @@ for (const locale of ['en', 'de'] as const) {
 			const title = `E2E retained inverter ${tag}`;
 			const workspace = page.locator('[data-linker-planner]');
 			expect(await context.cookies()).toEqual([]);
-			await page.goto(
-				url +
-					(locale === 'de'
-						? '/de/loesungskonfigurator/'
-						: '/solution-configurator/')
-			);
+			await page.goto(url + (locale === 'de' ? '/de/' : '/'));
 			const reject = page.getByRole('button', {
 				name: name('Reject all'),
 				exact: true,
 			});
 			if (await reject.isVisible()) await reject.click();
 			page.setDefaultTimeout(15_000);
+			await page
+				.locator('[data-linker-planner-entry="home-hero"] a')
+				.click();
+			await workspace
+				.getByRole('button', {
+					name: name('Enter project details'),
+					exact: true,
+				})
+				.click();
 			const project = page.getByRole('form', {
 				name: name('New project'),
 			});
