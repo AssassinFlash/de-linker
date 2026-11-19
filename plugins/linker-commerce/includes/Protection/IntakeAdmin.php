@@ -41,7 +41,7 @@ final class IntakeAdmin {
 		$order = $id > 0 ? wc_get_order( $id ) : false;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only native order key authorization.
 		$key = isset( $_GET['key'] ) && is_string( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
-		if ( $order instanceof WC_Order && hash_equals( $order->get_order_key(), $key ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
+		if ( $order instanceof WC_Order && hash_equals( $order->get_order_key(), $key ) && '' === $order->get_meta( \Linker\Commerce\Planning\Context::PROJECT_META ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
 			return str_replace( __( 'Inquiry received', 'linker-commerce' ), __( 'Inquiry saved for review', 'linker-commerce' ), $title );
 		}
 		return $title;

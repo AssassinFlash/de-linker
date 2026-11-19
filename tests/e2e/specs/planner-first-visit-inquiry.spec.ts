@@ -1,5 +1,22 @@
 import { expect, test, type Page } from '@playwright/test';
-import { instance, wp } from '../lib/instance';
+import {
+	applyTurnstileProfile,
+	instance,
+	instanceName,
+	wp,
+} from '../lib/instance';
+
+let restoreProtection: (() => void) | undefined;
+test.beforeAll(() => {
+	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
+});
+test.afterAll(() => {
+	restoreProtection?.();
+});
+test.beforeEach(({ page }) => {
+	page.setDefaultTimeout(15_000);
+});
 
 async function screenshot(page: Page, name: string) {
 	await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -83,9 +100,7 @@ for (const lang of ['en', 'de'] as const) {
 			const email = `e2e-preliminary-${Date.now()}@example.test`;
 			await form.locator('[name="name"]').fill('E2E First Guest');
 			await form.locator('[name="email"]').fill(email);
-			await form
-				.locator('textarea:visible')
-				.pressSequentially(words.message, { delay: 100 });
+			await form.locator('textarea:visible').fill(words.message);
 			await form.locator('[name="consent"]').check();
 			await form
 				.getByRole('button', { name: words.send, exact: true })
@@ -107,12 +122,13 @@ for (const lang of ['en', 'de'] as const) {
     $orders = wc_get_orders(array('billing_email' => '${email}', 'limit' => 2));
     if (count($orders) !== 1) {throw new RuntimeException('Expected one inquiry');}
     $order = $orders[0];
-    echo wp_json_encode(array('number'=>$order->get_order_number(),'customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note(),'project'=>$order->get_meta('_linker_preliminary_project')));
+    echo wp_json_encode(array('number'=>$order->get_order_number(),'locale'=>Linker\\Commerce\\Inquiry\\OrderLocale::of($order),'customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note(),'project'=>$order->get_meta('_linker_preliminary_project')));
    `,
 				])
 			);
 			expect(result).toEqual({
 				number: expect.any(String),
+				locale: lang === 'de' ? 'de_DE_formal' : 'en_US',
 				customer: 0,
 				status: 'inquiry-received',
 				items: 0,
@@ -120,9 +136,15 @@ for (const lang of ['en', 'de'] as const) {
 				note: expect.stringContaining(direction),
 			});
 			expect(result.note).toContain(words.message);
+			const overviewNumber = page
+				.locator('.woocommerce-order-overview__order strong')
+				.getByText(result.number, { exact: true });
+			const heldNumber = page
+				.getByRole('status')
+				.getByText(new RegExp(`#${result.number}\\b`));
 			await expect(
-				page.locator('.woocommerce-order-overview__order strong')
-			).toHaveText(result.number);
+				overviewNumber.or(heldNumber).filter({ visible: true }).first()
+			).toBeVisible();
 		});
 	}
 }
@@ -171,7 +193,7 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	await expect(projectReference).toHaveValue(selected);
 
 	await page
-		.getByRole('button', { name: 'Auswahl ändern', exact: true })
+		.getByRole('button', { name: 'Variante ändern', exact: true })
 		.click();
 	await compare(
 		labels.de.directions[changedDirection],
