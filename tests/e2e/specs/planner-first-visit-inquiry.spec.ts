@@ -7,6 +7,7 @@ import {
 } from '../lib/instance';
 
 let restoreProtection: (() => void) | undefined;
+let inquiryEmail: string | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
@@ -15,7 +16,25 @@ test.afterAll(() => {
 	restoreProtection?.();
 });
 test.beforeEach(({ page }) => {
+	inquiryEmail = undefined;
 	page.setDefaultTimeout(15_000);
+});
+test.afterEach(() => {
+	if (!inquiryEmail) return;
+	wp([
+		'eval',
+		String.raw`
+			if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+				throw new RuntimeException( 'A local WordPress mail sink is required.' );
+			}
+			foreach ( wc_get_orders( array( 'billing_email' => '${inquiryEmail}', 'limit' => -1 ) ) as $order ) {
+				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+					\Linker\Commerce\Protection\IntakeStore::forget( $order );
+				}
+				$order->delete( true );
+			}
+		`,
+	]);
 });
 
 async function screenshot(page: Page, name: string) {
@@ -129,7 +148,8 @@ for (const lang of ['en', 'de'] as const) {
 			if (width === 1440) expect(formBox!.x).toBeLessThan(summaryBox!.x);
 			else expect(summaryBox!.y).toBeLessThan(formBox!.y);
 			await screenshot(page, `review-and-inquire-${lang}-${width}`);
-			const email = `e2e-preliminary-${Date.now()}@example.test`;
+			const email =
+				(inquiryEmail = `e2e-preliminary-${Date.now()}@example.test`);
 			const message = lang === 'de' && width === 390 ? '' : words.message;
 			await form.locator('[name="name"]').fill('E2E First Guest');
 			await form.locator('[name="email"]').fill(email);
@@ -252,7 +272,7 @@ test('back after a lost receipt recovers the original Woo inquiry', async ({
 	page,
 }) => {
 	const { url } = instance();
-	const email = `e2e-preliminary-${Date.now()}@example.test`;
+	const email = (inquiryEmail = `e2e-preliminary-${Date.now()}@example.test`);
 	const message = 'Please help with my storage project.';
 	await page.goto(url + '/');
 	await page
