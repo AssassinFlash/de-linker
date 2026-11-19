@@ -13,7 +13,8 @@ const labels = {
 		roofHeight: 'Selected roof height',
 		useLayout: 'Use this layout',
 		knownModules: 'Use module details',
-		path: '/solution-configurator/',
+		home: '/',
+		enterDetails: 'Enter project details',
 		start: 'New project',
 		title: 'Project name',
 		town: 'Town or site',
@@ -48,7 +49,8 @@ const labels = {
 		roofHeight: 'Höhe der gewählten Dachfläche',
 		useLayout: 'Belegung übernehmen',
 		knownModules: 'Moduldaten verwenden',
-		path: '/de/loesungskonfigurator/',
+		home: '/de/',
+		enterDetails: 'Projektdaten eingeben',
 		start: 'Neues Projekt',
 		title: 'Projektname',
 		town: 'Ort oder Standort',
@@ -207,8 +209,19 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			await seedConsentCookies(context);
 			const title = `Berlin ${lang.toUpperCase()} ${width}`;
-			await page.goto(instance().url + words.path);
+			await page.goto(instance().url + words.home);
+			await page
+				.locator('[data-linker-planner-entry="home-hero"] a')
+				.click();
 			const workspace = page.locator('[data-linker-planner]');
+			const details = workspace.getByRole('button', {
+				name: words.enterDetails,
+				exact: true,
+			});
+			await expect(details).toBeVisible();
+			await screen(page, 'known-project-entry');
+			await details.click();
+			await expect(page).toHaveURL(/#sc-project$/);
 			const start = workspace.getByRole('form', { name: words.start });
 			await start.getByLabel(words.title).fill(title);
 			await start.locator('select[name=country]').selectOption('DE');
