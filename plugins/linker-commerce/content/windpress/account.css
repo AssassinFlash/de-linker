@@ -790,6 +790,11 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-content > .woocommerce-notices-wrapper,
 .linker-account .linker-account-main > .woocommerce-notices-wrapper { margin: 0; }
 
+@media (max-width: 600px) {
+	.linker-account .linker-account-main .woocommerce-info:has(> .wc-forward) { display: grid; grid-template-columns: auto minmax(0, 1fr); margin-bottom: 0; }
+	.linker-account .linker-account-main .woocommerce-info > .wc-forward { grid-area: 2 / 2; justify-self: start; height: auto; min-height: 44px; padding: 10px 16px; border-radius: var(--proto-radius-md); box-shadow: none; }
+}
+
 .linker-account .woocommerce-password-strength { display: inline-flex; align-items: center; gap: 12px; height: 18px; margin-top: 10px; font-size: 12.5px; font-weight: 600; color: var(--acct-muted); }
 
 /* WooCommerce's own strength meter, drawn as the prototype's four bars: the
