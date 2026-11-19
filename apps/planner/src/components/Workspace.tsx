@@ -687,13 +687,7 @@ export function Workspace({
 							session={session}
 							client={client}
 							store={store}
-							created={(project, destination) =>
-								created(
-									project,
-									destination,
-									location.hash !== "#sc-preliminary-options",
-								)
-							}
+							created={created}
 							recheck={recheck}
 							recoveryScopes={recovery.data}
 							recoveryChecking={recovery.isFetching}

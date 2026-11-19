@@ -54,6 +54,7 @@ export function NewProject({
 	created: (
 		project: Project,
 		destination?: CreationDestination | "energy",
+		openResult?: boolean,
 	) => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
@@ -245,6 +246,7 @@ export function NewProject({
 		const releaseCreation = beginCreation?.();
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
+		const submittedFrom = location.href;
 		if (!intent.current) intentScope.current = session.query_scope;
 		const originScope = intentScope.current;
 
@@ -315,6 +317,7 @@ export function NewProject({
 						(createdBrief?.system_scope === "storage_only"
 							? "energy"
 							: undefined),
+					location.href === submittedFrom,
 				)
 			) {
 				setFailed(true);

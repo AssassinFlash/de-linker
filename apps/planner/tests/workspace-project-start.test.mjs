@@ -256,19 +256,20 @@ test("visitors with project data can open setup from the comparison and keep the
 		);
 		await act(async () => option().click());
 		assert.equal(creates.length, 1);
+		await act(async () =>
+			[...document.querySelectorAll("button")]
+				.find((button) => button.textContent.trim() === "Projects")
+				.click(),
+		);
+		assert.equal(location.hash, "");
 	} finally {
 		await act(async () => createResponse.resolve());
 	}
-	await until(() => accepted && !setup()?.disabled);
+	await until(() => accepted);
 	assert.equal(accepted.inputs.backup_demand.load_kw, null);
 	assert.equal(accepted.title, "Oslo storage");
-	assert.equal(location.hash, "#sc-preliminary-options");
+	assert.equal(location.hash, "");
 	assert.equal(new URL(location.href).searchParams.has("project"), false);
-	await act(async () =>
-		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent.trim() === "Projects")
-			.click(),
-	);
 	await until(() =>
 		document
 			.querySelector('[role="listitem"]')
