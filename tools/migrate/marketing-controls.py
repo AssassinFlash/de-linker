@@ -940,12 +940,27 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
     return en_after, de_after
 
 
+def plan_home_configurator(english: str, german: str) -> tuple[str, str]:
+    def update(page: str, path: str) -> tuple[str, str]:
+        hero_link = f'data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}'
+        return _apply_edits(
+            page, ((hero_link + '?step=roof"', hero_link + '"'),), "Home configurator"
+        )
+
+    en, en_state = update(english, "/solution-configurator/")
+    de, de_state = update(german, "/de/loesungskonfigurator/")
+    if en_state != de_state:
+        raise ValueError("Partially changed homepage configurator language pair")
+    return en, de
+
+
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
         "about_registration": plan_about_registration,
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
+        "home_configurator": plan_home_configurator,
         "home_testimonials": plan_home_testimonials,
         "residential_storage": plan_residential_storage,
         "commercial_storage": plan_commercial_storage,

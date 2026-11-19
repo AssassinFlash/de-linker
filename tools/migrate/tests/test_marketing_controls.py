@@ -20,6 +20,23 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
+    hero = '<div class="hero-capsules" data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="'
+    en = "/solution-configurator/"
+    de = "/de/loesungskonfigurator/"
+    roof = '<a href="/solution-configurator/?step=roof">Roof details</a>'
+    before = (
+        hero + en + '?step=roof">Open the Solution Configurator</a></div>' + roof,
+        hero + de + '?step=roof">Lösungskonfigurator öffnen</a></div>',
+    )
+    expected = (
+        hero + en + '">Open the Solution Configurator</a></div>' + roof,
+        hero + de + '">Lösungskonfigurator öffnen</a></div>',
+    )
+    assert controls.plan_pair("home_configurator", *before) == expected
+    assert controls.plan_pair("home_configurator", *expected) == expected
+
+
 def test_about_registration_cards_open_the_localized_business_signup() -> None:
     before = (
         '<a class="row" href="/my-account/"><span class="no">03</span><span class="row-body"><strong>Create a partner account</strong></span></a>',
