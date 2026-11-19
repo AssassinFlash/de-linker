@@ -58,12 +58,25 @@
 		syncDraftState();
 	}
 	const inquiryStorageKey = 'linker-inquiry-edit';
+	const retryField = 'linker_inquiry_retry';
+	const carryRetry = ( link, retry ) => {
+		if ( ! retry || ! /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test( retry ) ) {
+			return;
+		}
+		const target = new URL( link.href );
+		if ( target.origin === window.location.origin ) {
+			target.searchParams.set( retryField, retry );
+			link.href = target.href;
+		}
+	};
 	if ( inquiry ) {
 		const form = inquiry.querySelector( '.linker-inquiry-form' );
 		const retentionError = inquiry.querySelector( '[data-inquiry-retention-error]' );
 		const names = [ 'name', 'email', 'company', 'message' ];
 		const context = form?.dataset.inquiryContext || '';
 		const field = ( name ) => form?.elements.namedItem( name );
+		const retry = field( retryField )?.value || '';
+		const retryPending = field( retryField )?.dataset.linkerRetryPending === 'true';
 
 		// A one-use bridge for the explicit edit/return navigation. It stays in
 		// this tab, uses the native authentication context, and never writes an inquiry or
@@ -72,7 +85,7 @@
 			const raw = window.sessionStorage.getItem( inquiryStorageKey );
 			window.sessionStorage.removeItem( inquiryStorageKey );
 			const kept = raw ? JSON.parse( raw ) : null;
-			if ( context && kept?.context === context && names.every( ( name ) => typeof kept.fields?.[ name ] === 'string' ) && field( 'linker_inquiry_retained' )?.value !== '1' ) {
+			if ( context && kept?.context === context && ( kept.retry || '' ) === retry && names.every( ( name ) => typeof kept.fields?.[ name ] === 'string' ) && ( field( 'linker_inquiry_retained' )?.value !== '1' || ( retry && ! retryPending ) ) ) {
 				let detailsChanged = false;
 				for ( const name of names ) {
 					const control = field( name );
@@ -116,6 +129,11 @@
 				inquiry.querySelector( '[name="update_cart"]' )?.focus();
 				return;
 			}
+			carryRetry( link, retry );
+			// A pending check uses the message and form identity already held by Woo.
+			if ( retryPending ) {
+				return;
+			}
 			const fields = Object.fromEntries( names.map( ( name ) => [ name, field( name )?.value || '' ] ) );
 			const consent = field( 'consent' )?.checked === true;
 			const notesToggle = field( 'linker_include_project_notes' );
@@ -127,7 +145,7 @@
 				if ( ! context ) {
 					throw new Error( 'Missing native inquiry context' );
 				}
-				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent, ...( null !== includeProjectNotes ? { includeProjectNotes } : {} ) } ) );
+				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent, ...( retry ? { retry } : {} ), ...( null !== includeProjectNotes ? { includeProjectNotes } : {} ) } ) );
 			} catch {
 				event.preventDefault();
 				if ( retentionError ) {
@@ -136,7 +154,17 @@
 				}
 			}
 		} );
-	} else if ( ! draftSurface ) {
+	} else if ( draftSurface ) {
+		const retry = new URLSearchParams( window.location.search ).get( retryField );
+		if ( retry ) {
+			document.addEventListener( 'click', ( event ) => {
+				const link = event.target.closest( '.wc-proceed-to-checkout a, a[lang], a[hreflang]' );
+				if ( link && ! event.defaultPrevented ) {
+					carryRetry( link, retry );
+				}
+			} );
+		}
+	} else {
 		// Account and confirmation pages retire the bridge; editing the draft keeps it.
 		try {
 			window.sessionStorage.removeItem( inquiryStorageKey );

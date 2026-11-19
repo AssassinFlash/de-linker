@@ -93,8 +93,9 @@ final class Form {
 	 * @param array<string,mixed> $fields Retained native input; no proof or nonce.
 	 * @param \WP_Error           $error  Native outcome.
 	 * @param string              $locale Submitted language.
+	 * @param string|null         $handle Existing attempt handle, or empty for a fresh authorized attempt.
 	 */
-	public function retry( array $fields, \WP_Error $error, string $locale ): void {
+	public function retry( array $fields, \WP_Error $error, string $locale, ?string $handle = null ): void {
 		$this->flash = array(
 			'fields'       => $fields,
 			'error'        => $error->get_error_message(),
@@ -102,6 +103,9 @@ final class Form {
 			'grouped'      => 'linker_intake_grouped' === $error->get_error_code(),
 			'unavailable'  => 'planning_preliminary_unavailable' === $error->get_error_code(),
 		);
+		if ( null !== $handle ) {
+			$this->flash['retry'] = CheckoutRetry::remember( $this->flash, $handle );
+		}
 	}
 
 	/**
@@ -109,6 +113,17 @@ final class Form {
 	 */
 	public function render(): string {
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
+		// This opaque handle reads only server-validated fields from the current Woo session.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only recovery in the native session.
+		if ( array() === $this->flash && isset( $_GET[ CheckoutRetry::HANDLE ] ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- CheckoutRetry verifies this opaque UUID.
+			$handle = is_string( $_GET[ CheckoutRetry::HANDLE ] ) ? wp_unslash( $_GET[ CheckoutRetry::HANDLE ] ) : '';
+			$flash  = CheckoutRetry::read( $handle );
+			if ( null === $flash ) {
+				return '<p role="alert">' . esc_html__( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) . '</p>';
+			}
+			$this->flash = $flash + array( 'retry' => $handle );
+		}
 		if ( array() === $this->flash ) {
 			foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
 				$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
@@ -157,12 +172,12 @@ final class Form {
 			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
 		}
 		$values = array(
-			'retention-context'  => hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token(), wp_salt( 'nonce' ) ),
+			'retention-context'  => CheckoutRetry::context(),
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
 			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : '',
-			'action'             => isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ? Checkout::request_url( determine_locale() ) : admin_url( 'admin-post.php' ),
+			'action'             => isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ? Checkout::request_url( OrderLocale::current( $this->submission_language() ) ) : admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
@@ -184,7 +199,12 @@ final class Form {
 	 * Nonce, language, anti-bot time, and transport fields.
 	 */
 	public function hidden(): string {
-		return $this->hidden_fields( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' );
+		return $this->hidden_fields( $this->submission_language() );
+	}
+
+	/** Recover the previous locale used in the native journal's input fingerprint. */
+	private function submission_language(): string {
+		return $this->flash['fields']['linker_inquiry_original_language'] ?? ( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' );
 	}
 
 	/** Fields carried from the reviewed transfer through native retries.
@@ -207,6 +227,9 @@ final class Form {
 		$binding  = '' === $project ? '' : '<input type="hidden" name="' . esc_attr( \Linker\Commerce\Planning\Context::PROJECT_FIELD ) . '" value="' . esc_attr( $project ) . '" />';
 		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
 			$binding .= self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
+		}
+		if ( isset( $this->flash['retry'] ) ) {
+			$binding .= '<input type="hidden" name="' . CheckoutRetry::HANDLE . '" value="' . esc_attr( $this->flash['retry'] ) . '" data-linker-retry-pending="' . ( '1' === $previous['linker_recovery_available'] ? 'true' : 'false' ) . '" />';
 		}
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'

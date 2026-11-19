@@ -47,6 +47,12 @@ final class Handler {
 	 */
 	private bool $without_project = false;
 
+	/** The original project binding passed its native nonce check.
+	 *
+	 * @var bool
+	 */
+	private bool $preliminary_verified = false;
+
 	/**
 	 * Both guests and account holders use this adapter.
 	 */
@@ -81,15 +87,18 @@ final class Handler {
 	 * @return WC_Order|WP_Error The received inquiry or validation failure.
 	 */
 	public function process( array $post ): WC_Order|WP_Error {
-		$this->without_project = false;
-		$language              = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
-		$locale                = new LocaleSwitch();
+		$this->without_project      = false;
+		$this->preliminary_verified = false;
+		$language                   = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+		$locale                     = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard   = new PublicGuard();
-			$nonce   = $post[ self::NONCE ] ?? '';
-			$project = $post[ Context::PROJECT_FIELD ] ?? '';
-			if ( ! is_string( $project ) || ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::nonce_action( $project ) ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
+			$guard                      = new PublicGuard();
+			$nonce                      = $post[ self::NONCE ] ?? '';
+			$project                    = $post[ Context::PROJECT_FIELD ] ?? '';
+			$nonce_valid                = is_string( $project ) && is_string( $nonce ) && wp_verify_nonce( $nonce, self::nonce_action( $project ) );
+			$this->preliminary_verified = $nonce_valid && '' !== $project;
+			if ( ! $nonce_valid || ! $guard->allows( $post, ! Business::enabled() ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {
@@ -123,8 +132,9 @@ final class Handler {
 			if ( '' !== $project ) {
 				$payload['preliminary_project'] = $project;
 			}
-			$sender  = new Sender();
-			$current = ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft );
+			$sender      = new Sender();
+			$bound_draft = $this->preliminary_verified;
+			$current     = ( ! $bound_draft && ! Business::enabled() ) || hash_equals( WC()->cart->get_cart_hash(), $draft );
 			if ( isset( $post['linker_planner_handoff_id'] ) || isset( $post['linker_planner_draft_sha256'] ) ) {
 				$id                 = $post['linker_planner_handoff_id'] ?? '';
 				$fingerprint        = $post['linker_planner_draft_sha256'] ?? '';
@@ -136,10 +146,11 @@ final class Handler {
 				$current            = is_string( $id ) && isset( $contexts[ $id ] )
 					&& is_string( $fingerprint ) && hash_equals( DraftPreview::fingerprint(), $fingerprint )
 					&& hash_equals( WC()->cart->get_cart_hash(), $draft );
-				// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
-				if ( ! $current && 'enforce' !== Configuration::active_mode() ) {
-					return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
-				}
+				$bound_draft        = true;
+			}
+			// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
+			if ( $bound_draft && ! $current && 'enforce' !== Configuration::active_mode() ) {
+				return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
 			}
 			// Conversation summaries belong to the separately reviewed Genie confirmation.
 			return \Linker\Commerce\Planning\Context::with_submission(
@@ -184,10 +195,14 @@ final class Handler {
 	private function submit( array $post, bool $on_checkout ): void {
 		wc_load_cart();
 		$result = $this->process( $post );
+		$handle = is_string( $post[ CheckoutRetry::HANDLE ] ?? null ) ? $post[ CheckoutRetry::HANDLE ] : '';
 		if ( $result instanceof WC_Order && $result->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $result );
 		}
 		if ( $result instanceof WC_Order ) {
+			if ( $on_checkout ) {
+				CheckoutRetry::forget( $handle );
+			}
 			if ( ! $on_checkout ) {
 				WC()->session->set( 'linker_inquiry_fields', null );
 				WC()->session->set( 'linker_intake_grouped', null );
@@ -241,10 +256,15 @@ final class Handler {
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
 			if ( $on_checkout ) {
 				if ( $blocked || ! isset( $fields[ Context::PROJECT_FIELD ] ) ) {
+					CheckoutRetry::forget( $handle );
 					wp_die( esc_html( $result->get_error_message() ), '', array( 'response' => 400 ) );
 				}
 				$fields['linker_without_project'] = $this->without_project;
-				$this->form->retry( $fields, $result, OrderLocale::current( $language ) );
+				$locale                           = OrderLocale::current( $language );
+				if ( '1' === $fields['linker_recovery_available'] ) {
+					$fields['linker_inquiry_original_language'] = str_starts_with( $locale, 'de' ) ? 'de' : 'en';
+				}
+				$this->form->retry( $fields, $result, $locale, $this->preliminary_verified ? $handle : null );
 				return;
 			}
 			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
