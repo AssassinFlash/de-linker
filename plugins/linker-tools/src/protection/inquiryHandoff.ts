@@ -15,7 +15,10 @@ interface Handoff {
 	expires: number;
 }
 
-/** Bind the displayed confirmation card to its original native identity and thread. */
+/**
+ * Bind the displayed confirmation card to its original native identity and thread.
+ * @param context The draft context that owns the displayed card.
+ */
 export function cardMessageHandoff( context: DraftContext ) {
 	const lease = context.capture();
 	return ( url: string, message: string ) => {

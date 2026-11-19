@@ -38,7 +38,10 @@ export function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
 	return [];
 }
 
-/** The unit counts displayed and signed for individual product cards. */
+/**
+ * The unit counts displayed and signed for individual product cards.
+ * @param blocks Product cards and actions returned in the same turn.
+ */
 export function quantitiesOf( blocks: Block[] ): Record< string, number > {
 	const quantities: Record< string, number > = {};
 	for ( const block of blocks ) {
