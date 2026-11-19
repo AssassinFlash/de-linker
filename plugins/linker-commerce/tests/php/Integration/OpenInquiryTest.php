@@ -171,6 +171,12 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \WP_Error::class, $refused );
 		$this->assertSame( 'linker_guided_checkout_refused', $refused->get_error_code() );
 		$this->assertFalse( \Linker\Commerce\Protection\FormRecovery::after_error( $refused ) );
+		$this->later(
+			static function () use ( $session ): void {
+				add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+			}
+		);
+		$this->assertFalse( has_action( 'shutdown', array( $session, 'save_data' ) ) );
 		$this->assertSame( 2, WC()->cart->get_cart()[ $cart_key ]['quantity'] );
 		$this->assertSame( $cart_before, WC()->session->get( 'cart' ) );
 		$this->assertSame( $receipts_before, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ) );
@@ -206,10 +212,17 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
 		$this->assertIsString( $cart_key );
 		$session->save_data();
+		$group = constant( 'WC_SESSION_CACHE_GROUP' );
+		$this->assertIsString( $group );
 		$current                        = $session->get( 'cart' );
+		$stale_data                     = $session->get_session_data();
 		$stale                          = $current;
 		$stale[ $cart_key ]['quantity'] = 1;
-		$session->set( 'cart', $stale );
+		$cache_key                      = \WC_Cache_Helper::get_cache_prefix( $group ) . $session->get_customer_id();
+		$stale_data['cart']             = maybe_serialize( $stale );
+		wp_cache_set( $cache_key, $stale_data, $group );
+		$session->init_session_cookie();
+		$this->assertSame( $stale, $session->get( 'cart' ) );
 
 		$flash = array(
 			'fields' => array( 'message' => 'My original inquiry' ),
@@ -222,6 +235,18 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			$session->init_session_cookie();
 			$this->assertSame( $current, $session->get( 'cart' ) );
 			$this->assertSame( $flash, \Linker\Commerce\Inquiry\CheckoutRetry::read( $handle ) );
+
+			add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+			$stale_data         = $session->get_session_data();
+			$stale_data['cart'] = maybe_serialize( $stale );
+			wp_cache_set( $cache_key, $stale_data, $group );
+			$session->init_session_cookie();
+
+			\Linker\Commerce\Inquiry\CheckoutRetry::forget( $handle, fresh: true );
+			$this->assertFalse( has_action( 'shutdown', array( $session, 'save_data' ) ) );
+			$session->init_session_cookie();
+			$this->assertSame( $current, $session->get( 'cart' ) );
+			$this->assertNull( \Linker\Commerce\Inquiry\CheckoutRetry::read( $handle ) );
 		} finally {
 			add_action( 'shutdown', array( $session, 'save_data' ), 20 );
 		}

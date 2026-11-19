@@ -270,7 +270,11 @@ final class DraftTransfer {
 			if ( is_wp_error( $items ) ) {
 				$scope->rollback();
 				$restore();
-				$this->evict_cart_cache();
+				if ( null !== $send ) {
+					$this->stop_autosave();
+				} else {
+					$this->evict_cart_cache();
+				}
 				return $items;
 			}
 			$contexts = (array) $session->get( self::CONTEXTS, array() );
@@ -304,7 +308,7 @@ final class DraftTransfer {
 				if ( $order instanceof WP_Error ) {
 					$scope->rollback();
 					$restore();
-					$this->evict_cart_cache();
+					$this->stop_autosave();
 					if ( 'checkout-error' === $order->get_error_code() ) {
 						return new WP_Error( 'linker_guided_checkout_refused', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 					}
@@ -469,12 +473,22 @@ final class DraftTransfer {
 	 */
 	private function fresh(): array {
 		$session = $this->native_session();
-		$group   = constant( 'WC_SESSION_CACHE_GROUP' );
+		self::evict_session_cache( $session );
+		return (array) $session->get_session_data();
+	}
+
+	/**
+	 * Reload the current Woo session from native storage rather than request cache.
+	 *
+	 * @param \WC_Session_Handler $session The native Woo session.
+	 * @throws \RuntimeException Native session metadata is unavailable.
+	 */
+	public static function evict_session_cache( \WC_Session_Handler $session ): void {
+		$group = constant( 'WC_SESSION_CACHE_GROUP' );
 		if ( ! is_string( $group ) ) {
 			throw new \RuntimeException( 'planning_native_session_group_unavailable' );
 		}
 		wp_cache_delete( \WC_Cache_Helper::get_cache_prefix( $group ) . $session->get_customer_id(), $group );
-		return (array) $session->get_session_data();
 	}
 
 	/**
@@ -491,7 +505,7 @@ final class DraftTransfer {
 		return $session;
 	}
 
-	/** An uncertain write must be resolved by readback, never shutdown compensation. */
+	/** Later callbacks cannot save a stale draft after releasing the draft lock. */
 	private function stop_autosave(): void {
 		remove_action( 'shutdown', array( WC()->session, 'save_data' ), 20 );
 		$this->evict_cart_cache();
@@ -499,7 +513,7 @@ final class DraftTransfer {
 
 	/** A reverted native cart must not survive in Woo's object caches. */
 	private function evict_cart_cache(): void {
-		$this->fresh();
+		self::evict_session_cache( $this->native_session() );
 		if ( get_current_user_id() > 0 ) {
 			clean_user_cache( get_current_user_id() );
 		}
