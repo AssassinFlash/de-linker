@@ -958,7 +958,9 @@ export function ImageCalibrationWorkspace({
 											<dd>
 												{sprintf(
 													__("%s %%", "linker-tools"),
-													checkDifferencePercent(calibration.check.residual_ratio),
+													checkDifferencePercent(
+														calibration.check.residual_ratio,
+													),
 												)}
 											</dd>
 										</div>
