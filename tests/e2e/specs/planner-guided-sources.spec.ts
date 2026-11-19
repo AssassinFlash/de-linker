@@ -1,0 +1,504 @@
+import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+
+const words = {
+	en: {
+		home: '/',
+		intake: 'Compare project options',
+		title: 'Project name',
+		town: 'Town or site',
+		use: 'Site use',
+		phase: 'Grid connection',
+		saved: 'Saved projects',
+		compare: 'Compare systems',
+		choose: 'Use this configuration',
+		send: 'Send inquiry',
+		received: 'Inquiry received',
+		report: 'Download PDF',
+		enter: 'Enter project details',
+		newProject: 'New project',
+		solar: 'Continue with solar',
+		energy: 'Continue with energy use',
+		roofChoice: 'Place modules on the roof',
+		module: 'PV module',
+		openRoof: 'Open roof layout',
+		dimensions: [
+			'Width',
+			'Depth',
+			'Pitch',
+			'Azimuth',
+			'Relative roof height',
+			'Origin east / U',
+			'Origin north / V',
+		],
+		drawing: 'Drawing source',
+		addRoof: 'Add rectangular roof',
+		rows: 'Rows',
+		columns: 'Columns',
+		gap: 'Module gap',
+		place: 'Place module group',
+		useLayout: 'Use this layout',
+		properties: 'Source properties',
+		export: 'Permission to export geometry',
+		timestamp: 'Timestamp column',
+		value: 'Value column',
+		unit: 'Value meaning and unit',
+		decimal: 'Decimal separator in the file',
+		boundaries: 'Interval boundaries',
+		timeRole: 'The timestamp identifies…',
+		interval: 'Interval duration',
+		zone: 'Source time zone',
+		profile: 'Your demand profile',
+		peakBeforeStorage: '7.83 kW',
+	},
+	de: {
+		home: '/de/',
+		intake: 'Projektoptionen vergleichen',
+		title: 'Projektname',
+		town: 'Ort oder Standort',
+		use: 'Nutzung des Standorts',
+		phase: 'Netzanschluss',
+		saved: 'Gespeicherte Projekte',
+		compare: 'Systeme vergleichen',
+		choose: 'Konfiguration übernehmen',
+		send: 'Anfrage senden',
+		received: 'Anfrage eingegangen',
+		report: 'PDF herunterladen',
+		enter: 'Projektdaten eingeben',
+		newProject: 'Neues Projekt',
+		solar: 'Weiter zur PV-Anlage',
+		energy: 'Weiter zum Energiebedarf',
+		roofChoice: 'Module auf dem Dach platzieren',
+		module: 'PV-Modul',
+		openRoof: 'Dachbelegung öffnen',
+		dimensions: [
+			'Breite',
+			'Tiefe',
+			'Dachneigung',
+			'Azimut',
+			'Relative Dachhöhe',
+			'Ursprung in Ostrichtung (U)',
+			'Ursprung in Nordrichtung (V)',
+		],
+		drawing: 'Grundlage der Zeichnung',
+		addRoof: 'Rechteckige Dachfläche hinzufügen',
+		rows: 'Reihen',
+		columns: 'Spalten',
+		gap: 'Modulabstand',
+		place: 'Modulgruppe platzieren',
+		useLayout: 'Belegung übernehmen',
+		properties: 'Quelleneigenschaften',
+		export: 'Berechtigung zum Export der Geometrie',
+		timestamp: 'Zeitstempelspalte',
+		value: 'Wertespalte',
+		unit: 'Bedeutung und Einheit der Werte',
+		decimal: 'Dezimaltrennzeichen in der Datei',
+		boundaries: 'Festlegung der Intervallgrenzen',
+		timeRole: 'Der Zeitstempel bezeichnet…',
+		interval: 'Intervalldauer',
+		zone: 'Zeitzone der Quelldaten',
+		profile: 'Ihr Lastprofil',
+		peakBeforeStorage: '7,83 kW',
+	},
+} as const;
+
+type Text = (typeof words)[keyof typeof words];
+const matrix = [
+	['en', 1440],
+	['de', 390],
+] as const;
+
+const button = (owner: Page | Locator, name: string) =>
+	owner.getByRole('button', { name, exact: true });
+
+function post(page: Page, endpoint: string) {
+	return page.waitForResponse(
+		(reply) =>
+			reply.request().method() === 'POST' &&
+			new URL(reply.url()).pathname.endsWith('/' + endpoint),
+		{ timeout: 120_000 }
+	);
+}
+
+function homeForm(page: Page, text: Text) {
+	return page
+		.locator('[data-linker-planner][data-planner-home-url]')
+		.getByRole('form', { name: text.intake });
+}
+
+async function enterProject(
+	form: Locator,
+	text: Text,
+	data: {
+		title: string;
+		town: string;
+		country: 'DE' | 'NL';
+		use: 'residential' | 'commercial';
+		scope: 'storage_only' | 'pv_only';
+		purpose: 'self' | 'peak';
+	}
+) {
+	await form.getByLabel(text.title).fill(data.title);
+	await form.locator('select[name=country]').selectOption(data.country);
+	await form.getByLabel(text.town).fill(data.town);
+	await form.getByLabel(text.use).selectOption(data.use);
+	await form.locator('select[name=system_scope]').selectOption(data.scope);
+	await form
+		.locator('select[name=project_purpose]')
+		.selectOption(data.purpose);
+}
+
+async function prepareSavedRoof(
+	page: Page,
+	url: string,
+	text: Text,
+	title: string
+) {
+	await page.goto(url + text.home);
+	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
+	const workspace = page.locator('[data-linker-planner]');
+	await button(workspace, text.enter).click();
+	const project = workspace.getByRole('form', { name: text.newProject });
+	await enterProject(project, text, {
+		title,
+		town: 'Rotterdam',
+		country: 'NL',
+		use: 'residential',
+		scope: 'pv_only',
+		purpose: 'self',
+	});
+	await button(project, text.solar).click();
+	await button(workspace, text.roofChoice).click();
+	const module = workspace.getByLabel(text.module, { exact: true });
+	const panel = module
+		.locator('option')
+		.filter({ hasText: 'TSM-460NEG9R.28' });
+	await expect(panel).toHaveCount(1);
+	await module.selectOption((await panel.getAttribute('value'))!);
+	await button(workspace, text.openRoof).click();
+	const measured = workspace.locator('.sc-roof-props details[open]');
+	for (const [index, value] of [
+		'8',
+		'5',
+		'25',
+		'180',
+		'3',
+		'0',
+		'0',
+	].entries()) {
+		await measured.getByLabel(text.dimensions[index]!).fill(value);
+	}
+	await measured
+		.getByLabel(text.drawing)
+		.fill('Installer survey of the review fixture');
+	await measured.getByRole('checkbox').check();
+	await button(measured, text.addRoof).click();
+	const controls = workspace.locator('.sc-roof-props');
+	await controls.getByLabel(text.rows, { exact: true }).fill('2');
+	await controls.getByLabel(text.columns, { exact: true }).fill('2');
+	await controls.getByLabel(text.gap).fill('0');
+	await button(controls, text.place).click();
+	await expect(
+		workspace.locator('.sc-roof-board .lp-panel-shape')
+	).toHaveCount(4);
+	await button(workspace, text.useLayout).click();
+	await workspace.getByText(text.properties, { exact: true }).click();
+	await workspace.getByLabel(text.export).selectOption('permitted');
+	await button(workspace, text.energy).click();
+	await workspace.getByLabel(text.phase).selectOption('3');
+	const previous = post(page, 'runs/find-equipment');
+	await button(workspace, text.compare).click();
+	const reply = await previous;
+	expect(reply.ok()).toBe(true);
+	const { project: savedProject } = await reply.json();
+	const request = reply.request().postDataJSON();
+	const geometry = request.inputs.geometry;
+	expect(geometry).toMatchObject({
+		roofs: [expect.objectContaining({ id: expect.any(String) })],
+		arrays: [
+			expect.objectContaining({
+				rows: 2,
+				columns: 2,
+				roof_id: geometry.roofs[0].id,
+			}),
+		],
+	});
+	await expect(button(page, text.choose).first()).toBeEnabled({
+		timeout: 120_000,
+	});
+	expect(savedProject.inputs.geometry).toEqual(geometry);
+	return {
+		projectId: savedProject.id,
+		revision: savedProject.revision,
+		geometry,
+	};
+}
+
+async function chooseAndSend(
+	page: Page,
+	text: Text,
+	projectId: string,
+	email: string
+) {
+	const prepared =
+		await test.step('2. Choose the configuration', async () => {
+			const generated = post(page, 'runs/report');
+			const reply = post(page, 'inquiry/form');
+			await button(page, text.choose).first().click({ timeout: 120_000 });
+			const [report, form] = await Promise.all([generated, reply]);
+			expect(report.ok()).toBe(true);
+			expect(form.ok()).toBe(true);
+			const request = form.request().postDataJSON();
+			expect(request).toMatchObject({
+				project_id: projectId,
+				revision: report.request().postDataJSON().expected_revision,
+				report_run_id: expect.stringMatching(/^[a-f0-9]{32}$/),
+			});
+			return request;
+		});
+	await test.step('3. Review and send the inquiry', async () => {
+		const form = page.locator('form.linker-inquiry-form');
+		await expect(form).toBeVisible();
+		await form.locator('[name=name]').fill('Review site installer');
+		await form.locator('[name=email]').fill(email);
+		await form
+			.locator('textarea[name=message]')
+			.pressSequentially(
+				'Please check the configuration and confirm whether the equipment included in the report is ready for this site.',
+				{ delay: 32 }
+			);
+		await form.locator('[name=consent]').check();
+		await button(form, text.send).click();
+		await expect(
+			page.getByRole('heading', { name: text.received, exact: true })
+		).toBeVisible({ timeout: 90_000 });
+		const order = JSON.parse(
+			wp([
+				'eval',
+				String.raw`
+			if ( ! defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST) ) {
+				throw new RuntimeException('A local WordPress mail sink is required.');
+			}
+			$orders = wc_get_orders(array('billing_email' => '${email}', 'limit' => 2));
+			if ( count($orders) !== 1 ) { throw new RuntimeException('Expected one inquiry'); }
+			$order = $orders[0];
+			$stored = \Linker\Commerce\Planning\Context::stored($order);
+			echo wp_json_encode(array('id' => $order->get_id(), 'status' => $order->get_status(),
+				'reference' => count($stored) === 1 ? reset($stored)['reference'] : null));
+		`,
+			])
+		);
+		expect(order).toMatchObject({
+			status: 'inquiry-received',
+			reference: {
+				project_id: projectId,
+				revision: prepared.revision,
+				report_run_id: prepared.report_run_id,
+			},
+		});
+		const report = page.getByRole('link', {
+			name: text.report,
+			exact: true,
+		});
+		await expect(report).toHaveAttribute(
+			'href',
+			new RegExp(
+				`/inquiries/${order.id}/planning-report/${order.reference.handoff_id}`
+			)
+		);
+		const pdf = await page.request.get(
+			new URL((await report.getAttribute('href'))!, page.url()).href
+		);
+		expect(pdf.ok()).toBe(true);
+		expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
+	});
+}
+
+// Open Power System Data. 2020. Data Package Household Data. Version 2020-04-15.
+// https://data.open-power-system-data.org/household_data/2020-04-15/ (CC BY 4.0).
+// CoSSMic DE_KN_residential6 hourly gross site load is the interval change in
+// grid import plus PV generation less grid export. Selected channels have no
+// interpolation flags in these 54 intervals. The peak is 7.826 kW.
+const loadFile = fileURLToPath(
+	new URL('../fixtures/cossmic-konstanz-load-2017-06-19.csv', import.meta.url)
+);
+
+async function fillMeasuredLoad(form: Locator, text: Text) {
+	await form.locator('input[name=load_profile]').setInputFiles(loadFile);
+	await form.locator('select[name=load_profile_delimiter]').selectOption(';');
+	await form
+		.locator('input[name=load_profile_source]')
+		.fill('Open Power System Data, CoSSMic Konstanz household 6');
+	await form
+		.locator('textarea[name=load_profile_rights]')
+		.fill(
+			'CC BY 4.0. Hourly gross load derived from the Open Power System Data Household Data release 2020-04-15.'
+		);
+	await form.getByLabel(text.timestamp, { exact: true }).fill('Time');
+	await form.getByLabel(text.value, { exact: true }).fill('Load');
+	await form
+		.getByLabel(text.unit, { exact: true })
+		.selectOption('interval_energy_kwh');
+	await form.getByLabel(text.decimal, { exact: true }).selectOption('.');
+	await form
+		.getByLabel(text.boundaries, { exact: true })
+		.selectOption('fixed');
+	await form.getByLabel(text.timeRole, { exact: true }).selectOption('start');
+	await form.getByLabel(text.interval).fill('60');
+	await form.getByLabel(text.zone, { exact: true }).selectOption('UTC');
+}
+
+test.beforeAll(async ({ request }) => {
+	const { url, engineUrl } = instance();
+	expect(new URL(url).hostname).toBe('127.0.0.1');
+	expect(
+		(await request.get(engineUrl + '/health')).ok(),
+		'The review Engine must be running'
+	).toBe(true);
+});
+
+for (const [lang, width] of matrix) {
+	test(`${lang} ${width}: a saved rooftop layout reaches Woo untouched in three actions`, async ({
+		page,
+		context,
+	}) => {
+		expect(await context.cookies()).toEqual([]);
+		const restoreBudgets = isolateVisitorBudgets();
+		try {
+			const text = words[lang];
+			const { url } = instance();
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const tag = randomUUID();
+			const title = `Saved Rotterdam roof ${tag}`;
+			const previous =
+				await test.step('Earlier visit creates and saves a roof with four placed modules', () =>
+					prepareSavedRoof(page, url, text, title));
+			await page.goto(url + text.home);
+			await test.step('1. Bring the rooftop project and compare', async () => {
+				const form = homeForm(page, text);
+				await form
+					.getByLabel(text.saved)
+					.selectOption({ label: title });
+				const started = post(page, 'runs/find-equipment');
+				await button(form, text.compare).click();
+				const reply = await started;
+				expect(reply.ok()).toBe(true);
+				expect(reply.request().postDataJSON()).toMatchObject({
+					project_id: previous.projectId,
+					expected_revision: previous.revision,
+					inputs: { geometry: previous.geometry },
+				});
+				await expect(page).toHaveURL(
+					new RegExp(`[?&]project=${previous.projectId}`)
+				);
+			});
+			await chooseAndSend(
+				page,
+				text,
+				previous.projectId,
+				`e2e-roof-${tag}@example.test`
+			);
+		} finally {
+			restoreBudgets();
+		}
+	});
+
+	test(`${lang} ${width}: a measured load and peak target reach Woo in three actions`, async ({
+		page,
+		context,
+	}) => {
+		expect(await context.cookies()).toEqual([]);
+		const restoreBudgets = isolateVisitorBudgets();
+		try {
+			const text = words[lang];
+			const { url } = instance();
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			await page.goto(url + text.home);
+			const tag = randomUUID();
+			const projectId =
+				await test.step('1. Supply site measurements and compare', async () => {
+					const form = homeForm(page, text);
+					await enterProject(form, text, {
+						title: `Measured Konstanz load ${tag}`,
+						town: 'Konstanz',
+						country: 'DE',
+						use: 'residential',
+						scope: 'storage_only',
+						purpose: 'peak',
+					});
+					await form.getByLabel(text.phase).selectOption('3');
+					await form.locator('input[name=peak_import_kw]').fill('5');
+					await fillMeasuredLoad(form, text);
+					const imported = post(page, 'profiles/csv');
+					const compared = post(page, 'runs/find-equipment');
+					await button(form, text.compare).click();
+
+					const upload = await imported;
+					expect(upload.ok()).toBe(true);
+					expect(
+						upload.request().postDataJSON().mapping
+					).toMatchObject({
+						timestamp_column: 'Time',
+						value_column: 'Load',
+						measurement: 'gross_load',
+						origin: 'measured',
+						value_kind: 'interval_energy_kwh',
+						interval_seconds: 3600,
+						timezone: 'UTC',
+					});
+					const asset = await upload.json();
+					const comparison = await compared;
+					expect(comparison.ok()).toBe(true);
+					const request = comparison.request().postDataJSON();
+					expect(request).toMatchObject({
+						project_id: asset.project_id,
+						inputs: {
+							profile_selections: {
+								selected: { gross_load: asset.id },
+							},
+							energy_scenario: {
+								schedule: [
+									expect.objectContaining({
+										import_cap_kw: 5,
+									}),
+								],
+							},
+						},
+					});
+					const { run } = await comparison.json();
+					expect(
+						run.result.search.demand.baseline.peak_grid_import_kw
+					).toBeCloseTo(7.826, 3);
+					const profile = page.locator('.sc-system-options');
+					await expect(
+						profile.getByRole('heading', {
+							name: text.profile,
+							exact: true,
+						})
+					).toBeVisible();
+					await expect(
+						profile.getByText(text.peakBeforeStorage, {
+							exact: true,
+						})
+					).toBeVisible();
+					return request.project_id;
+				});
+			await chooseAndSend(
+				page,
+				text,
+				projectId,
+				`e2e-peak-${tag}@example.test`
+			);
+		} finally {
+			restoreBudgets();
+		}
+	});
+}
