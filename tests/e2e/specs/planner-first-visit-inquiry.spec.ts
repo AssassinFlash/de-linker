@@ -266,6 +266,29 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	const summary = page.locator('.sc-draft-transfer aside');
 	await expect(summary).toContainText('Planned system: Storage');
 	await expect(summary).not.toContainText(labels.en.directions[direction]);
+
+	await page
+		.getByRole('button', { name: 'Enter project details', exact: true })
+		.click();
+	await expect(
+		page.getByRole('heading', { name: 'What is the project?' })
+	).toBeFocused();
+	await page.locator('select[name=country]').selectOption('DE');
+	await page
+		.locator('input[name=location_label]')
+		.fill('Berlin project site');
+	const savedDetails = page.waitForResponse((response) =>
+		new URL(response.url()).pathname.endsWith('/projects/revise')
+	);
+	await page.goBack();
+	const saved = await savedDetails;
+	expect(saved.ok()).toBe(true);
+	expect(saved.request().postDataJSON()).toMatchObject({
+		project_id: id,
+		inputs: { brief: { site: { location_label: 'Berlin project site' } } },
+	});
+	await expect(projectReference).toHaveValue(`${id}:${Number(revision) + 2}`);
+	await expect(form.locator('textarea:visible')).toHaveValue(editedNote);
 });
 
 test('back after a lost receipt recovers the original Woo inquiry', async ({
