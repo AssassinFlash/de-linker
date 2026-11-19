@@ -101,9 +101,10 @@ for (const lang of ['en', 'de'] as const) {
 			expect(direction).toContain(chosen);
 			await screenshot(page, `review-and-inquire-${lang}-${width}`);
 			const email = `e2e-preliminary-${Date.now()}@example.test`;
+			const message = lang === 'de' && width === 390 ? '' : words.message;
 			await form.locator('[name="name"]').fill('E2E First Guest');
 			await form.locator('[name="email"]').fill(email);
-			await form.locator('textarea:visible').fill(words.message);
+			await form.locator('textarea:visible').fill(message);
 			await form.locator('[name="consent"]').check();
 			await form
 				.getByRole('button', { name: words.send, exact: true })
@@ -138,13 +139,13 @@ for (const lang of ['en', 'de'] as const) {
 				project: binding,
 				note: expect.stringContaining(direction),
 			});
-			expect(result.note).toContain(words.message);
+			if (message) expect(result.note).toContain(message);
 			const overviewNumber = page
 				.locator('.woocommerce-order-overview__order strong')
 				.getByText(result.number, { exact: true });
 			const heldNumber = page
 				.getByRole('status')
-				.getByText(new RegExp(`#${result.number}\\b`));
+				.getByText(new RegExp(`\\b${result.number}\\b`));
 			await expect(
 				overviewNumber.or(heldNumber).filter({ visible: true }).first()
 			).toBeVisible();
@@ -195,14 +196,25 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	await expect(form.locator('textarea:visible')).toHaveValue(note);
 	await expect(projectReference).toHaveValue(selected);
 
+	const editedNote = 'Bitte helfen Sie uns bei der Auswahl.';
+	await form.locator('textarea:visible').fill(editedNote);
+	await page.goBack();
+	await expect(
+		form.getByRole('button', { name: labels.en.send, exact: true })
+	).toBeVisible();
+	await expect(form.locator('textarea:visible')).toHaveValue(editedNote);
+
 	await page
-		.getByRole('button', { name: 'Variante ändern', exact: true })
+		.getByRole('button', { name: 'Change selection', exact: true })
 		.click();
 	await compare(
-		labels.de.directions[changedDirection],
-		labels.de.choose
+		labels.en.directions[changedDirection],
+		labels.en.choose
 	).click();
-	await expect(form.locator('textarea:visible')).toHaveValue(note);
+	await expect(form.locator('textarea:visible')).toHaveValue(editedNote);
 	const [id, revision] = selected.split(':');
 	await expect(projectReference).toHaveValue(`${id}:${Number(revision) + 1}`);
+	const summary = page.locator('.sc-draft-transfer aside');
+	await expect(summary).toContainText('Planned system: Storage');
+	await expect(summary).not.toContainText(labels.en.directions[direction]);
 });
