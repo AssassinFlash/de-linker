@@ -110,7 +110,7 @@ final class Form {
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function value( $atts = array() ): string {
-		$key      = (string) ( $atts['key'] ?? '' );
+		$key = (string) ( $atts['key'] ?? '' );
 		if ( 'draft-hash' === $key ) {
 			return esc_attr( $this->flash['fields']['linker_draft_hash'] ?? WC()->cart->get_cart_hash() );
 		}

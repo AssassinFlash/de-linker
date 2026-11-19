@@ -302,7 +302,7 @@ final class AccountTemplates {
 				if ( ! isset( $items[ $endpoint ] ) ) {
 					continue;
 				}
-				$url    = match ( $endpoint ) {
+				$url = match ( $endpoint ) {
 					'edit-address'    => wc_get_endpoint_url( 'edit-address', 'billing', wc_get_page_permalink( 'myaccount' ) ),
 					'customer-logout' => linker_commerce_logout_url(),
 					default           => wc_get_account_endpoint_url( $endpoint ),
