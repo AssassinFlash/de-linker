@@ -1219,6 +1219,9 @@
   .sc-configurator .sc-review :is(th, td):first-child { padding-left: 0; }
   .sc-configurator .sc-bom-label { display: none; }
   @media (max-width: 600px) {
+    .sc-configurator .sc-review .sc-summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-1); padding-block: var(--proto-space-3); }
+    .sc-configurator .sc-review .sc-summary dt { font-weight: 600; }
+    .sc-configurator .sc-review .sc-summary dd { text-align: start; }
     .sc-configurator .sc-bom-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .sc-configurator .sc-bom-table tbody { display: grid; }
     .sc-configurator .sc-bom-table tbody tr { display: grid; gap: 5px; padding-block: 14px; border-bottom: 1px solid var(--proto-color-line); }
