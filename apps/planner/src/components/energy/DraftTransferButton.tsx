@@ -44,7 +44,8 @@ export function DraftTransferButton({
 	const confirmed = useRef<{ key: string; receipt: DraftReceipt } | null>(null),
 		flight = useRef<AbortController | null>(null),
 		lifetime = useRef(0),
-		transferEnabled = useRef(current && !blocked);
+		transferEnabled = useRef(current && !blocked),
+		currentReport = useRef(current);
 	const record = useMemo(
 		() =>
 			operations.records
@@ -68,6 +69,7 @@ export function DraftTransferButton({
 	}, [current]);
 	useLayoutEffect(() => {
 		transferEnabled.current = current && !blocked;
+		currentReport.current = current;
 	}, [current, blocked]);
 
 	useEffect(() => {
@@ -219,7 +221,7 @@ export function DraftTransferButton({
 			setError(null);
 			if (
 				continueToInquiry &&
-				transferEnabled.current &&
+				currentReport.current &&
 				reply.receipt.inquiryUrls
 			)
 				window.location.assign(reply.receipt.inquiryUrls[language]);

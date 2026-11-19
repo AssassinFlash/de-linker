@@ -206,6 +206,87 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	assert.equal(applied.length, 3);
 });
 
+for (const current of [true, false])
+	test(`confirmation only opens inquiry for the current report (${current})`, async (t) => {
+		const dom = setupDom();
+		const { createRoot } = await import("react-dom/client");
+		const { DraftTransferButton } =
+			await import("../src/components/energy/DraftTransferButton.tsx");
+		const root = createRoot(dom.element);
+		t.after(() => dom.dispose(root));
+		const origin = window.location.origin;
+		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+		const startUrl = location.href;
+		const inquiryUrl = startUrl + "#inquiry";
+		const inquiryUrls = { en: inquiryUrl, de: `${origin}/de/anfrage/` };
+		const inquiryPages = { en: `${origin}/inquiry/`, de: inquiryUrls.de };
+		const applied = deferred();
+		const started = deferred();
+		const client = {
+			origin,
+			isCurrentScope: () => true,
+			async query() {
+				return {
+					schema_version: 1,
+					project_id: run.project_id,
+					report_run_id: run.id,
+					revision: run.revision,
+					handoff_id: "c".repeat(32),
+					draft_sha256: "d".repeat(64),
+					snapshot_sha256: "e".repeat(64),
+					already_present: false,
+					changes: [{ product_id: 1, label: "Inverter", before: 0, after: 1 }],
+					draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+					inquiry_urls: inquiryPages,
+				};
+			},
+		};
+		const operations = {
+			records: [],
+			async start() {
+				started.resolve();
+				return applied.promise;
+			},
+		};
+		const render = (blocked, current = true) =>
+			act(async () =>
+				root.render(
+					React.createElement(DraftTransferButton, {
+						run,
+						client,
+						operations,
+						scope: "owned",
+						locale: "en",
+						current,
+						blocked,
+						recheck() {},
+					}),
+				),
+			);
+		const button = (label) =>
+			[...dom.element.querySelectorAll("button")].find(
+				(item) => item.textContent.trim() === label,
+			);
+		await render(false);
+		await act(async () =>
+			button("Add selected products to solution draft").click(),
+		);
+		await act(async () => button("Confirm and continue to inquiry").click());
+		await started.promise;
+		await render(true, current);
+		await act(async () =>
+			applied.resolve({
+				path: "draft/apply",
+				intent: { key: "attached" },
+				receipt: {
+					urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+					inquiryUrls,
+				},
+			}),
+		);
+		assert.equal(location.href, current ? inquiryUrl : startUrl);
+	});
+
 test("an applied product report resumes at the localized inquiry without another transfer", async (t) => {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
