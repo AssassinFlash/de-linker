@@ -18,6 +18,7 @@ const words = {
 		keep: 'Keep the existing inverter',
 		inverter: 'Inverter or integrated storage system',
 		saved: 'Saved projects',
+		systemName: 'System name',
 		compare: 'Compare systems',
 		select: 'Use this configuration',
 		review: 'Review your inquiry',
@@ -42,6 +43,7 @@ const words = {
 		keep: 'Vorhandenen Wechselrichter beibehalten',
 		inverter: 'Wechselrichter oder integriertes Speichersystem',
 		saved: 'Gespeicherte Projekte',
+		systemName: 'Systemname',
 		compare: 'Systeme vergleichen',
 		select: 'Konfiguration übernehmen',
 		review: 'Anfrage prüfen',
@@ -182,10 +184,12 @@ async function enterProject(
 			.selectOption({ label: scenario.selectedInverter });
 	if (scenario.systems) {
 		await intake
-			.locator('[name=system_count]')
-			.fill(String(scenario.systems.length));
+			.locator('select[name=system_arrangement]')
+			.selectOption('multiple');
+		const names = intake.getByLabel(text.systemName, { exact: true });
+		await expect(names).toHaveCount(scenario.systems.length);
 		for (const [index, name] of scenario.systems.entries()) {
-			await intake.locator('[name=system_name]').nth(index).fill(name);
+			await names.nth(index).fill(name);
 		}
 	}
 }
