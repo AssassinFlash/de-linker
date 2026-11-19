@@ -466,7 +466,7 @@ export function ReviewProposal({
 					)}
 				</p>
 			)}
-			{!selected && transfer}
+			{transfer}
 			{!selected && (!report || !current) && summary}
 			{!selected && !report && materials}
 			{!selected && !report && (
@@ -682,8 +682,6 @@ export function ReviewProposal({
 						</>
 					)}
 				</section>
-			)}
-			{selected && transfer}
-		</article>
+			)}		</article>
 	);
 }

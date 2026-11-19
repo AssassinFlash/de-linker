@@ -717,6 +717,8 @@ test("Review & inquire asks Genie and downloads the chosen report while the nati
 					<input type="hidden" name="action" value="linker_inquiry">
 					<input type="hidden" name="linker_planner_handoff_id" value="${handoff.handoff_id}">
 					<input type="hidden" name="linker_draft_hash"><input type="hidden" name="linker_planner_draft_sha256">
+					<input name="name" required><input type="email" name="email" required><input name="company">
+					<textarea name="message"></textarea><input type="checkbox" name="consent" value="1" required>
 					<p>Workshop · input revision 3</p><button type="submit">Send inquiry</button></form>`,
 				};
 			throw new Error(path);
@@ -869,7 +871,40 @@ test("Review & inquire asks Genie and downloads the chosen report while the nati
 		await act(async () =>
 			button("Download bill of materials (CSV)", history()).click(),
 		);
+		await act(async () => button("Close", history()).click());
 		await until(() => button("Send inquiry"));
+		const fields = () => button("Send inquiry").form.elements;
+		const contact = {
+			name: "Robin Meyer",
+			email: "robin@example.test",
+			company: "Workshop Solar",
+			message: "Please quote the workshop system.",
+		};
+		for (const [name, value] of Object.entries(contact))
+			await enter(fields().namedItem(name), value);
+		await act(async () => fields().namedItem("consent").click());
+		await act(async () => button("Earlier calculations").click());
+		await until(() => button("Revision 2", history()));
+		await act(async () => button("Revision 2", history()).click());
+		await until(() => button("Download PDF", history()));
+		const assertContact = () => {
+			for (const [name, value] of Object.entries(contact))
+				assert.equal(fields().namedItem(name).value, value, name);
+			assert.equal(fields().namedItem("consent").checked, true);
+		};
+		assertContact();
+		assert.ok(
+			button("Send inquiry").form.compareDocumentPosition(history()) &
+				window.Node.DOCUMENT_POSITION_FOLLOWING,
+			"the current inquiry stays above the historical report",
+		);
+		await act(async () => button("Close", history()).click());
+		await until(() => button("Send inquiry"));
+		assertContact();
+		await act(async () => button("Revision 2", history()).click());
+		await until(
+			() => button("Download PDF", history()) && button("Send inquiry"),
+		);
 		assert.match(
 			button("Send inquiry").form.textContent,
 			/Workshop · input revision 3/,
@@ -884,6 +919,9 @@ test("Review & inquire asks Genie and downloads the chosen report while the nati
 			assert.equal(body.report_run_id, current.id, path);
 			assert.equal(body.expected_revision, 3, path);
 		}
+		for (const [name, value] of Object.entries(contact))
+			assert.equal(posts[0][name], value, name);
+		assert.equal(posts[0].consent, "1");
 		assert.equal(posts[0].action, "linker_inquiry");
 		assert.equal(posts[0].linker_planner_handoff_id, handoff.handoff_id);
 		assert.equal(posts[0].linker_planner_draft_sha256, "f".repeat(64));
@@ -896,7 +934,6 @@ test("Review & inquire asks Genie and downloads the chosen report while the nati
 		assert.ok(dom.element.textContent.includes("Projektplanungsbericht"));
 		await ask(button("Download PDF").closest("section"), 3, [current.id]);
 		await act(async () => button("Download PDF").click());
-		await act(async () => button("Earlier calculations").click());
 		await until(() => button("Revision 2"));
 		await act(async () => button("Revision 2").click());
 		assert.equal(button("Revision 2").getAttribute("aria-pressed"), "true");
