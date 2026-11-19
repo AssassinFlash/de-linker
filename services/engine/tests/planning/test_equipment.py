@@ -6242,7 +6242,9 @@ def test_storage_search_uses_site_application_before_qualifying_products(
         ("industrial", {}, None),
         (None, {}, None),
         ("residential", {"application": "commercial"}, "commercial"),
-        ("residential", {"application": None}, None),
+        pytest.param(
+            "residential", {"application": None}, "residential", id="after-adoption"
+        ),
     ],
 )
 def test_plant_search_uses_site_application_only_for_undeclared_systems(

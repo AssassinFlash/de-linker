@@ -190,7 +190,8 @@ def compile_discovery_inputs(authored: Object) -> Object:
         inputs=inputs,
         whole_plant=True,
     )
-    if "application" in common_setup:
+    # Candidate adoption serializes an unspecified common application as null.
+    if common.application is not None:
         application = common.application
     units, groups = raw.get("units"), raw.get("parallel_groups")
     if not isinstance(units, list) or not isinstance(groups, list):
