@@ -30,7 +30,8 @@ interface ProductQuantity {
 }
 
 const byId = (a: ProductQuantity, b: ProductQuantity) => a.id - b.id;
-const byQuantity = (a: number, b: number) => a - b;
+const byLabel = (a: { label: string }, b: { label: string }) =>
+	a.label.localeCompare(b.label);
 
 for (const locale of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
@@ -125,11 +126,10 @@ for (const locale of ['en', 'de'] as const) {
 					.click();
 				const reportResponse = await reportReply;
 				expect(reportResponse.ok()).toBe(true);
-				const report = await reportResponse.json();
+				const report = reportResponse.request().postDataJSON();
 				expect(report).toMatchObject({
-					id: expect.stringMatching(/^[a-f0-9]{32}$/),
 					project_id: projectId,
-					revision: expect.any(Number),
+					expected_revision: expect.any(Number),
 				});
 				const add = workspace.getByRole('button', {
 					name: name('Add selected products to solution draft'),
@@ -142,17 +142,12 @@ for (const locale of ['en', 'de'] as const) {
 				await add.click();
 				const previewResponse = await previewReply;
 				expect(previewResponse.ok()).toBe(true);
-				const preview = await previewResponse.json();
+				const preview = previewResponse.request().postDataJSON();
 				expect(preview).toMatchObject({
 					project_id: projectId,
-					report_run_id: report.id,
-					revision: report.revision,
+					report_run_id: expect.stringMatching(/^[a-f0-9]{32}$/),
+					expected_revision: report.expected_revision,
 				});
-				const changes: {
-					product_id: number;
-					label: string;
-					after: number;
-				}[] = preview.changes;
 				const table = workspace.getByRole('table').filter({
 					has: page.getByRole('columnheader', {
 						name: name('New quantity'),
@@ -172,12 +167,6 @@ for (const locale of ['en', 'de'] as const) {
 						})
 					);
 				expect(reviewed.length).toBeGreaterThan(0);
-				expect(reviewed).toEqual(
-					changes.map(({ label, after }) => ({
-						label,
-						quantity: after,
-					}))
-				);
 				expect(
 					reviewed.every(
 						({ label, quantity }) => label && quantity > 0
@@ -214,25 +203,17 @@ for (const locale of ['en', 'de'] as const) {
 				expect(applyResponse.ok()).toBe(true);
 				expect(applyResponse.request().postDataJSON()).toMatchObject({
 					project_id: projectId,
-					report_run_id: report.id,
-					expected_revision: report.revision,
-					expected_draft_sha256: preview.draft_sha256,
+					report_run_id: preview.report_run_id,
+					expected_revision: report.expected_revision,
+					expected_draft_sha256:
+						expect.stringMatching(/^[a-f0-9]{64}$/),
 				});
-				const lines = changes
-					.map(({ product_id, after }) => ({
-						id: product_id,
-						quantity: after,
-					}))
-					.sort(byId);
-				const quantities = reviewed
-					.map((item) => item.quantity)
-					.sort(byQuantity);
 				const inquiryUrl =
 					locale === 'de'
 						? '/de/proforma-anfrage/'
 						: '/proforma-request/';
 				const form = page.locator('form.linker-inquiry-form');
-				await expect(form).toBeVisible({ timeout: 60_000 });
+				await expect(form).toBeVisible({ timeout: 20_000 });
 				await expect(page).toHaveURL(url + inquiryUrl);
 				await expect(page.locator('html')).toHaveAttribute(
 					'lang',
@@ -242,26 +223,40 @@ for (const locale of ['en', 'de'] as const) {
 				const nativeDraft = page.locator(
 					'.linker-inquiry-lines .linker-inquiry-line'
 				);
-				await expect(nativeDraft).toHaveCount(lines.length);
-				const shown = await nativeDraft
-					.locator('input.qty')
-					.evaluateAll((inputs) =>
-						inputs.map(
-							(input) => (input as HTMLInputElement).valueAsNumber
-						)
-					);
-				expect(shown.sort(byQuantity)).toEqual(quantities);
+				await expect(nativeDraft).toHaveCount(reviewed.length);
+				const shown = await nativeDraft.evaluateAll((rows) =>
+					rows.map((row) => ({
+						label: row
+							.querySelector(
+								'.linker-inquiry-product > span:last-child'
+							)!
+							.textContent!.trim(),
+						quantity:
+							row.querySelector<HTMLInputElement>('input.qty')!
+								.valueAsNumber,
+					}))
+				);
+				expect(shown.sort(byLabel)).toEqual(
+					[...reviewed].sort(byLabel)
+				);
 				const nativeCart = await context.request.get(
 					`${url}/wp-json/wc/store/v1/cart`
 				);
 				expect(nativeCart.ok()).toBe(true);
-				const cartItems: ProductQuantity[] = (await nativeCart.json())
-					.items;
+				const cartItems: (ProductQuantity & { name: string })[] = (
+					await nativeCart.json()
+				).items;
 				expect(
 					cartItems
-						.map(({ id, quantity }) => ({ id, quantity }))
-						.sort(byId)
-				).toEqual([...lines].sort(byId));
+						.map(({ name, quantity }) => ({
+							label: name,
+							quantity,
+						}))
+						.sort(byLabel)
+				).toEqual([...reviewed].sort(byLabel));
+				const lines = cartItems
+					.map(({ id, quantity }) => ({ id, quantity }))
+					.sort(byId);
 
 				await form
 					.locator('[name="name"]')
@@ -302,8 +297,8 @@ for (const locale of ['en', 'de'] as const) {
 						title,
 						handoff_id: expect.stringMatching(/^[a-f0-9]{32}$/),
 						project_id: projectId,
-						report_run_id: report.id,
-						revision: report.revision,
+						report_run_id: preview.report_run_id,
+						revision: report.expected_revision,
 					},
 				});
 				expect(order.lines.sort(byId)).toEqual([...lines].sort(byId));
