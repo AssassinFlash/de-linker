@@ -180,6 +180,59 @@ function configured() {
 	};
 }
 
+test("returning to one system keeps the surviving unit's application", () => {
+	const draft = configured();
+	const unit = draft.units[0]!;
+	const converted = (common: JsonObject, scoped: JsonObject) =>
+		equipmentDraft(
+			singleSystem(
+				plantInputs(start(), {
+					...draft,
+					requirements: { ...draft.requirements, ...common },
+					units: [
+						{
+							...unit,
+							inputs: {
+								equipment_setup: {
+									...unit.inputs.equipment_setup,
+									...scoped,
+								},
+							},
+						},
+					],
+					parallel_groups: [],
+				}),
+			),
+		);
+
+	assert.equal(
+		Object.hasOwn(converted({ application: null }, {}), "application"),
+		false,
+	);
+	assert.equal(
+		converted({ application: null }, { application: "commercial" }).application,
+		"commercial",
+	);
+	assert.equal(
+		converted({ application: "commercial" }, { application: null }).application,
+		null,
+	);
+	assert.equal(
+		converted({ application: "commercial" }, {}).application,
+		"commercial",
+	);
+	assert.equal(
+		Object.hasOwn(
+			converted(
+				{ application: "commercial" },
+				{ equipment_use: { inverter: "retain", battery: "new" } },
+			),
+			"application",
+		),
+		false,
+	);
+});
+
 test("multi-system editing preserves project history, pins current Woo identities and invalidates preparation", () => {
 	const initial: Project = {
 		id: "a".repeat(32),

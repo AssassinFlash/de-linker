@@ -34,6 +34,7 @@ from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_assessment import assess_equipment
 from linker_engine.planning.equipment_candidate_choice import check_equipment_candidate
 from linker_engine.planning.equipment_candidate_store import EquipmentCandidateStore
+from linker_engine.planning.equipment_declarations import compile_discovery_inputs
 from linker_engine.planning.equipment_facts import compile_product
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.equipment_requirements import EquipmentRequirements
@@ -50,6 +51,7 @@ from linker_engine.planning.errors import (
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.plant_search_plan import PlantSearchPlan
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
@@ -4741,6 +4743,7 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         if key != "product_revisions"
     }
     authored: FixtureObject = {
+        "brief": {**incomplete_brief(), "project_use": "residential"},
         "equipment_plant_setup": {
             "schema_version": 1,
             "requirements": {
@@ -4753,7 +4756,10 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
                     "id": uid,
                     "name": uid.upper(),
                     "inputs": {
-                        "equipment_setup": {**setup, "application": "residential"}
+                        "equipment_setup": {
+                            **setup,
+                            **({"application": "residential"} if uid == "a" else {}),
+                        }
                     },
                 }
                 for uid in ("a", "b")
@@ -4767,7 +4773,7 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
                     "controller_use": "retain",
                 }
             ],
-        }
+        },
     }
     authored["equipment_plant_setup"]["requirements"].update(
         pv_dc_kw=20, required_usable_kwh=20, required_discharge_ac_kw=10
@@ -4788,6 +4794,15 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         assert worker.run_once()
         run = workspace.run(owner, str(reply["run"]["id"]))
         assert run.state == "succeeded", run.error
+        frozen = rig.post("/runs/inputs", {"project_id": pid, "run_id": run.id})[
+            "inputs"
+        ]
+        assert (
+            frozen["equipment_plant_requirements"]["units"][1]["requirements"][
+                "application"
+            ]
+            == "residential"
+        )
         candidates = json_object(run.result)["search"]["candidates"]
         assert candidates, run.result
         candidate = candidates[0]
@@ -4798,14 +4813,10 @@ def test_find_equipment_per_unit_application_reaches_candidate_adoption(
         for declaration, unit in zip(
             current["equipment_plant_setup"]["units"], selected["units"], strict=True
         ):
-            declaration["inputs"]["equipment_setup"] = {
-                **{
-                    k: v
-                    for k, v in unit["selection"].items()
-                    if k != "product_revisions"
-                },
-                "application": declaration["inputs"]["equipment_setup"]["application"],
-            }
+            declared_setup = declaration["inputs"]["equipment_setup"]
+            declared_setup.update(
+                {k: v for k, v in unit["selection"].items() if k != "product_revisions"}
+            )
         current["equipment_candidate"] = {
             "run_id": run.id,
             "candidate_id": candidate["id"],
@@ -6153,6 +6164,135 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
         1,
         1,
     ]
+
+
+@pytest.mark.parametrize("retain_inverter", [False, True])
+def test_storage_search_uses_site_application_before_qualifying_products(
+    feed: FixtureObject, workspace: Workspace, retain_inverter: bool
+) -> None:
+    brief = incomplete_brief()
+    brief.update(project_use="residential", system_scope="storage_only")
+    brief["site"].update(country_code="DE", location_label="Berlin")
+    authored: FixtureObject = {
+        "brief": brief,
+        "backup_demand": {"schema_version": 1, "load_kw": 3, "duration_hours": 2},
+        "equipment_setup": {
+            "schema_version": 1,
+            "inverter_product_id": None,
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+            "equipment_use": None,
+            "grid_phase": 3,
+            "operating_mode": "backup",
+            "pv_dc_kw": 0,
+            "required_usable_kwh": None,
+            "required_discharge_ac_kw": None,
+        },
+    }
+    if retain_inverter:
+        authored["equipment_setup"]["inverter_product_id"] = 1946
+        authored["equipment_setup"]["equipment_use"] = {
+            "inverter": "retain",
+            "battery": "new",
+        }
+    product_ids = {1183, 1946, 2090, 2092, 1954}
+    products = [
+        copy.deepcopy(product)
+        for product in feed["products"]
+        if product["id"] in product_ids
+    ]
+    # This fixture covers application, not an installed battery assembly.
+    # Reuse the published battery identity with a synthetic sales-unit witness.
+    commercial_battery = next(product for product in products if product["id"] == 1954)
+    commercial_battery["figures"]["sales_unit_kind"] = {
+        "value": "battery_system",
+        "unit": None,
+        "citation": commercial_battery["figures"]["system_operating_voltage_range_v"][
+            "citation"
+        ],
+    }
+    basis = {
+        "products": products,
+        "compatibility": feed["compatibility"],
+    }
+    result = json_object(
+        search_equipment(
+            compile_discovery_inputs(authored),
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            EquipmentCandidateStore(workspace),
+            lambda: None,
+        )
+    )
+    mismatch = {"product_id": 1946, "reason": "converter_application_mismatch"}
+    assert (mismatch in result["coverage"]["excluded_products"]) is not retain_inverter
+    assert {
+        row["selection"]["inverter_product_id"] for row in result["candidates"]
+    } == ({1946} if retain_inverter else {1183})
+    assert "application" not in authored["equipment_setup"]
+
+
+@pytest.mark.parametrize(
+    ("site_use", "common_application", "expected_default"),
+    [
+        ("residential", {}, "residential"),
+        ("commercial", {}, "commercial"),
+        ("industrial", {}, None),
+        (None, {}, None),
+        ("residential", {"application": "commercial"}, "commercial"),
+        pytest.param(
+            "residential", {"application": None}, "residential", id="after-adoption"
+        ),
+    ],
+)
+def test_plant_search_uses_site_application_only_for_undeclared_systems(
+    site_use: str | None, common_application: Object, expected_default: str | None
+) -> None:
+    brief = incomplete_brief()
+    brief["project_use"] = site_use
+    setup = {
+        "schema_version": 1,
+        "grid_phase": 3,
+        "operating_mode": "grid_connected",
+        "pv_dc_kw": None,
+        "required_usable_kwh": None,
+        "required_discharge_ac_kw": None,
+    }
+    authored: FixtureObject = {
+        "brief": brief,
+        "equipment_plant_setup": {
+            "schema_version": 1,
+            "requirements": {**setup, **common_application},
+            "units": [
+                {
+                    "id": uid,
+                    "name": uid,
+                    "inputs": {"equipment_setup": {**setup, **app}},
+                }
+                for uid, app in (
+                    ("a", {}),
+                    ("b", {"application": "commercial"}),
+                    ("c", {"application": None}),
+                )
+            ],
+            "parallel_groups": [],
+        },
+    }
+    plan = PlantSearchPlan.from_inputs(compile_discovery_inputs(authored))
+    assert plan.requirements.application == common_application.get("application")
+    assert [unit.requirements.application for unit in plan.units] == [
+        expected_default,
+        "commercial",
+        None,
+    ]
+    assert (
+        "application"
+        not in authored["equipment_plant_setup"]["units"][0]["inputs"][
+            "equipment_setup"
+        ]
+    )
 
 
 def test_residential_application_excludes_contradicting_converters_and_keeps_unknown_visible(

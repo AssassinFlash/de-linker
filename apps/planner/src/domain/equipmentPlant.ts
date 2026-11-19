@@ -16,7 +16,7 @@ import {
 	factoryEquipment,
 	PART_USES,
 } from "./equipment.ts";
-import type { EquipmentSelection, PartUse } from "./equipment.ts";
+import type { EquipmentSelection, EquipmentUse, PartUse } from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
 import type { BatteryAssemblies } from "../data/equipmentProducts.ts";
 
@@ -342,11 +342,19 @@ export function singleSystem(inputs: JsonObject): JsonObject {
 		)
 	)
 		throw incomplete();
+	const setup = equipmentDraft(draft.units[0]!.inputs);
+	const use = setup.equipment_use as EquipmentUse | null | undefined;
+	const { application, ...requirements } = draft.requirements;
 	const next: Record<string, Json> = {
 		...inputs,
 		equipment_setup: {
-			...equipmentDraft(draft.units[0]!.inputs),
-			...draft.requirements,
+			...setup,
+			...requirements,
+			...(setup.application === undefined &&
+			application != null &&
+			use?.inverter !== "retain"
+				? { application }
+				: {}),
 		},
 	};
 	delete next.pv_plant_string_plan;
