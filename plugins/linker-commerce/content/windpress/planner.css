@@ -1058,7 +1058,7 @@
   .sc-configurator .sc-project-heading [role="status"] { flex-basis: 100%; }
   .sc-configurator .sc-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--proto-color-line); }
   .sc-configurator .sc-nav button { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 16px; border: 0; border-radius: var(--proto-radius-md); color: var(--proto-neutral-500); background: transparent; font-size: 14px; font-weight: 600; }
-  .sc-configurator .sc-nav button:hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
+  .sc-configurator .sc-nav button:not([aria-current="step"]):hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
   .sc-configurator .sc-nav button[aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
   .sc-configurator .sc-step-number { margin-right: 8px; font-size: 12px; opacity: .7; }
   .sc-configurator .sc-inquiry-stages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -1159,6 +1159,9 @@
   .sc-configurator .sc-system-node dt svg { width: 20px; height: 20px; color: var(--proto-teal-800); }
   .sc-configurator .sc-system-node dd { margin: 4px 0 0; color: var(--proto-neutral-600); font-size: 13px; }
   .sc-configurator .sc-system-equipment { margin-top: 20px; }
+  .sc-configurator dl.sc-equipment { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); align-items: start; gap: 12px 20px; }
+  .sc-configurator dl.sc-equipment dt { color: var(--proto-neutral-600); font-size: 13px; }
+  .sc-configurator dl.sc-equipment dd { margin: 4px 0 0; font-weight: 600; }
   .sc-configurator .sc-report-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 20px; }
   .sc-configurator .sc-report-logo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-block: 12px; }
   .sc-configurator .sc-report-logo img { max-width: 100px; max-height: 45px; object-fit: contain; }
