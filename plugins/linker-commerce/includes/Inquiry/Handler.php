@@ -200,8 +200,7 @@ final class Handler {
 			return self::draft_changed();
 		}
 		$frozen  = null;
-		$review  = null;
-		$prepare = static function () use ( $transfer, $project, &$frozen, &$review ): ?WP_Error {
+		$prepare = static function () use ( $transfer, $project, &$frozen ): ?WP_Error {
 			$owned = Context::read_preliminary_project( $project );
 			if ( is_wp_error( $owned ) ) {
 				return $owned;
@@ -211,25 +210,29 @@ final class Handler {
 				return $handoff;
 			}
 			$frozen = $handoff;
-			$review = $owned;
 			return null;
 		};
-		$work    = static function () use ( $sender, $details, $post, $transfer, $prepare, &$frozen, &$review ): WC_Order|WP_Error {
+		$work    = static function () use ( $sender, $details, $post, $transfer, $prepare, &$frozen ): WC_Order|WP_Error {
 			$error = null === $frozen ? $prepare() : null;
 			if ( $error instanceof WP_Error ) {
 				return $error;
 			}
-			if ( ! is_array( $frozen ) || ! is_array( $review ) ) {
+			if ( ! is_array( $frozen ) ) {
 				return Context::admission_unavailable();
 			}
-			$applied = $transfer->apply( $review['project_id'], $review['revision'], $frozen );
-			if ( is_wp_error( $applied ) ) {
-				return 'planning_draft_changed' === $applied->get_error_code() ? self::draft_changed() : $applied;
-			}
-			if ( false === ( $applied['active'] ?? true ) ) {
-				return self::draft_changed();
-			}
-			return Context::with_submission( $post, static fn (): WC_Order|WP_Error => $sender->request( $details, $post, false ) );
+			$result = Context::with_submission(
+				$post,
+				static fn (): WC_Order|WP_Error => $sender->request(
+					$details,
+					$post,
+					false,
+					review: array(
+						'intent'  => $transfer,
+						'handoff' => $frozen,
+					)
+				)
+			);
+			return $result instanceof WP_Error && in_array( $result->get_error_code(), array( 'planning_draft_changed', 'planning_transfer_changed', 'out-of-stock' ), true ) ? self::draft_changed() : $result;
 		};
 		return Business::run( 'inquiry', $post, $payload, $work, $current, $prepare );
 	}
@@ -357,7 +360,8 @@ final class Handler {
 							array(
 								'project'             => explode( ':', $fields[ Context::PROJECT_FIELD ], 2 )[0],
 								'guided'              => 'inquiry',
-								CheckoutRetry::HANDLE => $retry,
+								'run'                 => $transfer->report,
+								CheckoutRetry::HANDLE => $retry ?? false,
 							),
 							$page
 						);

@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
+use Linker\Commerce\Inquiry\Assessment\Lock;
+use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Protection\FormRecovery;
 
 /** An opaque handle addresses one Woo session's retained form. */
@@ -28,7 +30,43 @@ final class CheckoutRetry {
 	 * @param array<string,mixed> $flash    Already retained fields and outcome.
 	 * @param string              $previous Previous handle for this checkout retry.
 	 */
-	public static function remember( array $flash, string $previous ): string {
+	public static function remember( array $flash, string $previous ): ?string {
+		$session = WC()->session;
+		if ( ! $session instanceof \WC_Session_Handler || false !== has_action( 'shutdown', array( $session, 'save_data' ) ) ) {
+			return self::store( $flash, $previous );
+		}
+		// The draft fence detached the stale request from native autosave.
+		// Update the retry field on the current stored session, preserving its draft.
+		$customer = $session->get_customer_id();
+		$cookie   = $session->get_session_cookie();
+		if ( ( $cookie[0] ?? (string) get_current_user_id() ) !== $customer ) {
+			return null;
+		}
+		$id = null;
+		try {
+			Lock::run(
+				DraftTransfer::session_lock( $customer ),
+				static function () use ( $session, $flash, $previous, &$id ): void {
+					$session->init_session_cookie();
+					$id = self::store( $flash, $previous );
+					$session->save_data();
+				},
+				wait_seconds: 1,
+				guard_connection: true
+			);
+		} catch ( \Throwable $error ) {
+			return null;
+		}
+		return $id;
+	}
+
+	/**
+	 * Bind the recovery fields to this Woo session and WordPress identity.
+	 *
+	 * @param array<string,mixed> $flash Retained input and outcome.
+	 * @param string              $previous Previous attempt handle.
+	 */
+	private static function store( array $flash, string $previous ): string {
 		$entries        = self::active();
 		$actor          = self::context();
 		$id             = isset( $entries[ $previous ] ) && $entries[ $previous ]['actor'] === $actor ? $previous : wp_generate_uuid4();

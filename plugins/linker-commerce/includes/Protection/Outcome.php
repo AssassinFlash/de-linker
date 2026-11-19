@@ -54,6 +54,9 @@ final class Outcome {
 		'planning_preliminary_unavailable'    => array( self::REFUSED, 'invalid' ),
 		'planning_project_deleted'            => array( self::REFUSED, 'invalid' ),
 		'planning_admission_unavailable'      => array( self::REFUSED, 'invalid' ),
+		'linker_guided_checkout_refused'      => array( self::REFUSED, 'invalid' ),
+		'linker_solution_changed'             => array( self::REFUSED, 'invalid' ),
+		'linker_solution_verification'        => array( self::REFUSED, 'invalid' ),
 		// The reviewed project notes drifted before the admission reserved a write.
 		'linker_project_notes_changed'        => array( self::REFUSED, 'invalid' ),
 		'linker_contact_invalid'              => array( self::REFUSED, 'invalid' ),

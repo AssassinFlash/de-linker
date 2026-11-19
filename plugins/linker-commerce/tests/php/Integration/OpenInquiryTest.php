@@ -76,6 +76,14 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->as_user( $this->customer()->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
+		$product  = $this->product( '99' );
+		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$this->assertIsString( $cart_key );
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->save_data();
+		$cart_before     = $session->get( 'cart' );
+		$receipts_before = $session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS );
 
 		$handoff        = $this->planning_report();
 		$id             = $handoff['snapshot']['project_id'];
@@ -122,7 +130,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertIsArray( $review );
-		$this->assertSame( array(), $review['inquiry_lines'] );
+		$this->assertCount( 1, $review['inquiry_lines'] );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
 		$this->assertSame( 1, preg_match( '/name="linker_report_transfer" value="([^"]+)"/', $review['inquiry_form_html'], $token ) );
 		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $review['inquiry_form_html'], $nonce ) );
@@ -149,6 +157,29 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \WP_Error::class, $refused );
 		$this->assertSame( 'linker_inquiry_invalid', $refused->get_error_code() );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+
+		$refuse = function (): void {
+			$this->assertCount( 1, \Linker\Commerce\Planning\Context::report_only_contexts() );
+			throw new \RuntimeException( 'Fixture checkout refusal before first order save.' );
+		};
+		add_action( 'woocommerce_checkout_create_order', $refuse, 20 );
+		try {
+			$refused = $handler->process( $post );
+		} finally {
+			remove_action( 'woocommerce_checkout_create_order', $refuse, 20 );
+		}
+		$this->assertInstanceOf( \WP_Error::class, $refused );
+		$this->assertSame( 'linker_guided_checkout_refused', $refused->get_error_code() );
+		$this->assertFalse( \Linker\Commerce\Protection\FormRecovery::after_error( $refused ) );
+		$this->assertSame( 2, WC()->cart->get_cart()[ $cart_key ]['quantity'] );
+		$this->assertSame( $cart_before, WC()->session->get( 'cart' ) );
+		$this->assertSame( $receipts_before, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ) );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$persisted = $session->get_session_data();
+		$this->assertSame( $cart_before, maybe_unserialize( $persisted['cart'] ?? null ) );
+		$this->assertSame( $receipts_before, maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ] ?? null ) );
+		$this->assertSame( array(), maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ] ?? array() ) );
+
 		$order = $handler->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() . ': ' . $order->get_error_message() : '' );
 		$this->later(
@@ -160,6 +191,40 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( $report, $stored[ $handoff['id'] ]['reference']['report_run_id'] );
 		$this->assertSame( 1, $stored[ $handoff['id'] ]['reference']['revision'] );
 		$this->assertSame( array(), $stored[ $handoff['id'] ]['included_items'] );
+	}
+
+	/** A detached request can retain its error without overwriting a newer native draft. */
+	public function test_detached_checkout_retry_preserves_the_stored_draft(): void {
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->init_session_cookie();
+		$this->assertSame( (string) get_current_user_id(), $session->get_customer_id() );
+		WC()->cart->empty_cart();
+		$product  = $this->product( '99' );
+		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$this->assertIsString( $cart_key );
+		$session->save_data();
+		$current                        = $session->get( 'cart' );
+		$stale                          = $current;
+		$stale[ $cart_key ]['quantity'] = 1;
+		$session->set( 'cart', $stale );
+
+		$flash = array(
+			'fields' => array( 'message' => 'My original inquiry' ),
+			'error'  => 'Review the updated draft.',
+		);
+		remove_action( 'shutdown', array( $session, 'save_data' ), 20 );
+		try {
+			$handle = \Linker\Commerce\Inquiry\CheckoutRetry::remember( $flash, '' );
+			$this->assertIsString( $handle );
+			$session->init_session_cookie();
+			$this->assertSame( $current, $session->get( 'cart' ) );
+			$this->assertSame( $flash, \Linker\Commerce\Inquiry\CheckoutRetry::read( $handle ) );
+		} finally {
+			add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+		}
 	}
 
 	/** A failed preliminary POST is rendered for this tab, not consumed by the next checkout visitor. */

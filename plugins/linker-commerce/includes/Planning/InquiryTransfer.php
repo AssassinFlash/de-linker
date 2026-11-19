@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Planning;
 
+use WC_Order;
 use WP_Error;
 
 /** The native form nonce covers the exact intent shown at review. */
@@ -76,22 +77,20 @@ final class InquiryTransfer {
 	}
 
 	/**
-	 * Apply the exact reviewed native draft via the existing idempotent writer.
+	 * Send the order inside the exact reviewed native draft write.
 	 *
-	 * @param string              $project Nonce-bound project identity.
-	 * @param int                 $revision Nonce-bound revision.
-	 * @param array<string,mixed> $handoff Already owned and bound to the request.
-	 * @return array<string,mixed>|WP_Error
+	 * @param array<string,mixed>            $handoff Already owned and bound to the request.
+	 * @param callable():(WC_Order|WP_Error) $send Native order writer.
 	 */
-	public function apply( string $project, int $revision, array $handoff ): array|WP_Error {
+	public function send( array $handoff, callable $send ): WC_Order|WP_Error {
 		$command = array(
 			'schema_version'        => 1,
-			'project_id'            => $project,
+			'project_id'            => $handoff['snapshot']['project_id'],
 			'report_run_id'         => $this->report,
-			'expected_revision'     => $revision,
+			'expected_revision'     => $handoff['snapshot']['revision'],
 			'key'                   => $this->key,
 			'expected_draft_sha256' => $this->draft,
 		);
-		return ( new DraftTransfer() )->apply( null, $command, $handoff );
+		return ( new DraftTransfer() )->submit( $command, $handoff, $send );
 	}
 }
