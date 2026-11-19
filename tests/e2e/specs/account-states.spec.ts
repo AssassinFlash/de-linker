@@ -1041,6 +1041,24 @@ for (const language of LANGUAGES) {
 				).toHaveCount(0);
 				await expectNoOverflow(page, width);
 				await shot(page, `${tag}-inquiry-search`);
+				const translated = LANGUAGES.find(
+					(entry) => entry.lang !== language.lang
+				)!;
+				for (const entry of [translated, language]) {
+					await page
+						.locator(
+							`header a[data-linker-language-choice="${entry.lang}"]:visible`
+						)
+						.first()
+						.click();
+					await expect(page).toHaveURL(
+						(url) =>
+							url.pathname === entry.inquiries &&
+							url.searchParams.get('inquiry_number') ===
+								`#${owner.order}`
+					);
+					await expect(exact).toBeVisible();
+				}
 				await exact.locator('.linker-account-row-view').click();
 				await expect(
 					page.locator('[data-action="quotation"]')

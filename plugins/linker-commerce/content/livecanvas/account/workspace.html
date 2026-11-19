@@ -5,10 +5,6 @@
 			<p id="linker-account-menu-name">[linker_account_text key="my-account"]</p>
 			<strong>[linker_account_field key="customer-name"]</strong>
 		</div>
-		<details class="linker-account-mobile-menu">
-			<summary><span class="screen-reader-text">[linker_account_text key="account-settings"]</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary>
-			<ul class="linker-account-nav-items">[linker_account_nav type="settings"]</ul>
-		</details>
 	</header>
 	<div class="linker-account-layout">
 		<aside class="linker-account-sidebar">[linker_account_nav]</aside>
@@ -17,6 +13,12 @@
 				<h1>[linker_account_field key="page-title"]</h1>
 			</header>
 			[linker_account_hook name="content"]
+			[lc_if condition="wc_is_current_account_menu_item" param="edit-account"]
+			<nav class="linker-account-profile-links" aria-labelledby="linker-account-profile-links-title">
+				<h2 id="linker-account-profile-links-title" class="screen-reader-text">[linker_account_text key="account-settings"]</h2>
+				<ul class="linker-account-nav-items">[linker_account_nav type="settings"]</ul>
+			</nav>
+			[/lc_if]
 		</div>
 	</div>
 	[linker_account_nav type="mobile"]

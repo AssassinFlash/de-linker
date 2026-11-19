@@ -151,7 +151,9 @@ final class AccountTemplates {
 		$previous  = $this->row;
 		$this->row = $row;
 		try {
-			$content = Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' );
+			$order_notices = 'inquiries' === $name ? $this->hook( array( 'name' => 'before-orders' ) ) : '';
+			// Resolve the template's shortcodes before inserting the customer-entered number.
+			$content = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' ) );
 			if ( 'overview' === $name ) {
 				$content = str_replace( '{{project-search-url}}', $this->field( array( 'key' => 'configurator-url' ) ), $content );
 			}
@@ -161,10 +163,11 @@ final class AccountTemplates {
 					array(
 						'{{inquiry-search-url}}' => $this->url( array( 'endpoint' => 'orders' ) ),
 						'{{inquiry-number}}'     => esc_attr( $this->inquiry_number() ),
+						'{{order-notices}}'      => $order_notices,
 					)
 				);
 			}
-			return do_shortcode( $content );
+			return $content;
 		} finally {
 			$this->row = $previous;
 		}
@@ -287,7 +290,7 @@ final class AccountTemplates {
 		if ( in_array( $type, array( 'mobile', 'shortcuts', 'settings' ), true ) ) {
 			$endpoints = match ( $type ) {
 				'mobile'    => array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' ),
-				'settings'  => $this->nav_groups()['account'],
+				'settings'  => array_diff( $this->nav_groups()['account'], array( 'edit-account' ) ),
 				'shortcuts' => array( 'saved-solutions', 'orders', 'documents' ),
 			};
 			foreach ( $endpoints as $endpoint ) {

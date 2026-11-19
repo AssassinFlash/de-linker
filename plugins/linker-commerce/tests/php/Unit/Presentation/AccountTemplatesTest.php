@@ -264,6 +264,7 @@ final class AccountTemplatesTest extends TestCase {
 		$adapter = new AccountTemplates();
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		WP_Mock::expectAction( 'woocommerce_before_account_orders', true );
 		$adapter->register();
 		$this->expand_fields( $adapter );
 
@@ -271,11 +272,15 @@ final class AccountTemplatesTest extends TestCase {
 		AccountTemplates::output(
 			array(
 				'template_name' => 'myaccount/orders.php',
-				'args'          => array( 'customer_orders' => (object) array( 'orders' => array( 20, 21 ) ) ),
+				'args'          => array(
+					'customer_orders' => (object) array( 'orders' => array( 20, 21 ) ),
+					'has_orders'      => true,
+				),
 			)
 		);
 		$html = (string) ob_get_clean();
 
+		$this->assertStringContainsString( '<form class="linker-account-panel linker-account-panel-body" role="search" aria-labelledby="linker-account-inquiry-number-label" action="/my-account/inquiries/" method="get">', $html );
 		$this->assertStringContainsString( '<span>Amount</span>', $html );
 		$this->assertMatchesRegularExpression( '/<span class="sr-only">Amount:\s*<\/span>\s*€1\.00/', $html );
 		$this->assertSame( 1, substr_count( $html, 'Amount:' ) );
