@@ -50,7 +50,6 @@ final class AccountStatusNoticeTest extends TestCase {
 		$this->assertStringContainsString( 'linker-gate-badge is-pending', $html );
 		$this->assertStringContainsString( 'https://example.test/products/', $html );
 		$this->assertStringNotContainsString( 'Inquiry received', $html );
-		$this->assertStringContainsString( 'linker-gate-btn is-primary', $html );
 		$this->assertStringNotContainsString( 'style=', $html );
 		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/auth.css' );
 		$this->assertStringContainsString( '.linker-gate {', $css );

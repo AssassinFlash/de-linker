@@ -196,6 +196,8 @@ final class AccountTemplates {
 			}
 		} elseif ( 'open-url' === $key ) {
 			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
+		} elseif ( 'inquiry-url' === $key ) {
+			return esc_url( wc_get_checkout_url() );
 		} elseif ( 'products-url' === $key ) {
 			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
 		} elseif ( 'projects-url' === $key ) {
@@ -277,7 +279,7 @@ final class AccountTemplates {
 	 * Current page is Woo's own endpoint, so the highlight follows the
 	 * request. Pending customers use the same navigation while awaiting prices.
 	 *
-	 * @param array<string, string>|string $atts Optional mobile navigation form.
+	 * @param array<string, string>|string $atts Use shortcuts for the overview links.
 	 */
 	public function nav( $atts = array() ): string {
 		$user_id = get_current_user_id();
@@ -286,36 +288,21 @@ final class AccountTemplates {
 		}
 		$items = wc_get_account_menu_items();
 		$html  = '';
-		$type  = $atts['type'] ?? '';
-		if ( in_array( $type, array( 'mobile', 'shortcuts', 'settings' ), true ) ) {
-			$endpoints = match ( $type ) {
-				'mobile'    => array( 'dashboard', 'orders', 'saved-solutions', 'documents', 'edit-account' ),
-				'settings'  => array_diff( $this->nav_groups()['account'], array( 'edit-account' ) ),
-				'shortcuts' => array( 'saved-solutions', 'orders', 'documents' ),
-			};
-			foreach ( $endpoints as $endpoint ) {
+		if ( 'shortcuts' === ( $atts['type'] ?? '' ) ) {
+			foreach ( array( 'saved-solutions', 'orders', 'documents' ) as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
-					$current = $this->endpoint_current( $endpoint );
-					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
-						$current = 'page';
-					}
-					$label = match ( true ) {
-						'mobile' === $type && 'edit-account' === $endpoint  => __( 'Account', 'linker-commerce' ),
-						'shortcuts' === $type && 'documents' === $endpoint => __( 'Quotations and documents', 'linker-commerce' ),
-						default                                           => $items[ $endpoint ],
-					};
 					$html .= $this->fragment(
 						'nav-item',
 						array(
-							'url'     => 'customer-logout' === $endpoint ? linker_commerce_logout_url() : wc_get_account_endpoint_url( $endpoint ),
-							'label'   => $label,
-							'current' => $current,
+							'url'     => wc_get_account_endpoint_url( $endpoint ),
+							'label'   => 'documents' === $endpoint ? __( 'Quotations and documents', 'linker-commerce' ) : $items[ $endpoint ],
+							'current' => $this->endpoint_current( $endpoint ),
 							'icon'    => $this->nav_icon( $endpoint ),
 						)
 					);
 				}
 			}
-			return 'mobile' === $type ? $this->fragment( 'mobile-nav', array( 'items' => $html ) ) : $html;
+			return $html;
 		}
 		foreach ( $this->nav_groups() as $group => $endpoints ) {
 			$links = '';
@@ -483,49 +470,48 @@ final class AccountTemplates {
 	 */
 	public function text( $atts = array() ): string {
 		$labels = array(
-			'welcome'          => __( 'Welcome back', 'linker-commerce' ),
-			'my-account'       => __( 'My account', 'linker-commerce' ),
-			'account-settings' => __( 'Account settings', 'linker-commerce' ),
-			'find-project'     => __( 'Find a saved project', 'linker-commerce' ),
-			'project-name'     => __( 'Project name', 'linker-commerce' ),
-			'all-projects'     => __( 'All projects', 'linker-commerce' ),
-			'search'           => __( 'Search', 'linker-commerce' ),
-			'menu'             => __( 'Account menu', 'linker-commerce' ),
-			'overview'         => __( 'Overview', 'linker-commerce' ),
-			'inquiries'        => __( 'Inquiries', 'linker-commerce' ),
-			'find-inquiry'     => __( 'Find an inquiry', 'linker-commerce' ),
-			'inquiry-number'   => __( 'Inquiry number', 'linker-commerce' ),
-			'no-match'         => __( 'No matching inquiries.', 'linker-commerce' ),
-			'all'              => __( 'All inquiries', 'linker-commerce' ),
-			'open'             => __( 'Open inquiries', 'linker-commerce' ),
-			'status'           => __( 'Status', 'linker-commerce' ),
-			'number'           => __( 'Inquiry', 'linker-commerce' ),
-			'date'             => __( 'Date', 'linker-commerce' ),
-			'amount'           => __( 'Amount', 'linker-commerce' ),
-			'actions'          => __( 'Actions', 'linker-commerce' ),
-			'view'             => __( 'View', 'linker-commerce' ),
-			'document'         => __( 'Document', 'linker-commerce' ),
-			'download'         => __( 'Download (PDF)', 'linker-commerce' ),
-			'saved'            => __( 'Saved on', 'linker-commerce' ),
-			'add'              => __( 'Add to solution draft', 'linker-commerce' ),
-			'recalculate'      => __( 'This saved solution needs a new calculation before it can be added to your solution draft.', 'linker-commerce' ),
-			'remove'           => __( 'Remove', 'linker-commerce' ),
-			'keep-solution'    => __( 'Keep solution', 'linker-commerce' ),
-			'remove-question'  => __( 'Remove this saved solution?', 'linker-commerce' ),
-			'remove-solution'  => __( 'Remove solution', 'linker-commerce' ),
-			'report'           => __( 'Design report (PDF)', 'linker-commerce' ),
-			'previous'         => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'next'             => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'empty'            => __( 'No inquiries yet.', 'linker-commerce' ),
-			'browse'           => __( 'Browse products', 'linker-commerce' ),
-			'configurator'     => __( 'Open the Solution Configurator', 'linker-commerce' ),
-			'projects'         => __( 'Projects', 'linker-commerce' ),
-			'projects-error'   => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
-			'empty-documents'  => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
-			'empty-solutions'  => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
-			'recent'           => __( 'Recent inquiries', 'linker-commerce' ),
-			'view-all'         => __( 'View all', 'linker-commerce' ),
-			'documents'        => __( 'Documents', 'linker-commerce' ),
+			'welcome'         => __( 'Welcome back', 'linker-commerce' ),
+			'new-inquiry'     => __( 'New inquiry', 'linker-commerce' ),
+			'find-project'    => __( 'Find a saved project', 'linker-commerce' ),
+			'project-name'    => __( 'Project name', 'linker-commerce' ),
+			'all-projects'    => __( 'All projects', 'linker-commerce' ),
+			'search'          => __( 'Search', 'linker-commerce' ),
+			'menu'            => __( 'Account menu', 'linker-commerce' ),
+			'overview'        => __( 'Overview', 'linker-commerce' ),
+			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
+			'find-inquiry'    => __( 'Find an inquiry', 'linker-commerce' ),
+			'inquiry-number'  => __( 'Inquiry number', 'linker-commerce' ),
+			'no-match'        => __( 'No matching inquiries.', 'linker-commerce' ),
+			'all'             => __( 'All inquiries', 'linker-commerce' ),
+			'open'            => __( 'Open inquiries', 'linker-commerce' ),
+			'status'          => __( 'Status', 'linker-commerce' ),
+			'number'          => __( 'Inquiry', 'linker-commerce' ),
+			'date'            => __( 'Date', 'linker-commerce' ),
+			'amount'          => __( 'Amount', 'linker-commerce' ),
+			'actions'         => __( 'Actions', 'linker-commerce' ),
+			'view'            => __( 'View', 'linker-commerce' ),
+			'document'        => __( 'Document', 'linker-commerce' ),
+			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
+			'saved'           => __( 'Saved on', 'linker-commerce' ),
+			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+			'recalculate'     => __( 'This saved solution needs a new calculation before it can be added to your solution draft.', 'linker-commerce' ),
+			'remove'          => __( 'Remove', 'linker-commerce' ),
+			'keep-solution'   => __( 'Keep solution', 'linker-commerce' ),
+			'remove-question' => __( 'Remove this saved solution?', 'linker-commerce' ),
+			'remove-solution' => __( 'Remove solution', 'linker-commerce' ),
+			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
+			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
+			'browse'          => __( 'Browse products', 'linker-commerce' ),
+			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
+			'projects'        => __( 'Projects', 'linker-commerce' ),
+			'projects-error'  => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
+			'empty-documents' => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
+			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
+			'view-all'        => __( 'View all', 'linker-commerce' ),
+			'documents'       => __( 'Documents', 'linker-commerce' ),
 		);
 			return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
 	}

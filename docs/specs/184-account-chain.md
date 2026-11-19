@@ -20,7 +20,7 @@
 | 账户细节（改密） | Woo 默认 `myaccount/form-edit-account.php` | **新增覆写** `templates/myaccount/account/form-edit-account.php`：资料卡 + 改密卡（说明行 + 干净标签） |
 | pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | `Account/AccountStatusNotice.php` 通过原生 `woocommerce_account_content` 在端点内容前显示 pending/restricted 共用的 LC 状态卡（restricted 含保存原因）；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
 | restricted / 空 Proforma / guest 带草稿门禁 | `Presentation/LoginGate.php` 的 `sf-checkout-empty` 文本块 | 同文件重写为卡片（badge + 标题 + 正文 + 动作）；guest 门禁两种形态（草稿空 = 取号，草稿有货 = 登录发送） |
-| 工作台骨架 | `content/livecanvas/account/workspace.html` + `mobile-nav.html` | 重写：桌面 = 左侧栏（WORKPLACE/ACCOUNT 两组）；移动 = **只有底部胶囊 tab 栏**（顶部 `details/summary` 折叠菜单删除） |
+| 工作台骨架 | `content/livecanvas/account/workspace.html` | 深绿横幅放客户姓名和新建询盘；桌面左侧栏，手机在工作区顶部提供一个账户菜单。两者展示同一分组及当前页。 |
 | 询盘列表行 | `inquiry-card.html` 行内展开全量商品行 | 重写：`n Produkte` 摘要（`_n` 复数）+ 单号 + 状态胶囊 + 日期 + 金额 + `View` 箭头 |
 | 工作台其余片段 | `overview/tiles/tile/recent/inquiry-row/summary/stage/proforma/documents/document-row/solutions/solution-card/empty*` | 全部按原型重写；`shortcuts.html` 删除（原型没有该组件） |
 | 页头账户入口 | `ProductShortcodes::header_utilities`：guest 两条同址 + 登出走 Woo 端点的二次确认页 | guest 一条 `Sign in`；登出改 `linker_commerce_logout_url()`（`wc_logout_url()`，带 nonce），落回 `my-account/?signed-out=true` |
@@ -151,7 +151,7 @@
 ## 十、可翻案处
 
 - 桌面品牌面板（≥1080px）只在登录/注册两页出现，且每张卡一个（V1）；辅助页（忘记密码、重置、确认）保持居中单卡，与原型一致。
-- 移动端工作台导航只有底部胶囊栏；1024px 是侧栏/胶囊的切换点（与原型 `app.css` 一致）。
+- 手机从工作区上方打开账户菜单，可直接访问询盘、已存方案、文件、公司、个人资料和退出。桌面保留同组链接的侧栏。
 - 强度计复用 Woo 的判分与文案（`pwsL10n`），不自定义阈值；`min_password_strength` 沿用 Woo 默认 3。
 
 ## #222 第一轮评审裁定（2026-10-18）
