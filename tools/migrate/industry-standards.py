@@ -324,10 +324,16 @@ def main() -> None:
     with backup_path.open("x") as handle:
         json.dump({"snapshot": snapshot, "changes": changes}, handle, indent=2)
     backup_path.chmod(0o600)
+    # Only the warranty sentence was reviewed. Preserve any earlier translation drift.
+    metadata_policy = (
+        {"mode": "adopt"}
+        if snapshot["current"]
+        else {"mode": "restore", "metadata_restore": snapshot["metadata"]}
+    )
     pair.invoke(
         args.wp,
         {
-            "mode": "adopt",
+            **metadata_policy,
             "changes": changes,
             "metadata_before": snapshot["metadata"],
         },
