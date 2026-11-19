@@ -43,7 +43,7 @@ from .test_energy_kernel import TOLERANCE
 from .test_grid_connection import declared
 from .test_installation_electrical import circuit_fixture
 from .test_installation_terminals import bind, sample
-from .test_pv_generation import parameter_document
+from .test_pv_generation import geometry, parameter_document
 
 
 @pytest.mark.parametrize("locale", ["en", "de"])
@@ -1286,6 +1286,64 @@ def test_report_omits_comparison_location_and_private_note(
                 "end_utc": "2023-06-16T11:00:00+00:00",
             }
         ]
+
+
+@pytest.mark.parametrize(
+    "binding",
+    ["full", "dc", "different_geometry", "foreign_module", "conflicting_arrays"],
+)
+def test_issued_reference_report_resolves_the_panels_on_its_frozen_layout(
+    workspace: Workspace, owner: Actor, context: Context, binding: str
+) -> None:
+    layout = geometry()
+    layout["module_specs"][0]["stc_power_w"] = 450
+    project = workspace.create(owner, "Issued roof", {"geometry": layout}, key="issued")
+    layout_sha = workspace.blobs.put_object(layout)
+    proof: Object = {
+        "geometry": "f" * 64 if binding == "different_geometry" else layout_sha
+    }
+    array: Object = {
+        "id": "array",
+        "module_spec_id": "foreign" if binding == "foreign_module" else "module",
+        "module_count": 18,
+        "stc_power_w": 8100,
+    }
+    reference: Object = {"dependencies": proof, "arrays": [array]}
+    if binding == "dc":
+        reference["converter_id"] = "only-one-group"
+    references: list[Json] = (
+        [reference, {**reference, "arrays": [{**array, "module_count": 5}]}]
+        if binding == "conflicting_arrays"
+        else [reference]
+    )
+    source: Object = {
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "pv_components": {
+            "status": "unavailable",
+            "reason": "declared_reference_module",
+        },
+        "pvlib_references": references,
+    }
+    sha = workspace.blobs.put_object(source)
+    report_context = replace(context, assets={**context.assets, "report.source": sha})
+    run = workspace.evaluate(
+        owner, project.id, 1, report_context, key="issued-report", max_attempts=1
+    )
+    result: Object = {
+        "kind": "planning_report_v1",
+        "dependencies": {"report_source": sha},
+    }
+    _, facts = _report_materials(workspace, replace(run, result=result), result)
+    if binding == "full":
+        assert facts["saved_roof_panel_groups"] == [
+            {"quantity": 18, "stc_power_w": 450, "rating_basis": "planning_assumption"}
+        ]
+        assert facts["saved_roof_panel_count"] == 18
+        assert facts["saved_roof_layout_revision"] == 1
+    else:
+        assert facts == {"saved_roof_panel_count": None}
 
 
 @pytest.mark.parametrize(

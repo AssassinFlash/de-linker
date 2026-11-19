@@ -1022,3 +1022,24 @@ def test_selected_report_answers_each_frozen_panel_rating(
             assert f"{watts} Wp" in payload["figures"].values()
     foreign = page.model_copy(update={"planning_run_ids": ["c" * 32]})
     assert planning.saved_panel_rating_answer(raw, foreign, locale) is None
+
+
+@pytest.mark.parametrize(
+    ("locale", "label"), [("en", "planning assumption"), ("de", "Planungsannahme")]
+)
+def test_issued_report_labels_a_generic_tier_panel_rating(
+    locale: str, label: str
+) -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        saved_roof_panel_count=18,
+        saved_roof_panel_groups=[
+            {"quantity": 18, "stc_power_w": 450, "rating_basis": "planning_assumption"}
+        ],
+    )
+    answer = planning.saved_panel_rating_answer(raw, page, locale)
+    assert (
+        answer is not None and "450 Wp" in answer and "18" in answer and label in answer
+    )
+    assert "planning assumption" in planning.view(raw, page)["text"]

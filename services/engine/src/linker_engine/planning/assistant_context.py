@@ -146,8 +146,86 @@ def _roof_panel_count(lines: list[Object]) -> int | None:
     return sum(cast(list[int], quantities))
 
 
-def _roof_groups(source: Object) -> Object:
+def _issued_reference_groups(workspace: Workspace, source: Object) -> Object:
+    references = source.get("pvlib_references")
+    inputs_sha = source.get("input_sha256")
+    if not isinstance(references, list) or not isinstance(inputs_sha, str):
+        return {}
+    geometry = workspace.blobs.object(inputs_sha).get("geometry")
+    if not isinstance(geometry, dict):
+        return {}
+    geometry_sha = digest(encode(geometry))
+    arrays = cast(list[Object], geometry["arrays"])
+    modules = {
+        row["id"]: row.get("stc_power_w")
+        for row in cast(list[Object], geometry["module_specs"])
+        if isinstance(row.get("id"), str)
+    }
+    layout = {str(row["id"]): row["module_spec_id"] for row in arrays}
+    quantities: dict[str, int] = {}
+    for reference in references:
+        if not isinstance(reference, dict) or reference.get("converter_id") is not None:
+            continue
+        proof = reference.get("dependencies")
+        if not isinstance(proof, dict) or proof.get("geometry") != geometry_sha:
+            continue
+        rows = reference.get("arrays")
+        if not isinstance(rows, list):
+            return {}
+        recorded = {}
+        for row in rows:
+            if not isinstance(row, dict):
+                return {}
+            key, module, count = (
+                row.get("id"),
+                row.get("module_spec_id"),
+                row.get("module_count"),
+            )
+            if (
+                not isinstance(key, str)
+                or key not in layout
+                or module != layout[key]
+                or type(count) is not int
+                or count < 0
+                or key in recorded
+            ):
+                return {}
+            recorded[key] = count
+        if recorded.keys() != layout.keys() or (quantities and quantities != recorded):
+            return {}
+        quantities = recorded
+    if not quantities:
+        return {}
+    by_module: dict[str, int] = {}
+    for key, count in quantities.items():
+        module = str(layout[key])
+        by_module[module] = by_module.get(module, 0) + count
+    groups: list[Json] = []
+    for module, count in by_module.items():
+        power = modules.get(module)
+        groups.append(
+            {
+                "quantity": count,
+                "stc_power_w": power
+                if type(power) in (int, float) and cast(float, power) > 0
+                else None,
+                "rating_basis": "planning_assumption",
+            }
+        )
+    return {
+        "saved_roof_panel_groups": groups,
+        "saved_roof_layout_revision": source["revision"],
+    }
+
+
+def _roof_groups(workspace: Workspace, source: Object) -> Object:
     components = source.get("pv_components")
+    if (
+        isinstance(components, dict)
+        and components.get("status") == "unavailable"
+        and components.get("reason") == "declared_reference_module"
+    ):
+        return _issued_reference_groups(workspace, source)
     if (
         not isinstance(components, dict)
         or components.get("status") != "available"
@@ -199,7 +277,7 @@ def _archived_roof_groups(
         or source.get("input_sha256") != run.manifest.get("input_sha256")
     ):
         return {}
-    return _roof_groups(source)
+    return _roof_groups(workspace, source)
 
 
 def _report_materials(
@@ -303,8 +381,14 @@ def _report_materials(
         ),
         None,
     )
+    roof = _roof_groups(workspace, source)
+    counted_materials = [
+        row
+        for row in raw_lines
+        if isinstance(row, dict) and row.get("handling") == "pv_reference"
+    ]
     panel_facts: Object = {
-        **_roof_groups(source),
+        **roof,
         **(
             {
                 "declared_panel_count": declaration.get("quantity"),
@@ -314,11 +398,8 @@ def _report_materials(
             else {}
         ),
         "saved_roof_panel_count": _roof_panel_count(
-            [
-                row
-                for row in raw_lines
-                if isinstance(row, dict) and row.get("handling") == "pv_reference"
-            ]
+            counted_materials
+            or cast(list[Object], roof.get("saved_roof_panel_groups", []))
         ),
     }
     return {

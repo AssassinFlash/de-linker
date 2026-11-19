@@ -211,6 +211,12 @@ def saved_panel_rating_answer(raw: Any, page: PageContext, language: str) -> str
                 else " The rated power per panel is not recorded."
             )
         unit = _panel_watts(watts, language)
+        if groups[0].get("rating_basis") == "planning_assumption":
+            return heading + (
+                f" Der Bericht verwendet {unit} je Modul als Planungsannahme."
+                if de
+                else f" The report uses {unit} per panel as a planning assumption."
+            )
         return heading + (
             f" Die angegebene Nennleistung beträgt {unit} je Modul."
             if de
@@ -234,6 +240,8 @@ def saved_panel_rating_answer(raw: Any, page: PageContext, language: str) -> str
             rating = _panel_watts(watts, language) + (
                 " je Modul" if de else " per panel"
             )
+        if group.get("rating_basis") == "planning_assumption" and watts is not None:
+            rating += " (Planungsannahme)" if de else " (planning assumption)"
         rows.append(f"- {label} · {rating}")
     return heading + "\n\n" + "\n".join(rows)
 
@@ -528,6 +536,11 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
                                 _panel_watts(watts, "en") + " per panel"
                                 if watts is not None
                                 else "per-panel rating not recorded"
+                            )
+                            + (
+                                " (planning assumption)"
+                                if group.get("rating_basis") == "planning_assumption"
+                                else ""
                             )
                         )
         materials = run.get("materials")
