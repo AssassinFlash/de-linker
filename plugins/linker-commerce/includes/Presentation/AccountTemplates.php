@@ -72,13 +72,6 @@ final class AccountTemplates {
 	private ?array $overview = null;
 
 	/**
-	 * The current project list replaces the historical empty-state prompt.
-	 *
-	 * @var bool
-	 */
-	private bool $current_projects_shown = false;
-
-	/**
 	 * The documents page, built once: the dashboard reads the same list.
 	 *
 	 * @var \Linker\Commerce\Account\Documents|null
@@ -516,6 +509,9 @@ final class AccountTemplates {
 		$type = (string) ( $atts['type'] ?? '' );
 		$html = '';
 		switch ( $type ) {
+			case 'saved-work':
+				$html = $this->rows( array( 'type' => 'solutions' ) ) . $this->rows( array( 'type' => 'planning-projects' ) );
+				return '' === $html ? $this->fragment( 'empty-solutions' ) : $html;
 			case 'planning-projects':
 				/**
 				 * Read summaries from the workbench's native current-account adapter.
@@ -528,7 +524,6 @@ final class AccountTemplates {
 					return '';
 				}
 				if ( is_wp_error( $projects ) || ! is_array( $projects ) ) {
-					$this->current_projects_shown = true;
 					return $this->fragment( 'project-error' );
 				}
 				foreach ( $projects as $project ) {
@@ -541,7 +536,6 @@ final class AccountTemplates {
 						)
 					);
 				}
-				$this->current_projects_shown = '' !== $html;
 				return '' === $html ? '' : $this->fragment( 'projects', array( 'rows' => $html ) );
 			case 'dashboard':
 				return $this->dashboard();
@@ -647,7 +641,7 @@ final class AccountTemplates {
 						);
 					}
 				}
-				return '' === $html && ! $this->current_projects_shown ? $this->fragment( 'empty-solutions' ) : $html;
+				return $html;
 			case 'product-name':
 				return '' !== ( $this->row['url'] ?? '' ) ? $this->fragment( 'action', array_merge( $this->row, array( 'kind' => 'product' ) ) ) : $this->field( array( 'key' => 'name' ) );
 			case 'solution-action':
