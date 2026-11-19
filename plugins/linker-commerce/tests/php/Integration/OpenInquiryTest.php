@@ -207,6 +207,25 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		if ( \Linker\Commerce\Protection\Business::enabled() ) {
 			$this->assertStringContainsString( 'name="linker_request_id" value="' . $uuid . '"', $retry );
 		}
+		$other = $project . ':6';
+		$stamp = (string) ( time() - 5 );
+		$error = ( new \Linker\Commerce\Inquiry\Handler() )->process(
+			array(
+				'linker_inquiry_retry'       => $handle,
+				'linker_preliminary_project' => $other,
+				'linker_request_id'          => $uuid,
+				'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $other ),
+				'linker_started'             => $stamp,
+				'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+				'name'                       => 'Separate Customer Action',
+				'email'                      => 'wrong-retry@example.test',
+				'consent'                    => '1',
+			)
+		);
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 'linker_inquiry_invalid', $error->get_error_code() );
+		$this->assertStringContainsString( 'Keep this reply with my project.', $form->render() );
+
 		$this->as_user( $this->customer()->get_id() );
 		$unbound = $form->render();
 		$this->assertStringNotContainsString( 'Keep this reply with my project.', $unbound );

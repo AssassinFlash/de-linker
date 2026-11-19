@@ -93,12 +93,17 @@ final class Handler {
 		$locale                     = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard                      = new PublicGuard();
-			$nonce                      = $post[ self::NONCE ] ?? '';
-			$project                    = $post[ Context::PROJECT_FIELD ] ?? '';
-			$nonce_valid                = is_string( $project ) && is_string( $nonce ) && wp_verify_nonce( $nonce, self::nonce_action( $project ) );
-			$this->preliminary_verified = $nonce_valid && '' !== $project;
-			if ( ! $nonce_valid || ! $guard->allows( $post, ! Business::enabled() ) ) {
+			$guard       = new PublicGuard();
+			$nonce       = $post[ self::NONCE ] ?? '';
+			$project     = $post[ Context::PROJECT_FIELD ] ?? '';
+			$nonce_valid = is_string( $project ) && is_string( $nonce ) && wp_verify_nonce( $nonce, self::nonce_action( $project ) );
+			$handle      = is_string( $post[ CheckoutRetry::HANDLE ] ?? null ) ? $post[ CheckoutRetry::HANDLE ] : '';
+			$retained    = CheckoutRetry::read( $handle )['fields'] ?? null;
+			// A live handle can only continue its own submission. With no retained entry,
+			// the nonce and original UUID still allow the native ledger to return a prior receipt.
+			$retry_matches              = ! is_array( $retained ) || ( ( $retained[ Context::PROJECT_FIELD ] ?? '' ) === $project && ( $retained['linker_request_id'] ?? '' ) === ( $post['linker_request_id'] ?? '' ) );
+			$this->preliminary_verified = $nonce_valid && $retry_matches && '' !== $project;
+			if ( ! $nonce_valid || ! $retry_matches || ! $guard->allows( $post, ! Business::enabled() ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {
