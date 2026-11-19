@@ -30,6 +30,7 @@ async function mount(
 	viewingImagery = null,
 	locale = "en",
 	lookupCoordinates = {},
+	mapEntry = {},
 ) {
 	const dom = setupDom();
 	if (locale === "de") {
@@ -58,6 +59,7 @@ async function mount(
 	function Harness() {
 		const [inputs, setInputs] = useState(current);
 		return React.createElement(SolarInstallation, {
+			...mapEntry,
 			inputs,
 			config: { locale, mapModuleUrl: null },
 			session: { query_scope: "test" },
@@ -245,6 +247,50 @@ test("a country and postcode center the aerial view without assigning a measurem
 	assert.equal(app.inputs.geometry, undefined);
 });
 
+test("a roof address opens its consented aerial map ready to draw and honours withdrawal", async (t) => {
+	const brief = emptyBrief();
+	let consent = true;
+	await mount(
+		t,
+		{
+			brief: {
+				...brief,
+				site: {
+					...brief.site,
+					country_code: "NL",
+					location_label: "Amsterdam",
+				},
+			},
+		},
+		aerial,
+		null,
+		"en",
+		{ latitude: 52.37, longitude: 4.9 },
+		{
+			initialMap: true,
+			takeImageryConsent: (source) => {
+				assert.deepEqual(source, aerial);
+				const granted = consent;
+				consent = false;
+				return granted;
+			},
+		},
+	);
+	await until(
+		() =>
+			document.querySelector('[data-map-status="ready"]') &&
+			[...document.querySelectorAll("button")].some(
+				(b) => b.textContent === "Hide aerial map",
+			),
+	);
+	assert.equal(button("Draw roof").getAttribute("aria-pressed"), "true");
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	assert.equal(button("Show aerial map").getAttribute("aria-pressed"), "false");
+});
+
 test("a site without licensed aerial imagery can open the roof image wizard while the draw tool is selected", async (t) => {
 	const brief = emptyBrief();
 	const app = await mount(
@@ -265,7 +311,19 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	await openRoof();
 	await until(() => button("Load street map"));
-	await click("Draw roof");
+	assert.equal(button("Draw roof").disabled, true);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/Mark each roof corner on the aerial map/,
+	);
+	assert.match(
+		document.body.textContent,
+		/No aerial image is available for this location/,
+	);
+	await click("Enter roof measurements");
+	await until(() => document.activeElement === input("Width"));
+	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
+	await click("Aerial map");
 	assert.equal(button("Calibrate a roof image").disabled, false);
 	const form = await traceRoofImage(t, "roof-plan.png");
 	form.elements.namedItem("source").value = "roof-plan.png";
@@ -795,16 +853,19 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 		["Relative roof height", "0"],
 	])
 		await enter(input(label), value);
-	await act(async () => document.querySelector(".sc-check input").click());
+	assert.ok(
+		!input("Pitch").closest("details"),
+		"map measurements are beside the traced outline",
+	);
 	await act(async () =>
 		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
 	);
-	assert.equal(button("Confirm roof and map origin").disabled, true);
-	await click("Confirm roof and map origin");
+	assert.equal(button("Finish outline").disabled, true);
+	await click("Finish outline");
 	assert.deepEqual(app.inputs.geometry.roofs, []);
 	await click("Show aerial map");
 	await finishAerial();
-	await click("Confirm roof and map origin");
+	await click("Finish outline");
 	const { coordinate_system: frame, roofs, sources } = app.inputs.geometry;
 	assert.equal(roofs.length, 1);
 	assert.equal(frame.anchor.longitude_deg, 11.56605);
@@ -820,7 +881,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 		retain: "permitted",
 		export: "unknown",
 	});
-	await click("Place modules");
+	assert.equal(button("Place modules").getAttribute("aria-pressed"), "true");
 	await click("Review panel layout");
 	assert.ok(
 		document.activeElement === input("Rows"),
@@ -833,6 +894,45 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	await point(11.56608, 48.14512);
 	assert.equal(app.inputs.geometry.arrays.length, 1);
 	assert.equal(app.inputs.geometry.arrays[0].columns, 2);
+	await click("Draw roof");
+	await until(() => document.querySelector('[data-collecting="true"]'));
+	const canvas = map().getCanvas();
+	map().unproject = ([x, y]) => ({
+		lng: 11.567 + x / 100000,
+		lat: 48.1455 - y / 100000,
+	});
+	await act(async () => {
+		for (const [type, x, y] of [
+			["pointerdown", 10, 10],
+			["pointermove", 35, 10],
+			["pointermove", 35, 30],
+			["pointermove", 10, 30],
+			["pointerup", 10, 10],
+		]) {
+			const event = new window.Event(type, { bubbles: true });
+			Object.assign(event, {
+				pointerId: 1,
+				isPrimary: true,
+				button: 0,
+				clientX: x,
+				clientY: y,
+			});
+			canvas.dispatchEvent(event);
+		}
+	});
+	assert.equal(
+		app.inputs.geometry.roofs.length,
+		2,
+		"releasing the traced outline applies the second roof",
+	);
+	const second = app.inputs.geometry.roofs[1];
+	assert.equal(second.boundary_uv.length, 4);
+	assert.equal(
+		app.inputs.geometry.sources.find((s) => s.id === second.source_id)
+			.reference_url,
+		aerial.licence_url,
+	);
+	assert.deepEqual(app.inputs.geometry.coordinate_system, frame);
 });
 
 test("the solar page records a named map origin only after confirmation", async (t) => {

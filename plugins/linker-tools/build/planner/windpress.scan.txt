@@ -168,8 +168,6 @@ lp-result-section
 lp-review-status
 lp-roof-picker
 lp-roof-shape
-lp-roof-start
-lp-roof-start-heading
 lp-run-basis
 lp-run-boundaries
 lp-run-content

@@ -33,6 +33,15 @@ import { entryInputs, placedProduct } from "../domain/entryHints.ts";
 import type { EntryHints } from "../domain/entryHints.ts";
 import { formatDecimal } from "../domain/decimal.ts";
 import type { Configuration } from "../data/config.ts";
+import { RoofMapAction } from "./RoofMapAction.tsx";
+import type { PlaceImagery } from "../domain/place.ts";
+import {
+	allowRoofImagery,
+	clearRoofImageryConsent,
+} from "../data/roofImageryConsent.ts";
+import { RoofStart } from "./RoofStart.tsx";
+import { locateProjectSite } from "../data/googleMaps.ts";
+import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
 import {
@@ -102,6 +111,14 @@ export function NewProject({
 	};
 }) {
 	const compareAtHome = Boolean(homeComparison);
+	const roofPermission = useRef<PlaceImagery | null>(null);
+	const roofEntry = Boolean(
+		config &&
+		entryHints?.roof &&
+		!initialProject &&
+		!compareAtHome &&
+		!compareOnLoad,
+	);
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
@@ -115,7 +132,7 @@ export function NewProject({
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [demandError, setDemandError] = useState(false);
 	const [referenceError, setReferenceError] = useState<
-		"settings" | "location" | null
+		"settings" | "location" | "addressService" | null
 	>(null);
 	const [profileForm, setProfileForm] = useState(emptyHomepageProfile);
 	const [profileError, setProfileError] = useState("");
@@ -173,7 +190,7 @@ export function NewProject({
 		brief: {
 			...seedBrief,
 			system_scope:
-				compareOnLoad || compareAtHome
+				compareOnLoad || compareAtHome || roofEntry
 					? seedBrief.system_scope
 					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
@@ -251,15 +268,30 @@ export function NewProject({
 			.then((records) => {
 				if (!active || !client.isCurrentScope(session.query_scope)) return;
 				const matching = records.filter((record) => {
-					if (compareAtHome) return record.destination === "guided-comparison";
+					if (compareAtHome)
+						return (
+							record.destination === "guided-comparison" ||
+							record.destination === "roof"
+						);
+					if (roofEntry)
+						return (
+							!record.profile &&
+							(record.destination === "roof" || record.destination === "design")
+						);
+					if (record.destination === "roof") return false;
 					return (
 						record.destination !== "guided-comparison" &&
 						(record.destination === "preliminary-review") === compareOnLoad
 					);
 				});
 				setRequests(matching);
-				if (openWork.current || !matching[0]) return;
-				restoreCreation(matching[0]);
+				if (openWork.current) return;
+				// Earlier roof entries and the regular project form both stored "design".
+				// Offer those receipts by title until the customer chooses one.
+				const resume = roofEntry
+					? matching.find((record) => record.destination === "roof")
+					: matching[0];
+				if (resume) restoreCreation(resume);
 			})
 			.catch(() => {
 				if (active) setRecoveryFailed(true);
@@ -279,6 +311,7 @@ export function NewProject({
 		recoveryChecking,
 		compareOnLoad,
 		compareAtHome,
+		roofEntry,
 		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
@@ -303,8 +336,9 @@ export function NewProject({
 	}
 	async function submit(
 		direction?: NonNullable<Brief["system_scope"]>,
-		{ discardProfile = false, useAddress = false } = {},
+		{ discardProfile = false, useAddress = false, openRoof = false } = {},
 	) {
+		const roof = roofEntry || openRoof || destination.current === "roof";
 		if (
 			sending.current ||
 			creationPending ||
@@ -313,10 +347,14 @@ export function NewProject({
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
 			!client.isCurrentScope(session.query_scope) ||
-			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
+			(!intent.current &&
+				!direction &&
+				(roof
+					? !brief.site.country_code || !brief.site.location_label.trim()
+					: !title.trim() || !brief.system_scope))
 		)
 			return;
-		if (compareAtHome && !intent.current) {
+		if (compareAtHome && !roof && !intent.current) {
 			const goal = energyGoal(inputs);
 			const invalidVisible =
 				invalidDemand.has("annual") ||
@@ -362,6 +400,7 @@ export function NewProject({
 		}
 		if (
 			file &&
+			!roof &&
 			energyGoal(inputs) === "peak" &&
 			readScenarioDraft(inputs.energy_scenario).schedule.some(
 				(period) => period.import_cap_kw === null,
@@ -414,15 +453,29 @@ export function NewProject({
 			if (lifetime.current !== instance) return;
 			if (!intent.current) {
 				let submittedInputs = inputs;
-				if (compareAtHome && useAddress) {
+				if (roof || (compareAtHome && useAddress)) {
 					try {
-						submittedInputs = await prepareHomepagePvReference(
-							inputs,
-							config ?? { locale },
-							useAddress,
-						);
+						if (roof && config) {
+							if (!config.googleMapsApiKey) {
+								setReferenceError("addressService");
+								return;
+							}
+							const site = await locateProjectSite(brief.site, config);
+							if (!site) {
+								if (lifetime.current === instance)
+									setReferenceError("location");
+								return;
+							}
+							submittedInputs = { ...inputs, brief: { ...brief, site } };
+						} else
+							submittedInputs = await prepareHomepagePvReference(
+								inputs,
+								config ?? { locale },
+								useAddress,
+							);
 					} catch {
-						if (lifetime.current === instance) setReferenceError("location");
+						if (lifetime.current === instance)
+							setReferenceError(roof ? "addressService" : "location");
 						return;
 					}
 					if (lifetime.current !== instance) return;
@@ -432,7 +485,14 @@ export function NewProject({
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
-						title: title.trim() || __("New project", "linker-tools"),
+						title:
+							title.trim() ||
+							(roof
+								? submittedBrief.site.location_label.slice(
+										0,
+										MAX_PROJECT_TITLE_LENGTH,
+									)
+								: __("New project", "linker-tools")),
 						inputs: {
 							...submittedInputs,
 							brief: {
@@ -449,13 +509,15 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = compareAtHome
-					? "guided-comparison"
-					: direction
-						? "preliminary-review"
-						: brief.system_scope === "storage_only"
-							? null
-							: "design";
+				destination.current = roof
+					? "roof"
+					: compareAtHome
+						? "guided-comparison"
+						: direction
+							? "preliminary-review"
+							: brief.system_scope === "storage_only"
+								? null
+								: "design";
 			}
 			await store
 				.writeCreation(
@@ -520,6 +582,15 @@ export function NewProject({
 				project.inputs.brief === undefined
 					? null
 					: readBrief(project.inputs.brief);
+			if (
+				destination.current === "roof" &&
+				location.href === submittedFrom &&
+				client.isCurrentScope(session.query_scope)
+			) {
+				if (roofPermission.current)
+					allowRoofImagery(project.id, roofPermission.current);
+				else clearRoofImageryConsent();
+			}
 			if (
 				!created(
 					project,
@@ -600,7 +671,9 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	const pendingRequests = requests.length > 1 && (
+	const chooseLegacy =
+		roofEntry && requests.some((record) => record.destination === "design");
+	const pendingRequests = (requests.length > 1 || chooseLegacy) && (
 		<label className="sc-field">
 			<span>{__("Unconfirmed project creations", "linker-tools")}</span>
 			<select
@@ -614,6 +687,11 @@ export function NewProject({
 					restoreCreation(request);
 				}}
 			>
+				{chooseLegacy && !selectedRequest && (
+					<option value="" disabled>
+						{__("New project", "linker-tools")}
+					</option>
+				)}
 				{requests.map((request, index) => (
 					<option key={intentId(request)} value={intentId(request)}>
 						{index + 1}.{" "}
@@ -654,6 +732,9 @@ export function NewProject({
 			waitingForProduct ||
 			!admitted;
 		const retry = Boolean(intent.current);
+		const roofUrl = new URL(location.href);
+		roofUrl.searchParams.set("step", "roof");
+		roofUrl.hash = "";
 		return (
 			<section className="sc-main">
 				<PreliminaryOptions
@@ -662,14 +743,21 @@ export function NewProject({
 					choose={(direction) => void submit(direction)}
 					action={
 						enterDetails && (
-							<button
-								className="sc-button"
-								type="button"
-								disabled={disabled || retry}
-								onClick={enterDetails}
-							>
-								{__("Enter project details", "linker-tools")}
-							</button>
+							<div className="sc-actions">
+								{!retry && !disabled && (
+									<a className="sc-button" href={roofUrl.href}>
+										{__("Start with your roof", "linker-tools")}
+									</a>
+								)}
+								<button
+									className="sc-button"
+									type="button"
+									disabled={disabled || retry}
+									onClick={enterDetails}
+								>
+									{__("Enter project details", "linker-tools")}
+								</button>
+							</div>
 						)
 					}
 				/>
@@ -742,6 +830,35 @@ export function NewProject({
 			</form>
 		);
 	}
+	const addressForm =
+		roofEntry ||
+		(failed && destination.current === "roof" && !profileCorrection);
+	const editingDisabled =
+		busy ||
+		creationPending ||
+		checking ||
+		recoveryChecking ||
+		recoveryDiscoveryFailed ||
+		!admitted;
+	const mapAction = config &&
+		(addressForm ||
+			(compareAtHome &&
+				brief.system_scope !== "storage_only" &&
+				(!intent.current || destination.current === "roof"))) && (
+			<RoofMapAction
+				config={config}
+				site={brief.site}
+				client={client}
+				scope={session.query_scope}
+				disabled={editingDisabled || inputContractRequired}
+				locked={Boolean(intent.current)}
+				busy={busy}
+				permitted={roofPermission}
+				{...(!addressForm && {
+					open: () => void submit(undefined, { openRoof: true }),
+				})}
+			/>
+		);
 	return (
 		<form
 			className="sc-main"
@@ -912,90 +1029,103 @@ export function NewProject({
 			{profileError && <Notice error>{profileError}</Notice>}
 			{referenceError && (
 				<Notice error>
-					{referenceError === "location"
+					{referenceError === "addressService"
 						? __(
-								"The location could not be found. Check the country and address, then try again.",
+								"Address search is unavailable right now. Your details are still here; please try again.",
 								"linker-tools",
 							)
-						: __(
-								"Complete the site coordinates, array details and PVGIS settings to compare systems.",
-								"linker-tools",
-							)}
+						: referenceError === "location"
+							? __(
+									"The location could not be found. Check the country and address, then try again.",
+									"linker-tools",
+								)
+							: __(
+									"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+									"linker-tools",
+								)}
 				</Notice>
 			)}
-			<ProjectDetails
-				inputs={inputs}
-				config={config ?? { locale, countries: {} }}
-				disabled={
-					busy ||
-					creationPending ||
-					checking ||
-					recoveryChecking ||
-					recoveryDiscoveryFailed ||
-					!admitted
-				}
-				edit={edit}
-				creation={{
-					title,
-					changeTitle: setTitle,
-					locked: Boolean(intent.current),
-					submitDisabled: waitingForProduct,
-					comparison: compareAtHome,
-					...(busy
-						? {
-								submitLabel: compareAtHome
-									? __("Preparing comparison…", "linker-tools")
-									: __("Creating…", "linker-tools"),
-							}
-						: failed
+			{addressForm && config ? (
+				<RoofStart
+					config={config}
+					site={brief.site}
+					disabled={editingDisabled || inputContractRequired}
+					locked={Boolean(intent.current)}
+					action={mapAction}
+					change={(site) =>
+						edit((current) => ({ ...current, brief: { ...brief, site } }))
+					}
+				/>
+			) : (
+				<ProjectDetails
+					inputs={inputs}
+					config={config ?? { locale, countries: {} }}
+					disabled={editingDisabled}
+					roofAction={mapAction}
+					edit={edit}
+					creation={{
+						title,
+						changeTitle: setTitle,
+						locked: Boolean(intent.current),
+						submitDisabled: waitingForProduct,
+						comparison: compareAtHome,
+						...(busy
 							? {
 									submitLabel: compareAtHome
-										? __("Try again", "linker-tools")
-										: __("Retry project creation", "linker-tools"),
+										? __("Preparing comparison…", "linker-tools")
+										: __("Creating…", "linker-tools"),
 								}
-							: compareAtHome
-								? { submitLabel: __("Compare systems", "linker-tools") }
-								: {}),
-				}}
-				demand={
-					compareAtHome && (
-						<HomepageDemand
-							inputs={inputs}
-							brief={brief}
-							locale={locale}
-							addressLookup={Boolean(config?.googleMapsApiKey)}
-							edit={edit}
-							validity={reportDemand}
-						/>
-					)
-				}
-				profile={
-					compareAtHome &&
-					(!intent.current || profileCorrection) && (
-						<HomepageLoadProfile
-							form={profileForm}
-							locale={locale}
-							disabled={busy || checking || !admitted}
-							change={changeProfile}
-							{...(profileCorrection && {
-								discard: () => void submit(undefined, { discardProfile: true }),
-							})}
-						/>
-					)
-				}
-				existingEquipment={
-					config && (
-						<ProjectEquipment
-							inputs={inputs}
-							client={client}
-							scope={session.query_scope}
-							disabled={busy || Boolean(intent.current)}
-							edit={edit}
-							intake={compareAtHome}
-						/>
-					)
-				}
-			/>
+							: failed
+								? {
+										submitLabel: compareAtHome
+											? __("Try again", "linker-tools")
+											: __("Retry project creation", "linker-tools"),
+									}
+								: compareAtHome
+									? { submitLabel: __("Compare systems", "linker-tools") }
+									: {}),
+					}}
+					demand={
+						compareAtHome && (
+							<HomepageDemand
+								inputs={inputs}
+								brief={brief}
+								locale={locale}
+								addressLookup={Boolean(config?.googleMapsApiKey)}
+								edit={edit}
+								validity={reportDemand}
+							/>
+						)
+					}
+					profile={
+						compareAtHome &&
+						(!intent.current || profileCorrection) && (
+							<HomepageLoadProfile
+								form={profileForm}
+								locale={locale}
+								disabled={busy || checking || !admitted}
+								change={changeProfile}
+								{...(profileCorrection && {
+									discard: () =>
+										void submit(undefined, { discardProfile: true }),
+								})}
+							/>
+						)
+					}
+					existingEquipment={
+						config && (
+							<ProjectEquipment
+								inputs={inputs}
+								client={client}
+								scope={session.query_scope}
+								disabled={busy || Boolean(intent.current)}
+								edit={edit}
+								intake={compareAtHome}
+							/>
+						)
+					}
+				/>
+			)}
 			{cancelled && !intent.current && (
 				<button
 					className="sc-button"

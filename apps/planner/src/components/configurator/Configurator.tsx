@@ -75,6 +75,7 @@ import {
 } from "../../domain/equipment.ts";
 import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
+import { takeRoofImageryConsent } from "../../data/roofImageryConsent.ts";
 import { dropGeometricRoofAc } from "../../domain/profiles.ts";
 import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
@@ -109,7 +110,8 @@ import { __, sprintf } from "../../i18n.ts";
 
 type Step = "project" | "solar" | "energy" | "system" | "review";
 const steps: Step[] = ["project", "solar", "energy", "system", "review"];
-const mapPropertyLinks = new Set([
+const roofMapLinks = new Set([
+	"#sc-roof",
 	"#lp-map-roof-properties",
 	"#lp-map-ring-properties",
 	"#lp-map-feature-properties",
@@ -119,7 +121,7 @@ function initialStep(): Step {
 	if (
 		hash === "sc-solar" ||
 		hash === "lp-design" ||
-		mapPropertyLinks.has(location.hash)
+		roofMapLinks.has(location.hash)
 	)
 		return "solar";
 	if (hash === "sc-energy" || hash === "lp-load") return "energy";
@@ -546,7 +548,7 @@ export default function Configurator({
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
-	const independentlyBlocked =
+	const projectWritesBlocked =
 		!admitted ||
 		recoveryChecking ||
 		recoveryFailed ||
@@ -557,9 +559,32 @@ export default function Configurator({
 		operations.checking ||
 		operations.storageFailed ||
 		controller.recoveries.length > 0 ||
-		Boolean(draft?.pending || draft?.conflict);
-	const blocked =
-		independentlyBlocked || operations.records.some((r) => r.resultId === null);
+		Boolean(draft?.conflict);
+	const unconfirmedOperation = operations.records.some(
+		(r) => r.resultId === null,
+	);
+	const independentlyBlocked = projectWritesBlocked || Boolean(draft?.pending);
+	const blocked = independentlyBlocked || unconfirmedOperation;
+	const requestedRoofSave = useRef<JsonObject | null>(null);
+	const attemptedRoofSave = useRef<JsonObject | null>(null);
+	useEffect(() => {
+		if (
+			step !== "solar" ||
+			!draft ||
+			projectWritesBlocked ||
+			unconfirmedOperation
+		)
+			return;
+		const inputs = draft.history.current;
+		const recoverRoofSave =
+			controller.recovered &&
+			draft.pending &&
+			!sameJson(inputs.geometry, draft.baseline.inputs.geometry);
+		if (requestedRoofSave.current !== inputs && !recoverRoofSave) return;
+		if (attemptedRoofSave.current === inputs) return;
+		attemptedRoofSave.current = inputs;
+		void controller.save().catch(setError);
+	});
 	const edit = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject): boolean => {
 			if (
@@ -606,6 +631,18 @@ export default function Configurator({
 		},
 		[client, comparisonInputs, session.query_scope, update],
 	);
+	function editHistory(operation: typeof undoDraft) {
+		const before = latest.current?.history.current;
+		const after = update(operation)?.history.current;
+		if (
+			step === "solar" &&
+			before &&
+			after &&
+			!sameJson(before.geometry, after.geometry) &&
+			sameJson(before.geometry_imports, after.geometry_imports)
+		)
+			requestedRoofSave.current = after;
+	}
 	const editWiring = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject) =>
 			edit((inputs) =>
@@ -1132,7 +1169,7 @@ export default function Configurator({
 									Boolean(draft.pending || draft.conflict) ||
 									!draft.history.past.length
 								}
-								onClick={() => update(undoDraft)}
+								onClick={() => editHistory(undoDraft)}
 							>
 								{__("Undo", "linker-tools")}
 							</button>
@@ -1144,17 +1181,16 @@ export default function Configurator({
 									Boolean(draft.pending || draft.conflict) ||
 									!draft.history.future.length
 								}
-								onClick={() => update(redoDraft)}
+								onClick={() => editHistory(redoDraft)}
 							>
 								{__("Redo", "linker-tools")}
 							</button>
 							<button
 								className="sc-button"
 								disabled={
-									controller.busy ||
-									navigationBlocked ||
-									Boolean(draft.conflict) ||
-									controller.recoveries.length > 0
+									projectWritesBlocked ||
+									unconfirmedOperation ||
+									(!draft.pending && navigationBlocked)
 								}
 								onClick={() => void controller.save()}
 							>
@@ -1393,6 +1429,10 @@ export default function Configurator({
 							session={session}
 							disabled={blocked || modelsUnavailable}
 							edit={edit}
+							onLayoutChange={() => {
+								requestedRoofSave.current =
+									latest.current?.history.current ?? null;
+							}}
 							next={() => navigate("energy")}
 							wiring={
 								wiringPlant
@@ -1444,7 +1484,10 @@ export default function Configurator({
 											/>
 										)
 							}
-							initialMap={mapPropertyLinks.has(location.hash)}
+							initialMap={roofMapLinks.has(location.hash)}
+							takeImageryConsent={(source) =>
+								takeRoofImageryConsent(project.id, source)
+							}
 							onEditing={setRoofEditing}
 							geometryImport={{
 								projectId: project.id,

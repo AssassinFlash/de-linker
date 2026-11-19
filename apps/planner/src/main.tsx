@@ -1,3 +1,7 @@
+import {
+	clearRoofImageryConsent,
+	onMapConsentChange,
+} from "./data/roofImageryConsent.ts";
 import { Component, StrictMode, useMemo } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -83,6 +87,7 @@ function Application({
 	);
 }
 async function mount(): Promise<void> {
+	onMapConsentChange(clearRoofImageryConsent);
 	// The first render must see the full catalog (or its bounded failure, which
 	// leaves the inline shell subset in place); rendering earlier paints the
 	// untranslated form and nothing re-renders when the catalog arrives.

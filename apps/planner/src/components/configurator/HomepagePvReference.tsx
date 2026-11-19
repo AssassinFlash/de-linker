@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Configuration } from "../../data/config.ts";
-import { geocodeAddress } from "../../data/googleMaps.ts";
+import { locateProjectSite } from "../../data/googleMaps.ts";
 import { ApiError, type JsonObject } from "../../data/protocol.ts";
 import { readBrief } from "../../domain/brief.ts";
 import type { Brief } from "../../domain/brief.ts";
@@ -58,29 +58,11 @@ export async function prepareHomepagePvReference(
 		referenceDraft(inputs).model !== KNOWN_PV_MODEL
 	)
 		return inputs;
-	const { country_code, location_label } = brief.site;
-	if (!config.googleMapsApiKey || !country_code || !location_label.trim())
-		throw new ApiError(422, "pvgis_reference_site_required");
-	const place = await geocodeAddress(
-		config.googleMapsApiKey,
-		location_label,
-		country_code,
-		config.locale,
-	);
-	if (!place) throw new ApiError(422, "pvgis_reference_site_required");
+	const site = await locateProjectSite(brief.site, config);
+	if (!site) throw new ApiError(422, "pvgis_reference_site_required");
 	return {
 		...invalidateEnergyReplay(inputs),
-		brief: {
-			...brief,
-			site: {
-				...brief.site,
-				location_label: place.formattedAddress,
-				postal_code: place.postcode,
-				latitude: place.lat,
-				longitude: place.lng,
-				coordinate_basis: "user_entered",
-			},
-		},
+		brief: { ...brief, site },
 	};
 }
 

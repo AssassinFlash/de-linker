@@ -1,3 +1,4 @@
+import { onMapConsentChange } from "../../data/roofImageryConsent.ts";
 import {
 	useEffect,
 	useId,
@@ -124,6 +125,7 @@ export default function MapViewport({
 	imagery = null,
 	viewOnly = false,
 	onAerialReady,
+	takeImageryConsent,
 	siteCentre = null,
 	siteOutline = null,
 	interaction: mapInteraction = null,
@@ -142,6 +144,7 @@ export default function MapViewport({
 	imagery?: PlaceImagery | null;
 	viewOnly?: boolean;
 	onAerialReady?: (source: PlaceImagery | null) => void;
+	takeImageryConsent?: ((source: PlaceImagery) => boolean) | undefined;
 	/** The declared site position, so the mosaic is visible before geometry exists. */
 	siteCentre?: readonly [number, number] | null;
 	/** The mapped building outline at the site, drawn as the starting point. */
@@ -246,6 +249,9 @@ export default function MapViewport({
 	const offeredSource = imagery?.tiles.length
 		? imagerySourceKey(imagery)
 		: STREET_STYLE;
+	useEffect(() => {
+		if (imagery && takeImageryConsent?.(imagery)) setGrant(offeredSource);
+	}, [imagery, offeredSource, takeImageryConsent]);
 	const external = grant === offeredSource;
 	const street = external && offeredSource === STREET_STYLE;
 	const aerial = external && !street ? grant : null;
@@ -260,24 +266,10 @@ export default function MapViewport({
 			releaseExternal.current?.();
 			setGrant(null);
 		};
-		globalThis.document.addEventListener(
-			"cookieyes_consent_update",
-			stopExternal,
-		);
-		globalThis.document.addEventListener(
-			"wp_listen_for_consent_change",
-			stopExternal,
-		);
+		const unsubscribe = onMapConsentChange(stopExternal);
 		window.addEventListener("pagehide", stopExternal);
 		return () => {
-			globalThis.document.removeEventListener(
-				"cookieyes_consent_update",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener(
-				"wp_listen_for_consent_change",
-				stopExternal,
-			);
+			unsubscribe();
 			window.removeEventListener("pagehide", stopExternal);
 		};
 	}, []);
@@ -699,6 +691,12 @@ export default function MapViewport({
 			if (value.phase === "collecting") {
 				const collector = new MapPrefixController(map, value.vertices, ink, {
 					append: (point) => latest.current.interaction?.append(point),
+					...(value.trace
+						? {
+								trace: (corners: readonly Vec2[]) =>
+									latest.current.interaction?.trace?.(corners),
+							}
+						: {}),
 					blockMapPick,
 					failed,
 				});
@@ -735,6 +733,7 @@ export default function MapViewport({
 	}, [
 		drawing?.key,
 		drawing?.phase,
+		Boolean(drawing?.trace),
 		readyMap,
 		status,
 		disabled,

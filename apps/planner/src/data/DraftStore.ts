@@ -22,7 +22,7 @@ export interface RecoveryCandidate {
 	readonly updatedAt: number;
 }
 export type CreationDestination =
-	"design" | "equipment" | "preliminary-review" | "guided-comparison";
+	"design" | "roof" | "equipment" | "preliminary-review" | "guided-comparison";
 
 export interface CreationIntent {
 	readonly key: string;
@@ -183,6 +183,7 @@ export class DraftStore {
 		if (
 			destination !== null &&
 			destination !== "design" &&
+			destination !== "roof" &&
 			destination !== "equipment" &&
 			destination !== "preliminary-review" &&
 			destination !== "guided-comparison"
@@ -270,6 +271,7 @@ export class DraftStore {
 		if (
 			destination !== null &&
 			destination !== "design" &&
+			destination !== "roof" &&
 			destination !== "equipment" &&
 			destination !== "preliminary-review" &&
 			destination !== "guided-comparison"
@@ -696,6 +698,7 @@ function scanCreations(
 			if (
 				destination !== null &&
 				destination !== "design" &&
+				destination !== "roof" &&
 				destination !== "equipment" &&
 				destination !== "preliminary-review" &&
 				destination !== "guided-comparison"
@@ -708,7 +711,9 @@ function scanCreations(
 					: readHomepageProfile(value.profile);
 			const profileIssue = readProfileIssue(value.profile_issue);
 			if (
-				(profile && destination !== "guided-comparison") ||
+				(profile &&
+					destination !== "guided-comparison" &&
+					destination !== "roof") ||
 				(value.profile_issue !== undefined && (!profile || !profileIssue))
 			)
 				throw new Error("invalid_creation_recovery");

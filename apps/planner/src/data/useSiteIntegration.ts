@@ -15,6 +15,7 @@ import { guidedInquiryRetry } from "./inquiryRecovery.ts";
 const workspaceHashes = new Set([
 	"#sc-project",
 	"#sc-solar",
+	"#sc-roof",
 	"#sc-energy",
 	"#sc-system",
 	"#sc-review",

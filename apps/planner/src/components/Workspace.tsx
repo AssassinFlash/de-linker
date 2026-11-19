@@ -355,9 +355,11 @@ export function Workspace({
 						? "sc-energy"
 						: destination === "equipment"
 							? "sc-system"
-							: destination === "design"
-								? "sc-solar"
-								: "sc-project",
+							: destination === "roof"
+								? "sc-roof"
+								: destination === "design"
+									? "sc-solar"
+									: "sc-project",
 			);
 		return true;
 	}
@@ -650,11 +652,22 @@ export function Workspace({
 			<header className="sc-project-heading">
 				<div>
 					<p>{__("Solution Configurator", "linker-tools")}</p>
-					<h1>{__("Your projects", "linker-tools")}</h1>
+					<h1>
+						{entryHints?.roof
+							? __("Start with your roof", "linker-tools")
+							: __("Your projects", "linker-tools")}
+					</h1>
 				</div>
-				<button className="sc-button" type="button" data-linker-genie-open>
-					{__("Ask Genie", "linker-tools")}
-				</button>
+				<div className="sc-actions">
+					{!entryHints && !projectIndex && !savedSource && !briefSource && (
+						<a className="sc-button" href="?step=roof">
+							{__("Start with your roof", "linker-tools")}
+						</a>
+					)}
+					<button className="sc-button" type="button" data-linker-genie-open>
+						{__("Ask Genie", "linker-tools")}
+					</button>
+				</div>
 			</header>
 			<div className="sc-main">
 				<div>
@@ -733,7 +746,11 @@ export function Workspace({
 						</button>
 					</Notice>
 				)}
-				<section className="sc-card" aria-labelledby="lp-projects-heading">
+				<section
+					className="sc-card"
+					hidden={Boolean(entryHints?.roof)}
+					aria-labelledby="lp-projects-heading"
+				>
 					<div className="sc-section-head">
 						<h2 id="lp-projects-heading">
 							{__("Saved projects", "linker-tools")}

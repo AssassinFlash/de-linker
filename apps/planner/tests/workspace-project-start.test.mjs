@@ -54,6 +54,10 @@ async function runHomeComparison(t, rejectedProfile) {
 	const commands = [];
 	const mappings = [];
 	const calls = [];
+	const sourceQueries = [];
+	const external = t.mock.method(globalThis, "fetch", async () => {
+		throw new Error("unexpected request to an external provider");
+	});
 	const asset = {
 		id: "a".repeat(32),
 		project_id: projectId,
@@ -87,6 +91,10 @@ async function runHomeComparison(t, rejectedProfile) {
 			};
 		},
 		async query(path, command) {
+			if (path === "places/lookup") {
+				sourceQueries.push([command.country, command.query]);
+				return { imagery: null, viewing_imagery: null };
+			}
 			if (path === "products/current")
 				return { schema_version: 1, provider: "woocommerce", products: [] };
 			calls.push(path);
@@ -197,6 +205,12 @@ async function runHomeComparison(t, rejectedProfile) {
 	}
 	await enter(title, "Berlin workshop");
 	await select("country", "DE");
+	assert.deepEqual(sourceQueries, []);
+	if (!rejectedProfile) {
+		await enter(field("location_label"), "Werkstatt, 10117 Berlin");
+		await until(() => sourceQueries.length > 0);
+		assert.deepEqual(sourceQueries, [["DE", "10117"]]);
+	}
 	await select("system_scope", "new_pv_storage");
 	await select("project_purpose", "peak");
 	await select("grid_phase", "3");
@@ -241,6 +255,7 @@ async function runHomeComparison(t, rejectedProfile) {
 	await enter(field("profile_interval_minutes"), "15");
 	await select("Source time zone", "UTC");
 	assert.deepEqual(calls, []);
+	assert.equal(external.mock.callCount(), 0);
 	const submit = form.querySelector('button[type="submit"]');
 	assert.equal(submit.textContent.trim(), "Compare systems");
 	await act(async () => submit.click());

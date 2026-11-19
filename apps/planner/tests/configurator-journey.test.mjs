@@ -502,6 +502,138 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 	}
 });
 
+test("a roof layout edit advances the saved project and reopens without a separate save", async (t) => {
+	const dom = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const cache = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	const root = createRoot(dom.element);
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	});
+	let saved = {
+		...knownPv.project,
+		inputs: {
+			brief: { ...emptyBrief(), system_scope: "new_pv_storage" },
+			geometry: flatRoof,
+		},
+	};
+	window.history.replaceState(null, "", `?project=${saved.id}#sc-solar`);
+	let dropNextReply = false;
+	const requests = [];
+	const revisions = new Map();
+	const { DraftStore } = await import("../src/data/DraftStore.ts");
+	const props = {
+		config: { locale: "en" },
+		session: {
+			kind: "guest",
+			query_scope: "3".repeat(64),
+			claim_pending: false,
+			runtime: {
+				limits: {
+					max_page_size: 30,
+					max_json_depth: 32,
+					max_body_bytes: 1000000,
+				},
+				models: {},
+			},
+		},
+		client: {
+			isCurrentScope: () => true,
+			query: async (path) =>
+				path === "projects/runs"
+					? { items: [], next: null }
+					: { schema_version: 1, provider: "woocommerce", pv_modules: [] },
+			send: async (path, raw) => {
+				assert.equal(path, "projects/revise");
+				requests.push(raw);
+				if (revisions.has(raw)) return revisions.get(raw);
+				const { inputs, project_id, expected_revision } = JSON.parse(raw);
+				assert.equal(project_id, saved.id);
+				assert.equal(expected_revision, saved.revision);
+				saved = {
+					...saved,
+					inputs,
+					revision: saved.revision + 1,
+					input_sha256: "2".repeat(64),
+				};
+				revisions.set(raw, saved);
+				if (dropNextReply) {
+					dropNextReply = false;
+					throw new TypeError("connection interrupted");
+				}
+				return saved;
+			},
+		},
+		store: new DraftStore(),
+		recheck() {},
+		close: () => true,
+	};
+	const render = () =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						...props,
+						key: saved.revision,
+						project: saved,
+					}),
+				),
+			),
+		);
+	const button = (text, parent = dom.element) =>
+		[...parent.querySelectorAll("button")].find(
+			(b) => b.textContent.trim() === text,
+		);
+	const click = async (text, parent) => {
+		await until(
+			() =>
+				button(text, parent)?.matches(":enabled") &&
+				!button(text, parent).closest("fieldset[disabled]"),
+		);
+		await act(async () => button(text, parent).click());
+	};
+	await render();
+	await click("Open roof layout");
+	await click("Remove selected");
+	await until(() => dom.element.textContent.includes("Saved · revision 2"));
+	assert.equal(saved.inputs.geometry.roofs.length, 0);
+	await click("Undo", dom.element.querySelector(".sc-roof-editor"));
+	await until(() => dom.element.textContent.includes("Saved · revision 3"));
+	assert.deepEqual(saved.inputs.geometry, flatRoof);
+	await render();
+	await click("Open roof layout");
+	assert.ok(dom.element.textContent.includes(flatRoof.roofs[0].name));
+	dropNextReply = true;
+	await click("Place modules");
+	await click("Remove selected");
+	await until(() => button("Retry save")?.matches(":enabled"));
+	const unconfirmed = requests.at(-1);
+	await click("Retry save");
+	await until(() => dom.element.textContent.includes("Saved · revision 4"));
+	assert.deepEqual(requests.slice(2), [unconfirmed, unconfirmed]);
+	assert.equal(saved.inputs.geometry.roofs.length, 0);
+	dropNextReply = true;
+	await click("Undo", dom.element.querySelector(".sc-roof-editor"));
+	await until(() => button("Retry save")?.matches(":enabled"));
+	const beforeReload = requests.at(-1);
+	await render();
+	await until(() => dom.element.textContent.includes("Saved · revision 5"));
+	assert.deepEqual(requests.slice(4), [beforeReload, beforeReload]);
+	assert.deepEqual(saved.inputs.geometry, flatRoof);
+});
+
 test("a storage project continues from its location directly to energy use", async () => {
 	const fixture = setupDom();
 	globalThis.indexedDB = new IDBFactory();

@@ -60,12 +60,12 @@ export function HomepageComparison({
 			),
 		enabled: admitted,
 	});
-	function compare(projectId: string): boolean {
+	function openProject(projectId: string, roof = false): boolean {
 		if (!client.isCurrentScope(scope) || session.claim_pending) return false;
 		const url = new URL(target.href);
 		url.searchParams.set("project", projectId);
-		url.searchParams.set("guided", "inquiry");
-		url.hash = "sc-system";
+		if (!roof) url.searchParams.set("guided", "inquiry");
+		url.hash = roof ? "sc-roof" : "sc-system";
 		location.assign(url.href);
 		return true;
 	}
@@ -133,6 +133,9 @@ export function HomepageComparison({
 						)}
 					</p>
 				</div>
+				<a className="sc-button" href={new URL("?step=roof", target).href}>
+					{__("Start with your roof", "linker-tools")}
+				</a>
 			</header>
 			{session.claim_pending ? (
 				<Notice>
@@ -157,13 +160,13 @@ export function HomepageComparison({
 					recoveryDiscoveryFailed={recovery.isError}
 					entryHints={readEntryHints(new URL(location.href).searchParams)}
 					openOnLoad
-					created={(project, _, openResult) =>
-						openResult ? compare(project.id) : true
+					created={(project, destination, openResult) =>
+						openResult ? openProject(project.id, destination === "roof") : true
 					}
 					homeComparison={{
 						picker,
 						savedProject: chosen,
-						compareSaved: compare,
+						compareSaved: openProject,
 					}}
 				/>
 			)}

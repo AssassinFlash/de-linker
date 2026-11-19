@@ -9,6 +9,7 @@ export interface MapInteraction {
 	readonly vertices: readonly Vec2[];
 	readonly referencePosition: Vec2 | null;
 	readonly append: (point: Vec2) => void;
+	readonly trace?: (corners: readonly Vec2[]) => void;
 	readonly transaction: (change: MapDrawingTransaction) => void;
 	readonly failed: () => void;
 	readonly interrupted: () => void;

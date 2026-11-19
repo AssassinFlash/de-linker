@@ -952,9 +952,17 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	);
 	assert.deepEqual(
 		app.requests.map(({ path }) => path),
-		["runs/find-equipment"],
+		["projects/revise", "projects/revise", "runs/find-equipment"],
 	);
-	const inputs = app.requests[0].body.inputs;
+	const [roofSave, layoutSave, comparison] = app.requests.map(
+		({ body }) => body,
+	);
+	assert.equal(roofSave.inputs.geometry.roofs.length, 1);
+	assert.equal(roofSave.inputs.geometry.arrays.length, 0);
+	assert.equal(layoutSave.inputs.geometry.arrays.length, 1);
+	assert.equal(comparison.expected_revision, layoutSave.expected_revision + 1);
+	const inputs = comparison.inputs;
+	assert.deepEqual(inputs.geometry, layoutSave.inputs.geometry);
 	assert.equal(inputs.equipment_setup.pv_dc_kw, null);
 	await act(async () => app.setServerRun("succeeded"));
 	await untilRun(() =>
