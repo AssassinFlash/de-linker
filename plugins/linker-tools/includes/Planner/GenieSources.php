@@ -114,13 +114,13 @@ final class GenieSources {
 		} catch ( \RuntimeException $error ) {
 			return null;
 		}
-		if ( ! is_array( $fresh ) || 'available' !== ( $fresh['status'] ?? null ) || true === ( $fresh['truncated'] ?? false ) || ! is_array( $fresh['runs'] ?? null ) || ( $fresh['project']['id'] ?? null ) !== $reference['planning_project_id'] || ( $fresh['project']['revision'] ?? null ) !== $reference['planning_revision'] || array_column( $fresh['runs'], 'id' ) !== $reference['planning_run_ids'] ) {
+		if ( ! is_array( $fresh ) || 'available' !== ( $fresh['status'] ?? null ) || ! is_array( $fresh['runs'] ?? null ) || ( $fresh['project']['id'] ?? null ) !== $reference['planning_project_id'] || ( $fresh['project']['revision'] ?? null ) !== $reference['planning_revision'] || array_column( $fresh['runs'], 'id' ) !== $reference['planning_run_ids'] ) {
 			return null;
 		}
 		$bindings = array();
 		$results  = array();
 		foreach ( $fresh['runs'] as $run ) {
-			if ( 'succeeded' !== ( $run['state'] ?? null ) || true === ( $run['truncated'] ?? false ) ) {
+			if ( 'succeeded' !== ( $run['state'] ?? null ) ) {
 				return null;
 			}
 			$source = $run['calculation_sources'] ?? null;

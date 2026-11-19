@@ -1044,6 +1044,13 @@ final class ProxyTest extends TestCase {
 		$this->assertSame( $binding['planning_project_id'], $seen['planning_project_id'] );
 		$this->assertStringContainsString( '2023-06-16T09:00:00+00:00', $restored );
 		$this->assertStringContainsString( '/verified', $restored );
+		// The display budget may omit report rows while the frozen periods remain complete.
+		$fresh['truncated']            = true;
+		$fresh['runs'][0]['truncated'] = true;
+		$this->assertSame( $restored, $reader->restore( $stream, $request, 'de' ) );
+		$fresh['runs'][0]['calculation_sources']['groups'] = array();
+		$this->assertStringNotContainsString( '2023-06-16', $reader->restore( $stream, $request, 'de' ) );
+		$fresh['runs'][0]['calculation_sources']['groups'] = $groups;
 		$replayed = \Linker\Tools\Planner\GenieSources::replayed( new WP_REST_Response( array( 'stream' => $stream ) ), array() );
 		$this->assertInstanceOf( WP_REST_Response::class, $replayed );
 		$this->assertStringContainsString( '"status":"unavailable"', $replayed->get_data()['stream'] );
