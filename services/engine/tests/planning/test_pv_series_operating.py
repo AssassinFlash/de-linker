@@ -22,8 +22,20 @@ from linker_engine.planning.pv_series_operating import series_operating_point
 from .panel_fixture import panel_basis, panel_parameters
 
 
+@pytest.mark.parametrize("technology", ["monocrystalline", "polycrystalline", None])
+def test_panel_cell_choices_resolve_the_operating_model(technology: str | None) -> None:
+    specification = panel_parameters(electrical=True)["specification"]
+    specification["electrical"]["cell_technology"] = technology
+    model = derive_iv_model(electrical_facts(ModuleSpec.read(specification)))
+    assert model["status"] == ("available" if technology else "unavailable")
+    if technology is None:
+        assert model["reason"] == "crystalline_module_basis_missing"
+
+
 def test_fitted_module_series_conditions_follow_the_common_current() -> None:
-    facts = electrical_facts(ModuleSpec.read(panel_parameters()["specification"]))
+    facts = electrical_facts(
+        ModuleSpec.read(panel_parameters(electrical=True)["specification"])
+    )
     model = derive_iv_model(facts)
     assert model["status"] == "available"
     params = cast(dict[str, Any], model["parameters"])
@@ -87,7 +99,7 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
 
     raw = json.loads((Path(__file__).parents[1] / "fixtures/feed.json").read_text())
     feed = publication_feed(raw, json.loads(SHIPPED_COMPATIBILITY.read_text()))
-    template = panel_parameters()
+    template = panel_parameters(electrical=True)
     geo = geometry()
     if pitched:
         geo["roofs"][0]["v_axis_enu"] = [

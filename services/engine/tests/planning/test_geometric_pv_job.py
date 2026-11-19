@@ -793,9 +793,6 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         ClearPitchedRoofLimits,
     )
     from linker_engine.planning.geometry import panel_poses, read_geometry
-    from linker_engine.planning.project_input_contracts import (
-        ENGINEERING_V10_INPUT_CONTRACT,
-    )
 
     from .test_country_rules import rule_input
     from .test_equipment import inputs as equipment_inputs
@@ -814,7 +811,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     provider = client.app.state.planning_product_provider()
     feed = provider.publication.feed
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
-    template = panel_parameters()
+    template = panel_parameters(electrical=True)
     expanded = mode in ("clear-flat-roof", "budget-tamper")
     pitched = mode == "pitched"
     large = expanded or pitched
@@ -883,7 +880,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
             "pv_string_plan": wiring,
         },
         key="series-create",
-        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+        input_contract="project_panel_parameters_v1",
     )
     source = WeatherImport(Assets(workspace), LIMITS).tmy(
         owner,
@@ -918,7 +915,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         1,
         {**project.inputs, "geometric_pv_preparation": request.model_dump(mode="json")},
         key="series-parameters",
-        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+        input_contract="project_panel_parameters_v1",
     )
     kernel = GeometricPvKernel(
         workspace,
@@ -988,7 +985,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
             source_revision,
             bad_inputs,
             key="series-outside-scope",
-            input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+            input_contract="project_panel_parameters_v1",
         )
         with pytest.raises(GeometricPvExpandedScopeRequired):
             service.evaluate(owner, project.id, bad.revision, key="series-rejected")
@@ -998,7 +995,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
             bad.revision,
             project.inputs,
             key="series-recovered",
-            input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+            input_contract="project_panel_parameters_v1",
         )
         source_revision = project.revision
     queued = service.evaluate(owner, project.id, source_revision, key="series-full")
@@ -1185,7 +1182,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
             },
         },
         key="series-energy-inputs",
-        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+        input_contract="project_panel_parameters_v1",
     )
     energy_revision = source_revision + 1
     energy_run = energy.evaluate(

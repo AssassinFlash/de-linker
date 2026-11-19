@@ -7,7 +7,7 @@ def panel_basis() -> FixtureObject:
     return {"schema_version": 1, "kind": "project_panel_parameters"}
 
 
-def panel_parameters() -> FixtureObject:
+def panel_parameters(*, electrical: bool = False) -> FixtureObject:
     source = {
         "kind": "user_declared",
         "note": "declared_reference — Customer-provided panel parameters.",
@@ -15,7 +15,7 @@ def panel_parameters() -> FixtureObject:
         "url": None,
         "page": None,
     }
-    return {
+    panel: FixtureObject = {
         "specification": {
             "id": "panel",
             "model": "PV 460 Wp · 1762 × 1134 mm",
@@ -42,3 +42,6 @@ def panel_parameters() -> FixtureObject:
             "source": source,
         },
     }
+    if not electrical:
+        del panel["specification"]["electrical"]
+    return panel

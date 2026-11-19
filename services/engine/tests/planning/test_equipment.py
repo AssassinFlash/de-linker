@@ -2580,7 +2580,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             "linker_engine.planning.equipment_kernel.assess_equipment", original
         )
         layout = geometry()
-        module = panel_parameters()
+        module = panel_parameters(electrical=True)
         layout["module_specs"] = [{**module["specification"], "id": "module"}]
         layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
         module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -2606,6 +2606,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                 "project_id": pid,
                 "expected_revision": 2,
                 "inputs": wired_inputs,
+                "input_contract": "project_panel_parameters_v1",
                 "key": "adopt-candidate-with-wiring",
             },
             headers=headers(),
@@ -2707,7 +2708,7 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
         product_provider=lambda: loaded,
     )
     layout = geometry()
-    module = panel_parameters()
+    module = panel_parameters(electrical=True)
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -6538,7 +6539,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
 
     proof = panel_basis()
     layout = geometry()
-    layout["module_specs"] = [{**panel_parameters()["specification"], "id": "module"}]
+    layout["module_specs"] = [
+        {**panel_parameters(electrical=True)["specification"], "id": "module"}
+    ]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
     assert len(ids) == 12
@@ -6745,7 +6748,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
         )
         assert (
             pv_iv_model.derive_iv_model(
-                electrical_facts(ModuleSpec.read(panel_parameters()["specification"]))
+                electrical_facts(
+                    ModuleSpec.read(panel_parameters(electrical=True)["specification"])
+                )
             )["status"]
             == "unavailable"
         )
@@ -6799,7 +6804,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     from .test_pv_generation import geometry
 
     layout = geometry()
-    module = panel_parameters()
+    module = panel_parameters(electrical=True)
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     mids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -7074,7 +7079,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         "Two separately wired systems",
         linked,
         key="plant-wiring-create",
-        input_contract=PLANT_PV_INPUT_CONTRACT,
+        input_contract="project_panel_parameters_v1",
     )
     run = equipment.evaluate(owner, project.id, 1, key="plant-wiring-evaluate")
     assert executor.run_once()
@@ -7563,7 +7568,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         }
         if wired:
             layout = geometry()
-            module = panel_parameters()
+            module = panel_parameters(electrical=True)
             layout["module_specs"] = [{**module["specification"], "id": "module"}]
             layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
             declarations.update(
@@ -7581,7 +7586,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             "project_id": pid,
             "expected_revision": 1,
             "inputs": declarations,
-            "input_contract": "backup_demand_v1",
+            "input_contract": "project_panel_parameters_v1"
+            if wired
+            else "backup_demand_v1",
             "key": "compare-profile-bounds",
         }
         if wired_dc or topology in ("plant_ac", "plant_shared_dc", "undeclared_plant"):
