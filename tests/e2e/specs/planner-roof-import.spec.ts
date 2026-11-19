@@ -22,6 +22,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { seedConsentCookies } from '../lib/consent';
 import {
 	plannerWords,
+	plannerScreenshot,
 	fillSolarProject,
 	compareProject,
 	reopenProject,
@@ -50,6 +51,11 @@ const WORDS = {
 		area: 'Roof-plane area',
 		openings: 'Openings retained',
 		attach: 'Add roof to current design',
+		openLayout: 'Open roof layout',
+		planView: 'Plan view',
+		board: 'Editable roof plan',
+		close: 'Close',
+		calibrate: 'Calibrate a roof image',
 	},
 	de: {
 		configurator: '/de/loesungskonfigurator/',
@@ -62,6 +68,11 @@ const WORDS = {
 		area: 'Fläche in der Dachebene',
 		openings: 'Übernommene Aussparungen',
 		attach: 'Dachfläche in den Entwurf übernehmen',
+		openLayout: 'Dachbelegung öffnen',
+		planView: 'Draufsicht',
+		board: 'Bearbeitbarer Dachplan',
+		close: 'Schließen',
+		calibrate: 'Dachbild kalibrieren',
 	},
 } as const;
 
@@ -183,6 +194,62 @@ test.describe('native roof import', () => {
 						await preview.locator('path').first().getAttribute('d')
 					)?.match(/M/g)
 				).toHaveLength(2);
+				await expect(preview.locator('path').first()).toHaveCSS(
+					'vector-effect',
+					'non-scaling-stroke'
+				);
+				await preview.evaluate((svg) =>
+					svg.scrollIntoView({ block: 'center', behavior: 'instant' })
+				);
+				await plannerScreenshot(page, `${lang}-${width}-overview`);
+				await page
+					.getByRole('button', {
+						name: words.openLayout,
+						exact: true,
+					})
+					.click();
+				const dialog = page.getByRole('dialog');
+				const calibrate = dialog.getByRole('button', {
+					name: words.calibrate,
+				});
+				const titleLeft = await dialog
+					.getByRole('heading', { level: 2 })
+					.evaluate(
+						(heading) => heading.getBoundingClientRect().left
+					);
+				expect(
+					await calibrate.evaluate(
+						(button) => button.getBoundingClientRect().left
+					)
+				).toBe(titleLeft);
+				const plan = dialog.getByRole('button', {
+					name: words.planView,
+					exact: true,
+				});
+				const close = dialog.getByRole('button', {
+					name: words.close,
+					exact: true,
+				});
+				await plan.click();
+				await expect(plan).toHaveAttribute('aria-pressed', 'true');
+				await close.hover();
+				const selectedBackground = await plan.evaluate(
+					(button) => getComputedStyle(button).backgroundColor
+				);
+				await plan.hover();
+				await expect(plan).toHaveCSS(
+					'background-color',
+					selectedBackground
+				);
+				const board = dialog.getByRole('img', {
+					name: words.board,
+				});
+				await expect(board).toBeVisible();
+				await dialog.evaluate((element) =>
+					element.scrollTo({ top: 0, behavior: 'instant' })
+				);
+				await plannerScreenshot(page, `${lang}-${width}-editor`);
+				await close.click();
 				await deleteOpenProject(page, lang, title);
 			});
 		}
