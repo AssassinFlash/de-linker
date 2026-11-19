@@ -697,6 +697,7 @@ async function lostReceipt(
 	await enter(field("message"), "Can you help size a battery?");
 	await act(async () => field("consent").click());
 	const original = new window.FormData(form());
+	assert.equal(original.has("linker_inquiry_receipt_only"), false);
 	await act(async () => {
 		assert.equal(
 			form().dispatchEvent(
@@ -760,6 +761,7 @@ async function lostReceipt(
 		true,
 	);
 	const replay = new window.FormData(form());
+	assert.deepEqual(replay.getAll("linker_inquiry_receipt_only"), ["1"]);
 	for (const key of [
 		"linker_request_id",
 		"linker_preliminary_project",

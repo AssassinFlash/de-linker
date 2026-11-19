@@ -158,8 +158,7 @@ export function inquiryPayload(pending: PendingInquiry): NativeInquiry | null {
 		: null;
 }
 
-/** The Woo protection client tries the original receipt before obtaining new
- * proof. Keep the viewed fields frozen while posting the exact original data. */
+/** Ask Woo for the original receipt with the unchanged submission details. */
 export function restoreInquiry(
 	form: HTMLFormElement,
 	payload: NativeInquiry,
@@ -196,7 +195,10 @@ export function restoreInquiry(
 		else if (value !== undefined) control.value = value;
 		control.disabled = true;
 	}
-	for (const [name, value] of payload) {
+	for (const [name, value] of [
+		...payload,
+		["linker_inquiry_receipt_only", "1"] as const,
+	]) {
 		if (name === requestField) continue;
 		const input = document.createElement("input");
 		input.type = "hidden";
