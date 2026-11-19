@@ -31,3 +31,25 @@ test('close, apply and Escape hide the drawer again',()=>{
  win.document.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
  assert.equal(win.document.getElementById('sidebar-filters').classList.contains('is-mobile-open'),false);
 });
+
+test('the first tap on Filters works while the catalog page is still arriving', () => {
+ const dom = new JSDOM('', { runScripts: 'outside-only' });
+ const {window} = dom;
+ const {document} = window;
+ window.eval(readFileSync(new URL('../../assets/catalog-ui.js', import.meta.url), 'utf8'));
+ document.body.innerHTML = '<button id="product-filter-open" aria-expanded="false"><span>Filters</span></button>';
+ const label = document.querySelector('#product-filter-open span');
+ label.click();
+ assert.equal(document.body.classList.contains('product-filter-open'), false);
+ document.body.insertAdjacentHTML('beforeend', '<aside id="sidebar-filters"></aside>');
+ label.click();
+ assert.equal(document.getElementById('product-filter-open').getAttribute('aria-expanded'), 'false');
+ document.querySelector('aside').innerHTML = '<button id="product-filter-close">Close</button><button id="product-filter-apply">Show products</button>';
+ label.click();
+ assert.equal(document.getElementById('product-filter-open').getAttribute('aria-expanded'), 'true');
+ assert.equal(document.getElementById('sidebar-filters').classList.contains('is-mobile-open'), true);
+ assert.equal(document.activeElement.id, 'product-filter-close');
+ document.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Escape'}));
+ assert.equal(document.activeElement.id, 'product-filter-open');
+ dom.window.close();
+});

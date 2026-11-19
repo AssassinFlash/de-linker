@@ -369,6 +369,9 @@
 	display: none;
 }
 @media (max-width: 860px) {
+	#linker-products:not(:has(#sidebar-filters #product-filter-apply)) #product-filter-open {
+		visibility: hidden;
+	}
 	#linker-products .sidebar-filters {
 		position: fixed;
 		inset: 0 0 0 auto;
