@@ -300,6 +300,8 @@ for (const lang of ['en', 'de'] as const) {
 			await preview.click();
 			const dialog = workspace.getByRole('dialog');
 			await expect(dialog).toBeVisible();
+			const frame = await dialog.boundingBox();
+			expect(frame!.x).toBeCloseTo((width - frame!.width) / 2, 0);
 			const originalPdf = dialog.getByRole('link', {
 				name: words.openPdf,
 			});

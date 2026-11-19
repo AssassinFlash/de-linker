@@ -1165,7 +1165,7 @@
   .sc-configurator .sc-report-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 20px; }
   .sc-configurator .sc-report-logo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-block: 12px; }
   .sc-configurator .sc-report-logo img { max-width: 100px; max-height: 45px; object-fit: contain; }
-  .sc-configurator .sc-report-dialog { width: min(800px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 22px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); overflow: auto; }
+  .sc-configurator .sc-report-dialog { position: fixed; inset: 0; margin: auto; width: min(800px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 22px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); overflow: auto; }
   .sc-configurator .sc-report-dialog::backdrop { background: rgb(15 43 38 / .58); }
   .sc-configurator .sc-report-pdf { display: grid; gap: 10px; justify-items: start; margin-block: 0 20px; }
   .sc-configurator .sc-report-preview > * + * { margin-top: 16px; }
