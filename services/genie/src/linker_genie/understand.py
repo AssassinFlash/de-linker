@@ -294,6 +294,17 @@ class Understander:
             # A nameplate is confirmed before anything else is answered about it, so
             # Jev is not asked: the route is the nameplate's (route.nameplate).
             route = nameplate(plate, language, subject, [])
+        elif (
+            fresh
+            and all(item.kind == "document" for item in fresh)
+            and message
+            in (
+                "\n".join(f"{prefix}: {item.name}" for item in fresh)
+                for prefix in ("Attached", "Anhang")
+            )
+        ):
+            # These are the upload labels the shell appends, not a catalogue query.
+            route = Route("model", no_handoff=True)
         else:
             reading = self._read(request, message, vocabulary, log, clock)
             # Jev's yes/no answers count from 0.5, the cut the measurement scored

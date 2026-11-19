@@ -10,18 +10,9 @@ from types import SimpleNamespace
 from typing import Any
 
 import httpx
-import linker_genie.app as service
 import pytest
 from conftest import SHELL
 from fastapi.testclient import TestClient
-from linker_genie.abilities import Abilities
-from linker_genie.agent import make_generate
-from linker_genie.facts import TurnFacts
-from linker_genie.jev import Reading
-from linker_genie.lexicon import Entry, Vocabulary, normalize
-from linker_genie.log import TurnLog
-from linker_genie.schema import TurnOutput, TurnRequest
-from linker_genie.understand import Understander
 from pydantic_ai.messages import (
     ModelMessage,
     ModelResponse,
@@ -30,6 +21,16 @@ from pydantic_ai.messages import (
 )
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 from test_turn_abilities import SEARCH, clients, manifest
+
+import linker_genie.app as service
+from linker_genie.abilities import Abilities
+from linker_genie.agent import make_generate
+from linker_genie.facts import TurnFacts
+from linker_genie.jev import Reading
+from linker_genie.lexicon import Entry, Vocabulary, normalize
+from linker_genie.log import TurnLog
+from linker_genie.schema import TurnOutput, TurnRequest
+from linker_genie.understand import Understander
 
 SAJ = 1179
 GOODWE = 6321
