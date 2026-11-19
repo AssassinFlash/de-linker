@@ -1,6 +1,9 @@
+import { useState } from "react";
+import type { Configuration } from "../../data/config.ts";
+import { geocodeAddress } from "../../data/googleMaps.ts";
+import { ApiError, type JsonObject } from "../../data/protocol.ts";
 import { readBrief } from "../../domain/brief.ts";
 import type { Brief } from "../../domain/brief.ts";
-import type { JsonObject } from "../../data/protocol.ts";
 import { hasPlant } from "../../domain/equipmentPlant.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import {
@@ -26,15 +29,59 @@ export function homepagePvReferenceAvailable(inputs: JsonObject, brief: Brief) {
 	);
 }
 
-export function isHomepagePvReferenceReady(inputs: JsonObject, brief: Brief) {
+export function isHomepagePvReferenceReady(
+	inputs: JsonObject,
+	brief: Brief,
+	useAddress = false,
+) {
 	return (
 		!homepagePvReferenceAvailable(inputs, brief) ||
 		referenceDraft(inputs).model !== KNOWN_PV_MODEL ||
-		(brief.site.latitude !== null &&
-			brief.site.longitude !== null &&
-			brief.site.coordinate_basis === "user_entered" &&
-			referencePrepared(inputs))
+		(referencePrepared(inputs) &&
+			(useAddress
+				? Boolean(brief.site.country_code && brief.site.location_label.trim())
+				: brief.site.latitude !== null &&
+					brief.site.longitude !== null &&
+					brief.site.coordinate_basis === "user_entered"))
 	);
+}
+
+export async function prepareHomepagePvReference(
+	inputs: JsonObject,
+	config: Pick<Configuration, "googleMapsApiKey" | "locale">,
+	useAddress: boolean,
+): Promise<JsonObject> {
+	if (!useAddress) return inputs;
+	const brief = readBrief(inputs.brief);
+	if (
+		!homepagePvReferenceAvailable(inputs, brief) ||
+		referenceDraft(inputs).model !== KNOWN_PV_MODEL
+	)
+		return inputs;
+	const { country_code, location_label } = brief.site;
+	if (!config.googleMapsApiKey || !country_code || !location_label.trim())
+		throw new ApiError(422, "pvgis_reference_site_required");
+	const place = await geocodeAddress(
+		config.googleMapsApiKey,
+		location_label,
+		country_code,
+		config.locale,
+	);
+	if (!place) throw new ApiError(422, "pvgis_reference_site_required");
+	return {
+		...invalidateEnergyReplay(inputs),
+		brief: {
+			...brief,
+			site: {
+				...brief.site,
+				location_label: place.formattedAddress,
+				postal_code: place.postcode,
+				latitude: place.lat,
+				longitude: place.lng,
+				coordinate_basis: "user_entered",
+			},
+		},
+	};
 }
 
 export function changeHomepagePvPower(
@@ -54,17 +101,21 @@ export function HomepagePvReference({
 	inputs,
 	brief,
 	power,
+	addressLookup = false,
 	edit,
 }: {
 	inputs: JsonObject;
 	brief: Brief;
 	power: number | null;
+	addressLookup?: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 }) {
+	const [useAddress, setUseAddress] = useState(false);
 	const reference = referenceDraft(inputs);
 	const array =
 		reference.model === KNOWN_PV_MODEL ? reference.arrays?.[0] : undefined;
 	function toggle(enabled: boolean) {
+		if (!enabled) setUseAddress(false);
 		edit((current) => {
 			if (enabled)
 				return referenceInputs(current, {
@@ -170,21 +221,39 @@ export function HomepagePvReference({
 			</label>
 			{array && (
 				<div className="sc-fields">
-					{number(
-						"latitude",
-						__("Latitude", "linker-tools"),
-						brief.site.latitude,
-						-90,
-						90,
-						(value) => coordinate("latitude", value),
+					{addressLookup && (
+						<label className="sc-check sc-field-wide">
+							<input
+								name="pvgis_use_address"
+								type="checkbox"
+								checked={useAddress}
+								onChange={(event) => setUseAddress(event.currentTarget.checked)}
+							/>
+							{__(
+								"Use the street address above for this estimate (send it to Google Maps)",
+								"linker-tools",
+							)}
+						</label>
 					)}
-					{number(
-						"longitude",
-						__("Longitude", "linker-tools"),
-						brief.site.longitude,
-						-180,
-						180,
-						(value) => coordinate("longitude", value),
+					{(!addressLookup || !useAddress) && (
+						<>
+							{number(
+								"latitude",
+								__("Latitude", "linker-tools"),
+								brief.site.latitude,
+								-90,
+								90,
+								(value) => coordinate("latitude", value),
+							)}
+							{number(
+								"longitude",
+								__("Longitude", "linker-tools"),
+								brief.site.longitude,
+								-180,
+								180,
+								(value) => coordinate("longitude", value),
+							)}
+						</>
 					)}
 					{number(
 						"pv_tilt_deg",
