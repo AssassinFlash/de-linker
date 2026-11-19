@@ -145,7 +145,7 @@ final class Checkout {
 		$customer_id = $order->get_customer_id();
 		if ( $verify_customer && $customer_id && get_current_user_id() !== $customer_id ) {
 			wc_get_template( 'checkout/order-received.php', array( 'order' => false ) );
-			wc_print_notice( __( 'Please log in to your account to view this order.', 'woocommerce' ), 'notice' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Existing WooCommerce receipt login notice.
+			wc_print_notice( __( 'Please log in to your account to view this inquiry.', 'linker-commerce' ), 'notice' );
 			woocommerce_login_form( array( 'redirect' => $order->get_checkout_order_received_url() ) );
 			return;
 		}
