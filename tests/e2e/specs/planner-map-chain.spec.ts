@@ -305,11 +305,11 @@ for (const lang of ['en', 'de'] as const) {
 			.locator('#lp-design button', { hasText: words.addModuleSpec })
 			.click({ timeout: 15_000 });
 
-		// The module-specification state: the tier select is prefilled, and one
-		// submit puts the reference module into the project - the gate Add
-		// module array waits on (geometry.module_specs.length).
 		const moduleForm = page.locator('#lp-design form');
-		await moduleForm.locator('select').first().selectOption({ index: 0 });
+		await moduleForm.locator('[name="panel_length_mm"]').fill('1800');
+		await moduleForm.locator('[name="panel_width_mm"]').fill('1100');
+		await moduleForm.locator('[name="panel_thickness_mm"]').fill('30');
+		await moduleForm.locator('[name="panel_power_w"]').fill('430');
 		await moduleForm.locator('button[type="submit"]').click();
 		await expect(
 			page.locator('#lp-design button', { hasText: words.addModuleArray })

@@ -11032,13 +11032,8 @@ msgstr "Betriebsbedingungen und deren Quelle sind noch unvollständig."
 
 #: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
 #: build/planner/assets/planner.js
-msgid ""
-"The maintained module data did not produce an admissible I–V model. The cold-"
-"Voc and STC checks remain available."
-msgstr ""
-"Aus den gepflegten Moduldaten konnte kein zulässiges I–V-Modell ermittelt "
-"werden. Die Prüfungen der Leerlaufspannung bei Kälte und unter STC bleiben "
-"verfügbar."
+msgid "The panel values entered for this project could not produce an operating curve. See the cold-voltage and STC checks below."
+msgstr "Mit den eingegebenen Modulwerten lässt sich keine Betriebskennlinie berechnen. Unten finden Sie die Prüfungen zur Kaltspannung und zu den STC-Werten."
 
 #: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
 #: build/planner/assets/planner.js
@@ -11330,23 +11325,13 @@ msgstr ""
 
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts
 #: build/planner/assets/planner.js
-msgid ""
-"The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc "
-"temperature coefficients, from the maintained module record with source "
-"references."
-msgstr ""
-"Das Modell benötigt Voc, Isc, Vmpp und Impp unter STC sowie die "
-"Temperaturkoeffizienten von Voc und Isc aus dem gepflegten Moduldatensatz, "
-"jeweils mit Quellenbeleg."
+msgid "Enter Voc, Isc, Vmpp and Impp at STC and the Voc and Isc temperature coefficients from your panel data sheet."
+msgstr "Geben Sie Voc, Isc, Vmpp und Impp unter STC sowie die Temperaturkoeffizienten für Voc und Isc aus Ihrem Moduldatenblatt ein."
 
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts
 #: build/planner/assets/planner.js
-msgid ""
-"The cited module record does not establish the crystalline-cell basis "
-"required by this model."
-msgstr ""
-"Der belegte Moduldatensatz bestätigt nicht die für dieses Modell "
-"erforderliche kristalline Zellgrundlage."
+msgid "This calculation requires crystalline cells. Check the cell technology on your panel data sheet."
+msgstr "Für diese Berechnung sind kristalline Zellen erforderlich. Prüfen Sie die Zelltechnologie im Moduldatenblatt."
 
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts
 #: build/planner/assets/planner.js
@@ -17374,3 +17359,90 @@ msgstr "Für diesen Standort ist kein Luftbild verfügbar. Verwenden Sie Ihren e
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
 msgid "Enter roof measurements"
 msgstr "Dachmaße eingeben"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Use the dimensions and rated power on your panel data sheet. Thickness is used for the 3D layout."
+msgstr "Verwenden Sie die Maße und die Nennleistung aus Ihrem Moduldatenblatt. Die Dicke wird für die 3D-Belegung benötigt."
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Panel length"
+msgstr "Modullänge"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Panel width"
+msgstr "Modulbreite"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Panel thickness"
+msgstr "Moduldicke"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Power per panel"
+msgstr "Nennleistung je Modul"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Panel data for electrical and energy checks (optional)"
+msgstr "Moduldaten für elektrische Prüfungen und Ertragsberechnungen (optional)"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Temperature coefficient of short-circuit current"
+msgstr "Temperaturkoeffizient des Kurzschlussstroms"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Temperature coefficient of open-circuit voltage"
+msgstr "Temperaturkoeffizient der Leerlaufspannung"
+
+#: ../../apps/planner/src/components/PanelMeasurementFields.tsx build/planner/assets/planner.js
+msgid "Maximum system voltage"
+msgstr "Maximale Systemspannung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Panel dimensions for this layout"
+msgstr "Modulmaße für diese Belegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Enter different panel dimensions"
+msgstr "Andere Modulmaße eingeben"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Edit panel parameters"
+msgstr "Moduldaten bearbeiten"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Apply panel parameters"
+msgstr "Moduldaten übernehmen"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Panel dimensions"
+msgstr "Modulmaße"
+
+#: ../../apps/planner/src/components/energy/PvForm.tsx build/planner/assets/planner.js
+msgid "The coefficients and conversion groups below belong to the geometric shading reference. The calculation uses the panel parameters recorded for this roof."
+msgstr "Die folgenden Koeffizienten und Umwandlungsgruppen gehören zum geometrischen Verschattungsmodell. Für die Berechnung gelten die auf diesem Dach erfassten Moduldaten."
+
+#: ../../apps/planner/src/components/energy/PvForm.tsx build/planner/assets/planner.js
+msgid "Use the temperature coefficient from your panel data sheet for a detailed calculation. Existing settings stay with the matching arrays."
+msgstr "Verwenden Sie für die detaillierte Berechnung den Temperaturkoeffizienten aus Ihrem Moduldatenblatt. Bestehende Einstellungen bleiben dem jeweiligen Modulfeld zugeordnet."
+
+#: ../../apps/planner/src/components/energy/PvModuleParameters.tsx build/planner/assets/planner.js
+msgid "Enter the temperature coefficient from the panel data sheet in the roof layout to calculate detailed energy."
+msgstr "Tragen Sie für die detaillierte Ertragsberechnung den Temperaturkoeffizienten aus dem Moduldatenblatt in die Dachbelegung ein."
+
+#: ../../apps/planner/src/components/energy/PvModuleParameters.tsx build/planner/assets/planner.js
+msgid "Update the parameters to use the coefficient recorded for this panel."
+msgstr "Aktualisieren Sie die Parameter, um den für dieses Modul erfassten Koeffizienten zu verwenden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Enter the total solar capacity if you know it, or enter the number of panels and their rated power. Leave unknown values blank."
+msgstr "Geben Sie die Gesamtleistung der PV-Anlage an, falls bekannt. Alternativ können Sie die Anzahl und Nennleistung der Module eintragen. Unbekannte Werte dürfen frei bleiben."
+
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx
+#: build/planner/assets/planner.js
+msgid "These measurements come from the earlier layout. Check them against your panel data sheet."
+msgstr "Diese Maße stammen aus der früheren Dachplanung. Vergleichen Sie sie mit Ihrem Moduldatenblatt."
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
+#: build/planner/assets/planner.js
+msgid "Panel parameters entered for this project"
+msgstr "Für dieses Projekt eingegebene Moduldaten"

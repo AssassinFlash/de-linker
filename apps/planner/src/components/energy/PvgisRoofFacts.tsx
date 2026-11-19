@@ -1,3 +1,4 @@
+import { panelLabel } from "../../domain/panelParameters.ts";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { __ } from "../../i18n.ts";
@@ -35,7 +36,7 @@ export function PvgisRoofFacts({
 						<tr>
 							{[
 								__("Array", "linker-tools"),
-								__("Module model", "linker-tools"),
+								__("Panel dimensions", "linker-tools"),
 								__("Included modules", "linker-tools"),
 								__("Nameplate power (kWp)", "linker-tools"),
 								__("Tilt (°)", "linker-tools"),
@@ -58,11 +59,12 @@ export function PvgisRoofFacts({
 								<tr key={array.id}>
 									<th scope="row">{array.name}</th>
 									<td>
-										{
+										{panelLabel(
 											geometry.module_specs.find(
 												(m) => m.id === array.module_spec_id,
-											)!.model
-										}
+											)!,
+											locale,
+										)}
 									</td>
 									<td>{n(included.length)}</td>
 									<td>
@@ -89,34 +91,6 @@ export function PvgisRoofFacts({
 					</tbody>
 				</table>
 			</div>
-			<ul>
-				{geometry.module_specs
-					.filter((module) =>
-						geometry.arrays.some(
-							(array) =>
-								array.module_spec_id === module.id &&
-								poses.some((p) => p.array_id === array.id),
-						),
-					)
-					.map((module) => (
-						<li key={module.id}>
-							{__("Source document", "linker-tools")}:{" "}
-							{module.source.url ? (
-								<a href={module.source.url} target="_blank" rel="noreferrer">
-									{module.model}
-								</a>
-							) : (
-								module.model
-							)}
-							{module.source.page !== null && (
-								<>
-									{" "}
-									· {__("Page", "linker-tools")} {module.source.page}
-								</>
-							)}
-						</li>
-					))}
-			</ul>
 		</div>
 	);
 }

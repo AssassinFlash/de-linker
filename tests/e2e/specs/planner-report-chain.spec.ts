@@ -515,7 +515,30 @@ for (const lang of ['en', 'de'] as const) {
 			})
 			.click();
 		const moduleForm = page.locator('#lp-design form');
-		await moduleForm.locator('select').first().selectOption({ index: 0 });
+		await moduleForm.locator('[name="panel_length_mm"]').fill('1800');
+		await moduleForm.locator('[name="panel_width_mm"]').fill('1100');
+		await moduleForm.locator('[name="panel_thickness_mm"]').fill('30');
+		await moduleForm.locator('[name="panel_power_w"]').fill('430');
+		await moduleForm.locator('details > summary').click();
+		await moduleForm
+			.locator('[name="panel_temperature_coefficient"]')
+			.fill('-0.3');
+		await moduleForm.locator('[name="panel_voc_v"]').fill('42');
+		await moduleForm.locator('[name="panel_vmpp_v"]').fill('35');
+		await moduleForm.locator('[name="panel_isc_a"]').fill('13');
+		await moduleForm.locator('[name="panel_impp_a"]').fill('12.3');
+		await moduleForm
+			.locator('[name="panel_max_system_voltage_v"]')
+			.fill('1000');
+		await moduleForm
+			.locator('[name="panel_alpha_isc_pct_per_c"]')
+			.fill('0.04');
+		await moduleForm
+			.locator('[name="panel_beta_voc_pct_per_c"]')
+			.fill('-0.25');
+		await moduleForm
+			.locator('[name="panel_cell_technology"]')
+			.fill('mono-crystalline silicon');
 		await moduleForm.locator('button[type="submit"]').click();
 		await page
 			.locator('#lp-design')

@@ -4,7 +4,7 @@ import { readObject } from "../data/readProtocol.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
 import { activePvGeometry } from "./solarSetup.ts";
-import { isDeclaredReferenceModule } from "./productModules.ts";
+import { isCurrentRoofModule } from "./productModules.ts";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/pvgis-roof-reference.schema.json" with { type: "json" };
 import knownSchema from "../contracts/pvgis-known-reference.schema.json" with { type: "json" };
@@ -194,7 +194,7 @@ export function referenceRoof(inputs: JsonObject) {
 			const m = layout.geometry.module_specs.find(
 				(item) => item.id === a.module_spec_id,
 			);
-			return !m?.source.woo && (!m || !isDeclaredReferenceModule(m));
+			return !isCurrentRoofModule(m);
 		})
 	)
 		throw new ApiError(422, "pvgis_reference_roof_required");

@@ -913,9 +913,11 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	const module =
 		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
 	await untilRun(() =>
-		app.fieldSelect("PV module")?.querySelector(`option[value="${module.id}"]`),
+		app
+			.fieldSelect("Panel dimensions for this layout")
+			?.querySelector(`option[value="${module.id}"]`),
 	);
-	await app.updateSelect("PV module", module.id);
+	await app.updateSelect("Panel dimensions for this layout", module.id);
 	for (const [label, value] of [
 		["Width", "8"],
 		["Depth", "5"],

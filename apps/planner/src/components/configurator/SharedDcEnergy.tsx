@@ -593,9 +593,6 @@ export function SharedDcEnergy({
 									onValidity={setPvValid}
 									start={() => start("runs/pv")}
 									openDesign={openDesign}
-									client={client}
-									scope={session.query_scope}
-									active={active}
 								/>
 							)}
 							{sourceEditor && preparation.data && (

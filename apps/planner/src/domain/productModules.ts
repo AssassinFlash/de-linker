@@ -1,33 +1,26 @@
 import type { ModuleSpec } from "./geometry.ts";
 import type { ModuleDraft } from "./solarSetup.ts";
-import { sameJson } from "./draft.ts";
 
 export const DECLARED_REFERENCE_PREFIX = "declared_reference";
-
-export interface ModuleTemplate {
-	readonly specification: ModuleSpec;
-	readonly parameters: ModuleDraft;
-}
-
-export function isDeclaredReferenceModule(specification: ModuleSpec): boolean {
+export function isCurrentRoofModule(
+	specification: ModuleSpec | undefined,
+): boolean {
 	return (
+		!!specification &&
 		!specification.source.woo &&
 		specification.source.kind === "user_declared" &&
-		specification.source.note.startsWith(DECLARED_REFERENCE_PREFIX) &&
-		typeof specification.gamma_pdc_per_c === "number" &&
-		Number.isFinite(specification.gamma_pdc_per_c) &&
-		specification.gamma_pdc_per_c < 0 &&
-		specification.gamma_pdc_per_c > -1
+		specification.source.note.startsWith(DECLARED_REFERENCE_PREFIX)
 	);
 }
-
-export function declaredModuleParameters(
-	specification: ModuleSpec,
+export function resolveModuleParameters(
+	specification: ModuleSpec | undefined,
 ): ModuleDraft | undefined {
-	if (!isDeclaredReferenceModule(specification)) return undefined;
+	if (!specification || !isCurrentRoofModule(specification)) return undefined;
+	const gamma = specification.gamma_pdc_per_c;
+	if (typeof gamma !== "number" || !(gamma < 0 && gamma > -1)) return undefined;
 	return {
 		module_spec_id: specification.id,
-		gamma_pdc_per_c: specification.gamma_pdc_per_c!,
+		gamma_pdc_per_c: gamma,
 		source: {
 			kind: "user_declared",
 			note: specification.source.note,
@@ -36,43 +29,4 @@ export function declaredModuleParameters(
 			page: null,
 		},
 	};
-}
-
-export function matchesModule(
-	specification: ModuleSpec,
-	template: ModuleTemplate,
-): boolean {
-	return (
-		!!specification.source.woo &&
-		sameJson(
-			{ ...specification, id: template.specification.id },
-			template.specification,
-		)
-	);
-}
-
-export function resolveModuleParameters(
-	specification: ModuleSpec | undefined,
-	templates: readonly ModuleTemplate[] | undefined,
-): ModuleDraft | undefined {
-	if (!specification) return undefined;
-	if (isDeclaredReferenceModule(specification))
-		return declaredModuleParameters(specification);
-	const template = templates?.find((item) =>
-		matchesModule(specification, item),
-	);
-	return template
-		? { ...template.parameters, module_spec_id: specification.id }
-		: undefined;
-}
-
-export function isCurrentRoofModule(
-	specification: ModuleSpec | undefined,
-	templates: readonly ModuleTemplate[] | undefined,
-): boolean {
-	if (!specification) return false;
-	if (isDeclaredReferenceModule(specification)) return true;
-	return !!templates?.some((template) =>
-		matchesModule(specification, template),
-	);
 }

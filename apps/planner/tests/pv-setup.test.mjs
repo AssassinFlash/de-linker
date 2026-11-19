@@ -14,38 +14,27 @@ import {
 } from "../src/domain/draft.ts";
 import fixture from "./fixtures/index.ts";
 
-// The existing synthetic model is served through the maintained-source
-// contract. This fixture is never a runtime product or manufacturer fact.
-function maintainedInputs(value) {
+function declaredInputs(value) {
 	const inputs = structuredClone(value);
 	const source = {
-		kind: "datasheet",
-		note: "Synthetic maintained-source contract fixture",
-		url: "https://example.test/module.pdf",
-		document_sha256: "b".repeat(64),
-		page: 1,
-		woo: {
-			product_id: 42,
-			product_revision: "a".repeat(64),
-			reference_input_id: "synthetic_woo_reference",
-		},
+		kind: "user_declared",
+		note: "declared_reference — project panel",
+		url: null,
+		page: null,
+		document_sha256: null,
 	};
-	for (const module of inputs.geometry.module_specs) module.source = source;
+	for (const spec of inputs.geometry.module_specs) {
+		spec.source = source;
+		spec.gamma_pdc_per_c =
+			fixture.pv_project.inputs.pv_generation.modules.find(
+				(m) => m.module_spec_id === spec.id,
+			)?.gamma_pdc_per_c ?? null;
+	}
 	for (const module of inputs.pv_generation?.modules ?? [])
 		module.source = source;
 	return inputs;
 }
-const maintained = maintainedInputs(fixture.pv_project.inputs);
-const moduleReply = {
-	schema_version: 1,
-	provider: "woocommerce",
-	pv_modules: [
-		{
-			specification: maintained.geometry.module_specs[0],
-			parameters: maintained.pv_generation.modules[0],
-		},
-	],
-};
+const declared = declaredInputs(fixture.pv_project.inputs);
 
 const visible = (node) => !node.closest("[hidden]");
 const button = (text) =>
@@ -74,7 +63,7 @@ async function choose(text, value) {
 	});
 }
 async function mount(t, inputs, locale = "en-GB") {
-	inputs = maintainedInputs(inputs);
+	inputs = declaredInputs(inputs);
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
@@ -130,7 +119,8 @@ async function mount(t, inputs, locale = "en-GB") {
 			return serverRun;
 		},
 		async query(path) {
-			if (path === "products/current") return moduleReply;
+			if (path === "products/current")
+				throw new Error("Unexpected catalogue lookup");
 			if (path === "projects/runs")
 				return {
 					items: serverRun
@@ -231,7 +221,7 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 	delete inputs.pv_generation;
 	inputs.unrelated = "retained";
 	const h = await mount(t, inputs),
-		expected = maintained.pv_generation,
+		expected = declared.pv_generation,
 		note = expected.source_note;
 	assert.equal(button("Calculate PV for saved inputs").disabled, true);
 	await click("Prepare PV model");
@@ -397,7 +387,7 @@ test("module evidence is read-only and historical missing bindings explain the r
 	});
 	assert.match(
 		document.querySelector(".lp-pv-parameters").textContent,
-		/requires an updated module selection/,
+		/Update the parameters to use the coefficient/,
 	);
 	assert.equal(h.requests.length, 0);
 	await h.edit((current) => ({

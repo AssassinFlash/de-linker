@@ -1,8 +1,10 @@
 import type { ModuleDraft } from "../../domain/solarSetup.ts";
 import type { ModuleSpec } from "../../domain/geometry.ts";
-import { DECLARED_REFERENCE_PREFIX } from "../../domain/productModules.ts";
+import { resolveModuleParameters } from "../../domain/productModules.ts";
+import { sameJson } from "../../domain/draft.ts";
+import { panelLabel } from "../../domain/panelParameters.ts";
 import { formatDecimal, toPercent } from "../../domain/decimal.ts";
-import { __, sprintf } from "../../i18n.ts";
+import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
 export function PvModuleParameters({
@@ -14,21 +16,28 @@ export function PvModuleParameters({
 	specification: ModuleSpec | undefined;
 	locale: string;
 }) {
-	const declaredReference =
-		!value.source.woo &&
-		value.source.kind === "user_declared" &&
-		value.source.note.startsWith(DECLARED_REFERENCE_PREFIX) &&
-		value.gamma_pdc_per_c !== null;
+	const expected = resolveModuleParameters(specification);
 	return (
 		<section className="lp-scenario-block lp-pv-parameters">
 			<h4>
-				{specification?.model ??
-					__("Module specification outside the current layout", "linker-tools")}
+				{specification
+					? panelLabel(specification, locale)
+					: __(
+							"Module specification outside the current layout",
+							"linker-tools",
+						)}
 			</h4>
-			{!value.source.woo && !declaredReference ? (
+			{expected && !sameJson(expected, value) ? (
 				<Notice>
 					{__(
-						"A new calculation requires an updated module selection.",
+						"Update the parameters to use the coefficient recorded for this panel.",
+						"linker-tools",
+					)}
+				</Notice>
+			) : !expected ? (
+				<Notice>
+					{__(
+						"Enter the temperature coefficient from the panel data sheet in the roof layout to calculate detailed energy.",
 						"linker-tools",
 					)}
 				</Notice>
@@ -44,16 +53,6 @@ export function PvModuleParameters({
 							</dd>
 						</div>
 					</dl>
-					{value.source.woo ? (
-						<p>
-							<a href={value.source.url!} target="_blank" rel="noreferrer">
-								{__("Source document", "linker-tools")}
-							</a>{" "}
-							· {sprintf(__("Page %d", "linker-tools"), value.source.page!)}
-						</p>
-					) : (
-						<p>{value.source.note}</p>
-					)}
 				</>
 			)}
 		</section>

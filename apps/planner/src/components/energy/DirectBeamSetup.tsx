@@ -17,8 +17,6 @@ import { readDirectBeamLimits } from "../../data/directBeamResult.ts";
 import { readBeamWeatherPreview } from "../../data/directBeamWeather.ts";
 import { useRetainedWeather } from "../../data/useRetainedWeather.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
-import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { isCurrentRoofModule } from "../../domain/productModules.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -132,7 +130,6 @@ export function DirectBeamSetup({
 			);
 		},
 	});
-	const catalog = useModuleTemplates(client, scope, active);
 	const roof = useMemo(() => {
 		try {
 			return referenceRoof(inputs);
@@ -140,17 +137,6 @@ export function DirectBeamSetup({
 			return null;
 		}
 	}, [inputs.geometry]);
-	const currentModules =
-		!!roof &&
-		roof.arrays.every((a) => {
-			const spec = roof.geometry.module_specs.find(
-				(s) => s.id === a.module_spec_id,
-			);
-			return isCurrentRoofModule(
-				spec,
-				catalog.error || catalog.isFetching ? undefined : catalog.data,
-			);
-		});
 	const sourceMatchesRoof =
 		!!roof &&
 		!!binding.data &&
@@ -264,7 +250,7 @@ export function DirectBeamSetup({
 					)}
 				</Notice>
 			)}
-			{!roof || !currentModules ? (
+			{!roof ? (
 				<Notice>
 					<p>
 						{__(
@@ -711,7 +697,7 @@ export function DirectBeamSetup({
 					disabled ||
 					!supported ||
 					!complete ||
-					!currentModules ||
+					!roof ||
 					!selected ||
 					!compatibleRequest ||
 					!sourceMatchesRoof ||

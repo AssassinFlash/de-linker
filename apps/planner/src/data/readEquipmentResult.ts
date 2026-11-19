@@ -4,7 +4,7 @@ import type { JsonObject } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { sameJson } from "../domain/draft.ts";
-import { documentReference } from "./documentReference.ts";
+import { documentReference, equipmentFactSource } from "./documentReference.ts";
 import { readEquipmentSelection } from "../domain/equipment.ts";
 
 export { documentReference } from "./documentReference.ts";
@@ -261,7 +261,7 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 		for (const value of check.facts) {
 			const fact = readObject(value);
 			if (fact.source !== null) {
-				documentReference(fact.source, true);
+				equipmentFactSource(fact.source);
 			}
 		}
 	}

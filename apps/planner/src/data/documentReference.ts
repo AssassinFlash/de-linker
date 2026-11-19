@@ -1,6 +1,17 @@
 import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 
+export function equipmentFactSource(value: unknown) {
+	const source = readObject(value);
+	if (
+		source.kind === "user_declared" &&
+		typeof source.module_spec_id === "string" &&
+		source.module_spec_id.length > 0
+	)
+		return;
+	documentReference(value, true);
+}
+
 export function documentReference(value: unknown, requirePage = false) {
 	const source = readObject(value);
 	if (

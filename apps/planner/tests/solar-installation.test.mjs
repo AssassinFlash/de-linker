@@ -134,6 +134,10 @@ function input(label) {
 test("new solar module details persist known capacity and source without requiring a roof", async (t) => {
 	const app = await mount(t);
 	await click("Use module details");
+	await enter(
+		input("Power per panel"),
+		String(flat.module_specs[0].stc_power_w),
+	);
 	await enter(input("Number of modules"), "12");
 	await enter(input("Roof pitch"), "25");
 	await enter(input("Azimuth (north = 0°)"), "180");

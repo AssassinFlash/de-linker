@@ -16,13 +16,7 @@
  * contract answered", not "the screen shows what this spec expected".
  *
  * The engineering overlay is asserted at the two layers where it is real: the
- * published module record `products/current` materialises (the Trina
- * reference component with its datasheet page), and the design contract
- * `/design/residential` that uses it as its string-layout reference — with
- * the sentence that discloses it as a design assumption. The roof module the
- * customer picks in the design editor is a declared generic tier by
- * construction (`moduleTiers.ts`: "this is never a product reference"), so no
- * page-cited datasheet link is expected there and none is asserted.
+ * published Woo equipment remains available without a panel product record.
  */
 /**
  * External dependencies
@@ -539,43 +533,10 @@ for (const lang of ['en', 'de'] as const) {
 	});
 }
 
-test('the engineering overlay publishes its reference module with the datasheet page', async () => {
-	// `products/current` is the published module record — the same reply the
-	// workbench reads to fill its module parameters. The overlay entry of the
-	// feed is what it materialises. It lives on the private planner route,
-	// behind the principal the gateway sets for every project page.
+test('the current Woo equipment feed keeps panel specifications out of the catalogue', async () => {
 	const reply = await plannerPost<{
 		prepared: boolean;
-		references: Array<{
-			id: string;
-			kind: string;
-			canonical_product_id: number;
-		}>;
-		pv_modules: Array<{
-			specification: {
-				id: string;
-				model: string;
-				stc_power_w: number;
-				length_m: number;
-				width_m: number;
-				source: {
-					kind: string;
-					url: string | null;
-					page: number | null;
-					document_sha256: string | null;
-					woo?: {
-						product_id: number;
-						product_revision: string;
-						reference_input_id: string;
-					} | null;
-				};
-			};
-			parameters: {
-				gamma_pdc_per_c: number;
-				source: { url: string | null; page: number | null };
-			};
-		}>;
-		module_diagnostics: unknown[];
+		products: Array<{ id: number }>;
 	}>(
 		'products/current',
 		{ schema_version: 1 },
@@ -584,65 +545,17 @@ test('the engineering overlay publishes its reference module with the datasheet 
 			subject: `compat-overlay:${Date.now()}`,
 		}
 	);
-	expect(reply.status, 'the published product record answers').toBe(200);
-	const current = reply.body;
-
-	expect(current.prepared).toBe(true);
-	expect(current.module_diagnostics).toEqual([]);
-	expect(current.references).toHaveLength(1);
-	const reference = current.references[0]!;
-	expect(reference.kind).toBe('pv_module');
-	expect(reference.id).toBe('mat_trina_solar_tsm_460neg9r_28');
-
-	expect(current.pv_modules).toHaveLength(1);
-	const module = current.pv_modules[0]!;
-	// The materialised record is the overlay component, bound to its Woo
-	// product and to the overlay entry itself.
-	expect(module.specification.model).toBe('Trina Solar TSM-460NEG9R.28');
-	expect(module.specification.source.woo).toMatchObject({
-		product_id: reference.canonical_product_id,
-		reference_input_id: reference.id,
-	});
-	// The binding pins the exact product revision it was prepared against, so a
-	// later Woo edit cannot silently change the module behind the design.
-	expect(module.specification.source.woo!.product_revision).toMatch(
-		/^[a-f0-9]{64}$/
-	);
-	// The figures are the overlay's own, and their citation is the datasheet
-	// page the overlay carries — the page the customer-visible module
-	// parameters would cite if this module were the project's roof module.
-	expect(module.specification.stc_power_w).toBe(460);
-	expect(module.specification.length_m).toBeCloseTo(1.762, 3);
-	expect(module.specification.width_m).toBeCloseTo(1.134, 3);
-	expect(module.parameters.gamma_pdc_per_c).toBeCloseTo(-0.0029, 6);
-	for (const source of [
-		module.specification.source,
-		module.parameters.source,
-	]) {
-		expect(source.page).toBe(2);
-		expect(source.url).toMatch(/Vertex-S_NEG9R\.28_EN_2024_C_web\.pdf$/);
-	}
-	expect(module.specification.source.document_sha256).toMatch(
-		/^[a-f0-9]{64}$/
-	);
+	expect(reply.status).toBe(200);
+	expect(reply.body.prepared).toBe(true);
+	expect(reply.body.products.length).toBeGreaterThan(0);
+	expect(reply.body).not.toHaveProperty('pv_modules');
+	expect(reply.body).not.toHaveProperty('module_diagnostics');
 });
 
-test('the design contract states the overlay component as its reference module', async () => {
-	// The string layout of the residential design uses the overlay module; the
-	// customer is told which module that is and that the modules installed
-	// govern. This is the disclosure the 2026-11-05 acceptance read at the
-	// production site, asserted here against the same contract.
+test('a design without panel electrical data leaves string layout unknown', async () => {
 	const design = await enginePost<{
 		status: string;
-		selected: {
-			strings: {
-				module: string;
-				module_wp: number;
-				modules_per_string: number;
-			};
-			lines: Array<{ label: string; basis: string[] }>;
-		} | null;
-		warnings?: Array<{ message?: string }>;
+		selected: { strings: unknown; lines: Array<{ role: string }> } | null;
 	}>('/design/residential', {
 		locale: 'en',
 		plz: '80538',
@@ -651,20 +564,6 @@ test('the design contract states the overlay component as its reference module',
 		phase: 3,
 	});
 	expect(design.status).toBe('solution');
-	const strings = design.selected!.strings;
-	expect(strings.module).toBe('Trina Solar TSM-460NEG9R.28');
-	expect(strings.module_wp).toBe(460);
-	expect(strings.modules_per_string).toBeGreaterThan(0);
-
-	const text = JSON.stringify(design);
-	expect(text).toContain(
-		'The string layout uses Trina Solar TSM-460NEG9R.28 as a reference module; the module you install can change it.'
-	);
-	// The overlay component is never sold as a product line: the bill of
-	// materials names PV modules as the customer's own choice.
-	expect(
-		design.selected!.lines.map((line) => line.label),
-		'no product line claims the reference module'
-	).not.toContain('Trina Solar TSM-460NEG9R.28');
-	expect(text).toContain('PV modules of your choice');
+	expect(design.selected).toBeTruthy();
+	expect(design.selected!.strings).toBeNull();
 });

@@ -7,11 +7,7 @@ import { ParameterNote } from "./ParameterNote.tsx";
 import { PvModuleParameters } from "./PvModuleParameters.tsx";
 import { PvArrayParameters } from "./PvArrayParameters.tsx";
 import { PvConverterParameters } from "./PvConverterParameters.tsx";
-import type { ModuleTemplate } from "../../data/moduleTemplates.ts";
-import {
-	isCurrentRoofModule,
-	isDeclaredReferenceModule,
-} from "../../domain/productModules.ts";
+import { isCurrentRoofModule } from "../../domain/productModules.ts";
 
 export function PvForm({
 	value,
@@ -22,7 +18,6 @@ export function PvForm({
 	valid,
 	onChange,
 	onValidity,
-	moduleTemplates,
 	geometric = false,
 	series = false,
 }: {
@@ -34,7 +29,6 @@ export function PvForm({
 	valid: boolean;
 	onChange: (next: PvDraft) => void;
 	onValidity: (valid: boolean) => void;
-	moduleTemplates?: readonly ModuleTemplate[] | undefined;
 	geometric?: boolean;
 	series?: boolean;
 }) {
@@ -58,17 +52,11 @@ export function PvForm({
 	const activeModuleIds = [
 		...new Set(arrays.map((array) => array.module_spec_id)),
 	];
-	const allDeclaredReference = activeModuleIds.every((id) => {
-		const specification = geometry.module_specs.find(
-			(module) => module.id === id,
-		);
-		return !!specification && isDeclaredReferenceModule(specification);
-	});
 	const moduleSelectionCurrent = activeModuleIds.every((id) => {
 		const specification = geometry.module_specs.find(
 			(module) => module.id === id,
 		);
-		return isCurrentRoofModule(specification, moduleTemplates);
+		return isCurrentRoofModule(specification);
 	});
 	return (
 		<fieldset className="lp-scenario-fields" disabled={disabled}>
@@ -77,7 +65,7 @@ export function PvForm({
 				<p>
 					{geometric
 						? __(
-								"The coefficients and conversion groups below belong to the geometric shading reference. Module parameters follow the current product data; thermal, optical and conversion assumptions remain explicit.",
+								"The coefficients and conversion groups below belong to the geometric shading reference. The calculation uses the panel parameters recorded for this roof.",
 								"linker-tools",
 							)
 						: __(
@@ -94,18 +82,14 @@ export function PvForm({
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
-					disabled={
-						!valid ||
-						(!allDeclaredReference && moduleTemplates === undefined) ||
-						!moduleSelectionCurrent
-					}
-					onClick={() => onChange(alignPv(value, geometry, moduleTemplates))}
+					disabled={!valid || !moduleSelectionCurrent}
+					onClick={() => onChange(alignPv(value, geometry))}
 				>
 					{__("Update parameters for current roof layout", "linker-tools")}
 				</button>
 				<p>
 					{__(
-						"The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group.",
+						"Use the temperature coefficient from your panel data sheet for a detailed calculation. Existing settings stay with the matching arrays.",
 						"linker-tools",
 					)}
 				</p>

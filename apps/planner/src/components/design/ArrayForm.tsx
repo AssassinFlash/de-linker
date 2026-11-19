@@ -1,3 +1,4 @@
+import { panelLabel } from "../../domain/panelParameters.ts";
 import { useCallback, useState } from "react";
 import type { PanelArray, Vec2 } from "../../domain/geometry.ts";
 import { applyGeometryCommand } from "../../domain/geometryCommands.ts";
@@ -109,7 +110,7 @@ export function ArrayForm({
 				>
 					{document.module_specs.map((module) => (
 						<option key={module.id} value={module.id}>
-							{module.model}
+							{panelLabel(module, locale)}
 						</option>
 					))}
 				</select>

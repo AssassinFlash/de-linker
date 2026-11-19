@@ -1,3 +1,4 @@
+import { panelLabel } from "../../domain/panelParameters.ts";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
 	GeometryDocument,
@@ -612,8 +613,6 @@ export function DesignEditor({
 							{form.kind === "module" && (
 								<ModuleForm
 									{...formProps}
-									client={client}
-									scope={session.query_scope}
 									module={
 										model?.module_specs.find(
 											(module) => module.id === form.id,
@@ -740,7 +739,7 @@ export function DesignEditor({
 										aria-pressed={selected === module.id}
 										onClick={() => choose(module.id)}
 									>
-										{module.model}
+										{panelLabel(module, locale)}
 									</button>
 								))}
 							</div>
@@ -792,7 +791,7 @@ export function DesignEditor({
 								<div className="lp-object-inspector">
 									<h3>
 										{object?.name ??
-											module?.model ??
+											(module ? panelLabel(module, locale) : null) ??
 											source?.note ??
 											array?.name}
 									</h3>

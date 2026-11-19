@@ -14,8 +14,6 @@ import { ApiError } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { PvForm } from "./PvForm.tsx";
-import type { PlannerClient } from "../../data/PlannerClient.ts";
-import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
 import { resolveModuleParameters } from "../../domain/productModules.ts";
 
 export function PvSetup({
@@ -29,9 +27,6 @@ export function PvSetup({
 	onError,
 	start,
 	openDesign,
-	client,
-	scope,
-	active,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -43,11 +38,7 @@ export function PvSetup({
 	onError: (error: unknown) => void;
 	start: () => void;
 	openDesign: (() => void) | undefined;
-	client: PlannerClient;
-	scope: string;
-	active: boolean;
 }) {
-	const catalog = useModuleTemplates(client, scope, active);
 	const inputs = draft.history.current,
 		parsed = useMemo(() => {
 			try {
@@ -72,10 +63,7 @@ export function PvSetup({
 				const spec = parsed.layout.geometry.module_specs.find(
 					(item) => item.id === module.module_spec_id,
 				);
-				const expected = resolveModuleParameters(
-					spec,
-					catalog.error || catalog.isFetching ? undefined : catalog.data,
-				);
+				const expected = resolveModuleParameters(spec);
 				return !!expected && sameJson(module, expected);
 			}) &&
 			sameJson(
@@ -115,23 +103,7 @@ export function PvSetup({
 		);
 	return (
 		<>
-			{catalog.error && (
-				<Notice error>
-					{__("Module data could not be loaded.", "linker-tools")}{" "}
-					<button
-						type="button"
-						className="lp-text-button"
-						disabled={catalog.isFetching}
-						onClick={() => void catalog.refetch()}
-					>
-						{__("Reload module data", "linker-tools")}
-					</button>
-				</Notice>
-			)}
 			<PvForm
-				moduleTemplates={
-					catalog.error || catalog.isFetching ? undefined : catalog.data
-				}
 				value={parsed.setup.pv}
 				geometry={parsed.layout.geometry}
 				arrays={parsed.layout.arrays}

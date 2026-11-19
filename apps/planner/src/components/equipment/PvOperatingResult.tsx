@@ -53,7 +53,7 @@ export function PvOperatingResult({
 			{model.status !== "available" && (
 				<Notice>
 					{__(
-						"The maintained module data did not produce an admissible I–V model. The cold-Voc and STC checks remain available.",
+						"The panel values entered for this project could not produce an operating curve. See the cold-voltage and STC checks below.",
 						"linker-tools",
 					)}
 				</Notice>

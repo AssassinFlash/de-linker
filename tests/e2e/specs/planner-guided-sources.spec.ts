@@ -182,13 +182,13 @@ async function prepareSavedRoof(
 	});
 	await button(project, text.solar).click();
 	await button(workspace, text.roofChoice).click();
-	const module = workspace.getByRole('combobox', {
-		name: text.module,
-		exact: true,
-	});
-	await module.selectOption({
-		label: 'Trina Solar TSM-460NEG9R.28 · 460 Wp',
-	});
+	for (const [field, value] of Object.entries({
+		panel_length_mm: '1800',
+		panel_width_mm: '1100',
+		panel_thickness_mm: '30',
+		panel_power_w: '430',
+	}))
+		await workspace.locator('input[name="' + field + '"]').fill(value);
 	await button(workspace, text.openRoof).click();
 	await button(workspace, text.planView).click();
 	const measured = workspace.locator('.sc-roof-props details[open]');

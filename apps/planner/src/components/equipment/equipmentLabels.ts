@@ -289,12 +289,12 @@ export function equipmentReason(reason: string): string | null {
 		);
 	if (reason === "module_iv_inputs_missing")
 		return __(
-			"The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc temperature coefficients, from the maintained module record with source references.",
+			"Enter Voc, Isc, Vmpp and Impp at STC and the Voc and Isc temperature coefficients from your panel data sheet.",
 			"linker-tools",
 		);
 	if (reason === "crystalline_module_basis_missing")
 		return __(
-			"The cited module record does not establish the crystalline-cell basis required by this model.",
+			"This calculation requires crystalline cells. Check the cell technology on your panel data sheet.",
 			"linker-tools",
 		);
 	if (reason === "module_iv_points_inconsistent")
