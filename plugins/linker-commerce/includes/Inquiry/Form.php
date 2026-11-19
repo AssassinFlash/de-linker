@@ -44,20 +44,25 @@ final class Form {
 	 */
 	public function project_notes(): string {
 		$previous = (array) ( $this->flash['fields'] ?? array() );
-		if ( isset( $previous['linker_planner_handoff_id'] ) || ( isset( $previous['linker_note_project'] ) && '1' === $previous['linker_recovery_available'] ) ) {
+		if ( isset( $previous['linker_planner_handoff_id'] ) || ( ( isset( $previous['linker_note_project'] ) || isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) && '1' === $previous['linker_recovery_available'] ) ) {
 			// Recover an uncertain send with the exact draft and note revisions originally posted.
 			$html = '';
 			if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
 				$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
 				$html .= '<input type="hidden" name="linker_include_project_notes" value="' . esc_attr( $previous[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ) . '" />';
 			}
-			foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] as $id => $revision ) {
+			foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ?? array() as $id => $revision ) {
 				$html .= '<input type="hidden" name="linker_project_note_revisions[' . esc_attr( $id ) . ']" value="' . esc_attr( $revision ) . '" />';
 			}
 			return $html;
 		}
 		$note = null;
-		if ( isset( $previous['linker_note_project'] ) ) {
+		if ( isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) {
+			$note = \Linker\Commerce\Planning\Context::read_preliminary_project( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] );
+			if ( $note instanceof \WP_Error ) {
+				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>';
+			}
+		} elseif ( isset( $previous['linker_note_project'] ) ) {
 			$note = \Linker\Commerce\Planning\Context::read_selected_note( $previous['linker_note_project'] );
 			if ( $note instanceof \WP_Error ) {
 				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>' . \Linker\Commerce\Planning\Context::inquiry_notes_section(
@@ -110,7 +115,7 @@ final class Form {
 		try {
 			$fields = do_shortcode( self::fields_template() );
 			$fields = preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => 'privacy' === $token[1] ? esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy', $language ) ) : $this->value( array( 'key' => $token[1] ) ), $fields ) ?? '';
-			return '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
+			return '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language, isset( $note['inputs'] ) ? $note['project_id'] . ':' . $note['revision'] : '' )
 				. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
 				. ( null === $handoff ? '' : self::planner_fields( $handoff['id'], '' ) )
 				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff, $note ) . $fields . '</form>';
@@ -193,16 +198,18 @@ final class Form {
 	/** Native guard and draft binding for both POST surfaces.
 	 *
 	 * @param string $language Form language.
+	 * @param string $project Reviewed preliminary project reference.
 	 */
-	private function hidden_fields( string $language ): string {
+	private function hidden_fields( string $language, string $project = '' ): string {
 		$previous = $this->flash['fields'] ?? array();
-		$binding  = '';
+		$project  = $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ?? $project;
+		$binding  = '' === $project ? '' : '<input type="hidden" name="' . esc_attr( \Linker\Commerce\Planning\Context::PROJECT_FIELD ) . '" value="' . esc_attr( $project ) . '" />';
 		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
-			$binding = self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
+			$binding .= self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
 		}
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
-		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
+		. wp_nonce_field( Handler::nonce_action( $project ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
 	}
 

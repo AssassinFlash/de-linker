@@ -344,8 +344,7 @@ async function equipmentApp(
 				return {
 					schema_version: 1,
 					inquiry_lines: [],
-					inquiry_form_html:
-						'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>',
+					inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="linker_preliminary_project" value="${body.project_id}:${body.revision}"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>`,
 				};
 			if (path === "assets/read" && body.asset_id === selectedPv?.id)
 				return structuredClone(selectedPv);
@@ -796,18 +795,25 @@ test("a saved project keeps its partial inputs and latest edit when choosing a p
 	);
 	assert.ok(direction);
 	await act(async () => direction.querySelector("button").click());
-	await until(() => document.querySelector('.sc-review input[name="message"]'));
+	await until(() =>
+		document.querySelector(
+			'.sc-review input[name="linker_preliminary_project"]',
+		),
+	);
 	assert.equal(
-		document.querySelector('.sc-review input[name="message"]').value,
-		"Planned system: Storage for existing PV",
+		document.querySelector(
+			'.sc-review input[name="linker_preliminary_project"]',
+		).value,
+		`${projectId}:${app.project.revision}`,
 	);
 	assert.equal(location.hash, "#sc-preliminary-review");
 	assert.equal(new URL(location.href).searchParams.get("project"), projectId);
 	await app.reopen();
 	await until(
 		() =>
-			document.querySelector('.sc-review input[name="message"]')?.value ===
-			"Planned system: Storage for existing PV",
+			document.querySelector(
+				'.sc-review input[name="linker_preliminary_project"]',
+			)?.value === `${projectId}:${app.project.revision}`,
 	);
 	assert.deepEqual(
 		app.requests.map(({ path }) => path),

@@ -129,6 +129,9 @@ for (const lang of ['en', 'de'] as const) {
 				await expect(page.locator('.sc-draft-transfer')).toContainText(
 					direction
 				);
+				const summary = page.locator('.linker-inquiry-project');
+				await expect(summary).toContainText(site);
+				await expect(summary).toContainText('6400 kWh');
 				await plannerScreenshot(
 					page,
 					`partial-${index === 0 ? 'new' : 'saved'}-${lang}-${width}`
@@ -189,6 +192,7 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			const form = page.locator('form.linker-inquiry-form');
 			await expect(form).toBeVisible({ timeout: 90_000 });
+			const binding = await form.locator('[name="linker_preliminary_project"]').inputValue();
 			const direction = await page
 				.locator('.sc-draft-transfer p')
 				.filter({ hasText: chosen })
@@ -224,7 +228,7 @@ for (const lang of ['en', 'de'] as const) {
     $orders = wc_get_orders(array('billing_email' => '${email}', 'limit' => 2));
     if (count($orders) !== 1) {throw new RuntimeException('Expected one inquiry');}
     $order = $orders[0];
-    echo wp_json_encode(array('customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note()));
+    echo wp_json_encode(array('customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note(),'project'=>$order->get_meta('_linker_preliminary_project')));
    `,
 				])
 			);
@@ -232,8 +236,10 @@ for (const lang of ['en', 'de'] as const) {
 				customer: 0,
 				status: 'inquiry-received',
 				items: 0,
-				note: `${direction}\r\n\r\n${words.message}`,
+				project: binding,
+				note: expect.stringContaining(direction),
 			});
+			expect(result.note).toContain(words.message);
 		});
 	}
 }

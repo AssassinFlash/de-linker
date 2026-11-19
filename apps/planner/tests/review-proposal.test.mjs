@@ -24,6 +24,7 @@ function props(run = structuredClone(fixture.geometric_pv.report_run)) {
 		project: {
 			id: run?.project_id ?? "1".repeat(32),
 			title: "Canal house",
+			revision: run?.revision ?? 3,
 			inputs: {},
 		},
 		inputs: {},
@@ -385,13 +386,12 @@ test("a brief-only project can download an older report or explicitly inquire ab
 	const earlier = props().run;
 	const calls = [];
 	value.client.origin = location.origin;
-	value.client.query = async (path) => {
+	value.client.query = async (path, command) => {
 		calls.push(path);
 		return {
 			schema_version: 1,
 			inquiry_lines: [],
-			inquiry_form_html:
-				'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea></form>',
+			inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="linker_preliminary_project" value="${command.project_id}:${command.revision}"><textarea name="message"></textarea></form>`,
 		};
 	};
 	value.client.reportPdf = async (id, asset) => {
@@ -494,7 +494,7 @@ for (const saved of [false, true])
 							},
 						]
 					: [],
-				inquiry_form_html: `<form method="post" action="${action}"><input type="hidden" name="action" value="linker_inquiry"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
+				inquiry_form_html: `<form method="post" action="${action}"><input type="hidden" name="linker_preliminary_project" value="${command.project_id}:${calls.length === 2 ? command.revision + 1 : command.revision}"><input type="hidden" name="action" value="linker_inquiry"><textarea name="message" maxlength="5000"></textarea><button type="submit">Send inquiry</button></form>`,
 			};
 		};
 		await act(async () =>
@@ -502,6 +502,12 @@ for (const saved of [false, true])
 		);
 		assert.ok(button("Load inquiry form again"));
 		assert.doesNotMatch(page.element.textContent, /could not be sent/);
+		await act(async () => button("Load inquiry form again").click());
+		assert.equal(
+			page.element.querySelector("form"),
+			null,
+			"A different tab’s revision cannot be submitted",
+		);
 		await act(async () => button("Load inquiry form again").click());
 		const form = page.element.querySelector("form");
 		form.querySelector("textarea").value = "Please call me back.";
@@ -526,12 +532,13 @@ for (const saved of [false, true])
 			{ once: true },
 		);
 		await act(async () => button("Send inquiry").click());
-		assert.equal(message, `${direction}\n\nPlease call me back.`);
+		assert.equal(message, "Please call me back.");
 		const lookup = {
 			schema_version: 1,
 			lang: "en",
-			...(saved ? {} : { project_id: value.project.id }),
+			project_id: value.project.id,
+			revision: value.project.revision,
 		};
-		assert.deepEqual(calls, [lookup, lookup]);
+		assert.deepEqual(calls, [lookup, lookup, lookup]);
 		assert.equal(button("Generate project report"), undefined);
 	});

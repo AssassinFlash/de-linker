@@ -178,8 +178,7 @@ for (const target of [
 					return {
 						schema_version: 1,
 						inquiry_lines: [],
-						inquiry_form_html:
-							'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>',
+						inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="linker_preliminary_project" value="${body.project_id}:${body.revision}"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>`,
 					};
 				if (path === "recovery/scopes")
 					return { schema_version: 1, scopes: [], next: null };

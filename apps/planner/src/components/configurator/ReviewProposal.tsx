@@ -429,9 +429,7 @@ export function ReviewProposal({
 			<article className="sc-review">
 				<ReviewInquiry
 					key={`${project.id}:${project.revision}:${scope}:${direction}`}
-					noteProjectId={
-						preliminaryBrief.project_note.trim() ? project.id : undefined
-					}
+					project={project}
 					direction={direction}
 					client={client}
 					scope={scope}

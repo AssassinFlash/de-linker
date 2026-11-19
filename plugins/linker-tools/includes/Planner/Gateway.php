@@ -75,7 +75,7 @@ final class Gateway {
 
 	/** Registered before any REST dispatch, so unknown routes/errors are private. */
 	public function lifecycle(): void {
-		add_filter( 'linker_tools_planning_inquiry_note', array( $this, 'inquiry_note' ), 10, 2 );
+		add_filter( 'linker_tools_planning_inquiry_note', array( $this, 'inquiry_note' ), 10, 3 );
 		add_filter( 'determine_current_user', array( $this->identity, 'rest_nonce_user' ), 25 );
 		add_filter( 'rest_pre_dispatch', array( $this, 'before_parse' ), 0, 3 );
 		// Installed ACF initialisation returns null even after an earlier error.
@@ -399,7 +399,10 @@ final class Gateway {
 			return is_wp_error( $staged ) ? $staged : new WP_REST_Response( $staged );
 		}
 		if ( 'inquiry/form' === $path ) {
-			if ( array_diff( array_keys( $command ), array( 'schema_version', 'lang', 'project_id' ) ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) ) {
+			if ( array_diff( array_keys( $command ), array( 'schema_version', 'lang', 'project_id', 'revision' ) ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) ) {
+				return Failure::make( 'input', 422 );
+			}
+			if ( array_key_exists( 'revision', $command ) && ( ! isset( $command['project_id'] ) || ! is_int( $command['revision'] ) || $command['revision'] < 1 ) ) {
 				return Failure::make( 'input', 422 );
 			}
 			$note = null;
@@ -407,7 +410,7 @@ final class Gateway {
 				if ( ! is_string( $command['project_id'] ) ) {
 					return Failure::make( 'input', 422 );
 				}
-				$note = $this->read_inquiry_note( $principal, $command['project_id'] );
+				$note = $this->read_inquiry_note( $principal, $command['project_id'], $command['revision'] ?? null );
 				if ( $note instanceof WP_Error ) {
 					return $note;
 				}
@@ -466,22 +469,24 @@ final class Gateway {
 
 	/** Read the selected note again under the native inquiry submitter's identity.
 	 *
-	 * @param mixed  $previous Earlier filter result.
-	 * @param string $id Selected planner project.
+	 * @param mixed    $previous Earlier filter result.
+	 * @param string   $id Selected planner project.
+	 * @param int|null $revision Reviewed revision; omitted for legacy note-only reads.
 	 * @return array<string,mixed>|WP_Error|null
 	 */
-	public function inquiry_note( mixed $previous, string $id ): array|WP_Error|null {
+	public function inquiry_note( mixed $previous, string $id, ?int $revision = null ): array|WP_Error|null {
 		$principal = $this->identity->inquiry_submitter();
-		return $principal instanceof WP_Error ? $principal : $this->read_inquiry_note( $principal, $id );
+		return $principal instanceof WP_Error ? $principal : $this->read_inquiry_note( $principal, $id, $revision );
 	}
 
 	/** Resolve the current project, with no handoff or product list.
 	 *
 	 * @param Principal $principal Verified native owner.
 	 * @param string    $id Selected planner project.
+	 * @param int|null  $revision Reviewed revision; omitted for legacy note-only reads.
 	 * @return array<string,mixed>|WP_Error|null
 	 */
-	private function read_inquiry_note( Principal $principal, string $id ): array|WP_Error|null {
+	private function read_inquiry_note( Principal $principal, string $id, ?int $revision ): array|WP_Error|null {
 		if ( 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $id ) ) {
 			return Failure::make( 'input', 422 );
 		}
@@ -491,6 +496,7 @@ final class Gateway {
 			array(
 				'schema_version' => 1,
 				'project_id'     => $id,
+				'revision'       => $revision,
 			)
 		);
 		if ( $project instanceof WP_Error ) {
@@ -500,7 +506,11 @@ final class Gateway {
 		if ( ( $project['id'] ?? null ) !== $id || ! is_int( $project['revision'] ?? null ) || 1 > $project['revision'] || ! is_string( $project['title'] ?? null ) || ! is_string( $text ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
-		return '' === trim( $text ) ? null : array(
+		if ( null !== $revision && ( $project['revision'] !== $revision || ! in_array( $project['inputs']['brief']['system_scope'] ?? null, array( 'new_pv_storage', 'storage_addition', 'pv_only', 'storage_only' ), true ) ) ) {
+			return Failure::make( 'invalid_reply', 502 );
+		}
+		return null === $revision && '' === trim( $text ) ? null : array(
+			...( null === $revision ? array() : array( 'inputs' => $project['inputs'] ) ),
 			'project_id'    => $id,
 			'title'         => $project['title'],
 			'revision'      => $project['revision'],

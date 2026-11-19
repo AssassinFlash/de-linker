@@ -39,6 +39,49 @@ final class TransportTest extends TestCase {
 		WP_Mock::userFunction( 'wp_tempnam' )->andReturnUsing( static fn (): string => (string) tempnam( sys_get_temp_dir(), 'lps' ) );
 	}
 
+	/** The submitter reads the exact project that was reviewed, even without a note. */
+	public function test_preliminary_project_revision(): void {
+		$id = str_repeat( 'a', 32 );
+		WP_Mock::userFunction( 'get_current_user_id' )->andReturn( 17 );
+		WP_Mock::userFunction( 'get_current_blog_id' )->andReturn( 1 );
+		$inputs  = array(
+			'brief' => array(
+				'system_scope' => 'pv_only',
+				'project_note' => '',
+				'annual_load'  => array( 'kwh' => 6400 ),
+			),
+		);
+		$project = array(
+			'id'       => $id,
+			'title'    => 'Oslo',
+			'revision' => 3,
+			'inputs'   => $inputs,
+		);
+		$fetch   = function ( string $url, array $args ) use ( $id, $project ): array {
+			$this->assertSame( 'https://engine.test/projects/read', $url );
+			$this->assertSame( 'wp:1:user:17', $args['headers']['X-Linker-Planner-Principal-Subject'] );
+			$this->assertSame(
+				array(
+					'schema_version' => 1,
+					'project_id'     => $id,
+					'revision'       => 3,
+				),
+				json_decode( $args['body'], true )
+			);
+			return array(
+				'status' => 200,
+				'body'   => wp_json_encode( $project ),
+			);
+		};
+		$gateway = new \Linker\Tools\Planner\Gateway( transport: new Transport( $fetch ) );
+		$review  = $gateway->inquiry_note( null, $id, 3 );
+		$this->assertSame( $inputs, $review['inputs'] );
+		$this->assertSame( '', $review['text'] );
+		$gateway = new \Linker\Tools\Planner\Gateway( transport: $this->replying( 200, wp_json_encode( $project ) ) );
+		$this->assertInstanceOf( \WP_Error::class, $gateway->inquiry_note( null, $id, 4 ) );
+		$this->assertNull( $gateway->inquiry_note( null, $id ), 'Old note-only forms omit an empty note.' );
+	}
+
 	/**
 	 * Build a transport whose single reply is the given status and body.
 	 *

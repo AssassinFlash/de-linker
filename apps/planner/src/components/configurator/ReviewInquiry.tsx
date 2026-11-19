@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import { ApiError } from "../../data/protocol.ts";
+import { ApiError, type Project } from "../../data/protocol.ts";
 import {
 	readInquiryForm,
 	readInquiryPreview,
@@ -38,7 +38,7 @@ function customerFields(form: HTMLFormElement) {
 export function ReviewInquiry({
 	run,
 	direction,
-	noteProjectId,
+	project,
 	client,
 	scope,
 	operations,
@@ -48,7 +48,7 @@ export function ReviewInquiry({
 }: {
 	run?: PlanningRun;
 	direction?: string;
-	noteProjectId?: string | undefined;
+	project?: Project;
 	client: PlannerClient;
 	scope: string;
 	operations: ReturnType<typeof usePlanningOperations>;
@@ -92,7 +92,9 @@ export function ReviewInquiry({
 			: {
 					schema_version: 1,
 					lang,
-					...(noteProjectId ? { project_id: noteProjectId } : {}),
+					...(project
+						? { project_id: project.id, revision: project.revision }
+						: {}),
 				};
 		setError(null);
 		void client
@@ -126,7 +128,8 @@ export function ReviewInquiry({
 		run?.project_id,
 		run?.id,
 		run?.revision,
-		noteProjectId,
+		project?.id,
+		project?.revision,
 		locale,
 		attempt,
 	]);
@@ -160,37 +163,21 @@ export function ReviewInquiry({
 			}
 			retained.current = null;
 		}
-		if (direction) {
-			const message = form.elements.namedItem("message");
-			if (!(message instanceof window.HTMLTextAreaElement)) {
-				node.replaceChildren();
-				setError({ stage: "load", cause: new Error("invalid_inquiry_form") });
-				return;
-			}
-			const full = document.createElement("input");
-			full.type = "hidden";
-			full.name = "message";
-			message.removeAttribute("name");
-			if (message.maxLength >= 0)
-				message.maxLength = Math.max(
-					0,
-					message.maxLength - direction.length - 2,
-				);
-			const update = () => {
-				full.value = message.value
-					? `${direction}\n\n${message.value}`
-					: direction;
-			};
-			update();
-			message.addEventListener("input", update);
-			form.addEventListener("submit", update, { capture: true });
-			form.append(full);
+		if (
+			project &&
+			form.querySelector<HTMLInputElement>(
+				'input[name="linker_preliminary_project"]',
+			)?.value !== `${project.id}:${project.revision}`
+		) {
+			node.replaceChildren();
+			setError({ stage: "load", cause: new Error("invalid_inquiry_form") });
+			return;
 		}
 		form.dispatchEvent(
 			new Event("linker:inquiry-form-mounted", { bubbles: true }),
 		);
 		return () => node.replaceChildren();
-	}, [preview, client.origin, direction]);
+	}, [preview, client.origin, project?.id, project?.revision]);
 	async function send(event: FormEvent) {
 		if (event.defaultPrevented) return;
 		const form = event.target;

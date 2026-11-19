@@ -27,6 +27,14 @@ final class Handler {
 	public const ACTION = 'linker_inquiry';
 	public const NONCE  = 'linker_inquiry_nonce';
 
+	/** Bind preliminary forms to the reviewed revision. Older handlers reject this nonce.
+	 *
+	 * @param string $project Project reference, empty for ordinary and legacy forms.
+	 */
+	public static function nonce_action( string $project ): string {
+		return '' === $project ? self::ACTION : self::ACTION . ':' . $project;
+	}
+
 	/**
 	 * Both guests and account holders use this adapter.
 	 */
@@ -48,9 +56,10 @@ final class Handler {
 		$locale   = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard = new PublicGuard();
-			$nonce = $post[ self::NONCE ] ?? '';
-			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
+			$guard   = new PublicGuard();
+			$nonce   = $post[ self::NONCE ] ?? '';
+			$project = $post[ Context::PROJECT_FIELD ] ?? '';
+			if ( ! is_string( $project ) || ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::nonce_action( $project ) ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			$details = Submission::from_post( $post, false );
@@ -68,6 +77,9 @@ final class Handler {
 			);
 			if ( isset( $post[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) || isset( $post[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ) ) {
 				$payload['project_notes'] = \Linker\Commerce\Planning\Context::submission_fingerprint( $post );
+			}
+			if ( '' !== $project ) {
+				$payload['preliminary_project'] = $project;
 			}
 			$sender  = new Sender();
 			$current = ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft );
@@ -128,21 +140,27 @@ final class Handler {
 			// outcomes may first recover their existing UUID without a new proof.
 			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';
 			$revisions                           = Context::submission_fingerprint( $post )['revisions'];
-			foreach ( array_keys( $revisions ) as $key ) {
-				if ( is_string( $key ) && preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
-					$fields['linker_note_project']      = $match[1];
-					$fields[ Context::REVISIONS_FIELD ] = $revisions;
-					if ( '1' === $fields['linker_recovery_available'] ) {
-						$fields['linker_draft_hash'] = is_string( $post['linker_draft_hash'] ?? null ) ? $post['linker_draft_hash'] : '';
+			if ( is_string( $post[ Context::PROJECT_FIELD ] ?? null ) && preg_match( '/\A[a-f0-9]{32}:[1-9][0-9]*\z/', $post[ Context::PROJECT_FIELD ] ) ) {
+				$fields[ Context::PROJECT_FIELD ] = $post[ Context::PROJECT_FIELD ];
+			} else {
+				foreach ( array_keys( $revisions ) as $key ) {
+					if ( is_string( $key ) && preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
+						$fields['linker_note_project'] = $match[1];
+						break;
 					}
-					break;
+				}
+			}
+			if ( isset( $fields[ Context::PROJECT_FIELD ] ) || isset( $fields['linker_note_project'] ) ) {
+				$fields[ Context::REVISIONS_FIELD ] = $revisions;
+				if ( '1' === $fields['linker_recovery_available'] ) {
+					$fields['linker_draft_hash'] = is_string( $post['linker_draft_hash'] ?? null ) ? $post['linker_draft_hash'] : '';
 				}
 			}
 			if ( '1' === $fields['linker_recovery_available'] && isset( $post['linker_planner_handoff_id'], $post['linker_planner_draft_sha256'] ) ) {
 				foreach ( array( 'linker_planner_handoff_id', 'linker_planner_draft_sha256', 'linker_draft_hash' ) as $key ) {
 					$fields[ $key ] = is_string( $post[ $key ] ?? null ) ? sanitize_text_field( $post[ $key ] ) : '';
 				}
-				$fields[ Context::REVISIONS_FIELD ] = Context::submission_fingerprint( $post )['revisions'];
+				$fields[ Context::REVISIONS_FIELD ] = $revisions;
 			}
 			$fields['billing'] = BillingFields::values( $post );
 			if ( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) ) {
