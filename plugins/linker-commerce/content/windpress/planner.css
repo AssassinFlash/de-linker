@@ -1058,6 +1058,9 @@
   .sc-configurator .sc-nav button:hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
   .sc-configurator .sc-nav button[aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
   .sc-configurator .sc-step-number { margin-right: 8px; font-size: 12px; opacity: .7; }
+  .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; }
+  .sc-configurator .sc-draft-transfer .linker-inquiry-draft { grid-area: summary; position: static; display: grid; gap: 12px; justify-items: start; }
+  .sc-configurator .sc-draft-transfer .sc-inquiry-fields { grid-area: form; min-width: 0; }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
   .sc-configurator .sc-main { min-width: 0; scroll-margin-top: calc(var(--lp-site-header-height, 0px) + 16px); }
   .sc-configurator .sc-sidebar { position: sticky; top: calc(var(--lp-site-header-height, 0px) + 16px); min-width: 0; overflow-wrap: anywhere; }
@@ -1140,6 +1143,7 @@
     .sc-configurator .sc-card { padding: 20px; }
     .sc-configurator .sc-section-head { flex-wrap: wrap; }
     .sc-configurator .sc-fields, .sc-configurator .sc-comparison { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "summary" "form"; grid-template-columns: minmax(0, 1fr); }
     .sc-configurator :is(input, select, textarea) { font-size: 16px; }
     .sc-configurator .sc-option { flex-basis: 100%; padding: 16px; }
     .sc-configurator .sc-footer { align-items: stretch; }

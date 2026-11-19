@@ -17035,3 +17035,59 @@ msgstr "Für den Bericht ausgewählt"
 #: ../../apps/planner/src/components/configurator/SharedDcEnergy.tsx build/planner/assets/planner.js:1
 msgid "Use this calculation in the report"
 msgstr "Diese Berechnung im Bericht verwenden"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Preliminary options"
+msgstr "Erste Anlagenvarianten"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Choose the option that sounds right for your project. We can work out the size and equipment with you."
+msgstr "Wählen Sie eine Variante für Ihr Projekt. Bei der Größe und der Auswahl der Geräte helfen wir Ihnen weiter."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "New solar panels and a battery let you use solar power after sunset. Panel space and electricity use help size both."
+msgstr "Mit neuen Solarmodulen und einem Speicher nutzen Sie Solarstrom auch nach Sonnenuntergang. Die passende Größe hängt von der verfügbaren Fläche und Ihrem Stromverbrauch ab."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "A battery stores extra power from the solar panels you already have. Your current equipment determines how the battery can be connected."
+msgstr "Ein Speicher nimmt überschüssigen Strom aus Ihrer bestehenden Photovoltaikanlage auf. Wie er angeschlossen werden kann, hängt von den vorhandenen Geräten ab."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Solar panels supply electricity during the day. Available space and daytime electricity use help work out how many panels fit your project."
+msgstr "Solarmodule liefern tagsüber Strom. Wie viele Module sinnvoll sind, hängt von der verfügbaren Fläche und Ihrem Stromverbrauch am Tag ab."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "A battery saves electricity for when you need it. Its size depends on how you use electricity and where the battery gets its charge."
+msgstr "Ein Speicher hält Strom für später bereit. Die passende Größe hängt von Ihrem Verbrauch und davon ab, wie Sie den Speicher laden."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Choose this option"
+msgstr "Diese Variante wählen"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Review your inquiry"
+msgstr "Anfrage prüfen"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Planned system: %s"
+msgstr "Geplantes System: %s"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Change selection"
+msgstr "Variante ändern"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Preparing your inquiry…"
+msgstr "Ihre Anfrage wird vorbereitet…"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "The inquiry form could not be loaded."
+msgstr "Das Anfrageformular konnte nicht geladen werden."
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Load inquiry form again"
+msgstr "Anfrageformular erneut laden"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Your browser could not save your entries. Stay on this page to avoid losing them."
+msgstr "Ihr Browser konnte Ihre Eingaben nicht speichern. Auf dieser Seite können Sie Ihre Anfrage weiter ausfüllen."

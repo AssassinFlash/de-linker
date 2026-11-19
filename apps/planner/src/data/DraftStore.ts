@@ -17,11 +17,13 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
+export type CreationDestination = "design" | "equipment" | "preliminary-review";
+
 export interface CreationIntent {
 	readonly key: string;
 	readonly title: string;
 	readonly body: string;
-	readonly destination: "design" | "equipment" | null;
+	readonly destination: CreationDestination | null;
 	readonly createdAt: number;
 }
 export interface ProfileImportIntent {
@@ -164,14 +166,15 @@ export class DraftStore {
 	async writeCreation(
 		scope: string,
 		body: string,
-		destination: "design" | "equipment" | null = null,
+		destination: CreationDestination | null = null,
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
 		if (
 			destination !== null &&
 			destination !== "design" &&
-			destination !== "equipment"
+			destination !== "equipment" &&
+			destination !== "preliminary-review"
 		)
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
@@ -225,7 +228,7 @@ export class DraftStore {
 		scope: string,
 		oldBody: string,
 		body: string,
-		destination: "design" | "equipment" | null = null,
+		destination: CreationDestination | null = null,
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const oldCommand = validateCreation(oldBody);
@@ -235,7 +238,8 @@ export class DraftStore {
 		if (
 			destination !== null &&
 			destination !== "design" &&
-			destination !== "equipment"
+			destination !== "equipment" &&
+			destination !== "preliminary-review"
 		)
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
@@ -645,7 +649,8 @@ function scanCreations(
 			if (
 				destination !== null &&
 				destination !== "design" &&
-				destination !== "equipment"
+				destination !== "equipment" &&
+				destination !== "preliminary-review"
 			)
 				throw new Error("invalid_creation_recovery");
 			bytes += new TextEncoder().encode(value.body).length;

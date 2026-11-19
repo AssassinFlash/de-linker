@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-query";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
-import type { DraftStore } from "../data/DraftStore.ts";
+import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
@@ -30,14 +30,23 @@ import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
 const Configurator = lazy(() => import("./configurator/Configurator.tsx"));
+import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
-import { replacePlannerLocation } from "../data/plannerLocation.ts";
+import {
+	PLANNER_NAVIGATION,
+	replacePlannerLocation,
+} from "../data/plannerLocation.ts";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
 	return value && /^[a-f0-9]{32}$/.test(value) ? value : null;
+}
+function preliminaryRoute(route: string): boolean {
+	return (
+		route === "sc-preliminary-options" || route === "sc-preliminary-review"
+	);
 }
 /** A delete binds one key to one revision, so a changed revision is a new
  * command and never reuses the key of the attempt that lost the race. */
@@ -72,6 +81,7 @@ export function Workspace({
 	recheck: () => void;
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
+	const [route, setRoute] = useState(() => location.hash.slice(1));
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
 	);
@@ -122,10 +132,31 @@ export function Workspace({
 			});
 		}
 	}, [cache, session]);
+	useEffect(() => {
+		const restore = () => {
+			const destination = location.hash.slice(1);
+			if (!preliminaryRoute(route) && !preliminaryRoute(destination)) return;
+			setRoute(destination);
+			setSelected(currentProject());
+			setEntryHints(readEntryHints(new URL(location.href).searchParams));
+		};
+		window.addEventListener("popstate", restore);
+		return () => window.removeEventListener("popstate", restore);
+	}, [route]);
 	const select = useCallback(
 		(id: string | null, destination = "") => {
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
+			const from = url.hash.slice(1);
+			if (
+				id &&
+				from === "sc-preliminary-review" &&
+				destination === "sc-preliminary-options" &&
+				window.history.state?.preliminaryProject === id
+			) {
+				window.history.back();
+				return;
+			}
 			if (id) url.searchParams.set("project", id);
 			else url.searchParams.delete("project");
 			url.searchParams.delete("run");
@@ -134,7 +165,20 @@ export function Workspace({
 			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
 			url.hash = destination;
-			replacePlannerLocation(url);
+			setRoute(destination);
+			if (
+				id &&
+				from === "sc-preliminary-options" &&
+				destination === "sc-preliminary-review"
+			) {
+				// The comparison stays in this project's history after creation.
+				// Back can change the choice without losing a filled inquiry.
+				const comparison = new URL(url);
+				comparison.hash = "sc-preliminary-options";
+				window.history.replaceState(null, "", comparison);
+				window.history.pushState({ preliminaryProject: id }, "", url);
+				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+			} else replacePlannerLocation(url);
 			setEntryHints(null);
 			setSavedSource(null);
 			setBriefSource(null);
@@ -187,7 +231,7 @@ export function Workspace({
 	}, [index.data]);
 	function created(
 		project: Project,
-		destination?: "design" | "equipment" | "energy",
+		destination?: CreationDestination | "energy",
 	) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -199,13 +243,15 @@ export function Workspace({
 		});
 		select(
 			project.id,
-			destination === "energy"
-				? "sc-energy"
-				: destination === "equipment"
-					? "sc-system"
-					: destination === "design"
-						? "sc-solar"
-						: "sc-project",
+			destination === "preliminary-review"
+				? "sc-preliminary-review"
+				: destination === "energy"
+					? "sc-energy"
+					: destination === "equipment"
+						? "sc-system"
+						: destination === "design"
+							? "sc-solar"
+							: "sc-project",
 		);
 		return true;
 	}
@@ -333,6 +379,25 @@ export function Workspace({
 			store,
 		],
 	);
+	if (
+		selected &&
+		!session.claim_pending &&
+		project.data &&
+		preliminaryRoute(route)
+	)
+		return (
+			<PreliminaryProject
+				key={session.query_scope + ":" + selected}
+				project={project.data}
+				session={session}
+				client={client}
+				store={store}
+				locale={config.locale}
+				comparing={route === "sc-preliminary-options"}
+				navigate={(destination) => select(selected, destination)}
+				recheck={recheck}
+			/>
+		);
 	if (selected)
 		return !session.claim_pending && project.data ? (
 			<Suspense
@@ -398,6 +463,39 @@ export function Workspace({
 				) : (
 					<p role="status">{__("Opening project…", "linker-tools")}</p>
 				)}
+			</div>
+		);
+
+	const firstVisitComparison =
+		route === "sc-preliminary-options" &&
+		savedSource === null &&
+		briefSource === null &&
+		!entryHints?.roof &&
+		!entryHints?.equipment;
+	if (firstVisitComparison)
+		return (
+			<div className="sc-configurator">
+				<NewProject
+					config={config}
+					compareOnLoad
+					entryHints={entryHints}
+					locale={config.locale}
+					session={session}
+					client={client}
+					store={store}
+					created={created}
+					recheck={recheck}
+					recoveryScopes={recovery.data}
+					recoveryChecking={recovery.isFetching}
+					recoveryDiscoveryFailed={recovery.isError}
+				/>
+				<button
+					className="sc-button"
+					type="button"
+					onClick={() => select(null)}
+				>
+					{__("Back to projects", "linker-tools")}
+				</button>
 			</div>
 		);
 
