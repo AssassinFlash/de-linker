@@ -40,7 +40,13 @@ test("review shows the report's actual BOM and supports generation before a repo
 	await act(async () =>
 		root.render(React.createElement(ReviewProposal, value)),
 	);
-	assert.match(document.querySelector("table").textContent, /460 Wp/);
+	const solarTitle = value.run.result.report.sections.find(
+		(section) => section.id === "pv-components",
+	).title;
+	const solarSection = [...document.querySelectorAll(".sc-card")].find(
+		(section) => section.querySelector("h2")?.textContent === solarTitle,
+	);
+	assert.match(solarSection.querySelector("table").textContent, /460 Wp/);
 	assert.ok(document.querySelector("details"));
 	assert.ok(button("Generate report in English"));
 	assert.equal(
@@ -64,6 +70,55 @@ test("review shows the report's actual BOM and supports generation before a repo
 	await act(async () => button("Generate project report").click());
 	assert.equal(generated, 1);
 });
+
+for (const historical of [false, true]) {
+	test(
+		"a panel-only " +
+			(historical ? "historical" : "current") +
+			" report shows one labeled layout and still offers its files",
+		async (t) => {
+			const page = setupDom(),
+				root = createRoot(page.element);
+			t.after(() => page.dispose(root));
+			const value = props(),
+				report = value.run.result.report;
+			const solar = report.sections.find(
+				(section) => section.id === "pv-components",
+			);
+			solar.title = "Solar panel layout";
+			solar.table.columns = ["Quantity", "Panel parameters", "Rated power"];
+			report.sections = [solar];
+			if (historical)
+				value.history = {
+					items: [],
+					selected: value.run.id,
+					run: value.run,
+					select() {},
+				};
+			await act(async () =>
+				root.render(React.createElement(ReviewProposal, value)),
+			);
+			const layouts = [...document.querySelectorAll("section")].filter(
+				(section) =>
+					section.firstElementChild?.textContent === "Solar panel layout" &&
+					!section.closest("dialog"),
+			);
+			assert.equal(layouts.length, 1);
+			assert.match(layouts[0].textContent, /460 Wp/);
+			assert.deepEqual(
+				[
+					...layouts[0].querySelectorAll(
+						"tbody tr:first-child td .sc-bom-label",
+					),
+				].map((e) => e.textContent),
+				solar.table.columns,
+			);
+			assert.ok(button("Download PDF"));
+			assert.ok(button("Download bill of materials (CSV)"));
+			assert.ok(button("Preview report"));
+		},
+	);
+}
 
 test("replacing the report aborts its download and releases the next report's controls", async (t) => {
 	const page = setupDom(),
