@@ -24,6 +24,7 @@ from .grid_connection_report import (
 )
 from .installation_report import installation_sections
 from .project_materials import (
+    listed_materials,
     material_list,
     material_name,
     material_quantity,
@@ -100,8 +101,11 @@ def _material_table(
 def _material_sections(lines: list[Object], locale: str) -> list[ReportSection]:
     if not lines:
         return []
+    lines = listed_materials(lines)
     panel_types = ("pv_reference", "pv_declared")
-    if not any(line["handling"] in panel_types for line in lines):
+    if not any(
+        line["handling"] in panel_types or "package_supply" in line for line in lines
+    ):
         return [_material_table(lines, "bom", text("bom", locale), locale)]
     sections = []
     for section_id, key in (

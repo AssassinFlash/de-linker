@@ -721,7 +721,21 @@ def material_scope(line: Object, locale: str) -> str:
             )
             scope += f" · {description}"
         return scope
-    if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
+    if line.get("package_supply") == "retained":
+        scope = (
+            "Lieferumfang der vorhandenen Geräte"
+            if locale == "de"
+            else "Package contents of existing equipment"
+        )
+    elif line.get("package_supply") == "unresolved":
+        scope = (
+            "Zuordnung zu vorhandenen oder neuen Geräten offen"
+            if locale == "de"
+            else "Allocation to existing or new equipment unconfirmed"
+        )
+    elif (
+        line["handling"] == "manufacturer_included" and line.get("quantity") is not None
+    ):
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")
         scope = f"{scope} · {parent}" if parent else scope
@@ -854,7 +868,60 @@ def _installation_fact_line(
     }
 
 
+def listed_materials(lines: list[Object]) -> list[Object]:
+    """Allocate frozen package contents to the same supply lists as their parents."""
+    retained = {
+        cast(int, line["product_id"]): line
+        for line in lines
+        if line["handling"] == "woo_product"
+        and "retained_quantity" in line
+        and isinstance(line.get("product_id"), int)
+    }
+    result = []
+    for line in lines:
+        parent_id = line.get("parent_product_id")
+        parent = retained.get(parent_id) if isinstance(parent_id, int) else None
+        if line["handling"] != "manufacturer_included" or parent is None:
+            result.append(line)
+            continue
+        existing, total = parent["retained_quantity"], parent.get("quantity")
+        if existing == 0:
+            result.append(line)
+        elif type(total) is int and type(existing) is int and existing >= total:
+            result.append({**line, "package_supply": "retained"})
+        else:
+            origin = line.get("source")
+            per_unit = (
+                origin.get("per_sales_unit") if isinstance(origin, dict) else None
+            )
+            if per_unit is None:
+                per_unit = line.get("declared_quantity")
+            if (
+                type(existing) is not int
+                or type(total) is not int
+                or not isinstance(per_unit, (int, float))
+                or line.get("quantity") is None
+            ):
+                result.append({**line, "package_supply": "unresolved"})
+                continue
+            factor = Decimal(str(per_unit))
+            for use, parents in (("retained", existing), ("new", total - existing)):
+                amount = factor * parents
+                result.append(
+                    {
+                        **line,
+                        "package_supply": use,
+                        "quantity": float(amount)
+                        if line.get("unit") == "m"
+                        else int(amount),
+                    }
+                )
+    return result
+
+
 def material_list(line: Object, locale: str) -> str:
+    if line.get("package_supply") in ("retained", "unresolved"):
+        return text("site_material_list", locale)
     if line["handling"] == "pv_declared":
         return text("material_pv_declared", locale)
     if line["handling"] == "pv_reference":
@@ -893,7 +960,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
             )
         ]
     )
-    lines = cast(list[Object], materials["lines"])
+    lines = listed_materials(cast(list[Object], materials["lines"]))
     order = [
         text(key, locale)
         for key in (
