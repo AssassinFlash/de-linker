@@ -254,12 +254,14 @@ export function ProjectEquipment({
 	scope,
 	disabled,
 	edit,
+	intake = false,
 }: {
 	inputs: JsonObject;
 	client: PlannerClient;
 	scope: string;
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
+	intake?: boolean;
 }) {
 	const authorized = client.isCurrentScope(scope);
 	const catalog = useEquipmentProducts(client, scope, authorized);
@@ -338,6 +340,20 @@ export function ProjectEquipment({
 	}
 	function newUnit(index: number) {
 		return { id: plantIdentity("system"), name: unitName(index) };
+	}
+	function changeArrangement(multiple: boolean) {
+		if (multiple === Boolean(plant)) return;
+		if (multiple) {
+			const first = newUnit(1),
+				second = newUnit(2);
+			update((current) => beginPlant(current, first, second));
+		} else {
+			try {
+				update(singleSystem);
+			} catch {
+				setTransitionError(true);
+			}
+		}
 	}
 	function updateUnit(
 		id: string,
@@ -489,43 +505,54 @@ export function ProjectEquipment({
 					</ul>
 				</div>
 			)}
-			<details className="sc-project-equipment" open={plant ? true : undefined}>
+			<details
+				className="sc-project-equipment"
+				open={plant || intake ? true : undefined}
+			>
 				<summary>
 					{__("Equipment and system arrangement", "linker-tools")}
 				</summary>
-				<div className="sc-actions">
-					<button
-						type="button"
-						className="sc-button"
-						aria-pressed={!plant}
-						disabled={disabled || !authorized || Boolean(plant && !canReturn)}
-						onClick={() => {
-							if (!plant) return;
-							try {
-								update(singleSystem);
-							} catch {
-								setTransitionError(true);
+				{intake ? (
+					<label className="sc-field">
+						<span>{__("System arrangement", "linker-tools")}</span>
+						<select
+							name="system_arrangement"
+							value={plant ? "multiple" : "single"}
+							disabled={disabled || !authorized}
+							onChange={(event) =>
+								changeArrangement(event.currentTarget.value === "multiple")
 							}
-						}}
-					>
-						{__("Single system", "linker-tools")}
-					</button>
-					<button
-						type="button"
-						className="sc-button"
-						aria-pressed={Boolean(plant)}
-						disabled={disabled || !authorized}
-						onClick={() => {
-							if (!plant) {
-								const first = newUnit(1),
-									second = newUnit(2);
-								update((current) => beginPlant(current, first, second));
-							}
-						}}
-					>
-						{__("Multiple systems", "linker-tools")}
-					</button>
-				</div>
+						>
+							<option value="single" disabled={Boolean(plant && !canReturn)}>
+								{__("Single system", "linker-tools")}
+							</option>
+							<option value="multiple">
+								{__("Multiple systems", "linker-tools")}
+							</option>
+						</select>
+					</label>
+				) : (
+					<div className="sc-actions">
+						<button
+							type="button"
+							className="sc-button"
+							aria-pressed={!plant}
+							disabled={disabled || !authorized || Boolean(plant && !canReturn)}
+							onClick={() => changeArrangement(false)}
+						>
+							{__("Single system", "linker-tools")}
+						</button>
+						<button
+							type="button"
+							className="sc-button"
+							aria-pressed={Boolean(plant)}
+							disabled={disabled || !authorized}
+							onClick={() => changeArrangement(true)}
+						>
+							{__("Multiple systems", "linker-tools")}
+						</button>
+					</div>
+				)}
 				{plant && !canReturn && (
 					<p className="sc-muted">
 						{__(

@@ -11,6 +11,8 @@ namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Mail\NativeTransaction;
+use Linker\Commerce\Planning\Context;
+use Linker\Commerce\Planning\InquiryTransfer;
 
 use Linker\Commerce\Contact\Submission;
 use WC_Order;
@@ -40,17 +42,22 @@ final class Sender {
 	 * Sends validated details with the current solution draft.
 	 * Products, prices and customer identity always come from Woo's session.
 	 *
-	 * @param Submission                      $details Validated reply details and message.
-	 * @param array<string, mixed>            $billing Optional account billing edits; guests cannot supply them.
-	 * @param array<string, mixed>|false|null $summary The conversation summary the
-	 *        Genie confirmation card showed (#250): an array stores it, false
-	 *        stores none (the customer turned the summary off), null asks the
-	 *        conversation-summary filter.
-	 * @param array<string, mixed>            $context Trusted related Genie conversation/page.
+	 * @param Submission                                                     $details Validated reply details and message.
+	 * @param array<string, mixed>                                           $billing Optional account billing edits; guests cannot supply them.
+	 * @param array<string, mixed>|false|null                                $summary The conversation summary the
+	 *                                       Genie confirmation card showed (#250): an array stores it, false
+	 *                                       stores none (the customer turned the summary off), null asks the
+	 *                                       conversation-summary filter.
+	 * @param array<string, mixed>                                           $context Trusted related Genie conversation/page.
+	 * @param array{intent:InquiryTransfer,handoff:array<string,mixed>}|null $review Guided review for this send.
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */
-	public function request( Submission $details, array $billing = array(), array|false|null $summary = null, array $context = array() ): WC_Order|WP_Error {
-		$error = \Linker\Commerce\Protection\BusinessCapacity::preflight() ?? $this->preflight( $details );
+	public function request( Submission $details, array $billing = array(), array|false|null $summary = null, array $context = array(), ?array $review = null ): WC_Order|WP_Error {
+		$handoff = $review['handoff'] ?? null;
+		$error   = \Linker\Commerce\Protection\BusinessCapacity::preflight() ?? Context::preflight( $handoff );
+		if ( null === $error && null === $review ) {
+			$error = $this->cart_preflight( $details );
+		}
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -65,20 +72,43 @@ final class Sender {
 				'payment_method'     => InquiryGateway::ID,
 			)
 		);
-		WC()->cart->calculate_totals();
+		if ( null === $review ) {
+			WC()->cart->calculate_totals();
+		}
 		$lock_refused = false;
 		try {
-			$order = \Linker\Commerce\Planning\Context::submit_inquiry(
-				function ( array $references, array $projects ) use ( $details, $data, $summary, $context, &$lock_refused ) {
-					return $this->create( $details, $data, $summary, $context, $references, $projects, $lock_refused );
-				}
+			$order = Context::submit_inquiry(
+				function ( array $references, array $projects ) use ( $details, $data, $summary, $context, $review, &$lock_refused ): WC_Order|WP_Error {
+					if ( null === $review ) {
+						return $this->create( $details, $data, $summary, $context, $references, $projects, $lock_refused );
+					}
+					return $review['intent']->send(
+						$review['handoff'],
+						function () use ( $details, $data, $summary, $context, $references, $projects, &$lock_refused ): WC_Order|WP_Error {
+							$error = $this->cart_preflight( $details );
+							if ( $error instanceof WP_Error ) {
+								return $error;
+							}
+							WC()->cart->calculate_totals();
+							return $this->create( $details, $data, $summary, $context, $references, $projects, $lock_refused );
+						}
+					);
+				},
+				$handoff
 			);
-			if ( $order instanceof WC_Order ) {
+			if ( null === $review && $order instanceof WC_Order ) {
 				\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
 				WC()->cart->empty_cart();
 			}
 		} catch ( \Throwable $error ) {
 			$order = $this->unknown();
+		}
+		if ( $order instanceof WP_Error ) {
+			$order = match ( $order->get_error_code() ) {
+				'planning_transfer_busy', 'planning_transfer_invalid', 'planning_transfer_unavailable' => Context::admission_unavailable(),
+				'planning_transfer_unconfirmed' => $this->unknown(),
+				default => $order,
+			};
 		}
 		return $lock_refused ? \Linker\Commerce\Planning\Context::admission_unavailable() : $order;
 	}
@@ -168,10 +198,14 @@ final class Sender {
 	 * @param Submission $details Validated reply details.
 	 */
 	public function preflight( Submission $details ): ?WP_Error {
-		$planning = \Linker\Commerce\Planning\Context::preflight();
-		if ( $planning instanceof WP_Error ) {
-			return $planning;
-		}
+		return Context::preflight() ?? $this->cart_preflight( $details );
+	}
+
+	/** Check native products after the projected draft becomes the checkout cart.
+	 *
+	 * @param Submission $details Validated reply details.
+	 */
+	private function cart_preflight( Submission $details ): ?WP_Error {
 		if ( WC()->cart->is_empty() && '' === $details->message && ! \Linker\Commerce\Planning\Context::has_included_notes() ) {
 			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
 		}

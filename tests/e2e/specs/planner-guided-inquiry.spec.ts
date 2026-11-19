@@ -1,0 +1,554 @@
+import { randomUUID } from 'node:crypto';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+
+const words = {
+	en: {
+		home: '/',
+		intake: 'Compare project options',
+		title: 'Project name',
+		location: 'Town or site',
+		siteUse: 'Site use',
+		phase: 'Grid connection',
+		load: 'Backup load',
+		duration: 'Required duration',
+		existing: 'There is an existing system',
+		existingName: 'Existing system name',
+		existingPower: 'Existing inverter power (kW)',
+		keep: 'Keep the existing inverter',
+		inverter: 'Inverter or integrated storage system',
+		saved: 'Saved projects',
+		systemName: 'System name',
+		compare: 'Compare systems',
+		select: 'Use this configuration',
+		review: 'Review your inquiry',
+		send: 'Send inquiry',
+		received: 'Inquiry received',
+		report: 'Download PDF',
+		message:
+			'Please check availability for the equipment above and tell me whether any additional parts are needed for installation.',
+	},
+	de: {
+		home: '/de/',
+		intake: 'Projektoptionen vergleichen',
+		title: 'Projektname',
+		location: 'Ort oder Standort',
+		siteUse: 'Nutzung des Standorts',
+		phase: 'Netzanschluss',
+		load: 'Ersatzstromlast',
+		duration: 'Gewünschte Dauer',
+		existing: 'Eine Anlage ist bereits vorhanden',
+		existingName: 'Bezeichnung der vorhandenen Anlage',
+		existingPower: 'Leistung des vorhandenen Wechselrichters (kW)',
+		keep: 'Vorhandenen Wechselrichter beibehalten',
+		inverter: 'Wechselrichter oder integriertes Speichersystem',
+		saved: 'Gespeicherte Projekte',
+		systemName: 'Systemname',
+		compare: 'Systeme vergleichen',
+		select: 'Konfiguration übernehmen',
+		review: 'Anfrage prüfen',
+		send: 'Anfrage senden',
+		received: 'Anfrage eingegangen',
+		report: 'PDF herunterladen',
+		message:
+			'Bitte prüfen Sie die Verfügbarkeit der aufgeführten Geräte und teilen Sie mir mit, ob für die Installation weitere Teile erforderlich sind.',
+	},
+} as const;
+
+type Locale = keyof typeof words;
+
+interface Scenario {
+	name: string;
+	country: 'DE' | 'NL';
+	town: string;
+	use: 'residential' | 'commercial';
+	scope: 'new_pv_storage' | 'storage_addition' | 'storage_only' | 'pv_only';
+	solar?: string;
+	backup?: readonly [load: string, duration: string];
+	retainedInverter?: { name: string; power: string };
+	selectedInverter?: string;
+	systems?: readonly string[];
+	carried?: boolean;
+}
+
+// Customer sample inputs follow the Berlin, Rotterdam, Konstanz and
+// Eindhoven cases in docs/acceptance/2026-11-17/demand-to-system.md.
+const scenarios: readonly Scenario[] = [
+	{
+		name: 'storage only',
+		country: 'DE',
+		town: 'Berlin',
+		use: 'residential',
+		scope: 'storage_only',
+		backup: ['3', '2'],
+	},
+	{
+		name: 'new solar and storage',
+		country: 'NL',
+		town: 'Rotterdam',
+		use: 'residential',
+		scope: 'new_pv_storage',
+		solar: '10',
+		backup: ['3', '2'],
+	},
+	{
+		name: 'existing PV with known capacity',
+		country: 'DE',
+		town: 'Konstanz',
+		use: 'residential',
+		scope: 'storage_addition',
+		solar: '8',
+	},
+	{
+		name: 'retrofit keeping the installed inverter',
+		country: 'DE',
+		town: 'Berlin',
+		use: 'residential',
+		scope: 'storage_addition',
+		backup: ['3', '2'],
+		retainedInverter: { name: 'Workshop inverter', power: '7.5' },
+	},
+	{
+		name: 'already selected equipment',
+		country: 'NL',
+		town: 'Rotterdam',
+		use: 'residential',
+		scope: 'pv_only',
+		solar: '10',
+		selectedInverter: 'SAJ HS2-10K-T2-X',
+	},
+	{
+		name: 'solar only',
+		country: 'NL',
+		town: 'Rotterdam',
+		use: 'residential',
+		scope: 'pv_only',
+		solar: '10',
+	},
+	{
+		name: 'larger multi-system project',
+		country: 'NL',
+		town: 'Eindhoven',
+		use: 'commercial',
+		scope: 'storage_only',
+		backup: ['10', '4'],
+		systems: ['Workshop', 'Warehouse'],
+	},
+	{
+		name: 'saved project on a return visit',
+		country: 'DE',
+		town: 'Berlin',
+		use: 'residential',
+		scope: 'storage_only',
+		backup: ['3', '2'],
+		carried: true,
+	},
+];
+
+async function enterProject(
+	intake: Locator,
+	scenario: Scenario,
+	title: string,
+	text: (typeof words)[Locale]
+) {
+	await intake.getByLabel(text.title).fill(title);
+	await intake.locator('select[name=country]').selectOption(scenario.country);
+	await intake.getByLabel(text.location).fill(scenario.town);
+	await intake
+		.locator('select[name=system_scope]')
+		.selectOption(scenario.scope);
+	await intake.getByLabel(text.siteUse).selectOption(scenario.use);
+	await intake
+		.locator('select[name=project_purpose]')
+		.selectOption(scenario.backup ? 'backup' : 'self');
+	await intake.getByLabel(text.phase).selectOption('3');
+	if (scenario.backup) {
+		await intake.getByLabel(text.load).fill(scenario.backup[0]);
+		await intake.getByLabel(text.duration).fill(scenario.backup[1]);
+	}
+	if (scenario.solar)
+		await intake.locator('[name=pv_dc_kw]').fill(scenario.solar);
+	if (scenario.retainedInverter) {
+		await intake.getByLabel(text.existing).check();
+		await intake
+			.getByLabel(text.existingName)
+			.fill(scenario.retainedInverter.name);
+		await intake
+			.getByLabel(text.existingPower)
+			.fill(scenario.retainedInverter.power);
+		await intake.getByLabel(text.keep).check();
+	}
+	if (scenario.selectedInverter)
+		await intake
+			.getByLabel(text.inverter)
+			.selectOption({ label: scenario.selectedInverter });
+	if (scenario.systems) {
+		await intake
+			.locator('select[name=system_arrangement]')
+			.selectOption('multiple');
+		const names = intake.getByLabel(text.systemName, { exact: true });
+		await expect(names).toHaveCount(scenario.systems.length);
+		for (const [index, name] of scenario.systems.entries()) {
+			await names.nth(index).fill(name);
+		}
+	}
+}
+
+interface ReviewLine {
+	label: string;
+	quantity: number;
+}
+
+const lineOrder = (a: ReviewLine, b: ReviewLine) =>
+	a.label.localeCompare(b.label) || a.quantity - b.quantity;
+
+function reply(page: Page, operation: string) {
+	return page.waitForResponse(
+		(response) =>
+			response.request().method() === 'POST' &&
+			new URL(response.url()).pathname.endsWith('/' + operation),
+		{ timeout: 120_000 }
+	);
+}
+
+async function screen(page: Page, width: number, name?: string) {
+	await page.evaluate(() => document.fonts.ready.then(() => undefined));
+	expect(
+		await page.evaluate(() => document.documentElement.scrollWidth)
+	).toBe(width);
+	if (name) {
+		await page.screenshot({
+			path: test.info().outputPath(name + '.png'),
+			animations: 'disabled',
+		});
+	}
+}
+
+function receivedOrder(email: string) {
+	return JSON.parse(
+		wp([
+			'eval',
+			String.raw`
+			if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+				throw new RuntimeException( 'A local WordPress mail sink is required.' );
+			}
+			$orders = wc_get_orders( array( 'billing_email' => '${email}', 'limit' => 2 ) );
+			if ( count( $orders ) !== 1 ) { throw new RuntimeException( 'Expected one inquiry' ); }
+			$order = $orders[0];
+			$stored = \Linker\Commerce\Planning\Context::stored( $order );
+			$lines = array();
+			foreach ( $order->get_items() as $line ) {
+				$lines[] = array( 'product_id' => $line->get_product_id(), 'label' => $line->get_name(), 'quantity' => $line->get_quantity() );
+			}
+			echo wp_json_encode( array(
+				'id' => $order->get_id(), 'number' => $order->get_order_number(), 'locale' => \Linker\Commerce\Inquiry\OrderLocale::of( $order ),
+				'customer' => $order->get_customer_id(), 'status' => $order->get_status(), 'note' => $order->get_customer_note(), 'lines' => $lines,
+				'reference' => count( $stored ) === 1 ? reset( $stored )['reference'] : null
+			) );
+			`,
+		])
+	) as {
+		id: number;
+		number: string;
+		lines: (ReviewLine & { product_id: number })[];
+		reference: { handoff_id: string };
+	};
+}
+
+test.beforeAll(async ({ request }) => {
+	const { url, engineUrl } = instance();
+	expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+	const health = await request.get(engineUrl + '/health');
+	expect(health.ok(), 'The review Engine must be running').toBe(true);
+});
+
+for (const scenario of scenarios) {
+	for (const locale of ['en', 'de'] as const) {
+		for (const width of [1440, 390]) {
+			test(`${locale} ${width}: ${scenario.name} reaches an inquiry receipt in three actions`, async ({
+				page,
+				context,
+			}) => {
+				const { url } = instance();
+				expect(await context.cookies()).toEqual([]);
+				const restoreBudgets = isolateVisitorBudgets();
+				try {
+					const text = words[locale];
+					const tag = randomUUID();
+					const title = `${scenario.town} ${scenario.name} ${tag}`;
+					const email = `e2e-guided-${tag}@example.test`;
+					const draft = page.locator('.linker-inquiry-draft').filter({
+						visible: true,
+					});
+					await page.setViewportSize({
+						width,
+						height: width === 390 ? 844 : 900,
+					});
+					await page.goto(url + text.home);
+					const home = page.locator(
+						'[data-linker-planner][data-planner-home-url]'
+					);
+					const intake = home.getByRole('form', {
+						name: text.intake,
+					});
+
+					let carriedProjectId: string | undefined;
+					if (scenario.carried) {
+						carriedProjectId =
+							await test.step('Prepare a saved project through the homepage on an earlier visit', async () => {
+								await enterProject(
+									intake,
+									scenario,
+									title,
+									text
+								);
+								await intake
+									.getByRole('button', {
+										name: text.compare,
+										exact: true,
+									})
+									.click();
+								await expect(
+									page
+										.getByRole('button', {
+											name: text.select,
+											exact: true,
+										})
+										.first()
+								).toBeEnabled({ timeout: 120_000 });
+								const id = new URL(page.url()).searchParams.get(
+									'project'
+								);
+								expect(id).toMatch(/^[a-f0-9]{32}$/);
+								await page.goto(url + text.home);
+								return id!;
+							});
+					}
+
+					await test.step('1. Bring or enter project details and compare', async () => {
+						await expect(intake).toBeVisible();
+						if (carriedProjectId)
+							await intake
+								.getByLabel(text.saved)
+								.selectOption({ label: title });
+						else await enterProject(intake, scenario, title, text);
+						const compare = intake.getByRole('button', {
+							name: text.compare,
+							exact: true,
+						});
+						await compare.scrollIntoViewIfNeeded();
+						await screen(
+							page,
+							width,
+							scenario === scenarios[0]
+								? 'homepage-project'
+								: undefined
+						);
+						const runReply = carriedProjectId
+							? undefined
+							: reply(page, 'runs/find-equipment');
+						await compare.click();
+						if (!runReply) return;
+						const run = await runReply;
+						expect(run.ok()).toBe(true);
+						expect(run.request().postDataJSON()).toMatchObject({
+							inputs: {
+								brief: {
+									project_use: scenario.use,
+									system_scope: scenario.scope,
+									site: {
+										country_code: scenario.country,
+										location_label: scenario.town,
+									},
+								},
+							},
+						});
+					});
+
+					const selected =
+						await test.step('2. Select a configuration', async () => {
+							const select = page
+								.getByRole('button', {
+									name: text.select,
+									exact: true,
+								})
+								.first();
+							await expect(select).toBeEnabled({
+								timeout: 120_000,
+							});
+							const projectId = new URL(
+								page.url()
+							).searchParams.get('project');
+							expect(projectId).toMatch(/^[a-f0-9]{32}$/);
+							if (carriedProjectId)
+								expect(projectId).toBe(carriedProjectId);
+							await select.scrollIntoViewIfNeeded();
+							await screen(
+								page,
+								width,
+								scenario === scenarios[0]
+									? 'comparison'
+									: undefined
+							);
+
+							const reportReply = reply(page, 'runs/report');
+							const formReply = reply(page, 'inquiry/form');
+							await select.click();
+							const [reportResponse, formResponse] =
+								await Promise.all([reportReply, formReply]);
+							expect(reportResponse.ok()).toBe(true);
+							expect(formResponse.ok()).toBe(true);
+							const prepared = formResponse
+								.request()
+								.postDataJSON();
+							const generated = reportResponse
+								.request()
+								.postDataJSON();
+							expect(prepared).toMatchObject({
+								report_run_id:
+									expect.stringMatching(/^[a-f0-9]{32}$/),
+								project_id: projectId,
+								revision: generated.expected_revision,
+							});
+							const report = {
+								id: prepared.report_run_id,
+								revision: prepared.revision,
+							};
+							await expect(
+								page.getByRole('heading', {
+									name: text.review,
+									exact: true,
+								})
+							).toBeVisible();
+							await expect(
+								page.locator('form.linker-inquiry-form')
+							).toBeVisible();
+							const lines: ReviewLine[] = (
+								await draft
+									.getByRole('listitem')
+									.allTextContents()
+							).map((line) => {
+								const displayed = /^(.+) × (\d+)$/.exec(
+									line.trim()
+								);
+								if (!displayed)
+									throw new Error(
+										'Expected a visible product and its quantity'
+									);
+								return {
+									label: displayed[1]!,
+									quantity: Number(displayed[2]),
+								};
+							});
+							if (scenario.retainedInverter)
+								expect(lines).toEqual([]);
+							else expect(lines.length).toBeGreaterThan(0);
+							if (scenario.selectedInverter)
+								expect(
+									lines.map(({ label }) => label)
+								).toContain(scenario.selectedInverter);
+							expect(
+								lines.every(({ quantity }) => quantity > 0)
+							).toBe(true);
+							return { projectId, report, lines };
+						});
+
+					await test.step('3. Review, send and receive the inquiry', async () => {
+						const form = page.locator('form.linker-inquiry-form');
+						await expect(form).toBeVisible();
+						await expect(page.locator('html')).toHaveAttribute(
+							'lang',
+							new RegExp('^' + locale)
+						);
+						await screen(
+							page,
+							width,
+							scenario === scenarios[0]
+								? 'inquiry-review'
+								: undefined
+						);
+						await form
+							.locator('[name=name]')
+							.fill('E2E project visitor');
+						await form.locator('[name=email]').fill(email);
+						await form
+							.locator('textarea[name=message]')
+							.pressSequentially(text.message, {
+								delay: 28,
+							});
+						await form.locator('[name=consent]').check();
+						await form
+							.getByRole('button', {
+								name: text.send,
+								exact: true,
+							})
+							.click();
+						await expect(
+							page.getByRole('heading', {
+								name: text.received,
+								exact: true,
+							})
+						).toBeVisible({ timeout: 90_000 });
+
+						const order = receivedOrder(email);
+						expect(order).toMatchObject({
+							locale: locale === 'de' ? 'de_DE_formal' : 'en_US',
+							customer: 0,
+							status: 'inquiry-received',
+							note: expect.stringContaining(text.message),
+							reference: {
+								title,
+								handoff_id:
+									expect.stringMatching(/^[a-f0-9]{32}$/),
+								project_id: selected.projectId,
+								report_run_id: selected.report.id,
+								revision: selected.report.revision,
+							},
+						});
+						expect(
+							order.lines.every(
+								({ product_id }: { product_id: number }) =>
+									product_id > 0
+							)
+						).toBe(true);
+						expect(
+							order.lines
+								.map(({ label, quantity }: ReviewLine) => ({
+									label,
+									quantity,
+								}))
+								.sort(lineOrder)
+						).toEqual(selected.lines.sort(lineOrder));
+						await expect(
+							page.locator(
+								'.woocommerce-order-overview__order strong'
+							)
+						).toHaveText(order.number);
+						const reportLink = page.getByRole('link', {
+							name: text.report,
+							exact: true,
+						});
+						await expect(reportLink).toHaveAttribute(
+							'href',
+							new RegExp(
+								`/inquiries/${order.id}/planning-report/${order.reference.handoff_id}`
+							)
+						);
+						const pdf = await context.request.get(
+							new URL(
+								(await reportLink.getAttribute('href'))!,
+								page.url()
+							).href
+						);
+						expect(pdf.ok()).toBe(true);
+						expect(
+							(await pdf.body()).subarray(0, 5).toString()
+						).toBe('%PDF-');
+					});
+				} finally {
+					restoreBudgets();
+				}
+			});
+		}
+	}
+}

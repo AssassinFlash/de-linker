@@ -24,7 +24,10 @@ import {
 	readProjectPage,
 } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
-import { pendingInquiryRevision } from "../data/inquiryRecovery.ts";
+import {
+	guidedInquiryRetry,
+	pendingInquiryRevision,
+} from "../data/inquiryRecovery.ts";
 import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
@@ -56,6 +59,9 @@ function preliminaryRoute(route: string): boolean {
 	return (
 		route === "sc-preliminary-options" || route === "sc-preliminary-review"
 	);
+}
+function currentGuidedRetryRevision(): number | null {
+	return guidedInquiryRetry(new URL(location.href))?.revision ?? null;
 }
 /** A delete binds one key to one revision, so a changed revision is a new
  * command and never reuses the key of the attempt that lost the race. */
@@ -100,6 +106,18 @@ export function Workspace({
 			: "",
 	);
 	const [route, setRoute] = useState(() => location.hash.slice(1));
+	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
+		currentGuidedRetryRevision,
+	);
+	useEffect(() => {
+		const update = () => setGuidedRetryRevision(currentGuidedRetryRevision());
+		window.addEventListener(PLANNER_NAVIGATION, update);
+		window.addEventListener("popstate", update);
+		return () => {
+			window.removeEventListener(PLANNER_NAVIGATION, update);
+			window.removeEventListener("popstate", update);
+		};
+	}, []);
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
 	);
@@ -177,6 +195,8 @@ export function Workspace({
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			const from = url.hash.slice(1);
+			if (id !== url.searchParams.get("project"))
+				url.searchParams.delete("guided");
 			if (
 				id &&
 				from === "sc-preliminary-review" &&
@@ -189,6 +209,8 @@ export function Workspace({
 			if (id) url.searchParams.set("project", id);
 			else url.searchParams.delete("project");
 			url.searchParams.delete("run");
+			url.searchParams.delete("retry_revision");
+			url.searchParams.delete("linker_inquiry_retry");
 			url.searchParams.delete("compare");
 			url.searchParams.delete("energy_view");
 			url.searchParams.delete("brief");
@@ -251,9 +273,13 @@ export function Workspace({
 		enabled: selected === null,
 	});
 	const inquiryRevision =
-		selected && preliminaryRoute(route)
+		guidedRetryRevision ??
+		(selected &&
+		(preliminaryRoute(route) ||
+			(route === "sc-review" &&
+				new URL(location.href).searchParams.get("guided") === "inquiry"))
 			? pendingInquiryRevision(session.query_scope, selected)
-			: null;
+			: null);
 	const project = useQuery({
 		queryKey: [
 			session.query_scope,

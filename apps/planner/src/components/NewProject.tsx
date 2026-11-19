@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -9,6 +10,20 @@ import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import type { Brief } from "../domain/brief.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
+import { readScenarioDraft } from "../domain/energyScenario.ts";
+import { issueLabel } from "./ProfileLabels.ts";
+import {
+	attachHomepageProfile,
+	prepareHomepageProfile,
+} from "../data/homepageProfile.ts";
+import type { HomepageProfileUpload } from "../data/homepageProfile.ts";
+import {
+	emptyHomepageProfile,
+	homepageProfileFile,
+	HomepageLoadProfile,
+	restoreHomepageProfile,
+} from "./configurator/HomepageLoadProfile.tsx";
+import type { HomepageProfileForm } from "./configurator/HomepageLoadProfile.tsx";
 import { hasPlant } from "../domain/equipmentPlant.ts";
 import { projectInputContract, sameJson } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
@@ -20,6 +35,14 @@ import { formatDecimal } from "../domain/decimal.ts";
 import type { Configuration } from "../data/config.ts";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
+import {
+	HomepageDemand,
+	hasComparisonDemand,
+} from "./configurator/HomepageDemand.tsx";
+import {
+	isHomepagePvReferenceReady,
+	prepareHomepagePvReference,
+} from "./configurator/HomepagePvReference.tsx";
 import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
 
 import {
@@ -47,6 +70,7 @@ export function NewProject({
 	hidden = false,
 	creationPending = false,
 	beginCreation,
+	homeComparison,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -71,7 +95,13 @@ export function NewProject({
 	hidden?: boolean;
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
+	homeComparison?: {
+		picker: ReactNode;
+		savedProject: string;
+		compareSaved: (projectId: string) => void;
+	};
 }) {
+	const compareAtHome = Boolean(homeComparison);
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
@@ -83,6 +113,30 @@ export function NewProject({
 	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
+	const [demandError, setDemandError] = useState(false);
+	const [referenceError, setReferenceError] = useState<
+		"settings" | "location" | null
+	>(null);
+	const [profileForm, setProfileForm] = useState(emptyHomepageProfile);
+	const [profileError, setProfileError] = useState("");
+	const [profileCorrection, setProfileCorrection] = useState(false);
+	const profile = useRef<HomepageProfileUpload | undefined>(undefined);
+	const changeProfile = useCallback((patch: Partial<HomepageProfileForm>) => {
+		setProfileForm((current) => ({ ...current, ...patch }));
+		if (patch.mappingValid === undefined) setProfileError("");
+	}, []);
+	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
+		new Set(),
+	);
+	const reportDemand = useCallback((field: string, valid: boolean) => {
+		setInvalidDemand((before) => {
+			if (before.has(field) === !valid) return before;
+			const next = new Set(before);
+			if (valid) next.delete(field);
+			else next.add(field);
+			return next;
+		});
+	}, []);
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
@@ -118,9 +172,10 @@ export function NewProject({
 		...seed,
 		brief: {
 			...seedBrief,
-			system_scope: compareOnLoad
-				? seedBrief.system_scope
-				: (seedBrief.system_scope ?? "new_pv_storage"),
+			system_scope:
+				compareOnLoad || compareAtHome
+					? seedBrief.system_scope
+					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
 	};
 	const seeded =
@@ -147,6 +202,8 @@ export function NewProject({
 		)
 			setCarriedProduct(false);
 		setDraft(changed);
+		setDemandError(false);
+		setReferenceError(null);
 		return true;
 	}
 	const [checking, setChecking] = useState(true);
@@ -193,10 +250,13 @@ export function NewProject({
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
 			.then((records) => {
 				if (!active || !client.isCurrentScope(session.query_scope)) return;
-				const matching = records.filter(
-					(record) =>
-						(record.destination === "preliminary-review") === compareOnLoad,
-				);
+				const matching = records.filter((record) => {
+					if (compareAtHome) return record.destination === "guided-comparison";
+					return (
+						record.destination !== "guided-comparison" &&
+						(record.destination === "preliminary-review") === compareOnLoad
+					);
+				});
 				setRequests(matching);
 				if (openWork.current || !matching[0]) return;
 				restoreCreation(matching[0]);
@@ -218,10 +278,20 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
+		compareAtHome,
 		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
+		const { profile: savedProfile, profileIssue: issue } = record;
+		profile.current = savedProfile;
+		setProfileForm(
+			savedProfile && issue
+				? restoreHomepageProfile(savedProfile)
+				: emptyHomepageProfile(),
+		);
+		setProfileCorrection(Boolean(issue));
+		setProfileError(issue ? issueLabel(issue.issue) : "");
 		intentScope.current = record.scope;
 		destination.current = record.destination;
 		setTitle(record.title);
@@ -229,9 +299,12 @@ export function NewProject({
 		setProjectGone(false);
 		setInputContractRequired(false);
 		setOpen(true);
-		setFailed(true);
+		setFailed(!issue);
 	}
-	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
+	async function submit(
+		direction?: NonNullable<Brief["system_scope"]>,
+		{ discardProfile = false, useAddress = false } = {},
+	) {
 		if (
 			sending.current ||
 			creationPending ||
@@ -243,6 +316,65 @@ export function NewProject({
 			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
 		)
 			return;
+		if (compareAtHome && !intent.current) {
+			const goal = energyGoal(inputs);
+			const invalidVisible =
+				invalidDemand.has("annual") ||
+				(invalidDemand.has("pv") &&
+					brief.system_scope !== "storage_only" &&
+					!hasPlant(inputs)) ||
+				(goal === "backup" &&
+					(invalidDemand.has("load") || invalidDemand.has("duration"))) ||
+				(goal === "peak" && invalidDemand.has("peak"));
+			if (!hasComparisonDemand(inputs, brief) || invalidVisible) {
+				setDemandError(true);
+				return;
+			}
+			if (!isHomepagePvReferenceReady(inputs, brief, useAddress)) {
+				setReferenceError(
+					useAddress &&
+						(!brief.site.country_code || !brief.site.location_label.trim())
+						? "location"
+						: "settings",
+				);
+				return;
+			}
+		}
+		const editableProfile =
+			compareAtHome && (!intent.current || profileCorrection);
+		const file =
+			editableProfile && !discardProfile
+				? homepageProfileFile(profileForm)
+				: null;
+		if (
+			editableProfile &&
+			!discardProfile &&
+			(profileForm.file || profileCorrection) &&
+			!file
+		) {
+			setProfileError(
+				__(
+					"Check the profile columns, units and time interval, then try again.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
+		if (
+			file &&
+			energyGoal(inputs) === "peak" &&
+			readScenarioDraft(inputs.energy_scenario).schedule.some(
+				(period) => period.import_cap_kw === null,
+			)
+		) {
+			setProfileError(
+				__(
+					"Enter your target grid import limit to compare peak reduction.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
 		const releaseCreation = beginCreation?.();
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
@@ -252,24 +384,63 @@ export function NewProject({
 
 		sending.current = true;
 		setBusy(true);
+		setReferenceError(null);
 		setFailed(false);
 		setProjectGone(false);
 		setInputContractRequired(false);
+		let creationConfirmed = false;
 		try {
+			const previousProfile = profileCorrection ? profile.current : undefined;
+			let nextProfile = editableProfile ? undefined : profile.current;
+			if (file) {
+				try {
+					nextProfile = await prepareHomepageProfile(
+						file,
+						session.runtime.limits,
+					);
+				} catch (error) {
+					setProfileError(
+						error instanceof ApiError &&
+							(error.code === "file_size" || error.code === "body_too_large")
+							? __("The file is empty or too large.", "linker-tools")
+							: __(
+									"Check the profile columns, units and time interval, then try again.",
+									"linker-tools",
+								),
+					);
+					return;
+				}
+			}
+			if (lifetime.current !== instance) return;
 			if (!intent.current) {
+				let submittedInputs = inputs;
+				if (compareAtHome && useAddress) {
+					try {
+						submittedInputs = await prepareHomepagePvReference(
+							inputs,
+							config ?? { locale },
+							useAddress,
+						);
+					} catch {
+						if (lifetime.current === instance) setReferenceError("location");
+						return;
+					}
+					if (lifetime.current !== instance) return;
+				}
+				const submittedBrief = readBrief(submittedInputs.brief);
 				intent.current = wire(
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
 						title: title.trim() || __("New project", "linker-tools"),
 						inputs: {
-							...inputs,
+							...submittedInputs,
 							brief: {
-								...brief,
-								system_scope: direction ?? brief.system_scope,
+								...submittedBrief,
+								system_scope: direction ?? submittedBrief.system_scope,
 								site: {
-									...brief.site,
-									location_label: brief.site.location_label.trim(),
+									...submittedBrief.site,
+									location_label: submittedBrief.site.location_label.trim(),
 								},
 							},
 						},
@@ -278,29 +449,68 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = direction
-					? "preliminary-review"
-					: brief.system_scope === "storage_only"
-						? null
-						: "design";
+				destination.current = compareAtHome
+					? "guided-comparison"
+					: direction
+						? "preliminary-review"
+						: brief.system_scope === "storage_only"
+							? null
+							: "design";
 			}
 			await store
-				.writeCreation(originScope, intent.current, destination.current)
-				.catch(() => {
+				.writeCreation(
+					originScope,
+					intent.current,
+					destination.current,
+					nextProfile,
+					previousProfile ? { previous: previousProfile } : undefined,
+				)
+				.catch((error: unknown) => {
 					if (lifetime.current === instance) setRecoveryFailed(true);
+					if (previousProfile) throw error;
 				});
 			if (lifetime.current !== instance) return;
+			profile.current = nextProfile;
+			setProfileCorrection(false);
 			if (!client.isCurrentScope(session.query_scope)) {
 				setFailed(true);
 				return;
 			}
-			const project = readProject(
+			let project = readProject(
 				await client.send(
 					"projects/create",
 					intent.current,
 					session.query_scope,
 				),
 			);
+			if (lifetime.current !== instance) return;
+			creationConfirmed = true;
+			if (profile.current) {
+				try {
+					project = await attachHomepageProfile(
+						client,
+						session,
+						project,
+						profile.current,
+					);
+				} catch (error) {
+					if (lifetime.current !== instance) return;
+					if (!(error instanceof ApiError && error.profileIssue)) throw error;
+					const issue = error.profileIssue;
+					await store.writeCreation(
+						originScope,
+						intent.current,
+						destination.current,
+						profile.current,
+						{ previous: profile.current, issue },
+					);
+					if (lifetime.current !== instance) return;
+					setProfileForm(restoreHomepageProfile(profile.current));
+					setProfileCorrection(true);
+					setProfileError(issueLabel(issue.issue));
+					return;
+				}
+			}
 			if (lifetime.current !== instance) return;
 			await store.clearCreation(originScope, intent.current).catch(() => {
 				if (lifetime.current === instance) setRecoveryFailed(true);
@@ -325,6 +535,10 @@ export function NewProject({
 			}
 			intent.current = null;
 			destination.current = null;
+			profile.current = undefined;
+			setProfileForm(emptyHomepageProfile());
+			setProfileCorrection(false);
+			setProfileError("");
 			setOpen(false);
 			setTitle("");
 			setDraft(null);
@@ -350,6 +564,7 @@ export function NewProject({
 			// attempt creates the same project content instead of an empty one.
 			if (
 				error instanceof ApiError &&
+				!creationConfirmed &&
 				error.status === 404 &&
 				error.code === "not_found" &&
 				intent.current !== null
@@ -418,10 +633,15 @@ export function NewProject({
 					"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
 					"linker-tools",
 				)
-			: __(
-					"Project creation was not confirmed. Retrying uses the same request.",
-					"linker-tools",
-				);
+			: profile.current
+				? __(
+						"The project and load profile could not be confirmed. Try again to resume this request.",
+						"linker-tools",
+					)
+				: __(
+						"Project creation was not confirmed. Retrying uses the same request.",
+						"linker-tools",
+					);
 
 	if (hidden) return null;
 	if (compareOnLoad) {
@@ -496,15 +716,46 @@ export function NewProject({
 				{__("New project", "linker-tools")}
 			</button>
 		);
+	const compareLabel = compareAtHome
+		? __("Compare project options", "linker-tools")
+		: __("New project", "linker-tools");
+	const showSavedPicker =
+		!busy &&
+		!checking &&
+		!recoveryChecking &&
+		!recoveryDiscoveryFailed &&
+		!intent.current;
+	if (homeComparison?.savedProject && showSavedPicker) {
+		return (
+			<form
+				className="sc-main"
+				aria-label={compareLabel}
+				onSubmit={(event) => {
+					event.preventDefault();
+					homeComparison.compareSaved(homeComparison.savedProject);
+				}}
+			>
+				{homeComparison.picker}
+				<button className="sc-button sc-primary" type="submit">
+					{__("Compare systems", "linker-tools")}
+				</button>
+			</form>
+		);
+	}
 	return (
 		<form
 			className="sc-main"
-			aria-label={__("New project", "linker-tools")}
+			aria-label={compareLabel}
 			onSubmit={(event) => {
 				event.preventDefault();
-				void submit();
+				const useAddress =
+					event.currentTarget.querySelector<HTMLInputElement>(
+						'input[name="pvgis_use_address"]',
+					)?.checked ?? false;
+				void submit(undefined, { useAddress });
 			}}
 		>
+			{showSavedPicker && homeComparison?.picker}
 			{entryHints &&
 				!intent.current &&
 				(hasCarriedValues || entryHints.invalid) && (
@@ -650,6 +901,28 @@ export function NewProject({
 					</Notice>
 				)}
 			{pendingRequests}
+			{demandError && (
+				<Notice error>
+					{__(
+						"Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
+			{profileError && <Notice error>{profileError}</Notice>}
+			{referenceError && (
+				<Notice error>
+					{referenceError === "location"
+						? __(
+								"The location could not be found. Check the country and address, then try again.",
+								"linker-tools",
+							)
+						: __(
+								"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+								"linker-tools",
+							)}
+				</Notice>
+			)}
 			<ProjectDetails
 				inputs={inputs}
 				config={config ?? { locale, countries: {} }}
@@ -667,12 +940,49 @@ export function NewProject({
 					changeTitle: setTitle,
 					locked: Boolean(intent.current),
 					submitDisabled: waitingForProduct,
+					comparison: compareAtHome,
 					...(busy
-						? { submitLabel: __("Creating…", "linker-tools") }
+						? {
+								submitLabel: compareAtHome
+									? __("Preparing comparison…", "linker-tools")
+									: __("Creating…", "linker-tools"),
+							}
 						: failed
-							? { submitLabel: __("Retry project creation", "linker-tools") }
-							: {}),
+							? {
+									submitLabel: compareAtHome
+										? __("Try again", "linker-tools")
+										: __("Retry project creation", "linker-tools"),
+								}
+							: compareAtHome
+								? { submitLabel: __("Compare systems", "linker-tools") }
+								: {}),
 				}}
+				demand={
+					compareAtHome && (
+						<HomepageDemand
+							inputs={inputs}
+							brief={brief}
+							locale={locale}
+							addressLookup={Boolean(config?.googleMapsApiKey)}
+							edit={edit}
+							validity={reportDemand}
+						/>
+					)
+				}
+				profile={
+					compareAtHome &&
+					(!intent.current || profileCorrection) && (
+						<HomepageLoadProfile
+							form={profileForm}
+							locale={locale}
+							disabled={busy || checking || !admitted}
+							change={changeProfile}
+							{...(profileCorrection && {
+								discard: () => void submit(undefined, { discardProfile: true }),
+							})}
+						/>
+					)
+				}
 				existingEquipment={
 					config && (
 						<ProjectEquipment
@@ -681,6 +991,7 @@ export function NewProject({
 							scope={session.query_scope}
 							disabled={busy || Boolean(intent.current)}
 							edit={edit}
+							intake={compareAtHome}
 						/>
 					)
 				}

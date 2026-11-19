@@ -75,6 +75,8 @@ export function ProjectDetails({
 	next,
 	creation,
 	existingEquipment,
+	demand,
+	profile,
 }: {
 	inputs: JsonObject;
 	config: Pick<Configuration, "countries" | "locale" | "googleMapsApiKey">;
@@ -85,10 +87,13 @@ export function ProjectDetails({
 		title: string;
 		changeTitle: (value: string) => void;
 		locked: boolean;
+		comparison?: boolean;
 		submitDisabled?: boolean;
 		submitLabel?: string;
 	};
 	existingEquipment?: ReactNode;
+	demand?: ReactNode;
+	profile?: ReactNode;
 }) {
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
@@ -229,19 +234,21 @@ export function ProjectDetails({
 	}
 	return (
 		<>
-			<header className="sc-section-head">
-				<div>
-					<h2 ref={heading} tabIndex={-1}>
-						{__("What is the project?", "linker-tools")}
-					</h2>
-					<p className="sc-muted">
-						{__(
-							"Start with the location and what is already known.",
-							"linker-tools",
-						)}
-					</p>
-				</div>
-			</header>
+			{!creation?.comparison && (
+				<header className="sc-section-head">
+					<div>
+						<h2 ref={heading} tabIndex={-1}>
+							{__("What is the project?", "linker-tools")}
+						</h2>
+						<p className="sc-muted">
+							{__(
+								"Start with the location and what is already known.",
+								"linker-tools",
+							)}
+						</p>
+					</div>
+				</header>
+			)}
 			<fieldset className="sc-card" disabled={fieldsDisabled}>
 				<div className="sc-fields">
 					{creation && (
@@ -290,40 +297,43 @@ export function ProjectDetails({
 							}
 						/>
 					</label>
-					{mapKey && brief.system_scope !== "storage_only" && (
-						<div className="sc-field-wide">
-							<div className="sc-actions">
-								<button
-									className="sc-button"
-									type="button"
-									disabled={!country || !address.trim()}
-									onClick={() => void locate()}
-								>
-									{__("Find site coordinates", "linker-tools")}
-								</button>
-								<span role="status">
-									{locating
-										? __("Finding the site…", "linker-tools")
-										: brief.site.latitude !== null &&
-											  brief.site.longitude !== null
-											? __("Site coordinates found", "linker-tools")
-											: ""}
-								</span>
+					{mapKey &&
+						!creation?.comparison &&
+						brief.system_scope !== "storage_only" && (
+							<div className="sc-field-wide">
+								<div className="sc-actions">
+									<button
+										className="sc-button"
+										type="button"
+										disabled={!country || !address.trim()}
+										onClick={() => void locate()}
+									>
+										{__("Find site coordinates", "linker-tools")}
+									</button>
+									<span role="status">
+										{locating
+											? __("Finding the site…", "linker-tools")
+											: brief.site.latitude !== null &&
+												  brief.site.longitude !== null
+												? __("Site coordinates found", "linker-tools")
+												: ""}
+									</span>
+								</div>
+								{locationError && (
+									<p role="alert">
+										{__(
+											"The location could not be found. Check the country and address, then try again.",
+											"linker-tools",
+										)}
+									</p>
+								)}
 							</div>
-							{locationError && (
-								<p role="alert">
-									{__(
-										"The location could not be found. Check the country and address, then try again.",
-										"linker-tools",
-									)}
-								</p>
-							)}
-						</div>
-					)}
+						)}
 					<label className="sc-field">
 						<span>{__("Planned system", "linker-tools")}</span>
 						<select
 							name="system_scope"
+							required={creation?.comparison}
 							value={brief.system_scope ?? ""}
 							onChange={(e) => {
 								const system_scope = (e.currentTarget.value ||
@@ -377,6 +387,7 @@ export function ProjectDetails({
 						<span>{__("Main purpose", "linker-tools")}</span>
 						<select
 							name="project_purpose"
+							required={creation?.comparison}
 							value={energyGoal(inputs)}
 							onChange={(e) => {
 								const goal = e.currentTarget.value as
@@ -400,6 +411,7 @@ export function ProjectDetails({
 						</select>
 					</label>
 				</div>
+				{demand}
 				{(pendingScope || solarConflict) && (
 					<div>
 						<p>
@@ -437,6 +449,7 @@ export function ProjectDetails({
 				)}
 				{existingEquipment}
 			</fieldset>
+			{profile}
 			<footer className="sc-footer">
 				<span />
 				<button

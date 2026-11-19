@@ -13,6 +13,8 @@ use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Planning\InquiryTransfer;
+use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Protection\Configuration;
 use WC_Order;
 use WP_Error;
@@ -35,10 +37,14 @@ final class Handler {
 
 	/** Bind preliminary forms to the reviewed revision. Older handlers reject this nonce.
 	 *
-	 * @param string $project Project reference, empty for ordinary and legacy forms.
+	 * @param string               $project Project reference, empty for ordinary and legacy forms.
+	 * @param InquiryTransfer|null $transfer Exact report draft shown with this form.
 	 */
-	public static function nonce_action( string $project ): string {
-		return '' === $project ? self::ACTION : self::ACTION . ':' . $project;
+	public static function nonce_action( string $project, ?InquiryTransfer $transfer = null ): string {
+		if ( '' === $project ) {
+			return self::ACTION;
+		}
+		return self::ACTION . ':' . $project . ( null === $transfer ? '' : ':' . $transfer->value() );
 	}
 
 	/** The explicit omission was authenticated in this process() call, not inferred from POST or errors.
@@ -96,9 +102,13 @@ final class Handler {
 			$guard       = new PublicGuard();
 			$nonce       = $post[ self::NONCE ] ?? '';
 			$project     = $post[ Context::PROJECT_FIELD ] ?? '';
-			$nonce_valid = is_string( $project ) && is_string( $nonce ) && wp_verify_nonce( $nonce, self::nonce_action( $project ) );
-			$handle      = is_string( $post[ CheckoutRetry::HANDLE ] ?? null ) ? $post[ CheckoutRetry::HANDLE ] : '';
-			$retained    = CheckoutRetry::read( $handle )['fields'] ?? null;
+			$transfer    = InquiryTransfer::read( $post[ InquiryTransfer::FIELD ] ?? null );
+			$nonce_valid = is_string( $project ) && is_string( $nonce ) && wp_verify_nonce( $nonce, self::nonce_action( $project, $transfer ) );
+			if ( array_key_exists( InquiryTransfer::FIELD, $post ) && ( null === $transfer || '' === $project ) ) {
+				$nonce_valid = false;
+			}
+			$handle   = is_string( $post[ CheckoutRetry::HANDLE ] ?? null ) ? $post[ CheckoutRetry::HANDLE ] : '';
+			$retained = CheckoutRetry::read( $handle )['fields'] ?? null;
 			// A live handle can only continue its own submission. With no retained entry,
 			// the nonce and original UUID still allow the native ledger to return a prior receipt.
 			$retry_matches              = ! is_array( $retained ) || ( ( $retained[ Context::PROJECT_FIELD ] ?? '' ) === $project && ( $retained['linker_request_id'] ?? '' ) === ( $post['linker_request_id'] ?? '' ) );
@@ -107,7 +117,7 @@ final class Handler {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {
-				if ( ! is_string( $post['linker_without_project'] ) || ! wp_verify_nonce( $post['linker_without_project'], 'linker_without_project:' . $project ) ) {
+				if ( null !== $transfer || ! is_string( $post['linker_without_project'] ) || ! wp_verify_nonce( $post['linker_without_project'], 'linker_without_project:' . $project ) ) {
 					return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 				}
 				// The customer opted out of this preliminary project, not the rest of the reviewed cart.
@@ -153,6 +163,12 @@ final class Handler {
 					&& hash_equals( WC()->cart->get_cart_hash(), $draft );
 				$bound_draft        = true;
 			}
+			if ( null !== $transfer ) {
+				$payload['report_transfer'] = $transfer->value();
+				$current                    = $current && $transfer->current();
+				$result                     = $this->send_report( $sender, $details, $post, $payload, $transfer, $project, $current );
+				return $result;
+			}
 			// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
 			if ( $bound_draft && ! $current && 'enforce' !== Configuration::active_mode() ) {
 				return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
@@ -165,6 +181,65 @@ final class Handler {
 		} finally {
 			$locale->back();
 		}
+	}
+
+	/**
+	 * Recover the original Woo order first. Only a newly admitted request
+	 * can apply the reviewed transfer and write the inquiry.
+	 *
+	 * @param Sender              $sender Native inquiry writer.
+	 * @param Submission          $details Validated contact details.
+	 * @param array<string,mixed> $post Unslashed form fields.
+	 * @param array<string,mixed> $payload Semantic idempotence input.
+	 * @param InquiryTransfer     $transfer Reviewed report and draft.
+	 * @param string              $project Nonce-bound project revision.
+	 * @param bool                $current Current native draft still equals the review.
+	 */
+	private function send_report( Sender $sender, Submission $details, array $post, array $payload, InquiryTransfer $transfer, string $project, bool $current ): WC_Order|WP_Error {
+		if ( ! $current && 'enforce' !== Configuration::active_mode() ) {
+			return self::draft_changed();
+		}
+		$frozen  = null;
+		$prepare = static function () use ( $transfer, $project, &$frozen ): ?WP_Error {
+			$owned = Context::read_preliminary_project( $project );
+			if ( is_wp_error( $owned ) ) {
+				return $owned;
+			}
+			$handoff = $transfer->owned( $owned['project_id'], $owned['revision'] );
+			if ( is_wp_error( $handoff ) ) {
+				return $handoff;
+			}
+			$frozen = $handoff;
+			return null;
+		};
+		$work    = static function () use ( $sender, $details, $post, $transfer, $prepare, &$frozen ): WC_Order|WP_Error {
+			$error = null === $frozen ? $prepare() : null;
+			if ( $error instanceof WP_Error ) {
+				return $error;
+			}
+			if ( ! is_array( $frozen ) ) {
+				return Context::admission_unavailable();
+			}
+			$result = Context::with_submission(
+				$post,
+				static fn (): WC_Order|WP_Error => $sender->request(
+					$details,
+					$post,
+					false,
+					review: array(
+						'intent'  => $transfer,
+						'handoff' => $frozen,
+					)
+				)
+			);
+			return $result instanceof WP_Error && in_array( $result->get_error_code(), array( 'planning_draft_changed', 'planning_transfer_changed', 'out-of-stock' ), true ) ? self::draft_changed() : $result;
+		};
+		return Business::run( 'inquiry', $post, $payload, $work, $current, $prepare );
+	}
+
+	/** A confirmed draft change is safe to show for a fresh review. */
+	private static function draft_changed(): WP_Error {
+		return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
 	}
 
 	/**
@@ -206,7 +281,7 @@ final class Handler {
 		}
 		if ( $result instanceof WC_Order ) {
 			if ( $on_checkout ) {
-				CheckoutRetry::forget( $handle );
+				CheckoutRetry::forget( $handle, fresh: isset( $post[ InquiryTransfer::FIELD ] ) );
 			}
 			if ( ! $on_checkout ) {
 				WC()->session->set( 'linker_inquiry_fields', null );
@@ -260,6 +335,53 @@ final class Handler {
 			$blocked  = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
 			if ( $on_checkout ) {
+				$transfer = InquiryTransfer::read( $post[ InquiryTransfer::FIELD ] ?? null );
+				if ( null !== $transfer && $this->preliminary_verified && ! $blocked && isset( $fields[ Context::PROJECT_FIELD ] ) ) {
+					$locale = OrderLocale::current( $language );
+					$page   = PageUrls::translated( 'solution-configurator', str_starts_with( $locale, 'de' ) ? 'de' : 'en' );
+					if ( '' !== $page ) {
+						$fields[ InquiryTransfer::FIELD ] = $transfer->value();
+						if ( '1' === $fields['linker_recovery_available'] ) {
+							$fields['linker_inquiry_receipt_only']      = '1';
+							$fields['linker_inquiry_original_language'] = str_starts_with( $locale, 'de' ) ? 'de' : 'en';
+						} elseif ( Business::enabled() ) {
+							$fields['linker_request_id'] = wp_generate_uuid4();
+						}
+						$retry = CheckoutRetry::remember(
+							array(
+								'fields'       => $fields,
+								'error'        => $result->get_error_message(),
+								'error_locale' => $locale,
+								'grouped'      => 'linker_intake_grouped' === $result->get_error_code(),
+							),
+							$handle,
+							fresh: true
+						);
+						if ( null === $retry ) {
+							wp_die(
+								esc_html( $result->get_error_message() ),
+								'',
+								array(
+									'response'  => 503,
+									'back_link' => true,
+								)
+							);
+						}
+						list( $project_id, $review_revision ) = explode( ':', $fields[ Context::PROJECT_FIELD ], 2 );
+						$url                                  = add_query_arg(
+							array(
+								'project'             => $project_id,
+								'guided'              => 'inquiry',
+								'run'                 => $transfer->report,
+								'retry_revision'      => $review_revision,
+								CheckoutRetry::HANDLE => $retry,
+							),
+							$page
+						);
+						wp_safe_redirect( $url . '#sc-review', 303 );
+						exit;
+					}
+				}
 				if ( $blocked || ! isset( $fields[ Context::PROJECT_FIELD ] ) ) {
 					CheckoutRetry::forget( $handle );
 					wp_die( esc_html( $result->get_error_message() ), '', array( 'response' => 400 ) );

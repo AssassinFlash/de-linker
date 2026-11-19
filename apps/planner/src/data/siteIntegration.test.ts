@@ -52,6 +52,38 @@ test("each configurator page stays open when the customer switches language", ()
 	}
 });
 
+test("a guided inquiry keeps the reviewed report when the site language changes", () => {
+	const project = "a".repeat(32);
+	const report = "b".repeat(32);
+	const current = `https://site.example/en/?project=${project}&guided=inquiry&run=${report}#sc-review`;
+	const same = new URL(projectLanguageUrl("/de/", current, project));
+	assert.equal(same.searchParams.get("guided"), "inquiry");
+	assert.equal(same.searchParams.get("run"), report);
+	assert.equal(same.hash, "#sc-review");
+	const other = new URL(projectLanguageUrl("/de/", current, "c".repeat(32)));
+	assert.equal(other.searchParams.has("guided"), false);
+	assert.equal(other.searchParams.has("run"), false);
+});
+
+test("native guided retry keeps only its own report, revision and handle on a language switch", () => {
+	const project = "a".repeat(32);
+	const report = "b".repeat(32);
+	const retry = "4bb5413a-1ac7-4507-bf3c-04ca4c994404";
+	const current = `https://site.example/en/?project=${project}&guided=inquiry&run=${report}&retry_revision=7&linker_inquiry_retry=${retry}#sc-review`;
+	const same = new URL(projectLanguageUrl("/de/", current, project));
+	assert.equal(same.searchParams.get("retry_revision"), "7");
+	assert.equal(same.searchParams.get("linker_inquiry_retry"), retry);
+	for (const [url, id] of [
+		[current, "c".repeat(32)],
+		[current.replace("#sc-review", "#sc-system"), project],
+		[current.replace("retry_revision=7", "retry_revision=1e3"), project],
+	]) {
+		const destination = new URL(projectLanguageUrl("/de/", url!, id!));
+		assert.equal(destination.searchParams.has("retry_revision"), false);
+		assert.equal(destination.searchParams.has("linker_inquiry_retry"), false);
+	}
+});
+
 test("language switches keep only validated result/workspace references for the same project", () => {
 	const project = "a".repeat(32),
 		run = "b".repeat(32),

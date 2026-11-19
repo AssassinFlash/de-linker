@@ -3,6 +3,7 @@ import test from "node:test";
 import { decodeDraft, DraftStore } from "./DraftStore.ts";
 import { beginDraft, editDraft, prepareSave } from "../domain/draft.ts";
 import type { Project } from "./protocol.ts";
+import { prepareHomepageProfile } from "./homepageProfile.ts";
 import { IDBFactory } from "fake-indexeddb";
 
 const project: Project = {
@@ -117,6 +118,52 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			restoredCreations.find((value) => value.body === legacyBody)?.destination,
 			null,
 		);
+		const profile = await prepareHomepageProfile(
+			{
+				file: new File(["Time,Load\n2020-01-01T00:00:00Z,2"], "profile.csv"),
+				source: "Meter export",
+				rights: "Permission from fixture owner",
+				mapping: {
+					timestamp_column: "Time",
+					value_column: "Load",
+					measurement: "gross_load",
+					value_kind: "interval_average_kw",
+					timestamp_role: "start",
+					timezone: "UTC",
+					origin: "measured",
+					interval_seconds: 900,
+					delimiter: ",",
+					decimal: ".",
+					end_timestamp_column: null,
+					fold_column: null,
+					end_fold_column: null,
+					offset_rule: "explicit_offset_precedes_naive_timezone",
+					within_interval_assumption: "constant_mean_no_new_observations",
+				},
+			},
+			{
+				max_body_bytes: 10000,
+				max_csv_bytes: 1000,
+				max_json_depth: 32,
+				max_page_size: 30,
+			},
+		);
+		const guided = JSON.stringify({ ...create, key: crypto.randomUUID() });
+		await store.writeCreation(scope, guided, "guided-comparison", profile);
+		const reopened = new DraftStore();
+		assert.deepEqual(
+			(await reopened.readCreations(scope)).find(
+				(value) => value.body === guided,
+			)?.profile,
+			profile,
+		);
+		assert.equal((await reopened.readCreations("4".repeat(64))).length, 0);
+		await reopened.clearCreation(scope, guided);
+		assert.equal(
+			(await store.readCreations(scope)).some((value) => value.body === guided),
+			false,
+		);
+
 		await assert.rejects(
 			store.writeCreation(
 				scope,

@@ -227,6 +227,9 @@ async function equipmentApp(
 		projectId,
 		inputs,
 		hash,
+		guided = false,
+		loseSelectionReply = false,
+		failFirstReport = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -261,7 +264,7 @@ async function equipmentApp(
 	window.history.replaceState(
 		null,
 		"",
-		`/workspace/?project=${projectId}${hash}`,
+		`/workspace/?project=${projectId}${guided ? "&guided=inquiry" : ""}${hash}`,
 	);
 	const browserGlobals = new Map();
 	const browserValues = {
@@ -303,7 +306,9 @@ async function equipmentApp(
 	let comparisonUnavailable = legacyUnavailable;
 	let findAttempts = 0;
 	let lostReceipt = null;
+	let lostSelection = null;
 	let reportRun = null;
+	let reportAttempts = 0;
 	const revisions = new Map([[project.revision, structuredClone(project)]]);
 	let serverRun = savedRun,
 		nextScope = session.query_scope,
@@ -423,23 +428,31 @@ async function equipmentApp(
 				assert.equal(body, lostReceipt.body);
 				return structuredClone(lostReceipt.receipt);
 			}
+			if (path === "projects/revise" && lostSelection) {
+				assert.equal(body, lostSelection.body);
+				return structuredClone(lostSelection.project);
+			}
 			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
 				revisions.set(project.revision, structuredClone(project));
+				if (loseSelectionReply) {
+					lostSelection = { body, project: structuredClone(project) };
+					throw new ApiError(502, "network_error");
+				}
 				return structuredClone(project);
 			}
 			if (path === "runs/report") {
 				reportRun = makeRun(
 					projectId,
-					"queued",
+					++reportAttempts === 1 && failFirstReport ? "failed" : "queued",
 					project.revision,
 					project.input_sha256,
 					"planning_report_v1",
 				);
-				reportRun.id = "8".repeat(32);
+				reportRun.id = (reportAttempts === 1 ? "8" : "9").repeat(32);
 				return structuredClone(reportRun);
 			}
 			if (path === "runs/find-equipment") {
@@ -1233,6 +1246,94 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	}
 });
 
+test("one guided configuration choice saves it and prepares its report", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["runs/find-equipment", "projects/revise", "runs/report"],
+	);
+	const saved = app.requests[1].body.inputs.equipment_candidate;
+	assert.equal(saved.run_id, app.serverRunId());
+	assert.equal(app.requests[2].body.expected_revision, 3);
+	assert.equal(window.location.hash, "#sc-review");
+});
+
+test("after losing the selection receipt, retrying keeps the same save and opens review", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		loseSelectionReply: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Try again")?.matches(":enabled"));
+	await act(async () => app.button("Try again").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(window.location.hash, "#sc-review");
+	const saves = app.requests.filter(({ path }) => path === "projects/revise");
+	assert.equal(saves.length, 2);
+	assert.deepEqual(saves[0].body, saves[1].body);
+});
+
+test("a failed guided report can be prepared again without reselecting the proposal", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		failFirstReport: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Try again")?.matches(":enabled"));
+	await act(async () => app.button("Try again").click());
+	await untilRun(
+		() =>
+			app.requests.filter(({ path }) => path === "runs/report").length === 2,
+	);
+	assert.equal(window.location.hash, "#sc-review");
+	const [first, second] = app.requests.filter(
+		({ path }) => path === "runs/report",
+	);
+	assert.equal(first.body.expected_revision, second.body.expected_revision);
+	assert.notEqual(first.body.key, second.body.key);
+	assert.equal(
+		app.requests.filter(({ path }) => path === "projects/revise").length,
+		1,
+	);
+});
+
 for (const [multi, selection] of [
 	[false, "none"],
 	[false, "battery"],
@@ -1344,10 +1445,16 @@ for (const [multi, selection] of [
 		assertModels(again);
 		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
 		if (selection === "none") {
+			await untilRun(app.pending);
 			await app.step("Project");
-			const declarations = document.querySelector("details");
-			if (!declarations.open)
-				await act(async () => declarations.querySelector("summary").click());
+			const declarations = [
+				...document.querySelectorAll("details > summary"),
+			].find(
+				(summary) => summary.textContent === "Equipment and system arrangement",
+			);
+			assert.ok(declarations, "Expected equipment and system arrangement");
+			if (!declarations.parentElement.open)
+				await act(async () => declarations.click());
 			await untilRun(() =>
 				app
 					.fieldSelect("Inverter or integrated storage system")

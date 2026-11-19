@@ -7,6 +7,7 @@ import { PlannerClient } from "./data/PlannerClient.ts";
 import { DraftStore } from "./data/DraftStore.ts";
 import { SessionBoundary } from "./components/SessionBoundary.tsx";
 import { Workspace } from "./components/Workspace.tsx";
+import { HomepageComparison } from "./components/HomepageComparison.tsx";
 import { ToolIdentity } from "./components/ToolIdentity.tsx";
 import { __ } from "./i18n.ts";
 
@@ -39,7 +40,13 @@ class ApplicationBoundary extends Component<
 		return this.props.children;
 	}
 }
-function Application({ config }: { config: Configuration }) {
+function Application({
+	config,
+	homepage,
+}: {
+	config: Configuration;
+	homepage: URL | null;
+}) {
 	const client = useMemo(
 		() => new PlannerClient({ ...config, origin: location.origin }),
 		[config],
@@ -47,19 +54,31 @@ function Application({ config }: { config: Configuration }) {
 	const store = useMemo(() => new DraftStore(), []);
 	return (
 		<SessionBoundary client={client}>
-			{(session, recheck) => (
-				<>
-					<Workspace
+			{(session, recheck) =>
+				homepage ? (
+					<HomepageComparison
 						key={session.query_scope}
 						client={client}
 						store={store}
 						config={config}
 						session={session}
+						target={homepage}
 						recheck={recheck}
 					/>
-					<ToolIdentity />
-				</>
-			)}
+				) : (
+					<>
+						<Workspace
+							key={session.query_scope}
+							client={client}
+							store={store}
+							config={config}
+							session={session}
+							recheck={recheck}
+						/>
+						<ToolIdentity />
+					</>
+				)
+			}
 		</SessionBoundary>
 	);
 }
@@ -73,10 +92,20 @@ async function mount(): Promise<void> {
 	)) {
 		try {
 			const config = readConfiguration(element, import.meta.url);
+			const homepage = element.dataset.plannerHomeUrl
+				? new URL(element.dataset.plannerHomeUrl, element.baseURI)
+				: null;
+			if (
+				homepage &&
+				(homepage.origin !== location.origin ||
+					homepage.username ||
+					homepage.password)
+			)
+				throw new Error("invalid_homepage_comparison_target");
 			createRoot(element).render(
 				<StrictMode>
 					<ApplicationBoundary>
-						<Application config={config} />
+						<Application config={config} homepage={homepage} />
 					</ApplicationBoundary>
 				</StrictMode>,
 			);

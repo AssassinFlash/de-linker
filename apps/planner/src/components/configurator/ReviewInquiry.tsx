@@ -4,6 +4,8 @@ import { ApiError, type Project } from "../../data/protocol.ts";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
 import {
 	pendingInquiry,
+	guidedInquiryRetry,
+	forgetInquiry,
 	rememberInquiry,
 	restoreInquiry,
 	inquiryPayload,
@@ -128,6 +130,7 @@ function takeNavigationDraft(
 
 export function ReviewInquiry({
 	project,
+	reportRunId,
 	direction,
 	client,
 	scope,
@@ -140,6 +143,7 @@ export function ReviewInquiry({
 	inquiryPending,
 }: {
 	project: Project;
+	reportRunId?: string;
 	direction: NonNullable<Brief["system_scope"]>;
 	client: PlannerClient;
 	scope: string;
@@ -152,9 +156,9 @@ export function ReviewInquiry({
 	inquiryPending?: (pending: boolean) => void;
 }) {
 	const [failed, setFailed] = useState(false);
-	const [lines, setLines] = useState<
-		ReturnType<typeof readInquiryForm>["lines"] | null
-	>(null);
+	const [review, setReview] = useState<ReturnType<
+		typeof readInquiryForm
+	> | null>(null);
 	const [navigationFailed, setNavigationFailed] = useState(false);
 	const [attempt, setAttempt] = useState(0);
 	const host = useRef<HTMLDivElement>(null);
@@ -225,9 +229,11 @@ export function ReviewInquiry({
 				(link.target && link.target !== "_self") ||
 				target.origin !== location.origin ||
 				target.searchParams.get("project") !== projectId ||
-				!["#sc-preliminary-review", "#sc-preliminary-options"].includes(
-					target.hash,
-				)
+				![
+					"#sc-preliminary-review",
+					"#sc-preliminary-options",
+					"#sc-review",
+				].includes(target.hash)
 			)
 				return;
 			try {
@@ -256,8 +262,20 @@ export function ReviewInquiry({
 		let expiry: number | undefined;
 		const abort = () => request.abort();
 		window.addEventListener("pagehide", abort, { once: true });
-		setLines(null);
+		setReview(null);
 		setFailed(false);
+		const local = volatile.current;
+		const pending =
+			pendingInquiry(scope, { id: projectId, revision }) ??
+			(local?.scope === scope &&
+			local.projectId === projectId &&
+			local.revision === revision
+				? local.pending
+				: null);
+		const transfer = pending?.fields?.linker_report_transfer;
+		const retry = reportRunId
+			? guidedInquiryRetry(new URL(location.href))?.handle
+			: null;
 		void client
 			.query(
 				"inquiry/form",
@@ -266,6 +284,12 @@ export function ReviewInquiry({
 					lang: locale.startsWith("de") ? "de" : "en",
 					project_id: projectId,
 					revision,
+					...(reportRunId ? { report_run_id: reportRunId } : {}),
+					...(retry
+						? { retry }
+						: transfer
+							? { report_transfer: transfer }
+							: {}),
 				},
 				scope,
 				request.signal,
@@ -287,40 +311,47 @@ export function ReviewInquiry({
 					!target.pathname.endsWith("/wp-admin/admin-post.php") ||
 					form.querySelector<HTMLInputElement>(
 						'input[name="linker_preliminary_project"]',
-					)?.value !== `${projectId}:${revision}`
+					)?.value !== `${projectId}:${revision}` ||
+					(reportRunId &&
+						!form
+							.querySelector<HTMLInputElement>(
+								'input[name="linker_report_transfer"]',
+							)
+							?.value.startsWith(reportRunId + ":"))
 				)
 					throw new Error("invalid_inquiry_form");
-				const local = volatile.current;
-				const pending =
-					pendingInquiry(scope, { id: projectId, revision }) ??
-					(local?.scope === scope &&
-					local.projectId === projectId &&
-					local.revision === revision
-						? local.pending
-						: null);
+				const replay = retry ? null : pending;
+				const serverReplay = Boolean(
+					retry &&
+					form.querySelector('input[name="linker_inquiry_receipt_only"]'),
+				);
+				if (retry && !serverReplay) {
+					forgetInquiry(scope, { id: projectId, revision });
+					volatile.current = null;
+				}
 				const payload =
-					pending && replayWindow(form) ? inquiryPayload(pending) : null;
+					replay && replayWindow(form) ? inquiryPayload(replay) : null;
 				if (
-					pending &&
+					replay &&
 					!payload &&
-					local?.pending === pending &&
-					Date.now() >= pending.expiresAt
+					local?.pending === replay &&
+					Date.now() >= replay.expiresAt
 				)
 					local.pending = {
-						requestId: pending.requestId,
-						expiresAt: pending.expiresAt,
+						requestId: replay.requestId,
+						expiresAt: replay.expiresAt,
 					};
-				const unavailable = Boolean(pending && !payload);
-				activeReplay.current = pending;
+				const unavailable = Boolean(replay && !payload);
+				activeReplay.current = replay;
 				setOutcomeUnconfirmed(unavailable);
-				setCheckingInquiry(Boolean(pending));
-				inquiryPending?.(Boolean(pending));
-				setLines(response.lines);
+				setCheckingInquiry(Boolean(replay) || serverReplay);
+				inquiryPending?.(Boolean(replay) || serverReplay);
+				setReview(response);
 				if (unavailable) return;
-				if (pending && payload) {
+				if (replay && payload) {
 					expiry = window.setTimeout(
 						() => setAttempt((value) => value + 1),
-						Math.max(0, pending.expiresAt - Date.now()),
+						Math.max(0, replay.expiresAt - Date.now()),
 					);
 					restoreCustomerFields(form, new Map(payload));
 					restoreInquiry(form, payload);
@@ -356,7 +387,23 @@ export function ReviewInquiry({
 			if (form) retained.current = readCustomerFields(form, retained.current);
 			node.replaceChildren();
 		};
-	}, [client, scope, projectId, revision, locale, attempt, recheck, ready]);
+	}, [
+		client,
+		scope,
+		projectId,
+		revision,
+		locale,
+		attempt,
+		recheck,
+		ready,
+		reportRunId,
+	]);
+	const changes = review?.changes ?? [];
+	const lines = review?.lines.filter(
+		(line) =>
+			line.projectId !== projectId ||
+			!changes.some((row) => row.productId === line.productId),
+	);
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"
@@ -385,11 +432,56 @@ export function ReviewInquiry({
 							))}
 						</ul>
 					)}
+					{!checkingInquiry && changes.length > 0 && (
+						<table className="lp-data-table">
+							<thead>
+								<tr>
+									<th scope="col">{__("Product", "linker-tools")}</th>
+									<th scope="col">{__("Current quantity", "linker-tools")}</th>
+									<th scope="col">{__("New quantity", "linker-tools")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{changes.map((line) => (
+									<tr key={line.productId}>
+										<th scope="row">{line.label}</th>
+										<td>{line.before}</td>
+										<td>{line.after}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					)}
+					{!checkingInquiry &&
+						review?.conflicts.map((conflict) => (
+							<p key={conflict.unit ?? "system"}>
+								{conflict.unit && <strong>{conflict.unit} · </strong>}
+								{sprintf(
+									// translators: 1: inverter phase count, 2: required grid phase count.
+									__(
+										"Grid phase mismatch. Selected inverter: %1$d. Project requirement: %2$d. You can send an inquiry to discuss the configuration.",
+										"linker-tools",
+									),
+									conflict.actual,
+									conflict.required,
+								)}
+							</p>
+						))}
 					<button
 						className="sc-button"
 						type="button"
 						disabled={checkingInquiry}
-						onClick={changeSelection}
+						onClick={() => {
+							if (reportRunId) {
+								try {
+									save();
+								} catch {
+									setNavigationFailed(true);
+									return;
+								}
+							}
+							changeSelection();
+						}}
 					>
 						{__("Change selection", "linker-tools")}
 					</button>
@@ -414,7 +506,7 @@ export function ReviewInquiry({
 					)}
 				</aside>
 				<div className="sc-inquiry-fields">
-					{!lines && !failed && (
+					{!review && !failed && (
 						<p role="status">{__("Preparing your inquiry…", "linker-tools")}</p>
 					)}
 					<div
@@ -454,7 +546,7 @@ export function ReviewInquiry({
 							takeNavigationDraft(scope, projectId);
 						}}
 					/>
-					{outcomeUnconfirmed && !failed && lines && (
+					{outcomeUnconfirmed && !failed && review && (
 						<p role="status">
 							{__(
 								"We could not confirm whether your inquiry was received. Please contact sales@de-linker.com before sending another one.",

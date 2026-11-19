@@ -255,6 +255,7 @@ function compareFit(
 
 export function SystemOptions({
 	solarOnly,
+	guided = false,
 	run,
 	client,
 	scope,
@@ -268,6 +269,7 @@ export function SystemOptions({
 	onSelect,
 }: {
 	solarOnly: boolean;
+	guided?: boolean;
 	run: PlanningRun;
 	client: PlannerClient;
 	scope: string;
@@ -678,10 +680,15 @@ export function SystemOptions({
 				<div>
 					<h2>{__("A system for this project", "linker-tools")}</h2>
 					<p>
-						{__(
-							"Compare the equipment, then adjust the configuration.",
-							"linker-tools",
-						)}
+						{guided
+							? __(
+									"Choose an option to review it and send an inquiry.",
+									"linker-tools",
+								)
+							: __(
+									"Compare the equipment, then adjust the configuration.",
+									"linker-tools",
+								)}
 					</p>
 				</div>
 				{onSaveComparison && (

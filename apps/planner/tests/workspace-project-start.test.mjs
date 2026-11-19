@@ -28,6 +28,291 @@ const session = {
 	},
 };
 
+test("the home form creates a comparison with the supplied data in a single submit", (t) =>
+	runHomeComparison(t));
+
+test("a rejected CSV mapping remains editable on the same project after reopening the homepage", (t) =>
+	runHomeComparison(t, "correct"));
+
+test("a customer can explicitly discard the rejected load profile and compare the same project", (t) =>
+	runHomeComparison(t, "discard"));
+
+async function runHomeComparison(t, rejectedProfile) {
+	const rejectFirstMapping = Boolean(rejectedProfile);
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { ApiError } = await import("../src/data/protocol.ts");
+	const { DraftStore } = await import("../src/data/DraftStore.ts");
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	Object.defineProperty(globalThis, "indexedDB", {
+		configurable: true,
+		value: new IDBFactory(),
+	});
+	const commands = [];
+	const mappings = [];
+	const calls = [];
+	const asset = {
+		id: "a".repeat(32),
+		project_id: projectId,
+		content_sha256: "5".repeat(64),
+		metadata_sha256: "6".repeat(64),
+		media_type: "application/json",
+		purpose: "csv_profile_v1",
+		metadata: {},
+	};
+	const startAt = "2020-01-01T10:00:00Z";
+	const endAt = "2020-01-01T10:30:00Z";
+	const csv = "Timestamp,Load\n" + startAt + ",3\n2020-01-01T10:15:00Z,7\n";
+	const opened = [];
+	const client = {
+		invalidate() {},
+		async bootstrap() {
+			return session;
+		},
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async send(path, body) {
+			const command = JSON.parse(body);
+			calls.push(path);
+			if (path === "projects/create") commands.push(command);
+			else assert.equal(path, "projects/revise");
+			return {
+				id: projectId,
+				revision: path === "projects/create" ? 1 : 2,
+				title: commands[0].title,
+				inputs: command.inputs,
+				input_sha256: "2".repeat(64),
+			};
+		},
+		async query(path, command) {
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", products: [] };
+			calls.push(path);
+			assert.equal(command.project_id, projectId);
+			if (path === "profiles/csv") {
+				assert.equal(atob(command.content_base64), csv);
+				assert.equal(command.mapping.measurement, "gross_load");
+				assert.equal(command.mapping.origin, "measured");
+				assert.equal(command.mapping.interval_seconds, 900);
+				assert.equal(command.mapping.value_kind, "interval_average_kw");
+				mappings.push(command);
+				if (command.mapping.value_column === "Incorrect heading") {
+					throw new ApiError(422, "invalid_input", {
+						issue: "headers",
+						line: 1,
+						field: "header",
+					});
+				}
+				assert.equal(command.mapping.value_column, "Load");
+				assert.equal(command.source_label, "workshop-meter.csv");
+				return asset;
+			}
+			assert.equal(path, "profiles/preview");
+			assert.equal(command.asset_id, asset.id);
+			return {
+				schema_version: 1,
+				evaluation_scope: "profile_interpretation",
+				project_id: projectId,
+				asset_id: asset.id,
+				content_sha256: asset.content_sha256,
+				metadata_sha256: asset.metadata_sha256,
+				measurement: "gross_load",
+				source: {},
+				transformations: [],
+				summary: {
+					start_utc: startAt,
+					end_utc: endAt,
+					interval_count: 2,
+					covered_seconds: 1800,
+					span_seconds: 1800,
+					gap_seconds: 0,
+					gap_count: 0,
+					energy_kwh: 2.5,
+					min_interval_mean_kw: 3,
+					max_interval_mean_kw: 7,
+					native_max_interval_seconds: 900,
+					effective_max_interval_seconds: 900,
+					reconstructed_means: false,
+				},
+				rows: [],
+				first_gaps: [],
+				gaps_truncated: false,
+				next_offset: null,
+			};
+		},
+	};
+	let root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else Reflect.deleteProperty(globalThis, "indexedDB");
+	});
+	const mountHome = () =>
+		act(async () =>
+			root.render(
+				React.createElement(SessionBoundary, { client }, (value, recheck) =>
+					React.createElement(NewProject, {
+						session: value,
+						client,
+						store: new DraftStore(),
+						recheck,
+						openOnLoad: true,
+						config: { locale: "en", countries: { DE: "Germany" } },
+						homeComparison: {
+							picker: null,
+							savedProject: "",
+							compareSaved() {},
+						},
+						created: (project, destination) => {
+							opened.push([project, destination]);
+							return true;
+						},
+					}),
+				),
+			),
+		);
+	const findForm = () =>
+		document.querySelector('form[aria-label="Compare project options"]');
+	await mountHome();
+	await until(findForm);
+	let form = findForm();
+	const title = form.querySelector('[name="project_title"]');
+	await until(() => !title.disabled && !title.closest("fieldset").disabled);
+	function field(name) {
+		return form.querySelector('[name="' + name + '"]');
+	}
+	function byLabel(label) {
+		return [...form.querySelectorAll("label")]
+			.find((element) => element.querySelector("span")?.textContent === label)
+			?.querySelector("input, select, textarea");
+	}
+	async function select(name, value) {
+		await act(async () => {
+			const input = field(name) ?? byLabel(name);
+			input.value = value;
+			input.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	await enter(title, "Berlin workshop");
+	await select("country", "DE");
+	await select("system_scope", "new_pv_storage");
+	await select("project_purpose", "peak");
+	await select("grid_phase", "3");
+	await enter(field("annual_load_kwh"), "7200");
+	await select("annual_load_basis", "bill_total");
+	await enter(field("pv_dc_kw"), "8");
+	await act(async () => field("estimate_solar").click());
+	await enter(field("latitude"), "47.66");
+	await enter(field("longitude"), "9.17");
+	await enter(field("pv_tilt_deg"), "32");
+	await enter(field("pv_azimuth_deg"), "180");
+	await enter(field("pvgis_year"), "2020");
+	await enter(field("pvgis_loss_percent"), "14");
+	await select("pvgis_database", "PVGIS-SARAH3");
+	await select("pvgis_technology", "crystSi");
+	await select("pvgis_mounting", "free");
+	await select("pvgis_horizon", "true");
+	await enter(field("pvgis_source"), "Surveyed customer array");
+	await enter(field("peak_import_kw"), "5");
+	const fileInput = field("load_profile");
+	assert.equal(fileInput?.type, "file");
+	await act(async () => {
+		Object.defineProperty(fileInput, "files", {
+			value: [new File([csv], "workshop-meter.csv", { type: "text/csv" })],
+		});
+		fileInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await select("load_profile_delimiter", ",");
+	await enter(
+		field("load_profile_rights"),
+		"Customer site meter; permission granted.",
+	);
+	await enter(byLabel("Timestamp column"), "Timestamp");
+	await enter(
+		byLabel("Value column"),
+		rejectFirstMapping ? "Incorrect heading" : "Load",
+	);
+	await select("Value meaning and unit", "interval_average_kw");
+	await select("Decimal separator in the file", ".");
+	await select("Interval boundaries", "fixed");
+	await select("The timestamp identifies…", "start");
+	await enter(field("profile_interval_minutes"), "15");
+	await select("Source time zone", "UTC");
+	assert.deepEqual(calls, []);
+	const submit = form.querySelector('button[type="submit"]');
+	assert.equal(submit.textContent.trim(), "Compare systems");
+	await act(async () => submit.click());
+	if (rejectFirstMapping) {
+		await until(() => calls.includes("profiles/csv") && !submit.disabled);
+		assert.equal(opened.length, 0);
+		await act(async () => root.unmount());
+		root = createRoot(fixture.element);
+		await mountHome();
+		await until(() =>
+			findForm()?.querySelector('[name="load_profile_source"]'),
+		);
+		form = findForm();
+		assert.equal(byLabel("Value column").value, "Incorrect heading");
+		assert.equal(field("load_profile_source").value, "workshop-meter.csv");
+		if (rejectedProfile === "discard") {
+			const discard = [...form.querySelectorAll("button")].find(
+				(button) => button.textContent === "Compare without this load profile",
+			);
+			assert.ok(discard);
+			await act(async () => discard.click());
+		} else {
+			await enter(byLabel("Value column"), "Load");
+			await act(async () =>
+				form.querySelector('button[type="submit"]').click(),
+			);
+		}
+	}
+	await until(() => opened.length === 1);
+	assert.equal(commands.length, rejectFirstMapping ? 2 : 1);
+	if (rejectFirstMapping) {
+		assert.deepEqual(commands[1], commands[0]);
+		if (rejectedProfile === "correct")
+			assert.notEqual(mappings[1].key, mappings[0].key);
+	}
+	assert.equal(commands[0].inputs.brief.site.country_code, "DE");
+	assert.equal(commands[0].inputs.equipment_setup.grid_phase, 3);
+	assert.equal(commands[0].inputs.brief.annual_load.kwh, 7200);
+	assert.equal(commands[0].inputs.brief.annual_load.basis, "bill_total");
+	assert.equal(commands[0].inputs.brief.site.coordinate_basis, "user_entered");
+	assert.deepEqual(commands[0].inputs.pvgis_reference.arrays[0], {
+		id: "declared-array",
+		peak_power_kwp: 8,
+		tilt_deg: 32,
+		azimuth_north_clockwise_deg: 180,
+		source_note: "Surveyed customer array",
+	});
+	assert.deepEqual(calls, [
+		...(rejectFirstMapping ? ["projects/create", "profiles/csv"] : []),
+		"projects/create",
+		...(rejectedProfile === "discard"
+			? []
+			: ["profiles/csv", "profiles/preview", "projects/revise"]),
+	]);
+	const [[saved, destination]] = opened;
+	assert.equal(destination, "guided-comparison");
+	assert.equal(saved.id, projectId);
+	assert.equal(saved.revision, rejectedProfile === "discard" ? 1 : 2);
+	assert.equal(
+		saved.inputs.profile_selections?.selected.gross_load,
+		rejectedProfile === "discard" ? undefined : asset.id,
+	);
+	assert.deepEqual(
+		await new DraftStore().readCreations(session.query_scope),
+		[],
+	);
+	const [period] = saved.inputs.energy_scenario.schedule;
+	assert.equal(period.import_cap_kw, 5);
+	assert.equal(period.start_utc, rejectedProfile === "discard" ? "" : startAt);
+	assert.equal(period.end_utc, rejectedProfile === "discard" ? "" : endAt);
+}
+
 test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
 	const fixture = setupDom();
 	window.history.replaceState(
@@ -1166,4 +1451,59 @@ test("reopening a pending preliminary review reads its original revision after a
 		fixture.element.querySelector(".sc-draft-transfer aside").textContent,
 		/Planned system: Storage/,
 	);
+});
+
+test("native guided retry reads the reviewed revision without any browser replay", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { replacePlannerLocation } =
+		await import("../src/data/plannerLocation.ts");
+	const cache = new QueryClient();
+	const root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+	});
+	const route = new URL(location.href);
+	route.searchParams.set("project", projectId);
+	route.searchParams.set("guided", "inquiry");
+	route.searchParams.set("run", "8".repeat(32));
+	route.searchParams.set("retry_revision", "7");
+	route.searchParams.set("linker_inquiry_retry", crypto.randomUUID());
+	route.hash = "sc-review";
+	history.replaceState(null, "", route);
+	const revisions = [];
+	const client = {
+		isCurrentScope: () => true,
+		query(path, command) {
+			assert.equal(path, "projects/read");
+			revisions.push(command.revision);
+			return new Promise(() => {});
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					session,
+					client,
+					config: {},
+					store: {},
+					recheck: () => assert.fail("Unexpected scope invalidation"),
+				}),
+			),
+		),
+	);
+	await until(() => revisions.length === 1);
+	assert.deepEqual(revisions, [7]);
+	route.searchParams.delete("retry_revision");
+	route.hash = "sc-system";
+	await act(async () => replacePlannerLocation(route));
+	await until(() => revisions.length === 2);
+	assert.deepEqual(revisions, [7, null]);
 });

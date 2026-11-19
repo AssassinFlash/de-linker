@@ -17269,3 +17269,88 @@ msgstr "Projektdaten eingeben"
 #: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
 msgid "This report is no longer in your solution draft."
 msgstr "Dieser Bericht ist nicht mehr in Ihrem Lösungsentwurf."
+
+#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
+msgid "Compare options for your project"
+msgstr "Anlagenoptionen für Ihr Projekt vergleichen"
+
+#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
+msgid "Enter your project details or use a saved project."
+msgstr "Geben Sie Ihre Projektdaten ein oder wählen Sie ein gespeichertes Projekt."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Compare project options"
+msgstr "Projektoptionen vergleichen"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Preparing comparison…"
+msgstr "Vergleich wird vorbereitet …"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run."
+msgstr "Wählen Sie Projektart, Zweck und Netzanschluss. Geben Sie für Ersatzstrom die Last und die gewünschte Dauer ein."
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "Annual electricity use source"
+msgstr "Quelle des jährlichen Stromverbrauchs"
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "Electricity bill"
+msgstr "Stromrechnung"
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "Estimate"
+msgstr "Schätzung"
+
+#: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx build/planner/assets/planner.js
+msgid "Estimate solar generation with PVGIS"
+msgstr "Solarstromertrag mit PVGIS schätzen"
+
+#: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx
+#: build/planner/assets/planner.js
+msgid "Use the street address above for this estimate (send it to Google Maps)"
+msgstr "Oben eingegebene Straßenadresse für diese Schätzung verwenden (Adresse an Google Maps senden)"
+
+#: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx build/planner/assets/planner.js
+msgid "Array inclination (°)"
+msgstr "Neigung der Modulfläche (°)"
+
+#: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx build/planner/assets/planner.js
+msgid "Azimuth clockwise from north (°)"
+msgstr "Ausrichtung im Uhrzeigersinn ab Norden (°)"
+
+#: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx build/planner/assets/planner.js
+msgid "Source of array details and model settings"
+msgstr "Quelle der Angaben zur Modulfläche und der Modelleinstellungen"
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "To estimate peak reduction, provide a measured load profile and a target grid import limit. Without both, this comparison shows equipment options."
+msgstr "Geben Sie zur Abschätzung der Spitzenlastsenkung ein gemessenes Lastprofil und eine Zielgrenze für den Netzbezug an. Fehlt eine dieser Angaben, zeigt der Vergleich passende Geräte."
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Measured site load (CSV, optional)"
+msgstr "Gemessener Stromverbrauch am Standort (CSV, optional)"
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Use a file that records total electricity use before on-site solar or battery effects. Enter the column headings exactly as they appear in the file."
+msgstr "Verwenden Sie eine Datei mit dem gesamten Stromverbrauch vor Berücksichtigung von Solarstrom und Speicher. Geben Sie die Spaltenüberschriften genau wie in der Datei ein."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Enter your target grid import limit to compare peak reduction."
+msgstr "Geben Sie Ihre Zielgrenze für den Netzbezug ein, um die Spitzenlastsenkung zu vergleichen."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "The file is empty or too large."
+msgstr "Die Datei ist leer oder zu groß."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "The project and load profile could not be confirmed. Try again to resume this request."
+msgstr "Projekt und Lastprofil konnten nicht bestätigt werden. Versuchen Sie es erneut, um die Anfrage fortzusetzen."
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Compare without this load profile"
+msgstr "Ohne dieses Lastprofil vergleichen"
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Your saved CSV is ready. Choose another file to replace it."
+msgstr "Ihre gespeicherte CSV-Datei liegt vor. Wählen Sie eine andere Datei, um sie zu ersetzen."

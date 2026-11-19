@@ -10,6 +10,7 @@ import {
 } from "./measurePlannerChrome.ts";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { projectTitleSearch } from "./projectIndex.ts";
+import { guidedInquiryRetry } from "./inquiryRecovery.ts";
 
 const workspaceHashes = new Set([
 	"#sc-project",
@@ -62,6 +63,9 @@ export function projectLanguageUrl(
 	target.searchParams.delete("compare");
 	target.searchParams.delete("energy_view");
 	target.searchParams.delete("brief");
+	target.searchParams.delete("guided");
+	target.searchParams.delete("retry_revision");
+	target.searchParams.delete("linker_inquiry_retry");
 	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
 	const saved = id === null ? savedSolutionId(page.searchParams) : null;
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
@@ -91,6 +95,8 @@ export function projectLanguageUrl(
 			? page.hash
 			: "";
 	if (id && page.searchParams.get("project") === id) {
+		if (page.searchParams.get("guided") === "inquiry")
+			target.searchParams.set("guided", "inquiry");
 		const view = page.searchParams.get("energy_view");
 		if (view && initialEnergyView(page) === view)
 			target.searchParams.set("energy_view", view);
@@ -104,6 +110,12 @@ export function projectLanguageUrl(
 		) {
 			target.searchParams.delete("run");
 			target.searchParams.set("compare", comparison);
+		}
+		const retry = guidedInquiryRetry(page);
+		if (retry && target.searchParams.has("run")) {
+			target.searchParams.set("retry_revision", String(retry.revision));
+			if (retry.handle !== null)
+				target.searchParams.set("linker_inquiry_retry", retry.handle);
 		}
 		if (workspaceHashes.has(page.hash)) target.hash = page.hash;
 		else if (

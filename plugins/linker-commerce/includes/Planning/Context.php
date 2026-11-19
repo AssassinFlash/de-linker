@@ -176,26 +176,27 @@ final class Context {
 		return isset( self::$reviewed_note['inputs'] ) || array() !== self::included_notes();
 	}
 
-	/** Recheck current source permission and project-note revision consistency before consuming an inquiry attempt. */
-	public static function preflight(): ?WP_Error {
-		$active = self::active();
-		foreach ( WC()->cart->get_cart() as $line ) {
+	/**
+	 * Recheck the exact reviewed draft and project-note revisions before Woo writes.
+	 *
+	 * @param array<string,mixed>|null $proposed Reviewed replacement handoff.
+	 */
+	public static function preflight( ?array $proposed = null ): ?WP_Error {
+		$active  = self::active();
+		$replace = null === $proposed ? array() : DraftPreview::replacement_keys( $proposed['snapshot']['project_id'], $proposed['id'] );
+		foreach ( WC()->cart->get_cart() as $key => $line ) {
 			$id = $line[ DraftTransfer::LINE_META ] ?? null;
-			if ( null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) ) {
+			if ( ! in_array( $key, $replace, true ) && null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) ) {
 				return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
 			}
 		}
-		foreach ( array_intersect_key( self::report_only_contexts(), self::included_notes() ) + $active as $handoff ) {
+		foreach ( self::submitted_handoffs( $proposed ) as $handoff ) {
 			$error = DraftTransfer::publication_error( $handoff['snapshot'] );
 			if ( $error instanceof WP_Error ) {
 				return $error;
 			}
 		}
-		$note_error = self::preflight_notes();
-		if ( $note_error instanceof WP_Error ) {
-			return $note_error;
-		}
-		return null;
+		return self::preflight_notes( $proposed );
 	}
 
 	/**
@@ -350,19 +351,33 @@ final class Context {
 
 	/** Frozen handoffs the current inquiry will submit, keyed by handoff ID.
 	 *
+	 * @param array<string,mixed>|null $proposed Reviewed replacement handoff.
 	 * @return array<string,array<string,mixed>>
 	 */
-	public static function submitted_handoffs(): array {
-		return self::active() + array_intersect_key( self::report_only_contexts(), self::included_notes() );
+	public static function submitted_handoffs( ?array $proposed = null ): array {
+		$active  = self::active();
+		$reports = self::report_only_contexts();
+		if ( null !== $proposed ) {
+			$other_project = static fn ( array $handoff ): bool => $handoff['snapshot']['project_id'] !== $proposed['snapshot']['project_id'];
+			$active        = array_filter( $active, $other_project );
+			$reports       = array_filter( $reports, $other_project );
+			if ( DraftTransfer::report_only( $proposed['snapshot'] ) ) {
+				$reports[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
+			} else {
+				$active[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
+			}
+		}
+		return $active + array_intersect_key( $reports, self::included_notes( $proposed ) );
 	}
 
 	/**
 	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
 	 * @param callable(array<string,array<string,mixed>>,array<int,string>):(WC_Order|WP_Error) $submit Native order writer.
+	 * @param array<string,mixed>|null                                                          $proposed Reviewed replacement handoff.
 	 */
-	public static function submit_inquiry( callable $submit ): WC_Order|WP_Error {
-		$handoffs = self::submitted_handoffs();
+	public static function submit_inquiry( callable $submit, ?array $proposed = null ): WC_Order|WP_Error {
+		$handoffs = self::submitted_handoffs( $proposed );
 		$project  = isset( self::$reviewed_note['inputs'] ) ? self::$reviewed_note : null;
 		if ( array() === $handoffs && null === $project ) {
 			return $submit( array(), array() );
@@ -842,8 +857,12 @@ final class Context {
 		return $project;
 	}
 
-	/** Check every reviewed revision before the first Woo write. */
-	private static function preflight_notes(): ?WP_Error {
+	/**
+	 * Check every reviewed revision before the first Woo write.
+	 *
+	 * @param array<string,mixed>|null $proposed Reviewed replacement handoff.
+	 */
+	private static function preflight_notes( ?array $proposed ): ?WP_Error {
 		if ( null === self::$submission_post ) {
 			return null;
 		}
@@ -860,7 +879,7 @@ final class Context {
 		if ( $present && '1' !== ( $post[ self::INCLUDE_FIELD ] ?? '' ) ) {
 			return null;
 		}
-		$current = self::session_notes();
+		$current = self::session_notes( $proposed );
 		if ( ! $present && ! isset( $post[ self::REVISIONS_FIELD ] ) ) {
 			return null;
 		}
@@ -899,13 +918,14 @@ final class Context {
 	/**
 	 * Resolve the project notes included by the current submission.
 	 *
+	 * @param array<string,mixed>|null $proposed Reviewed replacement handoff.
 	 * @return array<string,array{handoff_id?:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
-	private static function included_notes(): array {
+	private static function included_notes( ?array $proposed = null ): array {
 		if ( null !== self::$submission_post && '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' !== ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
 			return array();
 		}
-		$notes = self::session_notes();
+		$notes = self::session_notes( $proposed );
 		if ( '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' === ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
 			if ( null !== self::$reviewed_note && '' !== trim( self::$reviewed_note['text'] ) ) {
 				$note = self::$reviewed_note;

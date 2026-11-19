@@ -14,6 +14,7 @@ use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\NativeTransaction;
 use Linker\Commerce\Products\Publication;
+use WC_Order;
 use WP_Error;
 
 /** Browser product arrays and copied cart metadata never authorise a transfer. */
@@ -21,6 +22,15 @@ final class DraftTransfer {
 	public const LINE_META = '_linker_planning_handoff';
 	public const CONTEXTS  = '_linker_planning_contexts';
 	public const RECEIPTS  = '_linker_planning_receipts';
+
+	/**
+	 * Serialize writes against the same native Woo draft.
+	 *
+	 * @param string $customer Native Woo session identity.
+	 */
+	public static function session_lock( string $customer ): string {
+		return 'planning-draft:' . $customer;
+	}
 
 	/**
 	 * Engine ownership is already confirmed by the trusted Tools adapter.
@@ -32,7 +42,29 @@ final class DraftTransfer {
 	 */
 	public function apply( mixed $previous, array $command, array $handoff ): array|WP_Error {
 		unset( $previous );
-		$snapshot = $handoff['snapshot'] ?? null;
+		return $this->run( $command, $handoff, null );
+	}
+
+	/**
+	 * Apply and send the reviewed draft in one native transaction.
+	 *
+	 * @param array<string,mixed>            $command Original intent.
+	 * @param array<string,mixed>            $handoff Owned receipt.
+	 * @param callable():(WC_Order|WP_Error) $send Admitted native order writer.
+	 */
+	public function submit( array $command, array $handoff, callable $send ): WC_Order|WP_Error {
+		return $this->run( $command, $handoff, $send );
+	}
+
+	/**
+	 * Fence the native draft across its original writer and an optional order write.
+	 *
+	 * @param array<string,mixed>                   $command Original intent.
+	 * @param array<string,mixed>                   $handoff Owned receipt.
+	 * @param (callable():(WC_Order|WP_Error))|null $send Admitted native order writer.
+	 * @return ($send is null ? array<string,mixed>|WP_Error : WC_Order|WP_Error)
+	 */
+	private function run( array $command, array $handoff, ?callable $send ): array|WC_Order|WP_Error {
 		if ( ! self::envelope_valid( $handoff, $command['project_id'], $command['report_run_id'], $command['expected_revision'] ) ) {
 			return self::failure( 'planning_transfer_invalid', 502 );
 		}
@@ -44,9 +76,9 @@ final class DraftTransfer {
 		$result = self::failure( 'planning_transfer_busy', 409 );
 		try {
 			$taken = Lock::run(
-				'planning-draft:' . $session->get_customer_id(),
-				function () use ( $command, $handoff, &$result ): void {
-					$result = $this->write( $command, $handoff );
+				self::session_lock( $session->get_customer_id() ),
+				function () use ( $command, $handoff, $send, &$result ): void {
+					$result = $this->write( $command, $handoff, $send );
 				},
 				guard_connection: true
 			);
@@ -167,12 +199,13 @@ final class DraftTransfer {
 	/**
 	 * Native session state and acknowledgement commit in the same transaction.
 	 *
-	 * @param array<string,mixed> $command Original intent.
-	 * @param array<string,mixed> $handoff Owned receipt.
-	 * @return array<string,mixed>|WP_Error
+	 * @param array<string,mixed>                   $command Original intent.
+	 * @param array<string,mixed>                   $handoff Owned receipt.
+	 * @param (callable():(WC_Order|WP_Error))|null $send Admitted native order writer.
+	 * @return array<string,mixed>|WC_Order|WP_Error
 	 * @throws \RuntimeException If the reviewed cart cannot be updated.
 	 */
-	private function write( array $command, array $handoff ): array|WP_Error {
+	private function write( array $command, array $handoff, ?callable $send ): array|WC_Order|WP_Error {
 		$session  = $this->native_session();
 		$fresh    = $this->fresh();
 		$receipts = maybe_unserialize( $fresh[ self::RECEIPTS ] ?? array() );
@@ -187,6 +220,9 @@ final class DraftTransfer {
 			if ( ! is_array( $known ) || ( $known['intent_sha256'] ?? null ) !== $intent || ( $known['handoff_id'] ?? null ) !== $handoff['id'] ) {
 				return self::failure( 'planning_transfer_changed', 409 );
 			}
+			if ( null !== $send ) {
+				return self::failure( 'planning_draft_changed', 409 );
+			}
 			return array_replace( $known, self::destinations( self::report_only( $handoff['snapshot'] ) ), array( 'active' => self::has_active_handoff( $fresh, $handoff ) ) );
 		}
 		// Woo may have loaded this request before another transfer finished. Do
@@ -196,46 +232,36 @@ final class DraftTransfer {
 			return self::failure( 'planning_draft_changed', 409 );
 		}
 		if ( ! hash_equals( $command['expected_draft_sha256'], DraftPreview::fingerprint() ) ) {
-			$this->stop_autosave();
 			return self::failure( 'planning_draft_changed', 409 );
 		}
-		$snapshot     = $handoff['snapshot'];
-		$report_only  = self::report_only( $snapshot );
-		$lines        = array_map(
+		$snapshot    = $handoff['snapshot'];
+		$report_only = self::report_only( $snapshot );
+		$lines       = array_map(
 			static fn ( array $item ): array => array(
 				'product'  => array( 'id' => $item['product_id'] ),
 				'quantity' => $item['quantity'],
 			),
 			$snapshot['items']
 		);
-		$design       = array(
+		$design      = array(
 			'kind'        => 'planning_products_v1',
 			'publication' => $snapshot['publication'],
 			'selected'    => array( 'lines' => $lines ),
 		);
-		$scope        = null;
-		$restore_cart = null;
+		$scope       = null;
+		$restore     = $this->restore_cart_state( $session );
 		try {
 			$scope   = new NativeTransaction();
 			$replace = DraftPreview::replacement_keys( $snapshot['project_id'], $handoff['id'] );
 			if ( $report_only ) {
 				$items = self::publication_error( $snapshot ) ?? array();
 				if ( is_array( $items ) && array() !== $replace ) {
-					$cart         = WC()->cart;
-					$before       = $cart->get_cart();
-					$removed      = $cart->get_removed_cart_contents();
-					$totals       = $cart->get_totals();
-					$restore_cart = static function () use ( $cart, $before, $removed, $totals ): void {
-						$cart->set_cart_contents( $before );
-						$cart->set_removed_cart_contents( $removed );
-						$cart->set_totals( $totals );
-					};
 					foreach ( $replace as $cart_key ) {
-						if ( ! $cart->remove_cart_item( $cart_key ) ) {
+						if ( ! WC()->cart->remove_cart_item( $cart_key ) ) {
 							throw new \RuntimeException( 'planning_draft_changed' );
 						}
 					}
-					$cart->calculate_totals();
+					WC()->cart->calculate_totals();
 					$items = self::publication_error( $snapshot ) ?? array();
 				}
 			} else {
@@ -243,10 +269,12 @@ final class DraftTransfer {
 			}
 			if ( is_wp_error( $items ) ) {
 				$scope->rollback();
-				if ( null !== $restore_cart ) {
-					$restore_cart();
+				$restore();
+				if ( null !== $send ) {
+					$this->stop_autosave();
+				} else {
+					$this->evict_cart_cache();
 				}
-				$this->stop_autosave();
 				return $items;
 			}
 			$contexts = (array) $session->get( self::CONTEXTS, array() );
@@ -274,6 +302,21 @@ final class DraftTransfer {
 			$receipts[ $key ] = $result;
 			$session->set( self::CONTEXTS, $contexts );
 			$session->set( self::RECEIPTS, $receipts );
+			$order = null;
+			if ( null !== $send ) {
+				$order = $send();
+				if ( $order instanceof WP_Error ) {
+					$scope->rollback();
+					$restore();
+					$this->stop_autosave();
+					if ( 'checkout-error' === $order->get_error_code() ) {
+						return new WP_Error( 'linker_guided_checkout_refused', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
+					}
+					return $order;
+				}
+				Context::consume_captured_notes( $order );
+				WC()->cart->empty_cart();
+			}
 			if ( $report_only ) {
 				$session->set_customer_session_cookie( true );
 			}
@@ -282,27 +325,54 @@ final class DraftTransfer {
 			$stored = maybe_unserialize( $saved[ self::RECEIPTS ] ?? array() );
 			if ( ! is_array( $stored ) || ( $stored[ $key ] ?? null ) !== $result ) {
 				$scope->rollback();
-				if ( null !== $restore_cart ) {
-					$restore_cart();
-				}
+				$restore();
 				$this->stop_autosave();
 				return self::failure( 'planning_transfer_unconfirmed', 503 );
 			}
 			$scope->commit();
-			return $result;
+			return $order ?? $result;
 		} catch ( \Throwable $error ) {
 			if ( $scope instanceof NativeTransaction ) {
 				try {
 					$scope->rollback();
-					if ( null !== $restore_cart ) {
-						$restore_cart();
-					}
+					$restore();
 				} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- The original commit can be unknown; do not compensate on another connection.
 				}
 			}
 			$this->stop_autosave();
 			return self::failure( 'planning_transfer_unconfirmed', 503 );
 		}
+	}
+
+	/**
+	 * Keep Woo's request state consistent with its rolled-back native draft.
+	 *
+	 * @param \WC_Session_Handler $session Native session.
+	 * @return callable():void
+	 */
+	private function restore_cart_state( \WC_Session_Handler $session ): callable {
+		$cart           = WC()->cart;
+		$lines          = $cart->get_cart();
+		$removed        = $cart->get_removed_cart_contents();
+		$totals         = $cart->get_totals();
+		$coupons        = $cart->get_applied_coupons();
+		$discounts      = $cart->get_coupon_discount_totals();
+		$discount_taxes = $cart->get_coupon_discount_tax_totals();
+		$fields         = array();
+		foreach ( array( 'cart', 'removed_cart_contents', 'cart_totals', 'applied_coupons', 'coupon_discount_totals', 'coupon_discount_tax_totals', 'shipping_method_counts', 'previous_shipping_methods', 'chosen_shipping_methods', 'store_api_draft_order', 'order_awaiting_payment', 'wc_notices', self::CONTEXTS, self::RECEIPTS ) as $key ) {
+			$fields[ $key ] = $session->get( $key );
+		}
+		return static function () use ( $cart, $lines, $removed, $totals, $coupons, $discounts, $discount_taxes, $session, $fields ): void {
+			$cart->set_cart_contents( $lines );
+			$cart->set_removed_cart_contents( $removed );
+			$cart->set_totals( $totals );
+			$cart->set_applied_coupons( $coupons );
+			$cart->set_coupon_discount_totals( $discounts );
+			$cart->set_coupon_discount_tax_totals( $discount_taxes );
+			foreach ( $fields as $key => $value ) {
+				$session->set( $key, $value );
+			}
+		};
 	}
 
 	/**
@@ -403,12 +473,22 @@ final class DraftTransfer {
 	 */
 	private function fresh(): array {
 		$session = $this->native_session();
-		$group   = constant( 'WC_SESSION_CACHE_GROUP' );
+		self::evict_session_cache( $session );
+		return (array) $session->get_session_data();
+	}
+
+	/**
+	 * Reload the current Woo session from native storage rather than request cache.
+	 *
+	 * @param \WC_Session_Handler $session The native Woo session.
+	 * @throws \RuntimeException Native session metadata is unavailable.
+	 */
+	public static function evict_session_cache( \WC_Session_Handler $session ): void {
+		$group = constant( 'WC_SESSION_CACHE_GROUP' );
 		if ( ! is_string( $group ) ) {
 			throw new \RuntimeException( 'planning_native_session_group_unavailable' );
 		}
 		wp_cache_delete( \WC_Cache_Helper::get_cache_prefix( $group ) . $session->get_customer_id(), $group );
-		return (array) $session->get_session_data();
 	}
 
 	/**
@@ -425,10 +505,15 @@ final class DraftTransfer {
 		return $session;
 	}
 
-	/** An uncertain write must be resolved by readback, never shutdown compensation. */
+	/** Later callbacks cannot save a stale draft after releasing the draft lock. */
 	private function stop_autosave(): void {
 		remove_action( 'shutdown', array( WC()->session, 'save_data' ), 20 );
-		$this->fresh();
+		$this->evict_cart_cache();
+	}
+
+	/** A reverted native cart must not survive in Woo's object caches. */
+	private function evict_cart_cache(): void {
+		self::evict_session_cache( $this->native_session() );
 		if ( get_current_user_id() > 0 ) {
 			clean_user_cache( get_current_user_id() );
 		}

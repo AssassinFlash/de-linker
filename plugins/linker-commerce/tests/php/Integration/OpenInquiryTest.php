@@ -71,6 +71,187 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':4' ) );
 	}
 
+	/** A retained-equipment report is previewed without changing the cart, then attached by Send. */
+	public function test_guided_report_is_attached_by_the_native_send(): void {
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$product  = $this->product( '99' );
+		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$this->assertIsString( $cart_key );
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->save_data();
+		$cart_before     = $session->get( 'cart' );
+		$receipts_before = $session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS );
+
+		$handoff        = $this->planning_report();
+		$id             = $handoff['snapshot']['project_id'];
+		$report         = $handoff['snapshot']['report_run_id'];
+		$project        = array(
+			'project_id'    => $id,
+			'revision'      => 1,
+			'note_revision' => '1',
+			'title'         => 'Existing inverter plan',
+			'text'          => '',
+			'inputs'        => array( 'brief' => array( 'system_scope' => 'storage_only' ) ),
+		);
+		$project_source = static fn () => $project;
+		$handoff_source = static fn () => $handoff;
+		$admit          = static fn (): bool => true;
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingHookComment -- Simulated owned responses at the native Tools reader seam.
+		add_filter( 'linker_tools_planning_inquiry_note', $project_source, 11 );
+		add_filter( 'linker_tools_planning_inquiry_handoff', $handoff_source, 11 );
+		add_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+		$this->later(
+			static function () use ( $project_source, $handoff_source, $admit ): void {
+				remove_filter( 'linker_tools_planning_inquiry_note', $project_source, 11 );
+				remove_filter( 'linker_tools_planning_inquiry_handoff', $handoff_source, 11 );
+				remove_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+			}
+		);
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment
+
+		$review = ( new \Linker\Commerce\Planning\Module() )->inquiry_form(
+			null,
+			'en',
+			$project,
+			array(
+				'command'  => array(
+					'schema_version'    => 1,
+					'project_id'        => $id,
+					'report_run_id'     => $report,
+					'expected_revision' => 1,
+					'key'               => wp_generate_uuid4(),
+				),
+				'handoff'  => $handoff,
+				'replay'   => null,
+				'retained' => null,
+			)
+		);
+		$this->assertIsArray( $review );
+		$this->assertCount( 1, $review['inquiry_lines'] );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$this->assertSame( 1, preg_match( '/name="linker_report_transfer" value="([^"]+)"/', $review['inquiry_form_html'], $token ) );
+		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $review['inquiry_form_html'], $nonce ) );
+		$this->assertSame( 1, preg_match( '/name="linker_project_note_revisions\[' . $handoff['id'] . '\]" value="([^"]+)"/', $review['inquiry_form_html'], $note_revision ) );
+		$stamp                             = (string) ( time() - 5 );
+		$post                              = array(
+			'linker_preliminary_project'    => $id . ':1',
+			'linker_report_transfer'        => ( $token[1] ?? '' ),
+			'linker_inquiry_nonce'          => ( $nonce[1] ?? '' ),
+			'linker_started'                => $stamp,
+			'linker_started_nonce'          => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'linker_draft_hash'             => WC()->cart->get_cart_hash(),
+			'linker_project_notes_present'  => '1',
+			'linker_include_project_notes'  => '1',
+			'linker_project_note_revisions' => array( $handoff['id'] => ( $note_revision[1] ?? '' ) ),
+			'name'                          => 'Guided Fixture',
+			'email'                         => 'plan-' . self::tag() . '@example.test',
+			'consent'                       => '1',
+		);
+		$handler                           = new \Linker\Commerce\Inquiry\Handler();
+		$altered                           = $post;
+		$altered['linker_report_transfer'] = substr_replace( ( $token[1] ?? '' ), str_repeat( '9', 32 ), 0, 32 );
+		$refused                           = $handler->process( $altered );
+		$this->assertInstanceOf( \WP_Error::class, $refused );
+		$this->assertSame( 'linker_inquiry_invalid', $refused->get_error_code() );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+
+		$refuse = function (): void {
+			$this->assertCount( 1, \Linker\Commerce\Planning\Context::report_only_contexts() );
+			throw new \RuntimeException( 'Fixture checkout refusal before first order save.' );
+		};
+		add_action( 'woocommerce_checkout_create_order', $refuse, 20 );
+		try {
+			$refused = $handler->process( $post );
+		} finally {
+			remove_action( 'woocommerce_checkout_create_order', $refuse, 20 );
+		}
+		$this->assertInstanceOf( \WP_Error::class, $refused );
+		$this->assertSame( 'linker_guided_checkout_refused', $refused->get_error_code() );
+		$this->assertFalse( \Linker\Commerce\Protection\FormRecovery::after_error( $refused ) );
+		$this->later(
+			static function () use ( $session ): void {
+				add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+			}
+		);
+		$this->assertFalse( has_action( 'shutdown', array( $session, 'save_data' ) ) );
+		$this->assertSame( 2, WC()->cart->get_cart()[ $cart_key ]['quantity'] );
+		$this->assertSame( $cart_before, WC()->session->get( 'cart' ) );
+		$this->assertSame( $receipts_before, WC()->session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ) );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$persisted = $session->get_session_data();
+		$this->assertSame( $cart_before, maybe_unserialize( $persisted['cart'] ?? null ) );
+		$this->assertSame( $receipts_before, maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ] ?? null ) );
+		$this->assertSame( array(), maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ] ?? array() ) );
+
+		$order = $handler->process( $post );
+		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() . ': ' . $order->get_error_message() : '' );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$stored = \Linker\Commerce\Planning\Context::stored( $order );
+		$this->assertSame( $report, $stored[ $handoff['id'] ]['reference']['report_run_id'] );
+		$this->assertSame( 1, $stored[ $handoff['id'] ]['reference']['revision'] );
+		$this->assertSame( array(), $stored[ $handoff['id'] ]['included_items'] );
+	}
+
+	/** A detached request can retain its error without overwriting a newer native draft. */
+	public function test_detached_checkout_retry_preserves_the_stored_draft(): void {
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->init_session_cookie();
+		$this->assertSame( (string) get_current_user_id(), $session->get_customer_id() );
+		WC()->cart->empty_cart();
+		$product  = $this->product( '99' );
+		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$this->assertIsString( $cart_key );
+		$session->save_data();
+		$group = constant( 'WC_SESSION_CACHE_GROUP' );
+		$this->assertIsString( $group );
+		$current                        = $session->get( 'cart' );
+		$stale_data                     = $session->get_session_data();
+		$stale                          = $current;
+		$stale[ $cart_key ]['quantity'] = 1;
+		$cache_key                      = \WC_Cache_Helper::get_cache_prefix( $group ) . $session->get_customer_id();
+		$stale_data['cart']             = maybe_serialize( $stale );
+		wp_cache_set( $cache_key, $stale_data, $group );
+		$session->init_session_cookie();
+		$this->assertSame( $stale, $session->get( 'cart' ) );
+
+		$flash = array(
+			'fields' => array( 'message' => 'My original inquiry' ),
+			'error'  => 'Review the updated draft.',
+		);
+		remove_action( 'shutdown', array( $session, 'save_data' ), 20 );
+		try {
+			$handle = \Linker\Commerce\Inquiry\CheckoutRetry::remember( $flash, '' );
+			$this->assertIsString( $handle );
+			$session->init_session_cookie();
+			$this->assertSame( $current, $session->get( 'cart' ) );
+			$this->assertSame( $flash, \Linker\Commerce\Inquiry\CheckoutRetry::read( $handle ) );
+
+			add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+			$stale_data         = $session->get_session_data();
+			$stale_data['cart'] = maybe_serialize( $stale );
+			wp_cache_set( $cache_key, $stale_data, $group );
+			$session->init_session_cookie();
+
+			\Linker\Commerce\Inquiry\CheckoutRetry::forget( $handle, fresh: true );
+			$this->assertFalse( has_action( 'shutdown', array( $session, 'save_data' ) ) );
+			$session->init_session_cookie();
+			$this->assertSame( $current, $session->get( 'cart' ) );
+			$this->assertNull( \Linker\Commerce\Inquiry\CheckoutRetry::read( $handle ) );
+		} finally {
+			add_action( 'shutdown', array( $session, 'save_data' ), 20 );
+		}
+	}
+
 	/** A failed preliminary POST is rendered for this tab, not consumed by the next checkout visitor. */
 	public function test_preliminary_retry_is_private_to_its_request(): void {
 		wc_load_cart();

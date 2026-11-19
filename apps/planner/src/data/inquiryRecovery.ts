@@ -14,6 +14,7 @@ const replayFields = new Set([
 	"lang",
 	requestField,
 	"linker_preliminary_project",
+	"linker_report_transfer",
 	"linker_draft_hash",
 	"linker_project_notes_present",
 	"linker_include_project_notes",
@@ -34,6 +35,23 @@ export type PendingInquiry = {
 	fields?: Record<string, string>;
 };
 type ProjectVersion = Pick<Project, "id" | "revision">;
+
+export function guidedInquiryRetry(url: URL): {
+	revision: number;
+	handle: string | null;
+} | null {
+	if (
+		url.hash !== "#sc-review" ||
+		url.searchParams.get("guided") !== "inquiry" ||
+		!/^[a-f0-9]{32}$/.test(url.searchParams.get("run") ?? "")
+	)
+		return null;
+	const raw = url.searchParams.get("retry_revision") ?? "";
+	const revision = Number(raw);
+	if (!/^[1-9]\d*$/.test(raw) || !Number.isSafeInteger(revision)) return null;
+	const handle = url.searchParams.get("linker_inquiry_retry");
+	return { revision, handle: handle && uuid4.test(handle) ? handle : null };
+}
 
 function semanticField(name: string): boolean {
 	return (
@@ -145,6 +163,15 @@ export function pendingInquiry(
 		return record;
 	} catch {
 		return null;
+	}
+}
+
+/** Once Woo has definitely refused an attempt, its revised form can send anew. */
+export function forgetInquiry(scope: string, project: ProjectVersion): void {
+	try {
+		window.sessionStorage.removeItem(key(scope, project));
+	} catch {
+		// Storage may be unavailable; the native retry still holds this tab's fields.
 	}
 }
 
