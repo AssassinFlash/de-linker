@@ -198,7 +198,7 @@ for (const language of ['en', 'de'] as const) {
 					page
 						.locator(
 							width === 390
-								? '.linker-account-bottom-nav'
+								? '.linker-account-mobile-menu summary'
 								: '.linker-account-nav'
 						)
 						.first()

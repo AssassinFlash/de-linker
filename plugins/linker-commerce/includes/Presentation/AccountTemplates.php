@@ -277,7 +277,7 @@ final class AccountTemplates {
 				: array( 'orders', 'saved-solutions', 'documents' );
 			foreach ( $endpoints as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
-					$current = 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ? 'page' : $this->endpoint_current( $endpoint );
+					$current = $this->endpoint_current( $endpoint );
 					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
 						$current = 'page';
 					}
@@ -454,7 +454,7 @@ final class AccountTemplates {
 		if ( 'dashboard' === $endpoint ) {
 			return is_wc_endpoint_url() ? 'false' : 'page';
 		}
-		return is_wc_endpoint_url( $endpoint ) ? 'page' : 'false';
+		return wc_is_current_account_menu_item( $endpoint ) ? 'page' : 'false';
 	}
 
 	/**

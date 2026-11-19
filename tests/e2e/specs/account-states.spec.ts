@@ -6,7 +6,7 @@
  *
  * account.spec.ts walks several of these once at 1440 and in English; this
  * file walks them on the phone tier and in German too, because the workspace
- * swaps its sidebar for a bottom tab bar below 1024px (account.css) and
+ * uses a collapsible account menu on small screens and
  * linker-i18n rewrites every endpoint slug (`anfragen/`, `dokumente/`,
  * `gespeicherte-loesungen/`, `kontodaten/`, `unternehmen/…`). The records a
  * state needs — a customer, its inquiry, its saved solution — are made
@@ -321,7 +321,7 @@ for (const language of LANGUAGES) {
 					page
 						.locator(
 							width === 390
-								? '.linker-account-bottom-nav'
+								? '.linker-account-mobile-menu summary'
 								: '.linker-account-nav'
 						)
 						.first()
@@ -619,6 +619,16 @@ for (const language of LANGUAGES) {
 				await expect(
 					page.locator('.linker-account-main')
 				).toContainText(`#${owner.order}`);
+				const navigation = page.locator(
+					width === 390
+						? '.linker-account-mobile-menu'
+						: '.linker-account-sidebar'
+				);
+				if (width === 390) await navigation.locator('summary').click();
+				await expect(
+					navigation.locator('a[aria-current="page"]')
+				).toHaveAttribute('href', inquiries);
+				if (width === 390) await navigation.locator('summary').click();
 				await shot(page, `${language.lang}-${width}-inquiry-detail`);
 			} finally {
 				await context.close();

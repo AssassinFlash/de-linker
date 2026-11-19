@@ -101,14 +101,15 @@ do_action( 'woocommerce_before_edit_account_form' );
 			do_action( 'woocommerce_edit_account_form' );
 			?>
 
-			<div class="linker-account-actions">
-				<?php wp_nonce_field( 'save_account_details', 'save-account-details-nonce' ); ?>
-				<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
-				<button type="submit" class="woocommerce-Button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>" name="save_account_details" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"><span><?php esc_html_e( 'Save changes', 'woocommerce' ); ?></span></button>
-				<input type="hidden" name="action" value="save_account_details" />
-			</div>
 		</div>
 	</section>
+
+	<div class="linker-account-actions">
+		<?php wp_nonce_field( 'save_account_details', 'save-account-details-nonce' ); ?>
+		<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
+		<button type="submit" class="woocommerce-Button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>" name="save_account_details" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"><span><?php esc_html_e( 'Save changes', 'woocommerce' ); ?></span></button>
+		<input type="hidden" name="action" value="save_account_details" />
+	</div>
 
 	<?php
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-edit-account.php.

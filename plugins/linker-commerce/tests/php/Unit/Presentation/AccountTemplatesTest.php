@@ -358,6 +358,7 @@ final class AccountTemplatesTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'wc_logout_url', array( 'return' => static fn ( string $redirect ): string => 'https://example.test/logout/?redirect_to=' . rawurlencode( $redirect ) . '&_wpnonce=abc' ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wc_is_current_account_menu_item', array( 'return' => false ) );
 		$adapter = new AccountTemplates();
 		$this->expand_fields( $adapter );
 
