@@ -218,11 +218,14 @@ for (const lang of ['en', 'de'] as const) {
 				name: words.enterDetails,
 				exact: true,
 			});
-			await expect(details).toBeVisible();
+			await expect(details).toBeInViewport();
 			await screen(page, 'known-project-entry');
 			await details.click();
 			await expect(page).toHaveURL(/#sc-project$/);
 			const start = workspace.getByRole('form', { name: words.start });
+			await expect(
+				start.getByRole('heading', { name: words.projectSection })
+			).toBeFocused();
 			await start.getByLabel(words.title).fill(title);
 			await start.locator('select[name=country]').selectOption('DE');
 			await start.getByLabel(words.town).fill('Berlin');
