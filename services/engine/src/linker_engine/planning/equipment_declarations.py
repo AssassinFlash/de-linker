@@ -152,29 +152,45 @@ def comparison_model_preferences(inputs: Object) -> Json:
     return models(inputs)
 
 
+def _default_discovery_application(setup: Object, application: Json) -> None:
+    use = setup.get("equipment_use")
+    # An installed inverter is part of the customer's project. A site default
+    # screens possible new hardware but cannot remove equipment already there.
+    if application is not None and not (
+        isinstance(use, dict) and use.get("inverter") == "retain"
+    ):
+        setup.setdefault("application", application)
+
+
 def compile_discovery_inputs(authored: Object) -> Object:
     inputs = decode_object(encode(authored))
     from .existing_system import unverified_retained_inverter
 
     if unverified_retained_inverter(inputs) is not None:
         return inputs
+    brief = inputs.get("brief")
+    site_use = brief.get("project_use") if isinstance(brief, dict) else None
+    application = site_use if site_use in ("residential", "commercial") else None
     raw = inputs.get("equipment_plant_setup")
     if not isinstance(raw, dict):
         setup = object_value(
             inputs.get("equipment_setup"), "equipment demand declarations"
         )
+        _default_discovery_application(setup, application)
         inputs["equipment_requirements"] = EquipmentRequirements.effective(
             setup,
             path="equipment_setup",
             inputs=inputs,
         ).model_dump(mode="json")
         return inputs
+    common_setup = object_value(raw.get("requirements"), "plant connection demand")
     common = EquipmentRequirements.effective(
-        object_value(raw.get("requirements"), "plant connection demand"),
+        common_setup,
         path="equipment_plant_setup.requirements",
         inputs=inputs,
         whole_plant=True,
     )
+    application = common_setup.get("application", application)
     units, groups = raw.get("units"), raw.get("parallel_groups")
     if not isinstance(units, list) or not isinstance(groups, list):
         raise InvalidInput("declare the named plant systems and their groups")
@@ -185,6 +201,9 @@ def compile_discovery_inputs(authored: Object) -> Object:
         setup = object_value(
             declarations.get("equipment_setup"), "system demand declarations"
         )
+        # The site default filters each system's search. Keep the common
+        # declaration as authored so adopting a physical plant does not change it.
+        _default_discovery_application(setup, application)
         demand = EquipmentRequirements.effective(
             setup,
             path=f"equipment_plant_setup.units[{index}].inputs.equipment_setup",
