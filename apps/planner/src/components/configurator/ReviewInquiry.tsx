@@ -478,11 +478,6 @@ export function ReviewInquiry({
 									setNavigationFailed(true);
 									return;
 								}
-								const locationUrl = new URL(location.href);
-								if (locationUrl.searchParams.has("linker_inquiry_retry")) {
-									locationUrl.searchParams.delete("linker_inquiry_retry");
-									history.replaceState(history.state, "", locationUrl);
-								}
 							}
 							changeSelection();
 						}}

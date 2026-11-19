@@ -66,6 +66,11 @@ final class CheckoutRetry {
 					}
 					$result = $write();
 					$session->save_data();
+					DraftTransfer::evict_session_cache( $session );
+					$stored = $session->get_session_data();
+					if ( maybe_unserialize( $stored[ self::SESSION ] ?? null ) !== $session->get( self::SESSION ) ) {
+						$result = null;
+					}
 				},
 				wait_seconds: 1,
 				guard_connection: true

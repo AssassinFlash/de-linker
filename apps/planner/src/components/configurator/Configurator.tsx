@@ -622,8 +622,11 @@ export default function Configurator({
 		const url = new URL(location.href);
 		const previous = url.hash;
 		url.hash = "sc-" + next;
-		if (guided && previous === "#sc-review" && next !== "review")
+		if (guided && previous === "#sc-review" && next !== "review") {
 			url.searchParams.delete("run");
+			url.searchParams.delete("retry_revision");
+			url.searchParams.delete("linker_inquiry_retry");
+		}
 		if (guided && previous === "#sc-system" && next === "review") {
 			window.history.pushState(null, "", url);
 			window.dispatchEvent(new Event(PLANNER_NAVIGATION));

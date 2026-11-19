@@ -281,7 +281,7 @@ final class Handler {
 		}
 		if ( $result instanceof WC_Order ) {
 			if ( $on_checkout ) {
-				CheckoutRetry::forget( $handle );
+				CheckoutRetry::forget( $handle, fresh: isset( $post[ InquiryTransfer::FIELD ] ) );
 			}
 			if ( ! $on_checkout ) {
 				WC()->session->set( 'linker_inquiry_fields', null );
@@ -347,20 +347,23 @@ final class Handler {
 						} elseif ( Business::enabled() ) {
 							$fields['linker_request_id'] = wp_generate_uuid4();
 						}
-						$retry = CheckoutRetry::remember(
+						$retry                                = CheckoutRetry::remember(
 							array(
 								'fields'       => $fields,
 								'error'        => $result->get_error_message(),
 								'error_locale' => $locale,
 								'grouped'      => 'linker_intake_grouped' === $result->get_error_code(),
 							),
-							$handle
+							$handle,
+							fresh: true
 						);
-						$url   = add_query_arg(
+						list( $project_id, $review_revision ) = explode( ':', $fields[ Context::PROJECT_FIELD ], 2 );
+						$url                                  = add_query_arg(
 							array(
-								'project'             => explode( ':', $fields[ Context::PROJECT_FIELD ], 2 )[0],
+								'project'             => $project_id,
 								'guided'              => 'inquiry',
 								'run'                 => $transfer->report,
+								'retry_revision'      => $review_revision,
 								CheckoutRetry::HANDLE => $retry ?? false,
 							),
 							$page

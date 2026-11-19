@@ -1386,3 +1386,58 @@ test("reopening a pending preliminary review reads its original revision after a
 		/Planned system: Storage/,
 	);
 });
+
+test("native guided retry reads the reviewed revision without any browser replay", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { replacePlannerLocation } =
+		await import("../src/data/plannerLocation.ts");
+	const cache = new QueryClient();
+	const root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+	});
+	const route = new URL(location.href);
+	route.searchParams.set("project", projectId);
+	route.searchParams.set("guided", "inquiry");
+	route.searchParams.set("run", "8".repeat(32));
+	route.searchParams.set("retry_revision", "7");
+	route.searchParams.set("linker_inquiry_retry", crypto.randomUUID());
+	route.hash = "sc-review";
+	history.replaceState(null, "", route);
+	const revisions = [];
+	const client = {
+		isCurrentScope: () => true,
+		query(path, command) {
+			assert.equal(path, "projects/read");
+			revisions.push(command.revision);
+			return new Promise(() => {});
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					session,
+					client,
+					config: {},
+					store: {},
+					recheck: () => assert.fail("Unexpected scope invalidation"),
+				}),
+			),
+		),
+	);
+	await until(() => revisions.length === 1);
+	assert.deepEqual(revisions, [7]);
+	route.searchParams.delete("retry_revision");
+	route.hash = "sc-system";
+	await act(async () => replacePlannerLocation(route));
+	await until(() => revisions.length === 2);
+	assert.deepEqual(revisions, [7, null]);
+});

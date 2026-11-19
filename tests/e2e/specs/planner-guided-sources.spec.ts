@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
@@ -52,6 +53,8 @@ const words = {
 		zone: 'Source time zone',
 		profile: 'Your demand profile',
 		peakBeforeStorage: '7.83 kW',
+		peakTarget: 'Target grid import limit',
+		peakBeforeStorageLabel: 'Grid import peak without storage',
 	},
 	de: {
 		home: '/de/',
@@ -101,12 +104,16 @@ const words = {
 		zone: 'Zeitzone der Quelldaten',
 		profile: 'Ihr Lastprofil',
 		peakBeforeStorage: '7,83 kW',
+		peakTarget: 'Gewünschte Netzbezugsgrenze',
+		peakBeforeStorageLabel: 'Netzbezugsspitze ohne Speicher',
 	},
 } as const;
 
 type Text = (typeof words)[keyof typeof words];
 const matrix = [
 	['en', 1440],
+	['en', 390],
+	['de', 1440],
 	['de', 390],
 ] as const;
 
@@ -172,11 +179,9 @@ async function prepareSavedRoof(
 	await button(project, text.solar).click();
 	await button(workspace, text.roofChoice).click();
 	const module = workspace.getByLabel(text.module, { exact: true });
-	const panel = module
-		.locator('option')
-		.filter({ hasText: 'TSM-460NEG9R.28' });
-	await expect(panel).toHaveCount(1);
-	await module.selectOption((await panel.getAttribute('value'))!);
+	await module.selectOption({
+		label: 'Trina Solar TSM-460NEG9R.28 · 460 Wp',
+	});
 	await button(workspace, text.openRoof).click();
 	const measured = workspace.locator('.sc-roof-props details[open]');
 	for (const [index, value] of [
@@ -208,12 +213,13 @@ async function prepareSavedRoof(
 	await workspace.getByLabel(text.export).selectOption('permitted');
 	await button(workspace, text.energy).click();
 	await workspace.getByLabel(text.phase).selectOption('3');
-	const previous = post(page, 'runs/find-equipment');
+	const previous = post(page, 'runs/find-equipment').then(async (reply) => {
+		expect(reply.ok()).toBe(true);
+		const { project } = await reply.json();
+		return [project, reply.request().postDataJSON()] as const;
+	});
 	await button(workspace, text.compare).click();
-	const reply = await previous;
-	expect(reply.ok()).toBe(true);
-	const { project: savedProject } = await reply.json();
-	const request = reply.request().postDataJSON();
+	const [savedProject, request] = await previous;
 	const geometry = request.inputs.geometry;
 	expect(geometry).toMatchObject({
 		roofs: [expect.objectContaining({ id: expect.any(String) })],
@@ -240,14 +246,25 @@ async function chooseAndSend(
 	page: Page,
 	text: Text,
 	projectId: string,
-	email: string
+	email: string,
+	roof?: Awaited<ReturnType<typeof prepareSavedRoof>>
 ) {
 	const prepared =
 		await test.step('2. Choose the configuration', async () => {
 			const generated = post(page, 'runs/report');
 			const reply = post(page, 'inquiry/form');
+			const saved = roof ? post(page, 'projects/revise') : undefined;
 			await button(page, text.choose).first().click({ timeout: 120_000 });
 			const [report, form] = await Promise.all([generated, reply]);
+			if (saved && roof) {
+				const selection = await saved;
+				expect(selection.ok()).toBe(true);
+				expect(selection.request().postDataJSON()).toMatchObject({
+					project_id: roof.projectId,
+					expected_revision: roof.revision,
+					inputs: { geometry: roof.geometry },
+				});
+			}
 			expect(report.ok()).toBe(true);
 			expect(form.ok()).toBe(true);
 			const request = form.request().postDataJSON();
@@ -258,7 +275,7 @@ async function chooseAndSend(
 			});
 			return request;
 		});
-	await test.step('3. Review and send the inquiry', async () => {
+	return test.step('3. Review and send the inquiry', async () => {
 		const form = page.locator('form.linker-inquiry-form');
 		await expect(form).toBeVisible();
 		await form.locator('[name=name]').fill('Review site installer');
@@ -312,7 +329,9 @@ async function chooseAndSend(
 			new URL((await report.getAttribute('href'))!, page.url()).href
 		);
 		expect(pdf.ok()).toBe(true);
-		expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
+		const document = await pdf.body();
+		expect(document.subarray(0, 5).toString()).toBe('%PDF-');
+		return document;
 	});
 }
 
@@ -384,15 +403,7 @@ for (const [lang, width] of matrix) {
 				await form
 					.getByLabel(text.saved)
 					.selectOption({ label: title });
-				const started = post(page, 'runs/find-equipment');
 				await button(form, text.compare).click();
-				const reply = await started;
-				expect(reply.ok()).toBe(true);
-				expect(reply.request().postDataJSON()).toMatchObject({
-					project_id: previous.projectId,
-					expected_revision: previous.revision,
-					inputs: { geometry: previous.geometry },
-				});
 				await expect(page).toHaveURL(
 					new RegExp(`[?&]project=${previous.projectId}`)
 				);
@@ -401,7 +412,8 @@ for (const [lang, width] of matrix) {
 				page,
 				text,
 				previous.projectId,
-				`e2e-roof-${tag}@example.test`
+				`e2e-roof-${tag}@example.test`,
+				previous
 			);
 		} finally {
 			restoreBudgets();
@@ -438,11 +450,21 @@ for (const [lang, width] of matrix) {
 					await form.locator('input[name=peak_import_kw]').fill('5');
 					await fillMeasuredLoad(form, text);
 					const imported = post(page, 'profiles/csv');
+					const previewed = post(page, 'profiles/preview');
 					const compared = post(page, 'runs/find-equipment');
 					await button(form, text.compare).click();
 
-					const upload = await imported;
+					const [upload, preview] = await Promise.all([
+						imported,
+						previewed,
+					]);
 					expect(upload.ok()).toBe(true);
+					expect(preview.ok()).toBe(true);
+					const source = preview.request().postDataJSON();
+					expect(source).toMatchObject({
+						project_id: upload.request().postDataJSON().project_id,
+						asset_id: expect.stringMatching(/^[a-f0-9]{32}$/),
+					});
 					expect(
 						upload.request().postDataJSON().mapping
 					).toMatchObject({
@@ -454,15 +476,14 @@ for (const [lang, width] of matrix) {
 						interval_seconds: 3600,
 						timezone: 'UTC',
 					});
-					const asset = await upload.json();
 					const comparison = await compared;
 					expect(comparison.ok()).toBe(true);
 					const request = comparison.request().postDataJSON();
 					expect(request).toMatchObject({
-						project_id: asset.project_id,
+						project_id: source.project_id,
 						inputs: {
 							profile_selections: {
-								selected: { gross_load: asset.id },
+								selected: { gross_load: source.asset_id },
 							},
 							energy_scenario: {
 								schedule: [
@@ -473,10 +494,6 @@ for (const [lang, width] of matrix) {
 							},
 						},
 					});
-					const { run } = await comparison.json();
-					expect(
-						run.result.search.demand.baseline.peak_grid_import_kw
-					).toBeCloseTo(7.826, 3);
 					const profile = page.locator('.sc-system-options');
 					await expect(
 						profile.getByRole('heading', {
@@ -491,11 +508,28 @@ for (const [lang, width] of matrix) {
 					).toBeVisible();
 					return request.project_id;
 				});
-			await chooseAndSend(
+			const pdf = await chooseAndSend(
 				page,
 				text,
 				projectId,
 				`e2e-peak-${tag}@example.test`
+			);
+			const extracted = spawnSync('pdftotext', ['-layout', '-', '-'], {
+				input: pdf,
+				encoding: 'utf8',
+			});
+			expect(
+				extracted.status,
+				extracted.error?.message ?? extracted.stderr
+			).toBe(0);
+			const report = extracted.stdout;
+			expect(report).toMatch(
+				new RegExp(`${text.peakTarget}[^\\n]*5(?:[.,]00)? kW`)
+			);
+			expect(report).toMatch(
+				new RegExp(
+					`${text.peakBeforeStorageLabel}[^\\n]*${text.peakBeforeStorage}`
+				)
 			);
 		} finally {
 			restoreBudgets();
