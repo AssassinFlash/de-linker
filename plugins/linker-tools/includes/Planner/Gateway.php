@@ -401,8 +401,14 @@ final class Gateway {
 			if ( 2 !== count( $command ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) ) {
 				return Failure::make( 'input', 422 );
 			}
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce renders the native form for this Woo session.
-			$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'] );
+			/**
+			 * Return the native inquiry form for the visitor's current Woo session.
+			 *
+			 * @since 0.3.0
+			 * @param array|null $form Form response supplied by Commerce.
+			 * @param string     $lang Requested form language.
+			 */
+			$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Hook owned by Commerce.
 			return is_array( $form ) ? new WP_REST_Response( $form ) : Failure::make( 'configuration', 503 );
 		}
 		if ( 'equipment/certificates/read' === $path ) {

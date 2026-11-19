@@ -347,7 +347,9 @@ class Understander:
             route=route, log=log, reading=reading, readings=fresh, timing=clock
         )
         if vocabulary is not None:
-            prepared.card_quantities = parts.card_quantities(message, matches, vocabulary)
+            prepared.card_quantities = parts.card_quantities(
+                message, matches, vocabulary
+            )
         _run_calls(prepared, request, client, self._search, self._pages, clock)
         _add_readings(
             prepared,
