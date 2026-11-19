@@ -1347,6 +1347,12 @@ final class ProductShortcodesTest extends TestCase {
 				),
 			)
 		);
+		WP_Mock::userFunction( 'get_option' )->andReturn( 'no' );
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 10 ) );
+		WP_Mock::userFunction( 'wc_get_product_visibility_term_ids' )->andReturn( array() );
+		WP_Mock::userFunction( 'wc_get_product' )->andReturn( false );
+		WP_Mock::userFunction( 'get_post_time' )->andReturn( 0 );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn( string $value ): string => $value ) );
 		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn( string $value ): string => $value ) );
@@ -1380,6 +1386,9 @@ final class ProductShortcodesTest extends TestCase {
 		$chips                = $shortcodes->products_chips();
 		$this->assertStringContainsString( 'class="wbclear" href="http://linker.test/product-category/inverters/?q=ESA%20%26%205&sort=name" rel="nofollow">Clear all</a>', $chips );
 		$this->assertStringNotContainsString( 'product-page', $chips );
+		$_GET = array( 'brand' => 'retired-panel-maker' );
+		$this->assertStringNotContainsString( '>retired-panel-maker', $shortcodes->products_chips() );
+		$this->assertStringContainsString( '>Brand <span', $shortcodes->products_chips() );
 	}
 
 	/**
