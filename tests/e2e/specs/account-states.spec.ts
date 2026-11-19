@@ -752,7 +752,29 @@ for (const language of LANGUAGES) {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
 				await signIn(page, customer, language.account);
-				await page.goto(base() + language.details);
+				const nav = page.locator(
+					width === 390
+						? '.linker-account-bottom-nav'
+						: '.linker-account-sidebar'
+				);
+				await nav.locator(`a[href$="${language.details}"]`).click();
+				await expect(page).toHaveURL(base() + language.details);
+				if (width === 390) {
+					const settings = page.locator(
+						'.linker-account-profile-links'
+					);
+					await expect(
+						settings.locator('a[href*="action=logout"]')
+					).toBeVisible();
+					await expect(
+						settings.getByRole('link', {
+							name:
+								language.lang === 'de'
+									? 'Unternehmen'
+									: 'Company',
+						})
+					).toBeVisible();
+				}
 
 				// WooCommerce's own form, under the site's designed card.
 				await expect(page.locator('#account_first_name')).toBeVisible();
