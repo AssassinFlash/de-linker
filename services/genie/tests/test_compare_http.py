@@ -222,7 +222,7 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     get_saj = ("linker_get_product", {"product_id": SAJ})
     knowledge = ("linker_search_knowledge", {"query": "Battery current limits"})
     pair_search = ("linker_search_products", PAIR)
-    denied = {
+    denied: dict[str, tuple[str, dict[str, Any]]] = {
         "pairing-flag": pair_search,
         "foreign-product": ("linker_get_product", {"product_id": BATTERY}),
         "foreign-knowledge": (
@@ -230,6 +230,7 @@ def test_turn_keeps_model_scope_with_or_without_jev(
             {"query": "Battery current limits", "product_ids": [BATTERY]},
         ),
     }
+    calls: list[tuple[str, dict[str, Any]]]
     if compare:
         calls = [knowledge]
     elif pairing:

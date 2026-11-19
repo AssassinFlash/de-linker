@@ -1235,10 +1235,10 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
     """The service writes the entire claim for a qualified input current."""
     failures = []
     qualified: dict[int, list[Fact]] = {}
-    for fact in facts.facts.values():
-        if fact.per_input_current_direction is not None:
-            pid = int(fact.id.split(".", 1)[0].removeprefix("p"))
-            qualified.setdefault(pid, []).append(fact)
+    for candidate in facts.facts.values():
+        if candidate.per_input_current_direction is not None:
+            pid = int(candidate.id.split(".", 1)[0].removeprefix("p"))
+            qualified.setdefault(pid, []).append(candidate)
     has_qualified_current = False
     for block in output.blocks:
         if isinstance(block, TextBlock):
