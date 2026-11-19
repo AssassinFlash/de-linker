@@ -84,13 +84,37 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     assert "10 kW" in body
 
 
-@pytest.mark.parametrize("case", ["parameter", "also-requests-pdf", "backup-only"])
+@pytest.mark.parametrize(
+    ("case", "locale", "question"),
+    [
+        (
+            "parameter",
+            "de",
+            "Welche AC-Nennleistung hat der SAJ HS2-8K-T2-X laut Datenblatt?",
+        ),
+        ("parameter", "de", "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X?"),
+        ("parameter", "en", "What’s the rated AC output of the SAJ HS2-8K-T2-X?"),
+        (
+            "parameter",
+            "en",
+            "What is the AC rated power of the SAJ HS2-8K-T2-X according to the datasheet?",
+        ),
+        (
+            "also-requests-pdf",
+            "de",
+            "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X? Bitte geben Sie mir auch das vollständige Datenblatt.",
+        ),
+        (
+            "mixed-metric",
+            "en",
+            "What’s the rated AC output of the SAJ HS2-8K-T2-X and its maximum apparent power?",
+        ),
+        ("backup-only", "de", "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X?"),
+    ],
+)
 def test_named_ac_rated_power_turn_cites_only_its_source_page(
-    log: TurnLog, monkeypatch: pytest.MonkeyPatch, case: str
+    log: TurnLog, monkeypatch: pytest.MonkeyPatch, case: str, locale: str, question: str
 ) -> None:
-    question = "Welche AC-Nennleistung hat der SAJ HS2-8K-T2-X laut Datenblatt?"
-    if case == "also-requests-pdf":
-        question += " Bitte geben Sie mir auch das vollständige Datenblatt."
     on_grid = "AC Output [Backup]" if case == "backup-only" else "AC Output [On-grid]"
     # Turn 3 on e437a21ab: the EN projection has the rated-power row;
     # the DE projection supplied only the other AC figure the draft used.
@@ -167,11 +191,13 @@ def test_named_ac_rated_power_turn_cites_only_its_source_page(
     # The stored turn contains hydrated prose, not the raw model draft.
     # Reconstruct its fact placeholders and explicit blocks before hydration.
     draft = TurnOutput(
-        language="de",
+        language=locale,
         blocks=[
             TextBlock(
                 text=(
-                    "Der SAJ HS2-8K-T2-X ist ein dreiphasiger Wechselrichter für Wohngebäude. "
+                    f"Its rated AC output is {{fact:{en}.n10}} and its maximum apparent power is {{fact:{de}.n14}}."
+                    if locale == "en"
+                    else "Der SAJ HS2-8K-T2-X ist ein dreiphasiger Wechselrichter für Wohngebäude. "
                     "Laut Datenblatt im Abschnitt „HS2/AS2 Three Phase All-in-One Solution“ "
                     f"liegt die **AC-Nennleistung** im netzgekoppelten Betrieb bei {{fact:{en}.n10}}. "
                     "Die **maximale Scheinleistung** nennt das deutsche Datenblatt im Abschnitt "
@@ -211,11 +237,15 @@ def test_named_ac_rated_power_turn_cites_only_its_source_page(
     with clients(raw, {"product_id": product_id}) as (abilities, authority, _):
         monkeypatch.setattr(app.state, "publication", authority)
         monkeypatch.setattr(app_module, "ability_client", lambda: abilities)
-        sse = _post("observed-rated-power", question, locale="de")
+        sse = _post("observed-rated-power", question, locale=locale)
     blocks = _blocks(sse)
     assert _meta(sse)["grounded"] and not _meta(sse)["fallback"]
     if case == "also-requests-pdf":
         assert any(block.get("url") == generic for block in blocks)
+        return
+    if case == "mixed-metric":
+        assert "8000 W and its maximum apparent power is 8800 VA" in blocks[0]["text"]
+        assert {en, de} <= {block.get("ref") for block in blocks}
         return
     if case == "backup-only":
         assert "keine AC-Nennleistung für den Netzbetrieb" in blocks[0]["text"]
@@ -223,7 +253,9 @@ def test_named_ac_rated_power_turn_cites_only_its_source_page(
         return
     assert [block["type"] for block in blocks] == ["text", "document"]
     assert blocks[0]["text"] == (
-        "Die AC-Nennleistung des HS2-8K-T2-X beträgt im Netzbetrieb 8000 W."
+        "The rated AC power of the HS2-8K-T2-X is 8000 W in grid-connected operation."
+        if locale == "en"
+        else "Die AC-Nennleistung des HS2-8K-T2-X beträgt im Netzbetrieb 8000 W."
     )
     assert blocks[0]["refs"] == [en]
     assert blocks[1]["ref"] == en

@@ -1348,6 +1348,34 @@ def _shaped(
     return TurnOutput(language=language, blocks=blocks)
 
 
+_RATED_AC_METRIC = re.compile(
+    r"\b(?:rated ac (?:output(?: power)?|power)|ac rated (?:output(?: power)?|power)|"
+    r"ac[- ]nennleistung)\b"
+)
+_RATED_AC_QUESTION_OPENING = re.compile(r"^(?:what(?: is|'s)|welche|wie hoch ist)\b")
+
+
+def _asks_only_rated_ac_power(question: str, model: str) -> bool:
+    """Recognize a single metric and model; leave extra requests to the model."""
+    text = " ".join(question.casefold().replace("’", "'").split()).removesuffix("?")
+    opening = _RATED_AC_QUESTION_OPENING.match(text)
+    metric = _RATED_AC_METRIC.search(text)
+    if opening is None or metric is None:
+        return False
+    # The remaining words may identify the product or the source, not a second
+    # measurement, condition or action. Match the metric independently from
+    # the wording that introduces it.
+    return (
+        text[opening.end() : metric.start()].strip() in {"", "the", "die"}
+        and re.fullmatch(
+            rf"(?:of (?:the )?|hat (?:der |die |das )?|des )?(?:[\w-]+ )?"
+            rf"{re.escape(model.casefold())}(?: laut datenblatt| according to the datasheet)?",
+            text[metric.end() :].strip(),
+        )
+        is not None
+    )
+
+
 def rated_ac_power_answer(
     facts: TurnFacts, route: Route | None, question: str, language: Locale
 ) -> TurnOutput | None:
@@ -1359,14 +1387,7 @@ def rated_ac_power_answer(
     model = route.named_models[0]
     if not model.searched_known or model.is_conflict or len(model.product_ids) != 1:
         return None
-    code = re.escape(model.code)
-    named = rf"(?:[\w-]+ )?{code}"
-    if not re.fullmatch(
-        rf"(?:welche AC-Nennleistung hat (?:der |die |das )?{named}(?: laut Datenblatt)?|"
-        rf"what is the rated AC power of (?:the )?{named}(?: according to the datasheet)?)\??",
-        question.strip(),
-        re.IGNORECASE,
-    ):
+    if not _asks_only_rated_ac_power(question, model.code):
         return None
 
     candidates: dict[str, tuple[str, str]] = {}
