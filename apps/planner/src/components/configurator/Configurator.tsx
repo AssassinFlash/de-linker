@@ -389,8 +389,17 @@ export default function Configurator({
 		...(latestRuns ?? []),
 		...(olderHistory.data?.pages.flatMap((page) => page.items) ?? []),
 	].filter((item) => item.task_kind === REPORT_TASK);
+	const requestedReport = params.get("run");
+	const guidedReportId =
+		guided &&
+		step === "review" &&
+		requestedReport &&
+		/^[a-f0-9]{32}$/.test(requestedReport)
+			? requestedReport
+			: null;
 	const reportId =
 		submittedReport ??
+		guidedReportId ??
 		(guided
 			? reportRuns.find((item) => item.revision === draft?.baseline.revision)
 			: reportRuns[0]
@@ -432,6 +441,27 @@ export default function Configurator({
 	}
 	const searchRun = search.data ?? null,
 		reportRun = report.data ?? null;
+	const reviewedReportId =
+		guided &&
+		step === "review" &&
+		draft &&
+		reportRun?.state === "succeeded" &&
+		reportRun.revision === draft.baseline.revision &&
+		!isDirty(draft)
+			? reportRun.id
+			: null;
+	useEffect(() => {
+		if (!reviewedReportId) return;
+		const url = new URL(location.href);
+		if (
+			url.searchParams.get("project") !== project.id ||
+			url.hash !== "#sc-review" ||
+			url.searchParams.get("run") === reviewedReportId
+		)
+			return;
+		url.searchParams.set("run", reviewedReportId);
+		replacePlannerLocation(url);
+	}, [reviewedReportId, project.id]);
 	const genieRun =
 		step === "review" && genieReportId !== null
 			? [reportRun, viewedRun].find(
@@ -592,6 +622,8 @@ export default function Configurator({
 		const url = new URL(location.href);
 		const previous = url.hash;
 		url.hash = "sc-" + next;
+		if (guided && previous === "#sc-review" && next !== "review")
+			url.searchParams.delete("run");
 		if (guided && previous === "#sc-system" && next === "review") {
 			window.history.pushState(null, "", url);
 			window.dispatchEvent(new Event(PLANNER_NAVIGATION));
@@ -1030,6 +1062,9 @@ export default function Configurator({
 				: step;
 	const guidedReview = guided && activeStep === "review";
 	const guidedView = guidedReview || (guided && activeStep === "system");
+	const guidedReportFailed =
+		guidedReview &&
+		(reportRun?.state === "failed" || reportRun?.state === "cancelled");
 	const guidedChoiceNeedsSave =
 		guided && activeStep === "system" && choice && draft.pending;
 	const outdatedOption =
@@ -1656,7 +1691,7 @@ export default function Configurator({
 												"linker-tools",
 											)}
 										</p>
-										{Boolean(failure) &&
+										{(Boolean(failure) || guidedReportFailed) &&
 											(choice || canKeepInstalled) &&
 											!blocked && (
 												<button

@@ -229,6 +229,7 @@ async function equipmentApp(
 		hash,
 		guided = false,
 		loseSelectionReply = false,
+		failFirstReport = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -307,6 +308,7 @@ async function equipmentApp(
 	let lostReceipt = null;
 	let lostSelection = null;
 	let reportRun = null;
+	let reportAttempts = 0;
 	const revisions = new Map([[project.revision, structuredClone(project)]]);
 	let serverRun = savedRun,
 		nextScope = session.query_scope,
@@ -445,12 +447,12 @@ async function equipmentApp(
 			if (path === "runs/report") {
 				reportRun = makeRun(
 					projectId,
-					"queued",
+					++reportAttempts === 1 && failFirstReport ? "failed" : "queued",
 					project.revision,
 					project.input_sha256,
 					"planning_report_v1",
 				);
-				reportRun.id = "8".repeat(32);
+				reportRun.id = (reportAttempts === 1 ? "8" : "9").repeat(32);
 				return structuredClone(reportRun);
 			}
 			if (path === "runs/find-equipment") {
@@ -1295,6 +1297,41 @@ test("after losing the selection receipt, retrying keeps the same save and opens
 	const saves = app.requests.filter(({ path }) => path === "projects/revise");
 	assert.equal(saves.length, 2);
 	assert.deepEqual(saves[0].body, saves[1].body);
+});
+
+test("a failed guided report can be prepared again without reselecting the proposal", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		failFirstReport: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Try again")?.matches(":enabled"));
+	await act(async () => app.button("Try again").click());
+	await untilRun(
+		() =>
+			app.requests.filter(({ path }) => path === "runs/report").length === 2,
+	);
+	assert.equal(window.location.hash, "#sc-review");
+	const [first, second] = app.requests.filter(
+		({ path }) => path === "runs/report",
+	);
+	assert.equal(first.body.expected_revision, second.body.expected_revision);
+	assert.notEqual(first.body.key, second.body.key);
+	assert.equal(
+		app.requests.filter(({ path }) => path === "projects/revise").length,
+		1,
+	);
 });
 
 for (const [multi, selection] of [

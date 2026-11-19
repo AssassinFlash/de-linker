@@ -52,6 +52,19 @@ test("each configurator page stays open when the customer switches language", ()
 	}
 });
 
+test("a guided inquiry keeps the reviewed report when the site language changes", () => {
+	const project = "a".repeat(32);
+	const report = "b".repeat(32);
+	const current = `https://site.example/en/?project=${project}&guided=inquiry&run=${report}#sc-review`;
+	const same = new URL(projectLanguageUrl("/de/", current, project));
+	assert.equal(same.searchParams.get("guided"), "inquiry");
+	assert.equal(same.searchParams.get("run"), report);
+	assert.equal(same.hash, "#sc-review");
+	const other = new URL(projectLanguageUrl("/de/", current, "c".repeat(32)));
+	assert.equal(other.searchParams.has("guided"), false);
+	assert.equal(other.searchParams.has("run"), false);
+});
+
 test("language switches keep only validated result/workspace references for the same project", () => {
 	const project = "a".repeat(32),
 		run = "b".repeat(32),

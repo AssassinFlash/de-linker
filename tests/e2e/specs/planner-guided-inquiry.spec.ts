@@ -195,13 +195,12 @@ async function enterProject(
 }
 
 interface ReviewLine {
-	product_id: number;
 	label: string;
 	quantity: number;
 }
 
 const lineOrder = (a: ReviewLine, b: ReviewLine) =>
-	a.product_id - b.product_id || a.quantity - b.quantity;
+	a.label.localeCompare(b.label) || a.quantity - b.quantity;
 
 function reply(page: Page, operation: string) {
 	return page.waitForResponse(
@@ -251,7 +250,7 @@ function receivedOrder(email: string) {
 	) as {
 		id: number;
 		number: string;
-		lines: ReviewLine[];
+		lines: (ReviewLine & { product_id: number })[];
 		reference: { handoff_id: string };
 	};
 }
@@ -396,16 +395,48 @@ for (const scenario of scenarios) {
 								await Promise.all([reportReply, formReply]);
 							expect(reportResponse.ok()).toBe(true);
 							expect(formResponse.ok()).toBe(true);
-							const report = await reportResponse.json();
-							expect(report).toMatchObject({
-								id: expect.stringMatching(/^[a-f0-9]{32}$/),
+							const prepared = formResponse
+								.request()
+								.postDataJSON();
+							const generated = reportResponse
+								.request()
+								.postDataJSON();
+							expect(prepared).toMatchObject({
+								report_run_id:
+									expect.stringMatching(/^[a-f0-9]{32}$/),
 								project_id: projectId,
-								revision: expect.any(Number),
+								revision: generated.expected_revision,
 							});
-							const { inquiry_lines: lines } =
-								(await formResponse.json()) as {
-									inquiry_lines: ReviewLine[];
+							const report = {
+								id: prepared.report_run_id,
+								revision: prepared.revision,
+							};
+							await expect(
+								page.getByRole('heading', {
+									name: text.review,
+									exact: true,
+								})
+							).toBeVisible();
+							await expect(
+								page.locator('form.linker-inquiry-form')
+							).toBeVisible();
+							const lines: ReviewLine[] = (
+								await draft
+									.getByRole('listitem')
+									.allTextContents()
+							).map((line) => {
+								const displayed = /^(.+) × (\d+)$/.exec(
+									line.trim()
+								);
+								if (!displayed)
+									throw new Error(
+										'Expected a visible product and its quantity'
+									);
+								return {
+									label: displayed[1]!,
+									quantity: Number(displayed[2]),
 								};
+							});
 							if (scenario.retainedInverter)
 								expect(lines).toEqual([]);
 							else expect(lines.length).toBeGreaterThan(0);
@@ -414,25 +445,8 @@ for (const scenario of scenarios) {
 									lines.map(({ label }) => label)
 								).toContain(scenario.selectedInverter);
 							expect(
-								lines.every(
-									({ product_id, quantity }) =>
-										product_id > 0 && quantity > 0
-								)
+								lines.every(({ quantity }) => quantity > 0)
 							).toBe(true);
-							await expect(
-								page.getByRole('heading', {
-									name: text.review,
-									exact: true,
-								})
-							).toBeVisible();
-							for (const line of lines) {
-								await expect(
-									draft.getByText(
-										`${line.label} × ${line.quantity}`,
-										{ exact: true }
-									)
-								).toBeVisible();
-							}
 							return { projectId, report, lines };
 						});
 
@@ -488,15 +502,20 @@ for (const scenario of scenarios) {
 								revision: selected.report.revision,
 							},
 						});
-						expect(order.lines.sort(lineOrder)).toEqual(
-							selected.lines
-								.map(({ product_id, label, quantity }) => ({
-									product_id,
+						expect(
+							order.lines.every(
+								({ product_id }: { product_id: number }) =>
+									product_id > 0
+							)
+						).toBe(true);
+						expect(
+							order.lines
+								.map(({ label, quantity }: ReviewLine) => ({
 									label,
 									quantity,
 								}))
 								.sort(lineOrder)
-						);
+						).toEqual(selected.lines.sort(lineOrder));
 						await expect(
 							page.locator(
 								'.woocommerce-order-overview__order strong'

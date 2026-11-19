@@ -49,12 +49,13 @@ def test_home_project_comparison_preserves_the_hero_and_other_content() -> None:
     shortcode = '[linker_planner mode="home"]'
     before = tuple(
         f'<section class="hero-cinematic">{label}</section>\n{anchor}'
-        + UNCHANGED + '</section>'
+        + UNCHANGED
+        + "</section>"
         for label in ("Open the Solution Configurator", "Lösungskonfigurator öffnen")
     )
     after = controls.plan_pair("home_project_comparison", *before)
     for original, updated in zip(before, after, strict=True):
-        assert updated.index(shortcode) > updated.index('</section>')
+        assert updated.index(shortcode) > updated.index("</section>")
         assert updated.index(shortcode) < updated.index(anchor)
         assert updated.replace(shortcode + "\n", "", 1) == original
     assert controls.plan_pair("home_project_comparison", *after) == after
