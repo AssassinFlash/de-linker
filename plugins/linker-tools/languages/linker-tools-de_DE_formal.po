@@ -17317,3 +17317,7 @@ msgstr "Ausrichtung im Uhrzeigersinn ab Norden (°)"
 #: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx build/planner/assets/planner.js
 msgid "Source of array details and model settings"
 msgstr "Quelle der Angaben zur Modulfläche und der Modelleinstellungen"
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "To estimate peak reduction, provide a measured load profile and a target grid import limit. Without both, this comparison shows equipment options."
+msgstr "Geben Sie zur Abschätzung der Spitzenlastsenkung ein gemessenes Lastprofil und eine Zielgrenze für den Netzbezug an. Fehlt eine dieser Angaben, zeigt der Vergleich passende Geräte."

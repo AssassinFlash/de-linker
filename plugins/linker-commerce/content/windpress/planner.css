@@ -1285,3 +1285,5 @@
   }
   .sc-configurator .sc-solar svg.sc-roof-preview { min-height: 0; max-height: 180px; margin-block: 16px; }
 }
+
+#home-a .sc-home-comparison button.sc-primary { color: var(--proto-accent-on); }

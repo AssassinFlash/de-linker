@@ -219,18 +219,26 @@ export function HomepageDemand({
 				</>
 			)}
 			{goal === "peak" && (
-				<NumberField
-					name="peak_import_kw"
-					label={__("Target grid import limit", "linker-tools")}
-					unit="kW"
-					locale={locale}
-					min={0}
-					value={peak}
-					onChange={(value) =>
-						edit((current) => changePeakDemand(current, value))
-					}
-					onValidity={peakValid}
-				/>
+				<>
+					<NumberField
+						name="peak_import_kw"
+						label={__("Target grid import limit", "linker-tools")}
+						unit="kW"
+						locale={locale}
+						min={0}
+						value={peak}
+						onChange={(value) =>
+							edit((current) => changePeakDemand(current, value))
+						}
+						onValidity={peakValid}
+					/>
+					<p className="sc-field-wide">
+						{__(
+							"To estimate peak reduction, provide a measured load profile and a target grid import limit. Without both, this comparison shows equipment options.",
+							"linker-tools",
+						)}
+					</p>
+				</>
 			)}
 		</div>
 	);
