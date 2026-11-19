@@ -484,7 +484,10 @@ export function EnergyDemand({
 	const offerPreliminary =
 		Boolean(preliminary) && (!engineeringReady || modelsUnavailable);
 	const action =
-		offerPreliminary && !blocked && !coordinatesInvalid && invalid.size === 0
+		offerPreliminary &&
+		!demandBlocked &&
+		!coordinatesInvalid &&
+		invalid.size === 0
 			? "preliminary"
 			: canCompare
 				? "compare"

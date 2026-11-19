@@ -1608,9 +1608,13 @@ test("a failed legacy model read still lets the customer save annual electricity
 		legacyUnavailable: true,
 		inputs: { equipment_setup: selected, equipment_candidate: choice },
 	});
-	await untilRun(() => app.button("Try again"));
+	await untilRun(
+		() =>
+			app.button("Try again") &&
+			app.fieldInput("Annual electricity use")?.matches(":enabled"),
+	);
 	const annual = app.fieldInput("Annual electricity use");
-	assert.ok(annual.matches(":enabled"));
+	assert.ok(app.button("Compare preliminary options").matches(":disabled"));
 	assert.ok(app.fieldSelect("Grid connection").matches(":disabled"));
 	await enter(annual, "42");
 	await act(async () => app.button("Projects").click());
