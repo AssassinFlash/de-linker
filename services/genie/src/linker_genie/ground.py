@@ -1374,7 +1374,7 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                 # Negation must apply to the sharing assertion itself. A later
                 # “not available at each input” does not negate “is shared”.
                 if re.search(
-                    r"\b(?:not\s+(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
+                    r"\b(?:not\s+(?:use\s+)?(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
                     prose[: scope.start()],
                     re.I,
                 ) or re.search(

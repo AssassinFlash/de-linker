@@ -294,9 +294,9 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     assert comparisons == ([[SAJ, GOODWE]] if compare else [])
 
 
-@pytest.mark.parametrize("shared", [True, False])
+@pytest.mark.parametrize("scenario", ["misattributed", "independent", "warning"])
 def test_ac_current_cannot_support_a_shared_battery_limit(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, shared: bool
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scenario: str
 ) -> None:
     # The Woo publication feed captured the L260-OMNI's AC rating on page 2.
     feed_path = Path(__file__).resolve().parents[2] / "engine/tests/fixtures/feed.json"
@@ -342,11 +342,11 @@ def test_ac_current_cannot_support_a_shared_battery_limit(
             ),
         ]
     )
-    claim = (
-        "The other inverter has a total current of {fact:p2003.max_ac_current_a} for both battery inputs."
-        if shared
-        else "The maximum AC current for the L260-OMNI is {fact:p2003.max_ac_current_a}."
-    )
+    claim = {
+        "misattributed": "The other inverter has a total current of {fact:p2003.max_ac_current_a} for both battery inputs.",
+        "independent": "The maximum AC current for the L260-OMNI is {fact:p2003.max_ac_current_a}.",
+        "warning": "Do not use a shared limit of {fact:p2003.max_ac_current_a} for both battery inputs: that is the L260-OMNI’s maximum AC current.",
+    }[scenario]
     draft = TurnOutput(
         language="en",
         blocks=[TextBlock(text="{fact:p1179.max_battery_charge_a}\n" + claim)],
@@ -376,8 +376,17 @@ def test_ac_current_cannot_support_a_shared_battery_limit(
             },
         )
     assert response.status_code == 200
-    assert "181 A for both battery inputs" not in response.text
-    if not shared:
-        assert "50 A per battery input." in response.text
-        assert "maximum AC current for the L260-OMNI is 181 A." in response.text
+    if scenario == "misattributed":
+        assert "181 A for both battery inputs" not in response.text
+    else:
+        texts = [
+            json.loads(event.split("data: ", 1)[1]).get("text", "")
+            for event in response.text.split("\n\n")
+            if event.startswith("event: block\n")
+        ]
+        assert any(
+            "50 A per battery input." in text
+            and claim.replace("{fact:p2003.max_ac_current_a}", "181 A") in text
+            for text in texts
+        )
         assert ac["citation"]["url"] + "#page=2" in response.text
