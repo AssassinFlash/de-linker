@@ -204,6 +204,8 @@ export function readInquiryForm(value: unknown) {
 		)
 			fail();
 		return {
+			productId: line.product_id,
+			projectId: line.project_id,
 			label: line.label,
 			quantity: line.quantity,
 			projectTitle:
@@ -212,8 +214,45 @@ export function readInquiryForm(value: unknown) {
 					: null,
 		};
 	});
+	const readRows = <T>(field: string, read: (row: JsonObject) => T): T[] => {
+		const raw = row[field];
+		if (raw === undefined) return [];
+		if (!Array.isArray(raw)) fail();
+		return raw.map((value) => read(readObject(value)));
+	};
 	return {
 		lines,
 		form: row.inquiry_form_html,
+		changes: readRows("inquiry_changes", (change) => {
+			if (
+				!count(change.product_id) ||
+				!change.product_id ||
+				typeof change.label !== "string" ||
+				!change.label.trim() ||
+				typeof change.before !== "number" ||
+				!Number.isFinite(change.before) ||
+				change.before <= 0 ||
+				!count(change.after) ||
+				change.before === change.after
+			)
+				fail();
+			return {
+				productId: change.product_id,
+				label: change.label,
+				before: change.before,
+				after: change.after,
+			};
+		}),
+		conflicts: readRows("inquiry_phase_conflicts", (conflict) => {
+			const { unit, actual, required } = conflict;
+			if (
+				(unit !== null && (typeof unit !== "string" || !unit.trim())) ||
+				(actual !== 1 && actual !== 3) ||
+				(required !== 1 && required !== 3) ||
+				actual === required
+			)
+				fail();
+			return { unit, actual, required };
+		}),
 	};
 }

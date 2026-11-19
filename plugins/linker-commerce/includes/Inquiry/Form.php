@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Presentation\Tokens;
+use Linker\Commerce\Planning\InquiryTransfer;
 use WC_Customer;
 
 /**
@@ -150,14 +151,18 @@ final class Form {
 
 	/** Render the review form with a nonce for the immutable project revision.
 	 *
-	 * @param string              $language Requested planner language.
-	 * @param array<string,mixed> $project  Owner-verified project revision.
+	 * @param string                   $language Requested planner language.
+	 * @param array<string,mixed>      $project Owner-verified project revision.
+	 * @param InquiryTransfer|null     $transfer Reviewed draft intent.
+	 * @param array<string,mixed>|null $handoff Frozen projected report.
+	 * @param array<string,mixed>|null $retry Native retry from this Woo session.
 	 */
-	public function planning( string $language, array $project ): string {
-		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
+	public function planning( string $language, array $project, ?InquiryTransfer $transfer = null, ?array $handoff = null, ?array $retry = null ): string {
+		$this->flash = $retry ?? array();
+		$locale      = new \Linker\Commerce\Mail\LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$fields = preg_replace_callback(
+			$fields   = preg_replace_callback(
 				'/\{\{([a-z-]+)\}\}/',
 				fn ( array $token ): string => $this->value(
 					array(
@@ -167,14 +172,21 @@ final class Form {
 				),
 				do_shortcode( self::fields_template() )
 			) ?? '';
-			$replay = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+			$replay   = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
 				? \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS
 				: 0;
+			$previous = $this->flash['fields'] ?? array();
+			$error    = $this->value( array( 'key' => 'error' ) );
+			$notes    = '1' === ( $previous['linker_inquiry_receipt_only'] ?? '' )
+				? self::retained_notes( $previous )
+				: \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, $handoff, $project );
 			return do_shortcode( '[linker_inquiry_restriction]' )
 				. '<form class="linker-inquiry-form" data-linker-inquiry-replay-seconds="' . esc_attr( (string) $replay ) . '" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
-				. $this->hidden_fields( $language, $project['project_id'] . ':' . $project['revision'] )
-				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), null, $project ) . $fields . '</form>';
+				. $this->hidden_fields( $previous['linker_inquiry_original_language'] ?? $language, $project['project_id'] . ':' . $project['revision'], $transfer )
+				. ( '' === $error ? '' : '<p class="linker-inquiry-error" role="alert">' . $error . '</p>' )
+				. $notes . $fields . '</form>';
 		} finally {
+			$this->flash = array();
 			$locale->back();
 		}
 	}
@@ -257,13 +269,17 @@ final class Form {
 
 	/** Native guard and draft binding for both POST surfaces.
 	 *
-	 * @param string $language Form language.
-	 * @param string $project Reviewed preliminary project reference.
+	 * @param string               $language Form language.
+	 * @param string               $project Reviewed project reference.
+	 * @param InquiryTransfer|null $transfer Reviewed report and draft.
 	 */
-	private function hidden_fields( string $language, string $project = '' ): string {
+	private function hidden_fields( string $language, string $project = '', ?InquiryTransfer $transfer = null ): string {
 		$previous = $this->flash['fields'] ?? array();
 		$project  = $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ?? $project;
 		$binding  = '' === $project ? '' : '<input type="hidden" name="' . esc_attr( \Linker\Commerce\Planning\Context::PROJECT_FIELD ) . '" value="' . esc_attr( $project ) . '" />';
+		if ( null !== $transfer ) {
+			$binding .= '<input type="hidden" name="' . esc_attr( InquiryTransfer::FIELD ) . '" value="' . esc_attr( $transfer->value() ) . '" />';
+		}
 		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
 			$binding .= self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
 		}
@@ -276,7 +292,7 @@ final class Form {
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
-		. wp_nonce_field( Handler::nonce_action( $project ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
+		. wp_nonce_field( Handler::nonce_action( $project, $transfer ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ), $this->flash['grouped'] ?? null );
 	}
 

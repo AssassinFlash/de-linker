@@ -14,6 +14,7 @@ const replayFields = new Set([
 	"lang",
 	requestField,
 	"linker_preliminary_project",
+	"linker_report_transfer",
 	"linker_draft_hash",
 	"linker_project_notes_present",
 	"linker_include_project_notes",
@@ -145,6 +146,15 @@ export function pendingInquiry(
 		return record;
 	} catch {
 		return null;
+	}
+}
+
+/** Once Woo has definitely refused an attempt, its revised form can send anew. */
+export function forgetInquiry(scope: string, project: ProjectVersion): void {
+	try {
+		window.sessionStorage.removeItem(key(scope, project));
+	} catch {
+		// Storage may be unavailable; the native retry still holds this tab's fields.
 	}
 }
 

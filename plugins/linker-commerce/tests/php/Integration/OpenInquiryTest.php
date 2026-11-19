@@ -71,6 +71,97 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':4' ) );
 	}
 
+	/** A retained-equipment report is previewed without changing the cart, then attached by Send. */
+	public function test_guided_report_is_attached_by_the_native_send(): void {
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+
+		$handoff        = $this->planning_report();
+		$id             = $handoff['snapshot']['project_id'];
+		$report         = $handoff['snapshot']['report_run_id'];
+		$project        = array(
+			'project_id'    => $id,
+			'revision'      => 1,
+			'note_revision' => '1',
+			'title'         => 'Existing inverter plan',
+			'text'          => '',
+			'inputs'        => array( 'brief' => array( 'system_scope' => 'storage_only' ) ),
+		);
+		$project_source = static fn () => $project;
+		$handoff_source = static fn () => $handoff;
+		$admit          = static fn (): bool => true;
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingHookComment -- Simulated owned responses at the native Tools reader seam.
+		add_filter( 'linker_tools_planning_inquiry_note', $project_source, 11 );
+		add_filter( 'linker_tools_planning_inquiry_handoff', $handoff_source, 11 );
+		add_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+		$this->later(
+			static function () use ( $project_source, $handoff_source, $admit ): void {
+				remove_filter( 'linker_tools_planning_inquiry_note', $project_source, 11 );
+				remove_filter( 'linker_tools_planning_inquiry_handoff', $handoff_source, 11 );
+				remove_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+			}
+		);
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment
+
+		$review = ( new \Linker\Commerce\Planning\Module() )->inquiry_form(
+			null,
+			'en',
+			$project,
+			array(
+				'command'  => array(
+					'schema_version'    => 1,
+					'project_id'        => $id,
+					'report_run_id'     => $report,
+					'expected_revision' => 1,
+					'key'               => wp_generate_uuid4(),
+				),
+				'handoff'  => $handoff,
+				'replay'   => null,
+				'retained' => null,
+			)
+		);
+		$this->assertIsArray( $review );
+		$this->assertSame( array(), $review['inquiry_lines'] );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$this->assertSame( 1, preg_match( '/name="linker_report_transfer" value="([^"]+)"/', $review['inquiry_form_html'], $token ) );
+		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $review['inquiry_form_html'], $nonce ) );
+		$this->assertSame( 1, preg_match( '/name="linker_project_note_revisions\[' . $handoff['id'] . '\]" value="([^"]+)"/', $review['inquiry_form_html'], $note_revision ) );
+		$stamp                             = (string) ( time() - 5 );
+		$post                              = array(
+			'linker_preliminary_project'    => $id . ':1',
+			'linker_report_transfer'        => ( $token[1] ?? '' ),
+			'linker_inquiry_nonce'          => ( $nonce[1] ?? '' ),
+			'linker_started'                => $stamp,
+			'linker_started_nonce'          => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'linker_draft_hash'             => WC()->cart->get_cart_hash(),
+			'linker_project_notes_present'  => '1',
+			'linker_include_project_notes'  => '1',
+			'linker_project_note_revisions' => array( $handoff['id'] => ( $note_revision[1] ?? '' ) ),
+			'name'                          => 'Guided Fixture',
+			'email'                         => 'plan-' . self::tag() . '@example.test',
+			'consent'                       => '1',
+		);
+		$handler                           = new \Linker\Commerce\Inquiry\Handler();
+		$altered                           = $post;
+		$altered['linker_report_transfer'] = substr_replace( ( $token[1] ?? '' ), str_repeat( '9', 32 ), 0, 32 );
+		$refused                           = $handler->process( $altered );
+		$this->assertInstanceOf( \WP_Error::class, $refused );
+		$this->assertSame( 'linker_inquiry_invalid', $refused->get_error_code() );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$order = $handler->process( $post );
+		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() . ': ' . $order->get_error_message() : '' );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$stored = \Linker\Commerce\Planning\Context::stored( $order );
+		$this->assertSame( $report, $stored[ $handoff['id'] ]['reference']['report_run_id'] );
+		$this->assertSame( 1, $stored[ $handoff['id'] ]['reference']['revision'] );
+		$this->assertSame( array(), $stored[ $handoff['id'] ]['included_items'] );
+	}
+
 	/** A failed preliminary POST is rendered for this tab, not consumed by the next checkout visitor. */
 	public function test_preliminary_retry_is_private_to_its_request(): void {
 		wc_load_cart();

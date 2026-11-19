@@ -76,6 +76,7 @@ final class Gateway {
 	/** Registered before any REST dispatch, so unknown routes/errors are private. */
 	public function lifecycle(): void {
 		add_filter( 'linker_tools_planning_inquiry_note', array( $this, 'inquiry_note' ), 10, 3 );
+		add_filter( 'linker_tools_planning_inquiry_handoff', array( $this, 'inquiry_handoff' ), 10, 2 );
 		add_filter( 'determine_current_user', array( $this->identity, 'rest_nonce_user' ), 25 );
 		add_filter( 'rest_pre_dispatch', array( $this, 'before_parse' ), 0, 3 );
 		// Installed ACF initialisation returns null even after an earlier error.
@@ -448,23 +449,150 @@ final class Gateway {
 	 * @param array<string,mixed> $command    Reviewed project and language.
 	 */
 	private function inquiry_form( Principal $principal, array $command ): WP_REST_Response|WP_Error {
-		if ( 4 !== count( $command ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) || ! is_string( $command['project_id'] ?? null ) || ! is_int( $command['revision'] ?? null ) || $command['revision'] < 1 ) {
+		$keys = array_keys( $command );
+		sort( $keys );
+		$report = $command['report_run_id'] ?? null;
+		$replay = $command['report_transfer'] ?? null;
+		$retry  = $command['retry'] ?? null;
+		$base   = array( 'lang', 'project_id', 'revision', 'schema_version' );
+		if ( 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) || ! is_string( $command['project_id'] ?? null ) || ! is_int( $command['revision'] ?? null ) || $command['revision'] < 1 ) {
+			return Failure::make( 'input', 422 );
+		}
+		if ( null === $report ) {
+			if ( $base !== $keys ) {
+				return Failure::make( 'input', 422 );
+			}
+		} elseif ( ! is_string( $report ) || ! self::planning_identifier( $report ) || ! in_array(
+			$keys,
+			array(
+				array( 'lang', 'project_id', 'report_run_id', 'revision', 'schema_version' ),
+				array( 'lang', 'project_id', 'report_run_id', 'report_transfer', 'revision', 'schema_version' ),
+				array( 'lang', 'project_id', 'report_run_id', 'retry', 'revision', 'schema_version' ),
+			),
+			true
+		) || ( array_key_exists( 'report_transfer', $command ) && ! is_string( $replay ) ) || ( array_key_exists( 'retry', $command ) && ( ! is_string( $retry ) || ! wp_is_uuid( $retry, 4 ) ) ) ) {
 			return Failure::make( 'input', 422 );
 		}
 		$note = $this->read_inquiry_note( $principal, $command['project_id'], $command['revision'] );
 		if ( ! is_array( $note ) ) {
 			return $note ?? Failure::make( 'invalid_reply', 502 );
 		}
+		$proposal = null;
+		if ( is_string( $report ) ) {
+			$binding  = $note['project_id'] . ':' . $note['revision'];
+			$retained = null;
+			if ( is_string( $retry ) ) {
+				/**
+				 * The handle belongs to this Woo session and project and only
+				 * contains validated fields retained by the native handler.
+				 *
+				 * @since 0.3.0
+				 * @param array|null $retained Prior matching retry state.
+				 * @param string     $retry Opaque native handle.
+				 * @param string     $binding Exact project revision.
+				 * @param string     $report Exact report being retried.
+				 */
+				$retained = apply_filters( 'linker_commerce_planning_inquiry_retry', null, $retry, $binding, $report ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Native Commerce retry reader.
+				if ( ! is_array( $retained ) ) {
+					return Failure::make( 'identity', 403 );
+				}
+				$replay = $retained['fields']['linker_report_transfer'] ?? null;
+			}
+			$intent = array(
+				'schema_version'    => 1,
+				'project_id'        => $note['project_id'],
+				'report_run_id'     => $report,
+				'expected_revision' => $note['revision'],
+				'key'               => wp_generate_uuid4(),
+			);
+			if ( is_string( $replay ) ) {
+				$handoff = explode( ':', $replay, 4 )[1] ?? '';
+				if ( ! self::planning_identifier( $handoff ) ) {
+					return Failure::make( 'input', 422 );
+				}
+				$frozen = $this->read_inquiry_handoff( $principal, $handoff );
+			} else {
+				$encoded = wp_json_encode( $intent );
+				if ( ! is_string( $encoded ) ) {
+					return Failure::make( 'input', 422 );
+				}
+				$reply = $this->admission->send( $principal, 'handoffs/prepare', $intent, $encoded, $this->transport );
+				if ( is_wp_error( $reply ) ) {
+					return $reply;
+				}
+				$frozen = json_decode( $reply['body'], true );
+				if ( ! is_array( $frozen ) || ! str_starts_with( $reply['type'], 'application/json' ) ) {
+					return Failure::make( 'invalid_reply', 502 );
+				}
+				if ( $reply['status'] >= 400 ) {
+					return new WP_REST_Response( $frozen, $reply['status'] );
+				}
+			}
+			if ( is_wp_error( $frozen ) ) {
+				return $frozen;
+			}
+			$proposal = array(
+				'command'  => $intent,
+				'handoff'  => $frozen,
+				'replay'   => $replay,
+				'retained' => $retained,
+			);
+		}
 		/**
 		 * Return the native inquiry form for the visitor's current Woo session.
 		 *
 		 * @since 0.3.0
-		 * @param array|null $form Form response supplied by Commerce.
+		 * @param array|WP_Error|null $form Form response supplied by Commerce.
 		 * @param string     $lang Requested form language.
 		 * @param array      $note Owner-verified revision and project note.
+		 * @param array|null $proposal Owner-verified report and retry state.
 		 */
-		$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'], $note ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Hook owned by Commerce.
-		return is_array( $form ) ? new WP_REST_Response( $form ) : Failure::make( 'configuration', 503 );
+		$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'], $note, $proposal ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Hook owned by Commerce.
+		return is_wp_error( $form ) ? $form : ( is_array( $form ) ? new WP_REST_Response( $form ) : Failure::make( 'configuration', 503 ) );
+	}
+
+	/** A native inquiry uses the same account or signed Woo guest as the preview.
+	 *
+	 * @param mixed  $previous Prior adapter.
+	 * @param string $handoff_id Prepared report handoff.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function inquiry_handoff( mixed $previous, string $handoff_id ): array|WP_Error {
+		unset( $previous );
+		$principal = $this->identity->inquiry_submitter();
+		return $principal instanceof WP_Error ? $principal : $this->read_inquiry_handoff( $principal, $handoff_id );
+	}
+
+	/** Read exactly the owned report handoff, without starting another preparation.
+	 *
+	 * @param Principal $principal Current native owner.
+	 * @param string    $id Prepared report handoff.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	private function read_inquiry_handoff( Principal $principal, string $id ): array|WP_Error {
+		if ( ! self::planning_identifier( $id ) ) {
+			return Failure::make( 'input', 422 );
+		}
+		$handoff = $this->transport->object(
+			$principal,
+			'handoffs/read',
+			array(
+				'schema_version' => 1,
+				'handoff_id'     => $id,
+			)
+		);
+		if ( is_wp_error( $handoff ) ) {
+			return $handoff;
+		}
+		return ( $handoff['id'] ?? null ) === $id ? $handoff : Failure::make( 'invalid_reply', 502 );
+	}
+
+	/** Check the exact Planner identifier form before dispatching the private RPC.
+	 *
+	 * @param string $id Planner project/run/handoff reference.
+	 */
+	private static function planning_identifier( string $id ): bool {
+		return 1 === preg_match( '/\A[a-f0-9]{32}\z/', $id );
 	}
 
 	/** Read the selected note again under the native inquiry submitter's identity.
