@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
 import React, { act } from "react";
+import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter } from "./dom-fixture.mjs";
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -27,11 +28,15 @@ const session = {
 	},
 };
 
-test("project setup retains entered information when the saved-project index refreshes", async (t) => {
+test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
 	const fixture = setupDom();
-	// The shared fixture opens a project from its URL; this test starts at the
-	// empty index, which is where the one-screen start lives.
-	window.history.replaceState({}, "", "/workspace/");
+	window.history.replaceState(
+		{},
+		"",
+		"/workspace/?plz=0150#sc-preliminary-options",
+	);
+	document.querySelector("header").innerHTML =
+		'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
 	const globals = new Map();
 	for (const [name, value] of Object.entries({
 		MutationObserver: window.MutationObserver,
@@ -55,10 +60,12 @@ test("project setup retains entered information when the saved-project index ref
 	let listed = [];
 	const creates = [];
 	let accepted;
+	const createResponse = Promise.withResolvers();
 	const client = {
 		async send(path, body) {
 			assert.equal(path, "projects/create");
 			creates.push(body);
+			await createResponse.promise;
 			const command = JSON.parse(body);
 			accepted = {
 				id: projectId,
@@ -67,6 +74,7 @@ test("project setup retains entered information when the saved-project index ref
 				inputs: command.inputs,
 				input_sha256: "2".repeat(64),
 			};
+			listed = [{ ...accepted, updated_at: 1763200000 }];
 			return accepted;
 		},
 		invalidate() {},
@@ -135,7 +143,26 @@ test("project setup retains entered information when the saved-project index ref
 		),
 	);
 	const start = () => document.querySelector("form");
+	const setup = () =>
+		[...document.querySelectorAll("button")].find(
+			(button) => button.textContent.trim() === "Enter project details",
+		);
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.ok(
+		setup(),
+		"Known project details can lead directly to the project form",
+	);
+	await until(() => !setup().disabled);
+	await act(async () => setup().click());
 	await until(() => document.querySelector('select[name="system_scope"]'));
+	assert.equal(location.hash, "#sc-project");
+	assert.equal(document.activeElement.textContent, "What is the project?");
+	assert.equal(new URL(location.href).searchParams.get("project"), null);
+	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
+	assert.equal(document.querySelector('a[hreflang="de"]').hash, "#sc-project");
+	assert.deepEqual(creates, []);
 	await act(async () => {
 		const scope = document.querySelector('select[name="system_scope"]');
 		scope.value = "storage_only";
@@ -145,6 +172,31 @@ test("project setup retains entered information when the saved-project index ref
 		document.querySelector('input[name="project_title"]'),
 		"Oslo storage",
 	);
+	await enter(
+		document.querySelector('input[name="location_label"]'),
+		"Oslo 0150",
+	);
+	await act(async () => history.back());
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.equal(
+		Boolean(document.querySelector('input[name="project_title"]')),
+		false,
+	);
+	assert.equal(document.activeElement.textContent, "Preliminary options");
+	await act(async () => history.forward());
+	await until(() => document.querySelector('input[name="project_title"]'));
+	assert.equal(document.activeElement.textContent, "What is the project?");
+	assert.equal(
+		document.querySelector('input[name="project_title"]').value,
+		"Oslo storage",
+	);
+	assert.equal(
+		document.querySelector('input[name="location_label"]').value,
+		"Oslo 0150",
+	);
+	assert.deepEqual(creates, []);
 
 	listed = [
 		{
@@ -185,17 +237,50 @@ test("project setup retains entered information when the saved-project index ref
 		next.click();
 		next.click();
 	});
-	await until(() => location.hash === "#sc-energy");
-	assert.equal(creates.length, 1);
+	await until(() => creates.length === 1);
+	try {
+		await act(async () => history.back());
+		const option = () =>
+			document.querySelector(
+				'table[aria-label="Compare system options"] tbody button',
+			);
+		await until(
+			() =>
+				option() &&
+				(option().disabled || location.hash === "#sc-preliminary-options"),
+		);
+		assert.equal(
+			option().disabled,
+			true,
+			"One app session is already creating a project",
+		);
+		await act(async () => option().click());
+		assert.equal(creates.length, 1);
+		await act(async () =>
+			[...document.querySelectorAll("button")]
+				.find((button) => button.textContent.trim() === "Projects")
+				.click(),
+		);
+		assert.equal(location.hash, "");
+	} finally {
+		await act(async () => createResponse.resolve());
+	}
+	await until(() => accepted);
 	assert.equal(accepted.inputs.backup_demand.load_kw, null);
 	assert.equal(accepted.title, "Oslo storage");
+	assert.equal(location.hash, "");
+	assert.equal(new URL(location.href).searchParams.has("project"), false);
 	await until(() =>
-		document.body.textContent.includes("What should the system do?"),
+		document
+			.querySelector('[role="listitem"]')
+			?.textContent.includes("Oslo storage"),
 	);
 });
 
 test("the first-visit entry compares directions and opens the native inquiry for the choice", async (t) => {
 	const fixture = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	t.after(() => delete globalThis.indexedDB);
 	window.history.replaceState({}, "", "/workspace/#sc-preliminary-options");
 	document.querySelector("header").innerHTML =
 		'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
@@ -217,7 +302,9 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	const revisions = [];
 	const previews = [];
 	let accepted;
+	let stored = null;
 	let missed = false;
+	let confirmRevision = null;
 	const client = {
 		origin: location.origin,
 		isCurrentScope: (scope) => scope === session.query_scope,
@@ -225,6 +312,8 @@ test("the first-visit entry compares directions and opens the native inquiry for
 			if (path === "projects/list")
 				return { schema_version: 1, items: [], next: null };
 			if (path === "projects/read") return accepted;
+			if (path === "projects/runs")
+				return { schema_version: 1, items: [], next: null };
 			assert.equal(path, "inquiry/form");
 			previews.push(command);
 			return {
@@ -242,7 +331,14 @@ test("the first-visit entry compares directions and opens the native inquiry for
 			const command = JSON.parse(body);
 			if (path === "projects/revise") {
 				revisions.push(command);
-				accepted = { ...accepted, revision: 2, inputs: command.inputs };
+				if (confirmRevision && (await confirmRevision))
+					throw new Error("Revision reply lost");
+				assert.equal(command.expected_revision, accepted.revision);
+				accepted = {
+					...accepted,
+					revision: accepted.revision + 1,
+					inputs: command.inputs,
+				};
 				return accepted;
 			}
 			assert.equal(path, "projects/create");
@@ -268,12 +364,14 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		async writeCreation() {},
 		async clearCreation() {},
 		async read() {
-			return null;
+			return stored;
 		},
 		async candidates() {
 			return [];
 		},
-		async write() {},
+		async write(_scope, draft) {
+			stored = structuredClone(draft);
+		},
 	};
 	const render = (locale) =>
 		act(async () =>
@@ -460,6 +558,96 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		false,
 	);
 	assert.equal(created[0].title, "New project");
+	const refine = button("Enter project details");
+	assert.ok(refine, "The selected direction can lead into the same project");
+	await until(() => !button("Enter project details").disabled);
+	await act(async () => refine.click());
+	await until(() => document.body.textContent.includes("What is the project?"));
+	assert.equal(document.activeElement.textContent, "What is the project?");
+	assert.equal(
+		document.querySelector('select[name="system_scope"]')?.value,
+		"storage_only",
+	);
+	assert.equal(location.hash, "#sc-project");
+	assert.equal(location.search, "?project=" + projectId);
+	assert.equal(created.length, 2, "No additional creation request was sent");
+	assert.equal(revisions.length, 1, "Opening setup did not revise the project");
+	accepted = {
+		...accepted,
+		revision: 3,
+		inputs: {
+			...accepted.inputs,
+			brief: { ...accepted.inputs.brief, system_scope: "pv_only" },
+		},
+	};
+	await act(async () => history.back());
+	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
+	assert.equal(location.hash, "#sc-preliminary-review");
+	assert.equal(
+		fixture.element.querySelector('[name="linker_preliminary_project"]').value,
+		projectId + ":3",
+	);
+	assert.match(
+		fixture.element.querySelector(".linker-inquiry-draft").textContent,
+		/Planned system: Solar/,
+	);
+	assert.equal(previews.at(-1)?.revision, 3);
+	assert.equal(
+		fixture.element.querySelector('[name="message"]').value,
+		"Frage aus der deutschen Ansicht",
+	);
+	await until(
+		() =>
+			!button("Enter project details")?.disabled &&
+			button("Enter project details"),
+	);
+	await act(async () => button("Enter project details").click());
+	const site = () => document.querySelector('input[name="location_label"]');
+	await until(() => site() && !site().closest("fieldset").disabled);
+	await enter(site(), "Berlin 10115");
+	assert.equal(site().value, "Berlin 10115");
+	const pendingRevision = Promise.withResolvers();
+	confirmRevision = pendingRevision.promise;
+	try {
+		await act(async () => history.back());
+		await until(() => revisions.length === 2);
+		assert.equal(revisions[1].expected_revision, 3);
+		assert.equal(revisions[1].inputs.brief.site.location_label, "Berlin 10115");
+		assert.equal(
+			Boolean(fixture.element.querySelector("form.linker-inquiry-form")),
+			false,
+		);
+		assert.equal(
+			previews.at(-1)?.revision,
+			3,
+			"Do not request Woo form before the site edit is confirmed",
+		);
+	} finally {
+		pendingRevision.resolve(true);
+	}
+	await until(() => button("Retry save"));
+	assert.equal(revisions.length, 2);
+	assert.equal(
+		Boolean(fixture.element.querySelector("form.linker-inquiry-form")),
+		false,
+	);
+	confirmRevision = null;
+	await act(async () => button("Retry save").click());
+	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
+	assert.deepEqual(
+		revisions[2],
+		revisions[1],
+		"Retry the same frozen revise request",
+	);
+	assert.equal(previews.at(-1)?.revision, 4);
+	assert.equal(
+		fixture.element.querySelector('[name="linker_preliminary_project"]').value,
+		projectId + ":4",
+	);
+	assert.equal(
+		fixture.element.querySelector('[name="message"]').value,
+		"Frage aus der deutschen Ansicht",
+	);
 });
 
 test("signed-in preliminary landing explains a failed recovery read and offers a retry", async (t) => {
@@ -690,6 +878,9 @@ async function lostReceipt(
 				active: true,
 				scope: session.query_scope,
 				changeSelection() {},
+				enterDetails() {
+					assert.fail("A pending inquiry must stay on the review");
+				},
 				recheck() {},
 			}),
 		),
@@ -763,6 +954,12 @@ async function lostReceipt(
 	);
 	assert.equal(
 		fixture.element.querySelector(".sc-draft-transfer aside button").disabled,
+		true,
+	);
+	assert.equal(
+		[...fixture.element.querySelectorAll("button")].find(
+			(button) => button.textContent.trim() === "Enter project details",
+		)?.disabled,
 		true,
 	);
 	const replay = new window.FormData(form());

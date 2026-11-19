@@ -19,8 +19,11 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	const origin = window.location.origin;
 	const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
 	const applied = [];
+	let current = true;
+	let returnReceipt = false;
 	let phaseConflict = { actual: 1, required: 3 };
 	let reportOnly = false;
+	let reportChanges = [];
 	let phaseConflicts;
 	const client = {
 		origin,
@@ -39,7 +42,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				already_present: false,
 				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
 				...(reportOnly
-					? { changes: [], report_only: true }
+					? { changes: reportChanges, report_only: true }
 					: {
 							changes: [
 								{
@@ -63,6 +66,14 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		records: [],
 		async start(...args) {
 			applied.push(args);
+			if (returnReceipt)
+				return {
+					path: "draft/apply",
+					intent: { key: "attached" },
+					receipt: {
+						urls: { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` },
+					},
+				};
 		},
 	};
 	const render = (key, locale = "en") =>
@@ -74,7 +85,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 					client,
 					operations,
 					scope: "owned",
-					current: true,
+					current,
 					blocked: false,
 					locale,
 					reportOnly,
@@ -154,6 +165,40 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	assert.match(dom.element.textContent, /West: Grid phase mismatch/);
 	await act(async () => button("Attach report to inquiry").click());
 	assert.equal(applied.length, 2);
+
+	phaseConflicts = undefined;
+	returnReceipt = true;
+	await render("report-only-without-changes");
+	await act(async () => button("Attach report to inquiry").click());
+	assert.deepEqual(applied.at(-1), [
+		"draft/apply",
+		{
+			expected_revision: 3,
+			report_run_id: run.id,
+			expected_draft_sha256: "d".repeat(64),
+		},
+	]);
+	assert.equal(applied.length, 3);
+	assert.equal(
+		dom.element.querySelector("a").getAttribute("href"),
+		`${origin}/inquiry/`,
+	);
+	current = false;
+	await render("report-only-without-changes");
+	assert.equal(dom.element.querySelectorAll("a").length, 0);
+	assert.match(
+		dom.element.textContent,
+		/Generate a report for the current project/,
+	);
+	current = true;
+
+	reportChanges = [
+		{ product_id: 1, label: "GoodWe inverter", before: 1, after: 0 },
+	];
+	await render("report-only-with-replacement");
+	await act(async () => button("Attach report to inquiry").click());
+	assert.match(dom.element.textContent, /GoodWe inverter/);
+	assert.equal(applied.length, 3);
 });
 
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {

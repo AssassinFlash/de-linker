@@ -20,6 +20,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import {
 	applyTurnstileProfile,
+	isolateVisitorBudgets,
 	instance,
 	wp,
 	REPO_ROOT,
@@ -149,49 +150,6 @@ async function resetEmailLink(email: string, submitted: number): Promise<URL> {
 		)
 		.toBe(true);
 	return new URL(address);
-}
-
-/** Keep snapshot traffic outside this local run's real admission and mail windows. */
-function isolateVisitorBudgets(): () => void {
-	const localOnly = String.raw`
-		if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
-			throw new RuntimeException( 'A local WordPress mail sink is required.' );
-		}
-	`;
-	const snapshot = wp([
-		'eval',
-		localOnly +
-			String.raw`
-			$prior = array();
-			foreach ( array(
-				\Linker\Commerce\Mail\Throttle::OPTION,
-				\Linker\Commerce\Mail\OptionBudgetLedger::OPTION,
-				\Linker\Commerce\Protection\Ledger::OPTION
-			) as $name ) {
-				wp_cache_delete( $name, 'options' );
-				$prior[$name] = get_option( $name, null );
-				delete_option( $name );
-			}
-			echo base64_encode( serialize( $prior ) );
-		`,
-	]);
-	return () => {
-		wp([
-			'eval',
-			localOnly +
-				`
-				$prior = unserialize( base64_decode( '${snapshot}' ), array( 'allowed_classes' => false ) );
-				foreach ( $prior as $name => $value ) {
-					wp_cache_delete( $name, 'options' );
-					if ( null === $value ) {
-						delete_option( $name );
-					} else {
-						update_option( $name, $value, false );
-					}
-				}
-			`,
-		]);
-	};
 }
 
 const LOCALES = [

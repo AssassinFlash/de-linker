@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
@@ -133,7 +133,9 @@ export function ReviewInquiry({
 	scope,
 	locale,
 	active,
+	ready = true,
 	changeSelection,
+	enterDetails,
 	recheck,
 	inquiryPending,
 }: {
@@ -143,7 +145,9 @@ export function ReviewInquiry({
 	scope: string;
 	locale: string;
 	active: boolean;
+	ready?: boolean;
 	changeSelection: () => void;
+	enterDetails?: (() => void) | undefined;
 	recheck: () => void;
 	inquiryPending?: (pending: boolean) => void;
 }) {
@@ -170,24 +174,23 @@ export function ReviewInquiry({
 	const [checkingInquiry, setCheckingInquiry] = useState(() =>
 		Boolean(pendingInquiry(scope, project)),
 	);
+	// The next form consumes the draft only for the same owned project.
+	const save = useCallback(() => {
+		const form = host.current?.querySelector("form");
+		if (!form || posting.current || !client.isCurrentScope(scope)) return;
+		const values = readCustomerFields(form, retained.current);
+		retained.current = values;
+		if (values.size)
+			window.sessionStorage.setItem(
+				DRAFT_KEY,
+				JSON.stringify({
+					scope,
+					projectId,
+					fields: Object.fromEntries(values),
+				}),
+			);
+	}, [client, projectId, scope]);
 	useEffect(() => {
-		// Keep one unfinished navigation draft in this tab. The destination
-		// consumes it only after mounting a form for the same owned project.
-		const save = () => {
-			const form = host.current?.querySelector("form");
-			if (!form || posting.current || !client.isCurrentScope(scope)) return;
-			const values = readCustomerFields(form, retained.current);
-			retained.current = values;
-			if (values.size)
-				window.sessionStorage.setItem(
-					DRAFT_KEY,
-					JSON.stringify({
-						scope,
-						projectId,
-						fields: Object.fromEntries(values),
-					}),
-				);
-		};
 		const onPageHide = (event: PageTransitionEvent) => {
 			try {
 				save();
@@ -242,13 +245,13 @@ export function ReviewInquiry({
 			window.removeEventListener("pagehide", onPageHide);
 			window.removeEventListener("pageshow", onPageShow);
 		};
-	}, [client, projectId, scope]);
+	}, [projectId, save]);
 	useEffect(() => {
 		if (active) heading.current?.focus({ preventScroll: true });
 	}, [active]);
 	useEffect(() => {
 		const node = host.current;
-		if (!node) return;
+		if (!node || !ready) return;
 		const request = new AbortController();
 		let expiry: number | undefined;
 		const abort = () => request.abort();
@@ -353,7 +356,7 @@ export function ReviewInquiry({
 			if (form) retained.current = readCustomerFields(form, retained.current);
 			node.replaceChildren();
 		};
-	}, [client, scope, projectId, revision, locale, attempt, recheck]);
+	}, [client, scope, projectId, revision, locale, attempt, recheck, ready]);
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"
@@ -390,6 +393,25 @@ export function ReviewInquiry({
 					>
 						{__("Change selection", "linker-tools")}
 					</button>
+					{enterDetails && (
+						<button
+							className="sc-button"
+							type="button"
+							disabled={checkingInquiry}
+							onClick={() => {
+								if (posting.current || !client.isCurrentScope(scope)) return;
+								try {
+									save();
+								} catch {
+									setNavigationFailed(true);
+									return;
+								}
+								enterDetails();
+							}}
+						>
+							{__("Enter project details", "linker-tools")}
+						</button>
+					)}
 				</aside>
 				<div className="sc-inquiry-fields">
 					{!lines && !failed && (
@@ -427,6 +449,7 @@ export function ReviewInquiry({
 								}
 							}
 							posting.current = true;
+							setCheckingInquiry(true);
 							retained.current.clear();
 							takeNavigationDraft(scope, projectId);
 						}}

@@ -154,13 +154,24 @@ export function Workspace({
 		const restore = () => {
 			const destination = location.hash.slice(1);
 			if (!preliminaryRoute(route) && !preliminaryRoute(destination)) return;
+			const id = currentProject();
+			if (
+				id &&
+				!preliminaryRoute(route) &&
+				preliminaryRoute(destination) &&
+				pendingInquiryRevision(session.query_scope, id) === null
+			)
+				void cache.resetQueries({
+					queryKey: [session.query_scope, "project", id, session.claim_pending],
+					exact: true,
+				});
 			setRoute(destination);
-			setSelected(currentProject());
+			setSelected(id);
 			setEntryHints(readEntryHints(new URL(location.href).searchParams));
 		};
 		window.addEventListener("popstate", restore);
 		return () => window.removeEventListener("popstate", restore);
-	}, [route]);
+	}, [cache, route, session.claim_pending, session.query_scope]);
 	const select = useCallback(
 		(id: string | null, destination = "") => {
 			if (!client.isCurrentScope(session.query_scope)) return;
@@ -195,6 +206,13 @@ export function Workspace({
 				comparison.hash = "sc-preliminary-options";
 				window.history.replaceState(null, "", comparison);
 				window.history.pushState({ preliminaryProject: id }, "", url);
+				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+			} else if (
+				id &&
+				from === "sc-preliminary-review" &&
+				destination === "sc-project"
+			) {
+				window.history.pushState(null, "", url);
 				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
 			} else replacePlannerLocation(url);
 			setEntryHints(null);
@@ -278,9 +296,21 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
+	const creatingProject = useRef(false);
+	const [creationPending, setCreationPending] = useState(false);
+	function beginCreation() {
+		if (creatingProject.current) return null;
+		creatingProject.current = true;
+		setCreationPending(true);
+		return () => {
+			creatingProject.current = false;
+			setCreationPending(false);
+		};
+	}
 	function created(
 		project: Project,
 		destination?: CreationDestination | "energy",
+		openResult = true,
 	) {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -290,18 +320,19 @@ export function Workspace({
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
-		select(
-			project.id,
-			destination === "preliminary-review"
-				? "sc-preliminary-review"
-				: destination === "energy"
-					? "sc-energy"
-					: destination === "equipment"
-						? "sc-system"
-						: destination === "design"
-							? "sc-solar"
-							: "sc-project",
-		);
+		if (openResult)
+			select(
+				project.id,
+				destination === "preliminary-review"
+					? "sc-preliminary-review"
+					: destination === "energy"
+						? "sc-energy"
+						: destination === "equipment"
+							? "sc-system"
+							: destination === "design"
+								? "sc-solar"
+								: "sc-project",
+			);
 		return true;
 	}
 	const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
@@ -444,7 +475,17 @@ export function Workspace({
 				locale={config.locale}
 				comparing={route === "sc-preliminary-options"}
 				recoveringRevision={inquiryRevision !== null}
-				navigate={(destination) => select(selected, destination)}
+				navigate={(destination, confirmed) => {
+					if (confirmed)
+						cache.setQueryData<Project>(
+							[session.query_scope, "project", selected, session.claim_pending],
+							(current) =>
+								current && current.revision >= confirmed.revision
+									? current
+									: confirmed,
+						);
+					if (route !== destination) select(selected, destination);
+				}}
 				recheck={recheck}
 			/>
 		);
@@ -536,42 +577,50 @@ export function Workspace({
 		briefSource === null &&
 		!entryHints?.roof &&
 		!entryHints?.equipment;
-	if (firstVisitComparison)
-		return (
-			<div className="sc-configurator">
-				<ProjectHeading
-					anchor="sc-preliminary-options"
-					actions={
-						<button
-							className="sc-button"
-							type="button"
-							onClick={() => select(null)}
-						>
-							{__("Projects", "linker-tools")}
-						</button>
-					}
-				/>
-				<InquiryStages />
-				{recoveryNotice}
-				<NewProject
-					config={config}
-					compareOnLoad
-					entryHints={entryHints}
-					locale={config.locale}
-					session={session}
-					client={client}
-					store={store}
-					created={created}
-					recheck={recheck}
-					recoveryScopes={recovery.data}
-					recoveryChecking={recovery.isFetching}
-					recoveryDiscoveryFailed={recovery.isError}
-				/>
-			</div>
-		);
 
-	return (
+	const comparison = firstVisitComparison ? (
 		<div className="sc-configurator">
+			<ProjectHeading
+				anchor="sc-preliminary-options"
+				actions={
+					<button
+						className="sc-button"
+						type="button"
+						onClick={() => select(null)}
+					>
+						{__("Projects", "linker-tools")}
+					</button>
+				}
+			/>
+			<InquiryStages />
+			{recoveryNotice}
+			<NewProject
+				config={config}
+				compareOnLoad
+				creationPending={creationPending}
+				beginCreation={beginCreation}
+				enterDetails={() => {
+					const url = new URL(location.href);
+					url.hash = "sc-project";
+					window.history.pushState(null, "", url);
+					setRoute("sc-project");
+					window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+				}}
+				entryHints={entryHints}
+				locale={config.locale}
+				session={session}
+				client={client}
+				store={store}
+				created={created}
+				recheck={recheck}
+				recoveryScopes={recovery.data}
+				recoveryChecking={recovery.isFetching}
+				recoveryDiscoveryFailed={recovery.isError}
+			/>
+		</div>
+	) : null;
+	const workspace = (
+		<div className="sc-configurator" hidden={firstVisitComparison}>
 			<header className="sc-project-heading">
 				<div>
 					<p>{__("Solution Configurator", "linker-tools")}</p>
@@ -626,8 +675,13 @@ export function Workspace({
 						/>
 					) : (
 						<NewProject
+							hidden={firstVisitComparison}
+							creationPending={creationPending}
+							beginCreation={beginCreation}
 							config={config}
-							openOnLoad={index.isSuccess && !projects.length}
+							openOnLoad={
+								route === "sc-project" || (index.isSuccess && !projects.length)
+							}
 							entryHints={entryHints}
 							locale={config.locale}
 							session={session}
@@ -757,7 +811,10 @@ export function Workspace({
 											disabled={deleteBusy || index.isRefetching}
 											onClick={() => {
 												if (
-													cache.isFetching({ queryKey: indexKey, exact: true })
+													cache.isFetching({
+														queryKey: indexKey,
+														exact: true,
+													})
 												)
 													return;
 												setConfirmingDelete(item.id);
@@ -869,5 +926,11 @@ export function Workspace({
 				</footer>
 			</div>
 		</div>
+	);
+	return (
+		<>
+			{comparison}
+			{workspace}
+		</>
 	);
 }

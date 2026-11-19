@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
 import type { Project, Session } from "../../data/protocol.ts";
 import { pendingInquiry } from "../../data/inquiryRecovery.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { emptyBrief, readBrief, type Brief } from "../../domain/brief.ts";
-import { editDraft } from "../../domain/draft.ts";
+import { editDraft, isDirty } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
@@ -33,6 +33,7 @@ export function PreliminaryProject({
 	navigate: (
 		destination:
 			"sc-preliminary-options" | "sc-preliminary-review" | "sc-project",
+		confirmed?: Project,
 	) => void;
 	recheck: () => void;
 }) {
@@ -47,15 +48,35 @@ export function PreliminaryProject({
 	const [inquiryPending, setInquiryPending] = useState(() =>
 		Boolean(pendingInquiry(session.query_scope, project)),
 	);
-	const blocked =
-		!draft ||
-		controller.busy ||
-		inquiryPending ||
-		!client.isCurrentScope(session.query_scope);
+	const [saveNeedsEditor, setSaveNeedsEditor] = useState(false);
+	const automaticSaveStarted = useRef(false);
+	const admitted = client.isCurrentScope(session.query_scope);
+	const blocked = !draft || controller.busy || inquiryPending || !admitted;
 	// The full project editor already owns conflict and cross-account recovery.
 	const needsRecovery = Boolean(
-		draft?.conflict || controller.recoveries.length,
+		draft?.conflict ||
+		controller.recoveries.length ||
+		controller.inputContractRequired ||
+		saveNeedsEditor,
 	);
+	const replaying = recoveringRevision || inquiryPending;
+	const dirty = draft !== null && isDirty(draft);
+	const ready =
+		replaying ||
+		(admitted && draft !== null && !dirty && !draft.pending && !needsRecovery);
+	const autoSave =
+		!showOptions &&
+		!replaying &&
+		dirty &&
+		!draft?.pending &&
+		!blocked &&
+		!needsRecovery &&
+		!controller.failed;
+	useEffect(() => {
+		if (!autoSave || automaticSaveStarted.current) return;
+		automaticSaveStarted.current = true;
+		void saveSelection();
+	});
 
 	async function choose(systemScope: NonNullable<Brief["system_scope"]>) {
 		if (!draft || needsRecovery || blocked || draft.pending) return;
@@ -71,8 +92,12 @@ export function PreliminaryProject({
 		await saveSelection();
 	}
 	async function saveSelection() {
-		const saved = await controller.save();
-		if (saved) navigate("sc-preliminary-review");
+		try {
+			const saved = await controller.save();
+			if (saved) navigate("sc-preliminary-review", saved);
+		} catch {
+			setSaveNeedsEditor(true);
+		}
 	}
 	return (
 		<div className="sc-configurator">
@@ -98,14 +123,23 @@ export function PreliminaryProject({
 							{__("Check inquiry status", "linker-tools")}
 						</button>
 					)}
-					{controller.busy && (
+				</div>
+			)}
+			{!replaying && (showOptions || !ready) && (
+				<div className="sc-main">
+					{(controller.busy || autoSave) && (
 						<p role="status">{__("Saving…", "linker-tools")}</p>
+					)}
+					{!draft && !showOptions && (
+						<p role="status">{__("Opening the project…", "linker-tools")}</p>
 					)}
 					{needsRecovery ? (
 						<Notice error>
+							<p>{__("Save not confirmed", "linker-tools")}</p>
 							<button
 								className="sc-button"
 								type="button"
+								disabled={blocked}
 								onClick={() => navigate("sc-project")}
 							>
 								{__("Open project", "linker-tools")}
@@ -115,6 +149,7 @@ export function PreliminaryProject({
 						(draft?.pending || controller.failed) &&
 						!controller.busy && (
 							<Notice error>
+								<p>{__("Save not confirmed", "linker-tools")}</p>
 								<button
 									className="sc-button"
 									type="button"
@@ -135,8 +170,12 @@ export function PreliminaryProject({
 					client={client}
 					scope={session.query_scope}
 					locale={locale}
-					active={!showOptions}
+					active={!showOptions && ready}
+					ready={ready}
 					changeSelection={() => navigate("sc-preliminary-options")}
+					enterDetails={
+						blocked || draft?.pending ? undefined : () => navigate("sc-project")
+					}
 					recheck={recheck}
 					inquiryPending={setInquiryPending}
 				/>

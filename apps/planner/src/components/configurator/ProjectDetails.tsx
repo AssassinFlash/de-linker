@@ -100,8 +100,11 @@ export function ProjectDetails({
 	const [locating, setLocating] = useState(false);
 	const [locationError, setLocationError] = useState(false);
 	const live = useRef(true);
+	const heading = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
 		live.current = true;
+		if (location.hash === "#sc-project")
+			heading.current?.focus({ preventScroll: true });
 		return () => {
 			live.current = false;
 		};
@@ -228,7 +231,9 @@ export function ProjectDetails({
 		<>
 			<header className="sc-section-head">
 				<div>
-					<h2>{__("What is the project?", "linker-tools")}</h2>
+					<h2 ref={heading} tabIndex={-1}>
+						{__("What is the project?", "linker-tools")}
+					</h2>
 					<p className="sc-muted">
 						{__(
 							"Start with the location and what is already known.",

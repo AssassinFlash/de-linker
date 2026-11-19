@@ -43,6 +43,10 @@ export function NewProject({
 	config,
 	openOnLoad = false,
 	compareOnLoad = false,
+	enterDetails,
+	hidden = false,
+	creationPending = false,
+	beginCreation,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -50,6 +54,7 @@ export function NewProject({
 	created: (
 		project: Project,
 		destination?: CreationDestination | "energy",
+		openResult?: boolean,
 	) => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
@@ -62,6 +67,10 @@ export function NewProject({
 	config?: Configuration;
 	openOnLoad?: boolean;
 	compareOnLoad?: boolean;
+	enterDetails?: () => void;
+	hidden?: boolean;
+	creationPending?: boolean;
+	beginCreation?: () => (() => void) | null;
 }) {
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
@@ -77,7 +86,7 @@ export function NewProject({
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
-		Boolean(entryHints?.productId),
+		!hidden && Boolean(entryHints?.productId),
 	);
 	const [draft, setDraft] = useState<JsonObject | null>(null);
 	const [carriedProduct, setCarriedProduct] = useState(true);
@@ -178,7 +187,7 @@ export function NewProject({
 		};
 	}, [session.query_scope]);
 	useEffect(() => {
-		if (recoveryChecking || !admitted) return;
+		if (hidden || recoveryChecking || !admitted) return;
 		let active = true;
 		setChecking(true);
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
@@ -209,6 +218,7 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
+		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
@@ -224,6 +234,7 @@ export function NewProject({
 	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
 		if (
 			sending.current ||
+			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
@@ -232,7 +243,10 @@ export function NewProject({
 			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
 		)
 			return;
+		const releaseCreation = beginCreation?.();
+		if (releaseCreation === null) return;
 		const instance = lifetime.current;
+		const submittedFrom = location.href;
 		if (!intent.current) intentScope.current = session.query_scope;
 		const originScope = intentScope.current;
 
@@ -303,6 +317,7 @@ export function NewProject({
 						(createdBrief?.system_scope === "storage_only"
 							? "energy"
 							: undefined),
+					location.href === submittedFrom,
 				)
 			) {
 				setFailed(true);
@@ -361,6 +376,7 @@ export function NewProject({
 				setProjectGone(true);
 			}
 		} finally {
+			releaseCreation?.();
 			sending.current = false;
 			if (lifetime.current === instance) setBusy(false);
 		}
@@ -407,9 +423,11 @@ export function NewProject({
 					"linker-tools",
 				);
 
+	if (hidden) return null;
 	if (compareOnLoad) {
 		const disabled =
 			busy ||
+			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
@@ -422,9 +440,23 @@ export function NewProject({
 					inputs={inputs}
 					disabled={disabled || retry}
 					choose={(direction) => void submit(direction)}
+					action={
+						enterDetails && (
+							<button
+								className="sc-button"
+								type="button"
+								disabled={disabled || retry}
+								onClick={enterDetails}
+							>
+								{__("Enter project details", "linker-tools")}
+							</button>
+						)
+					}
 				/>
 				{pendingRequests}
-				{busy && <p role="status">{__("Creating…", "linker-tools")}</p>}
+				{(busy || creationPending) && (
+					<p role="status">{__("Creating…", "linker-tools")}</p>
+				)}
 				{failed && (
 					<Notice error>
 						<p>{failureMessage}</p>
@@ -453,7 +485,12 @@ export function NewProject({
 		return (
 			<button
 				className="sc-button sc-primary"
-				disabled={checking || recoveryChecking || recoveryDiscoveryFailed}
+				disabled={
+					creationPending ||
+					checking ||
+					recoveryChecking ||
+					recoveryDiscoveryFailed
+				}
 				onClick={() => setOpen(true)}
 			>
 				{__("New project", "linker-tools")}
@@ -618,6 +655,7 @@ export function NewProject({
 				config={config ?? { locale, countries: {} }}
 				disabled={
 					busy ||
+					creationPending ||
 					checking ||
 					recoveryChecking ||
 					recoveryDiscoveryFailed ||

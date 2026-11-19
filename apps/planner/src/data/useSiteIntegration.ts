@@ -86,7 +86,10 @@ export function projectLanguageUrl(
 		}))
 			if (value !== null) target.searchParams.set(key, String(value));
 	target.hash =
-		id === null && page.hash === "#sc-preliminary-options" ? page.hash : "";
+		id === null &&
+		["#sc-preliminary-options", "#sc-project"].includes(page.hash)
+			? page.hash
+			: "";
 	if (id && page.searchParams.get("project") === id) {
 		const view = page.searchParams.get("energy_view");
 		if (view && initialEnergyView(page) === view)

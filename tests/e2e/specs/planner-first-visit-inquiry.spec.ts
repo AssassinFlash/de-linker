@@ -7,6 +7,7 @@ import {
 } from '../lib/instance';
 
 let restoreProtection: (() => void) | undefined;
+let inquiryEmail: string | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
@@ -15,7 +16,25 @@ test.afterAll(() => {
 	restoreProtection?.();
 });
 test.beforeEach(({ page }) => {
+	inquiryEmail = undefined;
 	page.setDefaultTimeout(15_000);
+});
+test.afterEach(() => {
+	if (!inquiryEmail) return;
+	wp([
+		'eval',
+		String.raw`
+			if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+				throw new RuntimeException( 'A local WordPress mail sink is required.' );
+			}
+			foreach ( wc_get_orders( array( 'billing_email' => '${inquiryEmail}', 'limit' => -1 ) ) as $order ) {
+				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+					\Linker\Commerce\Protection\IntakeStore::forget( $order );
+				}
+				$order->delete( true );
+			}
+		`,
+	]);
 });
 
 async function screenshot(page: Page, name: string) {
@@ -129,7 +148,8 @@ for (const lang of ['en', 'de'] as const) {
 			if (width === 1440) expect(formBox!.x).toBeLessThan(summaryBox!.x);
 			else expect(summaryBox!.y).toBeLessThan(formBox!.y);
 			await screenshot(page, `review-and-inquire-${lang}-${width}`);
-			const email = `e2e-preliminary-${Date.now()}@example.test`;
+			const email =
+				(inquiryEmail = `e2e-preliminary-${Date.now()}@example.test`);
 			const message = lang === 'de' && width === 390 ? '' : words.message;
 			await form.locator('[name="name"]').fill('E2E First Guest');
 			await form.locator('[name="email"]').fill(email);
@@ -246,13 +266,36 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	const summary = page.locator('.sc-draft-transfer aside');
 	await expect(summary).toContainText('Planned system: Storage');
 	await expect(summary).not.toContainText(labels.en.directions[direction]);
+
+	await page
+		.getByRole('button', { name: 'Enter project details', exact: true })
+		.click();
+	await expect(
+		page.getByRole('heading', { name: 'What is the project?' })
+	).toBeFocused();
+	await page.locator('select[name=country]').selectOption('DE');
+	await page
+		.locator('input[name=location_label]')
+		.fill('Berlin project site');
+	const savedDetails = page.waitForResponse((response) =>
+		new URL(response.url()).pathname.endsWith('/projects/revise')
+	);
+	await page.goBack();
+	const saved = await savedDetails;
+	expect(saved.ok()).toBe(true);
+	expect(saved.request().postDataJSON()).toMatchObject({
+		project_id: id,
+		inputs: { brief: { site: { location_label: 'Berlin project site' } } },
+	});
+	await expect(projectReference).toHaveValue(`${id}:${Number(revision) + 2}`);
+	await expect(form.locator('textarea:visible')).toHaveValue(editedNote);
 });
 
 test('back after a lost receipt recovers the original Woo inquiry', async ({
 	page,
 }) => {
 	const { url } = instance();
-	const email = `e2e-preliminary-${Date.now()}@example.test`;
+	const email = (inquiryEmail = `e2e-preliminary-${Date.now()}@example.test`);
 	const message = 'Please help with my storage project.';
 	await page.goto(url + '/');
 	await page
