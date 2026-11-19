@@ -3159,6 +3159,13 @@ def test_preliminary_inquiry_fences_delayed_deletion_without_a_handoff(
             ).status_code
             == 404
         )
+    for route in ("/projects/read", "/projects/admit-inquiry"):
+        for actor, revision in ((FOREIGN, 1), (USER, 2)):
+            missing = rig.client.post(
+                route, json={**admit, "revision": revision}, headers=headers(actor)
+            )
+            assert missing.status_code == 404
+            assert missing.json()["error"]["code"] == "project_revision_not_found"
     assert rig.post("/projects/admit-inquiry", admit) == {"admitted": True}
     for path, extra in (
         ("/projects/delete", {}),

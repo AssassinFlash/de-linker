@@ -176,11 +176,11 @@ final class InquiryTest extends IntegrationTestCase {
 				);
 				self::assertSame( '0', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s,0)', $lock ) ), 'A competing deletion cannot acquire the project lock.' );
 				++$attempt;
-				if ( 2 === $attempt ) {
+				if ( 3 === $attempt ) {
 					$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
 				}
-				$body = 1 !== $attempt ? array( 'admitted' => true ) : array( 'error' => array( 'code' => 'not_found' ) );
-				$code = 1 === $attempt ? 404 : 200;
+				$code = $attempt <= 2 ? 404 : 200;
+				$body = 200 === $code ? array( 'admitted' => true ) : array( 'error' => array( 'code' => 1 === $attempt ? 'not_found' : 'project_revision_not_found' ) );
 			} else {
 				return $previous;
 			}
@@ -198,8 +198,26 @@ final class InquiryTest extends IntegrationTestCase {
 				remove_filter( 'pre_option_linker_planner_url', $base );
 			}
 		);
+		foreach ( array(
+			'not_found'                  => 'planning_admission_unavailable',
+			'project_revision_not_found' => 'planning_preliminary_unavailable',
+		) as $code => $expected ) {
+			$read_error = static fn () => new \WP_Error( 'linker_planner_' . $code, '', array( 'status' => 404 ) );
+			add_filter( 'linker_tools_planning_inquiry_note', $read_error, 11 );
+			try {
+				$refused = $send();
+				$this->assertInstanceOf( \WP_Error::class, $refused );
+				$this->assertSame( $expected, $refused->get_error_code() );
+			} finally {
+				remove_filter( 'linker_tools_planning_inquiry_note', $read_error, 11 );
+			}
+		}
+		$missing_route = $send();
+		$this->assertInstanceOf( \WP_Error::class, $missing_route );
+		$this->assertSame( 'planning_admission_unavailable', $missing_route->get_error_code() );
 		$failed = $send();
 		$this->assertInstanceOf( \WP_Error::class, $failed );
+		$this->assertSame( 'planning_preliminary_unavailable', $failed->get_error_code() );
 		$this->assertSame( 409, $failed->get_error_data()['status'] );
 		$this->assertFalse( \Linker\Commerce\Planning\ProjectReferences::contains( $id ) );
 		$lost = $send();

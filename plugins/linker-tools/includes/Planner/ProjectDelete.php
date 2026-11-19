@@ -44,7 +44,19 @@ final class ProjectDelete {
 					if ( is_wp_error( $state ) ) {
 						// A concurrent identical delete may have already committed. The original
 						// owner/key can recover its receipt even after the project disappeared.
-						$reply = 404 === ( $state->get_error_data()['status'] ?? null ) ? $transport->call( $principal, 'projects/delete', (string) wp_json_encode( $command ) ) : $state;
+						$reply = $state;
+						if ( 404 === ( $state->get_error_data()['status'] ?? null ) ) {
+							$receipt = $transport->object( $principal, 'operations/replay/projects/delete', $command );
+							if ( is_wp_error( $receipt ) ) {
+								$reply = $receipt;
+							} elseif ( 'replayed' === ( $receipt['status'] ?? null ) ) {
+								$reply = array(
+									'status' => 200,
+									'type'   => 'application/json',
+									'body'   => (string) wp_json_encode( $receipt['result'] ?? null ),
+								);
+							}
+						}
 						return;
 					}
 					if ( ! is_int( $state['inquiry_generation'] ?? null ) || $state['inquiry_generation'] < 0 ) {

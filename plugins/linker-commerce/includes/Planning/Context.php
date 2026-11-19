@@ -393,8 +393,8 @@ final class Context {
 					continue;
 				}
 				if ( ! isset( $reference['handoff_id'] ) ) {
-					if ( $admitted instanceof WP_Error && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
-						$result = self::notes_changed();
+					if ( $admitted instanceof WP_Error ) {
+						$result = self::preliminary_refusal( $admitted );
 					}
 					return;
 				}
@@ -791,6 +791,16 @@ final class Context {
 		return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
 	}
 
+	/** Only an owned-revision lookup can distinguish a missing project from a missing service route.
+	 *
+	 * @param WP_Error $error Private planner refusal.
+	 */
+	private static function preliminary_refusal( WP_Error $error ): WP_Error {
+		return 'linker_planner_project_revision_not_found' === $error->get_error_code() && 404 === ( $error->get_error_data()['status'] ?? null )
+			? new WP_Error( 'planning_preliminary_unavailable', __( 'This project is unavailable. Your contact details and message are still here.', 'linker-commerce' ), array( 'status' => 409 ) )
+			: self::admission_unavailable();
+	}
+
 	/** Read a project under the native submitter's ownership.
 	 *
 	 * @param string   $id Selected project ID.
@@ -804,6 +814,9 @@ final class Context {
 		 */
 		$note = apply_filters( 'linker_tools_planning_inquiry_note', null, $id, ...( null === $revision ? array() : array( $revision ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
 		if ( $note instanceof WP_Error ) {
+			if ( null !== $revision ) {
+				return self::preliminary_refusal( $note );
+			}
 			return in_array( $note->get_error_data()['status'] ?? null, array( 401, 403, 404 ), true ) ? self::notes_changed() : self::admission_unavailable();
 		}
 		return $note;

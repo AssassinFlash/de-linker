@@ -64,19 +64,22 @@ final class PlannerProjectDeleteTest extends TestCase {
 		$request->set_url_params( array( 'path' => 'projects/delete' ) );
 		$request->set_header( 'content-type', 'application/json' );
 		$request->set_body( $body );
-		$attempts = 0;
-		$deleted  = false;
-		$result   = array(
+		$state_read  = 0;
+		$race        = new \ArrayIterator( array( false, true ) );
+		$raw_deletes = 0;
+		$attempts    = 0;
+		$deleted     = false;
+		$result      = array(
 			'project_id' => $project,
 			'revision'   => 1,
 			'deleted'    => true,
 		);
-		$reply    = static fn ( int $status, array $value ): array => array(
+		$reply       = static fn ( int $status, array $value ): array => array(
 			'response' => array( 'code' => $status ),
 			'headers'  => array( 'content-type' => 'application/json' ),
 			'body'     => wp_json_encode( $value ),
 		);
-		$endpoint = static fn (): string => 'https://engine.test';
+		$endpoint    = static fn (): string => 'https://engine.test';
 		add_filter( 'pre_option_linker_planner_url', $endpoint );
 		try {
 			if ( 'yes' === $hpos && array() !== \WC_Install::get_missing_base_tables() ) {
@@ -88,7 +91,7 @@ final class PlannerProjectDeleteTest extends TestCase {
 			$_COOKIE[ Identity::COOKIE ]               = bin2hex( random_bytes( 16 ) );
 			$request->set_header( 'x-wp-nonce', wp_create_nonce( 'wp_rest' ) );
 			$transport = new Transport(
-				static function ( string $url, array $args ) use ( $command, $body, $reply, $result, $project, &$attempts, &$deleted ): array|\WP_Error {
+				static function ( string $url, array $args ) use ( $command, $body, $reply, $result, $project, &$attempts, &$deleted, &$state_read, &$raw_deletes, $race ): array|\WP_Error {
 					self::assertSame( NativeIdentity::user_subject( 1 ), $args['headers']['X-Linker-Planner-Principal-Subject'] );
 					if ( str_ends_with( $url, '/operations/replay/projects/delete' ) ) {
 						self::assertSame( $body, $args['body'] );
@@ -104,7 +107,13 @@ final class PlannerProjectDeleteTest extends TestCase {
 						);
 					}
 					if ( str_ends_with( $url, '/projects/prepared-handoffs' ) ) {
-						self::assertFalse( $deleted );
+						++$state_read;
+						if ( $race->current() ) {
+							$deleted = true;
+						}
+						if ( 1 === $state_read || $deleted ) {
+							return $reply( 404, array( 'error' => array( 'code' => 'not_found' ) ) );
+						}
 						self::assertSame(
 							array(
 								'schema_version' => 1,
@@ -122,6 +131,7 @@ final class PlannerProjectDeleteTest extends TestCase {
 					}
 					if ( str_ends_with( $url, '/projects/delete' ) ) {
 						self::assertSame( $body, $args['body'] );
+						++$raw_deletes;
 						return $reply( 200, $result );
 					}
 					self::assertStringEndsWith( '/projects/delete-after-inquiry-check', $url );
@@ -135,7 +145,10 @@ final class PlannerProjectDeleteTest extends TestCase {
 			$ledger    = new \Linker\Commerce\Protection\Ledger();
 			$summary   = $ledger->summary();
 			self::assertIsArray( $summary );
-			$before = $summary['counts']['planner_write']['dispatched'] ?? 0;
+			$before  = $summary['counts']['planner_write']['dispatched'] ?? 0;
+			$missing = $gateway->forward( $request );
+			self::assertInstanceOf( \WP_Error::class, $missing );
+			self::assertSame( 0, $raw_deletes );
 			$order->set_status( 'pending' );
 			$order_id = $order->save();
 			$order->delete( false );
@@ -189,6 +202,13 @@ final class PlannerProjectDeleteTest extends TestCase {
 			self::assertInstanceOf( \WP_REST_Response::class, $replay );
 			self::assertTrue( $replay->get_data()->deleted );
 			self::assertSame( 1, $attempts );
+			// A peer can commit between the gateway's first lookup and the state read.
+			$deleted = false;
+			$race->next();
+			$replay = $gateway->forward( $request );
+			self::assertInstanceOf( \WP_REST_Response::class, $replay );
+			self::assertTrue( $replay->get_data()->deleted );
+			self::assertSame( 0, $raw_deletes );
 		} finally {
 			if ( $order instanceof \WC_Order ) {
 				$order->delete( true );

@@ -28,6 +28,7 @@ from .errors import (
     InvalidInput,
     NotFound,
     PreparedHandoff,
+    ProjectRevisionNotFound,
     VersionUnavailable,
 )
 from .execution_control import require_accepting
@@ -164,7 +165,12 @@ class Workspace:
         if revision is not None:
             positive_integer(revision, "revision")
         with self.database.read() as connection:
-            return self._project(connection, actor, project_id, revision)
+            try:
+                return self._project(connection, actor, project_id, revision)
+            except NotFound as exc:
+                if revision is None:
+                    raise
+                raise ProjectRevisionNotFound("project revision not found") from exc
 
     def projects(self, actor: Actor) -> list[Project]:
         with self.database.read() as connection:
@@ -200,7 +206,10 @@ class Workspace:
         self, actor: Actor, project_id: str, revision: int
     ) -> Object:
         with self.database.transaction() as connection:
-            project_row(connection, actor, project_id, write=True)
+            try:
+                project_row(connection, actor, project_id, write=True)
+            except NotFound as exc:
+                raise ProjectRevisionNotFound("project revision not found") from exc
             if (
                 connection.execute(
                     "SELECT 1 FROM revisions WHERE project_id=? AND number=?",
@@ -208,7 +217,7 @@ class Workspace:
                 ).fetchone()
                 is None
             ):
-                raise NotFound("revision not found")
+                raise ProjectRevisionNotFound("project revision not found")
             self.advance_inquiry_generation(connection, project_id)
             return {"admitted": True}
 
