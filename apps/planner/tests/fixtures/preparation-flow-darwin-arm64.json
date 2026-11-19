@@ -4243,15 +4243,15 @@
 				"revision": 3,
 				"schema": 1
 			},
-			"result_sha256": "ece376f944f2e3d21cb61db62ed98859ba3c2f73e4c05c66a0b45d7ec11693e5",
+			"result_sha256": "bfe0d51dc65266bc8e302a014d350b313a8444486ca8dab2ff47a2d7fc916a38",
 			"result": {
 				"dependencies": {
 					"materials_model": "ba1946998f081d7deb6f8e36a705cef8e3dcf6030ee3bf6bd3d436b36f859095",
-					"prepared_asset_content": "7286815b17f901c39d595b83548da64656a53162880515f12937b4561c94b5a4",
-					"prepared_asset_metadata": "8c6ebcca2beaa95ecdc2c49c63e782c4cb7736af615bcdb02e6ce76255549120",
+					"prepared_asset_content": "cb9a892ca37f46e1111fd679542c13e955f2b129e5d55ac39945bedc5653ba9a",
+					"prepared_asset_metadata": "ef009f7444b29a5cac6ab377ef9e229aa5c856c7ebd3a040d25dc3378b659c04",
 					"prepared_attachment.bill_of_materials_csv.content": "ffba226a21e0b3966501f8bc2332f92ee954b720782107b5dde4c38a03bb77a5",
-					"prepared_attachment.bill_of_materials_csv.metadata": "9e12a49b08f1c674180afa02ed957a1962dc46444c9a7ae3f17b11f20f6e9188",
-					"report_model": "e41a811a5b3e4e68801c05088e56697ec815647e69fc2f6b30e792d15eaa6601",
+					"prepared_attachment.bill_of_materials_csv.metadata": "970cf9cf035f5fa735632e10ab2781160385c2c183aebd650a8facabfc6a50d2",
+					"report_model": "7cf7ce781e4ec451e0bd07da4a961d05e00fac55087f283c10e72ea095c2c277",
 					"report_source": "641c22ba65ffb06895bb8a89318ac1b0eb35817110b0ebe87c5d85fdc66edd93"
 				},
 				"equipment_candidate": null,
@@ -4265,13 +4265,13 @@
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "7286815b17f901c39d595b83548da64656a53162880515f12937b4561c94b5a4",
+					"content_sha256": "cb9a892ca37f46e1111fd679542c13e955f2b129e5d55ac39945bedc5653ba9a",
 					"id": "00000000000000000000000000000020",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
 							"materials_model": "ba1946998f081d7deb6f8e36a705cef8e3dcf6030ee3bf6bd3d436b36f859095",
-							"report_model": "e41a811a5b3e4e68801c05088e56697ec815647e69fc2f6b30e792d15eaa6601",
+							"report_model": "7cf7ce781e4ec451e0bd07da4a961d05e00fac55087f283c10e72ea095c2c277",
 							"report_source": "641c22ba65ffb06895bb8a89318ac1b0eb35817110b0ebe87c5d85fdc66edd93"
 						},
 						"locale": "de",
@@ -4280,10 +4280,10 @@
 							"label": "Projektplanungsbericht",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "e41a811a5b3e4e68801c05088e56697ec815647e69fc2f6b30e792d15eaa6601",
+						"report_model_sha256": "7cf7ce781e4ec451e0bd07da4a961d05e00fac55087f283c10e72ea095c2c277",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "8c6ebcca2beaa95ecdc2c49c63e782c4cb7736af615bcdb02e6ce76255549120",
+					"metadata_sha256": "ef009f7444b29a5cac6ab377ef9e229aa5c856c7ebd3a040d25dc3378b659c04",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "planning_report_pdf_v1"
 				},
@@ -4295,7 +4295,7 @@
 						"metadata": {
 							"dependencies": {
 								"materials_model": "ba1946998f081d7deb6f8e36a705cef8e3dcf6030ee3bf6bd3d436b36f859095",
-								"report_model": "e41a811a5b3e4e68801c05088e56697ec815647e69fc2f6b30e792d15eaa6601",
+								"report_model": "7cf7ce781e4ec451e0bd07da4a961d05e00fac55087f283c10e72ea095c2c277",
 								"report_source": "641c22ba65ffb06895bb8a89318ac1b0eb35817110b0ebe87c5d85fdc66edd93"
 							},
 							"locale": "de",
@@ -4306,7 +4306,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "9e12a49b08f1c674180afa02ed957a1962dc46444c9a7ae3f17b11f20f6e9188",
+						"metadata_sha256": "970cf9cf035f5fa735632e10ab2781160385c2c183aebd650a8facabfc6a50d2",
 						"project_id": "00000000000000000000000000000014",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -4437,7 +4437,7 @@
 								{
 									"href": null,
 									"label": "Enthaltene Module: Anzahl × Modell / Modul-STC; Dokument-SHA-256 / Seite",
-									"value": "1 × PV 460 Wp · 1762 × 1134 mm / 460 W; None / p. None"
+									"value": "1 × PV 460 Wp · 1762 × 1134 mm"
 								},
 								{
 									"href": null,
@@ -4724,7 +4724,7 @@
 					"subtitle": "Gespeicherte Projekteingaben und ausgewählte Berechnungsergebnisse",
 					"title": "Projektplanungsbericht"
 				},
-				"report_sha256": "e41a811a5b3e4e68801c05088e56697ec815647e69fc2f6b30e792d15eaa6601",
+				"report_sha256": "7cf7ce781e4ec451e0bd07da4a961d05e00fac55087f283c10e72ea095c2c277",
 				"revision": 3,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
@@ -5010,7 +5010,7 @@
 					"matches_view_revision": true,
 					"is_current": true,
 					"manifest_sha256": "ca9c7df0a5c071bf84992c542cf76cb14be2cd67c0b5149ff3e9812689756409",
-					"result_sha256": "ece376f944f2e3d21cb61db62ed98859ba3c2f73e4c05c66a0b45d7ec11693e5",
+					"result_sha256": "bfe0d51dc65266bc8e302a014d350b313a8444486ca8dab2ff47a2d7fc916a38",
 					"kind": "planning_report_v1",
 					"scope": {},
 					"rows": [
@@ -5104,7 +5104,7 @@
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: Included modules: quantity × model / module STC; document SHA-256 / page",
-							"value": "1 × PV 460 Wp · 1762 × 1134 mm / 460 W; None / p. None"
+							"value": "1 × PV 460 Wp · 1762 × 1134 mm"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: Array: module count / STC / tilt / azimuth clockwise from north / ENU normal",
@@ -5326,6 +5326,7 @@
 							}
 						]
 					},
+					"saved_roof_panel_count": 1,
 					"materials": {
 						"status": "verified",
 						"sha256": "ba1946998f081d7deb6f8e36a705cef8e3dcf6030ee3bf6bd3d436b36f859095",
