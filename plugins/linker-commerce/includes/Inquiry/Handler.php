@@ -122,7 +122,7 @@ final class Handler {
 			if ( $details instanceof WP_Error ) {
 				return $details;
 			}
-			if ( ! Business::enabled() && ! $guard->take() ) {
+			if ( ! Business::enabled() && '1' !== ( $post['linker_inquiry_receipt_only'] ?? '' ) && ! $guard->take() ) {
 				return new WP_Error( 'linker_inquiry_throttled', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
 			}
 			$draft   = isset( $post['linker_draft_hash'] ) && is_string( $post['linker_draft_hash'] ) ? $post['linker_draft_hash'] : '';
@@ -220,7 +220,7 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_inquiry_receipt_only', 'linker_individual_review', \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';

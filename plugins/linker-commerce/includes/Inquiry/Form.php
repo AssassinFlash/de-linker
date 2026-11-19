@@ -234,6 +234,9 @@ final class Form {
 		if ( isset( $this->flash['retry'] ) ) {
 			$binding .= '<input type="hidden" name="' . CheckoutRetry::HANDLE . '" value="' . esc_attr( $this->flash['retry'] ) . '" data-linker-retry-pending="' . ( '1' === $previous['linker_recovery_available'] ? 'true' : 'false' ) . '" />';
 		}
+		if ( '1' === ( $previous['linker_inquiry_receipt_only'] ?? '' ) ) {
+			$binding .= '<input type="hidden" name="linker_inquiry_receipt_only" value="1" />';
+		}
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
@@ -265,7 +268,9 @@ final class Form {
 			'company'            => __( 'Company (optional)', 'linker-commerce' ),
 			'consent'            => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
 			'privacy'            => __( 'Privacy', 'linker-commerce' ),
-			'send'               => __( 'Send inquiry', 'linker-commerce' ),
+			'send'               => '1' === ( $this->flash['fields']['linker_inquiry_receipt_only'] ?? '' )
+				? __( 'Try again', 'linker-commerce' )
+				: __( 'Send inquiry', 'linker-commerce' ),
 			'promise'            => __( 'We reply within one business day.', 'linker-commerce' ),
 			'no-account'         => __( 'No account needed.', 'linker-commerce' ),
 			'partner'            => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
