@@ -96,14 +96,16 @@ def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
     )
 
 
-def _saved_report_run(raw: Any, page: PageContext) -> dict[str, Any] | None:
+def _saved_report_run(
+    raw: Any, page: PageContext, *, require_all_rows: bool = True
+) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
     payload = view(raw, page)
     runs = raw.get("runs")
     if (
         payload.get("status") != "available"
-        or payload.get("truncated")
+        or (require_all_rows and payload.get("truncated"))
         or not isinstance(runs, list)
         or len(runs) != 1
     ):
@@ -113,10 +115,17 @@ def _saved_report_run(raw: Any, page: PageContext) -> dict[str, Any] | None:
         not isinstance(run, dict)
         or run.get("kind") != "planning_report_v1"
         or run.get("state") != "succeeded"
-        or run.get("truncated")
+        or (require_all_rows and run.get("truncated"))
     ):
         return None
     return run
+
+
+def saved_panel_count(raw: Any, page: PageContext) -> int | None:
+    """The complete roof total is independent of the report's paged display rows."""
+    run = _saved_report_run(raw, page, require_all_rows=False)
+    count = run.get("saved_roof_panel_count") if run else None
+    return count if type(count) is int and count >= 0 else None
 
 
 def is_material_report(raw: Any, page: PageContext) -> bool:
@@ -370,6 +379,13 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
             "Recorded assessment scope: "
             + json.dumps(run.get("scope", {}), ensure_ascii=False)
         )
+        count = run.get("saved_roof_panel_count")
+        if (
+            run.get("kind") == "planning_report_v1"
+            and type(count) is int
+            and count >= 0
+        ):
+            lines.append(f"Total panels in the saved roof layout: {count}")
         materials = run.get("materials")
         if materials is not None:
             handling = (

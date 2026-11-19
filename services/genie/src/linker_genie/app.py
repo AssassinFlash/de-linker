@@ -526,6 +526,28 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
+    if (
+        prepared.reading is not None
+        and prepared.reading.saved_panel_count_question is not None
+        and prepared.reading.saved_panel_count_question >= 0.5
+        and prepared.route.name
+        in {"model", "planning_project", "sizing", "documents", "products"}
+    ):
+        count = planning.saved_panel_count(body.planning_context, body.page_context)
+        if count is not None:
+            if language == "de":
+                text = f"Die Dachbelegung im gespeicherten Bericht enthält {count} PV-{'Modul' if count == 1 else 'Module'}."
+            else:
+                text = f"The roof layout in your saved report contains {count} solar {'panel' if count == 1 else 'panels'}."
+            _, facts = planning.record(body.planning_context, body.page_context)
+            return TurnResult(
+                output=TurnOutput(language=language, blocks=[TextBlock(text=text)]),
+                facts=facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ), None
     if "verified saved protection explanation" in prepared.route.reasons:
         answer = planning.protection_answer(
             body.planning_context, body.page_context, language

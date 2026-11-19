@@ -436,6 +436,13 @@ class Understander:
                     request.planning_context, request.page_context
                 ):
                     current_page["saved_protection_report"] = True
+                if (
+                    planning.saved_panel_count(
+                        request.planning_context, request.page_context
+                    )
+                    is not None
+                ):
+                    current_page["saved_roof_panel_count_available"] = True
                 reading = self._jev.read(
                     message,
                     current_page,

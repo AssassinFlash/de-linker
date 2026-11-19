@@ -93,6 +93,21 @@ def test_private_material_label_and_report_without_pv_sources_are_not_denied() -
     assert shipped["blocks"][-1]["status"] == "unavailable"
 
 
+def test_owned_report_panel_count_survives_truncated_display_rows() -> None:
+    raw, page = source()
+    report = raw["runs"][0]
+    report.update(kind="planning_report_v1", saved_roof_panel_count=4, truncated=True)
+    assert planning.saved_panel_count(raw, page) == 4
+    assert (
+        planning.saved_panel_count(
+            raw, page.model_copy(update={"planning_run_ids": ["other"]})
+        )
+        is None
+    )
+    report["saved_roof_panel_count"] = None
+    assert planning.saved_panel_count(raw, page) is None
+
+
 def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -> None:
     raw, page = source()
     raw["runs"][0].update(
