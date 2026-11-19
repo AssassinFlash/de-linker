@@ -113,6 +113,20 @@ final class ShortcodesTest extends TestCase {
 	public function test_confirmation_uses_woocommerce(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		WP_Mock::userFunction(
+			'get_query_var',
+			array(
+				'args'   => array( 'order-received' ),
+				'return' => 0,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'args'   => array( 0 ),
+				'return' => 0,
+			)
+		);
+		WP_Mock::userFunction(
 			'do_shortcode',
 			array(
 				'args'   => array( '[woocommerce_checkout]' ),

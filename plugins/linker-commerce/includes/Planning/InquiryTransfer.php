@@ -14,7 +14,8 @@ use WP_Error;
 
 /** The native form nonce covers the exact intent shown at review. */
 final class InquiryTransfer {
-	public const FIELD = 'linker_report_transfer';
+	public const FIELD      = 'linker_report_transfer';
+	public const ORDER_META = '_linker_planning_inquiry_handoff';
 
 	/** Identifiers and fingerprint from the owned handoff and native draft preview.
 	 *

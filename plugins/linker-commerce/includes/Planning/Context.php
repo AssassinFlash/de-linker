@@ -263,6 +263,10 @@ final class Context {
 	 * @throws \RuntimeException Frozen native context cannot be encoded.
 	 */
 	public function capture( WC_Order $order ): void {
+		$transfer = InquiryTransfer::read( self::$submission_post[ InquiryTransfer::FIELD ] ?? null );
+		if ( null !== $transfer ) {
+			$order->update_meta_data( InquiryTransfer::ORDER_META, $transfer->handoff );
+		}
 		if ( isset( self::$reviewed_note['inputs'] ) ) {
 			$project = self::$reviewed_note;
 			// Woo's native customer note remains readable by previous releases.
@@ -340,7 +344,7 @@ final class Context {
 			}
 			$order->update_meta_data( self::NOTES_META, $encoded_notes );
 		}
-		if ( ! isset( self::$submission_post[ InquiryTransfer::FIELD ] ) ) {
+		if ( null === $transfer ) {
 			self::$consumed_revisions = array_map( static fn ( array $note ): string => $note['note_revision'], $notes );
 		}
 	}

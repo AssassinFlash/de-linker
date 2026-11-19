@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Inquiry\Checkout;
 use Linker\Commerce\Settings\Options;
 use WC_Product;
 
@@ -313,7 +314,9 @@ final class Shortcodes {
 	 */
 	public function checkout( $atts = array() ): string {
 		unset( $atts );
-		return is_wc_endpoint_url( 'order-received' ) ? do_shortcode( '[woocommerce_checkout]' ) : do_shortcode( '[linker_inquiry_form]' );
+		return is_wc_endpoint_url( 'order-received' )
+			? ( Checkout::scoped_receipt() ?? do_shortcode( '[woocommerce_checkout]' ) )
+			: do_shortcode( '[linker_inquiry_form]' );
 	}
 
 		/**

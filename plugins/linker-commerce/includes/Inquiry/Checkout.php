@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
+use Automattic\WooCommerce\Internal\Utilities\Users;
+use Linker\Commerce\Planning\InquiryTransfer;
 use Linker\Commerce\Presentation\PageUrls;
 
 use WC_Order;
@@ -104,6 +106,65 @@ final class Checkout {
 	 */
 	public function without_payment_method_title( WC_Order $order ): void {
 		$order->set_payment_method_title( '' );
+	}
+
+	/**
+	 * Show a project inquiry using Woo's receipt views and access rules.
+	 *
+	 * The project order already consumed its own lines, so the remaining
+	 * solution draft stays available when its receipt is opened.
+	 */
+	public static function scoped_receipt(): ?string {
+		$id = absint( get_query_var( 'order-received' ) );
+		if ( 0 === $id ) {
+			return null;
+		}
+		$order = wc_get_order( $id );
+		if ( ! $order instanceof WC_Order || '' === $order->get_meta( InquiryTransfer::ORDER_META ) ) {
+			return null;
+		}
+		return \WC_Shortcodes::shortcode_wrapper( array( self::class, 'render_scoped_receipt' ), array( 'order' => $order ) );
+	}
+
+	/**
+	 * Render the selected order through Woo's receipt shortcode presentation.
+	 *
+	 * @param array{order:WC_Order} $attributes The stored project inquiry.
+	 */
+	public static function render_scoped_receipt( array $attributes ): void {
+		$order = $attributes['order'];
+		$key   = isset( $_GET['key'] ) && is_string( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Woo receipt keys authenticate emailed links.
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingHookComment,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own receipt access filters.
+		$key = (string) apply_filters( 'woocommerce_thankyou_order_key', $key );
+		if ( ! hash_equals( $order->get_order_key(), $key ) ) {
+			wc_get_template( 'checkout/thankyou.php', array( 'order' => false ) );
+			return;
+		}
+		$verify_customer = apply_filters( 'woocommerce_order_received_verify_known_shoppers', true );
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		$customer_id = $order->get_customer_id();
+		if ( $verify_customer && $customer_id && get_current_user_id() !== $customer_id ) {
+			wc_get_template( 'checkout/order-received.php', array( 'order' => false ) );
+			wc_print_notice( __( 'Please log in to your account to view this order.', 'woocommerce' ), 'notice' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Existing WooCommerce receipt login notice.
+			woocommerce_login_form( array( 'redirect' => $order->get_checkout_order_received_url() ) );
+			return;
+		}
+		$nonce = filter_input( INPUT_POST, 'check_submission' );
+		$email = is_string( $nonce ) && wp_verify_nonce( $nonce, 'wc_verify_email' )
+			? sanitize_email( wp_unslash( (string) filter_input( INPUT_POST, 'email' ) ) )
+			: null;
+		if ( Users::should_user_verify_order_email( $order->get_id(), $email, 'order-received' ) ) {
+			wc_get_template( 'checkout/order-received.php', array( 'order' => false ) );
+			wc_get_template(
+				'checkout/form-verify-email.php',
+				array(
+					'failed_submission' => ! empty( $_POST['email'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo uses the presence for feedback only.
+					'verify_url'        => $order->get_checkout_order_received_url(),
+				)
+			);
+			return;
+		}
+		wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
 	}
 
 	/**

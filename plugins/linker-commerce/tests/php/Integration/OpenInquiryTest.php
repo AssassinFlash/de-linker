@@ -297,6 +297,39 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( array( $cart_key, $other_key ), array_keys( maybe_unserialize( $persisted['cart'] ) ) );
 		$this->assertSame( array( $other['id'] => $contexts[ $other['id'] ] ), maybe_unserialize( $persisted[ DraftTransfer::CONTEXTS ] ) );
 		$this->assertSame( array( $other_removed, $manual_removed ), array_keys( maybe_unserialize( $persisted['removed_cart_contents'] ) ) );
+
+		// The checkout's receipt shortcode also runs on a separate page load.
+		global $wp;
+		$previous_route                   = $wp->query_vars;
+		$previous_id                      = get_query_var( 'order-received' );
+		$previous_query                   = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the request fixture.
+		$wp->query_vars['order-received'] = $order->get_id();
+		$wp->query_vars[ WC()->query->get_query_vars()['order-received'] ] = $order->get_id();
+		set_query_var( 'order-received', $order->get_id() );
+		$_GET['key'] = $order->get_order_key();
+		$checkout    = new \Linker\Commerce\Presentation\Shortcodes();
+		$registered  = shortcode_exists( 'woocommerce_checkout' );
+		if ( ! $registered ) {
+			add_shortcode( 'woocommerce_checkout', array( \WC_Shortcodes::class, 'checkout' ) );
+		}
+		try {
+			$rendered = $checkout->checkout();
+			$this->assertSame( array( $cart_key, $other_key ), array_keys( WC()->cart->get_cart() ) );
+			$this->assertStringContainsString( '/planning-report/' . $handoff['id'], $rendered );
+			$this->assertSame( array( $other['id'] ), array_keys( Context::active() ) );
+			$this->assertSame( array( $other_removed, $manual_removed ), array_keys( WC()->cart->get_removed_cart_contents() ) );
+
+			$_GET['key'] = 'not-the-receipt-key';
+			$this->assertStringNotContainsString( '/planning-report/' . $handoff['id'], $checkout->checkout() );
+			$this->assertSame( array( $cart_key, $other_key ), array_keys( WC()->cart->get_cart() ) );
+		} finally {
+			if ( ! $registered ) {
+				remove_shortcode( 'woocommerce_checkout' );
+			}
+			$wp->query_vars = $previous_route;
+			set_query_var( 'order-received', $previous_id );
+			$_GET = $previous_query;
+		}
 	}
 
 	/**
