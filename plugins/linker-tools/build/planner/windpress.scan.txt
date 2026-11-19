@@ -242,6 +242,7 @@ sc-field-wide
 sc-fields
 sc-footer
 sc-hint
+sc-home-comparison
 sc-inquiry-fields
 sc-inquiry-stages
 sc-layout
