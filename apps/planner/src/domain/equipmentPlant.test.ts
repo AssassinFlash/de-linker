@@ -221,6 +221,16 @@ test("returning to one system keeps the surviving unit's application", () => {
 		converted({ application: "commercial" }, {}).application,
 		"commercial",
 	);
+	assert.equal(
+		Object.hasOwn(
+			converted(
+				{ application: "commercial" },
+				{ equipment_use: { inverter: "retain", battery: "new" } },
+			),
+			"application",
+		),
+		false,
+	);
 });
 
 test("multi-system editing preserves project history, pins current Woo identities and invalidates preparation", () => {
