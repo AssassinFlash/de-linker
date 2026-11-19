@@ -50,12 +50,14 @@ export function HomepageDemand({
 	inputs,
 	brief,
 	locale,
+	addressLookup,
 	edit,
 	validity,
 }: {
 	inputs: JsonObject;
 	brief: Brief;
 	locale: string;
+	addressLookup: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	validity: (field: string, valid: boolean) => void;
 }) {
@@ -182,6 +184,7 @@ export function HomepageDemand({
 				<HomepagePvReference
 					inputs={inputs}
 					brief={brief}
+					addressLookup={addressLookup}
 					power={
 						typeof equipment.pv_dc_kw === "number" ? equipment.pv_dc_kw : null
 					}

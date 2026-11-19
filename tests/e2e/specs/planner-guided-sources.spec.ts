@@ -178,7 +178,10 @@ async function prepareSavedRoof(
 	});
 	await button(project, text.solar).click();
 	await button(workspace, text.roofChoice).click();
-	const module = workspace.getByLabel(text.module, { exact: true });
+	const module = workspace.getByRole('combobox', {
+		name: text.module,
+		exact: true,
+	});
 	await module.selectOption({
 		label: 'Trina Solar TSM-460NEG9R.28 · 460 Wp',
 	});
@@ -383,6 +386,7 @@ for (const [lang, width] of matrix) {
 		page,
 		context,
 	}) => {
+		page.setDefaultTimeout(15_000);
 		expect(await context.cookies()).toEqual([]);
 		const restoreBudgets = isolateVisitorBudgets();
 		try {
@@ -424,6 +428,7 @@ for (const [lang, width] of matrix) {
 		page,
 		context,
 	}) => {
+		page.setDefaultTimeout(15_000);
 		expect(await context.cookies()).toEqual([]);
 		const restoreBudgets = isolateVisitorBudgets();
 		try {

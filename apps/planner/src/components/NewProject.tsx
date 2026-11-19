@@ -39,7 +39,10 @@ import {
 	HomepageDemand,
 	hasComparisonDemand,
 } from "./configurator/HomepageDemand.tsx";
-import { isHomepagePvReferenceReady } from "./configurator/HomepagePvReference.tsx";
+import {
+	isHomepagePvReferenceReady,
+	prepareHomepagePvReference,
+} from "./configurator/HomepagePvReference.tsx";
 import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
 
 import {
@@ -111,7 +114,9 @@ export function NewProject({
 	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [demandError, setDemandError] = useState(false);
-	const [referenceError, setReferenceError] = useState(false);
+	const [referenceError, setReferenceError] = useState<
+		"settings" | "location" | null
+	>(null);
 	const [profileForm, setProfileForm] = useState(emptyHomepageProfile);
 	const [profileError, setProfileError] = useState("");
 	const [profileCorrection, setProfileCorrection] = useState(false);
@@ -198,7 +203,7 @@ export function NewProject({
 			setCarriedProduct(false);
 		setDraft(changed);
 		setDemandError(false);
-		setReferenceError(false);
+		setReferenceError(null);
 		return true;
 	}
 	const [checking, setChecking] = useState(true);
@@ -298,7 +303,7 @@ export function NewProject({
 	}
 	async function submit(
 		direction?: NonNullable<Brief["system_scope"]>,
-		discardProfile = false,
+		{ discardProfile = false, useAddress = false } = {},
 	) {
 		if (
 			sending.current ||
@@ -325,8 +330,13 @@ export function NewProject({
 				setDemandError(true);
 				return;
 			}
-			if (!isHomepagePvReferenceReady(inputs, brief)) {
-				setReferenceError(true);
+			if (!isHomepagePvReferenceReady(inputs, brief, useAddress)) {
+				setReferenceError(
+					useAddress &&
+						(!brief.site.country_code || !brief.site.location_label.trim())
+						? "location"
+						: "settings",
+				);
 				return;
 			}
 		}
@@ -374,6 +384,7 @@ export function NewProject({
 
 		sending.current = true;
 		setBusy(true);
+		setReferenceError(null);
 		setFailed(false);
 		setProjectGone(false);
 		setInputContractRequired(false);
@@ -402,19 +413,34 @@ export function NewProject({
 			}
 			if (lifetime.current !== instance) return;
 			if (!intent.current) {
+				let submittedInputs = inputs;
+				if (compareAtHome && useAddress) {
+					try {
+						submittedInputs = await prepareHomepagePvReference(
+							inputs,
+							config ?? { locale },
+							useAddress,
+						);
+					} catch {
+						if (lifetime.current === instance) setReferenceError("location");
+						return;
+					}
+					if (lifetime.current !== instance) return;
+				}
+				const submittedBrief = readBrief(submittedInputs.brief);
 				intent.current = wire(
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
 						title: title.trim() || __("New project", "linker-tools"),
 						inputs: {
-							...inputs,
+							...submittedInputs,
 							brief: {
-								...brief,
-								system_scope: direction ?? brief.system_scope,
+								...submittedBrief,
+								system_scope: direction ?? submittedBrief.system_scope,
 								site: {
-									...brief.site,
-									location_label: brief.site.location_label.trim(),
+									...submittedBrief.site,
+									location_label: submittedBrief.site.location_label.trim(),
 								},
 							},
 						},
@@ -722,7 +748,11 @@ export function NewProject({
 			aria-label={compareLabel}
 			onSubmit={(event) => {
 				event.preventDefault();
-				void submit();
+				const useAddress =
+					event.currentTarget.querySelector<HTMLInputElement>(
+						'input[name="pvgis_use_address"]',
+					)?.checked ?? false;
+				void submit(undefined, { useAddress });
 			}}
 		>
 			{showSavedPicker && homeComparison?.picker}
@@ -882,10 +912,15 @@ export function NewProject({
 			{profileError && <Notice error>{profileError}</Notice>}
 			{referenceError && (
 				<Notice error>
-					{__(
-						"Complete the site coordinates, array details and PVGIS settings to compare systems.",
-						"linker-tools",
-					)}
+					{referenceError === "location"
+						? __(
+								"The location could not be found. Check the country and address, then try again.",
+								"linker-tools",
+							)
+						: __(
+								"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+								"linker-tools",
+							)}
 				</Notice>
 			)}
 			<ProjectDetails
@@ -928,6 +963,7 @@ export function NewProject({
 							inputs={inputs}
 							brief={brief}
 							locale={locale}
+							addressLookup={Boolean(config?.googleMapsApiKey)}
 							edit={edit}
 							validity={reportDemand}
 						/>
@@ -942,7 +978,7 @@ export function NewProject({
 							disabled={busy || checking || !admitted}
 							change={changeProfile}
 							{...(profileCorrection && {
-								discard: () => void submit(undefined, true),
+								discard: () => void submit(undefined, { discardProfile: true }),
 							})}
 						/>
 					)
