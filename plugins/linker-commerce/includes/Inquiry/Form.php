@@ -44,8 +44,8 @@ final class Form {
 	 */
 	public function project_notes(): string {
 		$previous = (array) ( $this->flash['fields'] ?? array() );
-		if ( ! empty( $this->flash['unavailable'] ) ) {
-			return '<label class="linker-form-consent"><input type="checkbox" required name="linker_without_project" value="' . esc_attr( wp_create_nonce( 'linker_without_project:' . $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) . '" /> ' . esc_html__( 'Send my inquiry without this project', 'linker-commerce' ) . '</label>' . self::retained_notes( $previous );
+		if ( ! empty( $this->flash['unavailable'] ) || ! empty( $previous['linker_without_project'] ) ) {
+			return '<label class="linker-form-consent"><input type="checkbox" required name="linker_without_project"' . checked( ! empty( $previous['linker_without_project'] ), true, false ) . ' value="' . esc_attr( wp_create_nonce( 'linker_without_project:' . $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) . '" /> ' . esc_html__( 'Send my inquiry without this project', 'linker-commerce' ) . '</label>' . self::retained_notes( $previous );
 		}
 		if ( isset( $previous['linker_planner_handoff_id'] ) || ( ( isset( $previous['linker_note_project'] ) || isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) && '1' === $previous['linker_recovery_available'] ) ) {
 			return self::retained_notes( $previous );
@@ -210,7 +210,7 @@ final class Form {
 		}
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
-		 . '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
+		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
 		. wp_nonce_field( Handler::nonce_action( $project ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ), $this->flash['grouped'] ?? null );
 	}

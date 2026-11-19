@@ -41,6 +41,12 @@ final class Handler {
 		return '' === $project ? self::ACTION : self::ACTION . ':' . $project;
 	}
 
+	/** The explicit omission was authenticated in this process() call, not inferred from POST or errors.
+	 *
+	 * @var bool
+	 */
+	private bool $without_project = false;
+
 	/**
 	 * Both guests and account holders use this adapter.
 	 */
@@ -48,6 +54,22 @@ final class Handler {
 		add_action( 'admin_post_nopriv_' . self::ACTION, array( $this, 'handle' ) );
 		add_action( 'admin_post_' . self::ACTION, array( $this, 'handle' ) );
 		add_action( 'template_redirect', array( $this, 'checkout_post' ), 1 );
+		// Core reads POST into public query vars: name would select a post, company a Woo account endpoint.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput -- Only compare the literal action. checkout_post() verifies before writing.
+		if ( self::ACTION === ( $_POST['action'] ?? '' ) && isset( $_POST[ Context::PROJECT_FIELD ] ) ) {
+			add_filter(
+				'request',
+				static function ( array $vars ): array {
+					$language = is_string( $_POST['lang'] ?? null ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Select the configured page, never a posted URL.
+					$path     = wp_parse_url( Checkout::request_url( OrderLocale::current( $language ) ), PHP_URL_PATH );
+					$request  = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Compared to the configured path only.
+					if ( is_string( $path ) && is_string( $request ) && untrailingslashit( $path ) === untrailingslashit( $request ) ) {
+						unset( $vars['name'], $vars['company'] );
+					}
+					return $vars;
+				}
+			);
+		}
 	}
 
 	/**
@@ -59,8 +81,9 @@ final class Handler {
 	 * @return WC_Order|WP_Error The received inquiry or validation failure.
 	 */
 	public function process( array $post ): WC_Order|WP_Error {
-		$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
-		$locale   = new LocaleSwitch();
+		$this->without_project = false;
+		$language              = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+		$locale                = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
 			$guard   = new PublicGuard();
@@ -78,7 +101,8 @@ final class Handler {
 				if ( is_array( $post[ Context::REVISIONS_FIELD ] ?? null ) ) {
 					unset( $post[ Context::REVISIONS_FIELD ][ 'project_' . explode( ':', $project, 2 )[0] ] );
 				}
-				$project = '';
+				$this->without_project = true;
+				$project               = '';
 			}
 			$details = Submission::from_post( $post, false );
 			if ( $details instanceof WP_Error ) {
@@ -219,6 +243,7 @@ final class Handler {
 				if ( $blocked || ! isset( $fields[ Context::PROJECT_FIELD ] ) ) {
 					wp_die( esc_html( $result->get_error_message() ), '', array( 'response' => 400 ) );
 				}
+				$fields['linker_without_project'] = $this->without_project;
 				$this->form->retry( $fields, $result, OrderLocale::current( $language ) );
 				return;
 			}

@@ -141,7 +141,15 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
-		$order = $handler->process( array( 'linker_without_project' => $choice[1] ) + $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The native handler verifies both nonces.
+		$_POST['linker_without_project'] = 'not-the-offered-choice';
+		$handler->checkout_post();
+		$this->assertStringNotContainsString( 'name="linker_without_project" checked', $form->render() );
+		$_POST['linker_without_project'] = $choice[1];
+		$_POST['email']                  = 'not-an-email';
+		$handler->checkout_post();
+		$this->assertStringContainsString( 'name="linker_without_project" checked', $form->render() );
+		$_POST['email'] = $email;
+		$order          = $handler->process( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The native handler verifies both nonces.
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
