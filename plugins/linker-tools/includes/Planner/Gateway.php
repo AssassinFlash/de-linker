@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
+	private const PATHS = 'inquiry/form|projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -398,6 +398,9 @@ final class Gateway {
 			$staged = ( new ProjectBriefSource() )->stage( $principal, $command );
 			return is_wp_error( $staged ) ? $staged : new WP_REST_Response( $staged );
 		}
+		if ( 'inquiry/form' === $path ) {
+			return $this->inquiry_form( $principal, $command );
+		}
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );
 		}
@@ -437,6 +440,31 @@ final class Gateway {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		return new WP_REST_Response( $data, $reply['status'] );
+	}
+
+	/** Render the Woo form only after reading the selected revision under its owner.
+	 *
+	 * @param Principal           $principal Verified native owner.
+	 * @param array<string,mixed> $command    Reviewed project and language.
+	 */
+	private function inquiry_form( Principal $principal, array $command ): WP_REST_Response|WP_Error {
+		if ( 4 !== count( $command ) || 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) || ! is_string( $command['project_id'] ?? null ) || ! is_int( $command['revision'] ?? null ) || $command['revision'] < 1 ) {
+			return Failure::make( 'input', 422 );
+		}
+		$note = $this->read_inquiry_note( $principal, $command['project_id'], $command['revision'] );
+		if ( ! is_array( $note ) ) {
+			return $note ?? Failure::make( 'invalid_reply', 502 );
+		}
+		/**
+		 * Return the native inquiry form for the visitor's current Woo session.
+		 *
+		 * @since 0.3.0
+		 * @param array|null $form Form response supplied by Commerce.
+		 * @param string     $lang Requested form language.
+		 * @param array      $note Owner-verified revision and project note.
+		 */
+		$form = apply_filters( 'linker_commerce_planning_inquiry_form', null, $command['lang'], $note ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Hook owned by Commerce.
+		return is_array( $form ) ? new WP_REST_Response( $form ) : Failure::make( 'configuration', 503 );
 	}
 
 	/** Read the selected note again under the native inquiry submitter's identity.

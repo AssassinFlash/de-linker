@@ -32,6 +32,8 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		// @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectFilterAdded( 'linker_commerce_planning_inquiry_form', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Planning\Module::class ), 'inquiry_form' ), 10, 3 );
 		foreach ( array( array( 'linker_commerce_planning_draft_apply', \Linker\Commerce\Planning\DraftTransfer::class, 'apply', 3 ), array( 'linker_commerce_planning_draft_preview', \Linker\Commerce\Planning\DraftPreview::class, 'read', 3 ), array( 'linker_commerce_planning_draft_read', \Linker\Commerce\Planning\DraftTransfer::class, 'receipt', 3 ), array( 'woocommerce_get_item_data', \Linker\Commerce\Planning\Context::class, 'item_data', 2 ) ) as [ $hook, $class, $method, $args ] ) {
 			WP_Mock::expectFilterAdded( $hook, array( new WP_Mock\Matcher\AnyInstance( $class ), $method ), 10, $args ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
 		}

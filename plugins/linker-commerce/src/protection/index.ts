@@ -12,6 +12,11 @@ if ( config ) {
 
 connectForms();
 connectDraftLinks();
+document.addEventListener( 'linker:inquiry-form-mounted', ( event ) => {
+	if ( event.target instanceof HTMLFormElement ) {
+		connectForms( event.target );
+	}
+} );
 
 // Woo replaces the native cart form after quantity/removal AJAX. Reconnect the
 // new semantic fields; connectForms itself avoids duplicate listeners.
