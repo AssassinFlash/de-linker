@@ -184,7 +184,7 @@ def _archived_roof_count(
 
 def _report_materials(
     workspace: Workspace, run: Run, result: Object, source: Object | None = None
-) -> Json | None:
+) -> Object | None:
     """Expose one verified materials projection without duplicating its rows."""
     materials_sha = result.get("materials_sha256")
     if materials_sha is None:
