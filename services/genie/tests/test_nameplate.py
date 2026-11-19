@@ -341,6 +341,9 @@ def test_the_stream_carries_the_card_and_the_reading(
         "inquiry-filename",
         "typed-inquiry",
         "mixed-list",
+        "pasted-mixed-list",
+        "continued-mixed-list",
+        "after-mixed-list",
         "withdrawn-manual-as-list",
         "reopen-mixed-upload",
     ],
@@ -435,13 +438,16 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
     elif scenario == "withdrawn-manual-as-list":
         typed = "Here is my parts list."
         uploads = [upload(raw.replace(b"probe fixture", b"ZZ-90K-T4    "))]
-    elif scenario == "mixed-list":
+    elif scenario == "pasted-mixed-list":
+        typed = "2 x SAJ H2-10K-T3\n1 x SAJ ZZ-90K-T4\n2 x SMA Sunny Boy 5.0"
+        uploads = []
+    elif scenario in {"mixed-list", "continued-mixed-list", "after-mixed-list"}:
         typed = "Here is my parts list."
         list_bytes = raw
         for old, row in [
             (b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)", b"2 x SAJ H2-10K-T3"),
             (b"Rated power 10000 W", b"1 x SAJ ZZ-90K-T4"),
-            (b"Battery voltage 180-750 V", b""),
+            (b"Battery voltage 180-750 V", b"2 x SMA Sunny Boy 5.0"),
         ]:
             list_bytes = list_bytes.replace(old, row.ljust(len(old)))
         uploads = [upload(list_bytes)]
@@ -472,7 +478,11 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         )
         monkeypatch.setattr(app_module, "_log", log)
         monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
-        origin = "att2" if scenario == "recover-after-refusal" else "att1"
+        origin = (
+            "att2"
+            if scenario in {"recover-after-refusal", "after-mixed-list"}
+            else "att1"
+        )
         monkeypatch.setattr(
             app.state,
             "generate",
@@ -529,6 +539,28 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
                 message = "What rated power does datasheet.pdf give?"
             else:
                 assert refused["id"] == "att1"
+        if scenario in {"continued-mixed-list", "after-mixed-list"}:
+            messages.append({"role": "user", "content": message})
+            first = client.post(
+                "/assistant/turn",
+                json={
+                    "conversation_id": "pdf-publication",
+                    "messages": messages,
+                    "attachments": uploads,
+                },
+            )
+            assert first.status_code == 200 and '"route": "parts"' in first.text
+            history = [
+                json.loads(event.splitlines()[1][6:])
+                for event in first.text.split("\n\n")
+                if event.startswith("event: reading\n")
+            ]
+            if scenario == "after-mixed-list":
+                message = "What is the rated power?\nAttached: new.pdf"
+                uploads = [{**upload(raw), "name": "new.pdf"}]
+            else:
+                message = "Add these to my draft"
+                uploads = []
         messages.append({"role": "user", "content": message})
         response = client.post(
             "/assistant/turn",
@@ -550,7 +582,7 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         for kind, record in events
         if kind == "event: block" and record.get("type") == "text"
     ]
-    if scenario == "mixed-list":
+    if scenario in {"mixed-list", "pasted-mixed-list", "continued-mixed-list"}:
         assert events[0][1]["route"] == "parts", texts
         [card] = [record for _, record in events if record.get("type") == "parts"]
         assert [
@@ -558,7 +590,11 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
             for row in card["rows"]
             if row["status"] == "matched"
         ] == [(4107, 2)]
-        assert len(card["rows"]) == 2
+        assert len(card["rows"]) == 3
+        assert (
+            card["rows"][2]["status"] == "missing"
+            and "Sunny Boy" in card["rows"][2]["text"]
+        )
         assert any(
             row["status"] == "missing" and "ZZ-90K-T4" in row["text"]
             for row in card["rows"]
@@ -578,6 +614,7 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         "de-filename",
         "withdrawn-filename",
         "recover-after-refusal",
+        "after-mixed-list",
         "parts-filename",
         "inquiry-filename",
     }:

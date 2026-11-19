@@ -182,25 +182,6 @@ class Understander:
         with timing.phase(clock, timing.VOCABULARY):
             vocabulary = self._load_vocabulary(log, get_vocabulary)
         matches = vocabulary.match(message) if vocabulary else []
-        if (
-            self._publication is not None
-            and message
-            and "unavailable" in self._publication.identify_text(message).values()
-            and not (
-                vocabulary
-                and parts.looks_like_list(message, vocabulary)
-                and _several_models(matches)
-            )
-        ):
-            from linker_genie.publication_copy import upload_unavailable
-
-            return Prepared(
-                route=Route(
-                    "scripted", no_cards=True, answer=upload_unavailable(language)
-                ),
-                log={"publication": "supplied_model_unavailable"},
-                timing=clock,
-            )
         log["matches"] = [
             {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
         ]
@@ -237,6 +218,33 @@ class Understander:
         )
         unavailable_rows: set[str] = set()
         if self._publication is not None:
+            from linker_genie.publication_copy import upload_unavailable
+
+            typed_statuses = self._publication.identify_text(message) if message else {}
+            pasted = (
+                source is not None
+                and source.kind == "text"
+                and source.since == len(request.messages) - 1
+            )
+            if "unavailable" in typed_statuses.values() and not (
+                pasted and "published" in typed_statuses.values()
+            ):
+                return Prepared(
+                    route=Route(
+                        "scripted", no_cards=True, answer=upload_unavailable(language)
+                    ),
+                    log={"publication": "supplied_model_unavailable"},
+                    timing=clock,
+                )
+            if source and source.kind in {"text", "table"}:
+                labels = (
+                    typed_statuses
+                    if pasted
+                    else _text_statuses(
+                        "\n".join(row.text for row in source.parsed), self._publication
+                    )
+                )
+                unavailable_rows = _withdrawn_rows(source, labels)
             # Stored attachment readings are historical too. Recheck their supplied
             # model before adding any text or ratings to this turn's facts.
             readings = [*request.readings, *fresh]
@@ -255,18 +263,33 @@ class Understander:
                             source, self._publication, vocabulary
                         )
                         if row_statuses:
-                            unavailable_rows = {
-                                row
-                                for row, status in row_statuses.items()
-                                if status == "unavailable"
-                            }
+                            unavailable_rows = _withdrawn_rows(source, row_statuses)
+                            # Keep only parsed rows in the proxy's existing list format.
+                            # A later technical question must not reuse the raw document.
+                            table, truncated = attachments.list_text(
+                                [
+                                    (str(row.quantity), row.text)
+                                    for row in source.parsed
+                                ],
+                                source.truncated,
+                            )
+                            fresh = [
+                                r.model_copy(
+                                    update={
+                                        "kind": "list",
+                                        "text": table,
+                                        "truncated": truncated,
+                                    }
+                                )
+                                if r.id == item.id
+                                else r
+                                for r in fresh
+                            ]
                             continue
                     status = _document_status(item, self._publication, vocabulary)
                     if status != "published":
                         blocked[item.id] = status
             if blocked:
-                from linker_genie.publication_copy import upload_unavailable
-
                 safe = [
                     r.model_copy(
                         update={"text": "", "ratings": [], "product_type": None}
@@ -434,9 +457,16 @@ class Understander:
                 message, matches, vocabulary
             )
         _run_calls(prepared, request, client, self._search, self._pages, clock)
+        # PDF parts rows are saved for list continuation. They do not provide
+        # a manual's technical facts on a later, unrelated question.
+        historical = [
+            item
+            for item in request.readings
+            if not (item.kind == "list" and item.pages is not None)
+        ]
         _add_readings(
             prepared,
-            [*request.readings, *fresh],
+            [*historical, *fresh],
             fresh,
             plate,
             vocabulary,
@@ -515,18 +545,17 @@ def _first_nameplate(
     return None
 
 
-def _several_models(matches: list[Match]) -> bool:
-    return (
-        len(
-            {
-                pid
-                for m in matches
-                if m.kind == "model" and len(m.product_ids) == 1
-                for pid in m.product_ids
-            }
-        )
-        >= 2
-    )
+def _withdrawn_rows(source: parts.Source, labels: dict[str, str]) -> set[str]:
+    withdrawn = [
+        model_pattern(label)
+        for label, status in labels.items()
+        if status == "unavailable"
+    ]
+    return {
+        row.text
+        for row in source.parsed
+        if any(pattern.search(row.text) for pattern in withdrawn)
+    }
 
 
 def _model_list_rows(
@@ -542,9 +571,11 @@ def _model_list_rows(
     rows = {
         row.text: names.get(row.text.casefold(), "unknown") for row in source.parsed
     }
-    return (
-        rows if "published" in rows.values() and "unknown" not in rows.values() else {}
-    )
+    if "published" in rows.values() and (
+        source.quantified or "unknown" not in rows.values()
+    ):
+        return labels
+    return {}
 
 
 def _text_statuses(text: str, authority: PublicationClient) -> dict[str, str]:

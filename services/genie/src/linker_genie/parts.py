@@ -712,6 +712,7 @@ class Source:
     since: int
     reading_id: str | None = None
     truncated: bool = False
+    quantified: bool = False
 
 
 def find(
@@ -759,7 +760,18 @@ def find(
             rows = parse_text(text)
             if len(rows) >= 2:
                 since = len(messages) - 1
-                candidates.append(Source("photo", tuple(rows), since, reading.id))
+                lines = [line for line in text.splitlines() if line.strip()]
+                quantified = all(_quantity(line) is not None for line in lines)
+                candidates.append(
+                    Source(
+                        "photo",
+                        tuple(rows),
+                        since,
+                        reading.id,
+                        rows_truncated(text, rows),
+                        quantified,
+                    )
+                )
     if not candidates:
         for reading in reversed(readings):
             if reading.failed or reading.kind != "list":
