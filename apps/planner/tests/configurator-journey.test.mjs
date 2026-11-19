@@ -126,7 +126,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		button("Add selected products to solution draft").click(),
 	);
 	assert.doesNotMatch(dom.element.textContent, /Grid phase mismatch/);
-	assert.equal(button("Confirm changes").disabled, false);
+	assert.equal(button("Add to solution draft").disabled, false);
 
 	const { default: catalog } = await import(
 		"../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",

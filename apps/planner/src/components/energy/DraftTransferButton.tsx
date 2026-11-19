@@ -280,33 +280,35 @@ export function DraftTransferButton({
 									)}
 						</p>
 					)}
-					{inquiryUrl && (
-						<a className="lp-button" href={inquiryUrl}>
-							{__("Continue to inquiry", "linker-tools")}
-						</a>
-					)}
-					{!reportOnly && (
-						<a
-							className={
-								inquiryUrl ? "lp-button lp-button-secondary" : "lp-button"
-							}
-							href={readyUrls[language]}
+					<div className="lp-inline-actions">
+						{inquiryUrl && (
+							<a className="lp-button" href={inquiryUrl}>
+								{__("Continue to inquiry", "linker-tools")}
+							</a>
+						)}
+						{!reportOnly && (
+							<a
+								className={
+									inquiryUrl ? "lp-button lp-button-secondary" : "lp-button"
+								}
+								href={readyUrls[language]}
+							>
+								{__("View solution draft", "linker-tools")}
+							</a>
+						)}
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={busy || !current}
+							onClick={() => {
+								setReceipt(null);
+								setPresent(null);
+								void prepare();
+							}}
 						>
-							{__("View solution draft", "linker-tools")}
-						</a>
-					)}
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={busy || !current}
-						onClick={() => {
-							setReceipt(null);
-							setPresent(null);
-							void prepare();
-						}}
-					>
-						{addLabel}
-					</button>
+							{addLabel}
+						</button>
+					</div>
 				</>
 			) : record && current && !retired ? (
 				<>
@@ -405,34 +407,38 @@ export function DraftTransferButton({
 									)}
 								</Notice>
 							))}
-							{preview.inquiryUrls && (
+							<div className="lp-inline-actions">
+								{preview.inquiryUrls && (
+									<button
+										type="button"
+										className="lp-button"
+										disabled={busy || !current || operations.storageFailed}
+										onClick={() => void confirm(preview, true)}
+									>
+										{__("Confirm and continue to inquiry", "linker-tools")}
+									</button>
+								)}
 								<button
 									type="button"
-									className="lp-button"
+									className={
+										preview.inquiryUrls
+											? "lp-button lp-button-secondary"
+											: "lp-button"
+									}
 									disabled={busy || !current || operations.storageFailed}
-									onClick={() => void confirm(preview, true)}
+									onClick={() => void confirm(preview)}
 								>
-									{__("Confirm and continue to inquiry", "linker-tools")}
+									{operations.busy
+										? reportOnly
+											? __("Attaching report…", "linker-tools")
+											: __("Adding selected products…", "linker-tools")
+										: preview.inquiryUrls
+											? __("Add to solution draft", "linker-tools")
+											: reportOnly
+												? addLabel
+												: __("Confirm changes", "linker-tools")}
 								</button>
-							)}
-							<button
-								type="button"
-								className={
-									preview.inquiryUrls
-										? "lp-button lp-button-secondary"
-										: "lp-button"
-								}
-								disabled={busy || !current || operations.storageFailed}
-								onClick={() => void confirm(preview)}
-							>
-								{operations.busy
-									? reportOnly
-										? __("Attaching report…", "linker-tools")
-										: __("Adding selected products…", "linker-tools")
-									: reportOnly
-										? addLabel
-										: __("Confirm changes", "linker-tools")}
-							</button>
+							</div>
 						</>
 					)}
 				</>

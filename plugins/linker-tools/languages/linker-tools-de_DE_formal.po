@@ -560,7 +560,8 @@ msgstr "Das Produkt dem Lösungsentwurf hinzufügen"
 msgid "Add to current draft"
 msgstr "Zum Entwurf hinzufügen"
 
-#: build/genie.js:1 build/hero.js
+#: build/genie.js:1 build/hero.js build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
