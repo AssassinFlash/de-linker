@@ -404,10 +404,10 @@ export function ProjectEquipment({
 	);
 	return (
 		<section
-			className="sc-card"
+			className="sc-existing-system"
 			aria-label={__("System arrangement", "linker-tools")}
 		>
-			<label>
+			<label className="sc-check">
 				<input
 					type="checkbox"
 					checked={Boolean(existing)}
@@ -447,7 +447,7 @@ export function ProjectEquipment({
 							}}
 						/>
 					</label>
-					<label>
+					<label className="sc-check sc-field-wide">
 						<input
 							type="checkbox"
 							checked={existing.keep_inverter}
@@ -489,7 +489,7 @@ export function ProjectEquipment({
 					</ul>
 				</div>
 			)}
-			<details open={plant ? true : undefined}>
+			<details className="sc-project-equipment" open={plant ? true : undefined}>
 				<summary>
 					{__("Equipment and system arrangement", "linker-tools")}
 				</summary>

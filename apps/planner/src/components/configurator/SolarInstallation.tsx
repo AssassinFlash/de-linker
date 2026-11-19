@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { PlaceImagery } from "../../domain/place.ts";
 import type { Json, JsonObject, Session } from "../../data/protocol.ts";
 import { sameJson } from "../../domain/draft.ts";
@@ -45,6 +45,7 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { readBrief } from "../../domain/brief.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import { LazySceneViewport } from "../design/LazySceneViewport.tsx";
 import { LazyMapViewport } from "../design/LazyMapViewport.tsx";
 import type { MapCamera } from "../design/MapViewport.tsx";
@@ -83,7 +84,7 @@ interface ReferenceChange {
 	after: PvgisReferenceDraft;
 }
 type SolarUndo =
-	| { geometry: GeometryDocument }
+	| { geometry: GeometryDocument | null; reference: ReferenceChange | null }
 	| {
 			calibration: CalibrationCommand;
 			hadGeometry: boolean;
@@ -139,30 +140,29 @@ export function SolarInstallation({
 			: readGeometry(inputs.geometry, policy);
 	const reference = referenceDraft(inputs);
 	const site = readBrief(inputs.brief).site;
-	const siteCentre =
+	const recordedCentre =
 		site.latitude !== null && site.longitude !== null
 			? ([site.longitude, site.latitude] as const)
 			: null;
 	const mapReferenced =
 		geometry.coordinate_system.anchor !== null &&
 		geometry.coordinate_system.north_reference === "true_north";
-	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
-	const startOnMap =
-		initialMap ||
-		(reference.model !== KNOWN_PV_MODEL &&
-			(siteCentre !== null || mapReferenced));
 	const [mode, setMode] = useState<"known" | "roof">(
-		startOnMap || (reference.model !== KNOWN_PV_MODEL && geometry.roofs.length)
+		initialMap ||
+			(reference.model !== KNOWN_PV_MODEL && geometry.roofs.length > 0)
 			? "roof"
 			: "known",
 	);
+	const [layoutOpen, setLayoutOpen] = useState(initialMap);
+	const choicesId = useId();
+	const layoutHeading = useRef<HTMLHeadingElement>(null);
+	const openLayout = useRef<HTMLButtonElement>(null);
 	const templates = useModuleTemplates(client, session.query_scope, !disabled);
 	const [moduleId, setModuleId] = useState(geometry.module_specs[0]?.id ?? "");
 	const module =
 		geometry.module_specs.find((m) => m.id === moduleId) ??
 		templates.data?.find((t) => t.specification.id === moduleId)?.specification;
-	const known =
-		reference.model === KNOWN_PV_MODEL ? reference.arrays?.[0] : undefined;
+	const known = knownReferenceArrays(inputs)?.[0];
 	const [count, setCount] = useState("");
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
@@ -172,9 +172,60 @@ export function SolarInstallation({
 	);
 	const [error, setError] = useState("");
 	const [view, setView] = useState<"plan" | "map" | "scene">(
-		startOnMap ? "map" : "plan",
+		initialMap ||
+			recordedCentre !== null ||
+			mapReferenced ||
+			(site.country_code && site.location_label.trim())
+			? "map"
+			: "plan",
 	);
-	const map = view === "map";
+	const editingLayout = mode === "roof" && layoutOpen;
+	const map = editingLayout && view === "map";
+	const blocked = disabled || !client.isCurrentScope(session.query_scope);
+	const placeQuery = site.postal_code || site.location_label;
+	const imagery = useQuery({
+		queryKey: [
+			session.query_scope,
+			"sc-solar-imagery",
+			site.country_code,
+			site.postal_code,
+			site.location_label,
+		],
+		enabled: map && !blocked && Boolean(placeQuery.trim()),
+		retry: false,
+		queryFn: async ({ signal }) => {
+			const reply = readObject(
+				await client.query(
+					"places/lookup",
+					{
+						schema_version: 1,
+						query: placeQuery,
+						...(site.country_code ? { country: site.country_code } : {}),
+					},
+					session.query_scope,
+					signal,
+				),
+			);
+			return {
+				imagery: readPlaceImagery(reply.imagery),
+				viewingImagery: readPlaceImagery(reply.viewing_imagery),
+				latitude: reply.latitude,
+				longitude: reply.longitude,
+				country: reply.country_code,
+			};
+		},
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
+	});
+	const lookedUpLatitude = imagery.data?.latitude;
+	const lookedUpLongitude = imagery.data?.longitude;
+	const siteCentre =
+		recordedCentre ??
+		(typeof lookedUpLatitude === "number" &&
+		typeof lookedUpLongitude === "number"
+			? ([lookedUpLongitude, lookedUpLatitude] as const)
+			: null);
+	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
 	const [calibrationOpen, setCalibrationOpen] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const reportImportActivity = geometryImport?.onActivity;
@@ -186,9 +237,9 @@ export function SolarInstallation({
 		[reportImportActivity],
 	);
 	useEffect(() => {
-		onEditing?.(calibrationOpen || (mode === "roof" && tool !== "select"));
+		onEditing?.(editingLayout && (calibrationOpen || tool !== "select"));
 		return () => onEditing?.(false);
-	}, [calibrationOpen, mode, tool, onEditing]);
+	}, [calibrationOpen, editingLayout, tool, onEditing]);
 	const camera = useRef<MapCamera | null>(null);
 	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
@@ -225,7 +276,6 @@ export function SolarInstallation({
 		geometry.roofs[0];
 	const poses = panelPoses(geometry);
 	const summary = moduleSummary(geometry);
-	const blocked = disabled || !client.isCurrentScope(session.query_scope);
 	const numeric = (key: keyof typeof fields) => {
 		const value = fields[key].trim() ? Number(fields[key]) : NaN;
 		if (!Number.isFinite(value))
@@ -252,24 +302,33 @@ export function SolarInstallation({
 					current.geometry === undefined
 						? emptyGeometry()
 						: readGeometry(current.geometry, policy);
+				const after = applyGeometryCommand(before, command);
 				const updated = {
 					...invalidateEnergyReplay(current),
-					geometry: readObject(applyGeometryCommand(before, command)),
+					geometry: readObject(after),
 				};
 				const switchesReference =
-					calibration && referenceDraft(current).model === KNOWN_PV_MODEL;
+					referenceDraft(current).model === KNOWN_PV_MODEL &&
+					(calibration !== null ||
+						(mode === "roof" &&
+							before.roofs.length === 0 &&
+							after.roofs.length > 0));
 				const nextInputs = switchesReference
 					? roofReferenceInputs(updated)
 					: updated;
+				const reference = switchesReference
+					? { before: current, after: referenceDraft(nextInputs) }
+					: null;
 				entry = calibration
 					? {
 							calibration,
 							hadGeometry: current.geometry !== undefined,
-							reference: switchesReference
-								? { before: current, after: referenceDraft(nextInputs) }
-								: null,
+							reference,
 						}
-					: { geometry: before };
+					: {
+							geometry: current.geometry === undefined ? null : before,
+							reference,
+						};
 				return nextInputs;
 			});
 			if (ok && entry) {
@@ -295,38 +354,42 @@ export function SolarInstallation({
 		try {
 			const ok = edit((current) => {
 				const next = { ...invalidateEnergyReplay(current) };
-				if ("geometry" in previous)
-					return { ...next, geometry: readObject(previous.geometry) };
-
-				const [source, roof] = previous.calibration.edits;
-				const currentGeometry = readGeometry(current.geometry, policy);
-				if (
-					!sameJson(
-						currentGeometry.sources.find((item) => item.id === source.value.id),
-						source.value,
-					) ||
-					!sameJson(
-						currentGeometry.roofs.find((item) => item.id === roof.value.id),
-						roof.value,
+				if ("geometry" in previous) {
+					if (previous.geometry === null) delete next.geometry;
+					else next.geometry = readObject(previous.geometry);
+				} else {
+					const [source, roof] = previous.calibration.edits;
+					const currentGeometry = readGeometry(current.geometry, policy);
+					if (
+						!sameJson(
+							currentGeometry.sources.find(
+								(item) => item.id === source.value.id,
+							),
+							source.value,
+						) ||
+						!sameJson(
+							currentGeometry.roofs.find((item) => item.id === roof.value.id),
+							roof.value,
+						)
 					)
-				)
-					throw new Error("geometry_object_changed");
-				const restored = applyGeometryCommand(currentGeometry, {
-					type: "group",
-					edits: [
-						roof.before
-							? { type: "put_roof", before: roof.value, value: roof.before }
-							: {
-									type: "delete_roof",
-									id: roof.value.id,
-									expected_dependents: [],
-								},
-						{ type: "delete_object", id: source.value.id },
-					],
-				});
-				if (!previous.hadGeometry && sameJson(restored, emptyGeometry()))
-					delete next.geometry;
-				else next.geometry = readObject(restored);
+						throw new Error("geometry_object_changed");
+					const restored = applyGeometryCommand(currentGeometry, {
+						type: "group",
+						edits: [
+							roof.before
+								? { type: "put_roof", before: roof.value, value: roof.before }
+								: {
+										type: "delete_roof",
+										id: roof.value.id,
+										expected_dependents: [],
+									},
+							{ type: "delete_object", id: source.value.id },
+						],
+					});
+					if (!previous.hadGeometry && sameJson(restored, emptyGeometry()))
+						delete next.geometry;
+					else next.geometry = readObject(restored);
+				}
 				if (!previous.reference) return next;
 				const restoredInputs = restoreKnownReference(next, previous.reference);
 				if (referenceDraft(restoredInputs).model === KNOWN_PV_MODEL)
@@ -336,7 +399,10 @@ export function SolarInstallation({
 			if (!ok) return;
 			setUndo(undo.slice(0, -1));
 			setError("");
-			if (restoredMode) setMode(restoredMode);
+			if (restoredMode) {
+				setMode(restoredMode);
+				setLayoutOpen(false);
+			}
 		} catch {
 			setError(
 				__(
@@ -365,8 +431,7 @@ export function SolarInstallation({
 		if (blocked) return;
 		edit((current) => {
 			const draft = referenceDraft(current);
-			const existing =
-				draft.model === KNOWN_PV_MODEL ? (draft.arrays ?? []) : [];
+			const existing = knownReferenceArrays(current) ?? [];
 			const first = existing[0] ?? {
 				id: id(),
 				peak_power_kwp: null,
@@ -392,7 +457,14 @@ export function SolarInstallation({
 			model: "pvgis_5_3_roof_ac_reference_v1",
 		});
 	}
-	function referenceChange(patch: Partial<PvgisReferenceDraft>, method = mode) {
+	function referenceChange(
+		patch: Partial<PvgisReferenceDraft>,
+		method = mode === "roof" &&
+		!geometry.roofs.length &&
+		reference.model === KNOWN_PV_MODEL
+			? "known"
+			: mode,
+	) {
 		if (blocked) return;
 		edit((current) => {
 			if (method === "roof") return roofReferenceInputs(current, patch);
@@ -857,42 +929,6 @@ export function SolarInstallation({
 		depth = allPoints.length
 			? Math.max(...allPoints.map((p) => p[1])) - minV
 			: 1;
-	const placeQuery = site.postal_code || site.location_label;
-	const imagery = useQuery({
-		queryKey: [
-			session.query_scope,
-			"sc-solar-imagery",
-			site.country_code,
-			site.postal_code,
-			site.location_label,
-		],
-		enabled:
-			map && !blocked && Boolean(site.postal_code || site.location_label),
-		retry: false,
-		queryFn: async ({ signal }) => {
-			const reply = readObject(
-				await client.query(
-					"places/lookup",
-					{
-						schema_version: 1,
-						query: placeQuery,
-						...(site.country_code ? { country: site.country_code } : {}),
-					},
-					session.query_scope,
-					signal,
-				),
-			);
-			return {
-				imagery: readPlaceImagery(reply.imagery),
-				viewingImagery: readPlaceImagery(reply.viewing_imagery),
-				latitude: reply.latitude,
-				longitude: reply.longitude,
-				country: reply.country_code,
-			};
-		},
-		refetchOnReconnect: false,
-		refetchOnWindowFocus: false,
-	});
 	const viewingImagery = imagery.data?.viewingImagery ?? null;
 	const viewOnly = !imagery.data?.imagery && viewingImagery !== null;
 	const interaction = viewOnly ? null : mapDrawing;
@@ -957,41 +993,53 @@ export function SolarInstallation({
 					)}
 				</p>
 			</header>
-			<ImageCalibrationWorkspace
-				geometry={geometry}
-				roofId={null}
-				locale={config.locale}
-				disabled={blocked || importOpen || vertices.length > 0}
-				onActivity={setCalibrationOpen}
-				commit={(command) => {
-					if (!commit({ calibration: command })) return false;
-					setMode("roof");
-					setView("plan");
-					startTool("select");
-					select(command.edits[1].value.id);
-					return true;
-				}}
-			/>
 			<fieldset disabled={blocked || calibrationOpen}>
 				<div className="sc-option-row">
-					{(["known", "roof"] as const).map((value) => (
+					{(
+						[
+							[
+								"known",
+								__("Use module details", "linker-tools"),
+								__("Quantity, power and orientation", "linker-tools"),
+							],
+							[
+								"roof",
+								__("Place modules on the roof", "linker-tools"),
+								__("Roof outline, obstacles and layout", "linker-tools"),
+							],
+						] as const
+					).map(([value, label, help]) => (
 						<button
 							type="button"
-							className={`sc-option-card${mode === value ? " active" : ""}`}
+							className="sc-option-card"
+							aria-label={label}
+							aria-describedby={`${choicesId}-${value}-help`}
 							aria-pressed={mode === value}
+							disabled={importOpen || vertices.length > 0}
 							key={value}
 							onClick={() => {
+								if (value === mode) return;
 								if (
-									value !== mode &&
-									(value === "known" || reference.model === KNOWN_PV_MODEL)
+									(value === "known" &&
+										known &&
+										reference.model !== KNOWN_PV_MODEL) ||
+									(value === "roof" &&
+										geometry.roofs.length > 0 &&
+										reference.model === KNOWN_PV_MODEL)
 								)
 									referenceChange({}, value);
 								setMode(value);
+								setLayoutOpen(false);
+								startTool("select");
 							}}
 						>
-							{value === "known"
-								? __("Use module details", "linker-tools")
-								: __("Place modules on the roof", "linker-tools")}
+							<span>{label}</span>
+							<small
+								className="sc-solar-choice-note"
+								id={`${choicesId}-${value}-help`}
+							>
+								{help}
+							</small>
 						</button>
 					))}
 				</div>
@@ -1117,6 +1165,103 @@ export function SolarInstallation({
 							</div>
 						</>
 					) : (
+						<>
+							{!editingLayout && roof && (
+								<svg
+									className="sc-roof-board sc-roof-preview"
+									viewBox={`${minU - 1} ${minV - 1} ${width + 2} ${depth + 2}`}
+									role="img"
+									aria-label={__("Roof layout preview", "linker-tools")}
+								>
+									<polygon
+										className="lp-roof-shape"
+										points={roof.boundary_uv
+											.map((point) => point.join(","))
+											.join(" ")}
+									/>
+									{poses
+										.filter((pose) => pose.roof_id === roof.id && pose.included)
+										.map((pose) => (
+											<polygon
+												key={pose.id}
+												className="lp-panel-shape"
+												points={pose.footprint_uv
+													.map((point) => point.join(","))
+													.join(" ")}
+											/>
+										))}
+								</svg>
+							)}
+							{!editingLayout && (
+								<button
+									type="button"
+									className="sc-button sc-primary"
+									ref={openLayout}
+									onClick={() => {
+										setLayoutOpen(true);
+										window.requestAnimationFrame(() =>
+											revealActionResult(layoutHeading.current),
+										);
+									}}
+								>
+									{__("Open roof layout", "linker-tools")}
+								</button>
+							)}
+						</>
+					)}
+					<p className="sc-solar-total">
+						{mode === "roof" && geometry.roofs.length > 0
+							? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
+							: mode === "known" && known?.peak_power_kwp != null
+								? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
+								: __("Solar capacity not entered", "linker-tools")}
+					</p>
+				</div>
+			</fieldset>
+			{editingLayout && (
+				<section
+					className="sc-card sc-roof-editor"
+					aria-labelledby={`${choicesId}-roof-editor`}
+				>
+					<header className="sc-section-head sc-solar-layout-header">
+						<h2 ref={layoutHeading} id={`${choicesId}-roof-editor`}>
+							{__("Roof and module layout", "linker-tools")}
+						</h2>
+						<button
+							type="button"
+							className="sc-button sc-primary"
+							disabled={calibrationOpen || importOpen || vertices.length > 0}
+							onClick={() => {
+								startTool("select");
+								setLayoutOpen(false);
+								window.requestAnimationFrame(() =>
+									revealActionResult(openLayout.current),
+								);
+							}}
+						>
+							{geometry.roofs.length
+								? __("Use this layout", "linker-tools")
+								: __("Back", "linker-tools")}
+						</button>
+					</header>
+					<ImageCalibrationWorkspace
+						geometry={geometry}
+						roofId={null}
+						locale={config.locale}
+						disabled={blocked || importOpen || vertices.length > 0}
+						onActivity={setCalibrationOpen}
+						commit={(command) => {
+							if (!commit({ calibration: command })) return false;
+							setView("plan");
+							startTool("select");
+							select(command.edits[1].value.id);
+							return true;
+						}}
+					/>
+					<fieldset
+						className="sc-roof-editor-fields"
+						disabled={blocked || calibrationOpen}
+					>
 						<div className="sc-roof-layout">
 							<div>
 								<div className="sc-roof-tools">
@@ -1498,8 +1643,13 @@ export function SolarInstallation({
 								)}
 							</aside>
 						</div>
-					)}
-					<h3>{__("Solar generation estimate", "linker-tools")}</h3>
+					</fieldset>
+					{error && <p role="alert">{error}</p>}
+				</section>
+			)}
+			<details className="sc-card sc-product-filter">
+				<summary>{__("Solar generation estimate", "linker-tools")}</summary>
+				<fieldset disabled={blocked || calibrationOpen}>
 					<p className="sc-muted">
 						{__(
 							"Compare systems uses JRC PVGIS to estimate AC generation from the location, array details and settings below. Energy comparisons use the period covered by both the solar and energy use profiles.",
@@ -1670,50 +1820,45 @@ export function SolarInstallation({
 							/>
 						</label>
 					</div>
-					<p className="sc-solar-total">
-						{mode === "roof"
-							? `${summary.count} ${__("placed modules", "linker-tools")} · ${summary.stc_kwp} kWp`
-							: known?.peak_power_kwp != null
-								? `${known.peak_power_kwp} kWp`
-								: __("Solar capacity not entered", "linker-tools")}
-					</p>
-				</div>
-				{mode === "roof" && geometry.sources.length > 0 && (
-					<details className="sc-card sc-product-filter">
-						<summary>{__("Source properties", "linker-tools")}</summary>
-						<div className="sc-fields">
-							{geometry.sources.map((source) => (
-								<fieldset key={source.id}>
-									<legend>{source.note}</legend>
-									<GeometryExportPermission
-										value={source.permissions.export}
-										disabled={
-											blocked ||
-											Object.hasOwn(
-												readGeometryImports(inputs.geometry_imports).selected,
-												source.id,
-											)
-										}
-										onChange={(permission) =>
-											commit({
-												type: "put_source",
-												before: source,
-												value: {
-													...source,
-													permissions: {
-														...source.permissions,
-														export: permission,
-													},
+				</fieldset>
+			</details>
+			{mode === "roof" && geometry.sources.length > 0 && (
+				<details className="sc-card sc-product-filter">
+					<summary>{__("Source properties", "linker-tools")}</summary>
+					<div className="sc-fields">
+						{geometry.sources.map((source) => (
+							<fieldset key={source.id}>
+								<legend>{source.note}</legend>
+								<GeometryExportPermission
+									value={source.permissions.export}
+									disabled={
+										blocked ||
+										Object.hasOwn(
+											readGeometryImports(inputs.geometry_imports).selected,
+											source.id,
+										)
+									}
+									onChange={(permission) =>
+										commit({
+											type: "put_source",
+											before: source,
+											value: {
+												...source,
+												permissions: {
+													...source.permissions,
+													export: permission,
 												},
-											})
-										}
-									/>
-								</fieldset>
-							))}
-						</div>
-					</details>
-				)}
-				{geometryImport && (
+											},
+										})
+									}
+								/>
+							</fieldset>
+						))}
+					</div>
+				</details>
+			)}
+			{geometryImport && (
+				<div hidden={!editingLayout}>
 					<GeometryIntake
 						geometry={geometry}
 						projectId={geometryImport.projectId}
@@ -1756,15 +1901,20 @@ export function SolarInstallation({
 						recoveryScopes={geometryImport.recoveryScopes}
 						recoveryChecking={geometryImport.recoveryChecking}
 					/>
-				)}
-				{error && <p role="alert">{error}</p>}
-				{wiring}
-				<footer className="sc-next">
-					<button type="button" onClick={next}>
-						{__("Continue with energy use", "linker-tools")}
-					</button>
-				</footer>
-			</fieldset>
+				</div>
+			)}
+			{wiring}
+			<footer className="sc-next">
+				<button
+					type="button"
+					disabled={
+						blocked || calibrationOpen || importOpen || vertices.length > 0
+					}
+					onClick={next}
+				>
+					{__("Continue with energy use", "linker-tools")}
+				</button>
+			</footer>
 		</section>
 	);
 }

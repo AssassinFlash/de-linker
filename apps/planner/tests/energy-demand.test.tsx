@@ -117,7 +117,10 @@ test("energy demand edits one project and compares without preparation rituals",
 			2,
 			"peak comparison remains available without invented sizing",
 		);
-		assert.equal(energyGoal(changeEnergyGoal(inputs, "self")), "self");
+		await select("Purpose", "self");
+		assert.equal(energyGoal(inputs), "self");
+		assert.equal(inputs.energy_scenario.schedule[0].import_cap_kw, null);
+		assert.equal(inputs.energy_scenario.schedule[0].import_policy, null);
 		assert.doesNotMatch(dom.element.textContent, /Prepare|Adopt|Save project/);
 	} finally {
 		await dom.dispose(root);
@@ -171,7 +174,20 @@ test("a real typical profile is imported and selected for the same project", asy
 					effective_max_interval_seconds: 900,
 					reconstructed_means: false,
 				},
-				rows: [],
+				rows: [
+					{
+						interval_index: 0,
+						start_utc: "2019-12-31T23:00:00Z",
+						end_utc: "2019-12-31T23:15:00Z",
+						interval_mean_kw: 1,
+					},
+					{
+						interval_index: 1,
+						start_utc: "2019-12-31T23:15:00Z",
+						end_utc: "2019-12-31T23:30:00Z",
+						interval_mean_kw: 3,
+					},
+				],
 				first_gaps: [],
 				gaps_truncated: false,
 				next_offset: null,
@@ -222,6 +238,12 @@ test("a real typical profile is imported and selected for the same project", asy
 		assert.equal(calls[0].body.annual_kwh, 6000);
 		assert.equal(inputs.profile_selections.selected.gross_load, asset.id);
 		assert.match(dom.element.textContent, /6,000 kWh/);
+		const curve = dom.element.querySelector(
+			'[role="img"][aria-label="Electricity demand"]',
+		);
+		assert.ok(curve, "the selected load source has a visible demand chart");
+		assert.match(curve.textContent, /3 kW/);
+		assert.match(dom.element.querySelector("table").textContent, /23:15:00Z3/);
 		assert.equal(calls[0].body.year, 2020);
 		assert.equal(
 			inputs.energy_scenario.schedule[0].start_utc,
@@ -231,6 +253,24 @@ test("a real typical profile is imported and selected for the same project", asy
 			inputs.energy_scenario.schedule[0].end_utc,
 			"2020-12-31T23:00:00Z",
 		);
+		await act(async () => {
+			for (const [label, value] of [
+				["Purpose", "peak"],
+				["Grid connection", "3"],
+			]) {
+				const field = [...dom.element.querySelectorAll("label")]
+					.find((node) => node.querySelector("span")?.textContent === label)
+					.querySelector("select");
+				field.value = value;
+				field.dispatchEvent(new Event("change", { bubbles: true }));
+			}
+		});
+		const compare = [...dom.element.querySelectorAll("button")].find(
+			(button) => button.textContent === "Compare systems",
+		);
+		assert.equal(compare.disabled, true);
+		await enter(field("Target grid import limit"), "0");
+		assert.equal(compare.disabled, false, "an explicit zero is a valid target");
 	} finally {
 		await dom.dispose(root);
 	}

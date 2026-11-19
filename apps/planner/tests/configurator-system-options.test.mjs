@@ -193,6 +193,12 @@ test("system cards use real candidate data, inspect evidence and select without 
 	);
 	assert.match(document.querySelector(".sc-package").textContent, /10 kWh/);
 	assert.match(document.body.textContent, /Search incomplete/);
+	const overview = document.querySelector('[aria-label="System layout"]');
+	assert.ok(overview, "the equipment option has a labelled system layout");
+	assert.match(overview.textContent, /Solar capacity.*10 kWp/);
+	assert.match(overview.textContent, /Inverter model.*Linker Hybrid Actual/);
+	assert.match(overview.textContent, /Battery model.*Linker Battery Actual/);
+	assert.doesNotMatch(overview.textContent, /Example/);
 	const materials = [...document.querySelectorAll(".sc-equipment")];
 	assert.ok(
 		materials.some(

@@ -13,6 +13,7 @@ import {
 	plantInputs,
 	readPlantDraft,
 } from "../../domain/equipmentPlant.ts";
+import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
 
 const solarDemand = {
@@ -134,7 +135,7 @@ export function ProjectDetails({
 				)
 					return current;
 				return {
-					...current,
+					...invalidateEnergyReplay(current),
 					brief: {
 						...b,
 						site: {
@@ -199,6 +200,30 @@ export function ProjectDetails({
 			),
 		}));
 	}
+	function changeLocation(
+		patch: Partial<Pick<Brief["site"], "country_code" | "location_label">>,
+	) {
+		setLocationError(false);
+		edit((current) => {
+			const before =
+				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
+			return {
+				...invalidateEnergyReplay(current),
+				brief: {
+					...before,
+					site: {
+						...before.site,
+						...patch,
+						postal_code: null,
+						latitude: null,
+						longitude: null,
+						coordinate_basis: "not_provided",
+						timezone: null,
+					},
+				},
+			};
+		});
+	}
 	return (
 		<>
 			<header className="sc-section-head">
@@ -234,22 +259,9 @@ export function ProjectDetails({
 						<select
 							name="country"
 							value={country ?? ""}
-							onChange={(e) => {
-								const country_code = e.currentTarget.value || null;
-								setLocationError(false);
-								change((b) => ({
-									...b,
-									site: {
-										...b.site,
-										country_code,
-										postal_code: null,
-										latitude: null,
-										longitude: null,
-										coordinate_basis: "not_provided",
-										timezone: null,
-									},
-								}));
-							}}
+							onChange={(e) =>
+								changeLocation({ country_code: e.currentTarget.value || null })
+							}
 						>
 							<option value="">{__("Choose a country", "linker-tools")}</option>
 							{Object.entries(config.countries)
@@ -268,24 +280,41 @@ export function ProjectDetails({
 							autoComplete="street-address"
 							maxLength={4096}
 							value={brief.site.location_label}
-							onChange={(e) => {
-								const location_label = e.currentTarget.value;
-								setLocationError(false);
-								change((b) => ({
-									...b,
-									site: {
-										...b.site,
-										location_label,
-										postal_code: null,
-										latitude: null,
-										longitude: null,
-										coordinate_basis: "not_provided",
-										timezone: null,
-									},
-								}));
-							}}
+							onChange={(e) =>
+								changeLocation({ location_label: e.currentTarget.value })
+							}
 						/>
 					</label>
+					{mapKey && brief.system_scope !== "storage_only" && (
+						<div className="sc-field-wide">
+							<div className="sc-actions">
+								<button
+									className="sc-button"
+									type="button"
+									disabled={!country || !address.trim()}
+									onClick={() => void locate()}
+								>
+									{__("Find site coordinates", "linker-tools")}
+								</button>
+								<span role="status">
+									{locating
+										? __("Finding the site…", "linker-tools")
+										: brief.site.latitude !== null &&
+											  brief.site.longitude !== null
+											? __("Site coordinates found", "linker-tools")
+											: ""}
+								</span>
+							</div>
+							{locationError && (
+								<p role="alert">
+									{__(
+										"The location could not be found. Check the country and address, then try again.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+						</div>
+					)}
 					<label className="sc-field">
 						<span>{__("Planned system", "linker-tools")}</span>
 						<select
@@ -339,7 +368,7 @@ export function ProjectDetails({
 							</option>
 						</select>
 					</label>
-					<label className="sc-field">
+					<label className="sc-field sc-field-wide">
 						<span>{__("Main purpose", "linker-tools")}</span>
 						<select
 							name="project_purpose"
@@ -401,34 +430,8 @@ export function ProjectDetails({
 						</div>
 					</div>
 				)}
-				{mapKey && brief.system_scope !== "storage_only" && (
-					<div className="sc-actions">
-						<button
-							className="sc-button"
-							type="button"
-							disabled={!country || !address.trim()}
-							onClick={() => void locate()}
-						>
-							{__("Find site coordinates", "linker-tools")}
-						</button>
-						{brief.site.latitude !== null && brief.site.longitude !== null && (
-							<span>{__("Site coordinates found", "linker-tools")}</span>
-						)}
-					</div>
-				)}
+				{existingEquipment}
 			</fieldset>
-			{existingEquipment}
-			{locationError && (
-				<p role="alert">
-					{__(
-						"The location could not be found. Check the country and address, then try again.",
-						"linker-tools",
-					)}
-				</p>
-			)}
-			{locating && (
-				<p role="status">{__("Finding the site…", "linker-tools")}</p>
-			)}
 			<footer className="sc-footer">
 				<span />
 				<button

@@ -17,6 +17,7 @@ import {
 	equipmentReason,
 	equipmentStatus,
 } from "../equipment/equipmentLabels.ts";
+import { Icon } from "../Icon.tsx";
 import { __, sprintf } from "../../i18n.ts";
 
 const productName = (product: JsonObject | undefined) =>
@@ -961,95 +962,150 @@ export function SystemOptions({
 					</button>
 				</nav>
 			)}
-			{adjusted && (
-				<section className="sc-card">
-					<h3>{__("Adjust configuration", "linker-tools")}</h3>
-					{systems(adjusted).map(({ id, name, selection }, index) => (
-						<div className="sc-fields" key={id}>
-							{adjustmentFields.map((field) => {
-								if (solarOnly && field !== "inverter_product_id") return null;
-								const labels = {
-									inverter_product_id: __("Inverter model", "linker-tools"),
-									battery_product_id: __("Battery model", "linker-tools"),
-									modules_per_stack: __(
-										"Battery modules per stack",
-										"linker-tools",
-									),
-									parallel_stacks: __("Battery stacks", "linker-tools"),
-								};
-								const options = adjustmentOptions(
-									ranked,
-									adjusted,
-									index,
-									field,
-								);
-								const model =
-									field === "inverter_product_id" ||
-									field === "battery_product_id";
-								return (
-									<label className="sc-field" key={field}>
-										<span>
-											{name ? `${name} · ${labels[field]}` : labels[field]}
-										</span>
-										<select
-											value={String(selection[field] ?? "")}
-											disabled={disabled || selecting || options.size === 1}
-											onChange={(event) => {
-												const option = options.get(event.currentTarget.value);
-												if (option)
-													setAdjustment({
-														runId: run.id,
-														selectedId,
-														candidateId: option.id,
-													});
-											}}
-										>
-											{[...options.keys()].map((value) => (
-												<option key={value} value={value}>
-													{value === ""
-														? "—"
-														: model
-															? productName(products.get(Number(value)))
-															: format(Number(value))}
-												</option>
-											))}
-										</select>
-									</label>
-								);
-							})}
-						</div>
-					))}
-					{adjusted.id !== candidate?.id && (
-						<p>
-							{title(adjusted)} · {!solarOnly && `${capacity(adjusted)} · `}
-							{equipmentStatus(adjusted.status)}
-						</p>
-					)}
-					<div className="sc-actions">
-						<button
-							type="button"
-							className="sc-button"
-							disabled={disabled || selecting || adjusted.id === selectedId}
-							onClick={() => void select(adjusted)}
-						>
-							{__("Use this adjustment", "linker-tools")}
-						</button>
-						{onEditEquipment && (
-							<button
-								type="button"
-								className="sc-button"
-								disabled={disabled || selecting}
-								onClick={onEditEquipment}
-							>
-								{__("Edit equipment and system count", "linker-tools")}
-							</button>
-						)}
-					</div>
-				</section>
-			)}
 			{candidate && (
-				<section className="sc-card">
-					<h2>{title(candidate)}</h2>
+				<section className="sc-card sc-system-overview">
+					<header className="sc-section-head">
+						<div>
+							<h2>
+								{candidate.id === selectedId
+									? __("Selected equipment", "linker-tools")
+									: __("Equipment preview", "linker-tools")}
+							</h2>
+							<p>{title(candidate)}</p>
+						</div>
+						<p>{equipmentStatus(candidate.status)}</p>
+					</header>
+					<div role="group" aria-label={__("System layout", "linker-tools")}>
+						{systems(candidate).map(({ id, name, selection }) => (
+							<div key={id}>
+								{name && <h3>{name}</h3>}
+								<dl className="sc-system-diagram">
+									{typeof selection.pv_dc_kw === "number" &&
+										selection.pv_dc_kw > 0 && (
+											<div className="sc-system-node">
+												<dt>
+													<Icon name="solar" />
+													{__("Solar capacity", "linker-tools")}
+												</dt>
+												<dd>{measure(selection.pv_dc_kw, "kWp")}</dd>
+											</div>
+										)}
+									<div className="sc-system-node">
+										<dt>
+											<Icon name="system" />
+											{__("Inverter model", "linker-tools")}
+										</dt>
+										<dd>
+											{productName(products.get(selection.inverter_product_id))}
+										</dd>
+									</div>
+									{!solarOnly && selection.battery_product_id && (
+										<div className="sc-system-node">
+											<dt>
+												<Icon name="energy" />
+												{__("Battery model", "linker-tools")}
+											</dt>
+											<dd>
+												{productName(
+													products.get(selection.battery_product_id),
+												)}
+											</dd>
+										</div>
+									)}
+								</dl>
+							</div>
+						))}
+					</div>
+					{adjusted && (
+						<div className="sc-system-adjustment">
+							<h3>{__("Adjust configuration", "linker-tools")}</h3>
+							{systems(adjusted).map(({ id, name, selection }, index) => (
+								<div className="sc-fields" key={id}>
+									{adjustmentFields.map((field) => {
+										if (solarOnly && field !== "inverter_product_id")
+											return null;
+										const labels = {
+											inverter_product_id: __("Inverter model", "linker-tools"),
+											battery_product_id: __("Battery model", "linker-tools"),
+											modules_per_stack: __(
+												"Battery modules per stack",
+												"linker-tools",
+											),
+											parallel_stacks: __("Battery stacks", "linker-tools"),
+										};
+										const options = adjustmentOptions(
+											ranked,
+											adjusted,
+											index,
+											field,
+										);
+										const model =
+											field === "inverter_product_id" ||
+											field === "battery_product_id";
+										return (
+											<label className="sc-field" key={field}>
+												<span>
+													{name ? `${name} · ${labels[field]}` : labels[field]}
+												</span>
+												<select
+													value={String(selection[field] ?? "")}
+													disabled={disabled || selecting || options.size === 1}
+													onChange={(event) => {
+														const option = options.get(
+															event.currentTarget.value,
+														);
+														if (option)
+															setAdjustment({
+																runId: run.id,
+																selectedId,
+																candidateId: option.id,
+															});
+													}}
+												>
+													{[...options.keys()].map((value) => (
+														<option key={value} value={value}>
+															{value === ""
+																? "—"
+																: model
+																	? productName(products.get(Number(value)))
+																	: format(Number(value))}
+														</option>
+													))}
+												</select>
+											</label>
+										);
+									})}
+								</div>
+							))}
+							{adjusted.id !== candidate?.id && (
+								<p>
+									{title(adjusted)} · {!solarOnly && `${capacity(adjusted)} · `}
+									{equipmentStatus(adjusted.status)}
+								</p>
+							)}
+							<div className="sc-actions">
+								<button
+									type="button"
+									className="sc-button"
+									disabled={disabled || selecting || adjusted.id === selectedId}
+									onClick={() => void select(adjusted)}
+								>
+									{__("Use this adjustment", "linker-tools")}
+								</button>
+								{onEditEquipment && (
+									<button
+										type="button"
+										className="sc-button"
+										disabled={disabled || selecting}
+										onClick={onEditEquipment}
+									>
+										{__("Edit equipment and system count", "linker-tools")}
+									</button>
+								)}
+							</div>
+						</div>
+					)}
+
 					{detail.isPending && (
 						<p role="status" className="sc-muted">
 							{__("Loading equipment and evidence…", "linker-tools")}
@@ -1075,11 +1131,13 @@ export function SystemOptions({
 					{assessment && (
 						<>
 							<h3>{__("Bill of materials", "linker-tools")}</h3>
-							<CandidateMaterials
-								candidate={candidate}
-								assessment={assessment}
-								locale={locale}
-							/>
+							<div className="sc-system-equipment">
+								<CandidateMaterials
+									candidate={candidate}
+									assessment={assessment}
+									locale={locale}
+								/>
+							</div>
 							<details>
 								<summary>
 									{__("Selection basis and documents", "linker-tools")}

@@ -38,7 +38,9 @@ const editor = () =>
 	document.querySelector(".sc-project-heading")?.parentElement;
 const button = (label, area = document) =>
 	[...area.querySelectorAll("button")].find(
-		(node) => node.textContent.trim() === label,
+		(node) =>
+			node.getAttribute("aria-label") === label ||
+			node.textContent.trim() === label,
 	);
 const nav = (label) =>
 	[...document.querySelectorAll(".sc-nav button")].find(
@@ -303,7 +305,7 @@ test("a storage-only project reaches Energy use, System and Review without a roo
 	assert.equal(location.hash, "#sc-energy");
 	await act(async () => nav("System").click());
 	assert.equal(location.hash, "#sc-system");
-	await act(async () => nav("Review & share").click());
+	await act(async () => nav("Report & inquiry").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
 });
@@ -336,6 +338,7 @@ test("step changes retain the energy input and undo history and protect unfinish
 	);
 	await act(async () => nav("Solar").click());
 	await act(async () => button("Place modules on the roof").click());
+	await act(async () => button("Open roof layout").click());
 	await act(async () => button("Draw roof").click());
 	await act(async () => nav("Project").click());
 	assert.equal(location.hash, "#sc-solar");

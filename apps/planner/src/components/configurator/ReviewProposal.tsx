@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { PlanningRun, RunSummary } from "../../data/planningProtocol.ts";
 import {
@@ -16,6 +16,7 @@ import {
 } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import { readBrief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
@@ -87,18 +88,41 @@ function ReportContent({ section }: { section: ReportSection }) {
 }
 
 function ReportPreview({ report }: { report: PlanningReport }) {
+	const dialog = useRef<HTMLDialogElement>(null);
+	const name = useId();
 	return (
-		<details>
-			<summary>{__("Preview report", "linker-tools")}</summary>
-			<div lang={report.locale}>
-				{report.sections.map((section) => (
-					<section key={section.id}>
-						<h3>{section.title}</h3>
-						<ReportContent section={section} />
-					</section>
-				))}
-			</div>
-		</details>
+		<>
+			<button
+				type="button"
+				className="sc-button"
+				onClick={() => dialog.current?.showModal()}
+			>
+				{__("Preview report", "linker-tools")}
+			</button>
+			<dialog ref={dialog} className="sc-report-dialog" aria-labelledby={name}>
+				<header className="sc-section-head">
+					<h2 id={name} lang={report.locale}>
+						{report.title}
+					</h2>
+					<button
+						type="button"
+						className="sc-button"
+						onClick={() => dialog.current?.close()}
+					>
+						{__("Close", "linker-tools")}
+					</button>
+				</header>
+				<div className="sc-report-preview" lang={report.locale}>
+					<p className="sc-muted">{report.subtitle}</p>
+					{report.sections.map((section) => (
+						<section key={section.id}>
+							<h3>{section.title}</h3>
+							<ReportContent section={section} />
+						</section>
+					))}
+				</div>
+			</dialog>
+		</>
 	);
 }
 
@@ -109,6 +133,7 @@ function ReportDownloads({
 	scope,
 	recheck,
 	askGenie,
+	suspended = false,
 	children,
 }: {
 	run: PlanningRun;
@@ -117,7 +142,12 @@ function ReportDownloads({
 	scope: string;
 	recheck: () => void;
 	askGenie: () => void;
-	children?: ReactNode;
+	suspended?: boolean;
+	children?: (files: {
+		actions: ReactNode;
+		materials: ReactNode;
+		error: ReactNode;
+	}) => ReactNode;
 }) {
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
@@ -138,7 +168,7 @@ function ReportDownloads({
 			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
 			objectUrl.current = null;
 		};
-	}, [run.id, scope]);
+	}, [run.id, scope, suspended]);
 	async function download(format: "pdf" | "materials" | "rules" | "series") {
 		if (!run.result || busy || flight.current || !client.isCurrentScope(scope))
 			return;
@@ -204,64 +234,73 @@ function ReportDownloads({
 			if (instance === lifetime.current) setBusy(false);
 		}
 	}
-	return (
+	const materials = Boolean(attachments?.bill_of_materials_csv) && (
+		<button
+			type="button"
+			className="sc-button"
+			disabled={busy || !client.isCurrentScope(scope)}
+			onClick={() => void download("materials")}
+		>
+			{__("Download bill of materials (CSV)", "linker-tools")}
+		</button>
+	);
+	const actions = (
 		<>
-			<div className="sc-actions">
+			<ReportPreview report={report} />
+			<button
+				type="button"
+				className="sc-button"
+				disabled={busy || !client.isCurrentScope(scope)}
+				onClick={() => void download("pdf")}
+			>
+				{__("Download PDF", "linker-tools")}
+			</button>
+			{Boolean(attachments?.country_rule_review_csv) && (
 				<button
 					type="button"
 					className="sc-button"
 					disabled={busy || !client.isCurrentScope(scope)}
-					onClick={() => void download("pdf")}
+					onClick={() => void download("rules")}
 				>
-					{__("Download PDF", "linker-tools")}
+					{__("Download country rule review (CSV)", "linker-tools")}
 				</button>
-				{Boolean(attachments?.bill_of_materials_csv) && (
-					<button
-						type="button"
-						className="sc-button"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("materials")}
-					>
-						{__("Download bill of materials (CSV)", "linker-tools")}
-					</button>
-				)}
-				{Boolean(attachments?.country_rule_review_csv) && (
-					<button
-						type="button"
-						className="sc-button"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("rules")}
-					>
-						{__("Download country rule review (CSV)", "linker-tools")}
-					</button>
-				)}
-				{Boolean(attachments?.pv_series_csv) && (
-					<button
-						type="button"
-						className="sc-button"
-						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("series")}
-					>
-						{__("Download PV string intervals (CSV)", "linker-tools")}
-					</button>
-				)}
+			)}
+			{Boolean(attachments?.pv_series_csv) && (
 				<button
 					type="button"
 					className="sc-button"
-					data-linker-genie-open
-					data-linker-genie-planning={run.id}
-					disabled={!client.isCurrentScope(scope)}
-					onClick={askGenie}
+					disabled={busy || !client.isCurrentScope(scope)}
+					onClick={() => void download("series")}
 				>
-					{__("Ask Genie", "linker-tools")}
+					{__("Download PV string intervals (CSV)", "linker-tools")}
 				</button>
-				{children}
-			</div>
-			{error && (
-				<p role="alert">
-					{__("The file could not be downloaded. Try again.", "linker-tools")}
-				</p>
 			)}
+			<button
+				type="button"
+				className="sc-button"
+				data-linker-genie-open
+				data-linker-genie-planning={run.id}
+				disabled={!client.isCurrentScope(scope)}
+				onClick={askGenie}
+			>
+				{__("Ask Genie", "linker-tools")}
+			</button>
+		</>
+	);
+	const downloadError = error && (
+		<p role="alert">
+			{__("The file could not be downloaded. Try again.", "linker-tools")}
+		</p>
+	);
+	return children ? (
+		children({ actions, materials, error: downloadError })
+	) : (
+		<>
+			<div className="sc-actions">
+				{actions}
+				{materials}
+			</div>
+			{downloadError}
 		</>
 	);
 }
@@ -283,6 +322,7 @@ interface ReportHistory {
 
 export function ReviewProposal({
 	project,
+	inputs,
 	run,
 	history,
 	client,
@@ -318,6 +358,14 @@ export function ReviewProposal({
 		[logoError, setLogoError] = useState(false),
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
+	const logoInput = useRef<HTMLInputElement>(null);
+	const resetLogo = () => {
+		reader.current?.abort();
+		reader.current = null;
+		setLogo(null);
+		setLogoError(false);
+		setReading(false);
+	};
 	useEffect(
 		() => () => {
 			reader.current?.abort();
@@ -336,55 +384,73 @@ export function ReviewProposal({
 		reading ||
 		logoError;
 	const logoField = (
-		<label className="sc-field">
-			<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-			<input
-				type="file"
-				accept="image/png,image/jpeg"
-				disabled={blocked || operations.busy}
-				onChange={(event) => {
-					reader.current?.abort();
-					reader.current = null;
-					setLogo(null);
-					setReading(false);
-					setLogoError(false);
-					const file = event.currentTarget.files?.[0];
-					if (!file) return;
-					if (
-						file.size > 500000 ||
-						!["image/png", "image/jpeg"].includes(file.type)
-					) {
-						setLogoError(true);
-						return;
-					}
-					const next = new FileReader();
-					reader.current = next;
-					setReading(true);
-					next.onload = () => {
-						if (reader.current === next && typeof next.result === "string") {
-							setLogo(next.result);
-							setReading(false);
-						}
-					};
-					next.onerror = () => {
-						if (reader.current === next) {
+		<div className="sc-report-logo">
+			<label className="sc-field">
+				<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
+				<input
+					ref={logoInput}
+					type="file"
+					accept="image/png,image/jpeg"
+					disabled={blocked || operations.busy}
+					onChange={(event) => {
+						resetLogo();
+						const file = event.currentTarget.files?.[0];
+						if (!file) return;
+						if (
+							file.size > 500000 ||
+							!["image/png", "image/jpeg"].includes(file.type)
+						) {
 							setLogoError(true);
-							setReading(false);
+							return;
 						}
-					};
-					next.readAsDataURL(file);
-				}}
-			/>
-			<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
-			{logoError && (
-				<small role="alert">
-					{__(
-						"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
-						"linker-tools",
-					)}
-				</small>
+						const next = new FileReader();
+						reader.current = next;
+						setReading(true);
+						next.onload = () => {
+							if (reader.current === next && typeof next.result === "string") {
+								setLogo(next.result);
+								setReading(false);
+							}
+						};
+						next.onerror = () => {
+							if (reader.current === next) {
+								setLogoError(true);
+								setReading(false);
+							}
+						};
+						next.readAsDataURL(file);
+					}}
+				/>
+				<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
+				{logoError && (
+					<small role="alert">
+						{__(
+							"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
+							"linker-tools",
+						)}
+					</small>
+				)}
+			</label>
+			{(logo || logoError || reading) && (
+				<div className="sc-actions">
+					{logo && <img src={logo} alt={__("Report logo", "linker-tools")} />}
+					<button
+						type="button"
+						className="sc-button"
+						disabled={blocked || operations.busy}
+						onClick={() => {
+							resetLogo();
+							if (logoInput.current) {
+								logoInput.current.value = "";
+								logoInput.current.focus();
+							}
+						}}
+					>
+						{__("Remove logo", "linker-tools")}
+					</button>
+				</div>
 			)}
-		</label>
+		</div>
 	);
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable =
@@ -396,6 +462,159 @@ export function ReviewProposal({
 				: report.sections.some(
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
+
+	const brief = inputs.brief === undefined ? null : readBrief(inputs.brief);
+	const country = brief?.site.country_code;
+	const location = [
+		brief?.site.location_label,
+		country && new Intl.DisplayNames([locale], { type: "region" }).of(country),
+	]
+		.filter(Boolean)
+		.join(" · ");
+	const annualLoad = brief?.annual_load.kwh;
+	const bill = report?.sections.find((section) => section.id === "bom");
+	const reportDescription = __(
+		"Project inputs, layout, equipment and selection basis.",
+		"linker-tools",
+	);
+	const draftTransfer = transferable && run && (
+		<section className="sc-draft-transfer">
+			<h2>{__("Request a quotation", "linker-tools")}</h2>
+			{selected && current && (
+				<p>
+					{sprintf(
+						__(
+							"Your inquiry uses the current report (revision %d).",
+							"linker-tools",
+						),
+						run.revision,
+					)}
+				</p>
+			)}
+			{!reportOnly && (
+				<p className="sc-muted">
+					{__(
+						"The selected equipment and project details are included.",
+						"linker-tools",
+					)}
+				</p>
+			)}
+			<DraftTransferButton
+				key={`${run.id}:${scope}`}
+				run={run}
+				client={client}
+				scope={scope}
+				operations={operations}
+				reportOnly={reportOnly}
+				current={current}
+				blocked={blocked}
+				locale={locale}
+				recheck={recheck}
+			/>
+		</section>
+	);
+	const historyPanel = history &&
+		(selected || history.items.length > 0 || history.hasMore) && (
+			<section
+				className="sc-card"
+				aria-label={__("Calculation history", "linker-tools")}
+			>
+				<h2>{__("Calculation history", "linker-tools")}</h2>
+				<div className="sc-actions">
+					{history.items.map((item) => (
+						<button
+							type="button"
+							className="sc-button"
+							key={item.id}
+							aria-pressed={history.selected === item.id}
+							disabled={!client.isCurrentScope(scope)}
+							onClick={() =>
+								history.select(history.selected === item.id ? null : item.id)
+							}
+						>
+							{sprintf(__("Revision %d", "linker-tools"), item.revision)}
+							{" · "}
+							{new Intl.DateTimeFormat(locale, {
+								dateStyle: "short",
+								timeStyle: "short",
+							}).format(item.created_at * 1000)}
+						</button>
+					))}
+					{selected && (
+						<button
+							type="button"
+							className="sc-button"
+							disabled={!client.isCurrentScope(scope)}
+							onClick={() => history.select(null)}
+						>
+							{__("Close", "linker-tools")}
+						</button>
+					)}
+					{history.hasMore && (
+						<button
+							type="button"
+							className="sc-button"
+							disabled={history.loading || !client.isCurrentScope(scope)}
+							onClick={history.loadMore}
+						>
+							{__("Earlier calculations", "linker-tools")}
+						</button>
+					)}
+				</div>
+				{history.loadFailed && (
+					<p role="alert">
+						{__(
+							"Saved calculation history could not be refreshed.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+				{history.reading && (
+					<p role="status">
+						{__("Reading the saved calculation…", "linker-tools")}
+					</p>
+				)}
+				{selected && history.unavailable && (
+					<p role="alert">
+						{__(
+							"The saved calculation details could not be verified for this response.",
+							"linker-tools",
+						)}
+					</p>
+				)}
+				{history.readFailed && (
+					<div role="alert">
+						<p>
+							{__(
+								"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="sc-button"
+							disabled={!client.isCurrentScope(scope)}
+							onClick={history.retryRead}
+						>
+							{__("Refresh calculation status", "linker-tools")}
+						</button>
+					</div>
+				)}
+				{earlierRun && earlierReport && (
+					<>
+						<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
+						<ReportDownloads
+							run={earlierRun}
+							report={earlierReport}
+							client={client}
+							scope={scope}
+							recheck={recheck}
+							askGenie={() => askGenie(earlierRun)}
+						/>
+					</>
+				)}
+			</section>
+		);
 	return (
 		<article className="sc-review">
 			<header className="sc-section-head">
@@ -409,6 +628,42 @@ export function ReviewProposal({
 					</p>
 				</div>
 			</header>
+			{!selected && (
+				<section className="sc-card">
+					<h2>{__("Project overview", "linker-tools")}</h2>
+					<p>{project.title}</p>
+					{location && <p className="sc-muted">{location}</p>}
+					{annualLoad != null && (
+						<dl>
+							<div className="sc-summary">
+								<dt>{__("Annual electricity use", "linker-tools")}</dt>
+								<dd>{new Intl.NumberFormat(locale).format(annualLoad)} kWh</dd>
+							</div>
+						</dl>
+					)}
+					{current && report && (
+						<div lang={report.locale}>
+							{report.sections
+								.filter(
+									(section) =>
+										[
+											"pv",
+											"energy",
+											"existing-system",
+											"retained-energy-baseline",
+										].includes(section.id) ||
+										section.id.startsWith("declared-equipment-demand"),
+								)
+								.map((section) => (
+									<details key={section.id}>
+										<summary>{section.title}</summary>
+										<ReportContent section={section} />
+									</details>
+								))}
+						</div>
+					)}
+				</section>
+			)}
 			{!selected && run && !current && (
 				<p className="sc-card sc-muted" role="status" data-report-outdated="">
 					{__(
@@ -417,10 +672,10 @@ export function ReviewProposal({
 					)}
 				</p>
 			)}
-			{!selected && !report && (
+			{!selected && (!report || !run) && (
 				<section className="sc-card">
 					<h2>{__("Project report", "linker-tools")}</h2>
-					<p>{project.title}</p>
+					<p className="sc-muted">{reportDescription}</p>
 					{run && <p role="status">{runStateLabel(run.state, REPORT_TASK)}</p>}
 					{run?.error && (
 						<p role="alert">
@@ -443,228 +698,82 @@ export function ReviewProposal({
 					</div>
 				</section>
 			)}
-			{!selected && report && run && (
-				<>
-					<section className="sc-card" lang={report.locale}>
-						<h2>{report.title}</h2>
-						<p className="sc-muted">{report.subtitle}</p>
-						{reportLanguageDiffers(report.locale, locale) && (
-							<p className="sc-muted" lang={locale}>
-								{report.locale === "de"
-									? __("Report language: German", "linker-tools")
-									: __("Report language: English", "linker-tools")}
-							</p>
-						)}
-						<time className="sc-muted" dateTime={report.generated_at}>
-							{new Intl.DateTimeFormat(locale, {
-								dateStyle: "medium",
-								timeStyle: "short",
-								timeZone: "UTC",
-							}).format(new Date(report.generated_at))}{" "}
-							UTC
-						</time>
-					</section>
-					{report.sections
-						.filter(
-							(section) =>
-								[
-									"project",
-									"pv",
-									"energy",
-									"bom",
-									"existing-system",
-									"retained-energy-baseline",
-								].includes(section.id) ||
-								section.id.startsWith("declared-equipment-demand"),
-						)
-						.map((section) => (
-							<section
-								className="sc-card"
-								key={section.id}
-								lang={report.locale}
-							>
-								<div className="sc-section-head">
-									<h2>{section.title}</h2>
-								</div>
-								<ReportContent section={section} />
-							</section>
-						))}
-					<section className="sc-card">
-						<div className="sc-section-head">
-							<div>
-								<h2>{__("Project report", "linker-tools")}</h2>
-								<p className="sc-muted">
-									{__(
-										"Project inputs, layout, equipment and selection basis.",
-										"linker-tools",
-									)}
-								</p>
-							</div>
-						</div>
-						{logoField}
-						<ReportDownloads
-							run={run}
-							report={report}
-							client={client}
-							scope={scope}
-							recheck={recheck}
-							askGenie={() => askGenie(run)}
-						>
-							<button
-								type="button"
-								className="sc-button"
-								disabled={disabled}
-								onClick={() => generate(logo)}
-							>
-								{reportLanguageDiffers(report.locale, locale)
-									? locale.startsWith("de")
-										? __("Generate report in German", "linker-tools")
-										: __("Generate report in English", "linker-tools")
-									: __("Update project report", "linker-tools")}
-							</button>
-						</ReportDownloads>
-						<ReportPreview report={report} />
-					</section>
-				</>
-			)}
-			{history && (selected || history.items.length > 0 || history.hasMore) && (
-				<section
-					className="sc-card"
-					aria-label={__("Calculation history", "linker-tools")}
+			{selected && historyPanel}
+			{report && run && (
+				<ReportDownloads
+					run={run}
+					report={report}
+					client={client}
+					scope={scope}
+					recheck={recheck}
+					askGenie={() => askGenie(run)}
+					suspended={selected}
 				>
-					<h2>{__("Calculation history", "linker-tools")}</h2>
-					<div className="sc-actions">
-						{history.items.map((item) => (
-							<button
-								type="button"
-								className="sc-button"
-								key={item.id}
-								aria-pressed={history.selected === item.id}
-								disabled={!client.isCurrentScope(scope)}
-								onClick={() =>
-									history.select(history.selected === item.id ? null : item.id)
-								}
-							>
-								{sprintf(__("Revision %d", "linker-tools"), item.revision)}
-								{" · "}
-								{new Intl.DateTimeFormat(locale, {
-									dateStyle: "short",
-									timeStyle: "short",
-								}).format(item.created_at * 1000)}
-							</button>
-						))}
-						{selected && (
-							<button
-								type="button"
-								className="sc-button"
-								disabled={!client.isCurrentScope(scope)}
-								onClick={() => history.select(null)}
-							>
-								{__("Close", "linker-tools")}
-							</button>
-						)}
-						{history.hasMore && (
-							<button
-								type="button"
-								className="sc-button"
-								disabled={history.loading || !client.isCurrentScope(scope)}
-								onClick={history.loadMore}
-							>
-								{__("Earlier calculations", "linker-tools")}
-							</button>
-						)}
-					</div>
-					{history.loadFailed && (
-						<p role="alert">
-							{__(
-								"Saved calculation history could not be refreshed.",
-								"linker-tools",
-							)}
-						</p>
-					)}
-					{history.reading && (
-						<p role="status">
-							{__("Reading the saved calculation…", "linker-tools")}
-						</p>
-					)}
-					{selected && history.unavailable && (
-						<p role="alert">
-							{__(
-								"The saved calculation details could not be verified for this response.",
-								"linker-tools",
-							)}
-						</p>
-					)}
-					{history.readFailed && (
-						<div role="alert">
-							<p>
-								{__(
-									"The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
-									"linker-tools",
-								)}
-							</p>
-							<button
-								type="button"
-								className="sc-button"
-								disabled={!client.isCurrentScope(scope)}
-								onClick={history.retryRead}
-							>
-								{__("Refresh calculation status", "linker-tools")}
-							</button>
-						</div>
-					)}
-					{earlierRun && earlierReport && (
+					{({ actions, materials, error }) => (
 						<>
-							<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
-							<ReportDownloads
-								run={earlierRun}
-								report={earlierReport}
-								client={client}
-								scope={scope}
-								recheck={recheck}
-								askGenie={() => askGenie(earlierRun)}
-							/>
-							<ReportPreview report={earlierReport} />
+							{!selected && bill && (
+								<section className="sc-card">
+									<header className="sc-section-head">
+										<h2 lang={report.locale}>{bill.title}</h2>
+										{materials}
+									</header>
+									<div lang={report.locale}>
+										<ReportContent section={bill} />
+									</div>
+								</section>
+							)}
+							{(!selected || draftTransfer) && (
+								<div
+									className={selected ? "sc-card" : "sc-card sc-report-actions"}
+								>
+									{!selected && (
+										<section>
+											<h2>{__("Project report", "linker-tools")}</h2>
+											<p className="sc-muted">{reportDescription}</p>
+											<p lang={report.locale}>{report.title}</p>
+											{reportLanguageDiffers(report.locale, locale) && (
+												<p className="sc-muted">
+													{report.locale === "de"
+														? __("Report language: German", "linker-tools")
+														: __("Report language: English", "linker-tools")}
+												</p>
+											)}
+											<time className="sc-muted" dateTime={report.generated_at}>
+												{new Intl.DateTimeFormat(locale, {
+													dateStyle: "medium",
+													timeStyle: "short",
+													timeZone: "UTC",
+												}).format(new Date(report.generated_at))}{" "}
+												UTC
+											</time>
+											<div className="sc-actions">
+												{actions}
+												{!bill && materials}
+											</div>
+											{error}
+											{logoField}
+											<button
+												type="button"
+												className="sc-button"
+												disabled={disabled}
+												onClick={() => generate(logo)}
+											>
+												{reportLanguageDiffers(report.locale, locale)
+													? locale.startsWith("de")
+														? __("Generate report in German", "linker-tools")
+														: __("Generate report in English", "linker-tools")
+													: __("Update project report", "linker-tools")}
+											</button>
+										</section>
+									)}
+									{draftTransfer}
+								</div>
+							)}
 						</>
 					)}
-				</section>
+				</ReportDownloads>
 			)}
-			{transferable && run && (
-				<section className="sc-card sc-draft-transfer">
-					<h2>{__("Request a quotation", "linker-tools")}</h2>
-					{selected && current && (
-						<p>
-							{sprintf(
-								__(
-									"Your inquiry uses the current report (revision %d).",
-									"linker-tools",
-								),
-								run.revision,
-							)}
-						</p>
-					)}
-					{!reportOnly && (
-						<p className="sc-muted">
-							{__(
-								"The selected equipment and project details are included.",
-								"linker-tools",
-							)}
-						</p>
-					)}
-					<DraftTransferButton
-						key={`${run.id}:${scope}`}
-						run={run}
-						client={client}
-						scope={scope}
-						operations={operations}
-						reportOnly={reportOnly}
-						current={current}
-						blocked={blocked}
-						locale={locale}
-						recheck={recheck}
-					/>
-				</section>
-			)}
+			{!selected && historyPanel}
 		</article>
 	);
 }

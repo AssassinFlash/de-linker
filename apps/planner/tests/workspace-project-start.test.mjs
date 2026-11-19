@@ -299,10 +299,20 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	await render("en");
 	const language = document.querySelector('a[hreflang="de"]');
 	assert.equal(language.hash, "#sc-preliminary-options");
+	const comparison = fixture.element.querySelector(
+		'table[aria-label="Compare system options"]',
+	);
+	assert.ok(comparison, "Options belong in one project comparison table");
+	assert.deepEqual(
+		Array.from(comparison.querySelectorAll("tbody th")).map((cell) =>
+			cell.textContent.trim(),
+		),
+		["Solar and storage", "Storage for existing PV", "Solar", "Storage"],
+	);
 	const direction = () =>
-		Array.from(fixture.element.querySelectorAll("article")).find(
-			(card) =>
-				card.querySelector("h3")?.textContent === "Storage for existing PV",
+		Array.from(fixture.element.querySelectorAll("tbody tr")).find(
+			(row) =>
+				row.querySelector("th")?.textContent === "Storage for existing PV",
 		);
 	await until(() => direction()?.querySelector("button:not(:disabled)"));
 	assert.equal(
@@ -355,7 +365,7 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	await until(
 		() =>
 			location.hash === "#sc-preliminary-review" &&
-			fixture.element.querySelector("#sc-preliminary-review:not([hidden])"),
+			fixture.element.querySelector(".sc-draft-transfer:not([hidden])"),
 	);
 	assert.equal(
 		fixture.element.querySelector('[name="message"]').value,
@@ -363,8 +373,8 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	);
 	await act(async () => button("Change selection").click());
 	const storage = () =>
-		Array.from(fixture.element.querySelectorAll("article")).find(
-			(card) => card.querySelector("h3")?.textContent === "Storage",
+		Array.from(fixture.element.querySelectorAll("tbody tr")).find(
+			(row) => row.querySelector("th")?.textContent === "Storage",
 		);
 	await until(() => storage()?.querySelector("button:not(:disabled)"));
 	await act(async () => storage().querySelector("button").click());
@@ -516,14 +526,9 @@ test("signed-in preliminary landing explains a failed recovery read and offers a
 		fixture.element.textContent,
 		/creations and CSV imports from earlier sessions could not be checked/,
 	);
-	assert.equal(
-		fixture.element.querySelector(".sc-package button").disabled,
-		true,
-	);
+	assert.equal(fixture.element.querySelector("tbody button").disabled, true);
 	await act(async () => retry().click());
-	await until(
-		() => !fixture.element.querySelector(".sc-package button").disabled,
-	);
+	await until(() => !fixture.element.querySelector("tbody button").disabled);
 	assert.equal(recoveries, 2);
 	assert.equal(retry(), undefined);
 });

@@ -152,3 +152,56 @@ test("a retained inverter report can be attached to an inquiry without a product
 	assert.ok(button("Attach report to inquiry"));
 	assert.equal(button("Add selected products to solution draft"), undefined);
 });
+
+test("an unusable optional logo can be removed and the project report generated", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		generated = [];
+	t.after(() => page.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...props(null),
+				generate: (logo) => generated.push(logo),
+			}),
+		),
+	);
+	const field = document.querySelector('input[type="file"]');
+	Object.defineProperty(field, "files", {
+		value: [new window.File(["logo"], "logo.gif", { type: "image/gif" })],
+	});
+	await act(async () =>
+		field.dispatchEvent(new window.Event("change", { bubbles: true })),
+	);
+	assert.match(
+		document.querySelector("[role=alert]").textContent,
+		/could not be used/,
+	);
+	await act(async () => button("Remove logo").click());
+	await act(async () => button("Generate project report").click());
+	assert.deepEqual(generated, [null]);
+});
+
+test("report preview opens the complete pinned report and can be closed", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element);
+	t.after(() => page.dispose(root));
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, props())),
+	);
+	const dialog = document.querySelector("dialog");
+	assert.ok(dialog);
+	// JSDOM does not implement native dialog opening and closing.
+	dialog.showModal = () => {
+		dialog.open = true;
+	};
+	dialog.close = () => {
+		dialog.open = false;
+	};
+	assert.equal(dialog.open, false);
+	await act(async () => button("Preview report").click());
+	assert.equal(dialog.open, true);
+	assert.match(dialog.textContent, /Trina Solar TSM-460NEG9R.28/);
+	await act(async () => button("Close").click());
+	assert.equal(dialog.open, false);
+});

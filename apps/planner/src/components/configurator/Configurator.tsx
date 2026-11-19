@@ -83,6 +83,7 @@ import {
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { ReviewProposal } from "./ReviewProposal.tsx";
+import { ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
 import {
 	PvStringSetup,
@@ -819,7 +820,7 @@ export default function Configurator({
 		solar: __("Solar", "linker-tools"),
 		energy: __("Energy use", "linker-tools"),
 		system: __("System", "linker-tools"),
-		review: __("Review & share", "linker-tools"),
+		review: __("Report & inquiry", "linker-tools"),
 	};
 	const failedRead = [
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
@@ -905,87 +906,86 @@ export default function Configurator({
 				: step;
 	return (
 		<div className="sc-configurator">
-			<header className="sc-project-heading">
-				<div>
-					<p className="sc-muted">{__("Your project", "linker-tools")}</p>
-					<h1>{project.title}</h1>
-					<p>{siteLabel}</p>
-				</div>
-				<div className="sc-actions">
-					<span className="sc-muted" role="status">
-						{controller.busy
-							? __("Saving…", "linker-tools")
-							: draft.pending
-								? __("Save not confirmed", "linker-tools")
-								: isDirty(draft)
-									? __("Unsaved changes", "linker-tools")
-									: sprintf(
-											__("Saved · revision %d", "linker-tools"),
-											draft.baseline.revision,
-										)}
-					</span>
-					<button
-						type="button"
-						className="sc-button"
-						data-linker-genie-open
-						data-linker-genie-planning=""
-						disabled={!admitted}
-						onClick={() => setGenieReportId(null)}
-					>
-						{__("Ask Genie", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							preparingReport ||
-							navigationBlocked ||
-							Boolean(draft.pending || draft.conflict) ||
-							!draft.history.past.length
-						}
-						onClick={() => update(undoDraft)}
-					>
-						{__("Undo", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							navigationBlocked ||
-							Boolean(draft.pending || draft.conflict) ||
-							!draft.history.future.length
-						}
-						onClick={() => update(redoDraft)}
-					>
-						{__("Redo", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						disabled={
-							controller.busy ||
-							navigationBlocked ||
-							Boolean(draft.conflict) ||
-							controller.recoveries.length > 0
-						}
-						onClick={() => void controller.save()}
-					>
-						{draft.pending && !draft.conflict && !controller.busy
-							? __("Retry save", "linker-tools")
-							: __("Save snapshot", "linker-tools")}
-					</button>
-					<button
-						className="sc-button"
-						onClick={() => {
-							if (!mayLeave()) return;
-							void controller.flush().then((ok) => {
-								if (ok) close();
-							});
-						}}
-					>
-						{__("Projects", "linker-tools")}
-					</button>
-				</div>
-			</header>
+			<ProjectHeading
+				title={project.title}
+				location={siteLabel}
+				actions={
+					<div className="sc-actions">
+						<span className="sc-muted" role="status">
+							{controller.busy
+								? __("Saving…", "linker-tools")
+								: draft.pending
+									? __("Save not confirmed", "linker-tools")
+									: isDirty(draft)
+										? __("Unsaved changes", "linker-tools")
+										: sprintf(
+												__("Saved · revision %d", "linker-tools"),
+												draft.baseline.revision,
+											)}
+						</span>
+						<button
+							type="button"
+							className="sc-button"
+							data-linker-genie-open
+							data-linker-genie-planning=""
+							disabled={!admitted}
+							onClick={() => setGenieReportId(null)}
+						>
+							{__("Ask Genie", "linker-tools")}
+						</button>
+						<button
+							className="sc-button"
+							disabled={
+								controller.busy ||
+								preparingReport ||
+								navigationBlocked ||
+								Boolean(draft.pending || draft.conflict) ||
+								!draft.history.past.length
+							}
+							onClick={() => update(undoDraft)}
+						>
+							{__("Undo", "linker-tools")}
+						</button>
+						<button
+							className="sc-button"
+							disabled={
+								controller.busy ||
+								navigationBlocked ||
+								Boolean(draft.pending || draft.conflict) ||
+								!draft.history.future.length
+							}
+							onClick={() => update(redoDraft)}
+						>
+							{__("Redo", "linker-tools")}
+						</button>
+						<button
+							className="sc-button"
+							disabled={
+								controller.busy ||
+								navigationBlocked ||
+								Boolean(draft.conflict) ||
+								controller.recoveries.length > 0
+							}
+							onClick={() => void controller.save()}
+						>
+							{draft.pending && !draft.conflict && !controller.busy
+								? __("Retry save", "linker-tools")
+								: __("Save snapshot", "linker-tools")}
+						</button>
+						<button
+							className="sc-button"
+							onClick={() => {
+								if (!mayLeave()) return;
+								void controller.flush().then((ok) => {
+									if (ok) close();
+								});
+							}}
+						>
+							{__("Projects", "linker-tools")}
+						</button>
+					</div>
+				}
+			/>
 			<nav
 				className="sc-nav"
 				aria-label={__("Project navigation", "linker-tools")}

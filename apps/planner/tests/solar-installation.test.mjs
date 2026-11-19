@@ -29,6 +29,7 @@ async function mount(
 	placeImagery = aerial,
 	viewingImagery = null,
 	locale = "en",
+	lookupCoordinates = {},
 ) {
 	const dom = setupDom();
 	if (locale === "de") {
@@ -50,6 +51,7 @@ async function mount(
 	const root = createRoot(dom.element);
 	let current = initial,
 		next = 0;
+	const placeQueries = [];
 	const query = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
 	});
@@ -62,8 +64,14 @@ async function mount(
 			client: {
 				isCurrentScope: () => true,
 				query: async (path) => {
-					if (path === "places/lookup")
-						return { imagery: placeImagery, viewing_imagery: viewingImagery };
+					if (path === "places/lookup") {
+						placeQueries.push(path);
+						return {
+							imagery: placeImagery,
+							viewing_imagery: viewingImagery,
+							...lookupCoordinates,
+						};
+					}
 					if (path === "places/outline") return { found: false };
 					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
 				},
@@ -94,6 +102,7 @@ async function mount(
 		else delete globalThis.getComputedStyle;
 	});
 	return {
+		placeQueries,
 		get inputs() {
 			return current;
 		},
@@ -104,7 +113,8 @@ async function mount(
 }
 function button(text) {
 	const el = [...document.querySelectorAll("button")].find(
-		(e) => e.textContent.trim() === text,
+		(e) =>
+			e.getAttribute("aria-label") === text || e.textContent.trim() === text,
 	);
 	assert.ok(el, `Missing ${text}`);
 	return el;
@@ -135,6 +145,7 @@ test("new solar module details persist known capacity and source without requiri
 	assert.equal(known.arrays[0].tilt_deg, 25);
 	assert.equal(known.arrays[0].source_note, "Installer's module list");
 	assert.equal(app.inputs.pvgis_reference, undefined);
+	document.querySelector("summary").click();
 	await enter(input("Latitude"), "52.12567");
 	await enter(input("Longitude"), "5.12567");
 	await enter(input("Calendar year"), "2020");
@@ -163,7 +174,7 @@ test("new solar module details persist known capacity and source without requiri
 	await click("Continue with energy use");
 	assert.equal(app.next, 1);
 });
-test("a project with a located building starts on the aerial map without creating a measurement origin", async (t) => {
+test("a located project keeps the known-capacity path and opens the map only on request", async (t) => {
 	const brief = emptyBrief();
 	const app = await mount(t, {
 		brief: {
@@ -180,15 +191,57 @@ test("a project with a located building starts on the aerial map without creatin
 		},
 	});
 	assert.equal(
-		button("Place modules on the roof").getAttribute("aria-pressed"),
+		button("Use module details").getAttribute("aria-pressed"),
 		"true",
 	);
+	await enter(input("Solar capacity"), "5.5");
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, 5.5);
+	assert.deepEqual(app.placeQueries, []);
+	await click("Continue with energy use");
+	assert.equal(app.next, 1);
+	await click("Place modules on the roof");
+	assert.equal(document.querySelector('[data-map-status="ready"]'), null);
+	await click("Open roof layout");
 	assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
 	await until(
 		() =>
 			document.querySelector('[data-map-status="ready"]') &&
 			button("Show aerial map"),
 	);
+	assert.equal(app.inputs.geometry, undefined);
+	await click("Back");
+	assert.equal(document.querySelector('[data-map-status="ready"]'), null);
+	await click("Use module details");
+	assert.equal(input("Solar capacity").value, "5.5");
+});
+
+test("a country and postcode center the aerial view without assigning a measurement origin", async (t) => {
+	const brief = emptyBrief();
+	const app = await mount(
+		t,
+		{
+			brief: {
+				...brief,
+				site: {
+					...brief.site,
+					country_code: "NL",
+					location_label: "9401 AB",
+				},
+			},
+		},
+		aerial,
+		null,
+		"en",
+		{ latitude: 52.995, longitude: 6.562 },
+	);
+	await openRoof();
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	const { maps } = await import("./map-library-fixture.mjs");
+	assert.deepEqual(
+		maps.findLast((map) => !map.removed).options.center,
+		[6.562, 52.995],
+	);
+	assert.equal(app.inputs.brief.site.latitude, null);
 	assert.equal(app.inputs.geometry, undefined);
 });
 
@@ -210,6 +263,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 		},
 		null,
 	);
+	await openRoof();
 	await until(() => button("Load street map"));
 	await click("Draw roof");
 	assert.equal(button("Calibrate a roof image").disabled, false);
@@ -242,7 +296,19 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	assert.equal(button("Select / move").getAttribute("aria-pressed"), "true");
 });
 
+async function openRoof(locale = "en") {
+	await click(
+		locale === "de"
+			? "Module auf dem Dach platzieren"
+			: "Place modules on the roof",
+	);
+	await act(async () =>
+		document.querySelector(".sc-solar button.sc-primary").click(),
+	);
+}
+
 async function traceRoofImage(t, image, roofId, length = "12") {
+	if (!document.querySelector(".sc-roof-editor")) await openRoof();
 	await click("Calibrate a roof image");
 	const form = document.querySelector(".lp-import-panel form");
 	if (roofId) {
@@ -494,6 +560,7 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 	const { maps } = await import("./map-library-fixture.mjs");
 	const map = () => maps.findLast((value) => !value.removed);
 	const tileUrl = official.tiles[0].replace("{bbox-epsg-3857}", "1,2,3,4");
+	await openRoof();
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.throws(
 		() => map().options.transformRequest(tileUrl),
@@ -604,6 +671,7 @@ test("German Solar explains viewing consent and the customer drawing path", asyn
 		viewing,
 		"de",
 	);
+	await openRoof("de");
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.match(
 		document.body.textContent,
@@ -646,6 +714,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	});
 	const { maps } = await import("./map-library-fixture.mjs");
 	const map = () => maps.findLast((value) => !value.removed);
+	await openRoof();
 	await until(
 		() =>
 			button("Show aerial map") &&
@@ -771,7 +840,7 @@ test("the solar page records a named map origin only after confirmation", async 
 	const app = await mount(t, {
 		brief,
 	});
-	await click("Place modules on the roof");
+	await openRoof();
 	assert.equal(app.inputs.geometry, undefined);
 	await enter(input("Drawing source"), "Installer site plan");
 	await act(async () => document.querySelector(".sc-check input").click());
@@ -829,9 +898,39 @@ test("the solar page records a named map origin only after confirmation", async 
 	assert.equal(app.inputs.geometry.obstacles[0].height_m, 0.5);
 });
 
+test("drawing the first roof replaces the known calculation basis and Undo restores it", async (t) => {
+	const app = await mount(t, { brief: emptyBrief() });
+	await enter(input("Solar capacity"), "5.5");
+	const known = app.inputs.pvgis_reference_setup;
+	await openRoof();
+	assert.deepEqual(app.inputs.pvgis_reference_setup, known);
+	await enter(input("Drawing source"), "Installer site plan");
+	await act(async () => document.querySelector(".sc-check input").click());
+	for (const [label, value] of [
+		["Width", "8"],
+		["Depth", "5"],
+		["Pitch", "25"],
+		["Azimuth", "180"],
+		["Relative roof height", "3"],
+		["Origin east / U", "0"],
+		["Origin north / V", "0"],
+	])
+		await enter(input(label), value);
+	await click("Add rectangular roof");
+	assert.equal(app.inputs.geometry.roofs.length, 1);
+	assert.equal(
+		app.inputs.pvgis_reference_setup.model,
+		"pvgis_5_3_roof_ac_reference_v1",
+	);
+	await click("Undo");
+	assert.equal(app.inputs.geometry, undefined);
+	assert.deepEqual(app.inputs.pvgis_reference_setup, known);
+	assert.equal(input("Solar capacity").value, "5.5");
+});
+
 test("new roof interaction places moves rotates removes and undoes an actual module group", async (t) => {
 	const app = await mount(t);
-	await click("Place modules on the roof");
+	await openRoof();
 	await enter(input("Rows"), "1");
 	await enter(input("Columns"), "2");
 	await enter(input("Module gap"), "0.05");
