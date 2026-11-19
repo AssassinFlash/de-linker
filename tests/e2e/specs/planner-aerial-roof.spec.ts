@@ -205,10 +205,19 @@ for (const lang of ['en', 'de'] as const) {
 								: 'Luftbildkarte ausblenden',
 					})
 				).toBeEnabled();
-				const aerial = reopened.locator('.lp-map-surface');
+				await reopened
+					.getByRole('button', {
+						name:
+							lang === 'en' ? 'Draw roof' : 'Dachfläche zeichnen',
+						exact: true,
+					})
+					.click();
 				await expect(
-					reopened.locator('[data-map-status="ready"]')
-				).toBeVisible();
+					reopened.getByRole('button', {
+						name: /Add corner at map centre|Eckpunkt.*Kartenmitte/i,
+					})
+				).toBeEnabled({ timeout: 35000 });
+				const aerial = reopened.locator('.lp-map-surface');
 				await aerial.scrollIntoViewIfNeeded();
 				await aerial.screenshot({
 					path: test.info().outputPath('reopened-layout.png'),
