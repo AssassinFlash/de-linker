@@ -16,7 +16,7 @@ from linker_engine.planning.report_sources import report_sources
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import json_object
-from .test_planning_report import condition_project, evidence
+from .test_certificate_evidence import condition_project, evidence
 
 
 @pytest.mark.parametrize(

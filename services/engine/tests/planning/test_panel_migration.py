@@ -8,6 +8,7 @@ from linker_engine.planning.panel_migration import migrate
 from linker_engine.planning.records import Actor
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import FixtureObject, json_object
 from .test_pv_generation import geometry
 
 
@@ -32,7 +33,7 @@ def test_migration_preserves_roof_positions_count_ownership_and_original_revisio
         },
     }
     module.update(model=source["note"], source=source)
-    inputs = {
+    inputs: FixtureObject = {
         "geometry": roof,
         "pv_generation": {
             "modules": [
@@ -50,7 +51,7 @@ def test_migration_preserves_roof_positions_count_ownership_and_original_revisio
     assert migrate(root, apply=True)["current_projects"] == 1
     current = workspace.get(owner, original.id)
     assert current.revision == 2
-    updated = current.inputs["geometry"]
+    updated = json_object(current.inputs["geometry"])
     assert updated["roofs"] == roof["roofs"] and updated["arrays"] == roof["arrays"]
     (projected,) = updated["module_specs"]
     assert (

@@ -2,11 +2,14 @@
 
 import json
 from pathlib import Path
+from typing import Never
 
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_materials import project_materials
 from linker_engine.planning.report_pv_components import saved_roof_components
 from linker_engine.planning.storage import Blobs
+
+from .conftest import json_object
 
 
 def test_layout_and_materials_use_authored_dimensions_without_product_or_temperature(
@@ -28,7 +31,7 @@ def test_layout_and_materials_use_authored_dimensions_without_product_or_tempera
         },
     )
 
-    def offline():
+    def offline() -> Never:
         raise AssertionError("no Woo module lookup for a declared layout")
 
     products = ProductSources(offline)
@@ -36,19 +39,23 @@ def test_layout_and_materials_use_authored_dimensions_without_product_or_tempera
     products.check_project(inputs)
     basis = products.roof_basis(inputs)
     products.confirm_basis(basis)
-    parts = saved_roof_components(geometry, offline, Blobs(tmp_path / "blobs"), 4)
+    parts = json_object(
+        saved_roof_components(geometry, offline, Blobs(tmp_path / "blobs"), 4)
+    )
     assert parts["status"] == "available"
     (part,) = parts["components"]
     assert part["quantity"] == 5
     assert part["stc_power_w"] == 415
     assert "woo" not in part["source"]
-    lines = project_materials(
-        {
-            "pv_components": parts,
-            "project_id": "project",
-            "revision": 4,
-            "input_sha256": "a" * 64,
-        }
+    lines = json_object(
+        project_materials(
+            {
+                "pv_components": parts,
+                "project_id": "project",
+                "revision": 4,
+                "input_sha256": "a" * 64,
+            }
+        )
     )["lines"]
     assert all(line.get("product_id") is None for line in lines)
     assert lines[0]["quantity"] == part["quantity"]
