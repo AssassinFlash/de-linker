@@ -172,12 +172,12 @@ export function DraftTransferButton({
 				client.isCurrentScope(scope)
 			) {
 				const value = readDraftPreview(raw, command, client.origin);
+				setReceipt(null);
 				if (value.alreadyPresent) {
 					setPresent(value);
 					setPreview(null);
 				} else {
 					setPresent(null);
-					setReceipt(null);
 					if (
 						reportOnly &&
 						value.changes.length === 0 &&
