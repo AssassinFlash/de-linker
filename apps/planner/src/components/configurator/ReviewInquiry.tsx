@@ -227,6 +227,7 @@ export function ReviewInquiry({
 			)
 				throw new Error("invalid_inquiry_form");
 			let receipt;
+			let readback = false;
 			if (record) {
 				const command = readPlanningOperation(record.path, record.body),
 					status = readObject(
@@ -238,7 +239,7 @@ export function ReviewInquiry({
 					receipt = readDraftReceipt(status.receipt, command, client.origin);
 					if (record.resultId && record.resultId !== receipt.handoffId)
 						throw new Error("invalid_draft_receipt");
-					await operations.acknowledgeReadback(record, receipt.handoffId);
+					readback = true;
 				} else if (status.state === "not_applied") {
 					if (command.expected_draft_sha256 !== preview.transfer.draftSha256) {
 						staleIntent.current = record;
@@ -256,15 +257,26 @@ export function ReviewInquiry({
 				if (reply?.path === "draft/apply") receipt = reply.receipt;
 			}
 			if (!form.isConnected || !client.isCurrentScope(scope)) return;
-			if (
-				!receipt ||
-				receipt.handoffId !== handoff.value ||
-				typeof receipt.inquiryCartHash !== "string" ||
-				!receipt.inquiryDraftSha256
-			)
+			if (!receipt || receipt.handoffId !== handoff.value)
 				throw new Error("missing_inquiry_receipt");
-			cart.value = receipt.inquiryCartHash;
-			digest.value = receipt.inquiryDraftSha256;
+			if (
+				receipt.inquiryDraftSha256 &&
+				typeof receipt.inquiryCartHash === "string"
+			) {
+				cart.value = receipt.inquiryCartHash;
+				digest.value = receipt.inquiryDraftSha256;
+			} else if (readback && preview.transfer.alreadyPresent) {
+				// Older receipts have no post-apply hashes. The reviewed form already
+				// binds this cart when Woo found the exact handoff and quantities in it.
+				digest.value = preview.transfer.draftSha256;
+			} else {
+				staleIntent.current = record;
+				throw new ApiError(409, "planning_draft_changed");
+			}
+			if (readback && record) {
+				await operations.acknowledgeReadback(record, receipt.handoffId);
+				if (!form.isConnected || !client.isCurrentScope(scope)) return;
+			}
 			window.HTMLFormElement.prototype.submit.call(form);
 			posted = true;
 		} catch (cause) {

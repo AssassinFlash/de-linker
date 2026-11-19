@@ -822,16 +822,31 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$stored = $transfer->receipt( null, $command, $report );
 		$this->assertIsArray( $stored, is_wp_error( $stored ) ? $stored->get_error_message() : '' );
 		$this->assertSame( $receipt, $stored['receipt'] );
-		$contact = $this->post();
+		// A pre-inquiry schema-1 receipt has no post-apply cart bindings.
+		$receipts = $session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS );
+		unset( $receipts[ $command['key'] ]['inquiry_cart_hash'], $receipts[ $command['key'] ]['inquiry_draft_sha256'] );
+		$session->set( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS, $receipts );
+		$session->save_data();
+		$stored = $transfer->receipt( null, $command, $report );
+		$this->assertIsArray( $stored );
+		$this->assertSame( 'applied', $stored['state'] );
+		$this->assertSame( $receipts[ $command['key'] ], $stored['receipt'] );
+		$reviewed = ( new \Linker\Commerce\Planning\DraftPreview() )->inquiry( null, array( 'lang' => 'en' ), $report );
+		$this->assertIsArray( $reviewed );
+		$this->assertTrue( $reviewed['already_present'] );
+		$this->assertSame( $quantities, array_column( $reviewed['inquiry_lines'], 'quantity' ) );
+		$post                                = $this->inquiry_controls( $reviewed['inquiry_form_html'] );
+		$post['linker_planner_draft_sha256'] = $reviewed['draft_sha256'];
+		$contact                             = $this->post();
 		foreach ( array( 'name', 'email', 'message', 'consent', 'linker_proof' ) as $field ) {
 			$post[ $field ] = $contact[ $field ];
 		}
 		if ( ! $guest ) {
 			$post['billing_address_1'] = 'Geänderte Straße 7';
 		}
-		$post['linker_draft_hash']           = $receipt['inquiry_cart_hash'];
-		$post['linker_planner_draft_sha256'] = $receipt['inquiry_draft_sha256'];
-		$endpoint                            = static fn () => 'https://planner.example.test';
+		$this->assertSame( $receipt['inquiry_cart_hash'], $post['linker_draft_hash'] );
+		$this->assertSame( $receipt['inquiry_draft_sha256'], $post['linker_planner_draft_sha256'] );
+		$endpoint = static fn () => 'https://planner.example.test';
 		add_filter( 'pre_option_linker_planner_url', $endpoint );
 		$this->later(
 			static function () use ( $endpoint ): void {

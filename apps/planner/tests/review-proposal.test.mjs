@@ -151,14 +151,23 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 	assert.deepEqual(revoked, ["blob:report-1", "blob:report-2"]);
 });
 
-for (const mode of ["new", "applied", "unapplied", "changed"])
+for (const mode of [
+	"new",
+	"applied",
+	"unapplied",
+	"changed",
+	"legacy",
+	"legacy-edited",
+])
 	test(`Review submits or recovers the native inquiry (${mode})`, async (t) => {
 		const page = setupDom(),
 			root = createRoot(page.element),
 			value = props();
 		t.after(() => page.dispose(root));
 		reflectNamedFormAction(t);
-		value.run.result.has_report_only_handoff = true;
+		const legacy = mode.startsWith("legacy");
+		value.run.result.has_report_only_handoff = !legacy;
+		value.run.result.has_draft_items = legacy;
 		const handoff = "b".repeat(32),
 			digest = "e".repeat(64),
 			calls = [],
@@ -174,7 +183,8 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 					project_id: value.run.project_id,
 					report_run_id: value.run.id,
 					expected_revision: value.run.revision,
-					expected_draft_sha256: mode === "changed" ? "a".repeat(64) : digest,
+					expected_draft_sha256:
+						mode === "changed" || legacy ? "a".repeat(64) : digest,
 					key,
 				}),
 			};
@@ -182,7 +192,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 		value.client.send = async (path, body) => {
 			calls.push(path);
 			assert.equal(body, record.body);
-			return mode === "applied"
+			return mode === "applied" || legacy
 				? {
 						schema_version: 1,
 						state: "applied",
@@ -194,14 +204,18 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 							handoff_id: handoff,
 							snapshot_sha256: digest,
 							intent_sha256: digest,
-							report_only: true,
-							items: [],
+							command: JSON.parse(body),
+							...(legacy
+								? { items: [{ id: 12, quantity: 3 }] }
+								: { report_only: true, items: [] }),
 							draft_urls: {
 								en: location.origin + "/en",
 								de: location.origin + "/de",
 							},
-							inquiry_cart_hash: "c".repeat(32),
-							inquiry_draft_sha256: "d".repeat(64),
+							...(!legacy && {
+								inquiry_cart_hash: "c".repeat(32),
+								inquiry_draft_sha256: "d".repeat(64),
+							}),
 						},
 					}
 				: { schema_version: 1, state: "not_applied" };
@@ -209,6 +223,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 		value.operations.acknowledgeReadback = async (item, id) => {
 			assert.equal(item, record);
 			assert.equal(id, handoff);
+			if (legacy) calls.push("ack");
 		};
 		value.operations.retry = async (item) => {
 			assert.equal(item, record);
@@ -242,9 +257,18 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 					en: location.origin + "/en/inquiry",
 					de: location.origin + "/de/anfrage",
 				},
-				report_only: true,
-				already_present: false,
-				changes: [],
+				report_only: !legacy,
+				already_present: mode === "legacy",
+				changes: legacy
+					? [
+							{
+								product_id: 12,
+								label: "Existing draft inverter",
+								before: mode === "legacy" ? 3 : 1,
+								after: 3,
+							},
+						]
+					: [],
 				inquiry_lines: [
 					{
 						product_id: 12,
@@ -257,11 +281,11 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 						product_id: 12,
 						label: "Existing draft inverter",
 						quantity: 3,
-						project_id: "f".repeat(32),
+						project_id: legacy ? value.run.project_id : "f".repeat(32),
 						project_title: "Warehouse roof",
 					},
 				],
-				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="action" value="linker_inquiry"><input name="name" required>${mode === "changed" ? `<input type="checkbox" name="linker_include_project_notes" value="1" checked><input name="billing_city" value="Berlin"><select name="billing_country"><option>DE</option><option>NL</option></select><input type="hidden" name="linker_project_note_revisions[project]" value="${calls.length}">` : ""}<input name="linker_draft_hash"><input name="linker_planner_draft_sha256"><input name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
+				inquiry_form_html: `<form method="post" action="/wp-admin/admin-post.php"><input type="hidden" name="action" value="linker_inquiry"><input name="name" required>${mode === "changed" ? `<input type="checkbox" name="linker_include_project_notes" value="1" checked><input name="billing_city" value="Berlin"><select name="billing_country"><option>DE</option><option>NL</option></select><input type="hidden" name="linker_project_note_revisions[project]" value="${calls.length}">` : ""}<input type="hidden" name="linker_draft_hash" value="${"9".repeat(32)}"><input type="hidden" name="linker_planner_draft_sha256" value=""><input type="hidden" name="linker_planner_handoff_id" value="${handoff}"><button type="submit">Send inquiry</button></form>`,
 			};
 		};
 		value.operations.start = async (path, fields) => {
@@ -303,7 +327,7 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 			form.elements.billing_country.value = "NL";
 		}
 		await act(async () => button("Send inquiry").click());
-		if (mode === "changed") {
+		if (mode === "changed" || mode === "legacy-edited") {
 			assert.deepEqual(calls, ["draft/inquiry-preview", "draft/read"]);
 			assert.equal(posts.length, 0);
 			await act(async () => button("Review inquiry again").click());
@@ -319,26 +343,31 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 			]);
 			await act(async () => button("Send inquiry").click());
 			assert.equal(posts.length, 1);
-			assert.equal(posts[0].linker_include_project_notes, undefined);
-			assert.equal(posts[0].billing_city, "Utrecht");
-			assert.equal(posts[0].billing_country, "NL");
-			assert.equal(posts[0]["linker_project_note_revisions[project]"], "4");
+			assert.equal(calls.at(-1), "draft/apply");
+			if (mode === "changed") {
+				assert.equal(posts[0].linker_include_project_notes, undefined);
+				assert.equal(posts[0].billing_city, "Utrecht");
+				assert.equal(posts[0].billing_country, "NL");
+				assert.equal(posts[0]["linker_project_note_revisions[project]"], "4");
+			}
 			return;
 		}
 		assert.deepEqual(calls, [
 			"draft/inquiry-preview",
-			...(mode === "new"
-				? ["draft/apply"]
-				: mode === "applied"
-					? ["draft/read"]
-					: ["draft/read", "retry"]),
+			...(legacy
+				? ["draft/read", "ack"]
+				: mode === "new"
+					? ["draft/apply"]
+					: mode === "applied"
+						? ["draft/read"]
+						: ["draft/read", "retry"]),
 		]);
 		assert.deepEqual(posts, [
 			{
 				action: "linker_inquiry",
 				name: "Installer",
-				linker_draft_hash: "c".repeat(32),
-				linker_planner_draft_sha256: "d".repeat(64),
+				linker_draft_hash: legacy ? "9".repeat(32) : "c".repeat(32),
+				linker_planner_draft_sha256: legacy ? digest : "d".repeat(64),
 				linker_planner_handoff_id: handoff,
 			},
 		]);
