@@ -176,7 +176,7 @@ final class PreparationJobsTest extends TestCase {
 
 	/** Reference records do not require supplier-answer knowledge preparation. */
 	public function test_knowledge_expected_scope_excludes_engineering_reference_records(): void {
-		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::PV_MODULE;
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
 		$request                         = $this->receipt( 'knowledge' );
 		$request['prepared_products']    = array();
 		$request['preparation_complete'] = true;

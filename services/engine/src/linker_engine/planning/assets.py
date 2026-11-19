@@ -64,6 +64,24 @@ class Assets:
                 raise NotFound("asset not found")
             return self._record(row)
 
+    def customer_asset(self, actor: Actor, project_id: str, asset_id: str) -> Asset:
+        with self.workspace.database.read() as db:
+            project_row(db, actor, project_id)
+            return self.presented(db, project_id, asset_id)
+
+    def presented(
+        self, db: sqlite3.Connection, project_id: str, asset_id: str
+    ) -> Asset:
+        row = db.execute(
+            "SELECT a.* FROM project_assets o LEFT JOIN panel_asset_reissues r ON r.original_id=o.id "
+            "JOIN project_assets a ON a.id=coalesce(r.replacement_id,o.id) AND a.project_id=o.project_id "
+            "WHERE o.id=? AND o.project_id=?",
+            (asset_id, project_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound("asset not found")
+        return self._record(row)
+
     def content(self, actor: Actor, project_id: str, asset_id: str) -> bytes:
         asset = self.get(actor, project_id, asset_id)
         return self.workspace.blobs.read(asset.content_sha256)

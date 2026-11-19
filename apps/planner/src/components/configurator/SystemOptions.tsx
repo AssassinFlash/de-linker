@@ -486,21 +486,28 @@ export function SystemOptions({
 					) : (
 						<p>{equipmentReason(String(check.reason))}</p>
 					)}
-					{documents.map((source, sourceIndex) => (
-						<a
-							key={sourceIndex}
-							href={String(source.url)}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							{source.page
-								? sprintf(
-										__("Source, page %d", "linker-tools"),
-										Number(source.page),
-									)
-								: __("Source document", "linker-tools")}
-						</a>
-					))}
+					{documents.some((source) => source.kind === "user_declared") && (
+						<p>
+							{__("Panel parameters entered for this project", "linker-tools")}
+						</p>
+					)}
+					{documents
+						.filter((source) => typeof source.url === "string")
+						.map((source, sourceIndex) => (
+							<a
+								key={sourceIndex}
+								href={String(source.url)}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{source.page
+									? sprintf(
+											__("Source, page %d", "linker-tools"),
+											Number(source.page),
+										)
+									: __("Source document", "linker-tools")}
+							</a>
+						))}
 				</li>
 			);
 		});

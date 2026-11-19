@@ -28,6 +28,10 @@ import { __, sprintf } from "../../i18n.ts";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
+function isReportItemSection(section: ReportSection) {
+	return ["bom", "site-materials", "pv-components"].includes(section.id);
+}
+
 function ReportContent({ section }: { section: ReportSection }) {
 	return (
 		<>
@@ -61,7 +65,11 @@ function ReportContent({ section }: { section: ReportSection }) {
 					role="region"
 					aria-label={section.title}
 				>
-					<table className={section.id === "bom" ? "sc-bom-table" : undefined}>
+					<table
+						className={
+							isReportItemSection(section) ? "sc-bom-table" : undefined
+						}
+					>
 						<thead>
 							<tr>
 								{section.table.columns.map((column, index) => (
@@ -75,8 +83,15 @@ function ReportContent({ section }: { section: ReportSection }) {
 							{section.table.rows.map((row, index) => (
 								<tr key={index}>
 									{row.map((cell, column) => (
-										<td key={column}>
-											{section.id === "bom" && (
+										<td
+											key={column}
+											className={
+												isReportItemSection(section) && column === 0
+													? "whitespace-nowrap tabular-nums"
+													: undefined
+											}
+										>
+											{isReportItemSection(section) && (
 												<span className="sc-bom-label" aria-hidden="true">
 													{section.table?.columns[column]}
 												</span>
@@ -92,6 +107,21 @@ function ReportContent({ section }: { section: ReportSection }) {
 			)}
 		</>
 	);
+}
+
+function ReportItemSections({
+	report,
+	heading: Heading = "h2",
+}: {
+	report: PlanningReport;
+	heading?: "h2" | "h4";
+}) {
+	return report.sections.filter(isReportItemSection).map((section) => (
+		<section key={section.id} className="sc-card" lang={report.locale}>
+			<Heading>{section.title}</Heading>
+			<ReportContent section={section} />
+		</section>
+	));
 }
 
 function ReportPreview({
@@ -600,7 +630,6 @@ export function ReviewProposal({
 		.filter(Boolean)
 		.join(" · ");
 	const annualLoad = brief?.annual_load.kwh;
-	const bill = report?.sections.find((section) => section.id === "bom");
 	const reportDescription = __(
 		"Project inputs, layout, equipment and selection basis.",
 		"linker-tools",
@@ -731,6 +760,7 @@ export function ReviewProposal({
 				{earlierRun && earlierReport && (
 					<>
 						<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
+						<ReportItemSections report={earlierReport} heading="h4" />
 						<ReportDownloads
 							run={earlierRun}
 							report={earlierReport}
@@ -839,17 +869,7 @@ export function ReviewProposal({
 				>
 					{({ actions, materials, error }) => (
 						<>
-							{!selected && bill && (
-								<section className="sc-card">
-									<header className="sc-section-head">
-										<h2 lang={report.locale}>{bill.title}</h2>
-										{materials}
-									</header>
-									<div lang={report.locale}>
-										<ReportContent section={bill} />
-									</div>
-								</section>
-							)}
+							{!selected && <ReportItemSections report={report} />}
 							{(!selected || draftTransfer) && (
 								<div
 									className={selected ? "sc-card" : "sc-card sc-report-actions"}
@@ -876,7 +896,7 @@ export function ReviewProposal({
 											</time>
 											<div className="sc-actions">
 												{actions}
-												{!bill && materials}
+												{materials}
 											</div>
 											{error}
 											{logoField}

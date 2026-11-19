@@ -90,8 +90,20 @@ class ComparisonPv:
                 asset, "pv_available_ac", inputs, self.workspace.blobs
             ), False
         brief = inputs.get("brief")
+        if known and asset is None:
+            site = brief.get("site") if isinstance(brief, dict) else None
+            if (
+                parameters is None
+                or not isinstance(site, dict)
+                or site.get("latitude") is None
+                or site.get("longitude") is None
+                or site.get("coordinate_basis") == "not_provided"
+            ):
+                # Equipment can be compared with the project’s known ratings.
+                # A generation estimate also requires site and array inputs.
+                return {}, False
         if (
-            (placed or known and parameters is None and known_capacity(setup) > 0)
+            placed
             and asset is None
             and "gross_load" not in selected
             and isinstance(brief, dict)

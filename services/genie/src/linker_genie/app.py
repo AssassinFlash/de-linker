@@ -526,6 +526,43 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
+    if (
+        prepared.reading is not None
+        and prepared.reading.saved_panel_count_question is not None
+        and prepared.reading.saved_panel_count_question >= 0.5
+        and prepared.route.name
+        in {"model", "planning_project", "sizing", "documents", "products"}
+    ):
+        saved_count = planning.saved_panel_count(
+            body.planning_context, body.page_context
+        )
+        if saved_count is not None:
+            count, basis = saved_count
+            if count is None:
+                text = (
+                    "Im gespeicherten Bericht ist die Leistung je Modul angegeben. Die Modulanzahl ist offen."
+                    if language == "de"
+                    else "Your saved report records the power per panel. The panel count is unknown."
+                )
+            elif basis == "declared":
+                text = (
+                    f"Im gespeicherten Bericht haben Sie {count} PV-{'Modul' if count == 1 else 'Module'} angegeben."
+                    if language == "de"
+                    else f"You entered {count} solar {'panel' if count == 1 else 'panels'} in the saved report."
+                )
+            elif language == "de":
+                text = f"Die Dachbelegung im gespeicherten Bericht enthält {count} PV-{'Modul' if count == 1 else 'Module'}."
+            else:
+                text = f"The roof layout in your saved report contains {count} solar {'panel' if count == 1 else 'panels'}."
+            _, facts = planning.record(body.planning_context, body.page_context)
+            return TurnResult(
+                output=TurnOutput(language=language, blocks=[TextBlock(text=text)]),
+                facts=facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ), None
     if "verified saved protection explanation" in prepared.route.reasons:
         answer = planning.protection_answer(
             body.planning_context, body.page_context, language

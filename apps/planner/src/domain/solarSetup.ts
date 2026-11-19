@@ -9,7 +9,6 @@ import { readGeometry } from "./validateGeometry.ts";
 import type { GeometryDocument } from "./geometry.ts";
 import { sameJson } from "./draft.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
-import type { ModuleTemplate } from "./productModules.ts";
 import { resolveModuleParameters } from "./productModules.ts";
 
 export interface WeatherDraft extends JsonObject {
@@ -294,11 +293,7 @@ export function activePvGeometry(value: unknown): {
 		),
 	};
 }
-export function alignPv(
-	value: PvDraft,
-	geometryValue: unknown,
-	templates?: readonly ModuleTemplate[],
-): PvDraft {
+export function alignPv(value: PvDraft, geometryValue: unknown): PvDraft {
 	const { arrays, geometry } = activePvGeometry(geometryValue),
 		modules = [...new Set(arrays.map((array) => array.module_spec_id))];
 	return {
@@ -308,7 +303,7 @@ export function alignPv(
 				(item) => item.id === id,
 			);
 			return (
-				resolveModuleParameters(specification, templates) ??
+				resolveModuleParameters(specification) ??
 				value.modules.find((item) => item.module_spec_id === id) ?? {
 					module_spec_id: id,
 					gamma_pdc_per_c: null,

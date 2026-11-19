@@ -179,7 +179,7 @@ final class IdentityTest extends TestCase {
 			$response->get_data()['models']
 		);
 		$status = 'publish';
-		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::PV_MODULE;
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
 		$response = $this->identify( $body );
 		$this->assertInstanceOf( \WP_REST_Response::class, $response );
 		$this->assertSame(
@@ -240,6 +240,7 @@ final class IdentityTest extends TestCase {
 	/** Duplicate labels still prefer the currently published ordinary source. */
 	public function test_duplicate_labels_preserve_the_published_preference(): void {
 		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 13, EngineeringReference::ROLE_META_KEY, true )->andReturn( '' );
 		$status = 'draft';
 		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturnUsing(
 			static function () use ( &$status ): string {

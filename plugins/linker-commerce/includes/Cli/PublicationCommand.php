@@ -65,41 +65,6 @@ final class PublicationCommand {
 	}
 
 	/**
-	 * Migrate the retained reference input into Woo once, or withdraw that record.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [--dry-run]
-	 * : Preview without creating or changing any product.
-	 *
-	 * [--withdraw=<product-id>]
-	 * : Reversibly set the migrated reference record to draft; preserve all files/data.
-	 *
-	 * @subcommand migrate-reference
-	 * @param array<int,string>   $args Positional arguments.
-	 * @param array<string,mixed> $assoc_args Options.
-	 * @throws \RuntimeException Caught here and reported by WP-CLI.
-	 */
-	public function migrate_reference( array $args, array $assoc_args ): void {
-		unset( $args );
-		try {
-			$dry_run = isset( $assoc_args['dry-run'] );
-			if ( isset( $assoc_args['withdraw'] ) ) {
-				$result = \Linker\Commerce\Products\Publication\ReferenceMigration::withdraw( (int) $assoc_args['withdraw'], $dry_run );
-			} else {
-				$input = \Linker\Commerce\Products\EngineeringData::json( \Linker\Commerce\Products\EngineeringData::OVERLAY_FILE );
-				if ( null === $input ) {
-					throw new \RuntimeException( 'The one-time reference migration input is unavailable.' );
-				}
-				$result = \Linker\Commerce\Products\Publication\ReferenceMigration::run( $input, $dry_run );
-			}
-			\WP_CLI::log( (string) wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-		} catch ( \RuntimeException $error ) {
-			\WP_CLI::error( $error->getMessage() );
-		}
-	}
-
-	/**
 	 * Preview or adopt the two source-bound noncommercial cable references.
 	 * Originals must already exist in uploads through normal media maintenance.
 	 *
@@ -610,7 +575,7 @@ final class PublicationCommand {
 	private function knowledge_expected_products( array $manifest ): array {
 		$expected = array();
 		foreach ( $manifest['products'] as $product ) {
-			if ( ! in_array( $product['engineering_role'] ?? '', \Linker\Commerce\Products\EngineeringReference::ROLES, true ) ) {
+			if ( '' === ( $product['engineering_role'] ?? '' ) ) {
 				$expected[ (int) $product['product_id'] ] = (string) $product['product_revision'];
 			}
 		}

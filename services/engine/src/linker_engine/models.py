@@ -34,6 +34,29 @@ class Strict(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+PositiveMeasurement = Annotated[float, Field(gt=0, allow_inf_nan=False)]
+
+
+class PanelDimensions(Strict):
+    """Declared panel dimensions and rated power for a roof packing calculation."""
+
+    pmax_w: PositiveMeasurement
+    length_m: PositiveMeasurement
+    width_m: PositiveMeasurement
+
+
+class PanelElectrical(Strict):
+    """Declared panel values used by a string design, independent of stock."""
+
+    pmax_w: PositiveMeasurement
+    voc_v: PositiveMeasurement
+    vmpp_v: PositiveMeasurement
+    isc_a: PositiveMeasurement
+    impp_a: PositiveMeasurement
+    beta_voc_pct_per_c: Annotated[float, Field(le=0, allow_inf_nan=False)]
+    max_series_fuse_a: PositiveMeasurement
+
+
 class PlaneInput(Strict):
     """One roof plane of the array. Without planes the array is one plane at the default tilt and facing."""
 
@@ -66,6 +89,7 @@ class Location(Strict):
 
 
 class ResidentialInput(Strict):
+    module: PanelElectrical | None = None
     locale: Locale = "en"
     plz: Plz
     # The postcode alone is not unique across Europe — 80538 is both Munich and
@@ -359,6 +383,7 @@ class PlaceResult(BaseModel):
 
 
 class RoofRequest(Strict):
+    module: PanelDimensions
     plz: Plz
     country: Annotated[str, Field(pattern=r"^[A-Z]{2}$")] | None = None
     location: Location
@@ -367,6 +392,8 @@ class RoofRequest(Strict):
 
 class RoofPackRequest(Strict):
     """A roof plane drawn by hand where no official outline is available."""
+
+    module: PanelDimensions
 
     polygon: Annotated[
         list[tuple[Annotated[float, LONGITUDE], Annotated[float, LATITUDE]]],

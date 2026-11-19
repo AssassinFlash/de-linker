@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 from pydantic import Field, field_validator, model_validator
 
@@ -137,7 +137,19 @@ class ProjectInputs(Command):
 
             ProfileSelections.model_validate(value["profile_selections"])
         if "geometry" in value:
-            GeometryDocument.model_validate(value["geometry"])
+            from .declared_module import is_declared_reference, panel_label
+
+            layout = GeometryDocument.model_validate(value["geometry"])
+            raw_layout = cast(Object, value["geometry"])
+            for raw, module in zip(
+                cast(list[Object], raw_layout["module_specs"]),
+                layout.module_specs,
+                strict=True,
+            ):
+                if is_declared_reference(module):
+                    raw["model"] = panel_label(
+                        module.stc_power_w, module.length_m, module.width_m
+                    )
         if "geometry_imports" in value:
             from .geometry_import_selections import GeometryImports
 

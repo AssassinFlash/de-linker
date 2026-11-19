@@ -22,5 +22,5 @@
 		{ "en": "compatibility list", "de": "Kompatibilitätsliste", "enforce": true }
 	],
 	"_keep_source": "Names that stay as they are: the company, its assistant, and the brands of the live product attributes (wc/v3/products/attributes/9/terms, 2026-10-09).",
-	"keep": [ "Linker", "Genie", "Chint", "DEHN", "EcoFlow", "GoodWe", "LAPP", "MBS", "Mersen", "Pylontech", "SAJ", "Stäubli", "Trina Solar" ]
+	"keep": [ "Linker", "Genie", "Chint", "DEHN", "EcoFlow", "GoodWe", "LAPP", "MBS", "Mersen", "Pylontech", "SAJ", "Stäubli" ]
 }

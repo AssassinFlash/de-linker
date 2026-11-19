@@ -1178,13 +1178,9 @@ def test_report_omits_comparison_location_and_private_note(
     cited_section = next(
         item for item in cited_report.sections if item.id == "pvgis-roof-reference-0"
     )
-    citation_row = next(
-        row for row in cited_section.rows if row.value == "Cited module"
+    assert all(
+        row.href != "https://example.invalid/module.pdf" for row in cited_section.rows
     )
-    assert citation_row.label == (
-        text("source", other_locale) + " · " + text("page", other_locale) + " 2"
-    )
-    assert citation_row.href == "https://example.invalid/module.pdf"
     assert any(
         row.label == text("pv_components_capacity", other_locale)
         for row in cited_section.rows
@@ -1292,8 +1288,21 @@ def test_report_omits_comparison_location_and_private_note(
         ]
 
 
+@pytest.mark.parametrize(
+    ("panel_rows", "expected_count"),
+    [
+        ([], None),
+        ([("full_model", 7), ("full_model", 5)], 12),
+        ([("dc_group", 7)], None),
+        ([("saved_roof", 7), ("saved_roof", None)], None),
+    ],
+)
 def test_report_exposes_verified_materials_provenance(
-    workspace: Workspace, owner: Actor, context: Context
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    panel_rows: list[tuple[str, int | None]],
+    expected_count: int | None,
 ) -> None:
     project = workspace.create(owner, "Materials provenance", {}, key="materials")
     materials: Object = {
@@ -1322,6 +1331,15 @@ def test_report_exposes_verified_materials_provenance(
         "installation_status": "not_assessed",
         "equipment_status": "unresolved",
     }
+    for index, (scope, quantity) in enumerate(panel_rows):
+        cast(list[Object], materials["lines"]).append(
+            {
+                "id": f"pv:{index}",
+                "handling": "pv_reference",
+                "scope": scope,
+                "quantity": quantity,
+            }
+        )
     materials_sha = workspace.blobs.put_object(materials)
     source: Object = {
         "project_id": project.id,
@@ -1358,16 +1376,19 @@ def test_report_exposes_verified_materials_provenance(
 
     projection = assistant_context(workspace, owner, project.id, 1, [run.id], "en")
     selected = cast(list[Object], projection["runs"])[0]
+    assert selected["saved_roof_panel_count"] == expected_count
     assert selected["materials"] == {
         "status": "verified",
         "sha256": materials_sha,
         "model": "project_materials_v3",
-        "line_count": 3,
-        "unresolved_quantity_count": 1,
+        "line_count": 3 + len(panel_rows),
+        "unresolved_quantity_count": 1
+        + sum(quantity is None for _, quantity in panel_rows),
         "handling_counts": {
             "customer_supplied_required": 1,
             "manufacturer_included": 1,
             "woo_product": 1,
+            **({"pv_reference": len(panel_rows)} if panel_rows else {}),
         },
         "scope": "provisional_not_complete_bos",
     }

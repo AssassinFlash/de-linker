@@ -83,6 +83,13 @@ final class ReportAccessTest extends TestCase {
 	private string $content = self::PDF;
 
 	/**
+	 * The metadata returned when the report was reissued.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $asset = array();
+
+	/**
 	 * The reply status of assets/content.
 	 *
 	 * @var int
@@ -240,6 +247,27 @@ final class ReportAccessTest extends TestCase {
 		$this->assertSame( array(), $this->calls );
 	}
 
+	/** An issued inquiry retains its original reference when the report is reissued. */
+	public function test_a_reissued_report_matches_both_asset_identities(): void {
+		$pdf           = $this->stored['snapshot']['pdf'];
+		$this->content = str_replace( 'Catalog', 'Updated catalog', self::PDF );
+		$this->asset   = array(
+			'id'             => bin2hex( random_bytes( 16 ) ),
+			'project_id'     => $this->stored['snapshot']['project_id'],
+			'media_type'     => 'application/pdf',
+			'content_sha256' => hash( 'sha256', $this->content ),
+			'reissued_from'  => array(
+				'id'             => $pdf['asset_id'],
+				'content_sha256' => $pdf['sha256'],
+			),
+		);
+
+		$reader = new ReportAccess( $this->transport() );
+		$this->assertSame( $this->content, $reader->read( null, $this->reference(), $this->inquiry_id() ) );
+		$this->asset['reissued_from']['id'] = bin2hex( random_bytes( 16 ) );
+		$this->assertInstanceOf( WP_Error::class, $reader->read( null, $this->reference(), $this->inquiry_id() ) );
+	}
+
 	/**
 	 * A service refusal keeps its own meaning; it is not flattened into bytes.
 	 */
@@ -340,6 +368,13 @@ final class ReportAccessTest extends TestCase {
 						'response' => array( 'code' => 200 ),
 						'headers'  => array( 'content-type' => 'application/json' ),
 						'body'     => (string) wp_json_encode( $this->answered ),
+					);
+				}
+				if ( 'assets/read' === $path ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array( 'content-type' => 'application/json' ),
+						'body'     => (string) wp_json_encode( $this->asset ),
 					);
 				}
 				if ( 'assets/content' === $path ) {

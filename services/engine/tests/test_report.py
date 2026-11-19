@@ -208,6 +208,7 @@ def test_sections_follow_the_ticket(engine: Engine) -> None:
         "basis",
         "releases",
         "bom",
+        "warnings",
         "assumptions",
         "next",
     ]

@@ -17,6 +17,7 @@ from linker_engine.planning.records import Actor
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import FixtureObject, json_object, mapping_role
+from .panel_fixture import panel_basis, panel_parameters
 from .test_dispatch import TOLERANCE, battery, frame
 from .test_equipment import feed as feed
 from .test_equipment import plant_inputs, prepared_dc_fixture_source
@@ -63,7 +64,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
     }
     layout = geometry()
     module_id = layout["module_specs"][0]["id"]
-    specification = json_object(source.module_basis())["module"]["specification"]
+    specification = panel_parameters(electrical=True)["specification"]
     layout["module_specs"] = [{**specification, "id": module_id}]
     first_array = layout["arrays"][0]["id"]
     layout["arrays"].append(
@@ -205,7 +206,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
             "project_id": project.id,
             "expected_revision": 1,
             "inputs": authored,
-            "input_contract": "authored_equipment_discovery_v1",
+            "input_contract": "project_panel_parameters_v1",
             "key": "pv-only-calculation",
         }
         refused = client.post(
@@ -237,7 +238,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
                 "project_id": project.id,
                 "expected_revision": 1,
                 "inputs": authored,
-                "input_contract": "authored_equipment_discovery_v1",
+                "input_contract": "project_panel_parameters_v1",
                 "key": "pv-only-calculation",
             },
         )
@@ -371,7 +372,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
                     "project_id": project.id,
                     "expected_revision": calculated["project"]["revision"],
                     "inputs": invalid,
-                    "input_contract": "authored_equipment_discovery_v1",
+                    "input_contract": "project_panel_parameters_v1",
                     "key": key,
                 },
                 headers=headers(owner),
@@ -400,7 +401,7 @@ def test_native_pv_only_plant_calculates_without_storage_and_preserves_electrica
                 "project_id": project.id,
                 "expected_revision": calculated["project"]["revision"],
                 "inputs": outage,
-                "input_contract": "authored_equipment_discovery_v1",
+                "input_contract": "project_panel_parameters_v1",
                 "key": "plant-critical-only",
             },
         )
@@ -935,7 +936,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
     module_id = layout["module_specs"][0]["id"]
     layout["module_specs"] = [
         {
-            **json_object(source.module_basis())["module"]["specification"],
+            **panel_parameters(electrical=True)["specification"],
             "id": module_id,
         }
     ]
@@ -992,6 +993,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             "equipment_plant": plant,
         },
         key="dc-plant",
+        input_contract="project_panel_parameters_v1",
     )
     assets = Assets(workspace)
     pv = assets.add(
@@ -1009,7 +1011,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             "parameters_sha256": digest(
                 encode(json_object(project.inputs)["pv_generation"])
             ),
-            "woo_module_inputs": json_object(source.module_basis()),
+            "woo_module_inputs": panel_basis(),
             "dependencies": {
                 "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
                 "pv_model_witness": workspace.blobs.put(generated.witness_json),
@@ -1161,9 +1163,6 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         from linker_engine.planning.plant_energy_kernel import (
             check_plant_profile_boundary,
         )
-        from linker_engine.planning.project_input_contracts import (
-            PLANT_PV_INPUT_CONTRACT,
-        )
 
         poses = panel_poses(read_geometry(layout))
         inputs["pv_plant_string_plan"] = {
@@ -1224,7 +1223,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             project.revision,
             inputs,
             key="dc-plant-inputs",
-            input_contract=PLANT_PV_INPUT_CONTRACT,
+            input_contract="project_panel_parameters_v1",
         )
         response = client.post(
             "/runs/energy",
@@ -1339,7 +1338,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         project.revision,
         authored,
         key="current-dc-plant",
-        input_contract="authored_energy_calculation_v1",
+        input_contract="project_panel_parameters_v1",
     )
     assert "energy_plant" not in snapshot.inputs
     assert executor.run_once()

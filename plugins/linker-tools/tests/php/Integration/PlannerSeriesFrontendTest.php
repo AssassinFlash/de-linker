@@ -27,7 +27,7 @@ add_action('template_redirect', static function () {
     add_filter('pre_option_linker_planner_url', static fn () => 'http://127.0.0.1:9');
     $transport = new \Linker\Tools\Planner\Transport(static function ($url, $args) {
         if (str_ends_with($url, '/assets/read')) {
-            $data = array('id' => 'fixture-asset', 'project_id' => 'fixture-project', 'purpose' => 'planning_pv_series_csv_v1', 'media_type' => 'text/csv', 'content_sha256' => 'SHA');
+            $data = array('id' => 'reissued-asset', 'reissued_from' => array('id' => 'fixture-asset', 'content_sha256' => 'SHA'), 'project_id' => 'fixture-project', 'purpose' => 'planning_pv_series_csv_v1', 'media_type' => 'text/csv', 'content_sha256' => 'SHA');
             return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/json'), 'body' => wp_json_encode($data));
         }
         if (str_ends_with($url, '/assets/content') && true === ($args['stream'] ?? false)) {

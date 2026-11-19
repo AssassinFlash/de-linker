@@ -92,6 +92,7 @@ function equipmentBinding(
 		for (const fact of check.facts as readonly JsonObject[]) {
 			if (fact.source === null) continue;
 			const source = readObject(fact.source);
+			if (source.kind === "user_declared") continue;
 			require(
 				typeof source.product_id === "number" &&
 					Object.hasOwn(

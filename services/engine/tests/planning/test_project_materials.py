@@ -483,6 +483,21 @@ def test_retained_equipment_stays_listed_and_leaves_procurement() -> None:
     # package contents, while its inclusion still covers the generic row.
     package = [row for row in lines if str(row["id"]).startswith("package:6506")]
     assert [row["quantity"] for row in package] == [2]
+    for locale, name, group in (
+        ("en", "Smart meter", "Site and installation materials"),
+        ("de", "Smart Meter", "Materialien für Standort und Montage"),
+    ):
+        exported = list(
+            csv.reader(
+                io.StringIO(
+                    materials_csv(materials, "0" * 64, locale).decode("utf-8-sig")
+                )
+            )
+        )
+        assert [(row[2], row[-1]) for row in exported if row[3] == name] == [
+            ("2", group)
+        ]
+
     assert not [row for row in lines if str(row["id"]).startswith("included:")]
     for locale, scope in (
         ("en", "Existing device · retained on site, not purchased"),
@@ -517,6 +532,19 @@ def test_plant_retention_purchases_only_new_units_of_a_shared_model() -> None:
             "brand": "GoodWe",
             "model": "GW75K-ET-G10",
             "sku": "DLK-A",
+            "package_contents": {
+                "status": "documented",
+                "items": [
+                    {
+                        "id": "meter-lead",
+                        "label": {"en": "Meter lead", "de": "Zählerleitung"},
+                        "quantity": 1.25,
+                        "unit": "m",
+                        "role": "communication_cable",
+                        "source": cast(Object, _source(40, "Meter lead × 1.25 m")),
+                    }
+                ],
+            },
         },
         {
             "product_id": 8001,
@@ -599,6 +627,47 @@ def test_plant_retention_purchases_only_new_units_of_a_shared_model() -> None:
     assert material_scope(shared, "de") == (
         "Ausgewählte Geräte · 1 von 2 vorhanden · Beschaffung 1"
     )
+    package = next(row for row in lines if row["handling"] == "manufacturer_included")
+    assert package["quantity"] == 2.5
+    for locale, label, supplied, retained_group in (
+        (
+            "en",
+            "Meter lead",
+            "Equipment from Linker",
+            "Site and installation materials",
+        ),
+        (
+            "de",
+            "Zählerleitung",
+            "Geräte von Linker",
+            "Materialien für Standort und Montage",
+        ),
+    ):
+        exported = list(
+            csv.reader(
+                io.StringIO(
+                    materials_csv(materials, "0" * 64, locale).decode("utf-8-sig")
+                )
+            )
+        )
+        assert [(r[2], r[-1]) for r in exported if r[3] == label] == [
+            ("1.25", supplied),
+            ("1.25", retained_group),
+        ]
+        report = build_report(
+            cast(
+                Object,
+                {**source, "title": "Plant", "locale": locale, "materials": materials},
+            )
+        )
+        assert {
+            s.title: [r[0] for r in s.table.rows if r[1] == label]
+            for s in report.sections
+            if s.table and s.title in (supplied, retained_group)
+        } == {
+            supplied: ["1.25 m" if locale == "en" else "1,25 m"],
+            retained_group: ["1.25 m" if locale == "en" else "1,25 m"],
+        }
     woo_products = {
         cast(int, row["product_id"]): next(
             product

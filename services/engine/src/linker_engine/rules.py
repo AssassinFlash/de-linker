@@ -194,7 +194,7 @@ DEFAULT_AZIMUTH_DEG = Rule(
     f"{PLANNER} §2.1(b)",
 )
 
-# String layout with the reference module.
+# String layout with the declared panel characteristics.
 STRING_T_MIN_C = Rule(
     "string_t_min",
     -10.0,

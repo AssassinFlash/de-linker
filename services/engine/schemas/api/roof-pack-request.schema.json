@@ -1,7 +1,40 @@
 {
+	"$defs": {
+		"PanelDimensions": {
+			"additionalProperties": false,
+			"description": "Declared panel dimensions and rated power for a roof packing calculation.",
+			"properties": {
+				"pmax_w": {
+					"exclusiveMinimum": 0,
+					"title": "Pmax W",
+					"type": "number"
+				},
+				"length_m": {
+					"exclusiveMinimum": 0,
+					"title": "Length M",
+					"type": "number"
+				},
+				"width_m": {
+					"exclusiveMinimum": 0,
+					"title": "Width M",
+					"type": "number"
+				}
+			},
+			"required": [
+				"pmax_w",
+				"length_m",
+				"width_m"
+			],
+			"title": "PanelDimensions",
+			"type": "object"
+		}
+	},
 	"additionalProperties": false,
 	"description": "A roof plane drawn by hand where no official outline is available.",
 	"properties": {
+		"module": {
+			"$ref": "#/$defs/PanelDimensions"
+		},
 		"polygon": {
 			"description": "Ring as [longitude, latitude] pairs",
 			"items": {
@@ -49,6 +82,7 @@
 		}
 	},
 	"required": [
+		"module",
 		"polygon",
 		"tilt_deg",
 		"azimuth_deg"

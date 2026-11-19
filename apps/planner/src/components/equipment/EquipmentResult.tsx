@@ -245,7 +245,15 @@ export function EquipmentResult({
 										</p>
 									)}
 									{note && <p>{note}</p>}
-									{source && (
+									{source?.kind === "user_declared" && (
+										<p>
+											{__(
+												"Panel parameters entered for this project",
+												"linker-tools",
+											)}
+										</p>
+									)}
+									{source && typeof source.url === "string" && (
 										<p>
 											<a
 												href={String(source.url)}

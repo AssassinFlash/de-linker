@@ -192,18 +192,18 @@ final class EngineeringFeed {
 		$references = array();
 		foreach ( $publication['products'] as $product ) {
 			$role = $product['engineering_role'] ?? '';
-			if ( ! in_array( $role, EngineeringReference::ROLES, true ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
+			if ( EngineeringReference::CABLE !== $role || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
 				continue;
 			}
 			$id      = $product['product_id'];
 			$entries = self::figures( $id, $figures );
-			$cable   = EngineeringReference::CABLE === $role ? Publication\CableFacts::projection( $id, $publication ) : null;
-			if ( EngineeringReference::CABLE === $role ? null === $cable : ! EngineeringReference::ready( $entries ) ) {
+			$cable   = Publication\CableFacts::projection( $id, $publication );
+			if ( null === $cable ) {
 				continue;
 			}
 			$references[] = array(
 				'id'                   => $product['engineering_id'],
-				'kind'                 => EngineeringReference::CABLE === $role ? 'cable' : 'pv_module',
+				'kind'                 => 'cable',
 				'brand'                => $product['brand'],
 				'model'                => $product['model'],
 				'canonical_product_id' => $id,
@@ -211,7 +211,7 @@ final class EngineeringFeed {
 				'reference_revision'   => $product['product_revision'],
 				'figures'              => (object) $entries,
 				'documents'            => self::documents( $id, $publication ),
-				...( null === $cable ? array() : array( 'cable_facts' => $cable ) ),
+				'cable_facts'          => $cable,
 			);
 		}
 		return $references;

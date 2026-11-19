@@ -1504,9 +1504,6 @@ export function EnergyWorkspace({
 					<PvgisReferenceSetup
 						draft={draft}
 						edit={edit}
-						client={client}
-						scope={session.query_scope}
-						active={active && view === "pvgis-reference"}
 						locale={locale}
 						disabled={blocked || operations.busy || !admitted}
 						actionsDisabled={
@@ -1528,9 +1525,6 @@ export function EnergyWorkspace({
 					/>
 				) : (
 					<PvSetup
-						client={client}
-						scope={session.query_scope}
-						active={active && view === "pv"}
 						draft={draft}
 						edit={edit}
 						locale={locale}

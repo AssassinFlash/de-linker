@@ -969,12 +969,12 @@ TEXT = {
         "Das Modell lieferte für diese Bedingungen keine endliche, physikalisch zulässige Betriebskennlinie.",
     ),
     "module_iv_inputs_missing": (
-        "The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc temperature coefficients, from the maintained module record with source references.",
-        "Das Modell benötigt Voc, Isc, Vmpp und Impp unter STC sowie die Temperaturkoeffizienten von Voc und Isc aus dem gepflegten Moduldatensatz, jeweils mit Quellenbeleg.",
+        "Enter Voc, Isc, Vmpp and Impp at STC and the temperature coefficients for Voc and Isc from your panel datasheet.",
+        "Tragen Sie Voc, Isc, Vmpp und Impp unter STC sowie die Temperaturkoeffizienten für Voc und Isc aus Ihrem Moduldatenblatt ein.",
     ),
     "crystalline_module_basis_missing": (
-        "The cited module record does not establish the crystalline-cell basis required by this model.",
-        "Der belegte Moduldatensatz bestätigt nicht die für dieses Modell erforderliche kristalline Zellgrundlage.",
+        "Choose the cell technology shown on your panel datasheet. This calculation supports monocrystalline and polycrystalline panels.",
+        "Wählen Sie die Zelltechnologie aus Ihrem Moduldatenblatt. Diese Berechnung unterstützt monokristalline und polykristalline Module.",
     ),
     "module_iv_points_inconsistent": (
         "The supplied STC current or voltage points are inconsistent with a physical single-diode curve.",
@@ -1034,8 +1034,8 @@ TEXT = {
         "Leitungswege, Leiterbemessung, Steckverbinder-Kompatibilität, Sicherungen und Trenneinrichtungen müssen noch projektspezifisch ausgelegt werden.",
     ),
     "pv_components_title": (
-        "PV modules used in the calculation",
-        "PV-Module der Berechnung",
+        "Solar panel layout",
+        "PV-Modulbelegung",
     ),
     "pv_components_scope": (
         "Module counts come from the saved layout of the selected generation result. The listed modules are design references; electrical and mounting suitability require project-specific assessment.",
@@ -1934,8 +1934,24 @@ TEXT = {
         "Menge der Ersatzgeräte noch offen",
     ),
     "material_pv_reference": (
-        "PV reference module · project quotation",
-        "PV-Referenzmodul · Projektangebot",
+        "Placed on the project roof",
+        "In der Dachbelegung platziert",
+    ),
+    "material_pv_declared": (
+        "Customer-entered panel data",
+        "Vom Kunden angegebene Moduldaten",
+    ),
+    "panel_parameters": ("Panel parameters", "Moduldaten"),
+    "panel_unspecified": ("Solar panels", "PV-Module"),
+    "equipment_list": ("Equipment from Linker", "Geräte von Linker"),
+    "site_material_list": (
+        "Site and installation materials",
+        "Materialien für Standort und Montage",
+    ),
+    "material_list": ("List", "Liste"),
+    "panel_design_only": (
+        "Design parameters for the customer's panels.",
+        "Planungsdaten für die kundenseitigen PV-Module.",
     ),
     "material_manufacturer_included": (
         "Included according to manufacturer · quantity unconfirmed",

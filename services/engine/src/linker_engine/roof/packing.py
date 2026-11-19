@@ -1,11 +1,10 @@
-"""How many reference modules fit on a roof plane.
+"""How many panels of the declared size fit on a roof plane.
 
 A plane from LoD2 is a horizontal ring with a tilt and a facing. In a frame
 turned to the facing (u along the eave, w up the slope) and with the slope
 stretched by 1/cos(tilt), the ring has its true shape; after an edge inset,
 portrait modules are placed in rows along the eave and only whole modules
-inside the plane count. The count is an estimate with a reference module,
-which the report discloses as a design assumption.
+inside the plane count. The count is an estimate for the supplied dimensions.
 """
 
 from __future__ import annotations
@@ -17,7 +16,7 @@ from shapely import affinity
 from shapely.geometry import Polygon, box
 
 from .. import rules
-from ..products import PvModule
+from ..models import PanelDimensions
 from .citygml import Ring2, RoofPlane
 
 
@@ -49,7 +48,7 @@ def usable(plane: RoofPlane) -> str | None:
     return None
 
 
-def pack(plane: RoofPlane, module: PvModule) -> PackedPlane:
+def pack(plane: RoofPlane, module: PanelDimensions) -> PackedPlane:
     reason = usable(plane)
     if reason:
         return PackedPlane(plane, False, reason, [])

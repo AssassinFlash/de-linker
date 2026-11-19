@@ -297,7 +297,7 @@ class PlantEnergyKernel:
         basis = self.products.equipment_basis()
         plant_products(plant, basis)
         if inputs.get("pv_plant_string_plan") is not None:
-            basis["pv_module_inputs"] = self.products.electrical_module_basis()
+            basis["pv_module_inputs"] = self.products.roof_basis(inputs)
             assess_plant(inputs, basis)
         assets = assets if assets is not None else Assets(self.workspace)
         pinned = {

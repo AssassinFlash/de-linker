@@ -56,7 +56,7 @@
 
 ### 产品与库存
 
-- 产品与 SKU 原样保留，不建套装 SKU；组合由工具按兼容合同计算。产品分类不列光伏组件，组件只用于系统设计与项目报价。对客户使用 Product / Model / Series（Produkt / Modell / Serie），不说 Incoterms。
+- 产品与 SKU 原样保留，不建套装 SKU；组合由工具按兼容合同计算。光伏组件只作无品牌、无型号的项目参数。配置器、Genie、报告和导出按客户项目的数量、尺寸和功率展示，询盘中的供货商品来自 Woo。对客户使用 Product / Model / Series（Produkt / Modell / Serie），不说 Incoterms。
 - 产品事实冲突时以我们托管的原厂数据手册为准；手册取不到就标记无法核实，保持现值，不编参数。用途按厂商说法。发布、撤下、共享资料及派生数据变更先读 [统一产品与资料发布规则](docs/specs/609-product-publication.md)。
 - Woo 原生库存是唯一权威，无 TTL 或状态衰减。开启管理库存的商品以数量推导状态；独立状态输入只适用于不管理数量的商品。对客户只显示有货／暂时无货，不显示数量（`woocommerce_stock_format = no_amount`）。ERP 接入不能建立第二份手工权威。
 
@@ -82,7 +82,7 @@
 
 ### 页面与工具
 
-- 营销、产品、商城、分类、博客、页头页脚与商务链页面遵循已确认的线上设计；工具应用内部可按批准方向改动。工具不被旧“三屏”或旧入口名称锁定。
+- 全站页面、组件、客户链路与各批次顺序以[业主确认的整站蓝图](https://github.com/AssassinFlash/de-linker/issues/1167#issuecomment-7018452827)为准。原型与 Preline 用于逐屏核对。每一批的通过范围写回[整站总图](https://github.com/AssassinFlash/de-linker/issues/548)。
 - UI 开发/验收实例先装入线上主题、uploads 和数据快照，再施加本地密钥与待验改动；裸 WordPress 只作管线冒烟。按受影响页型逐一对照，首页不能代表商务全链。
 - 首页 hero 未交互时保持既有外观；输入、胶囊、拍照、附件、语音之后的交互可改。Genie 继续改造，不换成 Knocket；读 [Genie 目标](docs/specs/13-genie.md) 与 [既有对照](docs/research/2026-10-17-knocket/TRIAL.md)。
 - Genie、配置器与屋顶工具以成熟模式复刻为先：先读该工具的规格、原型、验收与 `docs/research/` 对应研究；已有合适模式就复用，无先例才说明设计理由。业主已批准的完整目标不重新缩减。

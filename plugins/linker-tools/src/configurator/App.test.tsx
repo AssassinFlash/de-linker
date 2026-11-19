@@ -161,11 +161,14 @@ test( 'a household becomes a released system with its report', async () => {
 		'href',
 		'https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf'
 	);
-	const installer = screen.getAllByRole( 'table' )[ 0 ];
-	expect( within( installer ).getAllByRole( 'cell' )[ 0 ] ).toHaveAttribute(
-		'data-label',
-		'Item'
-	);
+	expect(
+		screen.queryByRole( 'heading', { name: "Installer's scope" } )
+	).not.toBeInTheDocument();
+	expect(
+		screen.getAllByText(
+			'String sizing is pending the panel electrical specifications.'
+		).length
+	).toBeGreaterThan( 0 );
 
 	await act( async () => {
 		fireEvent.click(

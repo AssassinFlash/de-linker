@@ -1,6 +1,7 @@
 """Residential designs: the ticket's acceptance cases on the real product fixture."""
 
 import pytest
+from conftest import PANEL_ELECTRICAL
 
 from linker_engine import eligibility, residential
 from linker_engine.engine import Engine
@@ -21,6 +22,7 @@ HOUSEHOLDS = [
 
 def design(engine: Engine, **fields: object) -> residential.Design:
     values: dict[str, object] = {
+        "module": PANEL_ELECTRICAL.model_dump(),
         "plz": "80538",
         # The postcode alone is shared with a Ukrainian code; the country is
         # what names the place, exactly as the form passes it.

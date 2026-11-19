@@ -46,6 +46,17 @@ export type PlaneFrame = Pick<
 	"origin_enu" | "u_axis_enu" | "v_axis_enu"
 >;
 
+export interface PanelElectrical {
+	voc_v?: number | null;
+	vmpp_v?: number | null;
+	isc_a?: number | null;
+	impp_a?: number | null;
+	max_system_voltage_v?: number | null;
+	alpha_isc_pct_per_c?: number | null;
+	beta_voc_pct_per_c?: number | null;
+	cell_technology?: string | null;
+}
+
 export interface ModuleSpec {
 	id: string;
 	model: string;
@@ -53,10 +64,8 @@ export interface ModuleSpec {
 	length_m: number;
 	thickness_m: number;
 	stc_power_w: number;
-	/** A declared planning reference carries its own temperature coefficient,
-	 * because no product document backs it. A Woo-selected module leaves this
-	 * unset and the published module parameters supply the coefficient. */
 	gamma_pdc_per_c?: number | null;
+	electrical?: PanelElectrical | null;
 	source: {
 		kind: "datasheet" | "user_declared";
 		note: string;

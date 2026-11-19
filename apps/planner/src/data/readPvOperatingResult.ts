@@ -1,7 +1,7 @@
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
-import { documentReference } from "./documentReference.ts";
+import { equipmentFactSource } from "./documentReference.ts";
 
 const finite = (v: unknown): v is number =>
 	typeof v === "number" && Number.isFinite(v);
@@ -32,7 +32,7 @@ export function readPvOperatingResult(
 		invalid();
 	for (const value of Object.values(readObject(model.input_facts))) {
 		const fact = readObject(value);
-		if (fact.source != null) documentReference(fact.source, true);
+		if (fact.source != null) equipmentFactSource(fact.source);
 		else if (model.status === "available") invalid();
 	}
 	if (model.status === "available") {

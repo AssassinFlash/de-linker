@@ -1,9 +1,4 @@
-"""Cited string checks with explicit STC and design-temperature boundaries.
-
-The linear cold-Voc method follows the manufacturer's published coefficient
-definition and Trina UM-M-0002 O, section 6.4.1 (PDF pp37-38). It is not an
-I-V model or country release. See NUMERICAL-MODELS.md section 13 for scope.
-"""
+"""Electrical string checks from the project panel data and selected inverter."""
 
 from __future__ import annotations
 
@@ -12,6 +7,7 @@ from decimal import Decimal
 from typing import Any, cast
 
 from .canonical import Json, Object
+from .declared_module import electrical_facts
 from .equipment_facts import compile_facts, compile_product
 from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput
@@ -28,9 +24,7 @@ def assess_pv_strings(
     if plan.inverter_product_id != selection.inverter_product_id:
         raise InvalidInput("PV strings belong to a different inverter selection")
     proof = basis.get("pv_module_inputs")
-    if not isinstance(proof, dict) or not isinstance(
-        proof.get("electrical_product"), dict
-    ):
+    if not isinstance(proof, dict):
         raise InvalidInput("PV strings require the frozen Woo module electrical source")
     geometry = read_geometry(inputs.get("geometry"))
     poses = {p.id: p for p in panel_poses(geometry) if p.included}
@@ -44,8 +38,8 @@ def assess_pv_strings(
         for p in products
         if p["canonical_product_id"] == selection.inverter_product_id
     )
-    module = cast(dict[str, Any], proof["electrical_product"])
-    mf = cast(dict[str, Any], compile_facts(module))
+    module = proof.get("electrical_product")
+    mf = cast(dict[str, Any], compile_facts(module)) if isinstance(module, dict) else {}
     inv = cast(dict[str, Any], compile_product(inverter)["facts"])
     checks: list[Json] = []
     rows: list[Json] = []
@@ -115,7 +109,8 @@ def assess_pv_strings(
     total_wp = Decimal(0)
     tracker_strings: dict[int, list[tuple[int, tuple[tuple[float, ...], ...]]]] = {}
     n_mppt, n_refs = scalar(inv, "n_mppt", "count")
-    has_declared_reference = False
+    tracker_modules: dict[int, list[dict[str, Any]]] = {}
+    string_facts = {}
     max_v, max_refs = scalar(inv, "max_pv_input_v", "voltage")
     mpp_window = fact(inv, "mppt_voltage_range_v", "voltage")
     standby = fact(inv, "pv_standby_input_voltage_v", "voltage")
@@ -135,8 +130,9 @@ def assess_pv_strings(
             string_mf = mf
         else:
             ProductSources.check_declared_reference(spec)
-            has_declared_reference = True
-            string_mf = {}
+            string_mf = electrical_facts(spec)
+        string_facts[spec.id] = string_mf
+        tracker_modules.setdefault(item.mppt, []).append(string_mf)
         voc, voc_refs = scalar(string_mf, "voc_v", "voltage")
         vmpp, vmpp_refs = scalar(string_mf, "vmpp_v", "voltage")
         beta, beta_refs = scalar(
@@ -241,7 +237,6 @@ def assess_pv_strings(
         unit="kWp",
         reason="assigned_modules_must_match_selected_array_rating",
     )
-    tracker_mf = {} if has_declared_reference else mf
     for tracker, strings in tracker_strings.items():
         maximum_strings, refs = scalar(inv, "strings_per_mppt", "count", tracker)
         add(f"pv_parallel_count:{tracker}", len(strings), maximum_strings, refs)
@@ -249,11 +244,20 @@ def assess_pv_strings(
             ("pv_stc_current", "impp_a", "mppt_max_current_a"),
             ("pv_stc_isc", "isc_a", "mppt_max_isc_a"),
         ):
-            current, current_refs = scalar(tracker_mf, current_key, "current")
+            readings = [
+                scalar(fields, current_key, "current")
+                for fields in tracker_modules[tracker]
+            ]
+            current = (
+                sum(value for value, _ in readings if value is not None)
+                if all(value is not None for value, _ in readings)
+                else None
+            )
+            current_refs = [ref for _, refs in readings for ref in refs]
             maximum, refs = scalar(inv, limit_key, "current", tracker)
             add(
                 f"{key}:{tracker}",
-                current * len(strings) if current is not None else None,
+                current,
                 maximum,
                 [*current_refs, *refs],
                 unit="A",
@@ -273,7 +277,7 @@ def assess_pv_strings(
         operating = assess_operating_conditions(
             plan.operating_conditions,
             rows,
-            tracker_mf,
+            next(iter(string_facts.values())) if len(string_facts) == 1 else {},
             inv,
             {
                 tracker: len(set(strings)) == 1 and len(strings[0][1]) == 1

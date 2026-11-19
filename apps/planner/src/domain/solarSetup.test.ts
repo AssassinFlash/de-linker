@@ -415,33 +415,29 @@ test("explicit weather replacement clears only the stale binding and prepared re
 	);
 });
 
-test("a maintained module selection supplies the coefficient and keeps the array settings", () => {
+test("a recorded panel coefficient aligns detailed generation without changing array settings", () => {
 	const value = inputs();
 	const setup = readSolarSetup(value);
 	const geometry = structuredClone(
 		value.geometry,
 	) as unknown as GeometryDocument;
 	const specification = geometry.module_specs[0]!;
-	const source = {
-		kind: "datasheet" as const,
-		note: "Synthetic maintained-source contract fixture",
-		url: "https://example.test/module.pdf",
-		document_sha256: "b".repeat(64),
-		page: 1,
-		woo: {
-			product_id: 42,
-			product_revision: "a".repeat(64),
-			reference_input_id: "synthetic_woo_reference",
+	specification.source = {
+		kind: "user_declared",
+		note: "declared_reference — panel supplied by installer",
+		url: null,
+		document_sha256: null,
+		page: null,
+	};
+	specification.gamma_pdc_per_c = -0.003;
+	const next = alignPv({ ...setup.pv, modules: [] }, geometry);
+	assert.deepEqual(next.modules, [
+		{
+			module_spec_id: specification.id,
+			gamma_pdc_per_c: -0.003,
+			source: specification.source,
 		},
-	};
-	specification.source = source;
-	const parameter = { ...setup.pv.modules[0]!, source };
-	const template = {
-		specification: { ...specification },
-		parameters: parameter,
-	};
-	const next = alignPv({ ...setup.pv, modules: [] }, geometry, [template]);
-	assert.deepEqual(next.modules, [parameter]);
+	]);
 	assert.deepEqual(next.arrays, setup.pv.arrays);
 	assert.deepEqual(next.converters, setup.pv.converters);
 });

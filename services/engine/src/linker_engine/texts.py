@@ -87,9 +87,13 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Controller for parallel operation",
         "Steuerung für den Parallelbetrieb",
     ),
+    "warn.panel_measurements": (
+        "String sizing is pending the panel electrical specifications.",
+        "Für die Stringauslegung fehlen die elektrischen Moduldaten.",
+    ),
     "line.pv_module": (
-        "PV modules of your choice (layout checked with {model})",
-        "PV-Module nach Ihrer Wahl (Auslegung geprüft mit {model})",
+        "PV modules ({model} per panel)",
+        "PV-Module ({model} je Modul)",
     ),
     "line.mounting": (
         "Mounting system for {count} modules",
@@ -578,9 +582,9 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Dieser Bericht enthält keine Wirtschaftlichkeitsrechnung: keine Amortisationszeit, keinen Cashflow, "
         "keine Einspeisevergütung.",
     ),
-    "limit.reference_module": (
-        "The string layout uses {model} as a reference module; the module you install can change it.",
-        "Die Stringauslegung verwendet {model} als Referenzmodul; das tatsächlich verbaute Modul kann sie verändern.",
+    "limit.declared_module": (
+        "String sizing uses the declared electrical data for the {model} panels.",
+        "Die Stringauslegung beruht auf den angegebenen elektrischen Daten der Module mit {model}.",
     ),
     "limit.default_orientation": (
         "Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",

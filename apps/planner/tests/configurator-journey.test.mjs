@@ -552,7 +552,7 @@ test("a roof layout edit advances the saved project and reopens without a separa
 			query: async (path) =>
 				path === "projects/runs"
 					? { items: [], next: null }
-					: { schema_version: 1, provider: "woocommerce", pv_modules: [] },
+					: { schema_version: 1, provider: "woocommerce", products: [] },
 			send: async (path, raw) => {
 				assert.equal(path, "projects/revise");
 				requests.push(raw);
@@ -1669,7 +1669,7 @@ for (const scenario of [
 			isCurrentScope: (s) => s === scope,
 			query: async (path, body) => {
 				if (editWiring && path === "products/current")
-					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
+					return { schema_version: 1, provider: "woocommerce", products: [] };
 				if (path === "projects/runs")
 					return {
 						items: runs.map((run) => ({

@@ -3,7 +3,7 @@
 The postcode gives the state, the state its LoD2 source; the building whose
 footprint contains the position (or the nearest one within CLICK_TOLERANCE_M)
 is returned with every roof plane, its tilt and facing, and how many
-reference modules fit on it.
+panels of the declared dimensions fit on it.
 """
 
 from __future__ import annotations
@@ -18,8 +18,14 @@ from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from .. import geo
-from ..models import Locale, RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
-from ..products import PvModule
+from ..models import (
+    Locale,
+    PanelDimensions,
+    RoofPackRequest,
+    RoofPlaneResult,
+    RoofRequest,
+    RoofResult,
+)
 from ..texts import t
 from . import europe, footprints, lod2
 from .citygml import Building, RoofPlane
@@ -63,16 +69,18 @@ def _shape(building: dict[str, Any]) -> BaseGeometry:
 
 class RoofService:
     def __init__(
-        self, cache_dir: Path, module: PvModule, index: lod2.TileIndex | None = None
+        self,
+        cache_dir: Path,
+        index: lod2.TileIndex | None = None,
     ) -> None:
         self._index = index or lod2.TileIndex(cache_dir)
-        self._module = module
         # One published part per quadkey cell, kept because a part is tens of
         # megabytes and the next request in the same city reads it again.
         self._footprint_cache = cache_dir / "footprints"
         self._footprint_cache.mkdir(parents=True, exist_ok=True)
 
     def outline(self, request: RoofRequest) -> RoofResult:
+        module = request.module
         locale = request.locale
         place = geo.lookup(request.plz, request.country)
         if place is None:
@@ -85,7 +93,7 @@ class RoofService:
         # not built yet.
         model = europe.read(place.country, latitude, longitude)
         if model is not None:
-            return self._from_model(model, latitude, longitude, locale)
+            return self._from_model(model, latitude, longitude, locale, module)
         # No measured roof geometry here. Germany still answers from its states'
         # LoD2; every other country answers from the global building footprints,
         # which give the real outline and leave the pitch to the customer. The
@@ -94,7 +102,9 @@ class RoofService:
         try:
             tile = lod2.tile_for(place.iso_region, latitude, longitude)
         except lod2.Lod2Unavailable:
-            return self._from_footprints(place.country, latitude, longitude, locale)
+            return self._from_footprints(
+                place.country, latitude, longitude, locale, module
+            )
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -103,8 +113,7 @@ class RoofService:
             distance = _shape(building).distance(point)
             if distance <= CLICK_TOLERANCE_M and (best is None or distance < best[0]):
                 best = (distance, building)
-        module = self._module
-        name = f"{module.brand} {module.model}"
+        name = f"{module.pmax_w:g} Wp"
         source = f"LoD2 {place.iso_region}"
         assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         if best is None:
@@ -174,6 +183,7 @@ class RoofService:
         latitude: float,
         longitude: float,
         locale: Locale,
+        module: PanelDimensions,
     ) -> RoofResult:
         """The roof at a position, from a country's own 3D model.
 
@@ -181,8 +191,7 @@ class RoofService:
         back to WGS84 here so the map and the report see the same coordinates
         the German path produces.
         """
-        module = self._module
-        name = f"{module.brand} {module.model}"
+        name = f"{module.pmax_w:g} Wp"
         assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         to_wgs84 = model.transformer
         to_local = _to_model(model.country)
@@ -261,6 +270,7 @@ class RoofService:
         latitude: float,
         longitude: float,
         locale: Locale,
+        module: PanelDimensions,
     ) -> RoofResult:
         """The real outline of the building at a position, with no measured roof.
 
@@ -270,8 +280,7 @@ class RoofService:
         set the pitch they can see; returning `found: false` would claim the
         tool knows nothing about a building it can draw.
         """
-        module = self._module
-        name = f"{module.brand} {module.model}"
+        name = f"{module.pmax_w:g} Wp"
         empty = RoofResult(
             found=False,
             building_id=None,
@@ -362,8 +371,9 @@ def _zone(longitude: float) -> int:
     return int(math.floor((longitude + 180.0) / 6.0)) % 60 + 1
 
 
-def pack_drawn(request: RoofPackRequest, module: PvModule) -> RoofPlaneResult:
+def pack_drawn(request: RoofPackRequest) -> RoofPlaneResult:
     """Modules on a plane the user drew on the aerial image, at the tilt and facing they give."""
+    module = request.module
     zone = _zone(request.polygon[0][0])
     ring = [
         lod2.to_utm(zone, latitude, longitude)

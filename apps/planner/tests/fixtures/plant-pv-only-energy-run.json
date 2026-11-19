@@ -1,9 +1,9 @@
 {
 	"project": {
-		"id": "c86b32dd285b4c0487f505c7f7aeebe9",
+		"id": "bd42d1451e61442ebcf2b704b93c6dad",
 		"title": "Two PV inverters, no storage",
 		"revision": 2,
-		"input_sha256": "f08bfb1f8d28be5b3539edbee768e3de596e5aa6cfe46a4be039810ffae8e909",
+		"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
 		"inputs": {
 			"brief": {
 				"annual_load": {
@@ -165,22 +165,28 @@
 				],
 				"module_specs": [
 					{
+						"electrical": {
+							"alpha_isc_pct_per_c": 0.04,
+							"beta_voc_pct_per_c": -0.24,
+							"cell_technology": "monocrystalline",
+							"impp_a": 10.14,
+							"isc_a": 10.81,
+							"max_system_voltage_v": 1500,
+							"vmpp_v": 45.4,
+							"voc_v": 53.8
+						},
+						"gamma_pdc_per_c": -0.0029,
 						"id": "module",
 						"length_m": 1.762,
-						"model": "Trina Solar TSM-460NEG9R.28",
+						"model": "PV 460 Wp · 1762 × 1134 mm",
 						"source": {
-							"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-							"kind": "datasheet",
-							"note": "Trina Solar TSM-460NEG9R.28",
-							"page": 2,
-							"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-							"woo": {
-								"product_id": 90000001,
-								"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-								"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-							}
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "declared_reference — Customer-provided panel parameters.",
+							"page": null,
+							"url": null
 						},
-						"stc_power_w": 460.0,
+						"stc_power_w": 460,
 						"thickness_m": 0.03,
 						"width_m": 1.134
 					}
@@ -251,9 +257,9 @@
 			"profile_selections": {
 				"schema_version": 1,
 				"selected": {
-					"aux_ac": "cefcd5ec2a484747b1984a13ba2d5c5b",
-					"gross_load": "db39025d709f489a9e9e8c096e89b3e3",
-					"pv_available_ac": "83745b9ab5a24e2b89c6f60c3ca9c824"
+					"aux_ac": "1fa72b04c95c40a6b74b0550d3bac771",
+					"gross_load": "bfa0b3d9a4944c918efbf84b3646a5a0",
+					"pv_available_ac": "6cc5ad7712084f928f6369ba1103ba2a"
 				}
 			},
 			"pv_plant_string_plan": {
@@ -308,12 +314,12 @@
 		}
 	},
 	"run": {
-		"id": "55e92d4bd22c4640b3ec922bb507275a",
-		"project_id": "c86b32dd285b4c0487f505c7f7aeebe9",
+		"id": "29c1ab2db07040bd9560f3c3cfc5bbe5",
+		"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 		"revision": 2,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "5fccb0328b614ef8e562e0c2e886b613c71e26b79b63a3ee41254503a38a0b6a",
+		"manifest_sha256": "ed8ba5d7578b6ae906a127a1e1996d374b65a6a0579cb6a1f42778b31a4b8ac6",
 		"manifest": {
 			"context": {
 				"assets": {
@@ -327,11 +333,11 @@
 					"pv_available_ac.metadata": "dd493b22530e07bd9d79ab19f19357eab88551c35f8b92f1e23bd136e3b5092b",
 					"pv_available_ac.raw": "f04e0884ee73afec06617b4bed66870894009732ff4f01833d5ef43e1d1ad0ff",
 					"pv_available_ac.timezone": "5ee475f71a0fc1a32faeb849f8c39c6e7aa66d6d41ec742b97b3a7436b3b0701",
-					"resolved_inputs": "81a2c4bb0e675f6f6266bed9cb248a3e425c6763e77a2bb039a9adf9a63cb165",
-					"runtime_bundle": "9a60dfcc2b1cce8e909ed1384a11be4a99e985412cc799c4c3763a17c26f38e6",
-					"woo.equipment_inputs": "b201bf59fc206372eeb0754cb7fdd71f1829f9a5e56edf0caf7b71602c18ea85"
+					"resolved_inputs": "667a1af7b135d343a4340db3e352866ec73877e1f2919c60dc33fc96b28613b9",
+					"runtime_bundle": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
+					"woo.equipment_inputs": "613d4f326bc772823bf89977d508852a986712b4d3bd1c5a298263323188a941"
 				},
-				"code_sha256": "9a60dfcc2b1cce8e909ed1384a11be4a99e985412cc799c4c3763a17c26f38e6",
+				"code_sha256": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 				"models": {
 					"battery": "distinct_woo_battery_only_ac_equivalents_v1",
 					"controller": "proportional_available_power_self_consumption_v1",
@@ -353,19 +359,19 @@
 					}
 				}
 			},
-			"input_sha256": "f08bfb1f8d28be5b3539edbee768e3de596e5aa6cfe46a4be039810ffae8e909",
-			"project_id": "c86b32dd285b4c0487f505c7f7aeebe9",
+			"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
+			"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 			"revision": 2,
 			"schema": 1
 		},
-		"result_sha256": "942e2fbcc8e12dca5b4870f35085fe274240996152b060c7ad7bfa64330c7bba",
+		"result_sha256": "dd480ff58277f193a66f5954db7f60d0282799f5ee0b9cf9d964ef0ec4503b0c",
 		"result": {
 			"country_assessment": {
 				"reason": "country_rules_are_a_separate_assessment",
 				"status": "not_assessed"
 			},
 			"dependencies": {
-				"energy_trace": "7f907c9bcb60bff5a3beb54540264350e9f58ebf38c4d95db88ef0535ca63df8"
+				"energy_trace": "237aef2574df962b2da0592abb27e2d8aa1d16a30e0ef420198a4141962c426f"
 			},
 			"equipment_binding": {
 				"assessment": {
@@ -462,61 +468,6 @@
 							"unit_name": "A"
 						},
 						{
-							"actual": 0.22999999999999998,
-							"band": {
-								"band_basis": "cross_manufacturer_planning_band",
-								"relation": "pv_dc_kw / ac_output_kw_nominal",
-								"sources": [
-									"https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf",
-									"https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf"
-								]
-							},
-							"facts": [
-								{
-									"columns": [],
-									"condition_match": {
-										"qualifier": {
-											"quantity_kind": "rated_active_power",
-											"scope": "on_grid_ac_output"
-										}
-									},
-									"evidence_refs": [],
-									"qualifier": {
-										"quantity_kind": "rated_active_power",
-										"scope": "on_grid_ac_output"
-									},
-									"quantity": "active_power",
-									"raw_unit": "W",
-									"raw_value": 10000,
-									"shape": "scalar",
-									"source": {
-										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"figure_key": "ac_output_kw_nominal",
-										"figure_sha256": "8e70b966ffb6ffa301ce6484061f99fc6c1e640cb006fa76dd297316e19366c0",
-										"page": 2,
-										"product_id": 4107,
-										"product_revision": "ca2aa1f38325526ba7ef91c5b74306b29b3d089d6ca165e7c58e437ac8a615f0",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
-									},
-									"status": "conditional",
-									"unit": "kW",
-									"value": 10.0
-								}
-							],
-							"id": "unit:a:pv_dc_ac_ratio",
-							"reason": "published_dc_ac_sizing_band",
-							"required": [
-								0.6,
-								1.35
-							],
-							"semantic_id": "pv_dc_ac_ratio",
-							"status": "violated",
-							"unit_id": "a",
-							"unit_name": "A"
-						},
-						{
 							"actual": 5,
 							"facts": [],
 							"id": "unit:a:pv_layout_coverage",
@@ -580,49 +531,27 @@
 							"actual": null,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "voc_v",
-										"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "temperature_coefficient",
 									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "beta_voc_pct_per_c",
-										"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "1/°C",
 									"value": -0.0024
 								},
 								{
@@ -662,73 +591,40 @@
 							"actual": null,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "voc_v",
-										"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "temperature_coefficient",
 									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "beta_voc_pct_per_c",
-										"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "1/°C",
 									"value": -0.0024
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
-									"quantity": null,
-									"raw_unit": null,
-									"raw_value": "1500 V DC (IEC)",
-									"shape": "text",
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "1500.0",
+									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "max_system_voltage_v",
-										"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
-									"status": "text_evidence",
-									"unit": null,
-									"value": "1500 V DC (IEC)"
+									"status": "typed",
+									"value": 1500.0
 								}
 							],
 							"id": "unit:a:pv_module_voltage:string_a",
@@ -744,26 +640,15 @@
 							"actual": 227.0,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "45.4",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "vmpp_v",
-										"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 45.4
 								},
 								{
@@ -857,26 +742,15 @@
 							"actual": 10.14,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "current",
 									"raw_unit": "A",
 									"raw_value": "10.14",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "impp_a",
-										"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.14
 								},
 								{
@@ -916,26 +790,15 @@
 							"actual": 10.81,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "current",
 									"raw_unit": "A",
 									"raw_value": "10.81",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "isc_a",
-										"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.81
 								},
 								{
@@ -1026,7 +889,7 @@
 							"reason": "no_battery_selected",
 							"required": null,
 							"semantic_id": "battery",
-							"status": "unresolved",
+							"status": "satisfied",
 							"unit_id": "a",
 							"unit_name": "A"
 						},
@@ -1143,61 +1006,6 @@
 							"unit_name": "B"
 						},
 						{
-							"actual": 0.046,
-							"band": {
-								"band_basis": "cross_manufacturer_planning_band",
-								"relation": "pv_dc_kw / ac_output_kw_nominal",
-								"sources": [
-									"https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf",
-									"https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf"
-								]
-							},
-							"facts": [
-								{
-									"columns": [],
-									"condition_match": {
-										"qualifier": {
-											"quantity_kind": "rated_active_power",
-											"scope": "on_grid_ac_output"
-										}
-									},
-									"evidence_refs": [],
-									"qualifier": {
-										"quantity_kind": "rated_active_power",
-										"scope": "on_grid_ac_output"
-									},
-									"quantity": "active_power",
-									"raw_unit": "W",
-									"raw_value": 10000,
-									"shape": "scalar",
-									"source": {
-										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-										"figure_key": "ac_output_kw_nominal",
-										"figure_sha256": "8e70b966ffb6ffa301ce6484061f99fc6c1e640cb006fa76dd297316e19366c0",
-										"page": 2,
-										"product_id": 4107,
-										"product_revision": "ca2aa1f38325526ba7ef91c5b74306b29b3d089d6ca165e7c58e437ac8a615f0",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
-									},
-									"status": "conditional",
-									"unit": "kW",
-									"value": 10.0
-								}
-							],
-							"id": "unit:b:pv_dc_ac_ratio",
-							"reason": "published_dc_ac_sizing_band",
-							"required": [
-								0.6,
-								1.35
-							],
-							"semantic_id": "pv_dc_ac_ratio",
-							"status": "violated",
-							"unit_id": "b",
-							"unit_name": "B"
-						},
-						{
 							"actual": 1,
 							"facts": [],
 							"id": "unit:b:pv_layout_coverage",
@@ -1261,49 +1069,27 @@
 							"actual": null,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "voc_v",
-										"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "temperature_coefficient",
 									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "beta_voc_pct_per_c",
-										"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "1/°C",
 									"value": -0.0024
 								},
 								{
@@ -1343,73 +1129,40 @@
 							"actual": null,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "voc_v",
-										"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "temperature_coefficient",
 									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "beta_voc_pct_per_c",
-										"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "1/°C",
 									"value": -0.0024
 								},
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
-									"quantity": null,
-									"raw_unit": null,
-									"raw_value": "1500 V DC (IEC)",
-									"shape": "text",
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "1500.0",
+									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "max_system_voltage_v",
-										"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
-									"status": "text_evidence",
-									"unit": null,
-									"value": "1500 V DC (IEC)"
+									"status": "typed",
+									"value": 1500.0
 								}
 							],
 							"id": "unit:b:pv_module_voltage:string_b",
@@ -1425,26 +1178,15 @@
 							"actual": 45.4,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "voltage",
 									"raw_unit": "V",
 									"raw_value": "45.4",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "vmpp_v",
-										"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 45.4
 								},
 								{
@@ -1538,26 +1280,15 @@
 							"actual": 10.14,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "current",
 									"raw_unit": "A",
 									"raw_value": "10.14",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "impp_a",
-										"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.14
 								},
 								{
@@ -1597,26 +1328,15 @@
 							"actual": 10.81,
 							"facts": [
 								{
-									"columns": [],
-									"evidence_refs": [],
-									"qualifier": null,
 									"quantity": "current",
 									"raw_unit": "A",
 									"raw_value": "10.81",
 									"shape": "scalar",
 									"source": {
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"figure_key": "isc_a",
-										"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-										"page": 2,
-										"product_id": 90000001,
-										"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+										"kind": "user_declared",
+										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.81
 								},
 								{
@@ -1707,7 +1427,7 @@
 							"reason": "no_battery_selected",
 							"required": null,
 							"semantic_id": "battery",
-							"status": "unresolved",
+							"status": "satisfied",
 							"unit_id": "b",
 							"unit_name": "B"
 						},
@@ -1933,49 +1653,27 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
@@ -2012,73 +1710,40 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
-													"quantity": null,
-													"raw_unit": null,
-													"raw_value": "1500 V DC (IEC)",
-													"shape": "text",
+													"quantity": "voltage",
+													"raw_unit": "V",
+													"raw_value": "1500.0",
+													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "max_system_voltage_v",
-														"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
-													"status": "text_evidence",
-													"unit": null,
-													"value": "1500 V DC (IEC)"
+													"status": "typed",
+													"value": 1500.0
 												}
 											],
 											"id": "pv_module_voltage:string_a",
@@ -2091,26 +1756,15 @@
 											"actual": 227.0,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "vmpp_v",
-														"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -2195,26 +1849,15 @@
 											"actual": 10.14,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "impp_a",
-														"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -2251,26 +1894,15 @@
 											"actual": 10.81,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "isc_a",
-														"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -2350,7 +1982,7 @@
 											"cold_voc_v": null,
 											"id": "string_a",
 											"input": 1,
-											"model": "Trina Solar TSM-460NEG9R.28",
+											"model": "PV 460 Wp · 1762 × 1134 mm",
 											"module_count": 5,
 											"module_ids": [
 												"array:0:0",
@@ -2431,49 +2063,27 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
@@ -2510,73 +2120,40 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
-													"quantity": null,
-													"raw_unit": null,
-													"raw_value": "1500 V DC (IEC)",
-													"shape": "text",
+													"quantity": "voltage",
+													"raw_unit": "V",
+													"raw_value": "1500.0",
+													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "max_system_voltage_v",
-														"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
-													"status": "text_evidence",
-													"unit": null,
-													"value": "1500 V DC (IEC)"
+													"status": "typed",
+													"value": 1500.0
 												}
 											],
 											"id": "pv_module_voltage:string_b",
@@ -2589,26 +2166,15 @@
 											"actual": 45.4,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "vmpp_v",
-														"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -2693,26 +2259,15 @@
 											"actual": 10.14,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "impp_a",
-														"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -2749,26 +2304,15 @@
 											"actual": 10.81,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "isc_a",
-														"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -2848,7 +2392,7 @@
 											"cold_voc_v": null,
 											"id": "string_b",
 											"input": 1,
-											"model": "Trina Solar TSM-460NEG9R.28",
+											"model": "PV 460 Wp · 1762 × 1134 mm",
 											"module_count": 1,
 											"module_ids": [
 												"pv_b:0:0"
@@ -3870,58 +3414,6 @@
 										"status": "satisfied"
 									},
 									{
-										"actual": 0.22999999999999998,
-										"band": {
-											"band_basis": "cross_manufacturer_planning_band",
-											"relation": "pv_dc_kw / ac_output_kw_nominal",
-											"sources": [
-												"https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf",
-												"https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf"
-											]
-										},
-										"facts": [
-											{
-												"columns": [],
-												"condition_match": {
-													"qualifier": {
-														"quantity_kind": "rated_active_power",
-														"scope": "on_grid_ac_output"
-													}
-												},
-												"evidence_refs": [],
-												"qualifier": {
-													"quantity_kind": "rated_active_power",
-													"scope": "on_grid_ac_output"
-												},
-												"quantity": "active_power",
-												"raw_unit": "W",
-												"raw_value": 10000,
-												"shape": "scalar",
-												"source": {
-													"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"figure_key": "ac_output_kw_nominal",
-													"figure_sha256": "8e70b966ffb6ffa301ce6484061f99fc6c1e640cb006fa76dd297316e19366c0",
-													"page": 2,
-													"product_id": 4107,
-													"product_revision": "ca2aa1f38325526ba7ef91c5b74306b29b3d089d6ca165e7c58e437ac8a615f0",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
-												},
-												"status": "conditional",
-												"unit": "kW",
-												"value": 10.0
-											}
-										],
-										"id": "pv_dc_ac_ratio",
-										"reason": "published_dc_ac_sizing_band",
-										"required": [
-											0.6,
-											1.35
-										],
-										"status": "violated"
-									},
-									{
 										"actual": 5,
 										"facts": [],
 										"id": "pv_layout_coverage",
@@ -3976,49 +3468,27 @@
 										"actual": null,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "voc_v",
-													"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "temperature_coefficient",
 												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "beta_voc_pct_per_c",
-													"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "1/°C",
 												"value": -0.0024
 											},
 											{
@@ -4055,73 +3525,40 @@
 										"actual": null,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "voc_v",
-													"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "temperature_coefficient",
 												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "beta_voc_pct_per_c",
-													"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "1/°C",
 												"value": -0.0024
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
-												"quantity": null,
-												"raw_unit": null,
-												"raw_value": "1500 V DC (IEC)",
-												"shape": "text",
+												"quantity": "voltage",
+												"raw_unit": "V",
+												"raw_value": "1500.0",
+												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "max_system_voltage_v",
-													"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
-												"status": "text_evidence",
-												"unit": null,
-												"value": "1500 V DC (IEC)"
+												"status": "typed",
+												"value": 1500.0
 											}
 										],
 										"id": "pv_module_voltage:string_a",
@@ -4134,26 +3571,15 @@
 										"actual": 227.0,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "45.4",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "vmpp_v",
-													"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 45.4
 											},
 											{
@@ -4238,26 +3664,15 @@
 										"actual": 10.14,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "current",
 												"raw_unit": "A",
 												"raw_value": "10.14",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "impp_a",
-													"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.14
 											},
 											{
@@ -4294,26 +3709,15 @@
 										"actual": 10.81,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "current",
 												"raw_unit": "A",
 												"raw_value": "10.81",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "isc_a",
-													"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.81
 											},
 											{
@@ -4388,7 +3792,7 @@
 										"id": "battery",
 										"reason": "no_battery_selected",
 										"required": null,
-										"status": "unresolved"
+										"status": "satisfied"
 									}
 								],
 								"country_assessment": {
@@ -4396,7 +3800,7 @@
 									"reason": "versioned_country_rules_required",
 									"status": "unresolved"
 								},
-								"equipment_status": "violated",
+								"equipment_status": "unresolved",
 								"installation_requirements": [
 									{
 										"conditions": [
@@ -4416,7 +3820,7 @@
 									}
 								],
 								"manufacturer_pair": null,
-								"overall_status": "violated",
+								"overall_status": "unresolved",
 								"provisional_bill_of_materials": [
 									{
 										"basis": "selected_converter",
@@ -4485,49 +3889,27 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
@@ -4564,73 +3946,40 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
-													"quantity": null,
-													"raw_unit": null,
-													"raw_value": "1500 V DC (IEC)",
-													"shape": "text",
+													"quantity": "voltage",
+													"raw_unit": "V",
+													"raw_value": "1500.0",
+													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "max_system_voltage_v",
-														"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
-													"status": "text_evidence",
-													"unit": null,
-													"value": "1500 V DC (IEC)"
+													"status": "typed",
+													"value": 1500.0
 												}
 											],
 											"id": "pv_module_voltage:string_a",
@@ -4643,26 +3992,15 @@
 											"actual": 227.0,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "vmpp_v",
-														"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -4747,26 +4085,15 @@
 											"actual": 10.14,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "impp_a",
-														"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -4803,26 +4130,15 @@
 											"actual": 10.81,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "isc_a",
-														"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -4902,7 +4218,7 @@
 											"cold_voc_v": null,
 											"id": "string_a",
 											"input": 1,
-											"model": "Trina Solar TSM-460NEG9R.28",
+											"model": "PV 460 Wp · 1762 × 1134 mm",
 											"module_count": 5,
 											"module_ids": [
 												"array:0:0",
@@ -5938,58 +5254,6 @@
 										"status": "satisfied"
 									},
 									{
-										"actual": 0.046,
-										"band": {
-											"band_basis": "cross_manufacturer_planning_band",
-											"relation": "pv_dc_kw / ac_output_kw_nominal",
-											"sources": [
-												"https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf",
-												"https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf"
-											]
-										},
-										"facts": [
-											{
-												"columns": [],
-												"condition_match": {
-													"qualifier": {
-														"quantity_kind": "rated_active_power",
-														"scope": "on_grid_ac_output"
-													}
-												},
-												"evidence_refs": [],
-												"qualifier": {
-													"quantity_kind": "rated_active_power",
-													"scope": "on_grid_ac_output"
-												},
-												"quantity": "active_power",
-												"raw_unit": "W",
-												"raw_value": 10000,
-												"shape": "scalar",
-												"source": {
-													"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
-													"figure_key": "ac_output_kw_nominal",
-													"figure_sha256": "8e70b966ffb6ffa301ce6484061f99fc6c1e640cb006fa76dd297316e19366c0",
-													"page": 2,
-													"product_id": 4107,
-													"product_revision": "ca2aa1f38325526ba7ef91c5b74306b29b3d089d6ca165e7c58e437ac8a615f0",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
-												},
-												"status": "conditional",
-												"unit": "kW",
-												"value": 10.0
-											}
-										],
-										"id": "pv_dc_ac_ratio",
-										"reason": "published_dc_ac_sizing_band",
-										"required": [
-											0.6,
-											1.35
-										],
-										"status": "violated"
-									},
-									{
 										"actual": 1,
 										"facts": [],
 										"id": "pv_layout_coverage",
@@ -6044,49 +5308,27 @@
 										"actual": null,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "voc_v",
-													"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "temperature_coefficient",
 												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "beta_voc_pct_per_c",
-													"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "1/°C",
 												"value": -0.0024
 											},
 											{
@@ -6123,73 +5365,40 @@
 										"actual": null,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "voc_v",
-													"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "temperature_coefficient",
 												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "beta_voc_pct_per_c",
-													"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "1/°C",
 												"value": -0.0024
 											},
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
-												"quantity": null,
-												"raw_unit": null,
-												"raw_value": "1500 V DC (IEC)",
-												"shape": "text",
+												"quantity": "voltage",
+												"raw_unit": "V",
+												"raw_value": "1500.0",
+												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "max_system_voltage_v",
-													"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
-												"status": "text_evidence",
-												"unit": null,
-												"value": "1500 V DC (IEC)"
+												"status": "typed",
+												"value": 1500.0
 											}
 										],
 										"id": "pv_module_voltage:string_b",
@@ -6202,26 +5411,15 @@
 										"actual": 45.4,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "voltage",
 												"raw_unit": "V",
 												"raw_value": "45.4",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "vmpp_v",
-													"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 45.4
 											},
 											{
@@ -6306,26 +5504,15 @@
 										"actual": 10.14,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "current",
 												"raw_unit": "A",
 												"raw_value": "10.14",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "impp_a",
-													"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.14
 											},
 											{
@@ -6362,26 +5549,15 @@
 										"actual": 10.81,
 										"facts": [
 											{
-												"columns": [],
-												"evidence_refs": [],
-												"qualifier": null,
 												"quantity": "current",
 												"raw_unit": "A",
 												"raw_value": "10.81",
 												"shape": "scalar",
 												"source": {
-													"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-													"figure_key": "isc_a",
-													"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-													"page": 2,
-													"product_id": 90000001,
-													"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-													"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+													"kind": "user_declared",
+													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.81
 											},
 											{
@@ -6456,7 +5632,7 @@
 										"id": "battery",
 										"reason": "no_battery_selected",
 										"required": null,
-										"status": "unresolved"
+										"status": "satisfied"
 									}
 								],
 								"country_assessment": {
@@ -6553,49 +5729,27 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
@@ -6632,73 +5786,40 @@
 											"actual": null,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "voc_v",
-														"figure_sha256": "1cdeb2c898809bc05babea1da6491ee58af07af22ec1f3a6dc70e6c080d87019",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "temperature_coefficient",
 													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "beta_voc_pct_per_c",
-														"figure_sha256": "38219c2a83b053497467dce605e2e72ca587213ff64303ef9ef89fd810bae0f3",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "1/°C",
 													"value": -0.0024
 												},
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
-													"quantity": null,
-													"raw_unit": null,
-													"raw_value": "1500 V DC (IEC)",
-													"shape": "text",
+													"quantity": "voltage",
+													"raw_unit": "V",
+													"raw_value": "1500.0",
+													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "max_system_voltage_v",
-														"figure_sha256": "4246de2bc00e790b711cab20cb90a01b84119a576406b50ef2698b42bd95f01b",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
-													"status": "text_evidence",
-													"unit": null,
-													"value": "1500 V DC (IEC)"
+													"status": "typed",
+													"value": 1500.0
 												}
 											],
 											"id": "pv_module_voltage:string_b",
@@ -6711,26 +5832,15 @@
 											"actual": 45.4,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "voltage",
 													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "vmpp_v",
-														"figure_sha256": "09338707589b3f2f3c8098bcfafd70335ab5db8c23d81b26224b7872d2f65223",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -6815,26 +5925,15 @@
 											"actual": 10.14,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "impp_a",
-														"figure_sha256": "f942227a135a00a824beb7575a85ae8ed8ba7d1d09da7d0a69e901076fe60b44",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -6871,26 +5970,15 @@
 											"actual": 10.81,
 											"facts": [
 												{
-													"columns": [],
-													"evidence_refs": [],
-													"qualifier": null,
 													"quantity": "current",
 													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
-														"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-														"figure_key": "isc_a",
-														"figure_sha256": "24129e84e63130c24a8556c85acbdd42216b003e41fd4885fb30a00e6a74eab4",
-														"page": 2,
-														"product_id": 90000001,
-														"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-														"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+														"kind": "user_declared",
+														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -6970,7 +6058,7 @@
 											"cold_voc_v": null,
 											"id": "string_b",
 											"input": 1,
-											"model": "Trina Solar TSM-460NEG9R.28",
+											"model": "PV 460 Wp · 1762 × 1134 mm",
 											"module_count": 1,
 											"module_ids": [
 												"pv_b:0:0"
@@ -7988,10 +7076,10 @@
 				"reason": "explicit_scenario_replay_is_not_equipment_release",
 				"status": "not_assessed"
 			},
-			"input_sha256": "f08bfb1f8d28be5b3539edbee768e3de596e5aa6cfe46a4be039810ffae8e909",
+			"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
 			"interval_count": 2,
 			"kind": "plant_ac_energy_replay_v1",
-			"manifest_sha256": "5fccb0328b614ef8e562e0c2e886b613c71e26b79b63a3ee41254503a38a0b6a",
+			"manifest_sha256": "ed8ba5d7578b6ae906a127a1e1996d374b65a6a0579cb6a1f42778b31a4b8ac6",
 			"metrics": {
 				"aux_ac_unserved_kwh": 0.0,
 				"charge_conversion_loss_kwh": 0.0,
@@ -8075,9 +7163,9 @@
 				"pv_available_ac.metadata": "dd493b22530e07bd9d79ab19f19357eab88551c35f8b92f1e23bd136e3b5092b",
 				"pv_available_ac.raw": "f04e0884ee73afec06617b4bed66870894009732ff4f01833d5ef43e1d1ad0ff",
 				"pv_available_ac.timezone": "5ee475f71a0fc1a32faeb849f8c39c6e7aa66d6d41ec742b97b3a7436b3b0701",
-				"resolved_inputs": "81a2c4bb0e675f6f6266bed9cb248a3e425c6763e77a2bb039a9adf9a63cb165",
-				"runtime_bundle": "9a60dfcc2b1cce8e909ed1384a11be4a99e985412cc799c4c3763a17c26f38e6",
-				"woo.equipment_inputs": "b201bf59fc206372eeb0754cb7fdd71f1829f9a5e56edf0caf7b71602c18ea85"
+				"resolved_inputs": "667a1af7b135d343a4340db3e352866ec73877e1f2919c60dc33fc96b28613b9",
+				"runtime_bundle": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
+				"woo.equipment_inputs": "613d4f326bc772823bf89977d508852a986712b4d3bd1c5a298263323188a941"
 			},
 			"profile_interpretation": {
 				"operating_periods": [
@@ -8213,12 +7301,12 @@
 					}
 				]
 			},
-			"project_id": "c86b32dd285b4c0487f505c7f7aeebe9",
+			"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 			"revision": 2,
-			"runtime_sha256": "9a60dfcc2b1cce8e909ed1384a11be4a99e985412cc799c4c3763a17c26f38e6",
+			"runtime_sha256": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 			"scenario_constraint_status": "satisfied",
 			"schema": 1,
-			"trace_sha256": "7f907c9bcb60bff5a3beb54540264350e9f58ebf38c4d95db88ef0535ca63df8",
+			"trace_sha256": "237aef2574df962b2da0592abb27e2d8aa1d16a30e0ef420198a4141962c426f",
 			"verification": {
 				"checks": [
 					{
@@ -8619,12 +7707,12 @@
 			"system_scope": "pv_only"
 		},
 		"energy_plant": {
-			"aux_ac_asset_id": "cefcd5ec2a484747b1984a13ba2d5c5b",
+			"aux_ac_asset_id": "1fa72b04c95c40a6b74b0550d3bac771",
 			"controller": "proportional_available_power_self_consumption_v1",
 			"coupling": "plant_ac",
 			"critical_load_asset_id": null,
-			"gross_load_asset_id": "db39025d709f489a9e9e8c096e89b3e3",
-			"pv_available_asset_id": "83745b9ab5a24e2b89c6f60c3ca9c824",
+			"gross_load_asset_id": "bfa0b3d9a4944c918efbf84b3646a5a0",
+			"pv_available_asset_id": "6cc5ad7712084f928f6369ba1103ba2a",
 			"schedule": [
 				{
 					"allow_grid_charge": false,
@@ -8836,22 +7924,28 @@
 			],
 			"module_specs": [
 				{
+					"electrical": {
+						"alpha_isc_pct_per_c": 0.04,
+						"beta_voc_pct_per_c": -0.24,
+						"cell_technology": "monocrystalline",
+						"impp_a": 10.14,
+						"isc_a": 10.81,
+						"max_system_voltage_v": 1500,
+						"vmpp_v": 45.4,
+						"voc_v": 53.8
+					},
+					"gamma_pdc_per_c": -0.0029,
 					"id": "module",
 					"length_m": 1.762,
-					"model": "Trina Solar TSM-460NEG9R.28",
+					"model": "PV 460 Wp · 1762 × 1134 mm",
 					"source": {
-						"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-						"kind": "datasheet",
-						"note": "Trina Solar TSM-460NEG9R.28",
-						"page": 2,
-						"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-						"woo": {
-							"product_id": 90000001,
-							"product_revision": "63d58e4e00d3f9ec57b48aacf22a4a29d7af1aedce3682ec56aebe3eaa0741c8",
-							"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-						}
+						"document_sha256": null,
+						"kind": "user_declared",
+						"note": "declared_reference — Customer-provided panel parameters.",
+						"page": null,
+						"url": null
 					},
-					"stc_power_w": 460.0,
+					"stc_power_w": 460,
 					"thickness_m": 0.03,
 					"width_m": 1.134
 				}
@@ -8922,9 +8016,9 @@
 		"profile_selections": {
 			"schema_version": 1,
 			"selected": {
-				"aux_ac": "cefcd5ec2a484747b1984a13ba2d5c5b",
-				"gross_load": "db39025d709f489a9e9e8c096e89b3e3",
-				"pv_available_ac": "83745b9ab5a24e2b89c6f60c3ca9c824"
+				"aux_ac": "1fa72b04c95c40a6b74b0550d3bac771",
+				"gross_load": "bfa0b3d9a4944c918efbf84b3646a5a0",
+				"pv_available_ac": "6cc5ad7712084f928f6369ba1103ba2a"
 			}
 		},
 		"pv_plant_string_plan": {

@@ -599,7 +599,7 @@ class Thread {
 	 *
 	 * @param int $conversation Conversation post ID.
 	 */
-	private function lock_name( int $conversation ): string {
+	public function lock_name( int $conversation ): string {
 		global $wpdb;
 		$database = '';
 		if ( isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) && '' !== $wpdb->dbname ) {

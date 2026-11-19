@@ -64,6 +64,7 @@ from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
 from .conftest import FixtureObject, json_object, mapping_role
+from .panel_fixture import panel_basis, panel_parameters
 from .test_brief import incomplete_brief
 from .test_energy_kernel import BATTERY, TOLERANCE, create_scenario
 from .test_energy_kernel import worker as energy_worker
@@ -1426,7 +1427,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     )
     layout = geometry()
     module_id = layout["module_specs"][0]["id"]
-    module_basis = json_object(source.module_basis())["module"]
+    module_basis = panel_parameters()
     layout["module_specs"] = [{**module_basis["specification"], "id": module_id}]
     parameter_data = parameter_document()
     parameter_data["modules"] = [
@@ -1500,7 +1501,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         "parameters_sha256": digest(
             encode(json_object(project.inputs)["pv_generation"])
         ),
-        "woo_module_inputs": json_object(source.module_basis()),
+        "woo_module_inputs": panel_basis(),
         "dependencies": {
             "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
             "pv_model_witness": workspace.blobs.put(generated.witness_json),
@@ -1527,7 +1528,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     roof_parts = json_object(
         saved_roof_components(
             layout,
-            json_object(source.module_basis()),
+            panel_basis(),
             workspace.blobs,
             project.revision,
         )
@@ -1860,10 +1861,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             )
             == 3
         )
-        assert any(
-            row[0] == ("5 pc" if locale == "en" else "5 St.") and "460" in row[1]
-            for row in bom.table.rows
-        )
+        assert not any("460 Wp" in row[1] for row in bom.table.rows)
         assert any(
             row[0] == ("3 pc" if locale == "en" else "3 St.")
             and battery["model"] in row[1]
@@ -1872,7 +1870,8 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         part_table = next(
             section for section in report.sections if section.id == "pv-components"
         ).table
-        assert part_table is not None and part_table.rows[0][0] == "5"
+        assert part_table is not None
+        assert any(row[0] == "5" and "460 Wp" in row[1] for row in part_table.rows)
         section = next(section for section in report.sections if section.id == "energy")
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)
@@ -1983,77 +1982,18 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     assert workspace.get(owner, project.id) == snapshot
 
 
-def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
-    feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    loaded = SimpleNamespace(
-        engine=replace(engine, products=Products.from_feed(feed)),
-        publication=Publication(feed),
-        version="fixture",
-    )
-    withdrawn = False
-    loads = 0
-    reads = 0
-
-    def load() -> SimpleNamespace:
-        nonlocal loads
-        loads += 1
-        return loaded
-
-    def current(self: Publication) -> FixtureObject:
-        nonlocal reads
-        reads += 1
-        manifest = publication_manifest(self.feed)
-        for row in manifest["products"]:
-            row["ready"]["engineering"] = True
-        if withdrawn:
-            manifest["products"] = [
-                row
-                for row in manifest["products"]
-                if row.get("engineering_role") != "reference_pv_module"
-            ]
-        return manifest
-
-    monkeypatch.setattr(Publication, "read", current)
-    source = ProductSources(load)
-    proof = json_object(source.module_basis())
-    proof["publication"]["compatibility_revision"] = "0" * 64
-    source.confirm_basis(proof)
-    electrical = json_object(source.electrical_module_basis())
-    source.confirm_basis(electrical)
-    changed_electrical = copy.deepcopy(electrical)
-    changed_electrical["electrical_product"]["figures"]["voc_v"]["value"] = 1
+def test_historic_product_panel_proof_is_retired() -> None:
+    source = ProductSources(lambda: pytest.fail("no Woo read for a retired panel"))
     with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed_electrical)
-    changed = copy.deepcopy(proof)
-    changed["module"]["parameters"]["gamma_pdc_per_c"] = -0.01
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed)
-    changed = copy.deepcopy(proof)
-    changed["publication"]["documents"][0]["blob_sha256"] = "0" * 64
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(changed)
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_basis(proof)
-
-    withdrawn = False
-    loads = reads = 0
-    source.confirm_bases([(proof, True), (electrical, True), (electrical, False)])
-    assert (loads, reads) == (1, 1)
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_bases([(proof, True)])
-    assert (loads, reads) == (2, 2)
-    withdrawn = False
-    source.confirm_bases([(electrical, False)])
-    withdrawn = True
-    with pytest.raises(ProductEvidenceChanged):
-        source.confirm_bases([(electrical, False)])
-    assert (loads, reads) == (4, 4)
-    with pytest.raises(VersionUnavailable, match="pinned Woo product proof"):
-        source.confirm_bases([({}, False)])
-    assert (loads, reads) == (4, 4)
+        source.confirm_basis(
+            {
+                "schema_version": 1,
+                "publication": {
+                    "reference_inputs": [{"reference_input_id": "retired"}]
+                },
+            }
+        )
+    source.confirm_basis(panel_basis())
 
 
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
@@ -2630,7 +2570,6 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         # A customer may keep a previously adopted search result while adding
         # wiring. The matching, completed check must be usable in the report.
         from linker_engine.planning.geometry import panel_poses, read_geometry
-        from linker_engine.planning.woo_module import module_template
 
         from .test_pv_generation import geometry
 
@@ -2639,7 +2578,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             "linker_engine.planning.equipment_kernel.assess_equipment", original
         )
         layout = geometry()
-        module = json_object(module_template(feed["overlay"][0]))
+        module = panel_parameters(electrical=True)
         layout["module_specs"] = [{**module["specification"], "id": "module"}]
         layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
         module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -2665,6 +2604,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                 "project_id": pid,
                 "expected_revision": 2,
                 "inputs": wired_inputs,
+                "input_contract": "project_panel_parameters_v1",
                 "key": "adopt-candidate-with-wiring",
             },
             headers=headers(),
@@ -2766,7 +2706,7 @@ def test_current_equipment_check_freezes_unsaved_manual_hardware_and_pv_wiring_f
         product_provider=lambda: loaded,
     )
     layout = geometry()
-    module = json_object(source.electrical_module_basis())["module"]
+    module = panel_parameters(electrical=True)
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -3668,7 +3608,7 @@ def test_backup_candidate_reaches_report_and_bom_without_preparation(
         if retained_roof_export is not None:
             authored.update(brief_inputs("Europe/Berlin"))
             authored["brief"]["system_scope"] = "storage_only"
-            roof = fixture_inputs(json_object(source.module_basis()))["geometry"]
+            roof = fixture_inputs()["geometry"]
             roof["sources"][0]["permissions"]["export"] = retained_roof_export
             authored["geometry"] = roof
         found = rig.post(
@@ -3940,15 +3880,6 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
                 "logo": None,
             },
         }
-        current = loaded.publication.read()
-        reference = next(
-            row
-            for row in current["products"]
-            if row.get("engineering_role") == "reference_pv_module"
-        )
-        if declared_module:
-            reference["documents"] = []
-        monkeypatch.setattr(loaded.publication, "read", lambda: current)
         if export != "permitted":
             refused = client.post(
                 "/runs/report",
@@ -3978,28 +3909,9 @@ def test_roof_layout_changes_refuse_a_new_report_and_keep_the_old_pdf(
             workspace.blobs.object(finished["result"]["pinned_assets"]["report.source"])
         )
         parts = frozen_report["pv_components"]
-        if declared_module:
-            assert parts == {
-                "status": "unavailable",
-                "reason": "declared_reference_module",
-            }
-            assert "equipment_pv" not in frozen_report["woo_bases"]
-        else:
-            assert parts["components"][0]["quantity"] == 20
-            assert parts["nameplate_kwp"] == pytest.approx(9.2)
-            reference["documents"] = []
-            refused = client.post(
-                "/runs/report",
-                json={
-                    "schema_version": 1,
-                    **report_command,
-                    "expected_revision": saved["revision"],
-                    "key": "withdrawn-module-document",
-                },
-                headers=headers(owner),
-            )
-            assert refused.status_code == 409, refused.text
-            assert refused.json()["error"]["code"] == "product_evidence_changed"
+        assert parts["status"] == "available"
+        assert parts["components"][0]["quantity"] == 20
+        assert "equipment_pv" not in frozen_report["woo_bases"]
         changed = copy.deepcopy(adopted)
         changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 12
         revised = rig.post(
@@ -6620,17 +6532,14 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     from linker_engine.planning.geometry import panel_poses, read_geometry
     from linker_engine.planning.pv_string_assessment import assess_pv_strings
     from linker_engine.planning.pv_string_inputs import PvStringPlan
-    from linker_engine.planning.woo_module import module_template
 
     from .test_pv_generation import geometry
 
-    reference = feed["overlay"][0]
-    proof = {
-        "module": json_object(module_template(reference)),
-        "electrical_product": reference,
-    }
+    proof = panel_basis()
     layout = geometry()
-    layout["module_specs"] = [{**proof["module"]["specification"], "id": "module"}]
+    layout["module_specs"] = [
+        {**panel_parameters(electrical=True)["specification"], "id": "module"}
+    ]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
     assert len(ids) == 12
@@ -6744,11 +6653,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     standby_value["pv_string_plan"]["strings"][0]["module_ids"] = standby_ids[:20]
     below = json_object(assess_pv_strings(standby_value, standby_basis))
     assert below["standby"]["points"][0]["observation"] == "outside_interval"
-    boundary_basis = copy.deepcopy(standby_basis)
-    boundary_basis["pv_module_inputs"]["electrical_product"]["figures"]["vmpp_v"][
-        "value"
-    ] = 47.5
-    boundary = json_object(assess_pv_strings(standby_value, boundary_basis))
+    boundary_value = copy.deepcopy(standby_value)
+    boundary_value["geometry"]["module_specs"][0]["electrical"]["vmpp_v"] = 47.5
+    boundary = json_object(assess_pv_strings(boundary_value, standby_basis))
     assert boundary["standby"]["points"][0]["voltage_v"] == 950
     assert boundary["standby"]["points"][0]["observation"] == "boundary"
     assert "standby" not in result
@@ -6789,8 +6696,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     )
     assert model["diagnostics"]["stc"]["v_mp"] == pytest.approx(45.4)
     assert model["diagnostics"]["stc"]["i_mp"] == pytest.approx(10.14)
-    assert model["diagnostics"]["noct"]["cell_c_interval"] == [41, 45]
-    assert model["diagnostics"]["noct"]["declared_p_mp_w"] == 352
+    assert "noct" not in model["diagnostics"]
     assert "cells_in_series" not in model["parameters"]
     presentation = build_report(
         {
@@ -6812,7 +6718,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert op_checks["pv_model_applicability"]["status"] == "unresolved"
     assert op_checks["pv_hot_current:1"]["actual"] < op_checks["pv_hot_isc:1"]["actual"]
     invalid_conditions = copy.deepcopy(operating_value)
-    invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 100
+    invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 10
     outside = json_object(assess_equipment(invalid_conditions, basis))["pv_electrical"][
         "operating"
     ]
@@ -6826,7 +6732,8 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     # Reuse the valid fitted result to guard the observed success=True /
     # negative-resistance failure; do not rerun a root for this failure fixture.
     from linker_engine.planning import pv_iv_model
-    from linker_engine.planning.equipment_facts import compile_facts
+    from linker_engine.planning.declared_module import electrical_facts
+    from linker_engine.planning.geometry_documents import ModuleSpec
 
     with monkeypatch.context() as patch:
         patch.setattr(
@@ -6838,7 +6745,11 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
             ),
         )
         assert (
-            pv_iv_model.derive_iv_model(json_object(compile_facts(reference)))["status"]
+            pv_iv_model.derive_iv_model(
+                electrical_facts(
+                    ModuleSpec.read(panel_parameters(electrical=True)["specification"])
+                )
+            )["status"]
             == "unavailable"
         )
     without_target = copy.deepcopy(value)
@@ -6883,17 +6794,14 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     from linker_engine.planning.plant_assessment import assess_plant
     from linker_engine.planning.project_input_contracts import (
         GEOMETRIC_PV_INPUT_CONTRACT,
-        PLANT_PV_INPUT_CONTRACT,
         require_input_contract,
     )
     from linker_engine.planning.pv_string_inputs import PvPlantStringPlan
-    from linker_engine.planning.woo_module import module_template
 
     from .test_pv_generation import geometry
 
-    reference = feed["overlay"][0]
     layout = geometry()
-    module = json_object(module_template(reference))
+    module = panel_parameters(electrical=True)
     layout["module_specs"] = [{**module["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
     mids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
@@ -6933,7 +6841,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     basis: FixtureObject = {
         "products": feed["products"],
         "compatibility": engine.compatibility.snapshot(),
-        "pv_module_inputs": {"module": module, "electrical_product": reference},
+        "pv_module_inputs": panel_basis(),
         "publication": {"products": [], "documents": [], "reference_inputs": []},
     }
     with pytest.raises(ProjectInputContractRequired):
@@ -6942,7 +6850,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         require_input_contract(
             value, {"equipment_plant": plant}, GEOMETRIC_PV_INPUT_CONTRACT
         )
-    require_input_contract(value, value, PLANT_PV_INPUT_CONTRACT)
+    require_input_contract(value, value, "project_panel_parameters_v1")
     cached = {
         digest(encode(unit["selection"])): json_object(
             assess_equipment({"equipment_selection": unit["selection"]}, basis)
@@ -7168,7 +7076,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         "Two separately wired systems",
         linked,
         key="plant-wiring-create",
-        input_contract=PLANT_PV_INPUT_CONTRACT,
+        input_contract="project_panel_parameters_v1",
     )
     run = equipment.evaluate(owner, project.id, 1, key="plant-wiring-evaluate")
     assert executor.run_once()
@@ -7657,7 +7565,7 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
         }
         if wired:
             layout = geometry()
-            module = json_object(source.electrical_module_basis())["module"]
+            module = panel_parameters(electrical=True)
             layout["module_specs"] = [{**module["specification"], "id": "module"}]
             layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
             declarations.update(
@@ -7675,7 +7583,9 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             "project_id": pid,
             "expected_revision": 1,
             "inputs": declarations,
-            "input_contract": "backup_demand_v1",
+            "input_contract": "project_panel_parameters_v1"
+            if wired
+            else "backup_demand_v1",
             "key": "compare-profile-bounds",
         }
         if wired_dc or topology in ("plant_ac", "plant_shared_dc", "undeclared_plant"):

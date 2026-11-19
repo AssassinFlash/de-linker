@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, cast
+from typing import cast
 
 import pytest
 from conftest import publication_manifest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from linker_engine.planning import direct_beam_job
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import assistant_context
 from linker_engine.planning.canonical import Object, digest, encode
@@ -23,7 +22,6 @@ from linker_engine.planning.errors import (
     Conflict,
     EvaluationRevisionChanged,
     NotFound,
-    ProductEvidenceChanged,
 )
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
@@ -41,7 +39,8 @@ from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
-from .conftest import FixtureObject, json_object
+from .conftest import FixtureObject
+from .panel_fixture import panel_parameters
 from .test_energy_kernel import TOLERANCE
 from .test_private_http import TOKEN, headers
 from .test_pv_generation import geometry
@@ -75,7 +74,7 @@ def test_owned_frozen_weather_runs_only_in_worker_and_fails_closed_on_source_or_
     monkeypatch.setattr(Publication, "read", current)
     assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
-    template = cast(Object, json_object(products.module_basis())["module"])
+    template = cast(Object, panel_parameters())
     roof = geometry()
     identifier = roof["module_specs"][0]["id"]
     roof["module_specs"] = [
@@ -412,11 +411,8 @@ def test_owned_frozen_weather_runs_only_in_worker_and_fails_closed_on_source_or_
     with pytest.raises(Conflict):
         service.evaluate(owner, project.id, 1, key="visibility")
     assert publication_reads == reads_before_replay
-    with pytest.raises(ProductEvidenceChanged):
-        service.evaluate(owner, project.id, 2, key="new-withdrawn-command")
-    with pytest.raises(ProductEvidenceChanged):
-        reports.kernel.context(owner, project.id, 2, options)
-    assert publication_reads > reads_before_replay and parses == 1
+    reports.kernel.context(owner, project.id, 2, options)
+    assert publication_reads == reads_before_replay
     withdrawn = False
 
     # An owned row is insufficient if its retained original was corrupted.
@@ -432,22 +428,6 @@ def test_owned_frozen_weather_runs_only_in_worker_and_fails_closed_on_source_or_
         assert parses == 1
     finally:
         path.write_bytes(retained)
-
-    # Reuse the identical already-computed two-row witness. This isolates the
-    # actual post-compute Woo permission race without recomputing geometry.
-    permission_run = service.evaluate(owner, project.id, 2, key="permission-race")
-
-    def withdraw_after_compute(*args: Any, **kwargs: Any) -> Object:
-        nonlocal withdrawn
-        withdrawn = True
-        return deepcopy(witness)
-
-    monkeypatch.setattr(direct_beam_job, "prepare_direct_beam", withdraw_after_compute)
-    assert worker.run_once()
-    refused = workspace.run(owner, permission_run.id)
-    assert refused.state == "failed" and refused.result is None
-    assert refused.error == {"code": "product_evidence_changed", "retryable": False}
-    withdrawn = False
 
     # A save between the owned read and enqueue is rejected by the existing
     # transactional Workspace revision fence, never replaced with latest inputs.

@@ -42,6 +42,7 @@ from .records import Actor, Run
 from .report_copy import check_label, text
 from .report_model import build_report
 from .report_numbers import number, percent
+from .retained_panels import display_document, project_panels
 from .workspace import Workspace
 
 # Assistant context resource policies, not numerical/engineering limits.
@@ -69,6 +70,7 @@ _MATERIAL_HANDLING = frozenset(
         "installation_requirement",
         "manufacturer_included",
         "pv_reference",
+        "pv_declared",
         "site_engineering_required",
         "woo_product",
     }
@@ -135,9 +137,54 @@ def _rows(value: Json, locale: str, prefix: str = "") -> list[Json]:
     return result
 
 
+def _roof_panel_count(lines: list[Object]) -> int | None:
+    if not lines or any(row.get("scope") == "dc_group" for row in lines):
+        return None
+    quantities = [row.get("quantity") for row in lines]
+    if not all(type(n) is int and n >= 0 for n in quantities):
+        return None
+    return sum(cast(list[int], quantities))
+
+
+def _archived_roof_count(
+    workspace: Workspace, run: Run, source: Object | None
+) -> int | None:
+    if run.result is None:
+        return None
+    context = run.manifest.get("context")
+    pinned = context.get("assets") if isinstance(context, dict) else None
+    dependencies = run.result.get("dependencies")
+    if not isinstance(pinned, dict) or not isinstance(dependencies, dict):
+        return None
+    sha = pinned.get("report.source")
+    if not isinstance(sha, str) or sha != dependencies.get("report_source"):
+        return None
+    if source is None:
+        source = workspace.blobs.object(sha)
+    if (
+        source.get("project_id") != run.project_id
+        or source.get("revision") != run.revision
+        or source.get("input_sha256") != run.manifest.get("input_sha256")
+    ):
+        return None
+    components = source.get("pv_components")
+    if (
+        not isinstance(components, dict)
+        or components.get("status") != "available"
+        or components.get("scope") == "dc_group"
+    ):
+        return None
+    rows = components.get("components")
+    return (
+        _roof_panel_count(cast(list[Object], rows))
+        if isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
+        else None
+    )
+
+
 def _report_materials(
     workspace: Workspace, run: Run, result: Object, source: Object | None = None
-) -> Json | None:
+) -> Object | None:
     """Expose one verified materials projection without duplicating its rows."""
     materials_sha = result.get("materials_sha256")
     if materials_sha is None:
@@ -222,7 +269,30 @@ def _report_materials(
         handling_counts[handling] = handling_counts.get(handling, 0) + 1
         if quantity is None:
             unresolved += 1
+    declaration = next(
+        (
+            line
+            for line in raw_lines
+            if isinstance(line, dict) and line.get("handling") == "pv_declared"
+        ),
+        None,
+    )
     return {
+        **(
+            {
+                "declared_panel_count": declaration.get("quantity"),
+                "declared_panel_stc_power_w": declaration.get("stc_power_w"),
+            }
+            if declaration is not None
+            else {}
+        ),
+        "saved_roof_panel_count": _roof_panel_count(
+            [
+                row
+                for row in raw_lines
+                if isinstance(row, dict) and row.get("handling") == "pv_reference"
+            ]
+        ),
         "status": "verified",
         "sha256": materials_sha,
         "model": model,
@@ -1290,11 +1360,17 @@ def assistant_context(
             }
             result["truncated"] = result["truncated"] or len(rows) > remaining
             remaining -= min(remaining, len(rows))
+    panels = project_panels(project.inputs)
     runs: list[Json] = []
     for run_id in run_ids:
         run = workspace.run(actor, run_id)
         if run.project_id != project.id:
             raise InvalidInput("selected result belongs to a different project")
+        if run.revision != project.revision:
+            historical = workspace.get(actor, project.id, revision=run.revision)
+            panels.extend(
+                p for p in project_panels(historical.inputs) if p not in panels
+            )
         source_out: list[Object] = []
         rows = (
             _result_rows(workspace, run, locale, source_out)
@@ -1420,7 +1496,21 @@ def assistant_context(
             materials = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )
+            selected_run_view["saved_roof_panel_count"] = (
+                materials.pop("saved_roof_panel_count")
+                if materials is not None
+                else _archived_roof_count(
+                    workspace, run, source_out[0] if source_out else None
+                )
+            )
             if materials is not None:
+                if "declared_panel_count" in materials:
+                    selected_run_view["declared_panel_count"] = materials.pop(
+                        "declared_panel_count"
+                    )
+                    selected_run_view["declared_panel_stc_power_w"] = materials.pop(
+                        "declared_panel_stc_power_w"
+                    )
                 selected_run_view["materials"] = materials
                 installation = source_out[0].get("installation") if source_out else None
                 review = (
@@ -1463,6 +1553,7 @@ def assistant_context(
         if omitted:
             result["truncated"] = True
     result["runs"] = runs
+    result = display_document(result, panels)
     if len(encode(result)) > MAX_TEXT_BYTES:
         # Keep explicit provenance/status and refuse an oversized source, not a partial fact.
         raise InvalidInput("assistant context exceeds its presentation budget")

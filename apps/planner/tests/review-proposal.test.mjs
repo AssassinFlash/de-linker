@@ -40,10 +40,13 @@ test("review shows the report's actual BOM and supports generation before a repo
 	await act(async () =>
 		root.render(React.createElement(ReviewProposal, value)),
 	);
-	assert.match(
-		document.querySelector("table").textContent,
-		/Trina Solar TSM-460NEG9R.28/,
+	const solarTitle = value.run.result.report.sections.find(
+		(section) => section.id === "pv-components",
+	).title;
+	const solarSection = [...document.querySelectorAll(".sc-card")].find(
+		(section) => section.querySelector("h2")?.textContent === solarTitle,
 	);
+	assert.match(solarSection.querySelector("table").textContent, /460 Wp/);
 	assert.ok(document.querySelector("details"));
 	assert.ok(button("Generate report in English"));
 	assert.equal(
@@ -67,6 +70,99 @@ test("review shows the report's actual BOM and supports generation before a repo
 	await act(async () => button("Generate project report").click());
 	assert.equal(generated, 1);
 });
+
+test("site installation requirements have their own section alongside equipment and panel layout", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element);
+	t.after(() => page.dispose(root));
+	const value = props(),
+		report = value.run.result.report;
+	const base = {
+		id: "bom",
+		title: "Selected equipment",
+		paragraphs: [],
+		rows: [],
+		table: {
+			columns: ["Quantity", "Product"],
+			rows: [["1", "Selected inverter"]],
+		},
+	};
+	const solar = report.sections.find(
+		(section) => section.id === "pv-components",
+	);
+	report.sections = [
+		base,
+		{
+			...base,
+			id: "site-materials",
+			title: "Site installation materials",
+			table: {
+				columns: ["Quantity", "Requirement"],
+				rows: [["4", "Mounting rails"]],
+			},
+		},
+		solar,
+	];
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const areas = [...document.querySelectorAll(".sc-report-table")].filter(
+		(section) => !section.closest("dialog"),
+	);
+	assert.deepEqual(
+		areas.map((section) => section.getAttribute("aria-label")),
+		[base.title, "Site installation materials", solar.title],
+	);
+	assert.match(areas[1].textContent, /Mounting rails/);
+});
+for (const historical of [false, true]) {
+	test(
+		"a panel-only " +
+			(historical ? "historical" : "current") +
+			" report shows one labeled layout and still offers its files",
+		async (t) => {
+			const page = setupDom(),
+				root = createRoot(page.element);
+			t.after(() => page.dispose(root));
+			const value = props(),
+				report = value.run.result.report;
+			const solar = report.sections.find(
+				(section) => section.id === "pv-components",
+			);
+			solar.title = "Solar panel layout";
+			solar.table.columns = ["Quantity", "Panel parameters", "Rated power"];
+			report.sections = [solar];
+			if (historical)
+				value.history = {
+					items: [],
+					selected: value.run.id,
+					run: value.run,
+					select() {},
+				};
+			await act(async () =>
+				root.render(React.createElement(ReviewProposal, value)),
+			);
+			const layouts = [...document.querySelectorAll("section")].filter(
+				(section) =>
+					section.firstElementChild?.textContent === "Solar panel layout" &&
+					!section.closest("dialog"),
+			);
+			assert.equal(layouts.length, 1);
+			assert.match(layouts[0].textContent, /460 Wp/);
+			assert.deepEqual(
+				[
+					...layouts[0].querySelectorAll(
+						"tbody tr:first-child td .sc-bom-label",
+					),
+				].map((e) => e.textContent),
+				solar.table.columns,
+			);
+			assert.ok(button("Download PDF"));
+			assert.ok(button("Download bill of materials (CSV)"));
+			assert.ok(button("Preview report"));
+		},
+	);
+}
 
 test("replacing the report aborts its download and releases the next report's controls", async (t) => {
 	const page = setupDom(),
@@ -106,6 +202,16 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 	const value = props(),
 		calls = [],
 		revoked = [];
+	const pdf = value.run.result.prepared_asset,
+		csv = value.run.result.prepared_attachments.bill_of_materials_csv;
+	for (const [file, id, sha] of [
+		[pdf, "4", "5"],
+		[csv, "6", "7"],
+	]) {
+		file.reissued_from = { id: file.id, content_sha256: file.content_sha256 };
+		file.id = id.repeat(32);
+		file.content_sha256 = sha.repeat(64);
+	}
 	value.client.reportPdf = async (...args) => {
 		calls.push(["pdf", ...args]);
 		return new Blob(["pdf"]);
@@ -129,8 +235,10 @@ test("downloads use the report's pinned PDF and CSV and revoke their object URLs
 		root.render(React.createElement(ReviewProposal, value)),
 	);
 	await act(async () => button("Download PDF").click());
-	assert.equal(calls[0][5], value.run.result.prepared_asset.content_sha256);
+	assert.equal(calls[0][2], pdf.id);
+	assert.equal(calls[0][5], pdf.content_sha256);
 	await act(async () => button("Download bill of materials (CSV)").click());
+	assert.equal(calls[1][2], csv.id);
 	assert.equal(
 		calls[1][4],
 		value.run.result.prepared_attachments.bill_of_materials_csv.content_sha256,
@@ -222,7 +330,7 @@ test("report preview opens the complete pinned report and its original PDF", asy
 	assert.equal(dialog.open, false);
 	await act(async () => button("Preview report").click());
 	assert.equal(dialog.open, true);
-	assert.match(dialog.textContent, /Trina Solar TSM-460NEG9R.28/);
+	assert.match(dialog.textContent, /460 Wp/);
 	assert.deepEqual(requested[0]?.slice(0, 3), [
 		value.run.project_id,
 		asset.id,

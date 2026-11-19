@@ -368,12 +368,11 @@ def pvlib_rows(
     for component in cast(
         list[Object], components.get("components", []) if components else []
     ):
-        citation = _object(component["source"])
         add(
             rows,
             one(
                 "pvlib_module",
-                f"{number(component['quantity'])} × {component['model']} / {number(component['stc_power_w'])} W; {citation.get('document_sha256')} / p. {citation.get('page')}",
+                f"{number(component['quantity'])} × {component['model']}",
             ),
         )
     modules = {

@@ -121,6 +121,7 @@ class Reading:
     cost: float
     saved_material_question: float | None = None
     saved_protection_question: float | None = None
+    saved_panel_count_question: float | None = None
 
     def as_log(self) -> dict[str, Any]:
         return {
@@ -133,6 +134,7 @@ class Reading:
             "cost": self.cost,
             "saved_material_question": self.saved_material_question,
             "saved_protection_question": self.saved_protection_question,
+            "saved_panel_count_question": self.saved_panel_count_question,
         }
 
 
@@ -189,6 +191,14 @@ class Jev:
                     "instructions": "Is the customer asking to explain the results, values or status of protection comparisons already recorded in this saved report? Answer no to causes of real faults or accidents, general protection device selection, and questions not about the report's recorded comparisons.",
                 },
             }
+        if page.get("saved_roof_panel_count_available") is True:
+            questions = {
+                **questions,
+                "saved_panel_count_question": {
+                    "type": "noul",
+                    "instructions": "Can this request be answered in full by stating how many solar panels the selected saved report records, with the answer identifying whether the count comes from the roof layout or a customer entry, or stating that the report records only the power per panel? A request for a recommendation, potential capacity, a particular array, extra technical details, or an equipment quotation requires a different answer.",
+                },
+            }
         payload = {"model": MODEL, "state": state, "questions": questions}
         started = time.perf_counter()
         body = self._post(payload)
@@ -239,6 +249,11 @@ def _reading(body: dict[str, Any], seconds: float) -> Reading:
             cost=float(usage.get("cost") or 0.0) if isinstance(usage, dict) else 0.0,
             saved_material_question=float(answers["saved_material_question"]["noul"])
             if "saved_material_question" in answers
+            else None,
+            saved_panel_count_question=float(
+                answers["saved_panel_count_question"]["noul"]
+            )
+            if "saved_panel_count_question" in answers
             else None,
             saved_protection_question=float(
                 answers["saved_protection_question"]["noul"]

@@ -165,7 +165,7 @@ final class SupplyBrandsTest extends TestCase {
 		}
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( fn ( int $id ): string => $this->runtime[ $id ]['status'] );
-		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( fn ( int $id ): string => ! empty( $this->runtime[ $id ]['reference'] ) ? EngineeringReference::PV_MODULE : '' );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( fn ( int $id ): string => ! empty( $this->runtime[ $id ]['reference'] ) ? EngineeringReference::CABLE : '' );
 		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( $this->native_products( ... ) );
 		WP_Mock::userFunction( 'get_terms' )->andReturnUsing(
 			function ( array $args ): array {

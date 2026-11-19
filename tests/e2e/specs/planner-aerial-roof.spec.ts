@@ -137,11 +137,13 @@ for (const lang of ['en', 'de'] as const) {
 			expect((await savedRoof).ok()).toBe(true);
 
 			const editor = page.locator('.sc-solar');
-			await editor
-				.getByRole('combobox', { name: text.module, exact: true })
-				.selectOption({
-					label: 'Trina Solar TSM-460NEG9R.28 · 460 Wp',
-				});
+			for (const [field, value] of Object.entries({
+				panel_length_mm: '1800',
+				panel_width_mm: '1100',
+				panel_thickness_mm: '30',
+				panel_power_w: '430',
+			}))
+				await editor.locator('input[name="' + field + '"]').fill(value);
 			await editor.getByLabel(text.rows, { exact: true }).fill('2');
 			await editor.getByLabel(text.columns, { exact: true }).fill('2');
 			await editor.getByLabel(text.gap, { exact: true }).fill('0.02');
@@ -160,6 +162,14 @@ for (const lang of ['en', 'de'] as const) {
 			const geometry = saved.inputs.geometry;
 			expect(saved.project_id).toBe(id);
 			expect(geometry.roofs).toHaveLength(1);
+			expect(geometry.module_specs).toMatchObject([
+				{
+					model: 'PV 430 Wp · 1800 × 1100 mm',
+					stc_power_w: 430,
+					gamma_pdc_per_c: null,
+				},
+			]);
+			expect(geometry.module_specs[0].source.woo).toBeUndefined();
 			expect(geometry.arrays).toMatchObject([
 				{ rows: 2, columns: 2, roof_id: geometry.roofs[0].id },
 			]);

@@ -132,7 +132,11 @@ final class Publication {
 	 */
 	private static function published_in_current_read( int $id ): bool {
 		$canonical = self::canonical_id( $id );
-		return $id > 0 && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id ) && 'product' === get_post_type( $canonical ) && 'publish' === get_post_status( $canonical );
+		if ( $id <= 0 || 'product' !== get_post_type( $id ) || 'publish' !== get_post_status( $id ) || 'product' !== get_post_type( $canonical ) || 'publish' !== get_post_status( $canonical ) ) {
+			return false;
+		}
+		$role = get_post_meta( $canonical, EngineeringReference::ROLE_META_KEY, true );
+		return '' === $role || EngineeringReference::CABLE === $role;
 	}
 
 	/**

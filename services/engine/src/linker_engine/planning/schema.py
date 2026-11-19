@@ -31,6 +31,13 @@ CREATE TABLE IF NOT EXISTS evaluation_routes (
 );
 """
 
+PANEL_ASSET_REISSUES = """
+CREATE TABLE IF NOT EXISTS panel_asset_reissues (
+    original_id TEXT PRIMARY KEY REFERENCES project_assets(id) ON DELETE CASCADE,
+    replacement_id TEXT UNIQUE NOT NULL REFERENCES project_assets(id) ON DELETE CASCADE
+);
+"""
+
 SCHEMA = f"""
 CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
@@ -108,6 +115,7 @@ CREATE TABLE IF NOT EXISTS project_assets (
     created_at REAL NOT NULL
 );
 CREATE INDEX IF NOT EXISTS assets_project ON project_assets(project_id);
+{PANEL_ASSET_REISSUES}
 CREATE TABLE IF NOT EXISTS artifacts (
     id TEXT PRIMARY KEY,
     run_id TEXT NOT NULL REFERENCES runs(id),

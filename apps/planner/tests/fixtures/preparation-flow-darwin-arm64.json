@@ -1132,13 +1132,13 @@
 		"revision": 1,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "617d10869d1fee2741d723f7b54a1552357269c4eb0a7444b0bb33b7c2002fc7",
+		"manifest_sha256": "dfd0c6c1cf99fbfdcdd751529974efdd64e161d091f7b9c7f7709c317e25b08f",
 		"manifest": {
 			"context": {
 				"assets": {
-					"pvgis_reference.plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
+					"pvgis_reference.plan": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"models": {
@@ -1162,12 +1162,12 @@
 					"retained_original_bytes_policy": "shared_complete_originals_and_remaining_response_cap"
 				}
 			},
-			"input_sha256": "f9d8f71535a1d87aa94da6e5041331c833c366d6f103af8d5d7392c12e5cf35b",
+			"input_sha256": "e0fcfbb74a3e2b1ece8499316d203f019d4e3193853cb3a1ff15a10ce853f74d",
 			"project_id": "00000000000000000000000000000008",
 			"revision": 1,
 			"schema": 1
 		},
-		"result_sha256": "2a02842ee70a74655c085587a5a43bc26417b8d3560f3d3129a12417c203d6b4",
+		"result_sha256": "2d321a35837c9a334a096097904d47295b8b7c44eae390d9c1a05fbe9e30145e",
 		"result": {
 			"country_assessment": {
 				"status": "not_assessed"
@@ -1177,30 +1177,30 @@
 				"array.0.original": "27b24174f8749a17cb093c10799093c2a8f6861eea64de8ca2bf322de2bebed5",
 				"array.1.capture": "fb1e01602f9122483e464fe5383e703223b2c8c356354712682631f56776fb15",
 				"array.1.original": "f264b64e47645522ccccc326bb283724f1ed01addf9765d64f04331e1fdf5825",
-				"prepared_asset_content": "3c1a0d903ba66d774dd74236d00c3a63c4ab871c42aebeebdb2179022fd1ffec",
-				"prepared_asset_metadata": "4e39f1dddf8ffcc678ff84c1402c74ddcb43c37f83800eae26b7eeafdac3238c",
-				"reference_geometry": "c0da5d35a4d05946f6886bd2741b6139f833733ac3f3816003e8f93ca041ac39",
-				"reference_output": "8d330221d1a2ebdbbaab980bcefd24a033113577b53891f669bc78d3c5b4a3b6",
+				"prepared_asset_content": "0f47afabecec92e6aaa0426b6346384a45a142bd68c1fd9181df5d1a56485989",
+				"prepared_asset_metadata": "83494de09a6e4440e85426a52c68afc72817d5269f3fdd4ac28bee3310b075c2",
+				"reference_geometry": "c61d823ba59efec179f570c76773783caeb617e4c2ec8c0fcfbbe3c1c1d8cc7f",
+				"reference_output": "5b5b2e05f202b96e50e21831b3ca4c3fb931375869fb85397d0186c6d1e1f65b",
 				"reference_parameters": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
-				"reference_plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
-				"reference_woo_module": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+				"reference_plan": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8",
+				"reference_woo_module": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 			},
 			"equipment_release": {
 				"status": "not_assessed"
 			},
-			"input_sha256": "f9d8f71535a1d87aa94da6e5041331c833c366d6f103af8d5d7392c12e5cf35b",
+			"input_sha256": "e0fcfbb74a3e2b1ece8499316d203f019d4e3193853cb3a1ff15a10ce853f74d",
 			"kind": "prepare_pvgis_roof_ac_reference_v1",
-			"manifest_sha256": "617d10869d1fee2741d723f7b54a1552357269c4eb0a7444b0bb33b7c2002fc7",
+			"manifest_sha256": "dfd0c6c1cf99fbfdcdd751529974efdd64e161d091f7b9c7f7709c317e25b08f",
 			"near_shading_assessment": {
 				"status": "not_assessed"
 			},
 			"pinned_assets": {
-				"pvgis_reference.plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
+				"pvgis_reference.plan": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8",
 				"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
-				"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+				"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 			},
 			"prepared_asset": {
-				"content_sha256": "3c1a0d903ba66d774dd74236d00c3a63c4ab871c42aebeebdb2179022fd1ffec",
+				"content_sha256": "0f47afabecec92e6aaa0426b6346384a45a142bd68c1fd9181df5d1a56485989",
 				"id": "0000000000000000000000000000000b",
 				"media_type": "application/json",
 				"metadata": {
@@ -1226,11 +1226,11 @@
 							"array.0.original": "27b24174f8749a17cb093c10799093c2a8f6861eea64de8ca2bf322de2bebed5",
 							"array.1.capture": "fb1e01602f9122483e464fe5383e703223b2c8c356354712682631f56776fb15",
 							"array.1.original": "f264b64e47645522ccccc326bb283724f1ed01addf9765d64f04331e1fdf5825",
-							"reference_plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f"
+							"reference_plan": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8"
 						},
 						"kind": "pvgis_roof_reference_acquisition_v1",
-						"manifest_sha256": "617d10869d1fee2741d723f7b54a1552357269c4eb0a7444b0bb33b7c2002fc7",
-						"plan_sha256": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
+						"manifest_sha256": "dfd0c6c1cf99fbfdcdd751529974efdd64e161d091f7b9c7f7709c317e25b08f",
+						"plan_sha256": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8",
 						"run_id": "00000000000000000000000000000009",
 						"schema_version": 1,
 						"started_at": 1700000000.0
@@ -1240,14 +1240,14 @@
 						"array.0.original": "27b24174f8749a17cb093c10799093c2a8f6861eea64de8ca2bf322de2bebed5",
 						"array.1.capture": "fb1e01602f9122483e464fe5383e703223b2c8c356354712682631f56776fb15",
 						"array.1.original": "f264b64e47645522ccccc326bb283724f1ed01addf9765d64f04331e1fdf5825",
-						"reference_geometry": "c0da5d35a4d05946f6886bd2741b6139f833733ac3f3816003e8f93ca041ac39",
-						"reference_output": "8d330221d1a2ebdbbaab980bcefd24a033113577b53891f669bc78d3c5b4a3b6",
+						"reference_geometry": "c61d823ba59efec179f570c76773783caeb617e4c2ec8c0fcfbbe3c1c1d8cc7f",
+						"reference_output": "5b5b2e05f202b96e50e21831b3ca4c3fb931375869fb85397d0186c6d1e1f65b",
 						"reference_parameters": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
-						"reference_plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
-						"reference_woo_module": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+						"reference_plan": "94dea68928ebf636a76403e68d9f63e23c141415af6b125f73cb0c15e8ae4ef8",
+						"reference_woo_module": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 					},
 					"derived_from_revision": 1,
-					"geometry_sha256": "c0da5d35a4d05946f6886bd2741b6139f833733ac3f3816003e8f93ca041ac39",
+					"geometry_sha256": "c61d823ba59efec179f570c76773783caeb617e4c2ec8c0fcfbbe3c1c1d8cc7f",
 					"interpretation": {
 						"end_utc": "2021-01-01T00:00:00+00:00",
 						"energy_kwh": 8707.219664,
@@ -1269,81 +1269,11 @@
 					"retention": "permanent",
 					"schema": 1,
 					"woo_module_inputs": {
-						"module": {
-							"parameters": {
-								"gamma_pdc_per_c": -0.0029,
-								"module_spec_id": "woo_90000001",
-								"source": {
-									"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"kind": "datasheet",
-									"note": "Trina Solar TSM-460NEG9R.28",
-									"page": 2,
-									"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-									"woo": {
-										"product_id": 90000001,
-										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-									}
-								}
-							},
-							"specification": {
-								"id": "woo_90000001",
-								"length_m": 1.762,
-								"model": "Trina Solar TSM-460NEG9R.28",
-								"source": {
-									"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"kind": "datasheet",
-									"note": "Trina Solar TSM-460NEG9R.28",
-									"page": 2,
-									"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-									"woo": {
-										"product_id": 90000001,
-										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-									}
-								},
-								"stc_power_w": 460.0,
-								"thickness_m": 0.03,
-								"width_m": 1.134
-							}
-						},
-						"publication": {
-							"compatibility_revision": "002c64c1e575da2b9c871f1637fed6df12b591358cadd4048dc403739dbadde9",
-							"documents": [
-								{
-									"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"product_id": 90000001
-								},
-								{
-									"blob_sha256": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-									"document_id": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-									"document_revision": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-									"product_id": 90000001
-								}
-							],
-							"engineering_contract": 2,
-							"products": [
-								{
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-								}
-							],
-							"reference_inputs": [
-								{
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
-									"reference_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-								}
-							],
-							"source_revision": "4f52a5a7252bc1a82c28d39ec9af1b25e5e7cb83252d0d034a2f5fda30dd8d03"
-						},
+						"kind": "project_panel_parameters",
 						"schema_version": 1
 					}
 				},
-				"metadata_sha256": "4e39f1dddf8ffcc678ff84c1402c74ddcb43c37f83800eae26b7eeafdac3238c",
+				"metadata_sha256": "83494de09a6e4440e85426a52c68afc72817d5269f3fdd4ac28bee3310b075c2",
 				"project_id": "00000000000000000000000000000008",
 				"purpose": "pvgis_roof_ac_reference_profile_v1"
 			},
@@ -1369,7 +1299,7 @@
 		"id": "00000000000000000000000000000008",
 		"title": "Synthetic multi-array reference",
 		"revision": 1,
-		"input_sha256": "f9d8f71535a1d87aa94da6e5041331c833c366d6f103af8d5d7392c12e5cf35b",
+		"input_sha256": "e0fcfbb74a3e2b1ece8499316d203f019d4e3193853cb3a1ff15a10ce853f74d",
 		"inputs": {
 			"geometry": {
 				"arrays": [
@@ -1433,22 +1363,18 @@
 				],
 				"module_specs": [
 					{
+						"gamma_pdc_per_c": -0.0029,
 						"id": "module",
 						"length_m": 1.762,
-						"model": "Trina Solar TSM-460NEG9R.28",
+						"model": "PV 460 Wp · 1762 × 1134 mm",
 						"source": {
-							"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-							"kind": "datasheet",
-							"note": "Trina Solar TSM-460NEG9R.28",
-							"page": 2,
-							"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-							"woo": {
-								"product_id": 90000001,
-								"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-								"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-							}
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "declared_reference — Customer-provided panel parameters.",
+							"page": null,
+							"url": null
 						},
-						"stc_power_w": 460.0,
+						"stc_power_w": 460,
 						"thickness_m": 0.03,
 						"width_m": 1.134
 					}
@@ -1513,7 +1439,7 @@
 			"id": "0000000000000000000000000000000c",
 			"title": "Synthetic owned direct-beam fixture",
 			"revision": 2,
-			"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+			"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 			"inputs": {
 				"direct_beam_visibility": {
 					"row_indices": [0, 12],
@@ -1569,22 +1495,18 @@
 					],
 					"module_specs": [
 						{
+							"gamma_pdc_per_c": -0.0029,
 							"id": "module",
 							"length_m": 1.762,
-							"model": "Trina Solar TSM-460NEG9R.28",
+							"model": "PV 460 Wp · 1762 × 1134 mm",
 							"source": {
-								"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"kind": "datasheet",
-								"note": "Trina Solar TSM-460NEG9R.28",
-								"page": 2,
-								"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-								"woo": {
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-								}
+								"document_sha256": null,
+								"kind": "user_declared",
+								"note": "declared_reference — Customer-provided panel parameters.",
+								"page": null,
+								"url": null
 							},
-							"stc_power_w": 460.0,
+							"stc_power_w": 460,
 							"thickness_m": 0.03,
 							"width_m": 1.134
 						}
@@ -1636,15 +1558,15 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": false,
-			"manifest_sha256": "df2063aeb3a5c22bfafd2a816759b832af3ce2f18d820854e100933d3a6c19be",
+			"manifest_sha256": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a",
 			"manifest": {
 				"context": {
 					"assets": {
-						"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
+						"geometry": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 						"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 						"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-						"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+						"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 					"models": {
@@ -1670,25 +1592,25 @@
 						}
 					}
 				},
-				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+				"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 				"project_id": "0000000000000000000000000000000c",
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "a0bfbd4b33965dae7f6e8403d7d33b6052788cbfab6c52cab9facd31bef4d0ee",
+			"result_sha256": "eb5be0a589bfe1aba27678e1f86c0e039f9acab1a13801ae8a45e9372c5f2cd7",
 			"result": {
 				"consumer_scope": "sampled_geometry_only_no_power_profile",
 				"country_assessment": {
 					"status": "not_assessed"
 				},
 				"dependencies": {
-					"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
+					"geometry": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 					"weather.document": "9de56160fb075ac308f9924a6a9a2c9584658744ad69609882cdab3cbeb079a3",
 					"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
 					"weather.selection": "9ab296e57560a45f9ce68a0a7d26224cb90470cfeeb75b334bbff4981137043a",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"equipment_release": {
 					"status": "not_assessed"
@@ -1738,22 +1660,18 @@
 					],
 					"module_specs": [
 						{
+							"gamma_pdc_per_c": -0.0029,
 							"id": "module",
 							"length_m": 1.762,
-							"model": "Trina Solar TSM-460NEG9R.28",
+							"model": "PV 460 Wp · 1762 × 1134 mm",
 							"source": {
-								"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"kind": "datasheet",
-								"note": "Trina Solar TSM-460NEG9R.28",
-								"page": 2,
-								"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-								"woo": {
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-								}
+								"document_sha256": null,
+								"kind": "user_declared",
+								"note": "declared_reference — Customer-provided panel parameters.",
+								"page": null,
+								"url": null
 							},
-							"stc_power_w": 460.0,
+							"stc_power_w": 460,
 							"thickness_m": 0.03,
 							"width_m": 1.134
 						}
@@ -1797,9 +1715,9 @@
 						}
 					]
 				},
-				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+				"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 				"kind": "prepare_direct_beam_visibility_v1",
-				"manifest_sha256": "df2063aeb3a5c22bfafd2a816759b832af3ce2f18d820854e100933d3a6c19be",
+				"manifest_sha256": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a",
 				"native_source_checks": {
 					"owner": "native_owned_asset_at_admission",
 					"publication": "standard_worker_jobs_lease_fence_required",
@@ -1812,11 +1730,11 @@
 					"status": "not_assessed"
 				},
 				"pinned_assets": {
-					"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
+					"geometry": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 					"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"project_id": "0000000000000000000000000000000c",
 				"result_scope": "geometric_witness_not_a_profile_or_power_loss",
@@ -2069,14 +1987,14 @@
 						"zenith": "apparent"
 					},
 					"sources": {
-						"geometry_sha256": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
+						"geometry_sha256": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380",
 						"project_id": "0000000000000000000000000000000c",
 						"project_revision": 2,
 						"schema_version": 1,
 						"weather_asset_metadata_sha256": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 						"weather_document_sha256": "9de56160fb075ac308f9924a6a9a2c9584658744ad69609882cdab3cbeb079a3",
 						"weather_selection_sha256": "9ab296e57560a45f9ce68a0a7d26224cb90470cfeeb75b334bbff4981137043a",
-						"woo_module_basis_sha256": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+						"woo_module_basis_sha256": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 					},
 					"spatial_index": {
 						"leaf_size": 4,
@@ -2093,11 +2011,11 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": false,
-			"manifest_sha256": "513365a24f3fc7d718cfc30be1c2aae1c0309377263d7267cecb03410a86a383",
+			"manifest_sha256": "f1e04f804b5fb2267b1b33a7338eea5d1b6f4a7d08f36ee7fce6b925774fe679",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "7b0c76c06ee0cd5c567794a56b32c6531852de7fe61426307bb80663b620e346",
+						"report.source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
@@ -2113,41 +2031,41 @@
 						"policy": "selected_owned_analyses_current_woo_v1"
 					}
 				},
-				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+				"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 				"project_id": "0000000000000000000000000000000c",
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "87626308acf5e7b2c304ae87b97e4be1b5593eb8ad36f105147dbaa5bc3d0bc5",
+			"result_sha256": "a32562b28c665a2df010a9d71463120d5a6eb63c9670c6f41255f3ce9039e227",
 			"result": {
 				"dependencies": {
-					"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-					"prepared_asset_content": "8f0c5b8cf0581bf593f97a5c263950d61c970f22527b9be48e92cef80f55b10d",
-					"prepared_asset_metadata": "6dd536ed00bac248f48637476ca77b9117e529f853c468fd08b4a7d19d2a541f",
-					"prepared_attachment.bill_of_materials_csv.content": "8eb70033ecfb88403dea096364e239cc5de2614d9099245ca61c5350a920d297",
-					"prepared_attachment.bill_of_materials_csv.metadata": "6af886e3b1f1e5b4d3086d9beca07ef0e20bfcdb45a1013de170a4a745f8f458",
-					"report_model": "8a7963108fafb1c279f95eec63993def2f77ba5d17b56582258203a1083526ae",
-					"report_source": "7b0c76c06ee0cd5c567794a56b32c6531852de7fe61426307bb80663b620e346"
+					"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
+					"prepared_asset_content": "183dbdd2ae06b0f62d0ea020919428d022723012e7c04dfa8a91df649a97fd2b",
+					"prepared_asset_metadata": "29e45c95551d84a48102e6f89272798e01e4eeeceab9d9d81a4afa298a47c2d4",
+					"prepared_attachment.bill_of_materials_csv.content": "08998cb2e85802a5e33a22ec9b3140df6e76b478f770de8c2a057af0bfa10725",
+					"prepared_attachment.bill_of_materials_csv.metadata": "a9bc58813e46e2d4a1c6e16290aa8818ae71bf051648868f0050e2bc4d323177",
+					"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
+					"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
-				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+				"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "513365a24f3fc7d718cfc30be1c2aae1c0309377263d7267cecb03410a86a383",
-				"materials_sha256": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
+				"manifest_sha256": "f1e04f804b5fb2267b1b33a7338eea5d1b6f4a7d08f36ee7fce6b925774fe679",
+				"materials_sha256": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
 				"pinned_assets": {
-					"report.source": "7b0c76c06ee0cd5c567794a56b32c6531852de7fe61426307bb80663b620e346",
+					"report.source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "8f0c5b8cf0581bf593f97a5c263950d61c970f22527b9be48e92cef80f55b10d",
+					"content_sha256": "183dbdd2ae06b0f62d0ea020919428d022723012e7c04dfa8a91df649a97fd2b",
 					"id": "00000000000000000000000000000012",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
-							"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-							"report_model": "8a7963108fafb1c279f95eec63993def2f77ba5d17b56582258203a1083526ae",
-							"report_source": "7b0c76c06ee0cd5c567794a56b32c6531852de7fe61426307bb80663b620e346"
+							"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
+							"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
+							"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
 						},
 						"locale": "en",
 						"provenance": {
@@ -2155,23 +2073,23 @@
 							"label": "Project planning report",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "8a7963108fafb1c279f95eec63993def2f77ba5d17b56582258203a1083526ae",
+						"report_model_sha256": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "6dd536ed00bac248f48637476ca77b9117e529f853c468fd08b4a7d19d2a541f",
+					"metadata_sha256": "29e45c95551d84a48102e6f89272798e01e4eeeceab9d9d81a4afa298a47c2d4",
 					"project_id": "0000000000000000000000000000000c",
 					"purpose": "planning_report_pdf_v1"
 				},
 				"prepared_attachments": {
 					"bill_of_materials_csv": {
-						"content_sha256": "8eb70033ecfb88403dea096364e239cc5de2614d9099245ca61c5350a920d297",
+						"content_sha256": "08998cb2e85802a5e33a22ec9b3140df6e76b478f770de8c2a057af0bfa10725",
 						"id": "00000000000000000000000000000013",
 						"media_type": "text/csv",
 						"metadata": {
 							"dependencies": {
-								"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-								"report_model": "8a7963108fafb1c279f95eec63993def2f77ba5d17b56582258203a1083526ae",
-								"report_source": "7b0c76c06ee0cd5c567794a56b32c6531852de7fe61426307bb80663b620e346"
+								"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
+								"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
+								"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
 							},
 							"locale": "en",
 							"provenance": {
@@ -2181,7 +2099,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "6af886e3b1f1e5b4d3086d9beca07ef0e20bfcdb45a1013de170a4a745f8f458",
+						"metadata_sha256": "a9bc58813e46e2d4a1c6e16290aa8818ae71bf051648868f0050e2bc4d323177",
 						"project_id": "0000000000000000000000000000000c",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -2251,17 +2169,17 @@
 								{
 									"href": null,
 									"label": "Witness result SHA-256",
-									"value": "a0bfbd4b33965dae7f6e8403d7d33b6052788cbfab6c52cab9facd31bef4d0ee"
+									"value": "eb5be0a589bfe1aba27678e1f86c0e039f9acab1a13801ae8a45e9372c5f2cd7"
 								},
 								{
 									"href": null,
 									"label": "Witness manifest SHA-256",
-									"value": "df2063aeb3a5c22bfafd2a816759b832af3ce2f18d820854e100933d3a6c19be"
+									"value": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a"
 								},
 								{
 									"href": null,
 									"label": "geometry SHA-256",
-									"value": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29"
+									"value": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380"
 								},
 								{
 									"href": null,
@@ -2291,7 +2209,7 @@
 								{
 									"href": null,
 									"label": "woo.module_inputs SHA-256",
-									"value": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								}
 							],
 							"table": null,
@@ -2374,26 +2292,6 @@
 							"title": "Selected source row 12"
 						},
 						{
-							"id": "bom",
-							"paragraphs": [
-								"This table lists selected equipment, saved roof modules, manufacturer-included components, customer-supplied requirements and site-engineering obligations. Quantities are shown only where established. It is not a complete balance-of-system take-off; mounting, cabling, protection and other installation materials still require project-specific design."
-							],
-							"rows": [],
-							"table": {
-								"column_weights": [0.6, 1.7, 1.0, 1.7],
-								"columns": ["Quantity", "Product", "Reference", "Supply scope"],
-								"rows": [
-									[
-										"5 pc",
-										"Trina Solar TSM-460NEG9R.28",
-										"",
-										"PV reference module · project quotation"
-									]
-								]
-							},
-							"title": "Provisional bill of materials"
-						},
-						{
 							"id": "pv-components",
 							"paragraphs": [
 								"Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
@@ -2408,19 +2306,18 @@
 									"href": null,
 									"label": "PV nameplate power",
 									"value": "2.3 kWp"
-								},
-								{
-									"href": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-									"label": "Source document · Page 2",
-									"value": "Trina Solar TSM-460NEG9R.28"
 								}
 							],
 							"table": {
 								"column_weights": [1.0, 3.0, 2.0],
-								"columns": ["Quantity", "Model", "Module power (STC)"],
-								"rows": [["5", "Trina Solar TSM-460NEG9R.28", "460 W"]]
+								"columns": [
+									"Quantity",
+									"Panel parameters",
+									"Module power (STC)"
+								],
+								"rows": [["5", "PV 460 Wp · 1762 × 1134 mm", "460 W"]]
 							},
-							"title": "PV modules used in the calculation"
+							"title": "Solar panel layout"
 						},
 						{
 							"id": "basis",
@@ -2439,16 +2336,16 @@
 					"subtitle": "Saved project inputs and selected calculation results",
 					"title": "Project planning report"
 				},
-				"report_sha256": "8a7963108fafb1c279f95eec63993def2f77ba5d17b56582258203a1083526ae",
+				"report_sha256": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
 				"revision": 2,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
 				"source_runs": [
 					{
-						"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
+						"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 						"kind": "prepare_direct_beam_visibility_v1",
-						"manifest_sha256": "df2063aeb3a5c22bfafd2a816759b832af3ce2f18d820854e100933d3a6c19be",
-						"result_sha256": "a0bfbd4b33965dae7f6e8403d7d33b6052788cbfab6c52cab9facd31bef4d0ee",
+						"manifest_sha256": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a",
+						"result_sha256": "eb5be0a589bfe1aba27678e1f86c0e039f9acab1a13801ae8a45e9372c5f2cd7",
 						"revision": 2,
 						"run_id": "0000000000000000000000000000000e",
 						"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
@@ -2579,41 +2476,32 @@
 			"index_leaf_size": 4
 		},
 		"module_template": {
-			"parameters": {
+			"specification": {
+				"id": "panel",
+				"model": "PV 460 Wp · 1762 × 1134 mm",
+				"width_m": 1.134,
+				"length_m": 1.762,
+				"thickness_m": 0.03,
+				"stc_power_w": 460,
 				"gamma_pdc_per_c": -0.0029,
-				"module_spec_id": "woo_90000001",
 				"source": {
-					"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-					"kind": "datasheet",
-					"note": "Trina Solar TSM-460NEG9R.28",
-					"page": 2,
-					"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-					"woo": {
-						"product_id": 90000001,
-						"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-						"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-					}
+					"kind": "user_declared",
+					"note": "declared_reference — Customer-provided panel parameters.",
+					"document_sha256": null,
+					"url": null,
+					"page": null
 				}
 			},
-			"specification": {
-				"id": "woo_90000001",
-				"length_m": 1.762,
-				"model": "Trina Solar TSM-460NEG9R.28",
+			"parameters": {
+				"module_spec_id": "panel",
+				"gamma_pdc_per_c": -0.0029,
 				"source": {
-					"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-					"kind": "datasheet",
-					"note": "Trina Solar TSM-460NEG9R.28",
-					"page": 2,
-					"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-					"woo": {
-						"product_id": 90000001,
-						"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-						"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-					}
-				},
-				"stc_power_w": 460.0,
-				"thickness_m": 0.03,
-				"width_m": 1.134
+					"kind": "user_declared",
+					"note": "declared_reference — Customer-provided panel parameters.",
+					"document_sha256": null,
+					"url": null,
+					"page": null
+				}
 			}
 		},
 		"weather_asset": {
@@ -2894,7 +2782,7 @@
 			"id": "00000000000000000000000000000014",
 			"title": "Actual weather / synthetic one-module geometric scenario",
 			"revision": 2,
-			"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
+			"input_sha256": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed",
 			"inputs": {
 				"geometric_pv_preparation": {
 					"diffuse_policy": "retain_unobstructed_sky_and_ground_components_v1",
@@ -2942,16 +2830,12 @@
 								"gamma_pdc_per_c": -0.0029,
 								"module_spec_id": "module",
 								"source": {
-									"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-									"kind": "datasheet",
-									"note": "Trina Solar TSM-460NEG9R.28",
-									"page": 2,
-									"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-									"woo": {
-										"product_id": 90000001,
-										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-									}
+									"document_sha256": null,
+									"kind": "user_declared",
+									"note": "declared_reference — Customer-provided panel parameters.",
+									"page": null,
+									"url": null,
+									"woo": null
 								}
 							}
 						],
@@ -3014,22 +2898,18 @@
 					],
 					"module_specs": [
 						{
+							"gamma_pdc_per_c": -0.0029,
 							"id": "module",
 							"length_m": 1.762,
-							"model": "Trina Solar TSM-460NEG9R.28",
+							"model": "PV 460 Wp · 1762 × 1134 mm",
 							"source": {
-								"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"kind": "datasheet",
-								"note": "Trina Solar TSM-460NEG9R.28",
-								"page": 2,
-								"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-								"woo": {
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-								}
+								"document_sha256": null,
+								"kind": "user_declared",
+								"note": "declared_reference — Customer-provided panel parameters.",
+								"page": null,
+								"url": null
 							},
-							"stc_power_w": 460.0,
+							"stc_power_w": 460,
 							"thickness_m": 0.03,
 							"width_m": 1.134
 						}
@@ -3081,14 +2961,14 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "03094b158b2545d0f565b9faa79c89e9e1bb6ad7d9a7c6e66e07c570627959cb",
+			"manifest_sha256": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d",
 			"manifest": {
 				"context": {
 					"assets": {
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 						"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 						"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-						"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+						"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 					"models": {
@@ -3115,32 +2995,32 @@
 						}
 					}
 				},
-				"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
+				"input_sha256": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed",
 				"project_id": "00000000000000000000000000000014",
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "43d74896387bffc6c2571739ff53f4c97ef90c9eb4add472ee648f7f52b3a37d",
+			"result_sha256": "f8cec35db769db10916c432409baefd75428c9757398bf5b50bb5243448dbf37",
 			"result": {
 				"country_assessment": {
 					"status": "not_assessed"
 				},
 				"dependencies": {
-					"model.inputs": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
-					"model.witness": "be84c7df8937653db8975b980554a1c25b6cda428476232481b626b09b25ff5f",
-					"prepared_asset_content": "e59a8cc59e0ea3911da3dc03d401ece623aeb109b7445d48230e0ff2e06669a2",
-					"prepared_asset_metadata": "4fe55dd3d515267f6ecb31628ec8c2658f42cd1658c1fbe5ea45c6c6d98cccfb",
-					"project.parameters": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+					"model.inputs": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
+					"model.witness": "62266f13f4298aa7aeabf1095ef4bbc7067a5febea94a2a859054a9e6a5f5b24",
+					"prepared_asset_content": "c2d51966ac0a13336ba01589e9aa61edc63dcb8e0fae54e1f8b579be9fa1b91b",
+					"prepared_asset_metadata": "7bf152f8adc17bbeea5d07ef308c51e52d8323c67ba5a9261195d8ee2037ee93",
+					"project.parameters": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 					"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"equipment_release": {
 					"status": "not_assessed"
 				},
-				"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
+				"input_sha256": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed",
 				"kind": "prepare_geometric_pv_reference_v1",
-				"manifest_sha256": "03094b158b2545d0f565b9faa79c89e9e1bb6ad7d9a7c6e66e07c570627959cb",
+				"manifest_sha256": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d",
 				"model": "opaque_direct_uniform_pvlib_reference_v1",
 				"near_shading_assessment": {
 					"status": "direct_only_scenario_not_complete_assessment"
@@ -3149,23 +3029,23 @@
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 					"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"prepared_asset": {
-					"content_sha256": "e59a8cc59e0ea3911da3dc03d401ece623aeb109b7445d48230e0ff2e06669a2",
+					"content_sha256": "c2d51966ac0a13336ba01589e9aa61edc63dcb8e0fae54e1f8b579be9fa1b91b",
 					"id": "00000000000000000000000000000018",
 					"media_type": "application/json",
 					"metadata": {
 						"dependencies": {
-							"model.inputs": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
-							"model.witness": "be84c7df8937653db8975b980554a1c25b6cda428476232481b626b09b25ff5f",
-							"project.parameters": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+							"model.inputs": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
+							"model.witness": "62266f13f4298aa7aeabf1095ef4bbc7067a5febea94a2a859054a9e6a5f5b24",
+							"project.parameters": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 							"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 							"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-							"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+							"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 						},
 						"derived_from_revision": 2,
-						"geometry_sha256": "efe26adb96c7f7bcbffe320f98587e06a02150c19616e26ace464fa45c8cc442",
+						"geometry_sha256": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170",
 						"interpretation": {
 							"end_utc": "2024-01-01T00:00:00+00:00",
 							"energy_kwh": 314.01218286689516,
@@ -3177,7 +3057,7 @@
 							"reconstructed_means": true,
 							"start_utc": "2023-01-01T00:00:00+00:00"
 						},
-						"parameters_sha256": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+						"parameters_sha256": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 						"profile_type": "geometric_pv_reference_profile_v1",
 						"provenance": {
 							"basis": "official_weather_with_synthetic_geometry_and_parameter_fixture",
@@ -3225,81 +3105,11 @@
 							"use_terrain_horizon": false
 						},
 						"woo_module_inputs": {
-							"module": {
-								"parameters": {
-									"gamma_pdc_per_c": -0.0029,
-									"module_spec_id": "woo_90000001",
-									"source": {
-										"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"kind": "datasheet",
-										"note": "Trina Solar TSM-460NEG9R.28",
-										"page": 2,
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-										"woo": {
-											"product_id": 90000001,
-											"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-											"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-										}
-									}
-								},
-								"specification": {
-									"id": "woo_90000001",
-									"length_m": 1.762,
-									"model": "Trina Solar TSM-460NEG9R.28",
-									"source": {
-										"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"kind": "datasheet",
-										"note": "Trina Solar TSM-460NEG9R.28",
-										"page": 2,
-										"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-										"woo": {
-											"product_id": 90000001,
-											"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-											"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-										}
-									},
-									"stc_power_w": 460.0,
-									"thickness_m": 0.03,
-									"width_m": 1.134
-								}
-							},
-							"publication": {
-								"compatibility_revision": "002c64c1e575da2b9c871f1637fed6df12b591358cadd4048dc403739dbadde9",
-								"documents": [
-									{
-										"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-										"product_id": 90000001
-									},
-									{
-										"blob_sha256": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-										"document_id": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-										"document_revision": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-										"product_id": 90000001
-									}
-								],
-								"engineering_contract": 2,
-								"products": [
-									{
-										"product_id": 90000001,
-										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-									}
-								],
-								"reference_inputs": [
-									{
-										"product_id": 90000001,
-										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
-										"reference_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-									}
-								],
-								"source_revision": "4f52a5a7252bc1a82c28d39ec9af1b25e5e7cb83252d0d034a2f5fda30dd8d03"
-							},
+							"kind": "project_panel_parameters",
 							"schema_version": 1
 						}
 					},
-					"metadata_sha256": "4fe55dd3d515267f6ecb31628ec8c2658f42cd1658c1fbe5ea45c6c6d98cccfb",
+					"metadata_sha256": "7bf152f8adc17bbeea5d07ef308c51e52d8323c67ba5a9261195d8ee2037ee93",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "geometric_pv_reference_profile_v1"
 				},
@@ -3601,21 +3411,21 @@
 		"profile_asset": {
 			"id": "00000000000000000000000000000018",
 			"project_id": "00000000000000000000000000000014",
-			"content_sha256": "e59a8cc59e0ea3911da3dc03d401ece623aeb109b7445d48230e0ff2e06669a2",
+			"content_sha256": "c2d51966ac0a13336ba01589e9aa61edc63dcb8e0fae54e1f8b579be9fa1b91b",
 			"media_type": "application/json",
 			"purpose": "geometric_pv_reference_profile_v1",
-			"metadata_sha256": "4fe55dd3d515267f6ecb31628ec8c2658f42cd1658c1fbe5ea45c6c6d98cccfb",
+			"metadata_sha256": "7bf152f8adc17bbeea5d07ef308c51e52d8323c67ba5a9261195d8ee2037ee93",
 			"metadata": {
 				"dependencies": {
-					"model.inputs": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
-					"model.witness": "be84c7df8937653db8975b980554a1c25b6cda428476232481b626b09b25ff5f",
-					"project.parameters": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+					"model.inputs": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
+					"model.witness": "62266f13f4298aa7aeabf1095ef4bbc7067a5febea94a2a859054a9e6a5f5b24",
+					"project.parameters": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 					"weather.metadata": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+					"woo.module_inputs": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 				},
 				"derived_from_revision": 2,
-				"geometry_sha256": "efe26adb96c7f7bcbffe320f98587e06a02150c19616e26ace464fa45c8cc442",
+				"geometry_sha256": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170",
 				"interpretation": {
 					"end_utc": "2024-01-01T00:00:00+00:00",
 					"energy_kwh": 314.01218286689516,
@@ -3627,7 +3437,7 @@
 					"reconstructed_means": true,
 					"start_utc": "2023-01-01T00:00:00+00:00"
 				},
-				"parameters_sha256": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+				"parameters_sha256": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 				"profile_type": "geometric_pv_reference_profile_v1",
 				"provenance": {
 					"basis": "official_weather_with_synthetic_geometry_and_parameter_fixture",
@@ -3675,77 +3485,7 @@
 					"use_terrain_horizon": false
 				},
 				"woo_module_inputs": {
-					"module": {
-						"parameters": {
-							"gamma_pdc_per_c": -0.0029,
-							"module_spec_id": "woo_90000001",
-							"source": {
-								"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"kind": "datasheet",
-								"note": "Trina Solar TSM-460NEG9R.28",
-								"page": 2,
-								"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-								"woo": {
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-								}
-							}
-						},
-						"specification": {
-							"id": "woo_90000001",
-							"length_m": 1.762,
-							"model": "Trina Solar TSM-460NEG9R.28",
-							"source": {
-								"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"kind": "datasheet",
-								"note": "Trina Solar TSM-460NEG9R.28",
-								"page": 2,
-								"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-								"woo": {
-									"product_id": 90000001,
-									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
-								}
-							},
-							"stc_power_w": 460.0,
-							"thickness_m": 0.03,
-							"width_m": 1.134
-						}
-					},
-					"publication": {
-						"compatibility_revision": "002c64c1e575da2b9c871f1637fed6df12b591358cadd4048dc403739dbadde9",
-						"documents": [
-							{
-								"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
-								"product_id": 90000001
-							},
-							{
-								"blob_sha256": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-								"document_id": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-								"document_revision": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
-								"product_id": 90000001
-							}
-						],
-						"engineering_contract": 2,
-						"products": [
-							{
-								"product_id": 90000001,
-								"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-							}
-						],
-						"reference_inputs": [
-							{
-								"product_id": 90000001,
-								"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
-								"reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
-								"reference_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
-							}
-						],
-						"source_revision": "4f52a5a7252bc1a82c28d39ec9af1b25e5e7cb83252d0d034a2f5fda30dd8d03"
-					},
+					"kind": "project_panel_parameters",
 					"schema_version": 1
 				}
 			}
@@ -3754,12 +3494,12 @@
 			"schema_version": 1,
 			"project_id": "00000000000000000000000000000014",
 			"asset_id": "00000000000000000000000000000018",
-			"content_sha256": "e59a8cc59e0ea3911da3dc03d401ece623aeb109b7445d48230e0ff2e06669a2",
-			"metadata_sha256": "4fe55dd3d515267f6ecb31628ec8c2658f42cd1658c1fbe5ea45c6c6d98cccfb",
+			"content_sha256": "c2d51966ac0a13336ba01589e9aa61edc63dcb8e0fae54e1f8b579be9fa1b91b",
+			"metadata_sha256": "7bf152f8adc17bbeea5d07ef308c51e52d8323c67ba5a9261195d8ee2037ee93",
 			"evaluation_scope": "profile_interpretation",
 			"measurement": "pv_available_ac",
 			"source": {
-				"raw_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+				"raw_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 				"origin": "modelled",
 				"timezone": "UTC",
 				"native_max_interval_seconds": 3600,
@@ -3771,8 +3511,8 @@
 						"dc_wiring_factor": "applied_per_module",
 						"module_mpp": "independent_per_module"
 					},
-					"geometry_sha256": "efe26adb96c7f7bcbffe320f98587e06a02150c19616e26ace464fa45c8cc442",
-					"input_bundle_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+					"geometry_sha256": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170",
+					"input_bundle_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 					"limits": {
 						"index_leaf_size": 2,
 						"max_bounds_checks": 1000000,
@@ -3790,7 +3530,7 @@
 						"complete_shading_accuracy_or_sampling_error_bound"
 					],
 					"output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
-					"parameters_sha256": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+					"parameters_sha256": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 					"sampling": {
 						"coarse_cells_per_edge": 1,
 						"fine_cells_per_edge": 2
@@ -3798,7 +3538,7 @@
 					"temporal_policy": {
 						"energy_preservation_claim": false,
 						"exact_interval_copy": false,
-						"input_document_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+						"input_document_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 						"input_max_interval_seconds": 3600,
 						"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
 						"method": "representative_pv_output_over_declared_intervals_v1",
@@ -4033,7 +3773,7 @@
 			"transformations": [
 				{
 					"method": "representative_pv_output_over_declared_intervals_v1",
-					"input_document_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+					"input_document_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 					"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070",
 					"input_max_interval_seconds": 3600,
 					"output_max_interval_seconds": 3600.0,
@@ -4082,12 +3822,12 @@
 			"schema_version": 1,
 			"project_id": "00000000000000000000000000000014",
 			"asset_id": "00000000000000000000000000000018",
-			"content_sha256": "e59a8cc59e0ea3911da3dc03d401ece623aeb109b7445d48230e0ff2e06669a2",
-			"metadata_sha256": "4fe55dd3d515267f6ecb31628ec8c2658f42cd1658c1fbe5ea45c6c6d98cccfb",
+			"content_sha256": "c2d51966ac0a13336ba01589e9aa61edc63dcb8e0fae54e1f8b579be9fa1b91b",
+			"metadata_sha256": "7bf152f8adc17bbeea5d07ef308c51e52d8323c67ba5a9261195d8ee2037ee93",
 			"evaluation_scope": "profile_interpretation",
 			"measurement": "pv_available_ac",
 			"source": {
-				"raw_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+				"raw_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 				"origin": "modelled",
 				"timezone": "UTC",
 				"native_max_interval_seconds": 3600,
@@ -4099,8 +3839,8 @@
 						"dc_wiring_factor": "applied_per_module",
 						"module_mpp": "independent_per_module"
 					},
-					"geometry_sha256": "efe26adb96c7f7bcbffe320f98587e06a02150c19616e26ace464fa45c8cc442",
-					"input_bundle_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+					"geometry_sha256": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170",
+					"input_bundle_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 					"limits": {
 						"index_leaf_size": 2,
 						"max_bounds_checks": 1000000,
@@ -4118,7 +3858,7 @@
 						"complete_shading_accuracy_or_sampling_error_bound"
 					],
 					"output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
-					"parameters_sha256": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6",
+					"parameters_sha256": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7",
 					"sampling": {
 						"coarse_cells_per_edge": 1,
 						"fine_cells_per_edge": 2
@@ -4126,7 +3866,7 @@
 					"temporal_policy": {
 						"energy_preservation_claim": false,
 						"exact_interval_copy": false,
-						"input_document_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+						"input_document_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 						"input_max_interval_seconds": 3600,
 						"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
 						"method": "representative_pv_output_over_declared_intervals_v1",
@@ -4361,7 +4101,7 @@
 			"transformations": [
 				{
 					"method": "representative_pv_output_over_declared_intervals_v1",
-					"input_document_sha256": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459",
+					"input_document_sha256": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a",
 					"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070",
 					"input_max_interval_seconds": 3600,
 					"output_max_interval_seconds": 3600.0,
@@ -4412,11 +4152,11 @@
 			"revision": 3,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "ad166da12035cd59af45fdff5f18e3b557d84ceda8f312e162e5ffd6bca5018e",
+			"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "dcf08c018ed61ec28d3aa4a0289b5c861c5153bd7b2a9a2323fa34f208e0b59d",
+						"report.source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
@@ -4432,41 +4172,41 @@
 						"policy": "selected_owned_analyses_current_woo_v1"
 					}
 				},
-				"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379",
+				"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf",
 				"project_id": "00000000000000000000000000000014",
 				"revision": 3,
 				"schema": 1
 			},
-			"result_sha256": "82e23b129cc7295aa5a81c4be49b687be331a44ac2f1a1750566caab6c450458",
+			"result_sha256": "d6e89b96f49e89e1b07a35730f16b1f972da3c0234613a863426fe6764bf3f8f",
 			"result": {
 				"dependencies": {
-					"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
-					"prepared_asset_content": "9a3c20daf245df9a124a65caf4b621a8a98635deadb0d8d48671ee4b0bebac1c",
-					"prepared_asset_metadata": "be51b763f67e5099e344dc5ccedffd1f6d1f34d540ee9bc125e4e84eea463d20",
-					"prepared_attachment.bill_of_materials_csv.content": "d45e51f973384b807365c0e169b0d58bee56be46d2b07a631f383ed990477049",
-					"prepared_attachment.bill_of_materials_csv.metadata": "ea564274a4165d19437adf43916338eb7ea60f1c86e6bc3b42cff3fb58a32983",
-					"report_model": "bd4c71f5a0b195eef0429f95cadc826f03c29a3387d013fb83e4cc26a9f1f18c",
-					"report_source": "dcf08c018ed61ec28d3aa4a0289b5c861c5153bd7b2a9a2323fa34f208e0b59d"
+					"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
+					"prepared_asset_content": "723d49e55ac68a56596d67ce1815862187970a3f39fe95be836116999961579e",
+					"prepared_asset_metadata": "d3712fa9dbe8be60508224af600e107135db59b9de853e4007034c43b63bc221",
+					"prepared_attachment.bill_of_materials_csv.content": "4c3543b9580a7696a75a754ad9839e4bf45b123c3e1bd3019f2855eeed625b8f",
+					"prepared_attachment.bill_of_materials_csv.metadata": "ac257590667704b07b94c59b69eb51504c8c55c498881e92a73c9ff3e70e2d19",
+					"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
+					"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
-				"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379",
+				"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "ad166da12035cd59af45fdff5f18e3b557d84ceda8f312e162e5ffd6bca5018e",
-				"materials_sha256": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
+				"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
+				"materials_sha256": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
 				"pinned_assets": {
-					"report.source": "dcf08c018ed61ec28d3aa4a0289b5c861c5153bd7b2a9a2323fa34f208e0b59d",
+					"report.source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "9a3c20daf245df9a124a65caf4b621a8a98635deadb0d8d48671ee4b0bebac1c",
+					"content_sha256": "723d49e55ac68a56596d67ce1815862187970a3f39fe95be836116999961579e",
 					"id": "00000000000000000000000000000020",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
-							"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
-							"report_model": "bd4c71f5a0b195eef0429f95cadc826f03c29a3387d013fb83e4cc26a9f1f18c",
-							"report_source": "dcf08c018ed61ec28d3aa4a0289b5c861c5153bd7b2a9a2323fa34f208e0b59d"
+							"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
+							"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
+							"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
 						},
 						"locale": "de",
 						"provenance": {
@@ -4474,23 +4214,23 @@
 							"label": "Projektplanungsbericht",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "bd4c71f5a0b195eef0429f95cadc826f03c29a3387d013fb83e4cc26a9f1f18c",
+						"report_model_sha256": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "be51b763f67e5099e344dc5ccedffd1f6d1f34d540ee9bc125e4e84eea463d20",
+					"metadata_sha256": "d3712fa9dbe8be60508224af600e107135db59b9de853e4007034c43b63bc221",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "planning_report_pdf_v1"
 				},
 				"prepared_attachments": {
 					"bill_of_materials_csv": {
-						"content_sha256": "d45e51f973384b807365c0e169b0d58bee56be46d2b07a631f383ed990477049",
+						"content_sha256": "4c3543b9580a7696a75a754ad9839e4bf45b123c3e1bd3019f2855eeed625b8f",
 						"id": "00000000000000000000000000000021",
 						"media_type": "text/csv",
 						"metadata": {
 							"dependencies": {
-								"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
-								"report_model": "bd4c71f5a0b195eef0429f95cadc826f03c29a3387d013fb83e4cc26a9f1f18c",
-								"report_source": "dcf08c018ed61ec28d3aa4a0289b5c861c5153bd7b2a9a2323fa34f208e0b59d"
+								"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
+								"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
+								"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
 							},
 							"locale": "de",
 							"provenance": {
@@ -4500,7 +4240,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "ea564274a4165d19437adf43916338eb7ea60f1c86e6bc3b42cff3fb58a32983",
+						"metadata_sha256": "ac257590667704b07b94c59b69eb51504c8c55c498881e92a73c9ff3e70e2d19",
 						"project_id": "00000000000000000000000000000014",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -4631,7 +4371,7 @@
 								{
 									"href": null,
 									"label": "Enthaltene Module: Anzahl × Modell / Modul-STC; Dokument-SHA-256 / Seite",
-									"value": "1 × Trina Solar TSM-460NEG9R.28 / 460 W; 58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7 / p. 2"
+									"value": "1 × PV 460 Wp · 1762 × 1134 mm"
 								},
 								{
 									"href": null,
@@ -4716,17 +4456,17 @@
 								{
 									"href": null,
 									"label": "model.inputs SHA-256",
-									"value": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459"
+									"value": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a"
 								},
 								{
 									"href": null,
 									"label": "model.witness SHA-256",
-									"value": "be84c7df8937653db8975b980554a1c25b6cda428476232481b626b09b25ff5f"
+									"value": "62266f13f4298aa7aeabf1095ef4bbc7067a5febea94a2a859054a9e6a5f5b24"
 								},
 								{
 									"href": null,
 									"label": "project.parameters SHA-256",
-									"value": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6"
+									"value": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7"
 								},
 								{
 									"href": null,
@@ -4741,7 +4481,7 @@
 								{
 									"href": null,
 									"label": "woo.module_inputs SHA-256",
-									"value": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								},
 								{
 									"href": null,
@@ -4758,26 +4498,6 @@
 							"title": "PV-Referenz: geometrische Verschattung der Direktstrahlung"
 						},
 						{
-							"id": "bom",
-							"paragraphs": [
-								"Diese Tabelle führt ausgewählte Geräte, Module der gespeicherten Dachbelegung, herstellerseitig mitgelieferte Komponenten, kundenseitig bereitzustellende Anforderungen und projektseitig zu prüfende Pflichten auf. Mengen werden nur angezeigt, wenn sie feststehen. Die Tabelle ist keine vollständige Materialaufnahme des restlichen Systems; Montagesystem, Leitungen, Schutzmaßnahmen und weitere Installationsmaterialien müssen weiterhin projektspezifisch ausgelegt werden."
-							],
-							"rows": [],
-							"table": {
-								"column_weights": [0.6, 1.7, 1.0, 1.7],
-								"columns": ["Menge", "Produkt", "Referenz", "Lieferumfang"],
-								"rows": [
-									[
-										"1 St.",
-										"Trina Solar TSM-460NEG9R.28",
-										"",
-										"PV-Referenzmodul · Projektangebot"
-									]
-								]
-							},
-							"title": "Vorläufige Stückliste"
-						},
-						{
 							"id": "pv-components",
 							"paragraphs": [
 								"Die Stückzahlen stammen aus der für diesen Bericht gespeicherten Dachbelegung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden."
@@ -4792,19 +4512,14 @@
 									"href": null,
 									"label": "PV-Nennleistung",
 									"value": "0,46 kWp"
-								},
-								{
-									"href": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
-									"label": "Quelldokument · Seite 2",
-									"value": "Trina Solar TSM-460NEG9R.28"
 								}
 							],
 							"table": {
 								"column_weights": [1.0, 3.0, 2.0],
-								"columns": ["Menge", "Modell", "Modulleistung (STC)"],
-								"rows": [["1", "Trina Solar TSM-460NEG9R.28", "460 W"]]
+								"columns": ["Menge", "Moduldaten", "Modulleistung (STC)"],
+								"rows": [["1", "PV 460 Wp · 1762 × 1134 mm", "460 W"]]
 							},
-							"title": "PV-Module der Berechnung"
+							"title": "PV-Modulbelegung"
 						},
 						{
 							"id": "pv",
@@ -4923,25 +4638,25 @@
 					"subtitle": "Gespeicherte Projekteingaben und ausgewählte Berechnungsergebnisse",
 					"title": "Projektplanungsbericht"
 				},
-				"report_sha256": "bd4c71f5a0b195eef0429f95cadc826f03c29a3387d013fb83e4cc26a9f1f18c",
+				"report_sha256": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
 				"revision": 3,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
 				"source_runs": [
 					{
-						"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379",
+						"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf",
 						"kind": "single_ac_energy_replay_v1",
-						"manifest_sha256": "989661b92da570686faa75d38c55759a4732e9329a6c9b5dfcafb4dd0bdbd571",
-						"result_sha256": "1e27f3d7400f1bade7d8c0fefd7498c304e6644a5762b68d070fda98cd9b9d77",
+						"manifest_sha256": "77b97b7d09e65939a2463188a6dd821fc508927273effb8ac57cef940004be29",
+						"result_sha256": "4723138c226e0c700941a0e9281a9cf3560ceca2de71e1739e431dbc320f8ebf",
 						"revision": 3,
 						"run_id": "0000000000000000000000000000001c",
 						"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					{
-						"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
+						"input_sha256": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed",
 						"kind": "prepare_geometric_pv_reference_v1",
-						"manifest_sha256": "03094b158b2545d0f565b9faa79c89e9e1bb6ad7d9a7c6e66e07c570627959cb",
-						"result_sha256": "43d74896387bffc6c2571739ff53f4c97ef90c9eb4add472ee648f7f52b3a37d",
+						"manifest_sha256": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d",
+						"result_sha256": "f8cec35db769db10916c432409baefd75428c9757398bf5b50bb5243448dbf37",
 						"revision": 2,
 						"run_id": "00000000000000000000000000000016",
 						"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
@@ -4958,7 +4673,7 @@
 				"title": "Actual weather / synthetic one-module geometric scenario",
 				"revision": 2,
 				"current_revision": 3,
-				"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3"
+				"input_sha256": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed"
 			},
 			"rows": [],
 			"runs": [
@@ -4968,8 +4683,8 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": false,
-					"manifest_sha256": "03094b158b2545d0f565b9faa79c89e9e1bb6ad7d9a7c6e66e07c570627959cb",
-					"result_sha256": "43d74896387bffc6c2571739ff53f4c97ef90c9eb4add472ee648f7f52b3a37d",
+					"manifest_sha256": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d",
+					"result_sha256": "f8cec35db769db10916c432409baefd75428c9757398bf5b50bb5243448dbf37",
 					"kind": "prepare_geometric_pv_reference_v1",
 					"scope": {
 						"country_assessment": {
@@ -5157,7 +4872,7 @@
 						},
 						{
 							"label": "included_modules[0].model",
-							"value": "Trina Solar TSM-460NEG9R.28"
+							"value": "PV 460 Wp · 1762 × 1134 mm"
 						},
 						{
 							"label": "included_modules[0].quantity",
@@ -5198,7 +4913,7 @@
 				"title": "Actual weather / synthetic one-module geometric scenario",
 				"revision": 3,
 				"current_revision": 3,
-				"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379"
+				"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf"
 			},
 			"rows": [],
 			"runs": [
@@ -5208,8 +4923,8 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": true,
-					"manifest_sha256": "ad166da12035cd59af45fdff5f18e3b557d84ceda8f312e162e5ffd6bca5018e",
-					"result_sha256": "82e23b129cc7295aa5a81c4be49b687be331a44ac2f1a1750566caab6c450458",
+					"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
+					"result_sha256": "d6e89b96f49e89e1b07a35730f16b1f972da3c0234613a863426fe6764bf3f8f",
 					"kind": "planning_report_v1",
 					"scope": {},
 					"rows": [
@@ -5303,7 +5018,7 @@
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: Included modules: quantity × model / module STC; document SHA-256 / page",
-							"value": "1 × Trina Solar TSM-460NEG9R.28 / 460 W; 58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7 / p. 2"
+							"value": "1 × PV 460 Wp · 1762 × 1134 mm"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: Array: module count / STC / tilt / azimuth clockwise from north / ENU normal",
@@ -5347,15 +5062,15 @@
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: model.inputs SHA-256",
-							"value": "938f2d14fb0d1ae35266aad6eeeada7144dc14600717b98479978ab28e24d459"
+							"value": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: model.witness SHA-256",
-							"value": "be84c7df8937653db8975b980554a1c25b6cda428476232481b626b09b25ff5f"
+							"value": "62266f13f4298aa7aeabf1095ef4bbc7067a5febea94a2a859054a9e6a5f5b24"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: project.parameters SHA-256",
-							"value": "0d54cafa5dfa1ea2dcc8bbc0093c8040fe10db928953b64183df5618209025c6"
+							"value": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: weather.metadata SHA-256",
@@ -5367,7 +5082,7 @@
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: woo.module_inputs SHA-256",
-							"value": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
+							"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading: Used by saved run / revision",
@@ -5378,39 +5093,22 @@
 							"value": "00000000000000000000000000000016 / 2"
 						},
 						{
-							"label": "Provisional bill of materials",
-							"value": "This table lists selected equipment, saved roof modules, manufacturer-included components, customer-supplied requirements and site-engineering obligations. Quantities are shown only where established. It is not a complete balance-of-system take-off; mounting, cabling, protection and other installation materials still require project-specific design."
-						},
-						{
-							"label": "Provisional bill of materials",
-							"value": {
-								"Quantity": "1 pc",
-								"Product": "Trina Solar TSM-460NEG9R.28",
-								"Reference": "",
-								"Supply scope": "PV reference module · project quotation"
-							}
-						},
-						{
-							"label": "PV modules used in the calculation",
+							"label": "Solar panel layout",
 							"value": "Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
 						},
 						{
-							"label": "PV modules used in the calculation: Input revision",
+							"label": "Solar panel layout: Input revision",
 							"value": "2"
 						},
 						{
-							"label": "PV modules used in the calculation: PV nameplate power",
+							"label": "Solar panel layout: PV nameplate power",
 							"value": "0.46 kWp"
 						},
 						{
-							"label": "PV modules used in the calculation: Source document · Page 2",
-							"value": "Trina Solar TSM-460NEG9R.28"
-						},
-						{
-							"label": "PV modules used in the calculation",
+							"label": "Solar panel layout",
 							"value": {
 								"Quantity": "1",
-								"Model": "Trina Solar TSM-460NEG9R.28",
+								"Panel parameters": "PV 460 Wp · 1762 × 1134 mm",
 								"Module power (STC)": "460 W"
 							}
 						},
@@ -5529,9 +5227,10 @@
 							}
 						]
 					},
+					"saved_roof_panel_count": 1,
 					"materials": {
 						"status": "verified",
-						"sha256": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
+						"sha256": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
 						"model": "project_materials_v3",
 						"line_count": 1,
 						"unresolved_quantity_count": 0,

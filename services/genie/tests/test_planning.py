@@ -93,6 +93,72 @@ def test_private_material_label_and_report_without_pv_sources_are_not_denied() -
     assert shipped["blocks"][-1]["status"] == "unavailable"
 
 
+def test_owned_report_panel_count_survives_truncated_display_rows() -> None:
+    raw, page = source()
+    report = raw["runs"][0]
+    report.update(kind="planning_report_v1", saved_roof_panel_count=4, truncated=True)
+    assert planning.saved_panel_count(raw, page) == (4, "layout")
+    assert (
+        planning.saved_panel_count(
+            raw, page.model_copy(update={"planning_run_ids": ["other"]})
+        )
+        is None
+    )
+    report["saved_roof_panel_count"] = None
+    assert planning.saved_panel_count(raw, page) is None
+
+
+@pytest.mark.parametrize(
+    ("locale", "count", "count_key", "expected"),
+    [
+        ("en", 4, "saved_roof_panel_count", "contains 4 solar panels"),
+        ("en", 16, "declared_panel_count", "You entered 16 solar panels"),
+        ("de", 16, "declared_panel_count", "haben Sie 16 PV-Module angegeben"),
+        ("en", 430, "declared_panel_stc_power_w", "The panel count is unknown."),
+        ("de", 430, "declared_panel_stc_power_w", "Die Modulanzahl ist offen."),
+        ("de", 1, "saved_roof_panel_count", "enthält 1 PV-Modul."),
+    ],
+)
+def test_answer_uses_the_selected_reports_complete_panel_count(
+    locale: str, count: int, count_key: str, expected: str
+) -> None:
+    from types import SimpleNamespace
+
+    from linker_genie.app import _answer
+    from linker_genie.understand import Prepared
+
+    raw, page = source()
+    raw["runs"][0].update({"kind": "planning_report_v1", count_key: count})
+    message = (
+        "Wie viele Module sind auf meinem Dach?"
+        if locale == "de"
+        else "How many panels are on my roof?"
+    )
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "locale": locale,
+            "page_context": page.model_dump(),
+            "messages": [{"role": "user", "content": message}],
+        }
+    ).model_copy(update={"planning_context": raw})
+    reading = Reading(
+        intent="documents_specs",
+        confidence=0.9,
+        about_this_page=1,
+        wants_person=0,
+        needs_followup=0,
+        seconds=0,
+        cost=0,
+        saved_panel_count_question=1,
+    )
+    prepared = Prepared(route=Route("planning_project"), reading=reading)
+    result, _ = _answer(request, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert result.attempts == 0 and result.grounded
+    block = result.output.blocks[0]
+    assert isinstance(block, TextBlock) and expected in block.text
+
+
 def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -> None:
     raw, page = source()
     raw["runs"][0].update(
@@ -531,7 +597,7 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         [
             {
                 "label": "Reference module",
-                "value": {"model": "TSM-460NEG9R.28", "power": "460 W"},
+                "value": {"model": "PV 460 Wp · 1762 × 1134 mm", "power": "460 W"},
             },
             {"label": "Plain reference power", "value": "460.0 W"},
         ]
@@ -544,7 +610,10 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         for line in payload["text"].splitlines()
         if line.startswith("Reference module: ")
     )
-    assert json.loads(module_row)["model"] == "TSM-460NEG9R.28"
+    grounded = re.sub(
+        r"\[(n\d+)=[^\]]+\]", r"{fact:planning.\1}", json.loads(module_row)["model"]
+    )
+    assert fill(grounded, gathered) == "PV 460 Wp · 1762 × 1134 mm"
     for value in ("460 W", "460.0 W"):
         power = next(key for key, item in payload["figures"].items() if item == value)
         assert fill("{fact:" + power + "}", gathered) == value

@@ -75,6 +75,8 @@ class ReportWiringCheckRequired(ReportInputsChanged):
 
 def renew_module_permission(previous: Object, current: Object) -> Object:
     """Renew permission only when every frozen module fact and citation matches."""
+    if previous.get("kind") == "project_panel_parameters" and current == previous:
+        return previous
     if previous.get("schema_version") != 1 or not isinstance(
         previous.get("module"), dict
     ):
@@ -82,6 +84,29 @@ def renew_module_permission(previous: Object, current: Object) -> Object:
     if previous["module"] != current.get("module"):
         raise ProductEvidenceChanged("the frozen Woo module facts have changed")
     return current
+
+
+def _declared_panels(inputs: Object, components: Object | None) -> Object | None:
+    if (
+        isinstance(components, dict) and components.get("status") == "available"
+    ) or storage_only_project(inputs):
+        return None
+    setup = inputs.get("pvgis_reference_setup", inputs.get("pvgis_reference"))
+    details = inputs.get("known_panel_details")
+    if not is_known(setup) or not isinstance(details, dict):
+        return None
+    count, power = details.get("count"), details.get("power_w")
+    if count is not None and (type(count) is not int or count <= 0):
+        raise InvalidInput("the declared panel count must be a positive whole number")
+    if power is not None and (
+        type(power) not in (int, float) or cast(float, power) <= 0
+    ):
+        raise InvalidInput("the declared panel power must be positive")
+    return (
+        {"count": count, "stc_power_w": power}
+        if count is not None or power is not None
+        else None
+    )
 
 
 def report_sources(
@@ -1208,7 +1233,10 @@ def report_sources(
         and layout.get("arrays")
     ):
         component_list = saved_roof_components(
-            layout, products.module_basis, workspace.blobs, project.revision
+            layout,
+            lambda: products.roof_basis(project.inputs),
+            workspace.blobs,
+            project.revision,
         )
         component_dependencies = component_list.get("dependencies")
         if (
@@ -1223,7 +1251,7 @@ def report_sources(
         current_module = (
             workspace.blobs.object(cast(str, bases["pv"]))
             if "pv" in bases
-            else products.module_basis()
+            else products.roof_basis(project.inputs)
         )
         for name, sha in historical_bases.items():
             current = renew_module_permission(
@@ -1335,8 +1363,16 @@ def report_sources(
                     else {}
                 ),
             }
+    declared_panels = (
+        None if comparison_only else _declared_panels(declared_inputs, component_list)
+    )
     source: Object = {
         "schema_version": 1,
+        **(
+            {"declared_pv_panels": declared_panels}
+            if declared_panels is not None
+            else {}
+        ),
         "project_id": project.id,
         "revision": project.revision,
         "input_sha256": project.input_sha256,

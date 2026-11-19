@@ -4,27 +4,25 @@
 
 ## 当前对象与已加载代
 
-`services/engine` 每个计算读取 Woo `/linker/v1/publication/manifest`。只保留当前 canonical 产品版本、资料身份/内容版本和产品关联均与已加载 feed 一致的交集。候选、被排除项、配件和备选都从该视图计算。未准备的新产品不进入交集；空集正常返回 `no_candidate`。`compatibility_revision` 只标识兼容合同，不混入单一参考组件的修订。没有有效 Woo 文档关联的兼容依据不使用，也不以 JSON 中存在 URL 代替发布许可。
+`services/engine` 每个计算读取 Woo `/linker/v1/publication/manifest`。只保留当前 canonical 产品版本、资料身份/内容版本和产品关联均与已加载 feed 一致的交集。候选、被排除项、配件和备选都从该视图计算。未准备的新产品不进入交集；空集正常返回 `no_candidate`。`compatibility_revision` 标识厂商兼容合同。没有有效 Woo 文档关联的兼容依据不使用，也不以 JSON 中存在 URL 代替发布许可。
 
 结果返回前再次检查全部使用的候选与资料依赖。下架/内容更新发生在途中则返回 409；Woo 当前权威不可读时返回 503。Python 的发布判断和 PHP 的最后验证均独立于 `off` / `observe` / `enforce` 的反滥用模式。显式给出的旧逆变器或电池 ID 返回 422，保持原输入，不替换为首候选。
 
-## 参考组件仍由 Woo 维护
+## Woo 商品、电缆参考与项目组件
 
-光伏组件不进入销售产品分类，保留业主批准的参考组件设计输入。既有 Trina 的事实及两份托管 PDF 一次迁入 Woo 原生参考记录：已发布、隐藏销售展示、virtual、无价格、无产品分类；`engineering_role=reference_pv_module` 与 `engineering_id=mat_trina_solar_tsm_460neg9r_28` 标识用途。后台仍用现有产品图值与 Documents 入口维护。它不能作为商品候选、推荐或加入 Solution draft 的产品；非销售角色不免除资料公开许可校验。
+Woo 发布在售商品的 SKU、型号、图值、资料和库存。`feed.products` 用于选品。已发布的电缆工程参考使用 `engineering_role=reference_cable`，通过 `feed.overlay` 提供来源已绑定的 `cable_facts`。电缆记录保留 canonical 产品、修订、工程 ID 和资料关联。Woo 编制商品候选、品牌目录和购物草稿时排除这些参考。
 
-`feed.overlay` 从这一 Woo 记录及当前 EvidenceBindings 生成，不再运行时读取 `data/engineering-overlay.json`。文件仅作一次迁移输入。每项保留 `{id,kind,brand,model,figures,documents}`，增加 `canonical_product_id`、`product_revision`、`reference_revision`；后两者是同一 Woo 产品修订，不再构造另一份手工版本。文档携带当前 `document_id`、`document_revision`、`blob_sha256` 与 `product_ids`。manifest 中同一 source 还须具有匹配的参考角色与工程 ID。
+光伏组件在项目中使用通用功率、尺寸及客户提供的电气参数。品牌、型号、Woo ID 和厂商组件资料不进入配置器组件选择、Genie 产品推荐、报告或新导出。项目取用通用参数不依赖 Woo 参考记录或其发布修订。原有屋面、组件数量、项目/修订归属及私有文件的访问权限随项目保留。见[业主裁定与交付范围](https://github.com/AssassinFlash/de-linker/issues/1168)。
 
-使用参考组件的住宅完整候选评估与两条屋顶入口，计算前验证源记录仍发布、角色与 ID 一致、源修订一致、每份已加载资料的身份/修订/内容 SHA 及关联仍有效，全部图值引用属于这份获准资料集合。结果放行前再核相同范围。不能将旧图值临时绑定为刚读到的新 PDF hash，也不能以文件仍可访问、共享 SHA 或其他产品的关联授予参考组件许可。
+一次数据清理使用 `tools/migrate/1168-retire-pv-supply.php`。先用 `wp eval-file ... plan` 检查实际商品、订单行、词项归属和文件关联，再按备份规格运行 `apply`。订单引用的商品及其语言配对转为私有。未被订单引用的已核实废弃商品、独占品牌和型号词项、专属测试 PDF 被移除；原厂文件撤销公开权限。再次运行 `plan` 时应无待处理项。
+
+`tools/migrate/1168-genie-panel-history.php` 以同样的 `plan/apply` 命令校正旧报告在 Genie 会话中的历史答复。该脚本只替换助手写入的旧参考型号，将原始记录保存在其所属私有会话。后续转存或转发会话时使用校正过的文本。
 
 线上 feed URL 与 manifest URL 一致。本地快照保留本地 uploads origin，而现有 feed producer 将当前站点 URL 归一为 `https://de-linker.com`；Python 只按 `LINKER_PUBLICATION_URL` 所指定的同一精确 origin 做对应归一，保持路径、query、fragment 不变，且身份/修订/SHA/关联仍须全通过。任意其他主机即使路径或内容相同也不能通过。
 
 原生 Woo 文档可携带 `aliases`（明确托管 URL 列表），图值 `citation.doc` 保留原始来源文件名；schema 与 typed model 明确接收这两项，其他未声明键仍拒绝。文件名只作来源标签，不授予许可。引用允许使用当前同一文档的明确 URL 别名；所有已加载别名仍须属于新读到的许可 URL 集合，资料身份/修订/关联也须有效。producer 将历史语言标签派生为小写双字母、`mul`（明确多语言）或 `und`（未说明/未识别），不改 Woo 原值或其证明；资料类型复用现有产品资料的 EN/DE 映射。报告优先用匹配语言，缺少匹配时保留既有可用资料回退，不将未知语言假定为英文。
 
-新结果 `publication.engineering_contract=2`，且显式携带 `reference_inputs`。每个参考项为 `{reference_input_id,reference_revision,product_id,product_revision}`；其 source 产品依赖与全部文档依赖同时列入普通 `products` / `documents`，文档额外携带 `blob_sha256`。参考信息因此参与选择指纹及 Woo 最后校验。屋顶结果只列实际使用的参考及资料，不再清空依赖，也不附带无关销售候选。
-
-旧 receipt 没有这一版本标记、遗漏参考身份或不含其完整产品/文档证明时，后续保存、确认与新 PDF 拒绝为 409。资料或源在途撤回/更新同样拒绝 409；计算开始前参考未准备/不可用，返回 503 `publication_unavailable`，明确 `reason=reference_evidence_unavailable`。客户拥有的历史快照和已生成 PDF 原件仍保留。
-
-不实际读取参考组件的工商业计算、既有逆变器 retrofit，以及没有任何逆变器可评估的正常空候选，不携带参考依赖。`reference_inputs=[]` 在这些路径合法。overlay 可为空并正常加载普通产品；参考未准备不会封住这些计算。`/resource/version?ready=1` 仅确认已验证参考源的当前产品修订，缺证时只遗漏该参考；普通已准备产品仍可确认。参考资料变化不改变全局兼容修订。
+新计算记录实际使用的 Woo 产品、已授权资料与兼容合同。电缆输入以当前产品与所引用资料的版本为准。项目的通用组件不会生成销售行或厂商参考依赖。客户已生成的报告由账户文件入口按原有所有权读取，新报告与新导出按当前项目参数产生。
 
 ## 已确认结果与下一步
 

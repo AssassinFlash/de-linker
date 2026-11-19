@@ -518,7 +518,7 @@ final class ProductShortcodes {
 		if ( array() === $selected ) {
 			return '';
 		}
-		$labels     = $this->selection_labels();
+		$labels     = $this->selection_labels( isset( $selected['brand'] ) );
 		$html       = '';
 		$range_keys = array(
 			'kw'  => array( __( 'AC power', 'linker-commerce' ), __( 'kW', 'linker-commerce' ), 'kw_min', 'kw_max' ),
@@ -529,7 +529,7 @@ final class ProductShortcodes {
 				continue;
 			}
 			$value = (string) $selected[ $facet ];
-			$html .= '<a class="wbchip" href="' . esc_url( $this->facet_remove_url( $facet ) ) . '" rel="nofollow">' . esc_html( $labels[ $facet ][ $value ] ?? $value ) . ' <span aria-hidden="true">&times;</span></a>';
+			$html .= '<a class="wbchip" href="' . esc_url( $this->facet_remove_url( $facet ) ) . '" rel="nofollow">' . esc_html( $labels[ $facet ][ $value ] ?? ( 'brand' === $facet ? __( 'Brand', 'linker-commerce' ) : $value ) ) . ' <span aria-hidden="true">&times;</span></a>';
 		}
 		foreach ( $range_keys as $range ) {
 			list( $title, $unit, $min_key, $max_key ) = $range;
@@ -549,15 +549,24 @@ final class ProductShortcodes {
 	 * The facet values' printed labels, for the chips: the rail's own words
 	 * (the facet data owns them), plus the brands' term names.
 	 *
+	 * @param bool $has_brand The request includes a brand filter.
 	 * @return array<string, array<int|string, string>> Labels by facet and value. The phase values are
 	 *                                                   PHP's numeric strings: '3' lives under the int key 3,
 	 *                                                   and lookups by either spelling reach it.
 	 */
-	private function selection_labels(): array {
+	private function selection_labels( bool $has_brand ): array {
 		$labels = $this->filters->value_labels();
+		if ( ! $has_brand ) {
+			return $labels;
+		}
+		$ids = $this->filters->archive_product_ids();
+		if ( array() === $ids ) {
+			return $labels;
+		}
 		$brands = get_terms(
 			array(
 				'taxonomy'   => 'pa_brand',
+				'object_ids' => $ids,
 				'hide_empty' => false,
 			)
 		);

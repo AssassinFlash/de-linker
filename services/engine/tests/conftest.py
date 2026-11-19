@@ -21,9 +21,22 @@ from fastapi.testclient import TestClient
 from linker_engine.app import Settings, create_app
 from linker_engine.compatibility import Compatibility
 from linker_engine.engine import Engine
+from linker_engine.models import PanelDimensions, PanelElectrical
 from linker_engine.products import Products
 from linker_engine.pvgis import Pvgis
 from linker_engine.roof import lod2
+
+# Measurements supplied by the test project, independent of the Woo feed.
+PANEL_SIZE = PanelDimensions(pmax_w=460, length_m=1.76, width_m=1.13)
+PANEL_ELECTRICAL = PanelElectrical(
+    pmax_w=460,
+    voc_v=52,
+    vmpp_v=45,
+    isc_a=10.8,
+    impp_a=10.2,
+    beta_voc_pct_per_c=-0.24,
+    max_series_fuse_a=25,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures"
 # The contract the site ships, so the tests that pin a release decision or a
@@ -195,8 +208,6 @@ def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str,
             )
         product["canonical_product_id"] = product["id"]
         product["product_revision"] = digest(product)
-    # A synthetic Woo reference identity wraps the unchanged real Trina facts.
-    # It is deliberately absent from saleable feed.products and categories.
     for index, reference in enumerate(raw["overlay"]):
         reference["canonical_product_id"] = 90000001 + index
         for document in reference["documents"]:
@@ -225,9 +236,9 @@ def publication_manifest(feed: dict[str, Any]) -> dict[str, Any]:
             "documents": [d["document_id"] for d in product["documents"]],
             "ready": {"engineering": False},
         }
-        if product.get("kind") == "pv_module":
+        if product.get("kind") == "cable":
             source.update(
-                engineering_role="reference_pv_module", engineering_id=product["id"]
+                engineering_role="reference_cable", engineering_id=product["id"]
             )
         products.append(source)
         for doc in product["documents"]:

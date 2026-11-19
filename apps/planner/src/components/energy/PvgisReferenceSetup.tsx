@@ -2,9 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Draft } from "../../domain/draft.ts";
 import { isDirty } from "../../domain/draft.ts";
 import type { JsonObject } from "../../data/protocol.ts";
-import type { PlannerClient } from "../../data/PlannerClient.ts";
-import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { isCurrentRoofModule } from "../../domain/productModules.ts";
 import {
 	referencePrepared,
 	referenceDraft,
@@ -24,9 +21,6 @@ import { PvgisRoofFacts } from "./PvgisRoofFacts.tsx";
 export function PvgisReferenceSetup({
 	draft,
 	edit,
-	client,
-	scope,
-	active,
 	locale,
 	disabled,
 	actionsDisabled,
@@ -37,9 +31,6 @@ export function PvgisReferenceSetup({
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
-	client: PlannerClient;
-	scope: string;
-	active: boolean;
 	locale: string;
 	disabled: boolean;
 	actionsDisabled: boolean;
@@ -80,7 +71,6 @@ export function PvgisReferenceSetup({
 		return () => onValidity(true);
 	}, [invalid, onValidity]);
 	const known = parsed?.model === KNOWN_PV_MODEL;
-	const catalog = useModuleTemplates(client, scope, active && !known);
 	const site = useMemo(() => {
 		try {
 			return referenceSite(inputs);
@@ -89,17 +79,6 @@ export function PvgisReferenceSetup({
 		}
 	}, [inputs.brief]);
 	const siteReady = site !== null;
-	const currentModules =
-		!!roof &&
-		roof.arrays.every((array) => {
-			const module = roof.geometry.module_specs.find(
-				(m) => m.id === array.module_spec_id,
-			);
-			return isCurrentRoofModule(
-				module,
-				catalog.error || catalog.isFetching ? undefined : catalog.data,
-			);
-		});
 	const complete = referencePrepared(inputs);
 	const change = (
 		patch: Partial<
@@ -501,18 +480,6 @@ export function PvgisReferenceSetup({
 						)}
 					</Notice>
 				))}
-			{!known && catalog.error && (
-				<Notice error>
-					<p>{__("Module data could not be loaded.", "linker-tools")}</p>
-					<button
-						type="button"
-						className="lp-text-button"
-						onClick={() => void catalog.refetch()}
-					>
-						{__("Reload module data", "linker-tools")}
-					</button>
-				</Notice>
-			)}
 			{openDesign && !known && (
 				<button type="button" className="lp-text-button" onClick={openDesign}>
 					{__("Review roof design", "linker-tools")}
@@ -541,7 +508,7 @@ export function PvgisReferenceSetup({
 						actionsDisabled ||
 						!supported ||
 						!complete ||
-						(known ? !siteReady : !roof || !currentModules) ||
+						(known ? !siteReady : !roof) ||
 						invalid.length > 0 ||
 						isDirty(draft) ||
 						!!draft.pending ||

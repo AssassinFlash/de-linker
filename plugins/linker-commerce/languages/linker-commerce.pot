@@ -15,11 +15,6 @@ msgstr ""
 "X-Domain: linker-commerce\n"
 
 #. Retained published message identifier; no current runtime caller.
-msgid ""
-"Engineering components that are not products (data/engineering-overlay.json)."
-msgstr ""
-
-#. Retained published message identifier; no current runtime caller.
 msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
 
@@ -3691,10 +3686,6 @@ msgstr ""
 
 #: includes/Products/EngineeringReference.php:80
 msgid "Engineering role"
-msgstr ""
-
-#: includes/Products/EngineeringReference.php:83
-msgid "Reference PV module"
 msgstr ""
 
 #: includes/Products/EngineeringReference.php:84

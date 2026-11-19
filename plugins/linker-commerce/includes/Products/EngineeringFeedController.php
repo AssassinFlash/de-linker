@@ -145,18 +145,19 @@ final class EngineeringFeedController extends WP_REST_Controller {
 						'items'       => array(
 							'type'       => 'object',
 							'properties' => array(
-								'id'        => array( 'type' => 'string' ),
-								'kind'      => array(
+								'cable_facts' => array( 'type' => 'object' ),
+								'id'          => array( 'type' => 'string' ),
+								'kind'        => array(
 									'type' => 'string',
-									'enum' => array( 'pv_module' ),
+									'enum' => array( 'cable' ),
 								),
-								'brand'     => array( 'type' => 'string' ),
-								'model'     => array( 'type' => 'string' ),
-								'figures'   => array(
+								'brand'       => array( 'type' => 'string' ),
+								'model'       => array( 'type' => 'string' ),
+								'figures'     => array(
 									'type'                 => 'object',
 									'additionalProperties' => true,
 								),
-								'documents' => array(
+								'documents'   => array(
 									'type'  => 'array',
 									'items' => array(
 										'type'       => 'object',

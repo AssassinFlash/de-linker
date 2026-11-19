@@ -6,10 +6,12 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from .canonical import Object
+from .declared_module import electrical_facts
 from .equipment_assessment import selection_products
-from .equipment_facts import compile_facts, compile_product
+from .equipment_facts import compile_product
 from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput
+from .geometry import panel_poses, read_geometry
 from .pv_iv_model import derive_iv_model
 from .pv_string_assessment import assess_pv_strings
 from .pv_string_inputs import PvString, PvStringPlan
@@ -69,11 +71,6 @@ def series_plan(inputs: Object, basis: Object) -> SeriesPlan:
     if len({row.mppt for row in plan.strings}) != len(plan.strings):
         raise InvalidInput("the series scenario requires one string per tracker")
     products = selection_products(selection, basis)
-    raw_module = basis.get("pv_module_inputs")
-    if not isinstance(raw_module, dict) or not isinstance(
-        raw_module.get("electrical_product"), dict
-    ):
-        raise InvalidInput("the cited Woo module I-V source is required")
     assessment = assess_pv_strings(inputs, basis)
     checks = cast(list[dict[str, Any]], assessment["checks"])
     coverage = next(row for row in checks if row["id"] == "pv_layout_coverage")
@@ -81,9 +78,20 @@ def series_plan(inputs: Object, basis: Object) -> SeriesPlan:
         raise InvalidInput(
             "the series scenario requires every included module assigned"
         )
-    model = derive_iv_model(
-        compile_facts(cast(Object, raw_module["electrical_product"]))
-    )
+    geometry = read_geometry(inputs.get("geometry"))
+    assigned = {module_id for string in plan.strings for module_id in string.module_ids}
+    used_arrays = {
+        pose.array_id for pose in panel_poses(geometry) if pose.id in assigned
+    }
+    used_specs = {
+        array.module_spec_id for array in geometry.arrays if array.id in used_arrays
+    }
+    if len(used_specs) != 1:
+        raise InvalidInput(
+            "the series scenario requires uniform panel electrical parameters"
+        )
+    module = next(module for module in geometry.module_specs if module.id in used_specs)
+    model = derive_iv_model(electrical_facts(module))
     if model["status"] != "available":
         raise InvalidInput("the cited module cannot produce an admissible I-V fit")
     inverter = cast(

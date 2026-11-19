@@ -75,7 +75,7 @@ async function mount(
 						};
 					}
 					if (path === "places/outline") return { found: false };
-					return { schema_version: 1, provider: "woocommerce", pv_modules: [] };
+					return { schema_version: 1, provider: "woocommerce", products: [] };
 				},
 			},
 			disabled: false,
@@ -131,9 +131,63 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("German panel choices save the cell technology expected by the electrical calculation", async (t) => {
+	const inputs = { brief: emptyBrief(), geometry: structuredClone(flat) };
+	const app = await mount(t, inputs, aerial, null, "de");
+	await click("Moduldaten bearbeiten");
+	const field = document.querySelector("select[name=panel_cell_technology]");
+	assert.deepEqual(
+		[...field.options].map((o) => [o.label, o.value]),
+		[
+			["Unbekannt", ""],
+			["Monokristallines Silizium", "monocrystalline"],
+			["Polykristallines Silizium", "polycrystalline"],
+		],
+	);
+	await act(async () => {
+		field.value = "polycrystalline";
+		field.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await click("Weiter zum Energiebedarf");
+	assert.equal(
+		app.inputs.geometry.module_specs[0].electrical.cell_technology,
+		"polycrystalline",
+	);
+});
+test("continuing with edited panel settings preserves roof ownership and group quantities", async (t) => {
+	const app = await mount(t);
+	const geometry = app.inputs.geometry;
+	await click("Edit panel parameters");
+	await enter(input("Power per panel"), "497");
+	await click("Continue with energy use");
+	assert.equal(app.next, 1);
+	assert.equal(app.inputs.geometry.module_specs[0].stc_power_w, 497);
+	assert.equal(
+		app.inputs.geometry.module_specs[0].id,
+		geometry.module_specs[0].id,
+	);
+	assert.deepEqual(app.inputs.geometry.arrays, geometry.arrays);
+	assert.deepEqual(app.inputs.geometry.roofs, geometry.roofs);
+});
+test("a known system capacity and a partial panel count survive edits independently", async (t) => {
+	const app = await mount(t);
+	await click("Use module details");
+	await enter(input("Solar capacity"), "8");
+	await enter(input("Number of modules"), "16");
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, 8);
+	await enter(input("Power per panel"), "430");
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, 8);
+	await enter(input("Solar capacity"), "");
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, 6.88);
+	assert.equal(input("Number of modules").value, "16");
+});
 test("new solar module details persist known capacity and source without requiring a roof", async (t) => {
 	const app = await mount(t);
 	await click("Use module details");
+	await enter(
+		input("Power per panel"),
+		String(flat.module_specs[0].stc_power_w),
+	);
 	await enter(input("Number of modules"), "12");
 	await enter(input("Roof pitch"), "25");
 	await enter(input("Azimuth (north = 0°)"), "180");

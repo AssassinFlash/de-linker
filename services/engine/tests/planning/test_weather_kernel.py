@@ -19,7 +19,6 @@ from linker_engine.planning.errors import (
     InvalidInput,
     LeaseLost,
     NotFound,
-    VersionUnavailable,
 )
 from linker_engine.planning.execution_registry import (
     ExecutionRegistry,
@@ -469,7 +468,7 @@ def test_independent_managed_process_resumes_weather_then_refuses_pv_without_woo
         )
         pv = settings.pv_service(workspace)
         assert pv is not None
-        with pytest.raises(VersionUnavailable, match="current Woo module data"):
+        with pytest.raises(InvalidInput, match="declared_module_marker_missing"):
             pv.evaluate(owner, roof.id, saved.revision, key="pv")
         with workspace.database.read() as connection:
             assert (

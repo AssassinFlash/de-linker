@@ -2,11 +2,12 @@
 
 import io
 
-from conftest import TRIFTSTRASSE_5
+from conftest import PANEL_ELECTRICAL, PANEL_SIZE, TRIFTSTRASSE_5
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
 RESIDENTIAL = {
+    "module": PANEL_ELECTRICAL.model_dump(),
     "plz": "80538",
     "country": "DE",
     "annual_kwh": 5000,
@@ -132,6 +133,7 @@ def test_roof_outline(client: TestClient) -> None:
     response = client.post(
         "/roof/outline",
         json={
+            "module": PANEL_SIZE.model_dump(),
             "plz": "80538",
             "country": "DE",
             "location": {"latitude": latitude, "longitude": longitude},

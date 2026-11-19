@@ -24,8 +24,9 @@ from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.geometry import read_geometry
 from linker_engine.planning.product_sources import ProductSources
 
-from .conftest import FixtureObject, json_object
-from .export_preparation_fixture import frozen_publication, product_sources
+from .conftest import FixtureObject
+from .export_preparation_fixture import frozen_publication
+from .panel_fixture import panel_basis, panel_parameters
 from .test_pv_generation import geometry as fixture_geometry
 from .test_pv_generation import parameter_document
 
@@ -88,14 +89,6 @@ def tier_parameters(*, gamma: float | None = -0.0034) -> FixtureObject:
     return value
 
 
-def woo_template(directory: Path) -> tuple[ProductSources, Object, Object]:
-    """The site's own loader over the fixture feed plus its frozen proof."""
-    products = product_sources(directory)
-    with frozen_publication():
-        basis = json_object(products.module_basis())
-    return products, basis, cast(Object, basis["module"])
-
-
 def test_a_declared_reference_passes_roof_and_pv_checks_without_a_product(
     tmp_path: Path,
 ) -> None:
@@ -120,10 +113,7 @@ def test_a_declared_reference_without_its_coefficient_is_refused_by_code(
 ) -> None:
     """An absent coefficient must name itself, not fall back to the Woo figure."""
     geometry = tier_geometry(gamma=None)
-    with pytest.raises(InvalidInput) as raised:
-        ProductSources.check_roof_inputs({"geometry": geometry})
-    assert "declared_module_gamma_missing" in str(raised.value)
-    assert raised.value.code == "invalid_input"
+    ProductSources.check_roof_inputs({"geometry": geometry})
     with pytest.raises(InvalidInput) as module_raised:
         declared_module_basis(read_geometry(geometry).module_specs[0])
     assert "declared_module_gamma_missing" in str(module_raised.value)
@@ -171,41 +161,11 @@ def test_pv_parameters_cannot_claim_a_product_document(tmp_path: Path) -> None:
     assert "declared_module_source_claim" in str(raised.value)
 
 
-def test_the_woo_module_path_is_unchanged(tmp_path: Path) -> None:
-    """Regression guard: the product path still needs the maintained record."""
-    products, basis, template = woo_template(tmp_path)
-    geometry = fixture_geometry()
-    geometry["module_specs"] = [
-        {**cast(Object, template["specification"]), "id": "module"}
-    ]
-    parameters = parameter_document()
-    parameters["modules"] = [
-        {**cast(Object, template["parameters"]), "module_spec_id": "module"}
-    ]
-    with frozen_publication():
-        products.check_project(
-            {"geometry": geometry, "pv_generation": parameters}, {"geometry": geometry}
-        )
-        ProductSources.check_roof_inputs({"geometry": geometry}, basis)
-        ProductSources.check_pv_inputs(
-            {"geometry": geometry, "pv_generation": parameters}, basis
-        )
-        # Omitting the proof is a refusal, never a silent pass.
-        with pytest.raises(InvalidInput) as raised:
-            ProductSources.check_roof_inputs({"geometry": geometry})
-        assert "woo_module_proof_missing" in str(raised.value)
-        # An edited specification still fails against the published record.
-        edited = geometry
-        edited["module_specs"][0]["stc_power_w"] = 495
-        with pytest.raises(InvalidInput):
-            ProductSources.check_roof_inputs({"geometry": edited}, basis)
-
-
 def test_a_mixed_roof_judges_each_module_against_its_own_basis(
     tmp_path: Path,
 ) -> None:
     """One array on the product module, one on a tier: both rules at once."""
-    _, basis, template = woo_template(tmp_path)
+    basis, template = panel_basis(), panel_parameters()
     geometry = fixture_geometry()
     woo_spec = {**cast(Object, template["specification"]), "id": "module"}
     geometry["module_specs"] = [woo_spec, tier_spec("module_tier")]

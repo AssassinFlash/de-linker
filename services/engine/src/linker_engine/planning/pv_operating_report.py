@@ -80,7 +80,7 @@ def operating_sections(
     documents: dict[tuple[str, int], ReportRow] = {}
     for fact in data.values():
         source = fact.get("source")
-        if isinstance(source, dict):
+        if isinstance(source, dict) and source.get("url") and source.get("page"):
             url, page = source["url"], source["page"]
             documents[url, page] = ReportRow(
                 label=text("source", locale)

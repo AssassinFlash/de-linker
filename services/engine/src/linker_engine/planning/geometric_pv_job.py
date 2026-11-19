@@ -216,7 +216,7 @@ class GeometricPvKernel:
         source = selected_source(Assets(self.workspace), actor, project_id, inputs)
         self.workspace.blobs.read(source.content_sha256)
         basis = (
-            self.products.electrical_module_basis()
+            self.products.roof_basis(inputs)
             if request.model == MODEL_V3
             else self.products.pv_basis(request.product_inputs(inputs))
         )

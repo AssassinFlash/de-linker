@@ -7,10 +7,15 @@ import type { Json, JsonObject, Session } from "../../data/protocol.ts";
 import { sameJson } from "../../domain/draft.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
-import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
+import {
+	emptyPanelFields,
+	panelFields,
+	panelLabel,
+	panelSpecification,
+} from "../../domain/panelParameters.ts";
+import { PanelMeasurementFields } from "../PanelMeasurementFields.tsx";
 import type {
 	GeometryDocument,
-	ModuleSpec,
 	RoofFace,
 	Vec2,
 } from "../../domain/geometry.ts";
@@ -181,13 +186,23 @@ export function SolarInstallation({
 	const choicesId = useId();
 	const layoutHeading = useRef<HTMLHeadingElement>(null);
 	const openLayout = useRef<HTMLButtonElement>(null);
-	const templates = useModuleTemplates(client, session.query_scope, !disabled);
 	const [moduleId, setModuleId] = useState(geometry.module_specs[0]?.id ?? "");
+	const [newPanelId, setNewPanelId] = useState(id);
+	const savedPanel = geometry.module_specs.find((item) => item.id === moduleId);
+	const [measurements, setMeasurements] = useState(emptyPanelFields);
+	const [editingPanel, setEditingPanel] = useState(false);
 	const module =
-		geometry.module_specs.find((m) => m.id === moduleId) ??
-		templates.data?.find((t) => t.specification.id === moduleId)?.specification;
+		savedPanel && !editingPanel
+			? savedPanel
+			: panelSpecification(savedPanel?.id ?? newPanelId, measurements);
 	const known = knownReferenceArrays(inputs)?.[0];
-	const [count, setCount] = useState("");
+	const knownPanels = inputs.known_panel_details as
+		| {
+				count: number | null;
+				power_w: number | null;
+				system_kwp: number | null;
+		  }
+		| undefined;
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
 	);
@@ -393,8 +408,7 @@ export function SolarInstallation({
 				return nextInputs;
 			});
 			if (ok && entry) {
-				if (mode === "roof" && command.type !== "put_module")
-					onLayoutChange?.();
+				if (mode === "roof") onLayoutChange?.();
 				const applied = entry;
 				setUndo((previous) => [...previous, applied]);
 				setError("");
@@ -531,22 +545,7 @@ export function SolarInstallation({
 			);
 		}
 	}
-	function chooseModule(spec: ModuleSpec) {
-		const existing = geometry.module_specs.find((m) => m.id === spec.id);
-		if (!existing && !commit({ type: "put_module", before: null, value: spec }))
-			return;
-		setModuleId(spec.id);
-		if (
-			mode === "known" &&
-			Number.isSafeInteger(Number(count)) &&
-			Number(count) > 0
-		) {
-			knownChange({
-				peak_power_kwp: (Number(count) * (existing ?? spec).stc_power_w) / 1000,
-			});
-		}
-	}
-	function knownChange(patch: JsonObject) {
+	function knownChange(patch: JsonObject, panels?: JsonObject) {
 		if (blocked) return;
 		edit((current) => {
 			const draft = referenceDraft(current);
@@ -558,12 +557,32 @@ export function SolarInstallation({
 				azimuth_north_clockwise_deg: null,
 				source_note: "",
 			};
-			return referenceInputs(current, {
+			const next = referenceInputs(current, {
 				...draft,
 				model: KNOWN_PV_MODEL,
 				arrays: [{ ...first, ...patch }, ...existing.slice(1)],
 			});
+			if (panels === undefined) return next;
+			return { ...next, known_panel_details: panels };
 		});
+	}
+	function panelPowerChange(
+		field: "count" | "power_w" | "system_kwp",
+		value: number | null,
+	) {
+		const details = {
+			count: knownPanels?.count ?? null,
+			power_w: knownPanels?.power_w ?? null,
+			system_kwp: knownPanels
+				? knownPanels.system_kwp
+				: (known?.peak_power_kwp ?? null),
+			[field]: value,
+		};
+		const computed =
+			details.count && details.power_w
+				? (details.count * details.power_w) / 1000
+				: null;
+		knownChange({ peak_power_kwp: details.system_kwp ?? computed }, details);
 	}
 	function roofReferenceInputs(
 		current: JsonObject,
@@ -843,6 +862,17 @@ export function SolarInstallation({
 			);
 		}
 	}
+	function applyPanelChanges() {
+		if (!editingPanel && (savedPanel || !module)) return true;
+		if (
+			!module ||
+			!commit({ type: "put_module", before: savedPanel ?? null, value: module })
+		)
+			return false;
+		setModuleId(module.id);
+		setEditingPanel(false);
+		return true;
+	}
 	function placeModules(point?: Vec2) {
 		try {
 			if (!roof || !module) return;
@@ -866,7 +896,26 @@ export function SolarInstallation({
 					"linker-tools",
 				),
 			};
-			if (commit({ type: "put_array", before: null, value })) {
+			const arrayEdit = { type: "put_array" as const, before: null, value };
+			if (
+				commit(
+					savedPanel && !editingPanel
+						? arrayEdit
+						: {
+								type: "group",
+								edits: [
+									{
+										type: "put_module",
+										before: savedPanel ?? null,
+										value: module,
+									},
+									arrayEdit,
+								],
+							},
+				)
+			) {
+				setModuleId(module.id);
+				setEditingPanel(false);
 				select(value.id);
 				setTool("select");
 			}
@@ -1135,38 +1184,74 @@ export function SolarInstallation({
 	});
 	const moduleChoice = (
 		<>
-			<label className="sc-field">
-				<span>{__("PV module", "linker-tools")}</span>
-				<select
-					value={module?.id ?? ""}
-					onChange={(e) => {
-						const spec =
-							templates.data?.find(
-								(t) => t.specification.id === e.currentTarget.value,
-							)?.specification ??
-							geometry.module_specs.find((m) => m.id === e.currentTarget.value);
-						if (spec) chooseModule(spec);
+			{geometry.module_specs.length > 0 && (
+				<label className="sc-field">
+					<span>{__("Panel dimensions for this layout", "linker-tools")}</span>
+					<select
+						value={savedPanel?.id ?? ""}
+						onChange={(e) => {
+							setModuleId(e.currentTarget.value);
+							setEditingPanel(false);
+							setMeasurements(emptyPanelFields());
+							setNewPanelId(id());
+						}}
+					>
+						{geometry.module_specs.map((spec) => (
+							<option key={spec.id} value={spec.id}>
+								{panelLabel(spec, config.locale)}
+							</option>
+						))}
+						<option value="">
+							{__("Enter different panel dimensions", "linker-tools")}
+						</option>
+					</select>
+				</label>
+			)}
+			{savedPanel?.source.note ===
+				"declared_reference — Parameters retained from an earlier design." && (
+				<p className="sc-muted">
+					{__(
+						"These measurements come from the earlier layout. Check them against your panel data sheet.",
+						"linker-tools",
+					)}
+				</p>
+			)}
+			{savedPanel && !editingPanel && (
+				<button
+					type="button"
+					className="sc-button"
+					onClick={() => {
+						setMeasurements(panelFields(savedPanel));
+						setEditingPanel(true);
 					}}
 				>
-					<option value="">{__("Choose a module", "linker-tools")}</option>
-					{[
-						...geometry.module_specs,
-						...(templates.data ?? [])
-							.map((t) => t.specification)
-							.filter(
-								(m) => !geometry.module_specs.some((old) => old.id === m.id),
-							),
-					].map((m) => (
-						<option key={m.id} value={m.id}>
-							{m.model} · {m.stc_power_w} Wp
-						</option>
-					))}
-				</select>
-			</label>
-			{templates.isError && (
-				<p role="alert">
-					{__("Module data could not be loaded.", "linker-tools")}
-				</p>
+					{__("Edit panel parameters", "linker-tools")}
+				</button>
+			)}
+			{(!savedPanel || editingPanel) && (
+				<PanelMeasurementFields
+					fields={measurements}
+					change={setMeasurements}
+				/>
+			)}
+			{editingPanel && savedPanel && (
+				<div className="sc-actions">
+					<button
+						type="button"
+						className="sc-button"
+						disabled={!module}
+						onClick={applyPanelChanges}
+					>
+						{__("Apply panel parameters", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="sc-button"
+						onClick={() => setEditingPanel(false)}
+					>
+						{__("Cancel", "linker-tools")}
+					</button>
+				</div>
 			)}
 		</>
 	);
@@ -1222,7 +1307,8 @@ export function SolarInstallation({
 							}
 							key={value}
 							onClick={() => {
-								if (value === mode) return;
+								if (value === mode || (mode === "roof" && !applyPanelChanges()))
+									return;
 								if (
 									(value === "known" && reference.model !== KNOWN_PV_MODEL) ||
 									(value === "roof" &&
@@ -1246,36 +1332,45 @@ export function SolarInstallation({
 					))}
 				</div>
 				<div className="sc-card">
-					{!placingOnMap && moduleChoice}
+					{mode === "roof" && !placingOnMap && moduleChoice}
 					{mode === "known" ? (
 						<>
+							<p className="sc-muted">
+								{__(
+									"Enter the total solar capacity if you know it, or enter the number of panels and their rated power. Leave unknown values blank.",
+									"linker-tools",
+								)}
+							</p>
 							<div className="sc-fields">
+								<label className="sc-field">
+									<span>{__("Power per panel", "linker-tools")} (Wp)</span>
+									<input
+										type="number"
+										name="known_panel_power_w"
+										min="0"
+										step="any"
+										value={knownPanels?.power_w ?? ""}
+										onChange={(e) => {
+											const power = e.currentTarget.valueAsNumber;
+											const watts =
+												Number.isFinite(power) && power > 0 ? power : null;
+											panelPowerChange("power_w", watts);
+										}}
+									/>
+								</label>
 								<label className="sc-field">
 									<span>{__("Number of modules", "linker-tools")}</span>
 									<input
 										type="number"
+										name="known_panel_count"
 										min="1"
 										step="1"
-										value={
-											count ||
-											(module && known?.peak_power_kwp != null
-												? String(
-														(known.peak_power_kwp * 1000) / module.stc_power_w,
-													)
-												: "")
-										}
+										value={knownPanels?.count ?? ""}
 										onChange={(e) => {
-											const text = e.currentTarget.value;
-											setCount(text);
-											if (module)
-												knownChange({
-													peak_power_kwp:
-														text &&
-														Number(text) > 0 &&
-														Number.isInteger(Number(text))
-															? (Number(text) * module.stc_power_w) / 1000
-															: null,
-												});
+											const n = e.currentTarget.valueAsNumber;
+											const number =
+												Number.isSafeInteger(n) && n > 0 ? n : null;
+											panelPowerChange("count", number);
 										}}
 									/>
 								</label>
@@ -1285,14 +1380,24 @@ export function SolarInstallation({
 										type="number"
 										min="0"
 										step="any"
-										value={known?.peak_power_kwp ?? ""}
+										value={
+											(knownPanels
+												? knownPanels.system_kwp
+												: known?.peak_power_kwp) ?? ""
+										}
+										placeholder={
+											knownPanels?.count &&
+											knownPanels.power_w &&
+											known?.peak_power_kwp
+												? String(known.peak_power_kwp)
+												: undefined
+										}
 										onChange={(e) => {
-											setCount("");
-											knownChange({
-												peak_power_kwp: e.currentTarget.value
-													? Number(e.currentTarget.value)
-													: null,
-											});
+											const power = e.currentTarget.valueAsNumber;
+											panelPowerChange(
+												"system_kwp",
+												Number.isFinite(power) && power > 0 ? power : null,
+											);
 										}}
 									/>
 								</label>
@@ -1404,6 +1509,7 @@ export function SolarInstallation({
 								vertices.length > 0
 							}
 							onClick={() => {
+								if (!applyPanelChanges()) return;
 								startTool("select");
 								setLayoutOpen(false);
 								window.requestAnimationFrame(() =>
@@ -2190,9 +2296,12 @@ export function SolarInstallation({
 						calibrationOpen ||
 						importOpen ||
 						roofPropertyInvalid ||
+						(editingPanel && !module) ||
 						vertices.length > 0
 					}
-					onClick={next}
+					onClick={() => {
+						if (mode !== "roof" || applyPanelChanges()) next();
+					}}
 				>
 					{__("Continue with energy use", "linker-tools")}
 				</button>

@@ -304,12 +304,11 @@ def project_materials(source: Object) -> Object:
     if isinstance(pv, dict) and pv.get("status") == "available":
         for part in cast(list[Object], pv["components"]):
             citation = cast(Object, part["source"])
-            woo = cast(Object, citation["woo"])
             lines.append(
                 {
-                    "id": f"pv:{woo['reference_input_id']}",
+                    "id": f"pv:{part['module_spec_id']}",
                     "handling": "pv_reference",
-                    "product_id": woo["product_id"],
+                    "product_id": None,
                     "model": part["model"],
                     "quantity": part["quantity"],
                     "unit": "piece",
@@ -320,6 +319,20 @@ def project_materials(source: Object) -> Object:
                     "scope": pv["scope"],
                 }
             )
+    declared_panels = source.get("declared_pv_panels")
+    if isinstance(declared_panels, dict):
+        lines.append(
+            {
+                "id": "pv:declared",
+                "handling": "pv_declared",
+                "product_id": None,
+                "quantity": declared_panels["count"],
+                "stc_power_w": declared_panels["stc_power_w"],
+                "unit": "piece",
+                "basis": "project_declared_panel_parameters",
+                "source": {"kind": "user_declared"},
+            }
+        )
     installation = source.get("installation")
     if isinstance(installation, dict):
         declared = installation.get("material_review")
@@ -543,6 +556,13 @@ def project_materials(source: Object) -> Object:
 
 
 def material_name(line: Object, locale: str) -> str:
+    if line["handling"] == "pv_declared":
+        power = line.get("stc_power_w")
+        return (
+            f"{power:g} Wp"
+            if isinstance(power, (float, int))
+            else text("panel_unspecified", locale)
+        )
     if line["handling"] == "pending_battery_selection":
         return text("pending_battery", locale)
     if line["handling"] == "existing_system_declared":
@@ -701,7 +721,21 @@ def material_scope(line: Object, locale: str) -> str:
             )
             scope += f" · {description}"
         return scope
-    if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
+    if line.get("package_supply") == "retained":
+        scope = (
+            "Lieferumfang der vorhandenen Geräte"
+            if locale == "de"
+            else "Package contents of existing equipment"
+        )
+    elif line.get("package_supply") == "unresolved":
+        scope = (
+            "Zuordnung zu vorhandenen oder neuen Geräten offen"
+            if locale == "de"
+            else "Allocation to existing or new equipment unconfirmed"
+        )
+    elif (
+        line["handling"] == "manufacturer_included" and line.get("quantity") is not None
+    ):
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")
         scope = f"{scope} · {parent}" if parent else scope
@@ -834,6 +868,77 @@ def _installation_fact_line(
     }
 
 
+def listed_materials(lines: list[Object]) -> list[Object]:
+    """Allocate frozen package contents to the same supply lists as their parents."""
+    retained = {
+        cast(int, line["product_id"]): line
+        for line in lines
+        if line["handling"] == "woo_product"
+        and "retained_quantity" in line
+        and isinstance(line.get("product_id"), int)
+    }
+    result = []
+    for line in lines:
+        parent_id = line.get("parent_product_id")
+        parent = retained.get(parent_id) if isinstance(parent_id, int) else None
+        if line["handling"] != "manufacturer_included" or parent is None:
+            result.append(line)
+            continue
+        existing, total = parent["retained_quantity"], parent.get("quantity")
+        if existing == 0:
+            result.append(line)
+        elif type(total) is int and type(existing) is int and existing >= total:
+            result.append({**line, "package_supply": "retained"})
+        else:
+            origin = line.get("source")
+            per_unit = (
+                origin.get("per_sales_unit") if isinstance(origin, dict) else None
+            )
+            if per_unit is None:
+                per_unit = line.get("declared_quantity")
+            if (
+                type(existing) is not int
+                or type(total) is not int
+                or not isinstance(per_unit, (int, float))
+                or line.get("quantity") is None
+            ):
+                result.append({**line, "package_supply": "unresolved"})
+                continue
+            factor = Decimal(str(per_unit))
+            for use, parents in (("retained", existing), ("new", total - existing)):
+                amount = factor * parents
+                result.append(
+                    {
+                        **line,
+                        "package_supply": use,
+                        "quantity": float(amount)
+                        if line.get("unit") == "m"
+                        else int(amount),
+                    }
+                )
+    return result
+
+
+def material_list(line: Object, locale: str) -> str:
+    if line.get("package_supply") in ("retained", "unresolved"):
+        return text("site_material_list", locale)
+    if line["handling"] == "pv_declared":
+        return text("material_pv_declared", locale)
+    if line["handling"] == "pv_reference":
+        return text("pv_components_title", locale)
+    quantity, retained = line.get("quantity"), line.get("retained_quantity")
+    if (
+        line["handling"] == "woo_product"
+        and type(quantity) is int
+        and type(retained) is int
+        and retained >= quantity
+    ):
+        return text("site_material_list", locale)
+    if line["handling"] in ("woo_product", "manufacturer_included"):
+        return text("equipment_list", locale)
+    return text("site_material_list", locale)
+
+
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
@@ -851,10 +956,21 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 "material_snapshot",
                 "material_assessment",
                 "material_unit",
+                "material_list",
             )
         ]
     )
-    for line in cast(list[Object], materials["lines"]):
+    lines = listed_materials(cast(list[Object], materials["lines"]))
+    order = [
+        text(key, locale)
+        for key in (
+            "equipment_list",
+            "site_material_list",
+            "pv_components_title",
+            "material_pv_declared",
+        )
+    ]
+    for line in sorted(lines, key=lambda row: order.index(material_list(row, locale))):
         origin = line.get("source")
         comparison = (
             origin.get("manufacturer_comparison") if isinstance(origin, dict) else None
@@ -913,6 +1029,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 sha256,
                 assessment,
                 material_unit(line, locale),
+                material_list(line, locale),
             )
         )
     # BOM ensures Excel also recognizes German names as UTF-8.

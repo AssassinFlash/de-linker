@@ -34,10 +34,9 @@ final class ReferenceMigration {
 			throw new \RuntimeException( 'Expected the single verified reference input.' );
 		}
 		$entry = reset( $entries );
-		if ( ! is_array( $entry ) || ! in_array( $entry['kind'] ?? null, array( 'pv_module', 'cable' ), true ) || ! is_string( $entry['id'] ?? null ) || '' === $entry['id'] || ! is_array( $entry['figures'] ?? null ) || ! is_array( $entry['documents'] ?? null ) || ! is_string( $entry['brand'] ?? null ) || ! is_string( $entry['model'] ?? null ) || ( 'cable' === $entry['kind'] && ! is_array( $entry['cable_facts'] ?? null ) ) ) {
+		if ( ! is_array( $entry ) || 'cable' !== ( $entry['kind'] ?? null ) || ! is_string( $entry['id'] ?? null ) || '' === $entry['id'] || ! is_array( $entry['figures'] ?? null ) || ! is_array( $entry['documents'] ?? null ) || ! is_string( $entry['brand'] ?? null ) || ! is_string( $entry['model'] ?? null ) || ! is_array( $entry['cable_facts'] ?? null ) ) {
 			throw new \RuntimeException( 'Reference identity, figures and documents are required.' );
 		}
-		$role     = 'cable' === $entry['kind'] ? EngineeringReference::CABLE : EngineeringReference::PV_MODULE;
 		$existing = get_posts(
 			array(
 				'post_type'                   => 'product',
@@ -65,7 +64,7 @@ final class ReferenceMigration {
 		);
 		if ( array() !== $existing ) {
 			$id = (int) reset( $existing );
-			if ( EngineeringReference::role( $id ) !== $role ) {
+			if ( EngineeringReference::role( $id ) !== EngineeringReference::CABLE ) {
 				throw new \RuntimeException( 'The engineering identity belongs to a non-reference product; no record was changed.' );
 			}
 			$result['action']     = 'unchanged';
@@ -85,7 +84,7 @@ final class ReferenceMigration {
 		$product->set_name( $entry['brand'] . ' ' . $entry['model'] );
 		$product->set_status( 'draft' );
 		EngineeringReference::configure( $product );
-		$product->update_meta_data( EngineeringReference::ROLE_META_KEY, $role );
+		$product->update_meta_data( EngineeringReference::ROLE_META_KEY, EngineeringReference::CABLE );
 		$product->update_meta_data( EngineeringReference::ID_META_KEY, $entry['id'] );
 		$product->update_meta_data( self::MIGRATION_META_KEY, 'woo-reference-v1' );
 		// Associations exist before figures are written, so the normal event binds
@@ -128,13 +127,11 @@ final class ReferenceMigration {
 			$product->set_status( 'publish' );
 			$product->save();
 			wp_delete_object_term_relationships( $id, 'product_cat' );
-			if ( EngineeringReference::CABLE === $role ) {
-				$manifest = \Linker\Commerce\Products\Publication::manifest();
-				$facts    = self::cable_facts( $id, $entry['cable_facts'], $manifest );
-				update_post_meta( $id, CableFacts::META_KEY, $facts );
-				if ( null === CableFacts::projection( $id, $manifest ) ) {
-					throw new \RuntimeException( 'The maintained cable facts do not satisfy the deployed typed publication contract.' );
-				}
+			$manifest = \Linker\Commerce\Products\Publication::manifest();
+			$facts    = self::cable_facts( $id, $entry['cable_facts'], $manifest );
+			update_post_meta( $id, CableFacts::META_KEY, $facts );
+			if ( null === CableFacts::projection( $id, $manifest ) ) {
+				throw new \RuntimeException( 'The maintained cable facts do not satisfy the deployed typed publication contract.' );
 			}
 			( new PreparationJobs() )->changed();
 		} catch ( \Throwable $error ) {

@@ -380,9 +380,32 @@ def residential(
             ReportSection(
                 id="bom",
                 title=t("report.bom", locale),
-                table=_bom_table(selected.lines, locale),
+                table=_bom_table(
+                    [line for line in selected.lines if line.role != "pv_module"],
+                    locale,
+                ),
             )
         )
+        panel_lines = [line for line in selected.lines if line.role == "pv_module"]
+        if panel_lines:
+            sections.append(
+                ReportSection(
+                    id="pv-components",
+                    title="PV-Modulbelegung"
+                    if locale == "de"
+                    else "Solar panel layout",
+                    table=ReportTable(
+                        columns=[
+                            t("col.quantity", locale),
+                            "Moduldaten" if locale == "de" else "Panel parameters",
+                        ],
+                        rows=[
+                            [_quantity_text(line, locale), line.label]
+                            for line in panel_lines
+                        ],
+                    ),
+                )
+            )
     else:
         # No released system: the Bill of materials section stays in the report
         # and states why it cannot list components, with the conditions that
@@ -418,9 +441,7 @@ def residential(
     ]
     module = _module_name(design)
     if module:
-        # The reference module belongs to a string layout; without a released
-        # system no layout exists, and the sentence would name no module.
-        assumptions.insert(1, t("limit.reference_module", locale, model=module))
+        assumptions.insert(1, t("limit.declared_module", locale, model=module))
     if not request.planes:
         assumptions.append(t("limit.default_orientation", locale))
     assumptions += [

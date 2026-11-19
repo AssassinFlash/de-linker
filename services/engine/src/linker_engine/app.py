@@ -51,7 +51,6 @@ from .publication import (
     Publication,
     PublicationChanged,
     PublicationUnavailable,
-    ReferenceEvidenceUnavailable,
     View,
     fingerprint,
 )
@@ -132,9 +131,7 @@ class Services:
 
     @cached_property
     def roof(self) -> roof_service.RoofService:
-        return roof_service.RoofService(
-            self.settings.cache / "lod2", self.engine.products.module
-        )
+        return roof_service.RoofService(self.settings.cache / "lod2")
 
 
 # Captured after module imports, before a running app accepts any requests.
@@ -185,10 +182,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.planning_product_provider = services
 
     def unavailable(error: Exception, code: str) -> HTTPException:
-        detail = {"error": code, "message": str(error)}
-        if isinstance(error, ReferenceEvidenceUnavailable):
-            detail["reason"] = "reference_evidence_unavailable"
-        return HTTPException(status_code=503, detail=detail)
+        return HTTPException(
+            status_code=503, detail={"error": code, "message": str(error)}
+        )
 
     @app.middleware("http")
     async def loaded_headers(
@@ -280,11 +276,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> ResidentialResult | CommercialResult:
         loaded = services()
         try:
-            view = loaded.publication.view(
-                loaded.engine,
-                require_reference=isinstance(request, ResidentialInput)
-                and request.existing_inverter is None,
-            )
+            view = loaded.publication.view(loaded.engine)
             if isinstance(request, ResidentialInput):
                 design = residential.design(view.engine, request)
                 # The revision printed on the report is the loaded generation the
@@ -373,7 +365,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             loaded.publication.confirm(
                 View(loaded.engine, result.publication),
-                require_reference=reference_used(input_, result),
             )
         except PublicationChanged as error:
             raise HTTPException(
@@ -383,51 +374,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise unavailable(error, "publication_unavailable") from error
         return result
 
-    def reference_used(
-        input_: ResidentialInput | CommercialInput,
-        result: ResidentialResult | CommercialResult,
-    ) -> bool:
-        return (
-            isinstance(input_, ResidentialInput)
-            and input_.existing_inverter is None
-            and isinstance(result, ResidentialResult)
-            and bool(result.candidates.inverters or result.candidates.excluded)
-        )
-
     @app.post("/roof/outline")
     def roof_outline(request: RoofRequest) -> RoofResult:
         try:
             loaded = services()
-            view = loaded.publication.reference_view(loaded.engine)
-            result = loaded.roof.outline(request)
-            loaded.publication.confirm(view)
-            result.publication = view.dependencies
-            return result
-        except PublicationChanged as error:
-            raise HTTPException(
-                status_code=409, detail={"error": "publication_changed"}
-            ) from error
-        except PublicationUnavailable as error:
-            raise unavailable(error, "publication_unavailable") from error
+            return loaded.roof.outline(request)
         except Lod2Unavailable as error:
             raise unavailable(error, "lod2_unavailable") from error
 
     @app.post("/roof/pack")
     def roof_pack(request: RoofPackRequest) -> RoofPlaneResult:
         """Modules on a roof plane drawn by hand."""
-        loaded = services()
-        try:
-            view = loaded.publication.reference_view(loaded.engine)
-            result = roof_service.pack_drawn(request, view.engine.products.module)
-            loaded.publication.confirm(view)
-            result.publication = view.dependencies
-            return result
-        except PublicationChanged as error:
-            raise HTTPException(
-                status_code=409, detail={"error": "publication_changed"}
-            ) from error
-        except PublicationUnavailable as error:
-            raise unavailable(error, "publication_unavailable") from error
+        return roof_service.pack_drawn(request)
 
     @app.post("/report/pdf")
     def report_pdf(request: ReportRequest) -> Response:
@@ -440,7 +398,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             loaded = services()
             loaded.publication.confirm(
                 View(loaded.engine, result.publication or {}),
-                require_reference=reference_used(request.input, result),
             )
         except PublicationChanged as error:
             raise HTTPException(

@@ -104,13 +104,3 @@ def test_qualified_figure_evidence_survives_strict_feed_loading() -> None:
     assert figure.qualifier == {"scope": "per_battery_port"}
     assert figure.evidence_refs == ("reviewed-manual:p37",)
     assert figure.columns == ({"module_count": 2, "value": 6144, "unit": "W"},)
-
-
-def test_the_reference_module_comes_from_the_overlay(products: Products) -> None:
-    module = products.module
-    assert (module.model, module.pmax_w, module.isc_a, module.max_series_fuse_a) == (
-        "TSM-460NEG9R.28",
-        460.0,
-        10.81,
-        25.0,
-    )
