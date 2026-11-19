@@ -209,7 +209,8 @@ final class Context {
 		$notes   = self::session_notes( $proposed );
 		$project = '';
 		if ( isset( $note['inputs'] ) ) {
-			$project = '<div class="linker-inquiry-project">' . nl2br( esc_html( self::project_summary( $note, isset( $previous[ self::PROJECT_FIELD ] ) ) ) ) . '</div>';
+			$summary = self::project_summary( $note, isset( $previous[ self::PROJECT_FIELD ] ) );
+			$project = '' === $summary ? '' : '<div class="linker-inquiry-project">' . nl2br( esc_html( $summary ) ) . '</div>';
 		}
 		if ( null !== $note && ( ! isset( $note['inputs'] ) || '' !== trim( $note['text'] ) ) ) {
 			$notes[ 'project_' . $note['project_id'] ] = $note;
@@ -989,7 +990,7 @@ final class Context {
 			__( 'Solution draft', 'linker-commerce' )      => $inputs['saved_solution_reference']['title'] ?? '',
 		);
 		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch
-		$lines = array( self::label( $project ) );
+		$lines = $include_direction ? array( self::label( $project ) ) : array();
 		foreach ( $facts as $label => $value ) {
 			if ( '' !== $value ) {
 				$lines[] = $label . ': ' . $value;

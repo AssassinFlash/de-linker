@@ -134,12 +134,48 @@ final class Form {
 			}
 		}
 		try {
-			$template = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
+			$template = do_shortcode( str_replace( '{{inquiry-fields}}', self::fields_template(), Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) ) );
 			// Core intentionally refuses shortcode expansion in form actions and empty attributes.
 			// Insert customer text last so a message can never execute shortcodes.
 			return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
 		} finally {
 			$this->flash = array();
+		}
+	}
+
+	/** One set of native reply, consent and submit fields. */
+	private static function fields_template(): string {
+		return Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/fields.html' );
+	}
+
+	/** Render the review form with a nonce for the immutable project revision.
+	 *
+	 * @param string              $language Requested planner language.
+	 * @param array<string,mixed> $project  Owner-verified project revision.
+	 */
+	public function planning( string $language, array $project ): string {
+		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
+		$locale->to( OrderLocale::current( $language ) );
+		try {
+			$fields = preg_replace_callback(
+				'/\{\{([a-z-]+)\}\}/',
+				fn ( array $token ): string => $this->value(
+					array(
+						'key'      => $token[1],
+						'language' => $language,
+					)
+				),
+				do_shortcode( self::fields_template() )
+			) ?? '';
+			$replay = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+				? \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS
+				: 0;
+			return do_shortcode( '[linker_inquiry_restriction]' )
+				. '<form class="linker-inquiry-form" data-linker-inquiry-replay-seconds="' . esc_attr( (string) $replay ) . '" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
+				. $this->hidden_fields( $language, $project['project_id'] . ':' . $project['revision'] )
+				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), null, $project ) . $fields . '</form>';
+		} finally {
+			$locale->back();
 		}
 	}
 
@@ -184,7 +220,7 @@ final class Form {
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
-			'privacy'            => \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy' ),
+			'privacy'            => \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy', $atts['language'] ?? null ),
 			'open'               => is_user_logged_in() && '' !== $name && '' !== $email && array() === $previous ? '' : 'open',
 			'summary-hide'       => is_user_logged_in() ? '' : 'hidden',
 			'draft-empty'        => WC()->cart->is_empty() ? 'hidden' : '',

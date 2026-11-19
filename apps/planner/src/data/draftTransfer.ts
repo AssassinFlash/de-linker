@@ -168,3 +168,40 @@ export function readDraftPreview(
 		urls: readUrls(readObject(row.draft_urls), origin),
 	};
 }
+
+export function readInquiryForm(value: unknown) {
+	const row = readObject(value);
+	if (
+		row.schema_version !== 1 ||
+		typeof row.inquiry_form_html !== "string" ||
+		!row.inquiry_form_html.trim() ||
+		!Array.isArray(row.inquiry_lines)
+	)
+		fail();
+	const lines = row.inquiry_lines.map((value) => {
+		const line = readObject(value);
+		if (
+			!count(line.product_id) ||
+			!line.product_id ||
+			typeof line.quantity !== "number" ||
+			!Number.isFinite(line.quantity) ||
+			line.quantity <= 0 ||
+			typeof line.label !== "string" ||
+			!line.label.trim() ||
+			(line.project_id !== null && !hash(line.project_id, 32))
+		)
+			fail();
+		return {
+			label: line.label,
+			quantity: line.quantity,
+			projectTitle:
+				line.project_id !== null && typeof line.project_title === "string"
+					? line.project_title
+					: null,
+		};
+	});
+	return {
+		lines,
+		form: row.inquiry_form_html,
+	};
+}

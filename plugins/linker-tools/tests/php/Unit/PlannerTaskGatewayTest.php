@@ -44,12 +44,32 @@ final class PlannerTaskGatewayTest extends TestCase {
 		$this->assertSame( 'POST', $registered[2][2]['methods'] );
 		$this->assertSame( 'permission', $registered[2][2]['permission_callback'][1] );
 		$pattern = '~\A' . $registered[2][1] . '\z~';
-		foreach ( array( 'profiles/standard', 'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/inputs', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'weather/assets', 'weather/preview', 'runs/pvgis-reference', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'equipment/certificates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution', 'projects/create', 'projects/delete', 'projects/list', 'projects/read', 'projects/revise', 'projects/runs' ) as $path ) {
+		foreach ( array( 'inquiry/form', 'profiles/standard', 'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/inputs', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'weather/assets', 'weather/preview', 'runs/pvgis-reference', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'equipment/certificates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution', 'projects/create', 'projects/delete', 'projects/list', 'projects/read', 'projects/revise', 'projects/runs' ) as $path ) {
 			$this->assertSame( 1, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
 		foreach ( array( 'projects/assistant', 'projects/delete-after-inquiry-check', 'projects/prepared-handoffs', 'projects/admit-inquiry', 'handoffs/admit-inquiry', 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {
 			$this->assertSame( 0, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
+		$this->assertConditionsMet();
+	}
+
+	/** A preliminary inquiry form must always bind an explicit project revision. */
+	public function test_inquiry_form_requires_the_reviewed_revision(): void {
+		$request = new WP_REST_Request( 'POST', '/linker/v1/planner/rpc/inquiry/form' );
+		$request->set_url_params( array( 'path' => 'inquiry/form' ) );
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_header( 'x-wp-nonce', 'synthetic-rest-nonce' );
+		$request->set_body( '{"schema_version":1,"lang":"en","project_id":"b94de53435f84797900b710f5b2a948a"}' );
+		WP_Mock::userFunction( 'get_current_user_id' )->once()->andReturn( 17 );
+		WP_Mock::userFunction( 'wp_get_session_token' )->once()->andReturn( 'synthetic-session-token' );
+		WP_Mock::userFunction( 'wp_verify_nonce' )->once()->with( 'synthetic-rest-nonce', 'wp_rest' )->andReturn( true );
+		WP_Mock::userFunction( 'get_current_blog_id' )->once()->andReturn( 1 );
+		WP_Mock::userFunction( 'is_wp_error' )->zeroOrMoreTimes()->andReturnUsing( static fn ( mixed $value ): bool => $value instanceof WP_Error );
+		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $message ): string => $message ) );
+		$refused = ( new Gateway() )->forward( $request );
+		$this->assertInstanceOf( WP_Error::class, $refused );
+		$this->assertSame( 'linker_planner_input', $refused->get_error_code() );
+		$this->assertSame( 422, $refused->get_error_data()['status'] ?? null );
 		$this->assertConditionsMet();
 	}
 

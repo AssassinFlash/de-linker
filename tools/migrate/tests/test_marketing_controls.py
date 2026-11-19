@@ -20,6 +20,30 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
+    hero = '<div class="hero-capsules" data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="'
+    en = "/solution-configurator/"
+    de = "/de/loesungskonfigurator/"
+    roof = '<a href="/solution-configurator/?step=roof">Roof details</a>'
+    before = (
+        hero + en + '?step=roof">Open the Solution Configurator</a></div>' + roof,
+        hero + de + '?step=roof">Lösungskonfigurator öffnen</a></div>',
+    )
+    expected = (
+        hero
+        + en
+        + '#sc-preliminary-options">Open the Solution Configurator</a></div>'
+        + roof,
+        hero + de + '#sc-preliminary-options">Lösungskonfigurator öffnen</a></div>',
+    )
+    review = tuple(
+        page.replace('#sc-preliminary-options"', '"', 1) for page in expected
+    )
+    assert controls.plan_pair("home_configurator", *review) == expected
+    assert controls.plan_pair("home_configurator", *before) == expected
+    assert controls.plan_pair("home_configurator", *expected) == expected
+
+
 def thank_you_pair() -> tuple[str, str]:
     """Actual relevant fragments, without copying either full WordPress page."""
     en = """the contact page and the full project request both reach the same colleague.

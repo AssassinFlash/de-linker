@@ -147,3 +147,127 @@ test("several pending creations require selection and an explicit retry of the e
 	exercise(t, false));
 test("a native-granted prior scope restores exact creations without automatically sending or clearing another scope", (t) =>
 	exercise(t, true));
+
+test("preliminary and explicit roof entries resume only their own pending project creations", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { readEntryHints } = await import("../src/domain/entryHints.ts");
+	const scope = "3".repeat(64);
+	const session = {
+		query_scope: scope,
+		runtime: { limits: { max_json_depth: 32, max_body_bytes: 100000 } },
+	};
+	const pending = [
+		["Preliminary request", "preliminary-review", "storage_addition"],
+		["Roof request", "design", "new_pv_storage"],
+	].map(([title, destination, system_scope], createdAt) => {
+		const key = crypto.randomUUID();
+		return {
+			title,
+			key,
+			destination,
+			createdAt,
+			body: JSON.stringify({
+				title,
+				key,
+				inputs: { brief: { ...emptyBrief(), system_scope } },
+			}),
+		};
+	});
+	const received = [];
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		async send(path, body) {
+			assert.equal(path, "projects/create");
+			received.push(body);
+			const command = JSON.parse(body);
+			return {
+				id: "1".repeat(32),
+				revision: 1,
+				input_sha256: "2".repeat(64),
+				title: command.title,
+				inputs: command.inputs,
+			};
+		},
+	};
+	const store = {
+		async readCreations() {
+			return pending;
+		},
+		async writeCreation() {},
+		async clearCreation(_scope, body) {
+			pending.splice(
+				pending.findIndex((record) => record.body === body),
+				1,
+			);
+		},
+	};
+	const root = createRoot(fixture.element);
+	const cache = new QueryClient();
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+	});
+	const destinations = [];
+	const render = async (preliminary) => {
+		history.replaceState(
+			null,
+			"",
+			preliminary
+				? "/workspace/#sc-preliminary-options"
+				: "/workspace/?step=roof",
+		);
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(NewProject, {
+						key: location.href,
+						session,
+						client,
+						store,
+						compareOnLoad: preliminary,
+						entryHints: readEntryHints(new URL(location.href).searchParams),
+						created: (_project, destination) => {
+							destinations.push(destination);
+							return true;
+						},
+						recheck: () => assert.fail("unexpected session failure"),
+					}),
+				),
+			),
+		);
+	};
+	const [preliminary, roof] = pending;
+	await render(false);
+	await until(
+		() =>
+			document.querySelector('input[name="project_title"]')?.value ===
+			"Roof request",
+	);
+	await act(async () =>
+		document
+			.querySelector("form")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+	await until(() => destinations.length === 1);
+	assert.deepEqual(received, [roof.body]);
+	assert.deepEqual(destinations, ["design"]);
+	assert.deepEqual(pending, [preliminary]);
+	await render(true);
+	const retry = () =>
+		Array.from(document.querySelectorAll("button")).find(
+			(button) =>
+				button.textContent === "Retry project creation" && !button.disabled,
+		);
+	await until(retry);
+	await act(async () => retry().click());
+	await until(() => destinations.length === 2);
+	assert.deepEqual(received, [roof.body, preliminary.body]);
+	assert.deepEqual(destinations, ["design", "preliminary-review"]);
+});

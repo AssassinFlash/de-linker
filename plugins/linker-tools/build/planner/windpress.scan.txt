@@ -2,6 +2,9 @@ active
 bom
 gap-5
 grid
+linker-inquiry
+linker-inquiry-columns
+linker-inquiry-draft
 lp-actions
 lp-array-settings
 lp-back-projects
@@ -231,6 +234,7 @@ sc-field
 sc-fields
 sc-footer
 sc-hint
+sc-inquiry-fields
 sc-layout
 sc-main
 sc-muted

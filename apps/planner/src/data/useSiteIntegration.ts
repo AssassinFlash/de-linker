@@ -16,6 +16,8 @@ const workspaceHashes = new Set([
 	"#sc-energy",
 	"#sc-system",
 	"#sc-review",
+	"#sc-preliminary-options",
+	"#sc-preliminary-review",
 	"#lp-overview",
 	"#lp-site",
 	"#lp-brief-use",
@@ -75,7 +77,8 @@ export function projectLanguageUrl(
 			product_id: hints.productId,
 		}))
 			if (value !== null) target.searchParams.set(key, String(value));
-	target.hash = "";
+	target.hash =
+		id === null && page.hash === "#sc-preliminary-options" ? page.hash : "";
 	if (id && page.searchParams.get("project") === id) {
 		const view = page.searchParams.get("energy_view");
 		if (view && initialEnergyView(page) === view)

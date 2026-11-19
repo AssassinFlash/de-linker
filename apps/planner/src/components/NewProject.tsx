@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
-import type { DraftStore } from "../data/DraftStore.ts";
+import type { CreationDestination, DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
+import type { Brief } from "../domain/brief.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
 import { hasPlant } from "../domain/equipmentPlant.ts";
@@ -20,6 +21,11 @@ import type { Configuration } from "../data/config.ts";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
 import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
+
+import {
+	PreliminaryOptions,
+	systemNames,
+} from "./configurator/PreliminaryOptions.tsx";
 
 export function NewProject({
 	session,
@@ -36,13 +42,14 @@ export function NewProject({
 	locale = "en",
 	config,
 	openOnLoad = false,
+	compareOnLoad = false,
 }: {
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
 	created: (
 		project: Project,
-		destination?: "design" | "equipment" | "energy",
+		destination?: CreationDestination | "energy",
 	) => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
@@ -54,9 +61,10 @@ export function NewProject({
 	locale?: string;
 	config?: Configuration;
 	openOnLoad?: boolean;
+	compareOnLoad?: boolean;
 }) {
 	const [open, setOpen] = useState(
-		Boolean(entryHints || initialProject || openOnLoad),
+		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
 	const [useHints, setUseHints] = useState(true);
@@ -101,7 +109,9 @@ export function NewProject({
 		...seed,
 		brief: {
 			...seedBrief,
-			system_scope: seedBrief.system_scope ?? "new_pv_storage",
+			system_scope: compareOnLoad
+				? seedBrief.system_scope
+				: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
 	};
 	const seeded =
@@ -134,7 +144,7 @@ export function NewProject({
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
 	const intentScope = useRef(session.query_scope);
-	const destination = useRef<"design" | "equipment" | null>(null);
+	const destination = useRef<CreationDestination | null>(null);
 	const lifetime = useRef(0);
 	const sending = useRef(false);
 	const openWork = useRef(false);
@@ -173,21 +183,14 @@ export function NewProject({
 		setChecking(true);
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
 			.then((records) => {
-				if (
-					!active ||
-					!client.isCurrentScope(session.query_scope) ||
-					!records.length
-				)
-					return;
-				setRequests(records);
-				if (openWork.current) return;
-				intent.current = records[0]!.body;
-				intentScope.current = records[0]!.scope;
-				destination.current = records[0]!.destination;
-				setTitle(records[0]!.title);
-				setRecoveredInputs(readObject(JSON.parse(records[0]!.body).inputs));
-				setOpen(true);
-				setFailed(true);
+				if (!active || !client.isCurrentScope(session.query_scope)) return;
+				const matching = records.filter(
+					(record) =>
+						(record.destination === "preliminary-review") === compareOnLoad,
+				);
+				setRequests(matching);
+				if (openWork.current || !matching[0]) return;
+				restoreCreation(matching[0]);
 			})
 			.catch(() => {
 				if (active) setRecoveryFailed(true);
@@ -205,8 +208,20 @@ export function NewProject({
 		store,
 		recoveryScopes,
 		recoveryChecking,
+		compareOnLoad,
 	]);
-	async function submit() {
+	function restoreCreation(record: ScopedCreation) {
+		intent.current = record.body;
+		intentScope.current = record.scope;
+		destination.current = record.destination;
+		setTitle(record.title);
+		setRecoveredInputs(readObject(JSON.parse(record.body).inputs));
+		setProjectGone(false);
+		setInputContractRequired(false);
+		setOpen(true);
+		setFailed(true);
+	}
+	async function submit(direction?: NonNullable<Brief["system_scope"]>) {
 		if (
 			sending.current ||
 			checking ||
@@ -214,7 +229,7 @@ export function NewProject({
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
 			!client.isCurrentScope(session.query_scope) ||
-			(!intent.current && (!title.trim() || !brief.system_scope))
+			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
 		)
 			return;
 		const instance = lifetime.current;
@@ -232,11 +247,12 @@ export function NewProject({
 					{
 						schema_version: 1,
 						input_contract: projectInputContract,
-						title: title.trim(),
+						title: title.trim() || __("New project", "linker-tools"),
 						inputs: {
 							...inputs,
 							brief: {
 								...brief,
+								system_scope: direction ?? brief.system_scope,
 								site: {
 									...brief.site,
 									location_label: brief.site.location_label.trim(),
@@ -248,8 +264,11 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current =
-					brief.system_scope === "storage_only" ? null : "design";
+				destination.current = direction
+					? "preliminary-review"
+					: brief.system_scope === "storage_only"
+						? null
+						: "design";
 			}
 			await store
 				.writeCreation(originScope, intent.current, destination.current)
@@ -268,6 +287,7 @@ export function NewProject({
 					session.query_scope,
 				),
 			);
+			if (lifetime.current !== instance) return;
 			await store.clearCreation(originScope, intent.current).catch(() => {
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
@@ -279,9 +299,10 @@ export function NewProject({
 			if (
 				!created(
 					project,
-					createdBrief?.system_scope === "storage_only"
-						? "energy"
-						: (destination.current ?? undefined),
+					destination.current ??
+						(createdBrief?.system_scope === "storage_only"
+							? "energy"
+							: undefined),
 				)
 			) {
 				setFailed(true);
@@ -348,6 +369,86 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
+	const pendingRequests = requests.length > 1 && (
+		<label className="sc-field">
+			<span>{__("Unconfirmed project creations", "linker-tools")}</span>
+			<select
+				disabled={busy}
+				value={selectedRequest ? intentId(selectedRequest) : ""}
+				onChange={(event) => {
+					const request = requests.find(
+						(candidate) => intentId(candidate) === event.currentTarget.value,
+					);
+					if (!request) return;
+					restoreCreation(request);
+				}}
+			>
+				{requests.map((request, index) => (
+					<option key={intentId(request)} value={intentId(request)}>
+						{index + 1}.{" "}
+						{compareOnLoad ? preliminaryRecoveryLabel(request) : request.title}
+					</option>
+				))}
+			</select>
+		</label>
+	);
+	const failureMessage = projectGone
+		? __(
+				"The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project.",
+				"linker-tools",
+			)
+		: inputContractRequired
+			? __(
+					"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
+					"linker-tools",
+				)
+			: __(
+					"Project creation was not confirmed. Retrying uses the same request.",
+					"linker-tools",
+				);
+
+	if (compareOnLoad) {
+		const disabled =
+			busy ||
+			checking ||
+			recoveryChecking ||
+			recoveryDiscoveryFailed ||
+			waitingForProduct ||
+			!admitted;
+		const retry = Boolean(intent.current);
+		return (
+			<section className="sc-main" id="sc-preliminary-options">
+				<PreliminaryOptions
+					inputs={inputs}
+					disabled={disabled || retry}
+					choose={(direction) => void submit(direction)}
+				/>
+				{pendingRequests}
+				{busy && <p role="status">{__("Creating…", "linker-tools")}</p>}
+				{failed && (
+					<Notice error>
+						<p>{failureMessage}</p>
+						<button
+							className="sc-button"
+							type="button"
+							disabled={disabled || inputContractRequired}
+							onClick={() => void submit()}
+						>
+							{__("Retry project creation", "linker-tools")}
+						</button>
+					</Notice>
+				)}
+				{recoveryFailed && (
+					<Notice error>
+						{__(
+							"Browser recovery is unavailable. The open request can still be retried here.",
+							"linker-tools",
+						)}
+					</Notice>
+				)}
+			</section>
+		);
+	}
 	if (!open)
 		return (
 			<button
@@ -511,34 +612,7 @@ export function NewProject({
 						)}
 					</Notice>
 				)}
-			{requests.length > 1 && (
-				<label className="sc-field">
-					<span>{__("Unconfirmed project creations", "linker-tools")}</span>
-					<select
-						disabled={busy}
-						value={selectedRequest ? intentId(selectedRequest) : ""}
-						onChange={(event) => {
-							const request = requests.find(
-								(candidate) =>
-									intentId(candidate) === event.currentTarget.value,
-							);
-							if (!request) return;
-							intent.current = request.body;
-							intentScope.current = request.scope;
-							destination.current = request.destination;
-							setTitle(request.title);
-							setRecoveredInputs(readObject(JSON.parse(request.body).inputs));
-							setFailed(true);
-						}}
-					>
-						{requests.map((request, index) => (
-							<option key={intentId(request)} value={intentId(request)}>
-								{index + 1}. {request.title}
-							</option>
-						))}
-					</select>
-				</label>
-			)}
+			{pendingRequests}
 			<ProjectDetails
 				inputs={inputs}
 				config={config ?? { locale, countries: {} }}
@@ -583,24 +657,8 @@ export function NewProject({
 					{__("Cancel", "linker-tools")}
 				</button>
 			)}
-			{failed && (
-				<Notice error>
-					{projectGone
-						? __(
-								"The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project.",
-								"linker-tools",
-							)
-						: inputContractRequired
-							? __(
-									"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
-									"linker-tools",
-								)
-							: __(
-									"Project creation was not confirmed. Retrying uses the same request.",
-									"linker-tools",
-								)}
-				</Notice>
-			)}
+			{failed && <Notice error>{failureMessage}</Notice>}
+
 			{recoveryFailed && (
 				<Notice error>
 					{__(
@@ -611,6 +669,12 @@ export function NewProject({
 			)}
 		</form>
 	);
+}
+
+function preliminaryRecoveryLabel(record: ScopedCreation): string {
+	const inputs = readObject(JSON.parse(record.body).inputs);
+	const scope = readBrief(inputs.brief ?? emptyBrief()).system_scope;
+	return scope ? systemNames()[scope] : record.title;
 }
 
 function withProduct(

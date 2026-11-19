@@ -41,6 +41,36 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 */
 	private NormalMailAuthorizationFixture $authorization;
 
+	/** Review exposes the native checkout fields and signs exactly the revision shown. */
+	public function test_preliminary_review_form_binds_the_native_nonce(): void {
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$id      = 'b94de53435f84797900b710f5b2a948a';
+		$project = array(
+			'project_id'    => $id,
+			'revision'      => 3,
+			'note_revision' => '3',
+			'title'         => 'Storage inquiry fixture',
+			'text'          => '',
+			'inputs'        => array( 'brief' => array( 'system_scope' => 'storage_only' ) ),
+		);
+		$review  = apply_filters( 'linker_commerce_planning_inquiry_form', null, 'en', $project ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Defined by the planner gateway.
+		$this->assertIsArray( $review );
+		$this->assertSame( 1, $review['schema_version'] );
+		$this->assertSame( array(), $review['inquiry_lines'] );
+		$html = $review['inquiry_form_html'];
+		$this->assertIsString( $html );
+		$this->assertStringContainsString( 'action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"', $html );
+		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $id . ':3"', $html );
+		$this->assertSame( 1, substr_count( $html, 'name="linker_draft_hash"' ) );
+		$this->assertStringContainsString( 'id="inquiry-name" name="name"', $html );
+		$this->assertStringContainsString( 'id="inquiry-email" name="email"', $html );
+		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $html, $match ) );
+		$nonce = $match[1] ?? '';
+		$this->assertNotFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':3' ) );
+		$this->assertFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':4' ) );
+	}
+
 	/** A failed preliminary POST is rendered for this tab, not consumed by the next checkout visitor. */
 	public function test_preliminary_retry_is_private_to_its_request(): void {
 		wc_load_cart();

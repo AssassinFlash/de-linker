@@ -206,9 +206,14 @@ export const TURNSTILE_PROFILE: Record<string, string> = {
  * suite's fixtures read back.
  */
 export function applyTurnstileProfile(
-	name: string = instanceName()
+	name: string = instanceName(),
+	businessVerification?: 'required' | 'optional'
 ): () => void {
-	const prior = Object.keys(TURNSTILE_PROFILE).map((constant) => {
+	const profile = { ...TURNSTILE_PROFILE };
+	if (businessVerification !== undefined) {
+		profile.LINKER_BUSINESS_VERIFICATION = businessVerification;
+	}
+	const prior = Object.keys(profile).map((constant) => {
 		const current = runJustRaw([
 			'wp',
 			name,
@@ -222,7 +227,7 @@ export function applyTurnstileProfile(
 			value: current.status === 0 ? current.stdout.trim() : null,
 		};
 	});
-	for (const [constant, value] of Object.entries(TURNSTILE_PROFILE)) {
+	for (const [constant, value] of Object.entries(profile)) {
 		wp(
 			['config', 'set', constant, value, '--type=constant', '--quiet'],
 			name

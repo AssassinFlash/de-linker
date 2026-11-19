@@ -234,6 +234,16 @@ final class InquiryTest extends IntegrationTestCase {
 		$this->assertSame( Statuses::RECEIVED, $order->get_status() );
 		$this->assertTrue( \Linker\Commerce\Planning\ProjectReferences::contains( $id ) );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::stored( $order ) );
+
+		// A recorded preliminary inquiry has a receipt even while mail is held.
+		$order->update_meta_data( \Linker\Commerce\Mail\NotificationHold::META, array( 'reason' => 'verification_review' ) );
+		$order->save();
+		ob_start();
+		( new \Linker\Commerce\Inquiry\Checkout() )->next_steps( $order->get_id() );
+		$receipt = (string) ob_get_clean();
+		$this->assertStringContainsString( '<h2>Inquiry received</h2>', $receipt );
+		$this->assertStringContainsString( '#' . $order->get_order_number(), $receipt );
+		$this->assertStringContainsString( 'We have not sent a confirmation email.', $receipt );
 	}
 
 	/**
