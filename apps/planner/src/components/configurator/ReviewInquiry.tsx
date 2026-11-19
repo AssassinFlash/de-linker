@@ -4,6 +4,7 @@ import { ApiError, type Project } from "../../data/protocol.ts";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
 import {
 	pendingInquiry,
+	guidedInquiryRetry,
 	forgetInquiry,
 	rememberInquiry,
 	restoreInquiry,
@@ -273,7 +274,7 @@ export function ReviewInquiry({
 				: null);
 		const transfer = pending?.fields?.linker_report_transfer;
 		const retry = reportRunId
-			? new URL(location.href).searchParams.get("linker_inquiry_retry")
+			? guidedInquiryRetry(new URL(location.href))?.handle
 			: null;
 		void client
 			.query(

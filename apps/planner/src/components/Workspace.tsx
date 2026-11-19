@@ -24,7 +24,10 @@ import {
 	readProjectPage,
 } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
-import { pendingInquiryRevision } from "../data/inquiryRecovery.ts";
+import {
+	guidedInquiryRetry,
+	pendingInquiryRevision,
+} from "../data/inquiryRecovery.ts";
 import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
@@ -58,18 +61,7 @@ function preliminaryRoute(route: string): boolean {
 	);
 }
 function currentGuidedRetryRevision(): number | null {
-	const url = new URL(location.href);
-	if (
-		url.hash !== "#sc-review" ||
-		url.searchParams.get("guided") !== "inquiry" ||
-		!/^[a-f0-9]{32}$/.test(url.searchParams.get("run") ?? "")
-	)
-		return null;
-	const raw = url.searchParams.get("retry_revision") ?? "";
-	const revision = Number(raw);
-	return /^[1-9]\d*$/.test(raw) && Number.isSafeInteger(revision)
-		? revision
-		: null;
+	return guidedInquiryRetry(new URL(location.href))?.revision ?? null;
 }
 /** A delete binds one key to one revision, so a changed revision is a new
  * command and never reuses the key of the attempt that lost the race. */

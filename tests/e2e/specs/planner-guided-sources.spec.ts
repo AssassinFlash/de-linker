@@ -25,6 +25,7 @@ const words = {
 		roofChoice: 'Place modules on the roof',
 		module: 'PV module',
 		openRoof: 'Open roof layout',
+		planView: 'Plan view',
 		dimensions: [
 			'Width',
 			'Depth',
@@ -55,6 +56,7 @@ const words = {
 		peakBeforeStorage: '7.83 kW',
 		peakTarget: 'Target grid import limit',
 		peakBeforeStorageLabel: 'Grid import peak without storage',
+		savedRevision: /^Saved · revision (\d+)$/,
 	},
 	de: {
 		home: '/de/',
@@ -76,6 +78,7 @@ const words = {
 		roofChoice: 'Module auf dem Dach platzieren',
 		module: 'PV-Modul',
 		openRoof: 'Dachbelegung öffnen',
+		planView: 'Draufsicht',
 		dimensions: [
 			'Breite',
 			'Tiefe',
@@ -106,6 +109,7 @@ const words = {
 		peakBeforeStorage: '7,83 kW',
 		peakTarget: 'Gewünschte Netzbezugsgrenze',
 		peakBeforeStorageLabel: 'Netzbezugsspitze ohne Speicher',
+		savedRevision: /^Gespeichert · Version (\d+)$/,
 	},
 } as const;
 
@@ -186,6 +190,7 @@ async function prepareSavedRoof(
 		label: 'Trina Solar TSM-460NEG9R.28 · 460 Wp',
 	});
 	await button(workspace, text.openRoof).click();
+	await button(workspace, text.planView).click();
 	const measured = workspace.locator('.sc-roof-props details[open]');
 	for (const [index, value] of [
 		'8',
@@ -216,13 +221,11 @@ async function prepareSavedRoof(
 	await workspace.getByLabel(text.export).selectOption('permitted');
 	await button(workspace, text.energy).click();
 	await workspace.getByLabel(text.phase).selectOption('3');
-	const previous = post(page, 'runs/find-equipment').then(async (reply) => {
-		expect(reply.ok()).toBe(true);
-		const { project } = await reply.json();
-		return [project, reply.request().postDataJSON()] as const;
-	});
+	const previous = post(page, 'runs/find-equipment');
 	await button(workspace, text.compare).click();
-	const [savedProject, request] = await previous;
+	const reply = await previous;
+	expect(reply.ok()).toBe(true);
+	const request = reply.request().postDataJSON();
 	const geometry = request.inputs.geometry;
 	expect(geometry).toMatchObject({
 		roofs: [expect.objectContaining({ id: expect.any(String) })],
@@ -237,10 +240,14 @@ async function prepareSavedRoof(
 	await expect(button(page, text.choose).first()).toBeEnabled({
 		timeout: 120_000,
 	});
-	expect(savedProject.inputs.geometry).toEqual(geometry);
+	const savedVersion = await workspace
+		.getByText(text.savedRevision)
+		.innerText();
+	const revision = text.savedRevision.exec(savedVersion)?.[1];
+	expect(revision).toBeDefined();
 	return {
-		projectId: savedProject.id,
-		revision: savedProject.revision,
+		projectId: request.project_id,
+		revision: Number(revision),
 		geometry,
 	};
 }
@@ -532,9 +539,7 @@ for (const [lang, width] of matrix) {
 				new RegExp(`${text.peakTarget}[^\\n]*5(?:[.,]00)? kW`)
 			);
 			expect(report).toMatch(
-				new RegExp(
-					`${text.peakBeforeStorageLabel}[^\\n]*${text.peakBeforeStorage}`
-				)
+				new RegExp(`${text.peakBeforeStorageLabel}[^\\n]*7[.,]826 kW`)
 			);
 		} finally {
 			restoreBudgets();

@@ -36,6 +36,23 @@ export type PendingInquiry = {
 };
 type ProjectVersion = Pick<Project, "id" | "revision">;
 
+export function guidedInquiryRetry(url: URL): {
+	revision: number;
+	handle: string | null;
+} | null {
+	if (
+		url.hash !== "#sc-review" ||
+		url.searchParams.get("guided") !== "inquiry" ||
+		!/^[a-f0-9]{32}$/.test(url.searchParams.get("run") ?? "")
+	)
+		return null;
+	const raw = url.searchParams.get("retry_revision") ?? "";
+	const revision = Number(raw);
+	if (!/^[1-9]\d*$/.test(raw) || !Number.isSafeInteger(revision)) return null;
+	const handle = url.searchParams.get("linker_inquiry_retry");
+	return { revision, handle: handle && uuid4.test(handle) ? handle : null };
+}
+
 function semanticField(name: string): boolean {
 	return (
 		replayFields.has(name) ||

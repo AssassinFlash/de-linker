@@ -347,7 +347,7 @@ final class Handler {
 						} elseif ( Business::enabled() ) {
 							$fields['linker_request_id'] = wp_generate_uuid4();
 						}
-						$retry                                = CheckoutRetry::remember(
+						$retry = CheckoutRetry::remember(
 							array(
 								'fields'       => $fields,
 								'error'        => $result->get_error_message(),
@@ -357,6 +357,16 @@ final class Handler {
 							$handle,
 							fresh: true
 						);
+						if ( null === $retry ) {
+							wp_die(
+								esc_html( $result->get_error_message() ),
+								'',
+								array(
+									'response'  => 503,
+									'back_link' => true,
+								)
+							);
+						}
 						list( $project_id, $review_revision ) = explode( ':', $fields[ Context::PROJECT_FIELD ], 2 );
 						$url                                  = add_query_arg(
 							array(
@@ -364,7 +374,7 @@ final class Handler {
 								'guided'              => 'inquiry',
 								'run'                 => $transfer->report,
 								'retry_revision'      => $review_revision,
-								CheckoutRetry::HANDLE => $retry ?? false,
+								CheckoutRetry::HANDLE => $retry,
 							),
 							$page
 						);
