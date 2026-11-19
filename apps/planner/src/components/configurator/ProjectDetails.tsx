@@ -66,6 +66,23 @@ function withoutBattery(inputs: JsonObject): JsonObject {
 	});
 }
 
+export function withSystemScope(
+	current: JsonObject,
+	system_scope: Brief["system_scope"],
+): JsonObject {
+	const b =
+		current.brief === undefined ? emptyBrief() : readBrief(current.brief);
+	const amended: Record<string, JsonObject[string]> = {
+		...current,
+		brief: { ...b, system_scope },
+	};
+	const goal = energyGoal(amended);
+	return goal &&
+		(b.system_scope === "storage_only") !== (system_scope === "storage_only")
+		? changeEnergyGoal(amended, goal)
+		: amended;
+}
+
 export function ProjectDetails({
 	inputs,
 	config,
@@ -164,12 +181,7 @@ export function ProjectDetails({
 	function changeScope(system_scope: Brief["system_scope"]) {
 		setPendingScope(null);
 		edit((current) => {
-			const b =
-				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
-			const amended: Record<string, JsonObject[string]> = {
-				...current,
-				brief: { ...b, system_scope },
-			};
+			const amended = { ...withSystemScope(current, system_scope) };
 			if (system_scope === "storage_only") {
 				delete amended.pv_string_plan;
 				delete amended.pv_plant_string_plan;
@@ -191,11 +203,7 @@ export function ProjectDetails({
 					})),
 				});
 			}
-			return goal &&
-				(b.system_scope === "storage_only") !==
-					(system_scope === "storage_only")
-				? changeEnergyGoal(amended, goal)
-				: amended;
+			return amended;
 		});
 	}
 	function change(operation: (brief: Brief) => Brief) {
