@@ -5,16 +5,15 @@
 	function setOpen(open) {
 		var opener = document.getElementById('product-filter-open');
 		var panel = document.getElementById('sidebar-filters');
-		var focusTarget = open ? document.getElementById('product-filter-close') : opener;
+		var close = document.getElementById('product-filter-close');
+		if (!panel || !close) {
+			return;
+		}
 
 		document.body.classList.toggle('product-filter-open', open);
 		opener.setAttribute('aria-expanded', open ? 'true' : 'false');
-		if (panel) {
-			panel.classList.toggle('is-mobile-open', open);
-		}
-		if (focusTarget) {
-			focusTarget.focus();
-		}
+		panel.classList.toggle('is-mobile-open', open);
+		(open ? close : opener).focus();
 	}
 
 	document.addEventListener('click', function (event) {
@@ -33,10 +32,4 @@
 			setOpen(false);
 		}
 	});
-	document.addEventListener('DOMContentLoaded', function () {
-		var panel = document.getElementById('sidebar-filters');
-		if (panel && document.body.classList.contains('product-filter-open') && !panel.classList.contains('is-mobile-open')) {
-			setOpen(true);
-		}
-	}, { once: true });
 }(document));

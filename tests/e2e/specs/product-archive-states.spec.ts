@@ -106,32 +106,65 @@ test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
 
-test('en 390: the first Filters tap opens the drawer before the archive footer finishes', async ({
+test('en 390: the first Filters tap opens the completed drawer before the archive footer finishes', async ({
 	page,
-	context,
 }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await seedConsentCookies(context);
-	let releaseFooter: () => void;
-	const slowFooter = new Promise<void>((resolve) => {
-		releaseFooter = resolve;
+	const archiveUrl = instance().url + ARCHIVE.en;
+	// Pause the real archive parser before each part of the rail and at the footer.
+	const gates = ['before-rail', 'before-close', 'before-footer'].map((stage) => {
+		let release!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		return { src: '/' + stage + '.js', wait, release };
 	});
-	await page.route('**/product-family.js*', async (route) => {
-		await slowFooter;
-		await route.continue();
+	for (const gate of gates) {
+		await page.route('**' + gate.src, async (route) => {
+			await gate.wait;
+			await route.fulfill({ contentType: 'application/javascript', body: '' });
+		});
+	}
+	await page.route(archiveUrl, async (route) => {
+		const response = await route.fetch();
+		let html = await response.text();
+		const markers = [
+			/<aside\b[^>]*id="sidebar-filters"/,
+			/<button\b[^>]*id="product-filter-close"/,
+			/<div class="product-results"/,
+		];
+		for (const [i, marker] of markers.entries()) {
+			expect(html).toMatch(marker);
+			html = html.replace(marker, (tag) =>
+				'<script src="' + gates[i].src + '"></script>' + tag
+			);
+		}
+		await route.fulfill({ response, body: html });
 	});
 	try {
-		const loading = page.waitForRequest('**/product-family.js*');
-		await page.goto(instance().url + ARCHIVE.en, { waitUntil: 'commit' });
-		await loading;
-		const filters = page.getByRole('button', { name: /^Filters/ });
+		await page.goto(archiveUrl, { waitUntil: 'commit' });
+		const filters = page.locator('#product-filter-open');
+		const drawer = page.locator('#sidebar-filters');
+		const close = page.locator('#product-filter-close');
+		await filters.waitFor({ state: 'attached' });
+		await expect(drawer).toHaveCount(0);
+		await expect(filters).toBeHidden();
+		gates[0].release();
+		await drawer.waitFor({ state: 'attached' });
+		await expect(close).toHaveCount(0);
+		await expect(filters).toBeHidden();
+		gates[1].release();
 		await filters.click();
 		await expect(filters).toHaveAttribute('aria-expanded', 'true');
-		await expect(
-			page.locator('#sidebar-filters a[href*="brand=goodwe"]').first()
-		).toBeVisible();
+		await expect(close).toBeFocused();
+		await expect(drawer.locator('a[href*="brand=goodwe"]').first()).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(filters).toHaveAttribute('aria-expanded', 'false');
+		await expect(filters).toBeFocused();
 	} finally {
-		releaseFooter!();
+		for (const gate of gates) {
+			gate.release();
+		}
 		await page.waitForLoadState('load');
 	}
 });
