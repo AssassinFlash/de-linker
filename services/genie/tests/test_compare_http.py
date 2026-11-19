@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import Callable
+from contextlib import closing
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -25,12 +26,12 @@ from test_turn_abilities import SEARCH, clients, manifest
 import linker_genie.app as service
 from linker_genie.abilities import Abilities
 from linker_genie.agent import make_generate
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Entry, Vocabulary, normalize
 from linker_genie.log import TurnLog
-from linker_genie.schema import TurnOutput, TurnRequest
-from linker_genie.understand import Understander
+from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
+from linker_genie.understand import Understander, nothing
 
 SAJ = 1179
 GOODWE = 6321
@@ -291,3 +292,92 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         block["product_ids"] for block in blocks if block["type"] == "compare"
     ]
     assert comparisons == ([[SAJ, GOODWE]] if compare else [])
+
+
+@pytest.mark.parametrize("shared", [True, False])
+def test_ac_current_cannot_support_a_shared_battery_limit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, shared: bool
+) -> None:
+    # The Woo publication feed captured the L260-OMNI's AC rating on page 2.
+    feed_path = Path(__file__).resolve().parents[2] / "engine/tests/fixtures/feed.json"
+    pylon = next(
+        p for p in json.loads(feed_path.read_text())["products"] if p["id"] == 2003
+    )
+    ac = pylon["figures"]["max_ac_current_a"]
+    raw = manifest(SAJ)
+    other = manifest(2003)
+    other["documents"][0]["url"] = ac["citation"]["url"]
+    raw["products"] += other["products"]
+    raw["documents"] += other["documents"]
+    facts = merge(
+        [
+            collect(
+                "linker/get-product",
+                {
+                    "product_id": SAJ,
+                    "title": MODELS[SAJ],
+                    "documents": raw["documents"][:1],
+                    "figures": {
+                        "max_battery_charge_a": {
+                            "value": "50",
+                            "unit": "A",
+                            "qualifier": {
+                                "scope": "per_battery_port",
+                                "direction": "charge",
+                                "quantity_kind": "maximum",
+                            },
+                            "citation": {"url": raw["documents"][0]["url"], "page": 38},
+                        }
+                    },
+                },
+            ),
+            collect(
+                "linker/get-product",
+                {
+                    "product_id": 2003,
+                    "title": pylon["model"],
+                    "figures": {"max_ac_current_a": ac},
+                    "documents": other["documents"],
+                },
+            ),
+        ]
+    )
+    claim = (
+        "The other inverter has a total current of {fact:p2003.max_ac_current_a} for both battery inputs."
+        if shared
+        else "The maximum AC current for the L260-OMNI is {fact:p2003.max_ac_current_a}."
+    )
+    draft = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="{fact:p1179.max_battery_charge_a}\n" + claim)],
+    )
+    with (
+        clients(raw) as (client, authority, _),
+        closing(TurnLog(tmp_path / "turns.sqlite")) as log,
+    ):
+        monkeypatch.setattr(service, "_client", client)
+        monkeypatch.setattr(service, "_log", log)
+        monkeypatch.setattr(service.app.state, "publication", authority, raising=False)
+        monkeypatch.setattr(service.app.state, "prepare", nothing, raising=False)
+        monkeypatch.setattr(
+            service.app.state, "generate", lambda *_: (draft, facts), raising=False
+        )
+        monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
+        response = TestClient(service.app, headers=SHELL).post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "ac-vs-battery",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Compare the maximum battery and AC currents for both inverters.",
+                    }
+                ],
+            },
+        )
+    assert response.status_code == 200
+    assert "181 A for both battery inputs" not in response.text
+    if not shared:
+        assert "50 A per battery input." in response.text
+        assert "maximum AC current for the L260-OMNI is 181 A." in response.text
+        assert ac["citation"]["url"] + "#page=2" in response.text

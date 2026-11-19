@@ -1336,7 +1336,7 @@ _COMBINED_INPUTS = re.compile(
 def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
     """The service writes the entire claim for a qualified input current."""
     failures = []
-    qualified_owners: set[str] = set()
+    has_qualified_current = False
     for block in output.blocks:
         if isinstance(block, TextBlock):
             lines = block.text.splitlines()
@@ -1351,7 +1351,7 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                 fact = _fact_known(facts, fact_id)
                 if fact is None or fact.per_input_current_direction is None:
                     continue
-                qualified_owners.add(fact.id.partition(".")[0])
+                has_qualified_current = True
                 if (
                     not isinstance(block, TextBlock)
                     or line.strip() != f"{{fact:{fact_id}}}"
@@ -1360,13 +1360,9 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                         f"Place {{fact:{fact_id}}} alone on a text line. "
                         "The service writes the complete per-input current sentence."
                     )
-    if qualified_owners:
+    if has_qualified_current:
         for text in _model_texts(output):
-            # Keep placeholders intact when separating the model's clauses.
-            for clause in re.split(r"[,;\n]|[.!?](?=\s|$)", text):
-                # Preserve offsets so only the value inside the shared-current
-                # assertion can supply evidence for a different product.
-                prose = PLACEHOLDER.sub(lambda m: " " * len(m.group()), clause)
+            for prose in re.split(r"[,;\n]|[.!?](?=\s|$)", PLACEHOLDER.sub("", text)):
                 scope = _COMBINED_INPUTS.search(prose)
                 if scope is None or not re.search(
                     r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
@@ -1386,19 +1382,6 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                     scope.group(),
                     re.I,
                 ):
-                    continue
-                owners = {
-                    fact.id.partition(".")[0]
-                    for ref in leftover_placeholders(
-                        clause[scope.start() : scope.end()]
-                    )
-                    if (fact := _fact_known(facts, ref)) is not None
-                    and fact.source == "datasheet-figures"
-                    and fact.value.endswith(" A")
-                    and fact.per_input_current_direction is None
-                    and fact.id in facts.supporting_documents
-                }
-                if owners and owners.isdisjoint(qualified_owners):
                     continue
                 failures.append(
                     "Keep the service-written per-input limit without a second scope assertion."

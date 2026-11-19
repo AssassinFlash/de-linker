@@ -208,31 +208,6 @@ def test_other_product_port_count_does_not_support_a_shared_current() -> None:
     assert "shared between both inputs" not in prose
 
 
-def test_another_models_documented_total_can_follow_a_per_input_limit() -> None:
-    other = collect(
-        "linker/get-product",
-        {
-            "product_id": 1181,
-            "title": "Other inverter",
-            "figures": {
-                "total_current": {
-                    "value": "80",
-                    "unit": "A",
-                    "citation": {"url": DATASHEET, "page": 2},
-                }
-            },
-        },
-    )
-    prose, links = answer(
-        "{fact:p1179.max_battery_charge_a}\nThe other inverter has a total current of {fact:p1181.total_current} for both inputs.",
-        product(1179),
-        other,
-    )
-    assert "50 A per battery input." in prose
-    assert "total current of 80 A for both inputs." in prose
-    assert {link.url for link in links} == {f"{MANUAL}#page=38", f"{DATASHEET}#page=2"}
-
-
 def test_fallback_shows_document_library_without_unconsumed_figure_pages() -> None:
     _, links = answer("{fact:missing}", product(1179))
     assert {link.url for link in links} == {MANUAL, DATASHEET}
