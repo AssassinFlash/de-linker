@@ -6796,7 +6796,6 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     from linker_engine.planning.plant_assessment import assess_plant
     from linker_engine.planning.project_input_contracts import (
         GEOMETRIC_PV_INPUT_CONTRACT,
-        PLANT_PV_INPUT_CONTRACT,
         require_input_contract,
     )
     from linker_engine.planning.pv_string_inputs import PvPlantStringPlan
@@ -6853,7 +6852,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         require_input_contract(
             value, {"equipment_plant": plant}, GEOMETRIC_PV_INPUT_CONTRACT
         )
-    require_input_contract(value, value, PLANT_PV_INPUT_CONTRACT)
+    require_input_contract(value, value, "project_panel_parameters_v1")
     cached = {
         digest(encode(unit["selection"])): json_object(
             assess_equipment({"equipment_selection": unit["selection"]}, basis)

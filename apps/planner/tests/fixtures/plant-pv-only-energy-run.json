@@ -1,9 +1,9 @@
 {
 	"project": {
-		"id": "dce2b0be49b84234ae62843afad1abc7",
+		"id": "bd42d1451e61442ebcf2b704b93c6dad",
 		"title": "Two PV inverters, no storage",
 		"revision": 2,
-		"input_sha256": "40b6fbccbd0fe99db48d33c71d33d225b88eb1a40ef1755647d85ac63fd3083a",
+		"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
 		"inputs": {
 			"brief": {
 				"annual_load": {
@@ -257,9 +257,9 @@
 			"profile_selections": {
 				"schema_version": 1,
 				"selected": {
-					"aux_ac": "9070e23b6c144d7ea3f14fdc3ab10613",
-					"gross_load": "82c4ef0656d14d59a1286e45d5635d2a",
-					"pv_available_ac": "cadf8b3eb6c049ca9f7d561db1ad17a5"
+					"aux_ac": "1fa72b04c95c40a6b74b0550d3bac771",
+					"gross_load": "bfa0b3d9a4944c918efbf84b3646a5a0",
+					"pv_available_ac": "6cc5ad7712084f928f6369ba1103ba2a"
 				}
 			},
 			"pv_plant_string_plan": {
@@ -314,12 +314,12 @@
 		}
 	},
 	"run": {
-		"id": "da1bab3eeeee4db9a2f3be891fa85202",
-		"project_id": "dce2b0be49b84234ae62843afad1abc7",
+		"id": "29c1ab2db07040bd9560f3c3cfc5bbe5",
+		"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 		"revision": 2,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "d21d7da22291b783b64bfda85b032b99b4a55d5e2200618507fb8d793676c013",
+		"manifest_sha256": "ed8ba5d7578b6ae906a127a1e1996d374b65a6a0579cb6a1f42778b31a4b8ac6",
 		"manifest": {
 			"context": {
 				"assets": {
@@ -333,11 +333,11 @@
 					"pv_available_ac.metadata": "dd493b22530e07bd9d79ab19f19357eab88551c35f8b92f1e23bd136e3b5092b",
 					"pv_available_ac.raw": "f04e0884ee73afec06617b4bed66870894009732ff4f01833d5ef43e1d1ad0ff",
 					"pv_available_ac.timezone": "5ee475f71a0fc1a32faeb849f8c39c6e7aa66d6d41ec742b97b3a7436b3b0701",
-					"resolved_inputs": "f037362489be1fd4752bce8e1142e80f9eb659d538b063615ee1346a14d924ff",
-					"runtime_bundle": "a5223859f57d9fb383f5891b7b132a894ae3dbd7bcaca9418c514a3bfe136049",
+					"resolved_inputs": "667a1af7b135d343a4340db3e352866ec73877e1f2919c60dc33fc96b28613b9",
+					"runtime_bundle": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 					"woo.equipment_inputs": "613d4f326bc772823bf89977d508852a986712b4d3bd1c5a298263323188a941"
 				},
-				"code_sha256": "a5223859f57d9fb383f5891b7b132a894ae3dbd7bcaca9418c514a3bfe136049",
+				"code_sha256": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 				"models": {
 					"battery": "distinct_woo_battery_only_ac_equivalents_v1",
 					"controller": "proportional_available_power_self_consumption_v1",
@@ -359,19 +359,19 @@
 					}
 				}
 			},
-			"input_sha256": "40b6fbccbd0fe99db48d33c71d33d225b88eb1a40ef1755647d85ac63fd3083a",
-			"project_id": "dce2b0be49b84234ae62843afad1abc7",
+			"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
+			"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 			"revision": 2,
 			"schema": 1
 		},
-		"result_sha256": "40bdcd4be0bc0529431466fcd518972cd809dfd7ac4f72b7bef6eecbcb17f82b",
+		"result_sha256": "dd480ff58277f193a66f5954db7f60d0282799f5ee0b9cf9d964ef0ec4503b0c",
 		"result": {
 			"country_assessment": {
 				"reason": "country_rules_are_a_separate_assessment",
 				"status": "not_assessed"
 			},
 			"dependencies": {
-				"energy_trace": "b9918248b0b0f0afd804c8a1bd4875e29a6c47dd426e1b0fb3f4ae6e722dc367"
+				"energy_trace": "237aef2574df962b2da0592abb27e2d8aa1d16a30e0ef420198a4141962c426f"
 			},
 			"equipment_binding": {
 				"assessment": {
@@ -532,6 +532,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
@@ -539,11 +540,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
 									"quantity": "temperature_coefficient",
+									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
@@ -551,7 +552,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "%/°C",
 									"value": -0.0024
 								},
 								{
@@ -592,6 +592,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
@@ -599,11 +600,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
 									"quantity": "temperature_coefficient",
+									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
@@ -611,11 +612,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "%/°C",
 									"value": -0.0024
 								},
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "1500.0",
 									"shape": "scalar",
 									"source": {
@@ -623,7 +624,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 1500.0
 								}
 							],
@@ -641,6 +641,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "45.4",
 									"shape": "scalar",
 									"source": {
@@ -648,7 +649,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 45.4
 								},
 								{
@@ -743,6 +743,7 @@
 							"facts": [
 								{
 									"quantity": "current",
+									"raw_unit": "A",
 									"raw_value": "10.14",
 									"shape": "scalar",
 									"source": {
@@ -750,7 +751,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.14
 								},
 								{
@@ -791,6 +791,7 @@
 							"facts": [
 								{
 									"quantity": "current",
+									"raw_unit": "A",
 									"raw_value": "10.81",
 									"shape": "scalar",
 									"source": {
@@ -798,7 +799,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.81
 								},
 								{
@@ -1070,6 +1070,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
@@ -1077,11 +1078,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
 									"quantity": "temperature_coefficient",
+									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
@@ -1089,7 +1090,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "%/°C",
 									"value": -0.0024
 								},
 								{
@@ -1130,6 +1130,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "53.8",
 									"shape": "scalar",
 									"source": {
@@ -1137,11 +1138,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 53.8
 								},
 								{
 									"quantity": "temperature_coefficient",
+									"raw_unit": "%/°C",
 									"raw_value": "-0.24",
 									"shape": "scalar",
 									"source": {
@@ -1149,11 +1150,11 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "%/°C",
 									"value": -0.0024
 								},
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "1500.0",
 									"shape": "scalar",
 									"source": {
@@ -1161,7 +1162,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 1500.0
 								}
 							],
@@ -1179,6 +1179,7 @@
 							"facts": [
 								{
 									"quantity": "voltage",
+									"raw_unit": "V",
 									"raw_value": "45.4",
 									"shape": "scalar",
 									"source": {
@@ -1186,7 +1187,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "V",
 									"value": 45.4
 								},
 								{
@@ -1281,6 +1281,7 @@
 							"facts": [
 								{
 									"quantity": "current",
+									"raw_unit": "A",
 									"raw_value": "10.14",
 									"shape": "scalar",
 									"source": {
@@ -1288,7 +1289,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.14
 								},
 								{
@@ -1329,6 +1329,7 @@
 							"facts": [
 								{
 									"quantity": "current",
+									"raw_unit": "A",
 									"raw_value": "10.81",
 									"shape": "scalar",
 									"source": {
@@ -1336,7 +1337,6 @@
 										"module_spec_id": "module"
 									},
 									"status": "typed",
-									"unit": "A",
 									"value": 10.81
 								},
 								{
@@ -1654,6 +1654,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -1661,11 +1662,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -1673,7 +1674,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
@@ -1711,6 +1711,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -1718,11 +1719,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -1730,11 +1731,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "1500.0",
 													"shape": "scalar",
 													"source": {
@@ -1742,7 +1743,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 1500.0
 												}
 											],
@@ -1757,6 +1757,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
@@ -1764,7 +1765,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -1850,6 +1850,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
@@ -1857,7 +1858,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -1895,6 +1895,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
@@ -1902,7 +1903,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -2064,6 +2064,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -2071,11 +2072,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -2083,7 +2084,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
@@ -2121,6 +2121,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -2128,11 +2129,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -2140,11 +2141,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "1500.0",
 													"shape": "scalar",
 													"source": {
@@ -2152,7 +2153,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 1500.0
 												}
 											],
@@ -2167,6 +2167,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
@@ -2174,7 +2175,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -2260,6 +2260,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
@@ -2267,7 +2268,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -2305,6 +2305,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
@@ -2312,7 +2313,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -3469,6 +3469,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
@@ -3476,11 +3477,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
 												"quantity": "temperature_coefficient",
+												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
@@ -3488,7 +3489,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "%/°C",
 												"value": -0.0024
 											},
 											{
@@ -3526,6 +3526,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
@@ -3533,11 +3534,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
 												"quantity": "temperature_coefficient",
+												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
@@ -3545,11 +3546,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "%/°C",
 												"value": -0.0024
 											},
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "1500.0",
 												"shape": "scalar",
 												"source": {
@@ -3557,7 +3558,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 1500.0
 											}
 										],
@@ -3572,6 +3572,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "45.4",
 												"shape": "scalar",
 												"source": {
@@ -3579,7 +3580,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 45.4
 											},
 											{
@@ -3665,6 +3665,7 @@
 										"facts": [
 											{
 												"quantity": "current",
+												"raw_unit": "A",
 												"raw_value": "10.14",
 												"shape": "scalar",
 												"source": {
@@ -3672,7 +3673,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.14
 											},
 											{
@@ -3710,6 +3710,7 @@
 										"facts": [
 											{
 												"quantity": "current",
+												"raw_unit": "A",
 												"raw_value": "10.81",
 												"shape": "scalar",
 												"source": {
@@ -3717,7 +3718,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.81
 											},
 											{
@@ -3890,6 +3890,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -3897,11 +3898,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -3909,7 +3910,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
@@ -3947,6 +3947,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -3954,11 +3955,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -3966,11 +3967,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "1500.0",
 													"shape": "scalar",
 													"source": {
@@ -3978,7 +3979,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 1500.0
 												}
 											],
@@ -3993,6 +3993,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
@@ -4000,7 +4001,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -4086,6 +4086,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
@@ -4093,7 +4094,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -4131,6 +4131,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
@@ -4138,7 +4139,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -5309,6 +5309,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
@@ -5316,11 +5317,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
 												"quantity": "temperature_coefficient",
+												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
@@ -5328,7 +5329,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "%/°C",
 												"value": -0.0024
 											},
 											{
@@ -5366,6 +5366,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "53.8",
 												"shape": "scalar",
 												"source": {
@@ -5373,11 +5374,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 53.8
 											},
 											{
 												"quantity": "temperature_coefficient",
+												"raw_unit": "%/°C",
 												"raw_value": "-0.24",
 												"shape": "scalar",
 												"source": {
@@ -5385,11 +5386,11 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "%/°C",
 												"value": -0.0024
 											},
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "1500.0",
 												"shape": "scalar",
 												"source": {
@@ -5397,7 +5398,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 1500.0
 											}
 										],
@@ -5412,6 +5412,7 @@
 										"facts": [
 											{
 												"quantity": "voltage",
+												"raw_unit": "V",
 												"raw_value": "45.4",
 												"shape": "scalar",
 												"source": {
@@ -5419,7 +5420,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "V",
 												"value": 45.4
 											},
 											{
@@ -5505,6 +5505,7 @@
 										"facts": [
 											{
 												"quantity": "current",
+												"raw_unit": "A",
 												"raw_value": "10.14",
 												"shape": "scalar",
 												"source": {
@@ -5512,7 +5513,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.14
 											},
 											{
@@ -5550,6 +5550,7 @@
 										"facts": [
 											{
 												"quantity": "current",
+												"raw_unit": "A",
 												"raw_value": "10.81",
 												"shape": "scalar",
 												"source": {
@@ -5557,7 +5558,6 @@
 													"module_spec_id": "module"
 												},
 												"status": "typed",
-												"unit": "A",
 												"value": 10.81
 											},
 											{
@@ -5730,6 +5730,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -5737,11 +5738,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -5749,7 +5750,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
@@ -5787,6 +5787,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "53.8",
 													"shape": "scalar",
 													"source": {
@@ -5794,11 +5795,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 53.8
 												},
 												{
 													"quantity": "temperature_coefficient",
+													"raw_unit": "%/°C",
 													"raw_value": "-0.24",
 													"shape": "scalar",
 													"source": {
@@ -5806,11 +5807,11 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "%/°C",
 													"value": -0.0024
 												},
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "1500.0",
 													"shape": "scalar",
 													"source": {
@@ -5818,7 +5819,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 1500.0
 												}
 											],
@@ -5833,6 +5833,7 @@
 											"facts": [
 												{
 													"quantity": "voltage",
+													"raw_unit": "V",
 													"raw_value": "45.4",
 													"shape": "scalar",
 													"source": {
@@ -5840,7 +5841,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "V",
 													"value": 45.4
 												},
 												{
@@ -5926,6 +5926,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.14",
 													"shape": "scalar",
 													"source": {
@@ -5933,7 +5934,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.14
 												},
 												{
@@ -5971,6 +5971,7 @@
 											"facts": [
 												{
 													"quantity": "current",
+													"raw_unit": "A",
 													"raw_value": "10.81",
 													"shape": "scalar",
 													"source": {
@@ -5978,7 +5979,6 @@
 														"module_spec_id": "module"
 													},
 													"status": "typed",
-													"unit": "A",
 													"value": 10.81
 												},
 												{
@@ -7076,10 +7076,10 @@
 				"reason": "explicit_scenario_replay_is_not_equipment_release",
 				"status": "not_assessed"
 			},
-			"input_sha256": "40b6fbccbd0fe99db48d33c71d33d225b88eb1a40ef1755647d85ac63fd3083a",
+			"input_sha256": "379857ab1fabe9f0e959d6f5c114c5e05c1187fede482247aa2dc991438b78dc",
 			"interval_count": 2,
 			"kind": "plant_ac_energy_replay_v1",
-			"manifest_sha256": "d21d7da22291b783b64bfda85b032b99b4a55d5e2200618507fb8d793676c013",
+			"manifest_sha256": "ed8ba5d7578b6ae906a127a1e1996d374b65a6a0579cb6a1f42778b31a4b8ac6",
 			"metrics": {
 				"aux_ac_unserved_kwh": 0.0,
 				"charge_conversion_loss_kwh": 0.0,
@@ -7163,8 +7163,8 @@
 				"pv_available_ac.metadata": "dd493b22530e07bd9d79ab19f19357eab88551c35f8b92f1e23bd136e3b5092b",
 				"pv_available_ac.raw": "f04e0884ee73afec06617b4bed66870894009732ff4f01833d5ef43e1d1ad0ff",
 				"pv_available_ac.timezone": "5ee475f71a0fc1a32faeb849f8c39c6e7aa66d6d41ec742b97b3a7436b3b0701",
-				"resolved_inputs": "f037362489be1fd4752bce8e1142e80f9eb659d538b063615ee1346a14d924ff",
-				"runtime_bundle": "a5223859f57d9fb383f5891b7b132a894ae3dbd7bcaca9418c514a3bfe136049",
+				"resolved_inputs": "667a1af7b135d343a4340db3e352866ec73877e1f2919c60dc33fc96b28613b9",
+				"runtime_bundle": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 				"woo.equipment_inputs": "613d4f326bc772823bf89977d508852a986712b4d3bd1c5a298263323188a941"
 			},
 			"profile_interpretation": {
@@ -7301,12 +7301,12 @@
 					}
 				]
 			},
-			"project_id": "dce2b0be49b84234ae62843afad1abc7",
+			"project_id": "bd42d1451e61442ebcf2b704b93c6dad",
 			"revision": 2,
-			"runtime_sha256": "a5223859f57d9fb383f5891b7b132a894ae3dbd7bcaca9418c514a3bfe136049",
+			"runtime_sha256": "32b21e7a430b813c3076d94f3bfaefafc4796669bfcc19502489d8fd45510fef",
 			"scenario_constraint_status": "satisfied",
 			"schema": 1,
-			"trace_sha256": "b9918248b0b0f0afd804c8a1bd4875e29a6c47dd426e1b0fb3f4ae6e722dc367",
+			"trace_sha256": "237aef2574df962b2da0592abb27e2d8aa1d16a30e0ef420198a4141962c426f",
 			"verification": {
 				"checks": [
 					{
@@ -7707,12 +7707,12 @@
 			"system_scope": "pv_only"
 		},
 		"energy_plant": {
-			"aux_ac_asset_id": "9070e23b6c144d7ea3f14fdc3ab10613",
+			"aux_ac_asset_id": "1fa72b04c95c40a6b74b0550d3bac771",
 			"controller": "proportional_available_power_self_consumption_v1",
 			"coupling": "plant_ac",
 			"critical_load_asset_id": null,
-			"gross_load_asset_id": "82c4ef0656d14d59a1286e45d5635d2a",
-			"pv_available_asset_id": "cadf8b3eb6c049ca9f7d561db1ad17a5",
+			"gross_load_asset_id": "bfa0b3d9a4944c918efbf84b3646a5a0",
+			"pv_available_asset_id": "6cc5ad7712084f928f6369ba1103ba2a",
 			"schedule": [
 				{
 					"allow_grid_charge": false,
@@ -8016,9 +8016,9 @@
 		"profile_selections": {
 			"schema_version": 1,
 			"selected": {
-				"aux_ac": "9070e23b6c144d7ea3f14fdc3ab10613",
-				"gross_load": "82c4ef0656d14d59a1286e45d5635d2a",
-				"pv_available_ac": "cadf8b3eb6c049ca9f7d561db1ad17a5"
+				"aux_ac": "1fa72b04c95c40a6b74b0550d3bac771",
+				"gross_load": "bfa0b3d9a4944c918efbf84b3646a5a0",
+				"pv_available_ac": "6cc5ad7712084f928f6369ba1103ba2a"
 			}
 		},
 		"pv_plant_string_plan": {

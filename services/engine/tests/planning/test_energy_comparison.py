@@ -376,7 +376,7 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
     basis = panel_basis()
     equipment = products.equipment_basis()
     equipment["pv_module_inputs"] = basis
-    template = panel_parameters()
+    template = panel_parameters(electrical=True)
     geo = geometry()
     geo["module_specs"] = [{**template["specification"], "id": "module"}]
     geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[], origin_uv=[10, 10])
@@ -565,7 +565,7 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
     from linker_engine.planning.energy_comparison import compare_energy_runs
     from linker_engine.planning.profile_import import ProfileImport
     from linker_engine.planning.project_input_contracts import (
-        ENGINEERING_V10_INPUT_CONTRACT,
+        PANEL_PARAMETERS_INPUT_CONTRACT,
     )
 
     from .test_energy_kernel import mapping
@@ -643,7 +643,7 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
             project.revision,
             values,
             key="inputs-" + key,
-            input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+            input_contract=PANEL_PARAMETERS_INPUT_CONTRACT,
         )
         queued = energy.evaluate(
             owner, project.id, project.revision, key="energy-" + key
