@@ -138,9 +138,25 @@ for (const locale of ['en', 'de'] as const) {
 					exact: true,
 				});
 				await expect(add).toBeEnabled({ timeout: 90_000 });
+				const previewReply = page.waitForResponse((response) =>
+					new URL(response.url()).pathname.endsWith('/draft/preview')
+				);
 				await add.click();
+				const previewResponse = await previewReply;
+				expect(previewResponse.ok()).toBe(true);
+				const preview = await previewResponse.json();
+				expect(preview).toMatchObject({
+					project_id: projectId,
+					report_run_id: report.id,
+					revision: report.revision,
+				});
+				const changes: {
+					product_id: number;
+					label: string;
+					after: number;
+				}[] = preview.changes;
 				const table = workspace.getByRole('table').filter({
-					has: workspace.getByRole('columnheader', {
+					has: page.getByRole('columnheader', {
 						name: name('New quantity'),
 						exact: true,
 					}),
@@ -158,10 +174,17 @@ for (const locale of ['en', 'de'] as const) {
 						})
 					);
 				expect(reviewed.length).toBeGreaterThan(0);
-				for (const item of reviewed) {
-					expect(item.label).not.toBe('');
-					expect(item.quantity).toBeGreaterThan(0);
-				}
+				expect(reviewed).toEqual(
+					changes.map(({ label, after }) => ({
+						label,
+						quantity: after,
+					}))
+				);
+				expect(
+					reviewed.every(
+						({ label, quantity }) => label && quantity > 0
+					)
+				).toBe(true);
 				const confirm = workspace.getByRole('button', {
 					name: name('Confirm and continue to inquiry'),
 					exact: true,
@@ -201,9 +224,14 @@ for (const locale of ['en', 'de'] as const) {
 				const quantities = reviewed
 					.map((item) => item.quantity)
 					.sort(byQuantity);
-				expect(
-					lines.map((item) => item.quantity).sort(byQuantity)
-				).toEqual(quantities);
+				expect([...lines].sort(byId)).toEqual(
+					changes
+						.map(({ product_id, after }) => ({
+							id: product_id,
+							quantity: after,
+						}))
+						.sort(byId)
+				);
 				const inquiryUrl =
 					locale === 'de'
 						? '/de/proforma-anfrage/'
