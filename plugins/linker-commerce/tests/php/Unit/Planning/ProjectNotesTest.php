@@ -544,7 +544,10 @@ final class ProjectNotesTest extends TestCase {
 		$this->assertSame( array(), Context::session_notes() );
 	}
 
-	/** The project follows its reviewed revision even when the note is empty or excluded. */
+	/** The project follows its reviewed revision even when the note is empty or excluded.
+	 *
+	 * @return list<array{string,bool}>
+	 */
 	public static function preliminary_notes(): array {
 		return array( array( '', false ), array( self::NOTE, true ), array( self::NOTE, false ) );
 	}
@@ -597,7 +600,9 @@ final class ProjectNotesTest extends TestCase {
 				$post[ Context::INCLUDE_FIELD ] = '1';
 			}
 		}
-		WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id, 3 )->reply( $note );
+		$provider = WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id, 3 );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $provider );
+		$provider->reply( $note );
 		WP_Mock::passthruFunction( '__' );
 		WP_Mock::passthruFunction( 'esc_html' );
 		$order = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items', 'get_customer_note', 'set_customer_note' ) )->getMock();
@@ -631,7 +636,7 @@ final class ProjectNotesTest extends TestCase {
 		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW' ) as $fact ) {
 			$this->assertStringContainsString( $fact, $output );
 		}
-		$this->assertStringContainsString( $id, wp_json_encode( $meta ) );
+		$this->assertSame( $id . ':3', $meta['_linker_preliminary_project'] );
 		$this->assertSame( array(), Context::stored( $order ) );
 		$this->assertSame( array(), Context::stored_notes( $order ) );
 		if ( $include_note ) {

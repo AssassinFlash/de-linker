@@ -192,7 +192,9 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			const form = page.locator('form.linker-inquiry-form');
 			await expect(form).toBeVisible({ timeout: 90_000 });
-			const binding = await form.locator('[name="linker_preliminary_project"]').inputValue();
+			const binding = await form
+				.locator('[name="linker_preliminary_project"]')
+				.inputValue();
 			const direction = await page
 				.locator('.sc-draft-transfer p')
 				.filter({ hasText: chosen })

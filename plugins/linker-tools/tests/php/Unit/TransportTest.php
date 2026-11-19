@@ -75,9 +75,12 @@ final class TransportTest extends TestCase {
 		};
 		$gateway = new \Linker\Tools\Planner\Gateway( transport: new Transport( $fetch ) );
 		$review  = $gateway->inquiry_note( null, $id, 3 );
+		$this->assertIsArray( $review );
 		$this->assertSame( $inputs, $review['inputs'] );
 		$this->assertSame( '', $review['text'] );
-		$gateway = new \Linker\Tools\Planner\Gateway( transport: $this->replying( 200, wp_json_encode( $project ) ) );
+		$body = wp_json_encode( $project );
+		$this->assertIsString( $body );
+		$gateway = new \Linker\Tools\Planner\Gateway( transport: $this->replying( 200, $body ) );
 		$this->assertInstanceOf( \WP_Error::class, $gateway->inquiry_note( null, $id, 4 ) );
 		$this->assertNull( $gateway->inquiry_note( null, $id ), 'Old note-only forms omit an empty note.' );
 	}
