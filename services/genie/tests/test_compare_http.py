@@ -42,26 +42,41 @@ PAIR = {"device_class": "inverters", "text": MODELS[SAJ], "with_pairings": True}
 
 @pytest.mark.parametrize(
     "scenario",
-    ["compare", "pairing", "pairing-flag", "foreign-product", "foreign-knowledge"],
+    [
+        "compare",
+        "indexed-current",
+        "pairing",
+        "pairing-flag",
+        "foreign-product",
+        "foreign-knowledge",
+    ],
 )
 def test_turn_keeps_model_scope_with_or_without_jev(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scenario: str
 ) -> None:
-    compare = scenario == "compare"
+    indexed = scenario == "indexed-current"
+    compare = scenario in {"compare", "indexed-current"}
+    other = 2003 if indexed else GOODWE
+    models = {**MODELS, 2003: "L260-OMNI"}
     pairing = scenario == "pairing"
     raw = manifest(SAJ)
-    for pid in (GOODWE, BATTERY):
+    for pid in (other, BATTERY):
         product = manifest(pid)
         raw["products"].extend(product["products"])
         raw["documents"].extend(product["documents"])
     vocabulary = Vocabulary()
-    for pid, model in MODELS.items():
+    for pid, model in models.items():
         vocabulary.add(normalize(model), Entry("model", model, model, frozenset({pid})))
     question = "What is the maximum charge current per input for the H2-25K-T3?"
     if compare:
         question = (
             "Compare the SAJ H2-25K-T3 and GoodWe GW125/261-ESA-LCN-G10. "
             "What is the SAJ's maximum charge current per input?"
+        )
+    if indexed:
+        question = (
+            "Compare the SAJ H2-25K-T3 and L260-OMNI. "
+            "What are their maximum battery and AC currents?"
         )
     if pairing:
         question = "Which battery is compatible with the H2-25K-T3?"
@@ -79,14 +94,14 @@ def test_turn_keeps_model_scope_with_or_without_jev(
                 int(value)
                 for key, value in request.url.params.multi_items()
                 if key.startswith("input[product_ids][")
-            } == {SAJ, GOODWE}
+            } == {SAJ, other}
             # Native compare-products returns selection facts and rows, not cited figures.
-            powers = {SAJ: 25, GOODWE: 125}
+            powers = {SAJ: 25, other: 125}
             return {
                 "products": [
                     {
                         "product_id": pid,
-                        "title": MODELS[pid],
+                        "title": models[pid],
                         "url": f"https://wp.test/p/{pid}",
                         "facts": {"ac_power_kw": kw},
                     }
@@ -125,7 +140,7 @@ def test_turn_keeps_model_scope_with_or_without_jev(
             return {"qualified": [row]}
         assert path.endswith("/get-product/run")
         pid = int(request.url.params["input[product_id]"])
-        product = {"product_id": pid, "title": MODELS[pid]}
+        product = {"product_id": pid, "title": models[pid]}
         if pid == SAJ:
             product["figures"] = {
                 "max_battery_charge_a": {
@@ -139,6 +154,28 @@ def test_turn_keeps_model_scope_with_or_without_jev(
                     },
                 }
             }
+        if indexed:
+            document = next(
+                doc for doc in raw["documents"] if pid in doc["product_ids"]
+            )
+            product["documents"] = [document]
+            if pid == SAJ:
+                seeds = json.loads(
+                    (
+                        Path(__file__).resolve().parents[3]
+                        / "tools/migrate/1132-h2-port-current.json"
+                    ).read_text()
+                )["products"][str(SAJ)]["figures"]
+                product["figures"] = {
+                    f"max_battery_{direction}_a": {
+                        **seeds[f"max_battery_{direction}_a"]["expect"],
+                        "qualifier": seeds[f"max_battery_{direction}_a"]["set"][
+                            "qualifier"
+                        ],
+                        "citation": {"url": document["url"], "page": 38},
+                    }
+                    for direction in ("charge", "discharge")
+                }
         return product
 
     searched: list[set[int]] = []
@@ -146,7 +183,41 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     def search(arguments: dict[str, Any] | None) -> dict[str, Any]:
         assert arguments is not None
         searched.append(set(arguments["product_ids"]))
-        return {"hits": [], "ranking": "vector"}
+        hits = []
+        if indexed:
+            for pid, chunk, value, page, text in (
+                (
+                    SAJ,
+                    "saj-current",
+                    "50 A",
+                    38,
+                    "| Max. Lade-/Entladestrom [A] | [n1=50 A]/[n2=50 A] |",
+                ),
+                (other, "l260-ac", "181 A", 2, "| Max AC Current (A) | [n1=181 A] |"),
+            ):
+                if pid not in arguments["product_ids"]:
+                    continue
+                document = next(
+                    doc for doc in raw["documents"] if pid in doc["product_ids"]
+                )
+                hits.append(
+                    {
+                        "chunk_id": chunk,
+                        "doc_url": document["url"],
+                        "document_id": document["document_id"],
+                        "document_revision": document["document_revision"],
+                        "evidence_product_id": pid,
+                        "doc_type": "datasheet",
+                        "product_ids": [pid],
+                        "page": page,
+                        "text": text,
+                        "figures": {
+                            f"{chunk}.n1": value,
+                            **({f"{chunk}.n2": value} if pid == SAJ else {}),
+                        },
+                    }
+                )
+        return {"hits": hits, "ranking": "vector"}
 
     get_saj = ("linker_get_product", {"product_id": SAJ})
     knowledge = ("linker_search_knowledge", {"query": "Battery current limits"})
@@ -160,7 +231,7 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         ),
     }
     if compare:
-        calls = [get_saj, ("linker_get_product", {"product_id": GOODWE}), knowledge]
+        calls = [knowledge]
     elif pairing:
         calls = [pair_search]
     else:
@@ -178,9 +249,30 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         if len(returns) < len(calls):
             name, arguments = calls[len(returns)]
             return ModelResponse(parts=[ToolCallPart(name, {"arguments": arguments})])
-        if pairing:
-            assert returns[0]["qualified"][0]["pairings"][0]["product_id"] == BATTERY
+        if indexed:
+            corrected = any(
+                "The previous answer failed grounding" in str(part.content)
+                for message in messages
+                for part in message.parts
+                if hasattr(part, "content")
+            )
+            battery = (
+                "{fact:p1179.max_battery_charge_a}\n{fact:p1179.max_battery_discharge_a}"
+                if corrected
+                else "Maximum battery charge current: {fact:saj-current.n1}\nMaximum battery discharge current: {fact:saj-current.n2}"
+            )
             blocks: list[dict[str, Any]] = [
+                {
+                    "type": "text",
+                    "text": battery
+                    + "\nThe maximum AC current for L260-OMNI is {fact:l260-ac.n1}.",
+                    "refs": ["saj-current", "l260-ac"],
+                },
+                {"type": "compare", "product_ids": [SAJ, other]},
+            ]
+        elif pairing:
+            assert returns[0]["qualified"][0]["pairings"][0]["product_id"] == BATTERY
+            blocks = [
                 {
                     "type": "text",
                     "text": f"The SAJ inverter has a documented pairing with the {MODELS[BATTERY]} battery and its control module.",
@@ -190,7 +282,8 @@ def test_turn_keeps_model_scope_with_or_without_jev(
                 {"type": "document", "ref": f"compat.document.{BATTERY}.0"},
             ]
         else:
-            assert "max_battery_charge_a" in returns[0 if compare else 1]["figures"]
+            if not compare:
+                assert "max_battery_charge_a" in returns[1]["figures"]
             blocks = [
                 {
                     "type": "text",
@@ -199,7 +292,6 @@ def test_turn_keeps_model_scope_with_or_without_jev(
                 }
             ]
             if compare:
-                assert returns[1]["product_id"] == GOODWE
                 blocks.append({"type": "compare", "product_ids": [SAJ, GOODWE]})
         return ModelResponse(
             parts=[ToolCallPart("final_result", {"language": "en", "blocks": blocks})]
@@ -260,6 +352,26 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         for event in response.text.split("\n\n")
         if event.startswith("event: block\n")
     ]
+    if indexed:
+        texts = "\n".join(block["text"] for block in blocks if block["type"] == "text")
+        assert (
+            "The maximum charge current for H2-25K-T3 is 50 A per battery input."
+            in texts
+        )
+        assert (
+            "The maximum discharge current for H2-25K-T3 is 50 A per battery input."
+            in texts
+        )
+        assert "The maximum AC current for L260-OMNI is 181 A." in texts
+        assert {
+            (block["url"], block["evidence_product_id"])
+            for block in blocks
+            if block["type"] == "document"
+        } == {
+            (f"https://wp.test/{SAJ}.pdf#page=38", SAJ),
+            (f"https://wp.test/{other}.pdf#page=2", other),
+        }
+        return
     pairing_queries = [
         request
         for request in requests
@@ -283,11 +395,11 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     )
     assert f"https://wp.test/{SAJ}.pdf#page=38" in response.text
     assert searched == [{SAJ, GOODWE} if compare else {SAJ}]
-    assert [
+    assert sorted(
         int(request.url.params["input[product_id]"])
         for request in requests
         if request.url.path.endswith("/get-product/run")
-    ] == ([SAJ, GOODWE] if compare else [SAJ])
+    ) == ([SAJ, GOODWE] if compare else [SAJ])
     comparisons = [
         block["product_ids"] for block in blocks if block["type"] == "compare"
     ]

@@ -1234,6 +1234,11 @@ _COMBINED_INPUTS = re.compile(
 def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
     """The service writes the entire claim for a qualified input current."""
     failures = []
+    qualified: dict[int, list[Fact]] = {}
+    for fact in facts.facts.values():
+        if fact.per_input_current_direction is not None:
+            pid = int(fact.id.split(".", 1)[0].removeprefix("p"))
+            qualified.setdefault(pid, []).append(fact)
     has_qualified_current = False
     for block in output.blocks:
         if isinstance(block, TextBlock):
@@ -1247,7 +1252,34 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
         for line in lines:
             for fact_id in leftover_placeholders(line):
                 fact = _fact_known(facts, fact_id)
-                if fact is None or fact.per_input_current_direction is None:
+                if fact is None:
+                    continue
+                if fact.per_input_current_direction is None:
+                    chunk = chunk_of(fact.id)
+                    owners = facts.knowledge_products.get(chunk or "", ())
+                    if len(owners) != 1 or owners[0] not in qualified:
+                        continue
+                    original = facts.facts.get(f"{chunk}.text")
+                    if original is None:
+                        continue
+                    token = f"[{fact.id.rsplit('.', 1)[-1]}="
+                    for row in original.value.splitlines():
+                        label, _, cells = row.lstrip("| ").partition("|")
+                        if token not in cells or not re.search(
+                            r"\b(?:(?:charg(?:e|ing)|discharg(?:e|ing)).*current|(?:ent)?ladestrom)\b",
+                            label,
+                            re.I,
+                        ):
+                            continue
+                        placeholders = " and ".join(
+                            f"{{fact:{candidate.id}}}"
+                            for candidate in qualified[owners[0]]
+                        )
+                        failures.append(
+                            f"Use the verified per-input current facts {placeholders}, "
+                            "each alone on a text line, instead of the indexed battery current digits."
+                        )
+                        break
                     continue
                 has_qualified_current = True
                 if (
