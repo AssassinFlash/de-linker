@@ -771,12 +771,28 @@ export function SystemOptions({
 							</dd>
 						</div>
 					</dl>
-					<p className="sc-muted">
-						{__(
-							"These optimistic bounds assume a full battery at the start and lossless storage. Actual operation depends on the remaining equipment and operating checks.",
-							"linker-tools",
-						)}
-					</p>
+					{candidates.some(
+						(candidate) =>
+							typeof candidate.demand?.additional_pv_use_upper_kwh === "number",
+					) && (
+						<p className="sc-muted">
+							{__(
+								"Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage.",
+								"linker-tools",
+							)}
+						</p>
+					)}
+					{candidates.some(
+						(candidate) =>
+							typeof candidate.demand?.peak_import_lower_bound_kw === "number",
+					) && (
+						<p className="sc-muted">
+							{__(
+								"The lower bound assumes a full battery at the start and lossless storage.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 				</section>
 			)}
 			{candidates.length > 0 && (

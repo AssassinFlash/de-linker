@@ -647,7 +647,14 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 	);
 	assert.match(document.body.textContent, /2020/);
 	assert.match(document.body.textContent, /lossless/);
-	assert.match(document.body.textContent, /full battery/);
+	assert.match(
+		document.body.textContent,
+		/Only surplus solar energy stored during this period counts towards the upper bound/,
+	);
+	assert.match(
+		document.body.textContent,
+		/The lower bound assumes a full battery at the start/,
+	);
 	assert.equal(document.body.textContent.includes("simulated savings"), false);
 
 	window.wp.i18n.__ = (message) =>
@@ -669,6 +676,46 @@ test("demand comparison labels optimistic bounds and the actual profile horizon"
 		document.querySelector(".sc-package").textContent,
 		/Weitere Prüfung erforderlich/,
 	);
+	assert.match(
+		document.body.textContent,
+		/Die Untergrenze setzt einen zu Beginn voll geladenen Speicher/,
+	);
+	const { peak_target_kw: _, ...profile } = demand;
+	const selfUse = {
+		...props,
+		run: {
+			...run,
+			result: {
+				search: {
+					...run.result.search,
+					demand: {
+						...profile,
+						controller: "self_consumption_with_reserve_v1",
+						baseline: { ...demand.baseline, over_target_kwh: null },
+					},
+					candidates: [
+						{
+							...candidate,
+							demand: { ...candidate.demand, peak_import_lower_bound_kw: null },
+						},
+					],
+				},
+			},
+		},
+	};
+	await render({ ...selfUse, locale: "de-DE" });
+	assert.match(
+		document.body.textContent,
+		/Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze/,
+	);
+	assert.doesNotMatch(document.body.textContent, /zu Beginn voll/);
+	window.wp.i18n.__ = (message) => message;
+	await render(selfUse);
+	assert.match(
+		document.body.textContent,
+		/Only surplus solar energy stored during this period counts towards the upper bound/,
+	);
+	assert.doesNotMatch(document.body.textContent, /full battery/);
 });
 
 test("retaining an unverified inverter shows the measured baseline without a candidate", async (t) => {
