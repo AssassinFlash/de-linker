@@ -592,6 +592,14 @@ for (const [lang, width] of matrix) {
 			);
 			await expect(materials).toBeEnabled({ timeout: 120000 });
 			const retired = /Trina|TSM[-_ ]?460|Vertex[- ]?S/i;
+			const layoutTitle =
+				lang === 'en' ? 'Solar panel layout' : 'PV-Modulbelegung';
+			await expect(
+				workspace.getByRole('heading', {
+					name: layoutTitle,
+					exact: true,
+				})
+			).toBeVisible();
 			const pdfButton = button(workspace, text.report);
 			for (const [format, control] of [
 				['pdf', pdfButton],
@@ -612,11 +620,15 @@ for (const [lang, width] of matrix) {
 						: bytes.toString('utf8');
 				expect(content).toMatch(/430\s*Wp/);
 				expect(content).not.toMatch(retired);
+				expect(content).not.toMatch(
+					/PV reference module · project quotation|PV-Referenzmodul · Projektangebot/i
+				);
 				if (format === 'csv') {
 					const row = content
 						.split(/\r?\n/)
 						.find((line) => /430\s*Wp/.test(line));
 					expect(row).toMatch(/[;,"]4(?:[;,"]|$)/);
+					expect(row).toContain(layoutTitle);
 				}
 			}
 			await workspace
