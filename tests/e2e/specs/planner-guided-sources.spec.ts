@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -541,6 +542,114 @@ for (const [lang, width] of matrix) {
 			expect(report).toMatch(
 				new RegExp(`${text.peakBeforeStorageLabel}[^\\n]*7[.,]826 kW`)
 			);
+		} finally {
+			restoreBudgets();
+		}
+	});
+}
+
+for (const [lang, width] of matrix) {
+	test(`${lang} ${width}: the rooftop report, materials export and Genie retain the declared panels`, async ({
+		page,
+	}) => {
+		const text = words[lang];
+		await page.setViewportSize({
+			width,
+			height: width === 390 ? 844 : 900,
+		});
+		const restoreBudgets = isolateVisitorBudgets();
+		try {
+			await prepareSavedRoof(
+				page,
+				instance().url,
+				text,
+				lang === 'de' ? 'Dach in Rotterdam' : 'Rotterdam roof'
+			);
+			const workspace = page.locator('[data-linker-planner]');
+			await button(workspace, text.choose).first().click();
+			await button(
+				workspace,
+				lang === 'en'
+					? 'Review the proposal'
+					: 'Lösungsvorschlag prüfen'
+			).click();
+			await button(
+				workspace,
+				lang === 'en'
+					? 'Generate project report'
+					: 'Projektbericht erstellen'
+			).click();
+			const consent = button(
+				page,
+				lang === 'en' ? 'Reject all' : 'Alle ablehnen'
+			);
+			if (await consent.isVisible()) await consent.click();
+			const materials = button(
+				workspace,
+				lang === 'en'
+					? 'Download bill of materials (CSV)'
+					: 'Stückliste herunterladen (CSV)'
+			);
+			await expect(materials).toBeEnabled({ timeout: 120000 });
+			const retired = /Trina|TSM[-_ ]?460|Vertex[- ]?S/i;
+			const pdfButton = button(workspace, text.report);
+			for (const [format, control] of [
+				['pdf', pdfButton],
+				['csv', materials],
+			] as const) {
+				const pending = page.waitForEvent('download');
+				await control.click();
+				const download = await pending;
+				const path = await download.path();
+				expect(path).toBeTruthy();
+				const bytes = readFileSync(path!);
+				const content =
+					format === 'pdf'
+						? spawnSync('pdftotext', ['-layout', '-', '-'], {
+								input: bytes,
+								encoding: 'utf8',
+							}).stdout
+						: bytes.toString('utf8');
+				expect(content).toMatch(/430\s*Wp/);
+				expect(content).not.toMatch(retired);
+				if (format === 'csv') {
+					const row = content
+						.split(/\r?\n/)
+						.find((line) => /430\s*Wp/.test(line));
+					expect(row).toMatch(/[;,"]4(?:[;,"]|$)/);
+				}
+			}
+			await workspace
+				.locator('#lp-calculations [data-linker-genie-planning]')
+				.click();
+			const panel = page.locator('.linker-genie-app__panel');
+			const input = panel.locator('.linker-genie-app__input');
+			await input.fill(
+				lang === 'en'
+					? 'How many solar panels are on the roof in my saved report?'
+					: 'Wie viele PV-Module sind laut meinem gespeicherten Bericht auf dem Dach?'
+			);
+			const votes = panel.locator('.linker-genie-app__votes');
+			const before = await votes.count();
+			await panel.locator('.linker-genie-app__send').click();
+			await expect
+				.poll(() => votes.count(), { timeout: 120000 })
+				.toBeGreaterThan(before);
+			const answer = panel.locator('.linker-genie-message-body').last();
+			const expand = panel.getByRole('button', {
+				name:
+					lang === 'en'
+						? 'Show full response'
+						: 'Vollständige Antwort anzeigen',
+			});
+			if (await expand.isVisible()) await expand.click();
+			await expect(answer).toContainText(
+				/(?:4|four|vier)\s*(?:solar\s*|PV[- ]?)?(?:panels?|modules?|Module)|(?:panel count|module count|Anzahl[^.]{0,16})\s*[:|]?\s*4\b/i
+			);
+			await expect(answer).not.toContainText(retired);
+			await panel.screenshot({
+				path: test.info().outputPath('genie-roof-report.png'),
+			});
 		} finally {
 			restoreBudgets();
 		}
