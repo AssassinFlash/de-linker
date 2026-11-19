@@ -173,6 +173,25 @@
 		}
 	}
 
+	const retirePreliminaryInquiry = () => {
+		if ( ! document.querySelector( '.linker-account, .linker-inquiry-success' ) ) {
+			return;
+		}
+		try {
+			window.sessionStorage.removeItem( 'linker-preliminary-inquiry' );
+			for ( let index = window.sessionStorage.length - 1; index >= 0; index-- ) {
+				const key = window.sessionStorage.key( index );
+				if ( key?.startsWith( 'linker-preliminary-inquiry-pending:' ) ) {
+					window.sessionStorage.removeItem( key );
+				}
+			}
+		} catch {
+			// Native receipt and account pages remain available without storage.
+		}
+	};
+	retirePreliminaryInquiry();
+	window.addEventListener( 'pageshow', retirePreliminaryInquiry );
+
 	// The second field of a two-field password check, and the line under it.
 	function passwordPair( form ) {
 		const first = form.querySelector( '[name="password_1"]' );

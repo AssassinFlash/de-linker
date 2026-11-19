@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
+import {
+	pendingInquiry,
+	rememberInquiry,
+	restoreInquiry,
+} from "../../data/inquiryRecovery.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { systemNames } from "./PreliminaryOptions.tsx";
@@ -17,6 +22,7 @@ const contactFields = [
 	"message",
 	"consent",
 	"linker_include_project_notes",
+	"linker_individual_review",
 ];
 
 function customerFields(form: HTMLFormElement): CustomerField[] {
@@ -126,6 +132,7 @@ export function ReviewInquiry({
 	active,
 	changeSelection,
 	recheck,
+	inquiryPending,
 }: {
 	project: Project;
 	direction: NonNullable<Brief["system_scope"]>;
@@ -135,6 +142,7 @@ export function ReviewInquiry({
 	active: boolean;
 	changeSelection: () => void;
 	recheck: () => void;
+	inquiryPending?: (pending: boolean) => void;
 }) {
 	const [failed, setFailed] = useState(false);
 	const [lines, setLines] = useState<
@@ -148,6 +156,9 @@ export function ReviewInquiry({
 	const revision = project.revision;
 	const retained = useRef<CustomerDraft>(new Map());
 	const posting = useRef(false);
+	const [checkingInquiry, setCheckingInquiry] = useState(() =>
+		Boolean(pendingInquiry(scope, project)),
+	);
 	useEffect(() => {
 		// Keep one unfinished navigation draft in this tab. The destination
 		// consumes it only after mounting a form for the same owned project.
@@ -264,9 +275,20 @@ export function ReviewInquiry({
 					)?.value !== `${projectId}:${revision}`
 				)
 					throw new Error("invalid_inquiry_form");
-				retained.current =
-					takeNavigationDraft(scope, projectId) ?? retained.current;
-				restoreCustomerFields(form, retained.current);
+				const pending = pendingInquiry(scope, { id: projectId, revision });
+				if (pending) {
+					restoreCustomerFields(form, new Map(pending));
+					restoreInquiry(form, pending);
+					const send = form.querySelector('button[type="submit"]');
+					if (send)
+						send.textContent = __("Check inquiry status", "linker-tools");
+				} else {
+					retained.current =
+						takeNavigationDraft(scope, projectId) ?? retained.current;
+					restoreCustomerFields(form, retained.current);
+				}
+				setCheckingInquiry(Boolean(pending));
+				inquiryPending?.(Boolean(pending));
 				node.replaceChildren(template.content);
 				form.dispatchEvent(
 					new Event("linker:inquiry-form-mounted", { bubbles: true }),
@@ -311,7 +333,7 @@ export function ReviewInquiry({
 							systemNames()[direction],
 						)}
 					</p>
-					{Boolean(lines?.length) && (
+					{!checkingInquiry && Boolean(lines?.length) && (
 						<ul>
 							{lines?.map((line, index) => (
 								<li key={index}>
@@ -320,7 +342,12 @@ export function ReviewInquiry({
 							))}
 						</ul>
 					)}
-					<button className="sc-button" type="button" onClick={changeSelection}>
+					<button
+						className="sc-button"
+						type="button"
+						disabled={checkingInquiry}
+						onClick={changeSelection}
+					>
 						{__("Change selection", "linker-tools")}
 					</button>
 				</aside>
@@ -332,11 +359,20 @@ export function ReviewInquiry({
 						ref={host}
 						onSubmit={(event) => {
 							if (!client.isCurrentScope(scope)) event.preventDefault();
-							// Commerce owns the native retry and receipt from this POST.
-							if (!event.defaultPrevented) {
+							if (
+								event.defaultPrevented ||
+								!(event.target instanceof window.HTMLFormElement)
+							)
+								return;
+							try {
+								const saved = rememberInquiry(event.target, scope, project);
+								if (saved) inquiryPending?.(true);
 								posting.current = true;
 								retained.current.clear();
 								takeNavigationDraft(scope, projectId);
+							} catch {
+								event.preventDefault();
+								setNavigationFailed(true);
 							}
 						}}
 					/>

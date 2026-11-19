@@ -17091,3 +17091,7 @@ msgstr "Anfrageformular erneut laden"
 #: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
 msgid "Your browser could not save your entries. Stay on this page to avoid losing them."
 msgstr "Ihr Browser konnte Ihre Eingaben nicht speichern. Auf dieser Seite können Sie Ihre Anfrage weiter ausfüllen."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryProject.tsx ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "Check inquiry status"
+msgstr "Status der Anfrage prüfen"

@@ -623,3 +623,142 @@ test("the review restores edited signed-in details and Woo billing controls on a
 	assert.equal(field("billing_country").value, "NL");
 	assert.equal(field("name").value, "Updated Name");
 });
+
+test("returning after an unconfirmed native POST offers readback of the exact inquiry", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { ReviewInquiry } =
+		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	const requestIds = [
+		crypto.randomUUID(),
+		crypto.randomUUID(),
+		crypto.randomUUID(),
+	];
+	const project = { id: projectId, revision: 7 };
+	let loads = 0;
+	const client = {
+		origin: location.origin,
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path, command) {
+			assert.equal(path, "inquiry/form");
+			assert.equal(command.project_id, projectId);
+			assert.equal(command.revision, 7);
+			const n = loads++;
+			return {
+				schema_version: 1,
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
+					<input type="hidden" name="linker_preliminary_project" value="${projectId}:7">
+					<input type="hidden" name="linker_request_id" value="${requestIds[n]}" data-linker-protected-action="inquiry">
+					<input type="hidden" name="linker_draft_hash" value="${n ? "" : "original-cart"}">
+					<input type="hidden" name="lang" value="en">
+					<input type="hidden" name="linker_proof" value="${n ? "" : "fixture-old-proof"}">
+					<input type="hidden" name="linker_inquiry_nonce" value="current-nonce-${n}">
+					${n ? "" : '<input type="hidden" name="linker_project_notes_present" value="1"><input type="hidden" name="linker_project_note_revisions[project_source]" value="old-note-revision">'}
+					<input name="name" required><input name="email" type="email" required>
+					<textarea name="message"></textarea><input name="consent" type="checkbox" value="1" required>
+					<button type="submit">Send inquiry</button>
+				</form>`,
+				inquiry_lines: [],
+			};
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewInquiry, {
+				project,
+				direction: "storage_only",
+				client,
+				locale: "en",
+				active: true,
+				scope: session.query_scope,
+				changeSelection() {},
+				recheck() {},
+			}),
+		),
+	);
+	const form = () => fixture.element.querySelector("form.linker-inquiry-form");
+	const field = (name) => form().elements.namedItem(name);
+	await until(form);
+	await enter(field("name"), "Test Visitor");
+	await enter(field("email"), "visitor@example.test");
+	await enter(field("message"), "Can you help size a battery?");
+	await act(async () => field("consent").click());
+	const original = new window.FormData(form());
+	await act(async () => {
+		form().dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		);
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pagehide", { persisted: true }),
+		);
+	});
+	assert.equal(form(), null);
+	await act(async () =>
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pageshow", { persisted: true }),
+		),
+	);
+	await until(() => loads === 2 && form());
+	assert.equal(
+		form().querySelector('button[type="submit"]').textContent,
+		"Check inquiry status",
+	);
+	assert.equal(
+		field("linker_request_id").dataset.linkerProtectionRecovery,
+		"true",
+	);
+	assert.equal(
+		fixture.element.querySelector(".sc-draft-transfer aside button").disabled,
+		true,
+	);
+	const replay = new window.FormData(form());
+	for (const key of [
+		"linker_request_id",
+		"linker_preliminary_project",
+		"linker_draft_hash",
+		"linker_project_notes_present",
+		"linker_project_note_revisions[project_source]",
+		"name",
+		"email",
+		"message",
+		"consent",
+		"lang",
+	])
+		assert.equal(replay.get(key), original.get(key), key);
+	assert.equal(replay.get("linker_inquiry_nonce"), "current-nonce-1");
+	assert.equal(replay.get("linker_proof"), "");
+
+	// Landing on the native receipt retires the previous tab snapshot.
+	const { readFileSync } = await import("node:fs");
+	const accountUi = readFileSync(
+		new URL(
+			"../../../plugins/linker-commerce/assets/account-ui.js",
+			import.meta.url,
+		),
+		"utf8",
+	);
+	document
+		.querySelector("header")
+		.insertAdjacentHTML(
+			"afterend",
+			'<section class="linker-inquiry-success" role="status">Inquiry received</section>',
+		);
+	new Function("window", "document", accountUi)(window, document);
+	await act(async () => {
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pagehide", { persisted: true }),
+		);
+		window.dispatchEvent(
+			new window.PageTransitionEvent("pageshow", { persisted: true }),
+		);
+	});
+	await until(() => loads === 3 && form());
+	assert.equal(field("linker_request_id").value, requestIds[2]);
+	assert.equal(field("message").value, "");
+	assert.equal(
+		form().querySelector('button[type="submit"]').textContent,
+		"Send inquiry",
+	);
+});
