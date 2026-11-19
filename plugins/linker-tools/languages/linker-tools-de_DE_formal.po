@@ -1847,7 +1847,7 @@ msgstr "Leistung"
 msgid "Power (MW)"
 msgstr "Leistung (MW)"
 
-#: src/configurator/report/ReportView.tsx:117 build/configurator.js
+#: src/configurator/report/ReportView.tsx:117 ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/configurator.js build/planner/assets/planner.js:1
 msgid "Preparing PDF…"
 msgstr "PDF wird erstellt …"
 
@@ -17239,3 +17239,7 @@ msgstr "Ausrichtung der gewählten Dachfläche"
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
 msgid "Selected roof height"
 msgstr "Höhe der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the selected roof and dimensions."
+msgstr "Prüfen Sie die ausgewählte Dachfläche und ihre Abmessungen."

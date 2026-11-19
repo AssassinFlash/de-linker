@@ -964,6 +964,12 @@ test("selected measured roof properties apply to that roof and Undo restores its
 			field.dispatchEvent(new window.FocusEvent("focusout", { bubbles: true })),
 		);
 	}
+	await change(pitch, "90");
+	assert.equal(pitch.getAttribute("aria-invalid"), "true");
+	await click("Use this layout");
+	assert.equal(input("Selected roof pitch"), pitch);
+	await click("Continue with energy use");
+	assert.equal(app.next, 0);
 	await change(pitch, "30");
 	await change(direction, "180");
 	await change(height, "6");

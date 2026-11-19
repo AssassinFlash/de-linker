@@ -35,9 +35,9 @@ const labels = {
 		logo: 'Your logo on the PDF (optional)',
 		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
-		projectChapter: /^1\s*Project$/,
+		projectChapter: /^(?:1\s*)?Project$/,
 		projectSection: 'What is the project?',
-		solarChapter: /^2\s*Solar$/,
+		solarChapter: /^(?:2\s*)?Solar$/,
 	},
 	de: {
 		roofChoice: 'Module auf dem Dach platzieren',
@@ -70,9 +70,9 @@ const labels = {
 		logo: 'Ihr Logo im PDF (optional)',
 		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
-		projectChapter: /^1\s*Projekt$/,
+		projectChapter: /^(?:1\s*)?Projekt$/,
 		projectSection: 'Was planen Sie?',
-		solarChapter: /^2\s*Photovoltaik$/,
+		solarChapter: /^(?:2\s*)?Photovoltaik$/,
 	},
 } as const;
 
@@ -114,8 +114,9 @@ async function importLoadProfile(energy: ReturnType<Page['locator']>) {
 	await energy
 		.getByRole('button', { name: 'Verbrauchsdaten übernehmen' })
 		.click();
-	const metrics = energy.locator('.sc-demand-metrics');
-	await expect(metrics).toContainText('8 kW');
+	await expect(energy.locator('.sc-demand-profile')).toContainText(
+		'49,5 kWh'
+	);
 	await expect(energy.locator('figure svg')).toBeVisible();
 }
 
@@ -131,7 +132,9 @@ async function adjustRoof(
 	await workspace
 		.getByRole('button', { name: words.openRoof, exact: true })
 		.click();
-	await workspace.getByText(words.measuredRoof, { exact: true }).click();
+	await expect(
+		workspace.locator('.sc-roof-props details[open] summary')
+	).toHaveText(words.measuredRoof);
 	const roof = workspace.locator('.sc-roof-props details[open]');
 	const dimensions =
 		lang === 'en'
@@ -247,7 +250,6 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			await expect(next).toBeVisible();
 			await screen(page, 'solar');
-			await adjustRoof(page, workspace, lang);
 
 			await next.click();
 			await workspace.getByLabel(words.grid).selectOption('3');
@@ -327,6 +329,10 @@ for (const lang of ['en', 'de'] as const) {
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)
 			).toBe(width);
+			await navigation
+				.getByRole('button', { name: words.solarChapter })
+				.click();
+			await adjustRoof(page, workspace, lang);
 		});
 	}
 }

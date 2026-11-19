@@ -191,6 +191,8 @@ export function SolarInstallation({
 		"select",
 	);
 	const [error, setError] = useState("");
+	const [roofPropertyInvalid, setRoofPropertyInvalid] = useState(false);
+	const roofPropertiesPanel = useRef<HTMLDivElement>(null);
 	const [view, setView] = useState<"plan" | "map" | "scene">(
 		initialMap ||
 			recordedCentre !== null ||
@@ -257,9 +259,12 @@ export function SolarInstallation({
 		[reportImportActivity],
 	);
 	useEffect(() => {
-		onEditing?.(editingLayout && (calibrationOpen || tool !== "select"));
+		onEditing?.(
+			editingLayout &&
+				(calibrationOpen || tool !== "select" || roofPropertyInvalid),
+		);
 		return () => onEditing?.(false);
-	}, [calibrationOpen, editingLayout, tool, onEditing]);
+	}, [calibrationOpen, editingLayout, roofPropertyInvalid, tool, onEditing]);
 	const camera = useRef<MapCamera | null>(null);
 	const moduleRows = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
@@ -377,6 +382,14 @@ export function SolarInstallation({
 			return false;
 		}
 	}
+	function clearRoofPropertyError(target: HTMLInputElement) {
+		target.removeAttribute("aria-invalid");
+		const remaining = Boolean(
+			roofPropertiesPanel.current?.querySelector('input[aria-invalid="true"]'),
+		);
+		setRoofPropertyInvalid(remaining);
+		if (!remaining) setError("");
+	}
 	function applyRoofProperty(
 		key: keyof ReturnType<typeof roofProperties>,
 		target: HTMLInputElement,
@@ -385,10 +398,7 @@ export function SolarInstallation({
 		const value = target.valueAsNumber;
 		const previous = Math.round(selectedProperties[key] * 100) / 100;
 		if (value === previous) {
-			if (target.hasAttribute("aria-invalid")) {
-				target.removeAttribute("aria-invalid");
-				setError("");
-			}
+			if (target.hasAttribute("aria-invalid")) clearRoofPropertyError(target);
 			return;
 		}
 		if (
@@ -397,6 +407,7 @@ export function SolarInstallation({
 			(key === "azimuth" && (value < 0 || value >= 360))
 		) {
 			target.setAttribute("aria-invalid", "true");
+			setRoofPropertyInvalid(true);
 			setError(__("Check the selected roof and dimensions.", "linker-tools"));
 			return;
 		}
@@ -419,9 +430,11 @@ export function SolarInstallation({
 							roof.origin_enu,
 						),
 					};
-		if (commit({ type: "put_roof", before: roof, value: next }))
-			target.removeAttribute("aria-invalid");
-		else target.value = String(previous);
+		if (commit({ type: "put_roof", before: roof, value: next })) {
+			clearRoofPropertyError(target);
+		} else {
+			target.value = String(previous);
+		}
 	}
 
 	function undoRoofEdit() {
@@ -1092,7 +1105,9 @@ export function SolarInstallation({
 							aria-label={label}
 							aria-describedby={`${choicesId}-${value}-help`}
 							aria-pressed={mode === value}
-							disabled={importOpen || vertices.length > 0}
+							disabled={
+								importOpen || roofPropertyInvalid || vertices.length > 0
+							}
 							key={value}
 							onClick={() => {
 								if (value === mode) return;
@@ -1305,7 +1320,12 @@ export function SolarInstallation({
 						<button
 							type="button"
 							className="sc-button sc-primary"
-							disabled={calibrationOpen || importOpen || vertices.length > 0}
+							disabled={
+								calibrationOpen ||
+								importOpen ||
+								roofPropertyInvalid ||
+								vertices.length > 0
+							}
 							onClick={() => {
 								startTool("select");
 								setLayoutOpen(false);
@@ -1581,6 +1601,7 @@ export function SolarInstallation({
 									<span>{__("Selected roof", "linker-tools")}</span>
 									<select
 										value={roof?.id ?? ""}
+										disabled={roofPropertyInvalid}
 										onChange={(e) => select(e.currentTarget.value)}
 									>
 										<option value="">
@@ -1594,7 +1615,10 @@ export function SolarInstallation({
 									</select>
 								</label>
 								{roof && selectedProperties && (
-									<div className="sc-selected-roof-properties">
+									<div
+										className="sc-selected-roof-properties"
+										ref={roofPropertiesPanel}
+									>
 										{(
 											[
 												[
@@ -1637,10 +1661,7 @@ export function SolarInstallation({
 															event.currentTarget.value = String(
 																selectedProperties[key],
 															);
-															event.currentTarget.removeAttribute(
-																"aria-invalid",
-															);
-															setError("");
+															clearRoofPropertyError(event.currentTarget);
 														} else if (event.key === "Enter") {
 															event.preventDefault();
 															event.currentTarget.blur();
@@ -2049,7 +2070,11 @@ export function SolarInstallation({
 				<button
 					type="button"
 					disabled={
-						blocked || calibrationOpen || importOpen || vertices.length > 0
+						blocked ||
+						calibrationOpen ||
+						importOpen ||
+						roofPropertyInvalid ||
+						vertices.length > 0
 					}
 					onClick={next}
 				>
