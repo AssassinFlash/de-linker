@@ -10,6 +10,19 @@ import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import type { Brief } from "../domain/brief.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
+import { readScenarioDraft } from "../domain/energyScenario.ts";
+import { issueLabel } from "./ProfileLabels.ts";
+import {
+	attachHomepageProfile,
+	prepareHomepageProfile,
+} from "../data/homepageProfile.ts";
+import type { HomepageProfileUpload } from "../data/homepageProfile.ts";
+import {
+	emptyHomepageProfile,
+	homepageProfileFile,
+	HomepageLoadProfile,
+} from "./configurator/HomepageLoadProfile.tsx";
+import type { HomepageProfileForm } from "./configurator/HomepageLoadProfile.tsx";
 import { hasPlant } from "../domain/equipmentPlant.ts";
 import { projectInputContract, sameJson } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
@@ -98,6 +111,14 @@ export function NewProject({
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [demandError, setDemandError] = useState(false);
 	const [referenceError, setReferenceError] = useState(false);
+	const [profileForm, setProfileForm] = useState(emptyHomepageProfile);
+	const [profileError, setProfileError] = useState("");
+	const [profileCorrection, setProfileCorrection] = useState(false);
+	const profile = useRef<HomepageProfileUpload | undefined>(undefined);
+	const changeProfile = useCallback((patch: Partial<HomepageProfileForm>) => {
+		setProfileForm((current) => ({ ...current, ...patch }));
+		setProfileError("");
+	}, []);
 	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
 		new Set(),
 	);
@@ -256,6 +277,10 @@ export function NewProject({
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
+		profile.current = record.profile;
+		setProfileForm(emptyHomepageProfile());
+		setProfileCorrection(false);
+		setProfileError("");
 		intentScope.current = record.scope;
 		destination.current = record.destination;
 		setTitle(record.title);
@@ -296,6 +321,39 @@ export function NewProject({
 				return;
 			}
 		}
+		const file =
+			compareAtHome && (!intent.current || profileCorrection)
+				? homepageProfileFile(profileForm)
+				: null;
+		if (
+			compareAtHome &&
+			(!intent.current || profileCorrection) &&
+			profileForm.file &&
+			!file
+		) {
+			setProfileError(
+				__(
+					"Check the profile columns, units and time interval, then try again.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
+		if (
+			file &&
+			energyGoal(inputs) === "peak" &&
+			readScenarioDraft(inputs.energy_scenario).schedule.some(
+				(period) => period.import_cap_kw === null,
+			)
+		) {
+			setProfileError(
+				__(
+					"Enter your target grid import limit to compare peak reduction.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
 		const releaseCreation = beginCreation?.();
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
@@ -308,7 +366,29 @@ export function NewProject({
 		setFailed(false);
 		setProjectGone(false);
 		setInputContractRequired(false);
+		let creationConfirmed = false;
 		try {
+			if (!intent.current || profileCorrection) profile.current = undefined;
+			if (file) {
+				try {
+					profile.current = await prepareHomepageProfile(
+						file,
+						session.runtime.limits,
+					);
+				} catch (error) {
+					setProfileError(
+						error instanceof ApiError &&
+							(error.code === "file_size" || error.code === "body_too_large")
+							? __("The file is empty or too large.", "linker-tools")
+							: __(
+									"Check the profile columns, units and time interval, then try again.",
+									"linker-tools",
+								),
+					);
+					return;
+				}
+			}
+			if (lifetime.current !== instance) return;
 			if (!intent.current) {
 				intent.current = wire(
 					{
@@ -340,7 +420,12 @@ export function NewProject({
 							: "design";
 			}
 			await store
-				.writeCreation(originScope, intent.current, destination.current)
+				.writeCreation(
+					originScope,
+					intent.current,
+					destination.current,
+					profile.current,
+				)
 				.catch(() => {
 					if (lifetime.current === instance) setRecoveryFailed(true);
 				});
@@ -349,13 +434,33 @@ export function NewProject({
 				setFailed(true);
 				return;
 			}
-			const project = readProject(
+			let project = readProject(
 				await client.send(
 					"projects/create",
 					intent.current,
 					session.query_scope,
 				),
 			);
+			if (lifetime.current !== instance) return;
+			creationConfirmed = true;
+			if (profile.current) {
+				try {
+					project = await attachHomepageProfile(
+						client,
+						session,
+						project,
+						profile.current,
+					);
+				} catch (error) {
+					if (lifetime.current !== instance) return;
+					if (!(error instanceof ApiError && error.profileIssue)) throw error;
+					await store.clearCreation(originScope, intent.current);
+					profile.current = undefined;
+					setProfileCorrection(true);
+					setProfileError(issueLabel(error.profileIssue.issue));
+					return;
+				}
+			}
 			if (lifetime.current !== instance) return;
 			await store.clearCreation(originScope, intent.current).catch(() => {
 				if (lifetime.current === instance) setRecoveryFailed(true);
@@ -380,6 +485,10 @@ export function NewProject({
 			}
 			intent.current = null;
 			destination.current = null;
+			profile.current = undefined;
+			setProfileForm(emptyHomepageProfile());
+			setProfileCorrection(false);
+			setProfileError("");
 			setOpen(false);
 			setTitle("");
 			setDraft(null);
@@ -405,6 +514,7 @@ export function NewProject({
 			// attempt creates the same project content instead of an empty one.
 			if (
 				error instanceof ApiError &&
+				!creationConfirmed &&
 				error.status === 404 &&
 				error.code === "not_found" &&
 				intent.current !== null
@@ -473,10 +583,15 @@ export function NewProject({
 					"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
 					"linker-tools",
 				)
-			: __(
-					"Project creation was not confirmed. Retrying uses the same request.",
-					"linker-tools",
-				);
+			: profile.current
+				? __(
+						"The project and load profile could not be confirmed. Try again to resume this request.",
+						"linker-tools",
+					)
+				: __(
+						"Project creation was not confirmed. Retrying uses the same request.",
+						"linker-tools",
+					);
 
 	if (hidden) return null;
 	if (compareOnLoad) {
@@ -734,6 +849,7 @@ export function NewProject({
 					)}
 				</Notice>
 			)}
+			{profileError && <Notice error>{profileError}</Notice>}
 			{referenceError && (
 				<Notice error>
 					{__(
@@ -784,6 +900,17 @@ export function NewProject({
 							locale={locale}
 							edit={edit}
 							validity={reportDemand}
+						/>
+					)
+				}
+				profile={
+					compareAtHome &&
+					(!intent.current || profileCorrection) && (
+						<HomepageLoadProfile
+							form={profileForm}
+							locale={locale}
+							disabled={busy || checking || !admitted}
+							change={changeProfile}
 						/>
 					)
 				}

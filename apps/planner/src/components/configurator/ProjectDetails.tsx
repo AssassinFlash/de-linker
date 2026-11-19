@@ -76,6 +76,7 @@ export function ProjectDetails({
 	creation,
 	existingEquipment,
 	demand,
+	profile,
 }: {
 	inputs: JsonObject;
 	config: Pick<Configuration, "countries" | "locale" | "googleMapsApiKey">;
@@ -92,6 +93,7 @@ export function ProjectDetails({
 	};
 	existingEquipment?: ReactNode;
 	demand?: ReactNode;
+	profile?: ReactNode;
 }) {
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
@@ -445,6 +447,7 @@ export function ProjectDetails({
 				)}
 				{existingEquipment}
 			</fieldset>
+			{profile}
 			<footer className="sc-footer">
 				<span />
 				<button

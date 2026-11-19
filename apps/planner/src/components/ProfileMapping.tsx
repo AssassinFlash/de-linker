@@ -139,60 +139,80 @@ export function ProfileMapping({
 	locale,
 	onChange,
 	onValidity,
+	grossLoadOnly = false,
 }: {
-	columns: readonly string[];
+	columns: readonly string[] | null;
 	fields: MappingFields;
 	locale: string;
 	onChange: (next: MappingFields) => void;
 	onValidity: (valid: boolean) => void;
+	grossLoadOnly?: boolean;
 }) {
+	const mappingId = useId();
 	const zones = useMemo(
 		() => ["UTC", ...Intl.supportedValuesOf("timeZone")],
 		[],
 	);
 	const set = (key: keyof MappingFields, value: string | number | null) =>
 		onChange({ ...fields, [key]: value });
-	const options = () =>
-		columns.filter(Boolean).map((column) => (
-			<option key={column} value={column}>
-				{column}
-			</option>
-		));
-	return (
-		<div className="lp-profile-mapping grid gap-5 md:grid-cols-2">
-			<Choice
-				label={__("Timestamp column", "linker-tools")}
-				value={fields.timestamp}
-				onChange={(value) => set("timestamp", value)}
-				help={__(
-					"ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",
-					"linker-tools",
-				)}
-			>
-				{options()}
-			</Choice>
-			<Choice
-				label={__("Value column", "linker-tools")}
-				value={fields.value}
-				onChange={(value) => set("value", value)}
-			>
-				{options()}
-			</Choice>
-			<Choice
-				label={__("Measurement point", "linker-tools")}
-				value={fields.measurement}
-				onChange={(value) => set("measurement", value)}
-				help={__(
-					"What these values represent. Net grid import can include the effect of on-site generation and storage and cannot replace total site load.",
-					"linker-tools",
-				)}
-			>
-				{MEASUREMENTS.map((role) => (
-					<option key={role} value={role}>
-						{measurementLabel(role)}
+	function column(
+		field: "timestamp" | "value" | "end" | "fold" | "endFold",
+		label: string,
+		options: { help?: string; optional?: boolean } = {},
+	) {
+		const value = fields[field];
+		const onChange = (value: string) => set(field, value);
+		const id = mappingId + "-" + field;
+		if (columns === null)
+			return (
+				<label className="lp-field">
+					<span id={id}>{label}</span>
+					<input
+						aria-labelledby={id}
+						aria-describedby={options.help ? id + "-help" : undefined}
+						required={!options.optional}
+						value={value}
+						onChange={(event) => onChange(event.currentTarget.value)}
+					/>
+					{options.help && <small id={id + "-help"}>{options.help}</small>}
+				</label>
+			);
+		return (
+			<Choice label={label} value={value} onChange={onChange} {...options}>
+				{columns.filter(Boolean).map((column) => (
+					<option key={column} value={column}>
+						{column}
 					</option>
 				))}
 			</Choice>
+		);
+	}
+	return (
+		<div className="lp-profile-mapping grid gap-5 md:grid-cols-2">
+			{column("timestamp", __("Timestamp column", "linker-tools"), {
+				help: __(
+					"ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",
+					"linker-tools",
+				),
+			})}
+			{column("value", __("Value column", "linker-tools"))}
+			{!grossLoadOnly && (
+				<Choice
+					label={__("Measurement point", "linker-tools")}
+					value={fields.measurement}
+					onChange={(value) => set("measurement", value)}
+					help={__(
+						"What these values represent. Net grid import can include the effect of on-site generation and storage and cannot replace total site load.",
+						"linker-tools",
+					)}
+				>
+					{MEASUREMENTS.map((role) => (
+						<option key={role} value={role}>
+							{measurementLabel(role)}
+						</option>
+					))}
+				</Choice>
+			)}
 			<Choice
 				label={__("Value meaning and unit", "linker-tools")}
 				value={fields.unit}
@@ -217,21 +237,23 @@ export function ProfileMapping({
 				<option value=".">{__("Point · 12.5", "linker-tools")}</option>
 				<option value=",">{__("Comma · 12,5", "linker-tools")}</option>
 			</Choice>
-			<Choice
-				label={__("Source type", "linker-tools")}
-				value={fields.origin}
-				onChange={(value) => set("origin", value)}
-				help={__(
-					"This declaration is saved with the file. It describes the source you selected and does not verify the accuracy of a meter or model.",
-					"linker-tools",
-				)}
-			>
-				{["measured", "modelled", "template", "synthetic"].map((origin) => (
-					<option key={origin} value={origin}>
-						{originLabel(origin)}
-					</option>
-				))}
-			</Choice>
+			{!grossLoadOnly && (
+				<Choice
+					label={__("Source type", "linker-tools")}
+					value={fields.origin}
+					onChange={(value) => set("origin", value)}
+					help={__(
+						"This declaration is saved with the file. It describes the source you selected and does not verify the accuracy of a meter or model.",
+						"linker-tools",
+					)}
+				>
+					{["measured", "modelled", "template", "synthetic"].map((origin) => (
+						<option key={origin} value={origin}>
+							{originLabel(origin)}
+						</option>
+					))}
+				</Choice>
+			)}
 			<Choice
 				label={__("Interval boundaries", "linker-tools")}
 				value={fields.durationMode}
@@ -255,6 +277,7 @@ export function ProfileMapping({
 						<option value="end">{timestampRoleLabel("end")}</option>
 					</Choice>
 					<NumberField
+						name="profile_interval_minutes"
 						label={__("Interval duration", "linker-tools")}
 						unit="min"
 						locale={locale}
@@ -265,15 +288,8 @@ export function ProfileMapping({
 					/>
 				</>
 			)}
-			{fields.durationMode === "ends" && (
-				<Choice
-					label={__("Interval end column", "linker-tools")}
-					value={fields.end}
-					onChange={(value) => set("end", value)}
-				>
-					{options()}
-				</Choice>
-			)}
+			{fields.durationMode === "ends" &&
+				column("end", __("Interval end column", "linker-tools"))}
 			<Choice
 				label={__("Source time zone", "linker-tools")}
 				value={fields.timezone}
@@ -291,32 +307,25 @@ export function ProfileMapping({
 					</option>
 				))}
 			</Choice>
-			<Choice
-				label={__("Repeated-time column · optional", "linker-tools")}
-				value={fields.fold}
-				onChange={(value) => set("fold", value)}
-				optional
-				help={__(
+			{column("fold", __("Repeated-time column · optional", "linker-tools"), {
+				optional: true,
+				help: __(
 					"For repeated local times: 0 identifies the first occurrence, 1 the second. Timestamps with UTC offsets do not use this column.",
 					"linker-tools",
+				),
+			})}
+			{fields.durationMode === "ends" &&
+				column(
+					"endFold",
+					__("End repeated-time column · optional", "linker-tools"),
+					{
+						optional: true,
+						help: __(
+							"For this column, 0 identifies the first occurrence of a repeated local end time and 1 the second.",
+							"linker-tools",
+						),
+					},
 				)}
-			>
-				{options()}
-			</Choice>
-			{fields.durationMode === "ends" && (
-				<Choice
-					label={__("End repeated-time column · optional", "linker-tools")}
-					value={fields.endFold}
-					onChange={(value) => set("endFold", value)}
-					optional
-					help={__(
-						"For this column, 0 identifies the first occurrence of a repeated local end time and 1 the second.",
-						"linker-tools",
-					)}
-				>
-					{options()}
-				</Choice>
-			)}
 		</div>
 	);
 }

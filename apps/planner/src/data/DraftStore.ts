@@ -1,3 +1,5 @@
+import { readHomepageProfile } from "./homepageProfile.ts";
+import type { HomepageProfileUpload } from "./homepageProfile.ts";
 import type { Draft, SaveIntent } from "../domain/draft.ts";
 import { isProjectInputContract, sameJson } from "../domain/draft.ts";
 import type { JsonObject, Project } from "./protocol.ts";
@@ -25,6 +27,7 @@ export interface CreationIntent {
 	readonly title: string;
 	readonly body: string;
 	readonly destination: CreationDestination | null;
+	readonly profile?: HomepageProfileUpload;
 	readonly createdAt: number;
 }
 export interface ProfileImportIntent {
@@ -168,9 +171,11 @@ export class DraftStore {
 		scope: string,
 		body: string,
 		destination: CreationDestination | null = null,
+		profile?: HomepageProfileUpload,
 	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
+		const profileBytes = creationProfileBytes(profile);
 		if (
 			destination !== null &&
 			destination !== "design" &&
@@ -194,7 +199,11 @@ export class DraftStore {
 			(records) => {
 				const existing = records.find((record) => record.key === command.key);
 				if (existing) {
-					if (existing.body !== body || existing.destination !== destination)
+					if (
+						existing.body !== body ||
+						existing.destination !== destination ||
+						!sameJson(existing.profile, profile)
+					)
 						refuse(new Error("creation_intent_conflict"));
 					return;
 				}
@@ -202,7 +211,13 @@ export class DraftStore {
 					(sum, record) => sum + new TextEncoder().encode(record.body).length,
 					0,
 				);
+
+				const retainedProfileBytes = records.reduce(
+					(sum, record) => sum + creationProfileBytes(record.profile),
+					0,
+				);
 				if (
+					retainedProfileBytes + profileBytes > MAX_SCOPE_IMPORT_BYTES ||
 					records.length >= MAX_CREATION_INTENTS ||
 					bytes + new TextEncoder().encode(body).length > MAX_RECOVERY_BYTES
 				) {
@@ -214,6 +229,7 @@ export class DraftStore {
 					scope,
 					body,
 					destination,
+					...(profile && { profile }),
 					created_at: Date.now(),
 				});
 			},
@@ -306,6 +322,7 @@ export class DraftStore {
 					scope,
 					body,
 					destination: destination ?? previousDestination,
+					...(previous?.profile && { profile: previous.profile }),
 					created_at: createdAt,
 				});
 			},
@@ -616,6 +633,15 @@ function legacyCreation(value: unknown, scope: string): CreationIntent {
 	};
 }
 
+function creationProfileBytes(
+	profile: HomepageProfileUpload | undefined,
+): number {
+	if (!profile) return 0;
+	const bytes = new TextEncoder().encode(JSON.stringify(profile)).length;
+	if (bytes > MAX_IMPORT_BYTES) throw new Error("recovery_storage_limit");
+	return bytes;
+}
+
 function scanCreations(
 	store: IDBObjectStore,
 	scope: string,
@@ -624,6 +650,7 @@ function scanCreations(
 ): void {
 	const records: CreationIntent[] = [];
 	let bytes = 0;
+	let profileBytes = 0;
 	const cursor = store.index("scope").openCursor(scope);
 	cursor.onerror = () => fail(new Error("recovery_unavailable"));
 	cursor.onsuccess = () => {
@@ -657,6 +684,16 @@ function scanCreations(
 				destination !== "guided-comparison"
 			)
 				throw new Error("invalid_creation_recovery");
+
+			const profile =
+				value.profile === undefined
+					? undefined
+					: readHomepageProfile(value.profile);
+			if (profile && destination !== "guided-comparison")
+				throw new Error("invalid_creation_recovery");
+			profileBytes += creationProfileBytes(profile);
+			if (profileBytes > MAX_SCOPE_IMPORT_BYTES)
+				throw new Error("recovery_storage_limit");
 			bytes += new TextEncoder().encode(value.body).length;
 			if (records.length >= MAX_CREATION_INTENTS || bytes > MAX_RECOVERY_BYTES)
 				throw new Error("recovery_storage_limit");
@@ -664,6 +701,7 @@ function scanCreations(
 				...command,
 				body: value.body,
 				destination,
+				...(profile && { profile }),
 				createdAt: value.created_at,
 			});
 			row.continue();

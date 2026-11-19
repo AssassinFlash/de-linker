@@ -1,3 +1,4 @@
+import { attachGrossLoad } from "../../domain/grossLoad.ts";
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError } from "../../data/protocol.ts";
@@ -384,45 +385,7 @@ export function EnergyDemand({
 			return;
 		if (result.measurement !== "gross_load")
 			throw new ApiError(422, "gross_load_profile_required");
-		if (
-			edit((current) => {
-				const currentScenario =
-					current.energy_scenario === undefined
-						? null
-						: readScenarioDraft(current.energy_scenario);
-				const followsKnownPvProfile =
-					currentScenario?.schedule.length === 1 &&
-					currentScenario.schedule[0]?.mode === "connected" &&
-					referenceDraft(current).model === KNOWN_PV_MODEL;
-				return {
-					...current,
-					...(currentScenario
-						? {
-								energy_scenario: {
-									...currentScenario,
-									schedule: currentScenario.schedule.map((period) =>
-										followsKnownPvProfile ||
-										(period.start_utc === "" && period.end_utc === "")
-											? {
-													...period,
-													start_utc: result.summary.start_utc,
-													end_utc: result.summary.end_utc,
-												}
-											: period,
-									),
-								},
-							}
-						: {}),
-					profile_selections: {
-						schema_version: 1,
-						selected: {
-							...readSelections(current.profile_selections).selected,
-							gross_load: asset.id,
-						},
-					},
-				};
-			})
-		) {
+		if (edit((current) => attachGrossLoad(current, result))) {
 			importedAsset.current = asset.id;
 			setPreview(result);
 			pending.current = null;

@@ -17321,3 +17321,23 @@ msgstr "Quelle der Angaben zur Modulfläche und der Modelleinstellungen"
 #: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
 msgid "To estimate peak reduction, provide a measured load profile and a target grid import limit. Without both, this comparison shows equipment options."
 msgstr "Geben Sie zur Abschätzung der Spitzenlastsenkung ein gemessenes Lastprofil und eine Zielgrenze für den Netzbezug an. Fehlt eine dieser Angaben, zeigt der Vergleich passende Geräte."
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Measured site load (CSV, optional)"
+msgstr "Gemessener Stromverbrauch am Standort (CSV, optional)"
+
+#: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
+msgid "Use a file that records total electricity use before on-site solar or battery effects. Enter the column headings exactly as they appear in the file."
+msgstr "Verwenden Sie eine Datei mit dem gesamten Stromverbrauch vor Berücksichtigung von Solarstrom und Speicher. Geben Sie die Spaltenüberschriften genau wie in der Datei ein."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Enter your target grid import limit to compare peak reduction."
+msgstr "Geben Sie Ihre Zielgrenze für den Netzbezug ein, um die Spitzenlastsenkung zu vergleichen."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "The file is empty or too large."
+msgstr "Die Datei ist leer oder zu groß."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "The project and load profile could not be confirmed. Try again to resume this request."
+msgstr "Projekt und Lastprofil konnten nicht bestätigt werden. Versuchen Sie es erneut, um die Anfrage fortzusetzen."

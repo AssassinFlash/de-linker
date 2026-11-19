@@ -35,6 +35,19 @@ test("the home form creates a comparison with the supplied data in a single subm
 		await import("../src/components/SessionBoundary.tsx");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
 	const commands = [];
+	const calls = [];
+	const asset = {
+		id: "a".repeat(32),
+		project_id: projectId,
+		content_sha256: "5".repeat(64),
+		metadata_sha256: "6".repeat(64),
+		media_type: "application/json",
+		purpose: "csv_profile_v1",
+		metadata: {},
+	};
+	const startAt = "2020-01-01T10:00:00Z";
+	const endAt = "2020-01-01T10:30:00Z";
+	const csv = "Timestamp,Load\n" + startAt + ",3\n2020-01-01T10:15:00Z,7\n";
 	const opened = [];
 	const client = {
 		invalidate() {},
@@ -43,27 +56,75 @@ test("the home form creates a comparison with the supplied data in a single subm
 		},
 		isCurrentScope: (scope) => scope === session.query_scope,
 		async send(path, body) {
-			assert.equal(path, "projects/create");
 			const command = JSON.parse(body);
-			commands.push(command);
+			calls.push(path);
+			if (path === "projects/create") commands.push(command);
+			else assert.equal(path, "projects/revise");
 			return {
 				id: projectId,
-				revision: 1,
-				title: command.title,
+				revision: path === "projects/create" ? 1 : 2,
+				title: commands[0].title,
 				inputs: command.inputs,
 				input_sha256: "2".repeat(64),
 			};
 		},
-		async query() {
-			throw new Error("The test user does not select hardware.");
+		async query(path, command) {
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", products: [] };
+			calls.push(path);
+			assert.equal(command.project_id, projectId);
+			if (path === "profiles/csv") {
+				assert.equal(atob(command.content_base64), csv);
+				assert.equal(command.mapping.measurement, "gross_load");
+				assert.equal(command.mapping.origin, "measured");
+				assert.equal(command.mapping.interval_seconds, 900);
+				assert.equal(command.mapping.value_kind, "interval_average_kw");
+				assert.equal(command.mapping.value_column, "Load");
+				assert.equal(command.source_label, "workshop-meter.csv");
+				return asset;
+			}
+			assert.equal(path, "profiles/preview");
+			assert.equal(command.asset_id, asset.id);
+			return {
+				schema_version: 1,
+				evaluation_scope: "profile_interpretation",
+				project_id: projectId,
+				asset_id: asset.id,
+				content_sha256: asset.content_sha256,
+				metadata_sha256: asset.metadata_sha256,
+				measurement: "gross_load",
+				source: {},
+				transformations: [],
+				summary: {
+					start_utc: startAt,
+					end_utc: endAt,
+					interval_count: 2,
+					covered_seconds: 1800,
+					span_seconds: 1800,
+					gap_seconds: 0,
+					gap_count: 0,
+					energy_kwh: 2.5,
+					min_interval_mean_kw: 3,
+					max_interval_mean_kw: 7,
+					native_max_interval_seconds: 900,
+					effective_max_interval_seconds: 900,
+					reconstructed_means: false,
+				},
+				rows: [],
+				first_gaps: [],
+				gaps_truncated: false,
+				next_offset: null,
+			};
 		},
 	};
 	const store = {
 		async readCreations() {
 			return [];
 		},
-		async writeCreation(_, _body, destination) {
+		async writeCreation(_, _body, destination, upload) {
 			assert.equal(destination, "guided-comparison");
+			assert.equal(atob(upload.request.content_base64), csv);
+			assert.deepEqual(calls, []);
 		},
 		async clearCreation() {},
 	};
@@ -81,7 +142,7 @@ test("the home form creates a comparison with the supplied data in a single subm
 					config: { locale: "en", countries: { DE: "Germany" } },
 					homeComparison: { picker: null, savedProject: "", compareSaved() {} },
 					created: (project, destination) => {
-						opened.push([project.id, destination]);
+						opened.push([project, destination]);
 						return true;
 					},
 				}),
@@ -97,9 +158,14 @@ test("the home form creates a comparison with the supplied data in a single subm
 	function field(name) {
 		return form.querySelector('[name="' + name + '"]');
 	}
+	function byLabel(label) {
+		return [...form.querySelectorAll("label")]
+			.find((element) => element.querySelector("span")?.textContent === label)
+			?.querySelector("input, select, textarea");
+	}
 	async function select(name, value) {
 		await act(async () => {
-			const input = field(name);
+			const input = field(name) ?? byLabel(name);
 			input.value = value;
 			input.dispatchEvent(new window.Event("change", { bubbles: true }));
 		});
@@ -107,7 +173,7 @@ test("the home form creates a comparison with the supplied data in a single subm
 	await enter(title, "Berlin workshop");
 	await select("country", "DE");
 	await select("system_scope", "new_pv_storage");
-	await select("project_purpose", "backup");
+	await select("project_purpose", "peak");
 	await select("grid_phase", "3");
 	await enter(field("annual_load_kwh"), "7200");
 	await select("annual_load_basis", "bill_total");
@@ -124,9 +190,29 @@ test("the home form creates a comparison with the supplied data in a single subm
 	await select("pvgis_mounting", "free");
 	await select("pvgis_horizon", "true");
 	await enter(field("pvgis_source"), "Surveyed customer array");
-	await enter(field("backup_load_kw"), "3");
-	await enter(field("backup_duration_hours"), "2");
-	assert.equal(commands.length, 0);
+	await enter(field("peak_import_kw"), "5");
+	const fileInput = field("load_profile");
+	assert.equal(fileInput?.type, "file");
+	await act(async () => {
+		Object.defineProperty(fileInput, "files", {
+			value: [new File([csv], "workshop-meter.csv", { type: "text/csv" })],
+		});
+		fileInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await select("load_profile_delimiter", ",");
+	await enter(
+		field("load_profile_rights"),
+		"Customer site meter; permission granted.",
+	);
+	await enter(byLabel("Timestamp column"), "Timestamp");
+	await enter(byLabel("Value column"), "Load");
+	await select("Value meaning and unit", "interval_average_kw");
+	await select("Decimal separator in the file", ".");
+	await select("Interval boundaries", "fixed");
+	await select("The timestamp identifies…", "start");
+	await enter(field("profile_interval_minutes"), "15");
+	await select("Source time zone", "UTC");
+	assert.deepEqual(calls, []);
 	const submit = form.querySelector('button[type="submit"]');
 	assert.equal(submit.textContent.trim(), "Compare systems");
 	await act(async () => submit.click());
@@ -144,12 +230,21 @@ test("the home form creates a comparison with the supplied data in a single subm
 		azimuth_north_clockwise_deg: 180,
 		source_note: "Surveyed customer array",
 	});
-	assert.deepEqual(commands[0].inputs.backup_demand, {
-		schema_version: 1,
-		load_kw: 3,
-		duration_hours: 2,
-	});
-	assert.deepEqual(opened, [[projectId, "guided-comparison"]]);
+	assert.deepEqual(calls, [
+		"projects/create",
+		"profiles/csv",
+		"profiles/preview",
+		"projects/revise",
+	]);
+	const [[saved, destination]] = opened;
+	assert.equal(destination, "guided-comparison");
+	assert.equal(saved.id, projectId);
+	assert.equal(saved.revision, 2);
+	assert.equal(saved.inputs.profile_selections.selected.gross_load, asset.id);
+	const [period] = saved.inputs.energy_scenario.schedule;
+	assert.equal(period.import_cap_kw, 5);
+	assert.equal(period.start_utc, startAt);
+	assert.equal(period.end_utc, endAt);
 });
 
 test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
