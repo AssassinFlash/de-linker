@@ -32949,8 +32949,8 @@
       "consumer_chain": "tests/e2e/specs/planner-brief-chain.spec.ts tests 1+5 (PR #1027-1029 era) - staged note reads back verbatim, stays out of sizing, note-only retry",
       "20261119_installer_note": {
         "result": "bounded-local-review",
-        "environment": "review:8889",
-        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "environment": "local:installer03592 (127.0.0.1:8888)",
+        "scope": "For 93279e8a0, the planner screenshots show the Installer note at direction choice. At inquiry review, the checkbox to include the note is checked and the optional customer message has its own field. In woo-receipts.tsv, note_revision is 1 for all three inquiries (two English, one German). The receipts do not identify viewports.",
         "evidence": [
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-choose.png",
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-1440-review.png",
@@ -32984,8 +32984,8 @@
     "verified_checks": {
       "20261119_installer_note": {
         "result": "bounded-local-review",
-        "environment": "review:8889",
-        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "environment": "local:installer03592 (127.0.0.1:8888)",
+        "scope": "For 93279e8a0, the planner screenshots show the Installer note at direction choice. At inquiry review, the checkbox to include the note is checked and the optional customer message has its own field. In woo-receipts.tsv, note_revision is 1 for all three inquiries (two English, one German). The receipts do not identify viewports.",
         "evidence": [
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-choose.png",
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/en-390-review.png",
@@ -33019,8 +33019,8 @@
     "verified_checks": {
       "20261119_installer_note": {
         "result": "bounded-local-review",
-        "environment": "review:8889",
-        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "environment": "local:installer03592 (127.0.0.1:8888)",
+        "scope": "For 93279e8a0, the planner screenshots show the Installer note at direction choice. At inquiry review, the checkbox to include the note is checked and the optional customer message has its own field. In woo-receipts.tsv, note_revision is 1 for all three inquiries (two English, one German). The receipts do not identify viewports.",
         "evidence": [
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-choose.png",
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-1440-review.png",
@@ -33054,8 +33054,8 @@
     "verified_checks": {
       "20261119_installer_note": {
         "result": "bounded-local-review",
-        "environment": "review:8889",
-        "scope": "93279e8a0: The Installer note was visible at direction choice and selected as revision 1 on inquiry review, separate from the optional message. Woo records confirm note persistence by language, not by viewport. Images cover planner steps, not the whole Installer page.",
+        "environment": "local:installer03592 (127.0.0.1:8888)",
+        "scope": "For 93279e8a0, the planner screenshots show the Installer note at direction choice. At inquiry review, the checkbox to include the note is checked and the optional customer message has its own field. In woo-receipts.tsv, note_revision is 1 for all three inquiries (two English, one German). The receipts do not identify viewports.",
         "evidence": [
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-choose.png",
           "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/agent-a03592a692d39ad24/.scratch/installer-plan-93279e8a0/de-390-review.png",
