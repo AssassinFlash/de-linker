@@ -941,6 +941,17 @@
             }
           ],
           "default": null
+        },
+        "electrical": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PanelElectricalParameters"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -1083,6 +1094,101 @@
         "mounting_note"
       ],
       "title": "PanelArray",
+      "type": "object"
+    },
+    "PanelElectricalParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "voc_v": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "vmpp_v": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "isc_a": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "impp_a": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_system_voltage_v": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "alpha_isc_pct_per_c": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "beta_voc_pct_per_c": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cell_technology": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "PanelElectricalParameters",
       "type": "object"
     },
     "PositiveInteger": {
