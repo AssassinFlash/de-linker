@@ -34,7 +34,7 @@ final class EngineeringReference {
 	 * @param int $id Locale or source product ID.
 	 */
 	public static function is_reference( int $id ): bool {
-		return in_array( self::role( $id ), self::ROLES, true );
+		return '' !== self::role( $id );
 	}
 
 	/** Register ordinary Woo product administration, without another data source. */

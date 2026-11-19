@@ -575,7 +575,7 @@ final class PublicationCommand {
 	private function knowledge_expected_products( array $manifest ): array {
 		$expected = array();
 		foreach ( $manifest['products'] as $product ) {
-			if ( ! in_array( $product['engineering_role'] ?? '', \Linker\Commerce\Products\EngineeringReference::ROLES, true ) ) {
+			if ( '' === ( $product['engineering_role'] ?? '' ) ) {
 				$expected[ (int) $product['product_id'] ] = (string) $product['product_revision'];
 			}
 		}
