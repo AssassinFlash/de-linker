@@ -452,15 +452,18 @@ export function NewProject({
 			detailsReady &&
 			projectForm.current?.reportValidity()
 		) {
-			if (!initialProject && !briefEntry) {
-				if (draft || title.trim() || entryHints) {
-					void submit("options");
-					return;
-				}
-				const url = new URL(location.href);
-				url.hash = "sc-preliminary-options";
-				replacePlannerLocation(url);
+			if (
+				draft ||
+				title.trim() ||
+				entryHints ||
+				!sameJson(inputs, { brief: emptyBrief() })
+			) {
+				void submit("options");
+				return;
 			}
+			const url = new URL(location.href);
+			url.hash = "sc-preliminary-options";
+			replacePlannerLocation(url);
 			setComparingDirections(true);
 		}
 	}

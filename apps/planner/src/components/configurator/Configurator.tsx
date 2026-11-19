@@ -697,7 +697,8 @@ export default function Configurator({
 		controller.recoveryFailed ||
 		navigationBlocked;
 	function openPreliminaryOptions() {
-		if (!preliminaryBlocked && mayLeave()) openStep("preliminary-options");
+		if (!preliminaryBlocked && mayLeave())
+			void savePreliminaryStep("preliminary-options");
 	}
 	async function savePreliminaryStep(
 		target: "preliminary-options" | "preliminary-review",

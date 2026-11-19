@@ -243,6 +243,8 @@ async function equipmentApp(
 	},
 ) {
 	const fixture = setupDom();
+	document.querySelector("header").innerHTML =
+		'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
 	const priorIndexedDB = Object.getOwnPropertyDescriptor(
 		globalThis,
 		"indexedDB",
@@ -550,7 +552,7 @@ async function equipmentApp(
 		await act(async () => item.click());
 	}
 	return {
-		reopen: () => openWorkspace("reopen"),
+		reopen: () => openWorkspace(location.href),
 		async switchScope() {
 			nextScope = "9".repeat(64);
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -785,6 +787,19 @@ test("a saved project keeps its partial inputs and latest edit when choosing a p
 		"A project without grid and purpose can compare directions",
 	);
 	await act(async () => compare().click());
+	assert.equal(
+		app.project.inputs.brief.site.location_label,
+		"Harbour warehouse",
+	);
+	const translated = new URL(document.querySelector("a[hreflang]").href);
+	assert.equal(translated.pathname, "/de/workspace/");
+	assert.equal(translated.search, "?project=" + projectId);
+	assert.equal(translated.hash, "#sc-preliminary-options");
+	window.history.replaceState({}, "", translated);
+	await app.reopen();
+	await until(() =>
+		document.querySelector("article.sc-package button")?.matches(":enabled"),
+	);
 	const cards = [...document.querySelectorAll("article.sc-package")];
 	assert.ok(
 		!cards.some((card) => card.querySelector("h3")?.textContent === "Solar"),
@@ -817,7 +832,7 @@ test("a saved project keeps its partial inputs and latest edit when choosing a p
 	);
 	assert.deepEqual(
 		app.requests.map(({ path }) => path),
-		["projects/revise"],
+		["projects/revise", "projects/revise"],
 	);
 	assert.equal(app.project.inputs.brief.system_scope, "storage_addition");
 	assert.equal(

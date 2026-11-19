@@ -36,6 +36,8 @@ for (const target of [
 	"partial",
 	"carried-language",
 	"edited-language",
+	"saved-language",
+	"brief-language",
 	"saved",
 	"compare",
 	"retry",
@@ -43,7 +45,8 @@ for (const target of [
 	"profile-preliminary",
 	"csv",
 ]) {
-	const saved = target === "saved";
+	const saved = target === "saved" || target === "saved-language";
+	const briefId = "b".repeat(32);
 	const csv = "time;power\n2026-01-01T00:00Z;4\n";
 	const name =
 		{
@@ -51,6 +54,10 @@ for (const target of [
 				"A guest can switch language during preliminary comparison and keep the annual use from the entry link",
 			"edited-language":
 				"A guest can switch language during preliminary comparison and keep their site and annual use",
+			"saved-language":
+				"An account owner can change language while comparing an edited saved solution",
+			"brief-language":
+				"A brief with confirmed inputs survives a language change during preliminary comparison",
 			partial:
 				"A guest with a site and storage direction can compare without a grid phase",
 			preliminary:
@@ -73,7 +80,9 @@ for (const target of [
 					? "/workspace/#sc-preliminary-options"
 					: target === "carried-language"
 						? "/workspace/?annual_kwh=6400"
-						: "/workspace/",
+						: target === "brief-language"
+							? `/workspace/?brief=${briefId}&annual_kwh=7100`
+							: "/workspace/",
 		);
 		const languageSwitch = target.endsWith("-language");
 		if (languageSwitch)
@@ -110,11 +119,26 @@ for (const target of [
 			destinations = [];
 		let run;
 		let accepted;
+		const briefRecord = {
+			schema_version: 1,
+			brief_id: briefId,
+			revision: "a".repeat(64),
+			text: "Warehouse retrofit",
+			source_path: "/for-installer/",
+		};
 		const client = {
 			origin: location.origin,
 			async send(path, body, scope) {
 				assert.equal(scope, session.query_scope);
 				const command = JSON.parse(body);
+				if (path === "sources/project-brief/stage") {
+					assert.equal(command.expected_revision, briefRecord.revision);
+					Object.assign(briefRecord, {
+						text: command.text,
+						revision: "c".repeat(64),
+					});
+					return briefRecord;
+				}
 				if (path === "projects/revise") {
 					assert.equal(command.project_id, projectId);
 					assert.equal(command.expected_revision, accepted.revision);
@@ -195,7 +219,12 @@ for (const target of [
 					};
 				if (path === "recovery/scopes")
 					return { schema_version: 1, scopes: [], next: null };
+				if (target === "brief-language" && path === "sources/project-brief") {
+					assert.equal(scope, session.query_scope);
+					return briefRecord;
+				}
 				if (saved && path === "sources/saved-solution") {
+					assert.equal(scope, session.query_scope);
 					assert.equal(body.solution_id, 45);
 					return {
 						schema_version: 1,
@@ -359,14 +388,23 @@ for (const target of [
 				[...document.querySelectorAll("label")]
 					.find((el) => el.textContent.includes("Annual electricity use"))
 					?.querySelector("input");
-			if (target === "edited-language") {
+			if (target === "brief-language") {
+				await until(() => button("Back to project")?.matches(":enabled"));
+				await act(async () => button("Back to project").click());
+				await act(async () => button("Use these values").click());
+				await enter(
+					document.querySelector(".lp-project-brief-start textarea"),
+					"Revised warehouse retrofit",
+				);
+			}
+			if (target !== "carried-language") {
 				await enter(document.querySelector('[name="location_label"]'), "Oslo");
 				const scope = document.querySelector('[name="system_scope"]');
 				await act(async () => {
 					scope.value = "storage_addition";
 					scope.dispatchEvent(new window.Event("change", { bubbles: true }));
 				});
-				await enter(annual(), "7100");
+				if (target !== "brief-language") await enter(annual(), "7100");
 			}
 			await until(
 				() =>
@@ -386,12 +424,22 @@ for (const target of [
 				() => button("Back to project") && !button("Back to project").disabled,
 			);
 			await act(async () => button("Back to project").click());
-			if (target === "edited-language") {
+			if (target !== "carried-language") {
 				assert.equal(
 					document.querySelector('[name="location_label"]').value,
 					"Oslo",
 				);
 				assert.equal(annual().value, "7100");
+				if (saved)
+					assert.deepEqual(
+						accepted.inputs.saved_solution_reference.recorded_items,
+						recordedItems,
+					);
+				if (target === "brief-language")
+					assert.equal(
+						accepted.inputs.brief.project_note,
+						"Revised warehouse retrofit",
+					);
 			} else {
 				const scope = document.querySelector('[name="system_scope"]');
 				await act(async () => {
@@ -450,12 +498,12 @@ for (const target of [
 			);
 			assert.match(options[1].textContent, /existing inverter/i);
 			assert.match(document.body.textContent, /equipment compatibility/i);
-			assert.equal(creates.length, target === "partial" ? 1 : 0);
+			assert.equal(creates.length, target === "preliminary" ? 0 : 1);
 			await until(() => !options[1].querySelector("button").disabled);
 			await act(async () => options[1].querySelector("button").click());
 			await until(() => location.hash === "#sc-preliminary-review");
 			assert.deepEqual(destinations, [
-				target === "partial" ? "options" : "review",
+				target === "preliminary" ? "review" : "options",
 			]);
 			assert.equal(creates.length, 1);
 			await until(() =>
