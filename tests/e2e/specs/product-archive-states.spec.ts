@@ -112,13 +112,17 @@ test('en 390: the first Filters tap opens the completed drawer before the archiv
 	await page.setViewportSize({ width: 390, height: 844 });
 	const archiveUrl = instance().url + ARCHIVE.en;
 	// Pause the real archive parser before each part of the rail and at the footer.
-	const gates = ['before-rail', 'before-close', 'before-footer'].map((stage) => {
+	function gate(stage: string, marker: RegExp) {
 		let release!: () => void;
 		const wait = new Promise<void>((resolve) => {
 			release = resolve;
 		});
-		return { src: '/' + stage + '.js', wait, release };
-	});
+		return { src: '/' + stage + '.js', marker, wait, release };
+	}
+	const beforeRail = gate('before-rail', /<aside\b[^>]*id="sidebar-filters"/);
+	const beforeClose = gate('before-close', /<button\b[^>]*id="product-filter-close"/);
+	const beforeResults = gate('before-results', /<div class="product-results"/);
+	const gates = [beforeRail, beforeClose, beforeResults];
 	for (const gate of gates) {
 		await page.route('**' + gate.src, async (route) => {
 			await gate.wait;
@@ -128,15 +132,10 @@ test('en 390: the first Filters tap opens the completed drawer before the archiv
 	await page.route(archiveUrl, async (route) => {
 		const response = await route.fetch();
 		let html = await response.text();
-		const markers = [
-			/<aside\b[^>]*id="sidebar-filters"/,
-			/<button\b[^>]*id="product-filter-close"/,
-			/<div class="product-results"/,
-		];
-		for (const [i, marker] of markers.entries()) {
-			expect(html).toMatch(marker);
-			html = html.replace(marker, (tag) =>
-				'<script src="' + gates[i].src + '"></script>' + tag
+		for (const gate of gates) {
+			expect(html).toMatch(gate.marker);
+			html = html.replace(gate.marker, (tag) =>
+				'<script src="' + gate.src + '"></script>' + tag
 			);
 		}
 		await route.fulfill({ response, body: html });
@@ -149,11 +148,11 @@ test('en 390: the first Filters tap opens the completed drawer before the archiv
 		await filters.waitFor({ state: 'attached' });
 		await expect(drawer).toHaveCount(0);
 		await expect(filters).toBeHidden();
-		gates[0].release();
+		beforeRail.release();
 		await drawer.waitFor({ state: 'attached' });
 		await expect(close).toHaveCount(0);
 		await expect(filters).toBeHidden();
-		gates[1].release();
+		beforeClose.release();
 		await filters.click();
 		await expect(filters).toHaveAttribute('aria-expanded', 'true');
 		await expect(close).toBeFocused();
