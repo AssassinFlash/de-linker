@@ -585,7 +585,13 @@ export default function Configurator({
 			),
 		[edit],
 	);
+	const offersPreliminary =
+		!searchId && history.isSuccess && comparisonAction === "preliminary";
 	function navigate(next: Step) {
+		if (next === "system" && offersPreliminary) {
+			openPreliminaryOptions();
+			return;
+		}
 		if (!mayLeave()) return;
 		if (latest.current?.pending && !controller.busy) {
 			void controller.save().then((saved) => {
@@ -1015,6 +1021,21 @@ export default function Configurator({
 		inquiryRevision.current = revision;
 		void generate(null);
 	});
+	// Resolve an existing equipment search before treating System as the
+	// preliminary comparison. Keep the cards closed until edits are confirmed.
+	useEffect(() => {
+		if (
+			route !== "system" ||
+			!offersPreliminary ||
+			!draft ||
+			preliminaryBlocked ||
+			!mayLeave()
+		)
+			return;
+		if (isDirty(draft)) {
+			if (!controller.failed) void controller.save();
+		} else openStep("preliminary-options");
+	});
 	if (!draft)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
 	const inputs = draft.history.current;
@@ -1116,12 +1137,7 @@ export default function Configurator({
 		wiringPlant &&
 		inputs.geometry !== undefined &&
 		activePvGeometry(inputs.geometry).arrays.length > 0;
-	const showDirections =
-		route === "preliminary-options" ||
-		(step === "system" &&
-			!searchId &&
-			history.isSuccess &&
-			comparisonAction === "preliminary");
+	const showDirections = route === "preliminary-options";
 	const sectionLink = step === "solar" || step === "energy" ? step : null;
 	const activeStep =
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs)

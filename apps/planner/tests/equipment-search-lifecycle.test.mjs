@@ -231,6 +231,7 @@ async function equipmentApp(
 		foreignSelection = false,
 		selectionGate = null,
 		searchGate = null,
+		reviseGate = null,
 		readGate = null,
 		findRefusal = null,
 		pvReference = null,
@@ -435,6 +436,7 @@ async function equipmentApp(
 			}
 			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
+				if (reviseGate) await reviseGate.promise;
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
@@ -842,6 +844,54 @@ test("a saved project keeps its partial inputs and latest edit when choosing a p
 	assert.equal(app.project.inputs.brief.annual_load.kwh, 10);
 	assert.deepEqual(app.project.inputs.equipment_setup, equipment);
 });
+
+for (const waitingForHistory of [false, true]) {
+	test(`top navigation saves the edited project before showing preliminary options (${waitingForHistory ? "history loading" : "history ready"})`, async (t) => {
+		const gate = deferred();
+		const reviseGate = deferred();
+		const projectId = "4".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId,
+			hash: "#sc-project",
+			reviseGate,
+			inputs: { equipment_setup: { ...emptySetup, required_usable_kwh: 24 } },
+			readGate: waitingForHistory
+				? { path: "projects/runs", wait: () => gate.promise }
+				: null,
+		});
+		await until(() =>
+			app.button("Compare preliminary options")?.matches(":enabled"),
+		);
+		await enter(
+			document.querySelector('input[name="location_label"]'),
+			"North quay",
+		);
+		await app.step("Choose a solution");
+		await act(async () => gate.resolve());
+		await until(() =>
+			app.requests.some(({ path }) => path === "projects/revise"),
+		);
+		assert.equal(app.button("Choose this option"), undefined);
+		await act(async () => reviseGate.resolve());
+		await until(() => app.button("Choose this option")?.matches(":enabled"));
+		assert.equal(app.project.inputs.brief.site.location_label, "North quay");
+		const target = new URL(document.querySelector("a[hreflang]").href);
+		assert.equal(target.search, "?project=" + projectId);
+		assert.equal(target.hash, "#sc-preliminary-options");
+		window.history.replaceState({}, "", target);
+		await app.reopen();
+		await until(() => app.button("Back to project")?.matches(":enabled"));
+		await act(async () => app.button("Back to project").click());
+		assert.equal(
+			document.querySelector('input[name="location_label"]').value,
+			"North quay",
+		);
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["projects/revise"],
+		);
+	});
+}
 
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
