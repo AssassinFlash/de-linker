@@ -414,7 +414,10 @@ export function ReviewProposal({
 			: null;
 	const hasHistory =
 		history && (selected || history.items.length > 0 || history.hasMore);
-	if (preliminaryBrief?.system_scope && (preliminary || (!run && !hasHistory))) {
+	if (
+		preliminaryBrief?.system_scope &&
+		(preliminary || (!run && !hasHistory))
+	) {
 		const label = {
 			new_pv_storage: __("Solar and storage", "linker-tools"),
 			storage_addition: __("Storage for existing PV", "linker-tools"),

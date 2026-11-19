@@ -40,7 +40,7 @@
     "src/components/configurator/ProjectEquipment.tsx": "295a99da6b24311eb6e2abb4753d908e38c33654e6b5e6ee5eeba8dc781d586e",
     "src/components/configurator/ProjectInputsStep.tsx": "7ebb4afed575aade6e0adb39777ae9348711eac8ea5ce53fd4d6efad00e38d9d",
     "src/components/configurator/ReviewInquiry.tsx": "4e036a972b0e5235603ad7df3b0ee9c66a846c4ef94df7b5147aaa83e956141f",
-    "src/components/configurator/ReviewProposal.tsx": "8af2da5fdcc3d66af496cfaf2aea5681ca4600af71521621ec3f5b6d963146fa",
+    "src/components/configurator/ReviewProposal.tsx": "02401590ddbc8407c212bd208364604eb900433b4b3bd8eb169990f5c00131f8",
     "src/components/configurator/SharedDcEnergy.tsx": "801619038c53fedf4687db291c042bd9e685234b61b5d42c59342090a555c519",
     "src/components/configurator/SolarInstallation.tsx": "ed7e1be4486f4d9fa87461afb8db65b01a805f936c2a1b56cee7fe1ebd04da76",
     "src/components/configurator/SystemOptions.tsx": "b77c64d29ccbd84d78d362de245d0a98b9e2592f763fa7f6180f6501bcef12df",
