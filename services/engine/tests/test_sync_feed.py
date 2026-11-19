@@ -13,6 +13,7 @@ import json
 import subprocess
 import sys
 import threading
+import urllib.error
 from collections.abc import Callable, Iterator
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
@@ -93,6 +94,7 @@ def run(
     directory: Path,
     url: str,
     *,
+    cold_start_refusals: int = 0,
     loaded: Callable[[], dict[str, Any]] | None = None,
     jobs: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
 ) -> tuple[int, Restarter, list[str], Path, Path]:
@@ -108,6 +110,11 @@ def run(
 
     def actual() -> dict[str, Any]:
         from linker_engine import version
+
+        nonlocal cold_start_refusals
+        if cold_start_refusals:
+            cold_start_refusals -= 1
+            raise urllib.error.URLError(ConnectionRefusedError("socket not bound"))
 
         raw = feed.read_bytes()
         document = json.loads(raw)
@@ -136,6 +143,17 @@ def run(
         log=lines.append,
     )
     return code, restarter, lines, feed, contract
+
+
+def test_changed_generation_waits_for_the_cold_reader(
+    tmp_path: Path, feed_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sync = load_sync()
+    (tmp_path / "feed.json").write_text(json.dumps(feed_document()))
+    monkeypatch.setattr(sync.time, "sleep", lambda _: None)
+    code, restart, logs, _, _ = run(sync, tmp_path, feed_url, cold_start_refusals=9)
+    assert code == 0, logs
+    assert restart.calls == 1
 
 
 @pytest.mark.parametrize("empty", [False, True])

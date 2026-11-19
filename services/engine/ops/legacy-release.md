@@ -19,7 +19,9 @@ Git identity. `status` reports their selected absolute paths and actual/Git IDs.
 The remote root retains current + previous, at most one prepared unselected
 candidate, and explicitly protected interpreter dependencies. Unknown existing
 directories and contents are preserved and reported. The previous pytest
-interpreter must be explicitly protected for this migration. The stable feed,
+interpreter must be explicitly protected for this migration. New releases require
+the European postcode table. The preceding German-only release is verified with
+its original table and reader, including on rollback. The stable feed,
 cache, customer data and worker remain outside release directories.
 
 Prepare builds at the final path with `uv sync --locked --no-dev`; it never

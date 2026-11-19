@@ -275,12 +275,17 @@ compat=json.dumps(data['compatibility'],sort_keys=True,separators=(',',':'),ensu
 products=Products.from_feed(data);contract=Compatibility(json.loads(compat))
 engine=Engine(products=products,compatibility=contract,pvgis=Pvgis(Path(os.environ['LINKER_ENGINE_CACHE'])/'pvgis'))
 prepared=Publication(data).prepared_products(engine)
-place=geo.lookup('10115','DE');assert place is not None
+if geo.DATA.name == 'plz_de.csv.gz':
+ place=geo.lookup('10115');assert place is not None
+ postcode,state=place.plz,place.state
+else:
+ place=geo.lookup('10115','DE');assert place is not None
+ postcode,state=place.postcode,place.iso_region
 print(json.dumps({'import_root':str(root),'version':version.digest(version.source_bytes(root/'src/linker_engine'),feed,compat),
  'source_revision':data['source_revision'],'compatibility_revision':data['compatibility_revision'],
  'prepared_products':prepared,'feed_sha256':hashlib.sha256(feed).hexdigest(),
  'compatibility_sha256':hashlib.sha256(compat_file).hexdigest(),
- 'geo':{'plz':place.postcode,'latitude':place.latitude,'longitude':place.longitude,'state':place.iso_region,'place':place.name}}))
+ 'geo':{'plz':postcode,'latitude':place.latitude,'longitude':place.longitude,'state':state,'place':place.name}}))
 """
 
 
@@ -403,7 +408,7 @@ def readback(
         rows, key=lambda row: row["product_id"]
     ) != sorted(expected["prepared_products"], key=lambda row: row["product_id"]):
         raise RuntimeError("actual prepared product coverage differs")
-    geo = get(port, "/geo/plz/10115", env)
+    geo = get(port, "/geo/plz/10115?country=DE", env)
     if any(geo.get(key) != value for key, value in expected["geo"].items()):
         raise RuntimeError("actual Engine geo data differs")
     return {
@@ -1020,7 +1025,9 @@ def prune(root: Path, protected: dict[str, str]) -> dict[str, Any]:
         }
 
 
-def git_blobs(repository: Path, revision: str) -> dict[str, str]:
+def git_blobs(
+    repository: Path, revision: str, *, predecessor: bool = False
+) -> dict[str, str]:
     if not re.fullmatch("[0-9a-f]{40}", revision):
         raise ValueError("exact reviewed commit required")
     result = {}
@@ -1046,14 +1053,17 @@ def git_blobs(repository: Path, revision: str) -> dict[str, str]:
         if kind != "blob" or mode not in {"100644", "100755"}:
             raise ValueError("linked runtime source is forbidden")
         result[name] = oid
-    if not {"data/plz_eu.csv.gz", "pyproject.toml", "uv.lock"}.issubset(result):
+    postcodes = "data/plz_eu.csv.gz" in result or (
+        predecessor and "data/plz_de.csv.gz" in result
+    )
+    if not postcodes or not {"pyproject.toml", "uv.lock"}.issubset(result):
         raise ValueError("incomplete legacy runtime including geo data")
     return result
 
 
 def archive(repository: Path, revision: str, previous_revision: str) -> bytes:
     blobs = git_blobs(repository, revision)
-    prior = git_blobs(repository, previous_revision)
+    prior = git_blobs(repository, previous_revision, predecessor=True)
     operator = command(
         [
             "git",
