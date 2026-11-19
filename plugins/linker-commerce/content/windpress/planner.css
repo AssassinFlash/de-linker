@@ -1050,15 +1050,35 @@
   .sc-configurator a { color: var(--proto-accent); }
   .sc-configurator .sc-muted { color: var(--proto-neutral-500); font-size: 13px; line-height: 1.55; }
   .sc-configurator .sc-project-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-width: 0; margin: 10px 0 24px; }
+  .sc-configurator .sc-project-heading[id], .sc-project-workbench { scroll-margin-top: calc(var(--lp-site-header-height, 0px) + 16px); }
   .sc-configurator .sc-project-heading > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-project-heading h1 { font-size: 27px; }
   .sc-configurator .sc-project-heading p { margin-top: 5px; color: var(--proto-neutral-500); font-size: 14px; }
+  .sc-configurator .sc-project-heading .sc-eyebrow { margin: 0 0 6px; color: var(--proto-neutral-600); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+  .sc-configurator .sc-project-heading [role="status"] { flex-basis: 100%; }
   .sc-configurator .sc-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--proto-color-line); }
   .sc-configurator .sc-nav button { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 16px; border: 0; border-radius: var(--proto-radius-md); color: var(--proto-neutral-500); background: transparent; font-size: 14px; font-weight: 600; }
-  .sc-configurator .sc-nav button:hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
+  .sc-configurator .sc-nav button:not([aria-current="step"]):hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
   .sc-configurator .sc-nav button[aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
   .sc-configurator .sc-step-number { margin-right: 8px; font-size: 12px; opacity: .7; }
-  .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; }
+  .sc-configurator .sc-inquiry-stages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .sc-configurator .sc-inquiry-stages li { display: flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: var(--proto-radius-md); color: var(--proto-neutral-600); font-size: 14px; font-weight: 600; }
+  .sc-configurator .sc-inquiry-stages [aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
+  .sc-configurator .sc-direction-comparison table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+  .sc-configurator .sc-direction-comparison :is(th, td) { border-bottom: 1px solid var(--proto-color-line); padding: 15px 10px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
+  .sc-configurator .sc-direction-comparison :is(th, td):first-child { padding-left: 0; }
+  .sc-configurator .sc-direction-comparison :is(th, td):last-child { padding-right: 0; }
+  .sc-configurator .sc-direction-comparison thead th { color: var(--proto-neutral-600); font-size: 12px; font-weight: 600; }
+  .sc-configurator .sc-direction-comparison thead th:first-child { width: 23%; }
+  .sc-configurator .sc-direction-comparison thead td:last-child { width: 20%; }
+  .sc-configurator .sc-direction-comparison tbody th { font-weight: 650; }
+  .sc-configurator .sc-direction-comparison tbody tr:last-child > * { border: 0; }
+  .sc-configurator .sc-direction-comparison .sc-direction-action { text-align: right; }
+  .sc-configurator .sc-direction-details > span { display: none; }
+  .sc-configurator .sc-preliminary-layout .sc-sidebar p { margin-block-start: 12px; color: var(--proto-neutral-600); }
+  .sc-configurator .sc-direction-comparison h2:focus, .sc-configurator .sc-draft-transfer h2:focus { outline: none; }
+  .sc-configurator .sc-direction-comparison .sc-button { color: var(--proto-teal-800); font-size: 13px; }
+  .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; grid-template-columns: minmax(0, 1fr) 272px; gap: 28px; }
   .sc-configurator .sc-draft-transfer .linker-inquiry-draft { grid-area: summary; position: static; display: grid; gap: 12px; justify-items: start; }
   .sc-configurator .sc-draft-transfer .sc-inquiry-fields { grid-area: form; min-width: 0; }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
@@ -1124,8 +1144,34 @@
   .sc-configurator .sc-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid var(--proto-color-line); font-size: 13px; }
   .sc-configurator .sc-summary > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-summary dd { margin: 0; text-align: right; }
+  .sc-configurator .sc-field-wide { grid-column: 1 / -1; }
+  .sc-configurator .sc-existing-system { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--proto-color-line); }
+  .sc-configurator .sc-existing-system > :is(details, .sc-fields) { margin-top: 16px; }
+  .sc-configurator .sc-solar-choice-note { display: block; margin-top: 5px; color: var(--proto-neutral-600); font-size: 13px; font-weight: 400; }
+  .sc-configurator .sc-solar-layout-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-block: 12px 18px; }
+  .sc-configurator .sc-demand-metrics { display: flex; flex-wrap: wrap; gap: 14px 28px; margin-block: 16px; }
+  .sc-configurator .sc-demand-metrics dt { color: var(--proto-neutral-600); font-size: 13px; }
+  .sc-configurator .sc-demand-metrics dd { margin: 3px 0 0; font-size: 18px; font-weight: 650; }
+  .sc-configurator .sc-demand-profile > :is(details, figure) { margin-block: 16px 0; }
+  .sc-configurator .sc-system-diagram { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 18px; }
+  .sc-configurator .sc-system-node { display: grid; align-content: start; flex: 1 1 132px; min-width: 0; padding: 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-teal-50); text-align: center; overflow-wrap: anywhere; }
+  .sc-configurator .sc-system-node dt { display: grid; justify-items: center; gap: 6px; font-weight: 650; }
+  .sc-configurator .sc-system-node dt svg { width: 20px; height: 20px; color: var(--proto-teal-800); }
+  .sc-configurator .sc-system-node dd { margin: 4px 0 0; color: var(--proto-neutral-600); font-size: 13px; }
+  .sc-configurator .sc-system-equipment { margin-top: 20px; }
+  .sc-configurator dl.sc-equipment { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); align-items: start; gap: 12px 20px; }
+  .sc-configurator dl.sc-equipment dt { color: var(--proto-neutral-600); font-size: 13px; }
+  .sc-configurator dl.sc-equipment dd { margin: 4px 0 0; font-weight: 600; }
+  .sc-configurator .sc-report-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 20px; }
+  .sc-configurator .sc-report-logo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-block: 12px; }
+  .sc-configurator .sc-report-logo img { max-width: 100px; max-height: 45px; object-fit: contain; }
+  .sc-configurator .sc-report-dialog { position: fixed; inset: 0; margin: auto; width: min(800px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 22px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-0); overflow: auto; }
+  .sc-configurator .sc-report-dialog::backdrop { background: rgb(15 43 38 / .58); }
+  .sc-configurator .sc-report-pdf { display: grid; gap: 10px; justify-items: start; margin-block: 0 20px; }
+  .sc-configurator .sc-report-preview > * + * { margin-top: 16px; }
   @media (max-width: 1000px) {
     .sc-configurator .sc-layout { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-draft-transfer .linker-inquiry-columns { gap: 18px; }
     .sc-configurator .sc-sidebar { position: static; }
     .sc-configurator .sc-sidebar dl { display: flex; flex-wrap: wrap; gap: 20px 24px; }
   }
@@ -1137,12 +1183,21 @@
     .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
     .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
     .sc-configurator .sc-nav { gap: 5px; margin-bottom: 20px; }
+    .sc-configurator .sc-inquiry-stages li { min-height: 36px; padding: 7px 10px; font-size: 13px; }
+    .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .sc-configurator .sc-direction-comparison :is(table, tbody) { display: block; }
+    .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 12px; border-top: 1px solid var(--proto-color-line); padding-block: 16px; }
+    .sc-configurator .sc-direction-comparison tbody :is(th, td) { border: 0; padding: 0; }
+    .sc-configurator .sc-direction-comparison tbody :is(th, td:not(.sc-direction-action)) { grid-column: 1; }
+    .sc-configurator .sc-direction-comparison tbody .sc-direction-action { grid-column: 2; grid-row: 1 / span 3; max-width: 112px; }
+    .sc-configurator .sc-direction-comparison .sc-direction-details { color: var(--proto-neutral-600); font-size: 12px; }
+    .sc-configurator .sc-direction-details > span { display: block; font-weight: 600; }
     .sc-configurator .sc-nav button { flex: 1 0 auto; padding: 7px 10px; font-size: 12px; }
     .sc-configurator .sc-step-number { display: none; }
     .sc-configurator .sc-layout { gap: 0; }
     .sc-configurator .sc-card { padding: 20px; }
     .sc-configurator .sc-section-head { flex-wrap: wrap; }
-    .sc-configurator .sc-fields, .sc-configurator .sc-comparison { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-fields, .sc-configurator .sc-comparison, .sc-configurator .sc-report-actions { grid-template-columns: minmax(0, 1fr); }
     .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "summary" "form"; grid-template-columns: minmax(0, 1fr); }
     .sc-configurator :is(input, select, textarea) { font-size: 16px; }
     .sc-configurator .sc-option { flex-basis: 100%; padding: 16px; }
@@ -1185,7 +1240,7 @@
 /* Solar installation controls and roof layout from the approved prototype. */
 @layer components {
   .sc-configurator .sc-solar { min-width: 0; }
-  .sc-configurator .sc-solar > fieldset { min-inline-size: 0; min-width: 0; margin: 0; padding: 0; border: 0; }
+  .sc-configurator .sc-solar > fieldset, .sc-configurator .sc-roof-editor-fields, .sc-configurator .sc-solar details.sc-product-filter > fieldset { min-inline-size: 0; min-width: 0; margin: 0; padding: 0; border: 0; }
   .sc-configurator .sc-solar > .sc-section-head { flex-direction: column; gap: 0; }
   .sc-configurator .sc-solar .sc-option-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
   .sc-configurator .sc-solar .sc-option-card { flex: 1 1 180px; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); text-align: left; font-weight: 600; }
@@ -1201,6 +1256,8 @@
   .sc-configurator .sc-solar svg.sc-roof-board { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; min-height: 300px; max-height: 65vh; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-paper-journal); color: var(--proto-ink-deep); }
   .sc-configurator .sc-solar .sc-roof-props { display: grid; gap: 14px; min-width: 0; padding: 16px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-roof-props .sc-field { font-size: 12px; }
+  .sc-configurator .sc-selected-roof-properties { display: grid; gap: 12px; }
+  .sc-configurator .sc-roof-props > details[open] > :not(summary) { margin-top: 12px; }
   .sc-configurator .sc-solar .sc-roof-props :is(input:not([type="checkbox"]), select) { min-height: 44px; padding: 8px; }
   .sc-configurator .sc-solar .sc-check { display: flex; align-items: flex-start; gap: 10px; min-width: 0; font-size: 12px; font-weight: 400; }
   .sc-configurator .sc-solar .sc-check input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; }
@@ -1222,4 +1279,5 @@
     .sc-configurator .sc-solar .sc-roof-props { grid-template-columns: minmax(0, 1fr); padding: 12px; }
     .sc-configurator .sc-solar .sc-next button { width: 100%; }
   }
+  .sc-configurator .sc-solar svg.sc-roof-preview { min-height: 0; max-height: 180px; margin-block: 16px; }
 }

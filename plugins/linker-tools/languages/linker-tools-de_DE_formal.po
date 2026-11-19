@@ -1847,7 +1847,7 @@ msgstr "Leistung"
 msgid "Power (MW)"
 msgstr "Leistung (MW)"
 
-#: src/configurator/report/ReportView.tsx:117 build/configurator.js
+#: src/configurator/report/ReportView.tsx:117 ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/configurator.js build/planner/assets/planner.js:1
 msgid "Preparing PDF…"
 msgstr "PDF wird erstellt …"
 
@@ -17099,3 +17099,147 @@ msgstr "Status der Anfrage prüfen"
 #: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
 msgid "We could not confirm whether your inquiry was received. Please contact sales@de-linker.com before sending another one."
 msgstr "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Bitte wenden Sie sich an sales@de-linker.com, bevor Sie eine weitere Anfrage senden."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Use electricity from new solar panels during the day and store some for later."
+msgstr "Nutzen Sie tagsüber Strom aus neuen Solarmodulen und speichern Sie einen Teil für später."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Space for panels and how much electricity you use."
+msgstr "Platz für Solarmodule und Ihr Stromverbrauch."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Keep your solar panels and store more of the electricity they produce."
+msgstr "Nutzen Sie Ihre vorhandenen Solarmodule weiter und speichern Sie mehr von dem erzeugten Strom."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Which solar equipment you already have."
+msgstr "Welche Geräte bereits zu Ihrer Photovoltaikanlage gehören."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Generate electricity during the day with solar panels."
+msgstr "Erzeugen Sie tagsüber Strom mit Solarmodulen."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Space for panels and how much electricity you use during the day."
+msgstr "Platz für Solarmodule und Ihr Stromverbrauch am Tag."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Store electricity to use it later."
+msgstr "Speichern Sie Strom für später."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Where the battery will charge and what it needs to supply."
+msgstr "Die Stromquelle zum Laden und die Verbraucher, die der Speicher versorgen soll."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Choose what you want to do. We can work out the size and equipment later."
+msgstr "Wählen Sie die Variante für Ihr Projekt. Die passende Größe und die Geräte klären wir danach."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Compare system options"
+msgstr "Anlagenvarianten vergleichen"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "What it does"
+msgstr "Wofür sie geeignet ist"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js:1
+msgid "Choose an option to review it and send an inquiry."
+msgstr "Sobald Sie eine Variante auswählen, können Sie sie prüfen und Ihre Anfrage senden."
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx build/planner/assets/planner.js:1
+msgid "Compare options"
+msgstr "Varianten vergleichen"
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx build/planner/assets/planner.js:1
+msgid "Review and send"
+msgstr "Prüfen und senden"
+
+#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+msgid "Report & inquiry"
+msgstr "Bericht und Anfrage"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Report logo"
+msgstr "Berichtslogo"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Remove logo"
+msgstr "Logo entfernen"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Electricity demand"
+msgstr "Strombedarf"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Peak in this profile"
+msgstr "Höchste Leistung im Lastprofil"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Change load profile"
+msgstr "Lastprofil ändern"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Equipment preview"
+msgstr "Geräteübersicht"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "System layout"
+msgstr "Systemübersicht"
+
+#: ../../apps/planner/src/components/configurator/EnergyDemand.tsx build/planner/assets/planner.js:1
+msgid "Enter a grid import target to compare peak demand."
+msgstr "Für den Vergleich der Lastspitzen ist ein Grenzwert für den Netzbezug erforderlich."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Quantity, power and orientation"
+msgstr "Anzahl, Leistung und Ausrichtung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Roof outline, obstacles and layout"
+msgstr "Dachumriss, Hindernisse und Belegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Roof layout preview"
+msgstr "Vorschau der Dachbelegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Open roof layout"
+msgstr "Dachbelegung öffnen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Roof and module layout"
+msgstr "Dach und Modulbelegung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Use this layout"
+msgstr "Belegung übernehmen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Open report PDF"
+msgstr "Berichts-PDF öffnen"
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The PDF shows the original layout and any logo saved with this report."
+msgstr "Im PDF sehen Sie das ursprüngliche Layout und das mit dem Bericht gespeicherte Logo, sofern eines hinzugefügt wurde."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "The report PDF could not be opened."
+msgstr "Das Berichts-PDF konnte nicht geöffnet werden."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof pitch"
+msgstr "Neigung der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof azimuth"
+msgstr "Ausrichtung der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Selected roof height"
+msgstr "Höhe der gewählten Dachfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
+msgid "Check the selected roof and dimensions."
+msgstr "Prüfen Sie die ausgewählte Dachfläche und ihre Abmessungen."

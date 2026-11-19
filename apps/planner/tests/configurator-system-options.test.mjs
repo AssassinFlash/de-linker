@@ -193,6 +193,12 @@ test("system cards use real candidate data, inspect evidence and select without 
 	);
 	assert.match(document.querySelector(".sc-package").textContent, /10 kWh/);
 	assert.match(document.body.textContent, /Search incomplete/);
+	const overview = document.querySelector('[aria-label="System layout"]');
+	assert.ok(overview, "the equipment option has a labelled system layout");
+	assert.match(overview.textContent, /Solar capacity.*10 kWp/);
+	assert.match(overview.textContent, /Inverter model.*Linker Hybrid Actual/);
+	assert.match(overview.textContent, /Battery model.*Linker Battery Actual/);
+	assert.doesNotMatch(overview.textContent, /Example/);
 	const materials = [...document.querySelectorAll(".sc-equipment")];
 	assert.ok(
 		materials.some(
@@ -512,7 +518,7 @@ test("save a selected configuration, adjust its assembly and restore the compari
 	assert.equal(snapshots.length, 1);
 	await render({ ...props, comparison: snapshots[0] });
 	await change("Battery modules per stack", "3");
-	await act(async () => button("Use this adjustment").click());
+	await until(() => selected.length > 0);
 	assert.deepEqual(selected, [options[1]]);
 	await render({
 		...props,

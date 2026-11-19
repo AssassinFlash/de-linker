@@ -17,6 +17,7 @@ import {
 	equipmentReason,
 	equipmentStatus,
 } from "../equipment/equipmentLabels.ts";
+import { Icon } from "../Icon.tsx";
 import { __, sprintf } from "../../i18n.ts";
 
 const productName = (product: JsonObject | undefined) =>
@@ -263,6 +264,7 @@ export function SystemOptions({
 	comparison,
 	onSaveComparison,
 	onEditEquipment,
+	onSelectionPending,
 	onSelect,
 }: {
 	solarOnly: boolean;
@@ -275,6 +277,7 @@ export function SystemOptions({
 	comparison?: SystemComparison | null;
 	onSaveComparison?: (snapshot: SystemComparison) => void;
 	onEditEquipment?: () => void;
+	onSelectionPending?: (pending: boolean) => void;
 	onSelect: (
 		candidate: EquipmentCandidate,
 		source: PlanningRun,
@@ -306,11 +309,6 @@ export function SystemOptions({
 	const [term, setTerm] = useState("");
 	const [page, setPage] = useState(0);
 	const [order, setOrder] = useState("fit");
-	const [adjustment, setAdjustment] = useState<{
-		runId: string;
-		selectedId: string | null;
-		candidateId: string;
-	} | null>(null);
 	const cache = useQueryClient();
 	const [selecting, setSelecting] = useState(false);
 	const [selectionError, setSelectionError] = useState(false);
@@ -323,10 +321,6 @@ export function SystemOptions({
 		) ??
 		selected ??
 		ranked[0];
-	const adjusted =
-		(adjustment?.runId === run.id && adjustment.selectedId === selectedId
-			? candidates.find((item) => item.id === adjustment.candidateId)
-			: undefined) ?? candidate;
 	const saved =
 		comparison?.run.project_id === run.project_id ? comparison : null;
 	const detail = useCandidateAssessment(client, scope, run, candidate);
@@ -517,15 +511,20 @@ export function SystemOptions({
 		)
 			return;
 		setSelecting(true);
+		onSelectionPending?.(true);
 		setSelectionError(false);
 		setPreview({ runId: source.id, candidateId: item.id });
 		try {
 			await cache.fetchQuery(assessmentQuery(client, scope, source, item));
 			if (client.isCurrentScope(scope)) await onSelect(item, source);
 		} catch {
-			if (client.isCurrentScope(scope)) setSelectionError(true);
+			if (client.isCurrentScope(scope)) {
+				setPreview(null);
+				setSelectionError(true);
+			}
 		} finally {
 			setSelecting(false);
+			onSelectionPending?.(false);
 		}
 	}
 	if (!currentScope)
@@ -961,95 +960,126 @@ export function SystemOptions({
 					</button>
 				</nav>
 			)}
-			{adjusted && (
-				<section className="sc-card">
-					<h3>{__("Adjust configuration", "linker-tools")}</h3>
-					{systems(adjusted).map(({ id, name, selection }, index) => (
-						<div className="sc-fields" key={id}>
-							{adjustmentFields.map((field) => {
-								if (solarOnly && field !== "inverter_product_id") return null;
-								const labels = {
-									inverter_product_id: __("Inverter model", "linker-tools"),
-									battery_product_id: __("Battery model", "linker-tools"),
-									modules_per_stack: __(
-										"Battery modules per stack",
-										"linker-tools",
-									),
-									parallel_stacks: __("Battery stacks", "linker-tools"),
-								};
-								const options = adjustmentOptions(
-									ranked,
-									adjusted,
-									index,
-									field,
-								);
-								const model =
-									field === "inverter_product_id" ||
-									field === "battery_product_id";
-								return (
-									<label className="sc-field" key={field}>
-										<span>
-											{name ? `${name} · ${labels[field]}` : labels[field]}
-										</span>
-										<select
-											value={String(selection[field] ?? "")}
-											disabled={disabled || selecting || options.size === 1}
-											onChange={(event) => {
-												const option = options.get(event.currentTarget.value);
-												if (option)
-													setAdjustment({
-														runId: run.id,
-														selectedId,
-														candidateId: option.id,
-													});
-											}}
-										>
-											{[...options.keys()].map((value) => (
-												<option key={value} value={value}>
-													{value === ""
-														? "—"
-														: model
-															? productName(products.get(Number(value)))
-															: format(Number(value))}
-												</option>
-											))}
-										</select>
-									</label>
-								);
-							})}
+			{candidate && (
+				<section className="sc-card sc-system-overview">
+					<header className="sc-section-head">
+						<div>
+							<h2>
+								{candidate.id === selectedId
+									? __("Selected equipment", "linker-tools")
+									: __("Equipment preview", "linker-tools")}
+							</h2>
+							<p>{title(candidate)}</p>
 						</div>
-					))}
-					{adjusted.id !== candidate?.id && (
-						<p>
-							{title(adjusted)} · {!solarOnly && `${capacity(adjusted)} · `}
-							{equipmentStatus(adjusted.status)}
-						</p>
-					)}
-					<div className="sc-actions">
-						<button
-							type="button"
-							className="sc-button"
-							disabled={disabled || selecting || adjusted.id === selectedId}
-							onClick={() => void select(adjusted)}
-						>
-							{__("Use this adjustment", "linker-tools")}
-						</button>
+						<p>{equipmentStatus(candidate.status)}</p>
+					</header>
+					<div role="group" aria-label={__("System layout", "linker-tools")}>
+						{systems(candidate).map(({ id, name, selection }) => (
+							<div key={id}>
+								{name && <h3>{name}</h3>}
+								<dl className="sc-system-diagram">
+									{typeof selection.pv_dc_kw === "number" &&
+										selection.pv_dc_kw > 0 && (
+											<div className="sc-system-node">
+												<dt>
+													<Icon name="solar" />
+													{__("Solar capacity", "linker-tools")}
+												</dt>
+												<dd>{measure(selection.pv_dc_kw, "kWp")}</dd>
+											</div>
+										)}
+									<div className="sc-system-node">
+										<dt>
+											<Icon name="system" />
+											{__("Inverter model", "linker-tools")}
+										</dt>
+										<dd>
+											{productName(products.get(selection.inverter_product_id))}
+										</dd>
+									</div>
+									{!solarOnly && selection.battery_product_id && (
+										<div className="sc-system-node">
+											<dt>
+												<Icon name="energy" />
+												{__("Battery model", "linker-tools")}
+											</dt>
+											<dd>
+												{productName(
+													products.get(selection.battery_product_id),
+												)}
+											</dd>
+										</div>
+									)}
+								</dl>
+							</div>
+						))}
+					</div>
+					<div className="sc-system-adjustment">
+						<h3>{__("Adjust configuration", "linker-tools")}</h3>
+						{systems(candidate).map(({ id, name, selection }, index) => (
+							<div className="sc-fields" key={id}>
+								{adjustmentFields.map((field) => {
+									if (solarOnly && field !== "inverter_product_id") return null;
+									const labels = {
+										inverter_product_id: __("Inverter model", "linker-tools"),
+										battery_product_id: __("Battery model", "linker-tools"),
+										modules_per_stack: __(
+											"Battery modules per stack",
+											"linker-tools",
+										),
+										parallel_stacks: __("Battery stacks", "linker-tools"),
+									};
+									const options = adjustmentOptions(
+										ranked,
+										candidate,
+										index,
+										field,
+									);
+									const model =
+										field === "inverter_product_id" ||
+										field === "battery_product_id";
+									return (
+										<label className="sc-field" key={field}>
+											<span>
+												{name ? `${name} · ${labels[field]}` : labels[field]}
+											</span>
+											<select
+												value={String(selection[field] ?? "")}
+												disabled={disabled || selecting || options.size === 1}
+												onChange={(event) => {
+													const option = options.get(event.currentTarget.value);
+													if (option) void select(option);
+												}}
+											>
+												{[...options.keys()].map((value) => (
+													<option key={value} value={value}>
+														{value === ""
+															? "—"
+															: model
+																? productName(products.get(Number(value)))
+																: format(Number(value))}
+													</option>
+												))}
+											</select>
+										</label>
+									);
+								})}
+							</div>
+						))}
 						{onEditEquipment && (
-							<button
-								type="button"
-								className="sc-button"
-								disabled={disabled || selecting}
-								onClick={onEditEquipment}
-							>
-								{__("Edit equipment and system count", "linker-tools")}
-							</button>
+							<div className="sc-actions">
+								<button
+									type="button"
+									className="sc-button"
+									disabled={disabled || selecting}
+									onClick={onEditEquipment}
+								>
+									{__("Edit equipment and system count", "linker-tools")}
+								</button>
+							</div>
 						)}
 					</div>
-				</section>
-			)}
-			{candidate && (
-				<section className="sc-card">
-					<h2>{title(candidate)}</h2>
+
 					{detail.isPending && (
 						<p role="status" className="sc-muted">
 							{__("Loading equipment and evidence…", "linker-tools")}
@@ -1075,11 +1105,13 @@ export function SystemOptions({
 					{assessment && (
 						<>
 							<h3>{__("Bill of materials", "linker-tools")}</h3>
-							<CandidateMaterials
-								candidate={candidate}
-								assessment={assessment}
-								locale={locale}
-							/>
+							<div className="sc-system-equipment">
+								<CandidateMaterials
+									candidate={candidate}
+									assessment={assessment}
+									locale={locale}
+								/>
+							</div>
 							<details>
 								<summary>
 									{__("Selection basis and documents", "linker-tools")}

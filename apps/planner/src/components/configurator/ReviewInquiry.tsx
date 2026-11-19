@@ -244,7 +244,7 @@ export function ReviewInquiry({
 		};
 	}, [client, projectId, scope]);
 	useEffect(() => {
-		if (active) heading.current?.focus();
+		if (active) heading.current?.focus({ preventScroll: true });
 	}, [active]);
 	useEffect(() => {
 		const node = host.current;
@@ -356,8 +356,7 @@ export function ReviewInquiry({
 	}, [client, scope, projectId, revision, locale, attempt, recheck]);
 	return (
 		<section
-			className="sc-main sc-draft-transfer"
-			id="sc-preliminary-review"
+			className="sc-main sc-draft-transfer sc-preliminary-review"
 			hidden={!active}
 		>
 			<header className="sc-section-head">
@@ -367,6 +366,7 @@ export function ReviewInquiry({
 			</header>
 			<div className="linker-inquiry linker-inquiry-columns">
 				<aside className="linker-inquiry-draft">
+					<h3>{__("Current configuration", "linker-tools")}</h3>
 					<p>
 						{sprintf(
 							__("Planned system: %s", "linker-tools"),

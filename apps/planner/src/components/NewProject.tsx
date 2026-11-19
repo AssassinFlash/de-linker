@@ -417,7 +417,7 @@ export function NewProject({
 			!admitted;
 		const retry = Boolean(intent.current);
 		return (
-			<section className="sc-main" id="sc-preliminary-options">
+			<section className="sc-main">
 				<PreliminaryOptions
 					inputs={inputs}
 					disabled={disabled || retry}

@@ -33,7 +33,10 @@ const labels = {
 			'Solar',
 			'Storage',
 		],
-		choose: 'Choose this option',
+		choose: 'Select',
+		compare: 'Compare system options',
+		project: 'Your project',
+		steps: ['Compare options', 'Review and send'],
 		send: 'Send inquiry',
 		message: 'Please discuss this preliminary solution with me.',
 	},
@@ -44,7 +47,10 @@ const labels = {
 			'Photovoltaik',
 			'Speicher',
 		],
-		choose: 'Diese Variante wählen',
+		choose: 'Auswählen',
+		compare: 'Anlagenvarianten vergleichen',
+		project: 'Ihr Projekt',
+		steps: ['Varianten vergleichen', 'Prüfen und senden'],
 		send: 'Anfrage senden',
 		message: 'Bitte besprechen Sie diesen ersten Lösungsvorschlag mit mir.',
 	},
@@ -69,25 +75,39 @@ for (const lang of ['en', 'de'] as const) {
 			await page
 				.locator('[data-linker-planner-entry="home-hero"] a')
 				.click();
+			const comparison = page.getByRole('table', { name: words.compare });
 			for (const name of words.directions)
 				await expect(
-					page
-						.getByRole('article')
-						.getByRole('heading', { name, exact: true })
+					comparison.getByRole('rowheader', { name, exact: true })
 				).toBeVisible();
+			await expect(page.locator('[aria-current="step"]')).toHaveText(
+				words.steps[0]
+			);
+			await expect(
+				page.getByRole('heading', { name: words.project, exact: true })
+			).toBeInViewport();
+			expect(
+				await page.evaluate(() => document.documentElement.scrollWidth)
+			).toBe(width);
 			const chosen = words.directions[1];
-			const card = page.getByRole('article').filter({
-				has: page.getByRole('heading', {
-					name: chosen,
-					exact: true,
-				}),
+			const row = comparison.getByRole('row').filter({
+				has: page.getByRole('rowheader', { name: chosen, exact: true }),
 			});
 			await screenshot(page, `preliminary-solutions-${lang}-${width}`);
-			await card
+			await row
 				.getByRole('button', { name: words.choose, exact: true })
 				.click();
 			const form = page.locator('form.linker-inquiry-form');
 			await expect(form).toBeVisible({ timeout: 90_000 });
+			await expect(page.locator('[aria-current="step"]')).toHaveText(
+				words.steps[1]
+			);
+			await expect(
+				page.getByRole('heading', { name: words.project, exact: true })
+			).toBeInViewport();
+			expect(
+				await page.evaluate(() => document.documentElement.scrollWidth)
+			).toBe(width);
 			await expect(
 				form.getByText(/input revision|Eingabeversion/)
 			).toHaveCount(0);
@@ -172,9 +192,9 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	const form = page.locator('form.linker-inquiry-form');
 	const compare = (name: string, action: string) =>
 		page
-			.getByRole('article')
+			.getByRole('row')
 			.filter({
-				has: page.getByRole('heading', { name, exact: true }),
+				has: page.getByRole('rowheader', { name, exact: true }),
 			})
 			.getByRole('button', { name: action, exact: true });
 
@@ -242,9 +262,9 @@ test('back after a lost receipt recovers the original Woo inquiry', async ({
 		})
 		.click();
 	await page
-		.getByRole('article')
+		.getByRole('row')
 		.filter({
-			has: page.getByRole('heading', {
+			has: page.getByRole('rowheader', {
 				name: 'Storage for existing PV',
 				exact: true,
 			}),

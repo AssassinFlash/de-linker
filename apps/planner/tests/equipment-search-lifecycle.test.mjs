@@ -507,7 +507,8 @@ async function equipmentApp(
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
-				node.textContent === text &&
+				(node.getAttribute("aria-label") === text ||
+					node.textContent === text) &&
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
@@ -797,9 +798,11 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Solar");
+	await untilRun(() => app.button("Open roof layout")?.matches(":enabled"));
+	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
-			.querySelector(".lp-panel-shape")
+			.querySelector(".sc-roof-editor .lp-panel-shape")
 			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
 	);
 	await act(async () => app.button("Remove selected").click());
@@ -893,6 +896,7 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		await click("Switch to solar and exclude storage");
 	await click("Continue with solar");
 	await click("Place modules on the roof");
+	await click("Open roof layout");
 	const module =
 		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
 	await untilRun(() =>

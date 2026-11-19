@@ -414,6 +414,13 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	);
 	await until(
 		() =>
+			button("Place modules on the roof") &&
+			!button("Place modules on the roof").closest("fieldset[disabled]"),
+	);
+	await click("Place modules on the roof");
+	await click("Open roof layout");
+	await until(
+		() =>
 			button(asset.metadata.geometry_import_options.source.label) &&
 			!button(asset.metadata.geometry_import_options.source.label).closest(
 				"fieldset[disabled]",
@@ -462,6 +469,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 		knownPv.project.inputs.pvgis_reference.arrays,
 	);
 	await click("Place modules on the roof");
+	await click("Open roof layout");
 	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
 	await click("Save snapshot");
 	await until(

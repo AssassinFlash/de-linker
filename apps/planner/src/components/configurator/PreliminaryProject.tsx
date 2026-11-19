@@ -9,6 +9,7 @@ import { editDraft } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
+import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
 
 export function PreliminaryProject({
@@ -75,8 +76,14 @@ export function PreliminaryProject({
 	}
 	return (
 		<div className="sc-configurator">
+			<ProjectHeading
+				anchor={
+					showOptions ? "sc-preliminary-options" : "sc-preliminary-review"
+				}
+			/>
+			<InquiryStages reviewing={!showOptions} />
 			{showOptions && (
-				<div className="sc-main" id="sc-preliminary-options">
+				<div className="sc-main">
 					<PreliminaryOptions
 						inputs={draft?.history.current ?? reviewed.inputs}
 						disabled={blocked || needsRecovery || Boolean(draft?.pending)}

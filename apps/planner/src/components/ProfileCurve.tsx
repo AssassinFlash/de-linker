@@ -5,9 +5,11 @@ import { __ } from "../i18n.ts";
 export function ProfileCurve({
 	preview,
 	locale,
+	title = __("PV profile · visible intervals", "linker-tools"),
 }: {
 	preview: ProfilePreview;
 	locale: string;
+	title?: string;
 }) {
 	const rows = preview.rows;
 	if (!rows.length) return null;
@@ -33,7 +35,6 @@ export function ProfileCurve({
 		const row = rows[i]!;
 		path += `${i > 0 && row.start_utc === rows[i - 1]!.end_utc ? "L" : "M"}${x(row.start_utc)},${y(row.interval_mean_kw)} H${x(row.end_utc)} `;
 	}
-	const title = __("PV profile · visible intervals", "linker-tools");
 	return (
 		<figure className="lp-profile-review">
 			<figcaption>{title}</figcaption>

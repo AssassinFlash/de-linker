@@ -32,6 +32,10 @@ import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
 const Configurator = lazy(() => import("./configurator/Configurator.tsx"));
 import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
+import {
+	InquiryStages,
+	ProjectHeading,
+} from "./configurator/ProjectHeading.tsx";
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
@@ -511,6 +515,19 @@ export function Workspace({
 	if (firstVisitComparison)
 		return (
 			<div className="sc-configurator">
+				<ProjectHeading
+					anchor="sc-preliminary-options"
+					actions={
+						<button
+							className="sc-button"
+							type="button"
+							onClick={() => select(null)}
+						>
+							{__("Projects", "linker-tools")}
+						</button>
+					}
+				/>
+				<InquiryStages />
 				{recoveryNotice}
 				<NewProject
 					config={config}
@@ -526,13 +543,6 @@ export function Workspace({
 					recoveryChecking={recovery.isFetching}
 					recoveryDiscoveryFailed={recovery.isError}
 				/>
-				<button
-					className="sc-button"
-					type="button"
-					onClick={() => select(null)}
-				>
-					{__("Back to projects", "linker-tools")}
-				</button>
 			</div>
 		);
 

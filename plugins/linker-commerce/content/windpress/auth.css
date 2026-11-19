@@ -1142,7 +1142,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-weight: var(--proto-weight-medium);
 	line-height: var(--proto-leading-caption);
 }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-input {
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-input {
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
@@ -1156,11 +1156,11 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	color: var(--proto-ink-deep);
 	box-shadow: none;
 }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry textarea.linker-form-input {
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry textarea.linker-form-input {
 	min-height: calc(var(--proto-space-8) + var(--proto-space-7));
 	resize: vertical;
 }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry :where(a, button, input, textarea, summary):focus-visible {
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry :where(a, button, input, textarea, summary):focus-visible {
 	outline: var(--proto-focus-ring);
 	outline-offset: var(--proto-focus-offset);
 }
@@ -1183,7 +1183,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 .linker-inquiry-details[open] summary:not([hidden]) { margin-bottom: var(--proto-space-5); }
 .linker-inquiry-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--proto-space-5) var(--proto-space-4); }
 .linker-inquiry-company, .linker-inquiry-fields > .form-row { grid-column: 1 / -1; }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-consent {
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-consent {
 	display: flex;
 	gap: var(--proto-space-3);
 	align-items: flex-start;
@@ -1194,8 +1194,8 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	line-height: var(--proto-leading-body);
 }
 .linker-inquiry .linker-form-consent input { flex: 0 0 auto; margin-top: var(--proto-space-1); accent-color: var(--proto-accent); }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-consent a { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-primary {
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-consent a { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-primary {
 	min-height: var(--proto-control-height);
 	border: 0;
 	border-radius: var(--proto-radius-lg);
@@ -1211,7 +1211,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-weight: var(--proto-weight-semibold);
 	cursor: pointer;
 }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-primary:hover { background: var(--proto-teal-700); }
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-primary:hover { background: var(--proto-teal-700); }
 .linker-inquiry-reassurance {
 	display: flex;
 	flex-wrap: wrap;
@@ -1222,7 +1222,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	line-height: var(--proto-leading-body);
 }
 .linker-inquiry-promise { margin: 0; }
-:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry-form .linker-form-primary:disabled { opacity: 0.6; cursor: wait; }
+:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry-form .linker-form-primary:disabled { opacity: 0.6; cursor: wait; }
 .linker-inquiry-guest { padding-top: var(--proto-space-4); border-top: 1px solid var(--proto-line-journal); font-size: var(--proto-size-xs); line-height: var(--proto-leading-body); }
 #tv-woo-b2b-checkout .linker-inquiry-guest a { color: var(--proto-ink-muted-deep); text-decoration: none; }
 #tv-woo-b2b-checkout .linker-inquiry-guest a:hover { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
@@ -1305,6 +1305,6 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	.linker-inquiry-form, .linker-inquiry-draft { padding: var(--proto-space-5); border-radius: var(--proto-radius-card); }
 	.linker-inquiry-head h1 { font-size: var(--proto-size-2xl); }
 	.linker-inquiry-fields { grid-template-columns: minmax(0, 1fr); }
-	:is(#tv-woo-b2b-checkout, #sc-preliminary-review) .linker-inquiry .linker-form-input { font-size: var(--proto-size-md); }
+	:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-input { font-size: var(--proto-size-md); }
 	.linker-inquiry-draft { position: static; }
 }
