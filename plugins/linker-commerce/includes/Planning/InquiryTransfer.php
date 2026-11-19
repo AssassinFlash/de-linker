@@ -48,7 +48,7 @@ final class InquiryTransfer {
 
 	/** Reject changes before the business journal claims a new submission. */
 	public function current(): bool {
-		return hash_equals( $this->draft, DraftPreview::fingerprint() );
+		return hash_equals( $this->draft, DraftPreview::fingerprint( $this->handoff ) );
 	}
 
 	/**

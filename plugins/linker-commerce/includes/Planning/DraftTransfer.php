@@ -231,7 +231,7 @@ final class DraftTransfer {
 			$this->stop_autosave();
 			return self::failure( 'planning_draft_changed', 409 );
 		}
-		if ( ! hash_equals( $command['expected_draft_sha256'], DraftPreview::fingerprint() ) ) {
+		if ( ! hash_equals( $command['expected_draft_sha256'], DraftPreview::fingerprint( null === $send ? null : $handoff['id'] ) ) ) {
 			return self::failure( 'planning_draft_changed', 409 );
 		}
 		$snapshot    = $handoff['snapshot'];
@@ -250,18 +250,28 @@ final class DraftTransfer {
 		);
 		$scope       = null;
 		$restore     = $this->restore_cart_state( $session );
+		$cart        = WC()->cart;
 		try {
-			$scope   = new NativeTransaction();
-			$replace = DraftPreview::replacement_keys( $snapshot['project_id'], $handoff['id'] );
+			$scope    = new NativeTransaction();
+			$replace  = DraftPreview::replacement_keys( $snapshot['project_id'], $handoff['id'] );
+			$retained = array();
+			if ( null !== $send ) {
+				$retained = array_diff_key( $cart->get_cart(), array_fill_keys( $replace, true ) );
+				$cart->set_cart_contents( array() );
+				$cart->set_applied_coupons( array() );
+				$session->set( 'order_awaiting_payment', null );
+				$session->set( 'store_api_draft_order', null );
+				$replace = array();
+			}
 			if ( $report_only ) {
 				$items = self::publication_error( $snapshot ) ?? array();
 				if ( is_array( $items ) && array() !== $replace ) {
 					foreach ( $replace as $cart_key ) {
-						if ( ! WC()->cart->remove_cart_item( $cart_key ) ) {
+						if ( ! $cart->remove_cart_item( $cart_key ) ) {
 							throw new \RuntimeException( 'planning_draft_changed' );
 						}
 					}
-					WC()->cart->calculate_totals();
+					$cart->calculate_totals();
 					$items = self::publication_error( $snapshot ) ?? array();
 				}
 			} else {
@@ -278,13 +288,15 @@ final class DraftTransfer {
 				return $items;
 			}
 			$contexts = (array) $session->get( self::CONTEXTS, array() );
+			$consumed = array( $handoff['id'] => true );
 			foreach ( $contexts as $old_id => $context ) {
 				if ( ( $context['snapshot']['project_id'] ?? null ) === $snapshot['project_id'] ) {
+					$consumed[ $old_id ] = true;
 					unset( $contexts[ $old_id ] );
 				}
 			}
-			$contexts[ $handoff['id'] ] = self::native_context( $handoff );
-			$result                     = array(
+			$selected = array( $handoff['id'] => self::native_context( $handoff ) );
+			$result   = array(
 				'schema_version'  => 1,
 				'handoff_id'      => $handoff['id'],
 				'snapshot_sha256' => $handoff['snapshot_sha256'],
@@ -300,10 +312,9 @@ final class DraftTransfer {
 				$result['report_only'] = true;
 			}
 			$receipts[ $key ] = $result;
-			$session->set( self::CONTEXTS, $contexts );
-			$session->set( self::RECEIPTS, $receipts );
-			$order = null;
+			$order            = null;
 			if ( null !== $send ) {
+				$session->set( self::CONTEXTS, $selected );
 				$order = $send();
 				if ( $order instanceof WP_Error ) {
 					$scope->rollback();
@@ -314,9 +325,16 @@ final class DraftTransfer {
 					}
 					return $order;
 				}
-				Context::consume_captured_notes( $order );
-				WC()->cart->empty_cart();
+				$restore();
+				$cart->set_cart_contents( $retained );
+				$cart->set_removed_cart_contents( array_filter( $cart->get_removed_cart_contents(), static fn ( array $line ): bool => ! isset( $consumed[ $line[ self::LINE_META ] ?? '' ] ) ) );
+				$cart->calculate_totals();
+				( new \WC_Cart_Session( $cart ) )->persistent_cart_update();
+			} else {
+				$contexts += $selected;
 			}
+			$session->set( self::CONTEXTS, $contexts );
+			$session->set( self::RECEIPTS, $receipts );
 			if ( $report_only ) {
 				$session->set_customer_session_cookie( true );
 			}

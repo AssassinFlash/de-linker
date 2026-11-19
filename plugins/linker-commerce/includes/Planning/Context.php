@@ -135,11 +135,9 @@ final class Context {
 		if ( ! function_exists( 'WC' ) || null === WC()->session ) {
 			return array();
 		}
-		$stored = (array) WC()->session->get( DraftTransfer::CONTEXTS, array() );
-		if ( null !== $proposed ) {
-			$stored                    = array_filter( $stored, static fn ( $context ): bool => ( $context['snapshot']['project_id'] ?? null ) !== $proposed['snapshot']['project_id'] );
-			$stored[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
-		}
+		$stored     = null === $proposed
+			? (array) WC()->session->get( DraftTransfer::CONTEXTS, array() )
+			: array( $proposed['id'] => DraftTransfer::native_context( $proposed ) );
 		$by_project = array();
 		foreach ( $stored as $id => $handoff ) {
 			if ( ! is_string( $id ) || ! self::valid( $handoff, $id ) ) {
@@ -182,12 +180,13 @@ final class Context {
 	 * @param array<string,mixed>|null $proposed Reviewed replacement handoff.
 	 */
 	public static function preflight( ?array $proposed = null ): ?WP_Error {
-		$active  = self::active();
-		$replace = null === $proposed ? array() : DraftPreview::replacement_keys( $proposed['snapshot']['project_id'], $proposed['id'] );
-		foreach ( WC()->cart->get_cart() as $key => $line ) {
-			$id = $line[ DraftTransfer::LINE_META ] ?? null;
-			if ( ! in_array( $key, $replace, true ) && null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) ) {
-				return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
+		if ( null === $proposed ) {
+			$active = self::active();
+			foreach ( WC()->cart->get_cart() as $line ) {
+				$id = $line[ DraftTransfer::LINE_META ] ?? null;
+				if ( null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) ) {
+					return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
+				}
 			}
 		}
 		foreach ( self::submitted_handoffs( $proposed ) as $handoff ) {
@@ -341,7 +340,9 @@ final class Context {
 			}
 			$order->update_meta_data( self::NOTES_META, $encoded_notes );
 		}
-		self::$consumed_revisions = array_map( static fn ( array $note ): string => $note['note_revision'], $notes );
+		if ( ! isset( self::$submission_post[ InquiryTransfer::FIELD ] ) ) {
+			self::$consumed_revisions = array_map( static fn ( array $note ): string => $note['note_revision'], $notes );
+		}
 	}
 
 	/** A definite refusal before Woo writes the inquiry. */
@@ -355,19 +356,13 @@ final class Context {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public static function submitted_handoffs( ?array $proposed = null ): array {
-		$active  = self::active();
-		$reports = self::report_only_contexts();
 		if ( null !== $proposed ) {
-			$other_project = static fn ( array $handoff ): bool => $handoff['snapshot']['project_id'] !== $proposed['snapshot']['project_id'];
-			$active        = array_filter( $active, $other_project );
-			$reports       = array_filter( $reports, $other_project );
-			if ( DraftTransfer::report_only( $proposed['snapshot'] ) ) {
-				$reports[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
-			} else {
-				$active[ $proposed['id'] ] = DraftTransfer::native_context( $proposed );
+			if ( DraftTransfer::report_only( $proposed['snapshot'] ) && ! isset( self::included_notes( $proposed )[ $proposed['id'] ] ) ) {
+				return array();
 			}
+			return array( $proposed['id'] => DraftTransfer::native_context( $proposed ) );
 		}
-		return $active + array_intersect_key( $reports, self::included_notes( $proposed ) );
+		return self::active() + array_intersect_key( self::report_only_contexts(), self::included_notes() );
 	}
 
 	/**

@@ -15,6 +15,11 @@ use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Planning\Context;
+use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Planning\DraftTransfer;
+use Linker\Commerce\Planning\InquiryTransfer;
+use Linker\Commerce\Products\Publication;
 use WC_Order;
 
 /**
@@ -71,8 +76,13 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':4' ) );
 	}
 
-	/** A retained-equipment report is previewed without changing the cart, then attached by Send. */
-	public function test_guided_report_is_attached_by_the_native_send(): void {
+	/**
+	 * The selected report goes through native Send without consuming unrelated same-SKU rows.
+	 *
+	 * @dataProvider guided_report_kinds
+	 * @param bool $report_only Whether the report has no procurement lines.
+	 */
+	public function test_guided_report_is_attached_by_the_native_send( bool $report_only ): void {
 		$this->as_user( $this->customer()->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
@@ -81,11 +91,82 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertIsString( $cart_key );
 		$session = WC()->session;
 		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+
+		$product_id = $product->get_id();
+		$manifest   = Publication::manifest();
+		$published  = array_column( $manifest['products'], null, 'product_id' );
+		$evidence   = array(
+			'engineering_contract'   => 2,
+			'reference_inputs'       => array(),
+			'products'               => array(
+				array(
+					'product_id'       => $product_id,
+					'product_revision' => $published[ $product_id ]['product_revision'],
+				),
+			),
+			'documents'              => array(),
+			'compatibility_revision' => $manifest['compatibility_revision'],
+		);
+		$handoff    = $this->planning_report();
+		$other      = $this->planning_report();
+		$previous   = $handoff;
+		foreach ( array( &$previous, &$other ) as &$saved ) {
+			$saved['id']                      = bin2hex( random_bytes( 16 ) );
+			$saved['snapshot']['kind']        = 'planning_products_v1';
+			$saved['snapshot']['publication'] = $evidence;
+			$saved['snapshot']['items']       = array(
+				array(
+					'product_id' => $product_id,
+					'quantity'   => 2,
+					'label'      => 'Existing product selection',
+				),
+			);
+		}
+		unset( $saved );
+		$other['snapshot']['report']['sections'] = array(
+			array(
+				'id'   => 'site',
+				'rows' => array(
+					array(
+						'label' => 'Project note',
+						'value' => 'Separate project private note',
+					),
+				),
+			),
+		);
+		$other_key                               = WC()->cart->add_to_cart( $product_id, 2, 0, array(), array( DraftTransfer::LINE_META => $other['id'] ) );
+		$old_key                                 = WC()->cart->add_to_cart( $product_id, 2, 0, array(), array( DraftTransfer::LINE_META => $previous['id'] ) );
+		$this->assertIsString( $other_key );
+		$this->assertIsString( $old_key );
+		$undo_product   = $this->product( '51' );
+		$old_removed    = WC()->cart->add_to_cart( $undo_product->get_id(), 1, 0, array(), array( DraftTransfer::LINE_META => $previous['id'] ) );
+		$other_removed  = WC()->cart->add_to_cart( $undo_product->get_id(), 1, 0, array(), array( DraftTransfer::LINE_META => $other['id'] ) );
+		$manual_removed = WC()->cart->add_to_cart( $undo_product->get_id(), 1 );
+		foreach ( array( $old_removed, $other_removed, $manual_removed ) as $removed ) {
+			$this->assertIsString( $removed );
+			$this->assertTrue( WC()->cart->remove_cart_item( $removed ) );
+		}
+		$contexts = array(
+			$previous['id'] => DraftTransfer::native_context( $previous ),
+			$other['id']    => DraftTransfer::native_context( $other ),
+		);
+		$session->set( DraftTransfer::CONTEXTS, $contexts );
 		$session->save_data();
 		$cart_before     = $session->get( 'cart' );
-		$receipts_before = $session->get( \Linker\Commerce\Planning\DraftTransfer::RECEIPTS );
-
-		$handoff        = $this->planning_report();
+		$receipts_before = $session->get( DraftTransfer::RECEIPTS );
+		if ( ! $report_only ) {
+			$handoff['snapshot']['kind']                                      = 'planning_products_v1';
+			$handoff['snapshot']['publication']                               = $evidence;
+			$handoff['snapshot']['items']                                     = array(
+				array(
+					'product_id' => $product_id,
+					'quantity'   => 3,
+					'label'      => 'New frozen selection',
+				),
+			);
+			$handoff['snapshot']['report']                                    = $other['snapshot']['report'];
+			$handoff['snapshot']['report']['sections'][0]['rows'][0]['value'] = 'Selected project note';
+		}
 		$id             = $handoff['snapshot']['project_id'];
 		$report         = $handoff['snapshot']['report_run_id'];
 		$project        = array(
@@ -130,9 +211,17 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertIsArray( $review );
-		$this->assertCount( 1, $review['inquiry_lines'] );
+		$this->assertSame( $report_only ? array() : array( 3 ), array_column( $review['inquiry_lines'], 'quantity' ) );
+		$this->assertStringNotContainsString( 'Separate project private note', $review['inquiry_form_html'] );
+		$this->assertSame( array( 2 ), array_column( $review['inquiry_changes'], 'before' ) );
+		$this->assertSame( array( $report_only ? 0 : 3 ), array_column( $review['inquiry_changes'], 'after' ) );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
 		$this->assertSame( 1, preg_match( '/name="linker_report_transfer" value="([^"]+)"/', $review['inquiry_form_html'], $token ) );
+		$reviewed_transfer = InquiryTransfer::read( $token[1] ?? '' );
+		$this->assertInstanceOf( InquiryTransfer::class, $reviewed_transfer );
+		$this->assertTrue( $reviewed_transfer->current() );
+		$old_transfer = new InquiryTransfer( $report, $handoff['id'], $reviewed_transfer->key, DraftPreview::fingerprint() );
+		$this->assertFalse( $old_transfer->current() );
 		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $review['inquiry_form_html'], $nonce ) );
 		$this->assertSame( 1, preg_match( '/name="linker_project_note_revisions\[' . $handoff['id'] . '\]" value="([^"]+)"/', $review['inquiry_form_html'], $note_revision ) );
 		$stamp                             = (string) ( time() - 5 );
@@ -158,8 +247,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( 'linker_inquiry_invalid', $refused->get_error_code() );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
 
-		$refuse = function (): void {
-			$this->assertCount( 1, \Linker\Commerce\Planning\Context::report_only_contexts() );
+		$refuse = function ( WC_Order $order ) use ( $report_only ): void {
+			$this->assertSame( $report_only ? 0 : 3, $order->get_item_count() );
 			throw new \RuntimeException( 'Fixture checkout refusal before first order save.' );
 		};
 		add_action( 'woocommerce_checkout_create_order', $refuse, 20 );
@@ -184,7 +273,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$persisted = $session->get_session_data();
 		$this->assertSame( $cart_before, maybe_unserialize( $persisted['cart'] ?? null ) );
 		$this->assertSame( $receipts_before, maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::RECEIPTS ] ?? null ) );
-		$this->assertSame( array(), maybe_unserialize( $persisted[ \Linker\Commerce\Planning\DraftTransfer::CONTEXTS ] ?? array() ) );
+		$this->assertSame( $contexts, maybe_unserialize( $persisted[ DraftTransfer::CONTEXTS ] ?? array() ) );
 
 		$order = $handler->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() . ': ' . $order->get_error_message() : '' );
@@ -193,10 +282,33 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
-		$stored = \Linker\Commerce\Planning\Context::stored( $order );
+		$this->assertSame( $report_only ? 0 : 3, $order->get_item_count() );
+		$stored = Context::stored( $order );
+		$this->assertSame( array( $handoff['id'] ), array_keys( $stored ) );
+		$this->assertArrayNotHasKey( $other['id'], Context::stored_notes( $order ) );
 		$this->assertSame( $report, $stored[ $handoff['id'] ]['reference']['report_run_id'] );
 		$this->assertSame( 1, $stored[ $handoff['id'] ]['reference']['revision'] );
-		$this->assertSame( array(), $stored[ $handoff['id'] ]['included_items'] );
+		$this->assertSame( $report_only ? array() : array( $product_id => 3 ), $stored[ $handoff['id'] ]['included_items'] );
+		$this->assertSame( array( $cart_key, $other_key ), array_keys( WC()->cart->get_cart() ) );
+		$this->assertSame( array( $other['id'] ), array_keys( Context::active() ) );
+		$this->assertSame( array( $cart_key, $other_key ), array_keys( $session->get( 'cart' ) ) );
+		$this->assertSame( array( $other_removed, $manual_removed ), array_keys( WC()->cart->get_removed_cart_contents() ) );
+		$persisted = $session->get_session_data();
+		$this->assertSame( array( $cart_key, $other_key ), array_keys( maybe_unserialize( $persisted['cart'] ) ) );
+		$this->assertSame( array( $other['id'] => $contexts[ $other['id'] ] ), maybe_unserialize( $persisted[ DraftTransfer::CONTEXTS ] ) );
+		$this->assertSame( array( $other_removed, $manual_removed ), array_keys( maybe_unserialize( $persisted['removed_cart_contents'] ) ) );
+	}
+
+	/**
+	 * Both planning report types can be reviewed and sent from the configurator.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public static function guided_report_kinds(): array {
+		return array(
+			'retained equipment' => array( true ),
+			'procurement'        => array( false ),
+		);
 	}
 
 	/** A detached request can retain its error without overwriting a newer native draft. */
