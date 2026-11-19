@@ -108,7 +108,12 @@ async function openCardTurn( quantities?: Record< string, number > ) {
 				type: 'cards',
 				product_ids: [ 3556 ],
 				...( quantities
-					? { quantities, draft_proofs: { 3556: 'signed-two' } }
+					? {
+							quantities,
+							draft_proofs: quantities[ 3556 ]
+								? { 3556: 'signed-two' }
+								: {},
+						}
 					: {} ),
 			},
 		],
@@ -170,6 +175,23 @@ test( 'the card walks every action state inside the card', async () => {
 		expect( within( card ).getByText( text ) ).toBeInTheDocument();
 	}
 } );
+
+const unresolvedCounts: Record< string, number >[] = [ { 3556: 0 }, {} ];
+test.each( unresolvedCounts )(
+	'an unresolved quantity leaves the product visible without draft or save actions (%j)',
+	async ( quantities ) => {
+		await openCardTurn( quantities );
+		const card = within( screen.getByRole( 'article' ) );
+		expect(
+			card.getByRole( 'link', { name: PRODUCT.name } )
+		).toBeVisible();
+		for ( const name of [ 'Add to solution draft', 'Save solution' ] ) {
+			expect(
+				card.queryByRole( 'button', { name } )
+			).not.toBeInTheDocument();
+		}
+	}
+);
 
 test( 'the customer sees and adds the quantity on the signed product card', async () => {
 	const add = vi.fn( async () => true );

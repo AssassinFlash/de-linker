@@ -60,9 +60,9 @@ export function quantitiesOf( blocks: Block[] ): Record< string, number > {
 	for ( const block of blocks ) {
 		if ( block.type === 'cards' && block.quantities ) {
 			for ( const id of block.product_ids ) {
-				delete quantities[ id ];
+				// WordPress omits a count from the live map when it cannot sign it.
+				quantities[ id ] = block.quantities[ id ] ?? 0;
 			}
-			Object.assign( quantities, block.quantities );
 		}
 	}
 	return quantities;

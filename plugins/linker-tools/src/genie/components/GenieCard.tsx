@@ -158,26 +158,28 @@ export function GenieCard( {
 						},
 			] }
 			status={ status }
-			actions={ [
-				<button
-					key="draft"
-					type="button"
-					className="linker-genie-app__card-action linker-genie-app__card-action--primary"
-					disabled={ 'pending' === status.state }
-					onClick={ () => onAdd( productId, quantity ?? 1 ) }
-				>
-					{ __( 'Add to solution draft', 'linker-tools' ) }
-				</button>,
-				<button
-					key="save"
-					type="button"
-					className="linker-genie-app__card-action"
-					disabled={ 'pending' === status.state }
-					onClick={ () => onSave( productId, product.name ) }
-				>
-					{ __( 'Save solution', 'linker-tools' ) }
-				</button>,
-			] }
+			actions={
+				quantity !== 0 && [
+					<button
+						key="draft"
+						type="button"
+						className="linker-genie-app__card-action linker-genie-app__card-action--primary"
+						disabled={ 'pending' === status.state }
+						onClick={ () => onAdd( productId, quantity ?? 1 ) }
+					>
+						{ __( 'Add to solution draft', 'linker-tools' ) }
+					</button>,
+					<button
+						key="save"
+						type="button"
+						className="linker-genie-app__card-action"
+						disabled={ 'pending' === status.state }
+						onClick={ () => onSave( productId, product.name ) }
+					>
+						{ __( 'Save solution', 'linker-tools' ) }
+					</button>,
+				]
+			}
 		/>
 	);
 }
