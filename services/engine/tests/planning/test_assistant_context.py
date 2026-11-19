@@ -1292,16 +1292,17 @@ def test_report_omits_comparison_location_and_private_note(
     ("panel_rows", "expected_count"),
     [
         ([], None),
-        ([("full_model", 7), ("full_model", 5)], 12),
-        ([("dc_group", 7)], None),
-        ([("saved_roof", 7), ("saved_roof", None)], None),
+        ([("saved_roof", 4, 430)], 4),
+        ([("full_model", 7, 430), ("full_model", 5, 500)], 12),
+        ([("dc_group", 7, 430)], None),
+        ([("saved_roof", 7, None), ("saved_roof", None, 550)], None),
     ],
 )
 def test_report_exposes_verified_materials_provenance(
     workspace: Workspace,
     owner: Actor,
     context: Context,
-    panel_rows: list[tuple[str, int | None]],
+    panel_rows: list[tuple[str, int | None, int | None]],
     expected_count: int | None,
 ) -> None:
     project = workspace.create(owner, "Materials provenance", {}, key="materials")
@@ -1331,7 +1332,7 @@ def test_report_exposes_verified_materials_provenance(
         "installation_status": "not_assessed",
         "equipment_status": "unresolved",
     }
-    for index, (scope, quantity) in enumerate(panel_rows):
+    for index, (scope, quantity, _) in enumerate(panel_rows):
         cast(list[Object], materials["lines"]).append(
             {
                 "id": f"pv:{index}",
@@ -1348,6 +1349,21 @@ def test_report_exposes_verified_materials_provenance(
         "materials": materials,
         "dependencies": {"materials_model": materials_sha},
     }
+    if panel_rows:
+        source["pv_components"] = {
+            "status": "available",
+            "scope": panel_rows[0][0],
+            "layout_revision": 1,
+            "nameplate_kwp": 1.72,
+            "components": [
+                {
+                    "quantity": qty,
+                    "model": "Older display label",
+                    **({"stc_power_w": watts} if watts is not None else {}),
+                }
+                for _, qty, watts in panel_rows
+            ],
+        }
     source_sha = workspace.blobs.put_object(source)
     report_context = Context(
         context.code_sha256,
@@ -1377,13 +1393,20 @@ def test_report_exposes_verified_materials_provenance(
     projection = assistant_context(workspace, owner, project.id, 1, [run.id], "en")
     selected = cast(list[Object], projection["runs"])[0]
     assert selected["saved_roof_panel_count"] == expected_count
+    if panel_rows and panel_rows[0][0] != "dc_group":
+        assert selected["saved_roof_panel_groups"] == [
+            {"quantity": qty, "stc_power_w": watts} for _, qty, watts in panel_rows
+        ]
+        assert selected["saved_roof_layout_revision"] == 1
+    else:
+        assert "saved_roof_panel_groups" not in selected
     assert selected["materials"] == {
         "status": "verified",
         "sha256": materials_sha,
         "model": "project_materials_v3",
         "line_count": 3 + len(panel_rows),
         "unresolved_quantity_count": 1
-        + sum(quantity is None for _, quantity in panel_rows),
+        + sum(quantity is None for _, quantity, _ in panel_rows),
         "handling_counts": {
             "customer_supplied_required": 1,
             "manufacturer_included": 1,

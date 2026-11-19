@@ -146,19 +146,51 @@ def _roof_panel_count(lines: list[Object]) -> int | None:
     return sum(cast(list[int], quantities))
 
 
-def _archived_roof_count(
+def _roof_groups(source: Object) -> Object:
+    components = source.get("pv_components")
+    if (
+        not isinstance(components, dict)
+        or components.get("status") != "available"
+        or components.get("scope") == "dc_group"
+    ):
+        return {}
+    rows = components.get("components")
+    if not isinstance(rows, list) or not rows:
+        return {}
+    groups: list[Json] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            return {}
+        count, power = row.get("quantity"), row.get("stc_power_w")
+        groups.append(
+            {
+                "quantity": count if type(count) is int and count >= 0 else None,
+                "stc_power_w": power
+                if isinstance(power, (int, float))
+                and not isinstance(power, bool)
+                and power > 0
+                else None,
+            }
+        )
+    return {
+        "saved_roof_panel_groups": groups,
+        "saved_roof_layout_revision": components.get("layout_revision"),
+    }
+
+
+def _archived_roof_groups(
     workspace: Workspace, run: Run, source: Object | None
-) -> int | None:
+) -> Object:
     if run.result is None:
-        return None
+        return {}
     context = run.manifest.get("context")
     pinned = context.get("assets") if isinstance(context, dict) else None
     dependencies = run.result.get("dependencies")
     if not isinstance(pinned, dict) or not isinstance(dependencies, dict):
-        return None
+        return {}
     sha = pinned.get("report.source")
     if not isinstance(sha, str) or sha != dependencies.get("report_source"):
-        return None
+        return {}
     if source is None:
         source = workspace.blobs.object(sha)
     if (
@@ -166,29 +198,23 @@ def _archived_roof_count(
         or source.get("revision") != run.revision
         or source.get("input_sha256") != run.manifest.get("input_sha256")
     ):
-        return None
-    components = source.get("pv_components")
-    if (
-        not isinstance(components, dict)
-        or components.get("status") != "available"
-        or components.get("scope") == "dc_group"
-    ):
-        return None
-    rows = components.get("components")
-    return (
-        _roof_panel_count(cast(list[Object], rows))
-        if isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
-        else None
-    )
+        return {}
+    return _roof_groups(source)
 
 
 def _report_materials(
     workspace: Workspace, run: Run, result: Object, source: Object | None = None
-) -> Object | None:
+) -> tuple[Object | None, Object]:
     """Expose one verified materials projection without duplicating its rows."""
     materials_sha = result.get("materials_sha256")
     if materials_sha is None:
-        return None  # Reports frozen before the materials model retain their rows.
+        roof = _archived_roof_groups(workspace, run, source)
+        return None, {
+            **roof,
+            "saved_roof_panel_count": _roof_panel_count(
+                cast(list[Object], roof.get("saved_roof_panel_groups", []))
+            ),
+        }
     if (
         not isinstance(materials_sha, str)
         or len(materials_sha) != 64
@@ -277,7 +303,8 @@ def _report_materials(
         ),
         None,
     )
-    return {
+    panel_facts: Object = {
+        **_roof_groups(source),
         **(
             {
                 "declared_panel_count": declaration.get("quantity"),
@@ -293,6 +320,8 @@ def _report_materials(
                 if isinstance(row, dict) and row.get("handling") == "pv_reference"
             ]
         ),
+    }
+    return {
         "status": "verified",
         "sha256": materials_sha,
         "model": model,
@@ -300,7 +329,7 @@ def _report_materials(
         "unresolved_quantity_count": unresolved,
         "handling_counts": dict(sorted(handling_counts.items())),
         "scope": "provisional_not_complete_bos",
-    }
+    }, panel_facts
 
 
 def _string_link_projection(link: Object, private: str) -> Object:
@@ -1493,24 +1522,11 @@ def assistant_context(
                         ],
                     }
                 selected_run_view["protection_comparisons"] = descriptions
-            materials = _report_materials(
+            materials, panel_facts = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )
-            selected_run_view["saved_roof_panel_count"] = (
-                materials.pop("saved_roof_panel_count")
-                if materials is not None
-                else _archived_roof_count(
-                    workspace, run, source_out[0] if source_out else None
-                )
-            )
+            selected_run_view.update(panel_facts)
             if materials is not None:
-                if "declared_panel_count" in materials:
-                    selected_run_view["declared_panel_count"] = materials.pop(
-                        "declared_panel_count"
-                    )
-                    selected_run_view["declared_panel_stc_power_w"] = materials.pop(
-                        "declared_panel_stc_power_w"
-                    )
                 selected_run_view["materials"] = materials
                 installation = source_out[0].get("installation") if source_out else None
                 review = (

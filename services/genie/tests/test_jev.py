@@ -96,6 +96,38 @@ def test_saved_report_adds_material_intent_to_existing_jev_request() -> None:
     assert "time periods" in instructions and "which inverter" in instructions
 
 
+def test_selected_panel_ratings_and_counts_use_the_same_jev_request() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        posted = json.loads(request.content)
+        assert "saved_panel_count_question" in posted["questions"]
+        assert (
+            "rated watts per solar panel"
+            in posted["questions"]["saved_panel_rating_question"]["instructions"]
+        )
+        return httpx.Response(
+            200,
+            json={
+                **ANSWER,
+                "answers": {
+                    **ANSWER["answers"],
+                    "saved_panel_count_question": {"type": "noul", "noul": 0.39},
+                    "saved_panel_rating_question": {"type": "noul", "noul": 0.95},
+                },
+            },
+        )
+
+    jev, _ = _jev(handler)
+    reading = jev.read(
+        "What are the power per panel and the panel count in my saved planning report?",
+        {"type": "other", "saved_roof_panel_count_available": True},
+    )
+    assert (
+        reading.saved_panel_rating_question
+        == reading.as_log()["saved_panel_rating_question"]
+        == 0.95
+    )
+
+
 def test_a_transient_failure_is_retried() -> None:
     answers = iter([httpx.Response(503), httpx.Response(200, json=ANSWER)])
     jev, waits = _jev(lambda request: next(answers))
