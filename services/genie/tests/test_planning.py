@@ -108,6 +108,53 @@ def test_owned_report_panel_count_survives_truncated_display_rows() -> None:
     assert planning.saved_panel_count(raw, page) is None
 
 
+@pytest.mark.parametrize(
+    ("locale", "count", "expected"),
+    [
+        ("en", 4, "contains 4 solar panels"),
+        ("de", 1, "enthält 1 PV-Modul."),
+    ],
+)
+def test_answer_uses_the_selected_reports_complete_panel_count(
+    locale: str, count: int, expected: str
+) -> None:
+    from types import SimpleNamespace
+
+    from linker_genie.app import _answer
+    from linker_genie.understand import Prepared
+
+    raw, page = source()
+    raw["runs"][0].update(kind="planning_report_v1", saved_roof_panel_count=count)
+    message = (
+        "Wie viele Module sind auf meinem Dach?"
+        if locale == "de"
+        else "How many panels are on my roof?"
+    )
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "locale": locale,
+            "page_context": page.model_dump(),
+            "messages": [{"role": "user", "content": message}],
+        }
+    ).model_copy(update={"planning_context": raw})
+    reading = Reading(
+        intent="documents_specs",
+        confidence=0.9,
+        about_this_page=1,
+        wants_person=0,
+        needs_followup=0,
+        seconds=0,
+        cost=0,
+        saved_panel_count_question=1,
+    )
+    prepared = Prepared(route=Route("planning_project"), reading=reading)
+    result, _ = _answer(request, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert result.attempts == 0 and result.grounded
+    block = result.output.blocks[0]
+    assert isinstance(block, TextBlock) and expected in block.text
+
+
 def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -> None:
     raw, page = source()
     raw["runs"][0].update(
