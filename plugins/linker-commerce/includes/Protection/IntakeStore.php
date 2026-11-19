@@ -199,6 +199,54 @@ final class IntakeStore {
 		wp_cache_delete( 'alloptions', 'options' );
 	}
 
+	/** A bounded snapshot for reconciliation outside the capacity mutex.
+	 *
+	 * @return array<string,array{lane:string,action:string,order:int,fingerprint:string,binding:string,at:int}>
+	 */
+	public static function verification_entries(): array {
+		$entries = self::edit(
+			static fn ( array &$state ): array => array_filter( $state['entries'], static fn ( array $entry ): bool => 'verification' === $entry['lane'] && empty( $entry['erased'] ) )
+		);
+		return is_array( $entries ) ? $entries : array();
+	}
+
+	/** Remove only the exact resolved verification slot; keep the native order and request receipt.
+	 *
+	 * @param WC_Order $order Native source whose current notification handoff has been verified under its record lock.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public static function settle_verification( WC_Order $order ): array|WP_Error {
+		$id     = $order->get_id();
+		$result = self::edit(
+			static function ( array &$state ) use ( $order, $id ): array|WP_Error {
+				global $wpdb;
+				$request = (string) $order->get_meta( BusinessRecord::REQUEST );
+				$entry   = $state['entries'][ $request ] ?? null;
+				if ( ! is_array( $entry ) || 'verification' !== $entry['lane'] || ! empty( $entry['erased'] ) || ! in_array( (int) $entry['order'], array( 0, $id ), true ) || ! BusinessRecord::recover( $request, $entry['fingerprint'], $entry['binding'], array( 'outcome' => $id ) ) instanceof WC_Order ) {
+					return array();
+				}
+				// A fast authorization worker can finish before the original submission binds its slot.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- The existing native writer mutex must be checked on this connection under intake capacity.
+				if ( 0 === (int) $entry['order'] && '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT IS_FREE_LOCK(%s)', Lock::name( 'intake-write-' . $request ) ) ) ) {
+					return array();
+				}
+				$receipt = ( new Ledger() )->complete( $request, $entry['fingerprint'], $id );
+				if ( $receipt instanceof WP_Error ) {
+					// Historical completed sources may outlive the existing UUID receipt window.
+					if ( 'linker_admission_unknown_receipt' !== $receipt->get_error_code() || $entry['at'] + Ledger::RECEIPT_SECONDS > time() ) {
+						return $receipt;
+					}
+				} elseif ( $id !== $receipt['outcome'] || $entry['action'] !== $receipt['purpose'] || $entry['binding'] !== $receipt['binding'] ) {
+					return self::pending();
+				}
+				unset( $state['entries'][ $request ] );
+				self::save( $state );
+				return array();
+			}
+		);
+		return is_array( $result ) || $result instanceof WP_Error ? $result : self::pending();
+	}
+
 	/**
 	 * Native erasure also removes retry associations in the review registry.
 	 *
