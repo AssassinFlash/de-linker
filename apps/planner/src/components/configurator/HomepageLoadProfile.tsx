@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useId } from "react";
 import type {
 	HomepageProfileFile,
 	HomepageProfileUpload,
@@ -100,6 +100,7 @@ export function HomepageLoadProfile({
 	change: (patch: Partial<HomepageProfileForm>) => void;
 	discard?: () => void;
 }) {
+	const fileId = useId();
 	const checkMapping = useCallback(
 		(mappingValid: boolean) => change({ mappingValid }),
 		[change],
@@ -107,16 +108,35 @@ export function HomepageLoadProfile({
 	return (
 		<fieldset className="sc-card" disabled={disabled}>
 			<label className="sc-field">
-				<span>{__("Measured site load (CSV, optional)", "linker-tools")}</span>
-				<input
-					name="load_profile"
-					type="file"
-					accept=".csv,text/csv,text/plain"
-					onChange={(event) => {
-						const file = event.currentTarget.files?.[0] ?? null;
-						if (file) change({ file, recoveredFile: false, source: file.name });
-					}}
-				/>
+				<span id={fileId}>
+					{__("Measured site load (CSV, optional)", "linker-tools")}
+				</span>
+				<span className="lp-file-picker">
+					<span className="lp-file-button" aria-hidden="true">
+						{__("Choose CSV file", "linker-tools")}
+					</span>
+					<span
+						className="lp-file-name"
+						id={fileId + "-name"}
+						aria-live="polite"
+					>
+						{form.recoveredFile
+							? __("Recovered source file", "linker-tools")
+							: (form.file?.name ?? __("No file selected", "linker-tools"))}
+					</span>
+					<input
+						name="load_profile"
+						type="file"
+						aria-labelledby={fileId}
+						aria-describedby={fileId + "-name"}
+						accept=".csv,text/csv,text/plain"
+						onChange={(event) => {
+							const file = event.currentTarget.files?.[0] ?? null;
+							if (file)
+								change({ file, recoveredFile: false, source: file.name });
+						}}
+					/>
+				</span>
 			</label>
 			{form.recoveredFile && (
 				<p>

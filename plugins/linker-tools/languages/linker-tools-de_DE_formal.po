@@ -17307,6 +17307,7 @@ msgid "Estimate solar generation with PVGIS"
 msgstr "Solarstromertrag mit PVGIS schätzen"
 
 #: ../../apps/planner/src/components/configurator/HomepagePvReference.tsx
+#: build/planner/assets/planner.js
 msgid "Use the street address above for this estimate (send it to Google Maps)"
 msgstr "Oben eingegebene Straßenadresse für diese Schätzung verwenden (Adresse an Google Maps senden)"
 
