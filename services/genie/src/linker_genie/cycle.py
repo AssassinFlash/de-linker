@@ -51,6 +51,7 @@ from linker_genie.template import (
     clearance_question,
     fallback,
     finish,
+    rated_ac_power_answer,
     seal,
 )
 
@@ -432,6 +433,11 @@ def run(
         raised = False
         _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
+        rated = rated_ac_power_answer(
+            last_facts, route, customer_message(request), expected
+        )
+        if rated is not None:
+            output = rated
         with timing.phase(clock, timing.GROUND):
             result = check(
                 output,

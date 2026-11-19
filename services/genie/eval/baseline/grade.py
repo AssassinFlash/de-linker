@@ -334,10 +334,13 @@ def untraceable_numbers(
 
 
 def clauses(text: str) -> list[str]:
-    """Sentences and semicolon-separated claims, so a later negation cannot
-    license an earlier one."""
+    """Separate claims and keep periods between digits inside their numbers."""
 
-    return [part.strip() for part in re.split(r"[.!?;\n]+", text) if part.strip()]
+    return [
+        part.strip()
+        for part in re.split(r"[!?;\n]|(?<!\d)\.|\.(?!\d)", text)
+        if part.strip()
+    ]
 
 
 # A copula, colon, dash, "comes to", "liegt bei", or "of"/"von" that hands

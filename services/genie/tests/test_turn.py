@@ -8,14 +8,17 @@ from typing import Any
 import pytest
 from conftest import SHELL
 from fastapi.testclient import TestClient
+from test_turn_abilities import clients, manifest
 
 import linker_genie.app as app_module
 from linker_genie.app import app
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, TurnFacts, collect, merge
 from linker_genie.log import TurnLog
+from linker_genie.route import NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     CardsBlock,
+    DocumentBlock,
     TextBlock,
     TurnOutput,
     TurnRequest,
@@ -79,6 +82,206 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     assert "event: block" in body
     assert "event: done" in body
     assert "10 kW" in body
+
+
+@pytest.mark.parametrize("case", ["parameter", "also-requests-pdf", "backup-only"])
+def test_named_ac_rated_power_turn_cites_only_its_source_page(
+    log: TurnLog, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    question = "Welche AC-Nennleistung hat der SAJ HS2-8K-T2-X laut Datenblatt?"
+    if case == "also-requests-pdf":
+        question += " Bitte geben Sie mir auch das vollständige Datenblatt."
+    on_grid = "AC Output [Backup]" if case == "backup-only" else "AC Output [On-grid]"
+    # Turn 3 on e437a21ab: the EN projection has the rated-power row;
+    # the DE projection supplied only the other AC figure the draft used.
+    en = "0abea746ac33-p2-model-48c66ddb910103c5"
+    de = "b00de688082b-p2-model-ad95898e2b017006"
+    url = "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
+    german = "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf"
+    generic = "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+    product_id = 1184
+    facts = merge(
+        [
+            collect(
+                "linker/search-knowledge",
+                {
+                    "hits": [
+                        {
+                            "chunk_id": ref,
+                            "product_ids": [product_id],
+                            "evidence_product_id": product_id,
+                            "document_id": f"doc-{ref}",
+                            "document_revision": f"revision-{ref}",
+                            "title": title,
+                            "doc_url": pdf,
+                            "doc_type": "datasheet",
+                            "page": 2,
+                            "text": text,
+                            "figures": figures,
+                        }
+                        for ref, title, pdf, text, figures in [
+                            (
+                                de,
+                                "SAJ HS2 Dreiphasige Komplettlösung",
+                                german,
+                                "| Modell | HS2-8K-T2-X |\n"
+                                "| AC-Ausgang [Netzgekoppelt] |  |\n"
+                                "| Max. Scheinleistung [VA] | [n14=8800 VA] |\n"
+                                "| AC-Ausgang [Backup] |  |\n"
+                                "| Max. Ausgangsleistung [VA] | [n27=8000 VA] |",
+                                {f"{de}.n14": "8800 VA", f"{de}.n27": "8000 VA"},
+                            ),
+                            (
+                                en,
+                                "SAJ HS2 Three-Phase All-in-One Datasheet (EN)",
+                                url,
+                                "| MODEL | HS2-8K-T2-X |\n"
+                                f"| {on_grid} |  |\n"
+                                "| Rated AC Power [W] | [n10=8000 W] |\n"
+                                "| Max. Apparent Power [VA] | [n11=8800 VA] |",
+                                {f"{en}.n10": "8000 W", f"{en}.n11": "8800 VA"},
+                            ),
+                        ]
+                    ]
+                },
+                "de",
+            ),
+            collect(
+                "linker/get-product",
+                {
+                    "product_id": product_id,
+                    "documents": [
+                        {"url": "https://de-linker.com/other.pdf"},
+                        {"url": generic, "title": "SAJ HS2 series datasheet (EN)"},
+                    ],
+                },
+                "de",
+            ),
+        ]
+    )
+    route = Route(
+        "documents",
+        no_handoff=True,
+        named_models=(NamedModel("HS2-8K-T2-X", (product_id,)),),
+    )
+    # The stored turn contains hydrated prose, not the raw model draft.
+    # Reconstruct its fact placeholders and explicit blocks before hydration.
+    draft = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(
+                text=(
+                    "Der SAJ HS2-8K-T2-X ist ein dreiphasiger Wechselrichter für Wohngebäude. "
+                    "Laut Datenblatt im Abschnitt „HS2/AS2 Three Phase All-in-One Solution“ "
+                    f"liegt die **AC-Nennleistung** im netzgekoppelten Betrieb bei {{fact:{en}.n10}}. "
+                    "Die **maximale Scheinleistung** nennt das deutsche Datenblatt im Abschnitt "
+                    f"„HS2 Dreiphasige Komplettlösung“ mit {{fact:{de}.n14}}."
+                ),
+                refs=[en, de, str(product_id)],
+            ),
+            CardsBlock(product_ids=[product_id]),
+            DocumentBlock(ref=f"p{product_id}.document.1"),
+        ],
+    )
+    if case == "backup-only":
+        draft = TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(
+                    text="Die Unterlagen nennen keine AC-Nennleistung für den Netzbetrieb.",
+                    refs=[en],
+                )
+            ],
+        )
+    raw = manifest(product_id)
+    raw["documents"] = [
+        {
+            "document_id": f"doc-{ref}",
+            "document_revision": f"revision-{ref}",
+            "blob_sha256": "a" * 64,
+            "url": pdf,
+            "product_ids": [product_id],
+        }
+        for ref, pdf in [(en, url), (de, german), ("generic", generic)]
+    ]
+    monkeypatch.setattr(app.state, "prepare", lambda _: Prepared(route, facts))
+    monkeypatch.setattr(
+        app.state, "generate", lambda *_: (draft, TurnFacts()), raising=False
+    )
+    with clients(raw, {"product_id": product_id}) as (abilities, authority, _):
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(app_module, "ability_client", lambda: abilities)
+        sse = _post("observed-rated-power", question, locale="de")
+    blocks = _blocks(sse)
+    assert _meta(sse)["grounded"] and not _meta(sse)["fallback"]
+    if case == "also-requests-pdf":
+        assert any(block.get("url") == generic for block in blocks)
+        return
+    if case == "backup-only":
+        assert "keine AC-Nennleistung für den Netzbetrieb" in blocks[0]["text"]
+        assert "8000 W" not in blocks[0]["text"]
+        return
+    assert [block["type"] for block in blocks] == ["text", "document"]
+    assert blocks[0]["text"] == (
+        "Die AC-Nennleistung des HS2-8K-T2-X beträgt im Netzbetrieb 8000 W."
+    )
+    assert blocks[0]["refs"] == [en]
+    assert blocks[1]["ref"] == en
+    assert blocks[1]["url"] == f"{url}#page=2"
+    assert blocks[1]["evidence_product_id"] == product_id
+
+
+@pytest.mark.parametrize("unbound", [False, True])
+def test_product_list_keeps_grounded_power_not_bare_model_numbers(
+    log: TurnLog, monkeypatch: pytest.MonkeyPatch, unbound: bool
+) -> None:
+    ids = [6527, 6528]
+    facts = collect(
+        "linker/search-products",
+        {
+            "qualified": [
+                {"product_id": 6527, "facts": {"ac_power_kw": 8}},
+                {"product_id": 6528, "facts": {"ac_power_kw": 10}},
+            ]
+        },
+        "en",
+    )
+    draft = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "The two closest to the output you named are rated at "
+                    "{fact:p6527.ac_power_kw} and {fact:p6528.ac_power_kw}."
+                    + (" The price class is 93." if unbound else "")
+                ),
+                refs=[str(pid) for pid in ids],
+            ),
+            CardsBlock(product_ids=ids),
+        ],
+    )
+    monkeypatch.setattr(
+        app.state,
+        "prepare",
+        lambda _: Prepared(Route("products", show_products=True), facts),
+    )
+    monkeypatch.setattr(
+        app.state, "generate", lambda *_: (draft, TurnFacts()), raising=False
+    )
+    raw = manifest(ids[0])
+    raw["products"].extend(manifest(ids[1])["products"])
+    with clients(raw) as (abilities, authority, _):
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(app_module, "ability_client", lambda: abilities)
+        sse = _post(
+            "observed-product-list-power",
+            "Please prepare a product list with 2 hybrid inverters around 10 kW. I want to save the list to my account.",
+        )
+    blocks = _blocks(sse)
+    assert not _meta(sse)["fallback"]
+    assert "rated at 8 kW and 10 kW." in blocks[0]["text"]
+    assert "93" not in blocks[0]["text"]
+    assert blocks[1]["product_ids"] == ids
 
 
 @pytest.mark.parametrize("model_count", [None, 1, 2])
