@@ -17,16 +17,18 @@ from linker_engine.planning.workspace import Workspace
 
 from .conftest import json_object
 from .test_certificate_evidence import condition_project, evidence
+from .test_pv_generation import geometry
 
 
 @pytest.mark.parametrize(
-    ("count", "power", "active"),
+    ("count", "power", "active", "old_layout"),
     [
-        (16, 430, True),
-        (16, None, True),
-        (None, 430, True),
-        (None, None, True),
-        (16, 430, False),
+        (16, 430, True, False),
+        (16, 430, True, True),
+        (16, None, True, False),
+        (None, 430, True, False),
+        (None, None, True, False),
+        (16, 430, False, False),
     ],
 )
 def test_saved_report_keeps_only_the_active_known_panel_declaration(
@@ -37,9 +39,12 @@ def test_saved_report_keeps_only_the_active_known_panel_declaration(
     count: int | None,
     power: int | None,
     active: bool,
+    old_layout: bool,
 ) -> None:
     inputs = json_object(condition_project())
     inputs.pop("equipment_condition_inputs")
+    if old_layout:
+        inputs["geometry"] = geometry()
     inputs.update(
         known_panel_details={"count": count, "power_w": power, "system_kwp": 11},
         pvgis_reference_setup={
