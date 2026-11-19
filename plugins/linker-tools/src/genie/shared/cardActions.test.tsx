@@ -58,7 +58,7 @@ test( 'adding to the draft shows the settled status in the card', async () => {
 	const { result } = hook( client );
 
 	await act( async () => {
-		await result.current.addToDraft( 5, 'signed-a' );
+		await result.current.addToDraft( 5, 'signed-a', 1 );
 	} );
 
 	expect( client.addAll ).toHaveBeenCalledWith(

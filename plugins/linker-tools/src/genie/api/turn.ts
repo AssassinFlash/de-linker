@@ -61,6 +61,7 @@ export interface CardsBlock {
 	prices?: CardPrice[] | null;
 	/** Exact live action proofs, signed by WordPress after current validation. */
 	draft_proofs?: Record< string, string >;
+	quantities?: Record< string, number >;
 }
 
 /** A comparison of two to four products. */

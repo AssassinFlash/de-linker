@@ -19,7 +19,7 @@ import {
 	rememberInquiry,
 } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
-import { idsOf, pricesOf, proofsOf } from './shared/blocks';
+import { idsOf, pricesOf, proofsOf, quantitiesOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
@@ -1945,6 +1945,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
 	const cardProofs = proofsOf( turn?.blocks ?? [] );
+	const cardQuantities = quantitiesOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	// A failed initial owner lookup also interrupted the first history load.
@@ -2720,6 +2721,9 @@ export function App( { config }: { config: GenieConfig } ) {
 											<GenieCard
 												key={ productId }
 												productId={ productId }
+												quantity={
+													cardQuantities[ productId ]
+												}
 												restUrl={ config.restUrl }
 												store={ store }
 												locale={ config.locale }
@@ -2731,10 +2735,11 @@ export function App( { config }: { config: GenieConfig } ) {
 														line.product_id ===
 														productId
 												) }
-												onAdd={ ( id ) =>
+												onAdd={ ( id, quantity ) =>
 													addCardToDraft(
 														id,
-														cardProofs[ id ]
+														cardProofs[ id ],
+														quantity
 													)
 												}
 												onSave={ ( id, title ) =>

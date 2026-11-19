@@ -13,8 +13,14 @@ import linker_genie.app as app_module
 from linker_genie.app import app
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.log import TurnLog
-from linker_genie.schema import CardsBlock, TextBlock, TurnOutput, TurnRequest
-from linker_genie.understand import nothing
+from linker_genie.schema import (
+    ActionBlock,
+    CardsBlock,
+    TextBlock,
+    TurnOutput,
+    TurnRequest,
+)
+from linker_genie.understand import Prepared, nothing
 
 
 @pytest.fixture(autouse=True)
@@ -73,6 +79,76 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     assert "event: block" in body
     assert "event: done" in body
     assert "10 kW" in body
+
+
+@pytest.mark.parametrize("model_count", [None, 1, 2])
+def test_card_and_action_carry_the_requested_count(
+    log: TurnLog, model_count: int | None
+) -> None:
+    def prepare(request: TurnRequest) -> Prepared:
+        prepared = nothing(request)
+        prepared.card_quantities = {4107: 2}
+        return prepared
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        output, facts = _generate(request, retry)
+        args = {"product_id": 4107}
+        if model_count is not None:
+            args["quantity"] = model_count
+        output.blocks.append(ActionBlock(name="add_to_draft", args=args))
+        facts.product_ids.add(4106)
+        facts.qualified_ids.add(4106)
+        output.blocks.append(
+            ActionBlock(name="add_to_draft", args={"product_id": 4106, "quantity": 2})
+        )
+        output.blocks.append(
+            ActionBlock(name="save_solution", args={"product_id": 4107, "quantity": 1})
+        )
+        return output, facts
+
+    app.state.prepare = prepare
+    app.state.generate = generate
+    response = TestClient(app, headers=SHELL).post(
+        "/assistant/turn",
+        json={
+            "conversation_id": "c1",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Please prepare a product list with 2 SAJ H2-10K-T3 inverters. I want to save the list to my account.",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200
+    blocks = [
+        json.loads(event.split("data: ", 1)[1])
+        for event in response.text.split("\n\n")
+        if event.startswith("event: block\n")
+    ]
+    assert next(block for block in blocks if block["type"] == "cards")[
+        "quantities"
+    ] == {"4107": 2}
+    assert next(block for block in blocks if block.get("name") == "add_to_draft")[
+        "args"
+    ] == {"product_id": 4107, "quantity": 2}
+    assert (
+        next(
+            block
+            for block in blocks
+            if block.get("name") == "add_to_draft"
+            and block["args"]["product_id"] == 4106
+        )["args"]["quantity"]
+        == 1
+    )
+    assert (
+        next(block for block in blocks if block.get("name") == "save_solution")["args"][
+            "quantity"
+        ]
+        == 2
+    )
 
 
 def test_turn_alias_is_the_same_handler(log: TurnLog) -> None:

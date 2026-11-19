@@ -10,7 +10,7 @@
  * External dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -55,6 +55,7 @@ type Load =
 
 export function GenieCard( {
 	productId,
+	quantity,
 	restUrl,
 	store,
 	locale,
@@ -64,12 +65,13 @@ export function GenieCard( {
 	onSave,
 }: {
 	productId: number;
+	quantity?: number;
 	restUrl: string;
 	store: ReturnType< typeof storeClient >;
 	locale: string;
 	status: { state: CardState; text: string };
 	price?: CardPrice;
-	onAdd: ( productId: number ) => void;
+	onAdd: ( productId: number, quantity: number ) => void;
 	onSave: ( productId: number, title: string ) => void;
 } ) {
 	const [ load, setLoad ] = useState< Load >( {
@@ -132,6 +134,15 @@ export function GenieCard( {
 			role={ __( 'Product', 'linker-tools' ) }
 			title={ product.name }
 			model={ modelText }
+			quantity={
+				quantity
+					? sprintf(
+							/* translators: %d is the product quantity. */
+							__( '× %d', 'linker-tools' ),
+							quantity
+						)
+					: undefined
+			}
 			price={ priceLine( price ) }
 			url={ product.permalink }
 			image={ product.images[ 0 ] }
@@ -153,7 +164,7 @@ export function GenieCard( {
 					type="button"
 					className="linker-genie-app__card-action linker-genie-app__card-action--primary"
 					disabled={ 'pending' === status.state }
-					onClick={ () => onAdd( productId ) }
+					onClick={ () => onAdd( productId, quantity ?? 1 ) }
 				>
 					{ __( 'Add to solution draft', 'linker-tools' ) }
 				</button>,

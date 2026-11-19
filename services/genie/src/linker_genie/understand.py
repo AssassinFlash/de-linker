@@ -97,6 +97,7 @@ class Prepared:
     # add-to-draft action. The turn is the service's own (parts.answer), no model
     # writes it, so nothing here can be invented.
     parts_list: parts.PartsList | None = None
+    card_quantities: dict[int, int] = field(default_factory=dict)
     # This layer's own phase timings (#336, timing.py); the app adopts them into
     # the turn's clock. None when the layer did not time itself.
     timing: timing.Timing | None = None
@@ -345,6 +346,8 @@ class Understander:
         prepared = Prepared(
             route=route, log=log, reading=reading, readings=fresh, timing=clock
         )
+        if vocabulary is not None:
+            prepared.card_quantities = parts.card_quantities(message, matches, vocabulary)
         _run_calls(prepared, request, client, self._search, self._pages, clock)
         _add_readings(
             prepared,

@@ -349,6 +349,20 @@ def _compute_turn(
         # logged with the turn, never swallowed (prices.fill).
         prepared.log["price_failures"] = list(result.price_failures)
     shipped = result.output.model_dump()
+    for block in shipped["blocks"]:
+        if block["type"] == "cards":
+            quantities = {
+                pid: prepared.card_quantities[pid]
+                for pid in block["product_ids"]
+                if pid in prepared.card_quantities
+            }
+            if quantities:
+                block["quantities"] = quantities
+        elif block.get("name") in ("add_to_draft", "save_solution"):
+            args = block["args"]
+            pid = args.get("product_id")
+            if type(pid) is int and prepared.card_quantities:
+                args["quantity"] = prepared.card_quantities.get(pid, 1)
     if any(
         call.get("name") == planning.NAME and call.get("ok") is True
         for call in result.facts.tool_calls

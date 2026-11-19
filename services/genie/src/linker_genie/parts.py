@@ -259,6 +259,51 @@ def _quantity(value: str) -> int | None:
     return None
 
 
+def card_quantities(
+    message: str, matches: list[Match], vocabulary: Vocabulary
+) -> dict[int, int]:
+    """Counts immediately attached to a catalog model or SKU in this message."""
+    counts: dict[int, int] = {}
+    for match in matches:
+        if match.kind != "model" or len(match.product_ids) != 1:
+            continue
+        product_id = next(iter(match.product_ids))
+        words = re.findall(r"[\w.]+", match.words)
+        if not words:
+            continue
+        model = r"[\s-]+".join(re.escape(word) for word in words)
+        brands = [
+            vocabulary.brand_names.get(slug, slug)
+            for slug in vocabulary.brand_of.get(product_id, ())
+        ]
+        if brands:
+            brand = "|".join(re.escape(name) for name in brands)
+            model = rf"(?:(?:{brand})\s+)?{model}"
+        for named in re.finditer(rf"(?<![\w-]){model}(?![\w-])", message, re.I):
+            before = re.search(
+                rf"(?<![\w.,+/-])([0-9]+)(?:\s*{_QTY_UNIT}\.?)?\s+$",
+                message[: named.start()],
+                re.I,
+            )
+            after = re.match(
+                r"\s*[×x*]\s*([0-9]+)(?!\w|[.,]\d)", message[named.end() :], re.I
+            )
+            for adjacent in (before, after):
+                if adjacent:
+                    digits = adjacent[1].lstrip("0")
+                    count = (
+                        int(digits) if 0 < len(digits) <= len(str(MAX_QUANTITY)) else 0
+                    )
+                    # Zero keeps a conflicting or out-of-range request unsigned.
+                    counts[product_id] = (
+                        count
+                        if count <= MAX_QUANTITY
+                        and counts.get(product_id, count) == count
+                        else 0
+                    )
+    return counts
+
+
 def _without_quantity(value: str) -> str:
     """The text without the row numbering, bullet and quantity it led/trailed with."""
     text = _NUMBERING.sub("", value.strip())

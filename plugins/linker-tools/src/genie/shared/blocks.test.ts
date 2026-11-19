@@ -13,7 +13,7 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import type { Block } from '../api/turn';
-import { idsOf, pricesOf } from './blocks';
+import { idsOf, pricesOf, proofsOf, quantitiesOf } from './blocks';
 
 const BLOCKS: Block[] = [
 	{ type: 'text', text: 'These fit.', refs: [] },
@@ -42,4 +42,18 @@ test( 'the price lines come with the cards block', () => {
 test( 'no block means no ids and no prices', () => {
 	expect( idsOf( [ BLOCKS[ 0 ] ], 'cards' ) ).toEqual( [] );
 	expect( pricesOf( [ BLOCKS[ 0 ] ] ) ).toEqual( [] );
+} );
+
+test( 'reopening an unsigned turn shows the original action quantity without making a new proof', () => {
+	const stored: Block[] = [
+		{ type: 'cards', product_ids: [ 4107 ] },
+		{
+			type: 'action',
+			name: 'add_to_draft',
+			args: { product_id: 4107, quantity: 2 },
+		},
+		{ type: 'action', name: 'save_solution', args: {} },
+	];
+	expect( quantitiesOf( stored ) ).toEqual( { 4107: 2 } );
+	expect( proofsOf( stored ) ).toEqual( {} );
 } );

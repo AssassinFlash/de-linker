@@ -168,6 +168,29 @@ def test_saved_report_weather_uses_only_matching_native_planning_context(
             assert prepared.facts.facts == {}
 
 
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        (
+            "Please prepare a product list with 2 SAJ H2-10K-T3 inverters. I want to save the list to my account.",
+            {4107: 2},
+        ),
+        ("Bitte 2 Stück SAJ H2-10K-T3 und SAJ CB2-100.3-HV5 aufnehmen.", {4107: 2}),
+        ("Please save DLK-SAJ-H210KT3 × 3 inverters to my account.", {4107: 3}),
+        ("Save SAJ H2-10K-T3 for a 10 kW site.", {}),
+        ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", {4107: 0}),
+        ("Save 12000 SAJ H2-10K-T3 inverters to my account.", {4107: 0}),
+    ],
+)
+def test_named_product_counts_in_the_customer_message(
+    vocabulary: Vocabulary, message: str, expected: dict[int, int]
+) -> None:
+    prepared = Understander(lambda: vocabulary, None).prepare(
+        _request(message), _abilities([])
+    )
+    assert prepared.card_quantities == expected
+
+
 def test_saj_is_searched_by_code_before_the_model(vocabulary: Vocabulary) -> None:
     seen: list[httpx.Request] = []
     understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))

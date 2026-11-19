@@ -52,7 +52,12 @@ import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
-import { idsOf, pricesOf, proofsOf } from '../genie/shared/blocks';
+import {
+	idsOf,
+	pricesOf,
+	proofsOf,
+	quantitiesOf,
+} from '../genie/shared/blocks';
 import { useCardActions } from '../genie/shared/cardActions';
 import { buildQuestion, typeModelPrompt } from '../genie/shared/conversation';
 import {
@@ -928,6 +933,7 @@ export function HeroConversation( {
 	const compareIds = idsOf( blocks, 'compare' );
 	const cardPrices = pricesOf( blocks );
 	const cardProofs = proofsOf( blocks );
+	const cardQuantities = quantitiesOf( blocks );
 	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
 	const offersInquiry = blocks.some(
@@ -1114,6 +1120,7 @@ export function HeroConversation( {
 								<GenieCard
 									key={ productId }
 									productId={ productId }
+									quantity={ cardQuantities[ productId ] }
 									restUrl={ config.restUrl }
 									store={ store }
 									locale={ locale }
@@ -1122,8 +1129,12 @@ export function HeroConversation( {
 										( line ) =>
 											line.product_id === productId
 									) }
-									onAdd={ ( id ) =>
-										addCardToDraft( id, cardProofs[ id ] )
+									onAdd={ ( id, quantity ) =>
+										addCardToDraft(
+											id,
+											cardProofs[ id ],
+											quantity
+										)
 									}
 									onSave={ ( id, title ) =>
 										saveCardSolution(
