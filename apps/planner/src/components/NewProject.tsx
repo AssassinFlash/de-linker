@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -20,6 +21,10 @@ import { formatDecimal } from "../domain/decimal.ts";
 import type { Configuration } from "../data/config.ts";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
+import {
+	HomepageDemand,
+	hasComparisonDemand,
+} from "./configurator/HomepageDemand.tsx";
 import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
 
 import {
@@ -47,6 +52,7 @@ export function NewProject({
 	hidden = false,
 	creationPending = false,
 	beginCreation,
+	homeComparison,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -71,7 +77,13 @@ export function NewProject({
 	hidden?: boolean;
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
+	homeComparison?: {
+		picker: ReactNode;
+		savedProject: string;
+		compareSaved: (projectId: string) => void;
+	};
 }) {
+	const compareAtHome = Boolean(homeComparison);
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
@@ -83,6 +95,19 @@ export function NewProject({
 	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
+	const [demandError, setDemandError] = useState(false);
+	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
+		new Set(),
+	);
+	const reportDemand = useCallback((field: string, valid: boolean) => {
+		setInvalidDemand((before) => {
+			if (before.has(field) === !valid) return before;
+			const next = new Set(before);
+			if (valid) next.delete(field);
+			else next.add(field);
+			return next;
+		});
+	}, []);
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
@@ -118,9 +143,10 @@ export function NewProject({
 		...seed,
 		brief: {
 			...seedBrief,
-			system_scope: compareOnLoad
-				? seedBrief.system_scope
-				: (seedBrief.system_scope ?? "new_pv_storage"),
+			system_scope:
+				compareOnLoad || compareAtHome
+					? seedBrief.system_scope
+					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
 	};
 	const seeded =
@@ -147,6 +173,7 @@ export function NewProject({
 		)
 			setCarriedProduct(false);
 		setDraft(changed);
+		setDemandError(false);
 		return true;
 	}
 	const [checking, setChecking] = useState(true);
@@ -193,10 +220,13 @@ export function NewProject({
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
 			.then((records) => {
 				if (!active || !client.isCurrentScope(session.query_scope)) return;
-				const matching = records.filter(
-					(record) =>
-						(record.destination === "preliminary-review") === compareOnLoad,
-				);
+				const matching = records.filter((record) => {
+					if (compareAtHome) return record.destination === "guided-comparison";
+					return (
+						record.destination !== "guided-comparison" &&
+						(record.destination === "preliminary-review") === compareOnLoad
+					);
+				});
 				setRequests(matching);
 				if (openWork.current || !matching[0]) return;
 				restoreCreation(matching[0]);
@@ -218,6 +248,7 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
+		compareAtHome,
 		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
@@ -243,6 +274,20 @@ export function NewProject({
 			(!intent.current && !direction && (!title.trim() || !brief.system_scope))
 		)
 			return;
+		if (compareAtHome && !intent.current) {
+			const goal = energyGoal(inputs);
+			const invalidVisible =
+				(invalidDemand.has("pv") &&
+					brief.system_scope !== "storage_only" &&
+					!hasPlant(inputs)) ||
+				(goal === "backup" &&
+					(invalidDemand.has("load") || invalidDemand.has("duration"))) ||
+				(goal === "peak" && invalidDemand.has("peak"));
+			if (!hasComparisonDemand(inputs, brief) || invalidVisible) {
+				setDemandError(true);
+				return;
+			}
+		}
 		const releaseCreation = beginCreation?.();
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
@@ -278,11 +323,13 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = direction
-					? "preliminary-review"
-					: brief.system_scope === "storage_only"
-						? null
-						: "design";
+				destination.current = compareAtHome
+					? "guided-comparison"
+					: direction
+						? "preliminary-review"
+						: brief.system_scope === "storage_only"
+							? null
+							: "design";
 			}
 			await store
 				.writeCreation(originScope, intent.current, destination.current)
@@ -496,15 +543,36 @@ export function NewProject({
 				{__("New project", "linker-tools")}
 			</button>
 		);
+	const compareLabel = compareAtHome
+		? __("Compare project options", "linker-tools")
+		: __("New project", "linker-tools");
+	if (homeComparison?.savedProject && !intent.current) {
+		return (
+			<form
+				className="sc-main"
+				aria-label={compareLabel}
+				onSubmit={(event) => {
+					event.preventDefault();
+					homeComparison.compareSaved(homeComparison.savedProject);
+				}}
+			>
+				{homeComparison.picker}
+				<button className="sc-button sc-primary" type="submit">
+					{__("Compare systems", "linker-tools")}
+				</button>
+			</form>
+		);
+	}
 	return (
 		<form
 			className="sc-main"
-			aria-label={__("New project", "linker-tools")}
+			aria-label={compareLabel}
 			onSubmit={(event) => {
 				event.preventDefault();
 				void submit();
 			}}
 		>
+			{!busy && !intent.current && homeComparison?.picker}
 			{entryHints &&
 				!intent.current &&
 				(hasCarriedValues || entryHints.invalid) && (
@@ -650,6 +718,14 @@ export function NewProject({
 					</Notice>
 				)}
 			{pendingRequests}
+			{demandError && (
+				<Notice error>
+					{__(
+						"Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
 			<ProjectDetails
 				inputs={inputs}
 				config={config ?? { locale, countries: {} }}
@@ -667,12 +743,34 @@ export function NewProject({
 					changeTitle: setTitle,
 					locked: Boolean(intent.current),
 					submitDisabled: waitingForProduct,
+					comparison: compareAtHome,
 					...(busy
-						? { submitLabel: __("Creating…", "linker-tools") }
+						? {
+								submitLabel: compareAtHome
+									? __("Preparing comparison…", "linker-tools")
+									: __("Creating…", "linker-tools"),
+							}
 						: failed
-							? { submitLabel: __("Retry project creation", "linker-tools") }
-							: {}),
+							? {
+									submitLabel: compareAtHome
+										? __("Try again", "linker-tools")
+										: __("Retry project creation", "linker-tools"),
+								}
+							: compareAtHome
+								? { submitLabel: __("Compare systems", "linker-tools") }
+								: {}),
 				}}
+				demand={
+					compareAtHome && (
+						<HomepageDemand
+							inputs={inputs}
+							brief={brief}
+							locale={locale}
+							edit={edit}
+							validity={reportDemand}
+						/>
+					)
+				}
 				existingEquipment={
 					config && (
 						<ProjectEquipment
@@ -681,6 +779,7 @@ export function NewProject({
 							scope={session.query_scope}
 							disabled={busy || Boolean(intent.current)}
 							edit={edit}
+							intake={compareAtHome}
 						/>
 					)
 				}

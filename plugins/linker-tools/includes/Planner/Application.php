@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Planner;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 /** No layout, inline script, style or browser-selected identity is emitted. */
 final class Application {
 
@@ -219,12 +221,29 @@ final class Application {
 		wp_set_script_module_translations( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
 	}
 
-	/** WordPress owns routes/language/country labels; no private credential. */
-	public function mount(): string {
+	/**
+	 * WordPress owns routes, language and country labels.
+	 *
+	 * @param array<string,string>|string $attributes Native shortcode attributes.
+	 */
+	public function mount( array|string $attributes = array() ): string {
 		if ( is_admin() || $this->mounted ) {
 			return '';
 		}
-		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
+		$homepage = is_array( $attributes ) && 'home' === ( $attributes['mode'] ?? '' );
+		$target   = '';
+		if ( $homepage ) {
+			if ( ! is_front_page() ) {
+				return '';
+			}
+			$target = class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator' ) : '';
+			if ( '' === $target ) {
+				return '';
+			}
+		}
+		if ( ! $homepage || is_user_logged_in() ) {
+			\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
+		}
 		$this->mounted = true;
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );
@@ -255,8 +274,9 @@ final class Application {
 			)
 		);
 		return sprintf(
-			'<section data-linker-planner data-planner-config="%s"><p role="status">%s</p></section>',
+			'<section data-linker-planner data-planner-config="%s"%s><p role="status">%s</p></section>',
 			esc_attr( is_string( $config ) ? $config : '{}' ),
+			$homepage ? sprintf( ' data-planner-home-url="%s"', esc_url( $target ) ) : '',
 			esc_html__( 'Opening your workspace…', 'linker-tools' )
 		);
 	}

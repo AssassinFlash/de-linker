@@ -17269,3 +17269,23 @@ msgstr "Projektdaten eingeben"
 #: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
 msgid "This report is no longer in your solution draft."
 msgstr "Dieser Bericht ist nicht mehr in Ihrem Lösungsentwurf."
+
+#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
+msgid "Compare options for your project"
+msgstr "Anlagenoptionen für Ihr Projekt vergleichen"
+
+#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
+msgid "Enter your project details or use a saved project."
+msgstr "Geben Sie Ihre Projektdaten ein oder wählen Sie ein gespeichertes Projekt."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Compare project options"
+msgstr "Projektoptionen vergleichen"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Preparing comparison…"
+msgstr "Vergleich wird vorbereitet …"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run."
+msgstr "Wählen Sie Projektart, Zweck und Netzanschluss. Geben Sie für Ersatzstrom die Last und die gewünschte Dauer ein."

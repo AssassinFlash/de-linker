@@ -17,7 +17,8 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
-export type CreationDestination = "design" | "equipment" | "preliminary-review";
+export type CreationDestination =
+	"design" | "equipment" | "preliminary-review" | "guided-comparison";
 
 export interface CreationIntent {
 	readonly key: string;
@@ -174,7 +175,8 @@ export class DraftStore {
 			destination !== null &&
 			destination !== "design" &&
 			destination !== "equipment" &&
-			destination !== "preliminary-review"
+			destination !== "preliminary-review" &&
+			destination !== "guided-comparison"
 		)
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
@@ -239,7 +241,8 @@ export class DraftStore {
 			destination !== null &&
 			destination !== "design" &&
 			destination !== "equipment" &&
-			destination !== "preliminary-review"
+			destination !== "preliminary-review" &&
+			destination !== "guided-comparison"
 		)
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
@@ -650,7 +653,8 @@ function scanCreations(
 				destination !== null &&
 				destination !== "design" &&
 				destination !== "equipment" &&
-				destination !== "preliminary-review"
+				destination !== "preliminary-review" &&
+				destination !== "guided-comparison"
 			)
 				throw new Error("invalid_creation_recovery");
 			bytes += new TextEncoder().encode(value.body).length;

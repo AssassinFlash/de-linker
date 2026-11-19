@@ -1037,6 +1037,8 @@
 /* System configurator presentation from the approved November 17 prototype. */
 @layer components {
   .sc-configurator { width: 100%; min-width: 0; max-width: 1376px; margin-inline: auto; padding: 12px 32px 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
+  .sc-configurator.sc-home-comparison { padding-block: 32px; }
+  .sc-home-comparison > .sc-main > fieldset > .sc-fields + .sc-fields { margin-block-start: 20px; }
   .sc-configurator *, .sc-configurator *::before, .sc-configurator *::after { box-sizing: border-box; }
   .sc-configurator :is(h1, h2, h3, p) { margin: 0; color: inherit; }
   .sc-configurator :is(h1, h2, h3) { font-family: inherit; font-weight: 600; }

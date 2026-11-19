@@ -28,6 +28,105 @@ const session = {
 	},
 };
 
+test("the home form creates a comparison with the supplied data in a single submit", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const commands = [];
+	const opened = [];
+	const client = {
+		invalidate() {},
+		async bootstrap() {
+			return session;
+		},
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async send(path, body) {
+			assert.equal(path, "projects/create");
+			const command = JSON.parse(body);
+			commands.push(command);
+			return {
+				id: projectId,
+				revision: 1,
+				title: command.title,
+				inputs: command.inputs,
+				input_sha256: "2".repeat(64),
+			};
+		},
+		async query() {
+			throw new Error("The test user does not select hardware.");
+		},
+	};
+	const store = {
+		async readCreations() {
+			return [];
+		},
+		async writeCreation(_, _body, destination) {
+			assert.equal(destination, "guided-comparison");
+		},
+		async clearCreation() {},
+	};
+	const root = createRoot(fixture.element);
+	t.after(async () => fixture.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(SessionBoundary, { client }, (value, recheck) =>
+				React.createElement(NewProject, {
+					session: value,
+					client,
+					store,
+					recheck,
+					openOnLoad: true,
+					config: { locale: "en", countries: { DE: "Germany" } },
+					homeComparison: { picker: null, savedProject: "", compareSaved() {} },
+					created: (project, destination) => {
+						opened.push([project.id, destination]);
+						return true;
+					},
+				}),
+			),
+		),
+	);
+	const findForm = () =>
+		document.querySelector('form[aria-label="Compare project options"]');
+	await until(findForm);
+	const form = findForm();
+	const title = form.querySelector('[name="project_title"]');
+	await until(() => !title.disabled && !title.closest("fieldset").disabled);
+	function field(name) {
+		return form.querySelector('[name="' + name + '"]');
+	}
+	async function select(name, value) {
+		await act(async () => {
+			const input = field(name);
+			input.value = value;
+			input.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	await enter(title, "Berlin workshop");
+	await select("country", "DE");
+	await select("system_scope", "storage_only");
+	await select("project_purpose", "backup");
+	await select("grid_phase", "3");
+	await enter(field("backup_load_kw"), "3");
+	await enter(field("backup_duration_hours"), "2");
+	assert.equal(commands.length, 0);
+	const submit = form.querySelector('button[type="submit"]');
+	assert.equal(submit.textContent.trim(), "Compare systems");
+	await act(async () => submit.click());
+	await until(() => opened.length === 1);
+	assert.equal(commands.length, 1);
+	assert.equal(commands[0].inputs.brief.site.country_code, "DE");
+	assert.equal(commands[0].inputs.equipment_setup.grid_phase, 3);
+	assert.deepEqual(commands[0].inputs.backup_demand, {
+		schema_version: 1,
+		load_kw: 3,
+		duration_hours: 2,
+	});
+	assert.deepEqual(opened, [[projectId, "guided-comparison"]]);
+});
+
 test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
 	const fixture = setupDom();
 	window.history.replaceState(
