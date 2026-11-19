@@ -1364,7 +1364,9 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
         for text in _model_texts(output):
             # Keep placeholders intact when separating the model's clauses.
             for clause in re.split(r"[,;\n]|[.!?](?=\s|$)", text):
-                prose = PLACEHOLDER.sub("", clause)
+                # Preserve offsets so only the value inside the shared-current
+                # assertion can supply evidence for a different product.
+                prose = PLACEHOLDER.sub(lambda m: " " * len(m.group()), clause)
                 scope = _COMBINED_INPUTS.search(prose)
                 if scope is None or not re.search(
                     r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
@@ -1376,7 +1378,7 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                 # Negation must apply to the sharing assertion itself. A later
                 # “not available at each input” does not negate “is shared”.
                 if re.search(
-                    r"\b(?:not|nicht|kein(?:e[nmrs]?)?)\s+(?:a\s+)?$",
+                    r"\b(?:not\s+(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
                     prose[: scope.start()],
                     re.I,
                 ) or re.search(
@@ -1387,9 +1389,13 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
                     continue
                 owners = {
                     fact.id.partition(".")[0]
-                    for ref in leftover_placeholders(clause)
+                    for ref in leftover_placeholders(
+                        clause[scope.start() : scope.end()]
+                    )
                     if (fact := _fact_known(facts, ref)) is not None
                     and fact.source == "datasheet-figures"
+                    and fact.value.endswith(" A")
+                    and fact.per_input_current_direction is None
                     and fact.id in facts.supporting_documents
                 }
                 if owners and owners.isdisjoint(qualified_owners):

@@ -188,6 +188,26 @@ def test_negated_shared_limit_keeps_the_qualified_answer(clarification: str) -> 
     assert clarification in prose
 
 
+def test_german_negation_of_the_shared_scope_keeps_its_answer() -> None:
+    clarification = "Dieser Grenzwert gilt nicht für beide Eingänge zusammen."
+    prose, _ = answer(
+        "{fact:p1179.max_battery_charge_a}\n" + clarification,
+        product(1179),
+        locale="de",
+    )
+    assert "50 A je Batterieeingang." in prose
+    assert clarification in prose
+
+
+def test_other_product_port_count_does_not_support_a_shared_current() -> None:
+    prose, _ = answer(
+        "{fact:p1179.max_battery_charge_a}\nThat current is shared between both inputs unlike the other inverter with {fact:p1181.n_battery_ports} ports.",
+        product(1179),
+        product(1181),
+    )
+    assert "shared between both inputs" not in prose
+
+
 def test_another_models_documented_total_can_follow_a_per_input_limit() -> None:
     other = collect(
         "linker/get-product",
