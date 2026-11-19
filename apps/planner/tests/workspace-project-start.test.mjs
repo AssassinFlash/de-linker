@@ -154,6 +154,7 @@ test("visitors with project data can open setup from the comparison and keep the
 	await act(async () => setup().click());
 	await until(() => document.querySelector('select[name="system_scope"]'));
 	assert.equal(location.hash, "#sc-project");
+	assert.equal(document.activeElement.textContent, "What is the project?");
 	assert.equal(new URL(location.href).searchParams.get("project"), null);
 	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
 	assert.equal(document.querySelector('a[hreflang="de"]').hash, "#sc-project");
@@ -167,6 +168,31 @@ test("visitors with project data can open setup from the comparison and keep the
 		document.querySelector('input[name="project_title"]'),
 		"Oslo storage",
 	);
+	await enter(
+		document.querySelector('input[name="location_label"]'),
+		"Oslo 0150",
+	);
+	await act(async () => history.back());
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.equal(
+		Boolean(document.querySelector('input[name="project_title"]')),
+		false,
+	);
+	assert.equal(document.activeElement.textContent, "Preliminary options");
+	await act(async () => history.forward());
+	await until(() => document.querySelector('input[name="project_title"]'));
+	assert.equal(document.activeElement.textContent, "What is the project?");
+	assert.equal(
+		document.querySelector('input[name="project_title"]').value,
+		"Oslo storage",
+	);
+	assert.equal(
+		document.querySelector('input[name="location_label"]').value,
+		"Oslo 0150",
+	);
+	assert.deepEqual(creates, []);
 
 	listed = [
 		{
@@ -487,6 +513,7 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	await until(() => !button("Enter project details").disabled);
 	await act(async () => refine.click());
 	await until(() => document.body.textContent.includes("What is the project?"));
+	assert.equal(document.activeElement.textContent, "What is the project?");
 	assert.equal(
 		document.querySelector('select[name="system_scope"]')?.value,
 		"storage_only",
@@ -495,9 +522,26 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	assert.equal(location.search, "?project=" + projectId);
 	assert.equal(created.length, 2, "No additional creation request was sent");
 	assert.equal(revisions.length, 1, "Opening setup did not revise the project");
+	accepted = {
+		...accepted,
+		revision: 3,
+		inputs: {
+			...accepted.inputs,
+			brief: { ...accepted.inputs.brief, system_scope: "pv_only" },
+		},
+	};
 	await act(async () => history.back());
 	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
 	assert.equal(location.hash, "#sc-preliminary-review");
+	assert.equal(
+		fixture.element.querySelector('[name="linker_preliminary_project"]').value,
+		projectId + ":3",
+	);
+	assert.match(
+		fixture.element.querySelector(".linker-inquiry-draft").textContent,
+		/Planned system: Solar/,
+	);
+	assert.equal(previews.at(-1)?.revision, 3);
 	assert.equal(
 		fixture.element.querySelector('[name="message"]').value,
 		"Frage aus der deutschen Ansicht",

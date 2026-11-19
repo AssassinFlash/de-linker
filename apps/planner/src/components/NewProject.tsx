@@ -44,6 +44,7 @@ export function NewProject({
 	openOnLoad = false,
 	compareOnLoad = false,
 	enterDetails,
+	hidden = false,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -64,6 +65,7 @@ export function NewProject({
 	openOnLoad?: boolean;
 	compareOnLoad?: boolean;
 	enterDetails?: () => void;
+	hidden?: boolean;
 }) {
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
@@ -79,7 +81,7 @@ export function NewProject({
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
-		Boolean(entryHints?.productId),
+		!hidden && Boolean(entryHints?.productId),
 	);
 	const [draft, setDraft] = useState<JsonObject | null>(null);
 	const [carriedProduct, setCarriedProduct] = useState(true);
@@ -180,7 +182,7 @@ export function NewProject({
 		};
 	}, [session.query_scope]);
 	useEffect(() => {
-		if (recoveryChecking || !admitted) return;
+		if (hidden || recoveryChecking || !admitted) return;
 		let active = true;
 		setChecking(true);
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
@@ -211,6 +213,7 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
+		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
@@ -409,6 +412,7 @@ export function NewProject({
 					"linker-tools",
 				);
 
+	if (hidden) return null;
 	if (compareOnLoad) {
 		const disabled =
 			busy ||
@@ -420,22 +424,22 @@ export function NewProject({
 		const retry = Boolean(intent.current);
 		return (
 			<section className="sc-main">
-				{enterDetails && (
-					<div className="sc-actions">
-						<button
-							className="sc-button"
-							type="button"
-							disabled={disabled || retry}
-							onClick={enterDetails}
-						>
-							{__("Enter project details", "linker-tools")}
-						</button>
-					</div>
-				)}
 				<PreliminaryOptions
 					inputs={inputs}
 					disabled={disabled || retry}
 					choose={(direction) => void submit(direction)}
+					action={
+						enterDetails && (
+							<button
+								className="sc-button"
+								type="button"
+								disabled={disabled || retry}
+								onClick={enterDetails}
+							>
+								{__("Enter project details", "linker-tools")}
+							</button>
+						)
+					}
 				/>
 				{pendingRequests}
 				{busy && <p role="status">{__("Creating…", "linker-tools")}</p>}

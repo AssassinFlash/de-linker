@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import type { JsonObject } from "../../data/protocol.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __ } from "../../i18n.ts";
@@ -17,10 +17,12 @@ export function PreliminaryOptions({
 	inputs,
 	disabled,
 	choose,
+	action,
 }: {
 	inputs: JsonObject;
 	disabled: boolean;
 	choose: (scope: NonNullable<Brief["system_scope"]>) => void;
+	action?: ReactNode;
 }) {
 	const optionsHeading = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
@@ -85,6 +87,7 @@ export function PreliminaryOptions({
 							)}
 						</p>
 					</div>
+					{action}
 				</header>
 				<table
 					role="table"
