@@ -16319,8 +16319,12 @@ msgid "Grid import peak without storage"
 msgstr "Netzbezugsspitze ohne Speicher"
 
 #: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
-msgid "These optimistic bounds assume a full battery at the start and lossless storage. Actual operation depends on the remaining equipment and operating checks."
-msgstr "Diese Grenzen gelten unter günstigen Annahmen: Die Batterie ist zu Beginn voll und der Speicher arbeitet verlustfrei. Für den tatsächlichen Betrieb stehen weitere Geräte- und Betriebsprüfungen aus."
+msgid "Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage."
+msgstr "Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze. Die Berechnung setzt eine verlustfreie Speicherung voraus."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "The lower bound assumes a full battery at the start and lossless storage."
+msgstr "Die Untergrenze setzt einen zu Beginn voll geladenen Speicher ohne Speicherverluste voraus."
 
 #: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
 msgid "Find a product"
