@@ -691,12 +691,49 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Give this handoff a native Woo destination in each language, even on bare CI.
+	 *
+	 * @param string $page Woo page key (cart or checkout).
+	 */
+	private function paired_destination( string $page ): void {
+		$pages = array();
+		foreach ( array( 'en', 'de' ) as $language ) {
+			$id = wp_insert_post(
+				array(
+					'post_type'   => 'page',
+					'post_status' => 'publish',
+					'post_title'  => "Inquiry fixture {$page} {$language}",
+				),
+				true
+			);
+			$this->assertIsInt( $id );
+			$this->later(
+				static function () use ( $id ): void {
+					wp_delete_post( $id, true );
+				}
+			);
+			pll_set_post_language( $id, $language );
+			$pages[ $language ] = $id;
+		}
+		pll_save_post_translations( $pages );
+		$option = 'pre_option_woocommerce_' . $page . '_page_id';
+		$base   = static fn (): int => $pages['en'];
+		add_filter( $option, $base );
+		$this->later(
+			static function () use ( $option, $base ): void {
+				remove_filter( $option, $base );
+			}
+		);
+	}
+
+	/**
 	 * Completed browser retry returns the same native order after the cart was emptied.
 	 *
 	 * @dataProvider reviewed_drafts
 	 * @param bool $guest Guest with a product selection, or returning customer with a report.
 	 */
 	public function test_native_inquiry_retry_is_idempotent_and_payload_changes_are_refused( bool $guest ): void {
+		$this->paired_destination( $guest ? 'cart' : 'checkout' );
 		$session = WC()->session;
 		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
 		if ( $guest ) {
