@@ -560,7 +560,8 @@ msgstr "Das Produkt dem Lösungsentwurf hinzufügen"
 msgid "Add to current draft"
 msgstr "Zum Entwurf hinzufügen"
 
-#: build/genie.js:1 build/hero.js
+#: build/genie.js:1 build/hero.js build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
@@ -10040,6 +10041,10 @@ msgid "New quantity"
 msgstr "Neue Menge"
 
 #: build/planner/assets/planner.js
+msgid "Confirm and continue to inquiry"
+msgstr "Bestätigen und weiter zur Anfrage"
+
+#: build/planner/assets/planner.js
 msgid "Confirm changes"
 msgstr "Änderungen bestätigen"
 
@@ -17256,3 +17261,7 @@ msgstr "Keine passenden Projekte gefunden."
 #: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js
 msgid "Enter project details"
 msgstr "Projektdaten eingeben"
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "This report is no longer in your solution draft."
+msgstr "Dieser Bericht ist nicht mehr in Ihrem Lösungsentwurf."

@@ -25,6 +25,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	let reportOnly = false;
 	let reportChanges = [];
 	let phaseConflicts;
+	const inquiryUrls = { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` };
 	const client = {
 		origin,
 		isCurrentScope: () => true,
@@ -41,6 +42,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				snapshot_sha256: "e".repeat(64),
 				already_present: false,
 				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+				inquiry_urls: inquiryUrls,
 				...(reportOnly
 					? { changes: reportChanges, report_only: true }
 					: {
@@ -105,7 +107,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		dom.element.textContent,
 		/Grid phase mismatch\. Selected inverter: 1\. Project requirement: 3\. You can send an inquiry to discuss the configuration\./,
 	);
-	await act(async () => button("Confirm changes").click());
+	assert.equal(applied.length, 0);
+	await act(async () => button("Confirm and continue to inquiry").click());
 	assert.deepEqual(applied, [
 		[
 			"draft/apply",
@@ -123,7 +126,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		button("Add selected products to solution draft").click(),
 	);
 	assert.doesNotMatch(dom.element.textContent, /Grid phase mismatch/);
-	assert.equal(button("Confirm changes").disabled, false);
+	assert.equal(button("Add to solution draft").disabled, false);
 
 	const { default: catalog } = await import(
 		"../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
@@ -140,7 +143,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 		dom.element.textContent,
 		/Der ausgewählte Wechselrichter hat 1, das Projekt erfordert 3\. Senden Sie uns bei Bedarf eine Anfrage zur Konfiguration\./,
 	);
-	assert.equal(button("Änderungen bestätigen").disabled, false);
+	assert.equal(button("Bestätigen und weiter zur Anfrage").disabled, false);
+	assert.equal(button("Zum Lösungsentwurf hinzufügen").disabled, false);
 	phaseConflict = undefined;
 	phaseConflicts = [
 		{ unit: "Depot · East", actual: 1, required: 3 },
@@ -163,7 +167,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await act(async () => button("Attach report to inquiry").click());
 	assert.match(dom.element.textContent, /Depot · East: Grid phase mismatch/);
 	assert.match(dom.element.textContent, /West: Grid phase mismatch/);
-	await act(async () => button("Attach report to inquiry").click());
+	assert.equal(applied.length, 1);
+	await act(async () => button("Confirm and continue to inquiry").click());
 	assert.equal(applied.length, 2);
 
 	phaseConflicts = undefined;
@@ -200,6 +205,214 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	assert.match(dom.element.textContent, /GoodWe inverter/);
 	assert.equal(applied.length, 3);
 });
+
+for (const current of [true, false])
+	test(`confirmation only opens inquiry for the current report (${current})`, async (t) => {
+		const dom = setupDom();
+		const { createRoot } = await import("react-dom/client");
+		const { DraftTransferButton } =
+			await import("../src/components/energy/DraftTransferButton.tsx");
+		const root = createRoot(dom.element);
+		t.after(() => dom.dispose(root));
+		const origin = window.location.origin;
+		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+		const startUrl = location.href;
+		const inquiryUrl = startUrl + "#inquiry";
+		const inquiryUrls = { en: inquiryUrl, de: `${origin}/de/anfrage/` };
+		const inquiryPages = { en: `${origin}/inquiry/`, de: inquiryUrls.de };
+		const applied = deferred();
+		const started = deferred();
+		const client = {
+			origin,
+			isCurrentScope: () => true,
+			async query() {
+				return {
+					schema_version: 1,
+					project_id: run.project_id,
+					report_run_id: run.id,
+					revision: run.revision,
+					handoff_id: "c".repeat(32),
+					draft_sha256: "d".repeat(64),
+					snapshot_sha256: "e".repeat(64),
+					already_present: false,
+					changes: [{ product_id: 1, label: "Inverter", before: 0, after: 1 }],
+					draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+					inquiry_urls: inquiryPages,
+				};
+			},
+		};
+		const operations = {
+			records: [],
+			async start() {
+				started.resolve();
+				return applied.promise;
+			},
+		};
+		const render = (blocked, current = true) =>
+			act(async () =>
+				root.render(
+					React.createElement(DraftTransferButton, {
+						run,
+						client,
+						operations,
+						scope: "owned",
+						locale: "en",
+						current,
+						blocked,
+						recheck() {},
+					}),
+				),
+			);
+		const button = (label) =>
+			[...dom.element.querySelectorAll("button")].find(
+				(item) => item.textContent.trim() === label,
+			);
+		await render(false);
+		await act(async () =>
+			button("Add selected products to solution draft").click(),
+		);
+		await act(async () => button("Confirm and continue to inquiry").click());
+		await started.promise;
+		await render(true, current);
+		await act(async () =>
+			applied.resolve({
+				path: "draft/apply",
+				intent: { key: "attached" },
+				receipt: {
+					urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+					inquiryUrls,
+				},
+			}),
+		);
+		assert.equal(location.href, current ? inquiryUrl : startUrl);
+	});
+
+for (const active of [undefined, false])
+	test(`an applied product report has the appropriate actions for its current draft (${active})`, async (t) => {
+		const dom = setupDom();
+		const { createRoot } = await import("react-dom/client");
+		const { DraftTransferButton } =
+			await import("../src/components/energy/DraftTransferButton.tsx");
+		const root = createRoot(dom.element);
+		t.after(() => dom.dispose(root));
+		const origin = window.location.origin;
+		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+		const command = {
+			schema_version: 1,
+			project_id: run.project_id,
+			report_run_id: run.id,
+			expected_revision: run.revision,
+			expected_draft_sha256: "d".repeat(64),
+			key: "3909eb85-2936-43a8-8b53-c13114084498",
+		};
+		const record = {
+			path: "draft/apply",
+			body: JSON.stringify(command),
+			key: command.key,
+			resultId: null,
+		};
+		const handoff = "c".repeat(32);
+		const acknowledged = [];
+		let previewed = 0;
+		const client = {
+			origin,
+			isCurrentScope: () => true,
+			async query(path, request) {
+				assert.equal(path, "draft/preview");
+				assert.equal(request.report_run_id, run.id);
+				previewed++;
+				return {
+					schema_version: 1,
+					project_id: run.project_id,
+					report_run_id: run.id,
+					revision: run.revision,
+					handoff_id: handoff,
+					draft_sha256: "f".repeat(64),
+					snapshot_sha256: "e".repeat(64),
+					already_present: false,
+					changes: [{ product_id: 1, label: "Inverter", before: 0, after: 1 }],
+					draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+				};
+			},
+			async send(path, body) {
+				assert.equal(path, "draft/read");
+				assert.equal(body, record.body);
+				return {
+					schema_version: 1,
+					state: "applied",
+					...(active === undefined ? {} : { active }),
+					receipt: {
+						schema_version: 1,
+						project_id: run.project_id,
+						report_run_id: run.id,
+						revision: run.revision,
+						handoff_id: handoff,
+						intent_sha256: "d".repeat(64),
+						snapshot_sha256: "e".repeat(64),
+						items: [{ id: 1, quantity: 1 }],
+						draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+						inquiry_urls: {
+							en: `${origin}/inquiry/`,
+							de: `${origin}/de/anfrage/`,
+						},
+					},
+				};
+			},
+		};
+		const render = (records) =>
+			act(async () =>
+				root.render(
+					React.createElement(DraftTransferButton, {
+						client,
+						current: true,
+						blocked: false,
+						locale: "de_DE_formal",
+						operations: {
+							records,
+							async acknowledgeReadback(...args) {
+								acknowledged.push(args);
+							},
+							start() {
+								assert.fail("Recovery attempted another transfer");
+							},
+						},
+						run,
+						scope: "owned",
+						recheck() {},
+					}),
+				),
+			);
+		await render([record]);
+		assert.deepEqual(acknowledged, [[record, handoff]]);
+		if (active === false) {
+			assert.equal(
+				[...dom.element.querySelectorAll("a")].some(
+					(link) => link.textContent === "Continue to inquiry",
+				),
+				false,
+			);
+			await render([]);
+			const add = [...dom.element.querySelectorAll("button")].find(
+				(item) =>
+					item.textContent === "Add selected products to solution draft",
+			);
+			assert.equal(add?.disabled, false);
+			await act(async () => add.click());
+			assert.equal(previewed, 1);
+			assert.match(dom.element.textContent, /Inverter/);
+			return;
+		}
+		assert.deepEqual(
+			[...dom.element.querySelectorAll("a")].map(({ textContent, href }) => [
+				textContent,
+				href,
+			]),
+			[
+				["Continue to inquiry", `${origin}/de/anfrage/`],
+				["View solution draft", `${origin}/de/entwurf/`],
+			],
+		);
+	});
 
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
 	const dom = setupDom();
@@ -946,6 +1159,71 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 			staleTransfer.closest(".sc-draft-transfer").textContent,
 			/Your inquiry uses the current report/,
 		);
+		await act(async () => root.render(null));
+		cache.clear();
+		project.revision = current.revision;
+		project.input_sha256 = current.manifest.input_sha256;
+		currentSummary.is_current = true;
+		const { planningIntentStore } =
+			await import("../src/data/PlanningIntentStore.ts");
+		const body = JSON.stringify({
+			schema_version: 1,
+			project_id: current.project_id,
+			report_run_id: current.id,
+			expected_revision: current.revision,
+			expected_draft_sha256: "d".repeat(64),
+			key: "3909eb85-2936-43a8-8b53-c13114084498",
+		});
+		await planningIntentStore.write(scope, "draft/apply", body);
+		const transfer = [];
+		const priorSend = client.send;
+		client.send = async (path, raw) => {
+			if (path !== "draft/read" && path !== "draft/apply")
+				return priorSend(path, raw);
+			transfer.push(path);
+			assert.equal(raw, body);
+			if (path === "draft/read")
+				return { schema_version: 1, state: "not_applied" };
+			return {
+				schema_version: 1,
+				project_id: current.project_id,
+				report_run_id: current.id,
+				revision: current.revision,
+				handoff_id: "c".repeat(32),
+				intent_sha256: "d".repeat(64),
+				snapshot_sha256: "e".repeat(64),
+				items: [],
+				report_only: true,
+				draft_urls: {
+					en: location.origin + "/inquiry/",
+					de: location.origin + "/de/anfrage/",
+				},
+				inquiry_urls: {
+					en: location.origin + "/inquiry/",
+					de: location.origin + "/de/anfrage/",
+				},
+			};
+		};
+		client.origin = location.origin;
+		const priorQuery = client.query;
+		client.query = (path, command) =>
+			path === "projects/runs"
+				? Promise.resolve({ items: [currentSummary], next: null })
+				: priorQuery(path, command);
+		window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
+		await render("en");
+		await until(() => button("Retry transfer"));
+		await until(() => transfer.includes("draft/read"));
+		assert.equal(button("Retry transfer").disabled, false);
+		assert.equal(Boolean(button("Check previous request")), false);
+		await act(async () => button("Retry transfer").click());
+		const inquiryLink = () =>
+			[...dom.element.querySelectorAll("a")].find(
+				(link) => link.textContent === "Continue to inquiry",
+			);
+		await until(inquiryLink);
+		assert.equal(inquiryLink().href, location.origin + "/inquiry/");
+		assert.deepEqual(transfer, ["draft/read", "draft/apply"]);
 	} finally {
 		await dom.dispose(root);
 		cache.clear();

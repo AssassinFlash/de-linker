@@ -4,12 +4,14 @@ import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 
 export interface DraftReceipt {
+	readonly active?: boolean;
 	readonly handoffId: string;
 	readonly snapshotSha256: string;
 	readonly projectId: string;
 	readonly reportRunId: string;
 	readonly revision: number;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
+	readonly inquiryUrls: Readonly<Record<"en" | "de", string>> | null;
 }
 export interface DraftPreview {
 	readonly draftSha256: string;
@@ -20,6 +22,7 @@ export interface DraftPreview {
 	}[];
 	readonly alreadyPresent: boolean;
 	readonly urls: Readonly<Record<"en" | "de", string>>;
+	readonly inquiryUrls: Readonly<Record<"en" | "de", string>> | null;
 	readonly changes: readonly {
 		readonly productId: number;
 		readonly label: string;
@@ -55,6 +58,7 @@ export function readDraftReceipt(
 	const row = lineage(value, command),
 		urls = readObject(row.draft_urls);
 	if (
+		(row.active !== undefined && typeof row.active !== "boolean") ||
 		!hash(row.intent_sha256, 64) ||
 		!Array.isArray(row.items) ||
 		(row.items.length === 0) !== (row.report_only === true)
@@ -75,13 +79,20 @@ export function readDraftReceipt(
 	}
 	const destinations = readUrls(urls, origin);
 	return {
+		...(row.active === undefined ? {} : { active: row.active }),
 		handoffId: String(row.handoff_id),
 		snapshotSha256: String(row.snapshot_sha256),
 		projectId: String(row.project_id),
 		reportRunId: String(row.report_run_id),
 		revision: Number(row.revision),
 		urls: destinations,
+		inquiryUrls: readInquiryUrls(row, origin),
 	};
+}
+function readInquiryUrls(row: JsonObject, origin: string) {
+	return row.inquiry_urls === undefined
+		? null
+		: readUrls(readObject(row.inquiry_urls), origin);
 }
 function readUrls(
 	urls: JsonObject,
@@ -166,6 +177,7 @@ export function readDraftPreview(
 		changes,
 		alreadyPresent: row.already_present,
 		urls: readUrls(readObject(row.draft_urls), origin),
+		inquiryUrls: readInquiryUrls(row, origin),
 	};
 }
 

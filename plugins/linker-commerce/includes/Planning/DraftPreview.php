@@ -96,7 +96,7 @@ final class DraftPreview {
 			'draft_sha256'    => self::fingerprint(),
 			'changes'         => $rows,
 			'already_present' => $present,
-			'draft_urls'      => DraftTransfer::urls( $report_only ),
+			...DraftTransfer::destinations( $report_only ),
 			...( $report_only ? array( 'report_only' => true ) : array() ),
 			...( array() !== $phase_conflicts ? array( 'phase_conflicts' => $phase_conflicts ) : array() ),
 		);

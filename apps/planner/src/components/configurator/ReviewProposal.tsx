@@ -439,6 +439,21 @@ interface ReportHistory {
 	loadMore: () => void;
 }
 
+export function reportCanTransfer(
+	run: PlanningRun | null,
+	report = run?.result ? reportFromRun(run) : null,
+): boolean {
+	if (!run?.result || !report) return false;
+	return (
+		run.result.has_report_only_handoff === true ||
+		(typeof run.result.has_draft_items === "boolean"
+			? run.result.has_draft_items
+			: report.sections.some(
+					(section) => section.id === "bom" && section.table?.rows.length,
+				))
+	);
+}
+
 export function ReviewProposal({
 	project,
 	inputs,
@@ -449,6 +464,7 @@ export function ReviewProposal({
 	operations,
 	locale,
 	blocked,
+	transferBlocked = blocked,
 	current,
 	generate,
 	askGenie,
@@ -463,6 +479,7 @@ export function ReviewProposal({
 	operations: ReturnType<typeof usePlanningOperations>;
 	locale: string;
 	blocked: boolean;
+	transferBlocked?: boolean;
 	current: boolean;
 	generate: (logo: string | null) => void;
 	askGenie: (run: PlanningRun) => void;
@@ -572,15 +589,7 @@ export function ReviewProposal({
 		</div>
 	);
 	const reportOnly = run?.result?.has_report_only_handoff === true;
-	const transferable =
-		run?.result &&
-		report &&
-		(reportOnly ||
-			(typeof run.result.has_draft_items === "boolean"
-				? run.result.has_draft_items
-				: report.sections.some(
-						(section) => section.id === "bom" && section.table?.rows.length,
-					)));
+	const transferable = reportCanTransfer(run, report);
 
 	const brief = inputs.brief === undefined ? null : readBrief(inputs.brief);
 	const country = brief?.site.country_code;
@@ -626,7 +635,7 @@ export function ReviewProposal({
 				operations={operations}
 				reportOnly={reportOnly}
 				current={current}
-				blocked={blocked}
+				blocked={transferBlocked}
 				locale={locale}
 				recheck={recheck}
 			/>

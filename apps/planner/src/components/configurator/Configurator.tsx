@@ -23,6 +23,7 @@ import {
 } from "@tanstack/react-query";
 import {
 	readRunInputs,
+	readPlanningOperation,
 	readRun,
 	readRunPage,
 	runPending,
@@ -82,7 +83,7 @@ import {
 	type SystemComparison,
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
-import { ReviewProposal } from "./ReviewProposal.tsx";
+import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
 import { ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
 import {
@@ -480,7 +481,7 @@ export default function Configurator({
 		void history.refetch();
 	}
 	const modelsUnavailable = legacyModels && comparisonInputs === undefined;
-	const blocked =
+	const independentlyBlocked =
 		!admitted ||
 		recoveryChecking ||
 		recoveryFailed ||
@@ -491,8 +492,9 @@ export default function Configurator({
 		operations.checking ||
 		operations.storageFailed ||
 		controller.recoveries.length > 0 ||
-		Boolean(draft?.pending || draft?.conflict) ||
-		operations.records.some((r) => r.resultId === null);
+		Boolean(draft?.pending || draft?.conflict);
+	const blocked =
+		independentlyBlocked || operations.records.some((r) => r.resultId === null);
 	const edit = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject): boolean => {
 			if (
@@ -907,6 +909,22 @@ export default function Configurator({
 			: step === "solar" && brief.system_scope === "storage_only"
 				? "energy"
 				: step;
+	const currentReport = Boolean(
+		reportRun &&
+		reportRun.revision === draft.baseline.revision &&
+		!isDirty(draft),
+	);
+	const activeTransferRunId =
+		activeStep === "review" && currentReport && reportCanTransfer(reportRun)
+			? reportRun?.id
+			: undefined;
+	const otherUnconfirmed = unconfirmed.filter(
+		(record) =>
+			record.path !== "draft/apply" ||
+			!activeTransferRunId ||
+			readPlanningOperation(record.path, record.body).report_run_id !==
+				activeTransferRunId,
+	);
 	return (
 		<div className="sc-configurator sc-project-workbench" ref={workbench}>
 			<ProjectHeading
@@ -1120,7 +1138,7 @@ export default function Configurator({
 					{__("Finding equipment for your project…", "linker-tools")}
 				</p>
 			)}
-			{unconfirmed.map((record) => (
+			{otherUnconfirmed.map((record) => (
 				<div className="sc-card" key={record.key}>
 					<p>
 						{__(
@@ -1452,11 +1470,8 @@ export default function Configurator({
 							operations={operations}
 							locale={config.locale}
 							blocked={blocked || modelsUnavailable}
-							current={Boolean(
-								reportRun &&
-								reportRun.revision === draft.baseline.revision &&
-								!isDirty(draft),
-							)}
+							transferBlocked={independentlyBlocked || modelsUnavailable}
+							current={currentReport}
 							generate={(logo) => void generate(logo)}
 							askGenie={(run) => setGenieReportId(run.id)}
 							recheck={recheck}

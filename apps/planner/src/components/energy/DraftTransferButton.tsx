@@ -7,7 +7,11 @@ import {
 import type { DraftPreview, DraftReceipt } from "../../data/draftTransfer.ts";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { readPlanningOperation } from "../../data/planningProtocol.ts";
-import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import type { PlanningIntent } from "../../data/PlanningIntentStore.ts";
+import type {
+	PlanningReply,
+	usePlanningOperations,
+} from "../../data/usePlanningOperations.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -35,18 +39,20 @@ export function DraftTransferButton({
 	recheck: () => void;
 	reportOnly?: boolean;
 }) {
+	const pending = operations.records.some((record) => record.resultId === null);
+	const transferBlocked = blocked || pending;
 	const [preview, setPreview] = useState<DraftPreview | null>(null),
 		[preparing, setPreparing] = useState(false),
 		[checking, setChecking] = useState(false),
+		[checkedBody, setCheckedBody] = useState<string | null>(null),
 		[receipt, setReceipt] = useState<DraftReceipt | null>(null),
 		[error, setError] = useState<unknown>(null),
-		[presentUrls, setPresentUrls] = useState<Readonly<
-			Record<"en" | "de", string>
-		> | null>(null);
+		[present, setPresent] = useState<DraftPreview | null>(null);
 	const confirmed = useRef<{ key: string; receipt: DraftReceipt } | null>(null),
 		flight = useRef<AbortController | null>(null),
 		lifetime = useRef(0),
-		transferEnabled = useRef(current && !blocked);
+		transferEnabled = useRef(current && !transferBlocked),
+		currentReport = useRef(current);
 	const record = useMemo(
 		() =>
 			operations.records
@@ -69,8 +75,9 @@ export function DraftTransferButton({
 		if (!current) setPreview(null);
 	}, [current]);
 	useLayoutEffect(() => {
-		transferEnabled.current = current && !blocked;
-	}, [current, blocked]);
+		transferEnabled.current = current && !transferBlocked;
+		currentReport.current = current;
+	}, [current, transferBlocked]);
 
 	useEffect(() => {
 		if (!record || operations.busy) {
@@ -94,21 +101,27 @@ export function DraftTransferButton({
 				const status = readObject(raw);
 				if (
 					status.schema_version !== 1 ||
-					!["applied", "not_applied"].includes(String(status.state))
+					!["applied", "not_applied"].includes(String(status.state)) ||
+					(status.active !== undefined && typeof status.active !== "boolean")
 				)
 					throw new ApiError(502, "invalid_draft_receipt");
+				if (status.state === "not_applied") setError(null);
 				if (status.state === "applied") {
-					const value = readDraftReceipt(
+					const receipt = readDraftReceipt(
 						status.receipt,
 						readPlanningOperation(record.path, record.body),
 						client.origin,
 					);
-					if (record.resultId !== null && record.resultId !== value.handoffId)
+					if (record.resultId !== null && record.resultId !== receipt.handoffId)
 						throw new ApiError(502, "invalid_draft_receipt");
-					confirmed.current = { key: record.key, receipt: value };
-					setReceipt(value);
+					const recovered =
+						status.active === undefined
+							? receipt
+							: { ...receipt, active: status.active };
+					confirmed.current = { key: record.key, receipt: recovered };
+					setReceipt(recovered);
 					setError(null);
-					await operations.acknowledgeReadback(record, value.handoffId);
+					await operations.acknowledgeReadback(record, receipt.handoffId);
 				}
 			})
 			.catch((cause) => {
@@ -122,7 +135,9 @@ export function DraftTransferButton({
 				else setError(cause);
 			})
 			.finally(() => {
-				if (admitted()) setChecking(false);
+				if (!admitted()) return;
+				setCheckedBody(record.body);
+				setChecking(false);
 			});
 		return () => {
 			active = false;
@@ -133,7 +148,7 @@ export function DraftTransferButton({
 	async function prepare() {
 		if (
 			flight.current ||
-			blocked ||
+			transferBlocked ||
 			!current ||
 			preparing ||
 			operations.busy ||
@@ -167,12 +182,12 @@ export function DraftTransferButton({
 				client.isCurrentScope(scope)
 			) {
 				const value = readDraftPreview(raw, command, client.origin);
+				setReceipt(null);
 				if (value.alreadyPresent) {
-					setPresentUrls(value.urls);
+					setPresent(value);
 					setPreview(null);
 				} else {
-					setPresentUrls(null);
-					setReceipt(null);
+					setPresent(null);
 					if (
 						reportOnly &&
 						value.changes.length === 0 &&
@@ -201,7 +216,8 @@ export function DraftTransferButton({
 			}
 		}
 	}
-	async function confirm(preview: DraftPreview) {
+	const language = locale.startsWith("de") ? "de" : "en";
+	async function confirm(preview: DraftPreview, continueToInquiry = false) {
 		if (!transferEnabled.current || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current;
 		const reply = await operations.start("draft/apply", {
@@ -209,18 +225,44 @@ export function DraftTransferButton({
 			report_run_id: run.id,
 			expected_draft_sha256: preview.draftSha256,
 		});
-		if (
-			reply?.path === "draft/apply" &&
-			instance === lifetime.current &&
-			client.isCurrentScope(scope)
-		) {
-			confirmed.current = { key: reply.intent.key, receipt: reply.receipt };
-			setReceipt(reply.receipt);
-			setPreview(null);
-			setError(null);
-		}
+		applyReceipt(reply, instance, continueToInquiry);
 	}
-	const readyUrls = current ? (receipt?.urls ?? presentUrls) : null;
+	function applyReceipt(
+		reply: PlanningReply | undefined,
+		instance: number,
+		continueToInquiry = false,
+	) {
+		if (
+			reply?.path !== "draft/apply" ||
+			instance !== lifetime.current ||
+			!client.isCurrentScope(scope)
+		)
+			return;
+		confirmed.current = { key: reply.intent.key, receipt: reply.receipt };
+		setReceipt(reply.receipt);
+		setPreview(null);
+		setError(null);
+		if (
+			continueToInquiry &&
+			currentReport.current &&
+			reply.receipt.active !== false &&
+			reply.receipt.inquiryUrls
+		)
+			window.location.assign(reply.receipt.inquiryUrls[language]);
+	}
+	async function retry(record: PlanningIntent) {
+		if (retryBlocked || !currentReport.current || !client.isCurrentScope(scope))
+			return;
+		setCheckedBody(null);
+		const instance = lifetime.current;
+		applyReceipt(await operations.retry(record), instance);
+	}
+	const retired = current && receipt?.active === false;
+	const ready = current && !retired ? (receipt ?? present) : null;
+	const readyUrls = ready?.urls;
+	const inquiryUrl =
+		ready?.inquiryUrls?.[language] ??
+		(reportOnly ? readyUrls?.[language] : undefined);
 	const operationError =
 		operations.intent?.path === "draft/apply" &&
 		readPlanningOperation("draft/apply", operations.intent.body)
@@ -228,12 +270,16 @@ export function DraftTransferButton({
 			? operations.error
 			: null;
 	const failure = !current || readyUrls ? null : (error ?? operationError),
-		busy =
-			preparing ||
-			checking ||
-			operations.busy ||
-			operations.checking ||
-			blocked;
+		busy = preparing || checking || operations.busy || operations.checking;
+	const transferBusy = busy || transferBlocked;
+	const retryBlocked =
+		busy ||
+		(record !== null && checkedBody !== record.body) ||
+		blocked ||
+		operations.storageFailed ||
+		operations.records.some(
+			(other) => other !== record && other.resultId === null,
+		);
 	const addLabel = reportOnly
 		? __("Attach report to inquiry", "linker-tools")
 		: __("Add selected products to solution draft", "linker-tools");
@@ -262,28 +308,37 @@ export function DraftTransferButton({
 									)}
 						</p>
 					)}
-					<a
-						className="lp-button"
-						href={readyUrls[locale.startsWith("de") ? "de" : "en"]}
-					>
-						{reportOnly
-							? __("Continue to inquiry", "linker-tools")
-							: __("View solution draft", "linker-tools")}
-					</a>
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={busy || !current}
-						onClick={() => {
-							setReceipt(null);
-							setPresentUrls(null);
-							void prepare();
-						}}
-					>
-						{addLabel}
-					</button>
+					<div className="lp-inline-actions">
+						{inquiryUrl && (
+							<a className="lp-button" href={inquiryUrl}>
+								{__("Continue to inquiry", "linker-tools")}
+							</a>
+						)}
+						{!reportOnly && (
+							<a
+								className={
+									inquiryUrl ? "lp-button lp-button-secondary" : "lp-button"
+								}
+								href={readyUrls[language]}
+							>
+								{__("View solution draft", "linker-tools")}
+							</a>
+						)}
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={transferBusy || !current}
+							onClick={() => {
+								setReceipt(null);
+								setPresent(null);
+								void prepare();
+							}}
+						>
+							{addLabel}
+						</button>
+					</div>
 				</>
-			) : record && current ? (
+			) : record && current && !retired ? (
 				<>
 					<p>
 						{__(
@@ -294,8 +349,8 @@ export function DraftTransferButton({
 					<button
 						type="button"
 						className="lp-button"
-						disabled={busy || operations.storageFailed}
-						onClick={() => void operations.retry(record)}
+						disabled={retryBlocked}
+						onClick={() => void retry(record)}
 					>
 						{__("Retry transfer", "linker-tools")}
 					</button>
@@ -315,11 +370,24 @@ export function DraftTransferButton({
 									)}
 						</Notice>
 					)}
+					{retired && !preview && (
+						<Notice>
+							{__(
+								"This report is no longer in your solution draft.",
+								"linker-tools",
+							)}
+						</Notice>
+					)}
 					{!preview ? (
 						<button
 							type="button"
 							className="lp-button"
-							disabled={busy || !current || operations.storageFailed}
+							disabled={
+								transferBusy ||
+								!current ||
+								operations.storageFailed ||
+								Boolean(record)
+							}
 							onClick={() => void prepare()}
 						>
 							{preparing ? __("Preparing changes…", "linker-tools") : addLabel}
@@ -370,20 +438,42 @@ export function DraftTransferButton({
 									)}
 								</Notice>
 							))}
-							<button
-								type="button"
-								className="lp-button"
-								disabled={busy || !current || operations.storageFailed}
-								onClick={() => void confirm(preview)}
-							>
-								{operations.busy
-									? reportOnly
-										? __("Attaching report…", "linker-tools")
-										: __("Adding selected products…", "linker-tools")
-									: reportOnly
-										? addLabel
-										: __("Confirm changes", "linker-tools")}
-							</button>
+							<div className="lp-inline-actions">
+								{preview.inquiryUrls && (
+									<button
+										type="button"
+										className="lp-button"
+										disabled={
+											transferBusy || !current || operations.storageFailed
+										}
+										onClick={() => void confirm(preview, true)}
+									>
+										{__("Confirm and continue to inquiry", "linker-tools")}
+									</button>
+								)}
+								<button
+									type="button"
+									className={
+										preview.inquiryUrls
+											? "lp-button lp-button-secondary"
+											: "lp-button"
+									}
+									disabled={
+										transferBusy || !current || operations.storageFailed
+									}
+									onClick={() => void confirm(preview)}
+								>
+									{operations.busy
+										? reportOnly
+											? __("Attaching report…", "linker-tools")
+											: __("Adding selected products…", "linker-tools")
+										: preview.inquiryUrls
+											? __("Add to solution draft", "linker-tools")
+											: reportOnly
+												? addLabel
+												: __("Confirm changes", "linker-tools")}
+								</button>
+							</div>
 						</>
 					)}
 				</>
