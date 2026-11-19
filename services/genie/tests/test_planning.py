@@ -65,6 +65,8 @@ def source() -> tuple[dict[str, Any], PageContext]:
 
 def test_private_material_label_and_report_without_pv_sources_are_not_denied() -> None:
     raw, page = source()
+    raw["truncated"] = True
+    raw["runs"][0]["truncated"] = True
     raw["runs"][0].update(
         kind="planning_report_v1",
         manifest_sha256="c" * 64,
@@ -565,7 +567,7 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         == "2023-06-16T09:00:00+00:00"
     )
     assert planning.source_card({**raw, "status": "unsaved_changes"}, page) is None
-    assert planning.source_card({**raw, "truncated": True}, page) is None
+    assert planning.source_card({**raw, "truncated": True}, page) == card
     assert (
         planning.source_card(
             raw, page.model_copy(update={"planning_project_id": "e" * 32})
@@ -934,3 +936,110 @@ def test_active_project_sizing_reads_selected_history_instead_of_blank_tool() ->
     assert routed.name == "planning_project"
     assert [call.ability for call in routed.calls] == [planning.NAME]
     assert routed.no_cards
+
+
+@pytest.mark.parametrize(
+    ("locale", "message", "groups", "expected"),
+    [
+        (
+            "en",
+            "What are the power per panel and the panel count in my saved planning report?",
+            [(4, 430)],
+            ["4 solar panels", "430 Wp"],
+        ),
+        (
+            "de",
+            "Welche Modulleistung und welche Modulanzahl stehen in meinem gespeicherten Planungsbericht?",
+            [(4, 430)],
+            ["4 PV-Module", "430 Wp"],
+        ),
+        (
+            "en",
+            "How many panels did my saved roof report retain, and what rated power in Wp did I enter for each panel?",
+            [(2, 430), (3, 500)],
+            ["2 panels", "430 Wp", "3 panels", "500 Wp"],
+        ),
+        (
+            "de",
+            "Welche Leistung pro Modul ist je Gruppe gespeichert?",
+            [(2, None), (1, 500)],
+            ["2 Module", "nicht angegeben", "500 Wp"],
+        ),
+        (
+            "en",
+            "What is the power per panel?",
+            [(4, None)],
+            ["4 solar panels", "not recorded"],
+        ),
+    ],
+)
+def test_selected_report_answers_each_frozen_panel_rating(
+    locale: str, message: str, groups: list[tuple[int, int | None]], expected: list[str]
+) -> None:
+    from types import SimpleNamespace
+
+    from linker_genie.app import _answer
+    from linker_genie.understand import Prepared
+
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        truncated=True,
+        saved_roof_layout_revision=2,
+        saved_roof_panel_count=sum(n for n, _ in groups),
+        saved_roof_panel_groups=[{"quantity": n, "stc_power_w": w} for n, w in groups],
+    )
+    body = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "locale": locale,
+            "page_context": page.model_dump(),
+            "messages": [{"role": "user", "content": message}],
+        }
+    ).model_copy(update={"planning_context": raw})
+    reading = Reading(
+        intent="documents_specs",
+        confidence=0.9,
+        about_this_page=1,
+        wants_person=0,
+        needs_followup=0,
+        seconds=0,
+        cost=0,
+        saved_panel_count_question=0.8,
+        saved_panel_rating_question=1,
+    )
+    prepared = Prepared(route=Route("planning_project"), reading=reading)
+    answer, _ = _answer(body, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert answer.grounded and answer.attempts == 0
+    block = answer.output.blocks[0]
+    assert isinstance(block, TextBlock)
+    for element in expected:
+        assert element in block.text
+    assert "1.72" not in block.text
+    payload, _ = planning.record(raw, page)
+    for _, watts in groups:
+        if watts is not None:
+            assert f"{watts} Wp" in payload["figures"].values()
+    foreign = page.model_copy(update={"planning_run_ids": ["c" * 32]})
+    assert planning.saved_panel_rating_answer(raw, foreign, locale) is None
+
+
+@pytest.mark.parametrize(
+    ("locale", "label"), [("en", "planning assumption"), ("de", "Planungsannahme")]
+)
+def test_issued_report_labels_a_generic_tier_panel_rating(
+    locale: str, label: str
+) -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        saved_roof_panel_count=18,
+        saved_roof_panel_groups=[
+            {"quantity": 18, "stc_power_w": 450, "rating_basis": "planning_assumption"}
+        ],
+    )
+    answer = planning.saved_panel_rating_answer(raw, page, locale)
+    assert (
+        answer is not None and "450 Wp" in answer and "18" in answer and label in answer
+    )
+    assert "planning assumption" in planning.view(raw, page)["text"]

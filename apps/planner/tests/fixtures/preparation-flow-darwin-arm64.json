@@ -5227,6 +5227,13 @@
 							}
 						]
 					},
+					"saved_roof_panel_groups": [
+						{
+							"quantity": 1,
+							"stc_power_w": 460.0
+						}
+					],
+					"saved_roof_layout_revision": 2,
 					"saved_roof_panel_count": 1,
 					"materials": {
 						"status": "verified",

@@ -528,6 +528,26 @@ def _answer(
     language = turn_language(body)
     if (
         prepared.reading is not None
+        and prepared.reading.saved_panel_rating_question is not None
+        and prepared.reading.saved_panel_rating_question >= 0.5
+        and prepared.route.name
+        in {"model", "planning_project", "sizing", "documents", "products"}
+    ):
+        answer = planning.saved_panel_rating_answer(
+            body.planning_context, body.page_context, language
+        )
+        if answer is not None:
+            _, facts = planning.record(body.planning_context, body.page_context)
+            return TurnResult(
+                output=TurnOutput(language=language, blocks=[TextBlock(text=answer)]),
+                facts=facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ), None
+    if (
+        prepared.reading is not None
         and prepared.reading.saved_panel_count_question is not None
         and prepared.reading.saved_panel_count_question >= 0.5
         and prepared.route.name

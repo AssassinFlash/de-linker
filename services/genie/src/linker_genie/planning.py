@@ -129,6 +129,13 @@ def saved_panel_count(raw: Any, page: PageContext) -> tuple[int | None, str] | N
         count = run.get("saved_roof_panel_count")
         if type(count) is int and count >= 0:
             return count, "layout"
+        groups = run.get("saved_roof_panel_groups")
+        if isinstance(groups, list) and any(
+            isinstance(group, dict)
+            and _panel_rating(group.get("stc_power_w")) is not None
+            for group in groups
+        ):
+            return None, "layout"
         declared = run.get("declared_panel_count")
         if type(declared) is int and declared > 0:
             return declared, "declared"
@@ -140,6 +147,103 @@ def saved_panel_count(raw: Any, page: PageContext) -> tuple[int | None, str] | N
         ):
             return None, "declared"
     return None
+
+
+def _panel_rating(value: Any) -> int | float | None:
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
+        return value
+    return None
+
+
+def _panel_watts(value: int | float, language: str) -> str:
+    number = (
+        str(int(value))
+        if isinstance(value, float) and value.is_integer()
+        else str(value)
+    )
+    return (number.replace(".", ",") if language == "de" else number) + " Wp"
+
+
+def saved_panel_rating_answer(raw: Any, page: PageContext, language: str) -> str | None:
+    run = _saved_report_run(raw, page, require_all_rows=False)
+    if run is None:
+        return None
+    de = language == "de"
+    groups = run.get("saved_roof_panel_groups")
+    declared = not groups and (
+        "declared_panel_stc_power_w" in run or "declared_panel_count" in run
+    )
+    count = run.get("declared_panel_count" if declared else "saved_roof_panel_count")
+    if type(count) is not int or count < 0:
+        count = None
+    if declared:
+        groups = [
+            {"quantity": count, "stc_power_w": run.get("declared_panel_stc_power_w")}
+        ]
+    if not isinstance(groups, list) or not groups:
+        groups = [{"quantity": count, "stc_power_w": None}]
+    if not all(isinstance(group, dict) for group in groups):
+        return None
+    if count is None:
+        heading = (
+            "Im gespeicherten Bericht ist die Gesamtzahl der PV-Module nicht angegeben."
+            if de
+            else "The total panel count is not recorded in your saved report."
+        )
+    elif declared:
+        heading = (
+            f"Im gespeicherten Bericht haben Sie {count} PV-{'Modul' if count == 1 else 'Module'} angegeben."
+            if de
+            else f"You entered {count} solar {'panel' if count == 1 else 'panels'} in your saved report."
+        )
+    else:
+        heading = (
+            f"Die Dachbelegung im gespeicherten Bericht enthält {count} PV-{'Modul' if count == 1 else 'Module'}."
+            if de
+            else f"The roof layout in your saved report contains {count} solar {'panel' if count == 1 else 'panels'}."
+        )
+    if len(groups) == 1:
+        watts = _panel_rating(groups[0].get("stc_power_w"))
+        if watts is None:
+            return heading + (
+                " Die Nennleistung je Modul ist nicht angegeben."
+                if de
+                else " The rated power per panel is not recorded."
+            )
+        unit = _panel_watts(watts, language)
+        if groups[0].get("rating_basis") == "planning_assumption":
+            return heading + (
+                f" Der Bericht verwendet {unit} je Modul als Planungsannahme."
+                if de
+                else f" The report uses {unit} per panel as a planning assumption."
+            )
+        return heading + (
+            f" Die angegebene Nennleistung beträgt {unit} je Modul."
+            if de
+            else f" The recorded rating is {unit} per panel."
+        )
+    rows = []
+    for group in groups:
+        quantity = group.get("quantity")
+        watts = _panel_rating(group.get("stc_power_w"))
+        label = "Modulanzahl nicht angegeben" if de else "Panel count not recorded"
+        if type(quantity) is int and quantity >= 0:
+            label = (
+                f"{quantity} {'Modul' if quantity == 1 else 'Module'}"
+                if de
+                else f"{quantity} {'panel' if quantity == 1 else 'panels'}"
+            )
+        rating = (
+            "Nennleistung nicht angegeben" if de else "per-panel rating not recorded"
+        )
+        if watts is not None:
+            rating = _panel_watts(watts, language) + (
+                " je Modul" if de else " per panel"
+            )
+        if group.get("rating_basis") == "planning_assumption" and watts is not None:
+            rating += " (Planungsannahme)" if de else " (planning assumption)"
+        rows.append(f"- {label} · {rating}")
+    return heading + "\n\n" + "\n".join(rows)
 
 
 def is_material_report(raw: Any, page: PageContext) -> bool:
@@ -413,6 +517,32 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
                 and watts > 0
             ):
                 lines.append(f"Customer-entered rated power per panel: {watts:g} Wp")
+        if run.get("kind") == "planning_report_v1":
+            groups = run.get("saved_roof_panel_groups")
+            if isinstance(groups, list):
+                for group in groups:
+                    if isinstance(group, dict):
+                        watts = _panel_rating(group.get("stc_power_w"))
+                        quantity = group.get("quantity")
+                        lines.append(
+                            "Saved roof panel group: "
+                            + (
+                                f"{quantity} panels"
+                                if type(quantity) is int
+                                else "quantity not recorded"
+                            )
+                            + "; "
+                            + (
+                                _panel_watts(watts, "en") + " per panel"
+                                if watts is not None
+                                else "per-panel rating not recorded"
+                            )
+                            + (
+                                " (planning assumption)"
+                                if group.get("rating_basis") == "planning_assumption"
+                                else ""
+                            )
+                        )
         materials = run.get("materials")
         if materials is not None:
             handling = (
@@ -483,11 +613,11 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
 def source_card(raw: Any, page: PageContext) -> dict[str, Any] | None:
     """Code's block, never part of the model-writable output schema."""
     payload = view(raw, page)
-    if "error" in payload or payload.get("truncated") or not isinstance(raw, dict):
+    if "error" in payload or not isinstance(raw, dict):
         return None
     bindings, results = [], []
     for run in raw["runs"]:
-        if run.get("state") != "succeeded" or run.get("truncated"):
+        if run.get("state") != "succeeded":
             return None
         summary = run.get("calculation_sources")
         if summary is None:

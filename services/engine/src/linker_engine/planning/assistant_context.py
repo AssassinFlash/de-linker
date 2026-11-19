@@ -146,19 +146,129 @@ def _roof_panel_count(lines: list[Object]) -> int | None:
     return sum(cast(list[int], quantities))
 
 
-def _archived_roof_count(
+def _issued_reference_groups(workspace: Workspace, source: Object) -> Object:
+    references = source.get("pvlib_references")
+    inputs_sha = source.get("input_sha256")
+    if not isinstance(references, list) or not isinstance(inputs_sha, str):
+        return {}
+    geometry = workspace.blobs.object(inputs_sha).get("geometry")
+    if not isinstance(geometry, dict):
+        return {}
+    geometry_sha = digest(encode(geometry))
+    arrays = cast(list[Object], geometry["arrays"])
+    modules = {
+        row["id"]: row.get("stc_power_w")
+        for row in cast(list[Object], geometry["module_specs"])
+        if isinstance(row.get("id"), str)
+    }
+    layout = {str(row["id"]): row["module_spec_id"] for row in arrays}
+    quantities: dict[str, int] = {}
+    for reference in references:
+        if not isinstance(reference, dict) or reference.get("converter_id") is not None:
+            continue
+        proof = reference.get("dependencies")
+        if not isinstance(proof, dict) or proof.get("geometry") != geometry_sha:
+            continue
+        rows = reference.get("arrays")
+        if not isinstance(rows, list):
+            return {}
+        recorded = {}
+        for row in rows:
+            if not isinstance(row, dict):
+                return {}
+            key, module, count = (
+                row.get("id"),
+                row.get("module_spec_id"),
+                row.get("module_count"),
+            )
+            if (
+                not isinstance(key, str)
+                or key not in layout
+                or module != layout[key]
+                or type(count) is not int
+                or count < 0
+                or key in recorded
+            ):
+                return {}
+            recorded[key] = count
+        if recorded.keys() != layout.keys() or (quantities and quantities != recorded):
+            return {}
+        quantities = recorded
+    if not quantities:
+        return {}
+    by_module: dict[str, int] = {}
+    for key, count in quantities.items():
+        module = str(layout[key])
+        by_module[module] = by_module.get(module, 0) + count
+    groups: list[Json] = []
+    for module, count in by_module.items():
+        power = modules.get(module)
+        groups.append(
+            {
+                "quantity": count,
+                "stc_power_w": power
+                if type(power) in (int, float) and cast(float, power) > 0
+                else None,
+                "rating_basis": "planning_assumption",
+            }
+        )
+    return {
+        "saved_roof_panel_groups": groups,
+        "saved_roof_layout_revision": source["revision"],
+    }
+
+
+def _roof_groups(workspace: Workspace, source: Object) -> Object:
+    components = source.get("pv_components")
+    if (
+        isinstance(components, dict)
+        and components.get("status") == "unavailable"
+        and components.get("reason") == "declared_reference_module"
+    ):
+        return _issued_reference_groups(workspace, source)
+    if (
+        not isinstance(components, dict)
+        or components.get("status") != "available"
+        or components.get("scope") == "dc_group"
+    ):
+        return {}
+    rows = components.get("components")
+    if not isinstance(rows, list) or not rows:
+        return {}
+    groups: list[Json] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            return {}
+        count, power = row.get("quantity"), row.get("stc_power_w")
+        groups.append(
+            {
+                "quantity": count if type(count) is int and count >= 0 else None,
+                "stc_power_w": power
+                if isinstance(power, (int, float))
+                and not isinstance(power, bool)
+                and power > 0
+                else None,
+            }
+        )
+    return {
+        "saved_roof_panel_groups": groups,
+        "saved_roof_layout_revision": components.get("layout_revision"),
+    }
+
+
+def _archived_roof_groups(
     workspace: Workspace, run: Run, source: Object | None
-) -> int | None:
+) -> Object:
     if run.result is None:
-        return None
+        return {}
     context = run.manifest.get("context")
     pinned = context.get("assets") if isinstance(context, dict) else None
     dependencies = run.result.get("dependencies")
     if not isinstance(pinned, dict) or not isinstance(dependencies, dict):
-        return None
+        return {}
     sha = pinned.get("report.source")
     if not isinstance(sha, str) or sha != dependencies.get("report_source"):
-        return None
+        return {}
     if source is None:
         source = workspace.blobs.object(sha)
     if (
@@ -166,29 +276,23 @@ def _archived_roof_count(
         or source.get("revision") != run.revision
         or source.get("input_sha256") != run.manifest.get("input_sha256")
     ):
-        return None
-    components = source.get("pv_components")
-    if (
-        not isinstance(components, dict)
-        or components.get("status") != "available"
-        or components.get("scope") == "dc_group"
-    ):
-        return None
-    rows = components.get("components")
-    return (
-        _roof_panel_count(cast(list[Object], rows))
-        if isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
-        else None
-    )
+        return {}
+    return _roof_groups(workspace, source)
 
 
 def _report_materials(
     workspace: Workspace, run: Run, result: Object, source: Object | None = None
-) -> Object | None:
+) -> tuple[Object | None, Object]:
     """Expose one verified materials projection without duplicating its rows."""
     materials_sha = result.get("materials_sha256")
     if materials_sha is None:
-        return None  # Reports frozen before the materials model retain their rows.
+        roof = _archived_roof_groups(workspace, run, source)
+        return None, {
+            **roof,
+            "saved_roof_panel_count": _roof_panel_count(
+                cast(list[Object], roof.get("saved_roof_panel_groups", []))
+            ),
+        }
     if (
         not isinstance(materials_sha, str)
         or len(materials_sha) != 64
@@ -277,7 +381,14 @@ def _report_materials(
         ),
         None,
     )
-    return {
+    roof = _roof_groups(workspace, source)
+    counted_materials = [
+        row
+        for row in raw_lines
+        if isinstance(row, dict) and row.get("handling") == "pv_reference"
+    ]
+    panel_facts: Object = {
+        **roof,
         **(
             {
                 "declared_panel_count": declaration.get("quantity"),
@@ -287,12 +398,11 @@ def _report_materials(
             else {}
         ),
         "saved_roof_panel_count": _roof_panel_count(
-            [
-                row
-                for row in raw_lines
-                if isinstance(row, dict) and row.get("handling") == "pv_reference"
-            ]
+            counted_materials
+            or cast(list[Object], roof.get("saved_roof_panel_groups", []))
         ),
+    }
+    return {
         "status": "verified",
         "sha256": materials_sha,
         "model": model,
@@ -300,7 +410,7 @@ def _report_materials(
         "unresolved_quantity_count": unresolved,
         "handling_counts": dict(sorted(handling_counts.items())),
         "scope": "provisional_not_complete_bos",
-    }
+    }, panel_facts
 
 
 def _string_link_projection(link: Object, private: str) -> Object:
@@ -1493,24 +1603,11 @@ def assistant_context(
                         ],
                     }
                 selected_run_view["protection_comparisons"] = descriptions
-            materials = _report_materials(
+            materials, panel_facts = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )
-            selected_run_view["saved_roof_panel_count"] = (
-                materials.pop("saved_roof_panel_count")
-                if materials is not None
-                else _archived_roof_count(
-                    workspace, run, source_out[0] if source_out else None
-                )
-            )
+            selected_run_view.update(panel_facts)
             if materials is not None:
-                if "declared_panel_count" in materials:
-                    selected_run_view["declared_panel_count"] = materials.pop(
-                        "declared_panel_count"
-                    )
-                    selected_run_view["declared_panel_stc_power_w"] = materials.pop(
-                        "declared_panel_stc_power_w"
-                    )
                 selected_run_view["materials"] = materials
                 installation = source_out[0].get("installation") if source_out else None
                 review = (
