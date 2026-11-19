@@ -344,6 +344,73 @@ for (const mode of ["new", "applied", "unapplied", "changed"])
 		]);
 	});
 
+test("a brief-only project can download an older report or explicitly inquire about its direction", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	value.inputs = {
+		brief: { ...emptyBrief(), system_scope: "storage_addition" },
+	};
+	const earlier = props().run;
+	const calls = [];
+	value.client.origin = location.origin;
+	value.client.query = async (path) => {
+		calls.push(path);
+		return {
+			schema_version: 1,
+			inquiry_lines: [],
+			inquiry_form_html:
+				'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea></form>',
+		};
+	};
+	value.client.reportPdf = async (id, asset) => {
+		assert.equal(id, earlier.project_id);
+		assert.equal(asset, earlier.result.prepared_asset.id);
+		return new Blob(["pdf"]);
+	};
+	let downloaded;
+	t.mock.method(window.HTMLAnchorElement.prototype, "click", function () {
+		downloaded = this.download;
+	});
+	const render = () => root.render(React.createElement(ReviewProposal, value));
+	value.history = {
+		items: [],
+		selected: null,
+		hasMore: true,
+		loadMore: () => {
+			value.history.items = [
+				{ id: earlier.id, revision: earlier.revision, created_at: 1700000000 },
+			];
+			value.history.hasMore = false;
+			render();
+		},
+		select: (id) => {
+			value.history.selected = id;
+			value.history.run = earlier;
+			render();
+		},
+	};
+	await act(async () => render());
+	assert.ok(button("Earlier calculations"));
+	await act(async () => button("Earlier calculations").click());
+	const history = page.element.querySelector(
+		'[aria-label="Calculation history"]',
+	);
+	await act(async () => history.querySelector("button").click());
+	await act(async () => button("Download PDF").click());
+	assert.match(downloaded, /\.pdf$/);
+	value.preliminary = true;
+	await act(async () => render());
+	assert.ok(page.element.querySelector(".sc-draft-transfer form textarea"));
+	assert.match(
+		page.element.textContent,
+		/Planned system: Storage for existing PV/,
+	);
+	assert.deepEqual(calls, ["inquiry/form"]);
+});
+
 for (const saved of [false, true])
 	test(`an installer can send a preliminary direction with the original cart (saved Genie solution: ${saved})`, async (t) => {
 		const page = setupDom(),

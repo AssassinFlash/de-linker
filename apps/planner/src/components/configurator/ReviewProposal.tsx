@@ -412,7 +412,9 @@ export function ReviewProposal({
 			))
 			? readBrief(inputs.brief).system_scope
 			: null;
-	if (preliminaryScope && (preliminary || (!selected && !transferable))) {
+	const hasHistory =
+		history && (selected || history.items.length > 0 || history.hasMore);
+	if (preliminaryScope && (preliminary || (!run && !hasHistory))) {
 		const label = {
 			new_pv_storage: __("Solar and storage", "linker-tools"),
 			storage_addition: __("Storage for existing PV", "linker-tools"),
@@ -584,7 +586,7 @@ export function ReviewProposal({
 					</div>
 				</>
 			)}
-			{history && (selected || history.items.length > 0 || history.hasMore) && (
+			{hasHistory && (
 				<section
 					className="sc-card"
 					aria-label={__("Calculation history", "linker-tools")}
