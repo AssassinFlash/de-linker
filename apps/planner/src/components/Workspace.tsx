@@ -20,6 +20,7 @@ import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
 import { readProjectPage } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
+import { pendingInquiryRevision } from "../data/inquiryRecovery.ts";
 import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
@@ -204,17 +205,38 @@ export function Workspace({
 		getNextPageParam: (page) => page.next ?? undefined,
 		enabled: selected === null,
 	});
+	const inquiryRevision =
+		selected && preliminaryRoute(route)
+			? pendingInquiryRevision(session.query_scope, selected)
+			: null;
 	const project = useQuery({
-		queryKey: [session.query_scope, "project", selected, session.claim_pending],
-		queryFn: async ({ signal }) =>
-			readProject(
+		queryKey: [
+			session.query_scope,
+			"project",
+			selected,
+			session.claim_pending,
+			...(inquiryRevision === null ? [] : [inquiryRevision]),
+		],
+		queryFn: async ({ signal }) => {
+			const authorized = readProject(
 				await client.query(
 					"projects/read",
-					{ schema_version: 1, project_id: selected, revision: null },
+					{
+						schema_version: 1,
+						project_id: selected,
+						revision: inquiryRevision,
+					},
 					session.query_scope,
 					signal,
 				),
-			),
+			);
+			if (
+				inquiryRevision !== null &&
+				(authorized.id !== selected || authorized.revision !== inquiryRevision)
+			)
+				throw new Error("inquiry_revision_unavailable");
+			return authorized;
+		},
 		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
@@ -394,6 +416,7 @@ export function Workspace({
 				store={store}
 				locale={config.locale}
 				comparing={route === "sc-preliminary-options"}
+				recoveringRevision={inquiryRevision !== null}
 				navigate={(destination) => select(selected, destination)}
 				recheck={recheck}
 			/>

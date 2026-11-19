@@ -17095,3 +17095,7 @@ msgstr "Ihr Browser konnte Ihre Eingaben nicht speichern. Auf dieser Seite könn
 #: ../../apps/planner/src/components/configurator/PreliminaryProject.tsx ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
 msgid "Check inquiry status"
 msgstr "Status der Anfrage prüfen"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
+msgid "We could not confirm whether your inquiry was received. Please contact sales@de-linker.com before sending another one."
+msgstr "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Bitte wenden Sie sich an sales@de-linker.com, bevor Sie eine weitere Anfrage senden."

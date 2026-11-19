@@ -28,6 +28,12 @@ const replayFields = new Set([
 	"billing_vat_id",
 ]);
 type NativeInquiry = Map<string, string>;
+export type PendingInquiry = {
+	requestId: string;
+	expiresAt: number;
+	fields?: Record<string, string>;
+};
+type ProjectVersion = Pick<Project, "id" | "revision">;
 
 function semanticField(name: string): boolean {
 	return (
@@ -36,7 +42,7 @@ function semanticField(name: string): boolean {
 	);
 }
 
-function key(scope: string, project: Pick<Project, "id" | "revision">): string {
+function key(scope: string, project: ProjectVersion): string {
 	return pendingPrefix + scope + ":" + project.id + ":" + project.revision;
 }
 
@@ -46,49 +52,110 @@ function identityField(form: HTMLFormElement): HTMLInputElement | null {
 	);
 }
 
-/** Carries only the native logical request and semantic input across a lost
- * navigation response. The next authorized form supplies fresh credentials. */
+export function replayWindow(form: HTMLFormElement): number {
+	const seconds = Number(form.dataset.linkerInquiryReplaySeconds);
+	return Number.isSafeInteger(seconds) && seconds > 0 ? seconds : 0;
+}
+
+/** The next authorized form supplies fresh credentials. */
 export function rememberInquiry(
 	form: HTMLFormElement,
 	scope: string,
-	project: Pick<Project, "id" | "revision">,
-): boolean {
+	project: ProjectVersion,
+): { saved: boolean; attempt: PendingInquiry } | null {
+	const seconds = replayWindow(form);
 	const identity = identityField(form);
-	if (!identity || !uuid4.test(identity.value)) return false;
+	if (!seconds || !identity || !uuid4.test(identity.value)) return null;
 	const payload = new Map<string, string>();
 	for (const [name, value] of new window.FormData(form))
 		if (typeof value === "string" && semanticField(name))
 			payload.set(name, value);
-	window.sessionStorage.setItem(
-		key(scope, project),
-		JSON.stringify(Object.fromEntries(payload)),
+	const attempt = {
+		requestId: identity.value,
+		expiresAt: Date.now() + seconds * 1000,
+		fields: Object.fromEntries(payload),
+	};
+	try {
+		window.sessionStorage.setItem(key(scope, project), JSON.stringify(attempt));
+		return { saved: true, attempt };
+	} catch {
+		return { saved: false, attempt };
+	}
+}
+
+function readPending(storageKey: string): PendingInquiry | null {
+	const record = JSON.parse(
+		window.sessionStorage.getItem(storageKey) ?? "null",
 	);
-	return true;
+	return record &&
+		typeof record.requestId === "string" &&
+		uuid4.test(record.requestId) &&
+		Number.isSafeInteger(record.expiresAt)
+		? record
+		: null;
+}
+
+export function pendingInquiryRevision(
+	scope: string,
+	projectId: string,
+): number | null {
+	const prefix = pendingPrefix + scope + ":" + projectId + ":";
+	let oldest: { revision: number; expiresAt: number } | null = null;
+	try {
+		for (let i = 0; i < window.sessionStorage.length; i++) {
+			const name = window.sessionStorage.key(i);
+			if (!name?.startsWith(prefix)) continue;
+			const revision = Number(name.slice(prefix.length));
+			if (!Number.isSafeInteger(revision) || revision < 1) continue;
+			const pending = pendingInquiry(scope, { id: projectId, revision });
+			if (pending && (!oldest || pending.expiresAt < oldest.expiresAt))
+				oldest = { revision, expiresAt: pending.expiresAt };
+		}
+	} catch {
+		// Browser storage is optional for the native submission.
+	}
+	return oldest?.revision ?? null;
 }
 
 export function pendingInquiry(
 	scope: string,
-	project: Pick<Project, "id" | "revision">,
-): NativeInquiry | null {
+	project: ProjectVersion,
+): PendingInquiry | null {
 	try {
-		const raw = JSON.parse(
-			window.sessionStorage.getItem(key(scope, project)) ?? "null",
-		);
+		const storageKey = key(scope, project);
+		const record = readPending(storageKey);
+		if (!record) return null;
+		const { requestId, expiresAt } = record;
+		if (!record.fields) return { requestId, expiresAt };
+		if (Date.now() >= expiresAt) {
+			const expired = { requestId, expiresAt };
+			try {
+				window.sessionStorage.setItem(storageKey, JSON.stringify(expired));
+			} catch {
+				// Expired values are not used even if this tab cannot write the marker.
+			}
+			return expired;
+		}
 		if (
-			!raw ||
-			!uuid4.test(raw[requestField] ?? "") ||
-			raw.linker_preliminary_project !== `${project.id}:${project.revision}`
+			record.fields[requestField] !== requestId ||
+			record.fields.linker_preliminary_project !==
+				`${project.id}:${project.revision}`
 		)
 			return null;
-		return new Map(
-			Object.entries(raw).filter(
-				(entry): entry is [string, string] =>
-					semanticField(entry[0]) && typeof entry[1] === "string",
-			),
-		);
+		return record;
 	} catch {
 		return null;
 	}
+}
+
+export function inquiryPayload(pending: PendingInquiry): NativeInquiry | null {
+	return pending.fields && Date.now() < pending.expiresAt
+		? new Map(
+				Object.entries(pending.fields).filter(
+					([name, value]) => semanticField(name) && typeof value === "string",
+				),
+			)
+		: null;
 }
 
 /** The Woo protection client tries the original receipt before obtaining new

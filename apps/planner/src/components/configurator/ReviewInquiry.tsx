@@ -6,6 +6,9 @@ import {
 	pendingInquiry,
 	rememberInquiry,
 	restoreInquiry,
+	inquiryPayload,
+	replayWindow,
+	type PendingInquiry,
 } from "../../data/inquiryRecovery.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -156,6 +159,14 @@ export function ReviewInquiry({
 	const revision = project.revision;
 	const retained = useRef<CustomerDraft>(new Map());
 	const posting = useRef(false);
+	const volatile = useRef<{
+		scope: string;
+		projectId: string;
+		revision: number;
+		pending: PendingInquiry;
+	} | null>(null);
+	const activeReplay = useRef<PendingInquiry | null>(null);
+	const [outcomeUnconfirmed, setOutcomeUnconfirmed] = useState(false);
 	const [checkingInquiry, setCheckingInquiry] = useState(() =>
 		Boolean(pendingInquiry(scope, project)),
 	);
@@ -239,6 +250,7 @@ export function ReviewInquiry({
 		const node = host.current;
 		if (!node) return;
 		const request = new AbortController();
+		let expiry: number | undefined;
 		const abort = () => request.abort();
 		window.addEventListener("pagehide", abort, { once: true });
 		setLines(null);
@@ -275,10 +287,40 @@ export function ReviewInquiry({
 					)?.value !== `${projectId}:${revision}`
 				)
 					throw new Error("invalid_inquiry_form");
-				const pending = pendingInquiry(scope, { id: projectId, revision });
-				if (pending) {
-					restoreCustomerFields(form, new Map(pending));
-					restoreInquiry(form, pending);
+				const local = volatile.current;
+				const pending =
+					pendingInquiry(scope, { id: projectId, revision }) ??
+					(local?.scope === scope &&
+					local.projectId === projectId &&
+					local.revision === revision
+						? local.pending
+						: null);
+				const payload =
+					pending && replayWindow(form) ? inquiryPayload(pending) : null;
+				if (
+					pending &&
+					!payload &&
+					local?.pending === pending &&
+					Date.now() >= pending.expiresAt
+				)
+					local.pending = {
+						requestId: pending.requestId,
+						expiresAt: pending.expiresAt,
+					};
+				const unavailable = Boolean(pending && !payload);
+				activeReplay.current = pending;
+				setOutcomeUnconfirmed(unavailable);
+				setCheckingInquiry(Boolean(pending));
+				inquiryPending?.(Boolean(pending));
+				setLines(response.lines);
+				if (unavailable) return;
+				if (pending && payload) {
+					expiry = window.setTimeout(
+						() => setAttempt((value) => value + 1),
+						Math.max(0, pending.expiresAt - Date.now()),
+					);
+					restoreCustomerFields(form, new Map(payload));
+					restoreInquiry(form, payload);
 					const send = form.querySelector('button[type="submit"]');
 					if (send)
 						send.textContent = __("Check inquiry status", "linker-tools");
@@ -287,13 +329,10 @@ export function ReviewInquiry({
 						takeNavigationDraft(scope, projectId) ?? retained.current;
 					restoreCustomerFields(form, retained.current);
 				}
-				setCheckingInquiry(Boolean(pending));
-				inquiryPending?.(Boolean(pending));
 				node.replaceChildren(template.content);
 				form.dispatchEvent(
 					new Event("linker:inquiry-form-mounted", { bubbles: true }),
 				);
-				setLines(response.lines);
 			})
 			.catch((error) => {
 				if (request.signal.aborted) return;
@@ -308,6 +347,7 @@ export function ReviewInquiry({
 			});
 		return () => {
 			window.removeEventListener("pagehide", abort);
+			window.clearTimeout(expiry);
 			abort();
 			const form = node.querySelector("form");
 			if (form) retained.current = readCustomerFields(form, retained.current);
@@ -364,18 +404,41 @@ export function ReviewInquiry({
 								!(event.target instanceof window.HTMLFormElement)
 							)
 								return;
-							try {
-								const saved = rememberInquiry(event.target, scope, project);
-								if (saved) inquiryPending?.(true);
-								posting.current = true;
-								retained.current.clear();
-								takeNavigationDraft(scope, projectId);
-							} catch {
+							const replay = activeReplay.current;
+							if (
+								replay &&
+								(!replay.fields || Date.now() >= replay.expiresAt)
+							) {
 								event.preventDefault();
-								setNavigationFailed(true);
+								setAttempt((value) => value + 1);
+								return;
 							}
+							if (!replay) {
+								const captured = rememberInquiry(event.target, scope, project);
+								if (captured) {
+									if (!captured.saved)
+										volatile.current = {
+											scope,
+											projectId,
+											revision,
+											pending: captured.attempt,
+										};
+									inquiryPending?.(true);
+								}
+							}
+							posting.current = true;
+							retained.current.clear();
+							takeNavigationDraft(scope, projectId);
 						}}
 					/>
+					{outcomeUnconfirmed && !failed && lines && (
+						<p role="status">
+							{__(
+								"We could not confirm whether your inquiry was received. Please contact sales@de-linker.com before sending another one.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 					{failed && (
 						<div role="alert">
 							<p>

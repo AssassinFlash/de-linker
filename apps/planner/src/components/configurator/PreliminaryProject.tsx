@@ -18,6 +18,7 @@ export function PreliminaryProject({
 	store,
 	locale,
 	comparing,
+	recoveringRevision,
 	navigate,
 	recheck,
 }: {
@@ -27,6 +28,7 @@ export function PreliminaryProject({
 	store: DraftStore;
 	locale: string;
 	comparing: boolean;
+	recoveringRevision: boolean;
 	navigate: (
 		destination:
 			"sc-preliminary-options" | "sc-preliminary-review" | "sc-project",
@@ -35,7 +37,7 @@ export function PreliminaryProject({
 }) {
 	const controller = useProjectDraft(project, session, client, store, recheck);
 	const draft = controller.draft;
-	const reviewed = draft?.baseline ?? project;
+	const reviewed = recoveringRevision ? project : (draft?.baseline ?? project);
 	const brief =
 		reviewed.inputs.brief === undefined
 			? emptyBrief()

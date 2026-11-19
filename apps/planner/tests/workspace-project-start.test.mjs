@@ -624,7 +624,12 @@ test("the review restores edited signed-in details and Woo billing controls on a
 	assert.equal(field("name").value, "Updated Name");
 });
 
-test("returning after an unconfirmed native POST offers readback of the exact inquiry", async (t) => {
+async function lostReceipt(
+	t,
+	storageAllowed,
+	replaySeconds = 86400,
+	expired = false,
+) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { ReviewInquiry } =
@@ -637,6 +642,12 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 		crypto.randomUUID(),
 	];
 	const project = { id: projectId, revision: 7 };
+	if (!storageAllowed)
+		Object.defineProperty(window, "sessionStorage", {
+			get: () => {
+				throw new window.DOMException("Storage unavailable", "SecurityError");
+			},
+		});
 	let loads = 0;
 	const client = {
 		origin: location.origin,
@@ -648,7 +659,7 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 			const n = loads++;
 			return {
 				schema_version: 1,
-				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php" data-linker-inquiry-replay-seconds="${replaySeconds}">
 					<input type="hidden" name="linker_preliminary_project" value="${projectId}:7">
 					<input type="hidden" name="linker_request_id" value="${requestIds[n]}" data-linker-protected-action="inquiry">
 					<input type="hidden" name="linker_draft_hash" value="${n ? "" : "original-cart"}">
@@ -687,20 +698,55 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 	await act(async () => field("consent").click());
 	const original = new window.FormData(form());
 	await act(async () => {
-		form().dispatchEvent(
-			new window.Event("submit", { bubbles: true, cancelable: true }),
+		assert.equal(
+			form().dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+			true,
 		);
 		window.dispatchEvent(
 			new window.PageTransitionEvent("pagehide", { persisted: true }),
 		);
 	});
 	assert.equal(form(), null);
+	if (expired) {
+		const previous = Date.now;
+		const afterWindow = previous() + replaySeconds * 1000 + 1;
+		Date.now = () => afterWindow;
+		t.after(() => {
+			Date.now = previous;
+		});
+	}
 	await act(async () =>
 		window.dispatchEvent(
 			new window.PageTransitionEvent("pageshow", { persisted: true }),
 		),
 	);
+	const pendingKey =
+		"linker-preliminary-inquiry-pending:" +
+		session.query_scope +
+		":" +
+		projectId +
+		":7";
+	if (expired) {
+		await until(() =>
+			fixture.element.textContent.includes(
+				"We could not confirm whether your inquiry was received.",
+			),
+		);
+		assert.equal(form(), null);
+		assert.deepEqual(
+			Object.keys(JSON.parse(window.sessionStorage.getItem(pendingKey))).sort(),
+			["expiresAt", "requestId"],
+		);
+		return;
+	}
 	await until(() => loads === 2 && form());
+	if (!replaySeconds) {
+		assert.equal(field("linker_request_id").value, requestIds[1]);
+		assert.equal(window.sessionStorage.getItem(pendingKey), null);
+		return;
+	}
 	assert.equal(
 		form().querySelector('button[type="submit"]').textContent,
 		"Check inquiry status",
@@ -730,7 +776,16 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 	assert.equal(replay.get("linker_inquiry_nonce"), "current-nonce-1");
 	assert.equal(replay.get("linker_proof"), "");
 
-	// Landing on the native receipt retires the previous tab snapshot.
+	if (!storageAllowed) return;
+
+	// Account keeps unresolved requests. A confirmed receipt retires only its own.
+	const otherRequest = crypto.randomUUID();
+	const otherKey = "linker-preliminary-inquiry-pending:unrelated";
+	window.sessionStorage.setItem(
+		otherKey,
+		JSON.stringify({ requestId: otherRequest }),
+	);
+
 	const { readFileSync } = await import("node:fs");
 	const accountUi = readFileSync(
 		new URL(
@@ -739,13 +794,33 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 		),
 		"utf8",
 	);
+	const attachAccountUi = new Function("window", "document", accountUi);
 	document
 		.querySelector("header")
 		.insertAdjacentHTML(
 			"afterend",
-			'<section class="linker-inquiry-success" role="status">Inquiry received</section>',
+			'<section class="linker-account">Account</section>',
 		);
-	new Function("window", "document", accountUi)(window, document);
+	attachAccountUi(window, document);
+	assert.ok(window.sessionStorage.getItem(otherKey));
+	assert.ok(
+		window.sessionStorage.getItem(
+			"linker-preliminary-inquiry-pending:" +
+				session.query_scope +
+				":" +
+				projectId +
+				":7",
+		),
+	);
+	document.querySelector(".linker-account").remove();
+	document
+		.querySelector("header")
+		.insertAdjacentHTML(
+			"afterend",
+			`<section class="linker-inquiry-success" data-linker-received-request="${requestIds[0]}" role="status">Inquiry received</section>`,
+		);
+	attachAccountUi(window, document);
+	assert.ok(window.sessionStorage.getItem(otherKey));
 	await act(async () => {
 		window.dispatchEvent(
 			new window.PageTransitionEvent("pagehide", { persisted: true }),
@@ -760,5 +835,131 @@ test("returning after an unconfirmed native POST offers readback of the exact in
 	assert.equal(
 		form().querySelector('button[type="submit"]').textContent,
 		"Send inquiry",
+	);
+}
+test("returning after an unconfirmed native POST offers readback of the exact inquiry", (t) =>
+	lostReceipt(t, true));
+test("storage restrictions allow a native POST and recover the original in browser cache", (t) =>
+	lostReceipt(t, false));
+
+test("observe-mode UUID does not offer client-side replay", (t) =>
+	lostReceipt(t, true, 0));
+test("a pending inquiry beyond Woo's replay window discards its submitted fields and offers outcome guidance", (t) =>
+	lostReceipt(t, true, 10, true));
+
+test("reopening a pending preliminary review reads its original revision after another tab advances the project", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const style = Object.getOwnPropertyDescriptor(globalThis, "getComputedStyle");
+	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+	const root = createRoot(fixture.element);
+	const cache = new QueryClient();
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+		if (style) Object.defineProperty(globalThis, "getComputedStyle", style);
+		else delete globalThis.getComputedStyle;
+	});
+	history.replaceState(
+		null,
+		"",
+		"/workspace/?project=" + projectId + "#sc-preliminary-review",
+	);
+	const original = {
+		id: projectId,
+		revision: 7,
+		title: "New project",
+		input_sha256: "2".repeat(64),
+		inputs: { brief: { ...emptyBrief(), system_scope: "storage_only" } },
+	};
+	const advanced = {
+		...original,
+		revision: 8,
+		inputs: { brief: { ...emptyBrief(), system_scope: "pv_only" } },
+	};
+	const originalRequest = crypto.randomUUID();
+	window.sessionStorage.setItem(
+		"linker-preliminary-inquiry-pending:" +
+			session.query_scope +
+			":" +
+			projectId +
+			":7",
+		JSON.stringify({
+			requestId: originalRequest,
+			expiresAt: Date.now() + 10000,
+			fields: {
+				linker_request_id: originalRequest,
+				linker_preliminary_project: projectId + ":7",
+				message: "Original message",
+			},
+		}),
+	);
+	const requests = [];
+	const client = {
+		origin: location.origin,
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path, command) {
+			requests.push([path, command.revision]);
+			if (path === "projects/read")
+				return command.revision === 7 ? original : advanced;
+			assert.equal(path, "inquiry/form");
+			return {
+				schema_version: 1,
+				inquiry_lines: [],
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php" data-linker-inquiry-replay-seconds="10">
+					<input type="hidden" name="linker_preliminary_project" value="${projectId}:${command.revision}">
+					<input type="hidden" name="linker_request_id" data-linker-protected-action="inquiry" value="${crypto.randomUUID()}">
+					<textarea name="message"></textarea><button type="submit">Send inquiry</button>
+				</form>`,
+			};
+		},
+	};
+	const store = {
+		async read() {
+			return null;
+		},
+		async candidates() {
+			return [];
+		},
+		async write() {},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					session,
+					client,
+					store,
+					config: {
+						baseUrl: location.origin + "/api/",
+						nonceUrl: "",
+						locale: "en",
+						countries: {},
+					},
+					recheck: () => assert.fail("Unexpected scope invalidation"),
+				}),
+			),
+		),
+	);
+	const form = () => fixture.element.querySelector("form.linker-inquiry-form");
+	await until(form);
+	assert.deepEqual(requests, [
+		["projects/read", 7],
+		["inquiry/form", 7],
+	]);
+	assert.equal(
+		form().elements.namedItem("linker_request_id").value,
+		originalRequest,
+	);
+	assert.equal(new window.FormData(form()).get("message"), "Original message");
+	assert.match(
+		fixture.element.querySelector(".sc-draft-transfer aside").textContent,
+		/Planned system: Storage/,
 	);
 });
