@@ -82,7 +82,11 @@ final class ReportAccessTest extends TestCase {
 	 */
 	private string $content = self::PDF;
 
-	/** @var array<string,mixed> Served asset metadata when an original was reissued. */
+	/**
+	 * The metadata returned when the report was reissued.
+	 *
+	 * @var array<string,mixed>
+	 */
 	private array $asset = array();
 
 	/**

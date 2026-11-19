@@ -25,8 +25,13 @@ def test_project_panels_are_outside_the_offer_in_both_downloads(locale: str) -> 
             ),
         ],
     )
-    common = {"quantity": 1, "unit": "piece", "source": {}, "basis": "saved_layout"}
-    sale = {
+    common: Object = {
+        "quantity": 1,
+        "unit": "piece",
+        "source": {},
+        "basis": "saved_layout",
+    }
+    sale: Object = {
         **common,
         "handling": "woo_product",
         "id": "item",
@@ -34,7 +39,7 @@ def test_project_panels_are_outside_the_offer_in_both_downloads(locale: str) -> 
         "model": "Inverter",
         "sku": "INV",
     }
-    panel = {
+    panel: Object = {
         **common,
         "handling": "pv_reference",
         "id": "pv:roof",

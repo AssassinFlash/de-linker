@@ -134,7 +134,7 @@ def _panel_schedule(
             id="pv-components", title=text("pv_components_title", locale)
         )
         sections.append(design)
-    design.title = text("pv_components_title", locale)
+    design.title = material_list(panels[0], locale)
     if design.table:
         design.table.columns[1] = text("panel_parameters", locale)
     else:

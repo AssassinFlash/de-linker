@@ -389,34 +389,44 @@ export function Solution( props: SolutionProps ) {
 						: null }
 				</p>
 			</div>
-			<h3 className="linker-section__subtitle">
-				{ __( "Installer's scope", 'linker-tools' ) }
-			</h3>
-			<p className="linker-section__note">
-				{ __(
-					'We do not supply these parts; the quantities follow the reference layout.',
-					'linker-tools'
-				) }
-			</p>
-			<Table
-				columns={ [
-					{ label: __( 'Item', 'linker-tools' ) },
-					{ label: __( 'Quantity', 'linker-tools' ), numeric: true },
-					{ label: __( 'Basis', 'linker-tools' ) },
-				] }
-				rows={ installer.map( ( line ) => ( {
-					key: line.role,
-					cells: [
-						line.label,
-						unitText( line, locale ),
-						line.basis.map( ( reason ) => (
-							<span key={ reason } className="linker-table__line">
-								{ reason }
-							</span>
-						) ),
-					],
-				} ) ) }
-			/>
+			{ installer.length > 0 && (
+				<>
+					<h3 className="linker-section__subtitle">
+						{ __( "Installer's scope", 'linker-tools' ) }
+					</h3>
+					<p className="linker-section__note">
+						{ __(
+							'We do not supply these parts; the quantities follow the reference layout.',
+							'linker-tools'
+						) }
+					</p>
+					<Table
+						columns={ [
+							{ label: __( 'Item', 'linker-tools' ) },
+							{
+								label: __( 'Quantity', 'linker-tools' ),
+								numeric: true,
+							},
+							{ label: __( 'Basis', 'linker-tools' ) },
+						] }
+						rows={ installer.map( ( line ) => ( {
+							key: line.role,
+							cells: [
+								line.label,
+								unitText( line, locale ),
+								line.basis.map( ( reason ) => (
+									<span
+										key={ reason }
+										className="linker-table__line"
+									>
+										{ reason }
+									</span>
+								) ),
+							],
+						} ) ) }
+					/>
+				</>
+			) }
 		</div>
 	);
 }

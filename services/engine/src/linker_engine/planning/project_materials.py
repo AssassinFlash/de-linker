@@ -855,7 +855,9 @@ def _installation_fact_line(
 
 
 def material_list(line: Object, locale: str) -> str:
-    if line["handling"] in ("pv_reference", "pv_declared"):
+    if line["handling"] == "pv_declared":
+        return text("material_pv_declared", locale)
+    if line["handling"] == "pv_reference":
         return text("pv_components_title", locale)
     quantity, retained = line.get("quantity"), line.get("retained_quantity")
     if (
@@ -894,7 +896,12 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     lines = cast(list[Object], materials["lines"])
     order = [
         text(key, locale)
-        for key in ("equipment_list", "site_material_list", "pv_components_title")
+        for key in (
+            "equipment_list",
+            "site_material_list",
+            "pv_components_title",
+            "material_pv_declared",
+        )
     ]
     for line in sorted(lines, key=lambda row: order.index(material_list(row, locale))):
         origin = line.get("source")
