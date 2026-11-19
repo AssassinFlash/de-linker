@@ -133,7 +133,11 @@ def saved_panel_count(raw: Any, page: PageContext) -> tuple[int | None, str] | N
         if type(declared) is int and declared > 0:
             return declared, "declared"
         watts = run.get("declared_panel_stc_power_w")
-        if type(watts) in (int, float) and watts > 0:
+        if (
+            isinstance(watts, (int, float))
+            and not isinstance(watts, bool)
+            and watts > 0
+        ):
             return None, "declared"
     return None
 
@@ -403,7 +407,11 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
                     f"Customer-entered number of panels in this report: {declared}"
                 )
             watts = run.get("declared_panel_stc_power_w")
-            if type(watts) in (int, float) and watts > 0:
+            if (
+                isinstance(watts, (int, float))
+                and not isinstance(watts, bool)
+                and watts > 0
+            ):
                 lines.append(f"Customer-entered rated power per panel: {watts:g} Wp")
         materials = run.get("materials")
         if materials is not None:
