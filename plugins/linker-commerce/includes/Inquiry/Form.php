@@ -96,6 +96,9 @@ final class Form {
 	 * @param string|null         $handle Existing attempt handle, or empty for a fresh authorized attempt.
 	 */
 	public function retry( array $fields, \WP_Error $error, string $locale, ?string $handle = null ): void {
+		if ( null !== $handle && \Linker\Commerce\Protection\Business::enabled() && ! wp_is_uuid( (string) ( $fields['linker_request_id'] ?? '' ), 4 ) ) {
+			$fields['linker_request_id'] = wp_generate_uuid4();
+		}
 		$this->flash = array(
 			'fields'       => $fields,
 			'error'        => $error->get_error_message(),
