@@ -184,7 +184,10 @@ final class DraftTransfer {
 		if ( isset( $receipts[ $key ] ) ) {
 			$known = $receipts[ $key ];
 			$this->stop_autosave();
-			return is_array( $known ) && ( $known['intent_sha256'] ?? null ) === $intent && ( $known['handoff_id'] ?? null ) === $handoff['id'] ? array_replace( $known, self::destinations( self::report_only( $handoff['snapshot'] ) ) ) : self::failure( 'planning_transfer_changed', 409 );
+			if ( ! is_array( $known ) || ( $known['intent_sha256'] ?? null ) !== $intent || ( $known['handoff_id'] ?? null ) !== $handoff['id'] ) {
+				return self::failure( 'planning_transfer_changed', 409 );
+			}
+			return array_replace( $known, self::destinations( self::report_only( $handoff['snapshot'] ) ), array( 'active' => self::has_active_handoff( $fresh, $handoff ) ) );
 		}
 		// Woo may have loaded this request before another transfer finished. Do
 		// not overwrite that newer native draft or import arbitrary session fields.
@@ -365,7 +368,32 @@ final class DraftTransfer {
 			'schema_version' => 1,
 			'state'          => 'applied',
 			'receipt'        => $known,
+			'active'         => self::has_active_handoff( $fresh, $handoff ),
 		);
+	}
+
+	/**
+	 * A committed handoff remains available only while the native draft refers to it.
+	 *
+	 * @param array<string,mixed> $fresh Persisted Woo session data.
+	 * @param array<string,mixed> $handoff Owned immutable engine receipt.
+	 */
+	private static function has_active_handoff( array $fresh, array $handoff ): bool {
+		$id       = $handoff['id'];
+		$contexts = maybe_unserialize( $fresh[ self::CONTEXTS ] ?? array() );
+		$context  = is_array( $contexts ) ? ( $contexts[ $id ] ?? null ) : null;
+		if ( ! self::native_context_valid( $context, $id ) || $context['snapshot_sha256'] !== $handoff['snapshot_sha256'] ) {
+			return false;
+		}
+		if ( self::report_only( $handoff['snapshot'] ) ) {
+			return true;
+		}
+		foreach ( (array) maybe_unserialize( $fresh['cart'] ?? array() ) as $line ) {
+			if ( ( $line[ self::LINE_META ] ?? null ) === $id ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Fresh native storage read, not a cached copy of an uncommitted receipt.

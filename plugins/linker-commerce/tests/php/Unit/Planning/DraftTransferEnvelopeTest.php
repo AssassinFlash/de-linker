@@ -66,6 +66,82 @@ final class DraftTransferEnvelopeTest extends TestCase {
 		$this->assertTrue( $method->invoke( null, $legacy, $legacy['id'] ) );
 	}
 
+	/** A committed request stays recoverable after its handoff leaves the live draft. */
+	public function test_receipt_distinguishes_the_current_handoff_from_its_historical_commit(): void {
+		if ( ! defined( 'WC_SESSION_CACHE_GROUP' ) ) {
+			define( 'WC_SESSION_CACHE_GROUP', 'woocommerce_sessions' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WooCommerce defines it on the running site.
+		}
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( mixed $value ): string => (string) json_encode( $value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ) );
+		WP_Mock::userFunction( 'maybe_unserialize', array( 'return' => static fn ( mixed $value ): mixed => $value ) );
+		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => '1' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn ( int $id, string $lang ): int => 'de' === $lang ? 2 : $id ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => static fn ( int $id ): string => 'https://fixture.invalid/' . $id ) );
+		\Mockery::mock( 'alias:WC_Cache_Helper' )->shouldReceive( 'get_cache_prefix' )->andReturn( 'native:' );
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'get_customer_id' )->andReturn( 'owner' );
+		$native          = \Mockery::mock();
+		$native->session = $session;
+		$native->shouldReceive( 'initialize_session' );
+		WP_Mock::userFunction( 'WC', array( 'return' => $native ) );
+		$command                     = array( 'key' => 'owned-intent' );
+		$transfer                    = new DraftTransfer();
+		$handoff                     = $this->handoff();
+		$known                       = array(
+			'intent_sha256' => Publication::revision( $command ),
+			'handoff_id'    => $handoff['id'],
+			'items'         => array(
+				array(
+					'id'       => 3556,
+					'quantity' => 1,
+				),
+			),
+		);
+		$row                         = array( DraftTransfer::LINE_META => $handoff['id'] );
+		$context                     = DraftTransfer::native_context( $handoff );
+		$report                      = $handoff;
+		$report['snapshot']['kind']  = 'planning_report_only_v1';
+		$report['snapshot']['items'] = array();
+		$receipts                    = array( $command['key'] => $known );
+		$report_known                = array_replace( $known, array( 'items' => array() ) );
+		$session->shouldReceive( 'get_session_data' )->andReturn(
+			array(
+				DraftTransfer::RECEIPTS => $receipts,
+				DraftTransfer::CONTEXTS => array( $handoff['id'] => $context ),
+				'cart'                  => array( $row ),
+			),
+			array(
+				DraftTransfer::RECEIPTS => $receipts,
+				DraftTransfer::CONTEXTS => array( $handoff['id'] => $context ),
+				'cart'                  => array(),
+			),
+			array(
+				DraftTransfer::RECEIPTS => $receipts,
+				'cart'                  => array( $row ),
+			),
+			array(
+				DraftTransfer::RECEIPTS => array( $command['key'] => $report_known ),
+				DraftTransfer::CONTEXTS => array( $report['id'] => DraftTransfer::native_context( $report ) ),
+			),
+			array()
+		);
+		foreach ( array( true, false, false, true ) as $index => $active ) {
+			$result = $transfer->receipt( null, $command, 3 === $index ? $report : $handoff );
+			$this->assertIsArray( $result );
+			$this->assertSame( 'applied', $result['state'] );
+			$this->assertSame( $active, $result['active'] );
+			$expected = 3 === $index ? $report_known : $known;
+			$this->assertSame( $expected, array_intersect_key( $result['receipt'], $expected ) );
+		}
+		$this->assertSame(
+			array(
+				'schema_version' => 1,
+				'state'          => 'not_applied',
+			),
+			$transfer->receipt( null, $command, $handoff )
+		);
+	}
+
 	/** The owned project identity. */
 	private function project(): string {
 		return str_repeat( 'a', 32 );

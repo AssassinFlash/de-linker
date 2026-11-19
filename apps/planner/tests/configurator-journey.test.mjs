@@ -287,92 +287,132 @@ for (const current of [true, false])
 		assert.equal(location.href, current ? inquiryUrl : startUrl);
 	});
 
-test("an applied product report resumes at the localized inquiry without another transfer", async (t) => {
-	const dom = setupDom();
-	const { createRoot } = await import("react-dom/client");
-	const { DraftTransferButton } =
-		await import("../src/components/energy/DraftTransferButton.tsx");
-	const root = createRoot(dom.element);
-	t.after(() => dom.dispose(root));
-	const origin = window.location.origin;
-	const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
-	const command = {
-		schema_version: 1,
-		project_id: run.project_id,
-		report_run_id: run.id,
-		expected_revision: run.revision,
-		expected_draft_sha256: "d".repeat(64),
-		key: "3909eb85-2936-43a8-8b53-c13114084498",
-	};
-	const record = {
-		path: "draft/apply",
-		body: JSON.stringify(command),
-		key: command.key,
-		resultId: null,
-	};
-	const handoff = "c".repeat(32);
-	const acknowledged = [];
-	const client = {
-		origin,
-		isCurrentScope: () => true,
-		async send(path, body) {
-			assert.equal(path, "draft/read");
-			assert.equal(body, record.body);
-			return {
-				schema_version: 1,
-				state: "applied",
-				receipt: {
+for (const active of [undefined, false])
+	test(`an applied product report has the appropriate actions for its current draft (${active})`, async (t) => {
+		const dom = setupDom();
+		const { createRoot } = await import("react-dom/client");
+		const { DraftTransferButton } =
+			await import("../src/components/energy/DraftTransferButton.tsx");
+		const root = createRoot(dom.element);
+		t.after(() => dom.dispose(root));
+		const origin = window.location.origin;
+		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
+		const command = {
+			schema_version: 1,
+			project_id: run.project_id,
+			report_run_id: run.id,
+			expected_revision: run.revision,
+			expected_draft_sha256: "d".repeat(64),
+			key: "3909eb85-2936-43a8-8b53-c13114084498",
+		};
+		const record = {
+			path: "draft/apply",
+			body: JSON.stringify(command),
+			key: command.key,
+			resultId: null,
+		};
+		const handoff = "c".repeat(32);
+		const acknowledged = [];
+		let previewed = 0;
+		const client = {
+			origin,
+			isCurrentScope: () => true,
+			async query(path, request) {
+				assert.equal(path, "draft/preview");
+				assert.equal(request.report_run_id, run.id);
+				previewed++;
+				return {
 					schema_version: 1,
 					project_id: run.project_id,
 					report_run_id: run.id,
 					revision: run.revision,
 					handoff_id: handoff,
-					intent_sha256: "d".repeat(64),
+					draft_sha256: "f".repeat(64),
 					snapshot_sha256: "e".repeat(64),
-					items: [{ id: 1, quantity: 1 }],
+					already_present: false,
+					changes: [{ product_id: 1, label: "Inverter", before: 0, after: 1 }],
 					draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
-					inquiry_urls: {
-						en: `${origin}/inquiry/`,
-						de: `${origin}/de/anfrage/`,
+				};
+			},
+			async send(path, body) {
+				assert.equal(path, "draft/read");
+				assert.equal(body, record.body);
+				return {
+					schema_version: 1,
+					state: "applied",
+					...(active === undefined ? {} : { active }),
+					receipt: {
+						schema_version: 1,
+						project_id: run.project_id,
+						report_run_id: run.id,
+						revision: run.revision,
+						handoff_id: handoff,
+						intent_sha256: "d".repeat(64),
+						snapshot_sha256: "e".repeat(64),
+						items: [{ id: 1, quantity: 1 }],
+						draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
+						inquiry_urls: {
+							en: `${origin}/inquiry/`,
+							de: `${origin}/de/anfrage/`,
+						},
 					},
-				},
-			};
-		},
-	};
-	await act(async () =>
-		root.render(
-			React.createElement(DraftTransferButton, {
-				client,
-				current: true,
-				blocked: false,
-				locale: "de_DE_formal",
-				operations: {
-					records: [record],
-					async acknowledgeReadback(...args) {
-						acknowledged.push(args);
-					},
-					start() {
-						assert.fail("Recovery attempted another transfer");
-					},
-				},
-				run,
-				scope: "owned",
-				recheck() {},
-			}),
-		),
-	);
-	assert.deepEqual(acknowledged, [[record, handoff]]);
-	assert.deepEqual(
-		[...dom.element.querySelectorAll("a")].map(({ textContent, href }) => [
-			textContent,
-			href,
-		]),
-		[
-			["Continue to inquiry", `${origin}/de/anfrage/`],
-			["View solution draft", `${origin}/de/entwurf/`],
-		],
-	);
-});
+				};
+			},
+		};
+		const render = (records) =>
+			act(async () =>
+				root.render(
+					React.createElement(DraftTransferButton, {
+						client,
+						current: true,
+						blocked: false,
+						locale: "de_DE_formal",
+						operations: {
+							records,
+							async acknowledgeReadback(...args) {
+								acknowledged.push(args);
+							},
+							start() {
+								assert.fail("Recovery attempted another transfer");
+							},
+						},
+						run,
+						scope: "owned",
+						recheck() {},
+					}),
+				),
+			);
+		await render([record]);
+		assert.deepEqual(acknowledged, [[record, handoff]]);
+		if (active === false) {
+			assert.equal(
+				[...dom.element.querySelectorAll("a")].some(
+					(link) => link.textContent === "Continue to inquiry",
+				),
+				false,
+			);
+			await render([]);
+			const add = [...dom.element.querySelectorAll("button")].find(
+				(item) =>
+					item.textContent === "Add selected products to solution draft",
+			);
+			assert.equal(add?.disabled, false);
+			await act(async () => add.click());
+			assert.equal(previewed, 1);
+			assert.match(dom.element.textContent, /Inverter/);
+			return;
+		}
+		assert.deepEqual(
+			[...dom.element.querySelectorAll("a")].map(({ textContent, href }) => [
+				textContent,
+				href,
+			]),
+			[
+				["Continue to inquiry", `${origin}/de/anfrage/`],
+				["View solution draft", `${origin}/de/entwurf/`],
+			],
+		);
+	});
 
 test("the configuration sidebar counts included roof modules when no PV capacity was entered or selected", async (t) => {
 	const dom = setupDom();

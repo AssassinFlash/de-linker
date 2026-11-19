@@ -4,6 +4,7 @@ import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 
 export interface DraftReceipt {
+	readonly active?: boolean;
 	readonly handoffId: string;
 	readonly snapshotSha256: string;
 	readonly projectId: string;
@@ -57,6 +58,7 @@ export function readDraftReceipt(
 	const row = lineage(value, command),
 		urls = readObject(row.draft_urls);
 	if (
+		(row.active !== undefined && typeof row.active !== "boolean") ||
 		!hash(row.intent_sha256, 64) ||
 		!Array.isArray(row.items) ||
 		(row.items.length === 0) !== (row.report_only === true)
@@ -77,6 +79,7 @@ export function readDraftReceipt(
 	}
 	const destinations = readUrls(urls, origin);
 	return {
+		...(row.active === undefined ? {} : { active: row.active }),
 		handoffId: String(row.handoff_id),
 		snapshotSha256: String(row.snapshot_sha256),
 		projectId: String(row.project_id),

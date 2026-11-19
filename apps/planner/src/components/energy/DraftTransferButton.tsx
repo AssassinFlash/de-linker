@@ -94,21 +94,26 @@ export function DraftTransferButton({
 				const status = readObject(raw);
 				if (
 					status.schema_version !== 1 ||
-					!["applied", "not_applied"].includes(String(status.state))
+					!["applied", "not_applied"].includes(String(status.state)) ||
+					(status.active !== undefined && typeof status.active !== "boolean")
 				)
 					throw new ApiError(502, "invalid_draft_receipt");
 				if (status.state === "applied") {
-					const value = readDraftReceipt(
+					const receipt = readDraftReceipt(
 						status.receipt,
 						readPlanningOperation(record.path, record.body),
 						client.origin,
 					);
-					if (record.resultId !== null && record.resultId !== value.handoffId)
+					if (record.resultId !== null && record.resultId !== receipt.handoffId)
 						throw new ApiError(502, "invalid_draft_receipt");
-					confirmed.current = { key: record.key, receipt: value };
-					setReceipt(value);
+					const recovered =
+						status.active === undefined
+							? receipt
+							: { ...receipt, active: status.active };
+					confirmed.current = { key: record.key, receipt: recovered };
+					setReceipt(recovered);
 					setError(null);
-					await operations.acknowledgeReadback(record, value.handoffId);
+					await operations.acknowledgeReadback(record, receipt.handoffId);
 				}
 			})
 			.catch((cause) => {
@@ -222,12 +227,14 @@ export function DraftTransferButton({
 			if (
 				continueToInquiry &&
 				currentReport.current &&
+				reply.receipt.active !== false &&
 				reply.receipt.inquiryUrls
 			)
 				window.location.assign(reply.receipt.inquiryUrls[language]);
 		}
 	}
-	const ready = current ? (receipt ?? present) : null;
+	const retired = current && receipt?.active === false;
+	const ready = current && !retired ? (receipt ?? present) : null;
 	const readyUrls = ready?.urls;
 	const inquiryUrl =
 		ready?.inquiryUrls?.[language] ??
@@ -301,7 +308,7 @@ export function DraftTransferButton({
 						{addLabel}
 					</button>
 				</>
-			) : record && current ? (
+			) : record && current && !retired ? (
 				<>
 					<p>
 						{__(
@@ -333,11 +340,21 @@ export function DraftTransferButton({
 									)}
 						</Notice>
 					)}
+					{retired && !preview && (
+						<Notice>
+							{__(
+								"This report is no longer in your solution draft.",
+								"linker-tools",
+							)}
+						</Notice>
+					)}
 					{!preview ? (
 						<button
 							type="button"
 							className="lp-button"
-							disabled={busy || !current || operations.storageFailed}
+							disabled={
+								busy || !current || operations.storageFailed || Boolean(record)
+							}
 							onClick={() => void prepare()}
 						>
 							{preparing ? __("Preparing changes…", "linker-tools") : addLabel}

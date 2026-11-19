@@ -17260,3 +17260,7 @@ msgstr "Keine passenden Projekte gefunden."
 #: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js
 msgid "Enter project details"
 msgstr "Projektdaten eingeben"
+
+#: ../../apps/planner/src/components/energy/DraftTransferButton.tsx build/planner/assets/planner.js
+msgid "This report is no longer in your solution draft."
+msgstr "Dieser Bericht ist nicht mehr in Ihrem Lösungsentwurf."
