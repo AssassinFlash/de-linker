@@ -1,3 +1,4 @@
+import { clearRoofImageryConsent } from "./data/roofImageryConsent.ts";
 import { Component, StrictMode, useMemo } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -83,6 +84,11 @@ function Application({
 	);
 }
 async function mount(): Promise<void> {
+	for (const event of [
+		"cookieyes_consent_update",
+		"wp_listen_for_consent_change",
+	])
+		document.addEventListener(event, clearRoofImageryConsent);
 	// The first render must see the full catalog (or its bounded failure, which
 	// leaves the inline shell subset in place); rendering earlier paints the
 	// untranslated form and nothing re-renders when the catalog arrives.

@@ -76,6 +76,7 @@ export function ProjectDetails({
 	creation,
 	existingEquipment,
 	demand,
+	roofAction,
 	profile,
 }: {
 	inputs: JsonObject;
@@ -93,6 +94,7 @@ export function ProjectDetails({
 	};
 	existingEquipment?: ReactNode;
 	demand?: ReactNode;
+	roofAction?: ReactNode;
 	profile?: ReactNode;
 }) {
 	const brief =
@@ -297,6 +299,7 @@ export function ProjectDetails({
 							}
 						/>
 					</label>
+					{roofAction}
 					{mapKey &&
 						!creation?.comparison &&
 						brief.system_scope !== "storage_only" && (

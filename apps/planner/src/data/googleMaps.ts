@@ -1,3 +1,5 @@
+import type { Brief } from "../domain/brief.ts";
+import type { Configuration } from "./config.ts";
 export interface LatLngLiteral {
 	lat: number;
 	lng: number;
@@ -157,6 +159,29 @@ export function loadGoogleMaps(apiKey: string): Promise<GoogleMapsApi> {
 		document.head.append(script);
 	});
 	return loadingPromise;
+}
+
+export async function locateProjectSite(
+	site: Brief["site"],
+	config: Pick<Configuration, "googleMapsApiKey" | "locale">,
+): Promise<Brief["site"] | null> {
+	if (!config.googleMapsApiKey || !site.country_code) return null;
+	const place = await geocodeAddress(
+		config.googleMapsApiKey,
+		site.location_label,
+		site.country_code,
+		config.locale,
+	);
+	return (
+		place && {
+			...site,
+			location_label: place.formattedAddress,
+			latitude: place.lat,
+			longitude: place.lng,
+			postal_code: place.postcode,
+			coordinate_basis: "user_entered",
+		}
+	);
 }
 
 export interface GeocodedPlace {

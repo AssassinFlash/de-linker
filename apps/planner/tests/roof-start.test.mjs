@@ -8,13 +8,19 @@ const session = {
 	query_scope: "3".repeat(64),
 	runtime: { limits: { max_json_depth: 32, max_body_bytes: 1000000 } },
 };
+const imagery = {
+	tiles: ["https://aerial.example/{z}/{x}/{y}"],
+	credit: "Regional orthophotos",
+	licence: "Open imagery",
+	licence_url: "https://aerial.example/terms",
+};
 const button = (label) =>
 	[...document.querySelectorAll("button")].find(
 		(item) => item.textContent === label,
 	);
 const field = (name) => document.querySelector(`[name="${name}"]`);
 
-async function fixture(t, search = "", locale = "en") {
+async function fixture(t, search = "", locale = "en", home = false) {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
@@ -22,7 +28,8 @@ async function fixture(t, search = "", locale = "en") {
 	const requests = [],
 		records = [],
 		opened = [],
-		searches = [];
+		searches = [],
+		offeredAreas = [];
 	let createFailure = false,
 		lookupFailure = false;
 	const originalFetch = globalThis.fetch;
@@ -49,7 +56,11 @@ async function fixture(t, search = "", locale = "en") {
 	});
 	const client = {
 		isCurrentScope: (scope) => scope === session.query_scope,
-		async query(path) {
+		async query(path, input) {
+			if (path === "places/lookup") {
+				offeredAreas.push(input.query);
+				return { imagery };
+			}
 			assert.equal(path, "products/current");
 			return {
 				schema_version: 1,
@@ -121,6 +132,13 @@ async function fixture(t, search = "", locale = "en") {
 						client,
 						store,
 						openOnLoad: true,
+						...(home && {
+							homeComparison: {
+								picker: null,
+								savedProject: "",
+								compareSaved: () => assert.fail(),
+							},
+						}),
 						config: {
 							locale,
 							countries: { DE: "Germany" },
@@ -139,6 +157,7 @@ async function fixture(t, search = "", locale = "en") {
 	await render();
 	return {
 		requests,
+		offeredAreas,
 		records,
 		opened,
 		searches,
@@ -149,8 +168,11 @@ async function fixture(t, search = "", locale = "en") {
 			lookupFailure = true;
 		},
 		async fill(site = "Karlstraße 1, München") {
-			await until(() => !field("project_title").matches(":disabled"));
-			await enter(field("project_title"), "Munich PV");
+			await until(
+				() => field("country") && !field("country").matches(":disabled"),
+			);
+			if (!home && field("project_title"))
+				await enter(field("project_title"), "Munich PV");
 			await act(async () => {
 				const country = field("country");
 				country.value = "DE";
@@ -168,20 +190,111 @@ async function fixture(t, search = "", locale = "en") {
 	};
 }
 
-test("the old roof link uses the Project form and opens Solar without geocoding", async (t) => {
-	const page = await fixture(t, "step=roof");
+test("a roof starts from its country and address and opens directly on the located building", async (t) => {
+	const page = await fixture(t, "step=roof", "de-DE");
 	await page.fill();
-	await page.click("Continue with solar");
+	assert.ok(!field("project_title"), "the address names the roof project");
+	assert.ok(!field("system_scope"));
+	await page.click("Open aerial map");
 	await until(() => page.opened.length === 1);
 	assert.equal(page.requests.length, 1);
-	assert.equal(page.searches.length, 0);
-	assert.equal(page.opened[0].destination, "design");
-	assert.equal(page.opened[0].project.title, "Munich PV");
-	assert.equal(
-		page.opened[0].project.inputs.brief.site.location_label,
-		"Karlstraße 1, München",
+	assert.equal(page.searches.length, 1);
+	assert.equal(page.searches[0].languageCode, "de");
+	const { project, destination } = page.opened[0];
+	assert.equal(destination, "roof");
+	assert.equal(project.title, "Karlstraße 1, 80333 München");
+	assert.deepEqual(project.inputs.brief.site, {
+		country_code: "DE",
+		location_label: project.title,
+		postal_code: "80333",
+		latitude: 48.145,
+		longitude: 11.566,
+		coordinate_basis: "user_entered",
+		timezone: null,
+	});
+	assert.equal(project.inputs.brief.system_scope, null);
+});
+
+test("from the homepage a country, street address and provider choice open the roof without a comparison", async (t) => {
+	const page = await fixture(t, "", "en", true);
+	await page.fill("Platz der Republik 1, 11011 Berlin");
+	assert.equal(field("project_title").value, "");
+	await until(
+		() => page.offeredAreas.includes("11011") && field("roof_imagery_consent"),
 	);
-	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
+	assert.ok(document.body.textContent.includes("Regional orthophotos"));
+	await act(async () => field("roof_imagery_consent").click());
+	await page.click("Open aerial map");
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].destination, "roof");
+	assert.equal(page.requests.length, 1);
+	assert.equal(
+		page.opened[0].project.title,
+		page.opened[0].project.inputs.brief.site.location_label,
+	);
+	assert.equal(page.opened[0].project.inputs.brief.system_scope, null);
+	const { takeRoofImageryConsent } =
+		await import("../src/data/roofImageryConsent.ts");
+	assert.ok(takeRoofImageryConsent(page.opened[0].project.id, imagery));
+	assert.equal(
+		takeRoofImageryConsent(page.opened[0].project.id, imagery),
+		false,
+	);
+});
+
+test("changing privacy settings withdraws a roof permission before the homepage submission", async (t) => {
+	const page = await fixture(t, "", "en", true);
+	await page.fill("Platz der Republik 1, 11011 Berlin");
+	await until(() => field("roof_imagery_consent"));
+	await act(async () => field("roof_imagery_consent").click());
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
+	assert.equal(field("roof_imagery_consent").checked, false);
+	await page.click("Open aerial map");
+	await until(() => page.opened.length === 1);
+	const { takeRoofImageryConsent } =
+		await import("../src/data/roofImageryConsent.ts");
+	assert.equal(
+		takeRoofImageryConsent(page.opened[0].project.id, imagery),
+		false,
+	);
+});
+
+test("a different imagery source cannot consume the homepage choice as its own permission", async (t) => {
+	const page = await fixture(t, "", "en", true);
+	await page.fill("Platz der Republik 1, 11011 Berlin");
+	await until(() => field("roof_imagery_consent"));
+	await act(async () => field("roof_imagery_consent").click());
+	await page.click("Open aerial map");
+	await until(() => page.opened.length === 1);
+	const { takeRoofImageryConsent } =
+		await import("../src/data/roofImageryConsent.ts");
+	assert.equal(
+		takeRoofImageryConsent(page.opened[0].project.id, {
+			...imagery,
+			tiles: ["https://other.example/{z}/{x}/{y}"],
+		}),
+		false,
+	);
+	assert.equal(
+		takeRoofImageryConsent(page.opened[0].project.id, imagery),
+		false,
+	);
+});
+
+test("an address without a match stays editable before creating a roof project", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await page.fill("Missing");
+	page.failLookup();
+	await page.click("Open aerial map");
+	await until(() =>
+		document.body.textContent.includes("The location could not be found"),
+	);
+	assert.equal(page.requests.length, 0);
+	assert.equal(field("country").value, "DE");
+	assert.equal(field("location_label").value, "Missing");
+	assert.equal(field("location_label").matches(":disabled"), false);
 });
 
 test("the old product link carries a current product into the same Project form", async (t) => {
@@ -230,7 +343,7 @@ test("a lost creation reply is retried using the original request after reload",
 	const page = await fixture(t, "step=roof");
 	page.loseReceipt(true);
 	await page.fill();
-	await page.click("Continue with solar");
+	await page.click("Open aerial map");
 	await until(() => button("Retry project creation"));
 	assert.equal(page.records.length, 1);
 	const request = page.requests[0];
@@ -240,12 +353,13 @@ test("a lost creation reply is retried using the original request after reload",
 			button("Retry project creation") &&
 			!button("Retry project creation").disabled,
 	);
-	assert.equal(field("project_title").value, "Munich PV");
-	assert.equal(field("project_title").readOnly, true);
+	assert.equal(field("location_label").value, "Karlstraße 1, 80333 München");
+	assert.equal(field("location_label").matches(":disabled"), true);
 	page.loseReceipt(false);
 	await page.click("Retry project creation");
 	await until(() => page.opened.length === 1);
 	assert.deepEqual(page.requests, [request, request]);
-	assert.equal(page.opened[0].destination, "design");
+	assert.equal(page.opened[0].destination, "roof");
+	assert.equal(page.searches.length, 1);
 	assert.equal(page.records.length, 0);
 });

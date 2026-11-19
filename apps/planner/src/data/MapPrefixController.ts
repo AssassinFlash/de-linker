@@ -9,6 +9,7 @@ import type { Vec2 } from "../domain/geometry.ts";
 
 export interface PrefixCallbacks {
 	readonly append: (position: Vec2) => void;
+	readonly trace?: (corners: readonly Vec2[]) => void;
 	readonly blockMapPick: () => void;
 	readonly failed: (cause: unknown) => void;
 }
@@ -24,6 +25,8 @@ type MapPort = Pick<
 	| "getLayer"
 	| "removeLayer"
 	| "doubleClickZoom"
+	| "unproject"
+	| "dragPan"
 >;
 export class MapPrefixController {
 	private readonly map: MapPort;
@@ -38,6 +41,9 @@ export class MapPrefixController {
 	private gesture: { id: number; x: number; y: number; valid: boolean } | null =
 		null;
 	private completed = false;
+	private readonly restorePan: boolean;
+	private readonly touchAction: string;
+	private trail: [number, number][] = [];
 	private disposed = false;
 	constructor(
 		map: MapPort,
@@ -54,8 +60,12 @@ export class MapPrefixController {
 		this.layers = [this.id + "-line", this.id + "-point"];
 		this.zoomEnabled = map.doubleClickZoom.isEnabled();
 		this.cursor = this.canvas.style.cursor;
+		this.touchAction = this.canvas.style.touchAction;
+		this.restorePan = Boolean(callbacks.trace && map.dragPan.isEnabled());
 		try {
 			map.doubleClickZoom.disable();
+			if (this.restorePan) map.dragPan.disable();
+			if (callbacks.trace) this.canvas.style.touchAction = "none";
 			this.canvas.style.cursor = "crosshair";
 			map.addSource(this.id, {
 				type: "geojson",
@@ -117,6 +127,7 @@ export class MapPrefixController {
 	private down = (event: PointerEvent) => {
 		if (this.disposed) return;
 		this.completed = false;
+		if (this.pointers.size) this.cancelTrail();
 		if (this.pointers.size || this.canvas.contains(event.target as Node))
 			this.pointers.add(event.pointerId);
 		if (!this.canvas.contains(event.target as Node)) {
@@ -128,6 +139,7 @@ export class MapPrefixController {
 			if (this.gesture) this.gesture.valid = false;
 			return;
 		}
+		if (this.callbacks.trace) this.trail = [[event.clientX, event.clientY]];
 		this.gesture = {
 			id: event.pointerId,
 			x: event.clientX,
@@ -135,8 +147,28 @@ export class MapPrefixController {
 			valid: true,
 		};
 	};
+	private positions() {
+		const { left, top } = this.canvas.getBoundingClientRect();
+		return this.trail.map(([x, y]): Vec2 => {
+			const { lng, lat } = this.map.unproject([x - left, y - top]);
+			return [lng, lat];
+		});
+	}
+	private cancelTrail() {
+		if (this.trail.length > 1 && !this.disposed) this.update([]);
+		this.trail = [];
+	}
 	private move = (event: PointerEvent) => {
 		const gesture = this.gesture;
+		const last = this.trail.at(-1);
+		if (
+			last &&
+			gesture?.id === event.pointerId &&
+			Math.hypot(event.clientX - last[0], event.clientY - last[1]) >= 3
+		) {
+			this.trail.push([event.clientX, event.clientY]);
+			this.update(this.positions());
+		}
 		// Match the pinned MapLibre default click tolerance, in display pixels;
 		// this threshold is never a metre/survey/numerical tolerance.
 		if (
@@ -154,10 +186,25 @@ export class MapPrefixController {
 			gesture.valid &&
 			this.pointers.size === 1 &&
 			this.canvas.contains(event.target as Node);
+		if (
+			this.callbacks.trace &&
+			this.trail.length > 2 &&
+			gesture?.id === event.pointerId &&
+			this.pointers.size === 1 &&
+			this.canvas.contains(event.target as Node)
+		) {
+			const first = this.trail[0]!,
+				last = this.trail.at(-1)!;
+			if (Math.hypot(last[0] - first[0], last[1] - first[1]) < 3)
+				this.trail.pop();
+			if (this.trail.length >= 3) this.callbacks.trace(this.positions());
+		}
+		this.cancelTrail();
 		this.pointers.delete(event.pointerId);
 		this.gesture = null;
 	};
 	private cancel = (event: PointerEvent) => {
+		this.cancelTrail();
 		this.pointers.delete(event.pointerId);
 		this.gesture = null;
 		this.completed = false;
@@ -166,6 +213,7 @@ export class MapPrefixController {
 		if (this.gesture) this.reset();
 	};
 	private reset = () => {
+		this.cancelTrail();
 		this.pointers.clear();
 		this.gesture = null;
 		this.completed = false;
@@ -208,11 +256,13 @@ export class MapPrefixController {
 			if (this.map.getSource(this.id)) this.map.removeSource(this.id);
 		});
 		attempt(() => {
+			if (this.restorePan) this.map.dragPan.enable();
 			if (this.zoomEnabled) this.map.doubleClickZoom.enable();
 			else this.map.doubleClickZoom.disable();
 		});
 		attempt(() => {
 			this.canvas.style.cursor = this.cursor;
+			this.canvas.style.touchAction = this.touchAction;
 		});
 		if (failures.length)
 			this.callbacks.failed(

@@ -75,6 +75,7 @@ export interface SolarInstallationProps {
 	next: () => void;
 	wiring?: ReactNode;
 	initialMap?: boolean;
+	takeImageryConsent?: (source: PlaceImagery) => boolean;
 	onEditing?: (editing: boolean) => void;
 	geometryImport?: {
 		projectId: string;
@@ -151,6 +152,7 @@ export function SolarInstallation({
 	next,
 	wiring,
 	initialMap = false,
+	takeImageryConsent,
 	onEditing,
 	geometryImport,
 }: SolarInstallationProps) {
@@ -188,7 +190,7 @@ export function SolarInstallation({
 		geometry.roofs[0]?.id ?? null,
 	);
 	const [tool, setTool] = useState<"select" | "roof" | "obstacle" | "modules">(
-		"select",
+		initialMap && !geometry.roofs.length ? "roof" : "select",
 	);
 	const [error, setError] = useState("");
 	const [roofPropertyInvalid, setRoofPropertyInvalid] = useState(false);
@@ -662,12 +664,19 @@ export function SolarInstallation({
 			);
 		}
 	}
-	function addRoof(points?: readonly Vec2[]) {
-		const aerialTrace = points && firstMapRoof;
-		const aerial = aerialTrace ? tracedAerial.current : null;
-		if (aerialTrace && !canConfirmAerial) return;
+	function addRoof(
+		points?: readonly Vec2[],
+		aerial = points ? tracedAerial.current : null,
+	) {
+		if (
+			points &&
+			(!aerial ||
+				!readyAerial ||
+				imagerySourceKey(readyAerial) !== imagerySourceKey(aerial))
+		)
+			return;
 		try {
-			if (!confirmed || (!aerial && !fields.source.trim()))
+			if (!aerial && (!confirmed || !fields.source.trim()))
 				throw new Error(
 					__(
 						"Confirm the drawing source before adding a roof.",
@@ -759,7 +768,7 @@ export function SolarInstallation({
 			) {
 				select(identity.id);
 				setVertices([]);
-				setTool("select");
+				setTool(points ? "modules" : "select");
 			}
 		} catch (cause) {
 			setError(
@@ -871,11 +880,25 @@ export function SolarInstallation({
 			? {
 					key: drawingKey,
 					phase: "collecting",
-					requiresAerial: tool === "roof" && firstMapRoof,
+					requiresAerial: tool === "roof",
+					...(tool === "roof" &&
+					readyAerial &&
+					!vertices.length &&
+					fields.pitch &&
+					fields.azimuth &&
+					fields.height
+						? {
+								trace: (corners: readonly Vec2[]) => {
+									tracedAerial.current = readyAerial;
+									setVertices(corners);
+									addRoof(corners, readyAerial);
+								},
+							}
+						: {}),
 					vertices,
 					referencePosition: vertices[0] ?? null,
 					append: (point) => {
-						if (tool === "roof" && firstMapRoof) {
+						if (tool === "roof") {
 							if (!readyAerial) return;
 							const previousSource = tracedAerial.current;
 							if (
@@ -1031,6 +1054,9 @@ export function SolarInstallation({
 	const viewingImagery = imagery.data?.viewingImagery ?? null;
 	const viewOnly = !imagery.data?.imagery && viewingImagery !== null;
 	const interaction = viewOnly ? null : mapDrawing;
+	const tracingRoof =
+		interaction?.requiresAerial && Boolean(imagery.data?.imagery);
+	const placingOnMap = map && tool === "modules" && !viewOnly;
 	const latitude = site.latitude ?? imagery.data?.latitude,
 		longitude = site.longitude ?? imagery.data?.longitude,
 		country = site.country_code ?? imagery.data?.country;
@@ -1081,6 +1107,57 @@ export function SolarInstallation({
 			};
 		},
 	});
+	const moduleChoice = (
+		<>
+			<label className="sc-field">
+				<span>{__("PV module", "linker-tools")}</span>
+				<select
+					value={module?.id ?? ""}
+					onChange={(e) => {
+						const spec =
+							templates.data?.find(
+								(t) => t.specification.id === e.currentTarget.value,
+							)?.specification ??
+							geometry.module_specs.find((m) => m.id === e.currentTarget.value);
+						if (spec) chooseModule(spec);
+					}}
+				>
+					<option value="">{__("Choose a module", "linker-tools")}</option>
+					{[
+						...geometry.module_specs,
+						...(templates.data ?? [])
+							.map((t) => t.specification)
+							.filter(
+								(m) => !geometry.module_specs.some((old) => old.id === m.id),
+							),
+					].map((m) => (
+						<option key={m.id} value={m.id}>
+							{m.model} · {m.stc_power_w} Wp
+						</option>
+					))}
+				</select>
+			</label>
+			{templates.isError && (
+				<p role="alert">
+					{__("Module data could not be loaded.", "linker-tools")}
+				</p>
+			)}
+		</>
+	);
+	const roofDimensions = (
+		<div className="sc-fields">
+			{field("pitch", __("Pitch", "linker-tools"), "°")}
+			{field("azimuth", __("Azimuth", "linker-tools"), "°")}
+			{field("height", __("Relative roof height", "linker-tools"))}
+		</div>
+	);
+	const moduleLayout = (
+		<div className="sc-fields">
+			{field("rows", __("Rows", "linker-tools"), "")}
+			{field("columns", __("Columns", "linker-tools"), "")}
+			{field("gap", __("Module gap", "linker-tools"))}
+		</div>
+	);
 	return (
 		<section className="sc-solar">
 			<header className="sc-section-head">
@@ -1143,42 +1220,7 @@ export function SolarInstallation({
 					))}
 				</div>
 				<div className="sc-card">
-					<label className="sc-field">
-						<span>{__("PV module", "linker-tools")}</span>
-						<select
-							value={module?.id ?? ""}
-							onChange={(e) => {
-								const spec =
-									templates.data?.find(
-										(t) => t.specification.id === e.currentTarget.value,
-									)?.specification ??
-									geometry.module_specs.find(
-										(m) => m.id === e.currentTarget.value,
-									);
-								if (spec) chooseModule(spec);
-							}}
-						>
-							<option value="">{__("Choose a module", "linker-tools")}</option>
-							{[
-								...geometry.module_specs,
-								...(templates.data ?? [])
-									.map((t) => t.specification)
-									.filter(
-										(m) =>
-											!geometry.module_specs.some((old) => old.id === m.id),
-									),
-							].map((m) => (
-								<option key={m.id} value={m.id}>
-									{m.model} · {m.stc_power_w} Wp
-								</option>
-							))}
-						</select>
-					</label>
-					{templates.isError && (
-						<p role="alert">
-							{__("Module data could not be loaded.", "linker-tools")}
-						</p>
-					)}
+					{!placingOnMap && moduleChoice}
 					{mode === "known" ? (
 						<>
 							<div className="sc-fields">
@@ -1440,12 +1482,30 @@ export function SolarInstallation({
 										</button>
 									</div>
 								)}
+								{tracingRoof && (
+									<>
+										<p className="sc-hint">
+											{__(
+												"Enter your roof measurements, then trace around the roof in one drag. You can also tap each corner and finish the outline.",
+												"linker-tools",
+											)}
+										</p>
+										{roofDimensions}
+									</>
+								)}
+								{placingOnMap && (
+									<>
+										{moduleChoice}
+										{moduleLayout}
+									</>
+								)}
 								{map ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
 										imagery={imagery.data?.imagery ?? viewingImagery}
 										viewOnly={viewOnly}
 										onAerialReady={setReadyAerial}
+										takeImageryConsent={takeImageryConsent}
 										siteOutline={outline.data ?? null}
 										document={geometry}
 										poses={poses}
@@ -1464,7 +1524,7 @@ export function SolarInstallation({
 										siteCentre={siteCentre}
 										interaction={interaction}
 										placement={
-											tool === "modules" && roof && module && mapReferenced
+											placingOnMap && roof && module && mapReferenced
 												? {
 														roofId: roof.id,
 														place: placeModules,
@@ -1573,9 +1633,7 @@ export function SolarInstallation({
 												: addObstacle(vertices)
 										}
 									>
-										{firstMapRoof && tool === "roof"
-											? __("Confirm roof and map origin", "linker-tools")
-											: __("Finish outline", "linker-tools")}
+										{__("Finish outline", "linker-tools")}
 									</button>
 								)}
 								<p className="sc-hint">
@@ -1584,7 +1642,7 @@ export function SolarInstallation({
 												"Use the plan view or a roof image you have permission to use to create the layout.",
 												"linker-tools",
 											)
-										: interaction?.requiresAerial
+										: interaction?.requiresAerial && firstMapRoof
 											? __(
 													"Mark each roof corner on the aerial map. The first corner sets the origin with true north.",
 													"linker-tools",
@@ -1681,70 +1739,67 @@ export function SolarInstallation({
 										))}
 									</div>
 								)}
-								<details open={!roof || tool === "roof" || tool === "obstacle"}>
-									<summary>
-										{__("Add a measured roof face", "linker-tools")}
-									</summary>
-									{field("width", __("Width", "linker-tools"))}
-									{field("depth", __("Depth", "linker-tools"))}
-									{field("pitch", __("Pitch", "linker-tools"), "°")}
-									{field("azimuth", __("Azimuth", "linker-tools"), "°")}
-									{field("height", __("Relative roof height", "linker-tools"))}
-									{field("originU", __("Origin east / U", "linker-tools"))}
-									{field("originV", __("Origin north / V", "linker-tools"))}
-									<label className="sc-field">
-										<span>{__("Drawing source", "linker-tools")}</span>
-										<input
-											value={
-												map && firstMapRoof && tool === "roof"
-													? (readyAerial?.credit ?? "")
-													: fields.source
-											}
-											readOnly={map && firstMapRoof && tool === "roof"}
-											onChange={(e) => {
-												const value = e.currentTarget.value;
-												setFields((previous) => ({
-													...previous,
-													source: value,
-												}));
-											}}
-										/>
-									</label>
-									<label className="sc-check">
-										<input
-											type="checkbox"
-											checked={confirmed}
-											onChange={(e) => setConfirmed(e.currentTarget.checked)}
-										/>
-										{__(
-											"I confirm these dimensions and permission to use this drawing.",
-											"linker-tools",
-										)}
-									</label>
-									{!(map && firstMapRoof) &&
-										!geometry.coordinate_system.anchor &&
-										site.coordinate_basis === "user_entered" &&
-										site.latitude !== null &&
-										site.longitude !== null && (
-											<button
-												type="button"
-												disabled={!confirmed || !fields.source.trim()}
-												onClick={confirmMapReference}
-											>
-												{__(
-													"Confirm site coordinates as map origin and use true north",
-													"linker-tools",
-												)}
-											</button>
-										)}
-									<button
-										type="button"
-										disabled={!confirmed || !fields.source.trim()}
-										onClick={() => addRoof()}
+								{!tracingRoof && (
+									<details
+										open={!roof || tool === "roof" || tool === "obstacle"}
 									>
-										{__("Add rectangular roof", "linker-tools")}
-									</button>
-								</details>
+										<summary>
+											{__("Add a measured roof face", "linker-tools")}
+										</summary>
+										{field("width", __("Width", "linker-tools"))}
+										{field("depth", __("Depth", "linker-tools"))}
+										{roofDimensions}
+										{field("originU", __("Origin east / U", "linker-tools"))}
+										{field("originV", __("Origin north / V", "linker-tools"))}
+										<label className="sc-field">
+											<span>{__("Drawing source", "linker-tools")}</span>
+											<input
+												value={fields.source}
+												onChange={(e) => {
+													const value = e.currentTarget.value;
+													setFields((previous) => ({
+														...previous,
+														source: value,
+													}));
+												}}
+											/>
+										</label>
+										<label className="sc-check">
+											<input
+												type="checkbox"
+												checked={confirmed}
+												onChange={(e) => setConfirmed(e.currentTarget.checked)}
+											/>
+											{__(
+												"I confirm these dimensions and permission to use this drawing.",
+												"linker-tools",
+											)}
+										</label>
+										{!(map && firstMapRoof) &&
+											!geometry.coordinate_system.anchor &&
+											site.coordinate_basis === "user_entered" &&
+											site.latitude !== null &&
+											site.longitude !== null && (
+												<button
+													type="button"
+													disabled={!confirmed || !fields.source.trim()}
+													onClick={confirmMapReference}
+												>
+													{__(
+														"Confirm site coordinates as map origin and use true north",
+														"linker-tools",
+													)}
+												</button>
+											)}
+										<button
+											type="button"
+											disabled={!confirmed || !fields.source.trim()}
+											onClick={() => addRoof()}
+										>
+											{__("Add rectangular roof", "linker-tools")}
+										</button>
+									</details>
+								)}
 								{field(
 									"obstacleHeight",
 									__("Obstacle height above roof", "linker-tools"),
@@ -1756,9 +1811,7 @@ export function SolarInstallation({
 								>
 									{__("Add obstacle", "linker-tools")}
 								</button>
-								{field("rows", __("Rows", "linker-tools"), "")}
-								{field("columns", __("Columns", "linker-tools"), "")}
-								{field("gap", __("Module gap", "linker-tools"))}
+								{!placingOnMap && moduleLayout}
 								<button
 									type="button"
 									disabled={!module || !roof}

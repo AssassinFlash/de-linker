@@ -17354,3 +17354,15 @@ msgstr "Ohne dieses Lastprofil vergleichen"
 #: ../../apps/planner/src/components/configurator/HomepageLoadProfile.tsx build/planner/assets/planner.js
 msgid "Your saved CSV is ready. Choose another file to replace it."
 msgstr "Ihre gespeicherte CSV-Datei liegt vor. Wählen Sie eine andere Datei, um sie zu ersetzen."
+
+#: ../../apps/planner/src/components/RoofMapAction.tsx build/planner/assets/planner.js
+msgid "Opening the map sends this address to Google Maps to find your building."
+msgstr "Beim Öffnen der Karte wird diese Adresse an Google Maps gesendet, um Ihr Gebäude zu finden."
+
+#: ../../apps/planner/src/components/RoofMapAction.tsx build/planner/assets/planner.js
+msgid "Load aerial imagery from %s. The provider receives your IP address and the map area shown."
+msgstr "Luftbilder von %s laden. Der Anbieter erhält Ihre IP-Adresse und den angezeigten Kartenausschnitt."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Enter your roof measurements, then trace around the roof in one drag. You can also tap each corner and finish the outline."
+msgstr "Geben Sie die Dachmaße ein und ziehen Sie den Dachumriss in einem Zug nach. Sie können die Ecken auch einzeln antippen und den Umriss abschließen."
