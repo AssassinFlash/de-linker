@@ -986,7 +986,7 @@ final class Context {
 			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $equipment['required_usable_kwh'] . ' kWh' : '',
 			__( 'Backup load', 'linker-tools' )            => isset( $inputs['backup_demand']['load_kw'] ) ? $inputs['backup_demand']['load_kw'] . ' kW' : '',
 			__( 'Required duration', 'linker-tools' )      => isset( $inputs['backup_demand']['duration_hours'] ) ? $inputs['backup_demand']['duration_hours'] . ' h' : '',
-			__( 'Solution draft', 'linker-tools' )         => $inputs['saved_solution_reference']['title'] ?? '',
+			__( 'Solution draft', 'linker-commerce' )      => $inputs['saved_solution_reference']['title'] ?? '',
 		);
 		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch
 		$lines = array( self::label( $project ) );

@@ -568,7 +568,7 @@ final class ProjectNotesTest extends TestCase {
 			'note_revision' => '3',
 			'text'          => $text,
 			'inputs'        => array(
-				'brief'                 => array(
+				'brief'                    => array(
 					'system_scope' => 'pv_only',
 					'site'         => array( 'location_label' => 'Oslo' ),
 					'annual_load'  => array(
@@ -576,12 +576,13 @@ final class ProjectNotesTest extends TestCase {
 						'basis' => 'bill_total',
 					),
 				),
-				'pvgis_reference_setup' => array(
+				'pvgis_reference_setup'    => array(
 					'model'  => 'pvgis_5_3_known_ac_reference_v1',
 					'arrays' => array( array( 'peak_power_kwp' => 4.5 ), array( 'peak_power_kwp' => 3 ) ),
 				),
-				'equipment_setup'       => array( 'pv_dc_kw' => 9 ),
-				'energy_scenario'       => array(
+				'equipment_setup'          => array( 'pv_dc_kw' => 9 ),
+				'saved_solution_reference' => array( 'title' => 'April proposal' ),
+				'energy_scenario'          => array(
 					'controller' => 'peak_shaving_with_reserve_v1',
 					'schedule'   => array(
 						array(
@@ -603,7 +604,11 @@ final class ProjectNotesTest extends TestCase {
 		$provider = WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id, 3 );
 		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $provider );
 		$provider->reply( $note );
-		WP_Mock::passthruFunction( '__' );
+		WP_Mock::userFunction( '__' )->andReturnUsing(
+			static function ( string $text, string $domain = 'default' ): string {
+				return 'linker-commerce' === $domain && 'Solution draft' === $text ? 'Lösungsentwurf' : $text;
+			}
+		);
 		WP_Mock::passthruFunction( 'esc_html' );
 		$order = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items', 'get_customer_note', 'set_customer_note' ) )->getMock();
 		$order->method( 'get_items' )->willReturn( array() );
@@ -633,7 +638,7 @@ final class ProjectNotesTest extends TestCase {
 			}
 		);
 		$this->assertStringEndsWith( "\n\nPlease call.", $output );
-		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW' ) as $fact ) {
+		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW', 'Lösungsentwurf: April proposal' ) as $fact ) {
 			$this->assertStringContainsString( $fact, $output );
 		}
 		$this->assertSame( $id . ':3', $meta['_linker_preliminary_project'] );
