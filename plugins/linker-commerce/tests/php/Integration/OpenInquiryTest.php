@@ -228,6 +228,50 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'name="linker_inquiry_retained" value="1"', $cleared, 'An intentionally cleared failed submission is still customer input.' );
 	}
 
+	/** Return to checkout without substituting the current project for an uncertain send. */
+	public function test_preliminary_note_recovery(): void {
+		wc_load_cart();
+		$tags = $GLOBALS['shortcode_tags'];
+		$this->later(
+			static function () use ( $tags ): void {
+				$GLOBALS['shortcode_tags'] = $tags;
+			}
+		);
+		( new \Linker\Commerce\Inquiry\Form() )->register();
+		$id       = str_repeat( 'a', 32 );
+		$key      = 'project_' . $id;
+		$previous = WC()->session->get( 'linker_inquiry_fields' );
+		$missing  = static fn () => new \WP_Error( 'missing', '', array( 'status' => 404 ) );
+		add_filter( 'linker_tools_planning_inquiry_note', $missing, 11 );
+		$this->later(
+			static function () use ( $previous, $missing ): void {
+				WC()->session->set( 'linker_inquiry_fields', $previous );
+				remove_filter( 'linker_tools_planning_inquiry_note', $missing, 11 );
+			}
+		);
+		$fields = array(
+			'linker_note_project'           => $id,
+			'linker_recovery_available'     => '1',
+			'linker_project_notes_present'  => '1',
+			'linker_include_project_notes'  => '1',
+			'linker_project_note_revisions' => array( $key => '4' ),
+			'linker_draft_hash'             => 'original-cart',
+			'message'                       => 'Please reply.',
+		);
+		WC()->session->set( 'linker_inquiry_fields', $fields );
+		$html = do_shortcode( '[linker_inquiry_form]' );
+		$this->assertStringContainsString( 'name="linker_project_note_revisions[' . $key . ']" value="4"', $html );
+		$this->assertStringContainsString( 'name="linker_draft_hash" value="original-cart"', $html );
+		$this->assertStringContainsString( 'type="hidden" name="linker_include_project_notes" value="1"', $html );
+		$fields['linker_recovery_available'] = '0';
+		WC()->session->set( 'linker_inquiry_fields', $fields );
+		$html = do_shortcode( '[linker_inquiry_form]' );
+		$this->assertStringContainsString( 'type="checkbox" name="linker_include_project_notes"', $html );
+		$this->assertStringContainsString( 'name="linker_project_note_revisions[' . $key . ']" value="4"', $html );
+		$this->assertStringNotContainsString( 'class="linker-inquiry-project-note"', $html );
+		$this->assertStringContainsString( 'Please reply.</textarea>', $html );
+	}
+
 	/** Retained validation feedback follows the language when the customer switches pages. */
 	public function test_retained_error_changes_language_with_the_request_page(): void {
 		wc_load_cart();
