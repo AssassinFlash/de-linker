@@ -166,6 +166,8 @@ def catalog_turn(vocabulary: Any, monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.mark.parametrize(
     ("current", "expected"),
     [
+        ("Show me a SAJ inverter.", 1),
+        ("Please save that one.", 1),
         ("Please show me the SAJ H2-10K-T3 inverter.", 1),
         ("Please prepare 2 SAJ H2-10K-T3 inverters.", 2),
         ("I'd take 2 of the H2-10K-T3 for this project.", 2),
@@ -174,7 +176,7 @@ def catalog_turn(vocabulary: Any, monkeypatch: pytest.MonkeyPatch) -> None:
         ("Save 12000 SAJ H2-10K-T3 inverters to my account.", 0),
     ],
 )
-def test_named_product_actions_use_the_current_request(
+def test_product_card_and_actions_use_the_current_request(
     log: TurnLog, catalog_turn: None, current: str, expected: int
 ) -> None:
     def generate(
