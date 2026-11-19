@@ -56,7 +56,7 @@ final class VisibilityReadTest extends TestCase {
 				return $runtime[ $id ];
 			}
 		);
-		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key ): string => 14 === $id && EngineeringReference::ROLE_META_KEY === $key ? EngineeringReference::PV_MODULE : '' );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key ): string => 14 === $id && EngineeringReference::ROLE_META_KEY === $key ? EngineeringReference::CABLE : '' );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
 		foreach ( array(
 			11 => 11,

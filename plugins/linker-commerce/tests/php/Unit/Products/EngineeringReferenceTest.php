@@ -39,35 +39,13 @@ final class EngineeringReferenceTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->current_faq_product( self::ID, array() );
-		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::PV_MODULE;
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
 		$this->current_faq_meta[ EngineeringReference::ID_META_KEY ]   = 'mat_fixture_module';
-		$this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ]    = array(
-			'pmax_w' => array(
-				'value'    => '460',
-				'unit'     => 'W',
-				'citation' => array(
-					'url'  => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
-					'page' => 2,
-				),
-			),
-		);
-		foreach ( array(
-			'voc_v'              => '53.8',
-			'vmpp_v'             => '45.4',
-			'isc_a'              => '10.81',
-			'impp_a'             => '10.14',
-			'beta_voc_pct_per_c' => '-0.24',
-			'max_series_fuse_a'  => '25',
-			'dimensions_mm'      => '1762 × 1134 × 30',
-		) as $key => $value ) {
-			$this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ][ $key ] = array_merge( $this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ]['pmax_w'], array( 'value' => $value ) );
-		}
-		EvidenceBindings::capture( self::ID, true );
 		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array( 'pa_model', 'pa_brand' ) );
 		WP_Mock::userFunction( 'get_object_term_cache' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
 			static function ( int|array $id, string $taxonomy, array $args = array() ): array {
-				$name = 'pa_model' === $taxonomy ? 'TSM-460NEG9R.28' : 'Trina Solar';
+				$name = 'pa_model' === $taxonomy ? 'Test Cable 6' : 'Fixture';
 				if ( is_array( $id ) && 'all_with_object_id' === ( $args['fields'] ?? '' ) ) {
 					return array_map(
 						static fn ( int $product_id ): object => (object) array(
@@ -91,23 +69,15 @@ final class EngineeringReferenceTest extends TestCase {
 		parent::tearDown();
 	}
 
-	/** Current Woo fields and document permission form the entire overlay. */
-	public function test_overlay_is_a_woo_reference_with_ordinary_dependency_identity(): void {
+	/** Old panel reference rows cannot grant a product or engineering source. */
+	public function test_retired_panel_is_excluded_from_products_documents_and_engineering_feed(): void {
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = 'reference_pv_module';
 		$feed = EngineeringFeed::feed();
 		$this->assertSame( array(), $feed['products'] );
-		$this->assertCount( 1, $feed['overlay'] );
-		$reference = $feed['overlay'][0];
-		$this->assertSame( 'mat_fixture_module', $reference['id'] );
-		$this->assertSame( 'pv_module', $reference['kind'] );
-		$this->assertSame( self::ID, $reference['canonical_product_id'] );
-		$this->assertSame( 'Trina Solar', $reference['brand'] );
-		$this->assertSame( '460', $reference['figures']->pmax_w['value'] );
-		$this->assertSame( $reference['product_revision'], $reference['reference_revision'] );
-		$this->assertSame( 64, strlen( $reference['reference_revision'] ) );
-		$this->assertSame( array( self::ID ), $reference['documents'][0]['product_ids'] );
-		$this->assertArrayHasKey( 'blob_sha256', $reference['documents'][0] );
-		$this->assertArrayHasKey( 'document_revision', $reference['documents'][0] );
-		$this->assertSame( EngineeringReference::PV_MODULE, Publication::manifest()['products'][0]['engineering_role'] );
+		$this->assertSame( array(), $feed['overlay'] );
+		$this->assertSame( array(), Publication::manifest()['products'] );
+		$this->assertSame( array(), Publication::manifest()['documents'] );
+		$this->assertFalse( Publication::is_published( self::ID ) );
 		$this->assertNull( EngineeringFeed::item( self::ID ) );
 	}
 
@@ -206,67 +176,6 @@ final class EngineeringReferenceTest extends TestCase {
 		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
 	}
 
-	/** Replacement bytes revoke scalar evidence without changing unrelated compatibility. */
-	public function test_replaced_pdf_revokes_figures_and_migration_reruns_never_rebind(): void {
-		$before  = EngineeringFeed::feed();
-		$binding = $this->current_faq_meta[ EvidenceBindings::META_KEY ];
-		file_put_contents( $this->publication_uploads . '/2026/manual.pdf', "%PDF-1.4\nreplacement\n%%EOF" );
-		$result = ReferenceMigration::run(
-			array(
-				'overlay' => array(
-					array(
-						'id'        => 'mat_fixture_module',
-						'kind'      => 'pv_module',
-						'brand'     => 'Trina Solar',
-						'model'     => 'TSM-460NEG9R.28',
-						'figures'   => $this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ],
-						'documents' => $this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ],
-					),
-				),
-			),
-			false
-		);
-		$this->assertSame( 'unchanged', $result['action'] );
-		$this->assertSame( $binding, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
-		$after = EngineeringFeed::feed();
-		$this->assertSame( array(), $after['overlay'] );
-		$this->assertNotSame( $before['overlay'][0]['reference_revision'], Publication::manifest()['products'][0]['product_revision'] );
-		$this->assertSame( $before['compatibility_revision'], $after['compatibility_revision'] );
-		$this->assertSame( Publication::revision( EngineeringData::compatibility() ), $after['compatibility_revision'] );
-	}
-
-	/** A partial ready reference must not poison the rest of the engine feed. */
-	public function test_missing_required_field_omits_reference_without_hiding_source(): void {
-		unset( $this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ]['voc_v'] );
-		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
-		$this->assertCount( 1, Publication::manifest()['products'] );
-	}
-
-	/** Preview resolves the original evidence but cannot create or change products. */
-	public function test_dry_run_is_read_only_with_current_originals(): void {
-		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
-		WP_Mock::userFunction( 'taxonomy_exists' )->andReturn( true );
-		$before = $this->current_faq_meta;
-		$result = ReferenceMigration::run(
-			array(
-				'overlay' => array(
-					array(
-						'id'        => 'mat_fixture_module',
-						'kind'      => 'pv_module',
-						'brand'     => 'Trina Solar',
-						'model'     => 'TSM-460NEG9R.28',
-						'figures'   => $this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ],
-						'documents' => $this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ],
-					),
-				),
-			),
-			true
-		);
-		$this->assertSame( 'would_create', $result['action'] );
-		$this->assertSame( 0, $result['product_id'] );
-		$this->assertSame( $before, $this->current_faq_meta );
-	}
-
 	/** A reference label is known but cannot be offered as a current sales model. */
 	public function test_cable_preview_binds_the_exact_original_without_writing(): void {
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
@@ -299,6 +208,7 @@ final class EngineeringReferenceTest extends TestCase {
 
 	/** The same engineering ID cannot silently change its native reference role. */
 	public function test_cable_adoption_cannot_relabel_a_reference_module(): void {
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = 'reference_pv_module';
 		$input                     = $this->cable_input();
 		$input['overlay'][0]['id'] = 'mat_fixture_module';
 		$this->expectException( \RuntimeException::class );
@@ -387,7 +297,7 @@ final class EngineeringReferenceTest extends TestCase {
 	/** A reference label is known but cannot be offered as a current sales model. */
 	public function test_public_identity_and_direct_store_reads_refuse_reference(): void {
 		WP_Mock::userFunction( 'nocache_headers' );
-		foreach ( array( array( 'models' => array( 'TSM-460NEG9R.28' ) ), array( 'text' => 'Module TSM-460NEG9R.28' ) ) as $body ) {
+		foreach ( array( array( 'models' => array( 'Test Cable 6' ) ), array( 'text' => 'Cable Test Cable 6' ) ) as $body ) {
 			$request = Mockery::mock( \WP_REST_Request::class );
 			$request->shouldReceive( 'get_body' )->andReturn( (string) json_encode( $body ) );
 			$request->shouldReceive( 'get_json_params' )->andReturn( $body );
@@ -453,8 +363,7 @@ final class EngineeringReferenceTest extends TestCase {
 		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
 			function ( array $query ): array {
 				$this->assertSame( EngineeringReference::ROLE_META_KEY, $query['meta_key'] );
-				$this->assertSame( array( EngineeringReference::PV_MODULE, EngineeringReference::CABLE ), $query['meta_value'] );
-				$this->assertSame( 'IN', $query['meta_compare'] );
+				$this->assertSame( EngineeringReference::CABLE, $query['meta_value'] );
 				$this->assertTrue( $query['linker_publication_internal'] );
 				return array( self::ID, 9999 );
 			}
@@ -484,19 +393,8 @@ final class EngineeringReferenceTest extends TestCase {
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Every original reference PDF must already be present' );
-		ReferenceMigration::run(
-			array(
-				'overlay' => array(
-					array(
-						'id'        => 'mat_fixture_module',
-						'kind'      => 'pv_module',
-						'brand'     => 'Trina Solar',
-						'model'     => 'test',
-						'figures'   => array(),
-						'documents' => array( array( 'url' => 'https://de-linker.com/wp-content/uploads/absent.pdf' ) ),
-					),
-				),
-			)
-		);
+		$input                                      = $this->cable_input();
+		$input['overlay'][0]['documents'][0]['url'] = 'https://de-linker.com/wp-content/uploads/absent.pdf';
+		ReferenceMigration::run( $input, true );
 	}
 }

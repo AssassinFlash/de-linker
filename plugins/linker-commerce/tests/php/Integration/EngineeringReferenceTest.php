@@ -42,7 +42,7 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 			$product->set_status( $status );
 			if ( 'reference' === $role ) {
 				EngineeringReference::configure( $product );
-				$product->update_meta_data( EngineeringReference::ROLE_META_KEY, EngineeringReference::PV_MODULE );
+				$product->update_meta_data( EngineeringReference::ROLE_META_KEY, EngineeringReference::CABLE );
 			}
 			$products[ $role ] = $product->save();
 			$this->retain_fixture_product( $products[ $role ] );
@@ -255,17 +255,17 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 		$this->assertContains( $default_category, $ordinary_categories, 'Woo still restores the default category for an ordinary product.' );
 		$this->assertFalse( $product->is_purchasable(), 'The real priority chain must refuse even unpriced-inquiry permission.' );
 		$this->assertFalse( $product->is_visible() );
-		$this->assertCount( 30, get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true ) );
-		$this->assertCount( 30, get_post_meta( $id, EvidenceBindings::META_KEY, true ) );
+		$this->assertCount( 1, get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true ) );
+		$this->assertCount( 1, get_post_meta( $id, EvidenceBindings::META_KEY, true ) );
 		$this->assertCount( 2, Publication::document_rows( $id ) );
 		$feed      = EngineeringFeed::feed();
 		$reference = $this->reference( $feed, $id );
 		$this->assertNotNull( $reference );
 		$this->assertSame( $result['engineering_id'], $reference['id'] );
-		$this->assertSame( 'Trina Solar', $reference['brand'] );
-		$this->assertSame( 'TSM-460NEG9R.28', $reference['model'] );
+		$this->assertSame( $input['overlay'][0]['brand'], $reference['brand'] );
+		$this->assertSame( $input['overlay'][0]['model'], $reference['model'] );
 		$this->assertSame( $reference['product_revision'], $reference['reference_revision'] );
-		$this->assertCount( 30, get_object_vars( $reference['figures'] ) );
+		$this->assertCount( 1, get_object_vars( $reference['figures'] ) );
 		$this->assertNotContains( $id, array_column( $feed['products'], 'id' ) );
 		$this->assertTrue( Publication::validate( $this->dependencies( $reference ) )['valid'] );
 		$cart = new WC_Cart();
@@ -290,7 +290,7 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 				$this->assertSame( 404, $response->get_status() );
 			}
 		}
-		foreach ( array( array( 'models' => array( 'TSM-460NEG9R.28' ) ), array( 'text' => 'Module TSM-460NEG9R.28' ) ) as $body ) {
+		foreach ( array( array( 'models' => array( $reference['model'] ) ), array( 'text' => 'Cable ' . $reference['model'] ) ) as $body ) {
 			$request = new WP_REST_Request( 'POST', '/linker/v1/publication/identify' );
 			$request->set_header( 'Content-Type', 'application/json' );
 			$request->set_body( (string) wp_json_encode( $body ) );
@@ -298,11 +298,11 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 			$this->assertSame( 'unavailable', $identified['models'][0]['status'] );
 			$this->assertArrayNotHasKey( 'product_id', $identified['models'][0] );
 		}
-		$figures                    = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-		$figures['pmax_w']['value'] = '461';
+		$figures                               = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+		$figures['cross_section_mm2']['value'] = '4.5';
 		update_post_meta( $id, SelectionFacts::FIGURES_META_KEY, $figures );
 		$this->assertSame( 'unchanged', ReferenceMigration::run( $input, false )['action'] );
-		$this->assertSame( '461', get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true )['pmax_w']['value'] );
+		$this->assertSame( '4.5', get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true )['cross_section_mm2']['value'] );
 		$this->assertSame( array( $id ), $this->reference_ids( $result['engineering_id'] ) );
 		$withdraw = ReferenceMigration::withdraw( $id, true );
 		$this->assertSame( 'would_withdraw', $withdraw['action'] );
@@ -333,63 +333,96 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 		$this->assertSame( $bindings, get_post_meta( $id, EvidenceBindings::META_KEY, true ) );
 		$this->assertNull( $this->reference( EngineeringFeed::feed(), $id ), 'Missing bound required values omit the reference without poisoning other engine products.' );
 		$this->assertFalse( Publication::validate( $this->dependencies( $before ) )['valid'] );
-		$figures                    = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-		$figures['pmax_w']['value'] = '461';
-		update_post_meta( $id, SelectionFacts::FIGURES_META_KEY, $figures );
-		$this->assertNull( $this->reference( EngineeringFeed::feed(), $id ), 'One corrected value cannot authorize the other required values.' );
-		foreach ( $figures as &$figure ) {
-			$figure['citation']['page'] = 3;
-		}
-		unset( $figure );
-		update_post_meta( $id, SelectionFacts::FIGURES_META_KEY, $figures );
-		$current = $this->reference( EngineeringFeed::feed(), $id );
-		$this->assertNotNull( $current );
-		$this->assertCount( 30, get_object_vars( $current['figures'] ) );
 		$compatibility = Publication::manifest()['compatibility_revision'];
 		update_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, array() );
 		$this->assertSame( 'unchanged', ReferenceMigration::run( $input, false )['action'] );
 		$this->assertNull( $this->reference( EngineeringFeed::feed(), $id ) );
-		$this->assertFalse( Publication::validate( $this->dependencies( $current ) )['valid'] );
+		$this->assertFalse( Publication::validate( $this->dependencies( $before ) )['valid'] );
 		$this->assertSame( $compatibility, Publication::manifest()['compatibility_revision'], 'Reference changes do not invalidate a scope which uses only the compatibility contract.' );
 		$this->assertFileExists( $file['path'] );
 	}
 
 	/**
-	 * Reuse the verified 30 facts and 2 document rows, with fixture-owned files.
+	 * Isolated cable reference and two local originals for publication tests.
 	 *
 	 * @return array<string,mixed>
 	 */
 	private function input(): array {
-		$input = EngineeringData::json( EngineeringData::OVERLAY_FILE );
-		$this->assertIsArray( $input );
 		$tag       = self::tag();
-		$directory = wp_upload_dir()['basedir'] . '/reference-tests-' . $tag;
+		$uploads   = wp_upload_dir();
+		$relative  = '/reference-tests-' . $tag;
+		$directory = $uploads['basedir'] . $relative;
 		$this->assertTrue( wp_mkdir_p( $directory ) );
 		$this->later(
 			static function () use ( $directory ): void {
 				rmdir( $directory );
 			}
 		);
-		$urls = array();
-		foreach ( $input['overlay'][0]['documents'] as $index => &$document ) {
-			$path = $directory . '/module-' . $index . '.pdf';
-			file_put_contents( $path, "%PDF-1.4\nreference fixture " . $index . "\n%%EOF" );
-			$url                      = wp_upload_dir()['baseurl'] . '/reference-tests-' . $tag . '/module-' . $index . '.pdf';
-			$urls[ $document['url'] ] = $url;
-			$document['url']          = $url;
+		$documents = array();
+		foreach ( array( 'datasheet', 'manual' ) as $type ) {
+			$path = $directory . '/' . $type . '.pdf';
+			file_put_contents( $path, "%PDF-1.4\nfixture " . $type . "\n%%EOF" );
+			$documents[] = array(
+				'url'   => $uploads['baseurl'] . $relative . '/' . $type . '.pdf',
+				'type'  => $type,
+				'title' => $type,
+				'lang'  => 'en',
+			);
 			$this->later(
 				static function () use ( $path ): void {
 					wp_delete_file( $path );
 				}
 			);
 		}
-		unset( $document );
-		foreach ( $input['overlay'][0]['figures'] as &$figure ) {
-			$figure['citation']['url'] = $urls[ $figure['citation']['url'] ];
-		}
-		unset( $figure );
-		$input['overlay'][0]['id'] = 'mat_reference_fixture_' . $tag;
-		return $input;
+		$source = array(
+			'document_url' => $documents[0]['url'],
+			'blob_sha256'  => hash_file( 'sha256', $directory . '/datasheet.pdf' ),
+			'page'         => 1,
+			'quote'        => 'Synthetic cable conductor at 20 C',
+		);
+		return array(
+			'overlay' => array(
+				array(
+					'id'          => 'fixture_cable_' . $tag,
+					'kind'        => 'cable',
+					'brand'       => 'Fixture',
+					'model'       => 'Cable ' . $tag,
+					'figures'     => array(
+						'cross_section_mm2' => array(
+							'value'    => '4',
+							'unit'     => 'mm²',
+							'citation' => array(
+								'url'  => $source['document_url'],
+								'page' => 1,
+							),
+						),
+					),
+					'documents'   => $documents,
+					'cable_facts' => array(
+						'schema_version'     => 1,
+						'construction'       => 'single_conductor',
+						'core_count'         => 1,
+						'cross_section_mm2'  => 4,
+						'conductor_material' => 'Copper',
+						'insulation'         => 'Rubber',
+						'source'             => $source,
+						'parameter_sets'     => array(
+							array(
+								'id'                    => 'dc_20',
+								'current_kind'          => 'dc',
+								'temperature_c'         => 20,
+								'frequency_hz'          => null,
+								'arrangement'           => null,
+								'resistance_ohm_per_km' => 4.5,
+								'reactance_ohm_per_km'  => null,
+								'resistance_basis'      => 'maximum',
+								'source'                => $source,
+							),
+						),
+					),
+				),
+			),
+		);
 	}
 
 	/**

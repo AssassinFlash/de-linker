@@ -21,11 +21,6 @@ final class EngineeringData {
 	public const COMPATIBILITY_FILE = 'data/compatibility.json';
 
 	/**
-	 * One-time migration input only; runtime reference facts live in Woo.
-	 */
-	public const OVERLAY_FILE = 'data/engineering-overlay.json';
-
-	/**
 	 * Product meta that holds the document list: url, title, type, lang.
 	 */
 	public const DOCUMENTS_META_KEY = '_linker_documents';

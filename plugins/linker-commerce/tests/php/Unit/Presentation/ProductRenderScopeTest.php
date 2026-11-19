@@ -206,7 +206,7 @@ final class ProductRenderScopeTest extends TestCase {
 		$this->statuses[11] = 'draft';
 		$this->assertSame( '', $shortcodes->pdp_sku() );
 		$this->statuses[11] = 'publish';
-		$this->roles[11]    = EngineeringReference::PV_MODULE;
+		$this->roles[11]    = EngineeringReference::CABLE;
 		$this->assertSame( '', $shortcodes->pdp_sku() );
 	}
 }

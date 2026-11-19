@@ -15,32 +15,8 @@ use WC_Product;
 final class EngineeringReference {
 	public const ROLE_META_KEY = '_linker_engineering_role';
 	public const ID_META_KEY   = '_linker_engineering_id';
-	public const PV_MODULE     = 'reference_pv_module';
 	public const CABLE         = 'reference_cable';
-	public const ROLES         = array( self::PV_MODULE, self::CABLE );
-
-	/** Required fields of the engine's native PvModule.from_overlay loader. */
-	private const REQUIRED_NUMBERS = array( 'pmax_w', 'voc_v', 'vmpp_v', 'isc_a', 'impp_a', 'beta_voc_pct_per_c', 'max_series_fuse_a' );
-
-	/**
-	 * A reference missing a required bound input stays out of the ready feed.
-	 *
-	 * @param array<string,array<string,mixed>> $figures Current bound Woo fields.
-	 */
-	public static function ready( array $figures ): bool {
-		foreach ( self::REQUIRED_NUMBERS as $key ) {
-			$value = $figures[ $key ]['value'] ?? null;
-			if ( ! is_scalar( $value ) || 1 !== preg_match( '/-?[0-9]+(?:[.,][0-9]+)?/', str_replace( ' ', '', (string) $value ) ) ) {
-				return false;
-			}
-		}
-		$dimensions = $figures['dimensions_mm']['value'] ?? null;
-		if ( ! is_string( $dimensions ) ) {
-			return false;
-		}
-		$sides = array_filter( explode( 'x', str_replace( '×', 'x', $dimensions ) ), static fn ( string $side ): bool => 1 === preg_match( '/^[0-9]+(?:\.[0-9]+)?$/D', trim( $side ) ) );
-		return count( $sides ) >= 2;
-	}
+	public const ROLES         = array( self::CABLE );
 
 	/**
 	 * The canonical Woo role; ordinary products have an empty role.
@@ -79,9 +55,8 @@ final class EngineeringReference {
 				'id'      => self::ROLE_META_KEY,
 				'label'   => __( 'Engineering role', 'linker-commerce' ),
 				'options' => array(
-					''              => __( 'Product', 'linker-commerce' ),
-					self::PV_MODULE => __( 'Reference PV module', 'linker-commerce' ),
-					self::CABLE     => __( 'Reference cable', 'linker-commerce' ),
+					''          => __( 'Product', 'linker-commerce' ),
+					self::CABLE => __( 'Reference cable', 'linker-commerce' ),
 				),
 			)
 		);
@@ -104,7 +79,7 @@ final class EngineeringReference {
 			return;
 		}
 		$role = sanitize_text_field( wp_unslash( $_POST[ self::ROLE_META_KEY ] ) );
-		if ( ! in_array( $role, array( '', self::PV_MODULE, self::CABLE ), true ) ) {
+		if ( ! in_array( $role, array( '', self::CABLE ), true ) ) {
 			return;
 		}
 		$id = isset( $_POST[ self::ID_META_KEY ] ) && is_string( $_POST[ self::ID_META_KEY ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::ID_META_KEY ] ) ) : '';
@@ -173,8 +148,7 @@ final class EngineeringReference {
 				'linker_publication_internal' => true,
 				'cache_results'               => false,
 				'meta_key'                    => self::ROLE_META_KEY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Native scheduled repair of reference records only.
-				'meta_value'                  => array( self::PV_MODULE, self::CABLE ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- No public catalogue query.
-				'meta_compare'                => 'IN',
+				'meta_value'                  => self::CABLE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- No public catalogue query.
 			)
 		);
 		foreach ( $ids as $id ) {

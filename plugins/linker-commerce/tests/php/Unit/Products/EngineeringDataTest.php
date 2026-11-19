@@ -21,16 +21,13 @@ use WP_Mock\Tools\TestCase;
 final class EngineeringDataTest extends TestCase {
 
 	/**
-	 * Both shipped files read as JSON objects.
+	 * The shipped compatibility migration input is a JSON object.
 	 */
 	public function test_the_shipped_files_read(): void {
 		$compatibility = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
-		$overlay       = EngineeringData::json( EngineeringData::OVERLAY_FILE );
 
 		$this->assertIsArray( $compatibility );
 		$this->assertSame( 1, $compatibility['schema_version'] );
-		$this->assertIsArray( $overlay );
-		$this->assertArrayHasKey( 'overlay', $overlay );
 	}
 
 	/**
