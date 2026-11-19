@@ -51,7 +51,7 @@
     "src/components/design/GeometryImportSettings.tsx": "46be6f7d30710d3caa8e91c02c1127f675bcf32ecc63e03d4e29471aa01c3fab",
     "src/components/design/GeometryIntake.tsx": "078e035cf7d358eab083a87177602816b024feee8084a7630fe5e085db4b648c",
     "src/components/design/Google3DMap.tsx": "9110bd1bbb8a7f255a8eaa34c0837885fdbb309b91fc929e2c363aae66d14425",
-    "src/components/design/ImageCalibrationWorkspace.tsx": "cf87971008df6b7fcf1c68b8f331e0e44e40986e88e21959894e209a7a5e23d7",
+    "src/components/design/ImageCalibrationWorkspace.tsx": "f8e56c657b21989af7ddbc9463a4d4558a85d61ee362da2c477d5a83d3af23f5",
     "src/components/design/LayoutReviewPanel.tsx": "8b9649009e93c7c113024ce98e6a3483c7e151b746d8cd067e8bdb1b05963b6e",
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
@@ -329,13 +329,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/Configurator-CWLGz896.js": "a630d53ec0997be5a520c296a1ae4a0ca124d4d80d3bad9c72b531cc3055d788",
-    "assets/MapViewport-M8AbpYV5.js": "420f16d7754630b4a2cec46556a8ae29c134daea919f6bf7fb40932d1a6178dd",
-    "assets/SceneViewport-Bqnle6e4.js": "ab5fa86a697f2465c255f6655c8d52ff43b0195d560ad191693816a8781aedd9",
-    "assets/planner-core-BYN5FTsq.js": "1f892953f399e133dd345bf3856276b7130341e115463657bb66a86a65009616",
-    "assets/planner.js": "989875a8ec8a54c13438551e4e3a9c01424bd7d08fc3c45f7b0789491f84f3a3",
+    "assets/Configurator-iNzzcYAJ.js": "98deead30bb68274b45ff241cf3f8762bb5ecff3e58b57d1a2f1571904fa50bc",
+    "assets/MapViewport-B-eEiZxG.js": "c5acb14d66f35f7a565a3dda3349a996e6498ee929a83d693db6b01dca05753e",
+    "assets/SceneViewport-Bfwhyjf5.js": "baa3aadf0d28ab032c2082db0fe8dad3446a0dba664ec56a5ddb781b2cd22509",
+    "assets/planner-core-CUBR6rg7.js": "bfc9c892e59ccd1c8b22560fc85a3c18657340d6e0595179fd77b393f8468001",
+    "assets/planner.js": "9ba440cb731607146b716a8b78748c63de3ec36bf9b9eefc2271a4cbb85f5f74",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "904df3e3f0637b29a1cd54310b0d290382bb45ac1208489bfabd795ba4984341",
+    "vite-manifest.json": "e76b247c2f24338de1a1405efd6ea3bc9c84f33c3660ae70c6916eb9a61c7e0d",
     "windpress.scan.txt": "bcdb56e4e48f1077edd3b20a1ccfb7411ad7a4c6694dbb407753832ff400290a"
   },
   "project_input_contracts": [
