@@ -1211,7 +1211,7 @@ def report_sources(
     ):
         component_list = saved_roof_components(
             layout,
-            products.roof_basis(project.inputs),
+            lambda: products.roof_basis(project.inputs),
             workspace.blobs,
             project.revision,
         )

@@ -1551,7 +1551,7 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
             "parameters": parameters["modules"][0],
         },
     }
-    monkeypatch.setattr(products, "module_basis", lambda: module_proof)
+    monkeypatch.setattr(products, "roof_basis", lambda _inputs: module_proof)
     originals = workspace.blobs.put(
         b"Synthetic retained report weather, not provider data"
     )

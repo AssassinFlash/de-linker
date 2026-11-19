@@ -559,7 +559,10 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         for line in payload["text"].splitlines()
         if line.startswith("Reference module: ")
     )
-    assert json.loads(module_row)["model"] == "PV 460 Wp · 1762 × 1134 mm"
+    grounded = re.sub(
+        r"\[(n\d+)=[^\]]+\]", r"{fact:planning.\1}", json.loads(module_row)["model"]
+    )
+    assert fill(grounded, gathered) == "PV 460 Wp · 1762 × 1134 mm"
     for value in ("460 W", "460.0 W"):
         power = next(key for key, item in payload["figures"].items() if item == value)
         assert fill("{fact:" + power + "}", gathered) == value

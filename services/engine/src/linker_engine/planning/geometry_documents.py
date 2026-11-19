@@ -201,7 +201,9 @@ class ModuleSpec(Document):
     stc_power_w: Positive
     source: ModuleSource
     gamma_pdc_per_c: Number | None = None
-    electrical: PanelElectricalParameters | None = None
+    electrical: PanelElectricalParameters | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
 
 class PanelArray(Document):
