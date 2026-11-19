@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import {
 	readDraftPreview,
@@ -13,7 +13,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
-/** Preview is read-only. Only explicit confirmation submits a durable Woo intent. */
+/** Changes to the solution draft require review before the Woo transfer. */
 export function DraftTransferButton({
 	run,
 	client,
@@ -45,7 +45,8 @@ export function DraftTransferButton({
 		> | null>(null);
 	const confirmed = useRef<{ key: string; receipt: DraftReceipt } | null>(null),
 		flight = useRef<AbortController | null>(null),
-		lifetime = useRef(0);
+		lifetime = useRef(0),
+		transferEnabled = useRef(current && !blocked);
 	const record = useMemo(
 		() =>
 			operations.records
@@ -67,6 +68,10 @@ export function DraftTransferButton({
 	useEffect(() => {
 		if (!current) setPreview(null);
 	}, [current]);
+	useLayoutEffect(() => {
+		transferEnabled.current = current && !blocked;
+	}, [current, blocked]);
+
 	useEffect(() => {
 		if (!record || operations.busy) {
 			setChecking(false);
@@ -156,15 +161,27 @@ export function DraftTransferButton({
 				scope,
 				controller.signal,
 			);
-			if (instance === lifetime.current && client.isCurrentScope(scope)) {
+			if (
+				instance === lifetime.current &&
+				transferEnabled.current &&
+				client.isCurrentScope(scope)
+			) {
 				const value = readDraftPreview(raw, command, client.origin);
 				if (value.alreadyPresent) {
 					setPresentUrls(value.urls);
 					setPreview(null);
 				} else {
-					setPreview(value);
 					setPresentUrls(null);
 					setReceipt(null);
+					if (
+						reportOnly &&
+						value.changes.length === 0 &&
+						value.phaseConflicts.length === 0
+					) {
+						await confirm(value);
+					} else {
+						setPreview(value);
+					}
 				}
 			}
 		} catch (cause) {
@@ -184,8 +201,8 @@ export function DraftTransferButton({
 			}
 		}
 	}
-	async function confirm() {
-		if (!preview || blocked || !current) return;
+	async function confirm(preview: DraftPreview) {
+		if (!transferEnabled.current || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current;
 		const reply = await operations.start("draft/apply", {
 			expected_revision: run.revision,
@@ -203,14 +220,14 @@ export function DraftTransferButton({
 			setError(null);
 		}
 	}
-	const readyUrls = receipt?.urls ?? presentUrls;
+	const readyUrls = current ? (receipt?.urls ?? presentUrls) : null;
 	const operationError =
 		operations.intent?.path === "draft/apply" &&
 		readPlanningOperation("draft/apply", operations.intent.body)
 			.report_run_id === run.id
 			? operations.error
 			: null;
-	const failure = receipt || presentUrls ? null : (error ?? operationError),
+	const failure = !current || readyUrls ? null : (error ?? operationError),
 		busy =
 			preparing ||
 			checking ||
@@ -266,7 +283,7 @@ export function DraftTransferButton({
 						{addLabel}
 					</button>
 				</>
-			) : record ? (
+			) : record && current ? (
 				<>
 					<p>
 						{__(
@@ -357,7 +374,7 @@ export function DraftTransferButton({
 								type="button"
 								className="lp-button"
 								disabled={busy || !current || operations.storageFailed}
-								onClick={() => void confirm()}
+								onClick={() => void confirm(preview)}
 							>
 								{operations.busy
 									? reportOnly
