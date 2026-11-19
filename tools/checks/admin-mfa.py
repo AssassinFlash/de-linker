@@ -255,13 +255,10 @@ class Forms(HTMLParser):
         super().__init__()
         self.forms: list[Form] = []
         self.current: Form | None = None
-        self.links: list[str] = []
         self.feed(html)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
-        if tag == "a" and values.get("href"):
-            self.links.append(str(values["href"]))
         if tag == "form":
             self.current = Form(values)
             self.forms.append(self.current)
@@ -594,15 +591,24 @@ class Acceptance:
         for language, path in data["paths"].items():
             reset = Browser(self.base)
             reset.request(path)
-            links = [
-                link
-                for link in Forms(reset.html).links
-                if re.search(r"(?:lost-password|passwort-zuruecksetzen)/", link)
-            ]
-            self.check(f"{language}_native_reset_link_present", len(set(links)) == 1)
-            reset.request(links[0])
             form = Forms(reset.html).having("user_login")
-            form.attrs["action"] = form.attrs.get("action") or reset.url
+            action = urllib.parse.urlsplit(
+                urllib.parse.urljoin(reset.url, form.attrs.get("action") or "")
+            )
+            entry = urllib.parse.urlsplit(reset.url)
+            self.check(
+                f"{language}_native_reset_form_targets_account",
+                form.attrs.get("method") == "post"
+                and action.scheme == entry.scheme
+                and action.netloc == entry.netloc
+                and action.path
+                in {
+                    entry.path + "lost-password/",
+                    entry.path + "passwort-zuruecksetzen/",
+                }
+                and "woocommerce-lost-password-nonce" in form.fields
+                and "password" not in form.fields,
+            )
             # PublicGuard's existing three-second minimum; no proof bypass.
             time.sleep(3.2)
             proof = ""

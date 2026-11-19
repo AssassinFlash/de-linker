@@ -201,6 +201,7 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof \WP_Error ) );
 		WP_Mock::userFunction( 'get_query_var', array( 'return' => 1 ) );
 		WP_Mock::userFunction( 'is_shop', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => false ) );
 	}
 
 	/**
