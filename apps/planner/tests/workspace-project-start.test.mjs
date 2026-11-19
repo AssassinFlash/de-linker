@@ -106,9 +106,24 @@ test("the home form creates a comparison with the supplied data in a single subm
 	}
 	await enter(title, "Berlin workshop");
 	await select("country", "DE");
-	await select("system_scope", "storage_only");
+	await select("system_scope", "new_pv_storage");
 	await select("project_purpose", "backup");
 	await select("grid_phase", "3");
+	await enter(field("annual_load_kwh"), "7200");
+	await select("annual_load_basis", "bill_total");
+	await enter(field("pv_dc_kw"), "8");
+	await act(async () => field("estimate_solar").click());
+	await enter(field("latitude"), "47.66");
+	await enter(field("longitude"), "9.17");
+	await enter(field("pv_tilt_deg"), "32");
+	await enter(field("pv_azimuth_deg"), "180");
+	await enter(field("pvgis_year"), "2020");
+	await enter(field("pvgis_loss_percent"), "14");
+	await select("pvgis_database", "PVGIS-SARAH3");
+	await select("pvgis_technology", "crystSi");
+	await select("pvgis_mounting", "free");
+	await select("pvgis_horizon", "true");
+	await enter(field("pvgis_source"), "Surveyed customer array");
 	await enter(field("backup_load_kw"), "3");
 	await enter(field("backup_duration_hours"), "2");
 	assert.equal(commands.length, 0);
@@ -119,6 +134,16 @@ test("the home form creates a comparison with the supplied data in a single subm
 	assert.equal(commands.length, 1);
 	assert.equal(commands[0].inputs.brief.site.country_code, "DE");
 	assert.equal(commands[0].inputs.equipment_setup.grid_phase, 3);
+	assert.equal(commands[0].inputs.brief.annual_load.kwh, 7200);
+	assert.equal(commands[0].inputs.brief.annual_load.basis, "bill_total");
+	assert.equal(commands[0].inputs.brief.site.coordinate_basis, "user_entered");
+	assert.deepEqual(commands[0].inputs.pvgis_reference.arrays[0], {
+		id: "declared-array",
+		peak_power_kwp: 8,
+		tilt_deg: 32,
+		azimuth_north_clockwise_deg: 180,
+		source_note: "Surveyed customer array",
+	});
 	assert.deepEqual(commands[0].inputs.backup_demand, {
 		schema_version: 1,
 		load_kw: 3,

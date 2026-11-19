@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { readBrief } from "../../domain/brief.ts";
 import type { Brief } from "../../domain/brief.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
@@ -13,6 +14,11 @@ import {
 	energyGoal,
 } from "./EnergyDemand.tsx";
 import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
+import {
+	HomepagePvReference,
+	changeHomepagePvPower,
+	homepagePvReferenceAvailable,
+} from "./HomepagePvReference.tsx";
 
 function demands(inputs: JsonObject) {
 	const equipment = hasPlant(inputs)
@@ -34,6 +40,7 @@ export function hasComparisonDemand(inputs: JsonObject, brief: Brief) {
 	return Boolean(
 		brief.system_scope &&
 		goal &&
+		(brief.annual_load.kwh === null || brief.annual_load.basis !== null) &&
 		(equipment.grid_phase !== null || retainsUnverifiedInverter(inputs)) &&
 		(goal !== "backup" || (brief.system_scope !== "pv_only" && validBackup)),
 	);
@@ -62,6 +69,22 @@ export function HomepageDemand({
 		(valid: boolean) => validity("pv", valid),
 		[validity],
 	);
+	const annualValid = useCallback(
+		(valid: boolean) => validity("annual", valid),
+		[validity],
+	);
+	function annual(patch: Partial<Brief["annual_load"]>) {
+		edit((current) => {
+			const currentBrief = readBrief(current.brief);
+			return {
+				...current,
+				brief: {
+					...currentBrief,
+					annual_load: { ...currentBrief.annual_load, ...patch },
+				},
+			};
+		});
+	}
 	const loadValid = useCallback(
 		(valid: boolean) => validity("load", valid),
 		[validity],
@@ -93,6 +116,45 @@ export function HomepageDemand({
 					<option value="3">{__("Three phase", "linker-tools")}</option>
 				</select>
 			</label>
+			<NumberField
+				name="annual_load_kwh"
+				label={__("Annual electricity use", "linker-tools")}
+				unit="kWh"
+				locale={locale}
+				min={0}
+				value={brief.annual_load.kwh}
+				onChange={(kwh) =>
+					annual(kwh === null ? { kwh, basis: null } : { kwh })
+				}
+				onValidity={annualValid}
+			/>
+			{brief.annual_load.kwh !== null && (
+				<label className="sc-field">
+					<span>{__("Annual electricity use source", "linker-tools")}</span>
+					<select
+						name="annual_load_basis"
+						required
+						value={brief.annual_load.basis ?? ""}
+						onChange={(event) => {
+							const value = event.currentTarget.value;
+							annual({
+								basis:
+									value === "bill_total" || value === "user_estimate"
+										? value
+										: null,
+							});
+						}}
+					>
+						<option value="">{__("Choose an option", "linker-tools")}</option>
+						<option value="bill_total">
+							{__("Electricity bill", "linker-tools")}
+						</option>
+						<option value="user_estimate">
+							{__("Estimate", "linker-tools")}
+						</option>
+					</select>
+				</label>
+			)}
 			{brief.system_scope &&
 				brief.system_scope !== "storage_only" &&
 				!hasPlant(inputs) && (
@@ -106,11 +168,26 @@ export function HomepageDemand({
 							typeof equipment.pv_dc_kw === "number" ? equipment.pv_dc_kw : null
 						}
 						onChange={(pv_dc_kw) =>
-							edit((current) => changeDemandEquipment(current, { pv_dc_kw }))
+							edit((current) =>
+								changeHomepagePvPower(
+									changeDemandEquipment(current, { pv_dc_kw }),
+									pv_dc_kw,
+								),
+							)
 						}
 						onValidity={pvValid}
 					/>
 				)}
+			{homepagePvReferenceAvailable(inputs, brief) && (
+				<HomepagePvReference
+					inputs={inputs}
+					brief={brief}
+					power={
+						typeof equipment.pv_dc_kw === "number" ? equipment.pv_dc_kw : null
+					}
+					edit={edit}
+				/>
+			)}
 			{goal === "backup" && (
 				<>
 					<NumberField

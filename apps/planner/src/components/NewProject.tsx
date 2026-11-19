@@ -25,6 +25,7 @@ import {
 	HomepageDemand,
 	hasComparisonDemand,
 } from "./configurator/HomepageDemand.tsx";
+import { isHomepagePvReferenceReady } from "./configurator/HomepagePvReference.tsx";
 import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
 
 import {
@@ -96,6 +97,7 @@ export function NewProject({
 	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [demandError, setDemandError] = useState(false);
+	const [referenceError, setReferenceError] = useState(false);
 	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
 		new Set(),
 	);
@@ -174,6 +176,7 @@ export function NewProject({
 			setCarriedProduct(false);
 		setDraft(changed);
 		setDemandError(false);
+		setReferenceError(false);
 		return true;
 	}
 	const [checking, setChecking] = useState(true);
@@ -277,6 +280,7 @@ export function NewProject({
 		if (compareAtHome && !intent.current) {
 			const goal = energyGoal(inputs);
 			const invalidVisible =
+				invalidDemand.has("annual") ||
 				(invalidDemand.has("pv") &&
 					brief.system_scope !== "storage_only" &&
 					!hasPlant(inputs)) ||
@@ -285,6 +289,10 @@ export function NewProject({
 				(goal === "peak" && invalidDemand.has("peak"));
 			if (!hasComparisonDemand(inputs, brief) || invalidVisible) {
 				setDemandError(true);
+				return;
+			}
+			if (!isHomepagePvReferenceReady(inputs, brief)) {
+				setReferenceError(true);
 				return;
 			}
 		}
@@ -722,6 +730,14 @@ export function NewProject({
 				<Notice error>
 					{__(
 						"Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
+			{referenceError && (
+				<Notice error>
+					{__(
+						"Complete the site coordinates, array details and PVGIS settings to compare systems.",
 						"linker-tools",
 					)}
 				</Notice>
