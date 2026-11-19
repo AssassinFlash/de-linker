@@ -878,6 +878,11 @@ export function SolarInstallation({
 		}
 	}
 	const allPoints = roof?.boundary_uv ?? [];
+	const roofPath = roof
+		? [roof.boundary_uv, ...roof.holes_uv]
+				.map((ring) => `M${ring.map((point) => point.join(",")).join(" L")}Z`)
+				.join(" ")
+		: undefined;
 	const minU = allPoints.length ? Math.min(...allPoints.map((p) => p[0])) : 0,
 		minV = allPoints.length ? Math.min(...allPoints.map((p) => p[1])) : 0;
 	const width = allPoints.length
@@ -1173,12 +1178,7 @@ export function SolarInstallation({
 									<path
 										fillRule="evenodd"
 										className="lp-roof-shape"
-										d={[roof.boundary_uv, ...roof.holes_uv]
-											.map(
-												(ring) =>
-													`M${ring.map((p) => p.join(",")).join(" L")}Z`,
-											)
-											.join(" ")}
+										d={roofPath}
 									/>
 									{geometry.obstacles
 										.filter((o) => o.roof_id === roof.id)
@@ -1385,10 +1385,10 @@ export function SolarInstallation({
 														}}
 													>
 														{roof && (
-															<polygon
-																points={roof.boundary_uv
-																	.map((p) => p.join(","))
-																	.join(" ")}
+															<path
+																fillRule="evenodd"
+																d={roofPath}
+																vectorEffect="non-scaling-stroke"
 																className="lp-roof-shape"
 																onClick={() => select(roof.id)}
 															/>

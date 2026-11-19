@@ -153,18 +153,38 @@ test("reopened roof source shows its declared precision, measurement note and re
 	assert.match(properties.textContent, /Installer checked the second span\./);
 	assert.match(properties.textContent, /0,02 m je Pixel/);
 });
-test("roof overview opens the editor and returns to the recorded layout", async (t) => {
-	const app = await mount(t);
-	assert.ok(document.querySelector("svg.sc-roof-preview"));
+test("a saved roof opening remains visible when switching between the overview and editable plan", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.roofs[0].holes_uv = [
+		[
+			[9, 9],
+			[11, 9],
+			[11, 11],
+			[9, 11],
+		],
+	];
+	const app = await mount(t, { brief: emptyBrief(), geometry });
+	function assertOpening(svg) {
+		const shape = svg?.querySelector(".lp-roof-shape");
+		assert.equal(shape?.getAttribute("fill-rule"), "evenodd");
+		assert.equal(
+			shape?.getAttribute("d"),
+			"M0,0 L20,0 L20,20 L0,20Z M9,9 L11,9 L11,11 L9,11Z",
+		);
+	}
+	assertOpening(document.querySelector('svg[aria-label="Fixture roof"]'));
 	assert.equal(document.querySelector("dialog[open]"), null);
 	await click("Open roof layout");
-	assert.ok(document.querySelector("dialog[open] .sc-roof-board"));
+	assertOpening(
+		document.querySelector('dialog[open] svg[aria-label="Editable roof plan"]'),
+	);
 	await click("Draw roof");
 	assert.equal(button("Close").disabled, true);
 	await click("Select / move");
 	await click("Close");
 	assert.equal(document.querySelector("dialog[open]"), null);
-	assert.deepEqual(app.inputs.geometry, flat);
+	assertOpening(document.querySelector('svg[aria-label="Fixture roof"]'));
+	assert.deepEqual(app.inputs.geometry, geometry);
 });
 test("site coordinates keep pasted notation and leave mixed or out-of-range values available for correction", async (t) => {
 	const app = await mount(t, { geometry: structuredClone(flat) });
