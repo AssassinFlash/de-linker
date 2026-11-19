@@ -44,7 +44,6 @@ final class Module {
 		$retry   = $proposal['retained'] ?? null;
 		$preview = null;
 		$bound   = null;
-		$replace = array();
 		if ( null !== $proposal ) {
 			$command = $proposal['command'];
 			if ( ! DraftTransfer::envelope_valid( $handoff, $project['project_id'], $command['report_run_id'], $project['revision'] ) ) {
@@ -57,30 +56,15 @@ final class Module {
 			if ( null !== $replay && ( null === $retry || '1' === ( $retry['fields']['linker_recovery_available'] ?? '' ) ) ) {
 				$bound = $replay;
 			} else {
-				$preview = ( new DraftPreview() )->read( null, $command, $handoff );
+				$preview = ( new DraftPreview() )->read( null, $command, $handoff, guided: true );
 				if ( is_wp_error( $preview ) ) {
 					return $preview;
 				}
-				$bound   = new InquiryTransfer( $command['report_run_id'], $handoff['id'], $command['key'], $preview['draft_sha256'] );
-				$replace = DraftPreview::replacement_keys( $project['project_id'], $handoff['id'] );
+				$bound = new InquiryTransfer( $command['report_run_id'], $handoff['id'], $command['key'], $preview['draft_sha256'] );
 			}
 		}
-		$active = Context::active();
-		$lines  = array();
-		foreach ( WC()->cart->get_cart() as $key => $line ) {
-			if ( in_array( $key, $replace, true ) ) {
-				continue;
-			}
-			$source  = $line[ DraftTransfer::LINE_META ] ?? '';
-			$lines[] = array(
-				'product_id'    => (int) $line['product_id'],
-				'label'         => $line['data']->get_name(),
-				'quantity'      => $line['quantity'],
-				'project_id'    => $active[ $source ]['snapshot']['project_id'] ?? null,
-				'project_title' => $active[ $source ]['snapshot']['title'] ?? null,
-			);
-		}
-		if ( null !== $preview ) {
+		$lines = array();
+		if ( null !== $handoff ) {
 			foreach ( $handoff['snapshot']['items'] as $item ) {
 				$lines[] = array(
 					'product_id'    => $item['product_id'],
@@ -88,6 +72,18 @@ final class Module {
 					'quantity'      => $item['quantity'],
 					'project_id'    => $project['project_id'],
 					'project_title' => $project['title'],
+				);
+			}
+		} else {
+			$active = Context::active();
+			foreach ( WC()->cart->get_cart() as $line ) {
+				$source  = $line[ DraftTransfer::LINE_META ] ?? '';
+				$lines[] = array(
+					'product_id'    => (int) $line['product_id'],
+					'label'         => $line['data']->get_name(),
+					'quantity'      => $line['quantity'],
+					'project_id'    => $active[ $source ]['snapshot']['project_id'] ?? null,
+					'project_title' => $active[ $source ]['snapshot']['title'] ?? null,
 				);
 			}
 		}

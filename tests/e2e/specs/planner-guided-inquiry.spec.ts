@@ -552,3 +552,259 @@ for (const scenario of scenarios) {
 		}
 	}
 }
+
+interface NativeCartLine {
+	key: string;
+	id: number;
+	sku: string;
+	quantity: number;
+	permalink: string;
+}
+
+const draftWords = {
+	en: {
+		enter: 'Enter project details',
+		newProject: 'New project',
+		storage: 'Continue with storage',
+		proposal: 'Review the proposal',
+		generate: 'Generate project report',
+		add: 'Add selected products to solution draft',
+		confirm: 'Confirm and continue to inquiry',
+		decline: 'Reject all',
+	},
+	de: {
+		enter: 'Projektdaten eingeben',
+		newProject: 'Neues Projekt',
+		storage: 'Weiter zum Speicher',
+		proposal: 'Lösungsvorschlag prüfen',
+		generate: 'Projektbericht erstellen',
+		add: 'Ausgewählte Produkte zum Lösungsentwurf hinzufügen',
+		confirm: 'Bestätigen und weiter zur Anfrage',
+		decline: 'Alle ablehnen',
+	},
+} as const;
+
+const exactButton = (container: Page | Locator, name: string) =>
+	container.getByRole('button', { name, exact: true });
+
+async function keepEarlierProjectInDraft(
+	page: Page,
+	url: string,
+	locale: Locale,
+	title: string
+) {
+	const text = words[locale];
+	const draftText = draftWords[locale];
+	await page.goto(url + text.home);
+	const decline = exactButton(page, draftText.decline);
+	if (await decline.isVisible()) await decline.click();
+	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
+	const workspace = page.locator('[data-linker-planner]');
+	await exactButton(workspace, draftText.enter).click();
+	const project = workspace.getByRole('form', {
+		name: draftText.newProject,
+		exact: true,
+	});
+	await project.getByLabel(text.title).fill(title);
+	await project.locator('select[name=country]').selectOption('DE');
+	await project.getByLabel(text.location).fill('Berlin');
+	await project
+		.locator('select[name=system_scope]')
+		.selectOption('storage_only');
+	await project.getByLabel(text.siteUse).selectOption('residential');
+	await project
+		.locator('select[name=project_purpose]')
+		.selectOption('backup');
+	await exactButton(project, draftText.storage).click();
+	await workspace.getByLabel(text.phase).selectOption('3');
+	await workspace.getByLabel(text.load).fill('3');
+	await workspace.getByLabel(text.duration).fill('2');
+	await exactButton(workspace, text.compare).click();
+	await exactButton(workspace, text.select)
+		.first()
+		.click({ timeout: 90_000 });
+	await exactButton(workspace, draftText.proposal).click();
+	await exactButton(workspace, draftText.generate).click();
+	await exactButton(workspace, draftText.add).click({ timeout: 90_000 });
+	const applied = reply(page, 'draft/apply');
+	await exactButton(workspace, draftText.confirm).click();
+	const transfer = await applied;
+	expect(transfer.ok()).toBe(true);
+	const request = transfer.request().postDataJSON();
+	expect(request).toMatchObject({
+		project_id: expect.stringMatching(/^[a-f0-9]{32}$/),
+		report_run_id: expect.stringMatching(/^[a-f0-9]{32}$/),
+	});
+	await expect(page.locator('form.linker-inquiry-form')).toBeVisible();
+	return { project: request.project_id, report: request.report_run_id };
+}
+
+for (const [locale, width] of [
+	['en', 1440],
+	['de', 390],
+] as const) {
+	test(`${locale} ${width}: a guided inquiry leaves earlier same-SKU project and manual draft rows intact`, async ({
+		page,
+		context,
+	}) => {
+		const { url } = instance();
+		const restoreBudgets = isolateVisitorBudgets();
+		try {
+			const text = words[locale];
+			const tag = randomUUID();
+			const title = `Send Berlin project ${tag}`;
+			const email = `e2e-mixed-${tag}@example.test`;
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			async function cart() {
+				const response = await context.request.get(
+					url + '/wp-json/wc/store/v1/cart'
+				);
+				expect(response.ok()).toBe(true);
+				const body: { items: NativeCartLine[] } = await response.json();
+				return body.items.map(
+					({ key, id, sku, quantity, permalink }) => ({
+						key,
+						id,
+						sku,
+						quantity,
+						permalink,
+					})
+				);
+			}
+
+			const earlier =
+				await test.step('Keep an earlier project and a manual addition in the solution draft', async () => {
+					const retained = await keepEarlierProjectInDraft(
+						page,
+						url,
+						locale,
+						`Keep earlier Berlin project ${tag}`
+					);
+					const prior = await cart();
+					expect(prior.length).toBeGreaterThan(0);
+					const shared = prior[0]!;
+					expect(shared.sku).toBeTruthy();
+					expect(new URL(shared.permalink).origin).toBe(url);
+					await page.goto(shared.permalink);
+					await page
+						.locator('a[href*="add-to-cart="]:visible')
+						.first()
+						.click();
+					await expect
+						.poll(
+							async () =>
+								(await cart()).filter(
+									({ id }) => id === shared.id
+								).length,
+							{ timeout: 30_000 }
+						)
+						.toBe(2);
+					const mixed = await cart();
+					expect(mixed).toEqual(expect.arrayContaining(prior));
+					return { ...retained, shared, mixed };
+				});
+
+			await page.goto(url + text.home);
+			await test.step('1. Enter a different project and compare', async () => {
+				const intake = page
+					.locator('[data-linker-planner][data-planner-home-url]')
+					.getByRole('form', { name: text.intake });
+				await enterProject(intake, scenarios[0]!, title, text);
+				const pending = reply(page, 'runs/find-equipment');
+				await exactButton(intake, text.compare).click();
+				expect((await pending).ok()).toBe(true);
+			});
+			const selected =
+				await test.step('2. Choose one configuration and review only that project', async () => {
+					const pending = reply(page, 'inquiry/form');
+					await exactButton(page, text.select)
+						.first()
+						.click({ timeout: 90_000 });
+					const prepared = await pending;
+					expect(prepared.ok()).toBe(true);
+					const request = prepared.request().postDataJSON();
+					expect(request.project_id).not.toBe(earlier.project);
+					expect(request.report_run_id).not.toBe(earlier.report);
+					const shown = page
+						.locator('.linker-inquiry-draft')
+						.filter({ visible: true });
+					const rows = shown.getByRole('listitem');
+					await expect(rows.first()).toBeVisible();
+					const lines = (await rows.allTextContents()).map((row) => {
+						const match = /^(.+) × (\d+)$/.exec(row.trim());
+						expect(match).not.toBeNull();
+						return {
+							label: match![1]!,
+							quantity: Number(match![2]),
+						};
+					});
+					expect(new Set(lines.map(({ label }) => label)).size).toBe(
+						lines.length
+					);
+					expect(await cart()).toEqual(earlier.mixed);
+					return { request, lines };
+				});
+			await test.step('3. Send this project, receive its PDF, and retain the existing draft', async () => {
+				const form = page.locator('form.linker-inquiry-form');
+				await expect(form).toBeVisible();
+				await form.locator('[name=name]').fill('E2E project visitor');
+				await form.locator('[name=email]').fill(email);
+				await form
+					.locator('textarea[name=message]')
+					.pressSequentially(text.message, { delay: 28 });
+				await form.locator('[name=consent]').check();
+				await exactButton(form, text.send).click();
+				await expect(
+					page.getByRole('heading', {
+						name: text.received,
+						exact: true,
+					})
+				).toBeVisible({ timeout: 90_000 });
+				const order = receivedOrder(email);
+				expect(order).toMatchObject({
+					status: 'inquiry-received',
+					reference: {
+						title,
+						project_id: selected.request.project_id,
+						report_run_id: selected.request.report_run_id,
+						revision: selected.request.revision,
+					},
+				});
+				expect(
+					order.lines.some(
+						({ product_id }) => product_id === earlier.shared.id
+					)
+				).toBe(true);
+				expect(
+					order.lines
+						.map(({ label, quantity }) => ({ label, quantity }))
+						.sort(lineOrder)
+				).toEqual(selected.lines.sort(lineOrder));
+				const report = page.getByRole('link', {
+					name: text.report,
+					exact: true,
+				});
+				await expect(report).toHaveAttribute(
+					'href',
+					new RegExp(
+						`/inquiries/${order.id}/planning-report/${order.reference.handoff_id}`
+					)
+				);
+				const pdf = await context.request.get(
+					new URL((await report.getAttribute('href'))!, page.url())
+						.href
+				);
+				expect(pdf.ok()).toBe(true);
+				expect((await pdf.body()).subarray(0, 5).toString()).toBe(
+					'%PDF-'
+				);
+				expect(await cart()).toEqual(earlier.mixed);
+			});
+		} finally {
+			restoreBudgets();
+		}
+	});
+}

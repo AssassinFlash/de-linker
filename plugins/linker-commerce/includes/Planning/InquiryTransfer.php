@@ -14,7 +14,8 @@ use WP_Error;
 
 /** The native form nonce covers the exact intent shown at review. */
 final class InquiryTransfer {
-	public const FIELD = 'linker_report_transfer';
+	public const FIELD      = 'linker_report_transfer';
+	public const ORDER_META = '_linker_planning_inquiry_handoff';
 
 	/** Identifiers and fingerprint from the owned handoff and native draft preview.
 	 *
@@ -48,7 +49,7 @@ final class InquiryTransfer {
 
 	/** Reject changes before the business journal claims a new submission. */
 	public function current(): bool {
-		return hash_equals( $this->draft, DraftPreview::fingerprint() );
+		return hash_equals( $this->draft, DraftPreview::fingerprint( $this->handoff ) );
 	}
 
 	/**

@@ -21,9 +21,10 @@ final class DraftPreview {
 	 * @param mixed               $previous Earlier integration.
 	 * @param array<string,mixed> $command Owned intent.
 	 * @param array<string,mixed> $handoff Server-frozen report.
+	 * @param bool                $guided Inquiry review scoped to this project.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	public function read( mixed $previous, array $command, array $handoff ): array|WP_Error {
+	public function read( mixed $previous, array $command, array $handoff, bool $guided = false ): array|WP_Error {
 		unset( $previous, $command );
 		wc_load_cart();
 		if ( ! DraftTransfer::envelope_valid( $handoff ) ) {
@@ -93,7 +94,7 @@ final class DraftPreview {
 			'revision'        => $snapshot['revision'],
 			'handoff_id'      => $handoff['id'],
 			'snapshot_sha256' => $handoff['snapshot_sha256'],
-			'draft_sha256'    => self::fingerprint(),
+			'draft_sha256'    => self::fingerprint( $guided ? $handoff['id'] : null ),
 			'changes'         => $rows,
 			'already_present' => $present,
 			...DraftTransfer::destinations( $report_only ),
@@ -121,8 +122,12 @@ final class DraftPreview {
 		return $keys;
 	}
 
-	/** Native serialisable cart lines already exclude PHP product objects. */
-	public static function fingerprint(): string {
+	/**
+	 * Native cart and context revisions bound to the review the customer saw.
+	 *
+	 * @param string|null $inquiry_handoff Handoff for a project-scoped review.
+	 */
+	public static function fingerprint( ?string $inquiry_handoff = null ): string {
 		$native   = new \WC_Cart_Session( WC()->cart );
 		$contexts = array();
 		foreach ( Context::active() + Context::report_only_contexts() as $id => $context ) {
@@ -132,6 +137,7 @@ final class DraftPreview {
 			array(
 				'cart'     => $native->get_cart_for_session(),
 				'contexts' => $contexts,
+				...( null === $inquiry_handoff ? array() : array( 'inquiry_handoff' => $inquiry_handoff ) ),
 			)
 		);
 	}
