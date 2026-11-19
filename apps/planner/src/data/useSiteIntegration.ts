@@ -16,6 +16,8 @@ const workspaceHashes = new Set([
 	"#sc-energy",
 	"#sc-system",
 	"#sc-review",
+	"#sc-preliminary-options",
+	"#sc-preliminary-review",
 	"#lp-overview",
 	"#lp-site",
 	"#lp-brief-use",

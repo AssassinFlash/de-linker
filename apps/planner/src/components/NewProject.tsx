@@ -450,8 +450,14 @@ export function NewProject({
 			!waitingForProduct &&
 			detailsReady &&
 			projectForm.current?.reportValidity()
-		)
+		) {
+			if (!initialProject && !entryHints && !briefEntry) {
+				const url = new URL(location.href);
+				url.hash = "sc-preliminary-options";
+				replacePlannerLocation(url);
+			}
 			setComparingDirections(true);
+		}
 	}
 	function continueProject() {
 		if (intent.current) void submit("compare");
