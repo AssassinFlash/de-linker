@@ -162,6 +162,99 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * Only the last finished answer can supply card quantities for a follow-up.
+	 *
+	 * @dataProvider previous_card_answers
+	 *
+	 * @param string          $previous_role Role immediately before the new question.
+	 * @param string          $previous_text Submitted text at that position.
+	 * @param bool            $cards         Whether the stored answer displayed cards.
+	 * @param bool            $done          Whether the stored answer finished.
+	 * @param array<int, int> $expected      Card quantities sent to Genie.
+	 * @param bool            $stale         Whether this tab still shows the earlier identical answer.
+	 */
+	public function test_turn_uses_only_the_previous_stored_card_answer( string $previous_role, string $previous_text, bool $cards, bool $done, array $expected, bool $stale = false ): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread = new RecordingThread();
+		$stream = "event: block\ndata: {\"type\":\"text\",\"text\":\"These options fit.\"}\n\n";
+		if ( $cards ) {
+			$stream .= "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[31,32,33,34],\"quantities\":{\"31\":4,\"32\":0,\"99\":8}}\n\n";
+			$stream .= "event: block\ndata: {\"type\":\"action\",\"name\":\"add_to_draft\",\"args\":{\"product_id\":34,\"quantity\":2}}\n\n";
+			$stream .= "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[35]}\n\n";
+		}
+		$thread->stored['stream']   = $stream . ( $done ? "event: done\ndata: {}\n\n" : '' );
+		$messages                   = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Which batteries fit?',
+			),
+			array(
+				'role'    => 'assistant',
+				'content' => 'These options fit.',
+			),
+			array(
+				'role'    => 'user',
+				'content' => 'And for my inverter?',
+			),
+		);
+		$thread->stored['messages'] = $messages;
+		if ( $stale ) {
+			$messages = array_slice( $messages, 0, 1 );
+		}
+		$messages[] = array(
+			'role'    => $previous_role,
+			'content' => $previous_text,
+		);
+		$messages[] = array(
+			'role'    => 'user',
+			'content' => 'Two of those.',
+		);
+		$request    = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param( 'messages', $messages );
+		$request->set_param( 'previous_card_quantities', array( 99 => 8 ) );
+		$caught = array();
+		$fetch  = static function ( string $url, array $body ) use ( &$caught ): string {
+			$caught = $body;
+			return "event: done\ndata: {}\n\n";
+		};
+		$this->proxy( $fetch, $thread )->turn( $request );
+		$this->assertSame( '51', $caught['conversation_id'] );
+		if ( array() === $expected ) {
+			$this->assertArrayNotHasKey( 'previous_card_quantities', $caught );
+		} else {
+			$this->assertSame( $expected, $caught['previous_card_quantities'] );
+		}
+	}
+
+	/**
+	 * Submitted histories and the options available for their follow-up.
+	 *
+	 * @return array<string, array{string, string, bool, bool, array<int, int>, 5?: bool}>
+	 */
+	public static function previous_card_answers(): array {
+		return array(
+			'completed card answer' => array(
+				'assistant',
+				"These\noptions fit.",
+				true,
+				true,
+				array(
+					31 => 4,
+					32 => 0,
+					33 => 1,
+					34 => 2,
+				),
+			),
+			'stale identical text'  => array( 'assistant', 'These options fit.', true, true, array(), true ),
+			'older text matches'    => array( 'assistant', 'Different answer.', true, true, array() ),
+			'intervening user'      => array( 'user', 'These options fit.', true, true, array() ),
+			'answer without cards'  => array( 'assistant', 'These options fit.', false, true, array() ),
+			'incomplete stream'     => array( 'assistant', 'These options fit.', true, false, array() ),
+		);
+	}
+
+	/**
 	 * A turn's files ride apart from its messages (#236): checked, sent to
 	 * the service in `attachments`, never into the thread the proxy keeps;
 	 * the conversation's earlier readings go with them.

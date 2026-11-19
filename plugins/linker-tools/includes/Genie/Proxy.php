@@ -529,6 +529,11 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
+		$messages   = is_array( $body['messages'] ) ? $body['messages'] : array();
+		$quantities = $this->thread->previous_card_quantities( $conversation, $messages );
+		if ( array() !== $quantities ) {
+			$body['previous_card_quantities'] = $quantities;
+		}
 		$publication = $this->publication->dependencies();
 		if ( is_wp_error( $publication ) ) {
 			return self::unrecorded( $publication );
@@ -547,8 +552,7 @@ class Proxy {
 		// appended, not dropped (#373, Thread::record). The first customer
 		// message names the conversation, which is the only title the
 		// history rail has.
-		$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
-		$first    = $messages[0] ?? null;
+		$first = $messages[0] ?? null;
 		if ( is_array( $first ) && isset( $first['content'] ) ) {
 			$this->conversations->title_from_first_message(
 				$conversation,
