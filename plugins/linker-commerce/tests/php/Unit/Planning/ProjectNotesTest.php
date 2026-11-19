@@ -565,12 +565,29 @@ final class ProjectNotesTest extends TestCase {
 			'note_revision' => '3',
 			'text'          => $text,
 			'inputs'        => array(
-				'brief'           => array(
+				'brief'                 => array(
 					'system_scope' => 'pv_only',
 					'site'         => array( 'location_label' => 'Oslo' ),
-					'annual_load'  => array( 'kwh' => 6400 ),
+					'annual_load'  => array(
+						'kwh'   => 6400,
+						'basis' => 'bill_total',
+					),
 				),
-				'energy_scenario' => array( 'schedule' => array( array( 'mode' => 'connected' ) ) ),
+				'pvgis_reference_setup' => array(
+					'model'  => 'pvgis_5_3_known_ac_reference_v1',
+					'arrays' => array( array( 'peak_power_kwp' => 4.5 ), array( 'peak_power_kwp' => 3 ) ),
+				),
+				'equipment_setup'       => array( 'pv_dc_kw' => 9 ),
+				'energy_scenario'       => array(
+					'controller' => 'peak_shaving_with_reserve_v1',
+					'schedule'   => array(
+						array(
+							'mode'          => 'connected',
+							'import_policy' => 'limited',
+							'import_cap_kw' => 0,
+						),
+					),
+				),
 			),
 		);
 		if ( '' !== $text ) {
@@ -611,7 +628,7 @@ final class ProjectNotesTest extends TestCase {
 			}
 		);
 		$this->assertStringEndsWith( "\n\nPlease call.", $output );
-		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Use more solar on site' ) as $fact ) {
+		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW' ) as $fact ) {
 			$this->assertStringContainsString( $fact, $output );
 		}
 		$this->assertStringContainsString( $id, wp_json_encode( $meta ) );
