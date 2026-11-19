@@ -160,7 +160,7 @@ def hydrate(
     of a document figure. Callers that omit it keep the output's own language.
 
     Ordinary document blocks become one link per file, with cited pages joined.
-    A used qualified figure's page and every original condition page keep
+    Woo figure pages group by their product. Original chunk conditions keep
     separate links so each opens directly at the relevant source page.
 
     `qualified_mask` is used only during the final seal: it hides the exact
@@ -171,7 +171,9 @@ def hydrate(
     blocks: list[Block] = []
     # Ordinary citations share one file link. A qualification on another page
     # needs its own link, so the reader can open the actual condition directly.
-    links: dict[tuple[str, int | None], tuple[int, Document, list[int]]] = {}
+    links: dict[
+        tuple[str, int | None, int | None], tuple[int, Document, list[int]]
+    ] = {}
     condition_refs = {
         note.chunk_id for notes in _used_qualifications(output, facts) for note in notes
     }
@@ -193,8 +195,16 @@ def hydrate(
         for ref in block.refs
         if ref in facts.qualifications
     )
+    figure_sources = used_figure_sources(output, facts)
+    figure_pages: dict[tuple[str, int | None], set[int | None]] = {}
+    for ref in figure_sources:
+        source = facts.documents[ref]
+        figure_pages.setdefault((source.url, source.page), set()).add(
+            source.citation_owner
+        )
     emitted: set[tuple[str, str]] = set()
-    for block in [*output.blocks, *cited_documents(output, facts)]:
+    figure_links = [DocumentBlock(ref=ref) for ref in figure_sources]
+    for block in [*output.blocks, *figure_links, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
             text = fill(
                 block.text,
@@ -234,12 +244,29 @@ def hydrate(
             document = facts.documents.get(block.ref)
             if document is None:
                 continue
-            key = (
-                document.url,
-                document.page if block.ref in condition_refs | parameter_refs else None,
-            )
+            owner = document.citation_owner
+            page = None
+            if block.ref in condition_refs | parameter_refs:
+                page = document.page
+            elif owner is None:
+                # The same page need not be shown twice when both independently
+                # point to the one product's figure evidence.
+                owners = figure_pages.get((document.url, document.page), set())
+                if len(owners) == 1:
+                    owner = next(iter(owners))
+            key = (document.url, owner, page)
             if key in links:
                 index, first, pages = links[key]
+                previous = blocks[index]
+                if (
+                    block.ref in figure_sources
+                    and isinstance(previous, DocumentBlock)
+                    and previous.ref not in figure_sources
+                ):
+                    # Keep the figure's provenance when the model also links this page.
+                    first = document
+                    blocks[index] = block
+                    links[key] = (index, first, pages)
             else:
                 index, first, pages = len(blocks), document, []
                 blocks.append(block)
@@ -255,6 +282,21 @@ def hydrate(
         else:
             blocks.append(block)
     return output.model_copy(update={"blocks": blocks})
+
+
+def used_figure_sources(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """Citation refs of the Woo figures actually used in the answer."""
+    return [
+        ref
+        for block in output.blocks
+        if isinstance(block, (TextBlock, HandoffBlock))
+        for fact_id in PLACEHOLDER.findall(
+            block.text if isinstance(block, TextBlock) else block.summary
+        )
+        if (fact := _lookup(facts, fact_id)) is not None
+        if fact.source == "datasheet-figures"
+        for ref in facts.supporting_documents.get(fact.id, ())
+    ]
 
 
 def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]:
@@ -466,6 +508,11 @@ def fill(
             if unit and after and after.strip() == unit.group(1):
                 return value
             return value + after
+        if fact.source == "datasheet-figures":
+            value = _qualified_woo_value(fact, locale, len(facts.product_ids) > 1)
+            if qualified_mask is not None and fact.id in facts.supporting_documents:
+                value = qualified_mask(value)
+            return value + after
         unit_word = _unit(match.group(1)) if fact.source == "selection-facts" else None
         following = text[match.start(2) :].lstrip().lower()
         if unit_word and not following.startswith(unit_word.lower()):
@@ -494,6 +541,26 @@ def fill(
                 rendered = qualified_mask(rendered)
             filled += f"\n\n{label} {rendered}"
     return filled
+
+
+def _qualified_woo_value(fact: Fact, locale: str, name_product: bool) -> str:
+    direction = fact.per_input_current_direction
+    if direction is None:
+        return fact.value
+    if locale.startswith("de"):
+        current = "Ladestrom" if direction == "charge" else "Entladestrom"
+        subject = (
+            f" für {fact.product_label}" if name_product and fact.product_label else ""
+        )
+        return (
+            f"Der maximale {current}{subject} beträgt {fact.value} je Batterieeingang."
+        )
+    subject = (
+        f" for {fact.product_label}" if name_product and fact.product_label else ""
+    )
+    return (
+        f"The maximum {direction} current{subject} is {fact.value} per battery input."
+    )
 
 
 def _quote(note: Qualification) -> str | None:

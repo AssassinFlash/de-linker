@@ -21,10 +21,11 @@ final class CompatibilityClaims {
 	 *
 	 * @param list<array<string,mixed>> $products Current canonical products.
 	 * @param list<array<string,mixed>> $documents Current allowed documents.
+	 * @param bool                      $include_evidence Keep evidence identity for live compatibility citations.
 	 * @return array<string,mixed>|null Null means malformed Woo maintenance data.
 	 * @throws \RuntimeException Handled per scope to withdraw invalid claims.
 	 */
-	public static function projection( array $products, array $documents ): ?array {
+	public static function projection( array $products, array $documents, bool $include_evidence = false ): ?array {
 		$manifest = array(
 			'products'  => $products,
 			'documents' => $documents,
@@ -58,16 +59,18 @@ final class CompatibilityClaims {
 						if ( 'pairs' === $kind ) {
 							$projected['battery'] = self::pattern( (string) $index[ $target ]['model'] );
 						}
-						$projected['documents']   = array_map(
-							static fn( array $doc ): array => array_filter(
-								array(
-									'url'  => $doc['url'],
-									'page' => $doc['page'] ?? null,
+						if ( ! $include_evidence ) {
+							$projected['documents'] = array_map(
+								static fn( array $doc ): array => array_intersect_key(
+									$doc,
+									array(
+										'url'  => true,
+										'page' => true,
+									)
 								),
-								static fn( mixed $value ): bool => null !== $value
-							),
-							$valid['documents']
-						);
+								$valid['documents']
+							);
+						}
 						$projected['accessories'] = array_map(
 							static fn( array $part ): array => array(
 								'product_id' => $part['product_id'],

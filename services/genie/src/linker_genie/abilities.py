@@ -338,7 +338,7 @@ class _TurnAbilities:
         user_context: str | None = None,
         locale: str = "en",
     ) -> tuple[Any, TurnFacts]:
-        return _record(self, name, arguments, user_context, locale)
+        return _record(self, name, arguments, user_context, locale, self.permission)
 
 
 def _record(
@@ -347,9 +347,18 @@ def _record(
     arguments: dict[str, Any] | None,
     user_context: str | None,
     locale: str,
+    permission: Snapshot | None = None,
 ) -> tuple[Any, TurnFacts]:
     payload = client.run(name, arguments, user_context)
-    gathered = collect(name, payload, locale)
+    evidence_owner = None
+    if (
+        permission is not None
+        and name == "linker/get-product"
+        and isinstance(payload, dict)
+        and isinstance(product_id := payload.get("product_id"), int)
+    ):
+        evidence_owner = permission.canonical(product_id)
+    gathered = collect(name, payload, locale, evidence_owner=evidence_owner)
     # The log records what this call actually read, never a later replay.
     gathered.tool_calls.append(
         {"name": name, "arguments": arguments or {}, "ok": True, "result": payload}

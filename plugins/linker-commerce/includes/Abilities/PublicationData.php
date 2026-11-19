@@ -149,7 +149,7 @@ final class PublicationData {
 	 * @param int                 $inverter Inverter ID.
 	 * @param int                 $battery Battery ID.
 	 * @param array<string,mixed> $manifest Current snapshot.
-	 * @return array{verdict:string,conditions:list<array{en:string,de:string}>,documents:list<array{url:string,page?:int}>,accessories:list<array{model:string,quantity:int,per:string,product_id:int}>}|null
+	 * @return array{verdict:string,conditions:list<array{en:string,de:string}>,documents:list<array{document_id:string,document_revision:string,product_id:int,url:string,page?:int}>,accessories:list<array{model:string,quantity:int,per:string,product_id:int}>}|null
 	 */
 	public function pairing( int $inverter, int $battery, array $manifest ): ?array {
 		if ( count( $this->published( array( $inverter, $battery ), $manifest ) ) !== 2 ) {
