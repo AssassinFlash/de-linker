@@ -43,10 +43,10 @@ function projects() {
 	];
 }
 
-async function mount(handler, store) {
+async function mount(handler, store, url = "/workspace/") {
 	const fixture = setupDom();
 	// The shared fixture URL preselects a project; deletion lives in the list.
-	history.replaceState({}, "", "/workspace/");
+	history.replaceState({}, "", url);
 	const { createRoot } = await import("react-dom/client");
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
@@ -138,6 +138,47 @@ const confirmButton = () =>
 			'[role="group"][aria-label="Delete this project"] button',
 		),
 	].find((button) => button.className.includes("lp-button-danger"));
+
+test("the account search opens directly at the older project list", async (t) => {
+	const listRequests = [];
+	const historical = { ...projects()[1], title: "Alte Straße" };
+	const mounted = await mount(
+		async (url, init) => {
+			const path = String(url);
+			if (path.endsWith("/nonce")) return new Response("abcdefghij");
+			if (path.endsWith("/bootstrap")) return response(session());
+			if (path.endsWith("/projects/list")) {
+				const query = JSON.parse(init.body);
+				listRequests.push(query);
+				return response({
+					items: query.title_query === "Straße" ? [historical] : projects(),
+					next: null,
+					ordering:
+						"updated_at_desc_id_desc; live_navigation_not_a_frozen_search",
+				});
+			}
+			if (path.endsWith("/recovery/scopes"))
+				return response({ scopes: [session().query_scope] });
+			throw new Error(path);
+		},
+		recordingStore(),
+		"/workspace/?projects=1&project_search=Stra%C3%9Fe",
+	);
+	t.after(() => mounted.dispose());
+
+	assert.equal(listRequests[0].title_query, "Straße");
+	assert.equal(
+		document.querySelector('[role="listitem"] h3').textContent,
+		"Alte Straße",
+	);
+	assert.equal(document.querySelector('input[type="search"]').value, "Straße");
+	assert.equal(document.querySelector('input[name="title"]'), null);
+	const { projectLanguageUrl } =
+		await import("../src/data/useSiteIntegration.ts");
+	const translated = new URL(projectLanguageUrl("/de/", location.href, null));
+	assert.equal(translated.searchParams.get("projects"), "1");
+	assert.equal(translated.searchParams.get("project_search"), "Straße");
+});
 
 test("a refreshing list waits for the saved revision before offering deletion", async (t) => {
 	const refresh = deferred();

@@ -147,6 +147,27 @@ final class AccountTemplatesTest extends TestCase {
 		}
 	}
 
+	/** An exact lookup reaches an older order without widening Woo's customer scope. */
+	public function test_inquiry_number_search_preserves_customer_and_paging(): void {
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => $value ) );
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
+		$adapter = new AccountTemplates();
+		$query   = array(
+			'customer' => 5,
+			'page'     => 1,
+			'paginate' => true,
+		);
+
+		try {
+			$_GET['inquiry_number'] = ' #7541 ';
+			$this->assertSame( $query + array( 'post__in' => array( 7541 ) ), $adapter->orders_query( $query ) );
+			$_GET['inquiry_number'] = '7541x';
+			$this->assertSame( $query + array( 'post__in' => array( 0 ) ), $adapter->orders_query( $query ) );
+		} finally {
+			unset( $_GET['inquiry_number'] );
+		}
+	}
+
 	/** Native page links retain selection instead of silently widening on page two. */
 	public function test_pagination_keeps_selected_state(): void {
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => $value ) );
@@ -243,6 +264,7 @@ final class AccountTemplatesTest extends TestCase {
 		$adapter = new AccountTemplates();
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		WP_Mock::expectAction( 'woocommerce_before_account_orders', true );
 		$adapter->register();
 		$this->expand_fields( $adapter );
 
@@ -250,11 +272,15 @@ final class AccountTemplatesTest extends TestCase {
 		AccountTemplates::output(
 			array(
 				'template_name' => 'myaccount/orders.php',
-				'args'          => array( 'customer_orders' => (object) array( 'orders' => array( 20, 21 ) ) ),
+				'args'          => array(
+					'customer_orders' => (object) array( 'orders' => array( 20, 21 ) ),
+					'has_orders'      => true,
+				),
 			)
 		);
 		$html = (string) ob_get_clean();
 
+		$this->assertStringContainsString( '<form class="linker-account-panel linker-account-panel-body" role="search" aria-labelledby="linker-account-inquiry-number-label" action="/my-account/inquiries/" method="get">', $html );
 		$this->assertStringContainsString( '<span>Amount</span>', $html );
 		$this->assertMatchesRegularExpression( '/<span class="sr-only">Amount:\s*<\/span>\s*€1\.00/', $html );
 		$this->assertSame( 1, substr_count( $html, 'Amount:' ) );

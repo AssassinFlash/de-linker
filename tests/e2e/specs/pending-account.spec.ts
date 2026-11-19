@@ -208,13 +208,8 @@ for (const language of ['en', 'de'] as const) {
 				).not.toContainText(/€|EUR/);
 				await shot(page, `${prefix}-pending-account`);
 				if (width === 390) {
-					const menu = page.locator('.linker-account-mobile-menu');
-					await expect(menu).toBeVisible();
-					await menu.locator('summary').click();
-					await expect(
-						menu.locator('a[href*="action=logout"]')
-					).toBeVisible();
-					const saved = menu.getByRole('link', {
+					const tabs = page.locator('.linker-account-bottom-nav');
+					const saved = tabs.getByRole('link', {
 						name:
 							language === 'de'
 								? 'Gespeicherte Lösungen'
@@ -225,8 +220,19 @@ for (const language of ['en', 'de'] as const) {
 						throw new Error('Missing saved solutions URL');
 					await saved.click();
 					await expect(page).toHaveURL(savedUrl);
-					await menu.locator('summary').click();
-					const company = menu.getByRole('link', {
+					await tabs
+						.getByRole('link', {
+							name: language === 'de' ? 'Konto' : 'Account',
+							exact: true,
+						})
+						.click();
+					const settings = page.locator(
+						'.linker-account-profile-links'
+					);
+					await expect(
+						settings.locator('a[href*="action=logout"]')
+					).toBeVisible();
+					const company = settings.getByRole('link', {
 						name: language === 'de' ? 'Unternehmen' : 'Company',
 					});
 					const companyUrl = await company.getAttribute('href');

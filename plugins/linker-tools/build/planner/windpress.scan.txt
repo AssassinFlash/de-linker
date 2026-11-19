@@ -260,6 +260,7 @@ sc-primary
 sc-product-filter
 sc-project-equipment
 sc-project-heading
+sc-project-search
 sc-project-workbench
 sc-report-actions
 sc-report-dialog

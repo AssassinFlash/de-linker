@@ -1148,6 +1148,35 @@ def test_browser_owner_context_and_schema_coercions_are_not_commands(rig: Rig) -
     )
 
 
+def test_customer_project_title_search_filters_owned_history_before_paging(
+    rig: Rig,
+) -> None:
+    older = rig.post(
+        "/projects/create",
+        {"title": "Straße 12 · Norddach", "inputs": {}, "key": "older-roof"},
+    )
+    for index in range(11):
+        rig.create(f"newer-project-{index}")
+    newer = rig.post(
+        "/projects/create",
+        {"title": "STRAẞE 34 · Süddach", "inputs": {}, "key": "newer-roof"},
+    )
+    rig.post(
+        "/projects/create",
+        {"title": "STRASSE 56 · Fremddach", "inputs": {}, "key": "foreign-roof"},
+        FOREIGN,
+    )
+
+    search = {"page_size": 1, "title_query": "  STRASSE "}
+    first = rig.post("/projects/list", search)
+    assert [item["id"] for item in cast(list[Object], first["items"])] == [newer["id"]]
+
+    second = rig.post("/projects/list", {**search, "after": first["next"]})
+    assert [item["id"] for item in cast(list[Object], second["items"])] == [older["id"]]
+    assert second["next"] is None
+    assert rig.post("/projects/list", {"title_query": "Fremddach"})["items"] == []
+
+
 def test_owned_project_refresh_reopen_pagination_and_readonly_team(rig: Rig) -> None:
     ids = [rig.create(f"project-{index}") for index in range(3)]
     foreign = rig.create("foreign", FOREIGN)

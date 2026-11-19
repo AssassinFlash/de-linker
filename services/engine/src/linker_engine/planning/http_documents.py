@@ -79,6 +79,7 @@ class Cursor(Document):
 class ProjectList(Command):
     page_size: Annotated[int, Field(strict=True, gt=0)] | None = None
     after: Cursor | None = None
+    title_query: Annotated[str, Field(max_length=256)] = ""
 
     @field_validator("page_size", mode="before")
     @classmethod

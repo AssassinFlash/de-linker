@@ -16,8 +16,9 @@
 /**
  * External dependencies
  */
-import { expect, test, type Page } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { createHash } from 'node:crypto';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
@@ -64,7 +65,6 @@ interface Language {
 	productCount: string;
 	invalidOrder: string;
 	newProject: string;
-	createProject: string;
 }
 
 const LANGUAGES: Language[] = [
@@ -95,7 +95,6 @@ const LANGUAGES: Language[] = [
 		productCount: '1 product',
 		invalidOrder: 'Invalid order.',
 		newProject: 'New project',
-		createProject: 'Create project',
 	},
 	{
 		lang: 'de',
@@ -125,7 +124,6 @@ const LANGUAGES: Language[] = [
 		productCount: '1 Produkt',
 		invalidOrder: 'Ungültige Bestellung.',
 		newProject: 'Neues Projekt',
-		createProject: 'Projekt anlegen',
 	},
 ];
 
@@ -214,6 +212,76 @@ function makeOwner(tag: string): { owner: Owner; other: Customer } {
 	};
 }
 
+/** Stores an original file of each kind through the native file stores. */
+function issueOwnerFiles(
+	owner: Owner,
+	locale: Language['lang']
+): { number: string; quote_sha: string; report_sha: string; later: number } {
+	return JSON.parse(
+		wp([
+			'eval',
+			String.raw`
+			$order = wc_get_order( ${owner.order} );
+			foreach ( $order->get_items() as $item ) {
+				$item->set_subtotal( '420.00' );
+				$item->set_total( '420.00' );
+				$item->save();
+			}
+			$order->set_billing_email( '${owner.email}' );
+			$order->update_meta_data( \Linker\Commerce\Inquiry\OrderLocale::META, '${locale === 'de' ? 'de_DE_formal' : 'en_US'}' );
+			$order->set_status( \Linker\Commerce\Inquiry\Statuses::QUOTATION );
+			$order->save();
+
+			$quote = wc_get_order( ${owner.order} );
+			$quotes = new \Linker\Commerce\Account\PrivateFiles( \Linker\Commerce\Quotation\Issuer::DIRECTORY );
+			$number = $quote->get_meta( \Linker\Commerce\Quotation\Issuer::NUMBER_META );
+			$quote_path = $quotes->path( $quote->get_meta( \Linker\Commerce\Quotation\Issuer::FILE_META ) );
+			if ( '' === $number || '' === $quote_path ) {
+				throw new RuntimeException( 'Woo did not issue and store the quotation PDF' );
+			}
+			$reports = new \Linker\Commerce\Account\PrivateFiles( \Linker\Commerce\Account\SavedSolutions::REPORTS_DIRECTORY );
+			$renderer = new \Linker\Commerce\Quotation\Renderer( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+			$report = $renderer->pdf( '<h1>Saved solution archive</h1><p>Reference E2E-1142</p>' );
+			$stored = $reports->write( ${owner.solution}, 'saved-solution-archive', $report );
+			update_post_meta( ${owner.solution}, \Linker\Commerce\Account\SavedSolutions::REPORT_META, $stored );
+			$later = wc_create_order( array( 'customer_id' => ${owner.id}, 'status' => 'cancelled' ) );
+			echo wp_json_encode( [
+				'number' => $number,
+				'quote_sha' => hash_file( 'sha256', $quote_path ),
+				'report_sha' => hash_file( 'sha256', $reports->path( $stored ) ),
+				'later' => $later->get_id(),
+			] );`,
+		]).trim()
+	);
+}
+
+function removeOwnerFiles(owner: Owner): void {
+	wp([
+		'eval',
+		String.raw`
+		(new \Linker\Commerce\Account\PrivateFiles( \Linker\Commerce\Quotation\Issuer::DIRECTORY ))->delete_owner( ${owner.order} );
+		(new \Linker\Commerce\Account\PrivateFiles( \Linker\Commerce\Account\SavedSolutions::REPORTS_DIRECTORY ))->delete_owner( ${owner.solution} );`,
+	]);
+}
+
+async function downloadPDF(
+	page: Page,
+	action: Locator,
+	storedHash: string
+): Promise<void> {
+	const pending = page.waitForEvent('download');
+	await action.click();
+	const download = await pending;
+	try {
+		expect(await download.failure()).toBeNull();
+		const pdf = readFileSync((await download.path())!);
+		expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+		expect(createHash('sha256').update(pdf).digest('hex')).toBe(storedHash);
+	} finally {
+		await download.delete();
+	}
+}
+
 /** Removes a fixture's records and accounts, whatever the test did. */
 function remove(customers: Customer[], orders: number[] = []): void {
 	const ids = customers.map((customer) => customer.id).join(',');
@@ -269,7 +337,9 @@ async function signIn(
 	customer: Customer,
 	account: string
 ): Promise<void> {
-	await page.goto(base() + account);
+	await page.goto(base() + (account.startsWith('/de/') ? '/de/' : '/'));
+	await page.locator(`.hero-ops a[href$="${account}"]:visible`).click();
+	await expect(page).toHaveURL(base() + account);
 	await page.fill('#username', customer.login);
 	await page.fill('#password', PASSWORD);
 	// PublicGuard's minimum fill time is three seconds; every suite that posts
@@ -455,67 +525,101 @@ for (const language of LANGUAGES) {
 			try {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
+				page.setDefaultTimeout(12_000);
 				await signIn(page, customer, language.account);
 
 				// A project made while signed in belongs to this account's own
 				// principal, so the account row reads it back from the planner's
 				// private index - never from a second store.
-				await page.goto(base() + language.configuratorPath, {
-					waitUntil: 'networkidle',
+				await page.goto(base() + language.configuratorPath);
+				const creation = page.getByRole('form', {
+					name: language.newProject,
 				});
-				await page
-					.getByRole('button', { name: language.newProject })
-					.first()
-					.click();
-				await page
-					.locator('input[maxlength="256"]')
-					.first()
+				await expect(creation).toBeVisible();
+
+				const projectName =
+					language.lang === 'de' ? 'Projektname' : 'Project name';
+				await creation
+					.getByRole('textbox', { name: projectName })
 					.fill(title);
-				await page
-					.getByRole('button', { name: language.createProject })
-					.click();
+				await creation
+					.locator('select[name="country"]')
+					.selectOption('DE');
+				await creation
+					.locator('input[name="location_label"]')
+					.fill('Berlin');
+				await creation.locator('button[type="submit"]').click();
 				await expect(page).toHaveURL(/project=[a-f0-9]{32}/, {
 					timeout: 60_000,
 				});
 				const projectId = new URL(page.url()).searchParams.get(
 					'project'
 				)!;
-				await expect(page.locator('.lp-save-state')).toBeVisible({
-					timeout: 30_000,
-				});
+				await expect(
+					page.getByRole('heading', {
+						level: 1,
+						name: title,
+						exact: true,
+					})
+				).toBeVisible();
 
-				await page.goto(base() + language.solutions);
-				const panel = page.locator(
-					'section[aria-labelledby="linker-account-projects-title"]'
+				await page.goto(
+					base() + (language.lang === 'de' ? '/de/' : '/')
 				);
-				await expect(
-					panel,
-					'the account lists the planning projects'
-				).toBeVisible();
-				const row = panel
-					.locator('.linker-account-products li')
-					.filter({ hasText: title });
-				await expect(
-					row,
-					'the project row carries its title'
-				).toBeVisible();
-				const href = await row
-					.locator('a')
-					.first()
-					.getAttribute('href');
-				expect(href, 'the row opens the project it names').toContain(
-					`project=${projectId}#lp-overview`
+				await page
+					.locator(`.hero-ops a[href$="${language.account}"]:visible`)
+					.click();
+				await expect(page).toHaveURL(base() + language.account);
+				await expectNoOverflow(page, width);
+				await shot(page, `${language.lang}-${width}-overview`);
+				const search = page.getByRole('search', {
+					name:
+						language.lang === 'de'
+							? 'Gespeichertes Projekt finden'
+							: 'Find a saved project',
+				});
+				await expect(search).toBeVisible();
+				await search
+					.getByRole('searchbox', { name: projectName })
+					.fill(title);
+				await search
+					.getByRole('button', {
+						name: language.lang === 'de' ? 'Suchen' : 'Search',
+					})
+					.click();
+				await expect(page).toHaveURL(
+					new RegExp(
+						`${language.configuratorPath}\\?projects=1&project_search=`
+					)
 				);
-				await row.locator('a').first().click();
-				await page.waitForLoadState('load');
+				const row = page.getByRole('listitem').filter({
+					has: page.getByRole('heading', {
+						level: 3,
+						name: title,
+						exact: true,
+					}),
+				});
+				const found = row.getByRole('button', {
+					name:
+						language.lang === 'de'
+							? 'Projekt öffnen'
+							: 'Open project',
+					exact: true,
+				});
+				await expect(found).toBeVisible();
+				await shot(page, `${language.lang}-${width}-solutions-search`);
+				await found.click();
 				await expect(page).toHaveURL(
 					new RegExp(`project=${projectId}`)
 				);
+				await expect(
+					page.getByRole('heading', {
+						level: 1,
+						name: title,
+						exact: true,
+					})
+				).toBeVisible();
 				await expectNoOverflow(page, width);
-				await shot(
-					page,
-					`${language.lang}-${width}-solutions-populated`
-				);
 			} finally {
 				await context.close();
 				remove([customer]);
@@ -555,12 +659,15 @@ for (const language of LANGUAGES) {
 						shortcuts.locator(`a[href$="${path}"]`)
 					).toBeVisible();
 				}
-				expect((await contact.boundingBox())!.y).toBeLessThan(
-					(await shortcuts.boundingBox())!.y
+				expect((await shortcuts.boundingBox())!.y).toBeLessThan(
+					(await contact.boundingBox())!.y
 				);
 
 				const inquiries = base() + language.inquiries;
-				await page.goto(inquiries);
+				await shortcuts
+					.locator(`a[href$="${language.inquiries}"]`)
+					.click();
+				await expect(page).toHaveURL(inquiries);
 
 				const row = page.locator(`[data-inquiry="${owner.order}"]`);
 				await expect(
@@ -645,7 +752,29 @@ for (const language of LANGUAGES) {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
 				await signIn(page, customer, language.account);
-				await page.goto(base() + language.details);
+				const nav = page.locator(
+					width === 390
+						? '.linker-account-bottom-nav'
+						: '.linker-account-sidebar'
+				);
+				await nav.locator(`a[href$="${language.details}"]`).click();
+				await expect(page).toHaveURL(base() + language.details);
+				if (width === 390) {
+					const settings = page.locator(
+						'.linker-account-profile-links'
+					);
+					await expect(
+						settings.locator('a[href*="action=logout"]')
+					).toBeVisible();
+					await expect(
+						settings.getByRole('link', {
+							name:
+								language.lang === 'de'
+									? 'Unternehmen'
+									: 'Company',
+						})
+					).toBeVisible();
+				}
 
 				// WooCommerce's own form, under the site's designed card.
 				await expect(page.locator('#account_first_name')).toBeVisible();
@@ -886,6 +1015,113 @@ for (const language of LANGUAGES) {
 			}
 		});
 
+		test(`${tag}: the owner finds an inquiry and downloads both original account PDFs`, async ({
+			browser,
+		}) => {
+			const { owner, other } = makeOwner(`files-${tag}`);
+			const context = await browser.newContext({
+				viewport: { width, height: width === 390 ? 844 : 900 },
+				isMobile: width === 390,
+				hasTouch: width === 390,
+				reducedMotion: 'reduce',
+			});
+			let later = 0;
+			try {
+				const files = issueOwnerFiles(owner, language.lang);
+				later = files.later;
+				await seedConsentCookies(context);
+				const page = await context.newPage();
+				await signIn(page, owner, language.account);
+				const english = language.lang === 'en';
+				const search = page
+					.locator('.linker-account-main')
+					.getByRole('search', {
+						name: english ? 'Find an inquiry' : 'Anfrage finden',
+					});
+				await search
+					.getByLabel(english ? 'Inquiry number' : 'Anfragenummer')
+					.fill(`#${owner.order}`);
+				await search
+					.getByRole('button', {
+						name: english ? 'Search' : 'Suchen',
+					})
+					.click();
+				await expect(page).toHaveURL(
+					(url) =>
+						url.pathname === language.inquiries &&
+						url.searchParams.get('inquiry_number') ===
+							`#${owner.order}`
+				);
+				const exact = page.locator(
+					`.linker-account-inquiry[data-inquiry="${owner.order}"]`
+				);
+				await expect(
+					page.locator('.linker-account-inquiry[data-inquiry]')
+				).toHaveCount(1);
+				await expect(
+					page.locator(`[data-inquiry="${later}"]`)
+				).toHaveCount(0);
+				await expectNoOverflow(page, width);
+				await shot(page, `${tag}-inquiry-search`);
+				const translated = LANGUAGES.find(
+					(entry) => entry.lang !== language.lang
+				)!;
+				for (const entry of [translated, language]) {
+					await page
+						.locator(
+							`header a[data-linker-language-choice="${entry.lang}"]:visible`
+						)
+						.first()
+						.click();
+					await expect(page).toHaveURL(
+						(url) =>
+							url.pathname === entry.inquiries &&
+							url.searchParams.get('inquiry_number') ===
+								`#${owner.order}`
+					);
+					await expect(exact).toBeVisible();
+				}
+				await exact.locator('.linker-account-row-view').click();
+				await expect(
+					page.locator('[data-action="quotation"]')
+				).toBeVisible();
+
+				await page.goto(base() + language.account);
+				await page
+					.locator(
+						`.linker-account-content a[href$="${language.documents}"]:visible`
+					)
+					.first()
+					.click();
+				await expect(page).toHaveURL(base() + language.documents);
+				const documents = page.locator('.linker-account-file-list');
+				const quotation = documents
+					.locator('.linker-account-doc')
+					.filter({ hasText: files.number });
+				const report = documents
+					.locator('.linker-account-doc')
+					.filter({ hasText: 'E2E saved solution' });
+				await expect(quotation).toBeVisible();
+				await expect(report).toBeVisible();
+				await expectNoOverflow(page, width);
+				await shot(page, `${tag}-owner-files`);
+				await downloadPDF(
+					page,
+					quotation.getByRole('link'),
+					files.quote_sha
+				);
+				await downloadPDF(
+					page,
+					report.getByRole('link'),
+					files.report_sha
+				);
+			} finally {
+				await context.close();
+				removeOwnerFiles(owner);
+				remove([owner, other], [owner.order, later]);
+			}
+		});
+
 		test(`${tag}: another customer and a guest cannot read the owner's records`, async ({
 			browser,
 		}) => {
@@ -920,6 +1156,20 @@ for (const language of LANGUAGES) {
 				await expect(
 					page.locator('.linker-account-empty')
 				).toContainText(language.emptySolutions);
+
+				await page.goto(
+					`${base()}${language.inquiries}?inquiry_number=${owner.order}`
+				);
+				await expect(
+					page.locator(`[data-inquiry="${owner.order}"]`)
+				).toHaveCount(0);
+				await expect(
+					page.locator('.linker-account-empty-inquiries')
+				).toContainText(
+					language.lang === 'en'
+						? 'No matching inquiries.'
+						: 'Keine passende Anfrage gefunden.'
+				);
 
 				// Nor is the owner's inquiry readable through its view URL: Woo's
 				// own check refuses it and the page stays on the account.

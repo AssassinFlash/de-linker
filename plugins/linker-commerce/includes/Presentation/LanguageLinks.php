@@ -27,6 +27,8 @@ final class LanguageLinks {
 	 */
 	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'product', 'product_id', 'key', 'admin-access', 'q', 'sort', 'application', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'product-page', 'saved_solution', 'brief' );
 
+	private const INQUIRY_QUERY_KEYS = array( 'inquiry_number', 'inquiry-status' );
+
 	/**
 	 * The header's toggle: a globe (hidden by the header's own stylesheet)
 	 * beside the two halves, the current language marked.
@@ -141,8 +143,12 @@ final class LanguageLinks {
 		// its visibility still requires Woo's recorded session decision.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
 		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
-		$kept           = array();
-		foreach ( self::LANGUAGE_QUERY_KEYS as $query_key ) {
+		$keys           = self::LANGUAGE_QUERY_KEYS;
+		if ( \function_exists( 'is_account_page' ) && is_account_page() && is_wc_endpoint_url( 'orders' ) ) {
+			$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );
+		}
+		$kept = array();
+		foreach ( $keys as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
 			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || ( '' === $_GET[ $query_key ] && ! ( 's' === $query_key && $journal_search ) ) ) {
 				continue;
@@ -175,7 +181,7 @@ final class LanguageLinks {
 		foreach ( LibraryPage::language_query( wp_unslash( $_GET ) ) as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( $keys, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

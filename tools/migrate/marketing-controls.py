@@ -937,12 +937,37 @@ def plan_home_configurator(english: str, german: str) -> tuple[str, str]:
     return en, de
 
 
+def plan_home_account(english: str, german: str) -> tuple[str, str]:
+    def update(page: str, path: str, label: str) -> tuple[str, str]:
+        desktop = f'<a href="{path}">{label}</a>'
+        mobile = f'<a href="{path}" class="hero-ops-portal"><span>{label}</span>'
+        mobile_link = re.findall(re.escape(mobile) + r"[^\n]*?</a>", page)
+        if len(mobile_link) != 1:
+            raise ValueError("Expected one existing mobile Trade Portal link")
+        registration = '<span class="hero-ops-register">[linker_create_account]</span>'
+        return _apply_edits(
+            page,
+            (
+                (desktop + "\n", desktop + registration + "\n"),
+                (mobile_link[0] + "\n", mobile_link[0] + registration + "\n"),
+            ),
+            "Home account",
+        )
+
+    en, en_state = update(english, "/my-account/", "Trade Portal")
+    de, de_state = update(german, "/de/mein-konto/", "Handelsportal")
+    if en_state != de_state:
+        raise ValueError("Partially changed homepage account pair")
+    return en, de
+
+
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
         "home_configurator": plan_home_configurator,
+        "home_account": plan_home_account,
         "home_testimonials": plan_home_testimonials,
         "residential_storage": plan_residential_storage,
         "commercial_storage": plan_commercial_storage,

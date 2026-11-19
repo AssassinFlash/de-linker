@@ -140,6 +140,7 @@
 	animation: linker-account-spin 0.8s linear infinite;
 }
 
+.linker-auth .linker-auth-recovery .button.is-loading::after,
 .linker-gate .linker-gate-btn.is-ghost.is-loading::after,
 .linker-account .linker-account-content .button.is-ghost.is-loading::after {
 	border-color: var(--proto-teal-200);
@@ -516,6 +517,25 @@
 .linker-account button.show-password-input:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
 
 /* The checkbox: WooCommerce's own input, drawn as the prototype's box. */
+.linker-auth .form-row.linker-auth-remember {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0 16px;
+}
+
+.linker-auth-remember > a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	color: var(--proto-teal-700);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
 .linker-auth form .form-row label.woocommerce-form-login__rememberme,
 .linker-account form .form-row label.woocommerce-form-login__rememberme {
 	display: flex;
@@ -657,21 +677,16 @@
 	outline-offset: 2px;
 }
 
-/* WooCommerce prints one form row per field, and the name pair stands side by
- * side on a wide screen (the field ids are WooCommerce's own). */
-.linker-auth-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
+/* The two name fields share a row, with full-width email and password. */
+.linker-auth-fields { display: grid; gap: 0 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 /* Native first/last rows keep a 47% width for Woo's float layout. The grid
  * already places them, so each row must fill its assigned track. */
 .linker-auth .linker-auth-fields > .form-row { width: auto; }
 
-@media (min-width: 560px) {
-	.linker-auth-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.linker-auth-fields > * { grid-column: 1 / -1; }
 
-	.linker-auth-fields > * { grid-column: 1 / -1; }
-
-	.linker-auth-fields > :is(#billing_first_name_field, #billing_last_name_field) { grid-column: auto; }
-}
+.linker-auth-fields > :is(#billing_first_name_field, #billing_last_name_field) { grid-column: auto; }
 
 .linker-auth-fields .form-row:last-child { margin-bottom: 0; }
 
@@ -777,7 +792,40 @@
 
 .linker-auth .linker-auth-submit { margin: 0; }
 
+.linker-auth .linker-auth-create { margin-top: 12px; }
+
 .linker-auth .linker-auth-submit :is(.button, .linker-auth-btn) { width: 100%; }
+
+.linker-auth-recovery {
+	margin-top: var(--proto-space-7);
+	padding-top: var(--proto-space-6);
+	border-top: 1px solid var(--acct-line);
+}
+
+.linker-auth-recovery h2 {
+	margin: 0;
+	color: var(--acct-ink);
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.linker-auth-recovery h2 + p {
+	margin: 4px 0 var(--proto-space-5);
+	color: var(--acct-ink-2);
+	font-size: 14px;
+}
+
+.linker-auth .linker-auth-recovery .button {
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-800);
+	box-shadow: none;
+}
+
+.linker-auth .linker-auth-recovery .button:hover {
+	background: var(--proto-teal-100);
+	color: var(--proto-teal-900);
+	box-shadow: none;
+}
 
 /* ── The gates (pending, restricted, the two Proforma gates) ───────────── */
 .linker-gate-col { width: 100%; max-width: 480px; margin: 0 auto; }

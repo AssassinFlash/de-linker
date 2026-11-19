@@ -2,6 +2,13 @@ import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 
+// Same character bound as a stored project's title.
+export const MAX_PROJECT_TITLE_LENGTH = 256;
+
+export function projectTitleSearch(value: string | null): string {
+	return (value ?? "").trim().slice(0, MAX_PROJECT_TITLE_LENGTH);
+}
+
 export interface ProjectRow {
 	readonly id: string;
 	readonly title: string;
@@ -24,7 +31,7 @@ export function readProjectPage(value: unknown, pageSize: number): ProjectPage {
 			!/^[a-f0-9]{32}$/.test(item.id) ||
 			typeof item.title !== "string" ||
 			!item.title ||
-			item.title.length > 256 ||
+			item.title.length > MAX_PROJECT_TITLE_LENGTH ||
 			typeof item.revision !== "number" ||
 			!Number.isSafeInteger(item.revision) ||
 			item.revision < 1 ||

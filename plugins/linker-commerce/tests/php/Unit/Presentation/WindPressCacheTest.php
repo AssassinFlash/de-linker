@@ -35,7 +35,7 @@ final class WindPressCacheTest extends TestCase {
 		. '#tv-blog-single-v1{}'
 		. '#tv-blog-index-v1{}#tv-blog-search-v1{}#tv-blog-category-v1{}'
 		. '.linker-library-tabbar{}.linker-library-card{}.linker-library-thumb{}'
-		. '.linker-auth-card{}.linker-gate{}.linker-account-welcome{}.linker-account-pill{}';
+		. '.linker-auth-card{}.linker-gate{}.linker-account-mast{}.linker-account-pill{}';
 	/**
 	 * The per-test compiled-cache file.
 	 *
@@ -164,9 +164,9 @@ final class WindPressCacheTest extends TestCase {
 	public function test_missing_anchor_classes_matching(): void {
 		$cache = new WindPressCache( $this->cache_path );
 
-		$this->assertSame( array( 'py-10', 'px-4', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'sf-products', 'product-grid', 'sf-card', 'wb-strip', 'pdp-layout', 'pdp-purchase', 'pdp-intro', 'pdp-section-nav', 'pdp-disclose', 'tv-blog-single-v1', 'tv-blog-index-v1', 'tv-blog-search-v1', 'tv-blog-category-v1', 'linker-library-tabbar', 'linker-library-card', 'linker-library-thumb', 'linker-auth-card', 'linker-gate', 'linker-account-welcome', 'linker-account-pill' ), $cache->missing_anchor_classes( '' ) );
+		$this->assertSame( array( 'py-10', 'px-4', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'sf-products', 'product-grid', 'sf-card', 'wb-strip', 'pdp-layout', 'pdp-purchase', 'pdp-intro', 'pdp-section-nav', 'pdp-disclose', 'tv-blog-single-v1', 'tv-blog-index-v1', 'tv-blog-search-v1', 'tv-blog-category-v1', 'linker-library-tabbar', 'linker-library-card', 'linker-library-thumb', 'linker-auth-card', 'linker-gate', 'linker-account-mast', 'linker-account-pill' ), $cache->missing_anchor_classes( '' ) );
 		// .py-100 does not stand in for .py-10; the other classes are absent.
-		$this->assertSame( array( 'py-10', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'sf-products', 'product-grid', 'sf-card', 'wb-strip', 'pdp-layout', 'pdp-purchase', 'pdp-intro', 'pdp-section-nav', 'pdp-disclose', 'tv-blog-single-v1', 'tv-blog-index-v1', 'tv-blog-search-v1', 'tv-blog-category-v1', 'linker-library-tabbar', 'linker-library-card', 'linker-library-thumb', 'linker-auth-card', 'linker-gate', 'linker-account-welcome', 'linker-account-pill' ), $cache->missing_anchor_classes( '.py-100{padding-block:25rem}.px-4{padding-inline:1rem}' ) );
+		$this->assertSame( array( 'py-10', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'sf-products', 'product-grid', 'sf-card', 'wb-strip', 'pdp-layout', 'pdp-purchase', 'pdp-intro', 'pdp-section-nav', 'pdp-disclose', 'tv-blog-single-v1', 'tv-blog-index-v1', 'tv-blog-search-v1', 'tv-blog-category-v1', 'linker-library-tabbar', 'linker-library-card', 'linker-library-thumb', 'linker-auth-card', 'linker-gate', 'linker-account-mast', 'linker-account-pill' ), $cache->missing_anchor_classes( '.py-100{padding-block:25rem}.px-4{padding-inline:1rem}' ) );
 		$this->assertSame( array(), $cache->missing_anchor_classes( self::COMPILED_ALL ) );
 	}
 }

@@ -1,11 +1,32 @@
 <div class="linker-account-dashboard">
-	<header class="linker-account-welcome">
-		<span class="linker-account-avatar" aria-hidden="true">[linker_account_field key="customer-initials"]</span>
-		<div>
-			<p class="linker-account-welcome-hi">[linker_account_text key="welcome"]</p>
-			<p class="linker-account-welcome-name">[linker_account_field key="customer-name"]</p>
-		</div>
-	</header>
 	<ul class="linker-account-shortcuts">[linker_account_nav type="shortcuts"]</ul>
+	<div class="linker-account-search-tools">
+		<section class="linker-account-panel linker-account-lookup">
+			<header class="linker-account-panel-heading">
+				<h2 id="linker-account-project-search-title">[linker_account_text key="find-project"]</h2>
+				<a href="[linker_account_field key='projects-url']">[linker_account_text key="all-projects"]</a>
+			</header>
+			<form class="linker-account-panel-body" action="{{project-search-url}}" method="get" role="search" aria-labelledby="linker-account-project-search-title">
+				<input type="hidden" name="projects" value="1">
+				<div class="form-row">
+					<label for="linker-account-project-search">[linker_account_text key="project-name"]</label>
+					<input type="search" name="project_search" id="linker-account-project-search">
+				</div>
+				<button type="submit" class="linker-account-btn is-primary">[linker_account_text key="search"]</button>
+			</form>
+		</section>
+		<section class="linker-account-panel linker-account-lookup">
+			<header class="linker-account-panel-heading">
+				<h2 id="linker-account-inquiry-search-title">[linker_account_text key="find-inquiry"]</h2>
+			</header>
+			<form class="linker-account-panel-body" action="{{inquiry-search-url}}" method="get" role="search" aria-labelledby="linker-account-inquiry-search-title">
+				<div class="form-row">
+					<label for="linker-account-inquiry-search">[linker_account_text key="inquiry-number"]</label>
+					<input type="search" inputmode="numeric" name="inquiry_number" id="linker-account-inquiry-search" required>
+				</div>
+				<button type="submit" class="linker-account-btn is-primary">[linker_account_text key="search"]</button>
+			</form>
+		</section>
+	</div>
 	[linker_account_rows type="dashboard"]
 </div>

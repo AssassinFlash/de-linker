@@ -17243,3 +17243,11 @@ msgstr "Höhe der gewählten Dachfläche"
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js:1
 msgid "Check the selected roof and dimensions."
 msgstr "Prüfen Sie die ausgewählte Dachfläche und ihre Abmessungen."
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "Search projects"
+msgstr "Projekte suchen"
+
+#: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
+msgid "No matching projects."
+msgstr "Keine passenden Projekte gefunden."

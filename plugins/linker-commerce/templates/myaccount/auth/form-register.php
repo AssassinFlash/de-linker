@@ -62,7 +62,7 @@ $active_step     = Fields::active_step();
 			<section class="linker-auth-card linker-auth-register" aria-labelledby="linker-auth-register-heading">
 				<header class="linker-auth-card-heading">
 					<h1 id="linker-auth-register-heading"><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></h1>
-					<p><?php esc_html_e( 'We review every new account before activation.', 'linker-commerce' ); ?></p>
+					<p><?php esc_html_e( 'You can access your account straight away. Net prices are available after approval.', 'linker-commerce' ); ?></p>
 				</header>
 
 				<?php
@@ -88,8 +88,8 @@ $active_step     = Fields::active_step();
 							<?php echo $register_blocks['company']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's own register field markup, buffered from woocommerce_register_form_start; kses would strip the inputs. ?>
 						</div>
 
-						<p class="linker-auth-note"><?php esc_html_e( 'We use one of these to verify your company. Enter at least one.', 'linker-commerce' ); ?></p>
 						<div class="linker-auth-verify">
+							<p class="linker-auth-note"><?php esc_html_e( 'We use one of these to verify your company. Enter at least one.', 'linker-commerce' ); ?></p>
 							<div class="linker-auth-fields">
 								<?php echo $register_blocks['verify']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's own register field markup, buffered from woocommerce_register_form_start; kses would strip the inputs. ?>
 							</div>
@@ -128,7 +128,7 @@ $active_step     = Fields::active_step();
 									<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
 									<label for="reg_password"><?php esc_html_e( 'Password', 'woocommerce' ); ?>&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text"><?php esc_html_e( 'Required', 'woocommerce' ); ?></span></label>
 									<input type="password" class="woocommerce-Input woocommerce-Input--text input-text" name="password" id="reg_password" autocomplete="new-password" required aria-required="true" />
-									<span class="linker-auth-hint"><?php esc_html_e( 'Use at least 8 characters with a mix of letters, numbers and symbols.', 'linker-commerce' ); ?></span>
+									<span class="linker-auth-hint"><?php esc_html_e( 'Use a long, unique password.', 'linker-commerce' ); ?></span>
 								</p>
 							<?php else : ?>
 								<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>

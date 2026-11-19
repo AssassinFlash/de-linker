@@ -1,5 +1,11 @@
-[linker_account_hook name="before-orders"]
-<div class="linker-account-inquiry-block">
+<div class="linker-account-inquiry-block linker-account-lookup">
+	<form class="linker-account-panel linker-account-panel-body" role="search" aria-labelledby="linker-account-inquiry-number-label" action="{{inquiry-search-url}}" method="get">
+		<div class="form-row">
+			<label id="linker-account-inquiry-number-label" for="linker-account-inquiry-number">[linker_account_text key="inquiry-number"]</label>
+			<input type="search" inputmode="numeric" id="linker-account-inquiry-number" name="inquiry_number" value="{{inquiry-number}}" required>
+		</div>
+		<button type="submit" class="linker-account-btn is-primary">[linker_account_text key="search"]</button>
+	</form>
 	<nav class="linker-account-tabs" aria-label="[linker_account_text key='inquiries']">
 		<a href="[linker_account_url endpoint='orders']" aria-current="[linker_account_field key='all-current']">[linker_account_text key="all"]</a>
 		<a href="[linker_account_field key='open-url']" aria-current="[linker_account_field key='open-current']">[linker_account_text key="open"]</a>
@@ -17,4 +23,5 @@
 		<nav class="linker-account-pagination" aria-label="[linker_account_text key='inquiries']">[linker_account_rows type="pagination"]</nav>
 	</section>
 </div>
+<div class="linker-account-order-notices">{{order-notices}}</div>
 [linker_account_hook name="after-orders"]

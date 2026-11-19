@@ -83,7 +83,7 @@ do_action( 'woocommerce_before_edit_account_form' );
 			<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 				<label for="password_1"><?php esc_html_e( 'New password', 'linker-commerce' ); ?></label>
 				<input type="password" class="woocommerce-Input woocommerce-Input--password input-text" name="password_1" id="password_1" autocomplete="new-password" />
-				<span class="linker-account-hint"><?php esc_html_e( 'Use at least 8 characters with a mix of letters, numbers and symbols.', 'linker-commerce' ); ?></span>
+				<span class="linker-account-hint"><?php esc_html_e( 'Use a long, unique password.', 'linker-commerce' ); ?></span>
 			</p>
 			<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 				<label for="password_2"><?php esc_html_e( 'Confirm new password', 'linker-commerce' ); ?></label>
