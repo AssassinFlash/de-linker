@@ -62,6 +62,7 @@ export function projectLanguageUrl(
 	target.searchParams.delete("compare");
 	target.searchParams.delete("energy_view");
 	target.searchParams.delete("brief");
+	target.searchParams.delete("guided");
 	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
 	const saved = id === null ? savedSolutionId(page.searchParams) : null;
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
@@ -91,6 +92,8 @@ export function projectLanguageUrl(
 			? page.hash
 			: "";
 	if (id && page.searchParams.get("project") === id) {
+		if (page.searchParams.get("guided") === "inquiry")
+			target.searchParams.set("guided", "inquiry");
 		const view = page.searchParams.get("energy_view");
 		if (view && initialEnergyView(page) === view)
 			target.searchParams.set("energy_view", view);

@@ -177,6 +177,8 @@ export function Workspace({
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			const from = url.hash.slice(1);
+			if (id !== url.searchParams.get("project"))
+				url.searchParams.delete("guided");
 			if (
 				id &&
 				from === "sc-preliminary-review" &&
@@ -251,7 +253,10 @@ export function Workspace({
 		enabled: selected === null,
 	});
 	const inquiryRevision =
-		selected && preliminaryRoute(route)
+		selected &&
+		(preliminaryRoute(route) ||
+			(route === "sc-review" &&
+				new URL(location.href).searchParams.get("guided") === "inquiry"))
 			? pendingInquiryRevision(session.query_scope, selected)
 			: null;
 	const project = useQuery({

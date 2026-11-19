@@ -613,10 +613,16 @@ test("a storage project continues from its location directly to energy use", asy
 	}
 });
 
-test("PV comparison submits one command and reopens on the saved equipment search", async () => {
+async function compareKnownPv(guided) {
 	const dom = setupDom();
 	globalThis.indexedDB = new IDBFactory();
-	window.location.hash = "sc-energy";
+	if (guided) {
+		window.history.replaceState(
+			null,
+			"",
+			`?project=${knownPv.project.id}&guided=inquiry#sc-system`,
+		);
+	} else window.location.hash = "sc-energy";
 	const { createRoot } = await import("react-dom/client");
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
@@ -670,7 +676,9 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 				if (!run) return { items: [], next: null };
 				const { manifest, result, error, ...summary } = run;
 				return {
-					items: [{ ...summary, task_kind: kind, created_at: 1 }],
+					items: [
+						{ ...summary, task_kind: kind, created_at: 1, is_current: true },
+					],
 					next: null,
 				};
 			}
@@ -744,9 +752,13 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 			[...dom.element.querySelectorAll("button")].find(
 				(b) => b.textContent === "Compare systems",
 			);
-		await until(() => compare() && !compare().disabled);
-		await act(async () => compare().click());
-		await until(() => window.location.hash === "#sc-system");
+		if (!guided) {
+			await until(() => compare() && !compare().disabled);
+			await act(async () => compare().click());
+		}
+		await until(
+			() => commands.length === 1 && window.location.hash === "#sc-system",
+		);
 		await act(async () => root.unmount());
 		cache.clear();
 		run = {
@@ -793,7 +805,12 @@ test("PV comparison submits one command and reopens on the saved equipment searc
 		cache.clear();
 		delete globalThis.indexedDB;
 	}
-});
+}
+
+test("PV comparison submits one command and reopens on the saved equipment search", () =>
+	compareKnownPv(false));
+test("the homepage project submission opens comparison without another button and reopening does not repeat it", () =>
+	compareKnownPv(true));
 
 test("Report & inquiry asks Genie and downloads the chosen report while inquiry stays with the current report", async () => {
 	const dom = setupDom(),

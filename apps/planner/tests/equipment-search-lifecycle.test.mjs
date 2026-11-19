@@ -227,6 +227,7 @@ async function equipmentApp(
 		projectId,
 		inputs,
 		hash,
+		guided = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -261,7 +262,7 @@ async function equipmentApp(
 	window.history.replaceState(
 		null,
 		"",
-		`/workspace/?project=${projectId}${hash}`,
+		`/workspace/?project=${projectId}${guided ? "&guided=inquiry" : ""}${hash}`,
 	);
 	const browserGlobals = new Map();
 	const browserValues = {
@@ -1231,6 +1232,33 @@ test("a comparison dispatches once, polls in the background, and renders partial
 		delete document.visibilityState;
 		await act(async () => focusManager.setFocused(undefined));
 	}
+});
+
+test("one guided configuration choice saves it and prepares its report", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(app.pending);
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.deepEqual(
+		app.requests.map(({ path }) => path),
+		["runs/find-equipment", "projects/revise", "runs/report"],
+	);
+	const saved = app.requests[1].body.inputs.equipment_candidate;
+	assert.equal(saved.run_id, app.serverRunId());
+	assert.equal(app.requests[2].body.expected_revision, 3);
+	assert.equal(window.location.hash, "#sc-review");
 });
 
 for (const [multi, selection] of [

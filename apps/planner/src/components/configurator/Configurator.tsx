@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useEffectEvent,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
@@ -71,7 +78,10 @@ import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { dropGeometricRoofAc } from "../../domain/profiles.ts";
 import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { adoptPlantCandidate } from "../../domain/plantSearch.ts";
-import { replacePlannerLocation } from "../../data/plannerLocation.ts";
+import {
+	PLANNER_NAVIGATION,
+	replacePlannerLocation,
+} from "../../data/plannerLocation.ts";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
@@ -84,7 +94,8 @@ import {
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
-import { ProjectHeading } from "./ProjectHeading.tsx";
+import { ReviewInquiry } from "./ReviewInquiry.tsx";
+import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
 import {
 	PvStringSetup,
@@ -173,7 +184,19 @@ export default function Configurator({
 }) {
 	const controller = useProjectDraft(project, session, client, store, recheck);
 	const { draft, update, acknowledgeProject } = controller;
+	const params = new URL(location.href).searchParams;
+	const guided =
+		params.get("guided") === "inquiry" && params.get("project") === project.id;
 	const [step, setStep] = useState<Step>(initialStep);
+	useEffect(() => {
+		if (!guided) return;
+		const restore = () => {
+			if (new URL(location.href).searchParams.get("project") === project.id)
+				setStep(initialStep());
+		};
+		window.addEventListener("popstate", restore);
+		return () => window.removeEventListener("popstate", restore);
+	}, [guided, project.id]);
 	const main = useRef<HTMLElement>(null);
 	const workbench = useRef<HTMLDivElement>(null);
 	const [assessmentPending, setAssessmentPending] = useState(false);
@@ -340,7 +363,10 @@ export default function Configurator({
 		(item) => item.task_kind === SEARCH_TASK && item.is_current,
 	)?.id;
 	const searchId =
-		submittedSearch ?? currentSearch ?? selectedSearch ?? newest(SEARCH_TASK);
+		submittedSearch ??
+		currentSearch ??
+		selectedSearch ??
+		(guided ? null : newest(SEARCH_TASK));
 	const search = useProjectResult(
 		client,
 		session,
@@ -360,7 +386,13 @@ export default function Configurator({
 		...(latestRuns ?? []),
 		...(olderHistory.data?.pages.flatMap((page) => page.items) ?? []),
 	].filter((item) => item.task_kind === REPORT_TASK);
-	const reportId = submittedReport ?? reportRuns?.[0]?.id ?? null;
+	const reportId =
+		submittedReport ??
+		(guided
+			? reportRuns.find((item) => item.revision === draft?.baseline.revision)
+			: reportRuns[0]
+		)?.id ??
+		null;
 	const report = useProjectResult(
 		client,
 		session,
@@ -550,10 +582,17 @@ export default function Configurator({
 	);
 	function navigate(next: Step) {
 		if (!mayLeave()) return;
+		showStep(next);
+	}
+	function showStep(next: Step) {
 		setGenieReportId(null);
 		const url = new URL(location.href);
+		const previous = url.hash;
 		url.hash = "sc-" + next;
-		replacePlannerLocation(url);
+		if (guided && previous === "#sc-system" && next === "review") {
+			window.history.pushState(null, "", url);
+			window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+		} else if (previous !== url.hash) replacePlannerLocation(url);
 		if (next === "energy") setEnergyOpened(true);
 		setStep(next);
 		setNavigationRefused(false);
@@ -624,6 +663,33 @@ export default function Configurator({
 			navigate("system");
 		}
 	}
+	const startGuidedComparison = useEffectEvent(() => {
+		void compare();
+	});
+	const guidedComparisonStarted = useRef(false);
+	useEffect(() => {
+		if (
+			!guided ||
+			step !== "system" ||
+			!draft ||
+			blocked ||
+			modelsUnavailable ||
+			!history.isSuccess ||
+			searchId !== null ||
+			guidedComparisonStarted.current
+		)
+			return;
+		guidedComparisonStarted.current = true;
+		startGuidedComparison();
+	}, [
+		guided,
+		step,
+		draft,
+		blocked,
+		modelsUnavailable,
+		history.isSuccess,
+		searchId,
+	]);
 
 	async function select(candidate: EquipmentCandidate, run: PlanningRun) {
 		if (
@@ -707,6 +773,17 @@ export default function Configurator({
 			if (!edit(() => next))
 				throw new ApiError(409, "equipment_selection_changed");
 			setSubmittedSearch(run.id);
+			if (guided) {
+				const saved = await controller.save();
+				if (
+					!saved ||
+					instance !== lifetime.current ||
+					!client.isCurrentScope(session.query_scope)
+				)
+					return;
+				setSubmittedReport(null);
+				showStep("review");
+			}
 		} catch (cause) {
 			if (instance === lifetime.current) {
 				setError(cause);
@@ -812,6 +889,43 @@ export default function Configurator({
 			}
 		}
 	}
+	const canKeepInstalled = Boolean(
+		draft &&
+		searchRun?.state === "succeeded" &&
+		searchRun.result?.retained_inverter &&
+		searchRun.manifest.input_sha256 === draft.baseline.input_sha256 &&
+		!isDirty(draft),
+	);
+	const prepareGuidedReport = useEffectEvent(() => {
+		void generate(null);
+	});
+	const guidedReportAttempt = useRef<number | null>(null);
+	useEffect(() => {
+		if (
+			!guided ||
+			step !== "review" ||
+			!draft ||
+			blocked ||
+			modelsUnavailable ||
+			!history.isSuccess ||
+			reportId !== null ||
+			(!choice && !canKeepInstalled) ||
+			guidedReportAttempt.current === draft.baseline.revision
+		)
+			return;
+		guidedReportAttempt.current = draft.baseline.revision;
+		prepareGuidedReport();
+	}, [
+		guided,
+		step,
+		draft,
+		blocked,
+		modelsUnavailable,
+		history.isSuccess,
+		reportId,
+		choice,
+		canKeepInstalled,
+	]);
 	if (!draft)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
 	const inputs = draft.history.current;
@@ -909,6 +1023,8 @@ export default function Configurator({
 			: step === "solar" && brief.system_scope === "storage_only"
 				? "energy"
 				: step;
+	const guidedReview = guided && activeStep === "review";
+	const guidedView = guidedReview || (guided && activeStep === "system");
 	const currentReport = Boolean(
 		reportRun &&
 		reportRun.revision === draft.baseline.revision &&
@@ -931,97 +1047,103 @@ export default function Configurator({
 				title={project.title}
 				location={siteLabel}
 				actions={
-					<div className="sc-actions">
-						<span className="sc-muted" role="status">
-							{controller.busy
-								? __("Saving…", "linker-tools")
-								: draft.pending
-									? __("Save not confirmed", "linker-tools")
-									: isDirty(draft)
-										? __("Unsaved changes", "linker-tools")
-										: sprintf(
-												__("Saved · revision %d", "linker-tools"),
-												draft.baseline.revision,
-											)}
-						</span>
-						<button
-							type="button"
-							className="sc-button"
-							data-linker-genie-open
-							data-linker-genie-planning=""
-							disabled={!admitted}
-							onClick={() => setGenieReportId(null)}
-						>
-							{__("Ask Genie", "linker-tools")}
-						</button>
-						<button
-							className="sc-button"
-							disabled={
-								controller.busy ||
-								preparingReport ||
-								navigationBlocked ||
-								Boolean(draft.pending || draft.conflict) ||
-								!draft.history.past.length
-							}
-							onClick={() => update(undoDraft)}
-						>
-							{__("Undo", "linker-tools")}
-						</button>
-						<button
-							className="sc-button"
-							disabled={
-								controller.busy ||
-								navigationBlocked ||
-								Boolean(draft.pending || draft.conflict) ||
-								!draft.history.future.length
-							}
-							onClick={() => update(redoDraft)}
-						>
-							{__("Redo", "linker-tools")}
-						</button>
-						<button
-							className="sc-button"
-							disabled={
-								controller.busy ||
-								navigationBlocked ||
-								Boolean(draft.conflict) ||
-								controller.recoveries.length > 0
-							}
-							onClick={() => void controller.save()}
-						>
-							{draft.pending && !draft.conflict && !controller.busy
-								? __("Retry save", "linker-tools")
-								: __("Save snapshot", "linker-tools")}
-						</button>
-						<button
-							className="sc-button"
-							onClick={() => {
-								if (!mayLeave()) return;
-								void controller.flush().then((ok) => {
-									if (ok) close();
-								});
-							}}
-						>
-							{__("Projects", "linker-tools")}
-						</button>
-					</div>
+					guidedView ? null : (
+						<div className="sc-actions">
+							<span className="sc-muted" role="status">
+								{controller.busy
+									? __("Saving…", "linker-tools")
+									: draft.pending
+										? __("Save not confirmed", "linker-tools")
+										: isDirty(draft)
+											? __("Unsaved changes", "linker-tools")
+											: sprintf(
+													__("Saved · revision %d", "linker-tools"),
+													draft.baseline.revision,
+												)}
+							</span>
+							<button
+								type="button"
+								className="sc-button"
+								data-linker-genie-open
+								data-linker-genie-planning=""
+								disabled={!admitted}
+								onClick={() => setGenieReportId(null)}
+							>
+								{__("Ask Genie", "linker-tools")}
+							</button>
+							<button
+								className="sc-button"
+								disabled={
+									controller.busy ||
+									preparingReport ||
+									navigationBlocked ||
+									Boolean(draft.pending || draft.conflict) ||
+									!draft.history.past.length
+								}
+								onClick={() => update(undoDraft)}
+							>
+								{__("Undo", "linker-tools")}
+							</button>
+							<button
+								className="sc-button"
+								disabled={
+									controller.busy ||
+									navigationBlocked ||
+									Boolean(draft.pending || draft.conflict) ||
+									!draft.history.future.length
+								}
+								onClick={() => update(redoDraft)}
+							>
+								{__("Redo", "linker-tools")}
+							</button>
+							<button
+								className="sc-button"
+								disabled={
+									controller.busy ||
+									navigationBlocked ||
+									Boolean(draft.conflict) ||
+									controller.recoveries.length > 0
+								}
+								onClick={() => void controller.save()}
+							>
+								{draft.pending && !draft.conflict && !controller.busy
+									? __("Retry save", "linker-tools")
+									: __("Save snapshot", "linker-tools")}
+							</button>
+							<button
+								className="sc-button"
+								onClick={() => {
+									if (!mayLeave()) return;
+									void controller.flush().then((ok) => {
+										if (ok) close();
+									});
+								}}
+							>
+								{__("Projects", "linker-tools")}
+							</button>
+						</div>
+					)
 				}
 			/>
-			<nav
-				className="sc-nav"
-				aria-label={__("Project navigation", "linker-tools")}
-			>
-				{visible.map((s, i) => (
-					<button
-						key={s}
-						aria-current={activeStep === s ? "step" : undefined}
-						onClick={() => navigate(s)}
-					>
-						<span className="sc-step-number">{i + 1}</span>
-						{labels[s]}
-					</button>
-				))}
-			</nav>
+			{guidedView ? (
+				<InquiryStages guided reviewing={guidedReview} />
+			) : (
+				<nav
+					className="sc-nav"
+					aria-label={__("Project navigation", "linker-tools")}
+				>
+					{visible.map((s, i) => (
+						<button
+							key={s}
+							aria-current={activeStep === s ? "step" : undefined}
+							onClick={() => navigate(s)}
+						>
+							<span className="sc-step-number">{i + 1}</span>
+							{labels[s]}
+						</button>
+					))}
+				</nav>
+			)}
 			{navigationRefused &&
 				navigationBlocked &&
 				(!missingModules || invalidInput || roofEditing || importOpen) && (
@@ -1042,7 +1164,7 @@ export default function Configurator({
 									)}
 					</p>
 				)}
-			{preparingReport && activeStep === "review" && (
+			{preparingReport && activeStep === "review" && !guidedReview && (
 				<p className="sc-card" role="status">
 					{__("Preparing planning report…", "linker-tools")}
 				</p>
@@ -1176,7 +1298,7 @@ export default function Configurator({
 					</button>
 				</div>
 			))}
-			<div className="sc-layout">
+			<div className={guidedReview ? undefined : "sc-layout"}>
 				<main
 					id={activeStep === "review" ? "lp-calculations" : undefined}
 					ref={main}
@@ -1338,24 +1460,30 @@ export default function Configurator({
 					)}
 					{activeStep === "system" && (
 						<>
-							{findingEquipment ||
-							awaitingComparison ? null : searchRun?.state === "succeeded" &&
+							{awaitingComparison ? null : findingEquipment && guided ? (
+								<p className="sc-card" role="status">
+									{__("Finding equipment for your project…", "linker-tools")}
+								</p>
+							) : findingEquipment ? null : searchRun?.state === "succeeded" &&
 							  searchRun.result ? (
 								<SystemOptions
 									solarOnly={brief.system_scope === "pv_only"}
+									guided={guided}
 									run={searchRun}
 									client={client}
 									scope={session.query_scope}
 									locale={config.locale}
 									disabled={blocked || modelsUnavailable}
 									selectedId={
-										choice?.run_id === searchRun.id
+										!guided && choice?.run_id === searchRun.id
 											? String(choice.candidate_id)
 											: null
 									}
 									comparison={comparison}
-									onSaveComparison={setComparison}
-									onEditEquipment={() => navigate("project")}
+									{...(!guided && {
+										onSaveComparison: setComparison,
+										onEditEquipment: () => navigate("project"),
+									})}
 									onSelectionPending={setAssessmentPending}
 									onSelect={select}
 								/>
@@ -1393,50 +1521,132 @@ export default function Configurator({
 																	"The equipment search could not finish. Your inputs are saved.",
 																	"linker-tools",
 																)
-													: __(
-															"Enter your energy needs to compare equipment for this project.",
-															"linker-tools",
-														)}
+													: guided && !Boolean(error ?? operations.error)
+														? __(
+																"Finding equipment for your project…",
+																"linker-tools",
+															)
+														: __(
+																"Enter your energy needs to compare equipment for this project.",
+																"linker-tools",
+															)}
 											</p>
-											<button
-												className="sc-button sc-primary"
-												onClick={() => navigate("energy")}
-											>
-												{__("Energy use", "linker-tools")}
-											</button>
+											{guided &&
+												((searchRun && !runPending(searchRun.state)) ||
+													Boolean(error ?? operations.error)) && (
+													<button
+														className="sc-button sc-primary"
+														disabled={blocked || modelsUnavailable}
+														onClick={() => void compare()}
+													>
+														{__("Try again", "linker-tools")}
+													</button>
+												)}
+											{(!guided ||
+												Boolean(error ?? operations.error) ||
+												searchRun?.state === "failed") && (
+												<button
+													className={
+														guided ? "sc-button" : "sc-button sc-primary"
+													}
+													onClick={() => navigate("energy")}
+												>
+													{__("Energy use", "linker-tools")}
+												</button>
+											)}
 										</>
 									)}
 								</section>
 							)}
-							<footer className="sc-footer">
-								<button
-									className="sc-button"
-									onClick={() => navigate("energy")}
-								>
-									{__("Back", "linker-tools")}
-								</button>
-								<button
-									className="sc-button sc-primary"
-									disabled={
-										blocked ||
-										assessmentPending ||
-										(!choice &&
-											!(
-												searchRun?.state === "succeeded" &&
-												searchRun.result?.retained_inverter &&
-												searchRun.manifest.input_sha256 ===
-													draft.baseline.input_sha256 &&
-												sameJson(inputs, draft.baseline.inputs)
-											))
-									}
-									onClick={() => navigate("review")}
-								>
-									{__("Review the proposal", "linker-tools")}
-								</button>
-							</footer>
+							{guided ? (
+								canKeepInstalled && (
+									<footer className="sc-footer">
+										<button
+											className="sc-button sc-primary"
+											disabled={blocked}
+											onClick={() => navigate("review")}
+										>
+											{__("Use this configuration", "linker-tools")}
+										</button>
+									</footer>
+								)
+							) : (
+								<footer className="sc-footer">
+									<button
+										className="sc-button"
+										onClick={() => navigate("energy")}
+									>
+										{__("Back", "linker-tools")}
+									</button>
+									<button
+										className="sc-button sc-primary"
+										disabled={
+											blocked ||
+											assessmentPending ||
+											(!choice && !canKeepInstalled)
+										}
+										onClick={() => navigate("review")}
+									>
+										{__("Review the proposal", "linker-tools")}
+									</button>
+								</footer>
+							)}
 						</>
 					)}
-					{activeStep === "review" && (
+					{guidedReview &&
+						(currentReport &&
+						reportRun?.state === "succeeded" &&
+						reportCanTransfer(reportRun) &&
+						brief.system_scope ? (
+							<ReviewInquiry
+								project={draft.baseline}
+								direction={brief.system_scope}
+								client={client}
+								scope={session.query_scope}
+								locale={config.locale}
+								active
+								ready={!blocked}
+								changeSelection={() => navigate("system")}
+								recheck={recheck}
+								reportRunId={reportRun.id}
+							/>
+						) : (
+							<section className="sc-card">
+								{Boolean(failure) ||
+								(reportRun && !runPending(reportRun.state)) ||
+								(!choice && !canKeepInstalled && history.isSuccess) ? (
+									<>
+										<p>
+											{__(
+												"The inquiry form could not be loaded.",
+												"linker-tools",
+											)}
+										</p>
+										{Boolean(failure) &&
+											(choice || canKeepInstalled) &&
+											!blocked && (
+												<button
+													className="sc-button sc-primary"
+													onClick={() => void generate(null)}
+												>
+													{__("Try again", "linker-tools")}
+												</button>
+											)}
+										<button
+											className="sc-button"
+											onClick={() => navigate("system")}
+										>
+											{__("Change selection", "linker-tools")}
+										</button>
+									</>
+								) : (
+									<p role="status">
+										{__("Preparing your inquiry…", "linker-tools")}
+									</p>
+								)}
+							</section>
+						))}
+					{activeStep === "review" && !guidedReview && (
 						<ReviewProposal
 							project={draft.baseline}
 							inputs={inputs}
@@ -1478,49 +1688,51 @@ export default function Configurator({
 						/>
 					)}
 				</main>
-				<aside className="sc-sidebar">
-					<section className="sc-card">
-						<p className="sc-muted">
-							{__("Current configuration", "linker-tools")}
-						</p>
-						<h3>{project.title}</h3>
-						<dl>
-							{brief.system_scope !== "storage_only" && (
+				{!guidedReview && (
+					<aside className="sc-sidebar">
+						<section className="sc-card">
+							<p className="sc-muted">
+								{__("Current configuration", "linker-tools")}
+							</p>
+							<h3>{project.title}</h3>
+							<dl>
+								{brief.system_scope !== "storage_only" && (
+									<div>
+										<dt>{__("Solar capacity", "linker-tools")}</dt>
+										<dd>
+											{total(
+												roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
+												"kWp",
+											)}
+										</dd>
+									</div>
+								)}
+								{brief.system_scope !== "pv_only" && (
+									<div>
+										<dt>{__("Usable battery capacity", "linker-tools")}</dt>
+										<dd>
+											{total([selectedCandidate?.usable_energy_kwh], "kWh")}
+										</dd>
+									</div>
+								)}
 								<div>
-									<dt>{__("Solar capacity", "linker-tools")}</dt>
-									<dd>
-										{total(
-											roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
-											"kWp",
-										)}
-									</dd>
+									<dt>{__("Inverter power", "linker-tools")}</dt>
+									<dd>{total(powers, "kW")}</dd>
 								</div>
+							</dl>
+							{selectedCandidate && assessment && (
+								<details>
+									<summary>{__("View parts list", "linker-tools")}</summary>
+									<CandidateMaterials
+										candidate={selectedCandidate}
+										assessment={assessment}
+										locale={config.locale}
+									/>
+								</details>
 							)}
-							{brief.system_scope !== "pv_only" && (
-								<div>
-									<dt>{__("Usable battery capacity", "linker-tools")}</dt>
-									<dd>
-										{total([selectedCandidate?.usable_energy_kwh], "kWh")}
-									</dd>
-								</div>
-							)}
-							<div>
-								<dt>{__("Inverter power", "linker-tools")}</dt>
-								<dd>{total(powers, "kW")}</dd>
-							</div>
-						</dl>
-						{selectedCandidate && assessment && (
-							<details>
-								<summary>{__("View parts list", "linker-tools")}</summary>
-								<CandidateMaterials
-									candidate={selectedCandidate}
-									assessment={assessment}
-									locale={config.locale}
-								/>
-							</details>
-						)}
-					</section>
-				</aside>
+						</section>
+					</aside>
+				)}
 			</div>
 		</div>
 	);

@@ -32,16 +32,29 @@ export function ProjectHeading({
 	);
 }
 
-export function InquiryStages({ reviewing = false }: { reviewing?: boolean }) {
+export function InquiryStages({
+	reviewing = false,
+	guided = false,
+}: {
+	reviewing?: boolean;
+	guided?: boolean;
+}) {
 	return (
 		<nav
 			className="sc-nav"
 			aria-label={__("Project navigation", "linker-tools")}
 		>
 			<ol className="sc-inquiry-stages">
-				<li aria-current={reviewing ? undefined : "step"}>
-					{__("Compare options", "linker-tools")}
+				<li aria-current={!guided && !reviewing ? "step" : undefined}>
+					{guided
+						? __("Compare systems", "linker-tools")
+						: __("Compare options", "linker-tools")}
 				</li>
+				{guided && (
+					<li aria-current={reviewing ? undefined : "step"}>
+						{__("Choose an option", "linker-tools")}
+					</li>
+				)}
 				<li aria-current={reviewing ? "step" : undefined}>
 					{__("Review and send", "linker-tools")}
 				</li>
