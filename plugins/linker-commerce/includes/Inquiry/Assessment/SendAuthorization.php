@@ -14,6 +14,9 @@ use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\NotificationHold;
+use Linker\Commerce\Protection\BusinessRecord;
+use Linker\Commerce\Protection\Intake;
+use Linker\Commerce\Protection\IntakeStore;
 use WC_Order;
 /** No model string, public flag or mail priority is a sending permission. */
 final class SendAuthorization {
@@ -79,7 +82,11 @@ final class SendAuthorization {
 			return;
 		}
 		$order->read_meta_data( true );
-		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) || 'complete' === $order->get_meta( Queue::PENDING ) ) {
+		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
+			return;
+		}
+		if ( 'complete' === $order->get_meta( Queue::PENDING ) ) {
+			self::settle_intake( $order );
 			return;
 		}
 		$state = AuthorizationStore::read( $id );
@@ -156,6 +163,7 @@ final class SendAuthorization {
 			if ( ! is_array( $state ) || 'normal' !== ( $state['status'] ?? '' ) ) {
 				return;
 			}
+			self::settle_intake( $order );
 			foreach ( $state['jobs'] ?? array() as $purpose => $entry ) {
 				$job = (int) ( $entry['id'] ?? 0 );
 				if ( $job > 0 && empty( $entry['delivered_at'] ) && ( 'receipt' !== $purpose || empty( $state['team_only'] ) ) && 'private' === get_post_status( $job ) && ! \Linker\Commerce\Mail\NativeAttempt::unresolved( $job ) ) {
@@ -168,6 +176,68 @@ final class SendAuthorization {
 			return;
 		}
 		as_schedule_single_action( max( time(), (int) ( $state['next_at'] ?? 0 ) ), Queue::PROCESS, array( $id ), Outbox::GROUP, true );
+	}
+
+	/** Revisit historical or interrupted handoffs, including delivered sources outside the pending queue. */
+	public static function recover_intake(): void {
+		foreach ( IntakeStore::verification_entries() as $request => $entry ) {
+			$order = BusinessRecord::recover( $request, $entry['fingerprint'], $entry['binding'], array( 'outcome' => $entry['order'] ) );
+			if ( $order instanceof WC_Order ) {
+				self::settle_intake( $order );
+			}
+		}
+	}
+
+	/** Release an exact verification slot only after durable normal authorization.
+	 *
+	 * @param WC_Order $order Native candidate.
+	 */
+	private static function settle_intake( WC_Order $order ): void {
+		if ( 'verification' !== $order->get_meta( Intake::LANE_META ) || NotificationHold::held( $order ) ) {
+			return;
+		}
+		$id = $order->get_id();
+		// The staff release path already takes these locks in this order.
+		Lock::run(
+			'release-' . $id,
+			static function () use ( $id ): void {
+				AuthorizationStore::edit(
+					$id,
+					static function ( array &$state ) use ( $id ): void {
+						if ( 'normal' !== ( $state['status'] ?? '' ) || ! isset( $state['jobs']['team'] ) ) {
+							return;
+						}
+						$order = CurrentSource::order( $id );
+						if ( ! $order instanceof WC_Order || 'verification' !== $order->get_meta( Intake::LANE_META ) || NotificationHold::held( $order ) || $order->get_meta( Reviews::ERASED ) ) {
+							return;
+						}
+						$queued = false;
+						$store  = new JobStore();
+						foreach ( $state['jobs'] as $purpose => $entry ) {
+							if ( ! empty( $entry['delivered_at'] ) || ( 'receipt' === $purpose && ! empty( $state['team_only'] ) ) ) {
+								continue;
+							}
+							$job = (int) ( $entry['id'] ?? 0 );
+							clean_post_cache( $job );
+							$loaded = $store->load( $job );
+							if ( null === $loaded || 'private' !== get_post_status( $job ) || NotificationHold::inquiry( $job ) !== $id || self::message_hash( $loaded['message'] ) !== ( $entry['hash'] ?? '' ) ) {
+								return;
+							}
+							$queued = true;
+						}
+						if ( $queued && ! self::current( $order, $state ) ) {
+							return;
+						}
+						if ( is_wp_error( IntakeStore::settle_verification( $order ) ) ) {
+							throw new \RuntimeException( 'authorization_intake_settlement_unconfirmed' );
+						}
+					},
+					true
+				);
+			},
+			0,
+			true
+		);
 	}
 	/** Only one native background worker spends on a source at once.
 	 *

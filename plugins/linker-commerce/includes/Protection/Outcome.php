@@ -51,6 +51,7 @@ final class Outcome {
 		// The inquiry door's read-only draft check, before admission reserves.
 		'planning_context_unavailable'        => array( self::REFUSED, 'invalid' ),
 		// The native inquiry transaction rolled back before the form may retry.
+		'planning_preliminary_unavailable'    => array( self::REFUSED, 'invalid' ),
 		'planning_project_deleted'            => array( self::REFUSED, 'invalid' ),
 		'planning_admission_unavailable'      => array( self::REFUSED, 'invalid' ),
 		// The reviewed project notes drifted before the admission reserved a write.

@@ -44,9 +44,10 @@ final class Module {
 	public function register(): void {
 		( new \Linker\Commerce\Planning\Module() )->register();
 		( new Assessment\Queue() )->register();
-		( new Form() )->register();
+		$form = new Form();
+		$form->register();
 		( new AccountLink() )->register();
-		( new Handler() )->register();
+		( new Handler( $form ) )->register();
 		add_action( 'before_woocommerce_init', array( $this, 'declare_compatibility' ) );
 		add_action( 'init', array( $this->statuses, 'register' ) );
 		add_filter( 'wc_order_statuses', array( $this->statuses, 'names' ) );

@@ -166,9 +166,9 @@ test('agreeing passwords post and a cached return restores only the submitted re
  assert.equal(submit(form).defaultPrevented,false);
 });
 
-function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-tick',retained=false,storageUnavailable=false,closed=false,defaultName='',defaultEmail=''}={}){
+function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-tick',retained=false,retry='',storageUnavailable=false,closed=false,defaultName='',defaultEmail=''}={}){
  const dom=new JSDOM(`<div class="linker-inquiry">
- <form class="linker-inquiry-form" data-inquiry-context="${context}"><input type="hidden" name="linker_inquiry_nonce" value="${nonce}"><input type="hidden" name="linker_inquiry_retained" value="${retained?'1':'0'}">
+ <form class="linker-inquiry-form" data-inquiry-context="${context}"><input type="hidden" name="linker_inquiry_nonce" value="${nonce}"><input type="hidden" name="linker_inquiry_retained" value="${retained?'1':'0'}"><input type="hidden" name="linker_inquiry_retry" value="${retry}">
  <textarea name="message"></textarea><details class="linker-inquiry-details" ${closed?'':'open'}><summary><small>${defaultName} · ${defaultEmail}</small></summary><input name="name" value="${defaultName}"><input name="email" type="email" value="${defaultEmail}"><input name="company"></details><input type="checkbox" name="consent">
  <p data-inquiry-draft-pending hidden role="status">Update the solution draft before sending your inquiry.</p>
  <p data-inquiry-retention-error hidden role="alert" tabindex="-1">Your browser could not keep your entries.</p>
@@ -272,6 +272,26 @@ test('unavailable tab storage keeps the inquiry open and explains the edit failu
  assert.equal(prevented,true,'navigation must stop when filled entries cannot be kept');
  assert.equal(current.form.querySelector('[data-inquiry-retention-error]').hidden,false);
  assert.equal(current.field('message').value,'Do not lose this message');
+});
+
+test('a failed preliminary inquiry carries only its opaque recovery handle when changing language or returning from the draft',()=>{
+ const retry='8b76248c-c5f3-426f-8c57-e01084d4d345';
+ const {win,field}=inquiryDraft({retry,retained:true});
+ field('message').value='Customer message kept out of the link';
+ win.document.addEventListener('click',event=>event.preventDefault());
+ for(const selector of ['a[lang]','[data-inquiry-edit]']){
+  const link=win.document.querySelector(selector);
+  link.click();
+  assert.equal(new URL(link.href).search,`?linker_inquiry_retry=${retry}`);
+ }
+ win.close();
+ const cart=new JSDOM('<div id="tv-storefront-cart"><div class="wc-proceed-to-checkout"><a href="/proforma-request/">Send inquiry</a></div></div>',{runScripts:'outside-only',url:`https://example.test/cart/?linker_inquiry_retry=${retry}`});
+ const link=cart.window.document.querySelector('a');
+ cart.window.eval(script);
+ cart.window.document.addEventListener('click',event=>event.preventDefault());
+ link.click();
+ assert.equal(new URL(link.href).search,`?linker_inquiry_retry=${retry}`);
+ cart.window.close();
 });
 
 // Public inquiries use the same in-flight submission protection as account forms.

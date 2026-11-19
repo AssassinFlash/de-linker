@@ -40,9 +40,12 @@ final class BillingFields {
 		return $values;
 	}
 
-	/** Woo renders the fields with its country choices, labels and autocomplete. */
-	public static function render(): string {
-		$values = self::values();
+	/** Woo renders the fields with its country choices, labels and autocomplete.
+	 *
+	 * @param array<string,string> $previous Billing values from a pending submission.
+	 */
+	public static function render( array $previous = array() ): string {
+		$values = self::values( $previous );
 		$fields = WC()->checkout()->get_checkout_fields( 'billing' );
 		$html   = '';
 		foreach ( $values as $key => $value ) {

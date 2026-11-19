@@ -401,11 +401,9 @@ class Handoffs:
                 ) from exc
             if handoff["snapshot_sha256"] != snapshot_sha256:
                 raise Conflict("the inquiry report reference changed")
-            connection.execute(
-                "INSERT INTO inquiry_generations (project_id,generation) "
-                "SELECT project_id,1 FROM handoffs WHERE id=? "
-                "ON CONFLICT(project_id) DO UPDATE SET generation=generation+1",
-                (handoff_id,),
+            snapshot = cast(Object, handoff["snapshot"])
+            self.workspace.advance_inquiry_generation(
+                connection, cast(str, snapshot["project_id"])
             )
             return {"admitted": True}
 

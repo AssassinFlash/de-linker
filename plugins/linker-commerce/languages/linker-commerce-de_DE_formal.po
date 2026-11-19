@@ -7513,3 +7513,9 @@ msgstr ""
 #~ msgid_plural "products"
 #~ msgstr[0] "Produkt"
 #~ msgstr[1] "Produkte"
+
+msgid "This project is unavailable. Your contact details and message are still here."
+msgstr "Dieses Projekt ist nicht verfügbar. Ihre Kontaktdaten und Ihre Nachricht sind weiterhin eingetragen."
+
+msgid "Send my inquiry without this project"
+msgstr "Meine Anfrage ohne dieses Projekt senden"

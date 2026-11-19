@@ -27,7 +27,12 @@ final class Business {
 	 * @return WC_Order|WP_Error Native result or explicit refusal.
 	 */
 	public static function run( string $action, array $post, array $payload, callable $work, bool $current = true, ?callable $preflight = null ): WC_Order|WP_Error {
-		if ( 'off' === Configuration::active_mode() ) {
+		$receipt_only = 'inquiry' === $action && '1' === ( $post['linker_inquiry_receipt_only'] ?? '' );
+		$mode         = Configuration::active_mode();
+		if ( $receipt_only && 'enforce' !== $mode ) {
+			return self::unconfirmed_receipt();
+		}
+		if ( 'off' === $mode ) {
 			return $work();
 		}
 		$config   = Configuration::current();
@@ -64,6 +69,9 @@ final class Business {
 				// receipt without a verifiable native result are not a new write.
 				return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 			}
+		}
+		if ( $receipt_only ) {
+			return self::unconfirmed_receipt();
 		}
 		if ( 'enforce' === $config->mode && ! $current ) {
 			return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
@@ -141,6 +149,11 @@ final class Business {
 		return 'unavailable' === $outcome
 			? __( 'Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' )
 			: __( 'Verification could not be completed. No request has been sent in this attempt. Your entries are still here. Please try again.', 'linker-commerce' );
+	}
+
+	/** A receipt lookup may recover an original order and must never start another. */
+	private static function unconfirmed_receipt(): WP_Error {
+		return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 	}
 
 	/** Whether native handlers must use proof admission instead of the old connection gate. */

@@ -104,6 +104,7 @@ final class Module {
 		if ( false !== get_option( Ledger::OPTION ) ) {
 			( new Ledger() )->summary();
 		}
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover_intake();
 	}
 
 	/**

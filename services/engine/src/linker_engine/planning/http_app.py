@@ -95,6 +95,7 @@ from .http_documents import (
     ProjectAssistant,
     ProjectCreate,
     ProjectDelete,
+    ProjectInquiry,
     ProjectList,
     ProjectRead,
     ProjectRevise,
@@ -880,6 +881,12 @@ def create_private_app(
                 key=body.key,
                 input_contract=body.input_contract,
             )
+        )
+
+    @app.post("/projects/admit-inquiry")
+    def admit_project_inquiry(body: ProjectInquiry, request: Request) -> Object:
+        return workspace.admit_project_inquiry(
+            verified_actor(request.scope, write=True), body.project_id, body.revision
         )
 
     @app.post("/projects/prepared-handoffs")

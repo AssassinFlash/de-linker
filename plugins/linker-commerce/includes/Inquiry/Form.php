@@ -29,7 +29,7 @@ final class Form {
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
-		add_shortcode( 'linker_inquiry_billing', array( BillingFields::class, 'render' ) );
+		add_shortcode( 'linker_inquiry_billing', fn (): string => BillingFields::render( $this->flash['fields']['billing'] ?? array() ) );
 		add_shortcode( 'linker_inquiry_restriction', array( new \Linker\Commerce\Presentation\LoginGate(), 'restricted_notice' ) );
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
@@ -43,7 +43,72 @@ final class Form {
 	 * Active planning project notes, rendered separately from the customer message.
 	 */
 	public function project_notes(): string {
-		return \Linker\Commerce\Planning\Context::inquiry_notes_section( (array) ( $this->flash['fields'] ?? array() ) );
+		$previous = (array) ( $this->flash['fields'] ?? array() );
+		if ( ! empty( $this->flash['unavailable'] ) || ! empty( $previous['linker_without_project'] ) ) {
+			return '<label class="linker-form-consent"><input type="checkbox" required name="linker_without_project"' . checked( ! empty( $previous['linker_without_project'] ), true, false ) . ' value="' . esc_attr( wp_create_nonce( 'linker_without_project:' . $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) . '" /> ' . esc_html__( 'Send my inquiry without this project', 'linker-commerce' ) . '</label>' . self::retained_notes( $previous );
+		}
+		if ( isset( $previous['linker_planner_handoff_id'] ) || ( ( isset( $previous['linker_note_project'] ) || isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) && '1' === $previous['linker_recovery_available'] ) ) {
+			return self::retained_notes( $previous );
+		}
+		$note = null;
+		if ( isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) {
+			$note = \Linker\Commerce\Planning\Context::read_preliminary_project( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] );
+			if ( $note instanceof \WP_Error ) {
+				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>' . self::retained_notes( $previous );
+			}
+		} elseif ( isset( $previous['linker_note_project'] ) ) {
+			$note = \Linker\Commerce\Planning\Context::read_selected_note( $previous['linker_note_project'] );
+			if ( $note instanceof \WP_Error ) {
+				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>' . \Linker\Commerce\Planning\Context::inquiry_notes_section(
+					$previous,
+					null,
+					array(
+						'project_id'    => $previous['linker_note_project'],
+						'note_revision' => $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ][ 'project_' . $previous['linker_note_project'] ],
+					)
+				);
+			}
+		}
+		return \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, null, $note );
+	}
+
+	/** Preserve the reviewed inclusion choice and revisions while they cannot be reread.
+	 *
+	 * @param array<string,mixed> $previous Native form fields.
+	 */
+	private static function retained_notes( array $previous ): string {
+		$html = '';
+		if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
+			$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
+			$html .= '<input type="hidden" name="linker_include_project_notes" value="' . esc_attr( $previous[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ) . '" />';
+		}
+		foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ?? array() as $id => $revision ) {
+			$html .= '<input type="hidden" name="linker_project_note_revisions[' . esc_attr( $id ) . ']" value="' . esc_attr( $revision ) . '" />';
+		}
+		return $html;
+	}
+
+	/** Show this POST's correctable error on the current checkout response.
+	 *
+	 * @param array<string,mixed> $fields Retained native input; no proof or nonce.
+	 * @param \WP_Error           $error  Native outcome.
+	 * @param string              $locale Submitted language.
+	 * @param string|null         $handle Existing attempt handle, or empty for a fresh authorized attempt.
+	 */
+	public function retry( array $fields, \WP_Error $error, string $locale, ?string $handle = null ): void {
+		if ( null !== $handle && \Linker\Commerce\Protection\Business::enabled() && ! wp_is_uuid( (string) ( $fields['linker_request_id'] ?? '' ), 4 ) ) {
+			$fields['linker_request_id'] = wp_generate_uuid4();
+		}
+		$this->flash = array(
+			'fields'       => $fields,
+			'error'        => $error->get_error_message(),
+			'error_locale' => $locale,
+			'grouped'      => 'linker_intake_grouped' === $error->get_error_code(),
+			'unavailable'  => 'planning_preliminary_unavailable' === $error->get_error_code(),
+		);
+		if ( null !== $handle ) {
+			$this->flash['retry'] = CheckoutRetry::remember( $this->flash, $handle );
+		}
 	}
 
 	/**
@@ -51,9 +116,22 @@ final class Form {
 	 */
 	public function render(): string {
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
-		foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
-			$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
-			WC()->session->set( 'linker_inquiry_' . $key, null );
+		// This opaque handle reads only server-validated fields from the current Woo session.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only recovery in the native session.
+		if ( array() === $this->flash && isset( $_GET[ CheckoutRetry::HANDLE ] ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- CheckoutRetry verifies this opaque UUID.
+			$handle = is_string( $_GET[ CheckoutRetry::HANDLE ] ) ? wp_unslash( $_GET[ CheckoutRetry::HANDLE ] ) : '';
+			$flash  = CheckoutRetry::read( $handle );
+			if ( null === $flash ) {
+				return '<p role="alert">' . esc_html__( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) . '</p>';
+			}
+			$this->flash = $flash + array( 'retry' => $handle );
+		}
+		if ( array() === $this->flash ) {
+			foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
+				$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
+				WC()->session->set( 'linker_inquiry_' . $key, null );
+			}
 		}
 		try {
 			$template = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
@@ -71,7 +149,10 @@ final class Form {
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function value( $atts = array() ): string {
-		$key      = (string) ( $atts['key'] ?? '' );
+		$key = (string) ( $atts['key'] ?? '' );
+		if ( 'draft-hash' === $key ) {
+			return esc_attr( $this->flash['fields']['linker_draft_hash'] ?? WC()->cart->get_cart_hash() );
+		}
 		$customer = new WC_Customer( get_current_user_id() );
 		$previous = (array) ( $this->flash['fields'] ?? array() );
 		$name     = trim( $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() );
@@ -94,12 +175,12 @@ final class Form {
 			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
 		}
 		$values = array(
-			'retention-context'  => hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token(), wp_salt( 'nonce' ) ),
+			'retention-context'  => CheckoutRetry::context(),
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
 			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : '',
-			'action'             => admin_url( 'admin-post.php' ),
+			'action'             => isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ? Checkout::request_url( OrderLocale::current( $this->submission_language() ) ) : admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
@@ -121,11 +202,46 @@ final class Form {
 	 * Nonce, language, anti-bot time, and transport fields.
 	 */
 	public function hidden(): string {
-		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
+		return $this->hidden_fields( $this->submission_language() );
+	}
+
+	/** Recover the previous locale used in the native journal's input fingerprint. */
+	private function submission_language(): string {
+		return $this->flash['fields']['linker_inquiry_original_language'] ?? ( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' );
+	}
+
+	/** Fields carried from the reviewed transfer through native retries.
+	 *
+	 * @param string $handoff Planner handoff ID.
+	 * @param string $fingerprint Post-apply draft fingerprint.
+	 */
+	private static function planner_fields( string $handoff, string $fingerprint ): string {
+		return '<input type="hidden" name="linker_planner_handoff_id" value="' . esc_attr( $handoff ) . '" /><input type="hidden" name="linker_planner_draft_sha256" value="' . esc_attr( $fingerprint ) . '" />';
+	}
+
+	/** Native guard and draft binding for both POST surfaces.
+	 *
+	 * @param string $language Form language.
+	 * @param string $project Reviewed preliminary project reference.
+	 */
+	private function hidden_fields( string $language, string $project = '' ): string {
+		$previous = $this->flash['fields'] ?? array();
+		$project  = $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ?? $project;
+		$binding  = '' === $project ? '' : '<input type="hidden" name="' . esc_attr( \Linker\Commerce\Planning\Context::PROJECT_FIELD ) . '" value="' . esc_attr( $project ) . '" />';
+		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
+			$binding .= self::planner_fields( $previous['linker_planner_handoff_id'], $previous['linker_planner_draft_sha256'] );
+		}
+		if ( isset( $this->flash['retry'] ) ) {
+			$binding .= '<input type="hidden" name="' . CheckoutRetry::HANDLE . '" value="' . esc_attr( $this->flash['retry'] ) . '" data-linker-retry-pending="' . ( '1' === $previous['linker_recovery_available'] ? 'true' : 'false' ) . '" />';
+		}
+		if ( '1' === ( $previous['linker_inquiry_receipt_only'] ?? '' ) ) {
+			$binding .= '<input type="hidden" name="linker_inquiry_receipt_only" value="1" />';
+		}
+		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
-		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
-		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
+		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
+		. wp_nonce_field( Handler::nonce_action( $project ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
+		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ), $this->flash['grouped'] ?? null );
 	}
 
 	/**
@@ -152,7 +268,9 @@ final class Form {
 			'company'            => __( 'Company (optional)', 'linker-commerce' ),
 			'consent'            => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
 			'privacy'            => __( 'Privacy', 'linker-commerce' ),
-			'send'               => __( 'Send inquiry', 'linker-commerce' ),
+			'send'               => '1' === ( $this->flash['fields']['linker_inquiry_receipt_only'] ?? '' )
+				? __( 'Try again', 'linker-commerce' )
+				: __( 'Send inquiry', 'linker-commerce' ),
 			'promise'            => __( 'We reply within one business day.', 'linker-commerce' ),
 			'no-account'         => __( 'No account needed.', 'linker-commerce' ),
 			'partner'            => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
@@ -160,7 +278,7 @@ final class Form {
 			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
 			'quantity'           => __( 'Quantity', 'linker-commerce' ),
 			'update'             => __( 'Update solution draft', 'linker-commerce' ),
-			'update-before-send' => __( 'Update the solution draft before sending your inquiry.', 'linker-commerce' ),
+			'update-before-send' => __( 'Check the quantities in your solution draft and try again.', 'linker-commerce' ),
 			'retention-error'    => __( 'Your browser could not save your entries. Stay on this page to avoid losing them.', 'linker-commerce' ),
 		);
 		return esc_html( $words[ $atts['key'] ?? '' ] ?? '' );

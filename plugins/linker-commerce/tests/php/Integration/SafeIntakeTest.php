@@ -345,6 +345,89 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 	}
 
+	/** Native notification handoff releases one slot and preserves the completed request. */
+	public function test_normal_verification_frees_its_slot_after_notification_handoff(): void {
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$authorization = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
+		$handler       = new Handler();
+		$post          = $this->post();
+		$check         = $post + array( 'linker_inquiry_receipt_only' => '1' );
+		$unknown       = $handler->process( $check );
+		self::assertInstanceOf( WP_Error::class, $unknown );
+		self::assertSame( 'linker_inquiry_pending', $unknown->get_error_code() );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
+		$order = $handler->process( $post );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$pending = $this->post();
+		$other   = $handler->process( $pending );
+		self::assertInstanceOf( WC_Order::class, $other );
+		self::assertTrue( NotificationHold::held( $order ) );
+		$before = get_option( IntakeStore::OPTION )['entries'];
+		self::assertArrayHasKey( $post['linker_request_id'], $before );
+		$state = $authorization->process( $order );
+		self::assertSame( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
+		foreach ( $state['jobs'] as $job ) {
+			self::assertNotNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job['id'] ) );
+		}
+		$order->read_meta_data( true );
+		self::assertFalse( NotificationHold::held( $order ) );
+		self::assertSame( array( $pending['linker_request_id'] ), array_keys( get_option( IntakeStore::OPTION )['entries'] ) );
+		$replay = $handler->process( $check );
+		self::assertInstanceOf( WC_Order::class, $replay );
+		self::assertSame( $order->get_id(), $replay->get_id() );
+		self::assertSame( $state, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() ) );
+	}
+
+	/** Maintenance recovers a terminal handoff even after it leaves the pending notification queue. */
+	public function test_completed_verification_release_recovers_after_an_interruption(): void {
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$authorization = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
+		$post          = $this->post();
+		$order         = ( new Handler() )->process( $post );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$request = $post['linker_request_id'];
+		$entry   = get_option( IntakeStore::OPTION )['entries'][ $request ];
+		$authorization->process( $order, true );
+		$order->read_meta_data( true );
+		self::assertSame( 'complete', $order->get_meta( Queue::PENDING ) );
+		$before = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $before );
+		self::assertNotEmpty( $before['jobs']['team']['delivered_at'] );
+		self::assertNotEmpty( $before['jobs']['receipt']['delivered_at'] );
+		// Restore the exact slot and unresolved journal state from before native binding.
+		$entry['order'] = 0;
+		$ledger         = json_decode( (string) get_option( Ledger::OPTION ), true, 512, JSON_THROW_ON_ERROR );
+
+		$ledger['receipts'][ $request ]['status']  = 'unresolved';
+		$ledger['receipts'][ $request ]['outcome'] = 0;
+		update_option( Ledger::OPTION, wp_json_encode( $ledger ), false );
+		self::assertIsArray(
+			IntakeStore::edit(
+				static function ( array &$state ) use ( $request, $entry ): array {
+					$state['entries'][ $request ] = $entry;
+					IntakeStore::save( $state );
+					return array();
+				}
+			)
+		);
+		$job_marker = self::newest_mail_job();
+		$module     = new \Linker\Commerce\Protection\Module( __FILE__ );
+		self::assertTrue( \Linker\Commerce\Inquiry\Assessment\Lock::run( 'intake-write-' . $request, $module->maintain( ... ) ) );
+		self::assertArrayHasKey( $request, get_option( IntakeStore::OPTION )['entries'] );
+		$module->maintain();
+		$module->maintain();
+		self::assertArrayNotHasKey( $request, get_option( IntakeStore::OPTION )['entries'] );
+		$receipt = ( new Ledger() )->lookup( $request, $entry['fingerprint'] );
+		self::assertIsArray( $receipt );
+		self::assertSame( 'completed', $receipt['status'] );
+		self::assertSame( $order->get_id(), $receipt['outcome'] );
+		self::assertSame( $before, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() ) );
+		self::assertSame( array(), self::mail_jobs_after( $job_marker ) );
+		$retry = ( new Handler() )->process( $post );
+		self::assertInstanceOf( WC_Order::class, $retry );
+		self::assertSame( $order->get_id(), $retry->get_id() );
+	}
+
 	/**
 	 * Report outcomes while another inquiry holds the review lock.
 	 *

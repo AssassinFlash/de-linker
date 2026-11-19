@@ -16,7 +16,7 @@ final class Ledger {
 	public const OPTION = 'linker_public_admission_ledger';
 	public const POLICY = 'public-admission-519-v1';
 	// Initial operational bounds, docs/specs/519-public-admission.md.
-	private const RECEIPT_SECONDS   = DAY_IN_SECONDS;
+	public const RECEIPT_SECONDS    = DAY_IN_SECONDS;
 	private const MAX_RECEIPTS      = 10000;
 	private const MAX_DIMENSIONS    = 16;
 	private const MAX_JOURNAL_BYTES = 8388608;

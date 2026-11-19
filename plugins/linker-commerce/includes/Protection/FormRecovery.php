@@ -13,6 +13,9 @@ use WP_Error;
 
 /** No password, proof, nonce or full transport body is kept. */
 final class FormRecovery {
+	/** The shared native form recovery window follows the proof window. */
+	public const RETENTION_SECONDS = 300;
+
 	/**
 	 * Known native pre-dispatch refusals need a fresh check; every other outcome
 	 * keeps the original UUID recoverable.
@@ -30,7 +33,7 @@ final class FormRecovery {
 	 * @param WP_Error|null $error Native result, never a client-supplied state.
 	 */
 	public static function superseded( ?WP_Error $error ): bool {
-		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'linker_intake_full', 'linker_review_unavailable', 'planning_project_deleted', 'planning_admission_unavailable' ), true );
+		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'linker_intake_full', 'linker_review_unavailable', 'planning_project_deleted', 'planning_preliminary_unavailable', 'planning_admission_unavailable' ), true );
 	}
 
 	/**
@@ -84,7 +87,7 @@ final class FormRecovery {
 		WC()->session->set(
 			'linker_form_recovery_' . $action,
 			array(
-				'until'  => time() + 300,
+				'until'  => time() + self::RETENTION_SECONDS,
 				'fields' => $fields,
 			)
 		);

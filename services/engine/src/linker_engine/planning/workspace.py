@@ -28,6 +28,7 @@ from .errors import (
     InvalidInput,
     NotFound,
     PreparedHandoff,
+    ProjectRevisionNotFound,
     VersionUnavailable,
 )
 from .execution_control import require_accepting
@@ -164,7 +165,12 @@ class Workspace:
         if revision is not None:
             positive_integer(revision, "revision")
         with self.database.read() as connection:
-            return self._project(connection, actor, project_id, revision)
+            try:
+                return self._project(connection, actor, project_id, revision)
+            except NotFound as exc:
+                if revision is None:
+                    raise
+                raise ProjectRevisionNotFound("project revision not found") from exc
 
     def projects(self, actor: Actor) -> list[Project]:
         with self.database.read() as connection:
@@ -185,6 +191,35 @@ class Workspace:
             (project_id, project_id),
         ).fetchone()
         return bool(row[0]), int(row[1])
+
+    @staticmethod
+    def advance_inquiry_generation(
+        connection: sqlite3.Connection, project_id: str
+    ) -> None:
+        connection.execute(
+            "INSERT INTO inquiry_generations (project_id,generation) VALUES (?,1) "
+            "ON CONFLICT(project_id) DO UPDATE SET generation=generation+1",
+            (project_id,),
+        )
+
+    def admit_project_inquiry(
+        self, actor: Actor, project_id: str, revision: int
+    ) -> Object:
+        with self.database.transaction() as connection:
+            try:
+                project_row(connection, actor, project_id, write=True)
+            except NotFound as exc:
+                raise ProjectRevisionNotFound("project revision not found") from exc
+            if (
+                connection.execute(
+                    "SELECT 1 FROM revisions WHERE project_id=? AND number=?",
+                    (project_id, revision),
+                ).fetchone()
+                is None
+            ):
+                raise ProjectRevisionNotFound("project revision not found")
+            self.advance_inquiry_generation(connection, project_id)
+            return {"admitted": True}
 
     def prepared_handoffs(self, actor: Actor, project_id: str) -> Object:
         with self.database.read() as connection:
@@ -222,15 +257,15 @@ class Workspace:
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
             prepared, generation = self._inquiry_state(connection, project_id)
-            if prepared:
-                if inquiry_generation is None:
+            if inquiry_generation is None:
+                if prepared:
                     raise PreparedHandoff(
                         "prepared handoff requires a Woo inquiry check"
                     )
-                if generation != inquiry_generation:
-                    raise InquiryChanged(
-                        "inquiry admission changed since the Woo check"
-                    )
+                raise InquiryChanged("project deletion requires a Woo inquiry check")
+            if generation != inquiry_generation:
+                raise InquiryChanged("inquiry admission changed since the Woo check")
+            if prepared:
                 connection.execute(
                     "DELETE FROM handoffs WHERE project_id=?", (project_id,)
                 )
