@@ -6173,7 +6173,7 @@ def test_storage_search_uses_site_application_before_qualifying_products(
     brief = incomplete_brief()
     brief.update(project_use="residential", system_scope="storage_only")
     brief["site"].update(country_code="DE", location_label="Berlin")
-    authored = {
+    authored: FixtureObject = {
         "brief": brief,
         "backup_demand": {"schema_version": 1, "load_kw": 3, "duration_hours": 2},
         "equipment_setup": {
@@ -6260,7 +6260,7 @@ def test_plant_search_uses_site_application_only_for_undeclared_systems(
         "required_usable_kwh": None,
         "required_discharge_ac_kw": None,
     }
-    authored = {
+    authored: FixtureObject = {
         "brief": brief,
         "equipment_plant_setup": {
             "schema_version": 1,
