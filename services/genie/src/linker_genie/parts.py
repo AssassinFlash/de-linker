@@ -744,16 +744,21 @@ def find(
             continue
         if reading.kind == "list":
             rows = parse_table(rows_of_reading(reading))
-            since = _carried_at(messages, reading)
+            since = len(messages) - 1
             candidates.append(
                 Source("table", tuple(rows), since, reading.id, reading.truncated)
             )
         elif reading.kind in ("document", "photo") and (
             list_noun or ("?" not in latest and _photo_list(reading, vocabulary))
         ):
-            rows = parse_text(reading.text)
+            text = "\n".join(
+                line
+                for line in reading.text.splitlines()
+                if not line.startswith(("--- page ", "--- pages not read:"))
+            )
+            rows = parse_text(text)
             if len(rows) >= 2:
-                since = _carried_at(messages, reading)
+                since = len(messages) - 1
                 candidates.append(Source("photo", tuple(rows), since, reading.id))
     if not candidates:
         for reading in reversed(readings):
@@ -969,11 +974,17 @@ class PartsList:
 
 
 def build(
-    source: Source, messages: list[TurnMessage], vocabulary: Vocabulary
+    source: Source,
+    messages: list[TurnMessage],
+    vocabulary: Vocabulary,
+    *,
+    unavailable_rows: set[str] | None = None,
 ) -> PartsList:
     """The list's rows with the customer's answers applied (module docstring)."""
     rows = [
-        _row(number, parsed, vocabulary)
+        Row(number, parsed.text, parsed.quantity, "missing")
+        if unavailable_rows and parsed.text in unavailable_rows
+        else _row(number, parsed, vocabulary)
         for number, parsed in enumerate(source.parsed, start=1)
     ]
     for message in messages[source.since + 1 :]:

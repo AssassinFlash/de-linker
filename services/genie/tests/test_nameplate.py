@@ -336,6 +336,13 @@ def test_the_stream_carries_the_card_and_the_reading(
         "typed-contact",
         "de-filename",
         "published-history-unknown-file",
+        "recover-after-refusal",
+        "parts-filename",
+        "inquiry-filename",
+        "typed-inquiry",
+        "mixed-list",
+        "withdrawn-manual-as-list",
+        "reopen-mixed-upload",
     ],
 )
 def test_pdf_text_is_authorized_by_its_own_current_model(
@@ -419,6 +426,25 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         uploads[0]["name"] = "ZZ-90K-T4.pdf"
     elif scenario == "typed-contact":
         typed = "Call me"
+    elif scenario == "parts-filename":
+        uploads[0]["name"] = "parts list.pdf"
+    elif scenario == "inquiry-filename":
+        uploads[0]["name"] = "Send an inquiry.pdf"
+    elif scenario == "typed-inquiry":
+        typed = "Send an inquiry"
+    elif scenario == "withdrawn-manual-as-list":
+        typed = "Here is my parts list."
+        uploads = [upload(raw.replace(b"probe fixture", b"ZZ-90K-T4    "))]
+    elif scenario == "mixed-list":
+        typed = "Here is my parts list."
+        list_bytes = raw
+        for old, row in [
+            (b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)", b"2 x SAJ H2-10K-T3"),
+            (b"Rated power 10000 W", b"1 x SAJ ZZ-90K-T4"),
+            (b"Battery voltage 180-750 V", b""),
+        ]:
+            list_bytes = list_bytes.replace(old, row.ljust(len(old)))
+        uploads = [upload(list_bytes)]
     prefix = "Anhang" if scenario == "de-filename" else "Attached"
     message = "\n".join(
         s for s in [typed, *(f"{prefix}: {u['name']}" for u in uploads)] if s
@@ -446,6 +472,7 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         )
         monkeypatch.setattr(app_module, "_log", log)
         monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
+        origin = "att2" if scenario == "recover-after-refusal" else "att1"
         monkeypatch.setattr(
             app.state,
             "generate",
@@ -454,7 +481,8 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
                     language="en",
                     blocks=[
                         TextBlock(
-                            text="The rated power is {fact:att1.n2}.", refs=["att1"]
+                            text=f"The rated power is {{fact:{origin}.n2}}.",
+                            refs=[origin],
                         )
                     ],
                 ),
@@ -462,11 +490,51 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
             ),
             raising=False,
         )
-        response = TestClient(app, headers=SHELL).post(
+        client = TestClient(app, headers=SHELL)
+        messages = []
+        if scenario in {"recover-after-refusal", "reopen-mixed-upload"}:
+            unknown = upload(
+                raw.replace(b"H2-10K-T3", b"YY-90K-T4").replace(b"10000 W", b"23456 W")
+            )
+            unknown["name"] = "unknown.pdf"
+            first_uploads = (
+                [upload(raw)] if scenario == "reopen-mixed-upload" else []
+            ) + [unknown]
+            messages.append(
+                {
+                    "role": "user",
+                    "content": "\n".join(
+                        f"Attached: {u['name']}" for u in first_uploads
+                    ),
+                }
+            )
+            first = client.post(
+                "/assistant/turn",
+                json={
+                    "conversation_id": "pdf-publication",
+                    "messages": messages,
+                    "attachments": first_uploads,
+                },
+            )
+            assert first.status_code == 200 and "23456 W" not in first.text
+            history = [
+                json.loads(event.splitlines()[1][6:])
+                for event in first.text.split("\n\n")
+                if event.startswith("event: reading\n")
+            ]
+            refused = history[-1]
+            assert not refused["text"] and not refused["ratings"]
+            if scenario == "reopen-mixed-upload":
+                uploads = []
+                message = "What rated power does datasheet.pdf give?"
+            else:
+                assert refused["id"] == "att1"
+        messages.append({"role": "user", "content": message})
+        response = client.post(
             "/assistant/turn",
             json={
                 "conversation_id": "pdf-publication",
-                "messages": [{"role": "user", "content": message}],
+                "messages": messages,
                 "attachments": uploads,
                 "readings": history,
             },
@@ -482,7 +550,26 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         for kind, record in events
         if kind == "event: block" and record.get("type") == "text"
     ]
-    if scenario == "typed-contact":
+    if scenario == "mixed-list":
+        assert events[0][1]["route"] == "parts", texts
+        [card] = [record for _, record in events if record.get("type") == "parts"]
+        assert [
+            (row["product_id"], row["quantity"])
+            for row in card["rows"]
+            if row["status"] == "matched"
+        ] == [(4107, 2)]
+        assert len(card["rows"]) == 2
+        assert any(
+            row["status"] == "missing" and "ZZ-90K-T4" in row["text"]
+            for row in card["rows"]
+        )
+        assert card["add"]["items"] == [{"product_id": 4107, "quantity": 2}]
+    elif scenario == "reopen-mixed-upload":
+        assert not read and any("10000 W" in text for text in texts)
+        assert "23456 W" not in response.text
+    elif scenario == "typed-inquiry":
+        assert any(record.get("name") == "send_inquiry" for _, record in events)
+    elif scenario == "typed-contact":
         assert events[0][1]["route"] == "person"
         assert any(record.get("type") == "contact" for _, record in events)
     elif scenario in {
@@ -490,14 +577,32 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         "contact-filename",
         "de-filename",
         "withdrawn-filename",
+        "recover-after-refusal",
+        "parts-filename",
+        "inquiry-filename",
     }:
-        assert not any(record.get("type") == "contact" for _, record in events)
+        assert not any(
+            record.get("type") in {"contact", "parts"}
+            or record.get("name") == "send_inquiry"
+            for _, record in events
+        )
         assert any("10000 W" in text for text in texts), response.text
         assert "Rated power 10000 W" in read[0]["text"]
     else:
         assert events[0][1]["route"] == "scripted"
+        if scenario in {"unknown-file", "withdrawn-file", "withdrawn-history"}:
+            assert "Rated power 10000 W" in read[0]["text"]
+            read = read[1:]
         assert all(not r["text"] and not r["ratings"] for r in read)
-        assert "10000 W" not in response.text and "9250 W" not in response.text
+        assert all("10000 W" not in text and "9250 W" not in text for text in texts)
+        if scenario in {
+            "withdrawn-file",
+            "withdrawn-history",
+            "withdrawn-manual-as-list",
+        }:
+            assert any("outside our current product range" in text for text in texts)
+        else:
+            assert any("could not verify a current product" in text for text in texts)
 
 
 # --- review round 1 of PR #309 -------------------------------------------------

@@ -34,7 +34,11 @@ from linker_genie import (
     timing,
 )
 from linker_genie.abilities import Abilities, AbilityError
-from linker_genie.conversation import customer_messages, last_customer_message
+from linker_genie.conversation import (
+    customer_messages,
+    last_customer_message,
+    without_upload_footer,
+)
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import note
@@ -157,16 +161,9 @@ class Understander:
         *,
         get_vocabulary: Callable[[], Vocabulary] | None = None,
     ) -> Prepared:
+        request = without_upload_footer(request)
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
-        if request.attachments:
-            for prefix in ("Attached", "Anhang"):
-                footer = "\n".join(
-                    f"{prefix}: {item.name}" for item in request.attachments
-                )
-                if message == footer or message.endswith("\n" + footer):
-                    message = message.removesuffix(footer).removesuffix("\n")
-                    break
         # Route calls, fact collection and attachment decimals follow the
         # answer language. The page locale stays on the request for the prompt.
         language = turn_language(request)
@@ -218,12 +215,27 @@ class Understander:
                     else []
                 )
             ]
+        if self._publication and request.readings:
+            # Empty documents retained by the proxy reserve their IDs but supply no facts.
+            request = request.model_copy(
+                update={
+                    "readings": [
+                        item
+                        for item in request.readings
+                        if item.kind != "document"
+                        or item.text
+                        or item.ratings
+                        or item.product_type
+                    ]
+                }
+            )
         plate = _first_nameplate(fresh, vocabulary)
         source = (
             None
             if plate is not None or vocabulary is None
             else parts.find(request.messages, fresh, request.readings, vocabulary)
         )
+        unavailable_rows: set[str] = set()
         if self._publication is not None:
             # Stored attachment readings are historical too. Recheck their supplied
             # model before adding any text or ratings to this turn's facts.
@@ -231,22 +243,27 @@ class Understander:
             statuses = self._publication.identify(
                 [r.model for r in readings if r.model]
             )
-            blocked: list[AttachmentReading] = []
+            blocked: dict[str, str] = {}
             for item in readings:
                 if item.model and statuses.get(item.model.casefold()) != "published":
-                    blocked.append(item)
+                    blocked[item.id] = statuses.get(item.model.casefold(), "unknown")
                 elif item.kind == "document":
                     # A transcribed parts list may use the row-matching route,
                     # never the technical-answer route or another file's identity.
-                    if (
-                        source
-                        and source.reading_id == item.id
-                        and vocabulary
-                        and _several_models(vocabulary.match(item.text))
-                    ):
-                        continue
-                    if not _published_document(item, self._publication, vocabulary):
-                        blocked.append(item)
+                    if source and source.reading_id == item.id and vocabulary:
+                        row_statuses = _model_list_rows(
+                            source, self._publication, vocabulary
+                        )
+                        if row_statuses:
+                            unavailable_rows = {
+                                row
+                                for row, status in row_statuses.items()
+                                if status == "unavailable"
+                            }
+                            continue
+                    status = _document_status(item, self._publication, vocabulary)
+                    if status != "published":
+                        blocked[item.id] = status
             if blocked:
                 from linker_genie.publication_copy import upload_unavailable
 
@@ -254,6 +271,8 @@ class Understander:
                     r.model_copy(
                         update={"text": "", "ratings": [], "product_type": None}
                     )
+                    if r.id in blocked
+                    else r
                     for r in fresh
                 ]
                 route = Route(
@@ -261,11 +280,7 @@ class Understander:
                     no_cards=True,
                     answer=upload_unavailable(
                         language,
-                        identified=any(
-                            r.model
-                            and statuses.get(r.model.casefold()) == "unavailable"
-                            for r in blocked
-                        ),
+                        identified="unavailable" in blocked.values(),
                     ),
                 )
                 return Prepared(
@@ -280,7 +295,12 @@ class Understander:
             # run. Jev is not asked, as for a nameplate: the list decides.
             assert vocabulary is not None  # parts.find requires it
             with timing.phase(clock, timing.PARTS):
-                result = parts.build(source, list(request.messages), vocabulary)
+                result = parts.build(
+                    source,
+                    list(request.messages),
+                    vocabulary,
+                    unavailable_rows=unavailable_rows,
+                )
             log["parts"] = {
                 "kind": source.kind,
                 "reading": source.reading_id,
@@ -509,29 +529,59 @@ def _several_models(matches: list[Match]) -> bool:
     )
 
 
-def _published_document(
-    item: AttachmentReading, authority: PublicationClient, vocabulary: Vocabulary | None
-) -> bool:
-    """Only this file's own model and current Woo status can release its text."""
-    if not item.text.strip() or vocabulary is None:
-        return False
+def _model_list_rows(
+    source: parts.Source, authority: PublicationClient, vocabulary: Vocabulary
+) -> dict[str, str]:
+    """Recognize product-only rows without releasing a manual as a parts list."""
+    labels = _text_statuses("\n".join(row.text for row in source.parsed), authority)
+    names = {label.casefold(): status for label, status in labels.items()}
+    for brand in vocabulary.brand_names.values():
+        names.update(
+            {f"{brand} {label}".casefold(): status for label, status in labels.items()}
+        )
+    rows = {
+        row.text: names.get(row.text.casefold(), "unknown") for row in source.parsed
+    }
+    return (
+        rows if "published" in rows.values() and "unknown" not in rows.values() else {}
+    )
+
+
+def _text_statuses(text: str, authority: PublicationClient) -> dict[str, str]:
     # The Woo text oracle accepts 16,000 bytes; model labels are at most 200
     # bytes. Four bytes per character keeps UTF-8 intact, including the overlap.
     statuses: dict[str, str] = {}
-    for start in range(0, len(item.text), 3800):
-        statuses.update(authority.identify_text(item.text[start : start + 4000]))
-        if start + 4000 >= len(item.text):
+    for start in range(0, len(text), 3800):
+        statuses.update(authority.identify_text(text[start : start + 4000]))
+        if start + 4000 >= len(text):
             break
-    if not statuses or set(statuses.values()) != {"published"}:
-        return False
+    return statuses
+
+
+def _document_status(
+    item: AttachmentReading, authority: PublicationClient, vocabulary: Vocabulary | None
+) -> str:
+    """Only this file's own model and current Woo status can release its text."""
+    if not item.text.strip():
+        return "unknown"
+    statuses = _text_statuses(item.text, authority)
+    if any(
+        status == "unavailable" and model_pattern(label).search(item.text)
+        for label, status in statuses.items()
+    ):
+        return "unavailable"
+    if vocabulary is None or set(statuses.values()) != {"published"}:
+        return "unknown"
     labels = set(statuses)
     ids: set[int] = set()
     for label in labels:
         matches = [m for m in vocabulary.match(label) if m.kind == "model"]
         if not model_pattern(label).search(item.text) or not matches:
-            return False
+            return "unknown"
         ids.update(pid for m in matches for pid in m.product_ids)
-    return len(ids) == 1 and not unknown_models(item.text, labels, set(), section=True)
+    if len(ids) == 1 and not unknown_models(item.text, labels, set(), section=True):
+        return "published"
+    return "unknown"
 
 
 def _add_readings(

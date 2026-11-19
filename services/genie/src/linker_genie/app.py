@@ -55,7 +55,7 @@ from linker_genie.agent import (
     model_name,
     provider_name,
 )
-from linker_genie.conversation import last_customer_message
+from linker_genie.conversation import last_customer_message, without_upload_footer
 from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
@@ -312,6 +312,7 @@ def _compute_turn(
     except PublicationChanged as error:
         _record_incomplete_turn(body, None, clock, start_token, f"publication: {error}")
         raise
+    body = without_upload_footer(body)
     if prepared.timing is not None:
         clock.adopt(prepared.timing)
     # Which earlier turns of this conversation offered the team's contact, newest
