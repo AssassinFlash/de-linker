@@ -277,17 +277,22 @@ export function isolateVisitorBudgets(): () => void {
 		if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
 			throw new RuntimeException( 'A local WordPress mail sink is required.' );
 		}
+		global $wpdb;
+		$connections = $wpdb->get_col( $wpdb->prepare(
+			"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+			$wpdb->esc_like( \Linker\Commerce\Inquiry\RateLimit::PREFIX . 'public_connection.' ) . '%'
+		) );
 	`;
 	const snapshot = wp([
 		'eval',
 		localOnly +
 			String.raw`
 			$prior = array();
-			foreach ( array(
+			foreach ( array_merge( $connections, array(
 				\Linker\Commerce\Mail\Throttle::OPTION,
 				\Linker\Commerce\Mail\OptionBudgetLedger::OPTION,
 				\Linker\Commerce\Protection\Ledger::OPTION
-			) as $name ) {
+			) ) as $name ) {
 				wp_cache_delete( $name, 'options' );
 				$prior[$name] = get_option( $name, null );
 				delete_option( $name );
@@ -301,6 +306,11 @@ export function isolateVisitorBudgets(): () => void {
 			localOnly +
 				`
 				$prior = unserialize( base64_decode( '${snapshot}' ), array( 'allowed_classes' => false ) );
+				foreach ( $connections as $name ) {
+					if ( ! array_key_exists( $name, $prior ) ) {
+						delete_option( $name );
+					}
+				}
 				foreach ( $prior as $name => $value ) {
 					wp_cache_delete( $name, 'options' );
 					if ( null === $value ) {
