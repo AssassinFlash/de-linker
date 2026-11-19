@@ -496,6 +496,158 @@ final class ProjectNotesTest extends TestCase {
 		$this->assertSame( array(), Context::session_notes() );
 	}
 
+	/** A report-free project is read only for the exact selection on this form. */
+	public function test_preliminary_note_submission(): void {
+		$id       = str_repeat( 'b', 32 );
+		$key      = 'project_' . $id;
+		$note     = array(
+			'project_id'    => $id,
+			'title'         => 'Installer project',
+			'revision'      => 3,
+			'note_revision' => '3',
+			'text'          => self::NOTE,
+		);
+		$provider = WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $provider );
+		$provider->reply( $note );
+		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $text ): string => $text ) );
+		$post  = array(
+			Context::PRESENT_FIELD   => '1',
+			Context::INCLUDE_FIELD   => '1',
+			Context::REVISIONS_FIELD => array( $key => '3' ),
+		);
+		$order = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items' ) )->getMock();
+		$order->method( 'get_items' )->willReturn( array() );
+		$order->expects( $this->once() )->method( 'update_meta_data' )->with( Context::NOTES_META, wp_json_encode( array( $key => $note ) ) );
+		$order->method( 'get_meta' )->with( Context::NOTES_META )->willReturn( wp_json_encode( array( $key => $note ) ) );
+		Context::with_submission(
+			$post,
+			function () use ( $order ): void {
+				$this->assertNull( Context::preflight() );
+				$this->assertTrue( Context::has_included_notes() );
+				( new Context() )->capture( $order );
+			}
+		);
+		$this->assertSame( array( $key => $note ), Context::stored_notes( $order ) );
+		$post[ Context::REVISIONS_FIELD ][ $key ] = '2';
+		$error                                    = Context::with_submission( $post, Context::preflight( ... ) );
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 'linker_project_notes_changed', $error->get_error_code() );
+		unset( $post[ Context::INCLUDE_FIELD ] );
+		Context::with_submission(
+			$post,
+			function (): void {
+				$this->assertNull( Context::preflight() );
+				$this->assertFalse( Context::has_included_notes() );
+			}
+		);
+		$this->assertSame( array(), Context::session_notes() );
+	}
+
+	/** The project follows its reviewed revision even when the note is empty or excluded.
+	 *
+	 * @return list<array{string,bool}>
+	 */
+	public static function preliminary_notes(): array {
+		return array( array( '', false ), array( self::NOTE, true ), array( self::NOTE, false ) );
+	}
+
+	/** Captures the reviewed project in the native Woo customer note.
+	 *
+	 * @dataProvider preliminary_notes
+	 * @param string $text Reviewed project note.
+	 * @param bool   $include_note Whether the customer includes that note.
+	 */
+	public function test_preliminary_project_reaches_sales( string $text, bool $include_note ): void {
+		$id   = str_repeat( 'b', 32 );
+		$post = array( 'linker_preliminary_project' => $id . ':3' );
+		$note = array(
+			'project_id'    => $id,
+			'title'         => 'Canal house',
+			'revision'      => 3,
+			'note_revision' => '3',
+			'text'          => $text,
+			'inputs'        => array(
+				'brief'                 => array(
+					'system_scope' => 'pv_only',
+					'site'         => array( 'location_label' => 'Oslo' ),
+					'annual_load'  => array(
+						'kwh'   => 6400,
+						'basis' => 'bill_total',
+					),
+				),
+				'pvgis_reference_setup' => array(
+					'model'  => 'pvgis_5_3_known_ac_reference_v1',
+					'arrays' => array( array( 'peak_power_kwp' => 4.5 ), array( 'peak_power_kwp' => 3 ) ),
+				),
+				'equipment_setup'       => array( 'pv_dc_kw' => 9 ),
+				'energy_scenario'       => array(
+					'controller' => 'peak_shaving_with_reserve_v1',
+					'schedule'   => array(
+						array(
+							'mode'          => 'connected',
+							'import_policy' => 'limited',
+							'import_cap_kw' => 0,
+						),
+					),
+				),
+			),
+		);
+		if ( '' !== $text ) {
+			$post[ Context::PRESENT_FIELD ]   = '1';
+			$post[ Context::REVISIONS_FIELD ] = array( 'project_' . $id => '3' );
+			if ( $include_note ) {
+				$post[ Context::INCLUDE_FIELD ] = '1';
+			}
+		}
+		$provider = WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id, 3 );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $provider );
+		$provider->reply( $note );
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::passthruFunction( 'esc_html' );
+		$order = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items', 'get_customer_note', 'set_customer_note' ) )->getMock();
+		$order->method( 'get_items' )->willReturn( array() );
+		$meta   = array();
+		$output = '';
+		$order->method( 'get_customer_note' )->willReturn( 'Please call.' );
+		$order->method( 'set_customer_note' )->willReturnCallback(
+			static function ( $value ) use ( &$output ): void {
+				$output = $value;
+			}
+		);
+		$order->method( 'update_meta_data' )->willReturnCallback(
+			static function ( $key, $value ) use ( &$meta ): void {
+				$meta[ $key ] = $value;
+			}
+		);
+		$order->method( 'get_meta' )->willReturnCallback(
+			static function ( $key ) use ( &$meta ) {
+				return $meta[ $key ] ?? '';
+			}
+		);
+		Context::with_submission(
+			$post,
+			function () use ( $order ): void {
+				$this->assertNull( Context::preflight() );
+				( new Context() )->capture( $order );
+			}
+		);
+		$this->assertStringEndsWith( "\n\nPlease call.", $output );
+		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW' ) as $fact ) {
+			$this->assertStringContainsString( $fact, $output );
+		}
+		$this->assertSame( $id . ':3', $meta['_linker_preliminary_project'] );
+		$this->assertSame( array(), Context::stored( $order ) );
+		$this->assertSame( array(), Context::stored_notes( $order ) );
+		if ( $include_note ) {
+			$this->assertStringContainsString( self::NOTE, $output );
+			$post[ Context::REVISIONS_FIELD ][ 'project_' . $id ] = '4';
+			$this->assertInstanceOf( \WP_Error::class, Context::with_submission( $post, Context::preflight( ... ) ) );
+		} else {
+			$this->assertStringNotContainsString( self::NOTE, $output );
+		}
+	}
+
 	/** The reviewed inclusion choice is part of the admission fingerprint. */
 	public function test_submission_fingerprint_covers_inclusion_and_revisions(): void {
 		$included = Context::submission_fingerprint(

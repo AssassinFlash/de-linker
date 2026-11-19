@@ -949,7 +949,26 @@ final class Context {
 			default                                                                 => '',
 		};
 		$equipment = $inputs['equipment_plant_setup']['requirements'] ?? $inputs['equipment_plant']['requirements'] ?? $inputs['equipment_setup'] ?? $inputs['equipment_requirements'] ?? array();
-		$facts     = array(
+		$reference = $inputs['pvgis_reference_setup'] ?? $inputs['pvgis_reference'] ?? array();
+		$pv_kwp    = $equipment['pv_dc_kw'] ?? null;
+		if ( 'pvgis_5_3_known_ac_reference_v1' === ( $reference['model'] ?? '' ) && ! empty( $reference['arrays'] ) ) {
+			$sizes  = array_column( $reference['arrays'], 'peak_power_kwp' );
+			$pv_kwp = count( $sizes ) === count( $reference['arrays'] ) && ! in_array( null, $sizes, true ) ? array_sum( $sizes ) : null;
+		}
+		$basis = match ( $brief['annual_load']['basis'] ?? null ) {
+			'bill_total'     => __( 'Electricity bills', 'linker-tools' ),
+			'user_estimate'  => __( 'Project estimate', 'linker-tools' ),
+			default          => '',
+		};
+		$limits = array();
+		if ( 'peak_shaving_with_reserve_v1' === ( $scenario['controller'] ?? '' ) ) {
+			foreach ( $scenario['schedule'] ?? array() as $period ) {
+				if ( 'connected' === $period['mode'] && 'limited' === ( $period['import_policy'] ?? '' ) && isset( $period['import_cap_kw'] ) ) {
+					$limits[] = $period['import_cap_kw'] . ' kW';
+				}
+			}
+		}
+		$facts = array(
 			__( 'Planned system', 'linker-tools' )         => $include_direction ? $scope : '',
 			__( 'Location', 'linker-tools' )               => implode( ', ', array_filter( array( $site['location_label'] ?? '', $site['postal_code'] ?? '', $site['country_code'] ?? '' ), static fn ( $part ): bool => '' !== $part ) ),
 			__( 'Latitude', 'linker-tools' )               => $site['latitude'] ?? '',
@@ -957,10 +976,12 @@ final class Context {
 			__( 'Time zone', 'linker-tools' )              => $site['timezone'] ?? '',
 			__( 'Project type', 'linker-tools' )           => $use,
 			__( 'Annual electricity use', 'linker-tools' ) => isset( $brief['annual_load']['kwh'] ) ? $brief['annual_load']['kwh'] . ' kWh' : '',
+			__( 'Basis for the annual figure', 'linker-tools' ) => $basis,
 			__( 'Source note', 'linker-tools' )            => $brief['annual_load']['source_note'] ?? '',
 			__( 'Main purpose', 'linker-tools' )           => $purpose,
+			__( 'Target grid import limit', 'linker-tools' ) => implode( ', ', array_unique( $limits ) ),
 			__( 'Grid phases', 'linker-tools' )            => $equipment['grid_phase'] ?? '',
-			__( 'PV array size', 'linker-tools' )          => isset( $equipment['pv_dc_kw'] ) ? $equipment['pv_dc_kw'] . ' kWp' : '',
+			__( 'PV array size', 'linker-tools' )          => null !== $pv_kwp ? $pv_kwp . ' kWp' : '',
 			__( 'Continuous discharge power', 'linker-tools' ) => isset( $equipment['required_discharge_ac_kw'] ) ? $equipment['required_discharge_ac_kw'] . ' kW' : '',
 			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $equipment['required_usable_kwh'] . ' kWh' : '',
 			__( 'Backup load', 'linker-tools' )            => isset( $inputs['backup_demand']['load_kw'] ) ? $inputs['backup_demand']['load_kw'] . ' kW' : '',
