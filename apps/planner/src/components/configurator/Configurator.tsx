@@ -365,8 +365,11 @@ export default function Configurator({
 	const searchId =
 		submittedSearch ??
 		currentSearch ??
-		selectedSearch ??
-		(guided ? null : newest(SEARCH_TASK));
+		(guided
+			? step === "review"
+				? selectedSearch
+				: null
+			: (selectedSearch ?? newest(SEARCH_TASK)));
 	const search = useProjectResult(
 		client,
 		session,
@@ -597,6 +600,18 @@ export default function Configurator({
 		setStep(next);
 		setNavigationRefused(false);
 	}
+	async function saveGuidedSelection() {
+		const instance = lifetime.current;
+		const saved = await controller.save();
+		if (
+			!saved ||
+			instance !== lifetime.current ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		setSubmittedReport(null);
+		showStep("review");
+	}
 	async function startSharedDc(
 		path: "runs/calculate" | "runs/weather" | "runs/pv",
 	) {
@@ -773,17 +788,7 @@ export default function Configurator({
 			if (!edit(() => next))
 				throw new ApiError(409, "equipment_selection_changed");
 			setSubmittedSearch(run.id);
-			if (guided) {
-				const saved = await controller.save();
-				if (
-					!saved ||
-					instance !== lifetime.current ||
-					!client.isCurrentScope(session.query_scope)
-				)
-					return;
-				setSubmittedReport(null);
-				showStep("review");
-			}
+			if (guided) await saveGuidedSelection();
 		} catch (cause) {
 			if (instance === lifetime.current) {
 				setError(cause);
@@ -1025,6 +1030,15 @@ export default function Configurator({
 				: step;
 	const guidedReview = guided && activeStep === "review";
 	const guidedView = guidedReview || (guided && activeStep === "system");
+	const guidedChoiceNeedsSave =
+		guided && activeStep === "system" && choice && draft.pending;
+	const outdatedOption =
+		guided &&
+		activeStep === "system" &&
+		error instanceof ApiError &&
+		["equipment_selection_changed", "product_evidence_changed"].includes(
+			error.code,
+		);
 	const currentReport = Boolean(
 		reportRun &&
 		reportRun.revision === draft.baseline.revision &&
@@ -1274,6 +1288,8 @@ export default function Configurator({
 						onClick={() =>
 							void operations.retry(record).then((reply) => {
 								if (reply?.path === "runs/check-equipment") {
+									guidedReportAttempt.current = null;
+									void history.refetch();
 									navigate("review");
 								} else if (
 									reply &&
@@ -1460,6 +1476,24 @@ export default function Configurator({
 					)}
 					{activeStep === "system" && (
 						<>
+							{guidedChoiceNeedsSave && (
+								<button
+									className="sc-button sc-primary"
+									disabled={controller.busy}
+									onClick={() => void saveGuidedSelection()}
+								>
+									{__("Try again", "linker-tools")}
+								</button>
+							)}
+							{outdatedOption && (
+								<button
+									className="sc-button sc-primary"
+									disabled={blocked || modelsUnavailable}
+									onClick={() => void compare()}
+								>
+									{__("Compare systems", "linker-tools")}
+								</button>
+							)}
 							{awaitingComparison ? null : findingEquipment && guided ? (
 								<p className="sc-card" role="status">
 									{__("Finding equipment for your project…", "linker-tools")}
@@ -1627,7 +1661,11 @@ export default function Configurator({
 											!blocked && (
 												<button
 													className="sc-button sc-primary"
-													onClick={() => void generate(null)}
+													onClick={() =>
+														report.isError
+															? void report.refetch()
+															: void generate(null)
+													}
 												>
 													{__("Try again", "linker-tools")}
 												</button>

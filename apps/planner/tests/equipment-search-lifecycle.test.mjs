@@ -228,6 +228,7 @@ async function equipmentApp(
 		inputs,
 		hash,
 		guided = false,
+		loseSelectionReply = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -304,6 +305,7 @@ async function equipmentApp(
 	let comparisonUnavailable = legacyUnavailable;
 	let findAttempts = 0;
 	let lostReceipt = null;
+	let lostSelection = null;
 	let reportRun = null;
 	const revisions = new Map([[project.revision, structuredClone(project)]]);
 	let serverRun = savedRun,
@@ -424,12 +426,20 @@ async function equipmentApp(
 				assert.equal(body, lostReceipt.body);
 				return structuredClone(lostReceipt.receipt);
 			}
+			if (path === "projects/revise" && lostSelection) {
+				assert.equal(body, lostSelection.body);
+				return structuredClone(lostSelection.project);
+			}
 			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
 				revisions.set(project.revision, structuredClone(project));
+				if (loseSelectionReply) {
+					lostSelection = { body, project: structuredClone(project) };
+					throw new ApiError(502, "network_error");
+				}
 				return structuredClone(project);
 			}
 			if (path === "runs/report") {
@@ -1244,7 +1254,7 @@ test("one guided configuration choice saves it and prepares its report", async (
 			equipment_requirements: savedRequirements,
 		},
 	});
-	await untilRun(app.pending);
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
 	app.setServerRun("succeeded");
 	await untilRun(() =>
 		app.button("Use this configuration")?.matches(":enabled"),
@@ -1259,6 +1269,32 @@ test("one guided configuration choice saves it and prepares its report", async (
 	assert.equal(saved.run_id, app.serverRunId());
 	assert.equal(app.requests[2].body.expected_revision, 3);
 	assert.equal(window.location.hash, "#sc-review");
+});
+
+test("after losing the selection receipt, retrying keeps the same save and opens review", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		guided: true,
+		loseSelectionReply: true,
+		hash: "#sc-system",
+		inputs: {
+			equipment_setup: { ...savedSetup, equipment_use: null },
+			equipment_requirements: savedRequirements,
+		},
+	});
+	await untilRun(() => searchRequests(app).length === 1 && app.serverRunId());
+	app.setServerRun("succeeded");
+	await untilRun(() =>
+		app.button("Use this configuration")?.matches(":enabled"),
+	);
+	await act(async () => app.button("Use this configuration").click());
+	await untilRun(() => app.button("Try again")?.matches(":enabled"));
+	await act(async () => app.button("Try again").click());
+	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(window.location.hash, "#sc-review");
+	const saves = app.requests.filter(({ path }) => path === "projects/revise");
+	assert.equal(saves.length, 2);
+	assert.deepEqual(saves[0].body, saves[1].body);
 });
 
 for (const [multi, selection] of [
