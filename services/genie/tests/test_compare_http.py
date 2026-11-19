@@ -294,7 +294,9 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     assert comparisons == ([[SAJ, GOODWE]] if compare else [])
 
 
-@pytest.mark.parametrize("scenario", ["misattributed", "independent", "warning"])
+@pytest.mark.parametrize(
+    "scenario", ["misattributed", "independent", "warning", "warning-then-error"]
+)
 def test_ac_current_cannot_support_a_shared_battery_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scenario: str
 ) -> None:
@@ -345,6 +347,7 @@ def test_ac_current_cannot_support_a_shared_battery_limit(
     claim = {
         "misattributed": "The other inverter has a total current of {fact:p2003.max_ac_current_a} for both battery inputs.",
         "independent": "The maximum AC current for the L260-OMNI is {fact:p2003.max_ac_current_a}.",
+        "warning-then-error": "Do not use a shared limit from the SAJ because the L260-OMNI supplies a total current of {fact:p2003.max_ac_current_a} for both battery inputs.",
         "warning": "Do not use a shared limit of {fact:p2003.max_ac_current_a} for both battery inputs: that is the L260-OMNI’s maximum AC current.",
     }[scenario]
     draft = TurnOutput(
@@ -376,7 +379,7 @@ def test_ac_current_cannot_support_a_shared_battery_limit(
             },
         )
     assert response.status_code == 200
-    if scenario == "misattributed":
+    if scenario in {"misattributed", "warning-then-error"}:
         assert "181 A for both battery inputs" not in response.text
     else:
         texts = [

@@ -1363,30 +1363,34 @@ def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[st
     if has_qualified_current:
         for text in _model_texts(output):
             for prose in re.split(r"[,;\n]|[.!?](?=\s|$)", PLACEHOLDER.sub("", text)):
-                scope = _COMBINED_INPUTS.search(prose)
-                if scope is None or not re.search(
+                if not re.search(
                     r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
                     r"|^\s*(?:it|er|dieser|dieses)\b|\bshare it\b",
                     prose,
                     re.I,
                 ):
                     continue
-                # Negation must apply to the sharing assertion itself. A later
-                # “not available at each input” does not negate “is shared”.
-                if re.search(
-                    r"\b(?:not\s+(?:use\s+)?(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
-                    prose[: scope.start()],
-                    re.I,
-                ) or re.search(
-                    r"\b(?:not|nicht)\s+(?:share|gemeinsam|zusammen|geteil)",
-                    scope.group(),
-                    re.I,
-                ):
-                    continue
-                failures.append(
-                    "Keep the service-written per-input limit without a second scope assertion."
-                )
-                return failures
+                # Each assertion has its own polarity, even when two of them
+                # end at the same “both inputs”.
+                start = 0
+                while scope := _COMBINED_INPUTS.search(prose, start):
+                    if not (
+                        re.search(
+                            r"\b(?:not\s+(?:use\s+)?(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
+                            prose[: scope.start()],
+                            re.I,
+                        )
+                        or re.search(
+                            r"\b(?:not|nicht)\s+(?:share|gemeinsam|zusammen|geteil)",
+                            scope.group(),
+                            re.I,
+                        )
+                    ):
+                        failures.append(
+                            "Keep the service-written per-input limit without a second scope assertion."
+                        )
+                        return failures
+                    start = scope.start() + 1
     return failures
 
 
