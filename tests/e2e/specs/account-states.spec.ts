@@ -394,6 +394,22 @@ for (const language of LANGUAGES) {
 					page.locator('.linker-account-main')
 				).not.toContainText(/€|EUR/);
 
+				await page
+					.getByRole('link', {
+						name:
+							language.lang === 'de'
+								? 'Neue Anfrage'
+								: 'New inquiry',
+						exact: true,
+					})
+					.click();
+				await expect(
+					page.locator('form.linker-inquiry-form')
+				).toBeVisible();
+				await expect(
+					page.locator('form.linker-inquiry-form input[name="lang"]')
+				).toHaveValue(language.lang);
+
 				await page.goto(base() + language.inquiries);
 				const emptyInquiries = page.locator(
 					'.linker-account-empty-inquiries'
@@ -649,7 +665,16 @@ for (const language of LANGUAGES) {
 				await expect(
 					contact.locator('a[href^="mailto:"]')
 				).toBeVisible();
-				await expect(shortcuts.getByRole('link')).toHaveCount(3);
+				await expect(shortcuts.getByRole('link')).toHaveCount(4);
+				await expect(
+					shortcuts.getByRole('link', {
+						name:
+							language.lang === 'de'
+								? 'Alle Projekte'
+								: 'All projects',
+						exact: true,
+					})
+				).toHaveAttribute('href', /[?&]projects=1$/);
 				for (const path of [
 					language.inquiries,
 					language.solutions,

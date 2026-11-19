@@ -18,7 +18,7 @@
 | 发送成功确认 | Woo 默认 `myaccount/lost-password-confirmation.php`（裸文本落在页底） | **新增覆写** `templates/myaccount/auth/lost-password-confirmation.php`：同一张卡，Woo 的 notice + 过滤后的说明句进卡头 |
 | 重置密码表单 | Woo 默认 `myaccount/form-reset-password.php`（裸模板，链路最差一环） | **新增覆写** `templates/myaccount/auth/form-reset-password.php`：卡 + 双密码字段 + Woo 自带眼睛 + Woo 自带强度计 |
 | 账户细节（改密） | Woo 默认 `myaccount/form-edit-account.php` | **新增覆写** `templates/myaccount/account/form-edit-account.php`：资料卡 + 改密卡（说明行 + 干净标签） |
-| pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | `Account/AccountStatusNotice.php` 通过原生 `woocommerce_account_content` 在端点内容前显示 pending/restricted 共用的 LC 状态卡（restricted 含保存原因）；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
+| pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | `Account/AccountStatusNotice.php` 通过原生 `woocommerce_account_content` 在当前端点内容之后显示 pending/restricted 共用的 LC 状态卡（restricted 含保存原因）；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
 | restricted / 空 Proforma / guest 带草稿门禁 | `Presentation/LoginGate.php` 的 `sf-checkout-empty` 文本块 | 同文件重写为卡片（badge + 标题 + 正文 + 动作）；guest 门禁两种形态（草稿空 = 取号，草稿有货 = 登录发送） |
 | 工作台骨架 | `content/livecanvas/account/workspace.html` | 深绿横幅放客户姓名和新建询盘；桌面左侧栏，手机在工作区顶部提供一个账户菜单。两者展示同一分组及当前页。 |
 | 询盘列表行 | `inquiry-card.html` 行内展开全量商品行 | 重写：`n Produkte` 摘要（`_n` 复数）+ 单号 + 状态胶囊 + 日期 + 金额 + `View` 箭头 |

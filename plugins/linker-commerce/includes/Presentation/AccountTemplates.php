@@ -729,19 +729,19 @@ final class AccountTemplates {
 		foreach ( array_slice( $this->documents()->for_customer( $customer ), 0, 3 ) as $document ) {
 			$documents .= $this->fragment( 'document-row', $this->document_row( $document ) );
 		}
-		return $this->fragment(
-			'recent',
-			array(
-				'rows' => '' === $recent ? $this->fragment( 'empty' ) : $recent,
+		return $this->fragment( 'tiles', array( 'tiles' => $tiles ) )
+			. $this->fragment(
+				'recent',
+				array(
+					'rows' => '' === $recent ? $this->fragment( 'empty' ) : $recent,
+				)
 			)
-		)
 			. $this->fragment(
 				'documents-entry',
 				array(
 					'rows' => '' === $documents ? $this->fragment( 'empty-documents' ) : $documents,
 				)
-			)
-			. $this->fragment( 'tiles', array( 'tiles' => $tiles ) );
+			);
 	}
 
 	/**

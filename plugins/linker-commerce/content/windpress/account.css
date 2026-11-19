@@ -31,6 +31,7 @@ body.woocommerce-account.logged-in .linker-account-page #container-content-accou
 .linker-account .linker-account-mast .linker-account-btn.is-primary { background: var(--acct-card); color: var(--proto-ink-deep); }
 .linker-account .linker-account-mast .linker-account-btn.is-primary:hover { background: var(--proto-teal-100); }
 .linker-account .linker-account-mast .linker-account-btn:focus-visible { outline-color: var(--proto-teal-100); }
+@media (max-width: 480px) { .linker-account .linker-account-welcome { flex-basis: auto; } }
 
 .linker-account .linker-account-layout {
 	display: grid;
@@ -69,6 +70,19 @@ body.woocommerce-account.logged-in .linker-account-page #container-content-accou
 @media (min-width: 1024px) { .linker-account .linker-account-mobile-menu { display: none; } }
 .linker-account .linker-account-heading { display: grid; justify-items: start; gap: 6px; }
 .linker-account .linker-account-heading h1 { margin: 0; color: var(--acct-ink); font-size: clamp(24px, 2.7vw, 36px); font-weight: 650; line-height: 1.17; letter-spacing: -.025em; overflow-wrap: anywhere; }
+
+.linker-account .linker-account-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--proto-teal-700);
+	white-space: nowrap;
+}
+
+.linker-account .linker-account-back svg { transition: translate var(--proto-duration) var(--proto-ease); }
+.linker-account .linker-account-back:hover svg { translate: -2px 0; }
 
 /* The sidebar navigation reads the same menu the header dropdown does. */
 .linker-account .linker-account-nav {
@@ -315,6 +329,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 @media (max-width: 600px) {
 	.linker-account .linker-account-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--proto-space-2); }
 	.linker-account .linker-account-shortcuts a { flex-direction: column; gap: 6px; padding-inline: 4px; font-size: 12.5px; text-align: center; overflow-wrap: anywhere; }
+	.linker-account .linker-account-tile { flex-direction: column; align-items: start; padding: var(--proto-space-3); }
 	.linker-account .linker-account-panel-heading,
 	.linker-account .linker-account-panel-body { padding-inline: var(--proto-space-4); }
 }
@@ -336,29 +351,14 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-lookup .form-row input[type="search"] { height: 44px; min-height: 44px; }
 .linker-account .linker-account-lookup button { min-height: 44px; }
 
-.linker-account .linker-account-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .linker-account .linker-account-recent-list { padding: 0; }
 .linker-account .linker-account-recent-list li + li { border-top: 1px solid var(--acct-line-soft); }
 .linker-account .linker-account-recent-list .linker-account-row { padding: 12px var(--proto-space-4); }
 .linker-account .linker-account-recent-list .linker-account-row:hover { background: var(--proto-teal-50); }
 .linker-account .linker-account-recent-list .linker-account-row:focus-visible { outline-offset: -2px; }
 
-/* Saved project rows are one link, with the title and update date on the left. */
-.linker-account .linker-account-projects .linker-account-rows { padding: 0; }
-.linker-account .linker-account-project-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto auto;
-	gap: 10px;
-	min-height: 50px;
-	padding: 10px var(--proto-space-4);
-	text-decoration: none;
-}
-.linker-account .linker-account-project-row:is(:hover,:focus-visible) { background: var(--proto-teal-50); }
-.linker-account .linker-account-project-row:focus-visible { outline: var(--proto-focus-ring); outline-offset: -2px; }
-.linker-account .linker-account-project-row svg { color: var(--proto-teal-700); }
-
 /* ── Inquiries ─────────────────────────────────────────────────────────── */
-.linker-account .linker-account-inquiry-block { display: grid; min-width: 0; align-content: start; }
+.linker-account .linker-account-inquiry-block { display: grid; gap: var(--proto-space-4); min-width: 0; align-content: start; }
 
 .linker-account .linker-account-order-notices:empty { display: none; }
 .linker-account .linker-account-order-notices .woocommerce-info:has(> .wc-forward) { display: block; }
@@ -720,6 +720,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-project-link svg { flex: none; color: var(--proto-teal-700); }
 .linker-account .linker-account-project-link .linker-account-solution-date { display: block; }
 .linker-account .linker-account-project-link:hover { border-color: var(--proto-teal-300); background: var(--proto-teal-50); }
+.linker-account .linker-account-project-link:focus-visible { outline: var(--proto-focus-ring); outline-offset: 2px; }
 .linker-account .linker-account-solution { overflow-wrap: anywhere; }
 
 .linker-account .linker-account-solution-date { margin: 5px 0 0; font-size: 13px; color: var(--acct-muted); }
