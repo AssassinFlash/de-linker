@@ -1861,10 +1861,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             )
             == 3
         )
-        assert any(
-            row[0] == ("5 pc" if locale == "en" else "5 St.") and "460" in row[1]
-            for row in bom.table.rows
-        )
+        assert not any("460 Wp" in row[1] for row in bom.table.rows)
         assert any(
             row[0] == ("3 pc" if locale == "en" else "3 St.")
             and battery["model"] in row[1]
@@ -1873,7 +1870,8 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         part_table = next(
             section for section in report.sections if section.id == "pv-components"
         ).table
-        assert part_table is not None and part_table.rows[0][0] == "5"
+        assert part_table is not None
+        assert any(row[0] == "5" and "460 Wp" in row[1] for row in part_table.rows)
         section = next(section for section in report.sections if section.id == "energy")
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)
