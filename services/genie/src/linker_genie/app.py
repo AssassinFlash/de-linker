@@ -27,7 +27,7 @@ from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from threading import Lock
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 import httpx
@@ -298,16 +298,20 @@ def _compute_turn(
     start_token = turn_log().start(body.conversation_id, body.locale)
     abilities = ability_client().for_turn(original_permission)
     prepare = getattr(request.app.state, "prepare", None)
-    with timing.phase(clock, timing.UNDERSTAND):
-        prepared: Prepared = (
-            prepare(body)
-            if prepare is not None
-            else understander().prepare(
-                body,
-                abilities,
-                get_vocabulary=lambda: store_vocabulary().get(original_permission),
+    try:
+        with timing.phase(clock, timing.UNDERSTAND):
+            prepared: Prepared = (
+                prepare(body)
+                if prepare is not None
+                else understander().prepare(
+                    body,
+                    abilities,
+                    get_vocabulary=lambda: store_vocabulary().get(original_permission),
+                )
             )
-        )
+    except PublicationChanged as error:
+        _record_incomplete_turn(body, None, clock, start_token, f"publication: {error}")
+        raise
     if prepared.timing is not None:
         clock.adopt(prepared.timing)
     # Which earlier turns of this conversation offered the team's contact, newest
@@ -331,26 +335,9 @@ def _compute_turn(
             publication=original_permission,
         )
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
-        with timing.phase(clock, timing.LOG):
-            turn_log().record(
-                conversation_id=body.conversation_id,
-                locale=body.locale,
-                grounded=False,
-                failures=(f"internal: {error}",),
-                fallback=True,
-                provider=provider_name(),
-                model=model_name(),
-                tool_calls=[],
-                output={},
-                question=last_customer_message(body),
-                page=body.page_context.model_dump(),
-                understanding=prepared.log,
-                approved=body.user.partner,
-                # No stream will run: the record stays partial (no total) and is
-                # reported as incomplete, never as a fast turn.
-                timing=clock.as_log(complete=False),
-            )
-            turn_log().finish(start_token)
+        _record_incomplete_turn(
+            body, prepared, clock, start_token, f"internal: {error}"
+        )
         raise
     if result.retried and result.attempts > 1:
         prepared.log["retried"] = list(result.retried)
@@ -415,47 +402,13 @@ def _compute_turn(
     # answered by the service alone: no model ran (model-routing audits read
     # provider/model). The four model channels are unchanged; these routes are
     # sentences, not channels.
-    # Keep the computed facts/citations bound to their original input set. The
-    # outer handler freshly validates this same S0 immediately before SSE release.
-    permission = original_permission
-    permission.require_products(list(product_ids(shipped)))
-    permission.require_urls(list(document_urls(shipped)))
-    # Stored citations carry content identity. A historical same-URL link cannot
-    # silently point its old page references at newly replaced bytes.
-    for block in shipped["blocks"]:
-        if block.get("type") != "document" or not block.get("url"):
-            continue
-        url = block["url"].split("#")[0]
-        cited = result.facts.documents.get(block["ref"])
-        evidence = cited.evidence if cited is not None else None
-        if evidence is not None:
-            document = permission.documents.get(evidence.document_id)
-            owner = permission.canonical(evidence.product_id)
-            if (
-                document is None
-                or owner not in document["product_ids"]
-                or document["document_revision"] != evidence.document_revision
-                or url not in [document["url"], *document.get("aliases", [])]
-            ):
-                raise PublicationChanged("cited document association changed")
-            block["evidence_product_id"] = owner
-            block["document_id"] = evidence.document_id
-            block["document_revision"] = evidence.document_revision
-            continue
-        if block["ref"].startswith("compat.document."):
-            block["url"] = None
-            continue
-        document = next(
-            (
-                d
-                for d in permission.documents.values()
-                if url in [d["url"], *d.get("aliases", [])]
-            ),
-            None,
+    try:
+        _check_shipped_publication(shipped, result.facts, original_permission)
+    except PublicationChanged as error:
+        _record_incomplete_turn(
+            body, prepared, clock, start_token, f"publication: {error}"
         )
-        if document is not None:
-            block["document_id"] = document["document_id"]
-            block["document_revision"] = document["document_revision"]
+        raise
     code_made = prepared.route.name in (
         "card_selection",
         "person",
@@ -494,6 +447,80 @@ def _compute_turn(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
+
+
+def _check_shipped_publication(
+    shipped: dict[str, Any], facts: TurnFacts, permission: Snapshot
+) -> None:
+    # Keep the computed facts/citations bound to their original input set. The
+    # outer handler freshly validates this same S0 immediately before SSE release.
+    permission.require_products(list(product_ids(shipped)))
+    permission.require_urls(list(document_urls(shipped)))
+    # Stored citations carry content identity. A historical same-URL link cannot
+    # silently point its old page references at newly replaced bytes.
+    for block in shipped["blocks"]:
+        if block.get("type") != "document" or not block.get("url"):
+            continue
+        url = block["url"].split("#")[0]
+        cited = facts.documents.get(block["ref"])
+        evidence = cited.evidence if cited is not None else None
+        if evidence is not None:
+            document = permission.documents.get(evidence.document_id)
+            owner = permission.canonical(evidence.product_id)
+            if (
+                document is None
+                or owner not in document["product_ids"]
+                or document["document_revision"] != evidence.document_revision
+                or url not in [document["url"], *document.get("aliases", [])]
+            ):
+                raise PublicationChanged("cited document association changed")
+            block["evidence_product_id"] = owner
+            block["document_id"] = evidence.document_id
+            block["document_revision"] = evidence.document_revision
+            continue
+        if block["ref"].startswith("compat.document."):
+            block["url"] = None
+            continue
+        document = next(
+            (
+                d
+                for d in permission.documents.values()
+                if url in [d["url"], *d.get("aliases", [])]
+            ),
+            None,
+        )
+        if document is not None:
+            block["document_id"] = document["document_id"]
+            block["document_revision"] = document["document_revision"]
+
+
+def _record_incomplete_turn(
+    body: TurnRequest,
+    prepared: Prepared | None,
+    clock: timing.Timing,
+    start_token: int,
+    failure: str,
+) -> None:
+    with timing.phase(clock, timing.LOG):
+        turn_log().record(
+            conversation_id=body.conversation_id,
+            locale=body.locale,
+            grounded=False,
+            failures=(failure,),
+            fallback=True,
+            provider=provider_name(),
+            model=model_name(),
+            tool_calls=[],
+            output={},
+            question=last_customer_message(body),
+            page=body.page_context.model_dump(),
+            understanding=prepared.log if prepared is not None else None,
+            approved=body.user.partner,
+            # No stream will run: the record stays partial (no total) and is
+            # reported as incomplete, never as a fast turn.
+            timing=clock.as_log(complete=False),
+        )
+        turn_log().finish(start_token)
 
 
 @app.post("/turn/{turn_id}/vote")

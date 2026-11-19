@@ -16,10 +16,12 @@ import pytest
 from conftest import SHELL
 from fastapi.testclient import TestClient
 
+import turn_latency
 from linker_genie.abilities import Abilities, AbilityClient, AbilityError, gather
-from linker_genie.facts import Document, TurnFacts
+from linker_genie.facts import Document, DocumentEvidence, TurnFacts
 from linker_genie.lexicon import Vocabulary
 from linker_genie.log import TurnLog
+from linker_genie.page import PageReader
 from linker_genie.prices import Lookup, commerce_lookup
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.schema import (
@@ -291,10 +293,23 @@ def test_native_integer_ids_and_published_locale_ids_allow_verdict_only_response
 
 
 @pytest.mark.parametrize(
-    "failure", [None, "draft", "bytes", "outage", "new_member", "new_url"]
+    "failure",
+    [
+        None,
+        "draft",
+        "bytes",
+        "outage",
+        "new_member",
+        "new_url",
+        "new_owner",
+        "page_revoked",
+    ],
 )
 def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_changes(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str | None
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    failure: str | None,
 ) -> None:
     import json
 
@@ -302,6 +317,14 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
 
     seen: list[Abilities] = []
     raw = manifest()
+    if failure == "new_owner":
+        raw["products"].extend(manifest(2)["products"])
+    refused_before_validation = failure in {
+        "new_member",
+        "new_url",
+        "new_owner",
+        "page_revoked",
+    }
     model_finished = False
     validated: list[dict[str, Any]] = []
 
@@ -362,6 +385,13 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
     ) -> Prepared:
         assert get_vocabulary is not None
         seen.append(tools)
+        if failure == "page_revoked":
+            raw["products"] = []
+            pages = PageReader("https://wp.test", publication=authority)
+            try:
+                pages.read(body.page_context, "Show current products.", False)
+            finally:
+                pages.close()
         result = nothing(body)
         _payload, result.facts = tools.record(
             "linker/search-products", {"text": "initial"}
@@ -408,7 +438,14 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                 raw["documents"].append(
                     {**raw["documents"][0], "document_id": "new", "url": document_url}
                 )
-            facts.documents["fixture-document"] = Document(document_url, "Manual", 1)
+            evidence = (
+                DocumentEvidence("doc-1", "revision-1", 2)
+                if failure == "new_owner"
+                else None
+            )
+            facts.documents["fixture-document"] = Document(
+                document_url, "Manual", 1, evidence
+            )
             return TurnOutput(
                 language="en",
                 blocks=[
@@ -436,20 +473,34 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
         monkeypatch.setattr(service, "make_generate", make_generate)
         monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
         response = TestClient(service.app, headers=SHELL).post(
-            "/turn",
+            "/assistant/turn",
             json={
                 "conversation_id": "scoped-turn",
                 "messages": [{"role": "user", "content": "Show current products."}],
+                "page_context": {"type": "product", "product_id": 1}
+                if failure == "page_revoked"
+                else {},
             },
         )
+    if refused_before_validation:
+        # Give any start note left by the request time to pass the report's grace period.
+        with log._db:
+            log._db.execute("UPDATE turn_starts SET created_at = '2020-01-01 00:00:00'")
     log.close()
 
-    assert len(seen) == 3 and all(tools is seen[0] for tools in seen)
-    if failure in {"new_member", "new_url"}:
+    assert len(seen) == (1 if failure == "page_revoked" else 3)
+    assert all(tools is seen[0] for tools in seen)
+    if refused_before_validation:
         assert response.status_code == 409, response.text
+        assert response.json() == {"detail": "publication_changed"}
         assert "event: block" not in response.text
         assert validated == []
-        assert Counter(request.url.path for request in requests)[MANIFEST] == 1
+        assert Counter(request.url.path for request in requests)[MANIFEST] == (
+            2 if failure == "page_revoked" else 1
+        )
+        assert turn_latency.main([str(log.path)]) == 1  # No completed turns.
+        report = capsys.readouterr().out
+        assert "completed=0 incomplete=1 unfinished=0" in report
         return
     assert validated[0]["products"] == [
         {"product_id": 1, "product_revision": "product-1"}
