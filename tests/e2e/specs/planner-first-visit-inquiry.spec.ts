@@ -70,8 +70,8 @@ for (const lang of ['en', 'de'] as const) {
 			const consumption = energy.getByRole('textbox', {
 				name:
 					lang === 'en'
-						? 'Annual electricity use'
-						: 'Jährlicher Stromverbrauch',
+						? 'Annual electricity use kWh'
+						: 'Jährlicher Stromverbrauch kWh',
 				exact: true,
 			});
 			await grid.selectOption('3');
