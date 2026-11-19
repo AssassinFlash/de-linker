@@ -23,6 +23,58 @@
 			"title": "Location",
 			"type": "object"
 		},
+		"PanelElectrical": {
+			"additionalProperties": false,
+			"description": "Declared panel values used by a string design, independent of stock.",
+			"properties": {
+				"pmax_w": {
+					"exclusiveMinimum": 0,
+					"title": "Pmax W",
+					"type": "number"
+				},
+				"voc_v": {
+					"exclusiveMinimum": 0,
+					"title": "Voc V",
+					"type": "number"
+				},
+				"vmpp_v": {
+					"exclusiveMinimum": 0,
+					"title": "Vmpp V",
+					"type": "number"
+				},
+				"isc_a": {
+					"exclusiveMinimum": 0,
+					"title": "Isc A",
+					"type": "number"
+				},
+				"impp_a": {
+					"exclusiveMinimum": 0,
+					"title": "Impp A",
+					"type": "number"
+				},
+				"beta_voc_pct_per_c": {
+					"maximum": 0,
+					"title": "Beta Voc Pct Per C",
+					"type": "number"
+				},
+				"max_series_fuse_a": {
+					"exclusiveMinimum": 0,
+					"title": "Max Series Fuse A",
+					"type": "number"
+				}
+			},
+			"required": [
+				"pmax_w",
+				"voc_v",
+				"vmpp_v",
+				"isc_a",
+				"impp_a",
+				"beta_voc_pct_per_c",
+				"max_series_fuse_a"
+			],
+			"title": "PanelElectrical",
+			"type": "object"
+		},
 		"PlaneInput": {
 			"additionalProperties": false,
 			"description": "One roof plane of the array. Without planes the array is one plane at the default tilt and facing.",
@@ -58,6 +110,17 @@
 	},
 	"additionalProperties": false,
 	"properties": {
+		"module": {
+			"anyOf": [
+				{
+					"$ref": "#/$defs/PanelElectrical"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null
+		},
 		"locale": {
 			"default": "en",
 			"enum": [

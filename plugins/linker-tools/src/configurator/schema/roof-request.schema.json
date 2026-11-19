@@ -22,10 +22,41 @@
 			],
 			"title": "Location",
 			"type": "object"
+		},
+		"PanelDimensions": {
+			"additionalProperties": false,
+			"description": "Declared panel dimensions and rated power for a roof packing calculation.",
+			"properties": {
+				"pmax_w": {
+					"exclusiveMinimum": 0,
+					"title": "Pmax W",
+					"type": "number"
+				},
+				"length_m": {
+					"exclusiveMinimum": 0,
+					"title": "Length M",
+					"type": "number"
+				},
+				"width_m": {
+					"exclusiveMinimum": 0,
+					"title": "Width M",
+					"type": "number"
+				}
+			},
+			"required": [
+				"pmax_w",
+				"length_m",
+				"width_m"
+			],
+			"title": "PanelDimensions",
+			"type": "object"
 		}
 	},
 	"additionalProperties": false,
 	"properties": {
+		"module": {
+			"$ref": "#/$defs/PanelDimensions"
+		},
 		"plz": {
 			"description": "European postcode (PLZ) as its country writes it",
 			"maxLength": 12,
@@ -61,6 +92,7 @@
 		}
 	},
 	"required": [
+		"module",
 		"plz",
 		"location"
 	],

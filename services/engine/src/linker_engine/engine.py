@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from .compatibility import Compatibility, DocumentRef, PairResult
 from .models import Doc, Locale, ProductRef, Release
-from .products import Product, Products, PvModule
+from .products import Product, Products
 from .pvgis import Pvgis
 
 
@@ -49,7 +49,7 @@ def release(pair: PairResult, locale: Locale) -> Release:
     )
 
 
-def documents_of(product: Product | PvModule, kind: str, locale: Locale) -> list[Doc]:
+def documents_of(product: Product, kind: str, locale: Locale) -> list[Doc]:
     """A product's documents of one kind as answer objects, in the report's
     language when the product data carries it (the feed marks each document's
     language; a language the product data has no document for keeps what there

@@ -318,12 +318,11 @@
 		},
 		"overlayItem": {
 			"type": "object",
-			"allOf": [{ "if": { "properties": { "kind": { "const": "cable" } } }, "then": { "required": ["canonical_product_id", "product_revision", "reference_revision", "cable_facts"] }, "else": { "not": { "required": ["cable_facts"] } } }],
-			"required": ["id", "kind", "brand", "model", "figures", "documents"],
+			"required": ["id", "kind", "brand", "model", "figures", "documents", "canonical_product_id", "product_revision", "reference_revision", "cable_facts"],
 			"additionalProperties": false,
 			"properties": {
 				"id": { "type": "string", "minLength": 1 },
-				"kind": { "enum": ["pv_module", "cable"] },
+				"kind": { "const": "cable" },
 				"cable_facts": { "$ref": "#/$defs/cableFacts" },
 				"canonical_product_id": { "type": "integer", "minimum": 1 },
 				"product_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },

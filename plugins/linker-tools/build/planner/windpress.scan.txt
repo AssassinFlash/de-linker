@@ -253,6 +253,7 @@ sc-option-row
 sc-package
 sc-package-capacity
 sc-package-status
+sc-panel-measurements
 sc-preliminary-layout
 sc-preliminary-review
 sc-primary

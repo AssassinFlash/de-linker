@@ -418,9 +418,7 @@ def residential(
     ]
     module = _module_name(design)
     if module:
-        # The reference module belongs to a string layout; without a released
-        # system no layout exists, and the sentence would name no module.
-        assumptions.insert(1, t("limit.reference_module", locale, model=module))
+        assumptions.insert(1, t("limit.declared_module", locale, model=module))
     if not request.planes:
         assumptions.append(t("limit.default_orientation", locale))
     assumptions += [

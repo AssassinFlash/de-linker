@@ -202,92 +202,20 @@ class Product:
 
 
 @dataclass(frozen=True)
-class PvModule:
-    """The reference PV module of the engineering overlay (a design assumption)."""
-
-    id: str
-    brand: str
-    model: str
-    pmax_w: float
-    voc_v: float
-    vmpp_v: float
-    isc_a: float
-    impp_a: float
-    beta_voc_pct_per_c: float
-    max_series_fuse_a: float
-    length_m: float
-    width_m: float
-    figures: dict[str, Figure] = field(repr=False)
-    documents: tuple[Document, ...] = field(repr=False)
-
-    @classmethod
-    def from_overlay(cls, raw: dict[str, Any]) -> PvModule:
-        figures = _figures(raw["figures"])
-
-        def need(key: str) -> float:
-            found = figures.get(key)
-            value = units.number(found.value) if found else None
-            if value is None:
-                raise FeedError(f"overlay {raw['id']}: figure {key} is missing")
-            return value
-
-        dimensions = figures.get("dimensions_mm")
-        sides = [
-            float(side)
-            for side in (dimensions.value if dimensions else "")
-            .replace("×", "x")
-            .split("x")
-            if side.strip().replace(".", "").isdigit()
-        ]
-        if len(sides) < 2:
-            raise FeedError(f"overlay {raw['id']}: figure dimensions_mm is missing")
-        return cls(
-            id=raw["id"],
-            brand=raw["brand"],
-            model=raw["model"],
-            pmax_w=need("pmax_w"),
-            voc_v=need("voc_v"),
-            vmpp_v=need("vmpp_v"),
-            isc_a=need("isc_a"),
-            impp_a=need("impp_a"),
-            beta_voc_pct_per_c=need("beta_voc_pct_per_c"),
-            max_series_fuse_a=need("max_series_fuse_a"),
-            length_m=sides[0] / 1000,
-            width_m=sides[1] / 1000,
-            figures=figures,
-            documents=tuple(Document(**document) for document in raw["documents"]),
-        )
-
-
-@dataclass(frozen=True)
 class Products:
     """All products of one feed, indexed for the design steps."""
 
     generated_at: str
     compatibility_version: str
     products: tuple[Product, ...]
-    reference_module: PvModule | None
-
-    @property
-    def module(self) -> PvModule:
-        """Only paths that actually need a prepared reference may read it.
-
-        A withdrawn reference does not prevent loading unrelated saleable
-        products. HTTP consumers establish its current Woo evidence first.
-        """
-        if self.reference_module is None:
-            raise FeedError("feed has no prepared reference PV module")
-        return self.reference_module
 
     @classmethod
     def from_feed(cls, feed: dict[str, Any]) -> Products:
         validate(feed, "feed.schema.json")
-        modules = [item for item in feed["overlay"] if item["kind"] == "pv_module"]
         return cls(
             generated_at=feed["generated_at"],
             compatibility_version=feed["compatibility_version"],
             products=tuple(Product.from_feed(raw) for raw in feed["products"]),
-            reference_module=PvModule.from_overlay(modules[0]) if modules else None,
         )
 
     @classmethod

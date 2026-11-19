@@ -1,10 +1,9 @@
 /**
  * Engine and Store API stand-ins for tests and stories, answering with the
  * real engine's recorded answers (tests/fixtures/configurator). The engine
- * writes them and keeps them current (services/engine/tests/test_ui_fixtures.py,
- * which holds the request behind each file, with the fixture feed, a real
- * PVGIS profile for Munich and the official LoD2 cut around Triftstraße 5);
- * the Store API answers were read from the live site.
+ * samples use the engineering test feed, a recorded Munich PVGIS profile and
+ * the official LoD2 cut around Triftstraße 5. The Store API answers were read
+ * from the live site.
  */
 
 /**

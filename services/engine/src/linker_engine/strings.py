@@ -4,8 +4,7 @@ The layout answers two questions for a candidate inverter: can the array be
 connected within the inverter's MPPT windows at all, and how many strings run
 in parallel on each MPPT, which decides the string fuses. Each roof plane gets
 MPPTs of its own (strings of different orientations are not mixed on one
-tracker). It uses the reference module of the engineering overlay, a design
-assumption the report discloses: the installer's module can change the layout.
+tracker). The layout uses the electrical characteristics declared in the project.
 """
 
 from __future__ import annotations
@@ -14,7 +13,8 @@ import math
 from dataclasses import dataclass
 
 from . import rules
-from .products import Product, PvModule
+from .models import PanelElectrical
+from .products import Product
 
 
 @dataclass(frozen=True)
@@ -53,7 +53,7 @@ class LayoutResult:
     reason: str | None  # the rule that failed when there is no layout
 
 
-def string_voltages(module: PvModule) -> tuple[float, float]:
+def string_voltages(module: PanelElectrical) -> tuple[float, float]:
     """Open-circuit voltage at the coldest and MPP voltage at the hottest design cell temperature."""
     beta = module.beta_voc_pct_per_c / 100
     voc_cold = module.voc_v * (1 + beta * (rules.STRING_T_MIN_C.value - 25))
@@ -61,7 +61,7 @@ def string_voltages(module: PvModule) -> tuple[float, float]:
     return voc_cold, vmp_hot
 
 
-def fuses_needed(parallel_strings: int, module: PvModule) -> int:
+def fuses_needed(parallel_strings: int, module: PanelElectrical) -> int:
     """gPV fuses on one MPPT, counted per string and pole.
 
     A fault in one string is fed by every other string in parallel with it.
@@ -78,7 +78,7 @@ def fuses_needed(parallel_strings: int, module: PvModule) -> int:
     return parallel_strings * int(rules.STRING_FUSE_POLES.value)
 
 
-def modules_for(kwp: float, module: PvModule) -> int:
+def modules_for(kwp: float, module: PanelElectrical) -> int:
     return max(1, round(kwp * 1000 / module.pmax_w))
 
 
@@ -95,7 +95,7 @@ def _closest(target: int, lengths: range, max_strings: int) -> tuple[int, int] |
 
 
 def layout(
-    inverter: Product, plane_kwps: list[float], module: PvModule
+    inverter: Product, plane_kwps: list[float], module: PanelElectrical
 ) -> LayoutResult:
     """The layout closest to each plane's kWp within every MPPT limit, or the failed rule."""
     n_mppt = inverter.n_mppt

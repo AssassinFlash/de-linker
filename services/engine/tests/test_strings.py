@@ -2,12 +2,14 @@
 
 import dataclasses
 
+from conftest import PANEL_ELECTRICAL
+
 from linker_engine import strings
 from linker_engine.products import Products
 
 
 def test_fuses_follow_the_reverse_current_test_per_mppt(products: Products) -> None:
-    module = products.module  # Isc 10.81 A, maximum series fuse 25 A
+    module = PANEL_ELECTRICAL  # Isc 10.81 A, maximum series fuse 25 A
     # (N - 1) x 1.25 x Isc must exceed 1.35 x 25 A = 33.75 A before fuses are needed.
     assert [strings.fuses_needed(n, module) for n in (1, 2, 3, 4, 5)] == [
         0,
@@ -23,7 +25,7 @@ def test_two_strings_per_mppt_need_no_fuses_even_with_twenty_strings(
 ) -> None:
     # The old engine counted strings per inverter and fused 3+; ETR has 10 MPPTs x 2 strings.
     etr = products.by_id[6509]  # GW100K-ETR-G10
-    result = strings.layout(etr, [100.0], products.module)
+    result = strings.layout(etr, [100.0], PANEL_ELECTRICAL)
     assert result.layout is not None
     assert result.layout.total_strings > 3
     assert max(group.strings for group in result.layout.strings) <= 2
@@ -46,14 +48,14 @@ def test_an_mppt_with_four_strings_gets_eight_fuses(products: Products) -> None:
         },
     )
     # 60 modules: four strings of 15 on the single MPPT.
-    result = strings.layout(wide, [27.6], products.module)
+    result = strings.layout(wide, [27.6], PANEL_ELECTRICAL)
     assert result.layout is not None
     (group,) = result.layout.strings
     assert (group.strings, group.fuses) == (4, 8)
 
 
 def test_ten_kwp_on_a_ten_kw_inverter(products: Products) -> None:
-    result = strings.layout(products.by_id[4107], [10.0], products.module)  # H2-10K-T3
+    result = strings.layout(products.by_id[4107], [10.0], PANEL_ELECTRICAL)  # H2-10K-T3
     assert result.layout is not None
     assert result.layout.module_count == 22
     assert result.layout.array_kwp == 10.12
@@ -65,12 +67,12 @@ def test_missing_datasheet_values_stop_the_layout(products: Products) -> None:
     ecoflow = products.by_id[
         6480
     ]  # figures without a hosted citation are not in the feed
-    assert strings.layout(ecoflow, [5.0], products.module).reason == "engineering_data"
+    assert strings.layout(ecoflow, [5.0], PANEL_ELECTRICAL).reason == "engineering_data"
 
 
 def test_planes_keep_their_own_mppts(products: Products) -> None:
     esa = products.by_id[3584]  # GW12K-ETA-G20: 4 MPPTs with one string each
-    result = strings.layout(esa, [6.0, 6.0], products.module)
+    result = strings.layout(esa, [6.0, 6.0], PANEL_ELECTRICAL)
     assert result.layout is not None
     planes = {g.plane for g in result.layout.strings if g.strings}
     assert planes == {0, 1}

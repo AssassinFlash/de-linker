@@ -68,8 +68,26 @@ final class ReportAccess {
 		if ( is_wp_error( $reply ) ) {
 			return $reply;
 		}
-		if ( 200 !== $reply['status'] || ! str_starts_with( $reply['type'], 'application/octet-stream' ) || ! str_starts_with( $reply['body'], '%PDF-' ) || ! hash_equals( $snapshot['pdf']['sha256'], hash( 'sha256', $reply['body'] ) ) ) {
+		if ( 200 !== $reply['status'] || ! str_starts_with( $reply['type'], 'application/octet-stream' ) || ! str_starts_with( $reply['body'], '%PDF-' ) ) {
 			return Failure::make( 'unavailable', 503 );
+		}
+		$content_sha = hash( 'sha256', $reply['body'] );
+		if ( ! hash_equals( $snapshot['pdf']['sha256'], $content_sha ) ) {
+			$asset = $this->transport->object(
+				$principal,
+				'assets/read',
+				array(
+					'schema_version' => 1,
+					'project_id'     => $snapshot['project_id'],
+					'asset_id'       => $snapshot['pdf']['asset_id'],
+				)
+			);
+			if ( is_wp_error( $asset ) ) {
+				return $asset;
+			}
+			if ( ( $asset['project_id'] ?? null ) !== $snapshot['project_id'] || 'application/pdf' !== ( $asset['media_type'] ?? null ) || ( $asset['reissued_from']['id'] ?? null ) !== $snapshot['pdf']['asset_id'] || ( $asset['reissued_from']['content_sha256'] ?? null ) !== $snapshot['pdf']['sha256'] || ( $asset['content_sha256'] ?? null ) !== $content_sha ) {
+				return Failure::make( 'unavailable', 503 );
+			}
 		}
 		return $reply['body'];
 	}

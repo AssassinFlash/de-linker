@@ -16,6 +16,11 @@ without accounts; the retained checkout endpoint is an inquiry entry, not a
 payment flow. Historical Proforma URLs and stored identifiers do not define the
 current customer-facing terminology.
 
+Woo is the source for the equipment Linker offers. Photovoltaic panels are
+generic project inputs. A customer can supply a count, rated power or roof
+measurements without choosing a manufacturer or model. Plans and exported bills
+of materials keep that quantity separate from equipment requested from Linker.
+
 ## The two customer-facing tools
 
 - **Genie** ("Genie – der KI-Assistent von Linker"; never "Linker Genie", no

@@ -27,6 +27,7 @@ from .models import (
     Excluded,
     Line,
     MetricsResult,
+    PanelElectrical,
     PlaneInput,
     ProductRef,
     Range,
@@ -41,7 +42,7 @@ from .models import (
     StringLayoutResult,
     YieldResult,
 )
-from .products import Product, Products
+from .products import Product
 from .pvgis import Pvgis
 from .texts import Locale, fmt, t, tn
 
@@ -264,17 +265,18 @@ def evaluate(
             eligibility.pv_input(inverter, kwp),
             eligibility.dc_ac_ratio(inverter, kwp),
         ]
-        result = strings.layout(
-            inverter, [p.kwp for p in planes_of(request)], engine.products.module
-        )
-        layout = result.layout
-        checks.append(
-            eligibility.Check(
-                result.reason or "string_count",
-                layout is not None,
-                layout.module_count if layout else None,
+        if request.module is not None:
+            result = strings.layout(
+                inverter, [p.kwp for p in planes_of(request)], request.module
             )
-        )
+            layout = result.layout
+            checks.append(
+                eligibility.Check(
+                    result.reason or "string_count",
+                    layout is not None,
+                    layout.module_count if layout else None,
+                )
+            )
     batteries: list[BatteryFit] = []
     backup_wanted = request.backup != "none" and bool(sizing.reserve_kwh)
     if sizing.recommended or existing or backup_wanted:
@@ -418,8 +420,8 @@ def stueckliste(
         )
     if not existing:
         lines += _requirement_lines(engine, inverter, request, evaluation.backup_parts)
-        if evaluation.layout:
-            lines += installer_lines(evaluation.layout, engine.products, locale)
+        if evaluation.layout and request.module:
+            lines += installer_lines(evaluation.layout, request.module, locale)
     return lines
 
 
@@ -535,10 +537,9 @@ def _requirement_lines(
 
 
 def installer_lines(
-    layout: strings.StringLayout, products: Products, locale: Locale
+    layout: strings.StringLayout, module: PanelElectrical, locale: Locale
 ) -> list[Line]:
     """What the installer supplies, sized from the reference layout."""
-    module = products.module
     total = layout.total_strings
     fused = [g for g in layout.strings if g.fuses]
     module_basis = [
@@ -560,7 +561,6 @@ def installer_lines(
             mppts=", ".join(str(g.mppt) for g in fused),
         ),
     ]
-    module_docs = documents_of(module, "datasheet", locale)
     cable_m = rules.DC_CABLE_M_PER_STRING.value
     pairs = rules.CONNECTOR_PAIRS_PER_STRING.value
     lines = [
@@ -569,9 +569,9 @@ def installer_lines(
             product=None,
             quantity=layout.module_count,
             unit="pcs",
-            label=t("line.pv_module", locale, model=f"{module.brand} {module.model}"),
+            label=t("line.pv_module", locale, model=f"{module.pmax_w:g} Wp"),
             basis=module_basis,
-            documents=module_docs,
+            documents=[],
         ),
         Line(
             role="mounting",
@@ -637,11 +637,10 @@ def installer_lines(
 
 
 def string_result(
-    layout: strings.StringLayout, products: Products
+    layout: strings.StringLayout, module: PanelElectrical
 ) -> StringLayoutResult:
-    module = products.module
     return StringLayoutResult(
-        module=f"{module.brand} {module.model}",
+        module=f"{module.pmax_w:g} Wp",
         module_wp=module.pmax_w,
         modules_per_string=layout.modules_per_string,
         module_count=layout.module_count,
@@ -829,6 +828,9 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             )
     existing = request.existing_inverter is not None
 
+    if not existing and request.module is None:
+        warnings.append(t("warn.panel_measurements", locale))
+
     if existing:
         pool = [existing_product] if existing_product else []
     else:
@@ -888,7 +890,7 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         not sizing.recommended and request.backup != "none" and bool(sizing.reserve_kwh)
     )
     retrofit_only = not sizing.recommended and existing and not reserve_only
-    if chosen and (chosen.layout or existing):
+    if chosen:
         fit = None
         if chosen.batteries:
             fit = next(
@@ -918,8 +920,8 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             inverter=ref(chosen.inverter),
             inverter_rules=[rule_result(c, locale) for c in chosen.checks],
             battery=battery_choice(fit, locale) if fit else None,
-            strings=string_result(chosen.layout, engine.products)
-            if chosen.layout
+            strings=string_result(chosen.layout, request.module)
+            if chosen.layout and request.module
             else None,
             lines=stueckliste(
                 engine,

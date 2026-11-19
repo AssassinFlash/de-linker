@@ -12,8 +12,7 @@ from read-only sources:
 - facts of the old repository at `refs/landed/chain-tip` (read with
   `git show`, never imported): the document host map and evidence manifest
   (cited file name -> the URL we host), the compatibility contract (cells,
-  families, documents, delivery contents), the material registry (family ids)
-  and the manual decisions (the reference PV module's datasheet values).
+  families, documents, delivery contents), the material registry (family IDs).
 
 What the fixture does the way #7 and #8 specify it:
 
@@ -689,32 +688,6 @@ def documented_requirements(contract: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def overlay(decisions: dict[str, Any], docs: DocumentIndex) -> list[dict[str, Any]]:
-    module = decisions["manual_materials"]["mat_trina_solar_tsm_460neg9r_28"]
-    dropped: Counter[str] = Counter()
-    figures = cited_figures(module["technical"]["specifications"], docs, dropped)
-    return [
-        {
-            "id": module["material_id"],
-            "kind": "pv_module",
-            "brand": module["identity"]["manufacturer"],
-            "model": module["identity"]["model"],
-            "figures": figures,
-            "documents": [
-                {
-                    "url": d["url"],
-                    "title": d["title"],
-                    "type": "datasheet",
-                    "lang": lang,
-                }
-                for d, lang in zip(
-                    module["technical"]["documents"], ("en", "de"), strict=True
-                )
-            ],
-        }
-    ]
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--products", type=Path, required=True)
@@ -732,7 +705,6 @@ def main() -> None:
     series = series_index(
         git_show(repo, "plugins/terravolt-b2b-core/data/material-registry.json")
     )
-    decisions = git_show(repo, "knowledge/materials/manual-decisions.json")
 
     dropped: Counter[str] = Counter()
     products = []
@@ -769,7 +741,7 @@ def main() -> None:
             "generated_at": args.generated_at,
             "compatibility_version": compatibility["version"],
             "products": products,
-            "overlay": overlay(decisions, docs),
+            "overlay": [],
         },
         compatibility,
     )

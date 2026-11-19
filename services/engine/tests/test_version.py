@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from conftest import FIXTURES, publication_feed
+from conftest import FIXTURES, PANEL_SIZE, publication_feed
 from fastapi.testclient import TestClient
 
 from linker_engine.app import SOURCE, Services, Settings, create_app
@@ -90,7 +90,12 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
             computed = restarted.post(
                 "/roof/pack",
                 headers=headers,
-                json={"polygon": POLYGON, "tilt_deg": 30, "azimuth_deg": 180},
+                json={
+                    "polygon": POLYGON,
+                    "tilt_deg": 30,
+                    "azimuth_deg": 180,
+                    "module": PANEL_SIZE.model_dump(),
+                },
             )
             assert computed.status_code == 200
             assert computed.headers["x-linker-engine-version"] == version_b
