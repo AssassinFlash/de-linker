@@ -3144,10 +3144,53 @@ def test_project_list_read_and_runs_accept_omitted_optional_parameters(
         assert refused.status_code == 422
 
 
+def test_preliminary_inquiry_fences_delayed_deletion_without_a_handoff(
+    rig: Rig,
+) -> None:
+    project = rig.create("preliminary-project")
+    command = {"project_id": project, "expected_revision": 1, "key": "delete"}
+    state = rig.post("/projects/prepared-handoffs", {"project_id": project})
+    assert state == {"has_handoffs": False, "inquiry_generation": 0}
+    admit = {"schema_version": 1, "project_id": project, "revision": 1}
+    for actor in (FOREIGN, TEAM):
+        assert (
+            rig.client.post(
+                "/projects/admit-inquiry", json=admit, headers=headers(actor)
+            ).status_code
+            == 404
+        )
+    assert rig.post("/projects/admit-inquiry", admit) == {"admitted": True}
+    for path, extra in (
+        ("/projects/delete", {}),
+        ("/projects/delete-after-inquiry-check", {"inquiry_generation": 0}),
+    ):
+        refused = rig.client.post(
+            path, json={"schema_version": 1, **command, **extra}, headers=headers()
+        )
+        assert refused.status_code == 409
+    # Woo rolled back. A fresh check can delete, then admission cannot commit.
+    checked = rig.post("/projects/prepared-handoffs", {"project_id": project})
+    assert checked == {"has_handoffs": False, "inquiry_generation": 1}
+    assert (
+        rig.post(
+            "/projects/delete-after-inquiry-check", {**command, "inquiry_generation": 1}
+        )["deleted"]
+        is True
+    )
+    assert (
+        rig.client.post(
+            "/projects/admit-inquiry", json=admit, headers=headers()
+        ).status_code
+        == 404
+    )
+
+
 def test_project_delete_is_idempotent_over_the_private_protocol(rig: Rig) -> None:
     project = rig.create("delete-create")
     command = {"project_id": project, "expected_revision": 1, "key": "delete-http"}
-    deleted = rig.post("/projects/delete", command)
+    deleted = rig.post(
+        "/projects/delete-after-inquiry-check", {**command, "inquiry_generation": 0}
+    )
     assert deleted == {"project_id": project, "revision": 1, "deleted": True}
     assert rig.post("/projects/delete", command) == deleted
     replayed = rig.replay("/projects/delete", command)
@@ -3268,7 +3311,11 @@ def test_delete_replay_survives_claim_after_the_project_is_gone(
 
     project = rig.create("delete-claim-create", guest)
     command = {"project_id": project, "expected_revision": 1, "key": "guest-delete"}
-    deleted = rig.post("/projects/delete", command, guest)
+    deleted = rig.post(
+        "/projects/delete-after-inquiry-check",
+        {**command, "inquiry_generation": 0},
+        guest,
+    )
     assert deleted["deleted"] is True
     GuestClaims(rig.workspace).claim(guest, USER, key="login")
     # The claiming account replays a receipt for a project that no longer

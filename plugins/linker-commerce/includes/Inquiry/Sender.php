@@ -69,8 +69,8 @@ final class Sender {
 		$lock_refused = false;
 		try {
 			$order = \Linker\Commerce\Planning\Context::submit_inquiry(
-				function ( array $references ) use ( $details, $data, $summary, $context, &$lock_refused ) {
-					return $this->create( $details, $data, $summary, $context, $references, $lock_refused );
+				function ( array $references, array $projects ) use ( $details, $data, $summary, $context, &$lock_refused ) {
+					return $this->create( $details, $data, $summary, $context, $references, $projects, $lock_refused );
 				}
 			);
 			if ( $order instanceof WC_Order ) {
@@ -91,21 +91,22 @@ final class Sender {
 	 * @param array<string,mixed>|false|null    $summary Selected conversation summary.
 	 * @param array<string,mixed>               $context Related conversation/page.
 	 * @param array<string,array<string,mixed>> $references Admitted frozen reports.
+	 * @param array<int,string>                 $projects Locked projects including the preliminary revision.
 	 * @param bool                              $lock_refused New order stopped at its pre-save project lock check.
 	 */
-	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references, bool &$lock_refused ): WC_Order|WP_Error {
+	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references, array $projects, bool &$lock_refused ): WC_Order|WP_Error {
 		$prepared_key = '';
 		$transaction  = null;
-		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $references, &$lock_refused, &$prepared_key, &$transaction ): void {
+		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $projects, &$lock_refused, &$prepared_key, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
-			if ( array() !== $references ) {
+			if ( array() !== $projects ) {
 				// The form has no provider work. Its business/review slot joins Woo's first save.
 				if ( ! $awaited ) {
 					$transaction = new NativeTransaction();
 				}
 				$lock_refused = 0 === $order->get_id();
-				\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
+				\Linker\Commerce\Planning\ProjectReferences::require_locks( $projects );
 				$lock_refused = false;
 			}
 			if ( $awaited ) {
@@ -122,7 +123,7 @@ final class Sender {
 			if ( null === $transaction ) {
 				$transaction = new NativeTransaction();
 				// Provider work can lose the connection. Its prior dispatch remains charged.
-				\Linker\Commerce\Planning\ProjectReferences::require_locks( $references );
+				\Linker\Commerce\Planning\ProjectReferences::require_locks( $projects );
 			}
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );

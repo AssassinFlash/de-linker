@@ -103,10 +103,9 @@ final class Admission {
 		}
 		// An uncertain/repeated request reuses the same private command key.
 		// The native journal does not infer that an upstream timeout did no work.
-		$reply = $transport->call( $principal, $path, $body );
-		if ( 'projects/delete' === $path && ! is_wp_error( $reply ) && 409 === $reply['status'] && 'prepared_handoff' === ( json_decode( $reply['body'], true )['error']['code'] ?? null ) ) {
-			$reply = ProjectDelete::prepared( $principal, $command, $transport );
-		}
+		$reply = 'projects/delete' === $path
+			? ProjectDelete::checked( $principal, $command, $transport )
+			: $transport->call( $principal, $path, $body );
 		if ( 'projects/delete' === $path && ! is_wp_error( $reply ) ) {
 			if ( 400 <= $reply['status'] ) {
 				return $reply;

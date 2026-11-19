@@ -18,7 +18,7 @@ use WP_Error;
 final class Context {
 	public const META            = '_linker_planning_projects';
 	public const PROJECT_FIELD   = 'linker_preliminary_project';
-	private const PROJECT_META   = '_linker_preliminary_project';
+	public const PROJECT_META    = '_linker_preliminary_project';
 	public const NOTES_META      = '_linker_planning_notes';
 	public const INCLUDE_FIELD   = 'linker_include_project_notes';
 	public const PRESENT_FIELD   = 'linker_project_notes_present';
@@ -358,23 +358,31 @@ final class Context {
 	/**
 	 * Admit the submitted draft and hold its project locks through Woo's commit.
 	 *
-	 * @param callable(array<string,array<string,mixed>>):(WC_Order|WP_Error) $submit Native order writer.
+	 * @param callable(array<string,array<string,mixed>>,array<int,string>):(WC_Order|WP_Error) $submit Native order writer.
 	 */
 	public static function submit_inquiry( callable $submit ): WC_Order|WP_Error {
 		$handoffs = self::submitted_handoffs();
-		if ( array() === $handoffs ) {
-			return $submit( array() );
+		$project  = isset( self::$reviewed_note['inputs'] ) ? self::$reviewed_note : null;
+		if ( array() === $handoffs && null === $project ) {
+			return $submit( array(), array() );
 		}
 		$retry = self::admission_unavailable();
 		if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
 			return $retry;
 		}
 		$references = array_map( self::reference( ... ), $handoffs );
-		$projects   = array_unique( array_column( $references, 'project_id' ) );
+		$admissions = $references;
+		if ( null !== $project ) {
+			$admissions[] = array(
+				'project_id' => $project['project_id'],
+				'revision'   => $project['revision'],
+			);
+		}
+		$projects = array_unique( array_column( $admissions, 'project_id' ) );
 		sort( $projects, SORT_STRING );
 		$result = $retry;
-		$work   = static function () use ( $references, $submit, &$result ): void {
-			foreach ( $references as $reference ) {
+		$work   = static function () use ( $admissions, $projects, $references, $submit, &$result ): void {
+			foreach ( $admissions as $reference ) {
 				/**
 				 * Admit the server-stored handoff before commit.
 				 *
@@ -383,6 +391,12 @@ final class Context {
 				$admitted = apply_filters( 'linker_tools_planning_admit_inquiry', null, $reference ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
 				if ( true === $admitted ) {
 					continue;
+				}
+				if ( ! isset( $reference['handoff_id'] ) ) {
+					if ( $admitted instanceof WP_Error && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
+						$result = self::notes_changed();
+					}
+					return;
 				}
 				if ( $admitted instanceof WP_Error && 'linker_planner_handoff_not_found' === $admitted->get_error_code() && 404 === ( $admitted->get_error_data()['status'] ?? null ) ) {
 					$message = ! empty( $reference['report_only'] )
@@ -394,7 +408,7 @@ final class Context {
 				}
 				return;
 			}
-			$result = $submit( $references );
+			$result = $submit( $references, $projects );
 		};
 		foreach ( array_reverse( $projects ) as $project_id ) {
 			$work = static function () use ( $project_id, $work ): void {
@@ -412,6 +426,9 @@ final class Context {
 	 * @param array<string,array<string,mixed>> $references Admitted handoffs by ID.
 	 */
 	public static function matches_admission( WC_Order $order, array $references ): bool {
+		if ( isset( self::$reviewed_note['inputs'] ) && $order->get_meta( self::PROJECT_META ) !== self::$reviewed_note['project_id'] . ':' . self::$reviewed_note['revision'] ) {
+			return false;
+		}
 		$raw = $order->get_meta( self::META );
 		if ( '' === $raw ) {
 			return array() === $references;

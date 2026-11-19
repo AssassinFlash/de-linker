@@ -115,14 +115,14 @@ final class PlannerProjectDeleteTest extends TestCase {
 						return $reply(
 							200,
 							array(
-								'has_handoffs'       => true,
+								'has_handoffs'       => false,
 								'inquiry_generation' => 7,
 							)
 						);
 					}
 					if ( str_ends_with( $url, '/projects/delete' ) ) {
 						self::assertSame( $body, $args['body'] );
-						return $reply( 409, array( 'error' => array( 'code' => 'prepared_handoff' ) ) );
+						return $reply( 200, $result );
 					}
 					self::assertStringEndsWith( '/projects/delete-after-inquiry-check', $url );
 					self::assertSame( $command + array( 'inquiry_generation' => 7 ), json_decode( $args['body'], true ) );
@@ -142,6 +142,14 @@ final class PlannerProjectDeleteTest extends TestCase {
 			$order = wc_get_order( $order_id );
 			self::assertInstanceOf( \WC_Order::class, $order );
 			self::assertSame( 'trash', $order->get_status( 'edit' ) );
+			$order->update_meta_data( '_linker_preliminary_project', $project . ':12' );
+			$order->save_meta_data();
+			$refused = $gateway->forward( $request );
+			self::assertInstanceOf( \WP_REST_Response::class, $refused );
+			self::assertSame( 409, $refused->get_status() );
+			self::assertSame( 'inquiry_linked', $refused->get_data()->error->code );
+			$order->update_meta_data( '_linker_preliminary_project', $handoff . ':12' );
+			$order->save_meta_data();
 			foreach ( array( array( 'reference' => array( 'project_id' => $project ) ), array( 'handoff' => array( 'snapshot' => array( 'project_id' => $project ) ) ) ) as $entry ) {
 				$metadata = wp_json_encode( array( $handoff => $entry ) );
 				self::assertIsString( $metadata );

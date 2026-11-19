@@ -129,6 +129,95 @@ final class InquiryTest extends IntegrationTestCase {
 		$this->assertSame( array( $text ), array_column( \Linker\Commerce\Planning\Context::stored_notes( $stored ), 'text' ) );
 	}
 
+	/** A preliminary submission holds the same project lock as deletion and freezes only successful Woo orders. */
+	public function test_preliminary_submission_admission(): void {
+		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
+		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$id      = bin2hex( random_bytes( 16 ) );
+		$post    = array(
+			'name'                       => 'Maria Weber',
+			'email'                      => 'preliminary@example.test',
+			'consent'                    => '1',
+			'linker_preliminary_project' => $id . ':2',
+		);
+		$details = Submission::from_post( $post, false );
+		$this->assertInstanceOf( Submission::class, $details );
+		$send    = static fn () => \Linker\Commerce\Planning\Context::with_submission( $post, static fn () => ( new Sender() )->request( $details, array(), false ) );
+		$base    = static fn () => 'https://planner.example.test';
+		$attempt = 0;
+		global $wpdb;
+		$lock = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'planning-project:' . $id );
+		$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$this->later(
+			static function () use ( $peer ): void {
+				$peer->close();
+			}
+		);
+		$engine = static function ( $previous, $args, $url ) use ( $id, $lock, $peer, $wpdb, &$attempt ) {
+			if ( 'https://planner.example.test/projects/read' === $url ) {
+				$body = array(
+					'id'       => $id,
+					'revision' => 2,
+					'title'    => 'Installer',
+					'inputs'   => array( 'brief' => array( 'system_scope' => 'pv_only' ) ),
+				);
+				$code = 200;
+			} elseif ( 'https://planner.example.test/projects/admit-inquiry' === $url ) {
+				self::assertSame(
+					array(
+						'schema_version' => 1,
+						'project_id'     => $id,
+						'revision'       => 2,
+					),
+					json_decode( $args['body'], true )
+				);
+				self::assertSame( '0', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s,0)', $lock ) ), 'A competing deletion cannot acquire the project lock.' );
+				++$attempt;
+				if ( 2 === $attempt ) {
+					$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
+				}
+				$body = 1 !== $attempt ? array( 'admitted' => true ) : array( 'error' => array( 'code' => 'not_found' ) );
+				$code = 1 === $attempt ? 404 : 200;
+			} else {
+				return $previous;
+			}
+			return array(
+				'response' => array( 'code' => $code ),
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( $body ),
+			);
+		};
+		add_filter( 'pre_option_linker_planner_url', $base );
+		add_filter( 'pre_http_request', $engine, 10, 3 );
+		$this->later(
+			static function () use ( $base, $engine ): void {
+				remove_filter( 'pre_http_request', $engine, 10 );
+				remove_filter( 'pre_option_linker_planner_url', $base );
+			}
+		);
+		$failed = $send();
+		$this->assertInstanceOf( \WP_Error::class, $failed );
+		$this->assertSame( 409, $failed->get_error_data()['status'] );
+		$this->assertFalse( \Linker\Commerce\Planning\ProjectReferences::contains( $id ) );
+		$lost = $send();
+		$this->assertInstanceOf( \WP_Error::class, $lost );
+		$this->assertSame( 'planning_admission_unavailable', $lost->get_error_code() );
+		$this->assertFalse( \Linker\Commerce\Planning\ProjectReferences::contains( $id ) );
+		$order = $send();
+		$this->assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$this->assertSame( Statuses::RECEIVED, $order->get_status() );
+		$this->assertTrue( \Linker\Commerce\Planning\ProjectReferences::contains( $id ) );
+		$this->assertSame( array(), \Linker\Commerce\Planning\Context::stored( $order ) );
+	}
+
 	/**
 	 * Actual submission admits each frozen report under all project locks or retains the draft.
 	 *
@@ -193,7 +282,7 @@ final class InquiryTest extends IntegrationTestCase {
 			$writer = $wpdb;
 			$wpdb   = $peer;
 			try {
-				return \Linker\Tools\Planner\ProjectDelete::prepared(
+				return \Linker\Tools\Planner\ProjectDelete::checked(
 					new \Linker\Tools\Planner\Principal( $guest ? 'guest' : 'user', $subject ),
 					array( 'project_id' => $handoff['snapshot']['project_id'] ),
 					new \Linker\Tools\Planner\Transport()
