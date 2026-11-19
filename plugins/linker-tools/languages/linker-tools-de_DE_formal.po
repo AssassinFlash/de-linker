@@ -17251,3 +17251,8 @@ msgstr "Projekte suchen"
 #: ../../apps/planner/src/components/Workspace.tsx build/planner/assets/planner.js:1
 msgid "No matching projects."
 msgstr "Keine passenden Projekte gefunden."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx
+msgid "Enter project details"
+msgstr "Projektdaten eingeben"

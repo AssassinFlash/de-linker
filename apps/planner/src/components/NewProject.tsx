@@ -43,6 +43,7 @@ export function NewProject({
 	config,
 	openOnLoad = false,
 	compareOnLoad = false,
+	enterDetails,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -62,6 +63,7 @@ export function NewProject({
 	config?: Configuration;
 	openOnLoad?: boolean;
 	compareOnLoad?: boolean;
+	enterDetails?: () => void;
 }) {
 	const [open, setOpen] = useState(
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
@@ -418,6 +420,18 @@ export function NewProject({
 		const retry = Boolean(intent.current);
 		return (
 			<section className="sc-main">
+				{enterDetails && (
+					<div className="sc-actions">
+						<button
+							className="sc-button"
+							type="button"
+							disabled={disabled || retry}
+							onClick={enterDetails}
+						>
+							{__("Enter project details", "linker-tools")}
+						</button>
+					</div>
+				)}
 				<PreliminaryOptions
 					inputs={inputs}
 					disabled={disabled || retry}

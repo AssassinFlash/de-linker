@@ -196,6 +196,13 @@ export function Workspace({
 				window.history.replaceState(null, "", comparison);
 				window.history.pushState({ preliminaryProject: id }, "", url);
 				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+			} else if (
+				id &&
+				from === "sc-preliminary-review" &&
+				destination === "sc-project"
+			) {
+				window.history.pushState(null, "", url);
+				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
 			} else replacePlannerLocation(url);
 			setEntryHints(null);
 			setSavedSource(null);
@@ -444,7 +451,17 @@ export function Workspace({
 				locale={config.locale}
 				comparing={route === "sc-preliminary-options"}
 				recoveringRevision={inquiryRevision !== null}
-				navigate={(destination) => select(selected, destination)}
+				navigate={(destination, confirmed) => {
+					if (confirmed)
+						cache.setQueryData<Project>(
+							[session.query_scope, "project", selected, session.claim_pending],
+							(current) =>
+								current && current.revision >= confirmed.revision
+									? current
+									: confirmed,
+						);
+					select(selected, destination);
+				}}
 				recheck={recheck}
 			/>
 		);
@@ -556,6 +573,13 @@ export function Workspace({
 				<NewProject
 					config={config}
 					compareOnLoad
+					enterDetails={() => {
+						const url = new URL(location.href);
+						url.hash = "sc-project";
+						window.history.pushState(null, "", url);
+						setRoute("sc-project");
+						window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+					}}
 					entryHints={entryHints}
 					locale={config.locale}
 					session={session}
@@ -627,7 +651,9 @@ export function Workspace({
 					) : (
 						<NewProject
 							config={config}
-							openOnLoad={index.isSuccess && !projects.length}
+							openOnLoad={
+								route === "sc-project" || (index.isSuccess && !projects.length)
+							}
 							entryHints={entryHints}
 							locale={config.locale}
 							session={session}

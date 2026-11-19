@@ -27,11 +27,15 @@ const session = {
 	},
 };
 
-test("project setup retains entered information when the saved-project index refreshes", async (t) => {
+test("visitors with project data can open setup from the comparison and keep their inputs during an index refresh", async (t) => {
 	const fixture = setupDom();
-	// The shared fixture opens a project from its URL; this test starts at the
-	// empty index, which is where the one-screen start lives.
-	window.history.replaceState({}, "", "/workspace/");
+	window.history.replaceState(
+		{},
+		"",
+		"/workspace/?plz=0150#sc-preliminary-options",
+	);
+	document.querySelector("header").innerHTML =
+		'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
 	const globals = new Map();
 	for (const [name, value] of Object.entries({
 		MutationObserver: window.MutationObserver,
@@ -135,7 +139,25 @@ test("project setup retains entered information when the saved-project index ref
 		),
 	);
 	const start = () => document.querySelector("form");
+	const setup = () =>
+		[...document.querySelectorAll("button")].find(
+			(button) => button.textContent.trim() === "Enter project details",
+		);
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.ok(
+		setup(),
+		"Known project details can lead directly to the project form",
+	);
+	await until(() => !setup().disabled);
+	await act(async () => setup().click());
 	await until(() => document.querySelector('select[name="system_scope"]'));
+	assert.equal(location.hash, "#sc-project");
+	assert.equal(new URL(location.href).searchParams.get("project"), null);
+	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
+	assert.equal(document.querySelector('a[hreflang="de"]').hash, "#sc-project");
+	assert.deepEqual(creates, []);
 	await act(async () => {
 		const scope = document.querySelector('select[name="system_scope"]');
 		scope.value = "storage_only";
@@ -460,6 +482,26 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		false,
 	);
 	assert.equal(created[0].title, "New project");
+	const refine = button("Enter project details");
+	assert.ok(refine, "The selected direction can lead into the same project");
+	await until(() => !button("Enter project details").disabled);
+	await act(async () => refine.click());
+	await until(() => document.body.textContent.includes("What is the project?"));
+	assert.equal(
+		document.querySelector('select[name="system_scope"]')?.value,
+		"storage_only",
+	);
+	assert.equal(location.hash, "#sc-project");
+	assert.equal(location.search, "?project=" + projectId);
+	assert.equal(created.length, 2, "No additional creation request was sent");
+	assert.equal(revisions.length, 1, "Opening setup did not revise the project");
+	await act(async () => history.back());
+	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
+	assert.equal(location.hash, "#sc-preliminary-review");
+	assert.equal(
+		fixture.element.querySelector('[name="message"]').value,
+		"Frage aus der deutschen Ansicht",
+	);
 });
 
 test("signed-in preliminary landing explains a failed recovery read and offers a retry", async (t) => {
@@ -690,6 +732,9 @@ async function lostReceipt(
 				active: true,
 				scope: session.query_scope,
 				changeSelection() {},
+				enterDetails() {
+					assert.fail("A pending inquiry must stay on the review");
+				},
 				recheck() {},
 			}),
 		),
@@ -763,6 +808,12 @@ async function lostReceipt(
 	);
 	assert.equal(
 		fixture.element.querySelector(".sc-draft-transfer aside button").disabled,
+		true,
+	);
+	assert.equal(
+		[...fixture.element.querySelectorAll("button")].find(
+			(button) => button.textContent.trim() === "Enter project details",
+		)?.disabled,
 		true,
 	);
 	const replay = new window.FormData(form());

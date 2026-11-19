@@ -33,6 +33,7 @@ export function PreliminaryProject({
 	navigate: (
 		destination:
 			"sc-preliminary-options" | "sc-preliminary-review" | "sc-project",
+		confirmed?: Project,
 	) => void;
 	recheck: () => void;
 }) {
@@ -72,7 +73,7 @@ export function PreliminaryProject({
 	}
 	async function saveSelection() {
 		const saved = await controller.save();
-		if (saved) navigate("sc-preliminary-review");
+		if (saved) navigate("sc-preliminary-review", saved);
 	}
 	return (
 		<div className="sc-configurator">
@@ -106,6 +107,7 @@ export function PreliminaryProject({
 							<button
 								className="sc-button"
 								type="button"
+								disabled={blocked}
 								onClick={() => navigate("sc-project")}
 							>
 								{__("Open project", "linker-tools")}
@@ -137,6 +139,9 @@ export function PreliminaryProject({
 					locale={locale}
 					active={!showOptions}
 					changeSelection={() => navigate("sc-preliminary-options")}
+					enterDetails={
+						blocked || draft?.pending ? undefined : () => navigate("sc-project")
+					}
 					recheck={recheck}
 					inquiryPending={setInquiryPending}
 				/>
