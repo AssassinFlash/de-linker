@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { register } from "node:module";
 import React, { act } from "react";
+import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter } from "./dom-fixture.mjs";
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -244,6 +245,8 @@ test("visitors with project data can open setup from the comparison and keep the
 
 test("the first-visit entry compares directions and opens the native inquiry for the choice", async (t) => {
 	const fixture = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	t.after(() => delete globalThis.indexedDB);
 	window.history.replaceState({}, "", "/workspace/#sc-preliminary-options");
 	document.querySelector("header").innerHTML =
 		'<a hreflang="de" lang="de" href="/de/workspace/">Deutsch</a>';
@@ -265,7 +268,9 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	const revisions = [];
 	const previews = [];
 	let accepted;
+	let stored = null;
 	let missed = false;
+	let confirmRevision = null;
 	const client = {
 		origin: location.origin,
 		isCurrentScope: (scope) => scope === session.query_scope,
@@ -273,6 +278,8 @@ test("the first-visit entry compares directions and opens the native inquiry for
 			if (path === "projects/list")
 				return { schema_version: 1, items: [], next: null };
 			if (path === "projects/read") return accepted;
+			if (path === "projects/runs")
+				return { schema_version: 1, items: [], next: null };
 			assert.equal(path, "inquiry/form");
 			previews.push(command);
 			return {
@@ -290,7 +297,14 @@ test("the first-visit entry compares directions and opens the native inquiry for
 			const command = JSON.parse(body);
 			if (path === "projects/revise") {
 				revisions.push(command);
-				accepted = { ...accepted, revision: 2, inputs: command.inputs };
+				if (confirmRevision && (await confirmRevision))
+					throw new Error("Revision reply lost");
+				assert.equal(command.expected_revision, accepted.revision);
+				accepted = {
+					...accepted,
+					revision: accepted.revision + 1,
+					inputs: command.inputs,
+				};
 				return accepted;
 			}
 			assert.equal(path, "projects/create");
@@ -316,12 +330,14 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		async writeCreation() {},
 		async clearCreation() {},
 		async read() {
-			return null;
+			return stored;
 		},
 		async candidates() {
 			return [];
 		},
-		async write() {},
+		async write(_scope, draft) {
+			stored = structuredClone(draft);
+		},
 	};
 	const render = (locale) =>
 		act(async () =>
@@ -542,6 +558,58 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		/Planned system: Solar/,
 	);
 	assert.equal(previews.at(-1)?.revision, 3);
+	assert.equal(
+		fixture.element.querySelector('[name="message"]').value,
+		"Frage aus der deutschen Ansicht",
+	);
+	await until(
+		() =>
+			!button("Enter project details")?.disabled &&
+			button("Enter project details"),
+	);
+	await act(async () => button("Enter project details").click());
+	const site = () => document.querySelector('input[name="location_label"]');
+	await until(() => site() && !site().closest("fieldset").disabled);
+	await enter(site(), "Berlin 10115");
+	assert.equal(site().value, "Berlin 10115");
+	const pendingRevision = Promise.withResolvers();
+	confirmRevision = pendingRevision.promise;
+	try {
+		await act(async () => history.back());
+		await until(() => revisions.length === 2);
+		assert.equal(revisions[1].expected_revision, 3);
+		assert.equal(revisions[1].inputs.brief.site.location_label, "Berlin 10115");
+		assert.equal(
+			Boolean(fixture.element.querySelector("form.linker-inquiry-form")),
+			false,
+		);
+		assert.equal(
+			previews.at(-1)?.revision,
+			3,
+			"Do not request Woo form before the site edit is confirmed",
+		);
+	} finally {
+		pendingRevision.resolve(true);
+	}
+	await until(() => button("Retry save"));
+	assert.equal(revisions.length, 2);
+	assert.equal(
+		Boolean(fixture.element.querySelector("form.linker-inquiry-form")),
+		false,
+	);
+	confirmRevision = null;
+	await act(async () => button("Retry save").click());
+	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
+	assert.deepEqual(
+		revisions[2],
+		revisions[1],
+		"Retry the same frozen revise request",
+	);
+	assert.equal(previews.at(-1)?.revision, 4);
+	assert.equal(
+		fixture.element.querySelector('[name="linker_preliminary_project"]').value,
+		projectId + ":4",
+	);
 	assert.equal(
 		fixture.element.querySelector('[name="message"]').value,
 		"Frage aus der deutschen Ansicht",

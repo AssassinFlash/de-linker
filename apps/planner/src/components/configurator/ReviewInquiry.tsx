@@ -133,6 +133,7 @@ export function ReviewInquiry({
 	scope,
 	locale,
 	active,
+	ready = true,
 	changeSelection,
 	enterDetails,
 	recheck,
@@ -144,6 +145,7 @@ export function ReviewInquiry({
 	scope: string;
 	locale: string;
 	active: boolean;
+	ready?: boolean;
 	changeSelection: () => void;
 	enterDetails?: (() => void) | undefined;
 	recheck: () => void;
@@ -249,7 +251,7 @@ export function ReviewInquiry({
 	}, [active]);
 	useEffect(() => {
 		const node = host.current;
-		if (!node) return;
+		if (!node || !ready) return;
 		const request = new AbortController();
 		let expiry: number | undefined;
 		const abort = () => request.abort();
@@ -354,7 +356,7 @@ export function ReviewInquiry({
 			if (form) retained.current = readCustomerFields(form, retained.current);
 			node.replaceChildren();
 		};
-	}, [client, scope, projectId, revision, locale, attempt, recheck]);
+	}, [client, scope, projectId, revision, locale, attempt, recheck, ready]);
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"

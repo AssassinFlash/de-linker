@@ -471,7 +471,7 @@ export function Workspace({
 									? current
 									: confirmed,
 						);
-					select(selected, destination);
+					if (route !== destination) select(selected, destination);
 				}}
 				recheck={recheck}
 			/>
