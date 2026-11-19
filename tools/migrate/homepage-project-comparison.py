@@ -40,20 +40,24 @@ def main() -> None:
     if not (args.apply or args.remove):
         print(f"{snapshot['home']} {ids}: add one comparison mount on each homepage")
         return
-    reviewed_page_pair.invoke(
-        args.wp,
-        {
-            "mode": "adopt",
-            "changes": [
-                {"id": post, "before": old, "after": new}
-                for post, old, new in zip(ids, before, after, strict=True)
-            ],
-            "metadata_before": snapshot["metadata"],
-        },
-    )
+    payload = {
+        "mode": "adopt" if snapshot["current"] else "restore",
+        "changes": [
+            {"id": post, "before": old, "after": new}
+            for post, old, new in zip(ids, before, after, strict=True)
+        ],
+        "metadata_before": snapshot["metadata"],
+    }
+    # A localized shortcode mount does not review any earlier English edits.
+    # Keep a stale baseline's exact metadata rather than adopting those edits.
+    if not snapshot["current"]:
+        payload["metadata_restore"] = snapshot["metadata"]
+    reviewed_page_pair.invoke(args.wp, payload)
     result = reviewed_page_pair.read(args.wp, *ids)
     if tuple(result["pages"][str(post)] for post in ids) != after:
         raise RuntimeError("The bilingual comparison placement did not read back.")
+    if not snapshot["current"] and result["metadata"] != snapshot["metadata"]:
+        raise RuntimeError("The preexisting translation baseline changed.")
     print(f"{snapshot['home']} {ids}: paired comparison placement verified")
 
 
