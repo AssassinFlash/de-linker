@@ -1068,7 +1068,8 @@
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
   .sc-configurator .sc-main { min-width: 0; scroll-margin-top: calc(var(--lp-site-header-height, 0px) + 16px); }
   .sc-configurator .sc-sidebar { position: sticky; top: calc(var(--lp-site-header-height, 0px) + 16px); min-width: 0; overflow-wrap: anywhere; }
-  .sc-configurator .sc-card > p + fieldset, .sc-configurator .sc-card > p + div:has(> .sc-fields) { margin-top: 16px; }
+  .sc-configurator .sc-card > p + fieldset, .sc-configurator .sc-card > p + div:has(> .sc-fields), .sc-configurator .sc-draft-transfer > p + div:has(.linker-inquiry-form) { margin-top: 16px; }
+  [data-linker-planner] .sc-section-head h2[tabindex="-1"]:focus-visible { outline: none; }
   .sc-configurator .sc-card .sc-fields + .sc-actions { margin-top: 18px; }
   .sc-configurator .sc-card > .sc-fields + p, .sc-configurator .sc-card > fieldset > .sc-fields + p { margin-block: 22px 12px; }
   .sc-configurator .sc-solar .sc-fields + h3 { margin-block: 24px 8px; }
