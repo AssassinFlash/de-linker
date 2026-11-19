@@ -138,11 +138,11 @@ def _panel_schedule(
     if design.table:
         design.table.columns[1] = text("panel_parameters", locale)
     else:
-        design.paragraphs = [
-            text("material_pv_declared", locale)
+        design.paragraphs = (
+            []
             if panels[0]["handling"] == "pv_declared"
-            else text("panel_design_only", locale)
-        ]
+            else [text("panel_design_only", locale)]
+        )
         design.table = ReportTable(
             columns=[text("quantity", locale), text("panel_parameters", locale)],
             rows=[
