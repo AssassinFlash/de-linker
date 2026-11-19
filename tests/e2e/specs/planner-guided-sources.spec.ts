@@ -648,13 +648,6 @@ for (const [lang, width] of matrix) {
 				.poll(() => votes.count(), { timeout: 120000 })
 				.toBeGreaterThan(before);
 			const answer = panel.locator('.linker-genie-message-body').last();
-			const expand = panel.getByRole('button', {
-				name:
-					lang === 'en'
-						? 'Show full response'
-						: 'Vollständige Antwort anzeigen',
-			});
-			if (await expand.isVisible()) await expand.click();
 			await expect(answer).toContainText(
 				/(?:4|four|vier)\s*(?:solar\s*|PV[- ]?)?(?:panels?|modules?|Module)|(?:panel count|module count|Anzahl[^.]{0,16})\s*[:|]?\s*4\b/i
 			);
