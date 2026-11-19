@@ -177,6 +177,14 @@ for (const locale of ['en', 'de'] as const) {
 					exact: true,
 				});
 				await expect(confirm).toBeVisible();
+				await confirm.scrollIntoViewIfNeeded();
+				await page.evaluate(() =>
+					document.fonts.ready.then(() => undefined)
+				);
+				await page.screenshot({
+					path: test.info().outputPath('product-transfer-review.png'),
+					animations: 'disabled',
+				});
 				const before = await context.request.get(
 					`${url}/wp-json/wc/store/v1/cart`
 				);
@@ -220,6 +228,18 @@ for (const locale of ['en', 'de'] as const) {
 					new RegExp('^' + locale)
 				);
 				expect(documents).toEqual([url + inquiryUrl]);
+				expect(
+					await page.evaluate(
+						() => document.documentElement.scrollWidth
+					)
+				).toBe(width);
+				await page.evaluate(() =>
+					document.fonts.ready.then(() => undefined)
+				);
+				await page.screenshot({
+					path: test.info().outputPath('native-product-inquiry.png'),
+					animations: 'disabled',
+				});
 				const nativeDraft = page.locator(
 					'.linker-inquiry-lines .linker-inquiry-line'
 				);
