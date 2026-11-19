@@ -151,6 +151,65 @@ def test_card_and_action_carry_the_requested_count(
     )
 
 
+@pytest.fixture()
+def catalog_turn(vocabulary: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    from test_nameplate import _abilities
+
+    from linker_genie.understand import Understander
+
+    understander = Understander(lambda: vocabulary, None)
+    client = _abilities([])
+    monkeypatch.setattr(app_module, "_client", client)
+    app.state.prepare = lambda body: understander.prepare(body, client)
+
+
+@pytest.mark.parametrize(
+    ("current", "expected"),
+    [
+        ("Please show me the SAJ H2-10K-T3 inverter.", 1),
+        ("Please prepare 2 SAJ H2-10K-T3 inverters.", 2),
+        ("I'd take 2 of the H2-10K-T3 for this project.", 2),
+        ("I would like two units of the SAJ H2-10K-T3.", 2),
+        ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", 0),
+        ("Save 12000 SAJ H2-10K-T3 inverters to my account.", 0),
+    ],
+)
+def test_named_product_actions_use_the_current_request(
+    log: TurnLog, catalog_turn: None, current: str, expected: int
+) -> None:
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        output, facts = _generate(request, retry)
+        for name in ("add_to_draft", "save_solution"):
+            output.blocks.append(
+                ActionBlock(name=name, args={"product_id": 4107, "quantity": 4})
+            )
+        return output, facts
+
+    app.state.generate = generate
+    blocks = _blocks(_post("c1", "We considered 4 SAJ H2-10K-T3 inverters.", current))
+    assert {
+        block["name"]: block["args"] for block in blocks if block["type"] == "action"
+    } == {
+        "add_to_draft": {"product_id": 4107, "quantity": expected},
+        "save_solution": {"product_id": 4107, "quantity": expected},
+    }
+    card = next(block for block in blocks if block["type"] == "cards")
+    assert card["product_ids"] == [4107]
+    assert card["quantities"] == {"4107": expected}
+
+
+def test_explicitly_adding_an_earlier_parts_list_keeps_its_quantities(
+    log: TurnLog, catalog_turn: None
+) -> None:
+    blocks = _blocks(
+        _post("c1", "4x SAJ H2-10K-T3", "Please add these to my solution draft.")
+    )
+    parts = next(block for block in blocks if block["type"] == "parts")
+    assert parts["add"]["items"] == [{"product_id": 4107, "quantity": 4}]
+
+
 def test_turn_alias_is_the_same_handler(log: TurnLog) -> None:
     app.state.generate = _generate
     client = TestClient(app, headers=SHELL)

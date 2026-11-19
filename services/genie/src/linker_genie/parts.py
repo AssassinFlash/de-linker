@@ -136,6 +136,19 @@ _ADD_TARGET = re.compile(
 #   "2x", "2 x", "2×", "2 pcs", "2 Stk.", "2 Stück", "qty 2", "menge: 2"
 # and the same after the product ("SAJ H2-10K-T3 x2", "... - 2").
 _QTY_UNIT = r"(?:x|×|\*|pcs?|pieces?|stk|st(?:ü|ue)ck|units?|qty|quantity|anzahl|menge)"
+# Customer quantity words used by both product actions and conversation summaries.
+COUNT_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "dozen": 12,
+    "ein": 1, "eine": 1, "einen": 1, "einem": 1, "einer": 1, "eins": 1,
+    "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7,
+    "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12,
+}  # fmt: skip
+_CARD_COUNT_BEFORE = re.compile(
+    rf"(?<![\w.,+/-])([0-9]+|{'|'.join(COUNT_WORDS)})(?:\s*{_QTY_UNIT}\.?)?"
+    r"(?:\s+(?:of(?:\s+the)?|vom|von\s+(?:der|dem|den)))?\s+$",
+    re.I,
+)
 _LEAD_QTY = re.compile(
     rf"^(?P<qty>\d{{1,6}})\s*{_QTY_UNIT}\.?(?![A-Za-z0-9])\s*", re.IGNORECASE
 )
@@ -262,16 +275,26 @@ def _quantity(value: str) -> int | None:
 def card_quantities(
     message: str, matches: list[Match], vocabulary: Vocabulary
 ) -> dict[int, int]:
-    """Counts immediately attached to a catalog model or SKU in this message."""
+    """Use the adjacent count for each model named this turn, defaulting to one."""
+    named_ids: set[int] = set()
     counts: dict[int, int] = {}
     for match in matches:
         if match.kind != "model" or len(match.product_ids) != 1:
             continue
         product_id = next(iter(match.product_ids))
+        named_ids.add(product_id)
         words = re.findall(r"[\w.]+", match.words)
         if not words:
             continue
         model = r"[\s-]+".join(re.escape(word) for word in words)
+        series = {
+            re.escape(entry.words)
+            for entry in matches
+            if entry.kind == "series"
+            and entry.value in vocabulary.series_of.get(product_id, ())
+        }
+        if series:
+            model = rf"(?:(?:{'|'.join(sorted(series))})\s+)?{model}"
         brands = [
             vocabulary.brand_names.get(slug, slug)
             for slug in vocabulary.brand_of.get(product_id, ())
@@ -280,20 +303,21 @@ def card_quantities(
             brand = "|".join(re.escape(name) for name in brands)
             model = rf"(?:(?:{brand})\s+)?{model}"
         for named in re.finditer(rf"(?<![\w-]){model}(?![\w-])", message, re.I):
-            before = re.search(
-                rf"(?<![\w.,+/-])([0-9]+)(?:\s*{_QTY_UNIT}\.?)?\s+$",
-                message[: named.start()],
-                re.I,
-            )
+            before = _CARD_COUNT_BEFORE.search(message[: named.start()])
             after = re.match(
                 r"\s*[×x*]\s*([0-9]+)(?!\w|[.,]\d)", message[named.end() :], re.I
             )
             for adjacent in (before, after):
                 if adjacent:
-                    digits = adjacent[1].lstrip("0")
-                    count = (
-                        int(digits) if 0 < len(digits) <= len(str(MAX_QUANTITY)) else 0
-                    )
+                    token = adjacent[1].casefold()
+                    count = COUNT_WORDS.get(token)
+                    if count is None:
+                        digits = token.lstrip("0")
+                        count = (
+                            int(digits)
+                            if 0 < len(digits) <= len(str(MAX_QUANTITY))
+                            else 0
+                        )
                     # Zero keeps a conflicting or out-of-range request unsigned.
                     counts[product_id] = (
                         count
@@ -301,7 +325,7 @@ def card_quantities(
                         and counts.get(product_id, count) == count
                         else 0
                     )
-    return counts
+    return {pid: counts.get(pid, 1) for pid in named_ids}
 
 
 def _without_quantity(value: str) -> str:
