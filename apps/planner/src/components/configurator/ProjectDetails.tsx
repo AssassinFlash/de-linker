@@ -54,6 +54,14 @@ export function hasStorageToExclude(inputs: JsonObject): boolean {
 	);
 }
 
+export function hasSolarPlanToExclude(inputs: JsonObject): boolean {
+	return (
+		inputs.pv_string_plan != null ||
+		inputs.pv_plant_string_plan != null ||
+		inputs.shared_dc_energy_run_id != null
+	);
+}
+
 function withoutBattery(inputs: JsonObject): JsonObject {
 	const use = equipmentDraft(inputs).equipment_use as
 		EquipmentUse | null | undefined;
@@ -297,8 +305,7 @@ export function ProjectDetails({
 								if (
 									(system_scope === "pv_only" && hasStorageToExclude(inputs)) ||
 									(system_scope === "storage_only" &&
-										(inputs.pv_string_plan != null ||
-											inputs.pv_plant_string_plan != null))
+										hasSolarPlanToExclude(inputs))
 								)
 									setPendingScope(system_scope);
 								else changeScope(system_scope);

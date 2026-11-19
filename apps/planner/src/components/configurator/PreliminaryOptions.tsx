@@ -2,7 +2,10 @@ import { useEffect, useRef } from "react";
 import type { JsonObject } from "../../data/protocol.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __ } from "../../i18n.ts";
-import { hasStorageToExclude } from "./ProjectDetails.tsx";
+import {
+	hasSolarPlanToExclude,
+	hasStorageToExclude,
+} from "./ProjectDetails.tsx";
 
 export function systemNames() {
 	return {
@@ -68,8 +71,7 @@ export function PreliminaryOptions({
 					.filter(
 						(scope) =>
 							(scope !== "pv_only" || !hasStorageToExclude(inputs)) &&
-							(scope !== "storage_only" ||
-								(!inputs.pv_string_plan && !inputs.pv_plant_string_plan)),
+							(scope !== "storage_only" || !hasSolarPlanToExclude(inputs)),
 					)
 					.map((scope) => (
 						<article key={scope} className="sc-package">

@@ -73,6 +73,7 @@ export function Workspace({
 }) {
 	const [showProjects, setShowProjects] = useState(false);
 	const [comparison, setComparison] = useState<{
+		destination: "compare" | "review";
 		projectId: string;
 		inputs: JsonObject;
 	} | null>(null);
@@ -223,12 +224,16 @@ export function Workspace({
 					? "sc-system"
 					: destination === "design"
 						? "sc-solar"
-						: destination === "review"
-							? "sc-review"
+						: destination === "review" && !comparisonInputs
+							? "sc-preliminary-review"
 							: "sc-project",
 		);
-		if (destination === "compare")
+		if (
+			destination === "compare" ||
+			(destination === "review" && comparisonInputs)
+		)
 			setComparison({
+				destination,
 				projectId: project.id,
 				inputs: comparisonInputs ?? project.inputs,
 			});
@@ -372,6 +377,7 @@ export function Workspace({
 					project={project.data}
 					{...(comparison?.projectId === selected && {
 						entryComparison: {
+							destination: comparison.destination,
 							inputs: comparison.inputs,
 							consume: consumeComparison,
 						},

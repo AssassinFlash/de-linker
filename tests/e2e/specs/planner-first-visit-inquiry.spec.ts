@@ -1,6 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { instance, wp } from '../lib/instance';
-import { plannerScreenshot } from '../lib/planner-entry';
+import {
+	deleteOpenProject,
+	plannerScreenshot,
+	plannerWords,
+	reopenProject,
+} from '../lib/planner-entry';
 
 const labels = {
 	en: {
@@ -33,6 +38,111 @@ const labels = {
 
 for (const lang of ['en', 'de'] as const) {
 	for (const width of [390, 1440]) {
+		test(`${lang} ${width}: a partial project can choose a direction before and after reopening`, async ({
+			page,
+		}) => {
+			const words = labels[lang];
+			const fields = plannerWords[lang];
+			const site = `Oslo ${Date.now()}`;
+			const searches: string[] = [];
+			page.on('request', (request) => {
+				if (request.url().endsWith('/runs/find-equipment'))
+					searches.push(request.url());
+			});
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			await page.goto(instance().url + words.path);
+			const locationField = page.locator('input[name="location_label"]');
+			await locationField.fill(site);
+			await page
+				.locator('[name="system_scope"]')
+				.selectOption('storage_addition');
+			await page
+				.getByLabel(fields.purpose, { exact: true })
+				.selectOption('self');
+			const energy = page.getByRole('region', {
+				name: fields.energy,
+				exact: true,
+			});
+			const grid = energy.getByLabel(fields.grid, { exact: true });
+			const consumption = energy.getByRole('textbox', {
+				name:
+					lang === 'en'
+						? 'Annual electricity use'
+						: 'Jährlicher Stromverbrauch',
+				exact: true,
+			});
+			await grid.selectOption('3');
+			await consumption.fill('1.234,5');
+			await expect(
+				energy.getByRole('button', {
+					name: fields.compare,
+					exact: true,
+				})
+			).toBeDisabled();
+			await locationField.press('Enter');
+			await expect(consumption).toHaveValue('1.234,5');
+			await consumption.fill('6400');
+			await expect(
+				energy.getByRole('button', {
+					name: fields.compare,
+					exact: true,
+				})
+			).toBeEnabled();
+			await grid.selectOption('');
+			for (const [index, scope] of [
+				'storage_addition',
+				'storage_only',
+			].entries()) {
+				await expect(
+					energy.getByRole('button', {
+						name: words.compare,
+						exact: true,
+					})
+				).toBeEnabled();
+				if (index === 0) await locationField.press('Enter');
+				else
+					await energy
+						.getByRole('button', {
+							name: words.compare,
+							exact: true,
+						})
+						.click();
+				const direction = words.directions[index === 0 ? 1 : 3];
+				const card = page
+					.getByRole('article')
+					.filter({
+						has: page.getByRole('heading', {
+							name: direction,
+							exact: true,
+						}),
+					});
+				await card
+					.getByRole('button', { name: words.choose, exact: true })
+					.click();
+				await expect(
+					page.locator('form.linker-inquiry-form')
+				).toBeVisible();
+				await expect(page.locator('.sc-draft-transfer')).toContainText(
+					direction
+				);
+				await plannerScreenshot(
+					page,
+					`partial-${index === 0 ? 'new' : 'saved'}-${lang}-${width}`
+				);
+				const project = await reopenProject(page, lang, site);
+				expect(project.inputs.brief).toMatchObject({
+					system_scope: scope,
+					site: { location_label: site },
+					annual_load: { kwh: 6400 },
+				});
+				expect(project.inputs.equipment_setup.grid_phase).toBeNull();
+			}
+			expect(searches).toHaveLength(0);
+			await deleteOpenProject(page, lang, site);
+		});
 		test(`${lang} ${width}: a first guest requests a preliminary solution with no project data`, async ({
 			page,
 			context,

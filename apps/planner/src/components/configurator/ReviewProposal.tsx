@@ -284,6 +284,7 @@ interface ReportHistory {
 
 export function ReviewProposal({
 	inputs,
+	preliminary = false,
 	project,
 	summary,
 	materials,
@@ -303,6 +304,7 @@ export function ReviewProposal({
 	summary?: ReactNode;
 	materials?: ReactNode;
 	inputs: JsonObject;
+	preliminary?: boolean;
 	run: PlanningRun | null;
 	history?: ReportHistory;
 	client: PlannerClient;
@@ -404,12 +406,13 @@ export function ReviewProposal({
 					)));
 	const preliminaryScope =
 		inputs.brief &&
-		Object.keys(inputs).every(
-			(key) => key === "brief" || key === "saved_solution_reference",
-		)
+		(preliminary ||
+			Object.keys(inputs).every(
+				(key) => key === "brief" || key === "saved_solution_reference",
+			))
 			? readBrief(inputs.brief).system_scope
 			: null;
-	if (preliminaryScope && !selected && !transferable) {
+	if (preliminaryScope && (preliminary || (!selected && !transferable))) {
 		const label = {
 			new_pv_storage: __("Solar and storage", "linker-tools"),
 			storage_addition: __("Storage for existing PV", "linker-tools"),
@@ -682,6 +685,7 @@ export function ReviewProposal({
 						</>
 					)}
 				</section>
-			)}		</article>
+			)}
+		</article>
 	);
 }

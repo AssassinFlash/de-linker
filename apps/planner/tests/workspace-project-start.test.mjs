@@ -33,16 +33,20 @@ const session = {
 
 for (const target of [
 	"preliminary",
+	"partial",
 	"saved",
 	"compare",
 	"retry",
 	"profile",
+	"profile-preliminary",
 	"csv",
 ]) {
 	const saved = target === "saved";
 	const csv = "time;power\n2026-01-01T00:00Z;4\n";
 	const name =
 		{
+			partial:
+				"A guest with a site and storage direction can compare without a grid phase",
 			preliminary:
 				"A guest can compare preliminary options from a blank project and review their chosen direction",
 			csv: "a fresh PV project can import a CSV with an invalid coordinate and compare after correction",
@@ -91,8 +95,20 @@ for (const target of [
 		let run;
 		let accepted;
 		const client = {
+			origin: location.origin,
 			async send(path, body) {
 				const command = JSON.parse(body);
+				if (target === "profile-preliminary" && path === "projects/revise") {
+					assert.equal(command.project_id, projectId);
+					assert.equal(command.expected_revision, accepted.revision);
+					accepted = {
+						...accepted,
+						revision: accepted.revision + 1,
+						inputs: command.inputs,
+						input_sha256: "6".repeat(64),
+					};
+					return accepted;
+				}
 				if (path === "runs/find-equipment") {
 					searches.push(command);
 					assert.equal(command.project_id, projectId);
@@ -154,6 +170,13 @@ for (const target of [
 				return scope === session.query_scope;
 			},
 			async query(path, body) {
+				if (path === "inquiry/form")
+					return {
+						schema_version: 1,
+						inquiry_lines: [],
+						inquiry_form_html:
+							'<form method="post" action="/wp-admin/admin-post.php"><textarea name="message"></textarea><button type="submit">Send inquiry</button></form>',
+					};
 				if (path === "recovery/scopes")
 					return { schema_version: 1, scopes: [], next: null };
 				if (saved && path === "sources/saved-solution") {
@@ -307,7 +330,20 @@ for (const target of [
 		await mount();
 		const start = () => document.querySelector("form");
 		await until(() => document.querySelector('select[name="system_scope"]'));
-		if (target === "preliminary" || saved) {
+		if (target === "preliminary" || target === "partial" || saved) {
+			if (target === "partial") {
+				await enter(document.querySelector('[name="location_label"]'), "Oslo");
+				for (const [name, value] of [
+					["system_scope", "storage_addition"],
+					["project_purpose", "self"],
+				]) {
+					const select = document.querySelector(`select[name="${name}"]`);
+					await act(async () => {
+						select.value = value;
+						select.dispatchEvent(new window.Event("change", { bubbles: true }));
+					});
+				}
+			}
 			if (saved) {
 				assert.equal(
 					document.querySelector('[name="project_title"]').value,
@@ -321,9 +357,15 @@ for (const target of [
 			const compare = [...document.querySelectorAll("button")].find(
 				(button) => button.textContent === "Compare preliminary options",
 			);
-			assert.ok(compare, "a first-time guest can compare without any input");
+			assert.ok(
+				compare,
+				"preliminary options are available with incomplete inputs",
+			);
 			await until(() => !compare.disabled);
-			await act(async () => compare.click());
+			if (target === "partial") {
+				assert.equal(compare.form, start());
+				await act(async () => start().requestSubmit());
+			} else await act(async () => compare.click());
 			const options = [...document.querySelectorAll("article")].filter(
 				(card) =>
 					card.querySelector("button")?.textContent === "Choose this option",
@@ -336,14 +378,26 @@ for (const target of [
 			assert.match(document.body.textContent, /equipment compatibility/i);
 			assert.equal(creates.length, 0);
 			await act(async () => options[1].querySelector("button").click());
-			await until(() => location.hash === "#sc-review");
+			await until(() => location.hash === "#sc-preliminary-review");
 			assert.deepEqual(destinations, ["review"]);
 			assert.equal(creates.length, 1);
-			const inputs = JSON.parse(creates[0]).inputs;
-			assert.deepEqual(
-				Object.keys(inputs),
-				saved ? ["brief", "saved_solution_reference"] : ["brief"],
+			await until(() =>
+				document.querySelector(".sc-draft-transfer form textarea"),
 			);
+			assert.match(
+				document.querySelector(".sc-draft-transfer").textContent,
+				/Planned system: Storage for existing PV/,
+			);
+			const inputs = JSON.parse(creates[0]).inputs;
+			if (target === "partial") {
+				assert.equal(inputs.brief.site.location_label, "Oslo");
+				assert.equal(inputs.equipment_setup.grid_phase, null);
+				assert.equal(inputs.equipment_setup.operating_mode, "grid_connected");
+			} else
+				assert.deepEqual(
+					Object.keys(inputs),
+					saved ? ["brief", "saved_solution_reference"] : ["brief"],
+				);
 			if (saved) {
 				assert.equal(inputs.saved_solution_reference.solution_id, 45);
 				assert.deepEqual(
@@ -469,6 +523,9 @@ for (const target of [
 			const latitude = field("Latitude");
 			await enter(latitude, "1.234,5");
 			assert.equal(button("Compare systems").disabled, true);
+			await act(async () => start().requestSubmit());
+			assert.equal(creates.length, 0);
+			assert.equal(searches.length, 0);
 			await openSection("Electricity use over time");
 			await act(async () => button("Import CSV").click());
 			await enter(
@@ -507,7 +564,7 @@ for (const target of [
 			assert.equal(searches.length, 0);
 			await enter(latitude, "59,91");
 		}
-		if (target === "profile") {
+		if (target === "profile" || target === "profile-preliminary") {
 			const panel = [...document.querySelectorAll("summary")].find(
 				(el) => el.textContent === "Electricity use over time",
 			);
@@ -527,6 +584,28 @@ for (const target of [
 			);
 			assert.equal(searches.length, 0);
 			await enter(annual.querySelector("input"), "7100");
+			if (target === "profile-preliminary") {
+				await choose(grid.querySelector("select"), "");
+				await act(async () => button("Compare preliminary options").click());
+				const storage = [
+					...document.querySelectorAll("article.sc-package"),
+				].find((card) => card.querySelector("h3")?.textContent === "Storage");
+				await act(async () => storage.querySelector("button").click());
+				await until(() =>
+					document.querySelector(".sc-draft-transfer form textarea"),
+				);
+				assert.equal(location.hash, "#sc-preliminary-review");
+				assert.equal(creates.length, 1);
+				assert.equal(searches.length, 0);
+				assert.equal(accepted.id, projectId);
+				assert.equal(accepted.inputs.brief.annual_load.kwh, 7100);
+				assert.equal(accepted.inputs.equipment_setup.grid_phase, null);
+				assert.equal(
+					accepted.inputs.profile_selections.selected.gross_load,
+					"2".repeat(32),
+				);
+				return;
+			}
 		}
 		assert.ok(!button("Compare systems").disabled);
 		await act(async () => {
