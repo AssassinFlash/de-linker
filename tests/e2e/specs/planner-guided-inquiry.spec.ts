@@ -741,11 +741,9 @@ for (const [locale, width] of [
 							quantity: Number(match![2]),
 						};
 					});
-					expect(
-						lines.filter(
-							({ label }) => label === earlier.shared.sku
-						)
-					).toHaveLength(1);
+					expect(new Set(lines.map(({ label }) => label)).size).toBe(
+						lines.length
+					);
 					expect(await cart()).toEqual(earlier.mixed);
 					return { request, lines };
 				});
