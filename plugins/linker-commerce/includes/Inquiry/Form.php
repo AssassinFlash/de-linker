@@ -44,23 +44,17 @@ final class Form {
 	 */
 	public function project_notes(): string {
 		$previous = (array) ( $this->flash['fields'] ?? array() );
+		if ( ! empty( $this->flash['unavailable'] ) ) {
+			return '<label class="linker-form-consent"><input type="checkbox" required name="linker_without_project" value="' . esc_attr( wp_create_nonce( 'linker_without_project:' . $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) . '" /> ' . esc_html__( 'Send my inquiry without this project', 'linker-commerce' ) . '</label>' . self::retained_notes( $previous );
+		}
 		if ( isset( $previous['linker_planner_handoff_id'] ) || ( ( isset( $previous['linker_note_project'] ) || isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) && '1' === $previous['linker_recovery_available'] ) ) {
-			// Recover an uncertain send with the exact draft and note revisions originally posted.
-			$html = '';
-			if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
-				$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
-				$html .= '<input type="hidden" name="linker_include_project_notes" value="' . esc_attr( $previous[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ) . '" />';
-			}
-			foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ?? array() as $id => $revision ) {
-				$html .= '<input type="hidden" name="linker_project_note_revisions[' . esc_attr( $id ) . ']" value="' . esc_attr( $revision ) . '" />';
-			}
-			return $html;
+			return self::retained_notes( $previous );
 		}
 		$note = null;
 		if ( isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ) {
 			$note = \Linker\Commerce\Planning\Context::read_preliminary_project( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] );
 			if ( $note instanceof \WP_Error ) {
-				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>';
+				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>' . self::retained_notes( $previous );
 			}
 		} elseif ( isset( $previous['linker_note_project'] ) ) {
 			$note = \Linker\Commerce\Planning\Context::read_selected_note( $previous['linker_note_project'] );
@@ -78,14 +72,48 @@ final class Form {
 		return \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, null, $note );
 	}
 
+	/** Preserve the reviewed inclusion choice and revisions while they cannot be reread.
+	 *
+	 * @param array<string,mixed> $previous Native form fields.
+	 */
+	private static function retained_notes( array $previous ): string {
+		$html = '';
+		if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
+			$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
+			$html .= '<input type="hidden" name="linker_include_project_notes" value="' . esc_attr( $previous[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ) . '" />';
+		}
+		foreach ( $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ?? array() as $id => $revision ) {
+			$html .= '<input type="hidden" name="linker_project_note_revisions[' . esc_attr( $id ) . ']" value="' . esc_attr( $revision ) . '" />';
+		}
+		return $html;
+	}
+
+	/** Show this POST's correctable error on the current checkout response.
+	 *
+	 * @param array<string,mixed> $fields Retained native input; no proof or nonce.
+	 * @param \WP_Error           $error  Native outcome.
+	 * @param string              $locale Submitted language.
+	 */
+	public function retry( array $fields, \WP_Error $error, string $locale ): void {
+		$this->flash = array(
+			'fields'       => $fields,
+			'error'        => $error->get_error_message(),
+			'error_locale' => $locale,
+			'grouped'      => 'linker_intake_grouped' === $error->get_error_code(),
+			'unavailable'  => 'planning_preliminary_unavailable' === $error->get_error_code(),
+		);
+	}
+
 	/**
 	 * LC's own fragment with no PHP layout.
 	 */
 	public function render(): string {
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
-		foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
-			$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
-			WC()->session->set( 'linker_inquiry_' . $key, null );
+		if ( array() === $this->flash ) {
+			foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
+				$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
+				WC()->session->set( 'linker_inquiry_' . $key, null );
+			}
 		}
 		try {
 			$template = do_shortcode( str_replace( '{{inquiry-fields}}', self::fields_template(), Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) ) );
@@ -161,7 +189,7 @@ final class Form {
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
 			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : '',
-			'action'             => admin_url( 'admin-post.php' ),
+			'action'             => isset( $previous[ \Linker\Commerce\Planning\Context::PROJECT_FIELD ] ) ? Checkout::request_url( determine_locale() ) : admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
@@ -210,7 +238,7 @@ final class Form {
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::nonce_action( $project ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
+		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ), $this->flash['grouped'] ?? null );
 	}
 
 	/**
