@@ -565,6 +565,7 @@ export default function Configurator({
 	);
 	const independentlyBlocked = projectWritesBlocked || Boolean(draft?.pending);
 	const blocked = independentlyBlocked || unconfirmedOperation;
+	const requestedRoofSave = useRef<JsonObject | null>(null);
 	const attemptedRoofSave = useRef<JsonObject | null>(null);
 	useEffect(() => {
 		if (
@@ -575,10 +576,11 @@ export default function Configurator({
 		)
 			return;
 		const inputs = draft.history.current;
-		if (sameJson(inputs.geometry, draft.baseline.inputs.geometry)) {
-			attemptedRoofSave.current = null;
-			return;
-		}
+		const recoverRoofSave =
+			controller.recovered &&
+			draft.pending &&
+			!sameJson(inputs.geometry, draft.baseline.inputs.geometry);
+		if (requestedRoofSave.current !== inputs && !recoverRoofSave) return;
 		if (attemptedRoofSave.current === inputs) return;
 		attemptedRoofSave.current = inputs;
 		void controller.save().catch(setError);
@@ -629,6 +631,18 @@ export default function Configurator({
 		},
 		[client, comparisonInputs, session.query_scope, update],
 	);
+	function editHistory(operation: typeof undoDraft) {
+		const before = latest.current?.history.current;
+		const after = update(operation)?.history.current;
+		if (
+			step === "solar" &&
+			before &&
+			after &&
+			!sameJson(before.geometry, after.geometry) &&
+			sameJson(before.geometry_imports, after.geometry_imports)
+		)
+			requestedRoofSave.current = after;
+	}
 	const editWiring = useCallback(
 		(operation: (inputs: JsonObject) => JsonObject) =>
 			edit((inputs) =>
@@ -1155,7 +1169,7 @@ export default function Configurator({
 									Boolean(draft.pending || draft.conflict) ||
 									!draft.history.past.length
 								}
-								onClick={() => update(undoDraft)}
+								onClick={() => editHistory(undoDraft)}
 							>
 								{__("Undo", "linker-tools")}
 							</button>
@@ -1167,17 +1181,16 @@ export default function Configurator({
 									Boolean(draft.pending || draft.conflict) ||
 									!draft.history.future.length
 								}
-								onClick={() => update(redoDraft)}
+								onClick={() => editHistory(redoDraft)}
 							>
 								{__("Redo", "linker-tools")}
 							</button>
 							<button
 								className="sc-button"
 								disabled={
-									controller.busy ||
-									navigationBlocked ||
-									Boolean(draft.conflict) ||
-									controller.recoveries.length > 0
+									projectWritesBlocked ||
+									unconfirmedOperation ||
+									(!draft.pending && navigationBlocked)
 								}
 								onClick={() => void controller.save()}
 							>
@@ -1416,6 +1429,10 @@ export default function Configurator({
 							session={session}
 							disabled={blocked || modelsUnavailable}
 							edit={edit}
+							onLayoutChange={() => {
+								requestedRoofSave.current =
+									latest.current?.history.current ?? null;
+							}}
 							next={() => navigate("energy")}
 							wiring={
 								wiringPlant

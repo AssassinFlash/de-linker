@@ -311,7 +311,19 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	await openRoof();
 	await until(() => button("Load street map"));
-	await click("Draw roof");
+	assert.equal(button("Draw roof").disabled, true);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/Mark each roof corner on the aerial map/,
+	);
+	assert.match(
+		document.body.textContent,
+		/No aerial image is available for this location/,
+	);
+	await click("Enter roof measurements");
+	await until(() => document.activeElement === input("Width"));
+	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
+	await click("Aerial map");
 	assert.equal(button("Calibrate a roof image").disabled, false);
 	const form = await traceRoofImage(t, "roof-plan.png");
 	form.elements.namedItem("source").value = "roof-plan.png";

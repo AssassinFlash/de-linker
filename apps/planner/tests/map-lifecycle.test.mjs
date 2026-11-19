@@ -124,6 +124,12 @@ test("map view requires consent, releases provider requests on withdrawal, and p
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.equal(unavailable.removals, 1);
 	const withdrawn = activeMap(maps);
+	window.getCkyConsent = () => ({ isUserActionCompleted: false });
+	await act(async () =>
+		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
+	);
+	assert.equal(activeMap(maps), withdrawn);
+	window.getCkyConsent = () => ({ isUserActionCompleted: true });
 	await act(async () =>
 		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
 	);

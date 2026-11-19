@@ -616,13 +616,22 @@ test("a roof layout edit advances the saved project and reopens without a separa
 	await click("Open roof layout");
 	assert.ok(dom.element.textContent.includes(flatRoof.roofs[0].name));
 	dropNextReply = true;
+	await click("Place modules");
 	await click("Remove selected");
 	await until(() => button("Retry save")?.matches(":enabled"));
 	const unconfirmed = requests.at(-1);
-	await render();
+	await click("Retry save");
 	await until(() => dom.element.textContent.includes("Saved · revision 4"));
 	assert.deepEqual(requests.slice(2), [unconfirmed, unconfirmed]);
 	assert.equal(saved.inputs.geometry.roofs.length, 0);
+	dropNextReply = true;
+	await click("Undo", dom.element.querySelector(".sc-roof-editor"));
+	await until(() => button("Retry save")?.matches(":enabled"));
+	const beforeReload = requests.at(-1);
+	await render();
+	await until(() => dom.element.textContent.includes("Saved · revision 5"));
+	assert.deepEqual(requests.slice(4), [beforeReload, beforeReload]);
+	assert.deepEqual(saved.inputs.geometry, flatRoof);
 });
 
 test("a storage project continues from its location directly to energy use", async () => {

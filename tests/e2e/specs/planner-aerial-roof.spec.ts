@@ -4,10 +4,9 @@ import { instance } from '../lib/instance';
 const words = {
 	en: {
 		home: '/',
-		roof: 'Start with your roof',
+
 		open: 'Open aerial map',
-		show: 'Show aerial map',
-		finish: 'Finish outline',
+
 		module: 'PV module',
 		pitch: 'Pitch (°)',
 		azimuth: 'Azimuth (°)',
@@ -19,10 +18,9 @@ const words = {
 	},
 	de: {
 		home: '/de/',
-		roof: 'Dach planen',
+
 		open: 'Luftbildkarte öffnen',
-		show: 'Luftbildkarte anzeigen',
-		finish: 'Umriss abschließen',
+
 		module: 'PV-Modul',
 		pitch: 'Dachneigung (°)',
 		azimuth: 'Azimut (°)',
@@ -96,6 +94,7 @@ for (const lang of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
 		test(`${lang} ${width}: locate a building from home and reopen its roof layout`, async ({
 			page,
+			browser,
 		}) => {
 			const text = words[lang];
 			await page.setViewportSize({
@@ -103,13 +102,11 @@ for (const lang of ['en', 'de'] as const) {
 				height: width === 390 ? 844 : 900,
 			});
 			await page.goto(instance().url + text.home);
-			const homeForm = page
-				.getByRole('form')
-				.filter({
-					has: page.locator(
-						'[name="roof_imagery_consent"], [name="location_label"]'
-					),
-				});
+			const homeForm = page.getByRole('form').filter({
+				has: page.locator(
+					'[name="roof_imagery_consent"], [name="location_label"]'
+				),
+			});
 			await homeForm.locator('[name="country"]').selectOption('NL');
 			await homeForm.locator('[name="location_label"]').fill(address);
 			await homeForm.locator('[name="roof_imagery_consent"]').check();
@@ -159,28 +156,116 @@ for (const lang of ['en', 'de'] as const) {
 			await map.click({ position: { x: mid.x + 25, y: mid.y - 8 } });
 			const receipt = await savedLayout;
 			expect(receipt.ok()).toBe(true);
-			const saved = await receipt.json();
+			const saved = receipt.request().postDataJSON();
+			const geometry = saved.inputs.geometry;
+			expect(saved.project_id).toBe(id);
+			expect(geometry.roofs).toHaveLength(1);
+			expect(geometry.arrays).toMatchObject([
+				{ rows: 2, columns: 2, roof_id: geometry.roofs[0].id },
+			]);
+			expect(
+				geometry.sources.find(
+					(source: { id: string }) =>
+						source.id === geometry.roofs[0].source_id
+				)
+			).toMatchObject({
+				rights_basis: 'referenced_licence',
+				reference_url: 'https://creativecommons.org/licenses/by/4.0/',
+			});
+			const counter = '4 ' + text.placed;
+			await expect(editor).toContainText(counter);
 			await page.reload();
-			expect(saved).toMatchObject({
-				id,
-				inputs: {
-					geometry: {
-						roofs: [
-							expect.objectContaining({ id: expect.any(String) }),
-						],
-						arrays: [
-							expect.objectContaining({ rows: 2, columns: 2 }),
-						],
-					},
-				},
+			await expect(editor).toContainText(counter);
+			const clean = await browser.newContext({
+				viewport: page.viewportSize(),
+				storageState: await page.context().storageState(),
 			});
-			expect(saved.inputs.geometry.arrays[0].roof_id).toBe(
-				saved.inputs.geometry.roofs[0].id
-			);
-			await expect(editor).toContainText('4 ' + text.placed);
-			await page.screenshot({
-				path: test.info().outputPath('reopened-layout.png'),
-			});
+			try {
+				const reopened = await clean.newPage();
+				await reopened.goto(page.url());
+				await expect(reopened.locator('.sc-solar-total')).toContainText(
+					counter
+				);
+				const cookieChoice = reopened.locator(
+					'[data-cky-tag="reject-button"]:visible'
+				);
+				if (await cookieChoice.isVisible()) await cookieChoice.click();
+				const show = reopened.getByRole('button', {
+					name:
+						lang === 'en'
+							? 'Show aerial map'
+							: 'Luftbildkarte anzeigen',
+				});
+				await show.click();
+				await expect(
+					reopened.getByRole('button', {
+						name:
+							lang === 'en'
+								? 'Hide aerial map'
+								: 'Luftbildkarte ausblenden',
+					})
+				).toBeEnabled();
+				const aerial = reopened.locator('.lp-map-surface');
+				await expect(
+					reopened.locator('[data-map-status="ready"]')
+				).toBeVisible();
+				await aerial.scrollIntoViewIfNeeded();
+				await aerial.screenshot({
+					path: test.info().outputPath('reopened-layout.png'),
+				});
+			} finally {
+				await clean.close();
+			}
 		});
 	}
 }
+
+test('a Berlin street address opens the disclosed state aerial layer', async ({
+	page,
+}) => {
+	await page.goto(instance().url + '/de/');
+	const form = page
+		.getByRole('form')
+		.filter({ has: page.locator('[name="location_label"]') });
+	await form.locator('[name="country"]').selectOption('DE');
+	await form
+		.locator('[name="location_label"]')
+		.fill('Platz der Republik 1, 11011 Berlin');
+	const permission = form.getByRole('checkbox', {
+		name: /Luftbilder.*Berlin/i,
+	});
+	await permission.check();
+	await form
+		.getByRole('button', { name: 'Luftbildkarte öffnen', exact: true })
+		.click();
+	await expect(page).toHaveURL(/#sc-roof$/);
+	await expect(
+		page.getByRole('button', {
+			name: 'Eckpunkt in der Kartenmitte hinzufügen',
+		})
+	).toBeEnabled({ timeout: 60000 });
+	await expect(page.locator('.lp-map-surface').locator('..')).toContainText(
+		'Berlin'
+	);
+});
+
+test('a site without an aerial layer can continue with a measured roof', async ({
+	page,
+}) => {
+	await page.goto(instance().url + '/');
+	const form = page
+		.getByRole('form')
+		.filter({ has: page.locator('[name="location_label"]') });
+	await form.locator('[name="country"]').selectOption('BA');
+	await form
+		.locator('[name="location_label"]')
+		.fill('Obala Kulina bana 1, 71000 Sarajevo');
+	await form
+		.getByRole('button', { name: 'Open aerial map', exact: true })
+		.click();
+	await expect(page).toHaveURL(/#sc-roof$/);
+	await page
+		.getByRole('button', { name: 'Enter roof measurements', exact: true })
+		.click();
+	await expect(page.getByLabel('Width (m)', { exact: true })).toBeVisible();
+});

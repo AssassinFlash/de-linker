@@ -1,3 +1,4 @@
+import { onMapConsentChange } from "../../data/roofImageryConsent.ts";
 import {
 	useEffect,
 	useId,
@@ -265,24 +266,10 @@ export default function MapViewport({
 			releaseExternal.current?.();
 			setGrant(null);
 		};
-		globalThis.document.addEventListener(
-			"cookieyes_consent_update",
-			stopExternal,
-		);
-		globalThis.document.addEventListener(
-			"wp_listen_for_consent_change",
-			stopExternal,
-		);
+		const unsubscribe = onMapConsentChange(stopExternal);
 		window.addEventListener("pagehide", stopExternal);
 		return () => {
-			globalThis.document.removeEventListener(
-				"cookieyes_consent_update",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener(
-				"wp_listen_for_consent_change",
-				stopExternal,
-			);
+			unsubscribe();
 			window.removeEventListener("pagehide", stopExternal);
 		};
 	}, []);

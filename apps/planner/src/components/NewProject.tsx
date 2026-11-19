@@ -273,18 +273,25 @@ export function NewProject({
 							record.destination === "guided-comparison" ||
 							record.destination === "roof"
 						);
-					if (roofEntry || record.destination === "roof")
+					if (roofEntry)
 						return (
-							roofEntry && record.destination === "roof" && !record.profile
+							!record.profile &&
+							(record.destination === "roof" || record.destination === "design")
 						);
+					if (record.destination === "roof") return false;
 					return (
 						record.destination !== "guided-comparison" &&
 						(record.destination === "preliminary-review") === compareOnLoad
 					);
 				});
 				setRequests(matching);
-				if (openWork.current || !matching[0]) return;
-				restoreCreation(matching[0]);
+				if (openWork.current) return;
+				// Earlier roof entries and the regular project form both stored "design".
+				// Offer those receipts by title until the customer chooses one.
+				const resume = roofEntry
+					? matching.find((record) => record.destination === "roof")
+					: matching[0];
+				if (resume) restoreCreation(resume);
 			})
 			.catch(() => {
 				if (active) setRecoveryFailed(true);
@@ -664,7 +671,9 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	const pendingRequests = requests.length > 1 && (
+	const chooseLegacy =
+		roofEntry && requests.some((record) => record.destination === "design");
+	const pendingRequests = (requests.length > 1 || chooseLegacy) && (
 		<label className="sc-field">
 			<span>{__("Unconfirmed project creations", "linker-tools")}</span>
 			<select
@@ -678,6 +687,11 @@ export function NewProject({
 					restoreCreation(request);
 				}}
 			>
+				{chooseLegacy && !selectedRequest && (
+					<option value="" disabled>
+						{__("New project", "linker-tools")}
+					</option>
+				)}
 				{requests.map((request, index) => (
 					<option key={intentId(request)} value={intentId(request)}>
 						{index + 1}.{" "}

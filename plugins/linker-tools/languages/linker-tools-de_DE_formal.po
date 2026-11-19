@@ -17366,3 +17366,11 @@ msgstr "Luftbilder von %s laden. Der Anbieter erhält Ihre IP-Adresse und den an
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
 msgid "Enter your roof measurements, then trace around the roof in one drag. You can also tap each corner and finish the outline."
 msgstr "Geben Sie die Dachmaße ein und ziehen Sie den Dachumriss in einem Zug nach. Sie können die Ecken auch einzeln antippen und den Umriss abschließen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "No aerial image is available for this location. Use your own roof plan or enter the roof measurements."
+msgstr "Für diesen Standort ist kein Luftbild verfügbar. Verwenden Sie Ihren eigenen Dachplan oder geben Sie die Dachmaße ein."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Enter roof measurements"
+msgstr "Dachmaße eingeben"

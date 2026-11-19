@@ -148,7 +148,7 @@ test("several pending creations require selection and an explicit retry of the e
 test("a native-granted prior scope restores exact creations without automatically sending or clearing another scope", (t) =>
 	exercise(t, true));
 
-test("preliminary and explicit roof entries resume only their own pending project creations", async (t) => {
+test("the roof entry offers an older design request for explicit retry without adopting it as a new roof", async (t) => {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
@@ -230,6 +230,7 @@ test("preliminary and explicit roof entries resume only their own pending projec
 						client,
 						store,
 						compareOnLoad: preliminary,
+						config: { locale: "en", countries: { DE: "Germany" } },
 						entryHints: readEntryHints(new URL(location.href).searchParams),
 						created: (_project, destination) => {
 							destinations.push(destination);
@@ -243,18 +244,38 @@ test("preliminary and explicit roof entries resume only their own pending projec
 	};
 	const [preliminary, roof] = pending;
 	await render(false);
-	await until(
-		() =>
-			document.querySelector('input[name="project_title"]')?.value ===
-			"Roof request",
-	);
-	await act(async () =>
-		document
-			.querySelector("form")
-			.dispatchEvent(
-				new window.Event("submit", { bubbles: true, cancelable: true }),
+	const choice = () =>
+		[...document.querySelectorAll("select")].find((field) =>
+			[...field.options].some((option) =>
+				option.textContent.includes("Roof request"),
 			),
+		);
+	await until(choice);
+	assert.deepEqual(received, []);
+	assert.equal(choice().value, "");
+	assert.equal(
+		document.querySelector('[name="location_label"]').matches(":disabled"),
+		false,
 	);
+	assert.equal(
+		choice().options.length,
+		2,
+		"the preliminary request stays on its own entry",
+	);
+	const oldRequest = [...choice().options].find((option) =>
+		option.textContent.includes("Roof request"),
+	);
+	await act(async () => {
+		choice().value = oldRequest.value;
+		choice().dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.deepEqual(received, []);
+	const retryRoof = () =>
+		Array.from(document.querySelectorAll("button")).find(
+			(button) => button.textContent === "Retry project creation",
+		);
+	await until(retryRoof);
+	await act(async () => retryRoof().click());
 	await until(() => destinations.length === 1);
 	assert.deepEqual(received, [roof.body]);
 	assert.deepEqual(destinations, ["design"]);

@@ -36,3 +36,22 @@ export function takeRoofImageryConsent(
 		return false;
 	}
 }
+
+declare global {
+	interface Window {
+		getCkyConsent?: () => { isUserActionCompleted: boolean };
+	}
+}
+
+export function onMapConsentChange(revoke: () => void): () => void {
+	function cookieYesChanged() {
+		// CookieYes also announces its initial defaults on every first-visit page.
+		if (window.getCkyConsent?.().isUserActionCompleted !== false) revoke();
+	}
+	document.addEventListener("cookieyes_consent_update", cookieYesChanged);
+	document.addEventListener("wp_listen_for_consent_change", revoke);
+	return () => {
+		document.removeEventListener("cookieyes_consent_update", cookieYesChanged);
+		document.removeEventListener("wp_listen_for_consent_change", revoke);
+	};
+}

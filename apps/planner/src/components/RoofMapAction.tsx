@@ -3,7 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import { readObject } from "../data/readProtocol.ts";
-import { clearRoofImageryConsent } from "../data/roofImageryConsent.ts";
+import {
+	clearRoofImageryConsent,
+	onMapConsentChange,
+} from "../data/roofImageryConsent.ts";
 import type { Brief } from "../domain/brief.ts";
 import {
 	imagerySourceKey,
@@ -82,12 +85,10 @@ export function RoofMapAction({
 			permitted.current = null;
 			clearRoofImageryConsent();
 		};
-		document.addEventListener("cookieyes_consent_update", revoke);
-		document.addEventListener("wp_listen_for_consent_change", revoke);
+		const unsubscribe = onMapConsentChange(revoke);
 		return () => {
 			permitted.current = null;
-			document.removeEventListener("cookieyes_consent_update", revoke);
-			document.removeEventListener("wp_listen_for_consent_change", revoke);
+			unsubscribe();
 		};
 	}, [country, permitted, sourceKey]);
 	return (
