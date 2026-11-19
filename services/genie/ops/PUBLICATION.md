@@ -180,6 +180,8 @@ judge units. It does not stage sources, install dependencies, publish WordPress,
 change launchd, or touch Engine. The ordinary scheduled worker keeps its existing
 path. The previous one-use migration runner has been retired; do not recreate it.
 
+For card follow-ups, deploy the compatible WordPress proxy first and keep it in place if Genie rolls back. The proxy sends `previous_card_quantities` only for a matching stored card answer whose native SSE `meta` advertises `accepts_previous_card_quantities: true`. A rollback between turns can leave that marker in history. If the previous runtime returns HTTP 422 with that field as the sole `extra_forbidden` error, the proxy resends the same turn once without the field, within the original turn budget. Verify a card answer and its follow-up through WordPress after switching the runtime.
+
 Before this window, complete final review/CI, prepare one unselected VPS runtime
 under `/opt/linker-genie/<version>` with its locked `.venv`, and prepare the same
 final source on the Mac. Measure identities after all ops changes: ops Python

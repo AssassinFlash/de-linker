@@ -878,6 +878,7 @@ def _sse(
     clock.mark_first_event()
     meta = {
         "turn_id": turn_id,
+        "accepts_previous_card_quantities": True,
         "grounded": result.grounded,
         "fallback": result.fallback,
         "attempts": result.attempts,

@@ -79,7 +79,7 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
     body = response.text
-    assert "event: meta" in body
+    assert _meta(body)["accepts_previous_card_quantities"] is True
     assert "event: block" in body
     assert "event: done" in body
     assert "10 kW" in body

@@ -905,6 +905,7 @@ class Thread {
 		$actions    = array();
 		$quantities = array();
 		$done       = false;
+		$accepts    = false;
 		foreach ( explode( "\n\n", $stream ) as $event ) {
 			if ( 1 !== preg_match( '/^event: (.+)$/m', $event, $name ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
 				continue;
@@ -914,6 +915,10 @@ class Thread {
 				continue;
 			}
 			$block = json_decode( $data[1], true );
+			if ( 'meta' === $name[1] ) {
+				$accepts = true === ( $block['accepts_previous_card_quantities'] ?? false );
+				continue;
+			}
 			if ( 'block' !== $name[1] || ! is_array( $block ) ) {
 				continue;
 			}
@@ -941,7 +946,7 @@ class Thread {
 		return $done ? array(
 			'text'       => implode( ' ', $texts ),
 			'products'   => array_values( array_unique( array_filter( $products ) ) ),
-			'quantities' => $quantities,
+			'quantities' => $accepts ? $quantities : array(),
 		) : array(
 			'text'       => '',
 			'products'   => array(),
