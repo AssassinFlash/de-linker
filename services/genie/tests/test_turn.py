@@ -19,6 +19,7 @@ from linker_genie.schema import (
     ActionBlock,
     CardsBlock,
     DocumentBlock,
+    Locale,
     TextBlock,
     TurnOutput,
     TurnRequest,
@@ -113,7 +114,11 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     ],
 )
 def test_named_ac_rated_power_turn_cites_only_its_source_page(
-    log: TurnLog, monkeypatch: pytest.MonkeyPatch, case: str, locale: str, question: str
+    log: TurnLog,
+    monkeypatch: pytest.MonkeyPatch,
+    case: str,
+    locale: Locale,
+    question: str,
 ) -> None:
     on_grid = "AC Output [Backup]" if case == "backup-only" else "AC Output [On-grid]"
     # Turn 3 on e437a21ab: the EN projection has the rated-power row;

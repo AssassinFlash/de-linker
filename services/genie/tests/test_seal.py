@@ -1422,6 +1422,7 @@ def test_a_figure_fact_does_not_license_a_detached_grid_code() -> None:
 
 
 def test_sentences_and_decimal_marks_do_not_rename_a_model() -> None:
+    language: Literal["en", "de"]
     for language, model_line, next_sentence in (
         (
             "en",
