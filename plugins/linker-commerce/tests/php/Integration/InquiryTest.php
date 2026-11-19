@@ -63,6 +63,72 @@ final class InquiryTest extends IntegrationTestCase {
 		$this->assertTrue( WC()->cart->is_empty() );
 	}
 
+	/** A reviewed note alone is a valid native inquiry; stale or excluded text never creates one. */
+	public function test_preliminary_note_only_inquiry(): void {
+		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
+		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		$this->as_user( $this->customer()->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$id   = str_repeat( '7', 32 );
+		$text = "Existing array, no backup.\nBitte prüfen.";
+		$note = static fn ( $previous, $project ) => $id === $project ? array(
+			'project_id'    => $id,
+			'title'         => 'Installer',
+			'revision'      => 2,
+			'note_revision' => '2',
+			'text'          => $text,
+		) : null;
+		// Replace only the private planner read; the native Woo writer is real.
+		add_filter( 'linker_tools_planning_inquiry_note', $note, 11, 2 );
+		$this->later(
+			static function () use ( $note ): void {
+				remove_filter( 'linker_tools_planning_inquiry_note', $note, 11 );
+			}
+		);
+		$post    = array(
+			'name'                          => 'Maria Weber',
+			'email'                         => 'note-only@example.test',
+			'consent'                       => '1',
+			'linker_project_notes_present'  => '1',
+			'linker_project_note_revisions' => array( 'project_' . $id => '1' ),
+		);
+		$details = Submission::from_post( $post, false );
+		$this->assertInstanceOf( Submission::class, $details );
+		$send     = static fn ( array $fields ) => \Linker\Commerce\Planning\Context::with_submission( $fields, static fn () => ( new Sender() )->request( $details, array(), false ) );
+		$excluded = $send( $post );
+		$this->assertInstanceOf( \WP_Error::class, $excluded );
+		$this->assertSame( 'linker_inquiry_empty', $excluded->get_error_code() );
+		$post['linker_include_project_notes'] = '1';
+		$stale                                = $send( $post );
+		$this->assertInstanceOf( \WP_Error::class, $stale );
+		$this->assertSame( 'linker_project_notes_changed', $stale->get_error_code() );
+		$this->assertSame( 409, $stale->get_error_data()['status'] );
+		$this->assertSame(
+			array(),
+			wc_get_orders(
+				array(
+					'billing_email' => $post['email'],
+					'return'        => 'ids',
+				)
+			)
+		);
+		$post['linker_project_note_revisions'][ 'project_' . $id ] = '2';
+		$order = $send( $post );
+		$this->assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$stored = wc_get_order( $order->get_id() );
+		$this->assertInstanceOf( \WC_Order::class, $stored );
+		$this->assertSame( Statuses::RECEIVED, $stored->get_status() );
+		$this->assertCount( 0, $stored->get_items() );
+		$this->assertSame( '', $stored->get_customer_note() );
+		$this->assertSame( array( $text ), array_column( \Linker\Commerce\Planning\Context::stored_notes( $stored ), 'text' ) );
+	}
+
 	/**
 	 * Actual submission admits each frozen report under all project locks or retains the draft.
 	 *

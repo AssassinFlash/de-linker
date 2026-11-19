@@ -44,8 +44,8 @@ final class Form {
 	 */
 	public function project_notes(): string {
 		$previous = (array) ( $this->flash['fields'] ?? array() );
-		if ( isset( $previous['linker_planner_handoff_id'] ) ) {
-			// A pending UUID checks the original report selection even after Woo emptied the cart.
+		if ( isset( $previous['linker_planner_handoff_id'] ) || ( isset( $previous['linker_note_project'] ) && '1' === $previous['linker_recovery_available'] ) ) {
+			// Recover an uncertain send with the exact draft and note revisions originally posted.
 			$html = '';
 			if ( '1' === $previous[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) {
 				$html .= '<input type="hidden" name="linker_project_notes_present" value="1" />';
@@ -56,7 +56,21 @@ final class Form {
 			}
 			return $html;
 		}
-		return \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous );
+		$note = null;
+		if ( isset( $previous['linker_note_project'] ) ) {
+			$note = \Linker\Commerce\Planning\Context::read_selected_note( $previous['linker_note_project'] );
+			if ( $note instanceof \WP_Error ) {
+				return '<p role="alert">' . esc_html( $note->get_error_message() ) . '</p>' . \Linker\Commerce\Planning\Context::inquiry_notes_section(
+					$previous,
+					null,
+					array(
+						'project_id'    => $previous['linker_note_project'],
+						'note_revision' => $previous[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ][ 'project_' . $previous['linker_note_project'] ],
+					)
+				);
+			}
+		}
+		return \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, null, $note );
 	}
 
 	/**
@@ -88,8 +102,9 @@ final class Form {
 	 *
 	 * @param array<string,mixed>|null $handoff Verified engine handoff, or the current native draft alone.
 	 * @param string                   $language Requested planner language.
+	 * @param array<string,mixed>|null $note Current owner-verified project note.
 	 */
-	public function planning( ?array $handoff, string $language ): string {
+	public function planning( ?array $handoff, string $language, ?array $note = null ): string {
 		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
@@ -98,7 +113,7 @@ final class Form {
 			return '<form class="linker-inquiry-form" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">' . $this->hidden_fields( $language )
 				. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
 				. ( null === $handoff ? '' : self::planner_fields( $handoff['id'], '' ) )
-				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff ) . $fields . '</form>';
+				. \Linker\Commerce\Planning\Context::inquiry_notes_section( array(), $handoff, $note ) . $fields . '</form>';
 		} finally {
 			$locale->back();
 		}

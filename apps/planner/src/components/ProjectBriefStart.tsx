@@ -253,7 +253,7 @@ function BriefForm({
 			briefEntry={{
 				note: currentNote,
 				flush: () => (returning ? Promise.resolve(false) : flush()),
-				render: (disabled, apply) => (
+				render: (disabled, showSizingHints, apply) => (
 					<fieldset
 						disabled={disabled || returning}
 						className="sc-card lp-project-brief-start"
@@ -357,7 +357,7 @@ function BriefForm({
 								)}
 							</Notice>
 						)}
-						{proposed.length > 0 && (
+						{showSizingHints && proposed.length > 0 && (
 							<>
 								<p>
 									{__(

@@ -76,6 +76,7 @@ export function NewProject({
 		flush: () => Promise<boolean>;
 		render: (
 			disabled: boolean,
+			showSizingHints: boolean,
 			apply: (hints: JsonObject) => boolean,
 		) => ReactNode;
 	};
@@ -157,7 +158,9 @@ export function NewProject({
 		return true;
 	}
 	const [detailsReady, setDetailsReady] = useState(true);
-	const [comparingDirections, setComparingDirections] = useState(false);
+	const [comparingDirections, setComparingDirections] = useState(
+		Boolean(briefEntry),
+	);
 	const projectFormId = useId();
 	const [comparisonAction, setComparisonAction] = useState<
 		"compare" | "preliminary" | null
@@ -477,6 +480,35 @@ export function NewProject({
 				</div>
 			</header>
 			<ConfiguratorSteps active={showDirections ? "system" : "project"} />
+			{!intent.current &&
+				briefEntry?.render(
+					busy || checking || recoveryChecking || !admitted,
+					!showDirections,
+					(hints) =>
+						edit((current) => {
+							const b = readBrief(current.brief);
+							const carried = readBrief(hints.brief);
+							return reviseCarriedEquipment(
+								{
+									...current,
+									brief: {
+										...b,
+										annual_load:
+											b.annual_load.kwh === null
+												? carried.annual_load
+												: b.annual_load,
+										site: {
+											...b.site,
+											location_label:
+												b.site.location_label || carried.site.location_label,
+										},
+									},
+								},
+								hints,
+								true,
+							);
+						}),
+				)}
 			<div className="sc-layout">
 				{showDirections && (
 					<PreliminaryOptions
@@ -656,35 +688,7 @@ export function NewProject({
 								)}
 							</Notice>
 						)}
-					{!intent.current &&
-						briefEntry?.render(
-							busy || checking || recoveryChecking || !admitted,
-							(hints) =>
-								edit((current) => {
-									const b = readBrief(current.brief);
-									const carried = readBrief(hints.brief);
-									return reviseCarriedEquipment(
-										{
-											...current,
-											brief: {
-												...b,
-												annual_load:
-													b.annual_load.kwh === null
-														? carried.annual_load
-														: b.annual_load,
-												site: {
-													...b.site,
-													location_label:
-														b.site.location_label ||
-														carried.site.location_label,
-												},
-											},
-										},
-										hints,
-										true,
-									);
-								}),
-						)}
+
 					{requests.length > 1 && (
 						<label className="sc-field">
 							<span>{__("Unconfirmed project creations", "linker-tools")}</span>

@@ -423,6 +423,7 @@ for (const saved of [false, true])
 			brief: {
 				...emptyBrief(),
 				system_scope: saved ? "storage_addition" : "pv_only",
+				project_note: saved ? "" : "Installer's own words\nSecond line",
 			},
 		};
 		if (saved)
@@ -442,8 +443,9 @@ for (const saved of [false, true])
 		value.project.inputs = value.inputs;
 		value.client.origin = location.origin;
 		const calls = [];
-		value.client.query = async (path) => {
-			calls.push(path);
+		value.client.query = async (path, command) => {
+			calls.push(command);
+			assert.equal(path, "inquiry/form");
 			const action =
 				calls.length === 1
 					? saved
@@ -496,6 +498,11 @@ for (const saved of [false, true])
 		);
 		await act(async () => button("Send inquiry").click());
 		assert.equal(message, `${direction}\n\nPlease call me back.`);
-		assert.deepEqual(calls, ["inquiry/form", "inquiry/form"]);
+		const lookup = {
+			schema_version: 1,
+			lang: "en",
+			...(saved ? {} : { project_id: value.project.id }),
+		};
+		assert.deepEqual(calls, [lookup, lookup]);
 		assert.equal(button("Generate project report"), undefined);
 	});

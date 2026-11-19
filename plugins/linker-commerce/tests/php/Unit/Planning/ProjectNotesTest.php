@@ -496,6 +496,54 @@ final class ProjectNotesTest extends TestCase {
 		$this->assertSame( array(), Context::session_notes() );
 	}
 
+	/** A report-free project is read only for the exact selection on this form. */
+	public function test_preliminary_note_submission(): void {
+		$id       = str_repeat( 'b', 32 );
+		$key      = 'project_' . $id;
+		$note     = array(
+			'project_id'    => $id,
+			'title'         => 'Installer project',
+			'revision'      => 3,
+			'note_revision' => '3',
+			'text'          => self::NOTE,
+		);
+		$provider = WP_Mock::onFilter( 'linker_tools_planning_inquiry_note' )->with( null, $id );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $provider );
+		$provider->reply( $note );
+		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $text ): string => $text ) );
+		$post  = array(
+			Context::PRESENT_FIELD   => '1',
+			Context::INCLUDE_FIELD   => '1',
+			Context::REVISIONS_FIELD => array( $key => '3' ),
+		);
+		$order = $this->getMockBuilder( \WC_Order::class )->disableOriginalConstructor()->onlyMethods( array( 'get_meta', 'update_meta_data' ) )->addMethods( array( 'get_items' ) )->getMock();
+		$order->method( 'get_items' )->willReturn( array() );
+		$order->expects( $this->once() )->method( 'update_meta_data' )->with( Context::NOTES_META, wp_json_encode( array( $key => $note ) ) );
+		$order->method( 'get_meta' )->with( Context::NOTES_META )->willReturn( wp_json_encode( array( $key => $note ) ) );
+		Context::with_submission(
+			$post,
+			function () use ( $order ): void {
+				$this->assertNull( Context::preflight() );
+				$this->assertTrue( Context::has_included_notes() );
+				( new Context() )->capture( $order );
+			}
+		);
+		$this->assertSame( array( $key => $note ), Context::stored_notes( $order ) );
+		$post[ Context::REVISIONS_FIELD ][ $key ] = '2';
+		$error                                    = Context::with_submission( $post, Context::preflight( ... ) );
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 'linker_project_notes_changed', $error->get_error_code() );
+		unset( $post[ Context::INCLUDE_FIELD ] );
+		Context::with_submission(
+			$post,
+			function (): void {
+				$this->assertNull( Context::preflight() );
+				$this->assertFalse( Context::has_included_notes() );
+			}
+		);
+		$this->assertSame( array(), Context::session_notes() );
+	}
+
 	/** The reviewed inclusion choice is part of the admission fingerprint. */
 	public function test_submission_fingerprint_covers_inclusion_and_revisions(): void {
 		$included = Context::submission_fingerprint(

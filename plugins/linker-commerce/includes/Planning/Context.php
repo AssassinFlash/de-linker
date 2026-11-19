@@ -33,6 +33,12 @@ final class Context {
 	 */
 	private static ?array $submission_post = null;
 
+	/** Exact preliminary note verified before the native write.
+	 *
+	 * @var array{project_id:string,title:string,revision:int,note_revision:string,text:string}|null
+	 */
+	private static ?array $reviewed_note = null;
+
 	/**
 	 * Exact note revisions consumed by the most recent committed inquiry.
 	 *
@@ -50,11 +56,14 @@ final class Context {
 	 */
 	public static function with_submission( array $post, callable $callback ): mixed {
 		$previous              = self::$submission_post;
+		$previous_note         = self::$reviewed_note;
 		self::$submission_post = $post;
+		self::$reviewed_note   = null;
 		try {
 			return $callback();
 		} finally {
 			self::$submission_post = $previous;
+			self::$reviewed_note   = $previous_note;
 		}
 	}
 
@@ -192,9 +201,13 @@ final class Context {
 	 *
 	 * @param array<string,mixed>      $previous Consumed flash fields after a failed POST.
 	 * @param array<string,mixed>|null $proposed Handoff included in the projected inquiry.
+	 * @param array<string,mixed>|null $note Current owner-verified project note.
 	 */
-	public static function inquiry_notes_section( array $previous = array(), ?array $proposed = null ): string {
+	public static function inquiry_notes_section( array $previous = array(), ?array $proposed = null, ?array $note = null ): string {
 		$notes = self::session_notes( $proposed );
+		if ( null !== $note ) {
+			$notes[ 'project_' . $note['project_id'] ] = $note;
+		}
 		if ( array() === $notes ) {
 			return '';
 		}
@@ -206,8 +219,11 @@ final class Context {
 		$html         .= '<label class="linker-form-consent"><input type="checkbox" name="' . esc_attr( self::INCLUDE_FIELD ) . '" value="1"' . ( $included ? ' checked' : '' ) . ' /><span>' . ( $has_report ? esc_html__( 'Include planning reports and project notes with this inquiry', 'linker-commerce' ) : esc_html__( 'Include project notes with this inquiry', 'linker-commerce' ) ) . '</span></label>';
 		$has_note_text = false;
 		foreach ( $notes as $id => $note ) {
+			$html .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
+			if ( ! isset( $note['text'] ) ) {
+				continue; // Failed lookup on retry: retain the option to exclude, never display stale text.
+			}
 			$has_note_text = $has_note_text || '' !== $note['text'];
-			$html         .= '<input type="hidden" name="' . esc_attr( self::REVISIONS_FIELD . '[' . $id . ']' ) . '" value="' . esc_attr( $note['note_revision'] ) . '" />';
 			$html         .= '<div class="linker-inquiry-project-note"><p><strong>' . esc_html( self::label( $note ) ) . '</strong></p><p>' . nl2br( esc_html( $note['text'] ) ) . '</p></div>';
 		}
 		if ( $has_note_text ) {
@@ -302,7 +318,7 @@ final class Context {
 			}
 			$order->update_meta_data( self::NOTES_META, $encoded_notes );
 		}
-		self::$consumed_revisions = array_column( $notes, 'note_revision', 'handoff_id' );
+		self::$consumed_revisions = array_map( static fn ( array $note ): string => $note['note_revision'], $notes );
 	}
 
 	/** A definite refusal before Woo writes the inquiry. */
@@ -479,7 +495,7 @@ final class Context {
 	 * Historical project notes included with an authorised native inquiry.
 	 *
 	 * @param WC_Order $order Authorised native inquiry.
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
+	 * @return array<string,array{handoff_id?:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	public static function stored_notes( WC_Order $order ): array {
 		$raw    = $order->get_meta( self::NOTES_META );
@@ -489,22 +505,23 @@ final class Context {
 			foreach ( $raw as $id => $entry ) {
 				if (
 					is_string( $id )
-					&& 1 === preg_match( '/\A[a-f0-9]{32}\z/', $id )
 					&& is_array( $entry )
-					&& ( $entry['handoff_id'] ?? null ) === $id
 					&& is_string( $entry['project_id'] ?? null )
 					&& 1 === preg_match( '/\A[a-f0-9]{32}\z/', $entry['project_id'] )
 					&& is_string( $entry['title'] ?? null )
 					&& is_int( $entry['revision'] ?? null )
 					&& $entry['revision'] >= 1
 					&& is_string( $entry['note_revision'] ?? null )
-					&& 1 === preg_match( '/\A[a-f0-9]{64}\z/', $entry['note_revision'] )
+					&& (
+						( 'project_' . $entry['project_id'] === $id && ! isset( $entry['handoff_id'] ) && $entry['note_revision'] === (string) $entry['revision'] )
+						|| ( ( $entry['handoff_id'] ?? null ) === $id && 1 === preg_match( '/\A[a-f0-9]{32}\z/', $id ) && 1 === preg_match( '/\A[a-f0-9]{64}\z/', $entry['note_revision'] ) )
+					)
 					&& is_string( $entry['text'] ?? null )
 					&& '' !== trim( $entry['text'] )
 					&& mb_strlen( $entry['text'], 'UTF-8' ) <= self::MAX_NOTE_LENGTH
 				) {
 					$result[ $id ] = array(
-						'handoff_id'    => $id,
+						...( isset( $entry['handoff_id'] ) ? array( 'handoff_id' => $id ) : array() ),
 						'project_id'    => $entry['project_id'],
 						'title'         => $entry['title'],
 						'revision'      => $entry['revision'],
@@ -732,6 +749,28 @@ final class Context {
 	/**
 	 * Validate submitted project-note revisions against current session notes.
 	 */
+	private static function notes_changed(): WP_Error {
+		return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+	}
+
+	/** Read the latest revision under the native submitter's ownership.
+	 *
+	 * @param string $id Selected project ID.
+	 * @return array{project_id:string,title:string,revision:int,note_revision:string,text:string}|WP_Error|null
+	 */
+	public static function read_selected_note( string $id ): array|WP_Error|null {
+		/** Read the selected project with the native submitter’s identity.
+		 *
+		 * @since 0.3.0
+		 */
+		$note = apply_filters( 'linker_tools_planning_inquiry_note', null, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Private linker-tools transport seam.
+		if ( $note instanceof WP_Error ) {
+			return in_array( $note->get_error_data()['status'] ?? null, array( 401, 403, 404 ), true ) ? self::notes_changed() : self::admission_unavailable();
+		}
+		return $note;
+	}
+
+	/** Check every reviewed revision before the first Woo write. */
 	private static function preflight_notes(): ?WP_Error {
 		if ( null === self::$submission_post ) {
 			return null;
@@ -745,13 +784,31 @@ final class Context {
 		if ( ! $present && ! isset( $post[ self::REVISIONS_FIELD ] ) ) {
 			return null;
 		}
-		$posted = is_array( $post[ self::REVISIONS_FIELD ] ?? null ) ? $post[ self::REVISIONS_FIELD ] : array();
+		$posted              = is_array( $post[ self::REVISIONS_FIELD ] ?? null ) ? $post[ self::REVISIONS_FIELD ] : array();
+		self::$reviewed_note = null;
+		foreach ( array_keys( $posted ) as $key ) {
+			if ( ! is_string( $key ) || ! preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
+				continue;
+			}
+			if ( ! $present || null !== self::$reviewed_note ) {
+				return self::notes_changed();
+			}
+			$note = self::read_selected_note( $match[1] );
+			if ( $note instanceof WP_Error ) {
+				return $note;
+			}
+			if ( null === $note || $note['note_revision'] !== $posted[ $key ] ) {
+				return self::notes_changed();
+			}
+			self::$reviewed_note = $note;
+			$current[ $key ]     = $note;
+		}
 		if ( count( $posted ) !== count( $current ) ) {
-			return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+			return self::notes_changed();
 		}
 		foreach ( $current as $id => $note ) {
 			if ( ! isset( $posted[ $id ] ) || ! is_string( $posted[ $id ] ) || ! hash_equals( $note['note_revision'], $posted[ $id ] ) ) {
-				return new WP_Error( 'linker_project_notes_changed', __( 'The project notes have changed. Your other entries are still here.', 'linker-commerce' ), array( 'status' => 409 ) );
+				return self::notes_changed();
 			}
 		}
 		return null;
@@ -760,7 +817,7 @@ final class Context {
 	/**
 	 * Resolve the project notes included by the current submission.
 	 *
-	 * @return array<string,array{handoff_id:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
+	 * @return array<string,array{handoff_id?:string,project_id:string,title:string,revision:int,note_revision:string,text:string,report_only?:true}>
 	 */
 	private static function included_notes(): array {
 		if ( null !== self::$submission_post && '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' !== ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
@@ -768,6 +825,9 @@ final class Context {
 		}
 		$notes = self::session_notes();
 		if ( '1' === ( self::$submission_post[ self::PRESENT_FIELD ] ?? '' ) && '1' === ( self::$submission_post[ self::INCLUDE_FIELD ] ?? '' ) ) {
+			if ( null !== self::$reviewed_note ) {
+				$notes[ 'project_' . self::$reviewed_note['project_id'] ] = self::$reviewed_note;
+			}
 			return $notes;
 		}
 		return array_filter( $notes, static fn ( array $note ): bool => ! isset( $note['report_only'] ) );

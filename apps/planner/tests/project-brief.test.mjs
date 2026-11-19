@@ -32,7 +32,7 @@ function session() {
 	};
 }
 
-async function openBrief(t, hints = null) {
+async function openBrief(t, hints = null, preliminary = false) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { ProjectBriefStart } =
@@ -140,7 +140,7 @@ async function openBrief(t, hints = null) {
 					},
 					recheck: () => assert.fail("unexpected identity failure"),
 					created: (project, destination) => {
-						assert.equal(destination, "compare");
+						assert.equal(destination, preliminary ? "review" : "compare");
 						state.created = project;
 						return true;
 					},
@@ -160,6 +160,9 @@ async function openBrief(t, hints = null) {
 		assert.ok(b?.matches(":enabled"), label);
 		await act(async () => b.click());
 	};
+	await until(() => button("Choose this option")?.matches(":enabled"));
+	if (preliminary) return { fixture, state, requests, click, button };
+	await click("Back to project");
 	const choose = async (control, value) => {
 		assert.ok(control?.matches(":enabled"));
 		await act(async () => {
@@ -189,6 +192,22 @@ async function openBrief(t, hints = null) {
 	return { fixture, state, requests, click, button };
 }
 
+test("the installer handoff opens the options and one choice carries the note to Review", async (t) => {
+	const { fixture, state, click, requests } = await openBrief(t, null, true);
+	const note = fixture.element.querySelector("textarea");
+	assert.equal(note.closest("[hidden]"), null);
+	assert.equal(note.value, NOTE);
+	await click("Choose this option");
+	await until(() => state.created);
+	assert.deepEqual(Object.keys(state.created.inputs), ["brief"]);
+	assert.equal(state.created.inputs.brief.project_note, NOTE);
+	assert.equal(state.created.inputs.brief.system_scope, "new_pv_storage");
+	assert.equal(
+		requests.filter(([path]) => path.endsWith("/projects/create")).length,
+		1,
+	);
+});
+
 test("Compare carries the staged note without inferring capacity or load", async (t) => {
 	const { fixture, state, click, requests } = await openBrief(t);
 	assert.equal(fixture.element.querySelector("textarea").value, NOTE);
@@ -217,10 +236,8 @@ test("after editing the site, consent and a note edit are carried on Compare", a
 		fixture.element.querySelector('[name="location_label"]'),
 		"Customer site",
 	);
-	assert.ok(
-		button("Compare systems").disabled,
-		"proposed phase is not yet applied",
-	);
+	assert.equal(button("Compare systems"), undefined);
+	assert.ok(button("Compare preliminary options")?.matches(":enabled"));
 	await click("Use these values");
 	await enter(fixture.element.querySelector("textarea"), "Revised requirement");
 	await click("Compare systems");

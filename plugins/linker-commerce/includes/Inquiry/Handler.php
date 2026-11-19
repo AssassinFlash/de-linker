@@ -127,6 +127,17 @@ final class Handler {
 			// A definite refusal returns to fresh verification. Unknown/pending
 			// outcomes may first recover their existing UUID without a new proof.
 			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';
+			$revisions                           = Context::submission_fingerprint( $post )['revisions'];
+			foreach ( array_keys( $revisions ) as $key ) {
+				if ( is_string( $key ) && preg_match( '/\Aproject_([a-f0-9]{32})\z/', $key, $match ) ) {
+					$fields['linker_note_project']      = $match[1];
+					$fields[ Context::REVISIONS_FIELD ] = $revisions;
+					if ( '1' === $fields['linker_recovery_available'] ) {
+						$fields['linker_draft_hash'] = is_string( $post['linker_draft_hash'] ?? null ) ? $post['linker_draft_hash'] : '';
+					}
+					break;
+				}
+			}
 			if ( '1' === $fields['linker_recovery_available'] && isset( $post['linker_planner_handoff_id'], $post['linker_planner_draft_sha256'] ) ) {
 				foreach ( array( 'linker_planner_handoff_id', 'linker_planner_draft_sha256', 'linker_draft_hash' ) as $key ) {
 					$fields[ $key ] = is_string( $post[ $key ] ?? null ) ? sanitize_text_field( $post[ $key ] ) : '';

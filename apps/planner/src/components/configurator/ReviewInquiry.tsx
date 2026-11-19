@@ -38,6 +38,7 @@ function customerFields(form: HTMLFormElement) {
 export function ReviewInquiry({
 	run,
 	direction,
+	noteProjectId,
 	client,
 	scope,
 	operations,
@@ -47,6 +48,7 @@ export function ReviewInquiry({
 }: {
 	run?: PlanningRun;
 	direction?: string;
+	noteProjectId?: string | undefined;
 	client: PlannerClient;
 	scope: string;
 	operations: ReturnType<typeof usePlanningOperations>;
@@ -87,7 +89,11 @@ export function ReviewInquiry({
 					lang,
 					key: crypto.randomUUID(),
 				}
-			: { schema_version: 1, lang };
+			: {
+					schema_version: 1,
+					lang,
+					...(noteProjectId ? { project_id: noteProjectId } : {}),
+				};
 		setError(null);
 		void client
 			.query(
@@ -114,7 +120,16 @@ export function ReviewInquiry({
 				setError({ stage: "load", cause });
 			});
 		return () => request.abort();
-	}, [client, scope, run?.project_id, run?.id, run?.revision, locale, attempt]);
+	}, [
+		client,
+		scope,
+		run?.project_id,
+		run?.id,
+		run?.revision,
+		noteProjectId,
+		locale,
+		attempt,
+	]);
 	useEffect(() => {
 		const node = host.current;
 		if (!node || !preview) return;

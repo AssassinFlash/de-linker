@@ -404,28 +404,31 @@ export function ReviewProposal({
 				: report.sections.some(
 						(section) => section.id === "bom" && section.table?.rows.length,
 					)));
-	const preliminaryScope =
+	const preliminaryBrief =
 		inputs.brief &&
 		(preliminary ||
 			Object.keys(inputs).every(
 				(key) => key === "brief" || key === "saved_solution_reference",
 			))
-			? readBrief(inputs.brief).system_scope
+			? readBrief(inputs.brief)
 			: null;
 	const hasHistory =
 		history && (selected || history.items.length > 0 || history.hasMore);
-	if (preliminaryScope && (preliminary || (!run && !hasHistory))) {
+	if (preliminaryBrief?.system_scope && (preliminary || (!run && !hasHistory))) {
 		const label = {
 			new_pv_storage: __("Solar and storage", "linker-tools"),
 			storage_addition: __("Storage for existing PV", "linker-tools"),
 			pv_only: __("Solar", "linker-tools"),
 			storage_only: __("Storage", "linker-tools"),
-		}[preliminaryScope];
+		}[preliminaryBrief.system_scope];
 		const direction = sprintf(__("Planned system: %s", "linker-tools"), label);
 		return (
 			<article className="sc-review">
 				<ReviewInquiry
-					key={`${project.id}:${scope}:${direction}`}
+					key={`${project.id}:${project.revision}:${scope}:${direction}`}
+					noteProjectId={
+						preliminaryBrief.project_note.trim() ? project.id : undefined
+					}
 					direction={direction}
 					client={client}
 					scope={scope}
