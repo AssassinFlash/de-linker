@@ -3,14 +3,21 @@
  */
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { instance } from '../lib/instance';
 
 const retiredPanel = /Trina|TSM[-_ ]?(?:45|46)0NEG|Vertex[- ]S\+/i;
 
-async function screenshot(page: Page, name: string) {
+async function screenshot(page: Page, name: string, subject: Locator) {
 	const dir = process.env.LINKER_E2E_SHOTS;
 	if (dir) {
+		const reject = page.getByRole('button', {
+			name: /^(Reject all|Alle ablehnen)$/i,
+		});
+		if (await reject.isVisible()) await reject.click();
+		await subject.evaluate((node) =>
+			node.scrollIntoView({ block: 'center' })
+		);
 		await mkdir(dir, { recursive: true });
 		await page.screenshot({ path: join(dir, name + '.png') });
 	}
@@ -84,7 +91,7 @@ for (const locale of ['en', 'de'] as const) {
 							)
 					)
 					.toBeGreaterThan(0);
-				await screenshot(page, `brand-${locale}-${width}`);
+				await screenshot(page, `brand-${locale}-${width}`, card);
 				const product = await card.getAttribute('href');
 				await card.click();
 				expect(page.url()).toBe(product);
@@ -176,7 +183,11 @@ for (const locale of ['en', 'de'] as const) {
 						/I (?:will|can) (?:automatically )?(?:transfer|enter) .{0,100}(?:saved project|configurator)|(?:trage ich|ich trage|lese ich).{0,100}(?:trage sie in die Auslegung ein|in Ihr Projekt ein)/i
 					);
 					await answer.scrollIntoViewIfNeeded();
-					await screenshot(page, `genie-${entry}-${locale}-${width}`);
+					await screenshot(
+						page,
+						`genie-${entry}-${locale}-${width}`,
+						answer
+					);
 					await expect(
 						answer.locator(
 							'a[href*="/product/"],a[href*="/produkt/"]'
