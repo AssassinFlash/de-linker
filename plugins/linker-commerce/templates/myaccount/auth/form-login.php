@@ -24,7 +24,7 @@ ob_start();
 do_action( 'woocommerce_before_customer_login_form' );
 $auth_notices    = (string) ob_get_clean();
 $registration    = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
-$register_url    = AuthTemplates::register_url();
+$register_url    = \Linker\Commerce\Inquiry\AccountLink::continue_at( AuthTemplates::register_url() );
 $brand_logo      = plugins_url( 'assets/linker-logo-wordmark.webp', dirname( __DIR__, 3 ) . '/linker-commerce.php' );
 $brand_check     = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 $brand_documents = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';

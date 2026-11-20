@@ -961,6 +961,48 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$loaded = wc_get_order( $order->get_id() );
 		$this->assertInstanceOf( WC_Order::class, $loaded );
 		$this->assertSame( $customer->get_id(), $loaded->get_customer_id() );
+		$this->assertTrue( $link::claimed_by_customer( $loaded ) );
+		$user = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$this->assertSame( $loaded->get_view_order_url(), $link->after_login( '/my-account/', $user ) );
+
+		$loaded->set_billing_email( 'changed@example.test' );
+		$this->assertFalse( $link::claimed_by_customer( $loaded ) );
+	}
+
+	/** A guest can switch from receipt registration to sign-in and open that inquiry. */
+	public function test_receipt_sign_in_claims_only_the_order_with_the_matching_key(): void {
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$order = new WC_Order();
+		$order->set_billing_email( $user->user_email );
+		$order->save();
+		$other = new WC_Order();
+		$other->set_billing_email( $user->user_email );
+		$other->save();
+		$saved = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test browser state.
+		$this->later(
+			static function () use ( $order, $other, $saved ): void {
+				$order->delete( true );
+				$other->delete( true );
+				$_GET = $saved;
+			}
+		);
+
+		$account = wc_get_page_permalink( 'myaccount' );
+		$link    = new \Linker\Commerce\Inquiry\AccountLink();
+		$_GET    = array();
+		$this->assertSame( $account, $link->after_login( $account, $user ) );
+		$_GET = array(
+			'linker_inquiry' => $order->get_id(),
+			'linker_key'     => $order->get_order_key(),
+		);
+		$this->assertSame( add_query_arg( $_GET, $account ), $link::continue_at( $account ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Receipt credentials for this test order.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's native successful-login redirect.
+		$this->assertSame( $order->get_view_order_url(), apply_filters( 'woocommerce_login_redirect', $account, $user ) );
+		$this->assertTrue( $link::claimed_by_customer( new WC_Order( $order->get_id() ) ) );
+		$this->assertSame( 0, ( new WC_Order( $other->get_id() ) )->get_customer_id() );
 	}
 
 	/**
