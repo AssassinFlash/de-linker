@@ -86,7 +86,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->as_user( $this->customer()->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
-		$product  = $this->product( '99' );
+		$product = $this->product( '99' );
+		$product->set_short_description( 'Compact fixture for the electrical cabinet.' );
+		$product->save();
 		$cart_key = WC()->cart->add_to_cart( $product->get_id(), 2 );
 		$this->assertIsString( $cart_key );
 		$session = WC()->session;
@@ -213,6 +215,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertIsArray( $review );
 		$this->assertSame( $report_only ? array() : array( 3 ), array_column( $review['inquiry_lines'], 'quantity' ) );
 		$this->assertStringNotContainsString( 'Separate project private note', $review['inquiry_form_html'] );
+		$previews = array_merge( $review['inquiry_lines'], $review['inquiry_changes'] );
+		foreach ( $previews as $line ) {
+			$this->assertSame( get_permalink( $product_id ), $line['product_url'] );
+			$this->assertSame( 'Compact fixture for the electrical cabinet.', $line['highlight'] );
+		}
 		$this->assertSame( array( 2 ), array_column( $review['inquiry_changes'], 'before' ) );
 		$this->assertSame( array( $report_only ? 0 : 3 ), array_column( $review['inquiry_changes'], 'after' ) );
 		$this->assertSame( array(), \Linker\Commerce\Planning\Context::report_only_contexts() );
