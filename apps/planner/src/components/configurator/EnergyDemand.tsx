@@ -64,7 +64,7 @@ export function energyGoal(inputs: JsonObject): EnergyGoal {
 }
 export function changeEnergyGoal(
 	inputs: JsonObject,
-	goal: Exclude<EnergyGoal, "">,
+	goal: EnergyGoal,
 ): JsonObject {
 	const scenario =
 		inputs.energy_scenario === undefined
@@ -93,15 +93,18 @@ export function changeEnergyGoal(
 						: "self_consumption_with_reserve_v1",
 				schedule: scenario.schedule.map((period) => ({
 					...period,
-					mode: goal === "backup" ? "outage" : "connected",
+					mode: goal === "backup" ? "outage" : goal ? "connected" : null,
 					...(goal === "peak" ? { import_policy: "limited" } : {}),
 					...(leavingPeak ? { import_policy: null, import_cap_kw: null } : {}),
 					...(goal === "backup" ? { allow_grid_charge: false } : {}),
-					pv_enabled: !isStorageOnly(inputs),
+					...(goal && { pv_enabled: !isStorageOnly(inputs) }),
 				})),
 			},
 		},
-		{ operating_mode: goal === "backup" ? "backup" : "grid_connected" },
+		{
+			operating_mode:
+				goal === "backup" ? "backup" : goal ? "grid_connected" : null,
+		},
 	);
 }
 

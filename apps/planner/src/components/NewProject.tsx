@@ -171,11 +171,18 @@ export function NewProject({
 	const [profileForm, setProfileForm] = useState(emptyHomepageProfile);
 	const [profileError, setProfileError] = useState("");
 	const [profileCorrection, setProfileCorrection] = useState(false);
+	const [editedCorrection, setEditedCorrection] = useState(false);
 	const profile = useRef<HomepageProfileUpload | undefined>(undefined);
-	const changeProfile = useCallback((patch: Partial<HomepageProfileForm>) => {
-		setProfileForm((current) => ({ ...current, ...patch }));
-		if (patch.mappingValid === undefined) setProfileError("");
-	}, []);
+	const changeProfile = useCallback(
+		(patch: Partial<HomepageProfileForm>) => {
+			setProfileForm((current) => ({ ...current, ...patch }));
+			if (patch.mappingValid === undefined) {
+				setProfileError("");
+				if (profileCorrection) setEditedCorrection(true);
+			}
+		},
+		[profileCorrection],
+	);
 	const [invalidDemand, setInvalidDemand] = useState<ReadonlySet<string>>(
 		new Set(),
 	);
@@ -278,7 +285,7 @@ export function NewProject({
 	useEffect(() => {
 		if (
 			!draftEntry ||
-			intent.current ||
+			(intent.current && !(profileCorrection && editedCorrection)) ||
 			!admitted ||
 			(!draft &&
 				!title &&
@@ -289,21 +296,25 @@ export function NewProject({
 				!entryHints)
 		)
 			return;
-		const record = {
-			id: (draftId.current ??= crypto.randomUUID()),
-			scope: session.query_scope,
-			source,
-			title,
-			inputs: compareAtHome ? currentHomeInputs() : draft,
-			useHints,
-			carriedProduct,
-		};
-		savedDraft.current = record;
-		try {
-			writeComparisonDraft(record);
-			setDraftUnavailable(false);
-		} catch {
-			setDraftUnavailable(true);
+		const record = intent.current
+			? null
+			: {
+					id: (draftId.current ??= crypto.randomUUID()),
+					scope: session.query_scope,
+					source,
+					title,
+					inputs: compareAtHome ? currentHomeInputs() : draft,
+					useHints,
+					carriedProduct,
+				};
+		if (record) {
+			savedDraft.current = record;
+			try {
+				writeComparisonDraft(record);
+				setDraftUnavailable(false);
+			} catch {
+				setDraftUnavailable(true);
+			}
 		}
 		function handoff(event: MouseEvent) {
 			const target = event.target;
@@ -329,7 +340,8 @@ export function NewProject({
 					homeForm.current?.querySelector<HTMLInputElement>(
 						'input[name="pvgis_use_address"]',
 					)?.checked ?? false;
-				writeComparisonDraft({ ...record, usePvAddress }, link.href);
+				if (record)
+					writeComparisonDraft({ ...record, usePvAddress }, link.href);
 			} catch {
 				event.preventDefault();
 				setDraftUnavailable(true);
@@ -344,6 +356,8 @@ export function NewProject({
 		carriedProduct,
 		entryHints,
 		profileForm.file,
+		profileCorrection,
+		editedCorrection,
 		invalidDemand.size,
 		admitted,
 		draft,
@@ -453,6 +467,7 @@ export function NewProject({
 				: emptyHomepageProfile(),
 		);
 		setProfileCorrection(Boolean(issue));
+		setEditedCorrection(false);
 		setProfileError(issue ? issueLabel(issue.issue) : "");
 		intentScope.current = record.scope;
 		destination.current = record.destination;
@@ -705,6 +720,7 @@ export function NewProject({
 					if (lifetime.current !== instance) return;
 					setProfileForm(restoreHomepageProfile(profile.current));
 					setProfileCorrection(true);
+					setEditedCorrection(false);
 					setProfileError(issueLabel(issue.issue));
 					return;
 				}
@@ -1030,10 +1046,15 @@ export function NewProject({
 			{languageIssue === "csv" && profileForm.file && (
 				<Notice error>
 					<p>
-						{__(
-							"Your CSV is still here. Finish this comparison or remove the file to switch languages.",
-							"linker-tools",
-						)}
+						{profileCorrection
+							? __(
+									"Your CSV changes are still here. Retry the import or compare without this load profile before switching languages.",
+									"linker-tools",
+								)
+							: __(
+									"Your CSV is still here. Finish this comparison or remove the file to switch languages.",
+									"linker-tools",
+								)}
 					</p>
 					{!intent.current && (
 						<button

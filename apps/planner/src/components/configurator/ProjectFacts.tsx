@@ -2,6 +2,7 @@ import type { JsonObject } from "../../data/protocol.ts";
 import { readBrief } from "../../domain/brief.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
+import { readScenarioDraft } from "../../domain/energyScenario.ts";
 import { energyGoal } from "./EnergyDemand.tsx";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
@@ -93,6 +94,22 @@ export function projectFacts(inputs: JsonObject, locale: string) {
 					? __("Single phase", "linker-tools")
 					: __("To confirm", "linker-tools"),
 		]);
+	if (goal === "peak") {
+		const limits = new Set(
+			readScenarioDraft(inputs.energy_scenario).schedule.flatMap((period) =>
+				period.mode === "connected" &&
+				period.import_policy === "limited" &&
+				period.import_cap_kw !== null
+					? [formatDecimal(period.import_cap_kw, locale) + " kW"]
+					: [],
+			),
+		);
+		if (limits.size)
+			facts.push([
+				__("Target grid import limit", "linker-tools"),
+				Array.from(limits).join(", "),
+			]);
+	}
 	const backup = inputs.backup_demand as JsonObject | undefined;
 	if (typeof backup?.load_kw === "number")
 		facts.push([

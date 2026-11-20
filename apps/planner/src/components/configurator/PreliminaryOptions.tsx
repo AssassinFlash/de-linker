@@ -19,38 +19,93 @@ export function systemNames() {
 }
 
 export function retrofitOptions(inputs: JsonObject) {
+	const goal = energyGoal(inputs);
 	if (
 		!inputs.brief ||
 		readBrief(inputs.brief).system_scope !== "storage_addition" ||
-		!energyGoal(inputs) ||
+		!goal ||
 		hasPlant(inputs) ||
 		equipmentDraft(inputs).inverter_product_id !== null
 	)
 		return null;
+	const options = {
+		self: {
+			keep: {
+				benefit: __(
+					"Keep the PV inverter in service and add storage for surplus solar power.",
+					"linker-tools",
+				),
+				check: __(
+					"Check the inverter model and whether storage can connect to it or needs a separate battery inverter.",
+					"linker-tools",
+				),
+			},
+			replace: {
+				benefit: __(
+					"A hybrid inverter can connect the existing panels and a battery. This option includes replacing the PV inverter.",
+					"linker-tools",
+				),
+				check: __(
+					"Check the panel strings, battery compatibility and grid connection before choosing a model.",
+					"linker-tools",
+				),
+			},
+		},
+		peak: {
+			keep: {
+				benefit: __(
+					"Keep the PV inverter and add storage that can discharge when site demand approaches the grid import limit.",
+					"linker-tools",
+				),
+				check: __(
+					"Use the measured load profile to check how much power the battery inverter would need during demand peaks.",
+					"linker-tools",
+				),
+			},
+			replace: {
+				benefit: __(
+					"A replacement hybrid inverter can coordinate solar generation and battery discharge to limit grid import at peak times.",
+					"linker-tools",
+				),
+				check: __(
+					"Check the panel strings and whether the inverter and battery can cover the measured peaks above the import limit.",
+					"linker-tools",
+				),
+			},
+		},
+		backup: {
+			keep: {
+				benefit: __(
+					"Keep the PV inverter and add a battery backup supply for selected circuits.",
+					"linker-tools",
+				),
+				check: __(
+					"Check how the backup supply isolates from the grid and whether it can power those circuits for the requested duration.",
+					"linker-tools",
+				),
+			},
+			replace: {
+				benefit: __(
+					"A hybrid inverter with a backup output could supply selected circuits from the battery during an outage.",
+					"linker-tools",
+				),
+				check: __(
+					"Check backup output power, changeover equipment and the battery capacity needed for the requested duration.",
+					"linker-tools",
+				),
+			},
+		},
+	}[goal];
 	return [
 		{
 			keep: true,
 			title: __("Keep the existing inverter", "linker-tools"),
-			benefit: __(
-				"Keep the PV inverter in service and add storage for surplus solar power.",
-				"linker-tools",
-			),
-			check: __(
-				"Check the inverter model and whether storage can connect to it or needs a separate battery inverter.",
-				"linker-tools",
-			),
+			...options.keep,
 		},
 		{
 			keep: false,
 			title: __("Consider a replacement inverter", "linker-tools"),
-			benefit: __(
-				"A hybrid inverter can connect the existing panels and a battery. This option includes replacing the PV inverter.",
-				"linker-tools",
-			),
-			check: __(
-				"Check the panel strings, battery compatibility and grid connection before choosing a model.",
-				"linker-tools",
-			),
+			...options.replace,
 		},
 	];
 }

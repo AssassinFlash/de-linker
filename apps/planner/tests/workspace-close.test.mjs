@@ -158,6 +158,9 @@ test("a deferred close completes across a same-scope revalidation without being 
 			document.querySelector(".sc-configurator") &&
 			document.querySelector("#lp-projects-heading"),
 	);
-	assert.ok(document.body.textContent.includes("Your projects"));
+	assert.equal(
+		document.querySelector("#lp-projects-heading").textContent,
+		"Saved projects",
+	);
 	assert.equal(location.search, "");
 });

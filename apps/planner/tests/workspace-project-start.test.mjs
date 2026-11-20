@@ -264,8 +264,11 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 		assert.equal(field("annual_load_basis").value, "bill_total");
 		assert.equal(field("pv_dc_kw").value, "8");
 		await enter(field("pv_dc_kw"), "");
+		await select("project_purpose", "");
 		assert.equal(await switchLanguage("en", "/"), true);
 		assert.equal(field("pv_dc_kw").value, "");
+		assert.equal(field("project_purpose").value, "");
+		await select("project_purpose", "peak");
 		assert.equal(field("location_label").value, "Werkstatt, 10117 Berlin");
 		assert.equal(calls.length, 0);
 		await enter(field("pv_dc_kw"), "8");
@@ -292,6 +295,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	assert.match(projectSummary.textContent, /Berlin workshop/);
 	assert.match(projectSummary.textContent, /7200 kWh/);
 	assert.match(projectSummary.textContent, /8 kWp/);
+	assert.match(projectSummary.textContent, /Target grid import limit5 kW/);
 
 	const fileInput = field("load_profile");
 	assert.equal(fileInput?.type, "file");
@@ -337,6 +341,22 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	if (rejectFirstMapping) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);
 		assert.equal(opened.length, 0);
+		await enter(byLabel("Value column"), "Load corrected before switching");
+		const language = document.createElement("a");
+		language.href = "/de/";
+		language.hreflang = "de";
+		language.lang = "de";
+		document.querySelector("header").append(language);
+		const click = new window.MouseEvent("click", {
+			bubbles: true,
+			cancelable: true,
+		});
+		await act(async () => language.dispatchEvent(click));
+		assert.equal(click.defaultPrevented, true);
+		assert.equal(
+			byLabel("Value column").value,
+			"Load corrected before switching",
+		);
 		await act(async () => root.unmount());
 		root = createRoot(fixture.element);
 		await mountHome();
@@ -1684,7 +1704,11 @@ test("native guided retry reads the reviewed revision without any browser replay
 	assert.deepEqual(revisions, [7, null]);
 });
 
-test("a retrofit with an unknown phase can compare inverter options and send its reviewed project revision", async (t) => {
+for (const goal of ["self", "peak", "backup"])
+	test(`a retrofit with an unknown phase compares ${goal} inverter options and sends its reviewed project revision`, (t) =>
+		compareRetrofit(t, goal));
+
+async function compareRetrofit(t, goal) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { QueryClient, QueryClientProvider } =
@@ -1710,17 +1734,21 @@ test("a retrofit with an unknown phase can compare inverter options and send its
 				...brief,
 				system_scope: "storage_addition",
 				project_use: "residential",
-				site: { ...brief.site, country_code: "DE", location_label: "Konstanz" },
+				site: {
+					...brief.site,
+					country_code: "DE",
+					location_label: "Konstanz",
+				},
 				annual_load: { kwh: 6200, basis: "bill_total", source_note: "" },
 			},
 			equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 8 },
 		},
-		"self",
+		goal,
 	);
 	let project = {
 		id: projectId,
 		revision: 1,
-		title: "Konstanz",
+		title: "Bodensee",
 		inputs,
 		input_sha256: "2".repeat(64),
 	};
@@ -1782,7 +1810,11 @@ test("a retrofit with an unknown phase can compare inverter options and send its
 		"8 kWp",
 		"6200 kWh",
 		"Electricity bill",
-		"Use more solar on site",
+		{
+			self: "Use more solar on site",
+			peak: "Reduce peak demand",
+			backup: "Backup supply",
+		}[goal],
 		"To confirm",
 	])
 		assert.ok(facts.includes(value), value);
@@ -1790,6 +1822,16 @@ test("a retrofit with an unknown phase can compare inverter options and send its
 		row.textContent.includes("Keep the existing inverter"),
 	);
 	assert.ok(keep);
+	assert.equal(document.querySelector("h1").textContent, "Bodensee");
+	for (const row of options().querySelectorAll("tbody tr"))
+		assert.match(
+			row.textContent,
+			{
+				peak: /peak|import limit/i,
+				backup: /backup|outage/i,
+				self: /surplus|solar|panels/i,
+			}[goal],
+		);
 	assert.match(options().textContent, /replacement inverter/i);
 	await until(() => !keep.querySelector("button").disabled);
 	await act(async () => keep.querySelector("button").click());
@@ -1808,4 +1850,4 @@ test("a retrofit with an unknown phase can compare inverter options and send its
 		document.querySelector(".sc-inquiry-overview").textContent,
 		/Keep the existing inverter/,
 	);
-});
+}

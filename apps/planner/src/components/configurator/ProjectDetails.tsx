@@ -5,7 +5,11 @@ import type { Brief } from "../../domain/brief.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
-import { changeEnergyGoal, energyGoal } from "./EnergyDemand.tsx";
+import {
+	changeEnergyGoal,
+	energyGoal,
+	type EnergyGoal,
+} from "./EnergyDemand.tsx";
 import { changeEquipment, equipmentDraft } from "../../domain/equipment.ts";
 import type { EquipmentUse } from "../../domain/equipment.ts";
 import {
@@ -362,9 +366,8 @@ export function ProjectDetails({
 							required={creation?.comparison}
 							value={energyGoal(inputs)}
 							onChange={(e) => {
-								const goal = e.currentTarget.value as
-									"self" | "backup" | "peak";
-								if (goal) edit((current) => changeEnergyGoal(current, goal));
+								const goal = e.currentTarget.value as EnergyGoal;
+								edit((current) => changeEnergyGoal(current, goal));
 							}}
 						>
 							<option value="">{__("Choose an option", "linker-tools")}</option>
