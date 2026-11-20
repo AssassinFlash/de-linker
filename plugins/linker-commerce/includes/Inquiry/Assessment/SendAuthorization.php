@@ -505,10 +505,10 @@ final class SendAuthorization {
 		$data  = Queue::data( $order );
 		$label = match ( $result['decision'] ?? 'unknown' ) {
 			'normal'=>'normal', 'malicious'=>'suspected_spam', default=>'uncertain'};
-		$data['result']         = array_merge( $result, array( 'label' => $label ) );
-		$data['initial_result'] = $data['result'];
-		$data['completed_at']   = microtime( true );
-		$data['elapsed']        = max( 0.0, $data['completed_at'] - (float) ( $data['accepted_at'] ?? $data['completed_at'] ) );
+		$data['result']           = array_merge( $result, array( 'label' => $label ) );
+		$data['initial_result'] ??= $data['result'];
+		$data['completed_at']     = microtime( true );
+		$data['elapsed']          = max( 0.0, $data['completed_at'] - (float) ( $data['accepted_at'] ?? $data['completed_at'] ) );
 		StructuredMeta::update( $order, Queue::META, $data );
 		$order->save_meta_data();
 	}

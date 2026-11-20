@@ -332,6 +332,11 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 2, $state['attempts'] );
+		$order->read_meta_data( true );
+		$assessment = Queue::data( $order );
+		self::assertSame( 'unknown', $assessment['initial_result']['decision'] );
+		self::assertSame( 'unknown', $assessment['initial_result']['raw']['primary']['answers']['classification']['choice'] );
+		self::assertSame( 'normal', $assessment['result']['decision'] );
 		self::assertSame( 'normal', $state['status'] );
 		self::assertCount( 2, $state['jobs'] );
 	}

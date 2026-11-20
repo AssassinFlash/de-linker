@@ -41,7 +41,7 @@ final class SendVerdict {
 			return self::unknown( 'invalid_response' );
 		}
 		if ( 'unknown' === $decision ) {
-			return self::unknown( 1 === preg_match( '/^(conflict|insufficient_confidence|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3}|provider_budget_(quota|unavailable|configuration|permissions|replayed|provider|attempt)|escalation_(conflict|insufficient_confidence|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3}|provider_budget_(quota|unavailable|configuration|permissions|replayed|provider|attempt)))$/D', $reason ) ? $reason : 'invalid_response' );
+			return self::unknown_observation( $value, $reason );
 		}
 		if ( ! in_array( $reason, array( 'classified', 'escalated' ), true ) || ( 'normal' === $decision && ! in_array( $basis, array( 'business_request', 'service_or_complaint', 'reporting_abuse' ), true ) ) || ( 'malicious' === $decision && ! in_array( $basis, Result::ABUSE, true ) ) ) {
 			return self::unknown( 'invalid_response' );
@@ -60,6 +60,46 @@ final class SendVerdict {
 			}
 		}
 		return $value;
+	}
+	/**
+	 * Retain the typed model evidence on the staff inquiry even when it grants no sending permission.
+	 *
+	 * @param array<string,mixed> $value Bound classifier response.
+	 * @param string              $reason Unresolved classifier reason.
+	 * @return array<string,mixed>
+	 */
+	private static function unknown_observation( array $value, string $reason ): array {
+		if ( 1 !== preg_match( '/^(conflict|insufficient_confidence|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3}|provider_budget_(quota|unavailable|configuration|permissions|replayed|provider|attempt)|escalation_(conflict|insufficient_confidence|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3}|provider_budget_(quota|unavailable|configuration|permissions|replayed|provider|attempt)))$/D', $reason ) ) {
+			return self::unknown( 'invalid_response' );
+		}
+		$observed          = self::unknown( $reason );
+		$observed['basis'] = $value['basis'];
+		$observed['model'] = $value['model'];
+		if ( isset( $value['raw'] ) && is_array( $value['raw'] ) ) {
+			$observed['raw'] = array(
+				'primary'    => null,
+				'escalation' => null,
+			);
+			foreach ( array_keys( $observed['raw'] ) as $stage ) {
+				$reading = $value['raw'][ $stage ] ?? null;
+				if ( null === $reading ) {
+					continue;
+				}
+				if ( ! is_array( $reading ) || ! self::reading( $reading, 'escalation' === $stage ) || ! self::numeric_wire( $reading ) ) {
+					return self::unknown( 'invalid_response' );
+				}
+				$fields  = array_flip( array( 'type', 'choice', 'confidence', 'probabilities' ) );
+				$answers = array();
+				foreach ( array( 'classification', 'basis' ) as $question ) {
+					$answers[ $question ] = array_intersect_key( $reading['answers'][ $question ], $fields );
+				}
+				$observed['raw'][ $stage ] = array(
+					'model'   => $reading['model'],
+					'answers' => $answers,
+				);
+			}
+		}
+		return $observed;
 	}
 	/** Echoed binding.
 	 *
