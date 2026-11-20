@@ -1,6 +1,6 @@
 # Sending permission after automated abuse assessment
 
-Status: owner requirement fixed on 2026-10-23; solution research and validation in progress. This document does not assert deployment.
+The October 2026 decision covers mail that forwards customer content. [Fixed customer acknowledgements](https://github.com/AssassinFlash/de-linker/issues/1170#issuecomment-7036165453) records the November decision governing confirmation of a saved inquiry.
 
 ## Owner decision
 
@@ -34,7 +34,7 @@ This narrow correction is an emergency containment change, not completion of the
 
 - Save the complete native inquiry and return the submission result without waiting for an external model.
 - Establish durable, server-owned sending permission after assessment, bound to the exact native source and assessed content. Public request fields, a proof of human interaction, a model-looking string or a stale result cannot grant it.
-- Apply the decision to all mail caused by that public submission, including internal notification and automated customer receipt. Keep security transaction messages in their appropriate separate policy.
+- Apply the decision to the team notification and shared conversations containing customer content. A fixed customer acknowledgement follows the saved Woo inquiry and its own recipient allowance.
 - Automatically quarantine confirmed malicious submissions and suppress their per-record mail and replacement review reminders. Retain evidence and a reversible audit trail.
 - Deliver normal inquiries with their actual contents. Do not replace useful information with a count and a link.
 - Treat unresolved classification, invalid response, exhausted provider budget, timeout and recovery failure as explicit states with bounded automatic recovery; none is implicitly an allow verdict. Avoid indefinite invisible stranding of a genuine customer.

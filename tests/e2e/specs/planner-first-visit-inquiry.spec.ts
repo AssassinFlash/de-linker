@@ -75,10 +75,6 @@ function receiptDelivery(orderId: number): string {
 			}
 		};
 		$state = $read();
-		if ('pending' === ($state['status'] ?? '')) {
-			$run_due(\Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, $order->get_id());
-			$state = $read();
-		}
 		$job = $state['jobs']['receipt'] ?? [];
 		if (!empty($job['id']) && empty($job['delivered_at'])) {
 			$run_due(\Linker\Commerce\Mail\Outbox::HOOK, $job['id']);
@@ -266,6 +262,8 @@ for (const lang of ['en', 'de'] as const) {
 			);
 			expect(delivered).toHaveLength(1);
 			expect(delivered[0]!.subject).toContain(result.number);
+			expect(delivered[0]!.html).not.toContain('E2E First Guest');
+			if (message) expect(delivered[0]!.html).not.toContain(message);
 			expect(
 				delivered[0]!.html
 					.replaceAll('&amp;', '&')

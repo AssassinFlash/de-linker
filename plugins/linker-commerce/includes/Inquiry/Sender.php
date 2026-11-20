@@ -333,11 +333,7 @@ final class Sender {
 				if ( $stored instanceof WP_Error ) {
 					throw new \Linker\Commerce\Protection\CapacityFull( $stored ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped by the native form consumer.
 				}
-				$receipt_reason = 'assessment_pending';
-				$order->update_meta_data( ReceiptLimit::SKIPPED_META, $receipt_reason );
-				// Unverified destinations receive only a fixed acknowledgement, never
-				// attacker-supplied names, products, notes or links.
-				$order->update_meta_data( '_linker_fixed_receipt', \Linker\Commerce\Protection\Business::enabled() ? 'yes' : '' );
+				$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'assessment_pending' );
 				$order->save();
 				// Woo loads transactional email listeners lazily. Load before the transition.
 				WC()->mailer();
