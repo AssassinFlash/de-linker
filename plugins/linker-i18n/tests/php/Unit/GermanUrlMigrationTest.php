@@ -19,6 +19,49 @@ use WP_Mock\Tools\TestCase;
  * @covers \Linker\I18n\GermanUrlMigration::old_post
  */
 final class GermanUrlMigrationTest extends TestCase {
+	/** A withdrawn page's private preview URL cannot override a public replacement. */
+	public function test_retired_page_does_not_redirect_to_a_draft(): void {
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( GermanUrlMigration::ACTIVE ),
+				'return' => true,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( GermanUrlMigration::BACKUP, null ),
+				'return' => array(
+					'version' => 1,
+					'objects' => array(
+						'page:6873' => array(
+							'type' => 'page',
+							'id'   => 6873,
+							'url'  => 'https://linker.test/de/danke/',
+						),
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_status',
+			array(
+				'args'   => array( 6873 ),
+				'return' => 'draft',
+			)
+		);
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => '/de/danke/' ) );
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'  => array( 6873 ),
+				'times' => 0,
+			)
+		);
+		self::assertNull( ( new GermanUrlMigration() )->retired_url( null, '/de/danke/' ) );
+	}
+
 	/**
 	 * Core's history lookup does not constrain either language or post status.
 	 *
