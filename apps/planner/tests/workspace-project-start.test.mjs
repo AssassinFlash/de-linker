@@ -47,7 +47,7 @@ test("a new-project CSV remains actionable when the homepage picker shows a save
 		await import("@tanstack/react-query");
 	const { HomepageComparison } =
 		await import("../src/components/HomepageComparison.tsx");
-	const root = createRoot(fixture.element);
+	let root = createRoot(fixture.element);
 	const cache = new QueryClient();
 	t.after(async () => {
 		await fixture.dispose(root);
@@ -62,33 +62,48 @@ test("a new-project CSV remains actionable when the homepage picker shows a save
 	};
 	const client = {
 		isCurrentScope: () => true,
-		async query(path) {
+		async query(path, command) {
 			if (path === "products/current")
 				return { schema_version: 1, provider: "woocommerce", products: [] };
 			assert.equal(path, "projects/list");
-			return { schema_version: 1, items: [project], next: null };
+			if (command.title_query === "Saved roof")
+				return { schema_version: 1, items: [project], next: null };
+			const first = {
+				...project,
+				id: "8".repeat(32),
+				title: "Another project",
+			};
+			return {
+				schema_version: 1,
+				items: [first],
+				next: { id: first.id, updated_at: first.updated_at },
+			};
 		},
 	};
-	await act(async () =>
-		root.render(
-			React.createElement(
-				QueryClientProvider,
-				{ client: cache },
-				React.createElement(HomepageComparison, {
-					session,
-					client,
-					config: { locale: "en", countries: {} },
-					store: {
-						async readCreations() {
-							return [];
+	const mount = (locale) =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(HomepageComparison, {
+						session,
+						client,
+						config: { locale, countries: {} },
+						store: {
+							async readCreations() {
+								return [];
+							},
 						},
-					},
-					target: new URL("/workspace/", location.href),
-					recheck() {},
-				}),
+						target: new URL("/workspace/", location.href),
+						recheck() {},
+					}),
+				),
 			),
-		),
-	);
+		);
+	await mount("en");
+	await until(() => document.querySelector('input[type="search"]'));
+	await enter(document.querySelector('input[type="search"]'), "Saved roof");
 	await until(() =>
 		document.querySelector('option[value="' + projectId + '"]'),
 	);
@@ -135,7 +150,43 @@ test("a new-project CSV remains actionable when the homepage picker shows a save
 	assert.equal(remove.textContent, "Remove CSV");
 	await act(async () => remove.click());
 	assert.equal(document.querySelector("option:checked").value, projectId);
-	assert.equal(await blocked(), false);
+	async function switchLanguage(lang, path) {
+		link.href = path;
+		link.hreflang = lang;
+		link.lang = lang;
+		assert.equal(await blocked(), false);
+		await act(async () => root.unmount());
+		cache.clear();
+		history.pushState(null, "", link.href);
+		root = createRoot(fixture.element);
+		await mount(lang);
+		await until(() => document.querySelector('input[type="search"]'));
+		assert.equal(location.pathname, path);
+		assert.equal(location.search, "");
+		assert.equal(
+			document.querySelector('input[type="search"]').value,
+			"Saved roof",
+		);
+		await until(() =>
+			document.querySelector('option[value="' + projectId + '"]'),
+		);
+	}
+	await switchLanguage("de", "/de/");
+	const picker = document.querySelector(
+		'option[value="' + projectId + '"]',
+	).parentElement;
+	assert.equal(picker.value, projectId);
+	await act(async () => {
+		picker.value = "";
+		picker.dispatchEvent(new Event("change", { bubbles: true }));
+	});
+	await switchLanguage("en", "/");
+	assert.equal(
+		document.querySelector('option[value="' + projectId + '"]').parentElement
+			.value,
+		"",
+	);
+	assert.ok(document.querySelector('input[name="project_title"]'));
 });
 
 async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {

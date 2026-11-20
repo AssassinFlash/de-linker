@@ -3,6 +3,7 @@ import {
 	writeComparisonDraft,
 	forgetComparisonDraft,
 	type ComparisonDraft,
+	type ProjectPickerDraft,
 } from "../data/comparisonDraft.ts";
 import {
 	useCallback,
@@ -128,6 +129,7 @@ export function NewProject({
 	beginCreation?: () => (() => void) | null;
 	homeComparison?: {
 		picker: ReactNode;
+		projectPicker: ProjectPickerDraft;
 		savedProject: string;
 		compareSaved: (projectId: string) => void;
 	};
@@ -284,6 +286,7 @@ export function NewProject({
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
+	const projectPicker = homeComparison?.projectPicker;
 	const currentHomeInputs = useEffectEvent(() => inputs);
 	useEffect(() => {
 		if (
@@ -294,6 +297,8 @@ export function NewProject({
 				!title &&
 				useHints &&
 				!draftId.current &&
+				!projectPicker?.search &&
+				!projectPicker?.projectId &&
 				!profileForm.file &&
 				!invalidDemand.size &&
 				!entryHints)
@@ -307,6 +312,7 @@ export function NewProject({
 					source,
 					title,
 					inputs: compareAtHome ? currentHomeInputs() : draft,
+					...(projectPicker && { projectPicker }),
 					useHints,
 					carriedProduct,
 				};
@@ -365,6 +371,7 @@ export function NewProject({
 		compareAtHome,
 		carriedProduct,
 		entryHints,
+		projectPicker,
 		profileForm.file,
 		profileCorrection,
 		editedCorrection,
