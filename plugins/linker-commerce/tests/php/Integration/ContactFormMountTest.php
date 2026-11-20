@@ -86,6 +86,7 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'linker-form-success', $html );
 
 		$order = wc_create_order();
+		$this->assertInstanceOf( \WC_Order::class, $order );
 		try {
 			$order->update_meta_data( '_linker_inquiry_source', 'contact' );
 			$order->save();
