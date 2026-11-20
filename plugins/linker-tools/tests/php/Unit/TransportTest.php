@@ -192,6 +192,25 @@ final class TransportTest extends TestCase {
 		self::assertSame( 'linker_planner_claim_conflict', $refusal->get_error_code() );
 	}
 
+	/** Loading a saved project and its history uses the workspace read budget. */
+	public function test_workspace_reads_use_the_extended_request_budget(): void {
+		$owner     = new Principal( 'guest', 'test-guest' );
+		$budgets   = array();
+		$transport = new Transport(
+			static function ( string $url, array $args ) use ( &$budgets ): array {
+				$budgets[] = $args['timeout'];
+				return array(
+					'status' => 200,
+					'body'   => '{}',
+				);
+			}
+		);
+		foreach ( array( 'projects/list', 'projects/read', 'projects/runs' ) as $route ) {
+			$transport->call( $owner, $route, '{}' );
+		}
+		self::assertSame( array( 30.0, 30.0, 30.0 ), $budgets );
+	}
+
 	/** Omitted optional pagination and revision fields are filled before engine dispatch. */
 	public function test_omitted_optional_command_fields_receive_gateway_defaults(): void {
 		$sent      = array();

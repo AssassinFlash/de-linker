@@ -11,6 +11,7 @@ import { since } from '../lib/mail';
 let restoreProtection: (() => void) | undefined;
 let restoreBudgets: (() => void) | undefined;
 let inquiryEmail: string | undefined;
+let bareProject: { path: string; id: string } | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
@@ -22,13 +23,14 @@ test.afterAll(() => {
 });
 test.beforeEach(({ page }) => {
 	inquiryEmail = undefined;
+	bareProject = undefined;
 	page.setDefaultTimeout(15_000);
 });
-test.afterEach(() => {
-	if (!inquiryEmail) return;
-	wp([
-		'eval',
-		String.raw`
+test.afterEach(async ({ page }) => {
+	if (inquiryEmail)
+		wp([
+			'eval',
+			String.raw`
 			if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
 				throw new RuntimeException( 'A local WordPress mail sink is required.' );
 			}
@@ -39,7 +41,21 @@ test.afterEach(() => {
 				$order->delete( true );
 			}
 		`,
-	]);
+		]);
+	if (bareProject) {
+		await page.goto(instance().url + bareProject.path + '?projects=1');
+		const row = page
+			.getByRole('listitem')
+			.filter({
+				has: page.locator('[id="sc-project-' + bareProject.id + '"]'),
+			});
+		await row.locator('button[aria-label]').click();
+		await row
+			.getByRole('group')
+			.getByRole('button', { name: /^Delete project$|^Projekt löschen$/ })
+			.click();
+		await expect(row).toHaveCount(0);
+	}
 });
 
 async function screenshot(page: Page, name: string) {
@@ -454,3 +470,93 @@ test('back after a lost receipt recovers the original Woo inquiry', async ({
 	]);
 	expect(JSON.parse(orders)).toEqual([Number(order)]);
 });
+
+for (const lang of ['en', 'de'] as const) {
+	for (const width of [1440, 390]) {
+		test(`${lang} ${width}: a bare configurator visitor compares retrofit choices and receives the Woo inquiry`, async ({
+			page,
+		}) => {
+			const words = labels[lang];
+			const path =
+				lang === 'de'
+					? '/de/loesungskonfigurator/'
+					: '/solution-configurator/';
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			await page.goto(instance().url + path);
+			await page.locator('[data-cky-tag="reject-button"]').click();
+			const intake = page.locator('form.sc-comparison-intake');
+			const compare = intake.getByRole('button', {
+				name: lang === 'de' ? 'Systeme vergleichen' : 'Compare systems',
+				exact: true,
+			});
+			await expect(compare).toBeEnabled();
+			if (width === 1440) {
+				await expect(compare).toBeInViewport({ ratio: 1 });
+				await expect(
+					page.locator('.sc-project-summary')
+				).toBeInViewport();
+			}
+			await screenshot(page, `bare-entry-${lang}-${width}`);
+			await intake
+				.locator('select[name="system_scope"]')
+				.selectOption('storage_addition');
+			await compare.click();
+			const rows = page.locator('.sc-direction-comparison tbody tr');
+			await expect(rows).toHaveCount(2);
+			const id = new URL(page.url()).searchParams.get('project');
+			expect(id).toMatch(/^[a-f0-9]{32}$/);
+			bareProject = { id: id!, path };
+			const keep =
+				lang === 'de'
+					? 'Vorhandenen Wechselrichter beibehalten'
+					: 'Keep the existing inverter';
+			await expect(rows.first().getByRole('rowheader')).toHaveText(keep);
+			await screenshot(page, `bare-options-${lang}-${width}`);
+			await rows
+				.first()
+				.getByRole('button', { name: words.choose, exact: true })
+				.click();
+			const form = page.locator('form.linker-inquiry-form');
+			await expect(form).toBeVisible();
+			const binding = await form
+				.locator('[name="linker_preliminary_project"]')
+				.inputValue();
+			await expect(page.locator('.sc-inquiry-overview')).toContainText(
+				keep
+			);
+			await screenshot(page, `bare-review-${lang}-${width}`);
+			const email =
+				(inquiryEmail = `e2e-bare-${Date.now()}@example.test`);
+			await form.locator('[name="name"]').fill('Retrofit inquiry');
+			await form.locator('[name="email"]').fill(email);
+			await form.locator('[name="consent"]').check();
+			await form
+				.getByRole('button', { name: words.send, exact: true })
+				.click();
+			const receipt = page.getByRole('region', {
+				name:
+					lang === 'de' ? 'Anfrage eingegangen' : 'Inquiry received',
+				exact: true,
+			});
+			await expect(receipt).toBeVisible({ timeout: 60000 });
+			const result = JSON.parse(
+				wp([
+					'eval',
+					`$orders=wc_get_orders(['billing_email'=>'${email}','limit'=>2]); if(count($orders)!==1)throw new RuntimeException('Expected one inquiry'); $order=$orders[0]; echo wp_json_encode([$order->get_order_number(),$order->get_status(),$order->get_meta('_linker_preliminary_project')]);`,
+				])
+			);
+			expect(result).toEqual([
+				expect.any(String),
+				'inquiry-received',
+				binding,
+			]);
+			await expect(
+				receipt.locator('.linker-receipt-number')
+			).toContainText(result[0]);
+			await screenshot(page, `bare-receipt-${lang}-${width}`);
+		});
+	}
+}

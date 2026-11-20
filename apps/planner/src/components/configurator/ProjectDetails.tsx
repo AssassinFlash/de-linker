@@ -93,6 +93,7 @@ export function ProjectDetails({
 		changeTitle: (value: string) => void;
 		locked: boolean;
 		comparison?: boolean;
+		preliminary?: boolean;
 		submitDisabled?: boolean;
 		submitLabel?: string;
 		returnToComparison?: () => void;
@@ -242,7 +243,7 @@ export function ProjectDetails({
 	}
 	return (
 		<>
-			{!creation?.comparison && (
+			{(!creation?.comparison || creation.preliminary) && (
 				<header className="sc-section-head">
 					<div>
 						<h2 ref={heading} tabIndex={-1}>
@@ -264,7 +265,7 @@ export function ProjectDetails({
 							<span>{__("Project name", "linker-tools")}</span>
 							<input
 								name="project_title"
-								required
+								required={!creation.preliminary}
 								maxLength={256}
 								value={creation.title}
 								readOnly={creation.locked}
@@ -309,7 +310,7 @@ export function ProjectDetails({
 						<span>{__("Planned system", "linker-tools")}</span>
 						<select
 							name="system_scope"
-							required={creation?.comparison}
+							required={creation?.comparison && !creation.preliminary}
 							value={brief.system_scope ?? ""}
 							onChange={(e) => {
 								const system_scope = (e.currentTarget.value ||
@@ -363,7 +364,7 @@ export function ProjectDetails({
 						<span>{__("Main purpose", "linker-tools")}</span>
 						<select
 							name="project_purpose"
-							required={creation?.comparison}
+							required={creation?.comparison && !creation.preliminary}
 							value={energyGoal(inputs)}
 							onChange={(e) => {
 								const goal = e.currentTarget.value as EnergyGoal;
@@ -485,6 +486,7 @@ export function ProjectDetails({
 						solarConflict ||
 						creation?.submitDisabled ||
 						(!creation?.locked &&
+							!creation?.preliminary &&
 							(!brief.system_scope || (creation && !creation.title.trim())))
 					}
 					onClick={next}

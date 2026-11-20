@@ -223,6 +223,7 @@ sc-button
 sc-card
 sc-check
 sc-comparison
+sc-comparison-intake
 sc-configurator
 sc-demand-metrics
 sc-demand-profile

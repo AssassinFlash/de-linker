@@ -9,6 +9,7 @@ import { editDraft, isDirty } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { changeExistingSystem } from "./ProjectEquipment.tsx";
+import { energyGoal } from "./EnergyDemand.tsx";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
@@ -20,6 +21,7 @@ export function PreliminaryProject({
 	store,
 	locale,
 	comparing,
+	guided,
 	recoveringRevision,
 	navigate,
 	recheck,
@@ -30,6 +32,7 @@ export function PreliminaryProject({
 	store: DraftStore;
 	locale: string;
 	comparing: boolean;
+	guided: boolean;
 	recoveringRevision: boolean;
 	navigate: (
 		destination:
@@ -124,7 +127,10 @@ export function PreliminaryProject({
 						inputs={draft?.history.current ?? reviewed.inputs}
 						disabled={blocked || needsRecovery || Boolean(draft?.pending)}
 						choose={choose}
-						chooseRetrofit={(keep) => void choose("storage_addition", keep)}
+						{...((guided || energyGoal(reviewed.inputs)) && {
+							chooseRetrofit: (keep: boolean) =>
+								void choose("storage_addition", keep),
+						})}
 					/>
 					{inquiryPending && (
 						<button

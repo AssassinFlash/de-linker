@@ -17554,3 +17554,7 @@ msgstr "Zu prüfen sind die PV-Strings und die Leistung, die Wechselrichter und 
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "Your CSV changes are still here. Retry the import or compare without this load profile before switching languages."
 msgstr "Ihre Änderungen an der CSV-Datei und ihrer Zuordnung sind noch vorhanden. Starten Sie den Import erneut oder setzen Sie den Vergleich ohne dieses Lastprofil fort, bevor Sie die Sprache wechseln."
+
+#: apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Add a battery while keeping your existing PV inverter."
+msgstr "Sie ergänzen einen Batteriespeicher und behalten Ihren vorhandenen PV-Wechselrichter."
