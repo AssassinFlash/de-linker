@@ -9,12 +9,15 @@ from typing import Any
 
 import pytest
 
+HERE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(HERE))
 spec = importlib.util.spec_from_file_location(
-    "contact_page_styles", Path(__file__).parents[1] / "contact-page-styles.py"
+    "contact_page_styles", HERE / "contact-page-styles.py"
 )
 assert spec and spec.loader
 contact = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(contact)
+sys.path.pop(0)
 
 
 def test_reviewed_block_is_detached_without_changing_either_localized_body() -> None:
