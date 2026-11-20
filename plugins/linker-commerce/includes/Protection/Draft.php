@@ -63,6 +63,10 @@ final class Draft {
 					$_GET[ $key ] = wp_slash( $post[ $key ] );
 				}
 			}
+			if ( isset( $post['undo_item'], $post['_wpnonce'] ) && is_string( $post['_wpnonce'] ) ) {
+				// Woo's restore branch checks for the nonce in GET as well as verifying its value.
+				$_GET['_wpnonce'] = wp_slash( $post['_wpnonce'] );
+			}
 			return;
 		}
 		if ( wp_doing_ajax() || isset( $post['wc-ajax'] ) ) {
