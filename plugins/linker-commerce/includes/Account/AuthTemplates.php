@@ -105,10 +105,35 @@ final class AuthTemplates {
 		if ( '' === $target ) {
 			return $redirect;
 		}
+		$product = self::product_return_url( $target );
+		return '' !== $product ? $product : wc_get_page_permalink( 'myaccount' );
+	}
+
+	/**
+	 * A price sign-in points to the actual public product in the chosen language.
+	 *
+	 * @param string $target Canonical product permalink on this site.
+	 * @param string $language Optional requested language.
+	 */
+	public static function product_return_url( string $target, string $language = '' ): string {
 		$source = SelectionContext::normalize( array( 'source' => $target ) );
-		return 'product' === ( $source['type'] ?? '' ) && $source['source'] === $target
-			? $source['source']
-			: wc_get_page_permalink( 'myaccount' );
+		if ( 'product' !== ( $source['type'] ?? '' ) || $source['source'] !== $target ) {
+			return '';
+		}
+		$product = wc_get_product( (int) $source['id'] );
+		if ( ! $product || ! $product->is_visible() ) {
+			return '';
+		}
+		if ( '' === $language ) {
+			return $target;
+		}
+		$twins = pll_get_post_translations( (int) $source['id'] );
+		$twin  = isset( $twins[ $language ] ) ? get_post( $twins[ $language ] ) : null;
+		if ( ! $twin instanceof \WP_Post || 'product' !== $twin->post_type || 'publish' !== $twin->post_status || '' !== $twin->post_password ) {
+			return '';
+		}
+		$product = wc_get_product( $twin->ID );
+		return $product && $product->is_visible() ? (string) get_permalink( $twin ) : '';
 	}
 
 	/**
