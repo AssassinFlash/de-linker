@@ -116,7 +116,7 @@ def stale_tokens(text: str) -> list[str]:
 
 
 # Published pages, posts and LiveCanvas templates whose content or title
-# names a tool (or, for the thank-you page, opens its address), by step
+# names a tool, by step
 # key: English slug. The header and footer partials and the two tool pages
 # resolve separately below.
 SURFACES: dict[str, str] = {
@@ -132,7 +132,6 @@ SURFACES: dict[str, str] = {
     "services-support": "services-support",
     "gateway-post": "gateway-meter-cloud-monitoring-data-layer",
     "blog-index-template": "template-for-blog-posts-index",
-    "thank-you": "thank-you",
 }
 
 # Page titles, English slug (or German slug) -> (old, new).

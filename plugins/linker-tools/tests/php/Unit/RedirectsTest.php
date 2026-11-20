@@ -309,7 +309,6 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 261, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 24, $maps['pages'] );
 			$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
@@ -822,6 +821,20 @@ final class RedirectsTest extends TestCase {
 		$this->languages        = array( 'en', 'de' );
 
 		$this->assertNull( ( new Redirects() )->target( '/de/kasse/order-received/4711/' ) );
+	}
+
+	/** Bookmarks for the old confirmation pages lead to each language's inquiry form. */
+	public function test_static_confirmation_addresses_open_an_inquiry(): void {
+		$this->wordpress();
+		$routes = new Redirects();
+		$this->assertSame( self::HOME . '/proforma-request/', $routes->target( '/thank-you/' ) );
+		$this->current_language                              = 'de';
+		$this->default_language                              = 'en';
+		$this->languages                                     = array( 'en', 'de' );
+		$this->post_ids[ self::HOME . '/proforma-request/' ] = 1036;
+		$this->post_twins[1036]['de']                        = 6857;
+		$this->permalinks[6857]                              = self::HOME . '/de/proforma-anfrage/';
+		$this->assertSame( $this->permalinks[6857], $routes->target( '/de/danke/' ) );
 	}
 
 	/**

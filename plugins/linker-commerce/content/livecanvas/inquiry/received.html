@@ -1,1 +1,15 @@
-<section class="linker-form-success linker-inquiry-success woocommerce-message" role="status" data-linker-received-request="{{request_id}}"><span class="linker-form-state-icon" aria-hidden="true">✓</span><h2>{{title}}</h2><p>{{promise}}</p><p class="linker-receipt-notice empty:hidden">{{receipt_notice}}</p><a class="linker-form-primary" href="{{url}}">{{action}}</a></section>
+<section class="linker-form-success linker-inquiry-success" aria-labelledby="linker-receipt-title" data-linker-received-request="{{request_id}}">
+	<header class="linker-receipt-heading">
+		<span class="linker-form-state-icon" aria-hidden="true">✓</span>
+		<div>
+			<p class="linker-receipt-number">{{number}}</p>
+			<h1 id="linker-receipt-title">{{title}}</h1>
+		</div>
+	</header>
+	<div class="linker-receipt-next">
+		<h2>{{next}}</h2>
+		<p>{{promise}}</p>
+		<p class="linker-receipt-notice empty:hidden">{{receipt_notice}}</p>
+	</div>
+	<a class="linker-form-primary linker-receipt-action" href="{{url}}">{{action}}</a>
+</section>

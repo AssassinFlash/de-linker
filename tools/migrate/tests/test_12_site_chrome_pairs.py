@@ -442,8 +442,6 @@ def test_rename_slugs_accepts_the_german_pages_english_slug() -> None:
 def test_the_steps_carry_the_new_surfaces_and_retired_pages() -> None:
     keys = {step.key for step in chrome.steps(fake_ids())}
     for key in (
-        "thank-you-en",
-        "thank-you-de",
         "request-a-project-en",
         "request-a-project-de",
         "quote-configurator-2-en",

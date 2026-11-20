@@ -92,17 +92,5 @@
 				}
 			]
 		}
-	},
-	{
-		"type": "page",
-		"source": "thank-you",
-		"replace": {
-			"post_content": [
-				{
-					"old": "Technische Artikel",
-					"new": "Technische Beiträge"
-				}
-			]
-		}
 	}
 ]

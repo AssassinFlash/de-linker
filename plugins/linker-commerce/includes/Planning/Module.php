@@ -9,6 +9,10 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Planning;
 
+use Linker\Commerce\Abilities\ProductText;
+use Linker\Commerce\Products\EngineeringReference;
+use Linker\Commerce\Products\Materials;
+
 /** All visual output remains native semantic data; no page template or CSS. */
 final class Module {
 	/** Register native product/context lifecycle and private file access. */
@@ -87,12 +91,50 @@ final class Module {
 				);
 			}
 		}
+		$changes = array_values( array_filter( $preview['changes'] ?? array(), static fn ( array $line ): bool => $line['before'] > 0 && $line['before'] !== $line['after'] ) );
+		$display = array();
+		$locale  = new \Linker\Commerce\Mail\LocaleSwitch();
+		$locale->to( \Linker\Commerce\Inquiry\OrderLocale::current( $language ) );
+		try {
+			foreach ( array_unique( array_column( array_merge( $lines, $changes ), 'product_id' ) ) as $id ) {
+				$display[ $id ] = $this->product_details( $id, ProductText::lang( $language ) );
+			}
+		} finally {
+			$locale->back();
+		}
+		$with_details = static fn ( array $line ): array => $line + $display[ $line['product_id'] ];
 		return array(
 			'schema_version'          => 1,
 			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $bound, $handoff, $retry ),
-			'inquiry_lines'           => $lines,
-			'inquiry_changes'         => array_values( array_filter( $preview['changes'] ?? array(), static fn ( array $line ): bool => $line['before'] > 0 && $line['before'] !== $line['after'] ) ),
+			'inquiry_lines'           => array_map( $with_details, $lines ),
+			'inquiry_changes'         => array_map( $with_details, $changes ),
 			'inquiry_phase_conflicts' => $preview['phase_conflicts'] ?? array(),
+		);
+	}
+
+	/**
+	 * Present a current shop product beside the quantity retained in the customer's project.
+	 *
+	 * @param int       $id   Woo product on the handoff or current cart.
+	 * @param 'en'|'de' $lang Display language.
+	 * @return array<string,string>
+	 */
+	private function product_details( int $id, string $lang ): array {
+		$translated = ProductText::translated_id( $id, $lang );
+		if ( ! $translated || EngineeringReference::is_reference( $translated ) ) {
+			return array();
+		}
+		$product = wc_get_product( $translated );
+		if ( ! $product instanceof \WC_Product ) {
+			return array();
+		}
+		$fact = Materials::card_facts( $product, 1 )[0] ?? null;
+		return array_filter(
+			array(
+				'product_url' => (string) get_permalink( $translated ),
+				'image_url'   => (string) wp_get_attachment_image_url( (int) $product->get_image_id(), 'woocommerce_thumbnail' ),
+				'highlight'   => $fact ? $fact['label'] . ' · ' . $fact['value'] : wp_strip_all_tags( $product->get_short_description(), true ),
+			)
 		);
 	}
 
