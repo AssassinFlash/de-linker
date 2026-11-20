@@ -17,7 +17,10 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	}
 
 	global $wpdb;
-	$slugs = array( 623 => 'thank-you', 6873 => 'danke' );
+	$slugs = array(
+		623  => 'thank-you',
+		6873 => 'danke',
+	);
 	$pages = array();
 	foreach ( $slugs as $id => $slug ) {
 		$page = get_post( $id );
@@ -45,5 +48,5 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 			wp_transition_post_status( 'draft', 'publish', $page );
 		}
 	}
-	WP_CLI::log( json_encode( array( 'to_draft' => wp_list_pluck( $pages, 'ID' ) ), JSON_THROW_ON_ERROR ) );
+	WP_CLI::log( (string) wp_json_encode( array( 'to_draft' => wp_list_pluck( $pages, 'ID' ) ) ) );
 } )( $args ?? array() );
