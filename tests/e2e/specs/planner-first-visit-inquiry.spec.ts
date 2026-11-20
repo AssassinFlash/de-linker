@@ -1,18 +1,23 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
 	applyTurnstileProfile,
+	isolateVisitorBudgets,
 	instance,
 	instanceName,
 	wp,
 } from '../lib/instance';
+import { since } from '../lib/mail';
 
 let restoreProtection: (() => void) | undefined;
+let restoreBudgets: (() => void) | undefined;
 let inquiryEmail: string | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
+	restoreBudgets = isolateVisitorBudgets();
 });
 test.afterAll(() => {
+	restoreBudgets?.();
 	restoreProtection?.();
 });
 test.beforeEach(({ page }) => {
@@ -42,6 +47,51 @@ async function screenshot(page: Page, name: string) {
 	const path = test.info().outputPath(name + '.png');
 	await page.screenshot({ path, animations: 'disabled' });
 	await test.info().attach(name, { path, contentType: 'image/png' });
+}
+
+/** Execute this inquiry's due native actions, including a reschedule by Woo's mail throttle. */
+function receiptDelivery(orderId: number): string {
+	return wp([
+		'eval',
+		String.raw`
+		if (!defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST)) {
+			WP_CLI::error('A local mail sink is required.');
+		}
+		$order = wc_get_order(${orderId});
+		$read = static function () use ($order) {
+			$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read($order->get_id());
+			if (is_wp_error($state)) {WP_CLI::error($state->get_error_code());}
+			return $state;
+		};
+		$run_due = static function (string $hook, int $id): void {
+			$actions = as_get_scheduled_actions([
+				'hook' => $hook, 'args' => [$id], 'group' => \Linker\Commerce\Mail\Outbox::GROUP,
+				'status' => \ActionScheduler_Store::STATUS_PENDING, 'per_page' => 1
+			]);
+			foreach ($actions as $action_id => $action) {
+				if ($action->get_schedule()->get_date()->getTimestamp() <= time()) {
+					\ActionScheduler_QueueRunner::instance()->process_action($action_id, 'customer inquiry receipt');
+				}
+			}
+		};
+		$state = $read();
+		if ('pending' === ($state['status'] ?? '')) {
+			$run_due(\Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, $order->get_id());
+			$state = $read();
+		}
+		$job = $state['jobs']['receipt'] ?? [];
+		if (!empty($job['id']) && empty($job['delivered_at'])) {
+			$run_due(\Linker\Commerce\Mail\Outbox::HOOK, $job['id']);
+			$state = $read();
+			$job = $state['jobs']['receipt'] ?? [];
+		}
+		if (!empty($job['delivered_at'])) {echo 'delivered';}
+		else {
+			$order->read_meta_data(true);
+			echo wp_json_encode(['status' => $state['status'] ?? 'missing', 'skip' => $order->get_meta('_linker_receipt_skipped'), 'receipt_job' => $job['id'] ?? null]);
+		}
+	`,
+	]);
 }
 
 const labels = {
@@ -85,6 +135,7 @@ for (const lang of ['en', 'de'] as const) {
 			const { url } = instance();
 			expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 			const words = labels[lang];
+			const started = Date.now();
 			expect(await context.cookies()).toEqual([]);
 			await page.setViewportSize({
 				width,
@@ -158,15 +209,12 @@ for (const lang of ['en', 'de'] as const) {
 			await form
 				.getByRole('button', { name: words.send, exact: true })
 				.click();
-			await expect(
-				page.getByRole('status').getByRole('heading', {
-					name:
-						lang === 'en'
-							? 'Inquiry received'
-							: 'Anfrage eingegangen',
-					exact: true,
-				})
-			).toBeVisible({ timeout: 60_000 });
+			const receipt = page.getByRole('region', {
+				name:
+					lang === 'en' ? 'Inquiry received' : 'Anfrage eingegangen',
+				exact: true,
+			});
+			await expect(receipt).toBeVisible({ timeout: 60_000 });
 			await screenshot(page, `inquiry-received-${lang}-${width}`);
 			const result = JSON.parse(
 				wp([
@@ -175,11 +223,12 @@ for (const lang of ['en', 'de'] as const) {
     $orders = wc_get_orders(array('billing_email' => '${email}', 'limit' => 2));
     if (count($orders) !== 1) {throw new RuntimeException('Expected one inquiry');}
     $order = $orders[0];
-    echo wp_json_encode(array('number'=>$order->get_order_number(),'locale'=>Linker\\Commerce\\Inquiry\\OrderLocale::of($order),'customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note(),'project'=>$order->get_meta('_linker_preliminary_project')));
+    echo wp_json_encode(array('id'=>$order->get_id(),'number'=>$order->get_order_number(),'locale'=>Linker\\Commerce\\Inquiry\\OrderLocale::of($order),'customer'=>$order->get_customer_id(),'status'=>$order->get_status(),'items'=>count($order->get_items()),'note'=>$order->get_customer_note(),'project'=>$order->get_meta('_linker_preliminary_project')));
    `,
 				])
 			);
 			expect(result).toEqual({
+				id: expect.any(Number),
 				number: expect.any(String),
 				locale: lang === 'de' ? 'de_DE_formal' : 'en_US',
 				customer: 0,
@@ -189,15 +238,39 @@ for (const lang of ['en', 'de'] as const) {
 				note: expect.stringContaining(direction),
 			});
 			if (message) expect(result.note).toContain(message);
-			const overviewNumber = page
-				.locator('.woocommerce-order-overview__order strong')
-				.getByText(result.number, { exact: true });
-			const heldNumber = page
-				.getByRole('status')
-				.getByText(new RegExp(`\\b${result.number}\\b`));
 			await expect(
-				overviewNumber.or(heldNumber).filter({ visible: true }).first()
-			).toBeVisible();
+				receipt.locator('.linker-receipt-number')
+			).toContainText(result.number);
+			const receiptUrl = new URL(page.url());
+			expect(receiptUrl.searchParams.has('key')).toBe(true);
+			const registration = new URL(
+				(await receipt.getByRole('link').getAttribute('href'))!,
+				receiptUrl
+			);
+			expect(registration.searchParams.get('linker_inquiry')).toBe(
+				String(result.id)
+			);
+			expect(
+				registration.searchParams.get('linker_key') ===
+					receiptUrl.searchParams.get('key')
+			).toBe(true);
+
+			await expect
+				.poll(() => receiptDelivery(Number(result.id)), {
+					timeout: 180_000,
+					intervals: [1_000, 2_000, 5_000],
+				})
+				.toBe('delivered');
+			const delivered = since(started).filter((mail) =>
+				mail.to.includes(email)
+			);
+			expect(delivered).toHaveLength(1);
+			expect(delivered[0]!.subject).toContain(result.number);
+			expect(
+				delivered[0]!.html
+					.replaceAll('&amp;', '&')
+					.includes(registration.href)
+			).toBe(true);
 		});
 	}
 }
