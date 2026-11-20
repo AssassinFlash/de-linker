@@ -140,13 +140,7 @@ final class AccountLink {
 			return;
 		}
 		$order->set_customer_id( $user_id );
-		$order->update_meta_data(
-			self::CLAIM,
-			array(
-				'user_id' => $user_id,
-				'email'   => $email,
-			)
-		);
+		$order->update_meta_data( self::CLAIM, $user_id );
 		$order->save();
 	}
 
@@ -156,13 +150,12 @@ final class AccountLink {
 	 * @param WC_Order $order Saved inquiry.
 	 */
 	public static function claimed_by_customer( WC_Order $order ): bool {
-		$claim = $order->get_meta( self::CLAIM );
 		$owner = $order->get_customer_id();
-		if ( ! is_array( $claim ) || $owner < 1 || ( $claim['user_id'] ?? null ) !== $owner || strtolower( $order->get_billing_email() ) !== ( $claim['email'] ?? null ) ) {
+		if ( $owner < 1 || $owner !== (int) $order->get_meta( self::CLAIM ) ) {
 			return false;
 		}
 		$user = get_userdata( $owner );
-		return $user && strtolower( $user->user_email ) === $claim['email'];
+		return $user && '' !== $order->get_billing_email() && 0 === strcasecmp( $order->get_billing_email(), $user->user_email );
 	}
 
 	/**
