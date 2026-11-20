@@ -35,10 +35,11 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(page.locator('form.woocommerce-cart-form')).toHaveCount(0);
 			await page.locator('a.restore-item').click();
 			await expect(page.locator('.woocommerce-cart-form input.qty').first()).toHaveValue('1');
+			await page.locator('.woocommerce-cart-form input.qty').first().fill('3');
 			await page.locator('.wc-proceed-to-checkout a').click();
 			await expect(
 				page.locator('.linker-inquiry-line input.qty')
-			).toHaveValue('1');
+			).toHaveValue('3');
 			await expect(page).toHaveURL(base + request);
 			const message = page.locator(
 				'.linker-inquiry-form [name="message"]'

@@ -87,6 +87,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_can_reduce_order_stock', '__return_false' );
 		WP_Mock::expectActionAdded( 'admin_head', array( $statuses, 'admin_colours' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_payment_gateways', array( $module, 'add_gateway' ) );
+		WP_Mock::expectFilterAdded( 'wp_speculation_rules_href_exclude_paths', array( $checkout, 'session_page_paths' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_add_to_cart_redirect', array( $checkout, 'after_add_destination' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_available_payment_gateways', array( $checkout, 'gateways' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $checkout, 'without_payment_method_title' ) );

@@ -47,6 +47,18 @@ final class Checkout {
 	}
 
 	/**
+	 * Read the draft and inquiry after the customer's pending quantity change reaches Woo.
+	 *
+	 * @param string[] $paths Paths already excluded from WordPress speculative loading.
+	 * @return string[]
+	 */
+	public function session_page_paths( array $paths ): array {
+		$paths[] = wp_make_link_relative( wc_get_cart_url() );
+		$paths[] = wp_make_link_relative( wc_get_checkout_url() );
+		return $paths;
+	}
+
+	/**
 	 * Blocks the unused Store API checkout before it can create a draft order.
 	 * The Store API cart and product routes remain available.
 	 *

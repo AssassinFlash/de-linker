@@ -43,6 +43,17 @@ final class CheckoutTest extends TestCase {
 		}
 	}
 
+	/** A prefetched page must not hide the cart edit that the customer just confirmed. */
+	public function test_draft_and_inquiry_paths_are_excluded_from_wordpress_prefetch(): void {
+		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturn( 'https://example.test/de/proforma-anfrage/' );
+		WP_Mock::userFunction( 'wc_get_cart_url' )->andReturn( 'https://example.test/de/loesungsentwurf/' );
+		WP_Mock::userFunction( 'wp_make_link_relative' )->andReturnUsing( static fn ( string $url ): string => (string) parse_url( $url, PHP_URL_PATH ) );
+		$this->assertSame(
+			array( '/keep/', '/de/loesungsentwurf/', '/de/proforma-anfrage/' ),
+			( new Checkout() )->session_page_paths( array( '/keep/' ) )
+		);
+	}
+
 	/** An existing explicit native destination remains authoritative. */
 	public function test_after_add_preserves_an_existing_destination(): void {
 		$this->assertSame( 'https://example.test/inquiry/', ( new Checkout() )->after_add_destination( 'https://example.test/inquiry/' ) );
