@@ -293,36 +293,22 @@ final class Form {
 	private function state_message(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
-		$state = $this->displayed_state( $state );
+		if ( in_array( $state, array( 'sent', 'sent_no_receipt', 'receipt_pending', 'saved_review' ), true ) ) {
+			$order = $this->receipt_order();
+			return $order instanceof \WC_Order ? $this->receipt_notice( $order ) : '';
+		}
 		return match ( $state ) {
-			'reception_full' => $this->notice( 'invalid', \Linker\Commerce\Protection\BusinessCapacity::message() ),
-			'saved_review' => $this->notice( 'sent', \Linker\Commerce\Protection\IntakeAdmin::saved_message() ),
-			'review_size' => $this->notice( 'invalid', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
-			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'grouped' => $this->notice( 'invalid', __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
-			'receipt_pending', 'sent' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
-			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
-			'throttled' => $this->notice( 'invalid', __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'verification_failed' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
-			'verification_unavailable' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ),
-			'pending' => $this->notice( 'invalid', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),
+			'reception_full' => $this->notice( \Linker\Commerce\Protection\BusinessCapacity::message() ),
+			'review_size' => $this->notice( __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
+			'review_full' => $this->notice( __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'grouped' => $this->notice( __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'invalid'   => $this->notice( __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
+			'throttled' => $this->notice( __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'verification_failed' => $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
+			'verification_unavailable' => $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ),
+			'pending' => $this->notice( __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),
 			default     => '',
 		};
-	}
-
-	/**
-	 * Follow the saved inquiry when the redirect names one. A pending receipt
-	 * stays pending until the handoff records an omission or clears it.
-	 *
-	 * @param string $requested State from the redirect.
-	 */
-	private function displayed_state( string $requested ): string {
-		if ( ! in_array( $requested, array( 'sent', 'sent_no_receipt', 'receipt_pending' ), true ) ) {
-			return $requested;
-		}
-		$order = $this->receipt_order();
-		return $order instanceof \WC_Order ? Handler::receipt_state( $order ) : $requested;
 	}
 
 	/**
@@ -338,25 +324,40 @@ final class Form {
 		}
 		$id    = wc_get_order_id_by_order_key( $key );
 		$order = $id > 0 ? wc_get_order( $id ) : false;
-		if ( ! $order instanceof \WC_Order || 'contact' !== (string) $order->get_meta( '_linker_inquiry_source' ) ) {
+		if ( ! $order instanceof \WC_Order || ! hash_equals( (string) $order->get_order_key(), $key ) || 'contact' !== (string) $order->get_meta( '_linker_inquiry_source' ) ) {
 			return null;
 		}
 		return $order;
 	}
 
 	/**
-	 * One state message.
+	 * Confirm this saved inquiry using Woo's current order number and mail state.
 	 *
-	 * @param string $kind `sent` or `invalid`.
+	 * @param \WC_Order $order Contact inquiry identified by its key.
+	 */
+	private function receipt_notice( \WC_Order $order ): string {
+		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) ) {
+			$text = \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order );
+		} else {
+			/* translators: %s: inquiry number. */
+			$number = sprintf( __( 'Inquiry #%s', 'linker-commerce' ), $order->get_order_number() );
+			$text   = 'sent_no_receipt' === Handler::receipt_state( $order )
+				? __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' )
+				: __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' );
+			$text   = $number . ' · ' . $text;
+		}
+		return '<section class="linker-form-success woocommerce-message" role="status">'
+			. '<span class="linker-form-state-icon" aria-hidden="true">✓</span>'
+			. '<p>' . esc_html( $text ) . '</p>'
+			. '<a class="linker-form-primary" href="' . esc_url( $this->current_url() . '#' . self::ANCHOR ) . '">' . esc_html__( 'Send another message', 'linker-commerce' ) . '</a></section>';
+	}
+
+	/**
+	 * An error above the contact fields.
+	 *
 	 * @param string $text The message.
 	 */
-	private function notice( string $kind, string $text ): string {
-		if ( 'sent' === $kind ) {
-			return '<section class="linker-form-success woocommerce-message" role="status">'
-				. '<span class="linker-form-state-icon" aria-hidden="true">✓</span>'
-				. '<p>' . esc_html( $text ) . '</p>'
-				. '<a class="linker-form-primary" href="' . esc_url( $this->current_url() . '#' . self::ANCHOR ) . '">' . esc_html__( 'Send another message', 'linker-commerce' ) . '</a></section>';
-		}
+	private function notice( string $text ): string {
 		return '<div class="linker-form-error woocommerce-error" role="alert"><span class="linker-form-state-icon" aria-hidden="true">!</span><p>' . esc_html( $text ) . '</p></div>';
 	}
 

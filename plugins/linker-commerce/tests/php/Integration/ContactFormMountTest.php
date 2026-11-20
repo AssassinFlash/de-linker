@@ -79,17 +79,26 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
 	}
 
-	/**
-	 * The sent state is the form's own redirect state, rendered in place of
-	 * the fields.
-	 */
-	public function test_the_sent_state_renders_instead_of_the_fields(): void {
+	/** Only a saved contact inquiry and its real key identify a receipt. */
+	public function test_the_contact_receipt_requires_the_saved_inquiry(): void {
 		$html = $this->get( '/contact/?contact=sent' );
+		$this->assertStringContainsString( 'name="message"', $html );
+		$this->assertStringNotContainsString( 'linker-form-success', $html );
 
-		$this->assertStringContainsString( 'linker-form-success', $html );
-		$this->assertStringContainsString( 'Thank you. Your message is with the Linker team.', $html );
-		$this->assertStringNotContainsString( 'name="message"', $html );
-		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
+		$order = wc_create_order();
+		try {
+			$order->update_meta_data( '_linker_inquiry_source', 'contact' );
+			$order->save();
+			$query = '?contact=sent&contact_order=' . rawurlencode( $order->get_order_key() );
+			foreach ( array( '/contact/', '/de/kontakt/' ) as $path ) {
+				$html = $this->get( $path . $query );
+				$this->assertStringContainsString( 'linker-form-success', $html );
+				$this->assertStringContainsString( '#' . $order->get_order_number(), $html );
+				$this->assertStringNotContainsString( 'name="message"', $html );
+			}
+		} finally {
+			$order->delete( true );
+		}
 	}
 
 	/**

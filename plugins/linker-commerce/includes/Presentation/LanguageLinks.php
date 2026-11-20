@@ -144,6 +144,12 @@ final class LanguageLinks {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
 		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
 		$keys           = self::LANGUAGE_QUERY_KEYS;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A paired contact receipt verifies the full order key at its destination.
+		if ( isset( $_GET['contact'], $_GET['contact_order'] ) && is_page() && get_permalink( get_queried_object_id() ) === PageUrls::page( 'contact' ) ) {
+			$keys[] = 'contact';
+			$keys[] = 'contact_order';
+		}
+
 		if ( \function_exists( 'is_account_page' ) && is_account_page() ) {
 			if ( is_wc_endpoint_url( 'orders' ) ) {
 				$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );

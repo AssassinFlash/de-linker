@@ -212,24 +212,12 @@ final class FormTest extends TestCase {
 		$_GET = array();
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );
 
-		$_GET            = array( Form::STATE_PARAM => 'receipt_pending' );
-		$pending_receipt = ( new Form() )->render();
-		$this->assertStringContainsString( 'linker-form-success', $pending_receipt );
-		$this->assertStringContainsString( 'Thank you. Your message is with the Linker team.', $pending_receipt );
-		$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $pending_receipt, 'An undecided receipt must not claim that the confirmation was omitted.' );
-		$this->assertStringNotContainsString( 'http-equiv="refresh"', $pending_receipt, 'Without the saved inquiry there is nothing later to follow.' );
-
-		$_GET = array( Form::STATE_PARAM => 'sent_no_receipt' );
-		$this->assertStringContainsString( 'We have not sent a confirmation email.', ( new Form() )->render() );
-
-		$_GET = array( Form::STATE_PARAM => 'sent' );
-		$sent = ( new Form() )->render();
-		$this->assertStringContainsString( 'role="status"', $sent );
-		$this->assertStringContainsString( 'linker-form-success woocommerce-message', $sent );
-		$this->assertStringContainsString( 'Send another message', $sent );
-		$this->assertStringContainsString( '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">', $sent, 'The receipt keeps the card, as the panel itself.' );
-		$this->assertStringContainsString( 'linker-contact-rail', $sent );
-		$this->assertStringNotContainsString( 'type="submit"', $sent, 'A sent message has one follow-up action, not another form.' );
+		foreach ( array( 'receipt_pending', 'sent', 'sent_no_receipt', 'saved_review' ) as $flag ) {
+			$_GET = array( Form::STATE_PARAM => $flag );
+			$html = ( new Form() )->render();
+			$this->assertStringNotContainsString( 'linker-form-success', $html );
+			$this->assertStringContainsString( 'name="message"', $html );
+		}
 
 		$_GET    = array( Form::STATE_PARAM => 'invalid' );
 		$invalid = ( new Form() )->render();
