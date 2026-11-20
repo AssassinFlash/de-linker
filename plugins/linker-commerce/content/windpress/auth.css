@@ -924,20 +924,6 @@
 /* ── The guest account page's own ground ───────────────────────────────── */
 body.woocommerce-account:not(.logged-in) .linker-account #container-content-account { padding: clamp(20px, 4vw, 48px) 1rem; }
 
-#tv-woo-b2b-checkout .linker-inquiry-success {
-	display: grid;
-	justify-items: center;
-	gap: var(--proto-space-5);
-	padding: var(--proto-space-7) var(--proto-space-4);
-	border: 1px solid var(--proto-line-journal);
-	border-radius: var(--proto-radius-panel);
-	background: var(--proto-canvas-white);
-	color: var(--proto-ink-deep);
-	text-align: center;
-}
-#tv-woo-b2b-checkout .linker-inquiry-success :is(h2, p) { margin: 0; }
-#tv-woo-b2b-checkout .linker-inquiry-success::before { display: none; }
-
 /* Replace the contact shortcode's literal palette with the site's tokens.
  * Desktop dimensions reproduce its previous utility classes. */
 #contact-form .linker-contact-form .linker-form-label {
@@ -975,8 +961,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	text-decoration: none;
 }
 #contact-form .linker-contact-form .linker-form-primary { justify-self: start; }
-.linker-inquiry-success .linker-form-primary,
-#tv-woo-b2b-checkout .linker-inquiry-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
+
 #contact-form .linker-contact-form :where(a, button, input, textarea):focus-visible,
 .linker-inquiry-success a:focus-visible {
 	outline: var(--proto-focus-ring);
@@ -1438,6 +1423,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	color: var(--proto-ink-deep);
 }
 #tv-woo-b2b-checkout .linker-inquiry-success :is(h1, h2, p) {
+	text-align: start;
 	margin: 0;
 }
 .linker-receipt-heading {
@@ -1471,6 +1457,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-size: var(--proto-size-lg);
 }
 #tv-woo-b2b-checkout .linker-receipt-action {
+	justify-self: start;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;

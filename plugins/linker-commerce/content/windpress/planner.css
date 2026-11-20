@@ -1195,7 +1195,8 @@
     .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
     .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
     .sc-configurator .sc-nav { gap: 5px; margin-bottom: 20px; }
-    .sc-configurator .sc-inquiry-stages li { min-height: 36px; padding: 7px 10px; font-size: 13px; }
+    .sc-configurator .sc-inquiry-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--proto-space-1); width: 100%; }
+    .sc-configurator .sc-inquiry-stages li { justify-content: center; min-width: 0; min-height: 36px; padding: var(--proto-space-2) var(--proto-space-1); font-size: 13px; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
     .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .sc-configurator .sc-direction-comparison :is(table, tbody) { display: block; }
     .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--proto-space-3) var(--proto-space-2); padding-block: var(--proto-space-4); }
