@@ -166,6 +166,33 @@ final class SelectionContextTest extends TestCase {
 	}
 
 	/**
+	 * A login return carries only the published product's canonical site URL.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_product_login_preserves_the_exact_product_language(): void {
+		$this->native_product_pair();
+		$account = 'https://site.test/my-account/';
+		$auth    = new \Linker\Commerce\Account\AuthTemplates();
+		WP_Mock::userFunction( 'wp_unslash' )->andReturnUsing( 'stripslashes' );
+		WP_Mock::userFunction( 'wc_get_page_permalink' )->with( 'myaccount' )->andReturn( $account );
+		$before = $_GET;
+		try {
+			foreach ( array( 'https://site.test/product/model/', 'https://site.test/de/produkt/modell/' ) as $url ) {
+				$_GET['redirect_to'] = $url;
+				$this->assertSame( $url, $auth->product_login_destination( $account ) );
+			}
+			foreach ( array( 'https://other.test/product/model/', 'https://site.test/products/', 'https://site.test/product/model/?next=elsewhere' ) as $url ) {
+				$_GET['redirect_to'] = $url;
+				$this->assertSame( $account, $auth->product_login_destination( $account ) );
+			}
+		} finally {
+			$_GET = $before;
+		}
+	}
+
+	/**
 	 * A same-slug language lookup must identify the object at the requested canonical URL.
 	 *
 	 * @runInSeparateProcess

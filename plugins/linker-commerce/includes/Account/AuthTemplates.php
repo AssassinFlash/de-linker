@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Contact\SelectionContext;
 use Linker\Commerce\Inquiry\AccountLink;
 
 /**
@@ -85,11 +86,29 @@ final class AuthTemplates {
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'wc_get_template', array( $this, 'template' ), 30, 2 );
+		add_filter( 'woocommerce_login_redirect', array( $this, 'product_login_destination' ) );
 		add_filter( 'seopress_titles_title', array( $this, 'document_title' ), 40 );
 		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 40 );
 		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 		add_action( 'template_redirect', array( $this, 'register_redirect' ) );
 		add_action( 'woocommerce_account_register_endpoint', array( $this, 'confirm_inquiry' ) );
+	}
+
+	/**
+	 * Resume the published product whose price the customer signed in to see.
+	 *
+	 * @param string $redirect Woo's native destination for other login forms.
+	 */
+	public function product_login_destination( string $redirect ): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Woo authenticated the login before invoking this filter.
+		$target = isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? wp_unslash( $_GET['redirect_to'] ) : '';
+		if ( '' === $target ) {
+			return $redirect;
+		}
+		$source = SelectionContext::normalize( array( 'source' => $target ) );
+		return 'product' === ( $source['type'] ?? '' ) && $source['source'] === $target
+			? $source['source']
+			: wc_get_page_permalink( 'myaccount' );
 	}
 
 	/**
