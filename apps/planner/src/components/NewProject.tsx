@@ -1385,7 +1385,7 @@ export function NewProject({
 									scope={session.query_scope}
 									disabled={busy || Boolean(intent.current)}
 									edit={edit}
-									intake={compareOnSubmit}
+									intake={Boolean(homeComparison)}
 								/>
 							)
 						}

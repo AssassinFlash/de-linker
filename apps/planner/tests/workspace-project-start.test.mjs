@@ -2132,6 +2132,12 @@ test("the bare configurator compares a retrofit and opens its Woo inquiry with n
 	const selector = 'select[name="system_scope"]';
 	await until(() => document.querySelector(selector));
 	const scope = document.querySelector(selector);
+	const equipment = scope.form.querySelector("details.sc-project-equipment");
+	assert.equal(equipment.open, false);
+	assert.equal(
+		equipment.querySelector('button[aria-pressed="true"]').textContent,
+		"Single system",
+	);
 	await act(async () => {
 		scope.value = "storage_addition";
 		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
