@@ -151,7 +151,7 @@ use Linker\I18n\Woo\Projection;
 				throw new RuntimeException( 'Translation metadata changed since backup.' );
 			}
 			// A partial copy edit cannot review all differences in a stale English source.
-			if ( 'adopt' === $pair['mode'] && ! $translator->current( State::POST, $en ) ) {
+			if ( ( 'adopt' === $pair['mode'] || ! empty( $pair['require_current'] ) ) && ! $translator->current( State::POST, $en ) ) {
 				throw new RuntimeException( 'Translation baseline is stale before reviewed copy adoption.' );
 			}
 			$locked = true;
@@ -207,7 +207,7 @@ use Linker\I18n\Woo\Projection;
 			$adopt( $de );
 		}
 		$valid = 'restore' === $pair['mode'] ? $read() === $pair['metadata_restore'] : $translator->current( State::POST, $en ) && $read() === $expected;
-		if ( ! $locked || ! $adopted || ! $valid ) {
+		if ( ! $locked || ! $adopted || ! $valid || ( isset( $pair['expected_metadata'] ) && $pair['expected_metadata'] !== $expected ) ) {
 			throw new RuntimeException( 'Cannot commit an unadopted reviewed pair.' );
 		}
 		return $query;
