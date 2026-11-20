@@ -7599,7 +7599,7 @@ msgstr "Speicher"
 
 #: build/planner/assets/planner.js:1
 msgid "Storage for existing PV"
-msgstr "Speicher für eine bestehende PV-Anlage"
+msgstr "PV-Speicher nachrüsten"
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:126

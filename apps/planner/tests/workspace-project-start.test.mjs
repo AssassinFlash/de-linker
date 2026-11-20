@@ -341,22 +341,42 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	if (rejectFirstMapping) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);
 		assert.equal(opened.length, 0);
-		await enter(byLabel("Value column"), "Load corrected before switching");
 		const language = document.createElement("a");
 		language.href = "/de/";
 		language.hreflang = "de";
 		language.lang = "de";
 		document.querySelector("header").append(language);
-		const click = new window.MouseEvent("click", {
-			bubbles: true,
-			cancelable: true,
-		});
-		await act(async () => language.dispatchEvent(click));
-		assert.equal(click.defaultPrevented, true);
+		async function languageBlocked() {
+			let blocked;
+			document.addEventListener(
+				"click",
+				(event) => {
+					blocked = event.defaultPrevented;
+					event.preventDefault();
+				},
+				{ once: true },
+			);
+			await act(async () =>
+				language.dispatchEvent(
+					new window.MouseEvent("click", { bubbles: true, cancelable: true }),
+				),
+			);
+			return blocked;
+		}
 		assert.equal(
-			byLabel("Value column").value,
-			"Load corrected before switching",
+			await languageBlocked(),
+			false,
+			"the saved import can reopen in another language",
 		);
+		const editedField =
+			rejectedProfile === "correct"
+				? field("profile_interval_minutes")
+				: byLabel("Value column");
+		const editedText =
+			rejectedProfile === "correct" ? "-1" : "Load corrected before switching";
+		await enter(editedField, editedText);
+		assert.equal(await languageBlocked(), true);
+		assert.equal(editedField.value, editedText);
 		await act(async () => root.unmount());
 		root = createRoot(fixture.element);
 		await mountHome();

@@ -176,10 +176,9 @@ export function NewProject({
 	const changeProfile = useCallback(
 		(patch: Partial<HomepageProfileForm>) => {
 			setProfileForm((current) => ({ ...current, ...patch }));
-			if (patch.mappingValid === undefined) {
-				setProfileError("");
-				if (profileCorrection) setEditedCorrection(true);
-			}
+			if (patch.mappingValid === undefined) setProfileError("");
+			if (profileCorrection && patch.mappingValid !== true)
+				setEditedCorrection(true);
 		},
 		[profileCorrection],
 	);
