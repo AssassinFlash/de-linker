@@ -28,7 +28,10 @@ for (const locale of ['en', 'de'] as const) {
 				.locator('a[href*="add-to-cart="]:visible')
 				.first()
 				.click();
-			// Follow the actual product link; do not normalize the URL in the test.
+			await expect(page).toHaveURL(
+				base + (locale === 'en' ? '/cart/' : '/de/loesungsentwurf/')
+			);
+			await page.locator('.wc-proceed-to-checkout a').click();
 			await expect(
 				page.locator('.linker-inquiry-line input.qty')
 			).toHaveValue('1');

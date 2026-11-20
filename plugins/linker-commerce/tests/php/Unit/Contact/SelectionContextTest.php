@@ -176,6 +176,7 @@ final class SelectionContextTest extends TestCase {
 		$account = 'https://site.test/my-account/';
 		$auth    = new \Linker\Commerce\Account\AuthTemplates();
 		WP_Mock::userFunction( 'wp_unslash' )->andReturnUsing( 'stripslashes' );
+		WP_Mock::userFunction( 'esc_url_raw' )->andReturnArg( 0 );
 		WP_Mock::userFunction( 'wc_get_page_permalink' )->with( 'myaccount' )->andReturn( $account );
 		$before = $_GET;
 		try {

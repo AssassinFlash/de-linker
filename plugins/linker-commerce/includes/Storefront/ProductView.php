@@ -378,13 +378,13 @@ final class ProductView {
 	}
 
 	/**
-	 * Woo adds the product to the session draft and opens the public request.
+	 * Woo adds the product to the session's editable solution draft.
 	 *
 	 * @param \WC_Product $product The product.
 	 * @return string The URL.
 	 */
 	private function cta_url( \WC_Product $product ): string {
-		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
+		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_cart_url() ) );
 	}
 
 	/**

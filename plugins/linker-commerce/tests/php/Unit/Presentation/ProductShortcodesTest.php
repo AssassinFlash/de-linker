@@ -1595,7 +1595,7 @@ final class ProductShortcodesTest extends TestCase {
 					: 'http://linker.test/products/',
 			)
 		);
-		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'http://linker.test/proforma-request/' ) );
+		WP_Mock::userFunction( 'wc_get_cart_url', array( 'return' => 'http://linker.test/cart/' ) );
 		WP_Mock::userFunction( 'wc_attribute_label', array( 'return' => static fn ( string $name ): string => $name ) );
 		// The availability line's delivery note reads the product's own
 		// shipping meta through Materials::logistics (no mode and no weight in

@@ -10,30 +10,90 @@
 	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
 	const submittingButtons = new WeakMap();
 
-	// The inquiry and Woo draft are separate forms. Unsaved edits and in-flight
-	// writes must both stop the inquiry from sending the previous server lines.
+	// The inquiry consumes Woo's server-side cart. Resume only when Woo returns
+	// the requested quantities, including the absence of rows removed with zero.
 	const inquiry = document.querySelector( '.linker-inquiry' );
 	const draftSurface = document.querySelector( '.linker-inquiry, #tv-storefront-cart' );
-	const draftBusy = () => Boolean( draftSurface?.querySelector( '.woocommerce-cart-form.processing' ) );
-	const draftChanged = () => [ ...( draftSurface?.querySelectorAll( '.woocommerce-cart-form input.qty' ) || [] ) ]
-		.some( ( quantity ) => quantity.value !== quantity.defaultValue );
-	const draftBlocked = () => draftBusy() || draftChanged();
+	const draftForm = () => draftSurface?.querySelector( '.woocommerce-cart-form' );
+	const quantities = ( form ) => Array.from( form?.querySelectorAll( 'input.qty' ) || [] );
 	const send = inquiry?.querySelector( '.linker-inquiry-form button[type="submit"]' );
-	const pending = draftSurface?.querySelector( '[data-inquiry-draft-pending]' );
-	const syncDraftState = () => {
+	const notice = draftSurface?.querySelector( '[data-inquiry-draft-pending]' );
+	let continuation;
+	function syncDraftState() {
+		const form = draftForm();
+		const busy = Boolean( form?.classList.contains( 'processing' ) );
 		if ( send ) {
-			send.disabled = draftBlocked();
+			send.disabled = busy;
 		}
 		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout a' ).forEach( ( link ) => {
-			link.setAttribute( 'aria-disabled', String( draftBlocked() ) );
-			if ( pending?.id ) {
-				link.setAttribute( 'aria-describedby', pending.id );
-			}
+			link.setAttribute( 'aria-disabled', String( busy ) );
 		} );
-		if ( pending ) {
-			pending.hidden = ! draftBlocked();
+		if ( ! continuation ) {
+			return;
 		}
-	};
+		const attempt = continuation;
+		if ( form === attempt.form ) {
+			if ( busy ) {
+				attempt.processing = true;
+			} else if ( attempt.processing ) {
+				// Woo unblocked the original form after a failed request.
+				continuation = null;
+				if ( notice ) notice.hidden = false;
+			}
+			return;
+		}
+		continuation = null;
+		const rows = quantities( form );
+		const saved = new Map( rows.map( ( input ) => [ input.name, Number( input.defaultValue ) ] ) );
+		// The customer can still edit quantities while draft verification runs.
+		const values = new Map( quantities( attempt.form ).map( ( input ) => [ input.name, input.value ] ) );
+		const matches = Array.from( values ).every( ( [ name, value ] ) =>
+			value !== '' && ( Number( value ) === 0 ? ! saved.has( name ) : saved.get( name ) === Number( value ) )
+		);
+		if ( ( form || draftSurface.querySelector( '.wc-empty-cart-message' ) ) && matches &&
+			rows.every( ( input ) => values.has( input.name ) ) ) {
+			attempt.resume();
+		} else {
+			if ( notice ) notice.hidden = false;
+			for ( const input of rows ) {
+				if ( values.has( input.name ) ) {
+					input.value = values.get( input.name );
+				}
+			}
+		}
+	}
+
+	function saveBeforeContinuing( event, resume ) {
+		const form = draftForm();
+		if ( ! form ) {
+			return false;
+		}
+		if ( continuation || form.classList.contains( 'processing' ) ) {
+			event.preventDefault();
+			return true;
+		}
+		const rows = quantities( form );
+		if ( ! rows.some( ( input ) => input.value !== input.defaultValue ) ) {
+			return false;
+		}
+		event.preventDefault();
+		for ( const input of rows ) {
+			input.required = true;
+			if ( ! input.reportValidity() ) {
+				input.focus();
+				return true;
+			}
+		}
+		continuation = { form, resume };
+		if ( notice ) notice.hidden = true;
+		// Woo records the clicked update button before routing a verified submit to AJAX.
+		const update = form.querySelector( 'button[name="update_cart"], input[type="submit"][name="update_cart"]' );
+		update.disabled = false;
+		update.click();
+		syncDraftState();
+		return true;
+	}
+
 	if ( draftSurface ) {
 		new MutationObserver( syncDraftState ).observe( draftSurface, {
 			childList: true,
@@ -41,18 +101,22 @@
 			attributes: true,
 			attributeFilter: [ 'class' ],
 		} );
-		draftSurface.addEventListener( 'input', syncDraftState );
-		draftSurface.addEventListener( 'change', syncDraftState );
+		const cancelVerification = ( event ) => {
+			if ( continuation?.form.contains( event.target ) ) {
+				continuation = null;
+			}
+		};
+		draftSurface.addEventListener( 'linker:draft-verification-cancelled', cancelVerification, true );
+		draftSurface.addEventListener( 'linker:protection', ( event ) => {
+			if ( [ 'failed', 'expired' ].includes( event.detail.state ) ) {
+				cancelVerification( event );
+			}
+		} );
 		draftSurface.addEventListener( 'click', ( event ) => {
-			if ( event.target.closest( '.wc-proceed-to-checkout a' ) && draftBlocked() ) {
-				event.preventDefault();
-				syncDraftState();
-				const update = draftSurface.querySelector( '[name="update_cart"]' );
-				if ( update && ! update.disabled ) {
-					update.focus();
-				} else {
-					pending?.focus();
-				}
+			const link = event.target.closest( '.wc-proceed-to-checkout a' );
+			if ( link && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey ) {
+				carryRetry( link, new URLSearchParams( window.location.search ).get( retryField ) );
+				saveBeforeContinuing( event, () => window.location.assign( link.href ) );
 			}
 		} );
 		syncDraftState();
@@ -123,10 +187,7 @@
 			if ( ! link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
 				return;
 			}
-			if ( draftBlocked() ) {
-				event.preventDefault();
-				syncDraftState();
-				inquiry.querySelector( '[name="update_cart"]' )?.focus();
+			if ( saveBeforeContinuing( event, () => ( link.isConnected ? link : inquiry.querySelector( '[data-inquiry-edit]' ) ).click() ) ) {
 				return;
 			}
 			carryRetry( link, retry );
@@ -244,10 +305,6 @@
 			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) ) {
 				return;
 			}
-			if ( form.matches( '.linker-inquiry-form' ) && draftBlocked() ) {
-				event.preventDefault();
-				return;
-			}
 			// The register card's step 1 is not a submission: the step script
 			// below opens step 2 instead, before this handler marks the form.
 			if ( form.matches( '[data-linker-register].is-split' ) && '1' === form.dataset.activeStep ) {
@@ -269,10 +326,17 @@
 				event.preventDefault();
 				return;
 			}
+			if ( form.matches( '.linker-inquiry-form' ) && saveBeforeContinuing( event, () => form.requestSubmit( send ) ) ) {
+				return;
+			}
 			// Verification waits on the original submit. Mark busy only when
 			// its verified resubmit reaches this native UI handler. The server
 			// still validates the proof; this marker grants no permission.
-			if ( window.linkerPublicProtectionConfig?.mode === 'enforce' && form.querySelector( '[data-linker-protected-action]' ) && form.dataset.linkerProtectionVerified !== 'true' ) {
+			const protection = window.linkerPublicProtectionConfig;
+			const marker = form.querySelector( '[data-linker-protected-action]' );
+			const nativeInquiry = marker?.dataset.linkerProtectedAction === 'inquiry' &&
+				( protection?.businessVerification === 'optional' || marker.dataset.linkerProtectionRecovery === 'true' );
+			if ( protection?.mode === 'enforce' && marker && ! nativeInquiry && form.dataset.linkerProtectionVerified !== 'true' ) {
 				return;
 			}
 			if ( 'submitting' === form.dataset.accountState ) {

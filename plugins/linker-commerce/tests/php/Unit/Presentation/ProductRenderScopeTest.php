@@ -116,7 +116,7 @@ final class ProductRenderScopeTest extends TestCase {
 		WP_Mock::userFunction( 'get_post_time' )->andReturn( 0 );
 		WP_Mock::userFunction( 'wc_get_product_visibility_term_ids' )->andReturn( array() );
 		WP_Mock::userFunction( 'wc_get_page_permalink' )->andReturn( 'http://linker.test/my-account/' );
-		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturn( 'http://linker.test/proforma-request/' );
+		WP_Mock::userFunction( 'wc_get_cart_url' )->andReturn( 'http://linker.test/cart/' );
 		WP_Mock::userFunction( 'add_query_arg' )->andReturnUsing( static fn ( mixed $first, mixed $second = null, mixed $third = null ): string => (string) ( is_array( $first ) ? $second : $third ) );
 		WP_Mock::userFunction( 'wp_unslash' )->andReturnUsing( static fn ( mixed $value ): mixed => $value );
 		WP_Mock::userFunction( 'sanitize_text_field' )->andReturnUsing( static fn ( string $value ): string => $value );

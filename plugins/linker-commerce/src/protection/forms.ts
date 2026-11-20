@@ -53,6 +53,13 @@ export function connectForms( root: ParentNode = document ): void {
 		const failed = () => {
 			status.hidden = false;
 			status.textContent = verificationFailedText();
+			if ( action === 'draft_write' ) {
+				form.dispatchEvent(
+					new Event( 'linker:draft-verification-cancelled', {
+						bubbles: true,
+					} )
+				);
+			}
 		};
 		widget.addEventListener( 'linker:protection', ( event ) => {
 			const state = ( event as CustomEvent< { state: string } > ).detail

@@ -101,7 +101,7 @@ final class AuthTemplates {
 	 */
 	public function product_login_destination( string $redirect ): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Woo authenticated the login before invoking this filter.
-		$target = isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? wp_unslash( $_GET['redirect_to'] ) : '';
+		$target = isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : '';
 		if ( '' === $target ) {
 			return $redirect;
 		}
