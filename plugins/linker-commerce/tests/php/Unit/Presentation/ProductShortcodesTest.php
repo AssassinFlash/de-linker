@@ -352,6 +352,23 @@ final class ProductShortcodesTest extends TestCase {
 		self::assertSame( $expected, $this->url( 'de' ) );
 	}
 
+	/** The guest can switch language on the sign-in page without detaching the receipt. */
+	public function test_signin_switch_keeps_the_guest_inquiry_claim(): void {
+		$this->page( 1037, 'http://linker.test/my-account/', array( 'de' => 6858 ) );
+		$this->permalink( 6858, 'http://linker.test/de/mein-konto/' );
+		$_SERVER['REQUEST_URI'] = '/my-account/?linker_inquiry=42&linker_key=wc_order_example';
+		$_GET                   = array(
+			'linker_inquiry' => '42',
+			'linker_key'     => 'wc_order_example',
+		);
+		$this->account_page     = true;
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$expected = 'http://linker.test/de/mein-konto/?linker_inquiry=42&linker_key=wc_order_example';
+		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'de' ) );
+		self::assertSame( $expected, $this->url( 'de' ) );
+	}
+
 	/**
 	 * A category page keeps paging; the query keys the visitor set travel with the link.
 	 */
