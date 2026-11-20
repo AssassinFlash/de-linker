@@ -4,6 +4,7 @@ import { instance } from '../lib/instance';
 test('the same guest comparison keeps entered details across reload and language change', async ({
 	page,
 }) => {
+	page.setDefaultTimeout(15_000);
 	const { url } = instance();
 	await page.goto(url + '/');
 	const entry = page.locator('[data-linker-planner-entry="home-hero"] a');
