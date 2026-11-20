@@ -129,6 +129,24 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( $source['jobs'], $this->permissions( $order->get_id() )['jobs'] );
 	}
 
+	/** Accept the native submission while Outbox storage is unavailable.
+	 *
+	 * @param string $email Customer destination.
+	 */
+	private function submit_before_outbox_recovery( string $email = self::TESTER ): WC_Order {
+		$unavailable = static function ( int $id, \WP_Post $post ): void {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
+				throw new \RuntimeException( 'fixture_queue_unavailable' );
+			}
+		};
+		add_action( 'wp_insert_post', $unavailable, 10, 2 );
+		try {
+			return $this->submit( $email );
+		} finally {
+			remove_action( 'wp_insert_post', $unavailable );
+		}
+	}
+
 	/**
 	 * Recover the original pending source once job storage returns, with current terminal states respected.
 	 *
@@ -139,17 +157,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 * @param string $disposition Native outcome before the next recovery.
 	 */
 	public function test_recover_saved_pending_receipt_only_for_an_active_accepted_order( string $disposition ): void {
-		$unavailable = static function ( int $id, \WP_Post $post ): void {
-			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
-				throw new \RuntimeException( 'fixture_queue_unavailable' );
-			}
-		};
-		add_action( 'wp_insert_post', $unavailable, 10, 2 );
-		try {
-			$order = $this->submit();
-		} finally {
-			remove_action( 'wp_insert_post', $unavailable );
-		}
+		$order = $this->submit_before_outbox_recovery();
 		$id    = $order->get_id();
 		$state = $this->permissions( $id );
 		self::assertSame( array(), $state['jobs'] );
@@ -253,6 +261,86 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$after = $this->permissions( $order->get_id() );
 		self::assertSame( $claim, ! empty( $after['jobs']['receipt']['delivered_at'] ) );
 		self::assertSame( $receipt, $after['jobs']['receipt']['id'] );
+	}
+
+	/**
+	 * The accepted source retains its customer acknowledgement while the queue is unavailable.
+	 *
+	 * @testWith ["claim", true]
+	 *           ["quotation-issued", true]
+	 *           ["completed", true]
+	 *           ["transfer", false]
+	 *           ["email", false]
+	 *           ["cancelled", false]
+	 * @param string $change Native change before the first receipt job.
+	 * @param bool   $eligible Whether the original customer may still receive the acknowledgement.
+	 */
+	public function test_customer_changes_before_first_receipt_handoff( string $change, bool $eligible ): void {
+		$customer = $this->customer();
+		$this->as_user( 0 );
+		$order = $this->submit_before_outbox_recovery( $customer->get_email() );
+		$id    = $order->get_id();
+		self::assertSame( array(), $this->permissions( $id )['jobs'] );
+		if ( 'claim' === $change ) {
+			$saved = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the request around native order-key validation.
+			$_GET  = array(
+				'linker_inquiry' => $id,
+				'linker_key'     => $order->get_order_key(),
+			);
+			try {
+				( new \Linker\Commerce\Inquiry\AccountLink() )->claim( $customer->get_id() );
+			} finally {
+				$_GET = $saved;
+			}
+		} elseif ( 'transfer' === $change ) {
+			$order->set_customer_id( $customer->get_id() );
+			$order->save();
+		} elseif ( 'email' === $change ) {
+			$order->set_billing_email( 'changed@example.test' );
+			$order->save();
+		} else {
+			$order->update_status( $change );
+		}
+		if ( in_array( $change, array( 'claim', 'transfer', 'email' ), true ) ) {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
+			self::assertSame( 'invalidated', $this->permissions( $id )['status'] );
+		}
+		( new Queue() )->recover();
+		$jobs = $this->permissions( $id )['jobs'];
+		if ( ! $eligible ) {
+			self::assertArrayNotHasKey( 'receipt', $jobs );
+			return;
+		}
+		self::assertArrayHasKey( 'receipt', $jobs );
+		$receipt = $jobs['receipt']['id'];
+		if ( 'claim' === $change ) {
+			$claimed = wc_get_order( $id );
+			self::assertInstanceOf( WC_Order::class, $claimed );
+			$message = ( new \Linker\Commerce\Mail\JobStore() )->load( $receipt );
+			self::assertNotNull( $message );
+			self::assertStringContainsString( $claimed->get_view_order_url(), html_entity_decode( $message['message']->body ) );
+		}
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
+		( new Queue() )->recover();
+		$final = $this->permissions( $id );
+		self::assertSame( $receipt, $final['jobs']['receipt']['id'] );
+		self::assertNotEmpty( $final['jobs']['receipt']['delivered_at'] );
+	}
+
+	/** A completed Woo order without a received inquiry cannot originate a fixed receipt. */
+	public function test_completed_order_without_inquiry_acceptance_does_not_generate_a_receipt(): void {
+		$order = new WC_Order();
+		$order->set_billing_email( self::TESTER );
+		$order->set_payment_method( \Linker\Commerce\Inquiry\InquiryGateway::ID );
+		$order->set_status( 'completed' );
+		$order->save();
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
+		self::assertSame( array(), $this->permissions( $order->get_id() ) );
 	}
 
 	/** Return typed local service evidence for the actual request binding.

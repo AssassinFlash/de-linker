@@ -38,6 +38,9 @@ final class SendAuthorization {
 	 */
 	public static function defer( WC_Order $order ): bool {
 		$order->read_meta_data( true );
+		if ( ! $order->has_status( Statuses::RECEIVED ) && ! self::intake_awaits_receipt( $order ) ) {
+			return true;
+		}
 		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
 			return true;
 		}
@@ -603,6 +606,14 @@ final class SendAuthorization {
 		return empty( $state['jobs']['receipt'] ) && in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending', 'review_hold' ), true ) && self::receipt_source( $order, $state );
 	}
 
+	/** Native intake recorded an acknowledgement that has not reached Outbox.
+	 *
+	 * @param WC_Order $order Native inquiry.
+	 */
+	private static function intake_awaits_receipt( WC_Order $order ): bool {
+		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( 'assessment_pending', 'review_hold' ), true );
+	}
+
 	/**
 	 * Check the accepted native destination and explicit holds independently of content scoring.
 	 *
@@ -610,8 +621,7 @@ final class SendAuthorization {
 	 * @param array<string,mixed> $state Stored permissions.
 	 */
 	public static function receipt_source( WC_Order $order, array $state ): bool {
-		$statuses = ! empty( $state['jobs']['receipt']['fixed'] ) ? array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) : array( Statuses::RECEIVED );
-		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( $statuses ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
+		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
 			return false;
 		}
 		$snapshot = Queue::data( $order )['snapshot'] ?? array();
@@ -622,18 +632,21 @@ final class SendAuthorization {
 			return false;
 		}
 		$original_owner = $snapshot['account']['id'] ?? null;
-		if ( $original_owner !== $order->get_customer_id() && ( 0 !== $original_owner || empty( $state['jobs']['receipt']['fixed'] ) || ! \Linker\Commerce\Inquiry\AccountLink::claimed_by_customer( $order ) ) ) {
+		if ( $original_owner !== $order->get_customer_id() && ( 0 !== $original_owner || ! \Linker\Commerce\Inquiry\AccountLink::claimed_by_customer( $order ) ) ) {
 			return false;
 		}
 		$status = $state['status'] ?? '';
 		if ( 'invalidated' === $status ) {
-			return ! empty( $state['jobs']['receipt']['fixed'] ) && ! NotificationHold::held( $order );
+			$receipt_due = ! empty( $state['jobs']['receipt']['fixed'] ) || self::intake_awaits_receipt( $order );
+			if ( ! $receipt_due || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) {
+				return false;
+			}
 		}
 		if ( 'manual' === $status ) {
 			$hold = $order->get_meta( NotificationHold::META );
 			return is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || ( ! empty( $state['jobs']['receipt']['fixed'] ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
 		}
-		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
+		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal', 'invalidated' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
 	}
 
 	/**
