@@ -319,8 +319,11 @@ async def assess(
     started = time.monotonic()
     deadline = started + body.remaining_seconds
     phase = "primary"
+    phase_started = started
     evidence: dict[str, Any] = {"primary": None, "escalation": None}
-    stats = {name: {"attempts": 0, "calls": [], "usage": {}} for name in evidence}
+    stats: dict[str, dict[str, Any]] = {
+        name: {"attempts": 0, "calls": [], "usage": {}} for name in evidence
+    }
     result = undetermined("missing_credentials")
     try:
         async with asyncio.timeout_at(
@@ -349,6 +352,7 @@ async def assess(
                     "insufficient_confidence",
                 }:
                     phase = "escalation"
+                    phase_started = time.monotonic()
                     second_key = (
                         _key("deepseek") if escalation_key is None else escalation_key
                     )
@@ -411,7 +415,19 @@ async def assess(
         result = undetermined(
             "deadline"
         )  # A cancellation-resistant late answer cannot grant permission.
-    if result["reason"] not in {"classified", "escalated"}:
+    if result["reason"] == "deadline":
+        log.warning(
+            "inquiry assessment: deadline source=%s:%d snapshot=%s phase=%s "
+            "phase_seconds=%.3f dispatched=%d completed=%d",
+            body.binding.purpose,
+            body.binding.record_id,
+            body.binding.snapshot_sha256,
+            phase,
+            time.monotonic() - phase_started,
+            stats[phase]["attempts"],
+            len(stats[phase]["calls"]),
+        )
+    elif result["reason"] not in {"classified", "escalated"}:
         log.warning("inquiry assessment: %s", result["reason"])
     return {
         **result,
