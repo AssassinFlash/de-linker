@@ -178,7 +178,7 @@ final class Checkout {
 			return;
 		}
 		$guest       = 0 === $order->get_customer_id();
-		$held        = \Linker\Commerce\Mail\NotificationHold::held( $order );
+		$individual  = 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) && \Linker\Commerce\Mail\NotificationHold::held( $order );
 		$preliminary = '' !== $order->get_meta( \Linker\Commerce\Planning\Context::PROJECT_META );
 		$html        = strtr(
 			\Linker\Commerce\Presentation\Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/received.html' ),
@@ -187,11 +187,11 @@ final class Checkout {
 				'{{number}}'         => esc_html( sprintf( __( 'Inquiry #%s', 'linker-commerce' ), $order->get_order_number() ) ),
 				'{{next}}'           => esc_html__( 'Next steps', 'linker-commerce' ),
 				'{{request_id}}'     => $preliminary ? esc_attr( (string) $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST ) ) : '',
-				'{{title}}'          => $held && ! $preliminary ? esc_html__( 'Inquiry saved for review', 'linker-commerce' ) : esc_html__( 'Inquiry received', 'linker-commerce' ),
-				'{{promise}}'        => $held ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
+				'{{title}}'          => $individual ? esc_html__( 'Inquiry saved for review', 'linker-commerce' ) : esc_html__( 'Inquiry received', 'linker-commerce' ),
+				'{{promise}}'        => $individual ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
 				'{{url}}'            => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
 				'{{action}}'         => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
-				'{{receipt_notice}}' => $held ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( '' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META )
+				'{{receipt_notice}}' => $individual ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( 'omitted' === ReceiptLimit::delivery_state( $order )
 					? esc_html__( 'We have not sent a confirmation email.', 'linker-commerce' ) : '' ),
 			)
 		);

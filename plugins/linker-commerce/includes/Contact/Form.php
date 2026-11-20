@@ -301,8 +301,7 @@ final class Form {
 			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'grouped' => $this->notice( 'invalid', __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
-			'receipt_pending' => $this->receipt_pending_notice(),
-			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
+			'receipt_pending', 'sent' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			'throttled' => $this->notice( 'invalid', __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'verification_failed' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
@@ -343,28 +342,6 @@ final class Form {
 			return null;
 		}
 		return $order;
-	}
-
-	/**
-	 * A saved message whose confirmation email has not been decided.
-	 */
-	private function receipt_pending_notice(): string {
-		$notice = $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) );
-		$order  = $this->receipt_order();
-		if ( ! $order instanceof \WC_Order ) {
-			return $notice;
-		}
-		$url = add_query_arg(
-			array(
-				self::STATE_PARAM => 'receipt_pending',
-				self::ORDER_PARAM => $order->get_order_key(),
-			),
-			$this->current_url()
-		);
-		// Two seconds is inside the browser suite's 15-second expect timeout and
-		// shorter than the ten-second assessment window (Inquiry\Assessment\Queue::WAIT_SECONDS),
-		// so the handoff result appears without another customer action.
-		return '<meta http-equiv="refresh" content="2;url=' . esc_url( $url ) . '#' . esc_attr( self::ANCHOR ) . '" />' . $notice;
 	}
 
 	/**

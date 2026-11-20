@@ -5068,12 +5068,8 @@ msgstr ""
 #. translators: %s is the native inquiry number saved for this browser.
 #: includes/Protection/IntakeAdmin.php:149
 #, php-format
-msgid ""
-"Your inquiry #%s is saved and waiting for review. We have not sent a "
-"confirmation email."
-msgstr ""
-"Ihre Anfrage Nr. %s ist gespeichert und wartet auf die Prüfung. Wir haben "
-"keine Bestätigungs-E-Mail versendet."
+msgid "Your inquiry #%s is saved and waiting for review."
+msgstr "Ihre Anfrage Nr. %s ist gespeichert und wartet auf die Prüfung."
 
 #: includes/Protection/IntakeAdmin.php:164
 msgid "Review class"

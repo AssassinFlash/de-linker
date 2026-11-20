@@ -66,7 +66,7 @@ final class NotificationHold {
 		$order    = $order_id > 0 ? wc_get_order( $order_id ) : false;
 		if ( $order instanceof WC_Order ) {
 			$order->read_meta_data( true );
-			return self::held( $order );
+			return self::held( $order ) && ! \Linker\Commerce\Inquiry\Assessment\SendAuthorization::held_receipt_allowed( $order, $job );
 		}
 		return false;
 	}

@@ -24,7 +24,7 @@ ob_start();
 do_action( 'woocommerce_before_customer_login_form' );
 $auth_notices    = (string) ob_get_clean();
 $registration    = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
-$register_url    = AuthTemplates::register_url();
+$register_url    = \Linker\Commerce\Inquiry\AccountLink::continue_at( AuthTemplates::register_url() );
 $brand_logo      = plugins_url( 'assets/linker-logo-wordmark.webp', dirname( __DIR__, 3 ) . '/linker-commerce.php' );
 $brand_check     = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 $brand_documents = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
@@ -84,7 +84,7 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 					<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 						<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
 						<label for="username"><?php esc_html_e( 'Username or email address', 'woocommerce' ); ?>&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text"><?php esc_html_e( 'Required', 'woocommerce' ); ?></span></label>
-						<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="username" id="username" autocomplete="username" value="<?php echo ( ! empty( $_POST['username'] ) && is_string( $_POST['username'] ) ) ? esc_attr( wp_unslash( $_POST['username'] ) ) : ''; ?>" required aria-required="true" /><?php // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Woo's own repopulation of its login field, escaped on print. ?>
+						<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="username" id="username" autocomplete="username" value="<?php echo ( ! empty( $_POST['username'] ) && is_string( $_POST['username'] ) ) ? esc_attr( wp_unslash( $_POST['username'] ) ) : esc_attr( \Linker\Commerce\Inquiry\AccountLink::email() ); ?>" required aria-required="true" /><?php // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Woo's own repopulation of its login field, escaped on print. ?>
 					</p>
 					<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 						<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>

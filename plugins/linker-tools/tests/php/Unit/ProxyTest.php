@@ -964,7 +964,7 @@ final class ProxyTest extends TestCase {
 				array(
 					'after'   => 1,
 					'email'   => 'maria@example.test',
-					'receipt' => true,
+					'receipt' => null,
 				),
 			),
 			$data['contacts']

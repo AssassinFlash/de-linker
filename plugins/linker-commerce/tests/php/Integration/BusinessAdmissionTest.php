@@ -460,7 +460,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$first                 = $this->post( 'contact' );
 		$first['linker_proof'] = '';
-		$this->assertSame( 'saved_review', ( new ContactHandler() )->process( $first ) );
+		$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $first ) );
 		$orders = wc_get_orders( array( 'billing_email' => $first['email'] ) );
 		$this->assertIsArray( $orders );
 		$order = $orders[0];
@@ -504,7 +504,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$this->assertCount( 1, $orders );
 			$order = $orders[0];
 			$order->read_meta_data( true );
-			$this->assertSame( 'assessment_pending', (string) $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+			self::fixed_receipt_job( $order );
 			$this->later(
 				static function () use ( $order ): void {
 					$order->delete( true );
@@ -541,7 +541,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( $orders );
 		$this->assertCount( 1, $orders );
-		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array( self::fixed_receipt_job( $orders[0] ) ), self::mail_jobs_after( $marker ) );
 	}
 
 	/**
@@ -929,9 +929,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Optional customer receipt is fixed; every actual message retains team notification.
+	 * Accepted inquiries use the fixed receipt budget and retain the original text for the team.
 	 */
-	public function test_target_receipt_cap_retains_normal_business_and_complete_authorized_receipts(): void {
+	public function test_target_receipt_cap_preserves_business_and_limits_fixed_acknowledgements(): void {
 		$target = 'same-target-' . self::tag() . '@example.test';
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
@@ -946,7 +946,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ), 'The receipt stays undecided until the background verdict.' );
+			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$found = wc_get_orders(
 				array(
 					'billing_email' => $target,
@@ -963,20 +963,24 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$this->assertCount( 1, $matched );
 			$current = $matched[0];
 			$current->read_meta_data( true );
-			$this->assertSame( 'assessment_pending', (string) $current->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-			$this->assertSame( array(), self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
+			$expected = 2 === $i ? array() : array( self::fixed_receipt_job( $current ) );
+			$this->assertSame( $expected, self::mail_jobs_after( $marker ) );
 			$this->authorization->drain();
 			$current->read_meta_data( true );
-			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'sent', ContactHandler::receipt_state( $current ), 'Receipt admission follows the background verdict.' );
+			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'receipt_pending', ContactHandler::receipt_state( $current ), 'Queued mail waits for delivery.' );
 			$jobs = array_map( static fn ( int $id ) => $store->load( $id ), self::mail_jobs_after( $marker ) );
 			$this->assertCount( 2 === $i ? 1 : 2, $jobs );
 			foreach ( $jobs as $job ) {
 					$this->assertNotNull( $job );
 				if ( str_contains( $job['message']->subject, 'Your inquiry' ) ) {
-					$this->assertStringContainsString( 'InstallerFixtureName', $job['message']->body );
-					$this->assertStringContainsString( 'Please quote three compatible inverters.', $job['message']->body );
-					$this->assertStringContainsString( 'https://example.test/product', $job['message']->body );
+					$this->assertStringNotContainsString( 'InstallerFixtureName', $job['message']->body );
+					$this->assertStringNotContainsString( 'Please quote three compatible inverters.', $job['message']->body );
+					$this->assertStringNotContainsString( 'https://example.test/product', $job['message']->body );
 				}
+			}
+			if ( $i < 2 ) {
+				self::deliver_fixed_receipt( $current );
+				$this->assertSame( 'sent', ContactHandler::receipt_state( $current ) );
 			}
 		}
 		$orders = wc_get_orders( array( 'billing_email' => $target ) );
@@ -992,9 +996,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Login succeeds normally; only repeated failed use needs a scoped proof.
+	 * Both Genie handoffs distinguish an exhausted receipt allowance from a recoverable journal.
 	 */
-	public function test_genie_native_handoffs_report_all_suppressed_receipts(): void {
+	public function test_genie_native_handoffs_report_receipt_limits_and_recover_the_original(): void {
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		foreach ( array( 'contact', 'inquiry' ) as $door ) {
@@ -1020,7 +1024,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Exercise the existing native Genie handoff constants.
 				$result = apply_filters( 'contact' === $door ? \Linker\Commerce\Genie\Module::CONTACT_FILTER : \Linker\Commerce\Genie\Module::INQUIRY_FILTER, null, $payload );
 				$this->assertIsArray( $result );
-				$this->assertFalse( $result['receipt'] );
+				$this->assertSame( 'target_cap' === $reason ? false : null, $result['receipt'] );
 				$order = wc_get_order( $result['order'] );
 				$this->assertInstanceOf( WC_Order::class, $order );
 				$this->later(
@@ -1029,11 +1033,17 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					}
 				);
 				$this->assertSame( 'inquiry-received', $order->get_status() );
-				$this->assertSame( 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->assertSame( 'target_cap' === $reason ? $reason : 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				if ( 'unavailable' === $reason ) {
+					$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+					delete_option( Ledger::OPTION );
+					\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
+					self::fixed_receipt_job( $order );
+				}
 				$this->authorization->drain();
 				$order->read_meta_data( true );
-				$this->assertSame( $reason, $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-				$this->assertCount( 1, self::mail_jobs_after( $marker ), 'Only the normal team notice is queued.' );
+				$this->assertSame( 'target_cap' === $reason ? $reason : '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->assertCount( 'target_cap' === $reason ? 1 : 2, self::mail_jobs_after( $marker ) );
 			}
 		}
 	}

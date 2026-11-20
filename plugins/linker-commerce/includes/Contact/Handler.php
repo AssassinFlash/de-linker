@@ -121,7 +121,7 @@ final class Handler {
 			return Outcome::contact_state( (string) $order->get_error_code() );
 		}
 		$this->last_order = $order;
-		if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
 			return 'saved_review';
 		}
@@ -129,39 +129,16 @@ final class Handler {
 	}
 
 	/**
-	 * What the confirmation may claim about the optional receipt.
-	 *
-	 * `assessment_pending` has not been decided, so it is neither a sent receipt
-	 * nor an omission. A later handoff that records `daily_cap` is an omission.
+	 * Contact confirmation state for the saved inquiry.
 	 *
 	 * @param WC_Order $order Saved contact inquiry.
 	 */
 	public static function receipt_state( WC_Order $order ): string {
-		$order->read_meta_data( true );
-		$skipped = (string) $order->get_meta( ReceiptLimit::SKIPPED_META );
-		if ( 'assessment_pending' === $skipped ) {
-			// Under enforce the receipt budget decides at the assessment handoff
-			// (SendAuthorization::jobs), so this first page cannot guess and stays
-			// receipt_pending. Outside enforce the legacy site counter is already
-			// final, and a spent allowance can say so on the first page instead
-			// of waiting for a later reload to discover daily_cap.
-			return self::receipt_allowance_exhausted() ? 'sent_no_receipt' : 'receipt_pending';
-		}
-		return '' === $skipped ? 'sent' : 'sent_no_receipt';
-	}
-
-	/**
-	 * Whether the site-wide public receipt allowance is already spent.
-	 *
-	 * Enforce mode decides this through the separate receipt budget at handoff,
-	 * so this peek must not guess that outcome.
-	 */
-	private static function receipt_allowance_exhausted(): bool {
-		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
-			return false;
-		}
-		$spent = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
-		return is_int( $spent ) && $spent >= ReceiptLimit::DAILY_CAP;
+		return match ( ReceiptLimit::delivery_state( $order ) ) {
+			'sent'    => 'sent',
+			'omitted' => 'sent_no_receipt',
+			default   => 'receipt_pending',
+		};
 	}
 
 	/**

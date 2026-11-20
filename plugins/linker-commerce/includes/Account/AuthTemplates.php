@@ -181,7 +181,7 @@ final class AuthTemplates {
 			return;
 		}
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own account permalink.
-		\wp_safe_redirect( \wc_get_page_permalink( 'myaccount' ) );
+		\wp_safe_redirect( \Linker\Commerce\Inquiry\AccountLink::destination( \wc_get_page_permalink( 'myaccount' ), get_current_user_id() ) );
 		exit;
 	}
 

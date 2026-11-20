@@ -459,7 +459,7 @@ export function HeroConversation( {
 		onConversation( thread.length > 0 );
 	}, [ thread.length, onConversation ] );
 
-	const sent = useCallback( ( email: string, receipt: boolean ) => {
+	const sent = useCallback( ( email: string, receipt: boolean | null ) => {
 		const after = turnAt.current;
 		setContacts( ( known ) =>
 			known.some( ( card ) => card.after === after )
@@ -1035,9 +1035,7 @@ export function HeroConversation( {
 												<ContactSent
 													key={ card.email }
 													email={ card.email }
-													receipt={
-														false !== card.receipt
-													}
+													receipt={ card.receipt }
 												/>
 											) )
 									: null }

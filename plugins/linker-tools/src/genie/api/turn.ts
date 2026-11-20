@@ -359,7 +359,7 @@ export interface SentContact {
 	after: number;
 	email: string;
 	/** False when the site's receipt cap held the customer's receipt back. */
-	receipt?: boolean;
+	receipt?: boolean | null;
 }
 
 /**

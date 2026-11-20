@@ -280,7 +280,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'normal', $state['status'] );
-		self::assertSame( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertEqualsCanonicalizing( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
 		self::assertCount( 2, self::mail_jobs_after( $before ) );
 		$jobs = $state['jobs'];
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
@@ -503,7 +503,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		self::assertSame( 2, $attempts );
 	}
 
-	/** Unknown and malicious classification retain saved debt without mail or receipt spend.
+	/** An unresolved or malicious content verdict creates no team job or additional mail charge.
 	 *
 	 * @dataProvider withheld_decisions
 	 * @param string $decision Typed classifier decision.
@@ -545,7 +545,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		self::assertIsArray( $state );
 		self::assertSame( $decision, $state['verdict']['decision'] );
 		self::assertSame( 'malicious' === $decision ? 'quarantined' : 'pending', $state['status'] );
-		self::assertEmpty( $state['jobs'] ?? array() );
+		self::assertSame( $marker, self::fixed_receipt_job( $order ) );
 		self::assertSame( $marker, self::newest_mail_job() );
 		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
 		self::assertSame( $receipts, get_option( Ledger::OPTION ) );

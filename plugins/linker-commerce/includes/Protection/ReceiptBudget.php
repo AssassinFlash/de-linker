@@ -30,8 +30,9 @@ final class ReceiptBudget {
 	 * @param string|string[] $email Validated native recipient or frozen To list.
 	 * @param int|string      $order_id Native source reference.
 	 * @param string          $kind Native source kind.
+	 * @param bool            $spend Charge this source or only check current availability.
 	 */
-	public static function reason( string|array $email, int|string $order_id, string $kind = 'inquiry' ): string {
+	public static function reason( string|array $email, int|string $order_id, string $kind = 'inquiry', bool $spend = true ): string {
 		$subjects = array();
 		if ( is_string( $email ) ) {
 			// Existing callers keep their exact single-target identity/fingerprint.
@@ -65,14 +66,14 @@ final class ReceiptBudget {
 		$id           = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-a' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
 		$fp           = hash_hmac( 'sha256', $subject . '|' . $kind . '|' . $order_id, wp_salt( 'nonce' ) );
 		$ledger       = new Ledger();
-		$permit       = $ledger->reserve(
+		$permit       = $spend ? $ledger->reserve(
 			$id,
 			$fp,
 			$allowances,
 			60,
 			array(),
 			'customer_receipt'
-		);
+		) : $ledger->availability( $allowances );
 		if ( is_wp_error( $permit ) ) {
 			$data = $permit->get_error_data();
 			if ( 'linker_admission_quota' !== $permit->get_error_code() || ! is_array( $data ) ) {
@@ -80,7 +81,7 @@ final class ReceiptBudget {
 			}
 			return 'receipt_site_day' === ( $data['dimension'] ?? '' ) ? 'daily_cap' : 'target_cap';
 		}
-		if ( 'completed' === $permit['status'] ) {
+		if ( ! $spend || 'completed' === $permit['status'] ) {
 			return '';
 		}
 		if ( is_wp_error( $ledger->dispatch( $id, $fp ) ) ) {

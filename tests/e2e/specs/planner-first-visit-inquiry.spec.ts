@@ -69,16 +69,13 @@ function receiptDelivery(orderId: number): string {
 				'status' => \ActionScheduler_Store::STATUS_PENDING, 'per_page' => 1
 			]);
 			foreach ($actions as $action_id => $action) {
-				if ($action->get_schedule()->get_date()->getTimestamp() <= time()) {
+				$schedule = $action->get_schedule();
+				if ($schedule instanceof \ActionScheduler_NullSchedule || $schedule->get_date()->getTimestamp() <= time()) {
 					\ActionScheduler_QueueRunner::instance()->process_action($action_id, 'customer inquiry receipt');
 				}
 			}
 		};
 		$state = $read();
-		if ('pending' === ($state['status'] ?? '')) {
-			$run_due(\Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, $order->get_id());
-			$state = $read();
-		}
 		$job = $state['jobs']['receipt'] ?? [];
 		if (!empty($job['id']) && empty($job['delivered_at'])) {
 			$run_due(\Linker\Commerce\Mail\Outbox::HOOK, $job['id']);
@@ -266,6 +263,8 @@ for (const lang of ['en', 'de'] as const) {
 			);
 			expect(delivered).toHaveLength(1);
 			expect(delivered[0]!.subject).toContain(result.number);
+			expect(delivered[0]!.html).not.toContain('E2E First Guest');
+			if (message) expect(delivered[0]!.html).not.toContain(message);
 			expect(
 				delivered[0]!.html
 					.replaceAll('&amp;', '&')

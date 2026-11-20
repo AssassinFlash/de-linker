@@ -333,6 +333,18 @@ final class Outbox {
 			return false;
 		}
 
+		$receipt = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::charge_receipt( $message, $job_id );
+		if ( '' !== $receipt ) {
+			$this->throttle->release( $now, $transport, $message->category );
+			$this->jobs->resolve_attempt( $job_id, $attempt_token );
+			if ( 'unavailable' === $receipt ) {
+				$this->schedule( $job_id, $now + self::RETRY_DELAYS[0] );
+			} elseif ( in_array( $receipt, array( 'target_cap', 'daily_cap' ), true ) ) {
+				$this->jobs->delete( $job_id );
+			}
+			return false;
+		}
+
 		$this->delivering = true;
 		$this->error      = '';
 		$this->internal   = $message->is_internal();

@@ -179,8 +179,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 			$this->assertSame( '', $order->get_meta( SelectionContext::META ) );
 		}
 		$order->read_meta_data( true );
-		$this->assertSame( 'assessment_pending', (string) $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-		$this->assertCount( 0, self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
+		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
 		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 2, $jobs );
@@ -200,8 +199,8 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		}
 		$this->assertTrue( $team_found );
 		$order->read_meta_data( true );
-		$this->assertSame( 'sent', Handler::receipt_state( $order ), 'A normal verdict admits the receipt before a retry can report it.' );
-		$this->assertSame( 'sent', ( new Handler() )->process( $post ), 'Same logical retry recovers the same native record.' );
+		$this->assertSame( 'receipt_pending', Handler::receipt_state( $order ), 'A queued confirmation has no delivery witness.' );
+		$this->assertSame( 'receipt_pending', ( new Handler() )->process( $post ), 'Same logical retry recovers the same native record.' );
 		$again = wc_get_orders(
 			array(
 				'billing_email' => $post['email'],

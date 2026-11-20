@@ -31,6 +31,44 @@ final class Ledger {
 	 */
 	public function __construct( private mixed $clock = null ) {}
 
+	/** Check today's remaining allowances without reserving an operation.
+	 *
+	 * @param Allowance[] $allowances Current server-selected limits.
+	 * @return array<string,mixed>|WP_Error Empty when room is currently available.
+	 */
+	public function availability( array $allowances ): array|WP_Error {
+		return $this->edit(
+			static function ( array $state, int $now ) use ( $allowances ): array|WP_Error {
+				foreach ( $allowances as $allowance ) {
+					$error = self::quota( $state, $allowance, $now );
+					if ( $error ) {
+						return $error;
+					}
+				}
+				return array();
+			}
+		);
+	}
+
+	/** Return the refusal for this allowance in the current or prospective ledger state.
+	 *
+	 * @param array<string,mixed> $state Current or prospective allowance buckets.
+	 * @param Allowance           $allowance Limit to check.
+	 * @param int                 $now Unix time.
+	 */
+	private static function quota( array $state, Allowance $allowance, int $now ): ?WP_Error {
+		$used = (int) ( $state['buckets'][ $allowance->key( $now ) ]['used'] ?? 0 );
+		return $used + $allowance->units > $allowance->capacity
+			? self::error(
+				'quota',
+				array(
+					'dimension'   => $allowance->name,
+					'retry_after' => self::retry( $state, $allowance, $now ),
+				)
+			)
+			: null;
+	}
+
 	/**
 	 * Reserve all dimensions or none, preserving a replay's original outcome.
 	 *
@@ -115,15 +153,10 @@ final class Ledger {
 						'end'   => $allowance->ends( $now ),
 						'owner' => $allowance->owner(),
 					);
-					if ( (int) $bucket['used'] + $allowance->units > $allowance->capacity ) {
+					$error  = self::quota( $candidate, $allowance, $now );
+					if ( $error ) {
 						self::event( $state, $now, $purpose, 'quota', $allowance->name );
-						return self::error(
-							'quota',
-							array(
-								'dimension'   => $allowance->name,
-								'retry_after' => self::retry( $state, $allowance, $now ),
-							)
-						);
+						return $error;
 					}
 					$bucket['used']              += $allowance->units;
 					$bucket['name']               = $allowance->name;

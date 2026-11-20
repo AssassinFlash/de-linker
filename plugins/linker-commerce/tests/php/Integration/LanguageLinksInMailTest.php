@@ -134,7 +134,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	 */
 	public function test_front_end_inquiry_receipt_links_follow_the_recorded_language(): void {
 		$this->ensure_languages();
-		$order = $this->german_inquiry();
+		$order = $this->inquiry_in_locale();
 
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
@@ -146,13 +146,14 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 			}
 		);
 		$email->trigger( $order->get_id(), $order );
-		$this->assertSame( array(), $this->to_address( (string) $order->get_billing_email() ), 'Saved inquiry waits for a bound normal verdict.' );
-		$this->authorization->process( $order, true );
+		$this->assertSame( array(), $this->deliveries(), 'Rendering the queued receipt has not delivered it.' );
+		$this->deliver_fixed_receipt( $order );
 
-		$messages = $this->to_address( (string) $order->get_billing_email() );
+		$messages = $this->deliveries();
 		$this->assertCount( 1, $messages, 'One German receipt.' );
+		$this->assertSame( array( self::TESTER ), $messages[0]['recipients'] );
 		$this->assertSame( 'Ihre Anfrage #' . $order->get_order_number() . ' ist eingegangen', $messages[0]['subject'] );
-		$this->assertStringContainsString( 'Dank für Ihre Anfrage', $messages[0]['body'] );
+		$this->assertStringContainsString( 'Wir antworten innerhalb eines Arbeitstags.', $messages[0]['body'] );
 		$this->assertSame( 1, preg_match( '~href="([^"]*/de/mein-konto/[^"]*)"~', $messages[0]['body'], $registration ), 'The registration link is German.' );
 		parse_str( (string) wp_parse_url( html_entity_decode( $registration[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ), PHP_URL_QUERY ), $query );
 		$this->assertSame( (string) $order->get_id(), $query['linker_inquiry'] ?? '', 'The receipt key still travels.' );
@@ -166,8 +167,8 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	 */
 	public function test_scheduled_retry_keeps_the_german_message_and_links(): void {
 		$this->ensure_languages();
-		$order  = $this->german_inquiry();
 		$marker = self::newest_mail_job();
+		$order  = $this->inquiry_in_locale();
 
 		// A full minute quota makes the call a queue row instead of a send.
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
@@ -181,10 +182,10 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		);
 		$email->trigger( $order->get_id(), $order );
 
-		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'No content job before classification.' );
+		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
 		$state = $this->authorization->process( $order );
 		$jobs  = array( $state['jobs']['receipt']['id'] );
-		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'One team notification and one German receipt are queued after the normal verdict.' );
+		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'The normal verdict adds the team notification to the existing German receipt.' );
 		$stored = ( new JobStore() )->load( $jobs[0] );
 		$this->assertNotNull( $stored );
 		$this->assertSame( array( $order->get_billing_email() ), $stored['message']->to );
@@ -205,12 +206,12 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$delivered = array_values(
 			array_filter(
 				$this->deliveries(),
-				static fn ( array $mail ): bool => str_contains( $mail['body'], 'Dank für Ihre Anfrage' )
+				static fn ( array $mail ): bool => str_contains( $mail['body'], 'Wir antworten innerhalb eines Arbeitstags.' )
 			)
 		);
 		$this->assertCount( 1, $delivered, 'The scheduled attempt delivered once.' );
 		$this->assertSame( 'Ihre Anfrage #' . $order->get_order_number() . ' ist eingegangen', $delivered[0]['subject'] );
-		$this->assertStringContainsString( 'Dank für Ihre Anfrage', $delivered[0]['body'] );
+		$this->assertStringContainsString( 'Wir antworten innerhalb eines Arbeitstags.', $delivered[0]['body'] );
 		$this->assertStringContainsString( '/de/mein-konto/', $delivered[0]['body'], 'The queued message keeps its German links.' );
 		$this->assertStringNotContainsString( 'href="' . $this->english_page_url( 'myaccount' ) . 'register', $delivered[0]['body'] );
 	}
@@ -294,16 +295,14 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	public function test_bound_inquiry_batch_keeps_each_recorded_language(): void {
 		$this->ensure_languages();
 		foreach ( array( 'en_US', 'de_DE_formal', 'en_US' ) as $locale ) {
-			$order = $this->german_inquiry();
-			$order->update_meta_data( '_linker_locale', $locale );
-			$order->save_meta_data();
+			$order = $this->inquiry_in_locale( $locale );
 			( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
 			$state   = $this->authorization->process( $order );
 			$receipt = ( new JobStore() )->load( $state['jobs']['receipt']['id'] );
 			$this->assertNotNull( $receipt );
 			$subject = 'de_DE_formal' === $locale ? 'Ihre Anfrage #' . $order->get_order_number() . ' ist eingegangen' : 'Your inquiry #' . $order->get_order_number() . ' has been received';
 			$this->assertSame( $subject, $receipt['message']->subject );
-			$this->assertStringContainsString( 'de_DE_formal' === $locale ? 'Dank für Ihre Anfrage' : 'Thank you for your inquiry', $receipt['message']->body );
+			$this->assertStringContainsString( 'de_DE_formal' === $locale ? 'Wir antworten innerhalb eines Arbeitstags.' : 'We reply within one business day.', $receipt['message']->body );
 		}
 	}
 
@@ -363,13 +362,22 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * A guest inquiry recorded in German, as the German request form records it.
+	 * A guest inquiry created through the contact handoff in its recorded locale.
+	 *
+	 * @param string $locale Native inquiry locale.
 	 */
-	private function german_inquiry(): WC_Order {
-		$order = new WC_Order();
-		$order->set_billing_email( 'linker-language-' . self::tag() . '@example.test' );
-		$order->update_meta_data( '_linker_locale', 'de_DE_formal' );
-		$order->save();
+	private function inquiry_in_locale( string $locale = 'de_DE_formal' ): WC_Order {
+		$details = \Linker\Commerce\Contact\Submission::from_handoff(
+			array(
+				'email'   => 'linker-language-' . self::tag() . '@example.test',
+				'message' => 'Please contact us about storage.',
+				'consent' => '1',
+				'lang'    => 'de_DE_formal' === $locale ? 'de' : 'en',
+			)
+		);
+		self::assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
+		$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		self::assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				$stored = wc_get_order( $order->get_id() );

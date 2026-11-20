@@ -311,8 +311,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Missing proof saves complete evidence without a permit, mail, model or receipt budget. */
-	public function test_failed_verification_saves_native_record_and_idempotent_retry_without_side_effects(): void {
+	/** Optional verification keeps the original inquiry and fixed acknowledgement while content awaits review. */
+	public function test_optional_verification_saves_one_inquiry_and_one_receipt_across_retries(): void {
 		$post   = $this->post();
 		$jobs   = self::newest_mail_job();
 		$budget = get_option( Throttle::OPTION );
@@ -328,8 +328,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertIsArray( $pending );
 		self::assertSame( 'pending', $pending['status'] );
 		self::assertSame( 0, $pending['attempts'] );
-		self::assertSame( array(), $pending['jobs'] );
-		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
+		$receipt = self::fixed_receipt_job( $order );
+		self::assertSame( array( $receipt ), self::mail_jobs_after( $jobs ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$retry = ( new Handler() )->process( $post );
 		self::assertInstanceOf( WC_Order::class, $retry );
@@ -342,7 +342,55 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$queue->process( $order->get_id() );
 		$queue->expire( $order->get_id() );
 		$queue->finish( $order->get_id(), Result::unknown( 'late' ) );
-		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
+		self::assertSame( array( $receipt ), self::mail_jobs_after( $jobs ) );
+	}
+
+	/**
+	 * Both accepted customer paths deliver only the fixed acknowledgement before the content decision.
+	 *
+	 * @dataProvider accepted_verifications
+	 * @param bool $verified Whether the native verification proof is present.
+	 */
+	public function test_accepted_order_acknowledges_once_before_the_team_is_authorized( bool $verified ): void {
+		$post    = $this->post( $verified );
+		$handler = new Handler();
+		$order   = $handler->process( $post );
+		self::assertInstanceOf( WC_Order::class, $order );
+		self::assertSame( ! $verified, NotificationHold::held( $order ) );
+		$job = self::fixed_receipt_job( $order );
+
+		$sent    = 0;
+		$observe = static function () use ( &$sent ): void {
+			++$sent;
+		};
+		add_action( 'wp_mail_succeeded', $observe );
+		try {
+			do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Drive the original job.
+			$replay = $handler->process( $post );
+			self::assertInstanceOf( WC_Order::class, $replay );
+			self::assertSame( $order->get_id(), $replay->get_id() );
+			do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Replay the same consumer.
+		} finally {
+			remove_action( 'wp_mail_succeeded', $observe );
+		}
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( 'pending', $state['status'] );
+		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertSame( $job, $state['jobs']['receipt']['id'] );
+		self::assertNotEmpty( $state['jobs']['receipt']['delivered_at'] );
+		self::assertSame( 1, $sent );
+	}
+
+	/** Accepted guest verification paths.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public static function accepted_verifications(): array {
+		return array(
+			'verified visitor' => array( true ),
+			'optional check'   => array( false ),
+		);
 	}
 
 	/** Native notification handoff releases one slot and preserves the completed request. */
@@ -365,7 +413,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$before = get_option( IntakeStore::OPTION )['entries'];
 		self::assertArrayHasKey( $post['linker_request_id'], $before );
 		$state = $authorization->process( $order );
-		self::assertSame( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertEqualsCanonicalizing( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
 		foreach ( $state['jobs'] as $job ) {
 			self::assertNotNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job['id'] ) );
 		}
@@ -767,7 +815,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertIsArray( $result );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
+		self::assertEqualsCanonicalizing( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertSame( $marker, $state['jobs']['receipt']['id'] );
 		$job = $state['jobs']['team']['id'];
 		self::assertGreaterThan( 0, $job );
 		self::assertFalse( ( new \Linker\Commerce\Mail\JobStore() )->critical( $job ), 'Public content retains the ordinary quota after a native explicit staff release.' );
@@ -1003,15 +1052,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertCount( 1, get_option( IntakeStore::OPTION )['entries'] );
 	}
 
-	/** The contact adapter reports review rather than a sent-team notification. */
+	/** A contact message awaiting verification retains its acknowledgement across retries. */
 	public function test_contact_review_state_is_honest_and_retries_use_same_record(): void {
 		$post = $this->post( false, 'contact' );
-		self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
-		self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
+		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
+		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 		self::assertIsArray( $orders );
 		self::assertCount( 1, $orders );
-		self::assertStringContainsString( 'is saved and waiting for review', \Linker\Commerce\Protection\IntakeAdmin::saved_message() );
+		self::assertTrue( NotificationHold::held( $orders[0] ) );
+		self::fixed_receipt_job( $orders[0] );
 	}
 	/** Two native DB connections admit exactly one final global review slot. */
 	public function test_two_connections_cannot_overspend_the_last_review_slot(): void {
@@ -1114,7 +1164,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			self::assertIsArray( $orders );
 			self::assertCount( 1, $orders );
 			$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-			self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
+			self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$recovered = wc_get_order( $orders[0]->get_id() );
 			self::assertInstanceOf( WC_Order::class, $recovered );
 			self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
@@ -1174,8 +1224,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$html = (string) ob_get_clean();
 		self::assertStringContainsString( '#' . $order->get_order_number(), $html );
 		self::assertStringNotContainsString( 'a-different-later-record', $html );
-		self::assertSame( 1, substr_count( $html, 'We have not sent a confirmation email.' ) );
-		self::assertStringContainsString( 'quote this inquiry number', $html );
+		self::assertStringNotContainsString( 'We have not sent a confirmation email.', $html );
+		self::assertStringContainsString( 'We reply within one business day', $html );
 	}
 	/** Erasure can find a crash before the first Woo ID, without refunding its slot. */
 	public function test_privacy_erases_unwritten_reservation_and_prevents_resurrection(): void {

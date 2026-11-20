@@ -10,6 +10,9 @@ namespace Linker\Commerce\Inquiry\Assessment;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\ReceiptLimit;
+use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Inquiry\InquiryGateway;
+use Linker\Commerce\Mail\NativeAttempt;
 use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
@@ -65,9 +68,15 @@ final class SendAuthorization {
 			}
 		);
 		if ( $ready ) {
-			self::recover( $order->get_id() );
+			$id      = $order->get_id();
+			$recover = static function () use ( $id ): void {
+				self::recover( $id );
+			};
+			if ( ! \Linker\Commerce\Mail\NativeTransaction::after_commit( $recover ) ) {
+				$recover();
+			}
 			if ( Client::configured() && class_exists( \WP_Async_Request::class ) ) {
-				AsyncRunner::enqueue( $order->get_id() );
+				AsyncRunner::enqueue( $id );
 			}
 		}
 		return true;
@@ -82,7 +91,7 @@ final class SendAuthorization {
 			return;
 		}
 		$order->read_meta_data( true );
-		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
+		if ( $order->get_meta( Reviews::ERASED ) ) {
 			return;
 		}
 		if ( 'complete' === $order->get_meta( Queue::PENDING ) ) {
@@ -95,6 +104,10 @@ final class SendAuthorization {
 		}
 		if ( array() === $state ) {
 			self::defer( $order );
+			return;
+		}
+		self::recover_receipt( $order, $state );
+		if ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) {
 			return;
 		}
 		if ( 'processing' === ( $state['status'] ?? '' ) && (float) ( $state['deadline'] ?? PHP_INT_MAX ) <= microtime( true ) ) {
@@ -124,7 +137,7 @@ final class SendAuthorization {
 					if ( 'normal' !== ( $current['status'] ?? '' ) ) {
 						return;
 					}
-					$pending = false;
+					$pending = self::awaiting_receipt( $order, $current );
 					$store   = new JobStore();
 					foreach ( $current['jobs'] ?? array() as $purpose => $entry ) {
 						if ( ! empty( $entry['delivered_at'] ) || ( 'receipt' === $purpose && ! empty( $current['team_only'] ) ) ) {
@@ -133,7 +146,9 @@ final class SendAuthorization {
 						$job    = (int) ( $entry['id'] ?? 0 );
 						$loaded = $job > 0 ? $store->load( $job ) : null;
 						if ( null !== $loaded && 'private' === get_post_status( $job ) ) {
-							if ( \Linker\Commerce\Mail\NativeAttempt::expired( $job ) ) {
+							if ( 'receipt' === $purpose && empty( $entry['fixed'] ) && ! NativeAttempt::unresolved( $job ) ) {
+								$store->fail( $job, $loaded['attempts'], 'Customer receipt requires the fixed acknowledgement.' );
+							} elseif ( NativeAttempt::expired( $job ) ) {
 								$store->fail( $job, $loaded['attempts'] + 1, 'Orphaned delivery attempt timed out.' );
 								\Linker\Commerce\Mail\CapacityHealth::failed();
 							} elseif ( $loaded['attempts'] > count( Outbox::RETRY_DELAYS ) ) {
@@ -142,11 +157,14 @@ final class SendAuthorization {
 							}
 						}
 						if ( $job < 1 || null === $loaded || JobStore::FAILED_STATUS === get_post_status( $job ) ) {
-							$current['status'] = 'manual';
-							if ( isset( $current['jobs']['receipt'] ) && empty( $current['jobs']['receipt']['delivered_at'] ) ) {
+							if ( 'receipt' === $purpose ) {
+								$current['team_only'] = true;
 								$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'delivery_unconfirmed' );
+								$order->save_meta_data();
+								continue;
 							}
-							self::hold( $order, 'authorization_job_unavailable' );
+							$current['status'] = 'manual';
+							self::hold( $order, 'authorization_job_unavailable', 'team' );
 							$order->save_meta_data();
 							return;
 						}
@@ -377,19 +395,20 @@ final class SendAuthorization {
 					$state['status'] = 'invalidated';
 					return;
 				}
-				$state['jobs']   = self::jobs( $order, $state );
+				if ( ! isset( $state['jobs']['team'] ) ) {
+					self::capture_job( $order, $state, 'team' );
+				}
 				$state['status'] = 'normal';
 			},
 			true
 		);
 		if ( ! $written ) {
-			// Native Woo caches can contain values written before the owned transaction rolled back.
-			// Evict this source only before native history or recovery reads the retained record.
-			CurrentSource::order( $id );
 			// No caller transaction is committed or rolled back; native recovery retains approval.
 			AuthorizationStore::edit(
 				$id,
-				static function ( array &$state ): void {
+				static function ( array &$state ) use ( $id ): void {
+					// Discard cached Woo writes from the rolled-back handoff.
+					$order = CurrentSource::order( $id );
 					if ( 'approved' !== ( $state['status'] ?? '' ) ) {
 						return;
 					}
@@ -398,7 +417,12 @@ final class SendAuthorization {
 					$delay                     = Outbox::RETRY_DELAYS[ $attempt ] ?? null;
 					$state['status']           = null === $delay ? 'manual' : 'approved';
 					$state['next_at']          = null === $delay ? 0 : time() + $delay;
-				}
+					if ( null === $delay && $order instanceof WC_Order && ! NotificationHold::held( $order ) && ! $order->get_meta( Reviews::ERASED ) ) {
+						self::hold( $order, 'authorization_job_unavailable', 'team' );
+						$order->save_meta_data();
+					}
+				},
+				true
 			);
 		}
 	}
@@ -412,7 +436,7 @@ final class SendAuthorization {
 		$state['status']  = null === $delay ? 'manual' : 'pending';
 		$state['next_at'] = null === $delay ? 0 : time() + $delay;
 		if ( null === $delay ) {
-			self::hold( $order, 'assessment_unresolved' );
+			self::hold( $order, 'assessment_unresolved', 'team' );
 			$order->save_meta_data();
 		}
 	}
@@ -422,7 +446,7 @@ final class SendAuthorization {
 	 */
 	private static function owns_hold( WC_Order $order ): bool {
 		$hold = $order->get_meta( NotificationHold::META );
-		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && $order->get_meta( \Linker\Commerce\Protection\Intake::META ) && is_array( $hold ) && 'verification_review' === ( $hold['reason'] ?? '' );
+		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && 'verification' === $order->get_meta( Intake::LANE_META ) && 'verification' === ( $order->get_meta( Intake::META )['lane'] ?? '' ) && is_array( $hold ) && 'verification_review' === ( $hold['reason'] ?? '' ) && empty( Queue::data( $order )['notification_job'] );
 	}
 	/** Source.
 	 *
@@ -512,75 +536,195 @@ final class SendAuthorization {
 		StructuredMeta::update( $order, Queue::META, $data );
 		$order->save_meta_data();
 	}
-	/** Current native source.
+	/**
+	 * The native received transition owns the acknowledgement. Content decisions own the team notification.
 	 *
-	 * @param WC_Order            $order Current native source.
-	 * @param array<string,mixed> $state Pending grant.
-	 * @return array<string,array{id:int,hash:string}>
-	 * @throws \RuntimeException If native capture or durable job readback is unavailable.
+	 * @param WC_Order            $order Current persisted inquiry.
+	 * @param array<string,mixed> $state Existing authorization.
 	 */
-	private static function jobs( WC_Order $order, array $state ): array {
-		if ( ! empty( $state['jobs'] ) ) {
-			return $state['jobs'];
-		}
-		// Content is now authorized; capture the complete existing receipt instead of the pre-verdict fixed-text variant.
-		$order->delete_meta_data( '_linker_fixed_receipt' );
-		$order->save_meta_data();
-		$emails = WC()->mailer()->get_emails();
-		$jobs   = array();
-		if ( ! empty( $state['team_only'] ) ) {
-			$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'staff_release_team_only' );
-			$order->save_meta_data();
-		}
-		if ( empty( $state['team_only'] ) && 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
-			$reason = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ? \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id() ) : ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
-			$order->update_meta_data( ReceiptLimit::SKIPPED_META, $reason );
-			$order->save_meta_data();
-		}
-		foreach ( array(
-			'team'    => NewInquiryEmail::class,
-			'receipt' => InquiryReceivedEmail::class,
-		) as $purpose => $class ) {
-			if ( 'receipt' === $purpose && '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
-				continue;
-			}
-			$email = $emails[ $class ] ?? null;
-			if ( ! $email instanceof NewInquiryEmail && ! $email instanceof InquiryReceivedEmail ) {
-				throw new \RuntimeException( 'authorization_email_unavailable' );
-			}
-			$captured = $email->capture( $order );
-			if ( null === $captured ) {
-				continue;
-			}
-			$message = new Message(
-				$captured->to,
-				$captured->subject,
-				$captured->body,
-				$captured->headers,
-				$captured->attachments,
-				false,
-				Message::STANDARD,
-				array(
-					'kind'    => 'inquiry',
-					'record'  => $order->get_id(),
-					'purpose' => $purpose,
-				)
+	private static function recover_receipt( WC_Order $order, array $state ): void {
+		if ( 'manual' === ( $state['status'] ?? '' ) && 'yes' === $order->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $order ) ) {
+			AuthorizationStore::edit(
+				$order->get_id(),
+				static function ( array &$current ) use ( $order ): void {
+					$fresh = CurrentSource::order( $order->get_id() );
+					if ( ! $fresh instanceof WC_Order ) {
+						return;
+					}
+					$hold = $fresh->get_meta( NotificationHold::META );
+					if ( 'manual' === ( $current['status'] ?? '' ) && is_array( $hold ) && 'team' === ( $hold['purpose'] ?? '' ) && 'yes' === $fresh->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $fresh ) ) {
+						$fresh->update_meta_data( Queue::PENDING, 'held' );
+						$fresh->save_meta_data();
+					}
+				},
+				true
 			);
-			$hash    = self::message_hash( $message );
-			if ( '' === $hash ) {
-				throw new \RuntimeException( 'authorization_message_unavailable' );
-			}
-			$job    = ( new JobStore() )->create( $message, $order->get_id() );
-			$stored = $job > 0 ? ( new JobStore() )->load( $job ) : null;
-			if ( null === $stored || $stored['message']->to_array() !== $message->to_array() ) {
-				throw new \RuntimeException( 'authorization_job_unconfirmed' );
-			}
-			$jobs[ $purpose ] = array(
-				'id'   => $job,
-				'hash' => $hash,
-			);
+			return;
 		}
-		return $jobs;
+		$entry = $state['jobs']['receipt'] ?? array();
+		if ( ! empty( $entry['delivered_at'] ) || ! self::receipt_source( $order, $state ) ) {
+			return;
+		}
+		$id = $order->get_id();
+		if ( ! $entry ) {
+			AuthorizationStore::edit(
+				$id,
+				static function ( array &$current ) use ( $id ): void {
+					$order = CurrentSource::order( $id );
+					if ( ! $order instanceof WC_Order || isset( $current['jobs']['receipt'] ) || ! self::receipt_source( $order, $current ) ) {
+						return;
+					}
+					$reason = $order->get_meta( ReceiptLimit::SKIPPED_META );
+					if ( ! in_array( $reason, array( '', 'assessment_pending', 'review_hold' ), true ) ) {
+						return;
+					}
+					$reason = self::capture_job( $order, $current, 'receipt' );
+					$order->update_meta_data( ReceiptLimit::SKIPPED_META, $reason );
+					$order->save_meta_data();
+				},
+				true
+			);
+			$current = AuthorizationStore::read( $id );
+			$entry   = is_array( $current ) ? ( $current['jobs']['receipt'] ?? array() ) : array();
+		}
+		$job = (int) ( $entry['id'] ?? 0 );
+		if ( $job > 0 && ! empty( $entry['fixed'] ) && empty( $entry['delivered_at'] ) && 'private' === get_post_status( $job ) && ! NativeAttempt::unresolved( $job ) && ! as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) ) {
+			as_enqueue_async_action( Outbox::HOOK, array( $job ), Outbox::GROUP, true );
+		}
+	}
+
+	/**
+	 * Whether a missing receipt handoff still needs the pending-order recovery tick.
+	 *
+	 * @param WC_Order            $order Saved inquiry.
+	 * @param array<string,mixed> $state Current permissions.
+	 */
+	private static function awaiting_receipt( WC_Order $order, array $state ): bool {
+		return empty( $state['jobs']['receipt'] ) && in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending', 'review_hold' ), true ) && self::receipt_source( $order, $state );
+	}
+
+	/** Native intake recorded an acknowledgement that has not reached Outbox.
+	 *
+	 * @param WC_Order $order Native inquiry.
+	 */
+	private static function intake_awaits_receipt( WC_Order $order ): bool {
+		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( 'assessment_pending', 'review_hold' ), true );
+	}
+
+	/**
+	 * Check the accepted native destination and explicit holds independently of content scoring.
+	 *
+	 * @param WC_Order            $order Fresh native source.
+	 * @param array<string,mixed> $state Stored permissions.
+	 */
+	public static function receipt_source( WC_Order $order, array $state ): bool {
+		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
+			return false;
+		}
+		$receipt_due = ! empty( $state['jobs']['receipt']['fixed'] ) || self::intake_awaits_receipt( $order );
+		if ( ! $order->has_status( Statuses::RECEIVED ) && ! $receipt_due ) {
+			return false;
+		}
+		$snapshot = Queue::data( $order )['snapshot'] ?? array();
+		if ( ! in_array( $snapshot['submission']['source'] ?? '', array( 'contact', 'inquiry' ), true ) && InquiryGateway::ID !== $order->get_payment_method() ) {
+			return false;
+		}
+		if ( ! is_email( $order->get_billing_email() ) || ( $snapshot['submission']['billing']['email'] ?? '' ) !== $order->get_billing_email() ) {
+			return false;
+		}
+		$original_owner = $snapshot['account']['id'] ?? null;
+		if ( $original_owner !== $order->get_customer_id() && ( 0 !== $original_owner || ! \Linker\Commerce\Inquiry\AccountLink::claimed_by_customer( $order ) ) ) {
+			return false;
+		}
+		$status = $state['status'] ?? '';
+		if ( 'invalidated' === $status && ( ! $receipt_due || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) ) {
+			return false;
+		}
+		if ( 'manual' === $status ) {
+			$hold = $order->get_meta( NotificationHold::META );
+			return is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || ( ! empty( $state['jobs']['receipt']['fixed'] ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
+		}
+		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal', 'invalidated' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
+	}
+
+	/**
+	 * Only the independently granted acknowledgement may pass a content-only hold.
+	 *
+	 * @param WC_Order $order Fresh native source with a hold.
+	 * @param int      $job Original job.
+	 */
+	public static function held_receipt_allowed( WC_Order $order, int $job ): bool {
+		$state = AuthorizationStore::read( $order->get_id() );
+		if ( ! is_array( $state ) ) {
+			return false;
+		}
+		$entry = $state['jobs']['receipt'] ?? array();
+		return ! empty( $entry['fixed'] ) && ( $entry['id'] ?? 0 ) === $job && empty( $entry['delivered_at'] ) && self::receipt_source( $order, $state );
+	}
+
+	/**
+	 * Freeze one native Woo email and register its original Outbox job.
+	 *
+	 * @param WC_Order            $order Received inquiry.
+	 * @param array<string,mixed> $state Locked authorizations.
+	 * @param string              $purpose Team or receipt.
+	 * @return string Empty for a queued message, otherwise the omission reason.
+	 * @throws \RuntimeException When the immutable handoff cannot be confirmed.
+	 */
+	private static function capture_job( WC_Order $order, array &$state, string $purpose ): string {
+		$class = 'team' === $purpose ? NewInquiryEmail::class : InquiryReceivedEmail::class;
+		$email = WC()->mailer()->get_emails()[ $class ] ?? null;
+		if ( ! $email instanceof NewInquiryEmail && ! $email instanceof InquiryReceivedEmail ) {
+			throw new \RuntimeException( 'authorization_email_unavailable' );
+		}
+		$captured = $email->capture( $order );
+		if ( null === $captured ) {
+			return 'disabled';
+		}
+		$is_receipt = 'receipt' === $purpose;
+		if ( $is_receipt ) {
+			$reason = ReceiptLimit::reason( $order, false );
+			if ( 'unavailable' === $reason ) {
+				throw new \RuntimeException( 'receipt_allowance_unavailable' );
+			}
+			if ( '' !== $reason ) {
+				return $reason;
+			}
+		}
+		// The personal order link goes only to the destination whose allowance we reserved.
+		$headers = $is_receipt ? array_values( array_filter( $captured->headers, static fn ( string $header ): bool => 1 === preg_match( '/^(From|Content-Type|Reply-To):/i', $header ) ) ) : $captured->headers;
+		$message = new Message(
+			$is_receipt ? array( $order->get_billing_email() ) : $captured->to,
+			$captured->subject,
+			$captured->body,
+			$headers,
+			$is_receipt ? array() : $captured->attachments,
+			false,
+			Message::STANDARD,
+			array(
+				'kind'    => 'inquiry',
+				'record'  => $order->get_id(),
+				'purpose' => $purpose,
+			)
+		);
+		$hash    = self::message_hash( $message );
+		if ( '' === $hash ) {
+			throw new \RuntimeException( 'authorization_message_unavailable' );
+		}
+		$job    = ( new JobStore() )->create( $message, $order->get_id() );
+		$stored = $job > 0 ? ( new JobStore() )->load( $job ) : null;
+		if ( null === $stored || $stored['message']->to_array() !== $message->to_array() ) {
+			throw new \RuntimeException( 'authorization_job_unconfirmed' );
+		}
+		$state['jobs'][ $purpose ] = array(
+			'id'   => $job,
+			'hash' => $hash,
+		);
+		if ( $is_receipt ) {
+			$state['jobs'][ $purpose ]['fixed']      = true;
+			$state['jobs'][ $purpose ]['budget_due'] = true;
+		}
+		return '';
 	}
 	/** Always called before transport selection and every SMTP/PHP budget debit.
 	 *
@@ -623,12 +767,58 @@ final class SendAuthorization {
 			return false;
 		}
 		$order->read_meta_data( true );
-		if ( NotificationHold::held( $order ) || $order->get_meta( Reviews::ERASED ) ) {
+		$state = AuthorizationStore::read( $id );
+		$entry = is_array( $state ) ? ( $state['jobs'][ $purpose ] ?? array() ) : array();
+		$hash  = self::message_hash( $message );
+		if ( ! is_array( $state ) || ( $entry['id'] ?? 0 ) !== $job || ! empty( $entry['delivered_at'] ) || '' === $hash || ( $entry['hash'] ?? '' ) !== $hash ) {
 			return false;
 		}
-		$state = AuthorizationStore::read( $id );
-		return is_array( $state ) && ( 'receipt' !== $purpose || empty( $state['team_only'] ) ) && 'normal' === ( $state['status'] ?? '' ) && self::current( $order, $state ) && ( $state['jobs'][ $purpose ]['id'] ?? 0 ) === $job && '' !== self::message_hash( $message ) && ( $state['jobs'][ $purpose ]['hash'] ?? '' ) === self::message_hash( $message );
+		if ( 'receipt' === $purpose ) {
+			return ! empty( $entry['fixed'] ) && self::receipt_source( $order, $state ) && array( $order->get_billing_email() ) === $message->to;
+		}
+		return ! NotificationHold::held( $order ) && ! $order->get_meta( Reviews::ERASED ) && 'normal' === ( $state['status'] ?? '' ) && self::current( $order, $state );
 	}
+	/**
+	 * Commit the original receipt's public allowance only when Outbox has a transport slot.
+	 *
+	 * @param Message $message Original frozen message.
+	 * @param int     $job Original job.
+	 * @return string Empty to send, 'unavailable' to retry, or a final refusal.
+	 */
+	public static function charge_receipt( Message $message, int $job ): string {
+		if ( 'inquiry' !== ( $message->origin['kind'] ?? '' ) || 'receipt' !== ( $message->origin['purpose'] ?? '' ) ) {
+			return '';
+		}
+		$id     = (int) $message->origin['record'];
+		$reason = 'revoked';
+		$saved  = AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $id, $message, $job, &$reason ): void {
+				if ( ! self::allows( $message, $job ) ) {
+					return;
+				}
+				if ( empty( $state['jobs']['receipt']['budget_due'] ) ) {
+					$reason = '';
+					return;
+				}
+				$order  = CurrentSource::order( $id );
+				$reason = $order instanceof WC_Order ? ReceiptLimit::reason( $order, true ) : 'unavailable';
+				if ( 'unavailable' === $reason ) {
+					throw new \RuntimeException( 'receipt_allowance_unavailable' );
+				}
+				if ( '' === $reason ) {
+					unset( $state['jobs']['receipt']['budget_due'] );
+				} elseif ( $order instanceof WC_Order && in_array( $reason, array( 'target_cap', 'daily_cap' ), true ) ) {
+					$state['team_only'] = true;
+					$order->update_meta_data( ReceiptLimit::SKIPPED_META, $reason );
+					$order->save_meta_data();
+				}
+			},
+			true
+		);
+		return $saved ? $reason : 'unavailable';
+	}
+
 	/** Persist physical success separately from a missing native job.
 	 *
 	 * @param Message $message Actual sent frozen arguments.
@@ -668,7 +858,8 @@ final class SendAuthorization {
 						return;
 					}
 				}
-				$done = true;
+				$order = CurrentSource::order( $id );
+				$done  = $order instanceof WC_Order && ! self::awaiting_receipt( $order, $state );
 			}
 		);
 		if ( $done ) {
@@ -841,17 +1032,19 @@ final class SendAuthorization {
 	 *
 	 * @param WC_Order $order Newly managed record.
 	 * @param string   $reason Fixed server reason.
+	 * @param string   $purpose Notification affected by this hold, or empty for the entire source.
 	 */
-	private static function hold( WC_Order $order, string $reason ): void {
+	private static function hold( WC_Order $order, string $reason, string $purpose = '' ): void {
 		$order->update_meta_data(
 			NotificationHold::META,
 			array(
-				'reason' => $reason,
-				'policy' => SendVerdict::POLICY,
-				'at'     => time(),
+				'reason'  => $reason,
+				'policy'  => SendVerdict::POLICY,
+				'purpose' => $purpose,
+				'at'      => time(),
 			)
 		);
-		$order->update_meta_data( Queue::PENDING, 'held' );
+		$order->update_meta_data( Queue::PENDING, 'team' === $purpose ? 'yes' : 'held' );
 	}
 
 	/** Exact new-pipeline hold, never a historical incident marker.
@@ -932,7 +1125,7 @@ final class SendAuthorization {
 				$state['staff_release'] = $event;
 				$state['producer']      = 'human_override';
 				$state['team_only']     = true;
-				$state['status']        = empty( $state['jobs'] ) ? 'approved' : 'normal';
+				$state['status']        = isset( $state['jobs']['team'] ) ? 'normal' : 'approved';
 				$state['next_at']       = time();
 				$result                 = $event;
 			},

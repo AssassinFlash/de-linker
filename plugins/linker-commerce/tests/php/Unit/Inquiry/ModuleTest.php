@@ -63,6 +63,10 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_export_order_personal_data', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class ), 'export' ), 10, 2 );
 		$this->expect_action_on_any( 'woocommerce_privacy_before_remove_order_personal_data', \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class, 'erase' );
 		WP_Mock::userFunction( 'add_shortcode', array( 'return' => true ) );
+		// @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectFilterAdded( 'woocommerce_login_redirect', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\AccountLink::class ), 'after_login' ), 20, 2 );
+		// @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectFilterAdded( 'woocommerce_registration_redirect', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\AccountLink::class ), 'after_registration' ), 20 );
 		$this->expect_action_on_any( 'woocommerce_created_customer', \Linker\Commerce\Inquiry\AccountLink::class, 'claim', 20 );
 		$this->expect_action_on_any( 'admin_post_nopriv_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
 		$this->expect_action_on_any( 'admin_post_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );

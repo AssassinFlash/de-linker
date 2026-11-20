@@ -290,6 +290,7 @@ final class AuthTemplatesTest extends TestCase {
 	 * mapped on any page), so the redirect waits for both.
 	 */
 	public function test_a_signed_in_account_is_sent_off_the_register_page(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 17 ) );
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );

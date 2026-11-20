@@ -257,7 +257,7 @@ class InquiryRequest {
 		 * writer (#250): linker-commerce answers with Sender::request()'s record
 		 * and whether the receipt went, or with the WP_Error Woo returned.
 		 *
-		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool} or WP_Error.
+		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool|null} or WP_Error.
 		 * @param array<string, mixed> $details See send().
 		 * @since 0.1.0
 		 */
@@ -297,7 +297,7 @@ class InquiryRequest {
 				'user_id'  => (int) $customer['user_id'],
 				'messages' => count( $this->thread->read( $conversation )['messages'] ),
 				'summary'  => null !== $summary,
-				'receipt'  => ! empty( $sent['receipt'] ),
+				'receipt'  => $sent['receipt'] ?? null,
 				'page'     => $this->own_url( (string) ( $page['url'] ?? '' ) ),
 			)
 		);
@@ -327,7 +327,7 @@ class InquiryRequest {
 				'order'   => $order->get_id(),
 				'number'  => (string) $order->get_order_number(),
 				'status'  => $order->get_status(),
-				'receipt' => '' === (string) $order->get_meta( '_linker_receipt_skipped' ),
+				'receipt' => self::receipt_sent( $order ),
 				'email'   => (string) ( $note['email'] ?? $order->get_billing_email() ),
 				'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),
 			);
@@ -486,11 +486,20 @@ class InquiryRequest {
 			'order'   => $order->get_id(),
 			'number'  => (string) $order->get_order_number(),
 			'status'  => in_array( $status, self::STATUSES, true ) ? $status : 'inquiry-received',
-			'receipt' => '' === (string) $order->get_meta( '_linker_receipt_skipped' ),
+			'receipt' => self::receipt_sent( $order ),
 			'email'   => (string) $order->get_billing_email(),
 			'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),
 			'locale'  => $locale,
 		);
+	}
+
+	/**
+	 * Current customer-mail outcome from the plugin that owns the Woo receipt.
+	 *
+	 * @param \WC_Order $order Saved inquiry.
+	 */
+	public static function receipt_sent( \WC_Order $order ): ?bool {
+		return class_exists( \Linker\Commerce\Genie\Module::class ) ? \Linker\Commerce\Genie\Module::receipt_sent( $order ) : null;
 	}
 
 	/**

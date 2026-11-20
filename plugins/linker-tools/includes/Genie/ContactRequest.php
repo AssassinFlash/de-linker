@@ -243,7 +243,7 @@ class ContactRequest {
 		 * A customer asked Genie for the team's contact (#243): linker-commerce
 		 * sends it through #246's Sender::message() and answers with the record.
 		 *
-		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool}.
+		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool|null}.
 		 * @param array<string, mixed> $handoff See handoff().
 		 * @since 0.1.0
 		 */
@@ -251,7 +251,7 @@ class ContactRequest {
 		if ( ! is_array( $sent ) || ! isset( $sent['order'] ) ) {
 			return $this->error( 'linker_genie_contact_unavailable', 503 );
 		}
-		$receipt = ! empty( $sent['receipt'] );
+		$receipt = $sent['receipt'] ?? null;
 		add_post_meta(
 			$conversation,
 			self::NOTE,
@@ -335,7 +335,7 @@ class ContactRequest {
 	 * which is the index of the answer that showed the card).
 	 *
 	 * @param int $conversation Conversation post ID.
-	 * @return list<array{after: int, email: string, receipt: bool}>
+	 * @return list<array{after: int, email: string, receipt: bool|null}>
 	 */
 	public static function cards( int $conversation ): array {
 		$cards = array();
@@ -420,7 +420,7 @@ class ContactRequest {
 	 * This conversation's request, when nothing was said since it went out.
 	 *
 	 * @param int $conversation Conversation post ID.
-	 * @return array{email: string, receipt: bool}|null
+	 * @return array{email: string, receipt: bool|null}|null
 	 */
 	private function sent( int $conversation ): ?array {
 		$notes = get_post_meta( $conversation, self::NOTE, false );
@@ -443,10 +443,10 @@ class ContactRequest {
 	 *
 	 * @param array<string, mixed> $note Trusted persisted hand-off note.
 	 */
-	private static function current_receipt( array $note ): bool {
+	private static function current_receipt( array $note ): ?bool {
 		$order_id = (int) ( $note['order'] ?? 0 );
 		$order    = $order_id > 0 && function_exists( 'wc_get_order' ) ? wc_get_order( $order_id ) : false;
-		return $order instanceof \WC_Order ? '' === (string) $order->get_meta( '_linker_receipt_skipped' ) : ! empty( $note['receipt'] );
+		return $order instanceof \WC_Order ? InquiryRequest::receipt_sent( $order ) : null;
 	}
 
 	/**
@@ -463,10 +463,10 @@ class ContactRequest {
 	/**
 	 * The card's answer to a request that is with the team.
 	 *
-	 * @param string $email   Where the team replies.
-	 * @param bool   $receipt Whether the receipt went (the site's receipt cap may hold it back).
+	 * @param string    $email   Where the team replies.
+	 * @param bool|null $receipt Whether the receipt went (the site's receipt cap may hold it back).
 	 */
-	private function reply( string $email, bool $receipt = true ): WP_REST_Response {
+	private function reply( string $email, ?bool $receipt = null ): WP_REST_Response {
 		$reply = new WP_REST_Response(
 			array(
 				'sent'    => true,

@@ -39,6 +39,40 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	 */
 	private NormalMailAuthorizationFixture $authorization;
 
+	/** The received transition persists its recovery marker before handing a committed inquiry to the Outbox. */
+	public function test_outbox_handoff_uses_the_committed_inquiry(): void {
+		$details = \Linker\Commerce\Contact\Submission::from_post(
+			array(
+				'name'    => 'Installer',
+				'email'   => 'commit-' . self::tag() . '@example.test',
+				'message' => 'Please advise on storage for our building.',
+				'consent' => '1',
+			)
+		);
+		self::assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
+		$during  = null;
+		$observe = static function ( int $id ) use ( &$during ): void {
+			$during = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+		};
+		$event   = 'woocommerce_order_status_pending_to_inquiry-received_notification';
+		add_action( $event, $observe, PHP_INT_MAX );
+		try {
+			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		} finally {
+			remove_action( $event, $observe, PHP_INT_MAX );
+		}
+		self::assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		self::assertIsArray( $during );
+		self::assertSame( 'pending', $during['status'] );
+		self::assertSame( array(), $during['jobs'] );
+		self::fixed_receipt_job( $order );
+	}
+
 	/**
 	 * Round-one decision: three accepted messages per connection per hour,
 	 * shared across both doors; the next attempt cannot queue any mail.
@@ -127,17 +161,19 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			$workers[] = array( $process, $pipes, $door );
 		}
 		$accepted = 0;
+		$outcomes = array();
 		foreach ( $workers as list( $process, $pipes, $door ) ) {
 			$output = trim( (string) stream_get_contents( $pipes[1] ) );
 			$error  = (string) stream_get_contents( $pipes[2] );
 			fclose( $pipes[1] );
 			fclose( $pipes[2] );
 			$this->assertSame( 0, proc_close( $process ), $error . $output );
-			$accepted += ( 'contact' === $door ? 'receipt_pending' : 'sent' ) === $output ? 1 : 0;
+			$outcomes[] = $door . '=' . $output;
+			$accepted  += ( 'contact' === $door ? 'receipt_pending' : 'sent' ) === $output ? 1 : 0;
 		}
 		// Other PHP requests invalidated persistent caches; discard this process's stale runtime cache.
 		wp_cache_flush_runtime();
-		$this->assertSame( 3, $accepted, 'Parallel posts cannot share the last allowance. Contact acceptance is receipt_pending until authorization; an inquiry acceptance is a created order.' );
+		$this->assertSame( 3, $accepted, 'Expected three accepted inquiries from the concurrent workers: ' . implode( ', ', $outcomes ) );
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $email,
@@ -152,7 +188,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			$this->assertSame( 0, $native['attempts'], 'The submitting child must not let an unrelated background request consume this fixture source before the parent installs its typed service.' );
 			$accepted_order->read_meta_data( true );
 			$this->assertSame( 'yes', $accepted_order->get_meta( \Linker\Commerce\Inquiry\Assessment\Queue::PENDING ) );
-			$this->assertSame( 'assessment_pending', $accepted_order->get_meta( '_linker_receipt_skipped' ) );
+			self::fixed_receipt_job( $accepted_order );
 			$this->assertSame( 'Parallel public inquiry.', $accepted_order->get_customer_note() );
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $accepted_order->get_id() );
 			$this->authorization->process( $accepted_order );
@@ -184,9 +220,11 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
 		$before = self::newest_mail_job();
+		$orders = array();
 		for ( $i = 0; $i < 10; ++$i ) {
 			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
 			$this->assertInstanceOf( \WC_Order::class, $order );
+			$orders[] = $order;
 			$this->assertSame( '', $order->get_billing_first_name(), 'A hand-off name is optional.' );
 			$this->later(
 				static function () use ( $order ): void {
@@ -196,6 +234,10 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		}
 		$this->authorization->drain();
 		$this->assertCount( 20, self::mail_jobs_after( $before ), 'Each allowed nameless message still gets the ordinary receipt and team mail.' );
+		foreach ( $orders as $order ) {
+			self::deliver_fixed_receipt( $order );
+		}
+		$this->assertCount( 10, self::mail_jobs_after( $before ), 'The ten original team notices remain.' );
 		$stamp  = (string) ( time() - 5 );
 		$email  = 'tester246-cap-' . self::tag() . '@example.test';
 		$post   = array(
@@ -274,14 +316,14 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Optional-name callers get complete, localized letters without blank placeholders.
+	 * The fixed acknowledgement and team notification remain usable when a visitor gives no name.
 	 *
-	 * @testWith ["en", "Hello,"]
-	 *           ["de", "Guten Tag,"]
+	 * @testWith ["en", "We reply within one business day."]
+	 *           ["de", "Wir antworten innerhalb eines Arbeitstags."]
 	 * @param string $language Inquiry language.
-	 * @param string $greeting Independently reviewed generic salutation.
+	 * @param string $promise Localized reply promise.
 	 */
-	public function test_nameless_handoff_has_complete_customer_and_team_letters( string $language, string $greeting ): void {
+	public function test_nameless_handoff_has_complete_customer_and_team_letters( string $language, string $promise ): void {
 		$this->as_user( 0 );
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
@@ -308,7 +350,9 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$receipts = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) === $row['to'] ) );
 		$team     = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) !== $row['to'] ) );
 		$this->assertCount( 1, $receipts );
-		$this->assertSame( 1, preg_match( '/<p[^>]*>\s*' . preg_quote( $greeting, '/' ) . '\s*<\/p>/', $receipts[0]['body'] ), 'The receipt has a complete salutation without an empty name.' );
+		$this->assertStringContainsString( $promise, $receipts[0]['body'] );
+		$this->assertStringContainsString( '#' . $order->get_order_number(), $receipts[0]['body'] );
+		$this->assertStringNotContainsString( 'Please contact me.', $receipts[0]['body'] );
 		$this->assertCount( 1, $team );
 		$this->assertStringEndsWith( $email, $team[0]['subject'] );
 		$this->assertStringContainsString( $email . '.', $team[0]['body'] );

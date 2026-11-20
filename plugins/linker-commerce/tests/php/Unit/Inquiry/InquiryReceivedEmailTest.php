@@ -70,24 +70,54 @@ final class InquiryReceivedEmailTest extends TestCase {
 	}
 
 	/**
-	 * The body is this plugin's template with the inquiry; WooCommerce's own language switch stays off.
+	 * Render the customer acknowledgement with Woo's brand header and footer.
+	 *
+	 * @param WC_Order $order Saved inquiry.
 	 */
-	public function test_content(): void {
-		$this->email->object = Mockery::mock( WC_Order::class );
+	private function receipt_html( WC_Order $order ): string {
+		$email         = $this->email;
+		$email_heading = $email->get_default_heading();
+		WP_Mock::expectAction( 'woocommerce_email_header', $email_heading, $email );
+		WP_Mock::expectAction( 'woocommerce_email_footer', $email );
+		ob_start();
+		require dirname( __DIR__, 4 ) . '/templates/emails/linker-inquiry-received.php';
+		return (string) ob_get_clean();
+	}
+
+	/** Registered customers can view the inquiry in their account. */
+	public function test_fixed_account_receipt_links_to_the_inquiry(): void {
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_customer_id' )->andReturn( 8 );
+		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_view_order_url' )->andReturn( 'https://site.test/account/view-order/20/' );
+		$body = $this->receipt_html( $order );
+		self::assertStringContainsString( 'https://site.test/account/view-order/20/', $body );
+		self::assertStringContainsString( '#20', $body );
+	}
+
+	/** An accepted guest receives a fixed acknowledgement and the native link for their inquiry. */
+	public function test_fixed_guest_receipt_contains_number_and_full_registration_link(): void {
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_customer_id' )->andReturn( 0 );
+		$order->allows( 'get_id' )->andReturn( 20 );
+		$order->allows( 'get_order_key' )->andReturn( 'wc_order_complete_key' );
+		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'en_US' );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 42 ) );
+		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->shouldNotReceive( 'get_formatted_billing_full_name' );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://site.test/account/' ) );
+		WP_Mock::userFunction( 'wc_get_endpoint_url', array( 'return' => 'https://site.test/account/register/' ) );
 		WP_Mock::userFunction(
-			'wc_get_template_html',
-			array(
-				'times'  => 1,
-				'args'   => array( 'emails/linker-inquiry-received.php', Mockery::on( fn ( array $args ): bool => $args['order'] === $this->email->object && false === $args['sent_to_admin'] ), '', '/plugin/templates/' ),
-				'return' => '<p>Hello</p>',
-			)
+			'add_query_arg',
+			array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) )
 		);
 
-		$this->email->setup_locale();
-		$this->email->restore_locale();
-		$this->assertSame( '<p>Hello</p>', $this->email->get_content_html() );
-		$this->assertSame( '', $this->email->get_content_plain() );
-		$this->assertSame( '', $this->email->get_default_additional_content() );
+		$body = $this->receipt_html( $order );
+
+		self::assertStringContainsString( '#20', $body );
+		self::assertStringContainsString( 'one business day', $body );
+		self::assertStringContainsString( 'https://site.test/account/register/?linker_inquiry=20&linker_key=wc_order_complete_key', html_entity_decode( $body ) );
+		self::assertSame( 1, substr_count( $body, 'href=' ) );
 	}
 
 	/**

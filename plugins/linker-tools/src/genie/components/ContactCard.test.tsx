@@ -13,6 +13,7 @@ import { expect, test } from 'vitest';
 /**
  * Internal dependencies
  */
+import { readContact } from '../api/contact';
 import type { ContactReason } from '../api/turn';
 import { ContactCard } from './ContactCard';
 
@@ -138,6 +139,19 @@ test( 'a signed-in customer is not asked for an address', async () => {
 	await screen.findByText( 'Your request is with the Linker team' );
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body && 'email' in post.body ).toBe( false );
+} );
+
+test( 'a received contact has no mail omission while delivery is pending', async () => {
+	const { fetcher } = route( {
+		sent: { email: 'maria@example.test', receipt: null },
+	} );
+	const result = await readContact( '/contact', 'nonce', fetcher );
+	expect( result?.sent?.receipt ).toBeNull();
+	card( fetcher );
+	await screen.findByText( 'Your request is with the Linker team' );
+	expect(
+		screen.queryByText( 'We have not sent a confirmation email.' )
+	).toBeNull();
 } );
 
 test( 'a request already with the team shows as sent', async () => {
