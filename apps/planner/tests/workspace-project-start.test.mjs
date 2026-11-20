@@ -284,6 +284,15 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	await select("pvgis_horizon", "true");
 	await enter(field("pvgis_source"), "Surveyed customer array");
 	await enter(field("peak_import_kw"), "5");
+	const projectSummary = form.parentElement.querySelector("aside");
+	assert.ok(
+		projectSummary,
+		"the intake shows the customer's current project alongside the form",
+	);
+	assert.match(projectSummary.textContent, /Berlin workshop/);
+	assert.match(projectSummary.textContent, /7200 kWh/);
+	assert.match(projectSummary.textContent, /8 kWp/);
+
 	const fileInput = field("load_profile");
 	assert.equal(fileInput?.type, "file");
 	await act(async () => {
@@ -563,6 +572,9 @@ test("visitors with project data can open setup from the comparison and keep the
 		"A visitor can bring annual usage into the preliminary comparison",
 	);
 	await enter(annual, "6412");
+	assert.equal(document.querySelector("h1").textContent, "Oslo storage");
+	assert.match(document.querySelector("aside").textContent, /6412 kWh/);
+
 	await act(async () => compareAgain().click());
 	await until(() =>
 		document.querySelector('table[aria-label="Compare system options"]'),

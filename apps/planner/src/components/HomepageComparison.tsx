@@ -122,7 +122,10 @@ export function HomepageComparison({
 		</>
 	);
 	return (
-		<div className="sc-configurator sc-home-comparison" id="compare-project">
+		<div
+			className="sc-configurator sc-intake sc-home-comparison"
+			id="compare-project"
+		>
 			<header className="sc-section-head">
 				<div>
 					<h2>{__("Compare options for your project", "linker-tools")}</h2>

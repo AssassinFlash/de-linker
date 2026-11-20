@@ -54,6 +54,8 @@ import {
 import { RoofStart } from "./RoofStart.tsx";
 import { locateProjectSite } from "../data/googleMaps.ts";
 import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
+import { ProjectHeading } from "./configurator/ProjectHeading.tsx";
+import { ProjectSummary, projectFacts } from "./configurator/ProjectFacts.tsx";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
 import {
@@ -88,6 +90,8 @@ export function NewProject({
 	config,
 	openOnLoad = false,
 	compareOnLoad = false,
+	workspaceHeading = false,
+	opened,
 	enterDetails,
 	returnToComparison,
 	creationPending = false,
@@ -113,6 +117,8 @@ export function NewProject({
 	config?: Configuration;
 	openOnLoad?: boolean;
 	compareOnLoad?: boolean;
+	workspaceHeading?: boolean;
+	opened?: () => void;
 	enterDetails?: () => void;
 	returnToComparison?: () => void;
 	creationPending?: boolean;
@@ -935,7 +941,10 @@ export function NewProject({
 					recoveryChecking ||
 					recoveryDiscoveryFailed
 				}
-				onClick={() => setOpen(true)}
+				onClick={() => {
+					setOpen(true);
+					opened?.();
+				}}
 			>
 				{__("New project", "linker-tools")}
 			</button>
@@ -995,7 +1004,15 @@ export function NewProject({
 				})}
 			/>
 		);
-	return (
+	const showSummary = !addressForm && (compareAtHome || workspaceHeading);
+	const projectName = title.trim() || __("New project", "linker-tools");
+	const site = [
+		brief.site.location_label.trim(),
+		brief.site.country_code && config?.countries[brief.site.country_code],
+	]
+		.filter(Boolean)
+		.join(" · ");
+	const form = (
 		<form
 			ref={homeForm}
 			className="sc-main"
@@ -1334,6 +1351,29 @@ export function NewProject({
 				</Notice>
 			)}
 		</form>
+	);
+	if (!showSummary) return form;
+	return (
+		<>
+			{workspaceHeading && (
+				<ProjectHeading title={projectName} location={site} />
+			)}
+			<div className="sc-layout sc-intake-layout">
+				{form}
+				<ProjectSummary
+					title={projectName}
+					facts={[
+						[
+							__("Planned system", "linker-tools"),
+							brief.system_scope
+								? systemNames()[brief.system_scope]
+								: __("Not specified", "linker-tools"),
+						],
+						...projectFacts(inputs, locale),
+					]}
+				/>
+			</div>
+		</>
 	);
 }
 

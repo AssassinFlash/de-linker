@@ -119,3 +119,28 @@ export function ProjectFacts({ facts }: { facts: [string, string][] }) {
 		</dl>
 	);
 }
+
+export function ProjectSummary({
+	title,
+	facts,
+}: {
+	title: string;
+	facts: [string, string][];
+}) {
+	return (
+		<aside
+			className="sc-sidebar sc-project-summary"
+			aria-label={__("Current configuration", "linker-tools")}
+		>
+			<section className="sc-card">
+				<div>
+					<p className="sc-eyebrow">
+						{__("Current configuration", "linker-tools")}
+					</p>
+					<h3>{title}</h3>
+				</div>
+				<ProjectFacts facts={facts} />
+			</section>
+		</aside>
+	);
+}

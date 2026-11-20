@@ -1131,7 +1131,14 @@ export default function Configurator({
 				activeTransferRunId,
 	);
 	return (
-		<div className="sc-configurator sc-project-workbench" ref={workbench}>
+		<div
+			className={
+				guided
+					? "sc-configurator sc-project-workbench sc-intake"
+					: "sc-configurator sc-project-workbench"
+			}
+			ref={workbench}
+		>
 			<ProjectHeading
 				title={project.title}
 				location={siteLabel}

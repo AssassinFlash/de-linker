@@ -106,6 +106,7 @@ export function Workspace({
 				)
 			: "",
 	);
+	const [newProjectOpen, setNewProjectOpen] = useState(false);
 	const [route, setRoute] = useState(() => location.hash.slice(1));
 	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
 		currentGuidedRetryRevision,
@@ -242,6 +243,7 @@ export function Workspace({
 				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
 			} else replacePlannerLocation(url);
 			setEntryHints(null);
+			setNewProjectOpen(false);
 			setSavedSource(null);
 			setBriefSource(null);
 			setSelected(id);
@@ -621,6 +623,16 @@ export function Workspace({
 
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
+	const directEntry =
+		!projectIndex &&
+		savedSource === null &&
+		briefSource === null &&
+		!entryHints?.roof &&
+		!firstVisitComparison &&
+		(newProjectOpen ||
+			route === "sc-project" ||
+			Boolean(entryHints) ||
+			(index.isSuccess && !projects.length));
 	const entryKey =
 		canCompareDirections && (firstVisitComparison || route === "sc-project")
 			? JSON.stringify(entryHints)
@@ -634,7 +646,13 @@ export function Workspace({
 	}
 
 	return (
-		<div className="sc-configurator">
+		<div
+			className={
+				directEntry || firstVisitComparison
+					? "sc-configurator sc-intake"
+					: "sc-configurator"
+			}
+		>
 			{firstVisitComparison ? (
 				<>
 					<ProjectHeading
@@ -652,14 +670,18 @@ export function Workspace({
 					<InquiryStages />
 				</>
 			) : (
-				<header className="sc-project-heading">
+				<header
+					className={directEntry ? "sc-entry-toolbar" : "sc-project-heading"}
+				>
 					<div>
 						<p>{__("Solution Configurator", "linker-tools")}</p>
-						<h1>
-							{entryHints?.roof
-								? __("Start with your roof", "linker-tools")
-								: __("Your projects", "linker-tools")}
-						</h1>
+						{!directEntry && (
+							<h1>
+								{entryHints?.roof
+									? __("Start with your roof", "linker-tools")
+									: __("Your projects", "linker-tools")}
+							</h1>
+						)}
 					</div>
 					<div className="sc-actions">
 						{!entryHints && !projectIndex && !savedSource && !briefSource && (
@@ -720,6 +742,8 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
+							workspaceHeading={directEntry}
+							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
 							{...(canCompareDirections &&
 								route === "sc-project" && {
@@ -758,7 +782,7 @@ export function Workspace({
 					</Notice>
 				)}
 				<section
-					className="sc-card"
+					className="sc-card sc-saved-projects"
 					hidden={firstVisitComparison || Boolean(entryHints?.roof)}
 					aria-labelledby="lp-projects-heading"
 				>

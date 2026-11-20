@@ -6,7 +6,7 @@ import { energyGoal } from "./EnergyDemand.tsx";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant } from "../../domain/equipmentPlant.ts";
 import { Icon } from "../Icon.tsx";
-import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
+import { ProjectSummary, projectFacts } from "./ProjectFacts.tsx";
 import { hasStorageToExclude } from "./ProjectDetails.tsx";
 
 export function systemNames() {
@@ -61,12 +61,14 @@ export function PreliminaryOptions({
 	disabled,
 	choose,
 	chooseRetrofit,
+	projectTitle,
 	action,
 }: {
 	inputs: JsonObject;
 	locale: string;
 	disabled: boolean;
 	choose: (scope: NonNullable<Brief["system_scope"]>) => void;
+	projectTitle?: string;
 	chooseRetrofit?: (keep: boolean) => void;
 	action?: ReactNode;
 }) {
@@ -221,12 +223,10 @@ export function PreliminaryOptions({
 				{action && <footer className="sc-direction-tools">{action}</footer>}
 			</section>
 			{facts.length > 0 && (
-				<aside className="sc-sidebar">
-					<section className="sc-card">
-						<h2>{__("Project details", "linker-tools")}</h2>
-						<ProjectFacts facts={facts} />
-					</section>
-				</aside>
+				<ProjectSummary
+					title={projectTitle || __("Project details", "linker-tools")}
+					facts={facts}
+				/>
 			)}
 		</div>
 	);

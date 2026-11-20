@@ -108,8 +108,9 @@ export function PreliminaryProject({
 		}
 	}
 	return (
-		<div className="sc-configurator">
+		<div className="sc-configurator sc-intake">
 			<ProjectHeading
+				title={project.title}
 				anchor={
 					showOptions ? "sc-preliminary-options" : "sc-preliminary-review"
 				}
@@ -118,6 +119,7 @@ export function PreliminaryProject({
 			{showOptions && (
 				<div className="sc-main">
 					<PreliminaryOptions
+						projectTitle={project.title}
 						locale={locale}
 						inputs={draft?.history.current ?? reviewed.inputs}
 						disabled={blocked || needsRecovery || Boolean(draft?.pending)}
