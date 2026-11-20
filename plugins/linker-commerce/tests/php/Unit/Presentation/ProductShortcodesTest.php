@@ -34,7 +34,11 @@ final class ProductShortcodesTest extends TestCase {
 
 	use MocksSelectionFacts;
 
-	/** Whether the current fixture is an account endpoint. */
+	/**
+	 * Whether the current fixture is an account endpoint.
+	 *
+	 * @var bool
+	 */
 	private bool $account_page = false;
 
 	/**
