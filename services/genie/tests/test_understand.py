@@ -397,6 +397,41 @@ def test_a_csv_attachment_becomes_a_parts_turn(vocabulary: Vocabulary) -> None:
     assert prepared.cards[0]["kind"] == "list"
 
 
+@pytest.mark.parametrize("locale, prefix", [("en", "Attached"), ("de", "Anhang")])
+def test_upload_only_reads_the_document_without_searching_for_its_filename(
+    vocabulary: Vocabulary, locale: str, prefix: str
+) -> None:
+    import base64
+
+    from test_attachments import PROBE_PDF, See
+
+    from linker_genie.knowledge import KnowledgeUnavailable
+    from linker_genie.schema import Upload
+
+    def search(_: dict[str, Any] | None) -> dict[str, Any]:
+        raise KnowledgeUnavailable(
+            "managed knowledge index needs matching serving rules"
+        )
+
+    request = _request(f"{prefix}: {PROBE_PDF.name}", locale)
+    request.attachments.append(
+        Upload(
+            name=PROBE_PDF.name,
+            type="application/pdf",
+            data=base64.b64encode(PROBE_PDF.read_bytes()).decode(),
+        )
+    )
+    prepared = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("documents_specs")),
+        see=See(),
+        search=search,
+    ).prepare(request, _abilities([]))
+    assert prepared.knowledge_error is None
+    assert any(fact.value == "10000 W" for fact in prepared.facts.facts.values())
+    assert [card["name"] for card in prepared.cards] == [PROBE_PDF.name]
+
+
 def test_the_layer_times_its_own_phases(vocabulary: Vocabulary) -> None:
     """#336: the layer's clock travels with the Prepared; the app adopts it."""
     understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))

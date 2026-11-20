@@ -326,6 +326,7 @@ def check(
     failures.extend(_not_released_answer_shape(output, facts))
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
+    failures.extend(_qualified_figure_placement(output, facts))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
@@ -1318,6 +1319,79 @@ def _droppable_tokens(text: str) -> list[str]:
                 continue
             tokens.append(token.group())
     return tokens
+
+
+# A second scope assertion can contradict the sourced sentence even in another
+# paragraph or block. Other facts about the ports (count, voltage, protection)
+# can still be answered alongside it.
+_COMBINED_INPUTS = re.compile(
+    r"\b(?:shared|split|divided|total|combined)\b[^.!?\n]*\b(?:ports?|inputs?)\b"
+    r"|\b(?:both|all) (?:battery )?(?:inputs|ports)\b[^.!?\n]*\b(?:share|combined|together)\b"
+    r"|\b(?:beide[nr]?|alle[nr]?) (?:batterie)?eingänge[n]?\b[^.!?\n]*\b(?:zusammen|gemeinsam|geteilt)\b"
+    r"|\b(?:geteilt|verteilt|insgesamt|gemeinsam)\b[^.!?\n]*\b(?:batterie)?eingänge[n]?\b",
+    re.I,
+)
+
+
+def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """The service writes the entire claim for a qualified input current."""
+    failures = []
+    has_qualified_current = False
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            lines = block.text.splitlines()
+        elif isinstance(block, HandoffBlock):
+            lines = [block.summary]
+        elif isinstance(block, AskBlock):
+            lines = block.options
+        else:
+            continue
+        for line in lines:
+            for fact_id in leftover_placeholders(line):
+                fact = _fact_known(facts, fact_id)
+                if fact is None or fact.per_input_current_direction is None:
+                    continue
+                has_qualified_current = True
+                if (
+                    not isinstance(block, TextBlock)
+                    or line.strip() != f"{{fact:{fact_id}}}"
+                ):
+                    failures.append(
+                        f"Place {{fact:{fact_id}}} alone on a text line. "
+                        "The service writes the complete per-input current sentence."
+                    )
+    if has_qualified_current:
+        for text in _model_texts(output):
+            for prose in re.split(r"[,;\n]|[.!?](?=\s|$)", PLACEHOLDER.sub("", text)):
+                if not re.search(
+                    r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
+                    r"|^\s*(?:it|er|dieser|dieses)\b|\bshare it\b",
+                    prose,
+                    re.I,
+                ):
+                    continue
+                # Each assertion has its own polarity, even when two of them
+                # end at the same “both inputs”.
+                start = 0
+                while scope := _COMBINED_INPUTS.search(prose, start):
+                    if not (
+                        re.search(
+                            r"\b(?:not\s+(?:use\s+)?(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
+                            prose[: scope.start()],
+                            re.I,
+                        )
+                        or re.search(
+                            r"\b(?:not|nicht)\s+(?:share|gemeinsam|zusammen|geteil)",
+                            scope.group(),
+                            re.I,
+                        )
+                    ):
+                        failures.append(
+                            "Keep the service-written per-input limit without a second scope assertion."
+                        )
+                        return failures
+                    start = scope.start() + 1
+    return failures
 
 
 def _model_texts(output: TurnOutput) -> list[str]:

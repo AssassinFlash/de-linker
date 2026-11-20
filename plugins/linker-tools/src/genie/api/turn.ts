@@ -101,6 +101,7 @@ export interface DocumentBlock {
 	ref: string;
 	document_id?: string;
 	document_revision?: string;
+	evidence_product_id?: number;
 	label: string | null;
 	url: string | null;
 	/** Original document title, preserved when history UI is localized. */

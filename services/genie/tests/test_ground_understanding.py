@@ -76,6 +76,32 @@ def test_a_document_outage_keeps_requested_findings_under_the_existing_degradati
     )
 
 
+@pytest.mark.parametrize("catalog_document", [False, True])
+def test_a_document_outage_does_not_promote_unused_figure_evidence(
+    catalog_document: bool,
+) -> None:
+    facts = collect(
+        "linker/get-product",
+        {
+            "product_id": 1184,
+            "figures": {
+                "ac_connection": {
+                    "value": "Plug-in connector",
+                    "citation": {"url": PDF, "page": 2},
+                },
+            },
+            "documents": [{"url": PDF, "title": "Datasheet"}]
+            if catalog_document
+            else [],
+        },
+    )
+    output = fallback(facts, "de", DOCS, failure_class="retrieval")
+    assert output.blocks[0].type == "handoff"
+    assert [
+        block.ref for block in output.blocks if isinstance(block, DocumentBlock)
+    ] == (["p1184.document.0"] if catalog_document else [])
+
+
 def _facts() -> TurnFacts:
     facts = TurnFacts()
     facts.product_ids = {4107, 4109}

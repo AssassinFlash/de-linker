@@ -29,7 +29,7 @@ final class Compatibility {
 	 * @param string                   $inverter The inverter model (pa_model).
 	 * @param string                   $battery  The battery model (pa_model).
 	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null Null when no pair matches.
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null Null when no pair matches.
 	 */
 	public static function for_models( string $inverter, string $battery, ?array $manifest = null ): ?array {
 		$manifest  ??= Publication::manifest();
@@ -44,7 +44,7 @@ final class Compatibility {
 	 * @param int                 $inverter_id Canonical inverter.
 	 * @param int                 $battery_id Canonical battery.
 	 * @param array<string,mixed> $manifest Current shared authority.
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
 	 */
 	private static function answer( int $inverter_id, int $battery_id, array $manifest ): ?array {
 		$conditions  = array();
@@ -65,16 +65,18 @@ final class Compatibility {
 				}
 			}
 			foreach ( (array) ( $pair['documents'] ?? array() ) as $document ) {
-				if ( is_array( $document ) && is_string( $document['url'] ?? null ) ) {
-					$page = $document['page'] ?? null;
-					$documents[ $document['url'] . ':' . (string) $page ] = array_filter(
-						array(
-							'url'  => $document['url'],
-							'page' => is_int( $page ) ? $page : null,
-						),
-						static fn( $value ): bool => null !== $value
-					);
+				if ( ! is_array( $document ) || ! is_string( $document['url'] ?? null ) || ! is_string( $document['document_id'] ?? null ) || ! is_string( $document['document_revision'] ?? null ) || ! is_int( $document['product_id'] ?? null ) ) {
+					return null;
 				}
+				$page              = $document['page'] ?? null;
+				$key               = $document['document_id'] . ':' . $document['product_id'] . ':' . (string) $page;
+				$documents[ $key ] = array(
+					'document_id'       => $document['document_id'],
+					'document_revision' => $document['document_revision'],
+					'product_id'        => $document['product_id'],
+					'url'               => $document['url'],
+					...( is_int( $page ) ? array( 'page' => $page ) : array() ),
+				);
 			}
 			foreach ( (array) ( $pair['accessories'] ?? array() ) as $accessory ) {
 				if ( is_array( $accessory ) && is_string( $accessory['model'] ?? null ) ) {
@@ -105,7 +107,7 @@ final class Compatibility {
 	 * @param int                      $inverter_id Inverter product ID.
 	 * @param int                      $battery_id  Battery product ID.
 	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
 	 */
 	public static function for_products( int $inverter_id, int $battery_id, ?array $manifest = null ): ?array {
 		$manifest ??= Publication::manifest();
@@ -119,9 +121,10 @@ final class Compatibility {
 	 * @return list<array<string, mixed>>
 	 */
 	public static function pairs( ?array $manifest = null ): array {
-		$data   = EngineeringData::compatibility( $manifest );
-		$pairs  = is_array( $data['pairs'] ?? null ) ? $data['pairs'] : array();
-		$usable = array();
+		$manifest ??= Publication::manifest();
+		$data       = Publication\CompatibilityClaims::projection( $manifest['products'], $manifest['documents'], include_evidence: true );
+		$pairs      = is_array( $data['pairs'] ?? null ) ? $data['pairs'] : array();
+		$usable     = array();
 		foreach ( $pairs as $pair ) {
 			if ( is_array( $pair ) && in_array( $pair['verdict'] ?? '', self::VERDICTS, true ) ) {
 				$usable[] = $pair;

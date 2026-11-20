@@ -26,6 +26,7 @@ import time
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
+from threading import Lock
 from typing import Literal
 from uuid import UUID
 
@@ -124,6 +125,7 @@ logger = logging.getLogger(__name__)
 app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 
 _log: TurnLog | None = None
+_log_lock = Lock()
 _client: AbilityClient | None = None
 _understander: Understander | None = None
 _vocabulary: StoreVocabulary | None = None
@@ -141,9 +143,10 @@ def _log_path() -> Path:
 
 def turn_log() -> TurnLog:
     global _log
-    if _log is None:
-        _log = TurnLog(_log_path())
-    return _log
+    with _log_lock:
+        if _log is None:
+            _log = TurnLog(_log_path())
+        return _log
 
 
 def ability_client() -> AbilityClient:
@@ -318,7 +321,13 @@ def _compute_turn(
     )
     try:
         result, service_block = _answer(
-            body, prepared, request, commerce, clock, abilities=abilities
+            body,
+            prepared,
+            request,
+            commerce,
+            clock,
+            abilities=abilities,
+            publication=original_permission,
         )
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         with timing.phase(clock, timing.LOG):
@@ -405,6 +414,25 @@ def _compute_turn(
         if block.get("type") != "document" or not block.get("url"):
             continue
         url = block["url"].split("#")[0]
+        cited = result.facts.documents.get(block["ref"])
+        evidence = cited.evidence if cited is not None else None
+        if evidence is not None:
+            document = permission.documents.get(evidence.document_id)
+            owner = permission.canonical(evidence.product_id)
+            if (
+                document is None
+                or owner not in document["product_ids"]
+                or document["document_revision"] != evidence.document_revision
+                or url not in [document["url"], *document.get("aliases", [])]
+            ):
+                raise PublicationChanged("cited document association changed")
+            block["evidence_product_id"] = owner
+            block["document_id"] = evidence.document_id
+            block["document_revision"] = evidence.document_revision
+            continue
+        if block["ref"].startswith("compat.document."):
+            block["url"] = None
+            continue
         document = next(
             (
                 d
@@ -517,6 +545,7 @@ def _answer(
     clock: timing.Timing | None = None,
     *,
     abilities: Abilities,
+    publication: Snapshot | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); a short-code clarification (route.answer); a scripted
@@ -784,7 +813,11 @@ def _answer(
             None,
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        abilities, prepared=prepared, pages=page_reader().read, clock=clock
+        abilities,
+        prepared=prepared,
+        pages=page_reader().read,
+        clock=clock,
+        publication=publication,
     )
     # The same list the model tools append to during `generate` (inside
     # `run`). A tuple taken here would miss a search-products 500 the model

@@ -1169,9 +1169,11 @@ def _degraded(language: Locale) -> TurnOutput:
 
 def _document_refs(facts: TurnFacts) -> list[str]:
     """Document links the fallback shows, search order, capped at three."""
-    refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
-        facts.documents
-    )
+    refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or [
+        ref
+        for ref, document in facts.documents.items()
+        if document.figure_product_id is None
+    ]
     return refs[:FALLBACK_DOCUMENTS]
 
 
