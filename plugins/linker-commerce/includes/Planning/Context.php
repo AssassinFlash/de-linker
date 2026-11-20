@@ -961,9 +961,14 @@ final class Context {
 	 * @throws \UnexpectedValueException The project has no supported preliminary direction.
 	 */
 	private static function project_facts( array $project, bool $include_direction, bool $for_planner = false ): array {
-		$inputs = $project['inputs'];
-		$brief  = $inputs['brief'];
-		$site   = $brief['site'] ?? array();
+		$inputs  = $project['inputs'];
+		$brief   = $inputs['brief'];
+		$site    = $brief['site'] ?? array();
+		$number  = static fn ( $value ): string => $for_planner ? wc_format_localized_decimal( (string) $value ) : (string) $value;
+		$country = $site['country_code'] ?? '';
+		if ( $for_planner && '' !== $country ) {
+			$country = WC()->countries->get_countries()[ $country ] ?? $country;
+		}
 		// phpcs:disable WordPress.WP.I18n.TextDomainMismatch -- Use the configurator's existing EN/DE field labels.
 		$scope = match ( $brief['system_scope'] ) {
 			'new_pv_storage'   => __( 'Solar and storage', 'linker-tools' ),
@@ -1003,7 +1008,7 @@ final class Context {
 		if ( 'peak_shaving_with_reserve_v1' === ( $scenario['controller'] ?? '' ) ) {
 			foreach ( $scenario['schedule'] ?? array() as $period ) {
 				if ( 'connected' === $period['mode'] && 'limited' === ( $period['import_policy'] ?? '' ) && isset( $period['import_cap_kw'] ) ) {
-					$limits[] = $period['import_cap_kw'] . ' kW';
+					$limits[] = $number( $period['import_cap_kw'] ) . ' kW';
 				}
 			}
 		}
@@ -1021,39 +1026,39 @@ final class Context {
 		}
 		$facts = array(
 			__( 'Planned system', 'linker-tools' )         => $include_direction ? $scope : '',
-			__( 'Location', 'linker-tools' )               => implode( ', ', array_filter( array( $site['location_label'] ?? '', $site['postal_code'] ?? '', $site['country_code'] ?? '' ), static fn ( $part ): bool => '' !== $part ) ),
-			__( 'Latitude', 'linker-tools' )               => $site['latitude'] ?? '',
-			__( 'Longitude', 'linker-tools' )              => $site['longitude'] ?? '',
+			__( 'Location', 'linker-tools' )               => implode( ', ', array_filter( array( $site['location_label'] ?? '', $site['postal_code'] ?? '', $country ), static fn ( $part ): bool => '' !== $part ) ),
+			__( 'Latitude', 'linker-tools' )               => isset( $site['latitude'] ) ? $number( $site['latitude'] ) : '',
+			__( 'Longitude', 'linker-tools' )              => isset( $site['longitude'] ) ? $number( $site['longitude'] ) : '',
 			__( 'Time zone', 'linker-tools' )              => $site['timezone'] ?? '',
 			__( 'Project type', 'linker-tools' )           => $use,
-			__( 'Annual electricity use', 'linker-tools' ) => isset( $brief['annual_load']['kwh'] ) ? $brief['annual_load']['kwh'] . ' kWh' : '',
+			__( 'Annual electricity use', 'linker-tools' ) => isset( $brief['annual_load']['kwh'] ) ? $number( $brief['annual_load']['kwh'] ) . ' kWh' : '',
 			__( 'Basis for the annual figure', 'linker-tools' ) => $basis,
 			__( 'Source note', 'linker-tools' )            => $brief['annual_load']['source_note'] ?? '',
 			__( 'Main purpose', 'linker-tools' )           => $purpose,
 			__( 'Target grid import limit', 'linker-tools' ) => implode( ', ', array_unique( $limits ) ),
 			__( 'Grid phases', 'linker-tools' )            => $phase,
 			__( 'Existing inverter (retrofit)', 'linker-tools' ) => $inverter,
-			__( 'PV array size', 'linker-tools' )          => null !== $pv_kwp ? $pv_kwp . ' kWp' : '',
-			__( 'Continuous discharge power', 'linker-tools' ) => isset( $equipment['required_discharge_ac_kw'] ) ? $equipment['required_discharge_ac_kw'] . ' kW' : '',
-			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $equipment['required_usable_kwh'] . ' kWh' : '',
-			__( 'Backup load', 'linker-tools' )            => isset( $inputs['backup_demand']['load_kw'] ) ? $inputs['backup_demand']['load_kw'] . ' kW' : '',
-			__( 'Required duration', 'linker-tools' )      => isset( $inputs['backup_demand']['duration_hours'] ) ? $inputs['backup_demand']['duration_hours'] . ' h' : '',
+			__( 'PV array size', 'linker-tools' )          => null !== $pv_kwp ? $number( $pv_kwp ) . ' kWp' : '',
+			__( 'Continuous discharge power', 'linker-tools' ) => isset( $equipment['required_discharge_ac_kw'] ) ? $number( $equipment['required_discharge_ac_kw'] ) . ' kW' : '',
+			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $number( $equipment['required_usable_kwh'] ) . ' kWh' : '',
+			__( 'Backup load', 'linker-tools' )            => isset( $inputs['backup_demand']['load_kw'] ) ? $number( $inputs['backup_demand']['load_kw'] ) . ' kW' : '',
+			__( 'Required duration', 'linker-tools' )      => isset( $inputs['backup_demand']['duration_hours'] ) ? $number( $inputs['backup_demand']['duration_hours'] ) . ' h' : '',
 			__( 'Solution draft', 'linker-commerce' )      => $inputs['saved_solution_reference']['title'] ?? '',
 		);
 		if ( $for_planner ) {
 			if ( $arrays && isset( $equipment['pv_dc_kw'] ) ) {
-				$facts[ __( 'PV input power', 'linker-tools' ) ] = $equipment['pv_dc_kw'] . ' kWp';
+				$facts[ __( 'PV input power', 'linker-tools' ) ] = $number( $equipment['pv_dc_kw'] ) . ' kWp';
 			}
 			$panels = $inputs['known_panel_details'] ?? array();
 			if ( isset( $panels['count'] ) ) {
-				$facts[ __( 'Number of modules', 'linker-tools' ) ] = (string) $panels['count'];
+				$facts[ __( 'Number of modules', 'linker-tools' ) ] = $number( $panels['count'] );
 			}
 			if ( isset( $panels['power_w'] ) ) {
-				$facts[ __( 'Power per panel', 'linker-tools' ) ] = $panels['power_w'] . ' Wp';
+				$facts[ __( 'Power per panel', 'linker-tools' ) ] = $number( $panels['power_w'] ) . ' Wp';
 			}
 			// The Solar capacity control also populates the first reference array.
 			if ( isset( $panels['system_kwp'] ) && ! ( 1 === count( $arrays ) && isset( $arrays[0]['peak_power_kwp'] ) && (float) $arrays[0]['peak_power_kwp'] === (float) $panels['system_kwp'] ) ) {
-				$facts[ __( 'Solar capacity', 'linker-tools' ) ] = $panels['system_kwp'] . ' kWp';
+				$facts[ __( 'Solar capacity', 'linker-tools' ) ] = $number( $panels['system_kwp'] ) . ' kWp';
 			}
 		}
 		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch

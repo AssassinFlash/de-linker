@@ -655,6 +655,7 @@ final class ProjectNotesTest extends TestCase {
 
 	/** The planner keeps technical inputs in its summary and note controls in the contact form. */
 	public function test_planner_review_keeps_distinct_capacities_and_optional_note_controls(): void {
+		WP_Mock::userFunction( 'wc_format_localized_decimal', array( 'return' => static fn ( string $number ): string => $number ) );
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );
 		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
 		WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
