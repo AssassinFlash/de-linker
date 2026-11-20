@@ -37,7 +37,159 @@ test("a rejected CSV mapping remains editable on the same project after reopenin
 test("a customer can explicitly discard the rejected load profile and compare the same project", (t) =>
 	runHomeComparison(t, "discard"));
 
-async function runHomeComparison(t, rejectedProfile) {
+test("the home form carries an unknown grid connection through project creation", (t) =>
+	runHomeComparison(t, undefined, true));
+
+test("a new-project CSV remains actionable when the homepage picker shows a saved project", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { HomepageComparison } =
+		await import("../src/components/HomepageComparison.tsx");
+	let root = createRoot(fixture.element);
+	const cache = new QueryClient();
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+	});
+	const project = {
+		id: projectId,
+		title: "Saved rooftop",
+		revision: 1,
+		input_sha256: "2".repeat(64),
+		updated_at: 1763200000,
+	};
+	const client = {
+		isCurrentScope: () => true,
+		async query(path, command) {
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", products: [] };
+			assert.equal(path, "projects/list");
+			if (command.title_query === "Saved roof")
+				return { schema_version: 1, items: [project], next: null };
+			const first = {
+				...project,
+				id: "8".repeat(32),
+				title: "Another project",
+			};
+			return {
+				schema_version: 1,
+				items: [first],
+				next: { id: first.id, updated_at: first.updated_at },
+			};
+		},
+	};
+	const mount = (locale) =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(HomepageComparison, {
+						session,
+						client,
+						config: { locale, countries: {} },
+						store: {
+							async readCreations() {
+								return [];
+							},
+						},
+						target: new URL("/workspace/", location.href),
+						recheck() {},
+					}),
+				),
+			),
+		);
+	await mount("en");
+	await until(() => document.querySelector('input[type="search"]'));
+	await enter(document.querySelector('input[type="search"]'), "Saved roof");
+	await until(() =>
+		document.querySelector('option[value="' + projectId + '"]'),
+	);
+	const csv = document.querySelector('[name="load_profile"]');
+	await act(async () => {
+		Object.defineProperty(csv, "files", {
+			value: [new File(["timestamp,load"], "load.csv")],
+		});
+		csv.dispatchEvent(new Event("change", { bubbles: true }));
+	});
+	await act(async () => {
+		const picker = document.querySelector(
+			'option[value="' + projectId + '"]',
+		).parentElement;
+		picker.value = projectId;
+		picker.dispatchEvent(new Event("change", { bubbles: true }));
+	});
+	assert.equal(document.querySelector('[name="load_profile"]'), null);
+	const link = document.createElement("a");
+	link.href = "/de/";
+	link.lang = "de";
+	link.hreflang = "de";
+	document.querySelector("header").append(link);
+	async function blocked() {
+		let result;
+		document.addEventListener(
+			"click",
+			(event) => {
+				result = event.defaultPrevented;
+				event.preventDefault();
+			},
+			{ once: true },
+		);
+		await act(async () =>
+			link.dispatchEvent(
+				new window.MouseEvent("click", { bubbles: true, cancelable: true }),
+			),
+		);
+		return result;
+	}
+	assert.equal(await blocked(), true);
+	assert.match(document.activeElement.textContent, /Your CSV is still here/);
+	const remove = document.activeElement.querySelector("button");
+	assert.equal(remove.textContent, "Remove CSV");
+	await act(async () => remove.click());
+	assert.equal(document.querySelector("option:checked").value, projectId);
+	async function switchLanguage(lang, path) {
+		link.href = path;
+		link.hreflang = lang;
+		link.lang = lang;
+		assert.equal(await blocked(), false);
+		await act(async () => root.unmount());
+		cache.clear();
+		history.pushState(null, "", link.href);
+		root = createRoot(fixture.element);
+		await mount(lang);
+		await until(() => document.querySelector('input[type="search"]'));
+		assert.equal(location.pathname, path);
+		assert.equal(location.search, "");
+		assert.equal(
+			document.querySelector('input[type="search"]').value,
+			"Saved roof",
+		);
+		await until(() =>
+			document.querySelector('option[value="' + projectId + '"]'),
+		);
+	}
+	await switchLanguage("de", "/de/");
+	const picker = document.querySelector(
+		'option[value="' + projectId + '"]',
+	).parentElement;
+	assert.equal(picker.value, projectId);
+	await act(async () => {
+		picker.value = "";
+		picker.dispatchEvent(new Event("change", { bubbles: true }));
+	});
+	await switchLanguage("en", "/");
+	assert.equal(
+		document.querySelector('option[value="' + projectId + '"]').parentElement
+			.value,
+		"",
+	);
+	assert.ok(document.querySelector('input[name="project_title"]'));
+});
+
+async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	const rejectFirstMapping = Boolean(rejectedProfile);
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
@@ -157,7 +309,7 @@ async function runHomeComparison(t, rejectedProfile) {
 		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
 		else Reflect.deleteProperty(globalThis, "indexedDB");
 	});
-	const mountHome = () =>
+	const mountHome = (locale = "en") =>
 		act(async () =>
 			root.render(
 				React.createElement(SessionBoundary, { client }, (value, recheck) =>
@@ -167,7 +319,8 @@ async function runHomeComparison(t, rejectedProfile) {
 						store: new DraftStore(),
 						recheck,
 						openOnLoad: true,
-						config: { locale: "en", countries: { DE: "Germany" } },
+						locale,
+						config: { locale, countries: { DE: "Germany" } },
 						homeComparison: {
 							picker: null,
 							savedProject: "",
@@ -213,10 +366,63 @@ async function runHomeComparison(t, rejectedProfile) {
 	}
 	await select("system_scope", "new_pv_storage");
 	await select("project_purpose", "peak");
-	await select("grid_phase", "3");
+	if (unknownPhase) {
+		assert.match(
+			field("grid_phase").selectedOptions[0].textContent,
+			/not sure|not yet known/i,
+		);
+		assert.equal(field("grid_phase").required, false);
+	} else await select("grid_phase", "3");
 	await enter(field("annual_load_kwh"), "7200");
 	await select("annual_load_basis", "bill_total");
 	await enter(field("pv_dc_kw"), "8");
+	if (unknownPhase) {
+		const language = document.createElement("a");
+		document.querySelector("header").append(language);
+		async function switchLanguage(lang, url) {
+			language.href = url;
+			language.hreflang = lang;
+			language.lang = lang;
+			const click = new window.MouseEvent("click", {
+				bubbles: true,
+				cancelable: true,
+			});
+			// Emulate the cross-document navigation after the native switcher click.
+			let blocked;
+			document.addEventListener(
+				"click",
+				(event) => {
+					blocked = event.defaultPrevented;
+					event.preventDefault();
+				},
+				{ once: true },
+			);
+			await act(async () => language.dispatchEvent(click));
+			if (blocked) return false;
+			await act(async () => root.unmount());
+			history.pushState(null, "", language.href);
+			root = createRoot(fixture.element);
+			await mountHome(lang);
+			await until(findForm);
+			form = findForm();
+			return true;
+		}
+		assert.equal(await switchLanguage("de", "/de/"), true);
+		assert.equal(field("project_title").value, "Berlin workshop");
+		assert.equal(field("annual_load_kwh").value, "7200");
+		assert.equal(field("annual_load_basis").value, "bill_total");
+		assert.equal(field("pv_dc_kw").value, "8");
+		await enter(field("pv_dc_kw"), "");
+		await select("project_purpose", "");
+		assert.equal(await switchLanguage("en", "/"), true);
+		assert.equal(field("pv_dc_kw").value, "");
+		assert.equal(field("project_purpose").value, "");
+		await select("project_purpose", "peak");
+		assert.equal(field("location_label").value, "Werkstatt, 10117 Berlin");
+		assert.equal(calls.length, 0);
+		await enter(field("pv_dc_kw"), "8");
+	}
+
 	await act(async () => field("estimate_solar").click());
 	await enter(field("latitude"), "47.66");
 	await enter(field("longitude"), "9.17");
@@ -230,6 +436,16 @@ async function runHomeComparison(t, rejectedProfile) {
 	await select("pvgis_horizon", "true");
 	await enter(field("pvgis_source"), "Surveyed customer array");
 	await enter(field("peak_import_kw"), "5");
+	const projectSummary = form.parentElement.querySelector("aside");
+	assert.ok(
+		projectSummary,
+		"the intake shows the customer's current project alongside the form",
+	);
+	assert.match(projectSummary.textContent, /Berlin workshop/);
+	assert.match(projectSummary.textContent, /7200 kWh/);
+	assert.match(projectSummary.textContent, /8 kWp/);
+	assert.match(projectSummary.textContent, /Target grid import limit5 kW/);
+
 	const fileInput = field("load_profile");
 	assert.equal(fileInput?.type, "file");
 	await act(async () => {
@@ -239,6 +455,18 @@ async function runHomeComparison(t, rejectedProfile) {
 		fileInput.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await select("load_profile_delimiter", ",");
+	if (unknownPhase) {
+		const link = document.querySelector("a[hreflang]");
+		const click = new window.MouseEvent("click", {
+			bubbles: true,
+			cancelable: true,
+		});
+		await act(async () => link.dispatchEvent(click));
+		assert.equal(click.defaultPrevented, true);
+		assert.match(document.activeElement.textContent, /CSV.*switch languages/);
+		assert.equal(field("load_profile_delimiter").value, ",");
+	}
+
 	await enter(
 		field("load_profile_rights"),
 		"Customer site meter; permission granted.",
@@ -262,6 +490,62 @@ async function runHomeComparison(t, rejectedProfile) {
 	if (rejectFirstMapping) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);
 		assert.equal(opened.length, 0);
+		const language = document.createElement("a");
+		language.href = "/de/";
+		language.hreflang = "de";
+		language.lang = "de";
+		document.querySelector("header").append(language);
+		async function languageBlocked() {
+			let blocked;
+			document.addEventListener(
+				"click",
+				(event) => {
+					blocked = event.defaultPrevented;
+					event.preventDefault();
+				},
+				{ once: true },
+			);
+			await act(async () =>
+				language.dispatchEvent(
+					new window.MouseEvent("click", { bubbles: true, cancelable: true }),
+				),
+			);
+			return blocked;
+		}
+		assert.equal(
+			await languageBlocked(),
+			false,
+			"the saved import can reopen in another language",
+		);
+		const editedField =
+			rejectedProfile === "correct"
+				? field("profile_interval_minutes")
+				: byLabel("Value column");
+		const editedText =
+			rejectedProfile === "correct" ? "-1" : "Load corrected before switching";
+		const revealed = [];
+		const scrolling = t.mock.method(
+			window.HTMLElement.prototype,
+			"scrollIntoView",
+			function (options) {
+				revealed.push([this, options]);
+			},
+		);
+		await enter(editedField, editedText);
+		assert.equal(revealed.length, 0);
+		for (let click = 0; click < 2; click++) {
+			const previousReveals = revealed.length;
+			language.focus();
+			assert.equal(await languageBlocked(), true);
+			const notice = document.activeElement;
+			assert.equal(notice.getAttribute("role"), "alert");
+			assert.match(notice.textContent, /Your CSV changes are still here/);
+			assert.equal(revealed.length, previousReveals + 1);
+			assert.equal(revealed.at(-1)?.[0], notice);
+			assert.equal(revealed.at(-1)?.[1].block, "center");
+		}
+		scrolling.mock.restore();
+		assert.equal(editedField.value, editedText);
 		await act(async () => root.unmount());
 		root = createRoot(fixture.element);
 		await mountHome();
@@ -292,7 +576,10 @@ async function runHomeComparison(t, rejectedProfile) {
 			assert.notEqual(mappings[1].key, mappings[0].key);
 	}
 	assert.equal(commands[0].inputs.brief.site.country_code, "DE");
-	assert.equal(commands[0].inputs.equipment_setup.grid_phase, 3);
+	assert.equal(
+		commands[0].inputs.equipment_setup.grid_phase,
+		unknownPhase ? null : 3,
+	);
 	assert.equal(commands[0].inputs.brief.annual_load.kwh, 7200);
 	assert.equal(commands[0].inputs.brief.annual_load.basis, "bill_total");
 	assert.equal(commands[0].inputs.brief.site.coordinate_basis, "user_entered");
@@ -494,6 +781,9 @@ test("visitors with project data can open setup from the comparison and keep the
 		"A visitor can bring annual usage into the preliminary comparison",
 	);
 	await enter(annual, "6412");
+	assert.equal(document.querySelector("h1").textContent, "Oslo storage");
+	assert.match(document.querySelector("aside").textContent, /6412 kWh/);
+
 	await act(async () => compareAgain().click());
 	await until(() =>
 		document.querySelector('table[aria-label="Compare system options"]'),
@@ -1602,3 +1892,151 @@ test("native guided retry reads the reviewed revision without any browser replay
 	await until(() => revisions.length === 2);
 	assert.deepEqual(revisions, [7, null]);
 });
+
+for (const goal of ["self", "peak", "backup"])
+	test(`a retrofit with an unknown phase compares ${goal} inverter options and sends its reviewed project revision`, (t) =>
+		compareRetrofit(t, goal));
+
+async function compareRetrofit(t, goal) {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { changeEnergyGoal } =
+		await import("../src/components/configurator/EnergyDemand.tsx");
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const { DraftStore } = await import("../src/data/DraftStore.ts");
+	globalThis.indexedDB = new IDBFactory();
+	const root = createRoot(fixture.element);
+	const cache = new QueryClient();
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	});
+	const brief = emptyBrief();
+	const inputs = changeEnergyGoal(
+		{
+			brief: {
+				...brief,
+				system_scope: "storage_addition",
+				project_use: "residential",
+				site: {
+					...brief.site,
+					country_code: "DE",
+					location_label: "Konstanz",
+				},
+				annual_load: { kwh: 6200, basis: "bill_total", source_note: "" },
+			},
+			equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 8 },
+		},
+		goal,
+	);
+	let project = {
+		id: projectId,
+		revision: 1,
+		title: "Bodensee",
+		inputs,
+		input_sha256: "2".repeat(64),
+	};
+	let review;
+	const client = {
+		origin: location.origin,
+		isCurrentScope: () => true,
+		async query(path, command) {
+			if (path === "projects/read") return project;
+			if (path === "projects/runs")
+				return { schema_version: 1, items: [], next: null };
+			assert.equal(path, "inquiry/form");
+			review = command;
+			return {
+				schema_version: 1,
+				inquiry_lines: [],
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php"><input name="linker_preliminary_project" value="${projectId}:${project.revision}"></form>`,
+			};
+		},
+		async send(path, body) {
+			assert.equal(path, "projects/revise");
+			project = {
+				...project,
+				revision: 2,
+				inputs: JSON.parse(body).inputs,
+				input_sha256: "4".repeat(64),
+			};
+			return project;
+		},
+	};
+	history.replaceState(
+		null,
+		"",
+		`/workspace/?project=${projectId}&guided=inquiry#sc-system`,
+	);
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					config: { locale: "en", countries: { DE: "Germany" } },
+					session,
+					client,
+					store: new DraftStore(),
+					recheck() {},
+				}),
+			),
+		),
+	);
+	const options = () =>
+		document.querySelector('table[aria-label="Compare system options"]');
+	await until(options);
+	assert.equal(location.hash, "#sc-preliminary-options");
+	const facts = document.querySelector("dl.sc-project-facts").textContent;
+	for (const value of [
+		"Konstanz",
+		"Residential",
+		"8 kWp",
+		"6200 kWh",
+		"Electricity bill",
+		{
+			self: "Use more solar on site",
+			peak: "Reduce peak demand",
+			backup: "Backup supply",
+		}[goal],
+		"To confirm",
+	])
+		assert.ok(facts.includes(value), value);
+	const keep = [...options().querySelectorAll("tr")].find((row) =>
+		row.textContent.includes("Keep the existing inverter"),
+	);
+	assert.ok(keep);
+	assert.equal(document.querySelector("h1").textContent, "Bodensee");
+	for (const row of options().querySelectorAll("tbody tr"))
+		assert.match(
+			row.textContent,
+			{
+				peak: /peak|import limit/i,
+				backup: /backup|outage/i,
+				self: /surplus|solar|panels/i,
+			}[goal],
+		);
+	assert.match(options().textContent, /replacement inverter/i);
+	await until(() => !keep.querySelector("button").disabled);
+	await act(async () => keep.querySelector("button").click());
+	await until(() =>
+		document.querySelector(
+			".sc-preliminary-review:not([hidden]) form.linker-inquiry-form",
+		),
+	);
+	assert.equal(review.revision, 2);
+	assert.equal(review.project_id, projectId);
+	assert.equal(review.report_run_id, undefined);
+	assert.deepEqual(project.inputs.brief, inputs.brief);
+	assert.equal(project.inputs.equipment_setup.grid_phase, null);
+	assert.equal(project.inputs.existing_system.keep_inverter, true);
+	assert.match(
+		document.querySelector(".sc-inquiry-overview").textContent,
+		/Keep the existing inverter/,
+	);
+}

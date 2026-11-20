@@ -2,6 +2,11 @@ import type { JsonObject } from "./protocol.ts";
 
 const key = "linker-comparison-draft";
 
+export interface ProjectPickerDraft {
+	projectId: string;
+	search: string;
+}
+
 export interface ComparisonDraft {
 	id: string;
 	scope: string;
@@ -9,6 +14,10 @@ export interface ComparisonDraft {
 	title: string;
 	inputs: JsonObject | null;
 	useHints: boolean;
+	languageUrl?: string;
+	usePvAddress?: boolean;
+	carriedProduct?: boolean;
+	projectPicker?: ProjectPickerDraft;
 }
 
 export function readComparisonDraft(

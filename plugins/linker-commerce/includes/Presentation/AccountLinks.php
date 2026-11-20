@@ -76,6 +76,15 @@ final class AccountLinks {
 
 	/** One direct registration entry, empty when this visitor cannot register. */
 	public static function create(): string {
+		return self::registration( array() );
+	}
+
+	/**
+	 * Registration link with a site-generated destination.
+	 *
+	 * @param array<string,int> $query Local account form parameters.
+	 */
+	public static function registration( array $query ): string {
 		if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {
 			return '';
 		}
@@ -86,7 +95,7 @@ final class AccountLinks {
 		return strtr(
 			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/create-account.html' ),
 			array(
-				'{{register-url}}' => esc_url( $url ),
+				'{{register-url}}' => esc_url( $query ? add_query_arg( $query, $url ) : $url ),
 				'{{create}}'       => esc_html__( 'Create account', 'linker-commerce' ),
 			)
 		);

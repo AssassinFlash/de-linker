@@ -43,11 +43,35 @@ const checkExisting = new Ajv2020({
 	strict: true,
 	strictNumbers: true,
 }).compile<ExistingSystem>(schema);
-function existingSystem(inputs: JsonObject): ExistingSystem | undefined {
+export function existingSystem(inputs: JsonObject): ExistingSystem | undefined {
 	const value = inputs.existing_system;
 	if (value === undefined) return undefined;
 	if (!checkExisting(value)) throw new ApiError(422, "invalid_input");
 	return value;
+}
+
+export function changeExistingSystem(
+	current: JsonObject,
+	patch: Partial<ExistingSystem> | null,
+): JsonObject {
+	const {
+		existing_system: _previous,
+		equipment_candidate: _candidate,
+		...rest
+	} = current;
+	return patch === null
+		? rest
+		: {
+				...rest,
+				existing_system: {
+					schema_version: 1,
+					name: "",
+					inverter_power_kw: null,
+					keep_inverter: false,
+					...existingSystem(current),
+					...patch,
+				},
+			};
 }
 
 export function retainsUnverifiedInverter(inputs: JsonObject): boolean {
@@ -304,26 +328,7 @@ export function ProjectEquipment({
 		primaryUse?.inverter === "retain";
 	function changeExisting(patch: Partial<ExistingSystem> | null) {
 		if (disabled || !client.isCurrentScope(scope)) return;
-		edit((current) => {
-			const {
-				existing_system: _previous,
-				equipment_candidate: _candidate,
-				...rest
-			} = current;
-			return patch === null
-				? rest
-				: {
-						...rest,
-						existing_system: {
-							schema_version: 1,
-							name: "",
-							inverter_power_kw: null,
-							keep_inverter: false,
-							...existingSystem(current),
-							...patch,
-						},
-					};
-		});
+		edit((current) => changeExistingSystem(current, patch));
 	}
 
 	function update(transform: (current: JsonObject) => JsonObject) {

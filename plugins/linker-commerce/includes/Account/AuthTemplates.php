@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Inquiry\AccountLink;
+
 /**
  * Woo owns these forms — every field, nonce, hook and validation stays exactly
  * where Woo and the registration module put it. This class points the account
@@ -87,6 +89,7 @@ final class AuthTemplates {
 		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 40 );
 		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 		add_action( 'template_redirect', array( $this, 'register_redirect' ) );
+		add_action( 'woocommerce_account_register_endpoint', array( $this, 'confirm_inquiry' ) );
 	}
 
 	/**
@@ -177,12 +180,46 @@ final class AuthTemplates {
 	 * its normal content.
 	 */
 	public function register_redirect(): void {
-		if ( ! self::is_register_request() || ! is_user_logged_in() ) {
+		$register = self::is_register_request();
+		$args     = AccountLink::request_args();
+		if ( ( ! $register && ( ! $args || ! is_account_page() || is_wc_endpoint_url() ) ) || ! is_user_logged_in() ) {
 			return;
 		}
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own account permalink.
-		\wp_safe_redirect( \Linker\Commerce\Inquiry\AccountLink::destination( \wc_get_page_permalink( 'myaccount' ), get_current_user_id() ) );
+		$account = wc_get_page_permalink( 'myaccount' );
+		$order   = AccountLink::awaiting_confirmation();
+		if ( $order ) {
+			if ( ! $register ) {
+				wp_safe_redirect( AccountLink::continue_at( self::register_url() ) );
+				exit;
+			}
+			if ( ! isset( $_POST['linker_claim_nonce'] ) ) {
+				return;
+			}
+			if ( ! is_string( $_POST['linker_claim_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['linker_claim_nonce'] ) ), 'linker_claim_' . $order->get_id() ) ) {
+				wc_add_notice( __( 'Verification expired. Please try again.', 'linker-commerce' ), 'error' );
+				return;
+			}
+			( new AccountLink() )->claim( get_current_user_id() );
+		}
+		$destination = AccountLink::destination( $account, get_current_user_id() );
+		if ( $args && $destination === $account ) {
+			$signin = wp_logout_url( AccountLink::continue_at( $account ) );
+			wc_add_notice(
+				esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' )
+				. ' <a href="' . esc_url( $signin ) . '">' . esc_html__( 'Sign in with another account', 'linker-commerce' ) . '</a>',
+				'error'
+			);
+		}
+		wp_safe_redirect( $destination );
 		exit;
+	}
+
+	/** Show the explicit transfer action on the signed-in account endpoint. */
+	public function confirm_inquiry(): void {
+		$order = AccountLink::awaiting_confirmation();
+		if ( $order ) {
+			require dirname( __DIR__, 2 ) . '/templates/myaccount/auth/confirm-inquiry.php';
+		}
 	}
 
 	/**

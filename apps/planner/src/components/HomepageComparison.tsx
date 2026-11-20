@@ -9,6 +9,7 @@ import {
 	projectTitleSearch,
 	readProjectPage,
 } from "../data/projectIndex.ts";
+import { readComparisonDraft } from "../data/comparisonDraft.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { readEntryHints } from "../domain/entryHints.ts";
 import { __ } from "../i18n.ts";
@@ -32,8 +33,14 @@ export function HomepageComparison({
 }) {
 	const scope = session.query_scope;
 	const pageSize = Math.min(30, session.runtime.limits.max_page_size);
-	const [search, setSearch] = useState("");
-	const [savedProject, setSavedProject] = useState("");
+	const [projectPicker, setProjectPicker] = useState(
+		() =>
+			readComparisonDraft(scope, "homepage")?.projectPicker ?? {
+				projectId: "",
+				search: "",
+			},
+	);
+	const { search, projectId: savedProject } = projectPicker;
 	const titleQuery = projectTitleSearch(search);
 	const admitted = client.isCurrentScope(scope) && !session.claim_pending;
 	const recovery = useQuery({
@@ -81,7 +88,12 @@ export function HomepageComparison({
 						<span>{__("Saved projects", "linker-tools")}</span>
 						<select
 							value={chosen}
-							onChange={(event) => setSavedProject(event.currentTarget.value)}
+							onChange={(event) =>
+								setProjectPicker({
+									search,
+									projectId: event.currentTarget.value,
+								})
+							}
 						>
 							<option value="">{__("New project", "linker-tools")}</option>
 							{rows.map((project) => (
@@ -99,8 +111,10 @@ export function HomepageComparison({
 								value={search}
 								maxLength={MAX_PROJECT_TITLE_LENGTH}
 								onChange={(event) => {
-									setSearch(event.currentTarget.value);
-									setSavedProject("");
+									setProjectPicker({
+										search: event.currentTarget.value,
+										projectId: "",
+									});
 								}}
 							/>
 						</label>
@@ -122,7 +136,10 @@ export function HomepageComparison({
 		</>
 	);
 	return (
-		<div className="sc-configurator sc-home-comparison" id="compare-project">
+		<div
+			className="sc-configurator sc-intake sc-home-comparison"
+			id="compare-project"
+		>
 			<header className="sc-section-head">
 				<div>
 					<h2>{__("Compare options for your project", "linker-tools")}</h2>
@@ -166,6 +183,7 @@ export function HomepageComparison({
 					homeComparison={{
 						picker,
 						savedProject: chosen,
+						projectPicker,
 						compareSaved: openProject,
 					}}
 				/>

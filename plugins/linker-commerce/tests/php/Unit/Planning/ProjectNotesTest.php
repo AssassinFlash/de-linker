@@ -638,7 +638,7 @@ final class ProjectNotesTest extends TestCase {
 			}
 		);
 		$this->assertStringEndsWith( "\n\nPlease call.", $output );
-		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Reduce peak demand', 'Target grid import limit: 0 kW', 'Lösungsentwurf: April proposal' ) as $fact ) {
+		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Grid phases: To confirm', 'Reduce peak demand', 'Target grid import limit: 0 kW', 'Lösungsentwurf: April proposal' ) as $fact ) {
 			$this->assertStringContainsString( $fact, $output );
 		}
 		$this->assertSame( $id . ':3', $meta['_linker_preliminary_project'] );

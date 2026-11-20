@@ -1037,8 +1037,20 @@
 /* System configurator presentation from the approved November 17 prototype. */
 @layer components {
   .sc-configurator { width: 100%; min-width: 0; max-width: 1376px; margin-inline: auto; padding: 12px 32px 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
+  .sc-configurator.sc-intake { --proto-color-line: var(--sc-line); --proto-input-line: var(--sc-input-line); --proto-neutral-500: var(--sc-muted); background: var(--sc-paper); }
+  .sc-intake .sc-entry-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 8px 20px; color: var(--sc-muted); font-size: 14px; }
+  .sc-intake .sc-entry-toolbar .sc-button { background: transparent; border-color: transparent; }
+  .sc-intake .sc-entry-toolbar .sc-button:hover { background: var(--sc-soft); }
+  .sc-intake .sc-project-heading:has(+ .sc-intake-layout) { padding-bottom: 20px; margin-bottom: 28px; border-bottom: 1px solid var(--sc-line); }
+  .sc-intake .sc-intake-layout > .sc-main > .sc-section-head h2, .sc-home-comparison > .sc-section-head h2, .sc-intake .sc-system-options > .sc-section-head h2, .sc-intake .sc-direction-comparison .sc-section-head h2 { font-size: clamp(25px, 3vw, 36px); line-height: 1.2; letter-spacing: -1px; font-weight: 650; }
+  .sc-intake .sc-project-summary .sc-eyebrow { margin-bottom: 8px; color: var(--sc-muted); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+  .sc-intake .sc-project-summary h3 { font-weight: 700; }
+  .sc-intake .sc-project-summary dd { font-weight: 650; }
+  .sc-intake .sc-saved-projects { margin-block-start: 36px; }
+  .sc-intake .sc-direction-action .sc-button { border-color: var(--sc-input-line); color: var(--proto-teal-800); }
+  .sc-intake .sc-direction-action .sc-button:hover { background: var(--sc-soft); }
   .sc-configurator.sc-home-comparison { padding-block: 32px; }
-  .sc-home-comparison > .sc-main > fieldset > .sc-fields + .sc-fields { margin-block-start: 20px; }
+  .sc-home-comparison .sc-main > fieldset > .sc-fields + .sc-fields { margin-block-start: 20px; }
   .sc-configurator *, .sc-configurator *::before, .sc-configurator *::after { box-sizing: border-box; }
   .sc-configurator :is(h1, h2, h3, p) { margin: 0; color: inherit; }
   .sc-configurator :is(h1, h2, h3) { font-family: inherit; font-weight: 600; }
@@ -1182,6 +1194,9 @@
   .sc-configurator .sc-report-pdf { display: grid; gap: 10px; justify-items: start; margin-block: 0 20px; }
   .sc-configurator .sc-report-preview > * + * { margin-top: 16px; }
   @media (max-width: 1000px) {
+    .sc-intake .sc-project-summary .sc-card { display: flex; flex-wrap: wrap; align-items: baseline; gap: 18px 24px; }
+    .sc-intake .sc-project-summary dl { margin: 0; }
+    .sc-intake .sc-project-summary dd { margin-bottom: 0; }
     .sc-configurator .sc-layout { grid-template-columns: minmax(0, 1fr); }
     .sc-configurator .sc-draft-transfer .linker-inquiry-columns { gap: 18px; }
     .sc-configurator .sc-sidebar { position: static; }
@@ -1189,6 +1204,12 @@
   }
   @media (max-width: 600px) {
     .sc-configurator { padding: 5px 16px 35px; }
+    .sc-intake .sc-entry-toolbar { gap: 6px 12px; padding-block: 10px 16px; }
+    .sc-intake .sc-entry-toolbar .sc-actions { gap: 4px; }
+    .sc-intake .sc-entry-toolbar .sc-button { padding-inline: 9px; font-size: 13px; }
+    .sc-intake .sc-project-heading:has(+ .sc-intake-layout) { padding-bottom: 14px; margin-bottom: 20px; }
+    .sc-intake .sc-intake-layout > .sc-project-summary { margin-block-start: 24px; }
+    .sc-intake .sc-saved-projects { margin-block-start: 24px; }
     .sc-configurator .sc-project-heading { align-items: flex-start; flex-wrap: wrap; margin-top: 5px; }
     .sc-configurator .sc-project-heading h1 { font-size: 23px; }
     .sc-configurator .sc-project-heading { gap: 6px; margin-bottom: 12px; }

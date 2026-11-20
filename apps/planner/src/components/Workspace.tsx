@@ -32,6 +32,7 @@ import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
+import { needsPhaseConfirmation } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
@@ -105,6 +106,7 @@ export function Workspace({
 				)
 			: "",
 	);
+	const [newProjectOpen, setNewProjectOpen] = useState(false);
 	const [route, setRoute] = useState(() => location.hash.slice(1));
 	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
 		currentGuidedRetryRevision,
@@ -195,7 +197,10 @@ export function Workspace({
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			const from = url.hash.slice(1);
-			if (id !== url.searchParams.get("project"))
+			if (
+				id !== url.searchParams.get("project") ||
+				preliminaryRoute(destination)
+			)
 				url.searchParams.delete("guided");
 			if (
 				id &&
@@ -238,6 +243,7 @@ export function Workspace({
 				window.dispatchEvent(new Event(PLANNER_NAVIGATION));
 			} else replacePlannerLocation(url);
 			setEntryHints(null);
+			setNewProjectOpen(false);
 			setSavedSource(null);
 			setBriefSource(null);
 			setSelected(id);
@@ -311,6 +317,16 @@ export function Workspace({
 		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
+	const startPreliminary = Boolean(
+		selected &&
+		project.data &&
+		route === "sc-system" &&
+		new URL(location.href).searchParams.get("guided") === "inquiry" &&
+		needsPhaseConfirmation(project.data.inputs),
+	);
+	useEffect(() => {
+		if (startPreliminary) select(selected, "sc-preliminary-options");
+	}, [startPreliminary, selected, select]);
 	useSiteIntegration(selected);
 	const projects = useMemo(() => {
 		const seen = new Set<string>();
@@ -491,7 +507,7 @@ export function Workspace({
 		selected &&
 		!session.claim_pending &&
 		project.data &&
-		preliminaryRoute(route)
+		(preliminaryRoute(route) || startPreliminary)
 	)
 		return (
 			<PreliminaryProject
@@ -501,7 +517,7 @@ export function Workspace({
 				client={client}
 				store={store}
 				locale={config.locale}
-				comparing={route === "sc-preliminary-options"}
+				comparing={startPreliminary || route === "sc-preliminary-options"}
 				recoveringRevision={inquiryRevision !== null}
 				navigate={(destination, confirmed) => {
 					if (confirmed)
@@ -607,6 +623,16 @@ export function Workspace({
 
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
+	const directEntry =
+		!projectIndex &&
+		savedSource === null &&
+		briefSource === null &&
+		!entryHints?.roof &&
+		!firstVisitComparison &&
+		(newProjectOpen ||
+			route === "sc-project" ||
+			Boolean(entryHints) ||
+			(index.isSuccess && !projects.length));
 	const entryKey =
 		canCompareDirections && (firstVisitComparison || route === "sc-project")
 			? JSON.stringify(entryHints)
@@ -620,7 +646,13 @@ export function Workspace({
 	}
 
 	return (
-		<div className="sc-configurator">
+		<div
+			className={
+				directEntry || firstVisitComparison
+					? "sc-configurator sc-intake"
+					: "sc-configurator"
+			}
+		>
 			{firstVisitComparison ? (
 				<>
 					<ProjectHeading
@@ -638,14 +670,18 @@ export function Workspace({
 					<InquiryStages />
 				</>
 			) : (
-				<header className="sc-project-heading">
+				<header
+					className={directEntry ? "sc-entry-toolbar" : "sc-project-heading"}
+				>
 					<div>
 						<p>{__("Solution Configurator", "linker-tools")}</p>
-						<h1>
-							{entryHints?.roof
-								? __("Start with your roof", "linker-tools")
-								: __("Your projects", "linker-tools")}
-						</h1>
+						{!directEntry && (
+							<h1>
+								{entryHints?.roof
+									? __("Start with your roof", "linker-tools")
+									: __("Your projects", "linker-tools")}
+							</h1>
+						)}
 					</div>
 					<div className="sc-actions">
 						{!entryHints && !projectIndex && !savedSource && !briefSource && (
@@ -706,6 +742,8 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
+							workspaceHeading={directEntry}
+							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
 							{...(canCompareDirections &&
 								route === "sc-project" && {
@@ -744,7 +782,7 @@ export function Workspace({
 					</Notice>
 				)}
 				<section
-					className="sc-card"
+					className="sc-card sc-saved-projects"
 					hidden={firstVisitComparison || Boolean(entryHints?.roof)}
 					aria-labelledby="lp-projects-heading"
 				>

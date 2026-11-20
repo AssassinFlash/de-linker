@@ -126,7 +126,7 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 					<h2 id="linker-auth-reset"><?php esc_html_e( 'Reset your password', 'linker-commerce' ); ?></h2>
 					<p><?php esc_html_e( 'We’ll email you a link to set a new password.', 'linker-commerce' ); ?></p>
 					<?php
-					$reset_url = wp_lostpassword_url();
+					$reset_url = \Linker\Commerce\Inquiry\AccountLink::continue_at( wp_lostpassword_url() );
 					require __DIR__ . '/password-request-form.php';
 					?>
 				</section>

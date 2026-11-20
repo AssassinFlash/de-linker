@@ -107,7 +107,7 @@ final class DocumentDownload {
 
 		[ $owner, $path, $name ] = $this->document( $kind, $id );
 		if ( ! is_user_logged_in() || ( get_current_user_id() !== $owner && ! current_user_can( 'manage_woocommerce' ) ) || 0 === $owner ) {
-			$this->deny();
+			$this->deny( 'quotation' === $kind ? $id : 0 );
 		}
 		// 404, not 403, for a priced Quotation a pending or restricted owner
 		// asks for: 403 would confirm the document exists. Shop staff still
@@ -164,18 +164,24 @@ final class DocumentDownload {
 	}
 
 	/**
-	 * Refuses the download: 403, with the way to log in.
+	 * Refuses the download with a route back for the account that owns the quotation.
+	 *
+	 * @param int $quotation_id Requested quotation ID, or zero for other documents.
 	 */
-	private function deny(): void {
+	private function deny( int $quotation_id ): void {
+		$query   = $quotation_id > 0 ? array( 'linker_quotation' => $quotation_id ) : array();
+		$account = wc_get_page_permalink( 'myaccount' );
+		$signin  = $query ? add_query_arg( $query, $account ) : $account;
+		$switch  = $quotation_id > 0 && is_user_logged_in();
 		wp_die(
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- All substitutions are escaped data or escaped LC fragments.
 			strtr(
 				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/document-denied.html' ),
 				array(
 					'{{message}}'    => esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' ),
-					'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
-					'{{signin}}'     => esc_html__( 'Log in', 'linker-commerce' ),
-					'{{create}}'     => AccountLinks::create(),
+					'{{signin-url}}' => esc_url( $switch ? wp_logout_url( $signin ) : $signin ),
+					'{{signin}}'     => $switch ? esc_html__( 'Sign in with another account', 'linker-commerce' ) : esc_html__( 'Log in', 'linker-commerce' ),
+					'{{create}}'     => AccountLinks::registration( $query ),
 				)
 			),
 			esc_html__( 'Document', 'linker-commerce' ),

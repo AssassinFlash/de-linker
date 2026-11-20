@@ -235,6 +235,7 @@ sc-direction-tools
 sc-draft-transfer
 sc-empty-supply
 sc-energy-demand
+sc-entry-toolbar
 sc-equipment
 sc-existing-system
 sc-eyebrow
@@ -249,6 +250,8 @@ sc-inquiry-overview
 sc-inquiry-product
 sc-inquiry-products
 sc-inquiry-stages
+sc-intake
+sc-intake-layout
 sc-layout
 sc-main
 sc-muted
@@ -268,6 +271,7 @@ sc-project-equipment
 sc-project-facts
 sc-project-heading
 sc-project-search
+sc-project-summary
 sc-project-workbench
 sc-report-actions
 sc-report-dialog
@@ -284,6 +288,7 @@ sc-roof-preview
 sc-roof-props
 sc-roof-tools
 sc-roof-vertex
+sc-saved-projects
 sc-section-head
 sc-selected-roof-properties
 sc-sidebar

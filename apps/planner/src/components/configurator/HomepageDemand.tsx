@@ -6,6 +6,7 @@ import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
 import { readScenarioDraft } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
+import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
 import { NumberField } from "../NumberField.tsx";
 import {
 	changeBackupDemand,
@@ -13,7 +14,6 @@ import {
 	changePeakDemand,
 	energyGoal,
 } from "./EnergyDemand.tsx";
-import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
 import {
 	HomepagePvReference,
 	changeHomepagePvPower,
@@ -29,8 +29,15 @@ function demands(inputs: JsonObject) {
 	return { equipment, backup, goal: energyGoal(inputs) };
 }
 
+export function needsPhaseConfirmation(inputs: JsonObject) {
+	return (
+		demands(inputs).equipment.grid_phase === null &&
+		!retainsUnverifiedInverter(inputs)
+	);
+}
+
 export function hasComparisonDemand(inputs: JsonObject, brief: Brief) {
-	const { equipment, backup, goal } = demands(inputs);
+	const { backup, goal } = demands(inputs);
 	const validBackup =
 		backup &&
 		typeof backup.load_kw === "number" &&
@@ -41,7 +48,6 @@ export function hasComparisonDemand(inputs: JsonObject, brief: Brief) {
 		brief.system_scope &&
 		goal &&
 		(brief.annual_load.kwh === null || brief.annual_load.basis !== null) &&
-		(equipment.grid_phase !== null || retainsUnverifiedInverter(inputs)) &&
 		(goal !== "backup" || (brief.system_scope !== "pv_only" && validBackup)),
 	);
 }
@@ -125,6 +131,7 @@ export function HomepageDemand({
 	brief,
 	locale,
 	addressLookup,
+	usePvAddress,
 	edit,
 	validity,
 }: {
@@ -132,6 +139,7 @@ export function HomepageDemand({
 	brief: Brief;
 	locale: string;
 	addressLookup: boolean;
+	usePvAddress: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	validity: (field: string, valid: boolean) => void;
 }) {
@@ -164,14 +172,13 @@ export function HomepageDemand({
 				<select
 					name="grid_phase"
 					value={String(equipment.grid_phase ?? "")}
-					required={!retainsUnverifiedInverter(inputs)}
 					onChange={(event) => {
 						const value = event.currentTarget.value;
 						const grid_phase = value === "1" ? 1 : value === "3" ? 3 : null;
 						edit((current) => changeDemandEquipment(current, { grid_phase }));
 					}}
 				>
-					<option value="">{__("Choose an option", "linker-tools")}</option>
+					<option value="">{__("Not yet known", "linker-tools")}</option>
 					<option value="1">{__("Single phase", "linker-tools")}</option>
 					<option value="3">{__("Three phase", "linker-tools")}</option>
 				</select>
@@ -211,6 +218,7 @@ export function HomepageDemand({
 					inputs={inputs}
 					brief={brief}
 					addressLookup={addressLookup}
+					initialUseAddress={usePvAddress}
 					power={
 						typeof equipment.pv_dc_kw === "number" ? equipment.pv_dc_kw : null
 					}

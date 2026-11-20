@@ -84,15 +84,17 @@ export function HomepagePvReference({
 	brief,
 	power,
 	addressLookup = false,
+	initialUseAddress = false,
 	edit,
 }: {
 	inputs: JsonObject;
 	brief: Brief;
 	power: number | null;
 	addressLookup?: boolean;
+	initialUseAddress?: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 }) {
-	const [useAddress, setUseAddress] = useState(false);
+	const [useAddress, setUseAddress] = useState(initialUseAddress);
 	const reference = referenceDraft(inputs);
 	const array =
 		reference.model === KNOWN_PV_MODEL ? reference.arrays?.[0] : undefined;

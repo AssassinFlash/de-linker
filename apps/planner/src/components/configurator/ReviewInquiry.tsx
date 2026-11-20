@@ -15,7 +15,8 @@ import {
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
-import { systemNames } from "./PreliminaryOptions.tsx";
+import { existingSystem } from "./ProjectEquipment.tsx";
+import { retrofitOptions, systemNames } from "./PreliminaryOptions.tsx";
 
 type CustomerField = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 type CustomerDraft = Map<string, string | boolean>;
@@ -435,6 +436,13 @@ export function ReviewInquiry({
 		reportRunId,
 	]);
 	const facts = projectFacts(project.inputs, locale);
+	const inverter = existingSystem(project.inputs);
+	const retrofit =
+		!reportRunId &&
+		inverter &&
+		retrofitOptions(project.inputs)?.find(
+			(option) => option.keep === inverter.keep_inverter,
+		);
 	const changes = review?.changes ?? [];
 	const lines = review?.lines.filter(
 		(line) =>
@@ -460,6 +468,13 @@ export function ReviewInquiry({
 							systemNames()[direction],
 						)}
 					</p>
+					{retrofit && (
+						<div>
+							<h4>{retrofit.title}</h4>
+							<p>{retrofit.benefit}</p>
+							<p>{retrofit.check}</p>
+						</div>
+					)}
 					{facts.length > 0 && <ProjectFacts facts={facts} />}
 					{!checkingInquiry && review && !lines?.length && !changes.length && (
 						<p className="sc-empty-supply">

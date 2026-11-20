@@ -5,7 +5,11 @@ import type { Brief } from "../../domain/brief.ts";
 import type { Configuration } from "../../data/config.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
-import { changeEnergyGoal, energyGoal } from "./EnergyDemand.tsx";
+import {
+	changeEnergyGoal,
+	energyGoal,
+	type EnergyGoal,
+} from "./EnergyDemand.tsx";
 import { changeEquipment, equipmentDraft } from "../../domain/equipment.ts";
 import type { EquipmentUse } from "../../domain/equipment.ts";
 import {
@@ -301,39 +305,6 @@ export function ProjectDetails({
 							}
 						/>
 					</label>
-					{roofAction}
-					{mapKey &&
-						!creation?.comparison &&
-						brief.system_scope !== "storage_only" && (
-							<div className="sc-field-wide">
-								<div className="sc-actions">
-									<button
-										className="sc-button"
-										type="button"
-										disabled={!country || !address.trim()}
-										onClick={() => void locate()}
-									>
-										{__("Find site coordinates", "linker-tools")}
-									</button>
-									<span role="status">
-										{locating
-											? __("Finding the site…", "linker-tools")
-											: brief.site.latitude !== null &&
-												  brief.site.longitude !== null
-												? __("Site coordinates found", "linker-tools")
-												: ""}
-									</span>
-								</div>
-								{locationError && (
-									<p role="alert">
-										{__(
-											"The location could not be found. Check the country and address, then try again.",
-											"linker-tools",
-										)}
-									</p>
-								)}
-							</div>
-						)}
 					<label className="sc-field">
 						<span>{__("Planned system", "linker-tools")}</span>
 						<select
@@ -395,9 +366,8 @@ export function ProjectDetails({
 							required={creation?.comparison}
 							value={energyGoal(inputs)}
 							onChange={(e) => {
-								const goal = e.currentTarget.value as
-									"self" | "backup" | "peak";
-								if (goal) edit((current) => changeEnergyGoal(current, goal));
+								const goal = e.currentTarget.value as EnergyGoal;
+								edit((current) => changeEnergyGoal(current, goal));
 							}}
 						>
 							<option value="">{__("Choose an option", "linker-tools")}</option>
@@ -415,6 +385,39 @@ export function ProjectDetails({
 							</option>
 						</select>
 					</label>
+					{roofAction}
+					{mapKey &&
+						!creation?.comparison &&
+						brief.system_scope !== "storage_only" && (
+							<div className="sc-field-wide">
+								<div className="sc-actions">
+									<button
+										className="sc-button"
+										type="button"
+										disabled={!country || !address.trim()}
+										onClick={() => void locate()}
+									>
+										{__("Find site coordinates", "linker-tools")}
+									</button>
+									<span role="status">
+										{locating
+											? __("Finding the site…", "linker-tools")
+											: brief.site.latitude !== null &&
+												  brief.site.longitude !== null
+												? __("Site coordinates found", "linker-tools")
+												: ""}
+									</span>
+								</div>
+								{locationError && (
+									<p role="alert">
+										{__(
+											"The location could not be found. Check the country and address, then try again.",
+											"linker-tools",
+										)}
+									</p>
+								)}
+							</div>
+						)}
 				</div>
 				{demand}
 				{(pendingScope || solarConflict) && (

@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Quotation\Emails;
 
 use DateTimeImmutable;
-use Linker\Commerce\Account\DocumentDownload;
+use Linker\Commerce\Inquiry\AccountLink;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\CustomerOrderEmail;
 use Linker\Commerce\Mail\JobStore;
@@ -264,8 +264,7 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 		return array(
 			'quotation_number' => $number,
 			'valid_until'      => wp_date( LocaleFormat::date_format(), Document::valid_until( $issued )->getTimestamp() ),
-			'download_url'     => DocumentDownload::quotation_url( $order ),
-			'inquiry_url'      => $order->get_view_order_url(),
+			'quotation_url'    => AccountLink::quotation_url( $order ),
 		);
 	}
 }
