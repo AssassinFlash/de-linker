@@ -187,7 +187,24 @@ async function sendInquiry(page: Page, language: Language, email: string) {
 		'linker_preliminary_project'
 	).inputValue();
 	expect(reference).toMatch(/^[a-f0-9]{32}:[1-9]\d*$/);
-	await showsProject(page.locator('.sc-draft-transfer aside'));
+	const overview = page.locator('.sc-draft-transfer aside');
+	const details = overview.locator('details');
+	const disclosure = details.locator('summary');
+	const mobile = (page.viewportSize()?.width ?? 1440) <= 600;
+	await expect(disclosure).toBeVisible();
+	await expect(details).toHaveJSProperty('open', !mobile);
+	if (mobile) {
+		await disclosure.focus();
+		await page.keyboard.press('Enter');
+	}
+	await expect(details.getByText(/Konstanz/i).first()).toBeVisible();
+	await showsProject(details);
+	await expect(form).not.toContainText('Konstanz');
+	if (mobile) {
+		await disclosure.focus();
+		await page.keyboard.press('Enter');
+		await expect(details).toHaveJSProperty('open', false);
+	}
 	await shot(page, 'review');
 	await field(form, 'name').fill('Konstanz Review');
 	await field(form, 'email').fill(email);

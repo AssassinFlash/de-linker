@@ -653,6 +653,66 @@ final class ProjectNotesTest extends TestCase {
 		}
 	}
 
+	/** The planner keeps technical inputs in its summary and note controls in the contact form. */
+	public function test_planner_review_keeps_distinct_capacities_and_optional_note_controls(): void {
+		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $text ): string => $text ) );
+		$project = array(
+			'project_id'    => str_repeat( 'b', 32 ),
+			'note_revision' => '3',
+			'revision'      => 3,
+			'title'         => 'Canal house',
+			'text'          => 'Meter is upstairs',
+			'inputs'        => array(
+				'brief'                    => array(
+					'system_scope' => 'storage_addition',
+					'site'         => array(
+						'postal_code' => '78462',
+						'latitude'    => 47.66,
+						'longitude'   => 9.17,
+						'timezone'    => 'Europe/Berlin',
+					),
+				),
+				'pvgis_reference_setup'    => array(
+					'model'  => 'pvgis_5_3_known_ac_reference_v1',
+					'arrays' => array( array( 'peak_power_kwp' => 4.5 ), array( 'peak_power_kwp' => 3 ) ),
+				),
+				'known_panel_details'      => array(
+					'count'      => 10,
+					'power_w'    => 450,
+					'system_kwp' => 4.5,
+				),
+				'equipment_setup'          => array(
+					'pv_dc_kw'                 => 7.5,
+					'required_discharge_ac_kw' => 0,
+					'required_usable_kwh'      => 6,
+				),
+				'saved_solution_reference' => array( 'title' => 'April proposal' ),
+			),
+		);
+		$facts   = array_column( Context::review_facts( $project ), 'value', 'label' );
+		$this->assertSame( '78462', $facts['Location'] );
+		$this->assertSame( '47.66', $facts['Latitude'] );
+		$this->assertSame( '9.17', $facts['Longitude'] );
+		$this->assertSame( 'Europe/Berlin', $facts['Time zone'] );
+		$this->assertSame( '7.5 kWp', $facts['PV array size'] );
+		$this->assertSame( '7.5 kWp', $facts['PV input power'] );
+		$this->assertSame( '4.5 kWp', $facts['Solar capacity'] );
+		$this->assertSame( '10', $facts['Number of modules'] );
+		$this->assertSame( '450 Wp', $facts['Power per panel'] );
+		$this->assertSame( '0 kW', $facts['Continuous discharge power'] );
+		$this->assertSame( '6 kWh', $facts['Usable storage capacity'] );
+		$this->assertContains( 'April proposal', $facts );
+		$controls = Context::inquiry_notes_section( array(), null, $project, show_project: false );
+		$this->assertStringContainsString( 'Meter is upstairs', $controls );
+		$this->assertStringContainsString( 'name="linker_include_project_notes"', $controls );
+		$this->assertStringContainsString( 'name="linker_project_note_revisions[project_' . $project['project_id'] . ']" value="3"', $controls );
+		$this->assertStringNotContainsString( 'Europe/Berlin', $controls );
+		$this->assertStringContainsString( 'Europe/Berlin', Context::inquiry_notes_section( array(), null, $project ) );
+	}
+
 	/** The reviewed inclusion choice is part of the admission fingerprint. */
 	public function test_submission_fingerprint_covers_inclusion_and_revisions(): void {
 		$included = Context::submission_fingerprint(

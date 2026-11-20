@@ -16,8 +16,15 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 		id: "2".repeat(32),
 		revision: 3,
 		inputs: {
+			existing_system: {
+				schema_version: 1,
+				name: "Installed inverter",
+				inverter_power_kw: 3,
+				keep_inverter: true,
+			},
 			brief: {
 				...brief,
+				system_scope: "storage_addition",
 				site: { ...brief.site, country_code: "NL", location_label: "Utrecht" },
 				annual_load: { ...brief.annual_load, kwh: 6412 },
 			},
@@ -42,6 +49,11 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 					<input type="hidden" name="linker_preliminary_project" value="${project.id}:3">
 					<input type="hidden" name="linker_report_transfer" value="${binding}">
 					<button type="submit">Send inquiry</button></form>`,
+				inquiry_project_facts: [
+					{ label: "Location", value: "Utrecht, NL" },
+					{ label: "Annual electricity use", value: "6412 kWh" },
+					{ label: "Continuous discharge power", value: "5 kW" },
+				],
 				inquiry_lines: [
 					{
 						product_id: 42,
@@ -70,7 +82,7 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			React.createElement(ReviewInquiry, {
 				project,
 				reportRunId,
-				direction: "storage_only",
+				direction: "storage_addition",
 				client,
 				scope: "owned",
 				locale: "en",
@@ -103,7 +115,21 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 		"https://fixture.invalid/uploads/cable.png",
 	);
 	assert.match(fixture.element.textContent, /Outdoor DC cable/);
-	const projectDetails = fixture.element.querySelector("dl.sc-project-facts");
+	assert.match(
+		fixture.element.querySelector("aside .sc-review-choice").textContent,
+		/Keep the existing inverter/,
+	);
+	const summary = fixture.element.querySelector("aside details");
+	assert.equal(
+		summary?.querySelector("summary")?.textContent.trim(),
+		"Project details",
+	);
+	assert.equal(
+		fixture.element.querySelectorAll("form .sc-project-facts").length,
+		0,
+	);
+	const projectDetails = summary.querySelector("dl.sc-project-facts");
+	assert.match(projectDetails.textContent, /Continuous discharge power5 kW/);
 	assert.match(projectDetails?.textContent ?? "", /Utrecht/);
 	assert.match(projectDetails?.textContent ?? "", /6412 kWh/);
 	const row = Array.from(fixture.element.querySelectorAll("tbody tr")).find(

@@ -1103,6 +1103,17 @@
   .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr); gap: var(--proto-space-6); }
   .sc-configurator .sc-draft-transfer .linker-inquiry-draft { grid-area: summary; position: static; display: grid; gap: 12px; justify-items: start; }
   .sc-configurator .sc-draft-transfer .sc-inquiry-fields { grid-area: form; min-width: 0; }
+  .sc-preliminary-review .sc-review-choice { font-weight: var(--proto-weight-semibold); }
+  .sc-preliminary-review .sc-review-details { width: 100%; border-block: 1px solid var(--sc-line); }
+  .sc-preliminary-review .sc-review-details > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--proto-space-3); min-height: 44px; padding-block: var(--proto-space-2); color: var(--proto-teal-800); font-weight: var(--proto-weight-semibold); cursor: pointer; list-style: none; }
+  .sc-preliminary-review .sc-review-details > summary::-webkit-details-marker { display: none; }
+  .sc-preliminary-review .sc-review-details > summary::after { content: ""; width: 8px; height: 8px; margin-inline-end: 4px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+  .sc-preliminary-review .sc-review-details[open] > summary::after { transform: rotate(225deg); }
+  .sc-preliminary-review .sc-review-details > summary:focus-visible { outline: 2px solid var(--proto-accent); outline-offset: 2px; }
+  .sc-preliminary-review .sc-review-details[open] { padding-bottom: var(--proto-space-4); }
+  .sc-preliminary-review .sc-review-details > :not(summary) { margin-top: var(--proto-space-3); }
+  .sc-preliminary-review .sc-review-tradeoff { display: grid; gap: var(--proto-space-2); }
+  .sc-preliminary-review .sc-review-actions { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
   .sc-configurator .sc-main { min-width: 0; scroll-margin-top: calc(var(--lp-site-header-height, 0px) + 16px); }
   .sc-configurator .sc-sidebar { position: sticky; top: calc(var(--lp-site-header-height, 0px) + 16px); min-width: 0; overflow-wrap: anywhere; }

@@ -57,7 +57,13 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'note_revision' => '3',
 			'title'         => 'Storage inquiry fixture',
 			'text'          => '',
-			'inputs'        => array( 'brief' => array( 'system_scope' => 'storage_only' ) ),
+			'inputs'        => array(
+				'brief'           => array(
+					'system_scope' => 'storage_only',
+					'site'         => array( 'location_label' => 'Utrecht' ),
+				),
+				'equipment_setup' => array( 'required_discharge_ac_kw' => 5 ),
+			),
 		);
 		$review  = apply_filters( 'linker_commerce_planning_inquiry_form', null, 'en', $project ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Defined by the planner gateway.
 		$this->assertIsArray( $review );
@@ -65,6 +71,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( array(), $review['inquiry_lines'] );
 		$html = $review['inquiry_form_html'];
 		$this->assertIsString( $html );
+		$this->assertSame( '5 kW', array_column( $review['inquiry_project_facts'], 'value', 'label' )['Continuous discharge power'] );
+		$this->assertSame( 'Utrecht', array_column( $review['inquiry_project_facts'], 'value', 'label' )['Location'] );
+		$this->assertStringNotContainsString( 'Utrecht', $html );
 		$this->assertStringContainsString( 'action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"', $html );
 		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $id . ':3"', $html );
 		$this->assertSame( 1, substr_count( $html, 'name="linker_draft_hash"' ) );

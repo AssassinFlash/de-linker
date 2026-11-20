@@ -96,6 +96,7 @@ final class Module {
 		$locale  = new \Linker\Commerce\Mail\LocaleSwitch();
 		$locale->to( \Linker\Commerce\Inquiry\OrderLocale::current( $language ) );
 		try {
+			$facts = Context::review_facts( $project );
 			foreach ( array_unique( array_column( array_merge( $lines, $changes ), 'product_id' ) ) as $id ) {
 				$display[ $id ] = $this->product_details( $id, ProductText::lang( $language ) );
 			}
@@ -107,6 +108,7 @@ final class Module {
 			'schema_version'          => 1,
 			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $bound, $handoff, $retry ),
 			'inquiry_lines'           => array_map( $with_details, $lines ),
+			'inquiry_project_facts'   => $facts,
 			'inquiry_changes'         => array_map( $with_details, $changes ),
 			'inquiry_phase_conflicts' => $preview['phase_conflicts'] ?? array(),
 		);
