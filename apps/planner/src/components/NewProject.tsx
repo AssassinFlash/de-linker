@@ -1,3 +1,9 @@
+import {
+	readComparisonDraft,
+	writeComparisonDraft,
+	forgetComparisonDraft,
+	type ComparisonDraft,
+} from "../data/comparisonDraft.ts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
@@ -45,6 +51,7 @@ import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
 import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
 import {
+	AnnualElectricityUse,
 	HomepageDemand,
 	hasComparisonDemand,
 } from "./configurator/HomepageDemand.tsx";
@@ -123,8 +130,18 @@ export function NewProject({
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
-	const [useHints, setUseHints] = useState(true);
-	const [title, setTitle] = useState(initialProject?.title ?? "");
+	const draftEntry = compareOnLoad || Boolean(returnToComparison);
+	const source = JSON.stringify(entryHints);
+	const [restored] = useState(() =>
+		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
+	);
+	const draftId = useRef(restored?.id);
+	const savedDraft = useRef<ComparisonDraft | null>(null);
+	const [draftUnavailable, setDraftUnavailable] = useState(false);
+	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
+	const [title, setTitle] = useState(
+		restored?.title ?? initialProject?.title ?? "",
+	);
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [inputContractRequired, setInputContractRequired] = useState(false);
@@ -159,7 +176,9 @@ export function NewProject({
 		session.query_scope,
 		Boolean(entryHints?.productId),
 	);
-	const [draft, setDraft] = useState<JsonObject | null>(null);
+	const [draft, setDraft] = useState<JsonObject | null>(
+		restored?.inputs ?? null,
+	);
 	const [carriedProduct, setCarriedProduct] = useState(true);
 	const [recoveredInputs, setRecoveredInputs] = useState<JsonObject | null>(
 		null,
@@ -235,6 +254,58 @@ export function NewProject({
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
+	useEffect(() => {
+		if (!draftEntry || !admitted || (!draft && !title && useHints)) return;
+		const record = {
+			id: (draftId.current ??= crypto.randomUUID()),
+			scope: session.query_scope,
+			source,
+			title,
+			inputs: draft,
+			useHints,
+		};
+		savedDraft.current = record;
+		try {
+			writeComparisonDraft(record);
+			setDraftUnavailable(false);
+		} catch {
+			setDraftUnavailable(true);
+		}
+		function handoff(event: MouseEvent) {
+			const target = event.target;
+			if (!(target instanceof window.Element)) return;
+			const link = target.closest<HTMLAnchorElement>(
+				"header a[hreflang][lang], footer a[hreflang][lang]",
+			);
+			if (!link || new URL(link.href).origin !== location.origin) return;
+			try {
+				writeComparisonDraft(record, link.href);
+			} catch {
+				event.preventDefault();
+				setDraftUnavailable(true);
+			}
+		}
+		document.addEventListener("click", handoff, true);
+		return () => document.removeEventListener("click", handoff, true);
+	}, [
+		draftEntry,
+		compareOnLoad,
+		admitted,
+		draft,
+		title,
+		useHints,
+		session.query_scope,
+		source,
+	]);
+	const draftNotice = draftUnavailable && (
+		<Notice error>
+			{__(
+				"Your browser could not save your entries. Stay on this page to avoid losing them.",
+				"linker-tools",
+			)}
+		</Notice>
+	);
+
 	const waitingForProduct = Boolean(
 		!intent.current && useHints && entryHints?.productId && catalog.isPending,
 	);
@@ -603,6 +674,11 @@ export function NewProject({
 				setFailed(true);
 				return;
 			}
+			if (savedDraft.current) {
+				forgetComparisonDraft(savedDraft.current);
+				savedDraft.current = null;
+				draftId.current = undefined;
+			}
 			intent.current = null;
 			destination.current = null;
 			profile.current = undefined;
@@ -735,6 +811,7 @@ export function NewProject({
 		roofUrl.hash = "";
 		return (
 			<section className="sc-main">
+				{draftNotice}
 				<PreliminaryOptions
 					locale={locale}
 					inputs={inputs}
@@ -871,6 +948,7 @@ export function NewProject({
 				void submit(undefined, { useAddress });
 			}}
 		>
+			{draftNotice}
 			{showSavedPicker && homeComparison?.picker}
 			{entryHints &&
 				!intent.current &&
@@ -1063,7 +1141,10 @@ export function NewProject({
 					roofAction={mapAction}
 					edit={edit}
 					creation={{
-						...(returnToComparison && { returnToComparison }),
+						...(returnToComparison && {
+							returnToComparison,
+							comparisonDisabled: invalidDemand.has("annual"),
+						}),
 						title,
 						changeTitle: setTitle,
 						locked: Boolean(intent.current),
@@ -1086,7 +1167,7 @@ export function NewProject({
 									: {}),
 					}}
 					demand={
-						compareAtHome && (
+						compareAtHome ? (
 							<HomepageDemand
 								inputs={inputs}
 								brief={brief}
@@ -1095,7 +1176,16 @@ export function NewProject({
 								edit={edit}
 								validity={reportDemand}
 							/>
-						)
+						) : returnToComparison ? (
+							<div className="sc-fields">
+								<AnnualElectricityUse
+									brief={brief}
+									locale={locale}
+									edit={edit}
+									validity={reportDemand}
+								/>
+							</div>
+						) : undefined
 					}
 					profile={
 						compareAtHome &&

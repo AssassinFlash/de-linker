@@ -322,14 +322,14 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	const creatingProject = useRef(false);
+	const creatingProject = useRef<string | null>(null);
 	const [creationPending, setCreationPending] = useState(false);
-	function beginCreation() {
+	function beginCreation(entryKey: string) {
 		if (creatingProject.current) return null;
-		creatingProject.current = true;
+		creatingProject.current = entryKey;
 		setCreationPending(true);
 		return () => {
-			creatingProject.current = false;
+			creatingProject.current = null;
 			setCreationPending(false);
 		};
 	}
@@ -607,6 +607,10 @@ export function Workspace({
 
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
+	const entryKey =
+		canCompareDirections && (firstVisitComparison || route === "sc-project")
+			? JSON.stringify(entryHints)
+			: "workspace";
 	function showCreationPage(anchor: "sc-project" | "sc-preliminary-options") {
 		const url = new URL(location.href);
 		url.hash = anchor;
@@ -700,6 +704,7 @@ export function Workspace({
 						/>
 					) : (
 						<NewProject
+							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
 							enterDetails={() => showCreationPage("sc-project")}
 							{...(canCompareDirections &&
@@ -708,7 +713,7 @@ export function Workspace({
 										showCreationPage("sc-preliminary-options"),
 								})}
 							creationPending={creationPending}
-							beginCreation={beginCreation}
+							beginCreation={() => beginCreation(entryKey)}
 							config={config}
 							openOnLoad={
 								route === "sc-project" || (index.isSuccess && !projects.length)
