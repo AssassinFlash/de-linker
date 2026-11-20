@@ -24,16 +24,34 @@ use WC_Order;
  * @covers \Linker\Commerce\Inquiry\Checkout
  */
 final class CheckoutTest extends TestCase {
-	/** Native success uses Woo's localized checkout address without command arguments. */
-	public function test_after_add_uses_the_current_checkout_destination(): void {
-		WP_Mock::userFunction(
-			'wc_get_checkout_url',
-			array(
-				'return' => 'https://example.test/de/proforma-anfrage/',
-				'times'  => 1,
-			)
+	/** The native add resolves to the requested draft or inquiry in its language. */
+	public function test_after_add_uses_the_requested_destination(): void {
+		$draft   = 'https://example.test/de/loesungsentwurf/';
+		$inquiry = 'https://example.test/de/proforma-anfrage/';
+		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturn( $inquiry );
+		WP_Mock::userFunction( 'wc_get_cart_url' )->andReturn( $draft );
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
+		WP_Mock::userFunction( 'wp_unslash' )->andReturnUsing( 'stripslashes' );
+		$before = $_SERVER;
+		try {
+			$_SERVER['REQUEST_URI'] = '/de/loesungsentwurf/?add-to-cart=1';
+			$this->assertSame( $draft, ( new Checkout() )->after_add_destination( false ) );
+			$_SERVER['REQUEST_URI'] = '/de/proforma-anfrage/?add-to-cart=1';
+			$this->assertSame( $inquiry, ( new Checkout() )->after_add_destination( false ) );
+		} finally {
+			$_SERVER = $before;
+		}
+	}
+
+	/** A prefetched page must not hide the cart edit that the customer just confirmed. */
+	public function test_draft_and_inquiry_paths_are_excluded_from_wordpress_prefetch(): void {
+		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturn( 'https://example.test/de/proforma-anfrage/' );
+		WP_Mock::userFunction( 'wc_get_cart_url' )->andReturn( 'https://example.test/de/loesungsentwurf/' );
+		WP_Mock::userFunction( 'wp_make_link_relative' )->andReturnUsing( static fn ( string $url ): string => (string) parse_url( $url, PHP_URL_PATH ) );
+		$this->assertSame(
+			array( '/keep/', '/de/loesungsentwurf/', '/de/proforma-anfrage/' ),
+			( new Checkout() )->session_page_paths( array( '/keep/' ) )
 		);
-		$this->assertSame( 'https://example.test/de/proforma-anfrage/', ( new Checkout() )->after_add_destination( false ) );
 	}
 
 	/** An existing explicit native destination remains authoritative. */

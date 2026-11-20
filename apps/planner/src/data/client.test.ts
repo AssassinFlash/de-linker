@@ -50,6 +50,56 @@ function fixture(replies: Response[]) {
 }
 const guest = () => new Response("0", { status: 400 });
 
+test("project reads recover once from a transient gateway failure without replaying writes", async () => {
+	for (const path of [
+		"projects/list",
+		"projects/read",
+		"projects/runs",
+	] as const) {
+		const { client, calls } = fixture([
+			guest(),
+			json(context),
+			json({ code: "linker_planner_unavailable" }, 503),
+			json({ ok: true }),
+		]);
+		await client.bootstrap();
+		assert.deepEqual(await client.query(path, {}, context.query_scope), {
+			ok: true,
+		});
+		assert.equal(calls.length, 4);
+	}
+	for (const [path, status, attempts] of [
+		["projects/list", 503, 2],
+		["projects/read", 403, 1],
+		["projects/revise", 503, 1],
+		["projects/create", 503, 1],
+	] as const) {
+		const { client, calls } = fixture([
+			guest(),
+			json(context),
+			json({ code: "linker_planner_unavailable" }, status),
+			json({ code: "linker_planner_unavailable" }, status),
+		]);
+		await client.bootstrap();
+		await assert.rejects(client.query(path, {}, context.query_scope));
+		assert.equal(calls.length - 2, attempts);
+	}
+});
+
+test("a missing native planner configuration returns its original 503 without repeating the project read", async () => {
+	const { client, calls } = fixture([
+		guest(),
+		json(context),
+		json({ code: "linker_planner_configuration", data: { status: 503 } }, 503),
+	]);
+	await client.bootstrap();
+	await assert.rejects(client.query("projects/list", {}, context.query_scope), {
+		status: 503,
+		code: "linker_planner_configuration",
+	});
+	assert.equal(calls.length, 3);
+});
+
 test("input refusals retain bounded domain and framework correction paths", async () => {
 	for (const fields of [
 		["equipment_setup.grid_phase"],

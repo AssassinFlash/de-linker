@@ -144,7 +144,21 @@ final class LanguageLinks {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
 		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
 		$keys           = self::LANGUAGE_QUERY_KEYS;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A paired contact receipt verifies the full order key at its destination.
+		if ( isset( $_GET['contact'] ) && ( isset( $_GET['contact_order'] ) || 'saved_review' === $_GET['contact'] ) && is_page() && get_permalink( get_queried_object_id() ) === PageUrls::page( 'contact' ) ) {
+			$keys[] = 'contact';
+			$keys[] = 'contact_order';
+		}
+
+		$kept = array();
 		if ( \function_exists( 'is_account_page' ) && is_account_page() ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only the validated product permalink crosses languages at sign-in.
+			if ( isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) && ! isset( $_GET['linker_quotation'] ) && ! isset( $_GET['linker_inquiry'] ) && ! is_wc_endpoint_url() ) {
+				$product = \Linker\Commerce\Account\AuthTemplates::product_return_url( esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ), $lang ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only link validated against native products.
+				if ( '' !== $product ) {
+					$kept['redirect_to'] = rawurlencode( $product );
+				}
+			}
 			if ( is_wc_endpoint_url( 'orders' ) ) {
 				$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );
 			} elseif ( '' !== $base && ( is_wc_endpoint_url( 'register' ) || ! is_wc_endpoint_url() ) ) {
@@ -155,7 +169,6 @@ final class LanguageLinks {
 				}
 			}
 		}
-		$kept = array();
 		foreach ( $keys as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
 			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || ( '' === $_GET[ $query_key ] && ! ( 's' === $query_key && $journal_search ) ) ) {
@@ -189,7 +202,7 @@ final class LanguageLinks {
 		foreach ( LibraryPage::language_query( wp_unslash( $_GET ) ) as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( $keys, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( $keys, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', 'redirect_to', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

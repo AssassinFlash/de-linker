@@ -150,6 +150,7 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
+		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
 		$this->cart_is( true );
 
 		$html = $this->shortcodes()->draft_empty();
@@ -165,7 +166,7 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'bulk-order', $html );
 		$this->assertStringNotContainsString( 'Batch item-number import', $html );
 		$this->assertStringNotContainsString( 'item-number', $html );
-		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
+		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send an inquiry</a>', $html );
 		$this->assertStringNotContainsString( 'style=', $html );
 	}
 
@@ -180,6 +181,7 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
 		$this->cart_is( true );
 
 		$html = $this->shortcodes()->draft_empty();
@@ -187,7 +189,7 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( '>Sign in</a>', $html );
 		$this->assertStringNotContainsString( 'Sign in or register', $html );
 		$this->assertStringNotContainsString( 'Create account', $html );
-		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
+		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send an inquiry</a>', $html );
 	}
 
 

@@ -58,6 +58,7 @@ final class Module {
 		add_action( 'admin_head', array( $this->statuses, 'admin_colours' ) );
 
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateway' ) );
+		add_filter( 'wp_speculation_rules_href_exclude_paths', array( $this->checkout, 'session_page_paths' ) );
 		add_filter( 'woocommerce_add_to_cart_redirect', array( $this->checkout, 'after_add_destination' ) );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this->checkout, 'gateways' ) );
 		add_action( 'woocommerce_checkout_create_order', array( $this->checkout, 'without_payment_method_title' ) );

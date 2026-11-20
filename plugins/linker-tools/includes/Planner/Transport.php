@@ -20,11 +20,10 @@ final class Transport {
 	 * Product reads and operations using their facts check current Woo permission.
 	 * Each shared Python Publication.read has a 10-second network budget;
 	 * this native route allows both checks plus cold-load/transport overhead.
-	 * Operational policy, not an engineering limit. Read-only project/history
-	 * RPCs retain their existing five-second budget.
+	 * The same budget lets an owner open their project index, revisions and run history.
 	 */
-	private const SOURCE_OPERATION_TIMEOUT = 30.0;
-	private const SOURCE_OPERATIONS        = array( 'places/lookup', 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'runs/read', 'equipment/candidates/read', 'equipment/certificates/read' );
+	private const EXTENDED_TIMEOUT    = 30.0;
+	private const EXTENDED_OPERATIONS = array( 'projects/list', 'projects/read', 'projects/runs', 'places/lookup', 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'runs/read', 'equipment/candidates/read', 'equipment/certificates/read' );
 	/**
 	 * One published footprint part is about 38 MB and takes roughly 30 s to
 	 * fetch; measured 2026-11-16, the ordinary 5 s budget answered 503 while
@@ -64,7 +63,7 @@ final class Transport {
 			$headers['X-Linker-Planner-Previous-Guest'] = $previous_guest;
 		}
 		$args     = array(
-			'timeout'             => 'places/outline' === $path ? self::OUTLINE_TIMEOUT : ( in_array( $path, self::SOURCE_OPERATIONS, true ) ? self::SOURCE_OPERATION_TIMEOUT : 5.0 ),
+			'timeout'             => 'places/outline' === $path ? self::OUTLINE_TIMEOUT : ( in_array( $path, self::EXTENDED_OPERATIONS, true ) ? self::EXTENDED_TIMEOUT : 5.0 ),
 			'redirection'         => 0,
 			'sslverify'           => true,
 			'limit_response_size' => self::MAX_REPLY_BYTES + 1,

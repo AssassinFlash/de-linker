@@ -30,15 +30,32 @@ final class Checkout {
 	}
 
 	/**
-	 * Consume a successful native product add before the inquiry is rendered.
+	 * Consume a successful native product add before showing its destination.
 	 * Leaving add-to-cart in the address repeats that command on reload and on
-	 * Woo's native undo fragment refresh. Woo owns the add, notice and redirect;
-	 * its checkout URL already resolves the current language.
+	 * Woo's native undo fragment refresh. Woo owns the cart and checkout permalinks in the current language.
 	 *
 	 * @param string|false $url An earlier explicit Woo redirect, or no destination.
 	 */
 	public function after_add_destination( string|false $url ): string {
-		return $url ? $url : wc_get_checkout_url();
+		if ( $url ) {
+			return $url;
+		}
+		$draft = wc_get_cart_url();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Compare paths only; the destination always comes from Woo.
+		$path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH );
+		return wp_parse_url( $draft, PHP_URL_PATH ) === $path ? $draft : wc_get_checkout_url();
+	}
+
+	/**
+	 * Read the draft and inquiry after the customer's pending quantity change reaches Woo.
+	 *
+	 * @param string[] $paths Paths already excluded from WordPress speculative loading.
+	 * @return string[]
+	 */
+	public function session_page_paths( array $paths ): array {
+		$paths[] = wp_make_link_relative( wc_get_cart_url() );
+		$paths[] = wp_make_link_relative( wc_get_checkout_url() );
+		return $paths;
 	}
 
 	/**

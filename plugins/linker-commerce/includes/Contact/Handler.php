@@ -167,7 +167,7 @@ final class Handler {
 	 */
 	private function back( string $back, string $state ): void {
 		$args = array( Form::STATE_PARAM => $state );
-		if ( 'receipt_pending' === $state && $this->last_order instanceof WC_Order ) {
+		if ( $this->last_order instanceof WC_Order ) {
 			$args[ Form::ORDER_PARAM ] = $this->last_order->get_order_key();
 		}
 		wp_safe_redirect( add_query_arg( $args, $back ) . '#' . Form::ANCHOR );

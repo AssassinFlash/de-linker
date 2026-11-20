@@ -23,7 +23,6 @@ export function retrofitOptions(inputs: JsonObject) {
 	if (
 		!inputs.brief ||
 		readBrief(inputs.brief).system_scope !== "storage_addition" ||
-		!goal ||
 		hasPlant(inputs) ||
 		equipmentDraft(inputs).inverter_product_id !== null
 	)
@@ -95,12 +94,18 @@ export function retrofitOptions(inputs: JsonObject) {
 				),
 			},
 		},
-	}[goal];
+	}[goal || "self"];
 	return [
 		{
 			keep: true,
 			title: __("Keep the existing inverter", "linker-tools"),
 			...options.keep,
+			...(!goal && {
+				benefit: __(
+					"Add a battery while keeping your existing PV inverter.",
+					"linker-tools",
+				),
+			}),
 		},
 		{
 			keep: false,

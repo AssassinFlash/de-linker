@@ -62,10 +62,9 @@ async function startProjectCreation(title) {
 		"new_pv_storage",
 	);
 	await until(
-		() =>
-			button("Continue with solar") && !button("Continue with solar").disabled,
+		() => button("Compare systems") && !button("Compare systems").disabled,
 	);
-	await act(async () => button("Continue with solar").click());
+	await act(async () => button("Compare systems").click());
 }
 
 async function workspaceFixture(t, mode, configureDom = () => {}) {

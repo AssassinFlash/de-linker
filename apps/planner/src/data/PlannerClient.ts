@@ -96,16 +96,32 @@ export class PlannerClient {
 		signal?: AbortSignal,
 	): Promise<unknown> {
 		const session = this.requireSession();
-		return this.send(
-			path,
-			wire(
-				command,
-				session.runtime.limits.max_json_depth,
-				session.runtime.limits.max_body_bytes,
-			),
-			expectedScope,
-			signal,
+		const body = wire(
+			command,
+			session.runtime.limits.max_json_depth,
+			session.runtime.limits.max_body_bytes,
 		);
+		try {
+			return await this.send(path, body, expectedScope, signal);
+		} catch (error) {
+			const projectRead =
+				path === "projects/list" ||
+				path === "projects/read" ||
+				path === "projects/runs";
+			const transient =
+				error instanceof TypeError ||
+				(error instanceof ApiError &&
+					[502, 503, 504].includes(error.status) &&
+					error.code !== "linker_planner_configuration");
+			if (
+				!projectRead ||
+				!transient ||
+				signal?.aborted ||
+				!this.isCurrentScope(expectedScope)
+			)
+				throw error;
+			return this.send(path, body, expectedScope, signal);
+		}
 	}
 
 	/** Retries must pass the exact captured body and key, not regenerate either. */

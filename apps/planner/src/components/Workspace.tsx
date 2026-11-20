@@ -193,13 +193,14 @@ export function Workspace({
 		return () => window.removeEventListener("popstate", restore);
 	}, [cache, route, session.claim_pending, session.query_scope]);
 	const select = useCallback(
-		(id: string | null, destination = "") => {
+		(id: string | null, destination = "", guided = false) => {
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			const from = url.hash.slice(1);
-			if (
+			if (guided) url.searchParams.set("guided", "inquiry");
+			else if (
 				id !== url.searchParams.get("project") ||
-				preliminaryRoute(destination)
+				(preliminaryRoute(from) && !preliminaryRoute(destination))
 			)
 				url.searchParams.delete("guided");
 			if (
@@ -365,17 +366,20 @@ export function Workspace({
 		if (openResult)
 			select(
 				project.id,
-				destination === "preliminary-review"
-					? "sc-preliminary-review"
-					: destination === "energy"
-						? "sc-energy"
-						: destination === "equipment"
-							? "sc-system"
-							: destination === "roof"
-								? "sc-roof"
-								: destination === "design"
-									? "sc-solar"
-									: "sc-project",
+				destination === "guided-comparison"
+					? "sc-system"
+					: destination === "preliminary-review"
+						? "sc-preliminary-review"
+						: destination === "energy"
+							? "sc-energy"
+							: destination === "equipment"
+								? "sc-system"
+								: destination === "roof"
+									? "sc-roof"
+									: destination === "design"
+										? "sc-solar"
+										: "sc-project",
+				destination === "guided-comparison",
 			);
 		return true;
 	}
@@ -517,6 +521,7 @@ export function Workspace({
 				client={client}
 				store={store}
 				locale={config.locale}
+				guided={new URL(location.href).searchParams.get("guided") === "inquiry"}
 				comparing={startPreliminary || route === "sc-preliminary-options"}
 				recoveringRevision={inquiryRevision !== null}
 				navigate={(destination, confirmed) => {
@@ -621,6 +626,7 @@ export function Workspace({
 		!entryHints?.roof &&
 		!entryHints?.equipment;
 
+	const bareComparison = canCompareDirections && !entryHints && !route;
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
 	const directEntry =
@@ -629,7 +635,8 @@ export function Workspace({
 		briefSource === null &&
 		!entryHints?.roof &&
 		!firstVisitComparison &&
-		(newProjectOpen ||
+		(bareComparison ||
+			newProjectOpen ||
 			route === "sc-project" ||
 			Boolean(entryHints) ||
 			(index.isSuccess && !projects.length));
@@ -742,6 +749,7 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
+							directComparison={bareComparison}
 							workspaceHeading={directEntry}
 							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
@@ -754,7 +762,9 @@ export function Workspace({
 							beginCreation={() => beginCreation(entryKey)}
 							config={config}
 							openOnLoad={
-								route === "sc-project" || (index.isSuccess && !projects.length)
+								bareComparison ||
+								route === "sc-project" ||
+								(index.isSuccess && !projects.length)
 							}
 							entryHints={entryHints}
 							locale={config.locale}

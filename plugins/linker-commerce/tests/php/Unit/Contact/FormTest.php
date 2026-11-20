@@ -200,11 +200,46 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( 'href="http://site/de/genie/"', $html );
 	}
 
+	/** A legacy review link identifies only the matching Contact inquiry remembered in this Woo session. */
+	public function test_previous_individual_receipts_recover_from_their_native_session(): void {
+		$this->plain_text();
+		$this->form_environment();
+		$this->english_site();
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'get' )->with( 'linker_review_saved', '' )->andReturn( '47' );
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => $session ) );
+		$order = \Mockery::mock( \WC_Order::class );
+		$order->shouldReceive( 'get_order_number' )->andReturn( '47' );
+		$order->shouldReceive( 'get_customer_id' )->andReturn( 0 );
+		$order->shouldReceive( 'has_status' )->andReturnUsing( static fn ( $status ): bool => 'inquiry-received' === $status );
+		$metadata = array(
+			'_linker_inquiry_source' => 'contact',
+			'_linker_review_lane'    => 'individual',
+			'_linker_incident_hold'  => array( 'reason' => 'confirmed_campaign_review' ),
+		);
+		$order->shouldReceive( 'get_meta' )->andReturnUsing(
+			static function ( $key ) use ( &$metadata ) {
+				return $metadata[ $key ] ?? '';
+			}
+		);
+		WP_Mock::userFunction( 'wc_get_order' )->with( 47 )->andReturn( $order );
+		$_GET = array( Form::STATE_PARAM => 'saved_review' );
+		$this->assertStringContainsString( 'Your inquiry #47 is saved and waiting for review.', ( new Form() )->render() );
+		$metadata['_linker_inquiry_source'] = 'inquiry';
+		$this->assertStringNotContainsString( 'linker-form-success', ( new Form() )->render() );
+		$metadata['_linker_inquiry_source']                              = 'contact';
+		$metadata[ \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ] = 'yes';
+		$this->assertStringNotContainsString( 'linker-form-success', ( new Form() )->render() );
+	}
+
 	/**
 	 * The redirect's state shows above the fields; a fresh visit shows nothing.
 	 * A sent message keeps the card and its side cards, without another form.
 	 */
 	public function test_state_messages(): void {
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'get' )->with( 'linker_review_saved', '' )->andReturn( '' );
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => $session ) );
 		$this->plain_text();
 		$this->form_environment();
 		$this->english_site();
@@ -212,24 +247,12 @@ final class FormTest extends TestCase {
 		$_GET = array();
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );
 
-		$_GET            = array( Form::STATE_PARAM => 'receipt_pending' );
-		$pending_receipt = ( new Form() )->render();
-		$this->assertStringContainsString( 'linker-form-success', $pending_receipt );
-		$this->assertStringContainsString( 'Thank you. Your message is with the Linker team.', $pending_receipt );
-		$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $pending_receipt, 'An undecided receipt must not claim that the confirmation was omitted.' );
-		$this->assertStringNotContainsString( 'http-equiv="refresh"', $pending_receipt, 'Without the saved inquiry there is nothing later to follow.' );
-
-		$_GET = array( Form::STATE_PARAM => 'sent_no_receipt' );
-		$this->assertStringContainsString( 'We have not sent a confirmation email.', ( new Form() )->render() );
-
-		$_GET = array( Form::STATE_PARAM => 'sent' );
-		$sent = ( new Form() )->render();
-		$this->assertStringContainsString( 'role="status"', $sent );
-		$this->assertStringContainsString( 'linker-form-success woocommerce-message', $sent );
-		$this->assertStringContainsString( 'Send another message', $sent );
-		$this->assertStringContainsString( '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">', $sent, 'The receipt keeps the card, as the panel itself.' );
-		$this->assertStringContainsString( 'linker-contact-rail', $sent );
-		$this->assertStringNotContainsString( 'type="submit"', $sent, 'A sent message has one follow-up action, not another form.' );
+		foreach ( array( 'receipt_pending', 'sent', 'sent_no_receipt', 'saved_review' ) as $flag ) {
+			$_GET = array( Form::STATE_PARAM => $flag );
+			$html = ( new Form() )->render();
+			$this->assertStringNotContainsString( 'linker-form-success', $html );
+			$this->assertStringContainsString( 'name="message"', $html );
+		}
 
 		$_GET    = array( Form::STATE_PARAM => 'invalid' );
 		$invalid = ( new Form() )->render();

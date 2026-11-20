@@ -29,6 +29,7 @@ final class AuthTemplatesTest extends TestCase {
 	 */
 	public function test_register_hooks_the_query_vars_the_template_filter_and_the_notices(): void {
 		$auth = new AuthTemplates();
+		WP_Mock::expectFilterAdded( 'woocommerce_login_redirect', array( $auth, 'product_login_destination' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
 		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 40 );

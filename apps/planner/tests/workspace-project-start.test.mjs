@@ -2041,3 +2041,131 @@ async function compareRetrofit(t, goal) {
 		/Keep the existing inverter/,
 	);
 }
+
+test("the bare configurator compares a retrofit and opens its Woo inquiry with no invented project data", async (t) => {
+	const fixture = setupDom();
+	history.replaceState(null, "", "/workspace/");
+	const style = Object.getOwnPropertyDescriptor(globalThis, "getComputedStyle");
+	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+	t.after(() => {
+		if (style) Object.defineProperty(globalThis, "getComputedStyle", style);
+		else delete globalThis.getComputedStyle;
+	});
+	globalThis.indexedDB = new IDBFactory();
+	const { createRoot } = await import("react-dom/client");
+	const { QueryClient, QueryClientProvider } =
+		await import("@tanstack/react-query");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { DraftStore } = await import("../src/data/DraftStore.ts");
+	const cache = new QueryClient(),
+		root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		cache.clear();
+		delete globalThis.indexedDB;
+	});
+	let project, inquiry;
+	const client = {
+		origin: location.origin,
+		isCurrentScope: () => true,
+		async query(path, command) {
+			if (path === "projects/list")
+				return {
+					schema_version: 1,
+					items: [
+						{
+							id: "8".repeat(32),
+							title: "Earlier project",
+							revision: 1,
+							input_sha256: "7".repeat(64),
+							updated_at: 1763200000,
+						},
+					],
+					next: null,
+				};
+			if (path === "projects/runs")
+				return { schema_version: 1, items: [], next: null };
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", products: [] };
+			if (path === "projects/read") return project;
+			assert.equal(path, "inquiry/form");
+			inquiry = command;
+			return {
+				schema_version: 1,
+				inquiry_lines: [],
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php"><input name="linker_preliminary_project" value="${projectId}:${command.revision}"></form>`,
+			};
+		},
+		async send(path, body) {
+			const command = JSON.parse(body);
+			if (path === "projects/create") {
+				assert.equal(project, undefined);
+				project = {
+					id: projectId,
+					revision: 1,
+					title: command.title,
+					inputs: command.inputs,
+					input_sha256: "2".repeat(64),
+				};
+			} else {
+				assert.equal(path, "projects/revise");
+				project = { ...project, revision: 2, inputs: command.inputs };
+			}
+			return project;
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Workspace, {
+					config: { locale: "en", countries: {} },
+					client,
+					session,
+					store: new DraftStore(),
+					recheck: () => {},
+				}),
+			),
+		),
+	);
+	const selector = 'select[name="system_scope"]';
+	await until(() => document.querySelector(selector));
+	const scope = document.querySelector(selector);
+	const equipment = scope.form.querySelector("details.sc-project-equipment");
+	assert.equal(equipment.open, false);
+	assert.equal(
+		equipment.querySelector('button[aria-pressed="true"]').textContent,
+		"Single system",
+	);
+	await act(async () => {
+		scope.value = "storage_addition";
+		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	const compare = [...scope.form.querySelectorAll("button")].find(
+		(el) => el.textContent === "Compare systems",
+	);
+	assert.ok(compare, "the new project has a Compare systems action");
+	await until(() => !compare.disabled);
+	await act(async () => compare.click());
+	await until(() =>
+		document.querySelector(".sc-direction-comparison tbody tr"),
+	);
+	const rows = [
+		...document.querySelectorAll(".sc-direction-comparison tbody tr"),
+	];
+	assert.deepEqual(
+		rows.map((row) => row.querySelector("th").textContent),
+		["Keep the existing inverter", "Consider a replacement inverter"],
+	);
+	assert.equal(project.inputs.brief.system_scope, "storage_addition");
+	await until(() => !rows[0].querySelector("button").disabled);
+	await act(async () => rows[0].querySelector("button").click());
+	await until(() =>
+		document.querySelector(
+			".sc-preliminary-review:not([hidden]) form.linker-inquiry-form",
+		),
+	);
+	assert.equal(inquiry.project_id, project.id);
+	assert.equal(inquiry.revision, 2);
+});

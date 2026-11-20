@@ -149,3 +149,52 @@ def test_storage_rejects_a_mix_of_original_and_previous_candidate() -> None:
     review = snapshot(STORAGE, (STORAGE_ORIGINAL[0], STORAGE_PREVIOUS[1]))
     with pytest.raises(ValueError, match="partial revision"):
         copy.plan_pair(STORAGE, review)
+
+
+@pytest.mark.parametrize(
+    ("ids", "earlier_count", "remaining", "expected"),
+    [
+        (
+            (1674, 6825),
+            4,
+            (
+                "Invoices, Proforma invoices and related order documents are issued electronically and sent by email; by ordering, the buyer consents to receiving invoices in electronic form. Where a parcel charge can be calculated reliably, it is stated in the quotation or Proforma invoice. For pallet, dangerous-goods, multi-item, unknown-weight, and cross-border orders, Linker confirms the freight charge on the Proforma invoice, and nothing is payable until the Proforma total is complete.",
+                "Rechnungen, Proformarechnungen und zugehörige Auftragsunterlagen werden elektronisch erstellt und per E-Mail bereitgestellt; mit der Bestellung stimmt der Käufer dem Erhalt von Rechnungen in elektronischer Form zu. Sofern sich die Kosten für den Paketversand zuverlässig berechnen lassen, werden sie im Angebot oder in der Proformarechnung ausgewiesen. Bei Paletten- oder Gefahrgutversand, Bestellungen mit mehreren Positionen, unbekanntem Gewicht sowie grenzüberschreitenden Lieferungen bestätigt Linker die Frachtkosten auf der Proformarechnung. Eine Zahlung ist erst fällig, wenn der Gesamtbetrag der Proformarechnung vollständig feststeht.",
+            ),
+            (
+                "no payment is due until the full order total, including freight, is confirmed",
+                "Eine Zahlung ist erst fällig, wenn der Gesamtbetrag einschließlich Frachtkosten feststeht",
+            ),
+        ),
+        (
+            (1038, 6698),
+            1,
+            (
+                "contact Linker with the Proforma number before the goods are used or installed. Contact Linker with the Proforma number before sending anything back; a return needs written authorisation before goods are shipped.",
+                "kontaktieren Sie Linker unter Angabe der Proformanummer, bevor die Ware verwendet oder installiert wird. und benachrichtigen Sie Linker mit Fotos und der Proformanummer. Kontaktieren Sie Linker unter Angabe der Proformanummer, bevor Sie etwas zurücksenden; eine Rücksendung erfordert eine schriftliche Genehmigung, bevor die Ware versandt wird.",
+            ),
+            (
+                "order number before sending anything back",
+                "mit Fotos und der Bestellnummer",
+            ),
+        ),
+    ],
+)
+def test_legal_copy_keeps_order_and_payment_conditions_and_replays(
+    ids: tuple[int, int],
+    earlier_count: int,
+    remaining: tuple[str, str],
+    expected: tuple[str, str],
+) -> None:
+    previous = tuple(
+        " ".join(row[1] for row in revisions[:earlier_count]) + " " + text
+        for revisions, text in zip(copy.REVISIONS[ids], remaining, strict=True)
+    )
+    current = snapshot(ids, (previous[0], previous[1]))
+    planned = copy.plan_pair(ids, current)
+    assert planned is not None
+    for change, text in zip(planned["changes"], expected, strict=True):
+        assert text in change["after"]
+        assert "proforma" not in change["after"].lower()
+        current["pages"][str(change["id"])] = change["after"]
+    assert copy.plan_pair(ids, current) is None

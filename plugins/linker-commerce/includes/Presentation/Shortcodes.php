@@ -352,17 +352,9 @@ final class Shortcodes {
 		return esc_url( PageUrls::home() );
 	}
 
-		/**
-		 * Markup of the empty solution draft.
-		 *
-		 * The live empty cart had three actions. The middle one opened a
-		 * batch item-number import the owner ruled out on 2026-10-11
-		 * (docs/audit/2026-10-11-surface-inventory.md GAP-11: not built), so
-		 * the note does not promise one either. This page keeps the two
-		 * actions that still have a page: browse products, and sign in.
-		 * The heading names the solution draft. Classes only; the look
-		 * lives in the storefront volume.
-		 */
+	/**
+	 * An empty draft can still lead to a guest inquiry.
+	 */
 	private function empty_draft_html(): string {
 		$products = get_permalink( wc_get_page_id( 'shop' ) );
 		return strtr(
@@ -371,6 +363,8 @@ final class Shortcodes {
 				'{{label}}'        => esc_attr__( 'Empty solution draft', 'linker-commerce' ),
 				'{{title}}'        => esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
 				'{{intro}}'        => esc_html__( 'Browse products and add them to your solution draft. You can send an inquiry without an account.', 'linker-commerce' ),
+				'{{inquiry-url}}'  => esc_url( wc_get_checkout_url() ),
+				'{{inquiry}}'      => esc_html__( 'Send an inquiry', 'linker-commerce' ),
 				'{{products-url}}' => esc_url( false === $products ? '' : $products ),
 				'{{products}}'     => esc_html__( 'Browse products', 'linker-commerce' ),
 				'{{signin-url}}'   => esc_url( wc_get_page_permalink( 'myaccount' ) ),

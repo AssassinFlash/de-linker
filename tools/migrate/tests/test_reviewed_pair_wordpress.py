@@ -103,6 +103,7 @@ echo '@@fixture@@'.wp_json_encode(['ids'=>$ids]);
         "second_update_failure",
         "silent_units_rejection",
         "silent_units_add_rejection",
+        "unexpected_adopted_metadata",
         "silent_status_rejection",
         "silent_hash_rejection",
         "silent_note_delete_rejection",
@@ -136,6 +137,8 @@ def test_native_pair_and_baseline_commit_together(pages: list[int], case: str) -
         "changes": changes,
         "metadata_before": before["metadata"],
     }
+    if case == "unexpected_adopted_metadata":
+        payload["expected_metadata"] = before["metadata"]
     if case == "source_drift":
         changes[0]["before"] += "Unreviewed concurrent edit."
     if case == "metadata_drift":

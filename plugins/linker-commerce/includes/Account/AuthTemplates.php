@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Contact\SelectionContext;
 use Linker\Commerce\Inquiry\AccountLink;
 
 /**
@@ -85,11 +86,54 @@ final class AuthTemplates {
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'wc_get_template', array( $this, 'template' ), 30, 2 );
+		add_filter( 'woocommerce_login_redirect', array( $this, 'product_login_destination' ) );
 		add_filter( 'seopress_titles_title', array( $this, 'document_title' ), 40 );
 		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 40 );
 		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 		add_action( 'template_redirect', array( $this, 'register_redirect' ) );
 		add_action( 'woocommerce_account_register_endpoint', array( $this, 'confirm_inquiry' ) );
+	}
+
+	/**
+	 * Resume the published product whose price the customer signed in to see.
+	 *
+	 * @param string $redirect Woo's native destination for other login forms.
+	 */
+	public function product_login_destination( string $redirect ): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Woo authenticated the login before invoking this filter.
+		$target = isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : '';
+		if ( '' === $target ) {
+			return $redirect;
+		}
+		$product = self::product_return_url( $target );
+		return '' !== $product ? $product : wc_get_page_permalink( 'myaccount' );
+	}
+
+	/**
+	 * A price sign-in points to the actual public product in the chosen language.
+	 *
+	 * @param string $target Canonical product permalink on this site.
+	 * @param string $language Optional requested language.
+	 */
+	public static function product_return_url( string $target, string $language = '' ): string {
+		$source = SelectionContext::normalize( array( 'source' => $target ) );
+		if ( 'product' !== ( $source['type'] ?? '' ) || $source['source'] !== $target ) {
+			return '';
+		}
+		$product = wc_get_product( (int) $source['id'] );
+		if ( ! $product || ! $product->is_visible() ) {
+			return '';
+		}
+		if ( '' === $language ) {
+			return $target;
+		}
+		$twins = pll_get_post_translations( (int) $source['id'] );
+		$twin  = isset( $twins[ $language ] ) ? get_post( $twins[ $language ] ) : null;
+		if ( ! $twin instanceof \WP_Post || 'product' !== $twin->post_type || 'publish' !== $twin->post_status || '' !== $twin->post_password ) {
+			return '';
+		}
+		$product = wc_get_product( $twin->ID );
+		return $product && $product->is_visible() ? (string) get_permalink( $twin ) : '';
 	}
 
 	/**

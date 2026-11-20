@@ -25,6 +25,12 @@ DE_GUEST = (
 CAPABILITY_DE_BEFORE = "Wir prüfen die verfügbaren technischen Daten mit Ihnen, um die passende Konfiguration vor der Auftragsbestätigung einzugrenzen."
 EPC_DE_ADJUSTMENT_BEFORE = "Wenn sich die Standortbedingungen ändern, bevor der Auftrag in die Produktion freigegeben wird, lässt sich die Konfiguration noch ändern."
 
+
+def order_wording(before: str, after: str) -> tuple[str, str, str]:
+    """The published quotation revision still carries this older order wording."""
+    return before, after, before
+
+
 # Each native post_content fragment lists its original and final text. A third
 # value records the exact previous candidate where it differs from the final.
 REVISIONS = {
@@ -43,6 +49,18 @@ REVISIONS = {
                 "Bank details are provided with the order documents.",
                 "You will find the bank details for payment only on the formal invoice our team issues outside the website.",
             ),
+            order_wording(
+                "Invoices, Proforma invoices and related order documents are issued electronically and sent by email",
+                "Invoices and related order documents are issued electronically and sent by email",
+            ),
+            order_wording(
+                "Where a parcel charge can be calculated reliably, it is stated in the quotation or Proforma invoice.",
+                "Where a parcel charge can be calculated reliably, it is stated in the quotation.",
+            ),
+            order_wording(
+                "Linker confirms the freight charge on the Proforma invoice, and nothing is payable until the Proforma total is complete.",
+                "Linker confirms the freight charge in the order documents, and no payment is due until the full order total, including freight, is confirmed.",
+            ),
         ),
         (
             DE_GUEST,
@@ -58,9 +76,48 @@ REVISIONS = {
                 "Die Bankverbindung wird mit den Auftragsunterlagen mitgeteilt.",
                 "Die Bankverbindung für Ihre Zahlung steht ausschließlich auf der Rechnung, die unser Team außerhalb der Website ausstellt.",
             ),
+            order_wording(
+                "Rechnungen, Proformarechnungen und zugehörige Auftragsunterlagen werden elektronisch erstellt und per E-Mail bereitgestellt",
+                "Rechnungen und zugehörige Auftragsunterlagen werden elektronisch erstellt und per E-Mail bereitgestellt",
+            ),
+            order_wording(
+                "Sofern sich die Kosten für den Paketversand zuverlässig berechnen lassen, werden sie im Angebot oder in der Proformarechnung ausgewiesen.",
+                "Sofern sich die Kosten für den Paketversand zuverlässig berechnen lassen, werden sie im Angebot ausgewiesen.",
+            ),
+            order_wording(
+                "bestätigt Linker die Frachtkosten auf der Proformarechnung. Eine Zahlung ist erst fällig, wenn der Gesamtbetrag der Proformarechnung vollständig feststeht.",
+                "bestätigt Linker die Frachtkosten in den Auftragsunterlagen. Eine Zahlung ist erst fällig, wenn der Gesamtbetrag einschließlich Frachtkosten feststeht.",
+            ),
         ),
     ),
-    (1038, 6698): ((EN_GUEST,), (DE_GUEST,)),
+    (1038, 6698): (
+        (
+            EN_GUEST,
+            order_wording(
+                "contact Linker with the Proforma number before the goods are used or installed.",
+                "contact Linker with the order number before the goods are used or installed.",
+            ),
+            order_wording(
+                "Contact Linker with the Proforma number before sending anything back",
+                "Contact Linker with the order number before sending anything back",
+            ),
+        ),
+        (
+            DE_GUEST,
+            order_wording(
+                "kontaktieren Sie Linker unter Angabe der Proformanummer, bevor die Ware verwendet oder installiert wird.",
+                "kontaktieren Sie Linker unter Angabe der Bestellnummer, bevor die Ware verwendet oder installiert wird.",
+            ),
+            order_wording(
+                "und benachrichtigen Sie Linker mit Fotos und der Proformanummer.",
+                "und benachrichtigen Sie Linker mit Fotos und der Bestellnummer.",
+            ),
+            order_wording(
+                "Kontaktieren Sie Linker unter Angabe der Proformanummer, bevor Sie etwas zurücksenden",
+                "Kontaktieren Sie Linker unter Angabe der Bestellnummer, bevor Sie etwas zurücksenden",
+            ),
+        ),
+    ),
     (28, 6907): (
         (
             (
