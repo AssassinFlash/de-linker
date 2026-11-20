@@ -317,6 +317,7 @@
 		"/for-project-developers/": "/for-epc/",
 		"/solution/for-distributor/": "/about/",
 		"/request-a-project/": "/solution-configurator/",
+		"/projekt-anfragen/": "/solution-configurator/",
 		"/linker-planner/": "/solution-configurator/",
 		"/linker-planer/": "/solution-configurator/",
 		"/linker-advisor/": "/genie/",

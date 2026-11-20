@@ -921,6 +921,7 @@ final class RedirectsTest extends TestCase {
 		$this->languages        = array( 'en', 'de' );
 
 		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/linker-planner/' ) );
+		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/request-a-project/' ) );
 
 		$this->current_language = 'de';
 		$this->post_ids         = array( self::HOME . '/solution-configurator/' => 71 );
@@ -928,6 +929,7 @@ final class RedirectsTest extends TestCase {
 		$this->permalinks       = array( 72 => self::HOME . '/de/loesungskonfigurator/' );
 
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/linker-planer/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/projekt-anfragen/' ) );
 	}
 
 	/**
