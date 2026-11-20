@@ -146,7 +146,7 @@ final class IntakeAdmin {
 	public static function saved_message( ?WC_Order $order = null ): string {
 		$number = $order instanceof WC_Order ? $order->get_order_number() : (string) WC()->session->get( 'linker_review_saved', '' );
 		/* translators: %s is the native inquiry number saved for this browser. */
-		return '' !== $number ? sprintf( __( 'Your inquiry #%s is saved and waiting for review. We have not sent a confirmation email.', 'linker-commerce' ), $number ) : __( 'Please check the status of your inquiry before sending it again.', 'linker-commerce' );
+		return '' !== $number ? sprintf( __( 'Your inquiry #%s is saved and waiting for review.', 'linker-commerce' ), $number ) : __( 'Please check the status of your inquiry before sending it again.', 'linker-commerce' );
 	}
 
 	/**

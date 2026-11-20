@@ -15,8 +15,7 @@ use Linker\Commerce\Mail\CustomerOrderEmail;
 use WC_Order;
 
 /**
- * Sent when an inquiry is received: its number, the reply promise and the
- * products asked for.
+ * The fixed customer acknowledgement of a saved inquiry.
  */
 final class InquiryReceivedEmail extends CustomerOrderEmail {
 

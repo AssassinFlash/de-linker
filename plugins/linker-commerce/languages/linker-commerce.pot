@@ -4665,9 +4665,7 @@ msgstr ""
 #. translators: %s is the native inquiry number saved for this browser.
 #: includes/Protection/IntakeAdmin.php:149
 #, php-format
-msgid ""
-"Your inquiry #%s is saved and waiting for review. We have not sent a "
-"confirmation email."
+msgid "Your inquiry #%s is saved and waiting for review."
 msgstr ""
 
 #: includes/Protection/IntakeAdmin.php:164

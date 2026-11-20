@@ -41,7 +41,7 @@ export interface ContactCardProps {
 	 * The request is with the team (sent now, or found sent when the card
 	 * appeared): the conversation keeps the sent card in its history.
 	 */
-	onSent?: ( email: string, receipt: boolean ) => void;
+	onSent?: ( email: string, receipt: boolean | null ) => void;
 	/** Fetch for tests. */
 	fetcher?: typeof fetch;
 }
@@ -57,10 +57,10 @@ export interface ContactCardProps {
  */
 export function ContactSent( {
 	email,
-	receipt = true,
+	receipt,
 }: {
 	email: string;
-	receipt?: boolean;
+	receipt?: boolean | null;
 } ) {
 	return (
 		<section className="linker-genie-contact">
@@ -68,7 +68,7 @@ export function ContactSent( {
 				{ __( 'Your request is with the Linker team', 'linker-tools' ) }
 			</p>
 			<p className="linker-genie-contact__text">{ replyText( email ) }</p>
-			{ receipt ? null : (
+			{ receipt !== false ? null : (
 				<p className="linker-genie-contact__text">
 					{ __(
 						'We have not sent a confirmation email.',
@@ -149,7 +149,7 @@ export function ContactCard( {
 	const [ email, setEmail ] = useState( '' );
 	const [ trap, setTrap ] = useState( '' );
 	const [ sentTo, setSentTo ] = useState( '' );
-	const [ receipt, setReceipt ] = useState( true );
+	const [ receipt, setReceipt ] = useState< boolean | null >( null );
 	const [ consent, setConsent ] = useState( false );
 	const [ failure, setFailure ] = useState< ContactFailure | null >( null );
 	const field = useId();
@@ -249,7 +249,7 @@ export function ContactCard( {
 		<section className="linker-genie-contact" aria-live="polite">
 			<p className="linker-genie-contact__title">{ title }</p>
 			<p className="linker-genie-contact__text">{ text }</p>
-			{ sent && ! receipt ? (
+			{ sent && receipt === false ? (
 				<p className="linker-genie-contact__text">
 					{ __(
 						'We have not sent a confirmation email.',

@@ -90,11 +90,24 @@ final class CheckoutTest extends TestCase {
 	 * The reply promise (owner ruling 2026-10-09) above the button and on the confirmation.
 	 */
 	public function test_next_steps(): void {
+		$GLOBALS['wpdb']             = Mockery::mock( \wpdb::class );
+		$GLOBALS['wpdb']->options    = 'wp_options';
+		$GLOBALS['wpdb']->last_error = '';
+		$GLOBALS['wpdb']->allows( 'flush' );
+		$GLOBALS['wpdb']->allows( 'prepare' )->andReturn( 'receipt outcome' );
+		$GLOBALS['wpdb']->allows( 'get_var' )->andReturn( '{"jobs":{"receipt":{"delivered_at":100}}}' );
 		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'read_meta_data' );
 		$order->shouldReceive( 'get_id' )->andReturn( 124 );
 		$order->shouldReceive( 'get_order_number' )->andReturn( 'L-124' );
 		$order->shouldReceive( 'get_customer_id' )->andReturn( 12 );
-		$order->shouldReceive( 'get_meta' )->andReturn( '' );
+		$order->shouldReceive( 'get_meta' )->andReturnUsing(
+			static fn ( string $key ) => match ( $key ) {
+				\Linker\Commerce\Protection\Intake::LANE_META => 'verification',
+				\Linker\Commerce\Mail\NotificationHold::META => array( 'reason' => 'authorization_unresolved' ),
+				default => '',
+			}
+		);
 		WP_Mock::userFunction(
 			'wc_get_order',
 			array(
@@ -117,6 +130,7 @@ final class CheckoutTest extends TestCase {
 		$checkout->next_steps( 124 );
 		$html = (string) ob_get_clean();
 		$this->assertStringContainsString( 'We reply within one business day to the email address you provided.', $html );
+		$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $html );
 		$this->assertStringContainsString( 'Inquiry #L-124', $html );
 		$this->assertStringContainsString( '<h1 id="linker-receipt-title">Inquiry received</h1>', $html );
 		$this->assertStringContainsString( 'href="http://site/my-account/inquiries/"', $html );

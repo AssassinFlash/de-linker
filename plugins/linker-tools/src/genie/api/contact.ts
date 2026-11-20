@@ -27,7 +27,7 @@ export interface ContactState {
 	/** The signed-in customer's address; null for a guest. */
 	email: string | null;
 	/** The request already with the team, when nothing was said since. */
-	sent: { email: string; receipt: boolean } | null;
+	sent: { email: string; receipt: boolean | null } | null;
 	/** The team mailbox customers see, named when a request is refused. */
 	mailbox: string;
 }
@@ -37,7 +37,7 @@ export type ContactFailure =
 	'email' | 'consent' | 'retry' | 'limited' | 'unavailable';
 
 export type ContactResult =
-	| { ok: true; email: string; receipt: boolean }
+	| { ok: true; email: string; receipt: boolean | null }
 	| { ok: false; failure: ContactFailure };
 
 /**
@@ -75,7 +75,10 @@ export async function readContact(
 				body.sent && typeof body.sent.email === 'string'
 					? {
 							email: body.sent.email,
-							receipt: false !== body.sent.receipt,
+							receipt:
+								typeof body.sent.receipt === 'boolean'
+									? body.sent.receipt
+									: null,
 						}
 					: null,
 			mailbox: typeof body.mailbox === 'string' ? body.mailbox : '',
@@ -130,13 +133,14 @@ export async function sendContact(
 		const body = ( await response.json().catch( () => ( {} ) ) ) as {
 			email?: string;
 			code?: string;
-			receipt?: boolean;
+			receipt?: boolean | null;
 		};
 		if ( response.ok ) {
 			return {
 				ok: true,
 				email: body.email ?? request.email ?? '',
-				receipt: false !== body.receipt,
+				receipt:
+					typeof body.receipt === 'boolean' ? body.receipt : null,
 			};
 		}
 		const failures: Record< string, ContactFailure > = {

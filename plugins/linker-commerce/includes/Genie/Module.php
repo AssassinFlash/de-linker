@@ -108,13 +108,13 @@ final class Module {
 	 *
 	 * @param mixed $sent    An earlier answer: an array when another listener sent it.
 	 * @param mixed $handoff The hand-off (Linker\Tools\Genie\ContactRequest::handoff()).
-	 * @return array{order: int, receipt: bool}|null The record and whether the receipt went; null when the hand-off is not one.
+	 * @return array{order: int, receipt: bool|null}|null The record and whether the receipt went; null when the hand-off is not one.
 	 */
 	public function contact( mixed $sent, mixed $handoff ): array|WP_Error|null {
 		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
 			return array(
 				'order'   => (int) $sent['order'],
-				'receipt' => ! empty( $sent['receipt'] ),
+				'receipt' => $sent['receipt'] ?? null,
 			);
 		}
 		if ( ! is_array( $handoff ) || ! is_array( $handoff['customer'] ?? null ) ) {
@@ -138,10 +138,22 @@ final class Module {
 			return $order;
 		}
 		return array(
-			'order'           => $order->get_id(),
-			'receipt'         => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
-			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'order'   => $order->get_id(),
+			'receipt' => self::receipt_sent( $order ),
 		);
+	}
+
+	/**
+	 * Whether this inquiry's customer email was sent, or null while its outcome is unknown.
+	 *
+	 * @param \WC_Order $order Saved inquiry.
+	 */
+	public static function receipt_sent( \WC_Order $order ): ?bool {
+		return match ( ReceiptLimit::delivery_state( $order ) ) {
+			'sent'    => true,
+			'omitted' => false,
+			default   => null,
+		};
 	}
 
 	/**
@@ -166,13 +178,13 @@ final class Module {
 	 *
 	 * @param mixed $sent    An earlier answer: an array when another listener sent it.
 	 * @param mixed $details The card's details (InquiryRequest::send()).
-	 * @return array{order: int, receipt: bool}|WP_Error|null
+	 * @return array{order: int, receipt: bool|null}|WP_Error|null
 	 */
 	public function inquiry( mixed $sent, mixed $details ): array|WP_Error|null {
 		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
 			return array(
 				'order'   => (int) $sent['order'],
-				'receipt' => ! empty( $sent['receipt'] ),
+				'receipt' => $sent['receipt'] ?? null,
 			);
 		}
 		if ( ! is_array( $details ) || ! is_array( $details['customer'] ?? null ) ) {
@@ -204,9 +216,8 @@ final class Module {
 			return $order;
 		}
 		return array(
-			'order'           => $order->get_id(),
-			'receipt'         => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
-			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'order'   => $order->get_id(),
+			'receipt' => self::receipt_sent( $order ),
 		);
 	}
 

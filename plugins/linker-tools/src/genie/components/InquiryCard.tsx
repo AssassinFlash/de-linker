@@ -93,7 +93,7 @@ export function InquirySent( { inquiry }: { inquiry: SentInquiry } ) {
 					'linker-tools'
 				) }
 			</p>
-			{ inquiry.receipt ? null : (
+			{ inquiry.receipt !== false ? null : (
 				<p className="linker-genie-inquiry__text">
 					{ __(
 						'We have not sent a confirmation email.',
