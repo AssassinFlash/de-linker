@@ -965,6 +965,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$user = get_userdata( $customer->get_id() );
 		$this->assertInstanceOf( \WP_User::class, $user );
 		$this->assertSame( $loaded->get_view_order_url(), $link->after_login( '/my-account/', $user ) );
+		$this->as_user( $customer->get_id() );
+		$this->assertSame( $loaded->get_view_order_url(), $link->after_registration( '/my-account/' ) );
 
 		$loaded->set_billing_email( 'changed@example.test' );
 		$this->assertFalse( $link::claimed_by_customer( $loaded ) );
