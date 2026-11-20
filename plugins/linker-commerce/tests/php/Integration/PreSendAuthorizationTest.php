@@ -130,6 +130,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 * Recover the original pending source once job storage returns, with current terminal states respected.
 	 *
 	 * @testWith ["received"]
+	 *           ["budget_unavailable"]
 	 *           ["trash"]
 	 *           ["incident"]
 	 * @param string $disposition Native outcome before the next recovery.
@@ -156,9 +157,32 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			$order->update_meta_data( \Linker\Commerce\Mail\NotificationHold::META, array( 'reason' => 'historical_incident' ) );
 			$order->save_meta_data();
 		}
+		if ( 'budget_unavailable' === $disposition ) {
+			$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
+			$this->later(
+				static function () use ( $mode ): void {
+					putenv( false === $mode ? 'LINKER_PUBLIC_PROTECTION_MODE' : 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode );
+				}
+			);
+			$ledger  = \Linker\Commerce\Protection\Ledger::OPTION;
+			$prior   = get_option( $ledger );
+			$restore = static function () use ( $ledger, $prior ): void {
+				delete_option( $ledger );
+				if ( false !== $prior ) {
+					update_option( $ledger, $prior, false );
+				}
+			};
+			$this->later( $restore );
+			update_option( $ledger, 'fixture_unavailable', false );
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			self::assertSame( array(), $this->permissions( $id )['jobs'] );
+			self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+			$restore();
+		}
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
 		$after = $this->permissions( $id );
-		if ( 'received' !== $disposition ) {
+		if ( in_array( $disposition, array( 'trash', 'incident' ), true ) ) {
 			self::assertSame( $state['jobs'], $after['jobs'] );
 			return;
 		}
