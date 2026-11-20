@@ -380,17 +380,6 @@ export function NewProject({
 		if (compareAtHome && restored?.languageUrl === location.href)
 			homeForm.current?.scrollIntoView({ block: "start" });
 	}, [compareAtHome, restored]);
-	const draftNotice = draftUnavailable && (
-		<Notice
-			error
-			focusTarget={languageIssue === "storage" ? languageNotice : undefined}
-		>
-			{__(
-				"Your browser could not save your entries. Stay on this page to avoid losing them.",
-				"linker-tools",
-			)}
-		</Notice>
-	);
 
 	const waitingForProduct = Boolean(
 		!intent.current && useHints && entryHints?.productId && catalog.isPending,
@@ -891,170 +880,20 @@ export function NewProject({
 						"linker-tools",
 					);
 
-	if (compareOnLoad) {
-		const disabled =
-			busy ||
-			creationPending ||
-			checking ||
-			recoveryChecking ||
-			recoveryDiscoveryFailed ||
-			waitingForProduct ||
-			!admitted;
-		const retry = Boolean(intent.current);
-		const roofUrl = new URL(location.href);
-		roofUrl.searchParams.set("step", "roof");
-		roofUrl.hash = "";
-		return (
-			<section className="sc-main">
-				{draftNotice}
-				<PreliminaryOptions
-					locale={locale}
-					inputs={inputs}
-					disabled={disabled || retry}
-					choose={(direction) => void submit(direction)}
-					action={
-						enterDetails && (
-							<div className="sc-actions">
-								{!retry && !disabled && (
-									<a className="sc-button" href={roofUrl.href}>
-										{__("Start with your roof", "linker-tools")}
-									</a>
-								)}
-								<button
-									className="sc-button"
-									type="button"
-									disabled={disabled || retry}
-									onClick={enterDetails}
-								>
-									{__("Enter project details", "linker-tools")}
-								</button>
-							</div>
-						)
-					}
-				/>
-				{pendingRequests}
-				{(busy || creationPending) && (
-					<p role="status">{__("Creating…", "linker-tools")}</p>
-				)}
-				{failed && (
-					<Notice error>
-						<p>{failureMessage}</p>
-						<button
-							className="sc-button"
-							type="button"
-							disabled={disabled || inputContractRequired}
-							onClick={() => void submit()}
-						>
-							{__("Retry project creation", "linker-tools")}
-						</button>
-					</Notice>
-				)}
-				{recoveryFailed && (
-					<Notice error>
-						{__(
-							"Browser recovery is unavailable. The open request can still be retried here.",
-							"linker-tools",
-						)}
-					</Notice>
-				)}
-			</section>
-		);
-	}
-	if (!open)
-		return (
-			<button
-				className="sc-button sc-primary"
-				disabled={
-					creationPending ||
-					checking ||
-					recoveryChecking ||
-					recoveryDiscoveryFailed
-				}
-				onClick={() => {
-					setOpen(true);
-					opened?.();
-				}}
-			>
-				{__("New project", "linker-tools")}
-			</button>
-		);
-	const compareLabel = compareAtHome
-		? __("Compare project options", "linker-tools")
-		: __("New project", "linker-tools");
-	const showSavedPicker =
-		!busy &&
-		!checking &&
-		!recoveryChecking &&
-		!recoveryDiscoveryFailed &&
-		!intent.current;
-	if (homeComparison?.savedProject && showSavedPicker) {
-		return (
-			<form
-				className="sc-main"
-				aria-label={compareLabel}
-				onSubmit={(event) => {
-					event.preventDefault();
-					homeComparison.compareSaved(homeComparison.savedProject);
-				}}
-			>
-				{homeComparison.picker}
-				<button className="sc-button sc-primary" type="submit">
-					{__("Compare systems", "linker-tools")}
-				</button>
-			</form>
-		);
-	}
-	const addressForm =
-		roofEntry ||
-		(failed && destination.current === "roof" && !profileCorrection);
-	const editingDisabled =
-		busy ||
-		creationPending ||
-		checking ||
-		recoveryChecking ||
-		recoveryDiscoveryFailed ||
-		!admitted;
-	const mapAction = config &&
-		(addressForm ||
-			(compareAtHome &&
-				brief.system_scope !== "storage_only" &&
-				(!intent.current || destination.current === "roof"))) && (
-			<RoofMapAction
-				config={config}
-				site={brief.site}
-				client={client}
-				scope={session.query_scope}
-				disabled={editingDisabled || inputContractRequired}
-				locked={Boolean(intent.current)}
-				busy={busy}
-				permitted={roofPermission}
-				{...(!addressForm && {
-					open: () => void submit(undefined, { openRoof: true }),
-				})}
-			/>
-		);
-	const showSummary = !addressForm && (compareAtHome || workspaceHeading);
-	const projectName = title.trim() || __("New project", "linker-tools");
-	const site = [
-		brief.site.location_label.trim(),
-		brief.site.country_code && config?.countries[brief.site.country_code],
-	]
-		.filter(Boolean)
-		.join(" · ");
-	const form = (
-		<form
-			ref={homeForm}
-			className="sc-main"
-			aria-label={compareLabel}
-			onSubmit={(event) => {
-				event.preventDefault();
-				const useAddress =
-					event.currentTarget.querySelector<HTMLInputElement>(
-						'input[name="pvgis_use_address"]',
-					)?.checked ?? false;
-				void submit(undefined, { useAddress });
-			}}
+	const draftNotice = draftUnavailable && (
+		<Notice
+			error
+			focusTarget={languageIssue === "storage" ? languageNotice : undefined}
 		>
+			{__(
+				"Your browser could not save your entries. Stay on this page to avoid losing them.",
+				"linker-tools",
+			)}
+		</Notice>
+	);
+
+	return (
+		<>
 			{draftNotice}
 			{languageIssue === "csv" && profileForm.file && (
 				<Notice error focusTarget={languageNotice}>
@@ -1096,319 +935,490 @@ export function NewProject({
 					)}
 				</Notice>
 			)}
-			{showSavedPicker && homeComparison?.picker}
-			{entryHints &&
-				!intent.current &&
-				(hasCarriedValues || entryHints.invalid) && (
-					<Notice>
-						<dl className="sc-fields">
-							{entryHints.annualKwh !== null && (
-								<div>
-									<dt>
-										{__("Annual electricity consumption", "linker-tools")}
-									</dt>
-									<dd>{formatDecimal(entryHints.annualKwh, locale)} kWh</dd>
+			{renderEntry()}
+		</>
+	);
+
+	function renderEntry() {
+		if (compareOnLoad) {
+			const disabled =
+				busy ||
+				creationPending ||
+				checking ||
+				recoveryChecking ||
+				recoveryDiscoveryFailed ||
+				waitingForProduct ||
+				!admitted;
+			const retry = Boolean(intent.current);
+			const roofUrl = new URL(location.href);
+			roofUrl.searchParams.set("step", "roof");
+			roofUrl.hash = "";
+			return (
+				<section className="sc-main">
+					<PreliminaryOptions
+						locale={locale}
+						inputs={inputs}
+						disabled={disabled || retry}
+						choose={(direction) => void submit(direction)}
+						action={
+							enterDetails && (
+								<div className="sc-actions">
+									{!retry && !disabled && (
+										<a className="sc-button" href={roofUrl.href}>
+											{__("Start with your roof", "linker-tools")}
+										</a>
+									)}
+									<button
+										className="sc-button"
+										type="button"
+										disabled={disabled || retry}
+										onClick={enterDetails}
+									>
+										{__("Enter project details", "linker-tools")}
+									</button>
 								</div>
+							)
+						}
+					/>
+					{pendingRequests}
+					{(busy || creationPending) && (
+						<p role="status">{__("Creating…", "linker-tools")}</p>
+					)}
+					{failed && (
+						<Notice error>
+							<p>{failureMessage}</p>
+							<button
+								className="sc-button"
+								type="button"
+								disabled={disabled || inputContractRequired}
+								onClick={() => void submit()}
+							>
+								{__("Retry project creation", "linker-tools")}
+							</button>
+						</Notice>
+					)}
+					{recoveryFailed && (
+						<Notice error>
+							{__(
+								"Browser recovery is unavailable. The open request can still be retried here.",
+								"linker-tools",
 							)}
-							{entryHints.pvKw !== null && (
-								<div>
-									<dt>{__("PV array", "linker-tools")}</dt>
-									<dd>{formatDecimal(entryHints.pvKw, locale)} kWp</dd>
-								</div>
-							)}
-							{entryHints.phase !== null && (
-								<div>
-									<dt>{__("Grid connection", "linker-tools")}</dt>
-									<dd>
-										{entryHints.phase === 3
-											? __("Three-phase", "linker-tools")
-											: __("Single-phase", "linker-tools")}
-									</dd>
-								</div>
-							)}
-							{entryHints.backup !== null && (
-								<div>
-									<dt>{__("Backup supply", "linker-tools")}</dt>
-									<dd>
-										{entryHints.backup === "none"
-											? __("Not needed", "linker-tools")
-											: __("Requested", "linker-tools")}
-									</dd>
-								</div>
-							)}
-							{entryHints.postalCode !== null && (
-								<div>
-									<dt>{__("Postal code", "linker-tools")}</dt>
-									<dd>{entryHints.postalCode}</dd>
-								</div>
-							)}
-							{entryHints.productId !== null && (
-								<div>
-									<dt>
-										{product?.field === "inverter"
-											? __(
-													"Inverter or integrated storage system",
-													"linker-tools",
-												)
-											: product?.field === "battery"
-												? __("Battery or storage system", "linker-tools")
-												: product?.field === "accessory"
-													? __("Additional products", "linker-tools")
-													: __("Use current product data", "linker-tools")}
-									</dt>
-									<dd>
-										{proposed
-											? `${proposed.brand} ${proposed.model}`.trim()
-											: catalog.isPending
-												? __("Loading product data…", "linker-tools")
-												: __(
-														"Product from the link is unavailable",
+						</Notice>
+					)}
+				</section>
+			);
+		}
+		if (!open)
+			return (
+				<button
+					className="sc-button sc-primary"
+					disabled={
+						creationPending ||
+						checking ||
+						recoveryChecking ||
+						recoveryDiscoveryFailed
+					}
+					onClick={() => {
+						setOpen(true);
+						opened?.();
+					}}
+				>
+					{__("New project", "linker-tools")}
+				</button>
+			);
+		const compareLabel = compareAtHome
+			? __("Compare project options", "linker-tools")
+			: __("New project", "linker-tools");
+		const showSavedPicker =
+			!busy &&
+			!checking &&
+			!recoveryChecking &&
+			!recoveryDiscoveryFailed &&
+			!intent.current;
+		if (homeComparison?.savedProject && showSavedPicker) {
+			return (
+				<form
+					className="sc-main"
+					aria-label={compareLabel}
+					onSubmit={(event) => {
+						event.preventDefault();
+						homeComparison.compareSaved(homeComparison.savedProject);
+					}}
+				>
+					{homeComparison.picker}
+					<button className="sc-button sc-primary" type="submit">
+						{__("Compare systems", "linker-tools")}
+					</button>
+				</form>
+			);
+		}
+		const addressForm =
+			roofEntry ||
+			(failed && destination.current === "roof" && !profileCorrection);
+		const editingDisabled =
+			busy ||
+			creationPending ||
+			checking ||
+			recoveryChecking ||
+			recoveryDiscoveryFailed ||
+			!admitted;
+		const mapAction = config &&
+			(addressForm ||
+				(compareAtHome &&
+					brief.system_scope !== "storage_only" &&
+					(!intent.current || destination.current === "roof"))) && (
+				<RoofMapAction
+					config={config}
+					site={brief.site}
+					client={client}
+					scope={session.query_scope}
+					disabled={editingDisabled || inputContractRequired}
+					locked={Boolean(intent.current)}
+					busy={busy}
+					permitted={roofPermission}
+					{...(!addressForm && {
+						open: () => void submit(undefined, { openRoof: true }),
+					})}
+				/>
+			);
+		const showSummary = !addressForm && (compareAtHome || workspaceHeading);
+		const projectName = title.trim() || __("New project", "linker-tools");
+		const site = [
+			brief.site.location_label.trim(),
+			brief.site.country_code && config?.countries[brief.site.country_code],
+		]
+			.filter(Boolean)
+			.join(" · ");
+		const form = (
+			<form
+				ref={homeForm}
+				className="sc-main"
+				aria-label={compareLabel}
+				onSubmit={(event) => {
+					event.preventDefault();
+					const useAddress =
+						event.currentTarget.querySelector<HTMLInputElement>(
+							'input[name="pvgis_use_address"]',
+						)?.checked ?? false;
+					void submit(undefined, { useAddress });
+				}}
+			>
+				{showSavedPicker && homeComparison?.picker}
+				{entryHints &&
+					!intent.current &&
+					(hasCarriedValues || entryHints.invalid) && (
+						<Notice>
+							<dl className="sc-fields">
+								{entryHints.annualKwh !== null && (
+									<div>
+										<dt>
+											{__("Annual electricity consumption", "linker-tools")}
+										</dt>
+										<dd>{formatDecimal(entryHints.annualKwh, locale)} kWh</dd>
+									</div>
+								)}
+								{entryHints.pvKw !== null && (
+									<div>
+										<dt>{__("PV array", "linker-tools")}</dt>
+										<dd>{formatDecimal(entryHints.pvKw, locale)} kWp</dd>
+									</div>
+								)}
+								{entryHints.phase !== null && (
+									<div>
+										<dt>{__("Grid connection", "linker-tools")}</dt>
+										<dd>
+											{entryHints.phase === 3
+												? __("Three-phase", "linker-tools")
+												: __("Single-phase", "linker-tools")}
+										</dd>
+									</div>
+								)}
+								{entryHints.backup !== null && (
+									<div>
+										<dt>{__("Backup supply", "linker-tools")}</dt>
+										<dd>
+											{entryHints.backup === "none"
+												? __("Not needed", "linker-tools")
+												: __("Requested", "linker-tools")}
+										</dd>
+									</div>
+								)}
+								{entryHints.postalCode !== null && (
+									<div>
+										<dt>{__("Postal code", "linker-tools")}</dt>
+										<dd>{entryHints.postalCode}</dd>
+									</div>
+								)}
+								{entryHints.productId !== null && (
+									<div>
+										<dt>
+											{product?.field === "inverter"
+												? __(
+														"Inverter or integrated storage system",
 														"linker-tools",
-													)}
-									</dd>
-								</div>
+													)
+												: product?.field === "battery"
+													? __("Battery or storage system", "linker-tools")
+													: product?.field === "accessory"
+														? __("Additional products", "linker-tools")
+														: __("Use current product data", "linker-tools")}
+										</dt>
+										<dd>
+											{proposed
+												? `${proposed.brand} ${proposed.model}`.trim()
+												: catalog.isPending
+													? __("Loading product data…", "linker-tools")
+													: __(
+															"Product from the link is unavailable",
+															"linker-tools",
+														)}
+										</dd>
+									</div>
+								)}
+							</dl>
+							{entryHints.invalid && (
+								<p>
+									{initialProject
+										? __(
+												"Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.",
+												"linker-tools",
+											)
+										: __(
+												"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
+												"linker-tools",
+											)}
+								</p>
 							)}
-						</dl>
-						{entryHints.invalid && (
-							<p>
-								{initialProject
-									? __(
-											"Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.",
-											"linker-tools",
-										)
-									: __(
-											"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
-											"linker-tools",
-										)}
-							</p>
-						)}
-						{!intent.current && hasCarriedValues && (
-							<label className="lp-checkbox">
-								<input
-									type="checkbox"
-									checked={useHints}
-									onChange={(e) => {
-										setUseHints(e.currentTarget.checked);
-										const next = e.currentTarget.checked;
-										const hintInputs = entryInputs(
-											entryHints,
-											__(
-												"Values carried from a tool link. Review them for this project.",
-												"linker-tools",
-											),
-											__(
-												"Backup supply requested; accessories may be considered.",
-												"linker-tools",
-											),
-											product,
-										);
-										const hintBrief = readBrief(hintInputs.brief);
-										const empty = emptyBrief();
-										const currentBrief = readBrief(inputs.brief);
-										const matchedBrief = next ? empty : hintBrief;
-										const replacement = next ? hintBrief : empty;
-										const edited = {
-											...inputs,
-											brief: {
-												...currentBrief,
-												site: {
-													...currentBrief.site,
-													location_label:
-														currentBrief.site.location_label ===
-														matchedBrief.site.location_label
-															? replacement.site.location_label
-															: currentBrief.site.location_label,
+							{!intent.current && hasCarriedValues && (
+								<label className="lp-checkbox">
+									<input
+										type="checkbox"
+										checked={useHints}
+										onChange={(e) => {
+											setUseHints(e.currentTarget.checked);
+											const next = e.currentTarget.checked;
+											const hintInputs = entryInputs(
+												entryHints,
+												__(
+													"Values carried from a tool link. Review them for this project.",
+													"linker-tools",
+												),
+												__(
+													"Backup supply requested; accessories may be considered.",
+													"linker-tools",
+												),
+												product,
+											);
+											const hintBrief = readBrief(hintInputs.brief);
+											const empty = emptyBrief();
+											const currentBrief = readBrief(inputs.brief);
+											const matchedBrief = next ? empty : hintBrief;
+											const replacement = next ? hintBrief : empty;
+											const edited = {
+												...inputs,
+												brief: {
+													...currentBrief,
+													site: {
+														...currentBrief.site,
+														location_label:
+															currentBrief.site.location_label ===
+															matchedBrief.site.location_label
+																? replacement.site.location_label
+																: currentBrief.site.location_label,
+													},
+													annual_load: sameJson(
+														currentBrief.annual_load,
+														matchedBrief.annual_load,
+													)
+														? replacement.annual_load
+														: currentBrief.annual_load,
+													project_note:
+														currentBrief.project_note ===
+														matchedBrief.project_note
+															? replacement.project_note
+															: currentBrief.project_note,
 												},
-												annual_load: sameJson(
-													currentBrief.annual_load,
-													matchedBrief.annual_load,
-												)
-													? replacement.annual_load
-													: currentBrief.annual_load,
-												project_note:
-													currentBrief.project_note ===
-													matchedBrief.project_note
-														? replacement.project_note
-														: currentBrief.project_note,
-											},
-										};
-										setDraft(reviseCarriedEquipment(edited, hintInputs, next));
-										setCarriedProduct(next);
-									}}
-								/>
-								{__("Use these values for the new project", "linker-tools")}
-							</label>
+											};
+											setDraft(
+												reviseCarriedEquipment(edited, hintInputs, next),
+											);
+											setCarriedProduct(next);
+										}}
+									/>
+									{__("Use these values for the new project", "linker-tools")}
+								</label>
+							)}
+						</Notice>
+					)}
+				{pendingRequests}
+				{demandError && (
+					<Notice error>
+						{__(
+							"Choose a project type and purpose. For backup, enter the load and how long it must run.",
+							"linker-tools",
 						)}
 					</Notice>
 				)}
-			{pendingRequests}
-			{demandError && (
-				<Notice error>
-					{__(
-						"Choose a project type and purpose. For backup, enter the load and how long it must run.",
-						"linker-tools",
-					)}
-				</Notice>
-			)}
-			{profileError && <Notice error>{profileError}</Notice>}
-			{referenceError && (
-				<Notice error>
-					{referenceError === "addressService"
-						? __(
-								"Address search is unavailable right now. Your details are still here; please try again.",
-								"linker-tools",
-							)
-						: referenceError === "location"
+				{profileError && <Notice error>{profileError}</Notice>}
+				{referenceError && (
+					<Notice error>
+						{referenceError === "addressService"
 							? __(
-									"The location could not be found. Check the country and address, then try again.",
+									"Address search is unavailable right now. Your details are still here; please try again.",
 									"linker-tools",
 								)
-							: __(
-									"Complete the site coordinates, array details and PVGIS settings to compare systems.",
-									"linker-tools",
-								)}
-				</Notice>
-			)}
-			{addressForm && config ? (
-				<RoofStart
-					config={config}
-					site={brief.site}
-					disabled={editingDisabled || inputContractRequired}
-					locked={Boolean(intent.current)}
-					action={mapAction}
-					change={(site) =>
-						edit((current) => ({ ...current, brief: { ...brief, site } }))
-					}
-				/>
-			) : (
-				<ProjectDetails
-					inputs={inputs}
-					config={config ?? { locale, countries: {} }}
-					disabled={editingDisabled}
-					roofAction={mapAction}
-					edit={edit}
-					creation={{
-						...(returnToComparison && {
-							returnToComparison,
-							comparisonDisabled: invalidDemand.has("annual"),
-						}),
-						title,
-						changeTitle: setTitle,
-						locked: Boolean(intent.current),
-						submitDisabled: waitingForProduct,
-						comparison: compareAtHome,
-						...(busy
-							? {
-									submitLabel: compareAtHome
-										? __("Preparing comparison…", "linker-tools")
-										: __("Creating…", "linker-tools"),
-								}
-							: failed
+							: referenceError === "location"
+								? __(
+										"The location could not be found. Check the country and address, then try again.",
+										"linker-tools",
+									)
+								: __(
+										"Complete the site coordinates, array details and PVGIS settings to compare systems.",
+										"linker-tools",
+									)}
+					</Notice>
+				)}
+				{addressForm && config ? (
+					<RoofStart
+						config={config}
+						site={brief.site}
+						disabled={editingDisabled || inputContractRequired}
+						locked={Boolean(intent.current)}
+						action={mapAction}
+						change={(site) =>
+							edit((current) => ({ ...current, brief: { ...brief, site } }))
+						}
+					/>
+				) : (
+					<ProjectDetails
+						inputs={inputs}
+						config={config ?? { locale, countries: {} }}
+						disabled={editingDisabled}
+						roofAction={mapAction}
+						edit={edit}
+						creation={{
+							...(returnToComparison && {
+								returnToComparison,
+								comparisonDisabled: invalidDemand.has("annual"),
+							}),
+							title,
+							changeTitle: setTitle,
+							locked: Boolean(intent.current),
+							submitDisabled: waitingForProduct,
+							comparison: compareAtHome,
+							...(busy
 								? {
 										submitLabel: compareAtHome
-											? __("Try again", "linker-tools")
-											: __("Retry project creation", "linker-tools"),
+											? __("Preparing comparison…", "linker-tools")
+											: __("Creating…", "linker-tools"),
 									}
-								: compareAtHome
-									? { submitLabel: __("Compare systems", "linker-tools") }
-									: {}),
-					}}
-					demand={
-						compareAtHome ? (
-							<HomepageDemand
-								inputs={inputs}
-								brief={brief}
-								locale={locale}
-								addressLookup={Boolean(config?.googleMapsApiKey)}
-								usePvAddress={restored?.usePvAddress ?? false}
-								edit={edit}
-								validity={reportDemand}
-							/>
-						) : returnToComparison ? (
-							<div className="sc-fields">
-								<AnnualElectricityUse
+								: failed
+									? {
+											submitLabel: compareAtHome
+												? __("Try again", "linker-tools")
+												: __("Retry project creation", "linker-tools"),
+										}
+									: compareAtHome
+										? { submitLabel: __("Compare systems", "linker-tools") }
+										: {}),
+						}}
+						demand={
+							compareAtHome ? (
+								<HomepageDemand
+									inputs={inputs}
 									brief={brief}
 									locale={locale}
+									addressLookup={Boolean(config?.googleMapsApiKey)}
+									usePvAddress={restored?.usePvAddress ?? false}
 									edit={edit}
 									validity={reportDemand}
 								/>
-							</div>
-						) : undefined
-					}
-					profile={
-						compareAtHome &&
-						(!intent.current || profileCorrection) && (
-							<HomepageLoadProfile
-								form={profileForm}
-								locale={locale}
-								disabled={busy || checking || !admitted}
-								change={changeProfile}
-								{...(profileCorrection && {
-									discard: () =>
-										void submit(undefined, { discardProfile: true }),
-								})}
-							/>
-						)
-					}
-					existingEquipment={
-						config && (
-							<ProjectEquipment
-								inputs={inputs}
-								client={client}
-								scope={session.query_scope}
-								disabled={busy || Boolean(intent.current)}
-								edit={edit}
-								intake={compareAtHome}
-							/>
-						)
-					}
-				/>
-			)}
-			{cancelled && !intent.current && (
-				<button
-					className="sc-button"
-					type="button"
-					disabled={busy}
-					onClick={cancelled}
-				>
-					{__("Cancel", "linker-tools")}
-				</button>
-			)}
-			{failed && <Notice error>{failureMessage}</Notice>}
+							) : returnToComparison ? (
+								<div className="sc-fields">
+									<AnnualElectricityUse
+										brief={brief}
+										locale={locale}
+										edit={edit}
+										validity={reportDemand}
+									/>
+								</div>
+							) : undefined
+						}
+						profile={
+							compareAtHome &&
+							(!intent.current || profileCorrection) && (
+								<HomepageLoadProfile
+									form={profileForm}
+									locale={locale}
+									disabled={busy || checking || !admitted}
+									change={changeProfile}
+									{...(profileCorrection && {
+										discard: () =>
+											void submit(undefined, { discardProfile: true }),
+									})}
+								/>
+							)
+						}
+						existingEquipment={
+							config && (
+								<ProjectEquipment
+									inputs={inputs}
+									client={client}
+									scope={session.query_scope}
+									disabled={busy || Boolean(intent.current)}
+									edit={edit}
+									intake={compareAtHome}
+								/>
+							)
+						}
+					/>
+				)}
+				{cancelled && !intent.current && (
+					<button
+						className="sc-button"
+						type="button"
+						disabled={busy}
+						onClick={cancelled}
+					>
+						{__("Cancel", "linker-tools")}
+					</button>
+				)}
+				{failed && <Notice error>{failureMessage}</Notice>}
 
-			{recoveryFailed && (
-				<Notice error>
-					{__(
-						"Browser recovery is unavailable. The open request can still be retried here.",
-						"linker-tools",
-					)}
-				</Notice>
-			)}
-		</form>
-	);
-	if (!showSummary) return form;
-	return (
-		<>
-			{workspaceHeading && (
-				<ProjectHeading title={projectName} location={site} />
-			)}
-			<div className="sc-layout sc-intake-layout">
-				{form}
-				<ProjectSummary
-					title={projectName}
-					facts={[
-						[
-							__("Planned system", "linker-tools"),
-							brief.system_scope
-								? systemNames()[brief.system_scope]
-								: __("Not specified", "linker-tools"),
-						],
-						...projectFacts(inputs, locale),
-					]}
-				/>
-			</div>
-		</>
-	);
+				{recoveryFailed && (
+					<Notice error>
+						{__(
+							"Browser recovery is unavailable. The open request can still be retried here.",
+							"linker-tools",
+						)}
+					</Notice>
+				)}
+			</form>
+		);
+		if (!showSummary) return form;
+		return (
+			<>
+				{workspaceHeading && (
+					<ProjectHeading title={projectName} location={site} />
+				)}
+				<div className="sc-layout sc-intake-layout">
+					{form}
+					<ProjectSummary
+						title={projectName}
+						facts={[
+							[
+								__("Planned system", "linker-tools"),
+								brief.system_scope
+									? systemNames()[brief.system_scope]
+									: __("Not specified", "linker-tools"),
+							],
+							...projectFacts(inputs, locale),
+						]}
+					/>
+				</div>
+			</>
+		);
+	}
 }
 
 function preliminaryRecoveryLabel(record: ScopedCreation): string {
