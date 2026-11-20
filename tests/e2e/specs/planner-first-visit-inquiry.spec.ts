@@ -102,6 +102,7 @@ const labels = {
 		choose: 'Select',
 		compare: 'Compare system options',
 		project: 'Your project',
+		newProject: 'New project',
 		steps: ['Compare options', 'Review and send'],
 		send: 'Send inquiry',
 		message: 'Please discuss this preliminary solution with me.',
@@ -116,6 +117,7 @@ const labels = {
 		choose: 'Auswählen',
 		compare: 'Anlagenvarianten vergleichen',
 		project: 'Ihr Projekt',
+		newProject: 'Neues Projekt',
 		steps: ['Varianten vergleichen', 'Prüfen und senden'],
 		send: 'Anfrage senden',
 		message: 'Bitte besprechen Sie diesen ersten Lösungsvorschlag mit mir.',
@@ -180,7 +182,7 @@ for (const lang of ['en', 'de'] as const) {
 				words.steps[1]
 			);
 			await expect(
-				page.getByRole('heading', { name: words.project, exact: true })
+				page.getByRole('heading', { name: words.newProject, exact: true })
 			).toBeInViewport();
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)

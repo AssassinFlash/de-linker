@@ -1273,6 +1273,16 @@
     .sc-configurator .sc-card { padding: 20px; }
     .sc-configurator .sc-section-head { flex-wrap: wrap; }
     .sc-configurator .sc-fields, .sc-configurator .sc-comparison, .sc-configurator .sc-report-actions { grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-draft-transfer .sc-inquiry-overview { padding: var(--proto-space-4); }
+    .sc-configurator .sc-review-actions { column-gap: var(--proto-space-4); row-gap: 0; }
+    .sc-configurator .sc-review-actions .sc-button {
+      padding-inline: 0;
+      border: 0;
+      background: transparent;
+      color: var(--proto-teal-800);
+      text-decoration: underline;
+      text-underline-offset: .2em;
+    }
     .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "summary" "form"; grid-template-columns: minmax(0, 1fr); }
     .sc-configurator :is(input, select, textarea) { font-size: 16px; }
     .sc-configurator .sc-option { flex-basis: 100%; padding: 16px; }
