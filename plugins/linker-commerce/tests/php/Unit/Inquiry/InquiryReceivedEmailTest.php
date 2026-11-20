@@ -69,7 +69,11 @@ final class InquiryReceivedEmailTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/** Render the customer acknowledgement with Woo's brand header and footer. */
+	/**
+	 * Render the customer acknowledgement with Woo's brand header and footer.
+	 *
+	 * @param WC_Order $order Saved inquiry.
+	 */
 	private function receipt_html( WC_Order $order ): string {
 		$email         = $this->email;
 		$email_heading = $email->get_default_heading();
