@@ -28,7 +28,7 @@ Every provider attempt uses the existing shared persistent provider ledger. At m
 
 ## Native sending permit
 
-One frozen source verdict may serve both team and customer-receipt purposes without duplicate classification. After a validated normal source verdict, trusted PHP renders each immutable actual Message and atomically stores a separate local permit bound to source fingerprint, native record/staff/erasure version, policy, exact mail purpose, real recipient route and complete Message/attachment-content digests. Conversation mail never borrows inquiry authorization. The classifier has not scanned the final templated HTML; this is deliberately a source verdict plus server-derived message permit, not a claim that a model inspected that HTML. A changed source, purpose, route, Message, attachment, staff decision or erasure invalidates the permit. Existing Outbox must recheck before any SMTP/PHP budget or transport. Existing incident holds and non-content security transactions retain their own protections.
+A validated normal source verdict authorizes the team notification containing the original inquiry. Woo authorizes the fixed customer acknowledgement when it accepts the inquiry. A known malicious verdict before dispatch suppresses mail to an unverified address. Uncertainty, provider failure and a missing business category do not block the acknowledgement. Each purpose keeps its own native record, recipient route and frozen message. Conversation mail uses its own authorization. Outbox checks the current permission before transport. Existing incident holds retain their disposition. [Customer receipt policy](https://github.com/AssassinFlash/de-linker/issues/1170#issuecomment-7036165453)
 
 ## Evidence boundary
 
