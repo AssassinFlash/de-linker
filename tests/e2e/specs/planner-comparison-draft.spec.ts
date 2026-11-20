@@ -28,6 +28,9 @@ test('the same guest comparison keeps entered details across reload and language
 		.getByRole('link', { name: 'DE', exact: true })
 		.click();
 	await expect(page).toHaveURL(/\/de\/.+#sc-preliminary-options$/);
+	await expect(
+		page.getByRole('heading', { name: 'Projektbeschreibung', exact: true })
+	).toBeVisible();
 	await expect(facts).toContainText('Utrecht');
 	await expect(facts).toContainText('6412 kWh');
 	expect(page.url()).not.toMatch(/Utrecht|6412/);

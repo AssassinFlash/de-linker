@@ -2085,6 +2085,8 @@ msgid "Project"
 msgstr "Projekt"
 
 #: src/configurator/utility/UtilityForm.tsx:47 build/configurator.js
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx
+#: build/planner/assets/planner.js
 msgid "Project details"
 msgstr "Projektbeschreibung"
 
