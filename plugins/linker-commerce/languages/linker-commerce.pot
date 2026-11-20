@@ -41,6 +41,9 @@ msgstr ""
 msgid "Saved inquiries need staff review"
 msgstr ""
 
+msgid "Sign in with another account"
+msgstr ""
+
 msgid "Open quotation"
 msgstr ""
 

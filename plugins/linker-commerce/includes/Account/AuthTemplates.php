@@ -203,7 +203,12 @@ final class AuthTemplates {
 		}
 		$destination = AccountLink::destination( $account, get_current_user_id() );
 		if ( $args && $destination === $account ) {
-			wc_add_notice( __( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' ), 'error' );
+			$signin = wp_logout_url( AccountLink::continue_at( $account ) );
+			wc_add_notice(
+				esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' )
+				. ' <a href="' . esc_url( $signin ) . '">' . esc_html__( 'Sign in with another account', 'linker-commerce' ) . '</a>',
+				'error'
+			);
 		}
 		wp_safe_redirect( $destination );
 		exit;

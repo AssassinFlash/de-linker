@@ -52,6 +52,9 @@ msgstr ""
 msgid "Saved inquiries need staff review"
 msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
 
+msgid "Sign in with another account"
+msgstr "Mit einem anderen Konto anmelden"
+
 msgid "Open quotation"
 msgstr "Angebot öffnen"
 

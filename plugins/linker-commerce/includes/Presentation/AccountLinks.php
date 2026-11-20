@@ -82,7 +82,7 @@ final class AccountLinks {
 	/**
 	 * Registration link with a site-generated destination.
 	 *
-	 * @param array $query Local account form parameters.
+	 * @param array<string,int> $query Local account form parameters.
 	 */
 	public static function registration( array $query ): string {
 		if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {

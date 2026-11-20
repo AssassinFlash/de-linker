@@ -132,7 +132,16 @@ final class DocumentDownloadTest extends TestCase {
 	 * Another customer gets 403.
 	 */
 	public function test_other_customer_gets_403(): void {
+		WP_Mock::userFunction(
+			'wp_logout_url',
+			array(
+				'args'   => array( 'https://example.test/my-account/?linker_quotation=20' ),
+				'return' => 'https://example.test/change-account/',
+			)
+		);
 		$this->assertSame( '403', $this->status( true, 6 ) );
+		$this->assertStringContainsString( 'href="https://example.test/change-account/"', $this->denial );
+		$this->assertStringNotContainsString( 'linker_key', $this->denial );
 	}
 
 	/**

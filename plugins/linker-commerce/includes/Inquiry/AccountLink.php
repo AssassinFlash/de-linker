@@ -142,9 +142,10 @@ final class AccountLink {
 	 * @param WP_User $user     Authenticated customer.
 	 */
 	public function after_login( string $redirect, WP_User $user ): string {
-		$args    = self::request_args();
+		$args = self::request_args();
+		WC()->initialize_session();
 		$session = WC()->session;
-		$saved   = $session ? $session->get( self::RECOVERY ) : null;
+		$saved   = $session->get( self::RECOVERY );
 		if ( is_array( $saved ) ) {
 			$session->__unset( self::RECOVERY );
 			$args = $args ? $args : $saved;
@@ -186,10 +187,10 @@ final class AccountLink {
 	/**
 	 * Resolve Woo's authenticated form submissions and read-only account links.
 	 *
-	 * @param string $redirect Woo destination without an owned inquiry.
-	 * @param int    $user_id Authenticated customer.
-	 * @param array  $args Account link parameters.
-	 * @param bool   $claim Whether a native account submission authorizes transfer.
+	 * @param string                                                              $redirect Woo destination without an owned inquiry.
+	 * @param int                                                                 $user_id Authenticated customer.
+	 * @param array{linker_inquiry?:int,linker_key?:string,linker_quotation?:int} $args Account link parameters.
+	 * @param bool                                                                $claim Whether a native account submission authorizes transfer.
 	 */
 	private static function follow( string $redirect, int $user_id, array $args, bool $claim ): string {
 		$order = self::order( $args );
@@ -244,7 +245,7 @@ final class AccountLink {
 	/**
 	 * Account destinations accept a receipt or a quotation ID, never a redirect URL.
 	 *
-	 * @return array<string,int|string> Site-local inquiry reference.
+	 * @return array{linker_inquiry?:int,linker_key?:string,linker_quotation?:int} Site-local inquiry reference.
 	 */
 	public static function request_args(): array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Local navigation; possession and ownership are checked before use.
@@ -261,7 +262,7 @@ final class AccountLink {
 	/**
 	 * A bare quotation ID can locate an owned inquiry but cannot transfer it.
 	 *
-	 * @param array $args Parsed account link parameters.
+	 * @param array{linker_inquiry?:int,linker_key?:string,linker_quotation?:int} $args Parsed account link parameters.
 	 */
 	private static function order( array $args ): ?WC_Order {
 		$id    = (int) ( $args['linker_inquiry'] ?? $args['linker_quotation'] ?? 0 );

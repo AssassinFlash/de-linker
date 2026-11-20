@@ -171,14 +171,16 @@ final class DocumentDownload {
 	private function deny( int $quotation_id ): void {
 		$query   = $quotation_id > 0 ? array( 'linker_quotation' => $quotation_id ) : array();
 		$account = wc_get_page_permalink( 'myaccount' );
+		$signin  = $query ? add_query_arg( $query, $account ) : $account;
+		$switch  = $quotation_id > 0 && is_user_logged_in();
 		wp_die(
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- All substitutions are escaped data or escaped LC fragments.
 			strtr(
 				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/document-denied.html' ),
 				array(
 					'{{message}}'    => esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' ),
-					'{{signin-url}}' => esc_url( $query ? add_query_arg( $query, $account ) : $account ),
-					'{{signin}}'     => esc_html__( 'Log in', 'linker-commerce' ),
+					'{{signin-url}}' => esc_url( $switch ? wp_logout_url( $signin ) : $signin ),
+					'{{signin}}'     => $switch ? esc_html__( 'Sign in with another account', 'linker-commerce' ) : esc_html__( 'Log in', 'linker-commerce' ),
 					'{{create}}'     => AccountLinks::registration( $query ),
 				)
 			),
