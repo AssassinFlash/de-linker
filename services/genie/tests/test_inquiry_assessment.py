@@ -212,6 +212,38 @@ def test_actual_async_deadline_cancels_a_slow_provider() -> None:
     assert result["seconds"] < 0.5
 
 
+def test_deadline_identifies_the_outstanding_provider_without_logging_source_content(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    async def slow_escalation(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(1)
+        return httpx.Response(200, json={})
+
+    result = asyncio.run(
+        assessment.assess(
+            assessment.AssessmentInput(
+                binding=binding(),
+                state={"message": "private customer message"},
+                remaining_seconds=0.1,
+            ),
+            key="synthetic-key",
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    200, json=answer("unknown", "insufficient_context")
+                )
+            ),
+            escalation_key="synthetic-key",
+            escalation_transport=httpx.MockTransport(slow_escalation),
+        )
+    )
+    assert result["reason"] == "deadline"
+    assert "source=inquiry_mail:1" in caplog.text
+    assert "phase=escalation" in caplog.text
+    assert "dispatched=1 completed=0" in caplog.text
+    assert "phase_seconds=" in caplog.text
+    assert "private customer message" not in caplog.text
+
+
 def test_transient_retry_uses_same_channel_and_budget() -> None:
     calls: list[str] = []
 
