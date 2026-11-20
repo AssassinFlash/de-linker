@@ -76,7 +76,7 @@ export function NewProject({
 	openOnLoad = false,
 	compareOnLoad = false,
 	enterDetails,
-	hidden = false,
+	returnToComparison,
 	creationPending = false,
 	beginCreation,
 	homeComparison,
@@ -101,7 +101,7 @@ export function NewProject({
 	openOnLoad?: boolean;
 	compareOnLoad?: boolean;
 	enterDetails?: () => void;
-	hidden?: boolean;
+	returnToComparison?: () => void;
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
 	homeComparison?: {
@@ -157,7 +157,7 @@ export function NewProject({
 	const catalog = useEquipmentProducts(
 		client,
 		session.query_scope,
-		!hidden && Boolean(entryHints?.productId),
+		Boolean(entryHints?.productId),
 	);
 	const [draft, setDraft] = useState<JsonObject | null>(null);
 	const [carriedProduct, setCarriedProduct] = useState(true);
@@ -190,7 +190,7 @@ export function NewProject({
 		brief: {
 			...seedBrief,
 			system_scope:
-				compareOnLoad || compareAtHome || roofEntry
+				compareOnLoad || returnToComparison || compareAtHome || roofEntry
 					? seedBrief.system_scope
 					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
@@ -261,7 +261,7 @@ export function NewProject({
 		};
 	}, [session.query_scope]);
 	useEffect(() => {
-		if (hidden || recoveryChecking || !admitted) return;
+		if (recoveryChecking || !admitted) return;
 		let active = true;
 		setChecking(true);
 		void creationIntents(store, recoveryScopes ?? [session.query_scope])
@@ -312,7 +312,6 @@ export function NewProject({
 		compareOnLoad,
 		compareAtHome,
 		roofEntry,
-		hidden,
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
@@ -721,7 +720,6 @@ export function NewProject({
 						"linker-tools",
 					);
 
-	if (hidden) return null;
 	if (compareOnLoad) {
 		const disabled =
 			busy ||
@@ -738,6 +736,7 @@ export function NewProject({
 		return (
 			<section className="sc-main">
 				<PreliminaryOptions
+					locale={locale}
 					inputs={inputs}
 					disabled={disabled || retry}
 					choose={(direction) => void submit(direction)}
@@ -1064,6 +1063,7 @@ export function NewProject({
 					roofAction={mapAction}
 					edit={edit}
 					creation={{
+						...(returnToComparison && { returnToComparison }),
 						title,
 						changeTitle: setTitle,
 						locked: Boolean(intent.current),

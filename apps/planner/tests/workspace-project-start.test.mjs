@@ -462,6 +462,16 @@ test("visitors with project data can open setup from the comparison and keep the
 	assert.equal(new URL(location.href).searchParams.get("project"), null);
 	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
 	assert.equal(document.querySelector('a[hreflang="de"]').hash, "#sc-project");
+	const compareAgain = () =>
+		Array.from(document.querySelectorAll("button")).find(
+			(item) =>
+				item.textContent.trim() === "Compare options" &&
+				!item.closest("[hidden]"),
+		);
+	assert.ok(
+		compareAgain(),
+		"A visitor who filled in optional details can return to compare without starting another project",
+	);
 	assert.deepEqual(creates, []);
 	await act(async () => {
 		const scope = document.querySelector('select[name="system_scope"]');
@@ -476,6 +486,17 @@ test("visitors with project data can open setup from the comparison and keep the
 		document.querySelector('input[name="location_label"]'),
 		"Oslo 0150",
 	);
+	await act(async () => compareAgain().click());
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.match(
+		document.querySelector("dl.sc-project-facts").textContent,
+		/Oslo 0150/,
+	);
+	assert.deepEqual(creates, []);
+	await act(async () => history.back());
+	await until(() => document.querySelector('input[name="location_label"]'));
 	await act(async () => history.back());
 	await until(() =>
 		document.querySelector('table[aria-label="Compare system options"]'),
@@ -485,6 +506,17 @@ test("visitors with project data can open setup from the comparison and keep the
 		false,
 	);
 	assert.equal(document.activeElement.textContent, "Preliminary options");
+	assert.match(
+		document.querySelector("dl.sc-project-facts")?.textContent ?? "",
+		/Oslo 0150/,
+	);
+	assert.deepEqual(
+		Array.from(
+			document.querySelector(".sc-inquiry-stages").children,
+			(step) => step.textContent,
+		),
+		["Compare options", "Choose an option", "Review and send"],
+	);
 	await act(async () => history.forward());
 	await until(() => document.querySelector('input[name="project_title"]'));
 	assert.equal(document.activeElement.textContent, "What is the project?");
@@ -1029,7 +1061,7 @@ test("the review restores edited signed-in details and Woo billing controls on a
 	const root = createRoot(fixture.element);
 	t.after(() => fixture.dispose(root));
 	const opens = [];
-	const project = { id: projectId, revision: 1 };
+	const project = { id: projectId, revision: 1, inputs: {} };
 	const client = {
 		origin: location.origin,
 		isCurrentScope: (scope) => scope === session.query_scope,
@@ -1134,7 +1166,7 @@ async function lostReceipt(
 		crypto.randomUUID(),
 		crypto.randomUUID(),
 	];
-	const project = { id: projectId, revision: 7 };
+	const project = { id: projectId, revision: 7, inputs: {} };
 	if (!storageAllowed)
 		Object.defineProperty(window, "sessionStorage", {
 			get: () => {

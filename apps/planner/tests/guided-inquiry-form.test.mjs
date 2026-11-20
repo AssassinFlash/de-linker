@@ -10,7 +10,19 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 	t.after(() => fixture.dispose(root));
 	const { ReviewInquiry } =
 		await import("../src/components/configurator/ReviewInquiry.tsx");
-	const project = { id: "2".repeat(32), revision: 3 };
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const brief = emptyBrief();
+	const project = {
+		id: "2".repeat(32),
+		revision: 3,
+		inputs: {
+			brief: {
+				...brief,
+				site: { ...brief.site, country_code: "NL", location_label: "Utrecht" },
+				annual_load: { ...brief.annual_load, kwh: 6412 },
+			},
+		},
+	};
 	const reportRunId = "3".repeat(32);
 	const binding =
 		reportRunId +
@@ -40,6 +52,9 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 					{
 						product_id: 55,
 						label: "Existing draft cable",
+						product_url: "https://fixture.invalid/product/cable/",
+						image_url: "https://fixture.invalid/uploads/cable.png",
+						highlight: "Outdoor DC cable",
 						quantity: 2,
 						project_id: null,
 					},
@@ -79,6 +94,18 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 		],
 	]);
 	assert.match(fixture.element.textContent, /Existing draft cable × 2/);
+	const cable = fixture.element.querySelector(
+		'a[href="https://fixture.invalid/product/cable/"]',
+	);
+	assert.match(cable?.textContent ?? "", /Existing draft cable/);
+	assert.equal(
+		cable.querySelector("img")?.getAttribute("src"),
+		"https://fixture.invalid/uploads/cable.png",
+	);
+	assert.match(fixture.element.textContent, /Outdoor DC cable/);
+	const projectDetails = fixture.element.querySelector("dl.sc-project-facts");
+	assert.match(projectDetails?.textContent ?? "", /Utrecht/);
+	assert.match(projectDetails?.textContent ?? "", /6412 kWh/);
 	const row = Array.from(fixture.element.querySelectorAll("tbody tr")).find(
 		(r) => r.textContent.includes("Selected inverter"),
 	);

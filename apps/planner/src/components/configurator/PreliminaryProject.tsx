@@ -110,6 +110,7 @@ export function PreliminaryProject({
 			{showOptions && (
 				<div className="sc-main">
 					<PreliminaryOptions
+						locale={locale}
 						inputs={draft?.history.current ?? reviewed.inputs}
 						disabled={blocked || needsRecovery || Boolean(draft?.pending)}
 						choose={(direction) => void choose(direction)}

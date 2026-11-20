@@ -229,7 +229,11 @@ sc-demand-profile
 sc-direction-action
 sc-direction-comparison
 sc-direction-details
+sc-direction-name
+sc-direction-symbol
+sc-direction-tools
 sc-draft-transfer
+sc-empty-supply
 sc-energy-demand
 sc-equipment
 sc-existing-system
@@ -241,6 +245,9 @@ sc-footer
 sc-hint
 sc-home-comparison
 sc-inquiry-fields
+sc-inquiry-overview
+sc-inquiry-product
+sc-inquiry-products
 sc-inquiry-stages
 sc-layout
 sc-main
@@ -253,11 +260,12 @@ sc-package
 sc-package-capacity
 sc-package-status
 sc-panel-measurements
-sc-preliminary-layout
+sc-preliminary-layout--comparison
 sc-preliminary-review
 sc-primary
 sc-product-filter
 sc-project-equipment
+sc-project-facts
 sc-project-heading
 sc-project-search
 sc-project-workbench

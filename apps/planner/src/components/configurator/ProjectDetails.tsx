@@ -91,6 +91,7 @@ export function ProjectDetails({
 		comparison?: boolean;
 		submitDisabled?: boolean;
 		submitLabel?: string;
+		returnToComparison?: () => void;
 	};
 	existingEquipment?: ReactNode;
 	demand?: ReactNode;
@@ -454,7 +455,18 @@ export function ProjectDetails({
 			</fieldset>
 			{profile}
 			<footer className="sc-footer">
-				<span />
+				{creation?.returnToComparison ? (
+					<button
+						type="button"
+						className="sc-button"
+						disabled={fieldsDisabled || pendingScope !== null}
+						onClick={creation.returnToComparison}
+					>
+						{__("Compare options", "linker-tools")}
+					</button>
+				) : (
+					<span />
+				)}
 				<button
 					className="sc-button sc-primary"
 					type={creation ? "submit" : "button"}
