@@ -512,6 +512,20 @@ for (const lang of ['en', 'de'] as const) {
 					? 'Vorhandenen Wechselrichter beibehalten'
 					: 'Keep the existing inverter';
 			await expect(rows.first().getByRole('rowheader')).toHaveText(keep);
+			await expect
+				.poll(() =>
+					page
+						.locator('.sc-project-heading:visible')
+						.evaluate((el) => {
+							const header = document.getElementById('lc-header');
+							return (
+								el.getBoundingClientRect().top >=
+								(header?.getBoundingClientRect().bottom ?? 0) -
+									1
+							);
+						})
+				)
+				.toBe(true);
 			await screenshot(page, `bare-options-${lang}-${width}`);
 			await rows
 				.first()
