@@ -1104,14 +1104,6 @@
   .sc-configurator .sc-draft-transfer .linker-inquiry-draft { grid-area: summary; position: static; display: grid; gap: 12px; justify-items: start; }
   .sc-configurator .sc-draft-transfer .sc-inquiry-fields { grid-area: form; min-width: 0; }
   .sc-preliminary-review .sc-review-choice { font-weight: var(--proto-weight-semibold); }
-  .sc-preliminary-review .sc-review-details { width: 100%; border-block: 1px solid var(--sc-line); }
-  .sc-preliminary-review .sc-review-details > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--proto-space-3); min-height: 44px; padding-block: var(--proto-space-2); color: var(--proto-teal-800); font-weight: var(--proto-weight-semibold); cursor: pointer; list-style: none; }
-  .sc-preliminary-review .sc-review-details > summary::-webkit-details-marker { display: none; }
-  .sc-preliminary-review .sc-review-details > summary::after { content: ""; width: 8px; height: 8px; margin-inline-end: 4px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
-  .sc-preliminary-review .sc-review-details[open] > summary::after { transform: rotate(225deg); }
-  .sc-preliminary-review .sc-review-details > summary:focus-visible { outline: 2px solid var(--proto-accent); outline-offset: 2px; }
-  .sc-preliminary-review .sc-review-details[open] { padding-bottom: var(--proto-space-4); }
-  .sc-preliminary-review .sc-review-details > :not(summary) { margin-top: var(--proto-space-3); }
   .sc-preliminary-review .sc-review-tradeoff { display: grid; gap: var(--proto-space-2); }
   .sc-preliminary-review .sc-review-actions { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
@@ -1182,8 +1174,8 @@
   .sc-configurator .sc-field-wide { grid-column: 1 / -1; }
   .sc-configurator .sc-existing-system { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--proto-color-line); }
   .sc-configurator .sc-existing-system > :is(details, .sc-fields) { margin-top: var(--proto-space-4); }
-  .sc-configurator .sc-project-equipment { border-block: 1px solid var(--proto-color-line); }
-  .sc-configurator .sc-project-equipment > summary {
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details) { width: 100%; border-block: 1px solid var(--proto-color-line); }
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details) > summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1197,8 +1189,8 @@
     list-style: none;
     cursor: pointer;
   }
-  .sc-configurator .sc-project-equipment > summary::-webkit-details-marker { display: none; }
-  .sc-configurator .sc-project-equipment > summary::after {
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details) > summary::-webkit-details-marker { display: none; }
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details) > summary::after {
     content: "";
     flex: 0 0 auto;
     width: .6em;
@@ -1207,9 +1199,9 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-  .sc-configurator .sc-project-equipment[open] > summary::after { transform: rotate(225deg); }
-  .sc-configurator .sc-project-equipment[open] { padding-bottom: var(--proto-space-4); }
-  .sc-configurator .sc-project-equipment[open] > :not(summary) { margin-block-start: var(--proto-space-4); }
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details)[open] > summary::after { transform: rotate(225deg); }
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details)[open] { padding-bottom: var(--proto-space-4); }
+  .sc-configurator :is(.sc-project-equipment, .sc-review-details)[open] > :not(summary) { margin-block-start: var(--proto-space-4); }
   .sc-configurator .sc-project-equipment > .sc-actions > .sc-button[aria-pressed="true"] {
     border-color: var(--proto-accent);
     background: var(--proto-teal-50);
@@ -1217,7 +1209,7 @@
     box-shadow: inset 0 0 0 1px var(--proto-accent);
   }
   @media (hover: hover) {
-    .sc-configurator .sc-project-equipment > summary:hover { background: var(--sc-soft); }
+    .sc-configurator :is(.sc-project-equipment, .sc-review-details) > summary:hover { background: var(--sc-soft); }
   }
   .sc-configurator .sc-solar-choice-note { display: block; margin-top: 5px; color: var(--proto-neutral-600); font-size: 13px; font-weight: 400; }
   .sc-configurator .sc-solar-layout-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-block: 12px 18px; }
