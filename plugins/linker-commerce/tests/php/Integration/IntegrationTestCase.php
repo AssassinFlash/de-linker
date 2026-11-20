@@ -267,6 +267,44 @@ abstract class IntegrationTestCase extends TestCase {
 	}
 
 	/**
+	 * Read the one fixed customer acknowledgement bound to this received order before content review.
+	 *
+	 * @param WC_Order $order Newly saved inquiry.
+	 * @return int Native receipt job ID.
+	 */
+	protected static function fixed_receipt_job( WC_Order $order ): int {
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+		$receipt = $state['jobs']['receipt'];
+		self::assertTrue( $receipt['fixed'] );
+		$stored = ( new JobStore() )->load( $receipt['id'] );
+		self::assertNotNull( $stored );
+		self::assertSame( array( $order->get_billing_email() ), $stored['message']->to );
+		self::assertSame( $order->get_id(), $stored['message']->origin['record'] );
+		self::assertSame( 'receipt', $stored['message']->origin['purpose'] );
+		return $receipt['id'];
+	}
+
+	/**
+	 * Deliver this fixture's already queued receipt through its own native Outbox consumer.
+	 *
+	 * @param WC_Order $order Received inquiry in the local mail sink.
+	 */
+	protected static function deliver_fixed_receipt( WC_Order $order ): void {
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertTrue( $state['jobs']['receipt']['fixed'] );
+		$job = $state['jobs']['receipt']['id'];
+		delete_option( OptionBudgetLedger::OPTION );
+		delete_option( Throttle::OPTION );
+		do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual local receipt consumer.
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertNotEmpty( $state['jobs']['receipt']['delivered_at'] );
+	}
+
+	/**
 	 * A random tag for names and addresses of test data.
 	 */
 	protected static function tag(): string {

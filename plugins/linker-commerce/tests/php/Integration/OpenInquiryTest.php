@@ -1119,7 +1119,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		}
 		$this->assertCount( 1, $orders );
 		$orders[0]->read_meta_data( true );
-		$this->assertSame( 'assessment_pending', (string) $orders[0]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::fixed_receipt_job( $orders[0] );
 		$this->assertSame( 'inquiry-received', $orders[0]->get_status() );
 		$this->assertSame( 0, $orders[0]->get_item_count() );
 		$this->assertSame( 'A contact question.', $orders[0]->get_customer_note() );

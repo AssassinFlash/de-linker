@@ -439,7 +439,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		);
 		$permit = $normal->process( $order );
 		$this->assertSame( 'normal', $permit['verdict']['decision'] );
-		$this->assertCount( 2, $permit['jobs'] );
+		$this->assertSame( array( 'team' ), array_keys( $permit['jobs'] ), 'The fixture never submitted a public inquiry eligible for a receipt.' );
 		$this->assertGreaterThan( 9.0, $normal->requests[0]['remaining_seconds'] );
 		$this->assertLessThanOrEqual( Queue::WAIT_SECONDS, $normal->requests[0]['remaining_seconds'] );
 	}

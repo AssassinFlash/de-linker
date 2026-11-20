@@ -267,7 +267,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertSame( $guest, $data['email'] );
 		$this->assertSame( $guest, $data['inquiry']['email'] );
 		$this->assertSame( Statuses::RECEIVED, $data['inquiry']['status'] );
-		$this->assertFalse( $data['inquiry']['receipt'] );
+		$this->assertNull( $data['inquiry']['receipt'] );
 		$this->assertNotEmpty( $data['inquiry']['number'] );
 		$this->assertNotEmpty( $data['inquiry']['url'] );
 
@@ -310,6 +310,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertCount( 1, $notes );
 		$this->assertSame( $record->get_id(), $notes[0]['order'] );
 		$this->assertTrue( $notes[0]['summary'] );
+		$this->deliver_fixed_receipt( $record );
 		$after = $this->state();
 		$this->assertSame( $record->get_order_number(), $after['sent']['number'] );
 		$this->assertSame( Statuses::RECEIVED, $after['sent']['status'] );
@@ -583,6 +584,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'one team mail and one receipt' );
 		$this->assertCount( 1, $this->orders() );
+		$this->deliver_fixed_receipt( $this->record( $guest ) );
 		$fresh = $this->state();
 		$this->assertTrue( $fresh['sent']['receipt'] );
 		$completed = $this->send( $params )->get_data()['inquiry'];
@@ -590,7 +592,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$expected            = $first->get_data()['inquiry'];
 		$expected['receipt'] = true;
 		$this->assertSame( $expected, $completed );
-		$this->assertCount( 2, $this->jobs_after( $marker ) );
+		$this->assertCount( 1, $this->jobs_after( $marker ), 'Only the original team notification remains queued.' );
 	}
 
 	/**

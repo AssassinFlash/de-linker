@@ -219,7 +219,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			array(
 				'sent'    => true,
 				'email'   => $guest,
-				'receipt' => false,
+				'receipt' => null,
 			),
 			$response->get_data()
 		);
@@ -267,7 +267,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( $guest, $notes[0]['email'] );
 		$this->assertSame( 'asked', $notes[0]['reason'] );
 		$this->assertSame( $record->get_id(), $notes[0]['order'] );
-		$this->assertFalse( $notes[0]['receipt'] );
+		$this->assertNull( $notes[0]['receipt'] );
 	}
 
 	/**
@@ -446,9 +446,10 @@ final class GenieContactTest extends IntegrationTestCase {
 		// Once: one team mail and one receipt.
 		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ) );
+		$this->deliver_fixed_receipt( $this->record( $params['email'] ) );
 		$after = $this->send( $params );
 		$this->assertTrue( $after->get_data()['receipt'] );
-		$this->assertCount( 2, $this->jobs_after( $marker ), 'Completed retry does not duplicate either message.' );
+		$this->assertCount( 1, $this->jobs_after( $marker ), 'Only the original team notification remains queued.' );
 		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
 		$this->assertSame(
 			array(
@@ -501,14 +502,15 @@ final class GenieContactTest extends IntegrationTestCase {
 				array(
 					'after'   => 3,
 					'email'   => $guest,
-					'receipt' => false,
+					'receipt' => null,
 				),
 			),
 			$stored['contacts']
 		);
 		$this->authorization->drain();
+		$this->deliver_fixed_receipt( $this->record( $guest ) );
 		$fresh = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) )->get_data();
-		$this->assertTrue( $fresh['contacts'][0]['receipt'], 'Fresh history reads the normal native receipt decision.' );
+		$this->assertTrue( $fresh['contacts'][0]['receipt'], 'Fresh history reads the delivered receipt.' );
 		$current = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
 		$this->assertTrue( $current['sent']['receipt'] );
 	}

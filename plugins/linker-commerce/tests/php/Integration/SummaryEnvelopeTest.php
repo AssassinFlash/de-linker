@@ -170,6 +170,13 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 
 	/** Review keeps optional summaries while freeing the shared lock for other customers. */
 	public function test_held_review_summary_runs_outside_shared_mutex_and_retry_recovers_the_same_record(): void {
+		$previous_ledger = get_option( \Linker\Commerce\Protection\Ledger::OPTION );
+		delete_option( \Linker\Commerce\Protection\Ledger::OPTION );
+		$this->later(
+			static function () use ( $previous_ledger ): void {
+				false === $previous_ledger ? delete_option( \Linker\Commerce\Protection\Ledger::OPTION ) : update_option( \Linker\Commerce\Protection\Ledger::OPTION, $previous_ledger, false );
+			}
+		);
 		$id       = wp_generate_uuid4();
 		$fp       = hash( 'sha256', $id );
 		$identity = new \Linker\Commerce\Protection\Identity( str_repeat( 'a', 64 ), '' );
@@ -197,7 +204,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		self::assertInstanceOf( WC_Order::class, $retry );
 		self::assertSame( $order->get_id(), $retry->get_id() );
 		self::assertSame( 1, $calls );
-		self::assertSame( $before, self::newest_mail_job(), 'Held review sends neither team notice nor receipt.' );
+		self::assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $before ) );
 	}
 
 	/** A pre-save unknown summary outcome stays occupied, without free paid redispatch. */
