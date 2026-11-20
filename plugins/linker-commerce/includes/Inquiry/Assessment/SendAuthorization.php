@@ -151,11 +151,14 @@ final class SendAuthorization {
 							}
 						}
 						if ( $job < 1 || null === $loaded || JobStore::FAILED_STATUS === get_post_status( $job ) ) {
-							$current['status'] = 'manual';
-							if ( isset( $current['jobs']['receipt'] ) && empty( $current['jobs']['receipt']['delivered_at'] ) ) {
+							if ( 'receipt' === $purpose ) {
+								$current['team_only'] = true;
 								$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'delivery_unconfirmed' );
+								$order->save_meta_data();
+								continue;
 							}
-							self::hold( $order, 'authorization_job_unavailable' );
+							$current['status'] = 'manual';
+							self::hold( $order, 'authorization_job_unavailable', 'team' );
 							$order->save_meta_data();
 							return;
 						}
@@ -423,7 +426,7 @@ final class SendAuthorization {
 		$state['status']  = null === $delay ? 'manual' : 'pending';
 		$state['next_at'] = null === $delay ? 0 : time() + $delay;
 		if ( null === $delay ) {
-			self::hold( $order, 'assessment_unresolved' );
+			self::hold( $order, 'assessment_unresolved', 'team' );
 			$order->save_meta_data();
 		}
 	}
@@ -587,7 +590,11 @@ final class SendAuthorization {
 		if ( ! in_array( $snapshot['submission']['source'] ?? '', array( 'contact', 'inquiry' ), true ) && InquiryGateway::ID !== $order->get_payment_method() ) {
 			return false;
 		}
-		if ( ! is_email( $order->get_billing_email() ) || ( $snapshot['submission']['billing']['email'] ?? '' ) !== $order->get_billing_email() || ( $snapshot['account']['id'] ?? null ) !== $order->get_customer_id() ) {
+		if ( ! is_email( $order->get_billing_email() ) || ( $snapshot['submission']['billing']['email'] ?? '' ) !== $order->get_billing_email() ) {
+			return false;
+		}
+		$original_owner = $snapshot['account']['id'] ?? null;
+		if ( $original_owner !== $order->get_customer_id() && ( 0 !== $original_owner || empty( $state['jobs']['receipt']['fixed'] ) || ! \Linker\Commerce\Inquiry\AccountLink::claimed_by_customer( $order ) ) ) {
 			return false;
 		}
 		$status = $state['status'] ?? '';
@@ -595,9 +602,8 @@ final class SendAuthorization {
 			return ! empty( $state['jobs']['receipt']['fixed'] ) && ! NotificationHold::held( $order );
 		}
 		if ( 'manual' === $status ) {
-			// A content timeout cannot cancel an already granted fixed receipt.
 			$hold = $order->get_meta( NotificationHold::META );
-			return ! empty( $state['jobs']['receipt']['fixed'] ) && is_array( $hold ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
+			return ! empty( $state['jobs']['receipt']['fixed'] ) && is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
 		}
 		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
 	}
@@ -638,9 +644,7 @@ final class SendAuthorization {
 		}
 		$is_receipt = 'receipt' === $purpose;
 		if ( $is_receipt ) {
-			$reason = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
-				? \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id() )
-				: ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
+			$reason = ReceiptLimit::reason( $order, false );
 			if ( 'unavailable' === $reason ) {
 				throw new \RuntimeException( 'receipt_allowance_unavailable' );
 			}
@@ -678,7 +682,8 @@ final class SendAuthorization {
 			'hash' => $hash,
 		);
 		if ( $is_receipt ) {
-			$state['jobs'][ $purpose ]['fixed'] = true;
+			$state['jobs'][ $purpose ]['fixed']      = true;
+			$state['jobs'][ $purpose ]['budget_due'] = true;
 		}
 		return '';
 	}
@@ -734,6 +739,47 @@ final class SendAuthorization {
 		}
 		return ! NotificationHold::held( $order ) && ! $order->get_meta( Reviews::ERASED ) && 'normal' === ( $state['status'] ?? '' ) && self::current( $order, $state );
 	}
+	/**
+	 * Commit the original receipt's public allowance only when Outbox has a transport slot.
+	 *
+	 * @param Message $message Original frozen message.
+	 * @param int     $job Original job.
+	 * @return string Empty to send, 'unavailable' to retry, or a final refusal.
+	 */
+	public static function charge_receipt( Message $message, int $job ): string {
+		if ( 'inquiry' !== ( $message->origin['kind'] ?? '' ) || 'receipt' !== ( $message->origin['purpose'] ?? '' ) ) {
+			return '';
+		}
+		$id     = (int) $message->origin['record'];
+		$reason = 'revoked';
+		$saved  = AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $id, $message, $job, &$reason ): void {
+				if ( ! self::allows( $message, $job ) ) {
+					return;
+				}
+				if ( empty( $state['jobs']['receipt']['budget_due'] ) ) {
+					$reason = '';
+					return;
+				}
+				$order  = CurrentSource::order( $id );
+				$reason = $order instanceof WC_Order ? ReceiptLimit::reason( $order, true ) : 'unavailable';
+				if ( 'unavailable' === $reason ) {
+					throw new \RuntimeException( 'receipt_allowance_unavailable' );
+				}
+				if ( '' === $reason ) {
+					unset( $state['jobs']['receipt']['budget_due'] );
+				} elseif ( $order instanceof WC_Order && in_array( $reason, array( 'target_cap', 'daily_cap' ), true ) ) {
+					$state['team_only'] = true;
+					$order->update_meta_data( ReceiptLimit::SKIPPED_META, $reason );
+					$order->save_meta_data();
+				}
+			},
+			true
+		);
+		return $saved ? $reason : 'unavailable';
+	}
+
 	/** Persist physical success separately from a missing native job.
 	 *
 	 * @param Message $message Actual sent frozen arguments.
@@ -947,14 +993,16 @@ final class SendAuthorization {
 	 *
 	 * @param WC_Order $order Newly managed record.
 	 * @param string   $reason Fixed server reason.
+	 * @param string   $purpose Notification affected by this hold, or empty for the entire source.
 	 */
-	private static function hold( WC_Order $order, string $reason ): void {
+	private static function hold( WC_Order $order, string $reason, string $purpose = '' ): void {
 		$order->update_meta_data(
 			NotificationHold::META,
 			array(
-				'reason' => $reason,
-				'policy' => SendVerdict::POLICY,
-				'at'     => time(),
+				'reason'  => $reason,
+				'policy'  => SendVerdict::POLICY,
+				'purpose' => $purpose,
+				'at'      => time(),
 			)
 		);
 		$order->update_meta_data( Queue::PENDING, 'held' );

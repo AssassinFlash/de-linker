@@ -56,6 +56,29 @@ final class ReceiptLimit {
 		return ! $state && \Linker\Commerce\Mail\NotificationHold::held( $order ) ? 'omitted' : 'pending';
 	}
 
+	/** Determine the allowance for the real destination of this native receipt.
+	 *
+	 * @param WC_Order $order Native recipient and order.
+	 * @param bool     $spend Charge at dispatch, or check current availability at handoff.
+	 */
+	public static function reason( WC_Order $order, bool $spend ): string {
+		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
+			return \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id(), 'inquiry', $spend );
+		}
+		$limit = new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS );
+		$used  = $limit->spent( '' );
+		if ( null === $used ) {
+			return 'unavailable';
+		}
+		if ( $used >= self::DAILY_CAP ) {
+			return 'daily_cap';
+		}
+		if ( ! $spend || $limit->take( '' ) ) {
+			return '';
+		}
+		return ( $limit->spent( '' ) ?? 0 ) >= self::DAILY_CAP ? 'daily_cap' : 'unavailable';
+	}
+
 	/** Reserve a receipt atomically, independently of the connection address. */
 	public function take(): bool {
 		return ( new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS ) )->take( '' );

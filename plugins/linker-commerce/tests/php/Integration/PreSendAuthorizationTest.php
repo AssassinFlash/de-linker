@@ -37,12 +37,15 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		update_option( Queue::HEARTBEAT, microtime( true ) );
 		update_option( 'linker_genie_url', '' );
 	}
-	/** Persist one complete native synthetic inquiry. */
-	private function submit(): WC_Order {
+	/** Persist a complete native inquiry.
+	 *
+	 * @param string $email Customer destination.
+	 */
+	private function submit( string $email = self::TESTER ): WC_Order {
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic installer',
-				'email'   => self::TESTER,
+				'email'   => $email,
 				'company' => 'Fixture EPC',
 				'message' => 'Please quote a 10 kWh battery; full original content.',
 				'consent' => '1',
@@ -218,6 +221,38 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( $deliver, ! empty( $after['jobs']['receipt']['delivered_at'] ) );
 		self::assertSame( $grant['id'], $after['jobs']['receipt']['id'] );
 		self::assertSame( $deliver ? 'sent' : 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+	}
+
+	/** Only a matching customer claim preserves a guest's existing fixed receipt.
+	 *
+	 * @testWith [true]
+	 *           [false]
+	 * @param bool $claim Whether the ownership change is a verified native claim.
+	 */
+	public function test_guest_receipt_follows_only_its_own_account_claim( bool $claim ): void {
+		$customer = $this->customer();
+		$this->as_user( 0 );
+		$order   = $this->submit( $customer->get_email() );
+		$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
+		if ( $claim ) {
+			$saved = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the WP request; the order key is checked by AccountLink.
+			$_GET  = array(
+				'linker_inquiry' => $order->get_id(),
+				'linker_key'     => $order->get_order_key(),
+			);
+			try {
+				( new \Linker\Commerce\Inquiry\AccountLink() )->claim( $customer->get_id() );
+			} finally {
+				$_GET = $saved;
+			}
+		} else {
+			$order->set_customer_id( $customer->get_id() );
+			$order->save();
+		}
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
+		$after = $this->permissions( $order->get_id() );
+		self::assertSame( $claim, ! empty( $after['jobs']['receipt']['delivered_at'] ) );
+		self::assertSame( $receipt, $after['jobs']['receipt']['id'] );
 	}
 
 	/** Return typed local service evidence for the actual request binding.
@@ -885,7 +920,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *           [true]
 	 * @param bool $receipt_sent Whether the actual receipt transport already completed.
 	 */
-	public function test_missing_job_is_manual_and_completed_jobs_stop_the_native_heartbeat( bool $receipt_sent ): void {
+	public function test_team_delivery_failure_preserves_the_customer_receipt_in_either_order( bool $receipt_sent ): void {
 		$this->provider( 'normal' );
 		$order = $this->submit();
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
@@ -899,8 +934,34 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $state );
 		self::assertSame( 'manual', $state['status'] );
 		$order->read_meta_data( true );
-		self::assertSame( $receipt_sent ? '' : 'delivery_unconfirmed', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertSame( '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertSame( $receipt_sent ? 'sent' : 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		$receipt = $state['jobs']['receipt']['id'];
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
+		$done = $this->permissions( $order->get_id() );
+		self::assertSame( $receipt, $done['jobs']['receipt']['id'] );
+		self::assertNotEmpty( $done['jobs']['receipt']['delivered_at'] );
+		self::assertSame( 'manual', $done['status'] );
+		self::assertArrayNotHasKey( 'delivered_at', $done['jobs']['team'] );
 	}
+	/** Failure of a customer receipt leaves the normal team job deliverable. */
+	public function test_customer_job_failure_preserves_the_authorized_team_notification(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
+		$before = $this->permissions( $order->get_id() );
+		( new \Linker\Commerce\Mail\JobStore() )->delete( $before['jobs']['receipt']['id'] );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $before['jobs']['team']['id'] );
+		$done = $this->permissions( $order->get_id() );
+		self::assertNotEmpty( $done['jobs']['team']['delivered_at'] );
+		self::assertSame( $before['jobs']['receipt'], $done['jobs']['receipt'] );
+		self::assertSame( 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		$order->read_meta_data( true );
+		self::assertSame( 'delivery_unconfirmed', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertSame( 'complete', $order->get_meta( Queue::PENDING ) );
+	}
+
 	/** Probability mass never increases the selected confidence. */
 	/** A late classifier cannot restore erased native content or permission. */
 	public function test_erasure_during_provider_io_invalidates_the_claimed_operation(): void {
@@ -1145,7 +1206,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *           ["unknown"]
 	 * @param string $decision Typed native classifier result.
 	 */
-	public function test_fixed_receipt_debits_enforce_budget_once_before_content_assessment( string $decision ): void {
+	public function test_content_assessment_does_not_debit_the_public_receipt_budget( string $decision ): void {
 		$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
 		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
 		$this->later(
@@ -1180,6 +1241,62 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertStringNotContainsString( 'full original content', $receipt['message']->body );
 		self::assertSame( 'normal' === $decision, isset( $state['jobs']['team'] ) );
 	}
+	/** Classified junk consumes neither transport nor recipient capacity before a physical send. */
+	public function test_junk_before_dispatch_preserves_both_real_recipient_slots(): void {
+		$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
+		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
+		$this->later(
+			static function () use ( $mode ): void {
+				putenv( false === $mode ? 'LINKER_PUBLIC_PROTECTION_MODE' : 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode );
+			}
+		);
+		$ledger = \Linker\Commerce\Protection\Ledger::OPTION;
+		$prior  = get_option( $ledger );
+		delete_option( $ledger );
+		$this->later(
+			static function () use ( $ledger, $prior ): void {
+				delete_option( $ledger );
+				if ( false !== $prior ) {
+					update_option( $ledger, $prior, false );
+				}
+			}
+		);
+		$this->provider( 'malicious' );
+		$junk      = $this->submit();
+		$job       = $this->permissions( $junk->get_id() )['jobs']['receipt']['id'];
+		$transport = get_option( OptionBudgetLedger::OPTION );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $junk->get_id() );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		self::assertSame( $transport, get_option( OptionBudgetLedger::OPTION ) );
+		self::assertSame( 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $junk ) );
+		$usage = ( new \Linker\Commerce\Protection\Ledger() )->summary();
+		self::assertIsArray( $usage );
+		self::assertArrayNotHasKey( 'customer_receipt', $usage['counts'] );
+		$this->provider( 'normal' );
+		$orders     = array( $this->submit(), $this->submit(), $this->submit() );
+		$recovering = $this->permissions( $orders[0]->get_id() )['jobs']['receipt']['id'];
+		$healthy    = get_option( $ledger );
+		update_option( $ledger, 'fixture_unavailable', false );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $recovering );
+		self::assertSame( 0, ( new Throttle() )->used( time() ) );
+		self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $orders[0] ) );
+		self::assertTrue( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $recovering ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		update_option( $ledger, $healthy, false );
+		foreach ( $orders as $index => $order ) {
+			$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
+			self::assertSame( $index < 2 ? 'sent' : 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		}
+		$usage = ( new \Linker\Commerce\Protection\Ledger() )->summary();
+		self::assertIsArray( $usage );
+		self::assertSame( 2, $usage['counts']['customer_receipt']['completed'] );
+		self::assertSame( 2, ( new Throttle() )->used( time() ) );
+		self::assertSame( 'target_cap', $orders[2]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		$limited = $this->submit();
+		$limited->read_meta_data( true );
+		self::assertSame( 'target_cap', $limited->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+	}
+
 	/** A peer route change invalidates permission at both classification and retry boundaries.
 	 *
 	 * @testWith ["provider"]
