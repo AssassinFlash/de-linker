@@ -221,7 +221,7 @@ test('keeps the selection and inquiry edits while changing language and returnin
 	await page.goto(url + '/');
 	await page
 		.getByRole('link', {
-			name: 'Open the Solution Configurator',
+			name: 'Compare system options',
 			exact: true,
 		})
 		.click();
@@ -300,7 +300,7 @@ test('back after a lost receipt recovers the original Woo inquiry', async ({
 	await page.goto(url + '/');
 	await page
 		.getByRole('link', {
-			name: 'Open the Solution Configurator',
+			name: 'Compare system options',
 			exact: true,
 		})
 		.click();
