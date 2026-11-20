@@ -174,6 +174,28 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 0, $final['attempts'] );
 	}
 
+	/** A granted receipt follows its accepted inquiry into quotation preparation, never cancellation.
+	 *
+	 * @testWith ["quotation-issued", true]
+	 *           ["completed", true]
+	 *           ["cancelled", false]
+	 * @param string $next Native staff status transition.
+	 * @param bool   $deliver Whether this accepted receipt still belongs to the customer.
+	 */
+	public function test_pending_receipt_follows_a_valid_business_transition( string $next, bool $deliver ): void {
+		$order = $this->submit();
+		$grant = $this->permissions( $order->get_id() )['jobs']['receipt'];
+		$order->update_status( $next );
+		$moved = wc_get_order( $order->get_id() );
+		self::assertInstanceOf( WC_Order::class, $moved );
+		self::assertSame( $next, $moved->get_status() );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $grant['id'] );
+		$after = $this->permissions( $order->get_id() );
+		self::assertSame( $deliver, ! empty( $after['jobs']['receipt']['delivered_at'] ) );
+		self::assertSame( $grant['id'], $after['jobs']['receipt']['id'] );
+		self::assertSame( $deliver ? 'sent' : 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+	}
+
 	/** Return typed local service evidence for the actual request binding.
 	 *
 	 * @param string $decision Synthetic classifier decision.

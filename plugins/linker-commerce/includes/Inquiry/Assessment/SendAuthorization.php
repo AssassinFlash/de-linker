@@ -579,7 +579,8 @@ final class SendAuthorization {
 	 * @param array<string,mixed> $state Stored permissions.
 	 */
 	public static function receipt_source( WC_Order $order, array $state ): bool {
-		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( Statuses::RECEIVED ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
+		$statuses = ! empty( $state['jobs']['receipt']['fixed'] ) ? array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) : array( Statuses::RECEIVED );
+		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( $statuses ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
 			return false;
 		}
 		$snapshot = Queue::data( $order )['snapshot'] ?? array();
