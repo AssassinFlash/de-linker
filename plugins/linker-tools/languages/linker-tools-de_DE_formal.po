@@ -17470,3 +17470,51 @@ msgstr "Ihre Anfrage im Überblick"
 #: build/planner/assets/planner.js
 msgid "No products selected. We can discuss equipment after you send your inquiry."
 msgstr "Sie haben noch keine Produkte ausgewählt. Welche Geräte infrage kommen, klären wir nach Ihrer Anfrage."
+
+#: ../../apps/planner/src/components/configurator/HomepageDemand.tsx build/planner/assets/planner.js
+msgid "Not yet known"
+msgstr "Noch nicht bekannt"
+
+#: ../../apps/planner/src/components/configurator/ProjectFacts.tsx build/planner/assets/planner.js
+msgid "To confirm"
+msgstr "Noch zu klären"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Keep the PV inverter in service and add storage for surplus solar power."
+msgstr "Der PV-Wechselrichter bleibt in Betrieb. Ein zusätzlicher Speicher nimmt überschüssigen Solarstrom auf."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Check the inverter model and whether storage can connect to it or needs a separate battery inverter."
+msgstr "Am Wechselrichtermodell lässt sich prüfen, ob ein Speicher angeschlossen werden kann oder einen eigenen Batteriewechselrichter braucht."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Consider a replacement inverter"
+msgstr "Austausch des Wechselrichters prüfen"
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "A hybrid inverter can connect the existing panels and a battery. This option includes replacing the PV inverter."
+msgstr "Ein Hybridwechselrichter kann die vorhandenen PV-Module und einen Speicher anschließen. Dafür wird der bisherige PV-Wechselrichter ausgetauscht."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Check the panel strings, battery compatibility and grid connection before choosing a model."
+msgstr "Welche Modelle infrage kommen, hängt von den PV-Strings, der Batteriekompatibilität und dem Netzanschluss ab."
+
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
+msgid "Both options keep your existing panels. The inverter determines how the battery connects."
+msgstr "Bei beiden Varianten bleiben Ihre PV-Module in Betrieb. Vom Wechselrichter hängt ab, wie sich der Speicher anschließen lässt."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Your CSV is still here. Finish this comparison or remove the file to switch languages."
+msgstr "Ihre CSV-Datei ist weiterhin ausgewählt. Schließen Sie den Vergleich ab oder entfernen Sie die Datei, um die Sprache zu wechseln."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Remove CSV"
+msgstr "CSV-Datei entfernen"
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Check the highlighted value before switching languages."
+msgstr "Prüfen Sie den markierten Wert, bevor Sie die Sprache wechseln."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "Choose a project type and purpose. For backup, enter the load and how long it must run."
+msgstr "Wählen Sie die Anlagenart und das Ziel. Geben Sie für die Ersatzstromversorgung die benötigte Leistung und Dauer an."

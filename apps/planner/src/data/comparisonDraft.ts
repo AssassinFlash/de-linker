@@ -9,6 +9,8 @@ export interface ComparisonDraft {
 	title: string;
 	inputs: JsonObject | null;
 	useHints: boolean;
+	usePvAddress?: boolean;
+	carriedProduct?: boolean;
 }
 
 export function readComparisonDraft(

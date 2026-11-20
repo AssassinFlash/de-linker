@@ -8,6 +8,7 @@ import { emptyBrief, readBrief, type Brief } from "../../domain/brief.ts";
 import { editDraft, isDirty } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { changeExistingSystem } from "./ProjectEquipment.tsx";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
@@ -78,11 +79,18 @@ export function PreliminaryProject({
 		void saveSelection();
 	});
 
-	async function choose(systemScope: NonNullable<Brief["system_scope"]>) {
+	async function choose(
+		systemScope: NonNullable<Brief["system_scope"]>,
+		keepInverter?: boolean,
+	) {
 		if (!draft || needsRecovery || blocked || draft.pending) return;
 		controller.update((previous) =>
 			editDraft(previous, {
-				...previous.history.current,
+				...(keepInverter === undefined
+					? previous.history.current
+					: changeExistingSystem(previous.history.current, {
+							keep_inverter: keepInverter,
+						})),
 				brief: {
 					...readBrief(previous.history.current.brief ?? emptyBrief()),
 					system_scope: systemScope,
@@ -113,7 +121,8 @@ export function PreliminaryProject({
 						locale={locale}
 						inputs={draft?.history.current ?? reviewed.inputs}
 						disabled={blocked || needsRecovery || Boolean(draft?.pending)}
-						choose={(direction) => void choose(direction)}
+						choose={choose}
+						chooseRetrofit={(keep) => void choose("storage_addition", keep)}
 					/>
 					{inquiryPending && (
 						<button

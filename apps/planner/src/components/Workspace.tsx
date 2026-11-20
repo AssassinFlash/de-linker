@@ -32,6 +32,7 @@ import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
+import { needsPhaseConfirmation } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
@@ -195,7 +196,10 @@ export function Workspace({
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			const from = url.hash.slice(1);
-			if (id !== url.searchParams.get("project"))
+			if (
+				id !== url.searchParams.get("project") ||
+				preliminaryRoute(destination)
+			)
 				url.searchParams.delete("guided");
 			if (
 				id &&
@@ -311,6 +315,16 @@ export function Workspace({
 		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
+	const startPreliminary = Boolean(
+		selected &&
+		project.data &&
+		route === "sc-system" &&
+		new URL(location.href).searchParams.get("guided") === "inquiry" &&
+		needsPhaseConfirmation(project.data.inputs),
+	);
+	useEffect(() => {
+		if (startPreliminary) select(selected, "sc-preliminary-options");
+	}, [startPreliminary, selected, select]);
 	useSiteIntegration(selected);
 	const projects = useMemo(() => {
 		const seen = new Set<string>();
@@ -491,7 +505,7 @@ export function Workspace({
 		selected &&
 		!session.claim_pending &&
 		project.data &&
-		preliminaryRoute(route)
+		(preliminaryRoute(route) || startPreliminary)
 	)
 		return (
 			<PreliminaryProject
@@ -501,7 +515,7 @@ export function Workspace({
 				client={client}
 				store={store}
 				locale={config.locale}
-				comparing={route === "sc-preliminary-options"}
+				comparing={startPreliminary || route === "sc-preliminary-options"}
 				recoveringRevision={inquiryRevision !== null}
 				navigate={(destination, confirmed) => {
 					if (confirmed)

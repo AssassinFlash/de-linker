@@ -4,7 +4,13 @@ import {
 	forgetComparisonDraft,
 	type ComparisonDraft,
 } from "../data/comparisonDraft.ts";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useEffectEvent,
+	useRef,
+	useState,
+} from "react";
 import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
@@ -130,14 +136,19 @@ export function NewProject({
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
-	const draftEntry = compareOnLoad || Boolean(returnToComparison);
-	const source = JSON.stringify(entryHints);
+	const draftEntry =
+		compareAtHome || compareOnLoad || Boolean(returnToComparison);
+	const source = compareAtHome ? "homepage" : JSON.stringify(entryHints);
 	const [restored] = useState(() =>
 		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
 	);
 	const draftId = useRef(restored?.id);
 	const savedDraft = useRef<ComparisonDraft | null>(null);
 	const [draftUnavailable, setDraftUnavailable] = useState(false);
+	const [languageIssue, setLanguageIssue] = useState<"csv" | "number" | null>(
+		null,
+	);
+	const homeForm = useRef<HTMLFormElement>(null);
 	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
 	const [title, setTitle] = useState(
 		restored?.title ?? initialProject?.title ?? "",
@@ -179,7 +190,9 @@ export function NewProject({
 	const [draft, setDraft] = useState<JsonObject | null>(
 		restored?.inputs ?? null,
 	);
-	const [carriedProduct, setCarriedProduct] = useState(true);
+	const [carriedProduct, setCarriedProduct] = useState(
+		restored?.carriedProduct ?? true,
+	);
 	const [recoveredInputs, setRecoveredInputs] = useState<JsonObject | null>(
 		null,
 	);
@@ -238,6 +251,7 @@ export function NewProject({
 		)
 			setCarriedProduct(false);
 		setDraft(changed);
+		setLanguageIssue(null);
 		setDemandError(false);
 		setReferenceError(null);
 		return true;
@@ -254,15 +268,27 @@ export function NewProject({
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
+	const currentHomeInputs = useEffectEvent(() => inputs);
 	useEffect(() => {
-		if (!draftEntry || !admitted || (!draft && !title && useHints)) return;
+		if (
+			!draftEntry ||
+			!admitted ||
+			(!draft &&
+				!title &&
+				useHints &&
+				!draftId.current &&
+				!profileForm.file &&
+				!entryHints)
+		)
+			return;
 		const record = {
 			id: (draftId.current ??= crypto.randomUUID()),
 			scope: session.query_scope,
 			source,
 			title,
-			inputs: draft,
+			inputs: compareAtHome ? currentHomeInputs() : draft,
 			useHints,
+			carriedProduct,
 		};
 		savedDraft.current = record;
 		try {
@@ -279,7 +305,23 @@ export function NewProject({
 			);
 			if (!link || new URL(link.href).origin !== location.origin) return;
 			try {
-				writeComparisonDraft(record, link.href);
+				if (
+					compareAtHome &&
+					(profileForm.file ||
+						homeForm.current?.querySelector(
+							'[aria-invalid="true"], input:out-of-range',
+						))
+				) {
+					event.preventDefault();
+					setLanguageIssue(profileForm.file ? "csv" : "number");
+					homeForm.current?.scrollIntoView({ block: "start" });
+					return;
+				}
+				const usePvAddress =
+					homeForm.current?.querySelector<HTMLInputElement>(
+						'input[name="pvgis_use_address"]',
+					)?.checked ?? false;
+				writeComparisonDraft({ ...record, usePvAddress }, link.href);
 			} catch {
 				event.preventDefault();
 				setDraftUnavailable(true);
@@ -289,7 +331,10 @@ export function NewProject({
 		return () => document.removeEventListener("click", handoff, true);
 	}, [
 		draftEntry,
-		compareOnLoad,
+		compareAtHome,
+		carriedProduct,
+		entryHints,
+		profileForm.file,
 		admitted,
 		draft,
 		title,
@@ -937,6 +982,7 @@ export function NewProject({
 		);
 	return (
 		<form
+			ref={homeForm}
 			className="sc-main"
 			aria-label={compareLabel}
 			onSubmit={(event) => {
@@ -949,6 +995,41 @@ export function NewProject({
 			}}
 		>
 			{draftNotice}
+			{languageIssue === "csv" && profileForm.file && (
+				<Notice error>
+					<p>
+						{__(
+							"Your CSV is still here. Finish this comparison or remove the file to switch languages.",
+							"linker-tools",
+						)}
+					</p>
+					{!intent.current && (
+						<button
+							type="button"
+							className="sc-button"
+							onClick={() => {
+								setProfileForm(emptyHomepageProfile());
+								setProfileError("");
+								setLanguageIssue(null);
+								const field = homeForm.current?.querySelector<HTMLInputElement>(
+									'input[name="load_profile"]',
+								);
+								if (field) field.value = "";
+							}}
+						>
+							{__("Remove CSV", "linker-tools")}
+						</button>
+					)}
+				</Notice>
+			)}
+			{languageIssue === "number" && (
+				<Notice error>
+					{__(
+						"Check the highlighted value before switching languages.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
 			{showSavedPicker && homeComparison?.picker}
 			{entryHints &&
 				!intent.current &&
@@ -1098,7 +1179,7 @@ export function NewProject({
 			{demandError && (
 				<Notice error>
 					{__(
-						"Choose the project type, purpose and grid connection. For backup, enter the load and how long it must run.",
+						"Choose a project type and purpose. For backup, enter the load and how long it must run.",
 						"linker-tools",
 					)}
 				</Notice>
@@ -1173,6 +1254,7 @@ export function NewProject({
 								brief={brief}
 								locale={locale}
 								addressLookup={Boolean(config?.googleMapsApiKey)}
+								usePvAddress={restored?.usePvAddress ?? false}
 								edit={edit}
 								validity={reportDemand}
 							/>
