@@ -11,6 +11,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { flushSync } from "react-dom";
 import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
@@ -73,6 +74,8 @@ import {
 	PreliminaryOptions,
 	systemNames,
 } from "./configurator/PreliminaryOptions.tsx";
+
+type LanguageIssue = "csv" | "number" | "storage";
 
 export function NewProject({
 	session,
@@ -151,9 +154,10 @@ export function NewProject({
 	const draftId = useRef(restored?.id);
 	const savedDraft = useRef<ComparisonDraft | null>(null);
 	const [draftUnavailable, setDraftUnavailable] = useState(false);
-	const [languageIssue, setLanguageIssue] = useState<"csv" | "number" | null>(
+	const [languageIssue, setLanguageIssue] = useState<LanguageIssue | null>(
 		null,
 	);
+	const languageNotice = useRef<HTMLDivElement>(null);
 	const homeForm = useRef<HTMLFormElement>(null);
 	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
 	const [title, setTitle] = useState(
@@ -315,6 +319,16 @@ export function NewProject({
 				setDraftUnavailable(true);
 			}
 		}
+		function showLanguageIssue(event: MouseEvent, reason: LanguageIssue) {
+			event.preventDefault();
+			flushSync(() => {
+				setLanguageIssue(reason);
+				if (reason === "storage") setDraftUnavailable(true);
+			});
+			const notice = languageNotice.current;
+			notice?.focus({ preventScroll: true });
+			notice?.scrollIntoView({ block: "center", behavior: "instant" });
+		}
 		function handoff(event: MouseEvent) {
 			const target = event.target;
 			if (!(target instanceof window.Element)) return;
@@ -330,9 +344,7 @@ export function NewProject({
 							'[aria-invalid="true"], input:out-of-range',
 						))
 				) {
-					event.preventDefault();
-					setLanguageIssue(profileForm.file ? "csv" : "number");
-					homeForm.current?.scrollIntoView({ block: "start" });
+					showLanguageIssue(event, profileForm.file ? "csv" : "number");
 					return;
 				}
 				const usePvAddress =
@@ -342,8 +354,7 @@ export function NewProject({
 				if (record)
 					writeComparisonDraft({ ...record, usePvAddress }, link.href);
 			} catch {
-				event.preventDefault();
-				setDraftUnavailable(true);
+				showLanguageIssue(event, "storage");
 			}
 		}
 		document.addEventListener("click", handoff, true);
@@ -370,7 +381,10 @@ export function NewProject({
 			homeForm.current?.scrollIntoView({ block: "start" });
 	}, [compareAtHome, restored]);
 	const draftNotice = draftUnavailable && (
-		<Notice error>
+		<Notice
+			error
+			focusTarget={languageIssue === "storage" ? languageNotice : undefined}
+		>
 			{__(
 				"Your browser could not save your entries. Stay on this page to avoid losing them.",
 				"linker-tools",
@@ -1043,7 +1057,7 @@ export function NewProject({
 		>
 			{draftNotice}
 			{languageIssue === "csv" && profileForm.file && (
-				<Notice error>
+				<Notice error focusTarget={languageNotice}>
 					<p>
 						{profileCorrection
 							? __(
@@ -1075,7 +1089,7 @@ export function NewProject({
 				</Notice>
 			)}
 			{languageIssue === "number" && (
-				<Notice error>
+				<Notice error focusTarget={languageNotice}>
 					{__(
 						"Check the highlighted value before switching languages.",
 						"linker-tools",

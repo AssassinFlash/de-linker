@@ -374,8 +374,28 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 				: byLabel("Value column");
 		const editedText =
 			rejectedProfile === "correct" ? "-1" : "Load corrected before switching";
+		const revealed = [];
+		const scrolling = t.mock.method(
+			window.HTMLElement.prototype,
+			"scrollIntoView",
+			function (options) {
+				revealed.push([this, options]);
+			},
+		);
 		await enter(editedField, editedText);
-		assert.equal(await languageBlocked(), true);
+		assert.equal(revealed.length, 0);
+		for (let click = 0; click < 2; click++) {
+			const previousReveals = revealed.length;
+			language.focus();
+			assert.equal(await languageBlocked(), true);
+			const notice = document.activeElement;
+			assert.equal(notice.getAttribute("role"), "alert");
+			assert.match(notice.textContent, /Your CSV changes are still here/);
+			assert.equal(revealed.length, previousReveals + 1);
+			assert.equal(revealed.at(-1)?.[0], notice);
+			assert.equal(revealed.at(-1)?.[1].block, "center");
+		}
+		scrolling.mock.restore();
 		assert.equal(editedField.value, editedText);
 		await act(async () => root.unmount());
 		root = createRoot(fixture.element);
