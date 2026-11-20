@@ -1257,12 +1257,10 @@
     .sc-configurator .sc-inquiry-stages li { justify-content: center; min-width: 0; min-height: 36px; padding: var(--proto-space-2) var(--proto-space-1); font-size: 13px; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
     .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .sc-configurator .sc-direction-comparison :is(table, tbody) { display: block; }
-    .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--proto-space-3) var(--proto-space-2); padding-block: var(--proto-space-4); }
+    .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-3); padding-block-end: var(--proto-space-5); }
+    .sc-configurator .sc-direction-comparison tbody tr + tr { padding-block-start: var(--proto-space-5); }
     .sc-configurator .sc-direction-comparison tbody :is(th, td) { padding: 0; }
-    .sc-configurator .sc-direction-comparison tbody th { align-self: center; }
-    .sc-configurator .sc-direction-comparison tbody td:not(.sc-direction-action) { grid-column: 1 / -1; }
-    .sc-configurator .sc-direction-comparison tbody .sc-direction-action { grid-column: 2; grid-row: 1; }
-    .sc-configurator .sc-direction-action .sc-button { padding-inline: var(--proto-space-3); }
+    .sc-configurator .sc-direction-action .sc-button { width: 100%; }
     .sc-configurator .sc-direction-name { gap: var(--proto-space-2); }
     .sc-configurator .sc-direction-symbol { width: 2rem; height: 2rem; }
     .sc-configurator .sc-direction-details > span { display: block; font-weight: var(--proto-weight-semibold); }

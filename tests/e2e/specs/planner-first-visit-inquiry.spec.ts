@@ -109,7 +109,7 @@ const labels = {
 	de: {
 		directions: [
 			'Photovoltaik und Speicher',
-			'Speicher für eine bestehende PV-Anlage',
+			'PV-Speicher nachrüsten',
 			'Photovoltaik',
 			'Speicher',
 		],
@@ -160,6 +160,16 @@ for (const lang of ['en', 'de'] as const) {
 			const row = comparison.getByRole('row').filter({
 				has: page.getByRole('rowheader', { name: chosen, exact: true }),
 			});
+			if (width === 390) {
+				const details = await row
+					.getByRole('cell')
+					.nth(1)
+					.boundingBox();
+				const button = await row.getByRole('button').boundingBox();
+				expect(button!.y).toBeGreaterThanOrEqual(
+					details!.y + details!.height
+				);
+			}
 			await screenshot(page, `preliminary-solutions-${lang}-${width}`);
 			await row
 				.getByRole('button', { name: words.choose, exact: true })
