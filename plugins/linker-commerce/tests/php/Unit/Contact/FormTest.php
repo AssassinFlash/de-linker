@@ -200,11 +200,44 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( 'href="http://site/de/genie/"', $html );
 	}
 
+	/** A legacy review link identifies only the matching Contact inquiry remembered in this Woo session. */
+	public function test_previous_individual_receipts_recover_from_their_native_session(): void {
+		$this->plain_text();
+		$this->form_environment();
+		$this->english_site();
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'get' )->with( 'linker_review_saved', '' )->andReturn( '47' );
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => $session ) );
+		$order = \Mockery::mock( \WC_Order::class );
+		$order->shouldReceive( 'get_order_number' )->andReturn( '47' );
+		$order->shouldReceive( 'get_customer_id' )->andReturn( 0 );
+		$order->shouldReceive( 'has_status' )->andReturnUsing( static fn ( $status ): bool => 'inquiry-received' === $status );
+		$metadata = array(
+			'_linker_inquiry_source' => 'contact',
+			'_linker_review_lane'    => 'individual',
+			'_linker_incident_hold'  => array( 'reason' => 'confirmed_campaign_review' ),
+		);
+		$order->shouldReceive( 'get_meta' )->andReturnUsing(
+			static function ( $key ) use ( &$metadata ) {
+				return $metadata[ $key ] ?? '';
+			}
+		);
+		WP_Mock::userFunction( 'wc_get_order' )->with( 47 )->andReturn( $order );
+		$_GET = array( Form::STATE_PARAM => 'saved_review' );
+		$this->assertStringContainsString( 'Your inquiry #47 is saved and waiting for review.', ( new Form() )->render() );
+		$metadata['_linker_inquiry_source'] = 'inquiry';
+		$this->assertStringNotContainsString( 'linker-form-success', ( new Form() )->render() );
+		$metadata['_linker_inquiry_source']                              = 'contact';
+		$metadata[ \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ] = 'yes';
+		$this->assertStringNotContainsString( 'linker-form-success', ( new Form() )->render() );
+	}
+
 	/**
 	 * The redirect's state shows above the fields; a fresh visit shows nothing.
 	 * A sent message keeps the card and its side cards, without another form.
 	 */
 	public function test_state_messages(): void {
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => null ) );
 		$this->plain_text();
 		$this->form_environment();
 		$this->english_site();

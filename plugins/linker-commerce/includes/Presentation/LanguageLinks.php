@@ -145,7 +145,7 @@ final class LanguageLinks {
 		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
 		$keys           = self::LANGUAGE_QUERY_KEYS;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A paired contact receipt verifies the full order key at its destination.
-		if ( isset( $_GET['contact'], $_GET['contact_order'] ) && is_page() && get_permalink( get_queried_object_id() ) === PageUrls::page( 'contact' ) ) {
+		if ( isset( $_GET['contact'] ) && ( isset( $_GET['contact_order'] ) || 'saved_review' === $_GET['contact'] ) && is_page() && get_permalink( get_queried_object_id() ) === PageUrls::page( 'contact' ) ) {
 			$keys[] = 'contact';
 			$keys[] = 'contact_order';
 		}
