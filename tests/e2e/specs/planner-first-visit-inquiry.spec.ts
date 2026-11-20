@@ -182,7 +182,10 @@ for (const lang of ['en', 'de'] as const) {
 				words.steps[1]
 			);
 			await expect(
-				page.getByRole('heading', { name: words.newProject, exact: true })
+				page.getByRole('heading', {
+					name: words.newProject,
+					exact: true,
+				})
 			).toBeInViewport();
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)
