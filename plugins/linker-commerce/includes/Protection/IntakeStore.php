@@ -77,7 +77,7 @@ final class IntakeStore {
 			$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 			$retry  = false;
 			$wait   = 0 === $attempt ? $wait_seconds : (int) floor( $deadline - microtime( true ) );
-			Lock::run(
+			$locked = Lock::run(
 				self::MUTEX,
 				static function () use ( $work, &$result, &$retry ): void {
 					$previous = self::$snapshot;
@@ -116,6 +116,10 @@ final class IntakeStore {
 				},
 				max( 0, min( 1, $wait ) )
 			);
+			// Another waiting writer may acquire the mutex between a row conflict and our next attempt.
+			if ( ! $locked && $attempt > 0 ) {
+				$retry = true;
+			}
 			if ( ! $retry || ! $retry_row_lock ) {
 				return $result;
 			}

@@ -39,6 +39,40 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	 */
 	private NormalMailAuthorizationFixture $authorization;
 
+	/** The received transition persists its recovery marker before handing a committed inquiry to the Outbox. */
+	public function test_outbox_handoff_uses_the_committed_inquiry(): void {
+		$details = \Linker\Commerce\Contact\Submission::from_post(
+			array(
+				'name'    => 'Installer',
+				'email'   => 'commit-' . self::tag() . '@example.test',
+				'message' => 'Please advise on storage for our building.',
+				'consent' => '1',
+			)
+		);
+		self::assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
+		$during  = null;
+		$observe = static function ( int $id ) use ( &$during ): void {
+			$during = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+		};
+		$event   = 'woocommerce_order_status_pending_to_inquiry-received_notification';
+		add_action( $event, $observe, PHP_INT_MAX );
+		try {
+			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		} finally {
+			remove_action( $event, $observe, PHP_INT_MAX );
+		}
+		self::assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		self::assertIsArray( $during );
+		self::assertSame( 'pending', $during['status'] );
+		self::assertSame( array(), $during['jobs'] );
+		self::fixed_receipt_job( $order );
+	}
+
 	/**
 	 * Round-one decision: three accepted messages per connection per hour,
 	 * shared across both doors; the next attempt cannot queue any mail.

@@ -68,9 +68,15 @@ final class SendAuthorization {
 			}
 		);
 		if ( $ready ) {
-			self::recover( $order->get_id() );
+			$id      = $order->get_id();
+			$recover = static function () use ( $id ): void {
+				self::recover( $id );
+			};
+			if ( ! \Linker\Commerce\Mail\NativeTransaction::after_commit( $recover ) ) {
+				$recover();
+			}
 			if ( Client::configured() && class_exists( \WP_Async_Request::class ) ) {
-				AsyncRunner::enqueue( $order->get_id() );
+				AsyncRunner::enqueue( $id );
 			}
 		}
 		return true;

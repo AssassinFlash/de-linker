@@ -230,7 +230,8 @@ final class Capacity {
 					}
 				);
 			},
-			1
+			1,
+			'inquiry' === ( $message->origin['kind'] ?? '' ) && 'receipt' === ( $message->origin['purpose'] ?? '' )
 		);
 		return is_array( $result ) ? (int) ( $result['job'] ?? 0 ) : 0;
 	}
