@@ -1,4 +1,3 @@
-<label class="linker-form-label" for="inquiry-message">[linker_inquiry_text key="message"]<textarea class="linker-form-input" id="inquiry-message" name="message" rows="5" maxlength="5000">{{message}}</textarea></label>
 <details class="linker-inquiry-details" {{open}}>
 	<summary {{summary-hide}}><span>[linker_inquiry_text key="details"]<small>{{name}} · {{email}}</small></span><span>[linker_inquiry_text key="change"]</span></summary>
 	<div class="linker-inquiry-fields">
@@ -8,6 +7,7 @@
 		[linker_inquiry_billing]
 	</div>
 </details>
+<label class="linker-form-label" for="inquiry-message">[linker_inquiry_text key="message"]<textarea class="linker-form-input" id="inquiry-message" name="message" rows="5" maxlength="5000">{{message}}</textarea></label>
 <label class="linker-form-consent" {{guest-hide}}><input type="checkbox" name="consent" value="1" {{consent-attributes}} /><span>[linker_inquiry_text key="consent"] <a href="{{privacy}}">[linker_inquiry_text key="privacy"]</a></span></label>
 <p class="linker-inquiry-draft-notice" data-inquiry-draft-pending role="status" hidden>[linker_inquiry_text key="update-before-send"]</p>
 <p class="linker-inquiry-draft-notice" data-inquiry-retention-error role="alert" tabindex="-1" hidden>[linker_inquiry_text key="retention-error"]</p>

@@ -924,20 +924,6 @@
 /* ── The guest account page's own ground ───────────────────────────────── */
 body.woocommerce-account:not(.logged-in) .linker-account #container-content-account { padding: clamp(20px, 4vw, 48px) 1rem; }
 
-#tv-woo-b2b-checkout .linker-inquiry-success {
-	display: grid;
-	justify-items: center;
-	gap: var(--proto-space-5);
-	padding: var(--proto-space-7) var(--proto-space-4);
-	border: 1px solid var(--proto-line-journal);
-	border-radius: var(--proto-radius-panel);
-	background: var(--proto-canvas-white);
-	color: var(--proto-ink-deep);
-	text-align: center;
-}
-#tv-woo-b2b-checkout .linker-inquiry-success :is(h2, p) { margin: 0; }
-#tv-woo-b2b-checkout .linker-inquiry-success::before { display: none; }
-
 /* Replace the contact shortcode's literal palette with the site's tokens.
  * Desktop dimensions reproduce its previous utility classes. */
 #contact-form .linker-contact-form .linker-form-label {
@@ -975,8 +961,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	text-decoration: none;
 }
 #contact-form .linker-contact-form .linker-form-primary { justify-self: start; }
-.linker-inquiry-success .linker-form-primary,
-#tv-woo-b2b-checkout .linker-inquiry-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
+
 #contact-form .linker-contact-form :where(a, button, input, textarea):focus-visible,
 .linker-inquiry-success a:focus-visible {
 	outline: var(--proto-focus-ring);
@@ -1062,8 +1047,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	}
 	#contact-form .linker-contact-form textarea.linker-form-input { min-height: 10rem; }
 	#contact-form .linker-contact-form .linker-form-submit p { margin: 0; }
-	#contact-form .linker-contact-form .linker-form-success,
-	#tv-woo-b2b-checkout .linker-inquiry-success {
+	#contact-form .linker-contact-form .linker-form-success {
 		display: grid;
 		justify-items: center;
 		gap: var(--proto-space-5);
@@ -1074,17 +1058,12 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 		color: var(--proto-ink-deep);
 		text-align: center;
 	}
-	#contact-form .linker-contact-form .linker-form-success p,
-	#tv-woo-b2b-checkout .linker-inquiry-success :is(h2, p) { margin: 0; }
-	#contact-form .linker-contact-form .linker-form-success .linker-form-state-icon,
-	#tv-woo-b2b-checkout .linker-inquiry-success .linker-form-state-icon {
+	#contact-form .linker-contact-form .linker-form-success p { margin: 0; }
+	#contact-form .linker-contact-form .linker-form-success .linker-form-state-icon {
 		width: var(--proto-space-8);
 		height: var(--proto-space-8);
 		font-size: var(--proto-size-2xl);
 	}
-	#tv-woo-b2b-checkout .linker-inquiry-success::before { display: none; }
-	#tv-woo-b2b-checkout .linker-inquiry-success h2 { font-size: var(--proto-size-lg); }
-	#tv-woo-b2b-checkout .linker-inquiry-success p { font-size: var(--proto-size-sm); }
 	#tv-woo-b2b-checkout .woocommerce-invalid .checkout-inline-error-message { display: none; }
 	#container-content-checkout { padding: var(--proto-space-5) var(--proto-space-4) var(--proto-space-7); }
 	#tv-woo-b2b-checkout { padding: 0; }
@@ -1355,4 +1334,162 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	.linker-inquiry-fields { grid-template-columns: minmax(0, 1fr); }
 	:is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry .linker-form-input { font-size: var(--proto-size-md); }
 	.linker-inquiry-draft { position: static; }
+}
+
+/* Saved project details and the equipment included in an inquiry. */
+.sc-preliminary-layout .sc-sidebar .sc-project-facts,
+.sc-preliminary-review .sc-inquiry-overview .sc-project-facts {
+	display: grid;
+	gap: var(--proto-space-3);
+	width: 100%;
+	margin: 0;
+}
+.sc-project-facts > div {
+	min-width: 0;
+}
+.sc-preliminary-layout .sc-sidebar .sc-project-facts dt,
+.sc-preliminary-review .sc-inquiry-overview .sc-project-facts dt {
+	color: var(--proto-neutral-600);
+	font-size: var(--proto-size-xs);
+}
+.sc-preliminary-layout .sc-sidebar .sc-project-facts dd,
+.sc-preliminary-review .sc-inquiry-overview .sc-project-facts dd {
+	margin: var(--proto-space-1) 0 0;
+	font-size: var(--proto-size-md);
+	font-weight: var(--proto-weight-semibold);
+	overflow-wrap: anywhere;
+}
+.sc-preliminary-layout .sc-sidebar h2 + .sc-project-facts {
+	margin-top: var(--proto-space-4);
+}
+.sc-preliminary-review .sc-inquiry-overview {
+	align-content: start;
+}
+.sc-preliminary-review .sc-empty-supply {
+	padding-block: var(--proto-space-3);
+	border-block: 1px solid var(--proto-color-line);
+	color: var(--proto-neutral-600);
+	font-size: var(--proto-size-sm);
+}
+.sc-preliminary-review .sc-inquiry-products {
+	display: grid;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.sc-preliminary-review .sc-inquiry-products li {
+	padding-block: var(--proto-space-3);
+	border-top: 1px solid var(--proto-color-line);
+}
+.sc-preliminary-review .sc-inquiry-product,
+.sc-preliminary-review .sc-inquiry-product a {
+	display: grid;
+	align-items: center;
+	gap: var(--proto-space-2);
+}
+.sc-preliminary-review .sc-inquiry-product a {
+	grid-template-columns: auto minmax(0, 1fr);
+	color: var(--proto-teal-800);
+	font-weight: var(--proto-weight-semibold);
+	text-decoration: underline;
+	text-underline-offset: .18em;
+}
+.sc-preliminary-review .sc-inquiry-product img {
+	width: 3.5rem;
+	height: 3.5rem;
+	padding: var(--proto-space-1);
+	border: 1px solid var(--proto-color-line);
+	border-radius: var(--proto-radius-md);
+	background: var(--proto-color-surface);
+	object-fit: contain;
+}
+.sc-preliminary-review .sc-inquiry-product small {
+	color: var(--proto-neutral-600);
+	font-size: var(--proto-size-xs);
+}
+
+/* The receipt and the customer's issued order details share one reading order. */
+#tv-woo-b2b-checkout .linker-inquiry-success {
+	display: grid;
+	align-content: start;
+	justify-items: start;
+	gap: var(--proto-space-5);
+	margin: 0 0 var(--proto-space-6);
+	padding: clamp(var(--proto-space-5), 4vw, var(--proto-space-7));
+	border: 1px solid var(--proto-color-line);
+	border-radius: var(--proto-radius-card);
+	background: var(--proto-color-surface);
+	color: var(--proto-ink-deep);
+}
+#tv-woo-b2b-checkout .linker-inquiry-success :is(h1, h2, p) {
+	text-align: start;
+	margin: 0;
+}
+.linker-receipt-heading {
+	display: flex;
+	align-items: center;
+	gap: var(--proto-space-4);
+}
+.linker-receipt-heading .linker-form-state-icon {
+	flex: none;
+}
+#tv-woo-b2b-checkout .linker-receipt-heading h1 {
+	font-size: var(--proto-size-3xl);
+	line-height: var(--proto-leading-title);
+	letter-spacing: var(--proto-track-display);
+}
+.linker-receipt-number {
+	color: var(--proto-ink-muted-deep);
+	font-size: var(--proto-size-sm);
+	overflow-wrap: anywhere;
+}
+.linker-receipt-next {
+	display: grid;
+	gap: var(--proto-space-2);
+	width: 100%;
+	padding-top: var(--proto-space-5);
+	border-top: 1px solid var(--proto-color-line);
+	font-size: var(--proto-size-md);
+	line-height: var(--proto-leading-body);
+}
+#tv-woo-b2b-checkout .linker-receipt-next h2 {
+	font-size: var(--proto-size-lg);
+}
+#tv-woo-b2b-checkout .linker-receipt-action {
+	justify-self: start;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--proto-control-height);
+	padding: var(--proto-control-pad-y) var(--proto-control-pad-x);
+	border-radius: var(--proto-radius-md);
+	background: var(--proto-accent);
+	color: var(--proto-accent-on);
+	font-weight: var(--proto-weight-semibold);
+	text-decoration: none;
+}
+#tv-woo-b2b-checkout .linker-receipt-action:hover {
+	background: var(--proto-teal-700);
+}
+@media (min-width: 761px) {
+	#tv-woo-b2b-checkout .woocommerce-order:has(> .linker-inquiry-success):has(> .woocommerce-order-details) {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+		gap: var(--proto-space-6);
+	}
+	#tv-woo-b2b-checkout .woocommerce-order > .linker-inquiry-success {
+		grid-column: 1;
+		grid-row: 1;
+		margin-bottom: 0;
+	}
+	#tv-woo-b2b-checkout .woocommerce-order:has(> .linker-inquiry-success) > .woocommerce-order-details {
+		grid-column: 2;
+		grid-row: 1;
+		margin: 0;
+	}
+	#tv-woo-b2b-checkout .woocommerce-order:has(> .linker-inquiry-success) > .woocommerce-customer-details {
+		grid-column: 1 / -1;
+	}
 }

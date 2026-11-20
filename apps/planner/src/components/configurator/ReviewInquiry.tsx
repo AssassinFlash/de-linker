@@ -14,6 +14,7 @@ import {
 } from "../../data/inquiryRecovery.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
+import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { systemNames } from "./PreliminaryOptions.tsx";
 
 type CustomerField = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -126,6 +127,41 @@ function takeNavigationDraft(
 	} catch {
 		return null;
 	}
+}
+
+type InquiryProduct = ReturnType<typeof readInquiryForm>["lines"][number];
+
+function ProductSummary({
+	product,
+	quantity,
+}: {
+	product: Pick<
+		InquiryProduct,
+		"label" | "productUrl" | "imageUrl" | "highlight"
+	>;
+	quantity?: number;
+}) {
+	const heading = (
+		<>
+			{product.imageUrl && <img src={product.imageUrl} alt="" loading="lazy" />}
+			<span>
+				{product.label}
+				{quantity !== undefined && ` × ${quantity}`}
+			</span>
+		</>
+	);
+	return (
+		<div className="sc-inquiry-product">
+			{product.productUrl ? (
+				<a href={product.productUrl} target="_blank" rel="noopener noreferrer">
+					{heading}
+				</a>
+			) : (
+				heading
+			)}
+			{product.highlight && <small>{product.highlight}</small>}
+		</div>
+	);
 }
 
 export function ReviewInquiry({
@@ -398,6 +434,7 @@ export function ReviewInquiry({
 		ready,
 		reportRunId,
 	]);
+	const facts = projectFacts(project.inputs, locale);
 	const changes = review?.changes ?? [];
 	const lines = review?.lines.filter(
 		(line) =>
@@ -415,19 +452,28 @@ export function ReviewInquiry({
 				</h2>
 			</header>
 			<div className="linker-inquiry linker-inquiry-columns">
-				<aside className="linker-inquiry-draft">
-					<h3>{__("Current configuration", "linker-tools")}</h3>
+				<aside className="linker-inquiry-draft sc-inquiry-overview">
+					<h3>{__("Inquiry summary", "linker-tools")}</h3>
 					<p>
 						{sprintf(
 							__("Planned system: %s", "linker-tools"),
 							systemNames()[direction],
 						)}
 					</p>
+					{facts.length > 0 && <ProjectFacts facts={facts} />}
+					{!checkingInquiry && review && !lines?.length && !changes.length && (
+						<p className="sc-empty-supply">
+							{__(
+								"No products selected. We can discuss equipment after you send your inquiry.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 					{!checkingInquiry && Boolean(lines?.length) && (
-						<ul>
+						<ul className="sc-inquiry-products">
 							{lines?.map((line, index) => (
 								<li key={index}>
-									{line.label} × {line.quantity}
+									<ProductSummary product={line} quantity={line.quantity} />
 								</li>
 							))}
 						</ul>
@@ -444,7 +490,9 @@ export function ReviewInquiry({
 							<tbody>
 								{changes.map((line) => (
 									<tr key={line.productId}>
-										<th scope="row">{line.label}</th>
+										<th scope="row">
+											<ProductSummary product={line} />
+										</th>
 										<td>{line.before}</td>
 										<td>{line.after}</td>
 									</tr>

@@ -173,19 +173,25 @@ final class Checkout {
 	 * @param int $order_id Received inquiry.
 	 */
 	public function next_steps( int $order_id = 0 ): void {
-		$order       = $order_id > 0 ? wc_get_order( $order_id ) : false;
-		$guest       = $order instanceof WC_Order && 0 === $order->get_customer_id();
-		$held        = $order instanceof WC_Order && \Linker\Commerce\Mail\NotificationHold::held( $order );
-		$preliminary = $order instanceof WC_Order && '' !== $order->get_meta( \Linker\Commerce\Planning\Context::PROJECT_META );
+		$order = $order_id > 0 ? wc_get_order( $order_id ) : false;
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		$guest       = 0 === $order->get_customer_id();
+		$held        = \Linker\Commerce\Mail\NotificationHold::held( $order );
+		$preliminary = '' !== $order->get_meta( \Linker\Commerce\Planning\Context::PROJECT_META );
 		$html        = strtr(
 			\Linker\Commerce\Presentation\Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/received.html' ),
 			array(
+				/* translators: %s: inquiry number. */
+				'{{number}}'         => esc_html( sprintf( __( 'Inquiry #%s', 'linker-commerce' ), $order->get_order_number() ) ),
+				'{{next}}'           => esc_html__( 'Next steps', 'linker-commerce' ),
 				'{{request_id}}'     => $preliminary ? esc_attr( (string) $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST ) ) : '',
 				'{{title}}'          => $held && ! $preliminary ? esc_html__( 'Inquiry saved for review', 'linker-commerce' ) : esc_html__( 'Inquiry received', 'linker-commerce' ),
 				'{{promise}}'        => $held ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
 				'{{url}}'            => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
 				'{{action}}'         => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
-				'{{receipt_notice}}' => $held ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( $order instanceof WC_Order && '' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META )
+				'{{receipt_notice}}' => $held ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( '' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META )
 					? esc_html__( 'We have not sent a confirmation email.', 'linker-commerce' ) : '' ),
 			)
 		);
@@ -204,6 +210,10 @@ final class Checkout {
 	 */
 	public function received_url( string $url, WC_Order $order ): string {
 		if ( ! str_starts_with( OrderLocale::of( $order ), 'de' ) || ! function_exists( 'pll_get_post' ) ) {
+			return $url;
+		}
+		// A guest checking their email on an English receipt must return to that same receipt.
+		if ( function_exists( 'pll_current_language' ) && 'en' === pll_current_language() && (int) get_query_var( 'order-received' ) === $order->get_id() ) {
 			return $url;
 		}
 		$english = (string) get_permalink( (int) get_option( 'woocommerce_checkout_page_id' ) );

@@ -29,19 +29,26 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
         hero + en + '?step=roof">Open the Solution Configurator</a></div>' + roof,
         hero + de + '?step=roof">Lösungskonfigurator öffnen</a></div>',
     )
-    expected = (
+    published = (
         hero
         + en
         + '#sc-preliminary-options">Open the Solution Configurator</a></div>'
         + roof,
         hero + de + '#sc-preliminary-options">Lösungskonfigurator öffnen</a></div>',
     )
-    review = tuple(
-        page.replace('#sc-preliminary-options"', '"', 1) for page in expected
+    expected = (
+        published[0].replace(
+            "Open the Solution Configurator", "Compare system options"
+        ),
+        published[1].replace(
+            "Lösungskonfigurator öffnen", "Anlagenvarianten vergleichen"
+        ),
     )
-    assert controls.plan_pair("home_configurator", *review) == expected
-    assert controls.plan_pair("home_configurator", *before) == expected
-    assert controls.plan_pair("home_configurator", *expected) == expected
+    review = tuple(
+        page.replace('#sc-preliminary-options"', '"', 1) for page in published
+    )
+    for stage in (before, review, published, expected):
+        assert controls.plan_pair("home_configurator", *stage) == expected
 
 
 def test_home_project_comparison_preserves_the_hero_and_other_content() -> None:

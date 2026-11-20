@@ -2,6 +2,8 @@ import { useEffect, useRef, type ReactNode } from "react";
 import type { JsonObject } from "../../data/protocol.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __ } from "../../i18n.ts";
+import { Icon } from "../Icon.tsx";
+import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { hasStorageToExclude } from "./ProjectDetails.tsx";
 
 export function systemNames() {
@@ -15,11 +17,13 @@ export function systemNames() {
 
 export function PreliminaryOptions({
 	inputs,
+	locale,
 	disabled,
 	choose,
 	action,
 }: {
 	inputs: JsonObject;
+	locale: string;
 	disabled: boolean;
 	choose: (scope: NonNullable<Brief["system_scope"]>) => void;
 	action?: ReactNode;
@@ -66,6 +70,13 @@ export function PreliminaryOptions({
 			),
 		],
 	} satisfies Record<NonNullable<Brief["system_scope"]>, [string, string]>;
+	const facts = projectFacts(inputs, locale);
+	const symbols = {
+		new_pv_storage: "system",
+		storage_addition: "layers",
+		pv_only: "solar",
+		storage_only: "energy",
+	} as const;
 	const options = (Object.keys(names) as (keyof typeof names)[]).filter(
 		(scope) =>
 			(scope !== "pv_only" || !hasStorageToExclude(inputs)) &&
@@ -73,7 +84,9 @@ export function PreliminaryOptions({
 	);
 
 	return (
-		<div className="sc-layout sc-preliminary-layout">
+		<div
+			className={`sc-layout sc-preliminary-layout${facts.length ? "" : " sc-preliminary-layout--comparison"}`}
+		>
 			<section className="sc-card sc-direction-comparison">
 				<header className="sc-section-head">
 					<div>
@@ -87,7 +100,6 @@ export function PreliminaryOptions({
 							)}
 						</p>
 					</div>
-					{action}
 				</header>
 				<table
 					role="table"
@@ -111,7 +123,12 @@ export function PreliminaryOptions({
 						{options.map((scope) => (
 							<tr key={scope} role="row">
 								<th scope="row" role="rowheader" id={`sc-direction-${scope}`}>
-									{names[scope]}
+									<span className="sc-direction-name">
+										<span className="sc-direction-symbol">
+											<Icon name={symbols[scope]} />
+										</span>
+										{names[scope]}
+									</span>
 								</th>
 								<td role="cell">{comparisons[scope][0]}</td>
 								<td role="cell" className="sc-direction-details">
@@ -127,24 +144,23 @@ export function PreliminaryOptions({
 										onClick={() => choose(scope)}
 									>
 										{__("Select", "linker-tools")}
+										<Icon name="arrow" />
 									</button>
 								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
+				{action && <footer className="sc-direction-tools">{action}</footer>}
 			</section>
-			<aside className="sc-sidebar">
-				<section className="sc-card">
-					<h2>{__("Current configuration", "linker-tools")}</h2>
-					<p>
-						{__(
-							"Choose an option to review it and send an inquiry.",
-							"linker-tools",
-						)}
-					</p>
-				</section>
-			</aside>
+			{facts.length > 0 && (
+				<aside className="sc-sidebar">
+					<section className="sc-card">
+						<h2>{__("Project details", "linker-tools")}</h2>
+						<ProjectFacts facts={facts} />
+					</section>
+				</aside>
+			)}
 		</div>
 	);
 }

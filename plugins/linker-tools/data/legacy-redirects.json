@@ -298,6 +298,8 @@
 		"ci-accessories": "/product-category/accessories/"
 	},
 	"pages": {
+		"/thank-you/": "/proforma-request/",
+		"/danke/": "/proforma-request/",
 		"/application/": "/solution/",
 		"/application/residential-storage/": "/solution/residential-storage/",
 		"/application/commercial-storage/": "/solution/commercial-storage/",

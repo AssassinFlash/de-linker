@@ -241,7 +241,7 @@ final class InquiryTest extends IntegrationTestCase {
 		ob_start();
 		( new \Linker\Commerce\Inquiry\Checkout() )->next_steps( $order->get_id() );
 		$receipt = (string) ob_get_clean();
-		$this->assertStringContainsString( '<h2>Inquiry received</h2>', $receipt );
+		$this->assertStringContainsString( '<h1 id="linker-receipt-title">Inquiry received</h1>', $receipt );
 		$this->assertStringContainsString( '#' . $order->get_order_number(), $receipt );
 		$this->assertStringContainsString( 'We have not sent a confirmation email.', $receipt );
 	}

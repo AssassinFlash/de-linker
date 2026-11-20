@@ -424,24 +424,26 @@ test("visitors with project data can open setup from the comparison and keep the
 			else delete globalThis[name];
 		}
 	});
-	await act(async () =>
-		root.render(
-			React.createElement(
-				React.StrictMode,
-				null,
-				React.createElement(SessionBoundary, { client }, (value, recheck) =>
-					React.createElement(Workspace, {
-						key: value.query_scope,
-						session: value,
-						client,
-						store,
-						config,
-						recheck,
-					}),
+	const renderWorkspace = () =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					React.StrictMode,
+					null,
+					React.createElement(SessionBoundary, { client }, (value, recheck) =>
+						React.createElement(Workspace, {
+							key: value.query_scope,
+							session: value,
+							client,
+							store,
+							config,
+							recheck,
+						}),
+					),
 				),
 			),
-		),
-	);
+		);
+	await renderWorkspace();
 	const start = () => document.querySelector("form");
 	const setup = () =>
 		[...document.querySelectorAll("button")].find(
@@ -462,6 +464,16 @@ test("visitors with project data can open setup from the comparison and keep the
 	assert.equal(new URL(location.href).searchParams.get("project"), null);
 	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
 	assert.equal(document.querySelector('a[hreflang="de"]').hash, "#sc-project");
+	const compareAgain = () =>
+		Array.from(document.querySelectorAll("button")).find(
+			(item) =>
+				item.textContent.trim() === "Compare options" &&
+				!item.closest("[hidden]"),
+		);
+	assert.ok(
+		compareAgain(),
+		"A visitor who filled in optional details can return to compare without starting another project",
+	);
 	assert.deepEqual(creates, []);
 	await act(async () => {
 		const scope = document.querySelector('select[name="system_scope"]');
@@ -476,6 +488,63 @@ test("visitors with project data can open setup from the comparison and keep the
 		document.querySelector('input[name="location_label"]'),
 		"Oslo 0150",
 	);
+	const annual = document.querySelector('input[name="annual_load_kwh"]');
+	assert.ok(
+		annual,
+		"A visitor can bring annual usage into the preliminary comparison",
+	);
+	await enter(annual, "6412");
+	await act(async () => compareAgain().click());
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.match(
+		document.querySelector("dl.sc-project-facts").textContent,
+		/Oslo 0150/,
+	);
+	assert.deepEqual(creates, []);
+	// Rebuild the document against its current history entry, just as a reload does.
+	window.dispatchEvent(new window.Event("pagehide"));
+	await act(async () => root.render(null));
+	await renderWorkspace();
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.match(
+		document.querySelector("dl.sc-project-facts")?.textContent ?? "",
+		/Oslo 0150/,
+	);
+	assert.match(
+		document.querySelector("dl.sc-project-facts").textContent,
+		/6412 kWh/,
+	);
+	const englishPage = location.href;
+	const germanLink = document.querySelector('header a[hreflang="de"]');
+	const translatedPage = germanLink.href;
+	germanLink.addEventListener("click", (event) => event.preventDefault(), {
+		once: true,
+	});
+	germanLink.click();
+	window.dispatchEvent(new window.Event("pagehide"));
+	await act(async () => root.render(null));
+	history.pushState(null, "", translatedPage);
+	await renderWorkspace();
+	await until(() =>
+		document.querySelector('table[aria-label="Compare system options"]'),
+	);
+	assert.match(
+		document.querySelector("dl.sc-project-facts")?.textContent ?? "",
+		/Oslo 0150/,
+	);
+	await act(async () => root.render(null));
+	await new Promise((resolve) => {
+		window.addEventListener("popstate", resolve, { once: true });
+		history.back();
+	});
+	assert.equal(location.href, englishPage);
+	await renderWorkspace();
+	await act(async () => history.back());
+	await until(() => document.querySelector('input[name="location_label"]'));
 	await act(async () => history.back());
 	await until(() =>
 		document.querySelector('table[aria-label="Compare system options"]'),
@@ -485,6 +554,17 @@ test("visitors with project data can open setup from the comparison and keep the
 		false,
 	);
 	assert.equal(document.activeElement.textContent, "Preliminary options");
+	assert.match(
+		document.querySelector("dl.sc-project-facts")?.textContent ?? "",
+		/Oslo 0150/,
+	);
+	assert.deepEqual(
+		Array.from(
+			document.querySelector(".sc-inquiry-stages").children,
+			(step) => step.textContent,
+		),
+		["Compare options", "Choose an option", "Review and send"],
+	);
 	await act(async () => history.forward());
 	await until(() => document.querySelector('input[name="project_title"]'));
 	assert.equal(document.activeElement.textContent, "What is the project?");
@@ -1029,7 +1109,7 @@ test("the review restores edited signed-in details and Woo billing controls on a
 	const root = createRoot(fixture.element);
 	t.after(() => fixture.dispose(root));
 	const opens = [];
-	const project = { id: projectId, revision: 1 };
+	const project = { id: projectId, revision: 1, inputs: {} };
 	const client = {
 		origin: location.origin,
 		isCurrentScope: (scope) => scope === session.query_scope,
@@ -1134,7 +1214,7 @@ async function lostReceipt(
 		crypto.randomUUID(),
 		crypto.randomUUID(),
 	];
-	const project = { id: projectId, revision: 7 };
+	const project = { id: projectId, revision: 7, inputs: {} };
 	if (!storageAllowed)
 		Object.defineProperty(window, "sessionStorage", {
 			get: () => {

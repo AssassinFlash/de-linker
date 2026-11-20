@@ -919,19 +919,29 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
 
 
 def plan_home_configurator(english: str, german: str) -> tuple[str, str]:
-    def update(page: str, path: str) -> tuple[str, str]:
-        hero_link = f'data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}'
-        old_link = hero_link + (
-            '?step=roof"' if hero_link + '?step=roof"' in page else '"'
-        )
-        return _apply_edits(
-            page,
-            ((old_link, hero_link + '#sc-preliminary-options"'),),
-            "Home configurator",
-        )
+    def update(page: str, path: str, old_label: str, label: str) -> tuple[str, str]:
+        hero = f'data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}'
+        target = f'{hero}#sc-preliminary-options">{label}</a>'
+        for suffix in ("?step=roof", "", "#sc-preliminary-options"):
+            old = f'{hero}{suffix}">{old_label}</a>'
+            if old in page:
+                return _apply_edits(page, ((old, target),), "Home configurator")
+        if page.count(target) == 1:
+            return page, "final"
+        raise ValueError("Expected the homepage comparison entry")
 
-    en, en_state = update(english, "/solution-configurator/")
-    de, de_state = update(german, "/de/loesungskonfigurator/")
+    en, en_state = update(
+        english,
+        "/solution-configurator/",
+        "Open the Solution Configurator",
+        "Compare system options",
+    )
+    de, de_state = update(
+        german,
+        "/de/loesungskonfigurator/",
+        "Lösungskonfigurator öffnen",
+        "Anlagenvarianten vergleichen",
+    )
     if en_state != de_state:
         raise ValueError("Partially changed homepage configurator language pair")
     return en, de

@@ -181,6 +181,14 @@ export function readDraftPreview(
 	};
 }
 
+function inquiryProduct(row: JsonObject) {
+	return {
+		productUrl: typeof row.product_url === "string" ? row.product_url : null,
+		imageUrl: typeof row.image_url === "string" ? row.image_url : null,
+		highlight: typeof row.highlight === "string" ? row.highlight : null,
+	};
+}
+
 export function readInquiryForm(value: unknown) {
 	const row = readObject(value);
 	if (
@@ -204,6 +212,7 @@ export function readInquiryForm(value: unknown) {
 		)
 			fail();
 		return {
+			...inquiryProduct(line),
 			productId: line.product_id,
 			projectId: line.project_id,
 			label: line.label,
@@ -237,6 +246,7 @@ export function readInquiryForm(value: unknown) {
 			)
 				fail();
 			return {
+				...inquiryProduct(change),
 				productId: change.product_id,
 				label: change.label,
 				before: change.before,

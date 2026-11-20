@@ -746,7 +746,11 @@ final class GermanUrlMigration {
 			if ( in_array( $row['type'], array( 'product', 'nav_menu_item' ), true ) || ! is_string( $old_path ) || ! str_starts_with( $path, $old_path ) ) {
 				continue;
 			}
-			$url = in_array( $row['type'], array( 'category', 'product_cat' ), true ) ? get_term_link( $row['id'], $row['type'] ) : get_permalink( $row['id'] );
+			$is_term = in_array( $row['type'], array( 'category', 'product_cat' ), true );
+			if ( ! $is_term && 'publish' !== get_post_status( $row['id'] ) ) {
+				return null;
+			}
+			$url = $is_term ? get_term_link( $row['id'], $row['type'] ) : get_permalink( $row['id'] );
 			if ( is_string( $url ) && wp_parse_url( $url, PHP_URL_PATH ) !== $old_path ) {
 				$url = $routes->link( $url . substr( $path, strlen( $old_path ) ) );
 				return $this->old_url( $url );

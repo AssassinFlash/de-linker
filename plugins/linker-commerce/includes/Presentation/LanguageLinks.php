@@ -144,8 +144,12 @@ final class LanguageLinks {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
 		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
 		$keys           = self::LANGUAGE_QUERY_KEYS;
-		if ( \function_exists( 'is_account_page' ) && is_account_page() && is_wc_endpoint_url( 'orders' ) ) {
-			$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );
+		if ( \function_exists( 'is_account_page' ) && is_account_page() ) {
+			if ( is_wc_endpoint_url( 'orders' ) ) {
+				$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );
+			} elseif ( is_wc_endpoint_url( 'register' ) ) {
+				$keys = array_merge( $keys, array( 'linker_inquiry', 'linker_key' ) );
+			}
 		}
 		$kept = array();
 		foreach ( $keys as $query_key ) {

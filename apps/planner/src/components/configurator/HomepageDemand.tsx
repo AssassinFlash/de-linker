@@ -46,6 +46,80 @@ export function hasComparisonDemand(inputs: JsonObject, brief: Brief) {
 	);
 }
 
+export function AnnualElectricityUse({
+	brief,
+	locale,
+	edit,
+	validity,
+	requireSource = false,
+}: {
+	brief: Brief;
+	locale: string;
+	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
+	validity: (field: string, valid: boolean) => void;
+	requireSource?: boolean;
+}) {
+	const annualValid = useCallback(
+		(valid: boolean) => validity("annual", valid),
+		[validity],
+	);
+	function annual(patch: Partial<Brief["annual_load"]>) {
+		edit((current) => {
+			const currentBrief = readBrief(current.brief);
+			return {
+				...current,
+				brief: {
+					...currentBrief,
+					annual_load: { ...currentBrief.annual_load, ...patch },
+				},
+			};
+		});
+	}
+	return (
+		<>
+			<NumberField
+				name="annual_load_kwh"
+				label={__("Annual electricity use", "linker-tools")}
+				unit="kWh"
+				locale={locale}
+				min={0}
+				value={brief.annual_load.kwh}
+				onChange={(kwh) =>
+					annual(kwh === null ? { kwh, basis: null } : { kwh })
+				}
+				onValidity={annualValid}
+			/>
+			{brief.annual_load.kwh !== null && (
+				<label className="sc-field">
+					<span>{__("Annual electricity use source", "linker-tools")}</span>
+					<select
+						name="annual_load_basis"
+						required={requireSource}
+						value={brief.annual_load.basis ?? ""}
+						onChange={(event) => {
+							const value = event.currentTarget.value;
+							annual({
+								basis:
+									value === "bill_total" || value === "user_estimate"
+										? value
+										: null,
+							});
+						}}
+					>
+						<option value="">{__("Choose an option", "linker-tools")}</option>
+						<option value="bill_total">
+							{__("Electricity bill", "linker-tools")}
+						</option>
+						<option value="user_estimate">
+							{__("Estimate", "linker-tools")}
+						</option>
+					</select>
+				</label>
+			)}
+		</>
+	);
+}
+
 export function HomepageDemand({
 	inputs,
 	brief,
@@ -71,22 +145,6 @@ export function HomepageDemand({
 		(valid: boolean) => validity("pv", valid),
 		[validity],
 	);
-	const annualValid = useCallback(
-		(valid: boolean) => validity("annual", valid),
-		[validity],
-	);
-	function annual(patch: Partial<Brief["annual_load"]>) {
-		edit((current) => {
-			const currentBrief = readBrief(current.brief);
-			return {
-				...current,
-				brief: {
-					...currentBrief,
-					annual_load: { ...currentBrief.annual_load, ...patch },
-				},
-			};
-		});
-	}
 	const loadValid = useCallback(
 		(valid: boolean) => validity("load", valid),
 		[validity],
@@ -118,45 +176,13 @@ export function HomepageDemand({
 					<option value="3">{__("Three phase", "linker-tools")}</option>
 				</select>
 			</label>
-			<NumberField
-				name="annual_load_kwh"
-				label={__("Annual electricity use", "linker-tools")}
-				unit="kWh"
+			<AnnualElectricityUse
+				brief={brief}
 				locale={locale}
-				min={0}
-				value={brief.annual_load.kwh}
-				onChange={(kwh) =>
-					annual(kwh === null ? { kwh, basis: null } : { kwh })
-				}
-				onValidity={annualValid}
+				edit={edit}
+				validity={validity}
+				requireSource
 			/>
-			{brief.annual_load.kwh !== null && (
-				<label className="sc-field">
-					<span>{__("Annual electricity use source", "linker-tools")}</span>
-					<select
-						name="annual_load_basis"
-						required
-						value={brief.annual_load.basis ?? ""}
-						onChange={(event) => {
-							const value = event.currentTarget.value;
-							annual({
-								basis:
-									value === "bill_total" || value === "user_estimate"
-										? value
-										: null,
-							});
-						}}
-					>
-						<option value="">{__("Choose an option", "linker-tools")}</option>
-						<option value="bill_total">
-							{__("Electricity bill", "linker-tools")}
-						</option>
-						<option value="user_estimate">
-							{__("Estimate", "linker-tools")}
-						</option>
-					</select>
-				</label>
-			)}
 			{brief.system_scope &&
 				brief.system_scope !== "storage_only" &&
 				!hasPlant(inputs) && (

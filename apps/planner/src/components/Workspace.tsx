@@ -322,14 +322,14 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	const creatingProject = useRef(false);
+	const creatingProject = useRef<string | null>(null);
 	const [creationPending, setCreationPending] = useState(false);
-	function beginCreation() {
+	function beginCreation(entryKey: string) {
 		if (creatingProject.current) return null;
-		creatingProject.current = true;
+		creatingProject.current = entryKey;
 		setCreationPending(true);
 		return () => {
-			creatingProject.current = false;
+			creatingProject.current = null;
 			setCreationPending(false);
 		};
 	}
@@ -598,78 +598,68 @@ export function Workspace({
 			</button>
 		</Notice>
 	);
-	const firstVisitComparison =
+	const canCompareDirections =
 		!projectIndex &&
-		route === "sc-preliminary-options" &&
 		savedSource === null &&
 		briefSource === null &&
 		!entryHints?.roof &&
 		!entryHints?.equipment;
 
-	const comparison = firstVisitComparison ? (
+	const firstVisitComparison =
+		canCompareDirections && route === "sc-preliminary-options";
+	const entryKey =
+		canCompareDirections && (firstVisitComparison || route === "sc-project")
+			? JSON.stringify(entryHints)
+			: "workspace";
+	function showCreationPage(anchor: "sc-project" | "sc-preliminary-options") {
+		const url = new URL(location.href);
+		url.hash = anchor;
+		window.history.pushState(null, "", url);
+		setRoute(anchor);
+		window.dispatchEvent(new Event(PLANNER_NAVIGATION));
+	}
+
+	return (
 		<div className="sc-configurator">
-			<ProjectHeading
-				anchor="sc-preliminary-options"
-				actions={
-					<button
-						className="sc-button"
-						type="button"
-						onClick={() => select(null)}
-					>
-						{__("Projects", "linker-tools")}
-					</button>
-				}
-			/>
-			<InquiryStages />
-			{recoveryNotice}
-			<NewProject
-				config={config}
-				compareOnLoad
-				creationPending={creationPending}
-				beginCreation={beginCreation}
-				enterDetails={() => {
-					const url = new URL(location.href);
-					url.hash = "sc-project";
-					window.history.pushState(null, "", url);
-					setRoute("sc-project");
-					window.dispatchEvent(new Event(PLANNER_NAVIGATION));
-				}}
-				entryHints={entryHints}
-				locale={config.locale}
-				session={session}
-				client={client}
-				store={store}
-				created={created}
-				recheck={recheck}
-				recoveryScopes={recovery.data}
-				recoveryChecking={recovery.isFetching}
-				recoveryDiscoveryFailed={recovery.isError}
-			/>
-		</div>
-	) : null;
-	const workspace = (
-		<div className="sc-configurator" hidden={firstVisitComparison}>
-			<header className="sc-project-heading">
-				<div>
-					<p>{__("Solution Configurator", "linker-tools")}</p>
-					<h1>
-						{entryHints?.roof
-							? __("Start with your roof", "linker-tools")
-							: __("Your projects", "linker-tools")}
-					</h1>
-				</div>
-				<div className="sc-actions">
-					{!entryHints && !projectIndex && !savedSource && !briefSource && (
-						<a className="sc-button" href="?step=roof">
-							{__("Start with your roof", "linker-tools")}
-						</a>
-					)}
-					<button className="sc-button" type="button" data-linker-genie-open>
-						{__("Ask Genie", "linker-tools")}
-					</button>
-				</div>
-			</header>
-			<div className="sc-main">
+			{firstVisitComparison ? (
+				<>
+					<ProjectHeading
+						anchor="sc-preliminary-options"
+						actions={
+							<button
+								className="sc-button"
+								type="button"
+								onClick={() => select(null)}
+							>
+								{__("Projects", "linker-tools")}
+							</button>
+						}
+					/>
+					<InquiryStages />
+				</>
+			) : (
+				<header className="sc-project-heading">
+					<div>
+						<p>{__("Solution Configurator", "linker-tools")}</p>
+						<h1>
+							{entryHints?.roof
+								? __("Start with your roof", "linker-tools")
+								: __("Your projects", "linker-tools")}
+						</h1>
+					</div>
+					<div className="sc-actions">
+						{!entryHints && !projectIndex && !savedSource && !briefSource && (
+							<a className="sc-button" href="?step=roof">
+								{__("Start with your roof", "linker-tools")}
+							</a>
+						)}
+						<button className="sc-button" type="button" data-linker-genie-open>
+							{__("Ask Genie", "linker-tools")}
+						</button>
+					</div>
+				</header>
+			)}
+			<div className={firstVisitComparison ? undefined : "sc-main"}>
 				<div>
 					{projectIndex ? null : savedSource !== null ? (
 						<SavedSolutionStart
@@ -714,9 +704,16 @@ export function Workspace({
 						/>
 					) : (
 						<NewProject
-							hidden={firstVisitComparison}
+							key={creatingProject.current ?? entryKey}
+							compareOnLoad={firstVisitComparison}
+							enterDetails={() => showCreationPage("sc-project")}
+							{...(canCompareDirections &&
+								route === "sc-project" && {
+									returnToComparison: () =>
+										showCreationPage("sc-preliminary-options"),
+								})}
 							creationPending={creationPending}
-							beginCreation={beginCreation}
+							beginCreation={() => beginCreation(entryKey)}
 							config={config}
 							openOnLoad={
 								route === "sc-project" || (index.isSuccess && !projects.length)
@@ -748,7 +745,7 @@ export function Workspace({
 				)}
 				<section
 					className="sc-card"
-					hidden={Boolean(entryHints?.roof)}
+					hidden={firstVisitComparison || Boolean(entryHints?.roof)}
 					aria-labelledby="lp-projects-heading"
 				>
 					<div className="sc-section-head">
@@ -954,7 +951,7 @@ export function Workspace({
 						</button>
 					)}
 				</section>
-				<footer>
+				<footer hidden={firstVisitComparison}>
 					<p className="sc-muted">
 						{session.kind === "guest"
 							? __(
@@ -969,11 +966,5 @@ export function Workspace({
 				</footer>
 			</div>
 		</div>
-	);
-	return (
-		<>
-			{comparison}
-			{workspace}
-		</>
 	);
 }

@@ -23,6 +23,17 @@ use WP_Post;
  */
 final class TemplatesTest extends TestCase {
 
+	/** Both language exports draw their footer layout from the WindPress volume. */
+	public function test_both_footers_use_the_compiled_stylesheet(): void {
+		foreach ( Templates::footer_partials() as $partial ) {
+			$html = (string) file_get_contents( $partial );
+			$this->assertStringNotContainsString( '<style', $html, basename( dirname( $partial ) ) );
+		}
+		$path = WindPressVolume::path() . '/footer.css';
+		$this->assertContains( $path, WindPressVolume::files() );
+		$this->assertStringContainsString( '.footer-console', (string) file_get_contents( $path ) );
+	}
+
 	/** Existing template tests opt into public product taxonomies explicitly. */
 	public function setUp(): void {
 		parent::setUp();

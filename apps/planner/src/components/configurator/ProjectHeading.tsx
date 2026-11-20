@@ -50,11 +50,9 @@ export function InquiryStages({
 						? __("Compare systems", "linker-tools")
 						: __("Compare options", "linker-tools")}
 				</li>
-				{guided && (
-					<li aria-current={reviewing ? undefined : "step"}>
-						{__("Choose an option", "linker-tools")}
-					</li>
-				)}
+				<li aria-current={guided && !reviewing ? "step" : undefined}>
+					{__("Choose an option", "linker-tools")}
+				</li>
 				<li aria-current={reviewing ? "step" : undefined}>
 					{__("Review and send", "linker-tools")}
 				</li>

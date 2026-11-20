@@ -35,6 +35,13 @@ final class ProductShortcodesTest extends TestCase {
 	use MocksSelectionFacts;
 
 	/**
+	 * Whether the current fixture is an account endpoint.
+	 *
+	 * @var bool
+	 */
+	private bool $account_page = false;
+
+	/**
 	 * The product the product-page tests below read.
 	 */
 	private const PDP = 6530;
@@ -201,7 +208,7 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof \WP_Error ) );
 		WP_Mock::userFunction( 'get_query_var', array( 'return' => 1 ) );
 		WP_Mock::userFunction( 'is_shop', array( 'return' => false ) );
-		WP_Mock::userFunction( 'is_account_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => fn (): bool => $this->account_page ) );
 	}
 
 	/**
@@ -327,6 +334,22 @@ final class ProductShortcodesTest extends TestCase {
 		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', array( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', $this->url( 'de' ) );
 		$this->assertStringNotContainsString( 'mein-konto', $this->url( 'de' ) );
+	}
+
+	/** The guest can register from their receipt email in either language. */
+	public function test_registration_switch_keeps_the_guest_inquiry_claim(): void {
+		$this->page( 1037, 'http://linker.test/my-account/', array( 'de' => 6858 ) );
+		$this->permalink( 6858, 'http://linker.test/de/mein-konto/' );
+		$_SERVER['REQUEST_URI'] = '/my-account/register/?linker_inquiry=42&linker_key=wc_order_example';
+		$_GET                   = array(
+			'linker_inquiry' => '42',
+			'linker_key'     => 'wc_order_example',
+		);
+		$this->account_page     = true;
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => static fn ( $endpoint ) => 'register' === $endpoint ) );
+		$expected = 'http://linker.test/de/mein-konto/register/?linker_inquiry=42&linker_key=wc_order_example';
+		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'de' ) );
+		self::assertSame( $expected, $this->url( 'de' ) );
 	}
 
 	/**

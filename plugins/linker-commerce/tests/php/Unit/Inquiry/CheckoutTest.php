@@ -90,6 +90,19 @@ final class CheckoutTest extends TestCase {
 	 * The reply promise (owner ruling 2026-10-09) above the button and on the confirmation.
 	 */
 	public function test_next_steps(): void {
+		$order = Mockery::mock( WC_Order::class );
+		$order->shouldReceive( 'get_id' )->andReturn( 124 );
+		$order->shouldReceive( 'get_order_number' )->andReturn( 'L-124' );
+		$order->shouldReceive( 'get_customer_id' )->andReturn( 12 );
+		$order->shouldReceive( 'get_meta' )->andReturn( '' );
+		WP_Mock::userFunction(
+			'wc_get_order',
+			array(
+				'args'   => array( 124 ),
+				'return' => $order,
+			)
+		);
+
 		$this->plain_text();
 		$checkout = new Checkout();
 		WP_Mock::userFunction(
@@ -101,12 +114,20 @@ final class CheckoutTest extends TestCase {
 		);
 
 		ob_start();
-		$checkout->next_steps();
+		$checkout->next_steps( 124 );
 		$html = (string) ob_get_clean();
 		$this->assertStringContainsString( 'We reply within one business day to the email address you provided.', $html );
-		$this->assertStringContainsString( 'linker-inquiry-success woocommerce-message', $html );
+		$this->assertStringContainsString( 'Inquiry #L-124', $html );
+		$this->assertStringContainsString( '<h1 id="linker-receipt-title">Inquiry received</h1>', $html );
 		$this->assertStringContainsString( 'href="http://site/my-account/inquiries/"', $html );
 		$this->assertStringContainsString( 'View inquiries', $html );
+	}
+
+	/** A receipt without a persisted order cannot announce that an inquiry arrived. */
+	public function test_missing_order_emits_no_success(): void {
+		ob_start();
+		( new Checkout() )->next_steps();
+		$this->assertSame( '', (string) ob_get_clean() );
 	}
 
 	/**
@@ -151,6 +172,38 @@ final class CheckoutTest extends TestCase {
 			'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k',
 			( new Checkout() )->received_url( 'http://linker.test/proforma-request/inquiry-received/7021/?key=k', $order )
 		);
+	}
+
+	/** Verifying a German guest order from its English receipt keeps that open receipt. */
+	public function test_guest_email_verification_uses_the_open_receipt_language(): void {
+		$order = Mockery::mock( WC_Order::class );
+		$order->shouldReceive( 'get_id' )->andReturn( 7021 );
+		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'get_query_var',
+			array(
+				'args'   => array( 'order-received' ),
+				'return' => '7021',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'woocommerce_checkout_page_id' ),
+				'return' => 36,
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 36, 'de' ),
+				'return' => 6925,
+			)
+		);
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => static fn ( $id ) => 36 === $id ? 'http://localhost/request/' : 'http://localhost/de/anfrage/' ) );
+		$url = 'http://localhost/request/inquiry-received/7021/?key=wc_order_example';
+		$this->assertSame( $url, ( new Checkout() )->received_url( $url, $order ) );
 	}
 
 	/**

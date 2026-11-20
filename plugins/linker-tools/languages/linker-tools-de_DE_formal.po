@@ -2085,6 +2085,8 @@ msgid "Project"
 msgstr "Projekt"
 
 #: src/configurator/utility/UtilityForm.tsx:47 build/configurator.js
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx
+#: build/planner/assets/planner.js
 msgid "Project details"
 msgstr "Projektbeschreibung"
 
@@ -17458,3 +17460,13 @@ msgstr "Monokristallines Silizium"
 #: build/planner/assets/planner.js
 msgid "Polycrystalline silicon"
 msgstr "Polykristallines Silizium"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx
+#: build/planner/assets/planner.js
+msgid "Inquiry summary"
+msgstr "Ihre Anfrage im Überblick"
+
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx
+#: build/planner/assets/planner.js
+msgid "No products selected. We can discuss equipment after you send your inquiry."
+msgstr "Sie haben noch keine Produkte ausgewählt. Welche Geräte infrage kommen, klären wir nach Ihrer Anfrage."
