@@ -69,7 +69,8 @@ function receiptDelivery(orderId: number): string {
 				'status' => \ActionScheduler_Store::STATUS_PENDING, 'per_page' => 1
 			]);
 			foreach ($actions as $action_id => $action) {
-				if ($action->get_schedule()->get_date()->getTimestamp() <= time()) {
+				$schedule = $action->get_schedule();
+				if ($schedule instanceof \ActionScheduler_NullSchedule || $schedule->get_date()->getTimestamp() <= time()) {
 					\ActionScheduler_QueueRunner::instance()->process_action($action_id, 'customer inquiry receipt');
 				}
 			}
