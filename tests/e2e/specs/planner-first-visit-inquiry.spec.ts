@@ -44,11 +44,9 @@ test.afterEach(async ({ page }) => {
 		]);
 	if (bareProject) {
 		await page.goto(instance().url + bareProject.path + '?projects=1');
-		const row = page
-			.getByRole('listitem')
-			.filter({
-				has: page.locator('[id="sc-project-' + bareProject.id + '"]'),
-			});
+		const row = page.getByRole('listitem').filter({
+			has: page.locator('[id="sc-project-' + bareProject.id + '"]'),
+		});
 		await row.locator('button[aria-label]').click();
 		await row
 			.getByRole('group')
