@@ -112,7 +112,7 @@ export class PlannerClient {
 				error instanceof TypeError ||
 				(error instanceof ApiError &&
 					[502, 503, 504].includes(error.status) &&
-					error.code !== "configuration");
+					error.code !== "linker_planner_configuration");
 			if (
 				!projectRead ||
 				!transient ||
