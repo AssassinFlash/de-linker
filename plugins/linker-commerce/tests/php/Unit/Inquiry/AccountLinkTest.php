@@ -37,6 +37,10 @@ final class AccountLinkTest extends TestCase {
 			$order = Mockery::mock( WC_Order::class );
 			$order->allows( 'get_order_key' )->andReturn( 'wc_order_test' );
 			$order->allows( 'get_customer_id' )->andReturn( 0 );
+			$order->allows( 'get_billing_email' )->andReturn( 'buyer@example.test' );
+			$buyer             = new WP_User();
+			$buyer->user_email = 'buyer@example.test';
+			WP_Mock::userFunction( 'get_userdata', array( 'return' => $buyer ) );
 			$order->shouldNotReceive( 'set_customer_id' );
 			WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
 			$this->assertSame( '/my-account/', AccountLink::destination( '/my-account/', 13 ) );
@@ -71,7 +75,7 @@ final class AccountLinkTest extends TestCase {
 			$session->expects( 'set' )->with( 'linker_inquiry_after_reset', array( 'linker_quotation' => 31 ) );
 			$session->expects( 'get' )->with( 'linker_inquiry_after_reset' )->andReturn( array( 'linker_quotation' => 31 ) );
 			$session->expects( '__unset' )->with( 'linker_inquiry_after_reset' );
-			$woo = Mockery::mock( \WooCommerce::class );
+			$woo = Mockery::mock( \stdClass::class );
 			$woo->allows( 'initialize_session' );
 			$woo->session = $session;
 			WP_Mock::userFunction( 'WC', array( 'return' => $woo ) );
