@@ -280,6 +280,10 @@ sc-report-pdf
 sc-report-preview
 sc-report-table
 sc-review
+sc-review-actions
+sc-review-choice
+sc-review-details
+sc-review-tradeoff
 sc-roof-board
 sc-roof-editor
 sc-roof-editor-fields

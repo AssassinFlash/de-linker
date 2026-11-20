@@ -14,7 +14,7 @@ import {
 } from "../../data/inquiryRecovery.ts";
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
-import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
+import { ProjectFacts } from "./ProjectFacts.tsx";
 import { existingSystem } from "./ProjectEquipment.tsx";
 import { retrofitOptions, systemNames } from "./PreliminaryOptions.tsx";
 
@@ -200,6 +200,17 @@ export function ReviewInquiry({
 	const [attempt, setAttempt] = useState(0);
 	const host = useRef<HTMLDivElement>(null);
 	const heading = useRef<HTMLHeadingElement>(null);
+	const summaryDetails = useRef<HTMLDetailsElement>(null);
+	useEffect(() => {
+		const media = window.matchMedia?.("(max-width: 600px)");
+		if (!media) return;
+		const sync = () => {
+			if (summaryDetails.current) summaryDetails.current.open = !media.matches;
+		};
+		sync();
+		media.addEventListener("change", sync);
+		return () => media.removeEventListener("change", sync);
+	}, []);
 	const projectId = project.id;
 	const revision = project.revision;
 	const retained = useRef<CustomerDraft>(new Map());
@@ -435,7 +446,7 @@ export function ReviewInquiry({
 		ready,
 		reportRunId,
 	]);
-	const facts = projectFacts(project.inputs, locale);
+	const facts = review?.facts ?? [];
 	const inverter = existingSystem(project.inputs);
 	const retrofit =
 		!reportRunId &&
@@ -468,14 +479,63 @@ export function ReviewInquiry({
 							systemNames()[direction],
 						)}
 					</p>
-					{retrofit && (
-						<div>
-							<h4>{retrofit.title}</h4>
-							<p>{retrofit.benefit}</p>
-							<p>{retrofit.check}</p>
-						</div>
+					{direction === "storage_addition" && inverter && (
+						<p className="sc-review-choice">
+							{inverter.keep_inverter
+								? __("Keep the existing inverter", "linker-tools")
+								: __("Consider a replacement inverter", "linker-tools")}
+						</p>
 					)}
-					{facts.length > 0 && <ProjectFacts facts={facts} />}
+					<details
+						ref={summaryDetails}
+						className="sc-review-details"
+						hidden={
+							!retrofit && !facts.length && !lines?.length && !changes.length
+						}
+					>
+						<summary>{__("Project details", "linker-tools")}</summary>
+						{retrofit && (
+							<div className="sc-review-tradeoff">
+								<p>{retrofit.benefit}</p>
+								<p>{retrofit.check}</p>
+							</div>
+						)}
+						{facts.length > 0 && <ProjectFacts facts={facts} />}
+
+						{!checkingInquiry && Boolean(lines?.length) && (
+							<ul className="sc-inquiry-products">
+								{lines?.map((line, index) => (
+									<li key={index}>
+										<ProductSummary product={line} quantity={line.quantity} />
+									</li>
+								))}
+							</ul>
+						)}
+						{!checkingInquiry && changes.length > 0 && (
+							<table className="lp-data-table">
+								<thead>
+									<tr>
+										<th scope="col">{__("Product", "linker-tools")}</th>
+										<th scope="col">
+											{__("Current quantity", "linker-tools")}
+										</th>
+										<th scope="col">{__("New quantity", "linker-tools")}</th>
+									</tr>
+								</thead>
+								<tbody>
+									{changes.map((line) => (
+										<tr key={line.productId}>
+											<th scope="row">
+												<ProductSummary product={line} />
+											</th>
+											<td>{line.before}</td>
+											<td>{line.after}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						)}
+					</details>
 					{!checkingInquiry && review && !lines?.length && !changes.length && (
 						<p className="sc-empty-supply">
 							{__(
@@ -483,37 +543,6 @@ export function ReviewInquiry({
 								"linker-tools",
 							)}
 						</p>
-					)}
-					{!checkingInquiry && Boolean(lines?.length) && (
-						<ul className="sc-inquiry-products">
-							{lines?.map((line, index) => (
-								<li key={index}>
-									<ProductSummary product={line} quantity={line.quantity} />
-								</li>
-							))}
-						</ul>
-					)}
-					{!checkingInquiry && changes.length > 0 && (
-						<table className="lp-data-table">
-							<thead>
-								<tr>
-									<th scope="col">{__("Product", "linker-tools")}</th>
-									<th scope="col">{__("Current quantity", "linker-tools")}</th>
-									<th scope="col">{__("New quantity", "linker-tools")}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{changes.map((line) => (
-									<tr key={line.productId}>
-										<th scope="row">
-											<ProductSummary product={line} />
-										</th>
-										<td>{line.before}</td>
-										<td>{line.after}</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
 					)}
 					{!checkingInquiry &&
 						review?.conflicts.map((conflict) => (
@@ -530,43 +559,45 @@ export function ReviewInquiry({
 								)}
 							</p>
 						))}
-					<button
-						className="sc-button"
-						type="button"
-						disabled={checkingInquiry}
-						onClick={() => {
-							if (reportRunId) {
-								try {
-									save();
-								} catch {
-									setNavigationFailed(true);
-									return;
-								}
-							}
-							changeSelection();
-						}}
-					>
-						{__("Change selection", "linker-tools")}
-					</button>
-					{enterDetails && (
+					<div className="sc-review-actions">
 						<button
 							className="sc-button"
 							type="button"
 							disabled={checkingInquiry}
 							onClick={() => {
-								if (posting.current || !client.isCurrentScope(scope)) return;
-								try {
-									save();
-								} catch {
-									setNavigationFailed(true);
-									return;
+								if (reportRunId) {
+									try {
+										save();
+									} catch {
+										setNavigationFailed(true);
+										return;
+									}
 								}
-								enterDetails();
+								changeSelection();
 							}}
 						>
-							{__("Enter project details", "linker-tools")}
+							{__("Change selection", "linker-tools")}
 						</button>
-					)}
+						{enterDetails && (
+							<button
+								className="sc-button"
+								type="button"
+								disabled={checkingInquiry}
+								onClick={() => {
+									if (posting.current || !client.isCurrentScope(scope)) return;
+									try {
+										save();
+									} catch {
+										setNavigationFailed(true);
+										return;
+									}
+									enterDetails();
+								}}
+							>
+								{__("Enter project details", "linker-tools")}
+							</button>
+						)}
+					</div>
 				</aside>
 				<div className="sc-inquiry-fields">
 					{!review && !failed && (

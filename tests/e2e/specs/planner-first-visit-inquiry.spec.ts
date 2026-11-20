@@ -102,6 +102,7 @@ const labels = {
 		choose: 'Select',
 		compare: 'Compare system options',
 		project: 'Your project',
+		newProject: 'New project',
 		steps: ['Compare options', 'Review and send'],
 		send: 'Send inquiry',
 		message: 'Please discuss this preliminary solution with me.',
@@ -109,13 +110,14 @@ const labels = {
 	de: {
 		directions: [
 			'Photovoltaik und Speicher',
-			'Speicher für eine bestehende PV-Anlage',
+			'PV-Speicher nachrüsten',
 			'Photovoltaik',
 			'Speicher',
 		],
 		choose: 'Auswählen',
 		compare: 'Anlagenvarianten vergleichen',
 		project: 'Ihr Projekt',
+		newProject: 'Neues Projekt',
 		steps: ['Varianten vergleichen', 'Prüfen und senden'],
 		send: 'Anfrage senden',
 		message: 'Bitte besprechen Sie diesen ersten Lösungsvorschlag mit mir.',
@@ -160,6 +162,16 @@ for (const lang of ['en', 'de'] as const) {
 			const row = comparison.getByRole('row').filter({
 				has: page.getByRole('rowheader', { name: chosen, exact: true }),
 			});
+			if (width === 390) {
+				const details = await row
+					.getByRole('cell')
+					.nth(1)
+					.boundingBox();
+				const button = await row.getByRole('button').boundingBox();
+				expect(button!.y).toBeGreaterThanOrEqual(
+					details!.y + details!.height
+				);
+			}
 			await screenshot(page, `preliminary-solutions-${lang}-${width}`);
 			await row
 				.getByRole('button', { name: words.choose, exact: true })
@@ -170,7 +182,10 @@ for (const lang of ['en', 'de'] as const) {
 				words.steps[1]
 			);
 			await expect(
-				page.getByRole('heading', { name: words.project, exact: true })
+				page.getByRole('heading', {
+					name: words.newProject,
+					exact: true,
+				})
 			).toBeInViewport();
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)

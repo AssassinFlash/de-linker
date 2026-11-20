@@ -1438,7 +1438,8 @@ test("the review restores edited signed-in details and Woo billing controls on a
 				}),
 			),
 		);
-	const details = () => fixture.element.querySelector("details");
+	const details = () =>
+		fixture.element.querySelector("form .linker-inquiry-details");
 	const field = (name) => fixture.element.querySelector(`[name="${name}"]`);
 	await render("en");
 	await until(details);

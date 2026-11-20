@@ -232,6 +232,13 @@ export function readInquiryForm(value: unknown) {
 	return {
 		lines,
 		form: row.inquiry_form_html,
+		facts: readRows(
+			"inquiry_project_facts",
+			({ label, value }): [string, string] => {
+				if (typeof label !== "string" || typeof value !== "string") fail();
+				return [label, value];
+			},
+		),
 		changes: readRows("inquiry_changes", (change) => {
 			if (
 				!count(change.product_id) ||

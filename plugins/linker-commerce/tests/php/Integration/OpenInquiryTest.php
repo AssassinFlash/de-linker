@@ -57,7 +57,13 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'note_revision' => '3',
 			'title'         => 'Storage inquiry fixture',
 			'text'          => '',
-			'inputs'        => array( 'brief' => array( 'system_scope' => 'storage_only' ) ),
+			'inputs'        => array(
+				'brief'           => array(
+					'system_scope' => 'storage_only',
+					'site'         => array( 'location_label' => 'Utrecht' ),
+				),
+				'equipment_setup' => array( 'required_discharge_ac_kw' => 5 ),
+			),
 		);
 		$review  = apply_filters( 'linker_commerce_planning_inquiry_form', null, 'en', $project ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Defined by the planner gateway.
 		$this->assertIsArray( $review );
@@ -65,6 +71,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( array(), $review['inquiry_lines'] );
 		$html = $review['inquiry_form_html'];
 		$this->assertIsString( $html );
+		$this->assertSame( '5 kW', array_column( $review['inquiry_project_facts'], 'value', 'label' )['Continuous discharge power'] );
+		$this->assertSame( 'Utrecht', array_column( $review['inquiry_project_facts'], 'value', 'label' )['Location'] );
+		$this->assertStringNotContainsString( 'Utrecht', $html );
 		$this->assertStringContainsString( 'action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"', $html );
 		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $id . ':3"', $html );
 		$this->assertSame( 1, substr_count( $html, 'name="linker_draft_hash"' ) );
@@ -74,6 +83,44 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$nonce = $match[1] ?? '';
 		$this->assertNotFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':3' ) );
 		$this->assertFalse( wp_verify_nonce( $nonce, 'linker_inquiry:' . $id . ':4' ) );
+	}
+
+	/** Decimal quantities and country names follow the language of the reviewed project. */
+	public function test_planner_facts_use_the_requested_language(): void {
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$project = array(
+			'project_id'    => str_repeat( 'a', 32 ),
+			'revision'      => 1,
+			'note_revision' => '1',
+			'title'         => 'Bodensee',
+			'text'          => '',
+			'inputs'        => array(
+				'brief'           => array(
+					'system_scope' => 'storage_addition',
+					'site'         => array(
+						'country_code'   => 'DE',
+						'location_label' => 'Konstanz',
+					),
+					'annual_load'  => array( 'kwh' => 6200.5 ),
+				),
+				'equipment_setup' => array( 'pv_dc_kw' => 7.5 ),
+				'backup_demand'   => array(
+					'load_kw'        => 2.75,
+					'duration_hours' => 3.5,
+				),
+			),
+		);
+		foreach ( array( 'en', 'de' ) as $language ) {
+			$review = ( new \Linker\Commerce\Planning\Module() )->inquiry_form( null, $language, $project );
+			$this->assertIsArray( $review );
+			$values = array_column( $review['inquiry_project_facts'], 'value' );
+			foreach ( 'de' === $language
+				? array( 'Konstanz, Deutschland', '7,5 kWp', '6200,5 kWh', '2,75 kW', '3,5 h' )
+				: array( 'Konstanz, Germany', '7.5 kWp', '6200.5 kWh', '2.75 kW', '3.5 h' ) as $value ) {
+				$this->assertContains( $value, $values );
+			}
+		}
 	}
 
 	/**

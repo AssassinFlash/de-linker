@@ -179,7 +179,7 @@ final class Form {
 			$error    = $this->value( array( 'key' => 'error' ) );
 			$notes    = '1' === ( $previous['linker_inquiry_receipt_only'] ?? '' )
 				? self::retained_notes( $previous )
-				: \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, $handoff, $project );
+				: \Linker\Commerce\Planning\Context::inquiry_notes_section( $previous, $handoff, $project, show_project: false );
 			return do_shortcode( '[linker_inquiry_restriction]' )
 				. '<form class="linker-inquiry-form" data-linker-inquiry-replay-seconds="' . esc_attr( (string) $replay ) . '" data-inquiry-context="' . $this->value( array( 'key' => 'retention-context' ) ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
 				. $this->hidden_fields( $previous['linker_inquiry_original_language'] ?? $language, $project['project_id'] . ':' . $project['revision'], $transfer )
