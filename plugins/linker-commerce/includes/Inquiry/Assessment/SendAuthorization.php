@@ -38,9 +38,6 @@ final class SendAuthorization {
 	 */
 	public static function defer( WC_Order $order ): bool {
 		$order->read_meta_data( true );
-		if ( ! $order->has_status( Statuses::RECEIVED ) && ! self::intake_awaits_receipt( $order ) ) {
-			return true;
-		}
 		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
 			return true;
 		}
@@ -624,6 +621,10 @@ final class SendAuthorization {
 		if ( SendVerdict::POLICY !== ( $state['policy'] ?? '' ) || ! $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) ) || ! empty( $state['team_only'] ) || $order->get_meta( Reviews::ERASED ) ) {
 			return false;
 		}
+		$receipt_due = ! empty( $state['jobs']['receipt']['fixed'] ) || self::intake_awaits_receipt( $order );
+		if ( ! $order->has_status( Statuses::RECEIVED ) && ! $receipt_due ) {
+			return false;
+		}
 		$snapshot = Queue::data( $order )['snapshot'] ?? array();
 		if ( ! in_array( $snapshot['submission']['source'] ?? '', array( 'contact', 'inquiry' ), true ) && InquiryGateway::ID !== $order->get_payment_method() ) {
 			return false;
@@ -636,11 +637,8 @@ final class SendAuthorization {
 			return false;
 		}
 		$status = $state['status'] ?? '';
-		if ( 'invalidated' === $status ) {
-			$receipt_due = ! empty( $state['jobs']['receipt']['fixed'] ) || self::intake_awaits_receipt( $order );
-			if ( ! $receipt_due || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) {
-				return false;
-			}
+		if ( 'invalidated' === $status && ( ! $receipt_due || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) ) {
+			return false;
 		}
 		if ( 'manual' === $status ) {
 			$hold = $order->get_meta( NotificationHold::META );

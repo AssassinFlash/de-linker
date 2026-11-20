@@ -340,7 +340,10 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			}
 		);
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
-		self::assertSame( array(), $this->permissions( $order->get_id() ) );
+		$state = $this->permissions( $order->get_id() );
+		self::assertSame( 'pending', $state['status'] );
+		self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
+		self::assertSame( 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
 	}
 
 	/** Return typed local service evidence for the actual request binding.
