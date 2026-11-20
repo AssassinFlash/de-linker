@@ -272,12 +272,14 @@ export function NewProject({
 	useEffect(() => {
 		if (
 			!draftEntry ||
+			intent.current ||
 			!admitted ||
 			(!draft &&
 				!title &&
 				useHints &&
 				!draftId.current &&
 				!profileForm.file &&
+				!invalidDemand.size &&
 				!entryHints)
 		)
 			return;
@@ -331,10 +333,12 @@ export function NewProject({
 		return () => document.removeEventListener("click", handoff, true);
 	}, [
 		draftEntry,
+		compareOnLoad,
 		compareAtHome,
 		carriedProduct,
 		entryHints,
 		profileForm.file,
+		invalidDemand.size,
 		admitted,
 		draft,
 		title,
@@ -342,6 +346,10 @@ export function NewProject({
 		session.query_scope,
 		source,
 	]);
+	useEffect(() => {
+		if (compareAtHome && restored?.languageUrl === location.href)
+			homeForm.current?.scrollIntoView({ block: "start" });
+	}, [compareAtHome, restored]);
 	const draftNotice = draftUnavailable && (
 		<Notice error>
 			{__(
@@ -642,6 +650,13 @@ export function NewProject({
 					nextProfile,
 					previousProfile ? { previous: previousProfile } : undefined,
 				)
+				.then(() => {
+					if (compareAtHome && savedDraft.current) {
+						forgetComparisonDraft(savedDraft.current);
+						savedDraft.current = null;
+						draftId.current = undefined;
+					}
+				})
 				.catch((error: unknown) => {
 					if (lifetime.current === instance) setRecoveryFailed(true);
 					if (previousProfile) throw error;

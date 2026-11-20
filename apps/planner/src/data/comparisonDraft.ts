@@ -9,6 +9,7 @@ export interface ComparisonDraft {
 	title: string;
 	inputs: JsonObject | null;
 	useHints: boolean;
+	languageUrl?: string;
 	usePvAddress?: boolean;
 	carriedProduct?: boolean;
 }

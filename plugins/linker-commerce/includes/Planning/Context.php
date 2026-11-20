@@ -988,6 +988,10 @@ final class Context {
 				}
 			}
 		}
+		$inverter = '';
+		if ( 'storage_addition' === $brief['system_scope'] && isset( $inputs['existing_system']['keep_inverter'] ) ) {
+			$inverter = $inputs['existing_system']['keep_inverter'] ? __( 'Keep the existing inverter', 'linker-tools' ) : __( 'Consider a replacement inverter', 'linker-tools' );
+		}
 		$facts = array(
 			__( 'Planned system', 'linker-tools' )         => $include_direction ? $scope : '',
 			__( 'Location', 'linker-tools' )               => implode( ', ', array_filter( array( $site['location_label'] ?? '', $site['postal_code'] ?? '', $site['country_code'] ?? '' ), static fn ( $part ): bool => '' !== $part ) ),
@@ -1001,7 +1005,7 @@ final class Context {
 			__( 'Main purpose', 'linker-tools' )           => $purpose,
 			__( 'Target grid import limit', 'linker-tools' ) => implode( ', ', array_unique( $limits ) ),
 			__( 'Grid phases', 'linker-tools' )            => $equipment['grid_phase'] ?? ( '' === $purpose ? '' : __( 'To confirm', 'linker-tools' ) ),
-			__( 'Existing inverter (retrofit)', 'linker-tools' ) => 'storage_addition' === $brief['system_scope'] && isset( $inputs['existing_system']['keep_inverter'] ) ? ( $inputs['existing_system']['keep_inverter'] ? __( 'Keep the existing inverter', 'linker-tools' ) : __( 'Consider a replacement inverter', 'linker-tools' ) ) : '',
+			__( 'Existing inverter (retrofit)', 'linker-tools' ) => $inverter,
 			__( 'PV array size', 'linker-tools' )          => null !== $pv_kwp ? $pv_kwp . ' kWp' : '',
 			__( 'Continuous discharge power', 'linker-tools' ) => isset( $equipment['required_discharge_ac_kw'] ) ? $equipment['required_discharge_ac_kw'] . ' kW' : '',
 			__( 'Usable storage capacity', 'linker-tools' ) => isset( $equipment['required_usable_kwh'] ) ? $equipment['required_usable_kwh'] . ' kWh' : '',
