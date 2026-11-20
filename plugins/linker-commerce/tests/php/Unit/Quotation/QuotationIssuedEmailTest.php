@@ -48,6 +48,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_customer_id' )->andReturn( 5 );
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'en_US' );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'QT-2026-0001' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760000000' );
@@ -77,7 +78,8 @@ final class QuotationIssuedEmailTest extends TestCase {
 		$this->assertSame( 'QT-2026-0001', $email->placeholders['{quotation_number}'] );
 		$this->assertSame( 'Your Quotation {quotation_number} for inquiry #{order_number}', $email->get_default_subject() );
 
-		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wp_date', array( 'return' => static fn ( string $format, int $time ): string => gmdate( 'Y-m-d', $time ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
@@ -90,8 +92,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 					Mockery::on(
 						static fn ( array $args ): bool => 'QT-2026-0001' === $args['quotation_number']
 							&& '2025-11-08' === $args['valid_until']
-							&& 'https://example.test/?linker-document=quotation&id=20' === $args['download_url']
-							&& 'https://example.test/my-account/inquiry/20/' === $args['inquiry_url']
+							&& 'https://example.test/my-account/?linker_quotation=20' === $args['quotation_url']
 					),
 					'',
 					'/plugin/templates/',

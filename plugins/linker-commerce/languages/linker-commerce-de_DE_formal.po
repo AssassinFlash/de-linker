@@ -52,6 +52,17 @@ msgstr ""
 msgid "Saved inquiries need staff review"
 msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
 
+msgid "Open quotation"
+msgstr "Angebot öffnen"
+
+#. translators: %s: inquiry number.
+#, php-format
+msgid "Add inquiry #%s to your account?"
+msgstr "Möchten Sie die Anfrage Nr. %s Ihrem Konto zuordnen?"
+
+msgid "Link inquiry to my account"
+msgstr "Anfrage meinem Konto zuordnen"
+
 #: build/accounts.js:1
 msgid "Approve"
 msgstr "Freigeben"

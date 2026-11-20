@@ -233,6 +233,7 @@ final class QuotationPriceGateTest extends IntegrationTestCase {
 		$this->assertSame( 200, $download['status'], $where );
 		$this->assertStringStartsWith( '%PDF-', $download['body'], $where );
 		$this->assertStringContainsString( 'Content-Type: application/pdf', self::$headers, $where );
+		$this->assertStringContainsString( 'Content-Disposition: attachment; filename="' . $order->get_meta( Issuer::NUMBER_META ) . '.pdf"', self::$headers, $where );
 		$this->assertMatchesRegularExpression( self::AMOUNT, self::pdf_text( $download['body'] ), $where );
 
 		$this->assert_shows_amount( $list, $where . ' list' );

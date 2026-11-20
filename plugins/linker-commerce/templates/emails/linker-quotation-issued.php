@@ -9,8 +9,7 @@
  * @var WC_Order $order              The inquiry.
  * @var string   $quotation_number    Quotation number.
  * @var string   $valid_until        Last day of validity.
- * @var string   $download_url       Link to the PDF (account login needed).
- * @var string   $inquiry_url        Link to the inquiry in the account.
+ * @var string   $quotation_url      Account entry for this quotation.
  * @var string   $email_heading      Heading.
  * @var string   $additional_content Closing paragraph from the email settings.
  * @var WC_Email $email              The email.
@@ -38,16 +37,7 @@ printf(
 );
 ?>
 </p>
-<p><a class="button" href="<?php echo esc_url( $download_url ); ?>"><?php esc_html_e( 'Download the Quotation (PDF)', 'linker-commerce' ); ?></a></p>
-<p>
-<?php
-printf(
-	/* translators: %s: link to the inquiry in the account. */
-	esc_html__( 'You need to be logged in to open it. You can also find it in your account under %s.', 'linker-commerce' ),
-	'<a href="' . esc_url( $inquiry_url ) . '">' . esc_html__( 'Inquiries', 'linker-commerce' ) . '</a>'
-);
-?>
-</p>
+<p><a class="button" href="<?php echo esc_url( $quotation_url ); ?>"><?php esc_html_e( 'Open quotation', 'linker-commerce' ); ?></a></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

@@ -63,6 +63,7 @@ final class DocumentDownloadTest extends TestCase {
 		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( '20/QT-2026-0001-abc.pdf' );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'QT-2026-0001' );
 		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => '/nonexistent' ) ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
 		WP_Mock::userFunction(
@@ -77,7 +78,9 @@ final class DocumentDownloadTest extends TestCase {
 	public function test_guest_denial_has_a_register_entry_but_keeps_403(): void {
 		$this->assertSame( '403', $this->status( false ) );
 		$this->assertStringContainsString( 'Please log in with that account.', $this->denial );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/register/"', $this->denial );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/?linker_quotation=20"', $this->denial );
+		$this->assertStringNotContainsString( 'linker_key', $this->denial );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/?linker_quotation=20"', $this->denial );
 	}
 
 	/**

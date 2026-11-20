@@ -147,9 +147,12 @@ final class LanguageLinks {
 		if ( \function_exists( 'is_account_page' ) && is_account_page() ) {
 			if ( is_wc_endpoint_url( 'orders' ) ) {
 				$keys = array_merge( $keys, self::INQUIRY_QUERY_KEYS );
-			} elseif ( '' !== $base && isset( $_GET['linker_inquiry'], $_GET['linker_key'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Retain the receipt on the paired account form.
-				&& ( is_wc_endpoint_url( 'register' ) || ( ! is_user_logged_in() && ! is_wc_endpoint_url() ) ) ) {
-				$keys = array_merge( $keys, array( 'linker_inquiry', 'linker_key' ) );
+			} elseif ( '' !== $base && ( is_wc_endpoint_url( 'register' ) || ! is_wc_endpoint_url() ) ) {
+				$keys[] = 'linker_quotation';
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The paired account form needs both parts of its receipt.
+				if ( isset( $_GET['linker_inquiry'], $_GET['linker_key'] ) ) {
+					$keys = array_merge( $keys, array( 'linker_inquiry', 'linker_key' ) );
+				}
 			}
 		}
 		$kept = array();

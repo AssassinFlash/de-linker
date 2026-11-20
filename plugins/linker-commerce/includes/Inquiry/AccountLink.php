@@ -19,13 +19,15 @@ use WP_User;
  */
 final class AccountLink {
 
-	private const CLAIM = '_linker_receipt_claim';
+	private const CLAIM    = '_linker_receipt_claim';
+	private const RECOVERY = 'linker_inquiry_after_reset';
 
 	/**
 	 * Adds the claim after Woo has validated and created the account.
 	 */
 	public function register(): void {
 		add_action( 'woocommerce_created_customer', array( $this, 'claim' ), 20 );
+		add_action( 'lostpassword_post', array( $this, 'remember_recovery' ) );
 		add_filter( 'woocommerce_login_redirect', array( $this, 'after_login' ), 20, 2 );
 		add_filter( 'woocommerce_registration_redirect', array( $this, 'after_registration' ), 20 );
 	}
@@ -36,13 +38,34 @@ final class AccountLink {
 	 * @param WC_Order $order Guest inquiry.
 	 */
 	public static function url( WC_Order $order ): string {
-		$id = (int) get_option( 'woocommerce_myaccount_page_id' );
-		if ( function_exists( 'pll_get_post' ) ) {
-			$twin = PageUrls::twin( $id, OrderLocale::of( $order ) );
-			$id   = $twin > 0 ? $twin : $id;
+		return self::with_receipt( wc_get_endpoint_url( 'register', '', self::account_url( $order ) ), $order );
+	}
+
+	/**
+	 * The private email takes the recipient to the right native account form.
+	 *
+	 * @param WC_Order $order Issued inquiry.
+	 */
+	public static function quotation_url( WC_Order $order ): string {
+		$account = self::account_url( $order );
+		if ( $order->get_customer_id() > 0 ) {
+			return add_query_arg( array( 'linker_quotation' => $order->get_id() ), $account );
 		}
-		$url = wc_get_endpoint_url( 'register', '', (string) get_permalink( $id ) );
-		return self::with_receipt( $url, $order );
+		if ( ! email_exists( $order->get_billing_email() ) ) {
+			$account = wc_get_endpoint_url( 'register', '', $account );
+		}
+		return self::with_receipt( $account, $order );
+	}
+
+	/**
+	 * Account page in the inquiry's recorded language.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	private static function account_url( WC_Order $order ): string {
+		$id   = (int) get_option( 'woocommerce_myaccount_page_id' );
+		$twin = PageUrls::twin( $id, OrderLocale::of( $order ) );
+		return (string) get_permalink( $twin > 0 ? $twin : $id );
 	}
 
 	/**
@@ -51,8 +74,8 @@ final class AccountLink {
 	 * @param string $url Local account form URL.
 	 */
 	public static function continue_at( string $url ): string {
-		$order = self::requested();
-		return $order && '' !== $url ? self::with_receipt( $url, $order ) : $url;
+		$args = self::request_args();
+		return $args && '' !== $url ? add_query_arg( $args, $url ) : $url;
 	}
 
 	/**
@@ -75,7 +98,8 @@ final class AccountLink {
 	 * The email prefilled only after the receipt key has been verified.
 	 */
 	public static function email(): string {
-		$order = self::requested();
+		$args  = self::request_args();
+		$order = isset( $args['linker_key'] ) ? self::order( $args ) : null;
 		return $order && 0 === $order->get_customer_id() ? $order->get_billing_email() : '';
 	}
 
@@ -85,9 +109,29 @@ final class AccountLink {
 	 * @param int $user_id Woo-created customer.
 	 */
 	public function claim( int $user_id ): void {
-		$order = self::requested();
+		$args  = self::request_args();
+		$order = isset( $args['linker_key'] ) ? self::order( $args ) : null;
 		if ( $order && 0 === $order->get_customer_id() ) {
 			self::claim_guest_order( $order, $user_id );
+		}
+	}
+
+	/**
+	 * Keep the target on the browser that submitted Woo's password recovery form.
+	 * The reset email keeps its native URL.
+	 */
+	public function remember_recovery(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce validates the lost-password form before firing lostpassword_post.
+		if ( ! isset( $_POST['wc_reset_password'] ) ) {
+			return;
+		}
+		$args = self::request_args();
+		if ( $args && self::order( $args ) ) {
+			$session = WC()->session;
+			$session->set( self::RECOVERY, $args );
+			if ( $session instanceof \WC_Session_Handler ) {
+				$session->set_customer_session_cookie( true );
+			}
 		}
 	}
 
@@ -98,7 +142,14 @@ final class AccountLink {
 	 * @param WP_User $user     Authenticated customer.
 	 */
 	public function after_login( string $redirect, WP_User $user ): string {
-		return self::destination( $redirect, (int) $user->ID );
+		$args    = self::request_args();
+		$session = WC()->session;
+		$saved   = $session ? $session->get( self::RECOVERY ) : null;
+		if ( is_array( $saved ) ) {
+			$session->__unset( self::RECOVERY );
+			$args = $args ? $args : $saved;
+		}
+		return self::follow( $redirect, (int) $user->ID, $args, true );
 	}
 
 	/**
@@ -111,17 +162,41 @@ final class AccountLink {
 	}
 
 	/**
-	 * Open the exact receipt inquiry for its customer. A signed-in visitor can also reopen the emailed link.
+	 * Open an inquiry already owned by this account. Navigation never transfers it.
 	 *
 	 * @param string $redirect Woo's account destination.
 	 * @param int    $user_id  Authenticated customer.
 	 */
 	public static function destination( string $redirect, int $user_id ): string {
-		$order = self::requested();
+		return self::follow( $redirect, $user_id, self::request_args(), false );
+	}
+
+	/**
+	 * A signed-in receipt holder can confirm transfer of a matching guest inquiry.
+	 */
+	public static function awaiting_confirmation(): ?WC_Order {
+		$args  = self::request_args();
+		$order = isset( $args['linker_key'] ) ? self::order( $args ) : null;
+		if ( $order && 0 === $order->get_customer_id() && self::matches_email( $order, get_current_user_id() ) ) {
+			return $order;
+		}
+		return null;
+	}
+
+	/**
+	 * Resolve Woo's authenticated form submissions and read-only account links.
+	 *
+	 * @param string $redirect Woo destination without an owned inquiry.
+	 * @param int    $user_id Authenticated customer.
+	 * @param array  $args Account link parameters.
+	 * @param bool   $claim Whether a native account submission authorizes transfer.
+	 */
+	private static function follow( string $redirect, int $user_id, array $args, bool $claim ): string {
+		$order = self::order( $args );
 		if ( ! $order || $user_id < 1 ) {
 			return $redirect;
 		}
-		if ( 0 === $order->get_customer_id() ) {
+		if ( $claim && isset( $args['linker_key'] ) && 0 === $order->get_customer_id() ) {
 			self::claim_guest_order( $order, $user_id );
 		}
 		return $order->get_customer_id() === $user_id ? $order->get_view_order_url() : $redirect;
@@ -134,14 +209,23 @@ final class AccountLink {
 	 * @param int      $user_id Woo-created or authenticated customer.
 	 */
 	private static function claim_guest_order( WC_Order $order, int $user_id ): void {
-		$user  = get_userdata( $user_id );
-		$email = strtolower( $order->get_billing_email() );
-		if ( ! $user || '' === $email || strtolower( $user->user_email ) !== $email ) {
+		if ( ! self::matches_email( $order, $user_id ) ) {
 			return;
 		}
 		$order->set_customer_id( $user_id );
 		$order->update_meta_data( self::CLAIM, (string) $user_id );
 		$order->save();
+	}
+
+	/**
+	 * Whether Woo's billing email matches this authenticated account.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param int      $user_id Customer.
+	 */
+	private static function matches_email( WC_Order $order, int $user_id ): bool {
+		$user = get_userdata( $user_id );
+		return $user && '' !== $order->get_billing_email() && 0 === strcasecmp( $order->get_billing_email(), $user->user_email );
 	}
 
 	/**
@@ -154,19 +238,40 @@ final class AccountLink {
 		if ( $owner < 1 || $owner !== (int) $order->get_meta( self::CLAIM ) ) {
 			return false;
 		}
-		$user = get_userdata( $owner );
-		return $user && '' !== $order->get_billing_email() && 0 === strcasecmp( $order->get_billing_email(), $user->user_email );
+		return self::matches_email( $order, $owner );
 	}
 
 	/**
-	 * Resolve only the Woo order identified by its complete receipt key.
+	 * Account destinations accept a receipt or a quotation ID, never a redirect URL.
+	 *
+	 * @return array<string,int|string> Site-local inquiry reference.
 	 */
-	private static function requested(): ?WC_Order {
-     // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Woo's order key is the authorization; this read itself does not write.
-		$id  = isset( $_GET['linker_inquiry'] ) && is_scalar( $_GET['linker_inquiry'] ) ? absint( $_GET['linker_inquiry'] ) : 0;
-		$key = isset( $_GET['linker_key'] ) && is_string( $_GET['linker_key'] ) ? sanitize_text_field( wp_unslash( $_GET['linker_key'] ) ) : '';
-     // phpcs:enable
+	public static function request_args(): array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Local navigation; possession and ownership are checked before use.
+		if ( isset( $_GET['linker_inquiry'], $_GET['linker_key'] ) && is_scalar( $_GET['linker_inquiry'] ) && is_string( $_GET['linker_key'] ) ) {
+			return array(
+				'linker_inquiry' => absint( $_GET['linker_inquiry'] ),
+				'linker_key'     => sanitize_text_field( wp_unslash( $_GET['linker_key'] ) ),
+			);
+		}
+		return isset( $_GET['linker_quotation'] ) && is_scalar( $_GET['linker_quotation'] ) ? array( 'linker_quotation' => absint( $_GET['linker_quotation'] ) ) : array();
+		// phpcs:enable
+	}
+
+	/**
+	 * A bare quotation ID can locate an owned inquiry but cannot transfer it.
+	 *
+	 * @param array $args Parsed account link parameters.
+	 */
+	private static function order( array $args ): ?WC_Order {
+		$id    = (int) ( $args['linker_inquiry'] ?? $args['linker_quotation'] ?? 0 );
 		$order = $id > 0 ? wc_get_order( $id ) : false;
-		return $order instanceof WC_Order && '' !== $key && hash_equals( $order->get_order_key(), $key ) ? $order : null;
+		if ( ! $order instanceof WC_Order ) {
+			return null;
+		}
+		if ( isset( $args['linker_key'] ) && ( '' === $args['linker_key'] || ! hash_equals( $order->get_order_key(), $args['linker_key'] ) ) ) {
+			return null;
+		}
+		return $order;
 	}
 }

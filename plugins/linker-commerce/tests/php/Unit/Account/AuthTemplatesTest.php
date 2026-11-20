@@ -35,6 +35,7 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 40 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_account_register_endpoint', array( $auth, 'confirm_inquiry' ) );
 		$auth->register();
 		$this->assertConditionsMet();
 	}
