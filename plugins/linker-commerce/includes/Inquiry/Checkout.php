@@ -212,6 +212,10 @@ final class Checkout {
 		if ( ! str_starts_with( OrderLocale::of( $order ), 'de' ) || ! function_exists( 'pll_get_post' ) ) {
 			return $url;
 		}
+		// A guest checking their email on an English receipt must return to that same receipt.
+		if ( function_exists( 'pll_current_language' ) && 'en' === pll_current_language() && (int) get_query_var( 'order-received' ) === $order->get_id() ) {
+			return $url;
+		}
 		$english = (string) get_permalink( (int) get_option( 'woocommerce_checkout_page_id' ) );
 		$german  = PageUrls::twin( (int) get_option( 'woocommerce_checkout_page_id' ), OrderLocale::of( $order ) );
 		if ( '' === $english || 0 === $german || ! str_starts_with( $url, $english ) ) {

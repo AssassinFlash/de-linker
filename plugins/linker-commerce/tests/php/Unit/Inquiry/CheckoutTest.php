@@ -174,6 +174,38 @@ final class CheckoutTest extends TestCase {
 		);
 	}
 
+	/** Verifying a German guest order from its English receipt keeps that open receipt. */
+	public function test_guest_email_verification_uses_the_open_receipt_language(): void {
+		$order = Mockery::mock( WC_Order::class );
+		$order->shouldReceive( 'get_id' )->andReturn( 7021 );
+		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'get_query_var',
+			array(
+				'args'   => array( 'order-received' ),
+				'return' => '7021',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'woocommerce_checkout_page_id' ),
+				'return' => 36,
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 36, 'de' ),
+				'return' => 6925,
+			)
+		);
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => static fn ( $id ) => 36 === $id ? 'http://localhost/request/' : 'http://localhost/de/anfrage/' ) );
+		$url = 'http://localhost/request/inquiry-received/7021/?key=wc_order_example';
+		$this->assertSame( $url, ( new Checkout() )->received_url( $url, $order ) );
+	}
+
 	/**
 	 * An English inquiry keeps WooCommerce's URL, and so does one without Polylang.
 	 */
