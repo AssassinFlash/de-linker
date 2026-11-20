@@ -140,7 +140,7 @@ final class AccountLink {
 			return;
 		}
 		$order->set_customer_id( $user_id );
-		$order->update_meta_data( self::CLAIM, $user_id );
+		$order->update_meta_data( self::CLAIM, (string) $user_id );
 		$order->save();
 	}
 
