@@ -201,6 +201,7 @@ final class DocumentLibraryTest extends TestCase {
 				'return' => function ( int $id, string $key ) {
 					$product = self::PRODUCTS[ $id ];
 					return match ( $key ) {
+						'_sku'                => 'DLK-' . $id,
 						'_tv_legacy_acf_json' => (string) json_encode(
 							array(
 								'downloads' => $product['downloads'],
@@ -304,6 +305,13 @@ final class DocumentLibraryTest extends TestCase {
 		$this->assertSame(
 			array( 'GoodWe GW5.1-BAT-D-G21', 'GoodWe GW8.3-BAT-D-G21' ),
 			$documents['ESA battery datasheet (EN)']['covers']
+		);
+		$this->assertSame(
+			array(
+				'DLK-6521' => 'GoodWe GW5.1-BAT-D-G21',
+				'DLK-6522' => 'GoodWe GW8.3-BAT-D-G21',
+			),
+			$documents['ESA battery datasheet (EN)']['skus']
 		);
 		$this->assertSame( array( 'GoodWe GW5.1-BAT-D-G21' ), $documents['ESA battery manual (DE)']['covers'] );
 		$this->assertSame( 'GoodWe', $documents['ESA battery manual (DE)']['brand'] );

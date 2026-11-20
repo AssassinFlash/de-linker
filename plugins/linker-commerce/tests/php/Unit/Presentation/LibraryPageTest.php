@@ -157,6 +157,7 @@ final class LibraryPageTest extends TestCase {
 			array(
 				'return' => static function ( int $id, string $key ): mixed {
 					return match ( $key ) {
+						'_sku'                => 'DLK-EXAMPLE',
 						'_tv_legacy_acf_json' => (string) json_encode(
 							array(
 								'downloads' => array(
@@ -240,6 +241,8 @@ final class LibraryPageTest extends TestCase {
 		$html = ( new LibraryPage( $this->library() ) )->documents();
 
 		$this->assertStringContainsString( 'data-library-filters', $html );
+		$this->assertStringContainsString( 'data-library-skus=', $html );
+		$this->assertStringContainsString( 'DLK-EXAMPLE', $html );
 		$this->assertStringContainsString( 'aria-label="Document type"', $html );
 		$this->assertStringContainsString( 'data-library-type="datasheet" aria-pressed="false"', $html );
 		$this->assertStringContainsString( 'Datasheet', $html );

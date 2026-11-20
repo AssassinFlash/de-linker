@@ -111,7 +111,7 @@ final class LibraryPage {
 	 *
 	 * @var array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int
@@ -492,13 +492,13 @@ final class LibraryPage {
 	 * One document row: its first-page thumbnail (or its type tile), its type,
 	 * its title, what it covers, its language and its download.
 	 *
-	 * @param array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, thumb: array{src: string, width: int, height: int}|null} $document Document.
+	 * @param array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null} $document Document.
 	 */
 	private function document( array $document ): string {
 		// `has-tile` is constant: the design gives every row the same 52x72
 		// slot, and what varies is only whether a page image fills it (the
 		// fragments' `has-src`) or the type tile stands alone.
-		$out = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '" data-library-products="' . esc_attr( (string) wp_json_encode( $document['products'] ) ) . '">';
+		$out = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '" data-library-products="' . esc_attr( (string) wp_json_encode( $document['products'] ) ) . '" data-library-skus="' . esc_attr( (string) wp_json_encode( $document['skus'] ) ) . '">';
 		if ( null !== $document['thumb'] ) {
 			// `has-src` is what hides the tile's icon while the page image is
 			// there; a reader without the script sees the image, and the
@@ -731,7 +731,7 @@ final class LibraryPage {
 	 *
 	 * @return array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int
@@ -783,7 +783,7 @@ final class LibraryPage {
 		/**
 		 * The register, filed by brand; one entry per file.
 		 *
-		 * @var array<string, list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, thumb: array{src: string, width: int, height: int}|null}>> $documents
+		 * @var array<string, list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>> $documents
 		 */
 		$documents = array();
 		foreach ( $entries['documents'] as $document ) {
@@ -797,6 +797,7 @@ final class LibraryPage {
 				'language_label' => self::language_label( $document['language'] ),
 				'covers'         => self::covers( $document['covers'] ),
 				'products'       => $document['covers'],
+				'skus'           => $document['skus'],
 				'thumb'          => $this->thumbs->of( $document['url'] ),
 			);
 		}

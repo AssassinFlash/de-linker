@@ -123,7 +123,7 @@ final class DocumentLibrary {
 	 * The register: one row per file, in brand and title order, each carrying
 	 * the products that state it.
 	 *
-	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>
+	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
 	 */
 	public function documents(): array {
 		$manifest = $this->current();
@@ -137,7 +137,7 @@ final class DocumentLibrary {
 	 * cited bytes again. Independent answers()/documents() callers stay fresh too.
 	 *
 	 * @param 'en'|'de' $lang Language of the answer rows.
-	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>}
+	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>}
 	 */
 	public function entries( string $lang = 'en' ): array {
 		$manifest = $this->current();
@@ -154,14 +154,16 @@ final class DocumentLibrary {
 	 *
 	 * @param array<string,mixed> $manifest Current authority for this assembly.
 	 * @param int[]               $products Native locale product IDs.
-	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>
+	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
 	 */
 	private function documents_in( array $manifest, array $products ): array {
 		$files = array();
 		foreach ( $products as $id ) {
-			$title = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
-			$brand = self::brand( self::source( $id ) );
-			foreach ( $this->view->downloads( self::source( $id ), $manifest ) as $document ) {
+			$source = self::source( $id );
+			$title  = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
+			$brand  = self::brand( $source );
+			$sku    = (string) get_post_meta( $source, '_sku', true );
+			foreach ( $this->view->downloads( $source, $manifest ) as $document ) {
 				if ( '' === $document['url'] ) {
 					continue;
 				}
@@ -174,7 +176,11 @@ final class DocumentLibrary {
 						'language' => self::language( (string) $document['language'] ),
 						'brand'    => $brand,
 						'covers'   => array(),
+						'skus'     => array(),
 					);
+				}
+				if ( '' !== $sku ) {
+					$files[ $key ]['skus'][ $sku ] = $title;
 				}
 				if ( ! in_array( $title, $files[ $key ]['covers'], true ) ) {
 					$files[ $key ]['covers'][] = $title;

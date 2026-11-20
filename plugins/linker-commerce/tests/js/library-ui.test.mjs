@@ -424,6 +424,24 @@ test('a shared document is searchable by a covered model and explains that match
  dom.window.close();
 });
 
+test('the Woo SKU and differently separated model find the same associated PDF', () => {
+ const dom = fixture();
+ const row = dom.window.document.querySelector('.linker-library-doc');
+ row.setAttribute('data-library-skus', JSON.stringify({'DLK-GOODWE-GW8KEHAG20': 'GoodWe GW8K-EHA-G20'}));
+ const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-documents').click();
+ const input = doc.querySelector('.linker-library-q');
+ for (const query of ['DLK-GOODWE-GW8KEHAG20', 'GW8K-EHA-G20', 'GW8K EHA G20', 'dlk-goodwe-gw8kehag20 datasheet']) {
+  input.value = query;
+  input.dispatchEvent(new dom.window.Event('input',{bubbles:true}));
+  const hits = doc.querySelectorAll('[data-library-results] .linker-library-doc');
+  assert.equal(hits.length,1,query);
+  assert.equal(hits[0].querySelector('.linker-library-dl').href,'https://de-linker.test/a.pdf');
+  assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent,'1');
+ }
+ dom.window.close();
+});
+
 test('invalid association metadata cannot break ordinary document search', () => {
  const dom = fixture();
  const rows = dom.window.document.querySelectorAll('.linker-library-doc');

@@ -293,6 +293,17 @@
 		}
 	}
 
+	function compactCode(value) {
+		return normalize(value).replace(/[-\s]/g, "");
+	}
+
+	function rowSkus(row) {
+		var skus = row.getAttribute("data-library-skus");
+		return skus ? Object.entries(JSON.parse(skus)).map(function (entry) {
+			return { code: compactCode(entry[0]), product: entry[1] };
+		}) : [];
+	}
+
 	var index = [];
 	cards.forEach(function (card) {
 		card.rows.forEach(function (row, position) {
@@ -311,6 +322,7 @@
 				title: title ? title.textContent : row.textContent,
 				text: row.textContent + " " + products.join(" "),
 				products: products,
+				skus: rowSkus(row),
 			});
 		});
 	});
@@ -354,14 +366,31 @@
 		});
 	}
 
+	/** Match the missing words to one associated product's Woo code. */
+	function skuProduct(hit, query) {
+		var missing = terms(query).filter(function (word) {
+			return !matches(hit.text, word);
+		}).map(compactCode);
+		var match = missing.length && hit.skus.find(function (sku) {
+			return missing.every(function (word) {
+				return word && sku.code.includes(word);
+			});
+		});
+		return match ? match.product : "";
+	}
+
+	function hitMatches(hit, query) {
+		return matches(hit.text, query) || Boolean(skuProduct(hit, query));
+	}
+
 	/** Explain a hit whose missing query terms occur in a related product. */
 	function matchedProduct(hit, query) {
 		var missing = terms(query).filter(function (term) {
 			return !matches(hit.el.textContent, term);
 		});
-		return missing.length ? hit.products.filter(function (product) {
+		return skuProduct(hit, query) || (missing.length ? hit.products.filter(function (product) {
 			return matches(product, missing.join(" "));
-		})[0] || "" : "";
+		})[0] || "" : "");
 	}
 
 	/** A row's clone with the query marked, for the flat result list. */
@@ -642,7 +671,7 @@
 			return;
 		}
 		var hits = documents.filter(function (hit) {
-			return matches(hit.text, query);
+			return hitMatches(hit, query);
 		});
 		slice.call(filters.querySelectorAll("button[data-library-type]")).forEach(function (chip) {
 			var type = chip.getAttribute("data-library-type");
@@ -655,7 +684,7 @@
 	/** The hits of a query: every matching row, best match first. */
 	function searchHits(query) {
 		var hits = index.filter(function (hit) {
-			return matchesType(hit) && matches(hit.text, query);
+			return matchesType(hit) && hitMatches(hit, query);
 		});
 		hits.sort(function (a, b) {
 			return score(b.title, b.text, query) - score(a.title, a.text, query) || a.order - b.order;
@@ -677,7 +706,7 @@
 
 	function topHits(pool, query) {
 		var hits = pool.filter(function (hit) {
-			return matchesType(hit) && matches(hit.text, query);
+			return matchesType(hit) && hitMatches(hit, query);
 		});
 		hits.sort(function (a, b) {
 			return score(b.title, b.text, query) - score(a.title, a.text, query) || a.order - b.order;
