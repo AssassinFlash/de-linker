@@ -237,7 +237,9 @@ final class FormTest extends TestCase {
 	 * A sent message keeps the card and its side cards, without another form.
 	 */
 	public function test_state_messages(): void {
-		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => null ) );
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'get' )->with( 'linker_review_saved', '' )->andReturn( '' );
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => $session ) );
 		$this->plain_text();
 		$this->form_environment();
 		$this->english_site();

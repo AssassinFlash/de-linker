@@ -153,7 +153,7 @@ final class LanguageLinks {
 		$kept = array();
 		if ( \function_exists( 'is_account_page' ) && is_account_page() ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only the validated product permalink crosses languages at sign-in.
-			if ( ! is_wc_endpoint_url() && isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) && ! isset( $_GET['linker_quotation'] ) && ! isset( $_GET['linker_inquiry'] ) ) {
+			if ( isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) && ! isset( $_GET['linker_quotation'] ) && ! isset( $_GET['linker_inquiry'] ) && ! is_wc_endpoint_url() ) {
 				$product = \Linker\Commerce\Account\AuthTemplates::product_return_url( esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ), $lang ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only link validated against native products.
 				if ( '' !== $product ) {
 					$kept['redirect_to'] = rawurlencode( $product );

@@ -319,13 +319,13 @@ final class Form {
 	private function receipt_order( string $state ): ?\WC_Order {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A previous individual-review receipt was bound only to Woo's session.
 		if ( 'saved_review' === $state && ! isset( $_GET[ self::ORDER_PARAM ] ) ) {
-			$number = (string) WC()->session?->get( 'linker_review_saved', '' );
+			$number = (string) WC()->session->get( 'linker_review_saved', '' );
 			$order  = ctype_digit( $number ) ? wc_get_order( (int) $number ) : false;
 			if ( ! $order instanceof \WC_Order || $number !== (string) $order->get_order_number() || 'individual' !== $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) || 'contact' !== $order->get_meta( '_linker_inquiry_source' ) || $order->has_status( 'trash' ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
 				return null;
 			}
 			$owner = (int) $order->get_customer_id();
-			return 0 === $owner || $owner === get_current_user_id() ? $order : null;
+			return 0 === $owner || get_current_user_id() === $owner ? $order : null;
 		}
 		if ( ! isset( $_GET[ self::ORDER_PARAM ] ) || ! function_exists( 'wc_get_order_id_by_order_key' ) || ! function_exists( 'wc_get_order' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the redirect's own order key, rechecked against the contact source.
 			return null;
