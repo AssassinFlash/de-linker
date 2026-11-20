@@ -632,9 +632,6 @@ final class SendAuthorization {
 		if ( ! $email instanceof NewInquiryEmail && ! $email instanceof InquiryReceivedEmail ) {
 			throw new \RuntimeException( 'authorization_email_unavailable' );
 		}
-		if ( 'receipt' === $purpose ) {
-			$order->update_meta_data( '_linker_fixed_receipt', 'yes' );
-		}
 		$captured = $email->capture( $order );
 		if ( null === $captured ) {
 			return 'disabled';
