@@ -403,13 +403,12 @@ final class SendAuthorization {
 			true
 		);
 		if ( ! $written ) {
-			// Native Woo caches can contain values written before the owned transaction rolled back.
-			// Evict this source only before native history or recovery reads the retained record.
-			CurrentSource::order( $id );
 			// No caller transaction is committed or rolled back; native recovery retains approval.
 			AuthorizationStore::edit(
 				$id,
-				static function ( array &$state ): void {
+				static function ( array &$state ) use ( $id ): void {
+					// Discard cached Woo writes from the rolled-back handoff.
+					$order = CurrentSource::order( $id );
 					if ( 'approved' !== ( $state['status'] ?? '' ) ) {
 						return;
 					}
@@ -418,7 +417,12 @@ final class SendAuthorization {
 					$delay                     = Outbox::RETRY_DELAYS[ $attempt ] ?? null;
 					$state['status']           = null === $delay ? 'manual' : 'approved';
 					$state['next_at']          = null === $delay ? 0 : time() + $delay;
-				}
+					if ( null === $delay && $order instanceof WC_Order && ! NotificationHold::held( $order ) && ! $order->get_meta( Reviews::ERASED ) ) {
+						self::hold( $order, 'authorization_job_unavailable', 'team' );
+						$order->save_meta_data();
+					}
+				},
+				true
 			);
 		}
 	}
@@ -539,6 +543,24 @@ final class SendAuthorization {
 	 * @param array<string,mixed> $state Existing authorization.
 	 */
 	private static function recover_receipt( WC_Order $order, array $state ): void {
+		if ( 'manual' === ( $state['status'] ?? '' ) && 'yes' === $order->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $order ) ) {
+			AuthorizationStore::edit(
+				$order->get_id(),
+				static function ( array &$current ) use ( $order ): void {
+					$fresh = CurrentSource::order( $order->get_id() );
+					if ( ! $fresh instanceof WC_Order ) {
+						return;
+					}
+					$hold = $fresh->get_meta( NotificationHold::META );
+					if ( 'manual' === ( $current['status'] ?? '' ) && is_array( $hold ) && 'team' === ( $hold['purpose'] ?? '' ) && 'yes' === $fresh->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $fresh ) ) {
+						$fresh->update_meta_data( Queue::PENDING, 'held' );
+						$fresh->save_meta_data();
+					}
+				},
+				true
+			);
+			return;
+		}
 		$entry = $state['jobs']['receipt'] ?? array();
 		if ( ! empty( $entry['delivered_at'] ) || ! self::receipt_source( $order, $state ) ) {
 			return;
@@ -609,7 +631,7 @@ final class SendAuthorization {
 		}
 		if ( 'manual' === $status ) {
 			$hold = $order->get_meta( NotificationHold::META );
-			return ! empty( $state['jobs']['receipt']['fixed'] ) && is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
+			return is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || ( ! empty( $state['jobs']['receipt']['fixed'] ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
 		}
 		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
 	}
@@ -1011,7 +1033,7 @@ final class SendAuthorization {
 				'at'      => time(),
 			)
 		);
-		$order->update_meta_data( Queue::PENDING, 'held' );
+		$order->update_meta_data( Queue::PENDING, 'team' === $purpose ? 'yes' : 'held' );
 	}
 
 	/** Exact new-pipeline hold, never a historical incident marker.

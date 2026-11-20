@@ -363,7 +363,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $after );
 		self::assertSame( 'manual', $after['status'] );
 		$order->read_meta_data( true );
-		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
+		self::assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
 	}
 	/** Service result.
 	 *
@@ -521,6 +521,105 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 'normal', $state['status'] );
 		self::assertCount( 2, $state['jobs'] );
 	}
+	/** The existing minute recovery can still produce a receipt after content retries end.
+	 *
+	 * @testWith ["deliver"]
+	 *           ["disabled"]
+	 *           ["historic"]
+	 * @param string $outcome Original source's customer receipt outcome.
+	 */
+	public function test_team_assessment_exhaustion_recovers_only_the_current_missing_customer_receipt( string $outcome ): void {
+		$this->provider( 'unknown' );
+		$unavailable = static function ( int $id, \WP_Post $post ): void {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
+				throw new \RuntimeException( 'fixture_outbox_unavailable' );
+			}
+		};
+		add_action( 'wp_insert_post', $unavailable, 10, 2 );
+		try {
+			$order = $this->submit();
+			$id    = $order->get_id();
+			\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
+				$id,
+				static function ( array &$state ): void {
+					$state['attempts'] = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS );
+				}
+			);
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
+		} finally {
+			remove_action( 'wp_insert_post', $unavailable );
+		}
+		$state = $this->permissions( $id );
+		self::assertSame( 'manual', $state['status'] );
+		self::assertSame( array(), $state['jobs'] );
+		$order->read_meta_data( true );
+		if ( 'historic' === $outcome ) {
+			$hold = $order->get_meta( \Linker\Commerce\Mail\NotificationHold::META );
+			unset( $hold['purpose'] );
+			$order->update_meta_data( Queue::PENDING, 'held' );
+			$order->update_meta_data( \Linker\Commerce\Mail\NotificationHold::META, $hold );
+			$order->save_meta_data();
+		} else {
+			self::assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
+		}
+		if ( 'disabled' === $outcome ) {
+			add_filter( 'woocommerce_email_enabled_linker_inquiry_received', '__return_false' );
+		}
+		try {
+			( new Queue() )->recover();
+		} finally {
+			remove_filter( 'woocommerce_email_enabled_linker_inquiry_received', '__return_false' );
+		}
+		if ( 'historic' === $outcome ) {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		}
+		$state = $this->permissions( $id );
+		if ( 'deliver' === $outcome ) {
+			self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
+			self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		} else {
+			self::assertSame( array(), $state['jobs'] );
+		}
+		( new Queue() )->recover();
+		$order->read_meta_data( true );
+		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
+		self::assertSame( 'manual', $this->permissions( $id )['status'] );
+	}
+
+	/** A team handoff that exhausts retries preserves the already granted customer receipt. */
+	public function test_exhausted_team_job_creation_preserves_the_issued_customer_receipt(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		$id    = $order->get_id();
+		$job   = $this->permissions( $id )['jobs']['receipt']['id'];
+		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ): void {
+				$state['handoff_attempts'] = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS );
+			}
+		);
+		$full = static function ( int $job_id, \WP_Post $post ): void {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
+				throw new \RuntimeException( 'fixture_team_job_unavailable' );
+			}
+		};
+		add_action( 'wp_insert_post', $full, 10, 2 );
+		try {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
+		} finally {
+			remove_action( 'wp_insert_post', $full );
+		}
+		$state = $this->permissions( $id );
+		self::assertSame( 'manual', $state['status'] );
+		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		( new Queue() )->recover();
+		$order->read_meta_data( true );
+		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
+	}
+
 	/** Native core profile notifications keep their security purpose. */
 	public function test_native_core_profile_notifications_keep_their_security_purpose(): void {
 		$customer = $this->customer();
