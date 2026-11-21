@@ -59,6 +59,22 @@ DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachp
 </dl>
 </div>"""
 
+INSTALLED_ROWS = {
+    "en": EN_MARKUP.replace(
+        "Orders ship from our warehouse.", "Stock ships from our warehouse."
+    ),
+    "de": DE_MARKUP.replace(
+        "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
+    ),
+}
+WARRANTY_REVISION = {
+    "en": ("Warranty terms follow the Proforma.", "Warranty terms follow the order."),
+    "de": (
+        "Garantiebedingungen richten sich nach der Proformarechnung.",
+        "Garantiebedingungen richten sich nach der Bestellung.",
+    ),
+}
+
 MARKUP = (EN_MARKUP, DE_MARKUP)
 FORBIDDEN_PATTERNS = (
     ("named trade term", re.compile(r"\b(?:incoterms?|exw|dap)\b", re.I)),
@@ -187,14 +203,20 @@ def plan_page(content: str, language: str) -> str:
     assert_supported_content(content)
     markup = EN_MARKUP if language == "en" else DE_MARKUP
     assert_supported_content(markup)
-    if markup in content:
-        return content
-    if language == "en":
-        previous_count = content.count(PREVIOUS_EN_MARKUP)
-        if previous_count == 1:
-            return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
-        if previous_count > 1:
-            raise ValueError("Services page holds more than one previous reviewed row")
+    if '<div class="lk-trade-standards"' in content:
+        if content.count('<div class="lk-trade-standards"') == 1:
+            installed = INSTALLED_ROWS[language]
+            old, new = WARRANTY_REVISION[language]
+            if markup in content or installed in content:
+                return content
+            previous = installed.replace(new, old, 1)
+            if previous in content:
+                return content.replace(previous, installed, 1)
+            if language == "en" and PREVIOUS_EN_MARKUP in content:
+                return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
+        raise ValueError(
+            "Services standards row changed or is duplicated; inspect the page"
+        )
     return _insert_block(content, markup, SERVICE_LEDGER_INSERTION_POINT)
 
 

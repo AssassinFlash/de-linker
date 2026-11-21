@@ -164,6 +164,28 @@ def _capability(content: str) -> tuple[str, str]:
     return content, "old"
 
 
+def plan_about_registration(english: str, german: str) -> tuple[str, str]:
+    card = (
+        '<a class="row" href="{}"><span class="no">03</span>'
+        '<span class="row-body"><strong>{}</strong>'
+    )
+    en_label = "Create a partner account"
+    de_label = "Partnerkonto erstellen"
+    en_edit = (
+        card.format("/my-account/", en_label),
+        card.format("/my-account/register/", en_label),
+    )
+    de_edit = (
+        card.format("/de/mein-konto/", de_label),
+        card.format("/de/mein-konto/registrieren/", de_label),
+    )
+    en_after, en_state = _apply_edits(english, (en_edit,), "About registration EN")
+    de_after, de_state = _apply_edits(german, (de_edit,), "About registration DE")
+    if en_state != de_state:
+        raise ValueError("Partially changed About registration language pair")
+    return en_after, de_after
+
+
 def plan_thank_you_blog(english: str, german: str) -> tuple[str, str]:
     """Localize the existing Blog card without changing any other page bytes."""
     old = '<a href="/blog/" class="lk-path-row">'
@@ -977,6 +999,7 @@ def plan_home_account(english: str, german: str) -> tuple[str, str]:
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
+        "about_registration": plan_about_registration,
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
         "home_configurator": plan_home_configurator,

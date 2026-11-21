@@ -64,6 +64,33 @@ def test_the_previous_english_accessible_name_is_upgraded_without_a_second_row()
     assert standards.plan_page(upgraded, "en") == upgraded
 
 
+def test_installed_proforma_rows_are_replaced_in_place_in_both_languages() -> None:
+    en, de = standards.plan_pair(page(), page())
+    installed_en = en.replace(
+        "Orders ship from our warehouse.", "Stock ships from our warehouse."
+    ).replace("Warranty terms follow the order.", "Warranty terms follow the Proforma.")
+    installed_de = de.replace(
+        "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
+    ).replace(
+        "Garantiebedingungen richten sich nach der Bestellung.",
+        "Garantiebedingungen richten sich nach der Proformarechnung.",
+    )
+    expected = (
+        installed_en.replace(
+            "Warranty terms follow the Proforma.", "Warranty terms follow the order."
+        ),
+        installed_de.replace(
+            "Garantiebedingungen richten sich nach der Proformarechnung.",
+            "Garantiebedingungen richten sich nach der Bestellung.",
+        ),
+    )
+    updated = standards.plan_pair(installed_en, installed_de)
+    assert updated == expected
+    assert "Stock ships from our warehouse." in updated[0]
+    assert "Aus dem Lager liefern wir ab." in updated[1]
+    assert standards.plan_pair(*updated) == updated
+
+
 def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
     original = page()
     planned = standards.plan_page(original, "en")
