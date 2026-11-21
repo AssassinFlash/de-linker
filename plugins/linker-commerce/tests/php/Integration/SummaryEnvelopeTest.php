@@ -25,9 +25,17 @@ use WC_Order;
  * @coversNothing
  */
 final class SummaryEnvelopeTest extends IntegrationTestCase {
+	/**
+	 * Customer destination unique to this case.
+	 *
+	 * @var string
+	 */
+	private string $recipient;
+
 	/** Local native state is restored, not inferred from a previous fixture. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->recipient = wp_generate_uuid4() . '@example.test';
 		foreach ( array( IntakeStore::OPTION, Queue::ENABLED, Queue::HEARTBEAT ) as $name ) {
 			$old = get_option( $name );
 			$this->later(
@@ -247,7 +255,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic summary fixture',
-				'email'   => self::TESTER,
+				'email'   => $this->recipient,
 				'message' => 'Please review our solution.',
 				'consent' => '1',
 				'lang'    => 'en',

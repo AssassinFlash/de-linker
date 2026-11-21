@@ -14,18 +14,20 @@ if ( ! globalThis.crypto.subtle ) {
 }
 
 // Simulate the commerce widget's callback at the cross-bundle boundary.
-beforeEach( () => {
-	window.linkerTurnstile = {
-		mount: ( _node, _action, onToken ) => {
-			onToken( 'native-test-response' );
-			return () => {};
-		},
-		refresh: () => {},
-	};
-} );
-afterEach( () => {
-	delete window.linkerTurnstile;
-} );
+if ( typeof window !== 'undefined' ) {
+	beforeEach( () => {
+		window.linkerTurnstile = {
+			mount: ( _node, _action, onToken ) => {
+				onToken( 'native-test-response' );
+				return () => {};
+			},
+			refresh: () => {},
+		};
+	} );
+	afterEach( () => {
+		delete window.linkerTurnstile;
+	} );
+}
 afterEach( cleanup );
 
 // jsdom has no layout, so it does not implement scrolling; the apps call it.

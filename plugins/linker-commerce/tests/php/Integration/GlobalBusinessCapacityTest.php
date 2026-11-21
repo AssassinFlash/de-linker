@@ -31,9 +31,17 @@ use WP_Error;
  * @coversNothing
  */
 final class GlobalBusinessCapacityTest extends IntegrationTestCase {
+	/**
+	 * Customer destination unique to this case.
+	 *
+	 * @var string
+	 */
+	private string $recipient;
+
 	/** Preserve the local snapshot's pre-existing jobs and capacity ledger. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->recipient = wp_generate_uuid4() . '@example.test';
 		foreach ( array( IntakeStore::OPTION, Ledger::OPTION, \Linker\Commerce\Mail\CapacityHealth::OPTION ) as $option ) {
 			$before = get_option( $option );
 			delete_option( $option );
@@ -470,7 +478,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic capacity tester',
-				'email'   => self::TESTER,
+				'email'   => $this->recipient,
 				'company' => 'Synthetic Solar GmbH',
 				'message' => 'Please advise on equipment for this project.',
 				'consent' => '1',
