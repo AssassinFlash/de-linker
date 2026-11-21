@@ -44,6 +44,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 				return array();
 			}
 		);
+		$this->use_empty_mail_queue();
 		update_option( Queue::ENABLED, 'yes' );
 		update_option( Queue::HEARTBEAT, microtime( true ) );
 		$old = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );

@@ -38,7 +38,6 @@ final class Module {
 		// Acquire the release boundary before other native erasure listeners write.
 		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( IntakeStore::class, 'forget' ), 0 );
 		( new Accounts() )->register();
-		( new Login() )->register();
 		add_filter( 'xmlrpc_methods', array( $this, 'xmlrpc_methods' ) );
 	}
 
