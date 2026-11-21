@@ -19,11 +19,7 @@ const entry = {
 	},
 } as const;
 
-export async function startSolarProject(
-	page: Page,
-	lang: SiteLanguage,
-	title: string
-) {
+export async function roofEntry(page: Page, lang: SiteLanguage) {
 	const text = entry[lang];
 	await page.goto(instance().url + text.home, {
 		waitUntil: 'domcontentloaded',
@@ -31,9 +27,19 @@ export async function startSolarProject(
 	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
 	const workspace = page.locator('[data-linker-planner]');
 	await workspace.getByRole('link', { name: text.roof, exact: true }).click();
-	const form = workspace
+	return workspace
 		.locator('form')
 		.filter({ has: page.locator('[name="location_label"]') });
+}
+
+export async function startSolarProject(
+	page: Page,
+	lang: SiteLanguage,
+	title: string
+) {
+	const text = entry[lang];
+	const form = await roofEntry(page, lang);
+	const workspace = page.locator('[data-linker-planner]');
 	await form.locator('[name="country"]').selectOption('DE');
 	await form.locator('[name="location_label"]').fill(title);
 	await form.getByRole('button', { name: text.plan, exact: true }).click();

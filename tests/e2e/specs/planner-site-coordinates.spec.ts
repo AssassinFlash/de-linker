@@ -66,28 +66,20 @@ async function importMeterReadings(
 ) {
 	const text = words[lang];
 	await panel.getByRole('button', { name: text.import, exact: true }).click();
-	await panel.getByLabel(text.zone, { exact: true }).fill('UTC');
-	await panel.getByLabel(text.file, { exact: true }).setInputFiles(file);
-	await panel.getByLabel(text.delimiter, { exact: true }).selectOption(';');
+	await panel.getByLabel(text.zone).fill('UTC');
+	await panel.getByLabel(text.file).setInputFiles(file);
+	await panel.getByLabel(text.delimiter).selectOption(';');
 	await panel.getByRole('button', { name: text.inspect }).click();
-	await panel.getByLabel(text.time, { exact: true }).selectOption('Time');
-	await panel.getByLabel(text.load, { exact: true }).selectOption('Load');
-	await panel
-		.getByLabel(text.unit, { exact: true })
-		.selectOption('interval_energy_kwh');
-	await panel
-		.getByLabel(text.position, { exact: true })
-		.selectOption('start');
+	await panel.getByLabel(text.time).selectOption('Time');
+	await panel.getByLabel(text.load).selectOption('Load');
+	await panel.getByLabel(text.unit).selectOption('interval_energy_kwh');
+	await panel.getByLabel(text.position).selectOption('start');
 	await panel.getByLabel(text.interval).fill('60');
-	await panel.getByLabel(text.decimal, { exact: true }).selectOption('.');
+	await panel.getByLabel(text.decimal).selectOption('.');
+	await panel.getByLabel(text.origin).selectOption('measured');
+	await panel.getByLabel(text.source).fill('CoSSMic Konstanz');
 	await panel
-		.getByLabel(text.origin, { exact: true })
-		.selectOption('measured');
-	await panel
-		.getByLabel(text.source, { exact: true })
-		.fill('CoSSMic Konstanz');
-	await panel
-		.getByLabel(text.rights, { exact: true })
+		.getByLabel(text.rights)
 		.fill('Open Power System Data, Household Data 2020-04-15, CC BY 4.0.');
 	const result = page.waitForResponse((r) =>
 		new URL(r.url()).pathname.endsWith('/profiles/preview')
@@ -109,6 +101,7 @@ for (const lang of ['en', 'de'] as const) {
 			page,
 		}) => {
 			test.setTimeout(150_000);
+			page.setDefaultTimeout(15_000);
 			await page.setViewportSize({
 				width,
 				height: width === 390 ? 844 : 900,
@@ -145,12 +138,8 @@ for (const lang of ['en', 'de'] as const) {
 			);
 			await nav.getByRole('button', { name: text.energy }).click();
 			const panel = workspace.locator('.sc-energy-demand');
-			await panel
-				.getByLabel(text.purpose, { exact: true })
-				.selectOption('self');
-			await panel
-				.getByLabel(text.grid, { exact: true })
-				.selectOption('3');
+			await panel.getByLabel(text.purpose).selectOption('self');
+			await panel.getByLabel(text.grid).selectOption('3');
 			const asset = await importMeterReadings(page, panel, lang);
 			await expect(
 				panel.getByRole('button', { name: text.compare, exact: true })

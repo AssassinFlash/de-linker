@@ -1,6 +1,6 @@
 import { Icon } from "../Icon.tsx";
 import { attachGrossLoad } from "../../domain/grossLoad.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { isPreMutationInputRefusal } from "../../data/inputRefusal.ts";
@@ -30,7 +30,7 @@ import { KNOWN_PV_MODEL, referenceDraft } from "../../domain/pvgisReference.ts";
 import { emptyMapping, mappedProfile } from "../ProfileMapping.tsx";
 import { issueLabel } from "../ProfileLabels.ts";
 import { NumberField } from "../NumberField.tsx";
-import { ProfileCurve } from "../ProfileCurve.tsx";
+import { ProfileCurve, profileDateFormat } from "../ProfileCurve.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __ } from "../../i18n.ts";
 import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
@@ -248,6 +248,7 @@ export function EnergyDemand({
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
 	const [profilePreview, setPreview] = useState<ProfilePreview | null>(null);
+	const dates = useMemo(() => profileDateFormat(locale), [locale]);
 	const profileHeading = useRef<HTMLHeadingElement>(null);
 	const importedAsset = useRef<string | null>(null);
 	const pending = useRef<{ path: JsonRpcPath; body: JsonObject } | null>(null);
@@ -997,8 +998,12 @@ export function EnergyDemand({
 								kWh
 							</strong>{" "}
 							· {preview.summary.interval_count}{" "}
-							{__("readings", "linker-tools")} · {preview.summary.start_utc} –{" "}
-							{preview.summary.end_utc}
+							{__("readings", "linker-tools")} ·{" "}
+							{dates.formatRange(
+								new Date(preview.summary.start_utc),
+								new Date(preview.summary.end_utc),
+							)}{" "}
+							UTC
 						</p>
 						{goal === "peak" && (
 							<dl className="sc-fields sc-demand-metrics">
@@ -1043,7 +1048,11 @@ export function EnergyDemand({
 									<tbody>
 										{preview.rows.map((row) => (
 											<tr key={row.interval_index}>
-												<td>{row.start_utc}</td>
+												<td>
+													<time dateTime={row.start_utc}>
+														{dates.format(new Date(row.start_utc))}
+													</time>
+												</td>
 												<td>
 													{new Intl.NumberFormat(locale).format(
 														row.interval_mean_kw,

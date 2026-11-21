@@ -2,6 +2,15 @@
 import type { ProfilePreview } from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
 
+export function profileDateFormat(locale: string) {
+	return new Intl.DateTimeFormat(locale, {
+		dateStyle: "medium",
+		timeStyle: "medium",
+		hourCycle: "h23",
+		timeZone: "UTC",
+	});
+}
+
 export function ProfileCurve({
 	preview,
 	locale,
@@ -63,10 +72,7 @@ export function ProfileCurve({
 					0
 				</text>
 			</svg>
-			<p>
-				<time>{rows[0]!.start_utc}</time> → <time>{rows.at(-1)!.end_utc}</time>{" "}
-				· UTC
-			</p>
+			<p>{profileDateFormat(locale).formatRange(start, end)} UTC</p>
 			<p>
 				{__(
 					"The chart shows only the visible interval page. The source summary and the saved energy calculation use their complete declared periods. The steps represent interval mean power; no finer measurements are implied.",
