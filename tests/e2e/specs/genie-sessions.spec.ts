@@ -36,7 +36,7 @@ import {
 /**
  * Internal dependencies
  */
-import { instance, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 import { mark, since } from '../lib/mail';
 import { seedConsentCookies } from '../lib/consent';
 
@@ -101,9 +101,6 @@ const LABEL: Record<Lang, Labels> = {
 		deleteRow: 'Gespräch löschen:',
 	},
 };
-/** The one tester address of the test mail rule (AGENTS.md §5). */
-const TESTER = 'tester@example.test';
-
 const SHOTS = process.env.LINKER_E2E_SHOTS ?? '';
 
 async function shot(page: Page, name: string): Promise<void> {
@@ -172,6 +169,49 @@ async function titles(page: Page): Promise<string[]> {
 	return page.locator('.linker-genie-rail__item').allInnerTexts();
 }
 
+/** Run only this visitor's due native delivery in the local mail sink. */
+async function receiveMail(address: string, after: number, subject: string) {
+	const received = () =>
+		since(after, subject).filter((mail) => mail.to.includes(address));
+	await expect
+		.poll(
+			() => {
+				if (!received().length) {
+					wp([
+						'eval',
+						String.raw`
+				$store = new \Linker\Commerce\Mail\JobStore();
+				$ids = get_posts([
+					'post_type' => $store::POST_TYPE, 'post_status' => 'private',
+					'title' => '${subject}', 'fields' => 'ids', 'posts_per_page' => -1
+				]);
+				foreach ($ids as $id) {
+					$message = $store->load($id)['message'] ?? null;
+					if (!$message || $message->to !== ['${address}']) continue;
+					$actions = as_get_scheduled_actions([
+						'hook' => \Linker\Commerce\Mail\Outbox::HOOK,
+						'group' => \Linker\Commerce\Mail\Outbox::GROUP, 'args' => [$id],
+						'status' => 'pending', 'date' => time(), 'date_compare' => '<=',
+					], 'ids');
+					foreach ($actions as $action_id) {
+						\ActionScheduler_QueueRunner::instance()->process_action($action_id, 'Genie conversation test');
+					}
+				}
+			`,
+					]);
+				}
+				return received().length;
+			},
+			{
+				message: 'the addressee receives ' + subject,
+				timeout: 90_000,
+				intervals: [2000, 5000],
+			}
+		)
+		.toBe(1);
+	return received()[0]!;
+}
+
 /** A browser of its own at one width. */
 async function browserAt(
 	browser: Browser,
@@ -182,6 +222,7 @@ async function browserAt(
 		isMobile: width < 768,
 		hasTouch: width < 768,
 	});
+	await seedConsentCookies(context);
 	return { context, page: await context.newPage() };
 }
 
@@ -201,10 +242,6 @@ async function signIn(
 	});
 }
 
-test.beforeEach(async ({ context }) => {
-	await seedConsentCookies(context);
-});
-
 for (const lang of ['en', 'de'] as Lang[]) {
 	for (const width of [1440, 390]) {
 		test(`${lang} ${width}: a guest keeps three conversations, emails one, and signing in keeps all three on every device`, async ({
@@ -213,12 +250,13 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			test.setTimeout(900_000);
 			const tag = `${lang}-${width}`;
 			const login = `e2e-genie-235-${tag}-${Date.now()}`;
+			const address = `${login}@example.test`;
 			const password = `Pw-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 			const user = wp([
 				'user',
 				'create',
 				login,
-				`${login}@example.test`,
+				address,
 				'--role=customer',
 				`--user_pass=${password}`,
 				'--porcelain',
@@ -227,6 +265,7 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			const questions = QUESTIONS[lang];
 			const guest = await browserAt(browser, width);
 			const other = await browserAt(browser, width);
+			const restoreMail = isolateMailBudgets();
 			try {
 				const page = guest.page;
 				await page.goto(`${instance().url}${WORKSPACE[lang]}`);
@@ -295,44 +334,35 @@ for (const lang of ['en', 'de'] as Lang[]) {
 
 				// Email it to the guest's own address. First only a confirmation
 				// reaches that mailbox (fixed words and a link, nothing of the
-				// conversation); the conversation follows once the link is opened
-				// (review round 1 of #235). The run starts with a fresh allowance:
-				// the limiter rows of this instance's Genie mail are cleared
-				// (RateLimit, option names linker_tools_limit_genie_mail…).
-				wp([
-					'eval',
-					'global $wpdb; $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", \'linker\\_tools\\_limit\\_genie\\_mail%\' ) );',
-				]);
+				// conversation); the requested transcript follows the confirmation.
 				const before = mark();
 				await page.getByRole('button', { name: label.email }).click();
-				await page.getByLabel(label.address).fill(TESTER);
+				await page.getByLabel(label.address).fill(address);
 				await page
 					.locator('.linker-genie-app__email')
 					.scrollIntoViewIfNeeded();
 				await shot(page, `${tag}-4-email-form`);
-				// A person typing an address takes longer than the guard's
-				// floor (ConversationMail::MIN_SECONDS, 3 s from the page
-				// load); the test waits it out instead of being a bot.
-				await page.waitForTimeout(3_000);
 				await page.getByRole('button', { name: label.send }).click();
 				await expect(
 					page.locator('.linker-genie-app__email-status')
-				).toContainText(TESTER);
+				).toContainText(address);
 				await page
 					.locator('.linker-genie-app__email-status')
 					.scrollIntoViewIfNeeded();
 				await shot(page, `${tag}-5-confirm-requested`);
-				await expect
-					.poll(() => since(before, CONFIRM_SUBJECT[lang]).length, {
-						message: 'the confirmation reaches the spool',
-						timeout: 30_000,
-					})
-					.toBe(1);
-				const confirmation = since(before, CONFIRM_SUBJECT[lang])[0]!;
-				expect(confirmation.to).toEqual([TESTER]);
+				const confirmation = await receiveMail(
+					address,
+					before,
+					CONFIRM_SUBJECT[lang]
+				);
+				expect(confirmation.to).toEqual([address]);
 				expect(confirmation.bcc).toEqual([]);
 				expect(confirmation.html).not.toContain(questions[0]!);
-				expect(since(before, SUBJECT[lang])).toEqual([]);
+				expect(
+					since(before, SUBJECT[lang]).filter((mail) =>
+						mail.to.includes(address)
+					)
+				).toEqual([]);
 				await mailShot(
 					guest.context,
 					confirmation.html,
@@ -354,14 +384,8 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				).toBeVisible({ timeout: 30_000 });
 				await shot(opened, `${tag}-7-link-opened`);
 				await opened.close();
-				await expect
-					.poll(() => since(before, SUBJECT[lang]).length, {
-						message: 'the conversation reaches the spool',
-						timeout: 30_000,
-					})
-					.toBe(1);
-				const email = since(before, SUBJECT[lang])[0]!;
-				expect(email.to).toEqual([TESTER]);
+				const email = await receiveMail(address, before, SUBJECT[lang]);
+				expect(email.to).toEqual([address]);
 				expect(email.cc).toEqual([]);
 				expect(email.bcc).toEqual([]);
 				expect(email.html).toContain(questions[0]!);
@@ -418,6 +442,7 @@ for (const lang of ['en', 'de'] as Lang[]) {
 					.toEqual([questions[2], questions[0]]);
 				await shot(second, `${tag}-12-deleted`);
 			} finally {
+				restoreMail();
 				await guest.context.close();
 				await other.context.close();
 				// The customer and every conversation they own go again.
