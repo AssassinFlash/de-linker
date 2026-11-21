@@ -23,7 +23,7 @@ final class NativeTransfer {
 	 *
 	 * @param int                  $conversation Owned conversation.
 	 * @param array<string, mixed> $thread Read from that conversation.
-	 * @param array                $draft  Contact handoff’s current draft lines.
+	 * @param array<int,array<string,mixed>> $draft  Contact handoff’s current draft lines.
 	 */
 	public static function source( int $conversation, array $thread, array $draft = array() ): string {
 		$turn     = $thread['operation_id'] ?? hash( 'sha256', (string) wp_json_encode( array( $thread['messages'], $thread['stream'] ) ) );
@@ -98,7 +98,7 @@ final class NativeTransfer {
 				$history          = $note + array(
 					'at'      => time(),
 					'order'   => $order->get_id(),
-					'receipt' => \Linker\Commerce\Genie\Module::receipt_sent( $order ),
+					'receipt' => InquiryRequest::receipt_sent( $order ),
 				);
 				return false !== add_post_meta( $conversation, $meta, wp_slash( $history ) ) ? true : self::unavailable( $action );
 			}

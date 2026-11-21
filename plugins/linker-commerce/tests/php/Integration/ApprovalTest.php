@@ -160,7 +160,11 @@ final class ApprovalTest extends IntegrationTestCase {
 		$bucket  = str_pad( (string) intdiv( time(), 10 * MINUTE_IN_SECONDS ), 10, '0', STR_PAD_LEFT );
 		$row     = 'linker_commerce_limit_login_failed_account_connection.' . substr( md5( $subject ), 0, 12 ) . '.' . $bucket;
 		$this->assertTrue( add_option( $row, '100', '', false ) );
-		$this->later( static fn () => delete_option( $row ) );
+		$this->later(
+			static function () use ( $row ): void {
+				delete_option( $row );
+			}
+		);
 
 		$incorrect = wp_authenticate( $customer->get_username(), self::PASSWORD . '-incorrect' );
 		$this->assertInstanceOf( WP_Error::class, $incorrect );

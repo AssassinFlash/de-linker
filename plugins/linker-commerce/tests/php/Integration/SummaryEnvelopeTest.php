@@ -90,16 +90,20 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 	/** Existing inquiries occupying the former shared pool do not veto the customer's write. */
 	public function test_historical_business_occupancy_leaves_the_native_inquiry_available(): void {
 		IntakeStore::edit(
-			static function ( array &$state ): bool {
+			static function ( array &$state ): array {
 				$state['business']['historical'] = array( 'id' => 42, 'pool' => 'ordinary', 'bytes' => 40 * MB_IN_BYTES );
 				IntakeStore::save( $state );
-				return true;
+				return array();
 			},
 			1
 		);
 		$result = ( new Sender() )->request( $this->details() );
 		self::assertInstanceOf( WC_Order::class, $result );
-		$this->later( static fn () => $result->delete( true ) );
+		$this->later(
+			static function () use ( $result ): void {
+				$result->delete( true );
+			}
+		);
 		self::assertTrue( $result->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) );
 	}
 
@@ -165,7 +169,11 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		$before = self::newest_mail_job();
 		$order  = $send();
 		self::assertInstanceOf( WC_Order::class, $order );
-		$this->later( static fn () => $order->delete( true ) );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
 		$retry = $send();
 		self::assertInstanceOf( WC_Order::class, $retry );
 		self::assertSame( $order->get_id(), $retry->get_id() );
