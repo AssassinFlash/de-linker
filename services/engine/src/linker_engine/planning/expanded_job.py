@@ -29,6 +29,7 @@ from .errors import (
     NumericalFailure,
     PlanningError,
     ProductEvidenceChanged,
+    StorageUnavailable,
     VersionUnavailable,
 )
 from .records import Lease
@@ -152,6 +153,7 @@ _ERRORS: dict[str, type[PlanningError]] = {
         MethodDomainExceeded,
         ProductEvidenceChanged,
         RetryableExecution,
+        StorageUnavailable,
         VersionUnavailable,
         ExpandedResourceUnavailable,
         IsolatedExecutionFailed,

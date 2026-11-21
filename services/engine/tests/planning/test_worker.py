@@ -44,17 +44,26 @@ def test_queued_work_waits_for_workspace_capacity(
     assert workspace.run(owner, run.id).state == "succeeded"
 
 
+@pytest.mark.parametrize("during_execution", (True, False))
 def test_running_job_can_record_and_retry_a_storage_failure(
-    workspace: Workspace, owner: Actor, context: Context, clock: Clock
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    clock: Clock,
+    during_execution: bool,
 ) -> None:
     project = workspace.create(owner, "Storage retry", {}, key="project")
-    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    attempts: list[int] = []
 
     def execute(lease: Lease, _control: Control) -> Object:
-        if lease.attempt == 1:
+        attempts.append(lease.attempt)
+        if len(attempts) == 1:
             workspace.blobs.minimum_free_bytes = shutil.disk_usage(
                 workspace.blobs.directory
             ).total
+            if during_execution:
+                workspace.blobs.put(b"intermediate worker output")
         return {"ready": True}
 
     worker = Worker(
@@ -70,8 +79,10 @@ def test_running_job_can_record_and_retry_a_storage_failure(
     assert pending.state == "retry_wait"
     assert pending.error == {"code": "storage_unavailable", "retryable": True}
     workspace.blobs.minimum_free_bytes = 0
+    assert not worker.run_once()
     clock.advance(1)
     assert worker.run_once()
+    assert attempts == [1, 1]
     assert workspace.run(owner, run.id).state == "succeeded"
 
 

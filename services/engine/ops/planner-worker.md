@@ -64,8 +64,11 @@ free space it needs for a release. New projects, revisions, imports and queued
 calculations use available workspace storage. Under storage pressure, an
 uncommitted command returns HTTP 503 and can be retried with its original key.
 Reads, committed receipts and authorised deletions remain available. Workers
-leave pending calculations in the queue until capacity is available again.
-No existing project or revision is removed to free space.
+resume the same queued calculation once the host has space, for example after
+retired deployment artifacts are reclaimed. A storage retry waits for the
+configured retry delay and preserves the calculation's remaining attempts.
+Collection of unreferenced project blobs follows the existing maintenance
+procedure with the queue drained.
 
 ## Expanded clear-roof jobs
 

@@ -17,6 +17,7 @@ from linker_engine.planning.errors import (
     EvidenceMissing,
     ExpandedResourceUnavailable,
     LeaseLost,
+    StorageUnavailable,
     VersionUnavailable,
 )
 from linker_engine.planning.expanded_job import (
@@ -30,7 +31,7 @@ from linker_engine.planning.worker_policy import ExpandedJobPolicy
 
 
 @pytest.mark.parametrize(
-    "outcome", ["success", "cancel", "timeout", "version-error", "evidence"]
+    "outcome", ["success", "cancel", "timeout", "version-error", "evidence", "storage"]
 )
 def test_expanded_executor_yields_and_cleans_up_on_cancellation(
     tmp_path: Path,
@@ -83,6 +84,8 @@ def test_expanded_executor_yields_and_cleans_up_on_cancellation(
                     "details": {"constraint_id": "pv_reference_missing"},
                 }
                 if outcome == "evidence"
+                else {"error": "storage_unavailable"}
+                if outcome == "storage"
                 else {"published": "c" * 64}
             )
             self.stdout = io.BytesIO(encode(response))
@@ -94,7 +97,10 @@ def test_expanded_executor_yields_and_cleans_up_on_cancellation(
                 control.revoke()
             if self.polls == 2:
                 normal.clear()
-            if outcome in ("success", "version-error", "evidence") and self.polls >= 3:
+            if (
+                outcome in ("success", "version-error", "evidence", "storage")
+                and self.polls >= 3
+            ):
                 self.returncode = 0
             return self.returncode
 
@@ -132,6 +138,9 @@ def test_expanded_executor_yields_and_cleans_up_on_cancellation(
         with pytest.raises(VersionUnavailable):
             executor(lease, control)
         assert "fixture.module.read:42" in caplog.text
+    elif outcome == "storage":
+        with pytest.raises(StorageUnavailable):
+            executor(lease, control)
     elif outcome == "evidence":
         with pytest.raises(EvidenceMissing) as captured:
             executor(lease, control)
