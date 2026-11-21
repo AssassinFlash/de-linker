@@ -17,7 +17,7 @@ import re
 from datetime import UTC, datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from urllib.parse import urlsplit
 
 HERE = Path(__file__).resolve().parent
@@ -243,13 +243,13 @@ def prune_page_backups(backup_dir: Path, keep: int = 3) -> list[str]:
 
 def published_metadata(prefix: str, backup: dict[str, Any]) -> dict[str, Any]:
     if "published_metadata" in backup:
-        return backup["published_metadata"]
+        return cast(dict[str, Any], backup["published_metadata"])
     if not backup.get("readback_verified"):
         raise RuntimeError("The legacy receipt has no verified publication")
     original = backup["snapshot"]
     if not original["current"]:
         # Pending manual pairs kept the native metadata in the recovery point.
-        return original["metadata"]
+        return cast(dict[str, Any], original["metadata"])
     changes = backup["changes"]
     # The legacy publisher adopted a synced pair. Rebuild the old receipt first
     # so any intervening title, excerpt or baseline changes stop the restore.
@@ -257,9 +257,8 @@ def published_metadata(prefix: str, backup: dict[str, Any]) -> dict[str, Any]:
     before = pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": preimage})
     if before["expected_metadata"] != original["metadata"]:
         raise RuntimeError("The legacy translation baseline cannot be reconstructed")
-    return pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": changes})[
-        "expected_metadata"
-    ]
+    preview = pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": changes})
+    return cast(dict[str, Any], preview["expected_metadata"])
 
 
 def main() -> None:

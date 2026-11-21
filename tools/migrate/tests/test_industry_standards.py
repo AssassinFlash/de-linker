@@ -2,6 +2,7 @@
 
 import importlib.util
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -206,7 +207,7 @@ def test_page_snapshot_retention_keeps_the_latest_three_verified_files(
 
 
 def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
-    monkeypatch, tmp_path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     import sys
 
@@ -219,7 +220,7 @@ def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
     state = {**source}
     monkeypatch.setattr(standards.pair, "read", lambda *_: state)
 
-    def store(prefix, payload):
+    def store(prefix: str, payload: dict[str, Any]) -> None:
         import json
 
         saved = json.loads(
@@ -262,7 +263,7 @@ def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
 
 @pytest.mark.parametrize("was_current", [True, False])
 def test_legacy_verified_release_derives_native_translation_postimage(
-    monkeypatch, was_current
+    monkeypatch: pytest.MonkeyPatch, was_current: bool
 ) -> None:
     old = {
         "2748": {
@@ -283,7 +284,7 @@ def test_legacy_verified_release_derives_native_translation_postimage(
         "changes": changes,
     }
 
-    def preview(prefix, payload):
+    def preview(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
         assert payload["mode"] == "preview_page_adoption"
         return {
             "expected_metadata": old

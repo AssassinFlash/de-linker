@@ -534,7 +534,9 @@ def test_commercial_and_residential_prompts_and_inquiry_copy_are_idempotent() ->
         controls.plan_pair("commercial_storage", cs_after[0], cs_de)
 
 
-def test_imprint_labels_identify_the_operator_in_english_and_keep_registry_values():
+def test_imprint_labels_identify_the_operator_in_english_and_keep_registry_values() -> (
+    None
+):
     labels = (
         "Geschäftsführer",
         "Registergericht",

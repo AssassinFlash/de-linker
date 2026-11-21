@@ -82,6 +82,7 @@ def main() -> None:
         host = urlsplit(site).netloc.replace(":", "-")
         path = args.backup_dir / f"{host}-{page}.json" if args.backup_dir else None
         if args.restore:
+            assert path is not None
             if not args.page and not path.exists():
                 print(f"{site} {page}: no change recorded")
                 continue
@@ -138,6 +139,7 @@ def main() -> None:
             "published_pages": after,
             "published_metadata": meta,
         }
+        assert path is not None
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         if path.exists():
             if json.loads(path.read_text()) != backup:

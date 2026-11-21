@@ -3,6 +3,9 @@
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 
 def test_public_page_command_lists_each_native_pair() -> None:
@@ -22,7 +25,7 @@ def test_public_page_command_lists_each_native_pair() -> None:
 
 
 def test_release_restores_manual_copy_only_if_translation_state_still_matches(
-    tmp_path, monkeypatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     import importlib.util
     import json
@@ -46,7 +49,7 @@ def test_release_restores_manual_copy_only_if_translation_state_still_matches(
     monkeypatch.setattr(release, "planned", lambda *args: after)
     monkeypatch.setattr(release.wp, "read", lambda *args: dict(state))
 
-    def save(prefix, payload):
+    def save(prefix: str, payload: dict[str, Any]) -> None:
         assert payload["mode"] == "restore"
         assert state["metadata"] == payload["metadata_before"]
         state["pages"] = {str(row["id"]): row["after"] for row in payload["changes"]}
@@ -70,7 +73,6 @@ def test_release_restores_manual_copy_only_if_translation_state_still_matches(
     assert saved["published_metadata"] == state["metadata"]
     state["metadata"] = {"862": {"_linker_i18n_status": ["synced"]}}
     monkeypatch.setattr(sys, "argv", [*argv, "--restore"])
-    import pytest
 
     with pytest.raises(ValueError, match="changed"):
         release.main()
