@@ -13,12 +13,37 @@ use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
 use Linker\Commerce\Inquiry\Assessment\Reviews;
 use Linker\Commerce\Inquiry\Assessment\SendAuthorization;
 use WC_Order;
+use WP_User;
 
 /** Only receipts consume this allowance; inquiries and team notifications continue. */
 final class ReceiptLimit {
 
 	/** The saved reason a public-door receipt was omitted. */
 	public const SKIPPED_META = '_linker_receipt_skipped';
+
+	/** The current account email has been confirmed by an existing mailbox flow. */
+	private const MAILBOX_CONFIRMED = '_linker_receipt_mailbox_confirmed';
+
+	/** Woo validated the reset link delivered to this customer's mailbox.
+	 *
+	 * @param WP_User $user Confirmed account.
+	 */
+	public static function confirmed_mailbox( WP_User $user ): void {
+		update_user_meta( $user->ID, self::MAILBOX_CONFIRMED, 'yes' );
+	}
+
+	/**
+	 * A change of account email clears confirmation for the previous mailbox.
+	 *
+	 * @param int     $id Account being updated.
+	 * @param WP_User $previous Account before the update.
+	 */
+	public static function account_updated( int $id, WP_User $previous ): void {
+		$current = get_userdata( $id );
+		if ( $current && 0 !== strcasecmp( $previous->user_email, $current->user_email ) ) {
+			delete_user_meta( $id, self::MAILBOX_CONFIRMED );
+		}
+	}
 
 	/** Read the delivery of this order's customer acknowledgement.
 	 *
@@ -50,10 +75,19 @@ final class ReceiptLimit {
 
 	/** Determine the allowance for the real destination of this native receipt.
 	 *
+	 * @phpstan-impure
 	 * @param WC_Order $order Native recipient and order.
 	 * @param bool     $spend Charge at dispatch, or check current availability at handoff.
 	 */
 	public static function reason( WC_Order $order, bool $spend ): string {
-		return \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id(), 'inquiry', $spend );
+		$owner = $order->get_customer_id();
+		$email = $order->get_billing_email();
+		if ( $owner > 0 && 'yes' === get_user_meta( $owner, self::MAILBOX_CONFIRMED, true ) ) {
+			$user = get_userdata( $owner );
+			if ( $user && 0 === strcasecmp( $user->user_email, $email ) ) {
+				return '';
+			}
+		}
+		return \Linker\Commerce\Protection\ReceiptBudget::reason( $email, $order->get_id(), 'inquiry', $spend );
 	}
 }

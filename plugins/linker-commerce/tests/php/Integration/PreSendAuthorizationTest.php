@@ -95,6 +95,32 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertStringNotContainsString( 'records@example.test', implode( "\n", $job['message']->headers ) );
 	}
 
+	/** A confirmed mailbox can receive each of its owner's separate inquiry receipts. */
+	public function test_recipient_suppression_applies_only_to_unconfirmed_destinations(): void {
+		$customer = $this->customer();
+		$email    = $customer->get_email();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		for ( $i = 0; $i < 2; ++$i ) {
+			self::assertSame( '', \Linker\Commerce\Protection\ReceiptBudget::reason( $email, wp_generate_uuid4() ) );
+		}
+		$order = new \WC_Order();
+		$order->set_billing_email( $email );
+		$order->set_customer_id( $customer->get_id() );
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		do_action( 'woocommerce_customer_reset_password', $user );
+		self::assertSame( '', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$order->set_customer_id( 0 );
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$order->set_customer_id( $customer->get_id() );
+		$customer->set_email( 'changed-' . $email );
+		$customer->save();
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$customer->set_email( $email );
+		$customer->save();
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+	}
+
 	/** The accepted native source grants one fixed customer receipt while content remains pending. */
 	public function test_saved_inquiry_has_one_fixed_receipt_while_assessment_is_unavailable(): void {
 		$attempts = 0;
