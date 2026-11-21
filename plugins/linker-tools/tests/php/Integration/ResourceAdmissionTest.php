@@ -405,6 +405,11 @@ final class ResourceAdmissionTest extends TestCase {
 	public function test_account_project_creation_is_independent_of_guest_storage_traffic(): void {
 		$user = wp_create_user( 'planner-owner-' . wp_generate_uuid4(), wp_generate_password() );
 		$this->assertIsInt( $user );
+		if ( ! defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ) {
+			define( 'LINKER_GENIE_SERVICE_TOKEN', 'synthetic-owned-project' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Used only by the injected native transport.
+		}
+		$endpoint = static fn (): string => 'https://planner.example.test';
+		add_filter( 'pre_option_linker_planner_url', $endpoint );
 		try {
 			wp_set_current_user( $user );
 			$ledger    = new Ledger();
@@ -421,7 +426,7 @@ final class ResourceAdmissionTest extends TestCase {
 				'inputs' => array(),
 			);
 			$body      = (string) wp_json_encode( $command );
-			$principal = new \Linker\Tools\Planner\Principal( 'user', 'wp:1:user:' . $user );
+			$principal = new \Linker\Tools\Planner\Principal( 'user', \Linker\Tools\Planner\NativeIdentity::user_subject( $user ) );
 			$transport = new \Linker\Tools\Planner\Transport(
 				function ( string $url, array $args ) use ( $body, $principal ): array {
 					$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
@@ -445,6 +450,7 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertIsArray( $result );
 			$this->assertSame( '{"revision":1}', $result['body'] );
 		} finally {
+			remove_filter( 'pre_option_linker_planner_url', $endpoint );
 			wp_set_current_user( 0 );
 			require_once ABSPATH . 'wp-admin/includes/user.php';
 			wp_delete_user( $user );

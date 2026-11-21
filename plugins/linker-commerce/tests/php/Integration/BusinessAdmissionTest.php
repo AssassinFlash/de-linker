@@ -811,20 +811,22 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Both Genie handoffs distinguish an exhausted receipt allowance from a recoverable journal.
+	 * Both Genie handoffs keep the inquiry when its destination is limited or temporarily busy.
 	 */
 	public function test_genie_native_handoffs_report_receipt_limits_and_recover_the_original(): void {
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		foreach ( array( 'contact', 'inquiry' ) as $door ) {
 			foreach ( array( 'target_cap', 'unavailable' ) as $reason ) {
-				delete_option( Ledger::OPTION );
-				$email = $door . '-' . $reason . '@example.test';
+				$email = $door . '-' . self::tag() . '@example.test';
+				$peer  = null;
 				if ( 'target_cap' === $reason ) {
 					$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
 					$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
 				} else {
-					update_option( Ledger::OPTION, 'synthetic damaged journal', false );
+					$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+					$lock = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'recipient-delivery' );
+					$this->assertSame( '1', (string) $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s, 0)', $lock ) ) );
 				}
 				$payload = array(
 					'customer' => array(
@@ -836,11 +838,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					'locale'   => 'en',
 				);
 				$marker  = self::newest_mail_job();
-				// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Exercise the existing native Genie handoff constants.
-				$result = apply_filters( 'contact' === $door ? \Linker\Commerce\Genie\Module::CONTACT_FILTER : \Linker\Commerce\Genie\Module::INQUIRY_FILTER, null, $payload );
+				try {
+					// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Exercise the existing native Genie handoff constants.
+					$result = apply_filters( 'contact' === $door ? \Linker\Commerce\Genie\Module::CONTACT_FILTER : \Linker\Commerce\Genie\Module::INQUIRY_FILTER, null, $payload );
+				} finally {
+					$peer?->close();
+				}
 				$this->assertIsArray( $result );
 				$this->assertSame( 'target_cap' === $reason ? false : null, $result['receipt'] );
-				$order = wc_get_order( $result['order'] );
+				$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $result['order'] );
 				$this->assertInstanceOf( WC_Order::class, $order );
 				$this->later(
 					static function () use ( $order ): void {
@@ -848,16 +854,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					}
 				);
 				$this->assertSame( 'inquiry-received', $order->get_status() );
-				$this->assertSame( 'target_cap' === $reason ? $reason : 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->assertSame( 'target_cap' === $reason ? $reason : 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ), $door . '/' . $reason );
 				if ( 'unavailable' === $reason ) {
 					$this->assertSame( array(), self::mail_jobs_after( $marker ) );
-					delete_option( Ledger::OPTION );
 					\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
 					self::fixed_receipt_job( $order );
 				}
 				$this->authorization->drain();
 				$order->read_meta_data( true );
-				$this->assertSame( 'target_cap' === $reason ? $reason : '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->assertSame( 'target_cap' === $reason ? $reason : '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ), $door . '/' . $reason );
 				$this->assertCount( 'target_cap' === $reason ? 1 : 2, self::mail_jobs_after( $marker ) );
 			}
 		}

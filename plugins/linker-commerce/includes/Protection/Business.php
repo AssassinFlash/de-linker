@@ -136,6 +136,10 @@ final class Business {
 				if ( ! $order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {
 					return self::unconfirmed_receipt();
 				}
+				$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
+				if ( ! $order instanceof WC_Order || ! $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {
+					return self::unconfirmed_receipt();
+				}
 			}
 			if ( null !== $on_order ) {
 				$linked = $on_order( $order );
