@@ -13,6 +13,7 @@ use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Protection\Fingerprint;
 use Linker\Tools\Genie\Attachments;
+use Linker\Tools\Genie\Conversations;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -191,6 +192,17 @@ final class Resources {
 			}
 			$stored = $this->replies->read( $id, $binding );
 			if ( ! self::retryable( $action, $stored ) ) {
+				if ( 'conversation_create' === $action && $stored instanceof WP_REST_Response && $stored->get_status() < 400 ) {
+					$from          = (int) get_post_meta( $id, '_linker_previous_conversation', true );
+					$conversations = new Conversations();
+					if ( $from > 0 && $conversations->selected_id() === $from ) {
+						if ( is_user_logged_in() ) {
+							$conversations->activate( (int) $stored->get_data()['conversation_id'] );
+						} else {
+							$conversations->start_guest_conversation();
+						}
+					}
+				}
 				return 'solution_save' === $action ? EnginePublication::reply( $stored ) : $stored;
 			}
 			$reset = wp_update_post(
@@ -222,7 +234,8 @@ final class Resources {
 				$legacy_id = substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-a' . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
 				$entry     = $this->replies->previous( $legacy_id );
 			}
-			if ( 'conversation_create' === $action && ! is_user_logged_in() && 0 === ( new \Linker\Tools\Genie\Conversations() )->selected_id() && is_callable( $callback ) ) {
+			$from = 'conversation_create' === $action ? ( new Conversations() )->selected_id() : 0;
+			if ( 'conversation_create' === $action && ! is_user_logged_in() && 0 === $from && is_callable( $callback ) ) {
 				// A blank guest editor with no selected conversation has no mutation to replay.
 				$result = $callback( $request );
 				return is_wp_error( $result ) ? $result : rest_ensure_response( $result );
@@ -234,7 +247,7 @@ final class Resources {
 					return $checked;
 				}
 			}
-			$id = $this->replies->open( $binding, (string) $request->get_param( 'email' ), $operation, $fingerprint );
+			$id = $this->replies->open( $binding, (string) $request->get_param( 'email' ), $operation, $fingerprint, $from );
 			if ( $id < 1 ) {
 				return self::error( 'storage', 503 );
 			}
@@ -265,8 +278,8 @@ final class Resources {
 			}
 			if ( 'failed' === ( $response->get_headers()['X-Linker-Resource-Outcome'] ?? '' ) || ( 'solution_save' === $action && is_wp_error( $raw ) && 'linker_solution_changed' === $raw->get_error_code() ) ) {
 				wp_delete_post( $id, true );
-			} else {
-				$this->replies->finish( $id, $response );
+			} elseif ( $id !== $this->replies->finish( $id, $response ) ) {
+				return new WP_Error( 'linker_resource_result', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-tools' ), array( 'status' => 409 ) );
 			}
 			return $response;
 		} finally {

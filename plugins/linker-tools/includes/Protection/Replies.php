@@ -40,8 +40,9 @@ final class Replies {
 	 * @param string $email Optional native-validated guest privacy address.
 	 * @param string $operation Native request UUID.
 	 * @param string $fingerprint Owner-bound semantic input.
+	 * @param int    $from Conversation selected before the response writes its cookie.
 	 */
-	public function open( string $binding, string $email = '', string $operation = '', string $fingerprint = '' ): int {
+	public function open( string $binding, string $email = '', string $operation = '', string $fingerprint = '', int $from = 0 ): int {
 		if ( '' === $email && get_current_user_id() > 0 ) {
 			$email = (string) wp_get_current_user()->user_email;
 		}
@@ -55,6 +56,7 @@ final class Replies {
 				'meta_input'   => array(
 					'_linker_binding'   => $binding,
 					'_linker_input'     => $fingerprint,
+					...( $from > 0 ? array( '_linker_previous_conversation' => $from ) : array() ),
 					'_linker_recipient' => is_email( $email ) ? \Linker\Commerce\Protection\Identity::recipient( $email ) : '',
 					'_linker_expires'   => time() + DAY_IN_SECONDS,
 				),
@@ -105,14 +107,18 @@ final class Replies {
 			'binary'           => is_string( $data ),
 			'data'             => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
 		);
+		$content = wp_json_encode( $stored, JSON_HEX_TAG | JSON_HEX_AMP );
+		if ( ! is_string( $content ) ) {
+			return 0;
+		}
 		$updated = wp_update_post(
 			array(
 				'ID'           => $id,
-				'post_content' => wp_slash( (string) wp_json_encode( $stored ) ),
+				'post_content' => wp_slash( $content ),
 			),
 			true
 		);
-		return is_wp_error( $updated ) ? 0 : $updated;
+		return ! is_wp_error( $updated ) && get_post_field( 'post_content', $id, 'raw' ) === $content ? $id : 0;
 	}
 
 	/**

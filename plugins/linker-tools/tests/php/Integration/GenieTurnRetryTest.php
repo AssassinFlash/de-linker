@@ -224,6 +224,57 @@ final class GenieTurnRetryTest extends TestCase {
 		return is_array( $data ) ? $data : array();
 	}
 
+	/** An unanswered first guest turn leaves neither a new conversation nor a retry record. */
+	public function test_refused_first_turn_keeps_a_blank_editor_until_the_retry_succeeds(): void {
+		global $wp_filter;
+		$held = array();
+		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
+			remove_all_actions( $hook );
+		}
+		try {
+			unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+			$input     = array(
+				'locale'   => 'en',
+				'page'     => array( 'type' => 'home' ),
+				'messages' => array(
+					array(
+						'role'    => 'user',
+						'content' => 'Which inverter fits?',
+					),
+				),
+			);
+			$request   = $this->request( $input );
+			$resources = new Resources();
+			$operation = $request->get_header( 'X-Linker-Operation' );
+			$this->assertIsString( $operation );
+			$before = (int) wp_count_posts( Conversations::POST_TYPE )->private;
+			$failed = $resources->dispatch( null, $request, '', $this->handler() );
+			$this->assertInstanceOf( WP_REST_Response::class, $failed );
+			$this->assertSame( 502, $failed->get_status() );
+			$this->assertSame( 0, ( new Conversations() )->existing_id() );
+			$this->assertSame( $before, (int) wp_count_posts( Conversations::POST_TYPE )->private );
+			$this->assertSame( 0, ( new Replies() )->operation( $operation ) );
+			$this->service = static fn (): string => "event: block\ndata: {\"type\":\"text\",\"text\":\"A hybrid inverter.\",\"refs\":[]}\n\nevent: done\ndata: {\"ok\":true}\n\n";
+			$success       = $resources->dispatch( null, $request, '', $this->handler() );
+			$this->assertInstanceOf( WP_REST_Response::class, $success );
+			$this->assertSame( 200, $success->get_status() );
+			$id                            = $success->get_data()['conversation_id'];
+			$this->created_conversations[] = $id;
+			$this->assertGreaterThan( 0, $id );
+			$this->assertSame( $id, ( new Conversations() )->existing_id() );
+			$this->assertSame( $before + 1, (int) wp_count_posts( Conversations::POST_TYPE )->private );
+		} finally {
+			foreach ( $held as $hook => $callbacks ) {
+				if ( null === $callbacks ) {
+					unset( $wp_filter[ $hook ] );
+				} else {
+					$wp_filter[ $hook ] = $callbacks; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restore this fixture's held cookie hooks.
+				}
+			}
+		}
+	}
+
 	/**
 	 * A deterministic failure is followed by exactly one new dispatch.
 	 */

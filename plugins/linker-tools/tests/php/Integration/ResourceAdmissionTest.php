@@ -375,10 +375,36 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertSame( 409, $retry->get_error_data()['status'] );
 	}
 
+	/** A committed action without a writable reply stays uncertain and never runs twice. */
+	public function test_failed_reply_save_does_not_confirm_or_redispatch(): void {
+		$request   = $this->request( '/linker-ai/v1/genie/turn', array(), 'genie' );
+		$reject    = static fn ( bool $rejected, array $post ): bool => $rejected || ( Replies::TYPE === $post['post_type'] && ! empty( $post['ID'] ) && '' !== $post['post_content'] );
+		$calls     = 0;
+		$handler   = array(
+			'callback' => static function () use ( &$calls ): WP_REST_Response {
+						++$calls;
+						return new WP_REST_Response( array( 'saved' => true ) );
+			},
+		);
+		$resources = new Resources();
+		add_filter( 'wp_insert_post_empty_content', $reject, 10, 2 );
+		try {
+			$first = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $first );
+			$this->assertSame( 409, $first->get_error_data()['status'] );
+		} finally {
+			remove_filter( 'wp_insert_post_empty_content', $reject );
+		}
+		$retry = $resources->dispatch( null, $request, '', $handler );
+		$this->assertInstanceOf( WP_Error::class, $retry );
+		$this->assertSame( 409, $retry->get_error_data()['status'] );
+		$this->assertSame( 1, $calls );
+	}
+
 	/** A completed result from the previous release is still replayed by its owner. */
 	public function test_previous_release_result_is_recovered_without_running_its_callback(): void {
-		$request  = $this->request( '/linker-ai/v1/genie/turn', array(), 'genie' );
-		$id       = $request->get_header( 'X-Linker-Operation' );
+		$request = $this->request( '/linker-ai/v1/genie/turn', array(), 'genie' );
+		$id      = $request->get_header( 'X-Linker-Operation' );
 		$this->assertIsString( $id );
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
@@ -434,12 +460,20 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( 0, ( new Replies() )->operation( $key ) );
 			$old                           = $store->current_id();
 			$this->created_conversations[] = $old;
-			$previous_tab                  = $_COOKIE;
-			$from_old                      = $this->request( '/linker-ai/v1/genie/conversations', array(), 'conversation_create' );
-			$blank                         = $resources->dispatch( null, $from_old, '', $handler );
+			$old_group                     = sanitize_text_field( wp_unslash( $_COOKIE[ Conversations::BROWSER_COOKIE ] ?? '' ) );
+			$this->assertMatchesRegularExpression( '/^[0-9a-f]{32}$/', $old_group );
+			unset( $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+			$previous_tab = $_COOKIE;
+			$from_old     = $this->request( '/linker-ai/v1/genie/conversations', array(), 'conversation_create' );
+			$blank        = $resources->dispatch( null, $from_old, '', $handler );
 			$this->assertInstanceOf( WP_REST_Response::class, $blank );
 			$this->assertSame( 0, $blank->get_data()['conversation_id'] );
 			$this->assertContains( $old, array_column( $blank->get_data()['conversations'], 'id' ) );
+			// The response was lost before either of its Set-Cookie headers arrived.
+			$_COOKIE = $previous_tab;
+			$again   = $resources->dispatch( null, $from_old, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $again );
+			$this->assertContains( $old, array_column( ( new Conversations() )->list_for_visitor(), 'id' ) );
 			$this->assertSame( 0, ( new Conversations() )->existing_id() );
 			$first_question                = ( new Conversations() )->current_id();
 			$this->created_conversations[] = $first_question;
@@ -450,6 +484,9 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( $first_question, ( new Conversations() )->existing_id() );
 			$_COOKIE = $previous_tab;
 			$this->assertSame( $old, ( new Conversations() )->existing_id() );
+			unset( $_COOKIE[ Conversations::COOKIE ] );
+			$_COOKIE[ Conversations::BROWSER_COOKIE ] = $old_group;
+			$this->assertTrue( ( new Conversations() )->may_use( $old ) );
 		} finally {
 			foreach ( $held as $hook => $callbacks ) {
 				if ( null === $callbacks ) {

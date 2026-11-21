@@ -116,7 +116,7 @@ final class ReplyPrivacy {
 					if ( is_wp_error( $updated ) ) {
 						throw new \RuntimeException( 'tool_reply_erasure_unavailable' );
 					}
-					foreach ( array( '_linker_input', '_linker_recipient', '_linker_binding' ) as $meta ) {
+					foreach ( array( '_linker_input', '_linker_recipient', '_linker_binding', '_linker_previous_conversation' ) as $meta ) {
 						delete_post_meta( $id, $meta );
 					}
 				}

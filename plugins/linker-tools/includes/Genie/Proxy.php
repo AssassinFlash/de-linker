@@ -455,10 +455,26 @@ class Proxy {
 		if ( is_wp_error( $files ) ) {
 			return self::unrecorded( $files );
 		}
-		$conversation = $this->conversations->current_id();
+		$conversation = $this->conversations->begin_turn();
 		if ( $conversation < 1 ) {
 			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
+		try {
+			return $this->answer( $request, $base, $files, $conversation );
+		} finally {
+			$this->conversations->discard_unanswered_guest();
+		}
+	}
+
+	/** Send and record one native conversation turn.
+	 *
+	 * @param WP_REST_Request           $request Native turn.
+	 * @param string                    $base Private transport base.
+	 * @param list<array<string,mixed>> $files Verified attachments.
+	 * @param int                       $conversation Existing or provisional conversation.
+	 * @return WP_Error|WP_REST_Response The recorded answer or the native refusal.
+	 */
+	private function answer( WP_REST_Request $request, string $base, array $files, int $conversation ): WP_Error|WP_REST_Response {
 		$locale = $this->locale( $request->get_param( 'locale' ) );
 		// The page the browser names, checked key by key; the service reads
 		// the page's content itself from it (#234). A solution draft's
@@ -563,6 +579,9 @@ class Proxy {
 					array( 'status' => 409 )
 				)
 			);
+		}
+		if ( ! $this->conversations->publish_answer( $conversation ) ) {
+			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
 		// Action tokens are issued only for this live checked answer; history stays unsigned.
 		// The answer is already stored: these refusals are not a turn that

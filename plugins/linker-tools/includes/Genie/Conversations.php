@@ -212,6 +212,59 @@ class Conversations {
 		return setcookie( $name, $value, $options );
 	}
 
+	/** The current turn can receive a native post ID before its first answer.
+	 *
+	 * @var bool
+	 */
+	private bool $starting_turn = false;
+
+	/** An unanswered guest post is invisible to history, and to other tabs.
+	 *
+	 * @var int
+	 */
+	private int $unanswered_guest = 0;
+
+	/** Start a turn using an existing conversation or a provisional first guest post. */
+	public function begin_turn(): int {
+		$this->starting_turn = true;
+		try {
+			return $this->current_id();
+		} finally {
+			$this->starting_turn = false;
+		}
+	}
+
+	/** Make the first answer available to this browser and its history rail.
+	 *
+	 * @param int $id Post the service answered.
+	 */
+	public function publish_answer( int $id ): bool {
+		if ( $id !== $this->unanswered_guest ) {
+			return true;
+		}
+		$updated = wp_update_post(
+			array(
+				'ID'          => $id,
+				'post_status' => 'private',
+			),
+			true
+		);
+		if ( is_wp_error( $updated ) ) {
+			return false;
+		}
+		$this->select_new( $id, $this->ensure_browser_key() );
+		$this->unanswered_guest = 0;
+		return true;
+	}
+
+	/** Only this request's still-provisional post can be discarded. */
+	public function discard_unanswered_guest(): void {
+		if ( $this->unanswered_guest > 0 ) {
+			wp_delete_post( $this->unanswered_guest, true );
+			$this->unanswered_guest = 0;
+		}
+	}
+
 	/**
 	 * The conversation ID for this request: existing cookie or post, else a new one.
 	 */
@@ -370,10 +423,31 @@ class Conversations {
 
 	/** Start an empty guest editor while preserving access to the previous conversation. */
 	public function start_guest_conversation(): void {
-		if ( $this->selected_id() > 0 ) {
-			$this->adopt_cookie_conversation( $this->ensure_browser_key() );
-			$this->clear_cookie();
+		$id = $this->selected_id();
+		if ( $id < 1 ) {
+			return;
 		}
+		$browser = $this->browser_key();
+		if ( '' === $browser ) {
+			// The signed conversation cookie still owns this thread. Recover only
+			// that thread, without replacing its original browser's history key.
+			$browser = $this->write_browser_key( $this->recovery_key( $id ) );
+			$mark    = self::hash( $browser );
+			if ( ! in_array( $mark, (array) get_post_meta( $id, self::BROWSER_META, false ), true ) ) {
+				add_post_meta( $id, self::BROWSER_META, $mark );
+			}
+		} else {
+			$this->adopt_cookie_conversation( $browser );
+		}
+		$this->clear_cookie();
+	}
+
+	/** Replacement browser key scoped to a single verified signed conversation.
+	 *
+	 * @param int $id Selected native conversation.
+	 */
+	private function recovery_key( int $id ): string {
+		return substr( $this->sign( 'recover-browser-' . $id ), 0, 32 );
 	}
 
 	/**
@@ -430,14 +504,11 @@ class Conversations {
 	 */
 	public function open(): int {
 		$logged_in = is_user_logged_in();
-		$browser   = $logged_in ? '' : $this->ensure_browser_key();
-		if ( '' !== $browser ) {
-			$this->adopt_cookie_conversation( $browser );
-		}
-		$id = wp_insert_post(
+		$pending   = ! $logged_in && $this->starting_turn;
+		$id        = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
-				'post_status' => 'private',
+				'post_status' => $pending ? 'auto-draft' : 'private',
 				'post_title'  => self::UNTITLED,
 				'post_author' => $logged_in ? get_current_user_id() : 0,
 			),
@@ -446,14 +517,26 @@ class Conversations {
 		if ( is_wp_error( $id ) ) {
 			return 0;
 		}
-		if ( '' !== $browser ) {
-			update_post_meta( (int) $id, self::BROWSER_META, self::hash( $browser ) );
+		if ( $pending ) {
+			$this->unanswered_guest = $id;
+		} else {
+			$this->select_new( $id, $logged_in ? '' : $this->ensure_browser_key() );
 		}
-		// Opening is activity: the new conversation heads the list until
-		// another one has a newer turn.
-		update_post_meta( (int) $id, Thread::ACTIVITY, time() );
-		$this->set_cookie( (int) $id );
-		return (int) $id;
+		return $id;
+	}
+
+	/** Select an owned new conversation and preserve the browser's older signed cookie.
+	 *
+	 * @param int    $id New conversation.
+	 * @param string $browser Guest key; empty for an account.
+	 */
+	private function select_new( int $id, string $browser ): void {
+		if ( '' !== $browser ) {
+			$this->adopt_cookie_conversation( $browser );
+			update_post_meta( $id, self::BROWSER_META, self::hash( $browser ) );
+		}
+		update_post_meta( $id, Thread::ACTIVITY, time() );
+		$this->set_cookie( $id );
 	}
 
 	/**
@@ -605,7 +688,11 @@ class Conversations {
 			return true;
 		}
 		$browser = $this->browser_key();
-		return '' !== $browser && hash_equals( (string) get_post_meta( $id, self::BROWSER_META, true ), self::hash( $browser ) );
+		if ( '' === $browser ) {
+			return false;
+		}
+		$mark = self::hash( $browser );
+		return hash_equals( (string) get_post_meta( $id, self::BROWSER_META, true ), $mark ) || ( hash_equals( $this->recovery_key( $id ), $browser ) && in_array( $mark, (array) get_post_meta( $id, self::BROWSER_META, false ), true ) );
 	}
 
 	/**
