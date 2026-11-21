@@ -159,8 +159,7 @@ final class FormRecoveryTest extends TestCase {
 				),
 				$saved['fields']
 			);
-			$this->assertGreaterThanOrEqual( time(), $saved['until'] );
-			$this->assertLessThanOrEqual( time() + 300, $saved['until'] );
+			$this->assertArrayNotHasKey( 'until', $saved );
 			$this->assertSame( array(), FormRecovery::consume( 'password_reset' ), 'Without the native session cookie, no input is recovered.' );
 			$this->assertSame(
 				array(

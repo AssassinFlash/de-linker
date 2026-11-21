@@ -97,14 +97,9 @@ final class Handler {
 			$this->last_error = $submission;
 			return 'invalid';
 		}
-		if ( ! ( new PublicGuard() )->allows( $post, ! Business::enabled() ) ) {
+		if ( ! PublicGuard::allows( $post ) ) {
 			$this->last_error = new WP_Error( 'linker_contact_invalid', 'The form was refused.' );
 			return 'invalid';
-		}
-
-		if ( ! Business::enabled() && ! ( new PublicGuard() )->take() ) {
-			$this->last_error = new WP_Error( 'linker_contact_throttled', 'The connection limit is reached.' );
-			return 'throttled';
 		}
 
 		$selection = $submission->selection();

@@ -327,6 +327,7 @@ final class AuthTemplatesTest extends TestCase {
 	 * A guest stays on the register page — that is the page's visitor.
 	 */
 	public function test_the_register_page_keeps_its_guest(): void {
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'session' => null ) ) );
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );

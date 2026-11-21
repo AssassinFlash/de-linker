@@ -176,43 +176,35 @@ export function runJustRaw(args: string[]): { stdout: string; status: number } {
 	}
 }
 
-/**
- * Local Turnstile acceptance profile: Cloudflare's official always-pass dummy
- * pair, `enforce` so the browser chain runs the real verification, and the
- * testing hostname the dummy keys always report (siteverify metadata
- * `result_with_testing_key`). Production refuses the test key families
- * (Protection\Configuration::test_keys), so this cannot weaken live.
- *
- * These are the same values `just turnstile-test` writes for a human run. A
- * browser suite must not leave them behind: they turn every public door on the
- * instance into an enforce-mode chain, and the PHP integration suites that post
- * through those doors without a proof expect the instance as they found it.
- */
+/** Cloudflare's official testing keys, limited to the local WordPress mail sink. */
 export const TURNSTILE_PROFILE: Record<string, string> = {
-	LINKER_PUBLIC_PROTECTION_MODE: 'enforce',
 	LINKER_TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
 	LINKER_TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
 	LINKER_TURNSTILE_HOSTNAME: 'example.com',
-	// The dummy keys always pass at Cloudflare; this constant makes the
-	// server answer that verdict locally (Turnstile.php) so the suite stops
-	// depending on this machine's network for every verification.
-	LINKER_TURNSTILE_LOCAL_VERIFY: '1',
 };
 
-/**
- * Apply the dummy profile for one run and return the restore that puts the
- * instance's own constants back (an absent constant is deleted again). Reads
- * and writes go through WP-CLI, so the running site sees the same values the
- * suite's fixtures read back.
- */
 export function applyTurnstileProfile(
 	name: string = instanceName(),
-	businessVerification?: 'required' | 'optional'
+	outcome: 'pass' | 'fail' | 'spent' = 'pass'
 ): () => void {
+	const isolated = wp(
+		[
+			'eval',
+			"echo defined('LINKER_LOCAL_MAIL_DIR') && 'local' === wp_get_environment_type() && '127.0.0.1' === wp_parse_url(home_url(), PHP_URL_HOST) ? 'local' : '';",
+		],
+		name
+	);
+	if (isolated.trim() !== 'local')
+		throw new Error(
+			'The Turnstile test profile requires a loopback WordPress instance with a file mail sink.'
+		);
 	const profile = { ...TURNSTILE_PROFILE };
-	if (businessVerification !== undefined) {
-		profile.LINKER_BUSINESS_VERIFICATION = businessVerification;
-	}
+	if (outcome === 'fail')
+		profile.LINKER_TURNSTILE_SECRET_KEY =
+			'2x0000000000000000000000000000000AA';
+	if (outcome === 'spent')
+		profile.LINKER_TURNSTILE_SECRET_KEY =
+			'3x0000000000000000000000000000000AA';
 	const prior = Object.keys(profile).map((constant) => {
 		const current = runJustRaw([
 			'wp',
@@ -227,22 +219,10 @@ export function applyTurnstileProfile(
 			value: current.status === 0 ? current.stdout.trim() : null,
 		};
 	});
-	for (const [constant, value] of Object.entries(profile)) {
-		wp(
-			['config', 'set', constant, value, '--type=constant', '--quiet'],
-			name
-		);
-		if (
-			wp(['config', 'get', constant, '--type=constant'], name).trim() !==
-			value
-		) {
-			throw new Error(
-				`turnstile profile: ${constant} did not read back as applied`
-			);
-		}
-	}
-	return () => {
+	const changed = new Set<string>();
+	const restore = () => {
 		for (const { constant, value } of prior) {
+			if (!changed.has(constant)) continue;
 			if (value === null) {
 				wp(
 					[
@@ -269,59 +249,66 @@ export function applyTurnstileProfile(
 			);
 		}
 	};
+
+	try {
+		for (const [constant, value] of Object.entries(profile)) {
+			wp(
+				[
+					'config',
+					'set',
+					constant,
+					value,
+					'--type=constant',
+					'--quiet',
+				],
+				name
+			);
+			changed.add(constant);
+			if (
+				wp(
+					['config', 'get', constant, '--type=constant'],
+					name
+				).trim() !== value
+			) {
+				throw new Error(
+					`turnstile profile: ${constant} did not read back as applied`
+				);
+			}
+		}
+	} catch (error) {
+		restore();
+		throw error;
+	}
+	return restore;
 }
 
-/** Keep snapshot traffic outside this local run's real admission and mail windows. */
-export function isolateVisitorBudgets(): () => void {
-	const localOnly = String.raw`
-		if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
-			throw new RuntimeException( 'A local WordPress mail sink is required.' );
-		}
-		global $wpdb;
-		$connections = $wpdb->get_col( $wpdb->prepare(
-			"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-			$wpdb->esc_like( \Linker\Commerce\Inquiry\RateLimit::PREFIX . 'public_connection.' ) . '%'
-		) );
-	`;
+/** Isolate actual mail transport budgets for a capture on the local mail sink. */
+export function isolateMailBudgets(): () => void {
+	const check =
+		"if ( ! defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST) ) throw new RuntimeException('A local mail sink is required.');";
 	const snapshot = wp([
 		'eval',
-		localOnly +
+		check +
 			String.raw`
-			$prior = array();
-			foreach ( array_merge( $connections, array(
-				\Linker\Commerce\Mail\Throttle::OPTION,
-				\Linker\Commerce\Mail\OptionBudgetLedger::OPTION,
-				\Linker\Commerce\Protection\Ledger::OPTION
-			) ) as $name ) {
-				wp_cache_delete( $name, 'options' );
-				$prior[$name] = get_option( $name, null );
-				delete_option( $name );
-			}
-			echo base64_encode( serialize( $prior ) );
-		`,
+		$prior = array();
+		foreach (array(\Linker\Commerce\Mail\Throttle::OPTION, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION) as $name) {
+			wp_cache_delete($name, 'options');
+			$prior[$name] = get_option($name, null);
+			delete_option($name);
+		}
+		echo base64_encode(serialize($prior));`,
 	]);
-	return () => {
+	return () =>
 		wp([
 			'eval',
-			localOnly +
+			check +
 				`
-				$prior = unserialize( base64_decode( '${snapshot}' ), array( 'allowed_classes' => false ) );
-				foreach ( $connections as $name ) {
-					if ( ! array_key_exists( $name, $prior ) ) {
-						delete_option( $name );
-					}
-				}
-				foreach ( $prior as $name => $value ) {
-					wp_cache_delete( $name, 'options' );
-					if ( null === $value ) {
-						delete_option( $name );
-					} else {
-						update_option( $name, $value, false );
-					}
-				}
-			`,
+		foreach (unserialize(base64_decode('${snapshot}'), array('allowed_classes' => false)) as $name => $value) {
+			wp_cache_delete($name, 'options');
+			if (null === $value) delete_option($name);
+			else update_option($name, $value, false);
+		}`,
 		]);
-	};
 }
 
 /** Runs `just` from the repository root; throws with the captured output. */

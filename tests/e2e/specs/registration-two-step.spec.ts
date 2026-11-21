@@ -79,8 +79,6 @@ for (const [label, website, stored] of [
 			await page.locator('[name="billing_last_name"]').fill('Beispiel');
 			await page.locator('[name="email"]').fill(email);
 			await page.locator('[name="password"]').fill('Muster-Solar-2026!');
-			// PublicGuard's minimum fill time is three seconds.
-			await page.waitForTimeout(3_300);
 
 			// The actual button, not a scripted form.submit(): the browser runs
 			// its constraint validation and WooCommerce's own handler.

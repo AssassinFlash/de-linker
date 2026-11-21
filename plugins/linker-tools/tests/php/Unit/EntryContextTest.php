@@ -18,7 +18,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 
 /**
- * Scope response, the native identity comparison and the route's allowance.
+ * Scope response, the native identity comparison and the route's origin boundary.
  *
  * @covers \Linker\Tools\Genie\EntryContext
  * @covers \Linker\Tools\Genie\Conversations::entry_scope
@@ -95,17 +95,6 @@ final class EntryContextTest extends TestCase {
 		return $request;
 	}
 
-	/**
-	 * The route with its allowance's UPDATE answers queued in order: every 1
-	 * grants a take, every 0 refuses one (RateLimit's check-and-increment).
-	 *
-	 * @param array<int, int> $update_answers In-order results of the limiter's UPDATE.
-	 */
-	private function entry( array $update_answers = array( 1, 1 ) ): EntryContext {
-		$this->db->update_answers = $update_answers;
-		return new EntryContext();
-	}
-
 	/** Actual server identity and browser changes cannot share a recovery scope. */
 	public function test_scope_changes_with_guest_browser_user_and_auth_session(): void {
 		$user  = 0;
@@ -160,7 +149,7 @@ final class EntryContextTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 17 ) );
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => 'private-auth-token' ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'private-site-salt' ) );
-		$response = $this->entry()->read( $this->request() );
+		$response = ( new EntryContext() )->read( $this->request() );
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertSame( array( 'scope' ), array_keys( $response->get_data() ) );
 		$this->assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
@@ -168,26 +157,18 @@ final class EntryContextTest extends TestCase {
 		$this->assertStringNotContainsString( 'private-auth-token', $response->get_data()['scope'] );
 	}
 
-	/**
-	 * The connection's hourly allowance spent: a plain 429, and no identity
-	 * is resolved for a refused read (get_current_user_id is not mocked, so
-	 * reaching the scope would fail this test by itself).
-	 */
-	public function test_a_spent_connection_allowance_is_a_429(): void {
-		$refusal = $this->entry( array( 0 ) )->read( $this->request() );
-
-		$this->assertInstanceOf( WP_Error::class, $refusal );
-		$this->assertSame( 'linker_entry_context_quota', $refusal->get_error_code() );
-		$this->assertSame( 429, $refusal->get_error_data()['status'] );
-	}
-
-	/** The site-wide daily cap spent: the same plain 429. */
-	public function test_a_spent_site_cap_is_the_same_429(): void {
-		$refusal = $this->entry( array( 1, 0 ) )->read( $this->request() );
-
-		$this->assertInstanceOf( WP_Error::class, $refusal );
-		$this->assertSame( 'linker_entry_context_quota', $refusal->get_error_code() );
-		$this->assertSame( 429, $refusal->get_error_data()['status'] );
+	/** An established guest's scope read allocates no cold-claim storage. */
+	public function test_existing_browser_can_read_scope_with_no_new_browser_allocation(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'unit-test-private' ) );
+		$_COOKIE[ Conversations::BROWSER_COOKIE ] = str_repeat( 'b', 32 );
+		try {
+			$response = ( new EntryContext() )->read( $this->request() );
+			$this->assertInstanceOf( WP_REST_Response::class, $response );
+			$this->assertSame( array(), $this->db->queries );
+		} finally {
+			unset( $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+		}
 	}
 
 	/**
@@ -195,16 +176,16 @@ final class EntryContextTest extends TestCase {
 	 * could burn: neither the caller's own allowance nor the site's day is
 	 * spent on a request this site never asked for.
 	 */
-	public function test_a_cross_site_post_is_refused_without_spending_the_allowance(): void {
+	public function test_a_cross_site_post_is_refused_before_resolving_the_browser(): void {
 		$this->allow_translation();
-		$refusal = $this->entry( array( 0, 0 ) )->read(
+		$refusal = ( new EntryContext() )->read(
 			$this->request( array( 'sec-fetch-site' => 'cross-site' ) )
 		);
 
 		$this->assertInstanceOf( WP_Error::class, $refusal );
 		$this->assertSame( 'linker_planner_origin', $refusal->get_error_code() );
 		$this->assertSame( 403, $refusal->get_error_data()['status'] );
-		$this->assertSame( array(), $this->db->queries, 'A cross-site refusal touches no allowance row.' );
+		$this->assertSame( array(), $this->db->queries, 'A cross-site refusal records no browser claim.' );
 	}
 
 	/**

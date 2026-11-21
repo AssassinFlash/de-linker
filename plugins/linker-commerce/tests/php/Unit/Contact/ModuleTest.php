@@ -57,6 +57,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_remove_order_personal_data_meta', array( new WP_Mock\Matcher\AnyInstance( SelectionView::class ), 'erase' ) );
 		WP_Mock::expectFilterAdded( 'the_content', array( $module, 'mount_form' ), 9 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_language' ) );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $module, 'prepare_form_owner' ) );
 
 		$module->register();
 		$this->assertConditionsMet();

@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const local = /^http:\/\/127\.0\.0\.1:\d+$/;
 
 let restoreBudgets: (() => void) | undefined;
 test.beforeEach(() => {
-	restoreBudgets = isolateVisitorBudgets();
+	restoreBudgets = isolateMailBudgets();
 });
 test.afterEach(() => {
 	restoreBudgets?.();
@@ -192,8 +192,6 @@ for (const locale of ['en', 'de'] as const) {
 			await form.locator('[name="name"]').fill('E2E Report Guest');
 			await form.locator('[name="email"]').fill(email);
 			await form.locator('[name="consent"]').check();
-			// PublicGuard requires three seconds on a rendered form.
-			await page.waitForTimeout(3100);
 			await form
 				.getByRole('button', { name: name('Send inquiry') })
 				.click();

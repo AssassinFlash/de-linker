@@ -11,17 +11,42 @@ namespace Linker\Commerce\Protection;
 
 use Linker\Commerce\Inquiry\Statuses;
 use WC_Order;
+use WP_Error;
 
 /** Store scalar HMAC references, never posted raw bodies or proof credentials. */
 final class BusinessRecord {
 	public const REQUEST = '_linker_public_request';
 	public const INPUT   = '_linker_public_input';
 	public const SUBJECT = '_linker_public_subject';
+	private const ERASED = '_linker_erased_submission';
 
 	/** Stamp before Woo's first save, including checkout-created inquiries. */
 	public function register(): void {
 		add_action( 'woocommerce_before_order_object_save', array( $this, 'stamp' ) );
 		add_filter( 'woocommerce_privacy_remove_order_personal_data_meta', array( $this, 'erase_fields' ) );
+		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( $this, 'mark_erasure' ), PHP_INT_MAX );
+	}
+
+	/**
+	 * Prevent the original form from recreating erased customer data.
+	 * The remaining value identifies neither the owner nor the contents.
+	 *
+	 * @param WC_Order $order Native Woo erasure target.
+	 */
+	public function mark_erasure( WC_Order $order ): void {
+		$id = (string) $order->get_meta( self::REQUEST );
+		if ( wp_is_uuid( $id, 4 ) ) {
+			$order->update_meta_data( self::ERASED, self::erased_reference( $id ) );
+		}
+	}
+
+	/**
+	 * Private marker left after the native eraser removes the submitted UUID.
+	 *
+	 * @param string $id Original submission UUID.
+	 */
+	private static function erased_reference( string $id ): string {
+		return hash_hmac( 'sha256', 'erased-inquiry|' . $id, wp_salt( 'nonce' ) );
 	}
 
 	/**
@@ -58,6 +83,64 @@ final class BusinessRecord {
 		$order->update_meta_data( self::REQUEST, $context['id'] );
 		$order->update_meta_data( self::INPUT, $context['fingerprint'] );
 		$order->update_meta_data( self::SUBJECT, $context['binding'] );
+	}
+
+	/**
+	 * Look up the native order for a request, also distinguishing absence from a
+	 * failed read, an erased submission, and an ID bound to different input.
+	 *
+	 * @param string $id Logical request UUID.
+	 * @param string $fingerprint Server-bound semantic input.
+	 * @param string $binding Current owner.
+	 */
+	public static function find( string $id, string $fingerprint, string $binding ): WC_Order|WP_Error|null {
+		global $wpdb;
+		$erased = self::erased_reference( $id );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Exact Woo association lookup includes records in the trash and distinguishes database failure from a missing order.
+		if ( \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+			$sql = $wpdb->prepare( "SELECT DISTINCT o.id FROM %i m JOIN %i o ON o.id=m.order_id WHERE o.type='shop_order' AND ((m.meta_key=%s AND m.meta_value=%s) OR (m.meta_key=%s AND m.meta_value=%s)) LIMIT 2", $wpdb->prefix . 'wc_orders_meta', $wpdb->prefix . 'wc_orders', self::REQUEST, $id, self::ERASED, $erased );
+		} else {
+			$sql = $wpdb->prepare( "SELECT DISTINCT p.ID FROM %i m JOIN %i p ON p.ID=m.post_id WHERE p.post_type='shop_order' AND ((m.meta_key=%s AND m.meta_value=%s) OR (m.meta_key=%s AND m.meta_value=%s)) LIMIT 2", $wpdb->postmeta, $wpdb->posts, self::REQUEST, $id, self::ERASED, $erased );
+		}
+		$ids = $wpdb->get_col( $sql );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		if ( '' !== $wpdb->last_error || count( $ids ) > 1 ) {
+			return self::unconfirmed();
+		}
+		if ( array() === $ids ) {
+			// A pre-cutover in-flight or erased request may lack a recoverable Woo
+			// record. Read only its existing association; new writes do not use a pool.
+			$journal = get_option( Ledger::OPTION );
+			$old     = is_string( $journal ) ? ( json_decode( $journal, true )['receipts'][ $id ] ?? null ) : null;
+			if ( ! is_array( $old ) || (int) ( $old['retry_until'] ?? 0 ) <= time() ) {
+				return null;
+			}
+			if ( ( $old['binding'] ?? '' ) === $binding && ( $old['fingerprint'] ?? '' ) !== $fingerprint && 'erased' !== ( $old['status'] ?? '' ) ) {
+				return self::changed();
+			}
+			return self::unconfirmed();
+		}
+		$order = wc_get_order( (int) $ids[0] );
+		if ( ! $order instanceof WC_Order || $erased === $order->get_meta( self::ERASED ) ) {
+			return self::unconfirmed();
+		}
+		if ( $binding !== $order->get_meta( self::SUBJECT ) ) {
+			return self::unconfirmed();
+		}
+		if ( $fingerprint !== $order->get_meta( self::INPUT ) ) {
+			return self::changed();
+		}
+		return self::matches( $order, $id, $fingerprint, $binding ) ? $order : self::unconfirmed();
+	}
+
+	/** The owner can resubmit edited details under a fresh submission ID. */
+	private static function changed(): WP_Error {
+		return new WP_Error( 'linker_admission_payload_changed', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
+	}
+
+	/** A missing or private result carries no customer or order information. */
+	private static function unconfirmed(): WP_Error {
+		return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 	}
 
 	/**

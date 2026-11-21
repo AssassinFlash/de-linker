@@ -72,6 +72,7 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'admin_post_nopriv_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
 		$this->expect_action_on_any( 'admin_post_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
 		$this->expect_action_on_any( 'template_redirect', \Linker\Commerce\Inquiry\Handler::class, 'checkout_post', 1 );
+		$this->expect_action_on_any( 'template_redirect', \Linker\Commerce\Inquiry\Form::class, 'prepare_form_owner' );
 		$statuses = new Statuses();
 		$checkout = new Checkout();
 		$locale   = new OrderLocale();

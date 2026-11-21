@@ -149,6 +149,31 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'sales@de-linker.com', $sign_in->get_error_message() );
 	}
 
+	/** A stale failure count from the customer's connection cannot prevent a correct password. */
+	public function test_a_customer_can_sign_in_with_an_existing_failed_login_count(): void {
+		$customer = $this->customer();
+		$this->set_state( $customer, Approval::APPROVED );
+		wp_set_password( self::PASSWORD, $customer->get_id() );
+		// Seed only this synthetic customer's old counter, without sending repeated login attempts.
+		$address = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+		$subject = hash_hmac( 'sha256', $customer->get_id() . '|' . $address, wp_salt( 'auth' ) );
+		$bucket  = str_pad( (string) intdiv( time(), 10 * MINUTE_IN_SECONDS ), 10, '0', STR_PAD_LEFT );
+		$row     = 'linker_commerce_limit_login_failed_account_connection.' . substr( md5( $subject ), 0, 12 ) . '.' . $bucket;
+		$this->assertTrue( add_option( $row, '100', '', false ) );
+		$this->later(
+			static function () use ( $row ): void {
+				delete_option( $row );
+			}
+		);
+
+		$incorrect = wp_authenticate( $customer->get_username(), self::PASSWORD . '-incorrect' );
+		$this->assertInstanceOf( WP_Error::class, $incorrect );
+		$this->assertSame( 'incorrect_password', $incorrect->get_error_code() );
+		$correct = wp_authenticate( $customer->get_email(), self::PASSWORD );
+		$this->assertInstanceOf( WP_User::class, $correct );
+		$this->assertSame( $customer->get_id(), $correct->ID );
+	}
+
 	/**
 	 * A pending account can add a product and send its inquiry through the
 	 * same public gateway, while approval continues to govern prices.

@@ -45,16 +45,6 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 			$product->set_regular_price( '100' );
 			$product->save();
 			$fixture->add_product( $product->get_id() );
-			if ( 'capped' === ( $args[2] ?? '' ) ) {
-				for ( $i = 0; $i < 10; ++$i ) {
-					( new \Linker\Commerce\Inquiry\ReceiptLimit() )->take();
-					// Enforce mode caps receipts through the ledger-backed
-					// ReceiptBudget site day, not the legacy option counter.
-					// A distinct target each time fills the shared site
-					// allowance without tripping a per-target cap first.
-					\Linker\Commerce\Protection\ReceiptBudget::take( "cap-fixture-{$i}@example.test", "cap-fixture-{$i}" );
-				}
-			}
 			PublicInquiryAssessment::install();
 		} catch ( Throwable $error ) {
 			PublicInquiryAssessment::remove();
@@ -146,6 +136,8 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 		array(
 			'orders' => array_map(
 				static fn( $order ) => array(
+					'id'            => $order->get_id(),
+					'number'        => $order->get_order_number(),
 					'status'        => $order->get_status(),
 					'customer'      => $order->get_customer_id(),
 					'source'        => $order->get_meta( '_linker_inquiry_source' ),

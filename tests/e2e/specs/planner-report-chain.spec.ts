@@ -1236,8 +1236,6 @@ for (const lang of ['en', 'de'] as const) {
 			'query',
 			"DELETE FROM wp_options WHERE option_name LIKE 'linker_commerce_limit_public_connection%'",
 		]);
-		// PublicGuard requires three seconds between rendering and submission.
-		await page.waitForTimeout(3500);
 		const revisionField = inquiry.locator(
 			'input[name^="linker_project_note_revisions"]'
 		);

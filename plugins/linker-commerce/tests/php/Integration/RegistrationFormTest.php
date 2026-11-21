@@ -224,9 +224,7 @@ final class RegistrationFormTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * A bot that fills everything but the trap, or posts too fast, or comes
-	 * back over the shared limit, is refused before any account or mail and
-	 * the refusal is counted.
+	 * A filled registration honeypot is counted even when another field has an error.
 	 */
 	public function test_the_guard_refuses_and_counts_before_an_account_or_mail_exists(): void {
 		$previous = get_option( BlockedRegistrations::OPTION );
@@ -242,13 +240,7 @@ final class RegistrationFormTest extends IntegrationTestCase {
 		);
 		$marker = self::newest_mail_job();
 
-		$stamp = (string) ( time() - 5 );
-		$base  = $this->post(
-			array(
-				'linker_started'       => $stamp,
-				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
-			)
-		);
+		$base = $this->post();
 
 		$_POST  = array_merge( $base, array( 'website' => 'http://spam.example' ) );
 		$errors = ( new BotGuard() )->validate( new WP_Error() );
@@ -269,27 +261,9 @@ final class RegistrationFormTest extends IntegrationTestCase {
 		$this->assertContains( BotGuard::ERROR, $errors->get_error_codes() );
 		$this->assertContains( 'billing_company', $errors->get_error_codes() );
 
-		$now    = (string) time();
-		$_POST  = array_merge(
-			$this->post(),
-			array(
-				'linker_started'       => $now,
-				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $now ),
-			)
-		);
-		$errors = ( new BotGuard() )->validate( new WP_Error() );
-		$this->assertContains( BotGuard::ERROR, $errors->get_error_codes() );
-		$counts = BlockedRegistrations::counts();
-		$this->assertSame( 2, $counts['counts'][ PublicGuard::REFUSAL_HONEYPOT ] );
-		$this->assertSame( 1, $counts['counts'][ PublicGuard::REFUSAL_TOO_FAST ] );
-
-		// Three accepted attempts spend the connection's allowance; the fourth is refused.
 		$_POST = $base;
-		for ( $attempt = 0; $attempt < PublicGuard::LIMIT; ++$attempt ) {
-			$this->assertFalse( ( new BotGuard() )->validate( new WP_Error() )->has_errors(), 'Within the shared allowance.' );
-		}
-		$this->assertContains( BotGuard::ERROR, ( new BotGuard() )->validate( new WP_Error() )->get_error_codes() );
-		$this->assertSame( 1, BlockedRegistrations::counts()['counts'][ BotGuard::LIMIT ] );
+		$this->assertFalse( ( new BotGuard() )->validate( new WP_Error() )->has_errors() );
+		$this->assertSame( 2, BlockedRegistrations::counts()['counts'][ PublicGuard::REFUSAL_HONEYPOT ] );
 
 		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'A refused registration queues no mail.' );
 		$users = get_users(

@@ -92,7 +92,7 @@ final class InquiryRecoveryTest extends IntegrationTestCase {
 			}
 		);
 		$queue = new Queue();
-		$limit = array_sum( array_column( BusinessCapacity::LIMITS, 'count' ) );
+		$limit = Queue::RECOVERY_BATCH;
 		$read  = new \ReflectionMethod( Queue::class, 'pending_ids' );
 		// Check the actual native ID result before entering any consumer, even
 		// when empty. A normalized/ignored include must fail without side effects.
@@ -107,7 +107,7 @@ final class InquiryRecoveryTest extends IntegrationTestCase {
 			return $queue->recover();
 		};
 		self::assertSame( 0, $run() );
-		self::assertSame( 0, get_option( Queue::RECOVERY_OFFSET ) );
+		self::assertSame( 0, (int) get_option( Queue::RECOVERY_OFFSET ) );
 		// A nonpending older source distinguishes a true pending-only CPT query.
 		for ( $i = 0; $i <= $limit + 2; ++$i ) {
 			$order = new WC_Order();
@@ -150,14 +150,14 @@ final class InquiryRecoveryTest extends IntegrationTestCase {
 		);
 		self::assertSame( $limit, $run() );
 		self::assertSame( array_slice( $ids, 0, $limit ), $loaded, 'Exactly one fresh consumer hydration per selected ID.' );
-		self::assertSame( $limit, get_option( Queue::RECOVERY_OFFSET ) );
+		self::assertSame( $limit, (int) get_option( Queue::RECOVERY_OFFSET ) );
 		$first = $this->owned[ $ids[0] ];
 		$first->update_meta_data( Queue::PENDING, 'complete' );
 		$first->save_meta_data();
 		$loaded = array();
 		self::assertSame( 1, $run() );
 		self::assertSame( array( end( $ids ) ), $loaded );
-		self::assertSame( 0, get_option( Queue::RECOVERY_OFFSET ) );
+		self::assertSame( 0, (int) get_option( Queue::RECOVERY_OFFSET ) );
 		$loaded = array();
 		self::assertSame( $limit, $run() );
 		self::assertSame( array_slice( $ids, 1, $limit ), $loaded, 'The item shifted left by deletion is revisited on wrap.' );
@@ -200,8 +200,8 @@ final class InquiryRecoveryTest extends IntegrationTestCase {
 		} finally {
 			remove_filter( 'pre_as_schedule_single_action', $fail, 10 );
 		}
-		self::assertSame( 1, get_option( Queue::HEARTBEAT ), 'A failed pass cannot refresh readiness.' );
-		self::assertSame( 0, get_option( Queue::RECOVERY_OFFSET ) );
+		self::assertSame( 1, (int) get_option( Queue::HEARTBEAT ), 'A failed pass cannot refresh readiness.' );
+		self::assertSame( 0, (int) get_option( Queue::RECOVERY_OFFSET ) );
 		self::assertNotFalse( as_has_scheduled_action( Queue::PROCESS, array( $later->get_id() ), Outbox::GROUP ), 'A failed first source cannot starve a later source on the same short page.' );
 		self::assertCount(
 			0,

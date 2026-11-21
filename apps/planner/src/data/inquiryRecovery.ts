@@ -2,7 +2,6 @@ import type { Project } from "./protocol.ts";
 
 const pendingPrefix = "linker-preliminary-inquiry-pending:";
 const requestField = "linker_request_id";
-const protectedAction = "inquiry";
 const uuid4 =
 	/^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/i;
 const replayFields = new Set([
@@ -65,9 +64,7 @@ function key(scope: string, project: ProjectVersion): string {
 }
 
 function identityField(form: HTMLFormElement): HTMLInputElement | null {
-	return form.querySelector(
-		`input[type="hidden"][name="${requestField}"][data-linker-protected-action="${protectedAction}"]`,
-	);
+	return form.querySelector(`input[type="hidden"][name="${requestField}"]`);
 }
 
 export function replayWindow(form: HTMLFormElement): number {
@@ -194,7 +191,6 @@ export function restoreInquiry(
 	const requestId = payload.get(requestField);
 	if (!identity || !requestId) throw new Error("invalid_inquiry_form");
 	identity.value = requestId;
-	identity.dataset.linkerProtectionRecovery = "true";
 	for (const control of Array.from(form.elements)) {
 		if (
 			control === identity ||

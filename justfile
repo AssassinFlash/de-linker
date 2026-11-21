@@ -315,7 +315,7 @@ ci-native groups name:
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter "$filter")
     }
     run_inquiry() {
-        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicTrustTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest')
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'NativeFormRoutesTest|PublicLedgerTest|PublicVerificationTest|PublicAdmissionOwnersTest|NativeInquirySubmissionTest|BusinessAdmissionTest')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter InquiryStatusRestTest)
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ReadSolutionRestTest)
         just --justfile "$root/justfile" page-cache-chain "$name"
@@ -324,7 +324,7 @@ ci-native groups name:
             echo "pdftotext is required for the Proforma price-gate test" >&2
             exit 1
         fi
-        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ProformaPriceGateTest)
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter QuotationPriceGateTest)
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'GenieInquiryTest|test_planning_report_submission')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PreSendAuthorizationTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest')
     }
@@ -439,18 +439,8 @@ serve name *options:
 wp name *args:
     PHP={{ php }} {{ linker_local }} wp "$@"
 
-# Turnstile acceptance on a LOCAL instance (`just up <name>` first): Cloudflare's
-# official always-pass dummy pair plus enforce mode, so the full browser chain
-# (widget → protection/verify → proof → genie turn / cart write / contact
-# submit) runs locally with no real challenge and no real keys. The testing key
-# pair always reports hostname "example.com" (siteverify metadata
-# result_with_testing_key), so the expected hostname constant must say so; with
-# the default home host every verification would fail the hostname pin.
-# Production refuses these key families (Protection\Configuration::test_keys),
-# so this can never weaken live; real-question acceptance on production goes
-# through the service-level channel (x-linker-service-token + 64-hex
-# x-linker-resource-subject on the VPS loopback).
-# Re-runnable; leaves the settings in place for the instance's own lifetime.
+# Configure a local instance to use Cloudflare's official dummy credentials
+# for native anonymous inquiry, contact and registration submissions.
 [positional-arguments]
 turnstile-test name:
     #!/usr/bin/env bash

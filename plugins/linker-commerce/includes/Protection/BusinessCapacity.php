@@ -16,218 +16,11 @@ use WP_Error;
 /** The review registry's native lock/CAS also serializes independent normal pools. */
 final class BusinessCapacity {
 	public const KEY = '_linker_business_capacity_key';
-	/** First-save verification lives only within the trusted native request.
-	 *
-	 * @var array<string,array<string,string>>
-	 */
-	private static array $expected = array();
-	// Owner-approved adjustable operating envelopes, docs/specs/568-global-business-intake.md.
-	public const LIMITS = array(
-		'ordinary' => array(
-			'count' => 128,
-			'bytes' => 33554432,
-		),
-		'approved' => array(
-			'count' => 64,
-			'bytes' => 16777216,
-		),
-	);
 
 	/** Native completion/deletion, rather than elapsed time or SMTP, releases space. */
 	public function register(): void {
-		add_action( 'woocommerce_before_order_object_save', array( self::class, 'prepare' ), 99 );
-		add_action( 'woocommerce_new_order', array( $this, 'bind' ), 30, 2 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'status' ), 30, 4 );
 		add_action( 'woocommerce_delete_order', array( $this, 'deleted' ) );
-	}
-
-	/**
-	 * A count/empty-byte refusal before optional inquiry summarization or native work.
-	 * Actual complete logical bytes are checked again at prepare(), before first save.
-	 */
-	public static function preflight(): ?WP_Error {
-		$context = apply_filters( 'linker_commerce_public_business_context', null ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Trusted server-only native context.
-		if ( 'enforce' !== Configuration::active_mode() || ( is_array( $context ) && ! empty( $context['intake'] ) ) ) {
-			return null;
-		}
-		$result = IntakeStore::edit(
-			static function ( array &$state ): array|WP_Error {
-				self::initialize( $state );
-				return self::room( $state, TrustedCustomer::current() ? 'approved' : 'ordinary', 1 );
-			},
-			1,
-			true
-		);
-		return $result instanceof WP_Error ? $result : null;
-	}
-
-	/**
-	 * Charge full prepared Woo data, items, snapshot and evidence without truncation.
-	 *
-	 * @param WC_Order $order Native prepared inquiry, before its first save.
-	 * @param int      $additional_bytes Proven generated-summary headroom, never a customer cut-off.
-	 * @throws CapacityFull Explicit native failure; no received result is fabricated.
-	 */
-	public static function prepare( WC_Order $order, int $additional_bytes = 0 ): void {
-		if ( 'enforce' !== Configuration::active_mode() || $order->get_id() > 0 || $order->get_meta( Intake::META ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) ) {
-			return;
-		}
-		// Freeze the same trusted association before measuring, including the
-		// explicit pre-provider path that precedes Woo's before-save hooks.
-		( new BusinessRecord() )->stamp( $order );
-		$key = (string) $order->get_meta( self::KEY );
-		if ( '' !== $key ) {
-			self::finalize( $order );
-			return;
-		}
-		$context = apply_filters( 'linker_commerce_public_business_context', null ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native source association, never browser fields.
-		$key     = is_array( $context ) && wp_is_uuid( (string) ( $context['id'] ?? '' ), 4 ) ? (string) $context['id'] : wp_generate_uuid4();
-		$bytes   = self::bytes( $order ) + $additional_bytes;
-		$result  = IntakeStore::edit(
-			static function ( array &$state ) use ( $key, $bytes, $order ): array|WP_Error {
-				self::initialize( $state );
-				$pool = TrustedCustomer::current() ? 'approved' : 'ordinary';
-				if ( isset( $state['business'][ $key ] ) ) {
-					$entry = $state['business'][ $key ];
-					return (int) $entry['order'] === $order->get_id() && (int) $entry['bytes'] === $bytes
-						? array() : self::problem();
-				}
-				$room = self::room( $state, $pool, $bytes );
-				if ( is_wp_error( $room ) ) {
-					return $room;
-				}
-				$state['business'][ $key ] = array(
-					'pool'  => $pool,
-					'order' => $order->get_id(),
-					'bytes' => $bytes,
-				);
-				IntakeStore::save( $state );
-				return array();
-			},
-			1,
-			true
-		);
-		if ( $result instanceof WP_Error ) {
-			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped at the native form consumer.
-		}
-		$order->update_meta_data( self::KEY, $key );
-		$legacy                 = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
-		self::$expected[ $key ] = array();
-		foreach ( $order->get_meta_data() as $meta ) {
-			$value = $legacy && is_array( $meta->value ) ? wp_unslash( $meta->value ) : $meta->value;
-			self::$expected[ $key ][ (string) $meta->key ] = self::digest( $value );
-		}
-	}
-
-	/**
-	 * Convert a proven pre-model envelope into its complete actual first-save data.
-	 * The slot and paid/native throughput remain charged; only unused byte slack
-	 * is replaced before this order has ever been saved.
-	 *
-	 * @param WC_Order $order Complete prepared native inquiry.
-	 * @throws CapacityFull An unproven payload cannot exceed the reserved envelope.
-	 */
-	public static function finalize( WC_Order $order ): void {
-		if ( $order->get_id() > 0 || ! $order->get_meta( self::KEY ) ) {
-			return;
-		}
-		$key    = (string) $order->get_meta( self::KEY );
-		$bytes  = self::bytes( $order );
-		$result = IntakeStore::edit(
-			static function ( array &$state ) use ( $key, $bytes ): array|WP_Error {
-				$entry = $state['business'][ $key ] ?? null;
-				if ( ! is_array( $entry ) || 0 !== $entry['order'] || $bytes > $entry['bytes'] ) {
-					return self::problem();
-				}
-				$state['business'][ $key ]['bytes'] = $bytes;
-				IntakeStore::save( $state );
-				return array();
-			},
-			1,
-			true
-		);
-		if ( $result instanceof WP_Error ) {
-			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped at the native form consumer.
-		}
-		// Rebuild the first-save verification from the actual prepared metadata.
-		$legacy                 = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
-		self::$expected[ $key ] = array();
-		foreach ( $order->get_meta_data() as $meta ) {
-			self::$expected[ $key ][ (string) $meta->key ] = self::digest( $legacy && is_array( $meta->value ) ? wp_unslash( $meta->value ) : $meta->value );
-		}
-	}
-
-	/**
-	 * Woo may swallow a native save exception. Never announce received from its
-	 * in-memory object alone: force native metadata readback before status/mail.
-	 *
-	 * @param WC_Order $order Native caller's saved object.
-	 * @param string   $key Trusted first-save key when checkout reloads the object.
-	 */
-	public static function verify( WC_Order $order, string $key = '' ): ?WP_Error {
-		$fresh = $order->get_id() > 0 ? \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() ) : false;
-		if ( ! $fresh instanceof WC_Order ) {
-			return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
-		}
-		$fresh->read_meta_data( true );
-		$key = '' !== $key ? $key : (string) $order->get_meta( self::KEY );
-		foreach ( self::$expected[ $key ] ?? array() as $name => $digest ) {
-			if ( self::digest( $fresh->get_meta( $name ) ) !== $digest ) {
-				return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
-			}
-		}
-		if ( '' !== $key ) {
-			$bound = IntakeStore::edit(
-				static function ( array &$state ) use ( $key, $fresh ): array|WP_Error {
-					return ( $state['business'][ $key ]['order'] ?? 0 ) === $fresh->get_id() ? array() : self::problem();
-				},
-				1,
-				true
-			);
-			if ( $bound instanceof WP_Error ) {
-				return $bound;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Native metadata scalars are strings after DB storage; arrays keep types.
-	 *
-	 * @param mixed $value Prepared or native value, never printed.
-	 */
-	private static function digest( mixed $value ): string {
-		return hash( 'sha256', maybe_serialize( is_scalar( $value ) ? (string) $value : $value ) );
-	}
-
-	/**
-	 * The first save's source association survives a lost acknowledgement.
-	 *
-	 * @param int            $id Actual saved order.
-	 * @param WC_Order|false $order Native saved object.
-	 * @throws CapacityFull The native first-save owner must roll back a failed binding.
-	 */
-	public function bind( int $id, WC_Order|false $order = false ): void {
-		$order = $order instanceof WC_Order ? $order : wc_get_order( $id );
-		$key   = $order instanceof WC_Order ? (string) $order->get_meta( self::KEY ) : '';
-		if ( '' === $key ) {
-			return;
-		}
-		$result = IntakeStore::edit(
-			static function ( array &$state ) use ( $key, $id ): array|WP_Error {
-				if ( ! isset( $state['business'][ $key ] ) || ! in_array( $state['business'][ $key ]['order'], array( 0, $id ), true ) ) {
-					return self::problem();
-				}
-				$state['business'][ $key ]['order'] = $id;
-				IntakeStore::save( $state );
-				return array();
-			},
-			1,
-			true
-		);
-		if ( $result instanceof WP_Error ) {
-			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Native first-save owner rolls back; never acknowledges an unbound record.
-		}
 	}
 
 	/**
@@ -359,7 +152,7 @@ final class BusinessCapacity {
 				throw new \RuntimeException( 'business_capacity_invalid_state' );
 			}
 			foreach ( $state['business'] as $entry ) {
-				if ( ! is_array( $entry ) || ! isset( self::LIMITS[ $entry['pool'] ?? '' ] ) || ! is_int( $entry['bytes'] ?? null ) || $entry['bytes'] < 1 || ! is_int( $entry['order'] ?? null ) || $entry['order'] < 0 ) {
+				if ( ! is_array( $entry ) || ! in_array( $entry['pool'] ?? '', array( 'ordinary', 'approved' ), true ) || ! is_int( $entry['bytes'] ?? null ) || $entry['bytes'] < 1 || ! is_int( $entry['order'] ?? null ) || $entry['order'] < 0 ) {
 					throw new \RuntimeException( 'business_capacity_invalid_entry' );
 				}
 			}
@@ -413,20 +206,6 @@ final class BusinessCapacity {
 	 */
 	public static function synchronize( array &$state ): void {
 		self::initialize( $state );
-	}
-
-	/**
-	 * Check count and actual encoded logical bytes atomically.
-	 *
-	 * @param array<string,mixed> $state Locked registry.
-	 * @param string              $pool Staff-selected pool.
-	 * @param int                 $bytes Complete prospective logical bytes.
-	 * @return array<string,mixed>|WP_Error
-	 */
-	private static function room( array $state, string $pool, int $bytes ): array|WP_Error {
-		$entries = array_filter( $state['business'], static fn ( array $entry ): bool => $pool === $entry['pool'] );
-		return count( $entries ) >= self::LIMITS[ $pool ]['count'] || array_sum( array_column( $entries, 'bytes' ) ) + $bytes > self::LIMITS[ $pool ]['bytes']
-			? self::problem() : array();
 	}
 
 	/**

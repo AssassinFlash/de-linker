@@ -24,32 +24,6 @@ final class Intake {
 	private const MAX_LINES = 20;
 
 	/**
-	 * Valid proof needs the persisted successful verification, not only its MAC.
-	 *
-	 * @param string   $proof Browser proof.
-	 * @param string   $action Native door.
-	 * @param Identity $identity Native subject.
-	 * @param string   $id Logical business request.
-	 */
-	public static function verified( string $proof, string $action, Identity $identity, string $id ): bool {
-		$checked = ( new Proof() )->read( $proof, 'verified', $action, $identity );
-		if ( null === $checked ) {
-			return false;
-		}
-		// A lookup checks the fingerprint; verification uses a private canonical
-		// fingerprint, so inspect through a dedicated journal validity check.
-		return ( new Ledger() )->proof_valid(
-			array(
-				'id'      => $checked['id'],
-				'binding' => $identity->binding(),
-				'action'  => $action,
-				'single'  => true,
-			),
-			$id
-		);
-	}
-
-	/**
 	 * Native admission still enforces browser/account/connection dimensions.
 	 *
 	 * @param string                                         $lane Server-selected review class.

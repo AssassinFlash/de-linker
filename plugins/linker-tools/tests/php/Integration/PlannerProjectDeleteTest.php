@@ -197,7 +197,8 @@ final class PlannerProjectDeleteTest extends TestCase {
 			self::assertSame( 503, $lost->get_error_data()['status'] );
 			$summary = $ledger->summary();
 			self::assertIsArray( $summary );
-			self::assertSame( $before + 1, $summary['counts']['planner_write']['dispatched'] ?? 0 );
+			self::assertSame( $before, $summary['counts']['planner_write']['dispatched'] ?? 0 );
+			self::assertSame( 1, $attempts );
 			$replay = $gateway->forward( $request );
 			self::assertInstanceOf( \WP_REST_Response::class, $replay );
 			self::assertTrue( $replay->get_data()->deleted );

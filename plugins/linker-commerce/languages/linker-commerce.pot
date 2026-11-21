@@ -128,7 +128,7 @@ msgstr ""
 msgid "The request failed. Please try again."
 msgstr ""
 
-#: build/accounts.js:1 includes/Inquiry/Form.php:308
+#: build/accounts.js:1 build/protection.js:1 includes/Inquiry/Form.php:308
 msgid "Try again"
 msgstr ""
 
@@ -1528,7 +1528,7 @@ msgstr ""
 #. translators: 1: unhandled inquiries, 2: the site envelope, 3: quarantined inquiries.
 #: includes/Health/OperationsHealth.php:238
 #, php-format
-msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
+msgid "intake %1$d unhandled, %2$d quarantined"
 msgstr ""
 
 #: includes/Health/OperationsHealth.php:246
@@ -6350,4 +6350,8 @@ msgstr ""
 msgid ""
 "Reply to %s to confirm or adjust this Quotation. We agree on billing and "
 "delivery with you personally."
+msgstr ""
+
+#: includes/Protection/Login.php
+msgid "Too many failed sign-in attempts. Please try again later."
 msgstr ""

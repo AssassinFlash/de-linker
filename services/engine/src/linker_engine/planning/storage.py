@@ -7,6 +7,7 @@ references, so interrupted writes can leave unreferenced bytes, not broken refs.
 
 from __future__ import annotations
 
+import errno
 import mmap
 import os
 import re
@@ -17,7 +18,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .canonical import Object, decode_object, digest, encode
-from .errors import InvalidInput, VersionUnavailable
+from .errors import InvalidInput, StorageUnavailable, VersionUnavailable
 from .schema import READABLE_SCHEMA_VERSIONS, SCHEMA, SCHEMA_VERSION
 from .schema_upgrade import upgrade_jobs
 
@@ -33,8 +34,15 @@ def _sync_directory(directory: Path) -> None:
 class Blobs:
     """Content-addressed private storage; callers must check project ownership."""
 
-    def __init__(self, directory: Path, *, temporary_id: str | None = None) -> None:
+    def __init__(
+        self,
+        directory: Path,
+        *,
+        temporary_id: str | None = None,
+        minimum_free_bytes: int = 0,
+    ) -> None:
         self.directory = directory
+        self.minimum_free_bytes = minimum_free_bytes
         if temporary_id is not None and not re.fullmatch(r"[a-f0-9]{32}", temporary_id):
             raise InvalidInput("private temporary owner must be a lease token")
         self.temporary_id = temporary_id
@@ -45,21 +53,43 @@ class Blobs:
             raise InvalidInput("invalid content hash")
         return self.directory / sha256[:2] / sha256
 
+    def has_space(self, size: int = 0) -> bool:
+        """Keep the deployed recovery margin available for blocks and directory entries."""
+        if not self.minimum_free_bytes:
+            return True
+        space = os.statvfs(self.directory)
+        available = space.f_bavail * space.f_frsize
+        # One new blob can also require its two-character prefix directory.
+        if space.f_files and space.f_favail < 2:
+            return False
+        return available >= self.minimum_free_bytes + size + space.f_frsize
+
     def put(self, content: bytes) -> str:
+        try:
+            return self._put(content, recovery=False)
+        except OSError as error:
+            if error.errno in (errno.ENOSPC, errno.EDQUOT):
+                raise StorageUnavailable("workspace allocation failed") from error
+            raise
+
+    def recovery_record(self, value: Object) -> str:
+        """The small deletion receipt or worker error that lets recovery finish."""
+        return self._put(encode(value), recovery=True)
+
+    def _put(self, content: bytes, *, recovery: bool) -> str:
         sha256 = digest(content)
         destination = self._path(sha256)
-        try:
-            destination.parent.mkdir(mode=0o700)
-        except FileExistsError:
-            pass
-        # Reconfirm the prefix even on retries. An existing entry may have
-        # survived a previous caller's failed fsync, without being durable yet.
-        _sync_directory(self.directory)
         if destination.exists():
+            # A previous writer may have linked the blob before a failed fsync.
+            _sync_directory(self.directory)
             if self.read(sha256) != content:
                 raise VersionUnavailable("pinned bytes conflict")
             _sync_directory(destination.parent)
             return sha256
+        if not recovery and not self.has_space(len(content)):
+            raise StorageUnavailable("insufficient workspace capacity for new content")
+        destination.parent.mkdir(mode=0o700, exist_ok=True)
+        _sync_directory(self.directory)
         temporary = destination.parent / (
             ".incoming-" + (self.temporary_id or uuid4().hex)
         )
@@ -183,8 +213,15 @@ class Database:
             self._require_schema(connection)
             yield connection
             connection.commit()
-        except BaseException:
+        except BaseException as error:
             connection.rollback()
+            if (
+                isinstance(error, sqlite3.OperationalError)
+                and error.sqlite_errorcode == sqlite3.SQLITE_FULL
+            ):
+                raise StorageUnavailable(
+                    "workspace database allocation failed"
+                ) from error
             raise
         finally:
             connection.close()

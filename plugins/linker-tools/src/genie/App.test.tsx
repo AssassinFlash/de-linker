@@ -55,7 +55,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 } );
 vi.mock( './api/contact', () => ( {
 	readContact: vi.fn( async () => ( {
-		started: '100.sig',
+		source: '5:2',
 		email: null,
 		sent: null,
 		mailbox: 'sales@de-linker.com',
@@ -68,8 +68,7 @@ vi.mock( './api/product', () => ( {
 vi.mock( './api/inquiry', () => ( {
 	readInquiry: vi.fn( async () => ( {
 		conversation: 5,
-		started: '100',
-		startedNonce: 'sig',
+		source: '5:2',
 		account: null,
 		lines: [
 			{
@@ -113,11 +112,9 @@ const GERMAN_STREAM =
 	'event: done\n' +
 	'data: {"ok":true}\n\n';
 
-// The mounted App owns one challenge slot and the pre-dispatch cancellation of
-// its own turn, so every turn carries that binding rather than a DOM guess.
-const ownedVerification = () =>
+// Each turn remains bound to the mounted conversation owner until dispatch.
+const ownedTurn = () =>
 	expect.objectContaining( {
-		slot: expect.any( Function ),
 		signal: expect.any( AbortSignal ),
 		beforeDispatch: expect.any( Function ),
 		onDispatch: expect.any( Function ),
@@ -142,8 +139,6 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		workspaceUrl: '/genie/',
 		signedIn: false,
 		retentionDays: 90,
-		mailStarted: '1800000000',
-		mailStartedNonce: 'stamp-nonce',
 		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 		prompts: [
@@ -170,8 +165,6 @@ beforeEach( () => {
 afterEach( () => {
 	sessionStorage.clear();
 	resetTurnLane();
-	delete window.linkerPublicProtection;
-	delete window.linkerPublicProtectionConfig;
 } );
 
 test( 'fresh report URLs carry only the exact saved project and run', () => {
@@ -514,79 +507,6 @@ test( 'a selection changed while verification waits cannot open the wrong report
 		).toBeNull();
 	} finally {
 		window.history.replaceState( {}, '', original );
-	}
-} );
-
-test( 'the actual verification adapter exposes saved-report recovery without dispatching', async () => {
-	const actual =
-		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
-	const { webcrypto } = await import( 'node:crypto' );
-	vi.stubGlobal( 'crypto', webcrypto );
-	const original = window.location.href;
-	const project = 'a'.repeat( 32 );
-	const run = 'b'.repeat( 32 );
-	window.history.replaceState(
-		{},
-		'',
-		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
-	);
-	const page = {
-		type: 'other' as const,
-		title: 'Report',
-		url: window.location.href,
-		planning_project_id: project,
-		planning_revision: 5,
-		planning_run_ids: [ run ],
-		planning_unsaved: false,
-	};
-	window.linkerPublicProtectionConfig = {
-		api: '/proof',
-		nonce: 'synthetic',
-		mode: 'enforce',
-		language: 'en',
-	};
-	window.linkerPublicProtection = {
-		proof: vi.fn( async () => {
-			throw new Error( 'verification_widget_300030' );
-		} ),
-		reset: vi.fn(),
-	};
-	const transport = vi.fn< typeof fetch >();
-	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( {
-			...request,
-			fetcher: onDemandTransport( transport ),
-		} )
-	);
-	try {
-		await renderOwned( <App config={ config() } /> );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-		act( () =>
-			window.dispatchEvent(
-				new CustomEvent( 'linker-genie-planning-context', {
-					detail: { page },
-				} )
-			)
-		);
-		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-			target: { value: 'Saved report question' },
-		} );
-		await act( async () =>
-			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
-		);
-		expect(
-			await screen.findByRole( 'link', {
-				name: 'Open saved report in a new tab',
-			} )
-		).toBeVisible();
-		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
-			'Saved report question'
-		);
-		expect( transport ).not.toHaveBeenCalled();
-	} finally {
-		window.history.replaceState( {}, '', original );
-		delete window.linkerPublicProtection;
-		delete window.linkerPublicProtectionConfig;
 	}
 } );
 
@@ -1162,7 +1082,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 		page: { type: 'category' },
 		// No file was picked: the turn carries none.
 		uploads: [],
-		verification: ownedVerification(),
+		owner: ownedTurn(),
 		plannerNonce: undefined,
 	} );
 	expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument();
@@ -1763,7 +1683,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
 		page: { type: 'category' },
 		uploads: [],
-		verification: ownedVerification(),
+		owner: ownedTurn(),
 		plannerNonce: undefined,
 	} );
 	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
@@ -3195,7 +3115,6 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'confirm',
 		to: 'tester@example.test',
-		limit: 0,
 	} );
 	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
@@ -3210,17 +3129,14 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Send email' } ) );
 	} );
-	// The page's signed start time and the empty honeypot ride along
-	// (ConversationMail::passes()).
+
 	expect( emailConversation ).toHaveBeenCalledWith(
 		'/wp-json/linker-ai/v1/genie/conversations',
-		'n',
+		'',
 		9,
 		'en',
 		'tester@example.test',
 		{
-			started: '1800000000',
-			started_nonce: 'stamp-nonce',
 			website: '',
 		}
 	);
@@ -3248,7 +3164,6 @@ test( 'a signed-in customer gets the email at the account address, no form', asy
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'sent',
 		to: 'buyer@example.test',
-		limit: 0,
 	} );
 	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
@@ -3272,72 +3187,6 @@ test( 'a signed-in customer gets the email at the account address, no form', asy
 			'Your email to buyer@example.test is on its way.'
 		)
 	).toBeVisible();
-} );
-
-test( 'the limit is named with the number the server counts to', async () => {
-	resetTurnLane();
-	vi.mocked( listConversations ).mockResolvedValue( {
-		currentId: 9,
-		ok: true,
-		conversations: THREE,
-	} );
-	vi.mocked( readThread ).mockResolvedValue( {
-		messages: [
-			{ role: 'user', content: 'Third question' },
-			{ role: 'assistant', content: 'An answer.' },
-		],
-		turn: null,
-		contacts: [],
-	} );
-	vi.mocked( emailConversation ).mockResolvedValue( {
-		outcome: 'throttled',
-		to: '',
-		limit: 3,
-	} );
-	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	const start = await screen.findByRole( 'button', {
-		name: 'Email me this conversation',
-	} );
-	await act( async () => {
-		fireEvent.click( start );
-	} );
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'This connection has reached the limit of 3 emails per hour. Please try again later.'
-	);
-} );
-
-test( 'at the daily cap the panel says when emailing works again', async () => {
-	resetTurnLane();
-	vi.mocked( listConversations ).mockResolvedValue( {
-		currentId: 9,
-		ok: true,
-		conversations: THREE,
-	} );
-	vi.mocked( readThread ).mockResolvedValue( {
-		messages: [
-			{ role: 'user', content: 'Third question' },
-			{ role: 'assistant', content: 'An answer.' },
-		],
-		turn: null,
-		contacts: [],
-	} );
-	vi.mocked( emailConversation ).mockResolvedValue( {
-		outcome: 'capped',
-		to: '',
-		limit: 3,
-	} );
-	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	const start = await screen.findByRole( 'button', {
-		name: 'Email me this conversation',
-	} );
-	await act( async () => {
-		fireEvent.click( start );
-	} );
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		"Today's email limit has been reached. Please try again tomorrow."
-	);
 } );
 
 test( 'the page a confirmation link opens says how it went, once', async () => {
@@ -3445,7 +3294,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 		page: { type: 'category' },
 		// No file was picked (#236): the turn carries none.
 		uploads: [],
-		verification: ownedVerification(),
+		owner: ownedTurn(),
 		plannerNonce: undefined,
 	} );
 } );
@@ -3513,8 +3362,7 @@ test( 'the sent contact card stays in the history on the next turn', async () =>
 	// From now on the route says this conversation's request is sent: a card
 	// that mounts again while the next turn runs reports it once more.
 	vi.mocked( readContact ).mockResolvedValue( {
-		started: '100',
-		startedNonce: 'sig',
+		source: '5:2',
 		email: null,
 		sent: { email: 'maria@example.test', receipt: true },
 		mailbox: 'sales@de-linker.com',
@@ -3665,9 +3513,8 @@ test( 'the inquiry card follows the answer and the sent card stays on the next t
 	// From now on the route says this conversation's inquiry is sent: the
 	// next turn keeps the sent card in the history.
 	vi.mocked( readInquiry ).mockResolvedValue( {
+		source: '5:2',
 		conversation: 5,
-		started: '100',
-		startedNonce: 'sig',
 		account: null,
 		lines: [],
 		linesDigest: 'digest-2',
@@ -4002,6 +3849,42 @@ test( 'a delayed explicit refresh cannot overwrite a newer ask outside the share
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
 
+test.each( [
+	[ 'en', '/inquiry/', true ],
+	[ 'de', '/de/anfrage/', true ],
+	[ 'en', '/inquiry/', false ],
+] as const )(
+	'a handoff on %s offers %s only when the assistant failed (%s)',
+	async ( locale, url, failed ) => {
+		const summary = failed
+			? 'The assistant could not answer.'
+			: 'Contact our team.';
+		vi.mocked( sendTurn ).mockResolvedValue( {
+			meta: {
+				grounded: ! failed,
+				fallback: failed,
+				attempts: 1,
+				failures: failed ? [ 'model failure' ] : [],
+				language: locale,
+			},
+			blocks: [ { type: 'handoff', summary } ],
+		} );
+		await renderOwned(
+			<App config={ { ...config( locale ), requestPageUrl: url } } />
+		);
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Ask Genie' } )
+			)
+		);
+		expect( screen.getByText( summary ) ).toBeVisible();
+		const link = screen.queryByRole( 'link', { name: 'Send an inquiry' } );
+		expect( link?.getAttribute( 'href' ) ).toBe( failed ? url : undefined );
+		expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+	}
+);
+
 test( 'a resource refusal retains the question and file and offers native inquiry', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockRejectedValue(
@@ -4040,470 +3923,4 @@ test( 'a resource refusal retains the question and file and offers native inquir
 		screen.getByRole( 'link', { name: 'Send an inquiry' } )
 	).toHaveAttribute( 'href', '/proforma-request/' );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
-} );
-
-test( 'the real Genie composer labels a pending proof as unsent and restores its question on verification failure', async () => {
-	const actual =
-		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
-	const { webcrypto } = await import( 'node:crypto' );
-	vi.stubGlobal( 'crypto', webcrypto );
-	window.linkerPublicProtectionConfig = {
-		api: '/proof',
-		nonce: 'n',
-		mode: 'enforce',
-		language: 'en',
-	};
-	let failProof: ( error: Error ) => void = () => undefined;
-	const proof = vi.fn( async ( action: string, container: HTMLElement ) => {
-		container.dispatchEvent(
-			new CustomEvent( 'linker:protection', {
-				detail: { action, state: 'retrying' },
-			} )
-		);
-		return new Promise< string >( ( _resolve, reject ) => {
-			failProof = ( error ) => {
-				container.dispatchEvent(
-					new CustomEvent( 'linker:protection', {
-						detail: { action, state: 'failed' },
-					} )
-				);
-				reject( error );
-			};
-		} );
-	} );
-	window.linkerPublicProtection = { proof, reset: vi.fn() };
-	const transport = vi.fn< typeof fetch >();
-	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( {
-			...request,
-			fetcher: onDemandTransport( transport ),
-		} )
-	);
-	try {
-		await renderOwned( <App config={ config() } /> );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-			target: { value: 'My question awaiting verification' },
-		} );
-		await act( async () =>
-			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
-		);
-		await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
-		expect(
-			screen.getByText( 'My question awaiting verification' )
-		).toBeVisible();
-		expect(
-			screen.getByText(
-				'Verification is being retried. No request has been sent in this attempt.'
-			)
-		).toBeVisible();
-		expect( transport ).not.toHaveBeenCalled();
-		expect(
-			screen.queryByText( 'Genie is thinking…' )
-		).not.toBeInTheDocument();
-		expect( screen.getByText( 'Checking verification…' ) ).toBeVisible();
-		expect(
-			document.querySelector( '.linker-genie-wait__lines' )
-		).toBeNull();
-		expect(
-			screen
-				.getByText( 'Checking verification…' )
-				.closest( '.linker-genie-app__message--assistant' )
-		).toBeNull();
-
-		const slot = document.querySelector< HTMLElement >(
-			'[data-linker-resource-verification-slot]'
-		)!;
-		const widget = document.querySelector(
-			'[data-linker-resource-verification="genie"]'
-		);
-		expect( widget?.parentElement ).toBe( slot );
-
-		await act( async () =>
-			failProof( new Error( 'verification_widget_300030' ) )
-		);
-		await waitFor( () =>
-			expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
-				'Verification could not be completed. No request has been sent in this attempt.'
-			)
-		);
-		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
-			'My question awaiting verification'
-		);
-		expect(
-			screen.queryByText( 'Genie did not answer. Please try again.' )
-		).not.toBeInTheDocument();
-		expect( transport ).not.toHaveBeenCalled();
-		expect( slot.hidden ).toBe( true );
-		expect( slot.children ).toHaveLength( 0 );
-	} finally {
-		delete window.linkerPublicProtection;
-		delete window.linkerPublicProtectionConfig;
-	}
-} );
-
-test( 'a cached proof immediately dispatches through the real adapter and changes the mounted composer to thinking', async () => {
-	const actual =
-		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
-	const { webcrypto } = await import( 'node:crypto' );
-	vi.stubGlobal( 'crypto', webcrypto );
-	window.linkerPublicProtectionConfig = {
-		api: '/proof',
-		nonce: 'n',
-		mode: 'enforce',
-		language: 'en',
-	};
-	const cached = Promise.resolve( 'already-verified-proof' );
-	const proof = vi.fn( () => cached );
-	window.linkerPublicProtection = { proof, reset: vi.fn() };
-	let finish: ( response: Response ) => void = () => undefined;
-	const transport = vi.fn< typeof fetch >(
-		async () =>
-			new Promise< Response >( ( resolve ) => {
-				finish = resolve;
-			} )
-	);
-	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( {
-			...request,
-			fetcher: onDemandTransport( transport ),
-		} )
-	);
-	try {
-		await renderOwned( <App config={ config() } /> );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-			target: { value: 'Cached proof dispatch' },
-		} );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-		await waitFor( () => expect( transport ).toHaveBeenCalledOnce() );
-		expect( proof ).toHaveBeenCalledOnce();
-		expect( screen.getByText( 'Genie is thinking…' ) ).toBeVisible();
-		expect(
-			document.querySelector( '.linker-genie-wait__lines' )
-		).not.toBeNull();
-		expect(
-			screen.queryByText( 'Checking verification…' )
-		).not.toBeInTheDocument();
-		await act( async () =>
-			finish(
-				new Response(
-					JSON.stringify( {
-						stream: 'event: block\ndata: {"type":"text","text":"Cached answer","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
-					} )
-				)
-			)
-		);
-		await screen.findByText( 'Cached answer' );
-	} finally {
-		delete window.linkerPublicProtection;
-		delete window.linkerPublicProtectionConfig;
-	}
-} );
-
-/**
- * Challenge on demand: the proofless trust probe of an untrusted identity is
- * refused by admission here; only a proof-carrying attempt reaches the test's
- * own transport, so its call counts keep meaning "the dispatched turn".
- * @param fetcher
- */
-function onDemandTransport( fetcher: typeof fetch ): typeof fetch {
-	return async ( input, init ) =>
-		new Headers( init?.headers ).get( 'X-Linker-Proof' )
-			? fetcher( input, init )
-			: new Response(
-					JSON.stringify( { code: 'linker_admission_proof' } ),
-					{ status: 400 }
-				);
-}
-
-async function protectedComposer(
-	proof: NonNullable< Window[ 'linkerPublicProtection' ] >[ 'proof' ],
-	fetcher: typeof fetch,
-	surface: 'helper' | 'workspace' = 'helper'
-) {
-	const actual =
-		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
-	const { webcrypto } = await import( 'node:crypto' );
-	vi.stubGlobal( 'crypto', webcrypto );
-	window.linkerPublicProtectionConfig = {
-		api: '/proof',
-		nonce: 'n',
-		mode: 'enforce',
-		language: 'en',
-	};
-	const cancel = vi.fn( () => true );
-	window.linkerPublicProtection = { proof, cancel, reset: vi.fn() };
-	vi.mocked( sendTurn ).mockImplementation( ( request ) =>
-		actual.sendTurn( { ...request, fetcher: onDemandTransport( fetcher ) } )
-	);
-	await renderOwned( <App config={ { ...config(), surface } } /> );
-	if ( surface === 'helper' ) {
-		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	}
-	return { cancel };
-}
-
-test( 'closing verification restores the question on reopening without a failure banner, and its late proof cannot dispatch', async () => {
-	let finishProof: ( value: string ) => void = () => undefined;
-	const proof = vi.fn(
-		async () =>
-			new Promise< string >( ( resolve ) => {
-				finishProof = resolve;
-			} )
-	);
-	const transport = vi.fn< typeof fetch >(
-		async () =>
-			new Response(
-				JSON.stringify( {
-					stream: 'event: block\ndata: {"type":"text","text":"Answer after reopening","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
-				} )
-			)
-	);
-	const { cancel } = await protectedComposer( proof, transport );
-	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-		target: { value: 'Keep my question across close' },
-	} );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
-	await waitFor( () => expect( cancel ).toHaveBeenCalledOnce() );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	await waitFor( () =>
-		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
-			'Keep my question across close'
-		)
-	);
-	// Closing withdrew the attempt before anything was sent, so reopening owes
-	// the customer their question and no account of a failure that never was.
-	expect( screen.queryByRole( 'alert' ) ).not.toBeInTheDocument();
-	expect(
-		screen.queryByText( 'Genie did not answer. Please try again.' )
-	).not.toBeInTheDocument();
-	expect(
-		screen.queryByText( /Verification could not be completed/ )
-	).not.toBeInTheDocument();
-	await act( async () => finishProof( 'late-old-proof' ) );
-	expect( transport ).not.toHaveBeenCalled();
-	expect( screen.queryByRole( 'alert' ) ).not.toBeInTheDocument();
-	proof.mockResolvedValueOnce( 'fresh-proof' );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-	await screen.findByText( 'Answer after reopening' );
-	expect( transport ).toHaveBeenCalledOnce();
-} );
-
-test.each( [ 400, 503, 'network' ] as const )(
-	'a dispatched %s outcome clears its verification display without misreporting an unknown result as unsent',
-	async ( outcome ) => {
-		const transport = vi.fn< typeof fetch >( async () => {
-			if ( outcome === 'network' ) {
-				throw new TypeError( 'synthetic lost response' );
-			}
-			return new Response(
-				JSON.stringify( { code: 'linker_admission_unavailable' } ),
-				{ status: outcome }
-			);
-		} );
-		await protectedComposer( async () => 'cached-proof', transport );
-		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-			target: { value: `Retain ${ outcome } question` },
-		} );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-		await waitFor( () => expect( transport ).toHaveBeenCalledOnce() );
-		await screen.findByRole( 'alert' );
-		const slot = document.querySelector< HTMLElement >(
-			'[data-linker-resource-verification-slot]'
-		)!;
-		expect( slot.hidden ).toBe( true );
-		expect( slot.textContent ).toBe( '' );
-		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
-			`Retain ${ outcome } question`
-		);
-		const expected =
-			outcome === 'network'
-				? 'Genie did not answer. Please try again.'
-				: 'Genie is temporarily unavailable.';
-		expect( screen.getByRole( 'alert' ) ).toHaveTextContent( expected );
-		expect( screen.getByRole( 'alert' ) ).not.toHaveTextContent(
-			'No request has been sent'
-		);
-	}
-);
-
-test( 'a history switch cancels the old verification owner before a late proof can dispatch', async () => {
-	let finishProof: ( value: string ) => void = () => undefined;
-	const proof = vi.fn(
-		async () =>
-			new Promise< string >( ( resolve ) => {
-				finishProof = resolve;
-			} )
-	);
-	const transport = vi.fn< typeof fetch >();
-	let selected = false;
-	const conversations = [
-		{ id: 2, title: 'Other saved conversation', updated: '2026-10-28' },
-	];
-	vi.mocked( listConversations ).mockResolvedValue( {
-		currentId: 1,
-		conversations,
-		ok: true,
-	} );
-	vi.mocked( selectConversation ).mockImplementation( async () => {
-		selected = true;
-		return { currentId: 2, conversations, ok: true };
-	} );
-	vi.mocked( readThread ).mockImplementation( async () =>
-		selected
-			? {
-					messages: [
-						{ role: 'user', content: 'Other saved question' },
-					],
-					turn: null,
-				}
-			: { messages: [], turn: null }
-	);
-	await protectedComposer( proof, transport, 'workspace' );
-	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-		target: { value: 'Previous owner question' },
-	} );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
-	fireEvent.click(
-		await screen.findByRole( 'button', {
-			name: 'Other saved conversation',
-		} )
-	);
-	await screen.findByText( 'Other saved question' );
-	await act( async () => finishProof( 'late-previous-owner-proof' ) );
-	expect( transport ).not.toHaveBeenCalled();
-	expect( screen.getByLabelText( 'Ask Genie' ) ).not.toHaveValue(
-		'Previous owner question'
-	);
-} );
-
-test( 'a confirmed older source card stays with its earlier answer while a newer planning request is unverified', async () => {
-	const project = 'a'.repeat( 32 ),
-		oldRun = 'b'.repeat( 32 ),
-		newRun = 'c'.repeat( 32 );
-	const source: PlanningSourcesBlock = {
-		type: 'planning_sources',
-		schema_version: 1,
-		status: 'available',
-		binding: {
-			planning_project_id: project,
-			planning_revision: 4,
-			planning_run_ids: [ oldRun ],
-			runs: [
-				{
-					id: oldRun,
-					revision: 4,
-					manifest_sha256: 'd'.repeat( 64 ),
-					result_sha256: 'e'.repeat( 64 ),
-				},
-			],
-		},
-		results: [ { revision: 4, groups: [] } ],
-		url: `/solution-configurator/?project=${ project }&run=${ oldRun }#lp-calculations`,
-	};
-	vi.mocked( readThread ).mockResolvedValue( {
-		conversationId: 12,
-		messages: [
-			{ role: 'user', content: 'Earlier project question' },
-			{ role: 'assistant', content: 'Earlier confirmed response' },
-		],
-		turn: {
-			meta: null,
-			blocks: [
-				{ type: 'text', text: 'Earlier confirmed response', refs: [] },
-				source,
-				{
-					type: 'action',
-					name: 'open_configurator',
-					args: { url: source.url },
-				},
-			],
-		},
-	} );
-	const proof = vi.fn( async () => new Promise< string >( () => {} ) );
-	const transport = vi.fn< typeof fetch >();
-	const { cancel } = await protectedComposer( proof, transport );
-	await act( async () =>
-		window.dispatchEvent(
-			new CustomEvent( 'linker-genie-planning-context', {
-				detail: {
-					page: {
-						type: 'tool',
-						title: 'Current selected project',
-						planning_project_id: project,
-						planning_revision: 5,
-						planning_run_ids: [ newRun ],
-					},
-					plannerNonce: 'synthetic',
-				},
-			} )
-		)
-	);
-	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-		target: { value: 'Explain the newly selected revision five' },
-	} );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
-	try {
-		const card = screen.getByRole( 'region', {
-			name: 'Calculation sources and periods',
-		} );
-		expect(
-			screen
-				.getByRole( 'link', { name: 'Open the configurator' } )
-				.closest( 'li' )
-		).toBe( card.closest( 'li' ) );
-		expect( card.closest( 'li' ) ).toHaveTextContent(
-			'Earlier confirmed response'
-		);
-		expect(
-			card.compareDocumentPosition(
-				screen.getByText( 'Explain the newly selected revision five' )
-			)
-		).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
-		expect(
-			screen.getByText(
-				'This source card belongs to an earlier response, not the current request.'
-			)
-		).toBeVisible();
-		expect( screen.getByText( 'Saved revision 4' ) ).toBeVisible();
-		expect( transport ).not.toHaveBeenCalled();
-	} finally {
-		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
-		await waitFor( () => expect( cancel ).toHaveBeenCalledOnce() );
-	}
-} );
-
-test( 'the visible cancel-verification action restores the draft without closing Genie or dispatching a late proof', async () => {
-	let finish: ( value: string ) => void = () => undefined;
-	const proof = vi.fn(
-		async () =>
-			new Promise< string >( ( resolve ) => {
-				finish = resolve;
-			} )
-	);
-	const transport = vi.fn< typeof fetch >();
-	const { cancel } = await protectedComposer( proof, transport );
-	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
-		target: { value: 'Keep the unsent verification draft' },
-	} );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
-	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
-	fireEvent.click(
-		screen.getByRole( 'button', { name: 'Cancel verification' } )
-	);
-	await waitFor( () =>
-		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
-			'Keep the unsent verification draft'
-		)
-	);
-	expect( screen.queryByRole( 'alert' ) ).not.toBeInTheDocument();
-	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeEnabled();
-	expect( cancel ).toHaveBeenCalledOnce();
-	await act( async () => finish( 'synthetic-late-proof' ) );
-	expect( transport ).not.toHaveBeenCalled();
 } );

@@ -27,7 +27,10 @@ use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Intake;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Protection\Ledger;
-use Linker\Commerce\Protection\Proof;
+use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Inquiry\BillingFields;
+use Linker\Commerce\Inquiry\Sender;
+use Linker\Commerce\Protection\Fingerprint;
 use WC_Order;
 use WP_Error;
 
@@ -43,10 +46,9 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		$settings = array(
 			'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
-			'LINKER_BUSINESS_VERIFICATION'  => 'optional',
 			'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 			'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
-			'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
+			'LINKER_TURNSTILE_HOSTNAME'     => 'example.com',
 		);
 		foreach ( $settings as $key => $value ) {
 			$old = getenv( $key );
@@ -70,46 +72,34 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			);
 		}
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'a', 32 );
+		$this->use_empty_mail_queue();
 		wc_load_cart();
 		WC()->cart->empty_cart();
 		$this->later( static fn () => WC()->cart->empty_cart() );
 	}
 
 	/**
-	 * Synthetic fast-filled native request, with optional persisted successful proof.
+	 * Synthetic native form using the official Turnstile test keys.
 	 *
-	 * @param bool   $verified Whether to create an actual verification receipt.
-	 * @param string $action Native form action.
+	 * @param bool $verified Whether this request includes the public test token.
 	 * @return array<string,string>
 	 */
-	private function post( bool $verified = false, string $action = 'inquiry' ): array {
-		$started = (string) time();
-		$post    = array(
-			'name'                 => 'Safe intake fixture',
-			'email'                => 'intake-' . self::tag() . '@example.test',
-			'company'              => '',
-			'message'              => 'Please advise on a 10 kWh system. https://example.test/product',
-			'consent'              => '1',
-			'lang'                 => 'en',
-			'linker_request_id'    => wp_generate_uuid4(),
-			'linker_proof'         => '',
-			'linker_started'       => $started,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $started ),
-			'linker_inquiry_nonce' => wp_create_nonce( Handler::ACTION ),
-			'linker_contact_nonce' => wp_create_nonce( ContactForm::NONCE_ACTION ),
-			'linker_draft_hash'    => WC()->cart->get_cart_hash(),
+	private function post( bool $verified = false ): array {
+
+		$post = array(
+			'name'                  => 'Safe intake fixture',
+			'email'                 => 'intake-' . self::tag() . '@example.test',
+			'company'               => '',
+			'message'               => 'Please advise on a 10 kWh system. https://example.test/product',
+			'consent'               => '1',
+			'lang'                  => 'en',
+			'linker_request_id'     => wp_generate_uuid4(),
+			'cf-turnstile-response' => $verified ? 'XXXX.DUMMY.TOKEN.XXXX' : '',
+			'linker_inquiry_nonce'  => wp_create_nonce( Handler::ACTION ),
+			'linker_contact_nonce'  => wp_create_nonce( ContactForm::NONCE_ACTION ),
+			'linker_draft_hash'     => WC()->cart->get_cart_hash(),
 		);
-		if ( $verified ) {
-			$identity = Identity::current();
-			self::assertInstanceOf( Identity::class, $identity );
-			$id     = wp_generate_uuid4();
-			$fp     = hash( 'sha256', $id );
-			$ledger = new Ledger();
-			self::assertIsArray( $ledger->reserve( $id, $fp, array( new Allowance( 'fixture_verification', $identity->browser, 100, HOUR_IN_SECONDS ) ), 10, array(), 'verification_' . $action, $identity->binding() ) );
-			self::assertIsArray( $ledger->dispatch( $id, $fp ) );
-			self::assertIsArray( $ledger->complete( $id, $fp, 1 ) );
-			$post['linker_proof'] = ( new Proof() )->issue( 'verified', $action, $identity, $id );
-		}
+
 		$this->later(
 			static function () use ( $post ): void {
 				$orders = wc_get_orders(
@@ -127,58 +117,55 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		return $post;
 	}
 
-	/** Required proof cannot enter either persistent review or grouping.
+	/** A single stored review order dating from before the native form cutover.
 	 *
-	 * @dataProvider required_failures
-	 * @param string $action Native door.
-	 * @param string $proof Invalid proof shape.
-	 * @param string $lane Content/individual variation.
+	 * @param array<string,string> $post Original native customer input.
+	 * @param string               $action Historical form.
 	 */
-	public function test_required_verification_rejects_before_any_native_record( string $action, string $proof, string $lane ): void {
-		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
-		$post = $this->post( 'wrong-scope' === $proof, 'contact' === $action ? 'inquiry' : 'contact' );
-		if ( 'signed-only' === $proof ) {
-			$identity = Identity::current();
-			self::assertInstanceOf( Identity::class, $identity );
-			$post['linker_proof'] = ( new Proof() )->issue( 'verified', $action, $identity, wp_generate_uuid4() );
-		} elseif ( 'wrong-scope' !== $proof ) {
-			$post['linker_proof'] = $proof;
-		}
-		if ( 'normal' !== $lane ) {
-			$post['message']                  = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
-			$post['linker_individual_review'] = 'individual' === $lane ? '1' : '';
-		}
-		$jobs     = self::newest_mail_job();
-		$capacity = get_option( IntakeStore::OPTION );
-		$budget   = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
-		$result   = 'contact' === $action ? ( new ContactHandler() )->process( $post ) : ( new Handler() )->process( $post );
-		if ( 'contact' === $action ) {
-			self::assertSame( 'verification_failed', $result );
-		} else {
+	private function historical_submission( array $post, string $action = 'inquiry' ): WC_Order|WP_Error {
+		$identity = Identity::current();
+		self::assertInstanceOf( Identity::class, $identity );
+		$details = Submission::from_post( $post, 'contact' === $action );
+		self::assertInstanceOf( Submission::class, $details );
+		$payload     = 'contact' === $action ? get_object_vars( $details ) : array(
+			'details' => get_object_vars( $details ),
+			'billing' => BillingFields::values( $post ),
+			'draft'   => $post['linker_draft_hash'],
+		);
+		$fingerprint = Fingerprint::make( $identity, $action, $payload );
+		self::assertIsString( $fingerprint );
+		return Intake::run(
+			'verification',
+			$action,
+			$post['linker_request_id'],
+			$fingerprint,
+			$identity,
+			$payload,
+			array( new Allowance( 'historical_review', $identity->browser, 10, HOUR_IN_SECONDS ) ),
+			array(),
+			array( Allowance::owner_for( Identity::recipient( $details->email ) ) ),
+			static fn () => 'contact' === $action ? ( new Sender() )->message( $details ) : ( new Sender() )->request( $details, $post, false )
+		);
+	}
+
+	/** A guest who has not finished verification creates no new order or notification.
+	 *
+	 * @testWith ["contact"]
+	 *           ["inquiry"]
+	 * @param string $action Native door.
+	 */
+	public function test_required_verification_rejects_before_any_native_record( string $action ): void {
+		$post = $this->post();
+		$jobs = self::newest_mail_job();
+		if ( 'inquiry' === $action ) {
+			$result = ( new Handler() )->process( $post );
 			self::assertInstanceOf( WP_Error::class, $result );
 			self::assertSame( 'linker_admission_proof', $result->get_error_code() );
+		} else {
+			self::assertSame( 'verification_failed', ( new ContactHandler() )->process( $post ) );
 		}
 		self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
-		self::assertSame( $capacity, get_option( IntakeStore::OPTION ) );
-		self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
-	}
-
-	/**
-	 * Missing/forged scripts exercise both doors and each old fallback.
-	 *
-	 * @return array<string,array{string,string,string}> Native cases.
-	 */
-	public static function required_failures(): array {
-		$cases = array();
-		foreach ( array( 'contact', 'inquiry' ) as $action ) {
-			foreach ( array( '', 'forged', 'wrong-scope', 'signed-only' ) as $proof ) {
-				foreach ( array( 'normal', 'campaign', 'individual' ) as $lane ) {
-					$cases[ $action . '/' . $proof . '/' . $lane ] = array( $action, $proof, $lane );
-				}
-			}
-		}
-		return $cases;
 	}
 
 	/** Valid customers retain their complete native result and safe UUID retries.
@@ -187,9 +174,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 *           ["inquiry"]
 	 * @param string $action Native door.
 	 */
-	public function test_required_valid_proof_saves_once_and_cannot_be_reused_for_new_input( string $action ): void {
-		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
-		$post = $this->post( true, $action );
+	public function test_verified_submission_is_recovered_and_new_input_requires_a_new_check( string $action ): void {
+		$post = $this->post( true );
 		$send = 'contact' === $action ? new ContactHandler() : new Handler();
 		$send->process( $post );
 		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
@@ -198,8 +184,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$order = $orders[0];
 		self::assertSame( $post['message'], $order->get_customer_note() );
 		self::assertFalse( NotificationHold::held( $order ) );
-		$retry                 = $post;
-		$retry['linker_proof'] = '';
+		$retry                          = $post;
+		$retry['cf-turnstile-response'] = '';
 		$send->process( $retry );
 		$retry_orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 		self::assertIsArray( $retry_orders );
@@ -207,8 +193,9 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$retry['message'] .= ' changed';
 		$changed           = $send->process( $retry );
 		self::assertTrue( 'contact' === $action ? 'verification_failed' === $changed : $changed instanceof WP_Error );
-		$post['linker_request_id'] = wp_generate_uuid4();
-		$reused                    = $send->process( $post );
+		$post['linker_request_id']     = wp_generate_uuid4();
+		$post['cf-turnstile-response'] = '';
+		$reused                        = $send->process( $post );
 		self::assertTrue( 'contact' === $action ? 'verification_failed' === $reused : $reused instanceof WP_Error );
 		$final_orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 		self::assertIsArray( $final_orders );
@@ -217,7 +204,6 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Service configuration failure retains a retry, never a new review record. */
 	public function test_required_configuration_outage_cannot_persist_an_unverified_inquiry(): void {
-		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
 		$post = $this->post( true );
 		$old  = getenv( 'LINKER_TURNSTILE_SECRET_KEY' );
 		putenv( 'LINKER_TURNSTILE_SECRET_KEY' );
@@ -229,7 +215,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertInstanceOf( WP_Error::class, $result );
 		self::assertSame( 'linker_admission_configuration', $result->get_error_code() );
 		self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
-		self::assertFalse( get_option( IntakeStore::OPTION ) );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
 	}
 
 	/** Canonical names and normalized contact selection cannot enter recovery. */
@@ -273,7 +259,6 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Actual native transport also excludes refused activity from inquiry recovery. */
 	public function test_refused_inquiry_transport_excludes_activity_and_keeps_normal_retry_input(): void {
-		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
 		$old_post = $_POST;
 		$old      = WC()->session->get( 'linker_inquiry_fields' );
 		$this->later( static fn () => WC()->session->set( 'linker_inquiry_fields', $old ) );
@@ -311,12 +296,12 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Optional verification keeps the original inquiry and fixed acknowledgement while content awaits review. */
-	public function test_optional_verification_saves_one_inquiry_and_one_receipt_across_retries(): void {
+	/** A historical review record retains its original acknowledgement through a modern retry. */
+	public function test_historical_held_submission_recovers_its_original_woo_order(): void {
 		$post   = $this->post();
 		$jobs   = self::newest_mail_job();
 		$budget = get_option( Throttle::OPTION );
-		$order  = ( new Handler() )->process( $post );
+		$order  = $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		self::assertSame( $post['message'], $order->get_customer_note() );
 		self::assertSame( $post['email'], $order->get_billing_email() );
@@ -342,7 +327,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$queue->process( $order->get_id() );
 		$queue->expire( $order->get_id() );
 		$queue->finish( $order->get_id(), Result::unknown( 'late' ) );
-		self::assertSame( array( $receipt ), self::mail_jobs_after( $jobs ) );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( $receipt, $state['jobs']['receipt']['id'] );
+		self::assertEqualsCanonicalizing( array_column( $state['jobs'], 'id' ), self::mail_jobs_after( $jobs ) );
 	}
 
 	/**
@@ -354,7 +342,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	public function test_accepted_order_acknowledges_once_before_the_team_is_authorized( bool $verified ): void {
 		$post    = $this->post( $verified );
 		$handler = new Handler();
-		$order   = $handler->process( $post );
+		$order   = $verified ? $handler->process( $post ) : $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		self::assertSame( ! $verified, NotificationHold::held( $order ) );
 		$job = self::fixed_receipt_job( $order );
@@ -388,8 +376,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 */
 	public static function accepted_verifications(): array {
 		return array(
-			'verified visitor' => array( true ),
-			'optional check'   => array( false ),
+			'verified visitor'  => array( true ),
+			'historical review' => array( false ),
 		);
 	}
 
@@ -404,10 +392,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertInstanceOf( WP_Error::class, $unknown );
 		self::assertSame( 'linker_inquiry_pending', $unknown->get_error_code() );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
-		$order = $handler->process( $post );
+		$order = $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$pending = $this->post();
-		$other   = $handler->process( $pending );
+		$other   = $this->historical_submission( $pending );
 		self::assertInstanceOf( WC_Order::class, $other );
 		self::assertTrue( NotificationHold::held( $order ) );
 		$before = get_option( IntakeStore::OPTION )['entries'];
@@ -431,7 +419,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		$authorization = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
 		$post          = $this->post();
-		$order         = ( new Handler() )->process( $post );
+		$order         = $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$request = $post['linker_request_id'];
 		$entry   = get_option( IntakeStore::OPTION )['entries'][ $request ];
@@ -476,178 +464,18 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( $order->get_id(), $retry->get_id() );
 	}
 
-	/**
-	 * Report outcomes while another inquiry holds the review lock.
-	 *
-	 * @return array<string,array{bool,string}>
-	 */
-	public static function competing_review_writer(): array {
-		return array(
-			'deleted report'  => array( false, 'planning_project_deleted' ),
-			'admitted report' => array( true, 'linker_review_unavailable' ),
-		);
-	}
-
-	/**
-	 * The customer can retry a pre-save refusal while another writer has the capacity lock.
-	 *
-	 * @dataProvider competing_review_writer
-	 * @param bool   $admitted Planner accepted the report.
-	 * @param string $expected Refusal shown to the customer.
-	 */
-	public function test_report_refusal_releases_its_unwritten_review_slot( bool $admitted, string $expected ): void {
-		$report = $this->planning_report();
-		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
-		$prior  = WC()->session->get( $key );
-		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
-		$this->later( static fn () => WC()->session->set( $key, $prior ) );
-		$post   = $this->post() + array(
-			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
-			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
-			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
-		);
-		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
-		$lock   = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'intake-capacity' );
-		$refuse = static function () use ( $peer, $lock, $admitted ) {
-			self::assertSame( '1', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s, 0)', $lock ) ) );
-			return $admitted ? true : new WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) );
-		};
-		add_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
-		try {
-			$result = ( new Handler() )->process( $post );
-		} finally {
-			remove_filter( 'linker_tools_planning_admit_inquiry', $refuse, PHP_INT_MAX );
-			$peer->close();
-		}
-		self::assertInstanceOf( WP_Error::class, $result );
-		self::assertSame( $expected, $result->get_error_code() );
-		self::assertTrue( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) );
-		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] ?? array() );
-		$receipts = json_decode( (string) get_option( Ledger::OPTION ), true )['receipts'];
-		self::assertSame( 'dispatched', $receipts[ $post['linker_request_id'] ]['status'] );
-		unset( $post[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] );
-		$post['linker_request_id'] = wp_generate_uuid4();
-		self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $post ) );
-	}
-
-	/** Another customer can take the last review slot while Planner admits the report. */
-	public function test_review_slot_filled_during_report_admission_refuses_before_save(): void {
-		$report = $this->planning_report();
-		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
-		$prior  = WC()->session->get( $key );
-		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
-		$this->later( static fn () => WC()->session->set( $key, $prior ) );
-		$post  = $this->post();
-		$id    = $post['linker_request_id'];
-		$post += array(
-			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
-			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
-			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
-		);
-		$fill  = static function (): bool {
-			self::assertIsArray(
-				IntakeStore::edit(
-					static function ( array &$state ): array {
-						$state['entries'] = array_fill( 0, IntakeStore::CAPACITY['verification'], array( 'lane' => 'verification' ) );
-						IntakeStore::save( $state );
-						return array();
-					}
-				)
-			);
-			return true;
-		};
-		add_filter( 'linker_tools_planning_admit_inquiry', $fill, PHP_INT_MAX );
-		try {
-			$result = ( new Handler() )->process( $post );
-		} finally {
-			remove_filter( 'linker_tools_planning_admit_inquiry', $fill, PHP_INT_MAX );
-		}
-		self::assertInstanceOf( WP_Error::class, $result );
-		self::assertSame( 'linker_intake_full', $result->get_error_code() );
-		self::assertTrue( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) );
-		self::assertArrayNotHasKey( $id, get_option( IntakeStore::OPTION )['entries'] );
-	}
-
-	/** The verified form can retry into its last business slot after losing a report lock. */
-	public function test_lost_report_lock_preserves_last_ordinary_slot(): void {
-		$limit = \Linker\Commerce\Protection\BusinessCapacity::LIMITS['ordinary']['count'];
-		$used  = array_fill(
-			0,
-			$limit - 1,
-			array(
-				'pool'  => 'ordinary',
-				'order' => 0,
-				'bytes' => 1,
-			)
-		);
-		update_option(
-			IntakeStore::OPTION,
-			array(
-				'entries'               => array(),
-				'campaign_count'        => 0,
-				'business'              => $used,
-				'business_dispositions' => array(),
-			),
-			false
-		);
-		$report = $this->planning_report();
-		$key    = \Linker\Commerce\Planning\DraftTransfer::CONTEXTS;
-		$prior  = WC()->session->get( $key );
-		WC()->session->set( $key, array( $report['id'] => \Linker\Commerce\Planning\DraftTransfer::native_context( $report ) ) );
-		$this->later( static fn () => WC()->session->set( $key, $prior ) );
-		$include = array(
-			\Linker\Commerce\Planning\Context::PRESENT_FIELD => '1',
-			\Linker\Commerce\Planning\Context::INCLUDE_FIELD => '1',
-			\Linker\Commerce\Planning\Context::REVISIONS_FIELD => array( $report['id'] => $report['snapshot_sha256'] ),
-		);
-		$admit   = static function () use ( $report ): bool {
-			global $wpdb;
-			$name = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'planning-project:' . $report['snapshot']['project_id'] );
-			self::assertSame( '1', $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ) );
-			return true;
-		};
-		add_filter( 'linker_tools_planning_admit_inquiry', $admit, PHP_INT_MAX );
-		try {
-			$result = ( new Handler() )->process( $this->post( true ) + $include );
-		} finally {
-			remove_filter( 'linker_tools_planning_admit_inquiry', $admit, PHP_INT_MAX );
-		}
-		self::assertInstanceOf( WP_Error::class, $result );
-		self::assertSame( 'planning_admission_unavailable', $result->get_error_code() );
-		self::assertSame( $used, get_option( IntakeStore::OPTION )['business'] );
-		add_filter( 'linker_tools_planning_admit_inquiry', '__return_true', PHP_INT_MAX );
-		try {
-			self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $this->post( true ) + $include ) );
-		} finally {
-			remove_filter( 'linker_tools_planning_admit_inquiry', '__return_true', PHP_INT_MAX );
-		}
-	}
-
-	/** Forged and wrongly scoped proofs are unverified, never silently normal. */
-	public function test_forged_wrong_scope_and_missing_proofs_all_use_bounded_review(): void {
-		foreach ( array( '', 'forged', 'wrong-scope' ) as $value ) {
-			$post = $this->post( 'wrong-scope' === $value, 'contact' );
-			if ( 'wrong-scope' !== $value ) {
-				$post['linker_proof'] = $value;
-			}
-			$order = ( new Handler() )->process( $post );
-			self::assertInstanceOf( WC_Order::class, $order );
-			self::assertTrue( NotificationHold::held( $order ) );
-		}
-	}
-
 	/** Native field limits are UTF-8 characters, not JSON escape sequences. */
 	public function test_valid_full_length_unicode_message_is_completely_saved(): void {
-		$post            = $this->post();
+		$post            = $this->post( true );
 		$post['message'] = str_repeat( '🔋', \Linker\Commerce\Contact\Submission::MAX_MESSAGE );
 		$order           = ( new Handler() )->process( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		self::assertSame( $post['message'], $order->get_customer_note() );
-		self::assertTrue( NotificationHold::held( $order ) );
+		self::assertFalse( NotificationHold::held( $order ) );
 	}
 
-	/** Both storage lanes are finite; verified acceptance ignores review fullness. */
-	public function test_review_fullness_survives_days_and_does_not_consume_verified_capacity(): void {
+	/** Historical pending reviews do not block a new completed submission. */
+	public function test_full_historical_review_queue_allows_new_verified_requests(): void {
 		$entries = array();
 		for ( $i = 0; $i < IntakeStore::CAPACITY['verification']; ++$i ) {
 			$entries[ wp_generate_uuid4() ] = array(
@@ -664,11 +492,6 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			),
 			false
 		);
-		$post     = $this->post();
-		$rejected = ( new Handler() )->process( $post );
-		self::assertInstanceOf( WP_Error::class, $rejected );
-		self::assertSame( 'linker_intake_full', $rejected->get_error_code() );
-		self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
 		$normal = ( new Handler() )->process( $this->post( true ) );
 		self::assertInstanceOf( WC_Order::class, $normal );
 		self::assertFalse( NotificationHold::held( $normal ) );
@@ -692,7 +515,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		foreach ( array( 'inquiry', 'contact' ) as $action ) {
 			foreach ( array( 'name', 'company', 'message' ) as $field ) {
 				foreach ( array( '', '1' ) as $individual ) {
-					$post                             = $this->post( true, $action );
+					$post                             = $this->post( true );
 					$post[ $field ]                   = 'Вам перевод 100 руб. забрать тут https://xtimex.buzz/synthetic';
 					$post['linker_individual_review'] = $individual;
 					$ledger                           = get_option( Ledger::OPTION );
@@ -743,15 +566,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Technical Russian, quotations, normal links and domain substrings stay normal. */
 	public function test_campaign_rule_does_not_generalize_language_or_links(): void {
+		$this->as_user( $this->customer()->get_id() );
 		$messages = array( 'Нужна батарея 10 кВт·ч https://fredmer.buzz/manual', 'Вам перевод 100 руб. забрать тут https://fredmer.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://example.test/fredmer.buzz', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://fredmer.buzz/x', "Вам перевод 100 руб. забрать тут https://fredmer.buzz/x\nPlease quote an inverter.", 'Нужна батарея 10 кВт·ч https://xtimex.buzz/manual', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz@example.test/x', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://xtimex.buzz/x', "Вам перевод 100 руб. забрать тут https://xtimex.buzz/x\nPlease quote an inverter." );
 		foreach ( $messages as $message ) {
 			self::assertFalse( Campaign::matches( $message ) );
-			$post            = $this->post( true );
+			$post            = $this->post();
 			$post['name']    = 'Александр Müller';
 			$post['company'] = 'EPC Köln / 光伏工程';
 			$post['message'] = $message;
 			$order           = ( new Handler() )->process( $post );
-			self::assertInstanceOf( WC_Order::class, $order );
+			self::assertInstanceOf( WC_Order::class, $order, is_wp_error( $order ) ? $order->get_error_message() : '' );
 			self::assertFalse( NotificationHold::held( $order ) );
 		}
 		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. получить тут https://fredmer.buzz/x' ) );
@@ -785,7 +609,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** The original-job-absent case hands off exactly once, preserving all content. */
 	public function test_staff_can_release_new_review_record_without_original_job_once(): void {
-		$order = ( new Handler() )->process( $this->post() );
+		$order = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$basis = NotificationHold::reference( $order );
 		self::assertInstanceOf( WP_Error::class, NotificationHold::release( $order->get_id(), $basis ) );
@@ -833,7 +657,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Native PII removal includes added registry and intake metadata. */
 	public function test_native_erasure_removes_added_links_and_review_metadata(): void {
-		$order = ( new Handler() )->process( $this->post() );
+		$order = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $order );
 		\WC_Privacy_Erasers::remove_order_personal_data( $order );
 		$order->read_meta_data( true );
@@ -846,7 +670,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	/** Public erasure cannot be undone by a later staff notification release. */
 	public function test_erased_review_association_cannot_be_released(): void {
 		$post  = $this->post();
-		$order = ( new Handler() )->process( $post );
+		$order = $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		self::assertTrue( ( new \Linker\Commerce\Protection\Privacy() )->erase( $post['email'] )['items_removed'] );
 		$staff = $this->customer();
@@ -863,7 +687,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Native erasure cannot pass an employee holding the record's release lock. */
 	public function test_native_erasure_and_staff_release_serialize_across_connections(): void {
-		$order = ( new Handler() )->process( $this->post() );
+		$order = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$reference = NotificationHold::reference( $order );
 		$erasure   = array();
@@ -888,7 +712,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	/** A completed erase wins even when staff retained a complete stale Woo object. */
 	public function test_completed_native_erasure_cannot_be_resurrected_from_stale_object(): void {
 		$post  = $this->post();
-		$order = ( new Handler() )->process( $post );
+		$order = $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$reference = NotificationHold::reference( $order );
 		$marker    = self::newest_mail_job();
@@ -956,66 +780,9 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		return $result;
 	}
 
-	/** First initialization must ignore another connection's stale negative option cache. */
-	public function test_first_two_saves_preserve_both_records_after_negative_cache_warmup(): void {
-		$barrier = tempnam( sys_get_temp_dir(), 'linker-542-init-' );
-		self::assertIsString( $barrier );
-		$this->later(
-			static function () use ( $barrier ): void {
-				unlink( $barrier );
-			}
-		);
-		$pipes = array();
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- B warms its native in-process negative cache before A's first DB save.
-		$process = proc_open(
-			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/safe_intake_worker.php', $barrier, 'initial-' . self::tag() . '@example.test', 'negative-cache' ),
-			array(
-				0 => array( 'pipe', 'r' ),
-				1 => array( 'pipe', 'w' ),
-				2 => array( 'pipe', 'w' ),
-			),
-			$pipes
-		);
-		self::assertIsResource( $process );
-		fclose( $pipes[0] );
-		$until = microtime( true ) + 5;
-		while ( 'ready' !== file_get_contents( $barrier ) && microtime( true ) < $until ) {
-			usleep( 10000 );
-		}
-		self::assertSame( 'ready', file_get_contents( $barrier ) );
-		$first = ( new Handler() )->process( $this->post() );
-		self::assertInstanceOf( WC_Order::class, $first );
-		// B still has its real WordPress notoptions cache; do not reset it here.
-		file_put_contents( $barrier, 'go' );
-		$out = stream_get_contents( $pipes[1] );
-		$err = stream_get_contents( $pipes[2] );
-		fclose( $pipes[1] );
-		fclose( $pipes[2] );
-		self::assertSame( 0, proc_close( $process ), (string) $err );
-		$second = json_decode( (string) $out, true );
-		self::assertIsArray( $second );
-		self::assertArrayHasKey( 'order', $second );
-		$second_id = (int) $second['order'];
-		$this->later(
-			static function () use ( $second_id ): void {
-				$order = wc_get_order( $second_id );
-				if ( $order instanceof WC_Order ) {
-					$order->delete( true );
-				}
-			}
-		);
-		wp_cache_delete( IntakeStore::OPTION, 'options' );
-		$state = get_option( IntakeStore::OPTION );
-		self::assertIsArray( $state );
-		self::assertCount( 2, $state['entries'] );
-		$ids = array_map( static fn ( array $entry ): int => (int) $entry['order'], $state['entries'] );
-		self::assertContains( $first->get_id(), $ids );
-		self::assertContains( $second_id, $ids );
-	}
-
 	/** A failed durable staff audit rolls back its job and preserves both budgets. */
 	public function test_staff_release_rollback_preserves_existing_transport_history(): void {
-		$order = ( new Handler() )->process( $this->post() );
+		$order = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $order );
 		$staff = $this->customer();
 		$user  = get_userdata( $staff->get_id() );
@@ -1052,90 +819,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertCount( 1, get_option( IntakeStore::OPTION )['entries'] );
 	}
 
-	/** A contact message awaiting verification retains its acknowledgement across retries. */
-	public function test_contact_review_state_is_honest_and_retries_use_same_record(): void {
-		$post = $this->post( false, 'contact' );
-		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
-		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
-		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
-		self::assertIsArray( $orders );
-		self::assertCount( 1, $orders );
-		self::assertTrue( NotificationHold::held( $orders[0] ) );
-		self::fixed_receipt_job( $orders[0] );
-	}
-	/** Two native DB connections admit exactly one final global review slot. */
-	public function test_two_connections_cannot_overspend_the_last_review_slot(): void {
-		$entries = array();
-		for ( $i = 1; $i < IntakeStore::CAPACITY['verification']; ++$i ) {
-			$entries[ wp_generate_uuid4() ] = array(
-				'lane'  => 'verification',
-				'order' => 0,
-				'at'    => time(),
-			);
-		}
-		update_option(
-			IntakeStore::OPTION,
-			array(
-				'entries'        => $entries,
-				'campaign_count' => 0,
-			),
-			false
-		);
-		$barrier = tempnam( sys_get_temp_dir(), 'linker-542-' );
-		self::assertIsString( $barrier );
-		$this->later(
-			static function () use ( $barrier ): void {
-				unlink( $barrier );
-			}
-		);
-		$workers = array();
-		$emails  = array( 'concurrent-one-' . self::tag() . '@example.test', 'concurrent-two-' . self::tag() . '@example.test' );
-		foreach ( $emails as $email ) {
-			$pipes = array();
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Independent native database connections, no external calls.
-			$process = proc_open(
-				array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/safe_intake_worker.php', $barrier, $email ),
-				array(
-					0 => array( 'pipe', 'r' ),
-					1 => array( 'pipe', 'w' ),
-					2 => array( 'pipe', 'w' ),
-				),
-				$pipes
-			);
-			self::assertIsResource( $process );
-			fclose( $pipes[0] );
-			$workers[] = array( $process, $pipes );
-		}
-		file_put_contents( $barrier, 'go' );
-		$accepted = 0;
-		foreach ( $workers as [ $process, $pipes ] ) {
-			$output = stream_get_contents( $pipes[1] );
-			$error  = stream_get_contents( $pipes[2] );
-			fclose( $pipes[1] );
-			fclose( $pipes[2] );
-			self::assertSame( 0, proc_close( $process ), $error );
-			$result = json_decode( $output, true );
-			self::assertIsArray( $result, $output . $error );
-			if ( isset( $result['order'] ) ) {
-				++$accepted;
-				$order = wc_get_order( $result['order'] );
-				self::assertInstanceOf( WC_Order::class, $order );
-				$this->later(
-					static function () use ( $order ): void {
-						$order->delete( true );
-					}
-				);
-			} else {
-				self::assertContains( $result['error'], array( 'linker_intake_full', 'linker_intake_busy' ) );
-			}
-		}
-		self::assertSame( 1, $accepted );
-		wp_cache_delete( IntakeStore::OPTION, 'options' );
-		self::assertCount( 128, get_option( IntakeStore::OPTION )['entries'] );
-	}
 	/** A crash after the first native save recovers the same full record. */
 	public function test_interrupted_native_save_recovers_original_without_second_debit(): void {
-		$post      = $this->post( false, 'contact' );
+		$this->as_user( $this->customer()->get_id() );
+		$post      = $this->post();
 		$armed     = false;
 		$committed = false;
 		$arm       = static function ( WC_Order $order ) use ( $post, &$armed ): void {
@@ -1159,23 +846,45 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			remove_action( 'woocommerce_after_order_object_save', $arm );
 			remove_filter( 'query', $fail, 999 ); }
 			self::assertTrue( $committed, 'The native row/status commit really occurred; only its response is unknown.' );
-			self::assertSame( 'pending', $result );
+			self::assertSame( 'receipt_pending', $result );
 			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 			self::assertIsArray( $orders );
 			self::assertCount( 1, $orders );
-			$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+			$before = get_option( Ledger::OPTION );
 			self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$recovered = wc_get_order( $orders[0]->get_id() );
 			self::assertInstanceOf( WC_Order::class, $recovered );
 			self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
 			self::assertSame( $post['message'], $recovered->get_customer_note() );
-			self::assertTrue( NotificationHold::held( $recovered ) );
-			$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-			self::assertSame( $before['buckets'], $after['buckets'] );
+			self::assertFalse( NotificationHold::held( $recovered ) );
+			self::assertSame( $before, get_option( Ledger::OPTION ) );
 			self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
 	}
-	/** Review keeps the complete native product draft for guest/pending/approved customers. */
-	public function test_review_retains_products_for_all_customer_states(): void {
+
+	/** Reloading the form after a lost response recovers the original contact and receipt. */
+	public function test_contact_recovers_original_when_the_browser_did_not_receive_the_first_response(): void {
+		$post    = $this->post( true );
+		$handler = new ContactHandler();
+		$handler->process( $post );
+		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $orders );
+		self::assertCount( 1, $orders );
+		$order = $orders[0];
+		self::assertSame( $post['message'], $order->get_customer_note() );
+		self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $order->get_status() );
+		$receipt = self::fixed_receipt_job( $order );
+		$before  = self::newest_mail_job();
+		unset( $post['cf-turnstile-response'] );
+		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
+		$again = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $again );
+		self::assertCount( 1, $again );
+		self::assertSame( $order->get_id(), $again[0]->get_id() );
+		self::assertSame( $receipt, self::fixed_receipt_job( $again[0] ) );
+		self::assertSame( array(), self::mail_jobs_after( $before ) );
+	}
+	/** The native order keeps the complete native product draft for guest/pending/approved customers. */
+	public function test_native_submission_retains_product_and_quantity_for_all_customer_states(): void {
 		$product = $this->product( '1800' );
 		foreach ( array( 'guest', 'pending', 'approved' ) as $status ) {
 			if ( 'guest' === $status ) {
@@ -1186,11 +895,11 @@ final class SafeIntakeTest extends IntegrationTestCase {
 				$this->as_user( $customer->get_id() );
 			}
 			self::assertIsString( WC()->cart->add_to_cart( $product->get_id(), 2 ) );
-			$post            = $this->post();
+			$post            = $this->post( 'guest' === $status );
 			$post['message'] = '';
 			$order           = ( new Handler() )->process( $post );
 			self::assertInstanceOf( WC_Order::class, $order );
-			self::assertTrue( NotificationHold::held( $order ) );
+			self::assertFalse( NotificationHold::held( $order ) );
 			self::assertCount( 1, $order->get_items() );
 			$line = current( $order->get_items() );
 			self::assertInstanceOf( \WC_Order_Item_Product::class, $line );
@@ -1199,24 +908,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			self::assertTrue( WC()->cart->is_empty() );
 		}
 	}
-	/** A private verification configuration outage still preserves business input. */
-	public function test_verification_configuration_outage_is_a_review_save_even_with_old_proof(): void {
-		$post = $this->post( true );
-		$old  = getenv( 'LINKER_TURNSTILE_SECRET_KEY' );
-		putenv( 'LINKER_TURNSTILE_SECRET_KEY' );
-		try {
-			$order = ( new Handler() )->process( $post );
-		} finally {
-			putenv( false === $old ? 'LINKER_TURNSTILE_SECRET_KEY' : 'LINKER_TURNSTILE_SECRET_KEY=' . $old );
-		}
-		self::assertInstanceOf( WC_Order::class, $order );
-		self::assertTrue( NotificationHold::held( $order ) );
-		self::assertSame( $post['message'], $order->get_customer_note() );
-	}
 
 	/** Confirmation uses its actual record rather than a later form's session number. */
 	public function test_review_confirmation_uses_authorized_record_and_no_duplicate_receipt_notice(): void {
-		$order = ( new Handler() )->process( $this->post() );
+		$order = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $order );
 		WC()->session->set( 'linker_review_saved', 'a-different-later-record' );
 		ob_start();
@@ -1229,7 +924,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** Erasure can find a crash before the first Woo ID, without refunding its slot. */
 	public function test_privacy_erases_unwritten_reservation_and_prevents_resurrection(): void {
-		$post = $this->post( false, 'contact' );
+		$post = $this->post();
 		$fail = static function ( WC_Order $order ) use ( $post ): void {
 			if ( $order->get_billing_email() === $post['email'] ) {
 				throw new \Error( 'fixture_before_first_write' );
@@ -1237,7 +932,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		};
 		add_action( 'woocommerce_before_order_object_save', $fail, 99 );
 		try {
-			self::assertSame( 'pending', ( new ContactHandler() )->process( $post ) );
+			self::assertInstanceOf( WP_Error::class, $this->historical_submission( $post, 'contact' ) );
 		} finally {
 			remove_action( 'woocommerce_before_order_object_save', $fail, 99 );
 		}
@@ -1253,7 +948,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), $entry['owners'] );
 		self::assertSame( '', $entry['fingerprint'] );
 		self::assertSame( '', $entry['binding'] );
-		self::assertSame( 'verification_failed', ( new ContactHandler() )->process( $post ) );
+		self::assertSame( 'pending', ( new ContactHandler() )->process( $post ) );
 		self::assertSame(
 			array(),
 			wc_get_orders(
@@ -1266,7 +961,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** The operational summary includes genuine review requests, not campaign samples. */
 	public function test_pending_summary_excludes_confirmed_campaign_and_normal_jev_requests(): void {
-		$review = ( new Handler() )->process( $this->post() );
+		$review = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $review );
 		$historical = function ( string $lane ): WC_Order {
 			$post  = $this->post();

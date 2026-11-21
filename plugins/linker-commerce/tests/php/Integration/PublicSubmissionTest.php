@@ -11,7 +11,13 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 
+use Linker\Commerce\Contact\Form as ContactForm;
 use Linker\Commerce\Contact\Handler as ContactHandler;
+use Linker\Commerce\Inquiry\ReceiptLimit;
+use Linker\Commerce\Mail\LocaleSwitch;
+use Linker\Commerce\Protection\Identity;
+use Linker\Commerce\Protection\Ledger;
+use Linker\Commerce\Protection\ReceiptBudget;
 use Linker\Commerce\Inquiry\Handler;
 use Linker\Commerce\Mail\Throttle;
 use WC_Order;
@@ -25,6 +31,18 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	/** Install only this test's bound local service seam. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->use_empty_mail_queue();
+		$before = get_option( Ledger::OPTION );
+		delete_option( Ledger::OPTION );
+		$this->later(
+			static function () use ( $before ): void {
+				if ( false === $before ) {
+					delete_option( Ledger::OPTION );
+				} else {
+					update_option( Ledger::OPTION, $before, false );
+				}
+			}
+		);
 		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		$this->authorization = NormalMailAuthorizationFixture::install(
 			function ( callable $remove ): void {
@@ -74,245 +92,90 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Round-one decision: three accepted messages per connection per hour,
-	 * shared across both doors; the next attempt cannot queue any mail.
+	 * A repeat recipient can have mail withheld while the team receives the full inquiry.
 	 *
 	 * @dataProvider doors
-	 * @param string $door The door used for the over-limit attempt.
+	 * @param string $door Native form.
 	 */
-	public function test_an_over_limit_guest_cannot_queue_mail_on_either_door( string $door ): void {
-		$this->as_user( 0 );
+	public function test_recipient_suppression_preserves_woo_and_the_team_handoff( string $door ): void {
+		$this->as_user( $this->customer()->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
-		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
-		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
-		$stamp = (string) ( time() - 5 );
-		$post  = array(
-			'name'                 => '246 Tester',
-			'email'                => 'tester246-limit-' . self::tag() . '@example.test',
-			'message'              => 'A test inquiry.',
-			'consent'              => '1',
-			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
-		);
-		for ( $attempt = 0; $attempt < 3; ++$attempt ) {
-			$order = ( new Handler() )->process( $post );
-			$this->assertInstanceOf( WC_Order::class, $order );
-			$this->later(
-				static function () use ( $order ): void {
-					$order->delete( true );
-				}
-			);
-		}
-		$marker = self::newest_mail_job();
-		$result = 'request' === $door ? ( new Handler() )->process( $post ) : ( new ContactHandler() )->process( $post );
-		if ( $result instanceof WC_Order ) {
-			$this->later(
-				static function () use ( $result ): void {
-					$result->delete( true );
-				}
-			);
-		}
-		if ( 'request' === $door ) {
-			$this->assertInstanceOf( \WP_Error::class, $result );
-		} else {
-			$this->assertSame( 'throttled', $result );
-		}
-		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'The rejected attempt creates no team mail or customer receipt.' );
-	}
-
-	/** Eight independent requests share three slots across both doors. */
-	public function test_parallel_public_requests_accept_exactly_three_and_queue_no_rejected_mail(): void {
-		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
-		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
-		$email = 'tester246-parallel-' . self::tag() . '@example.test';
+		$cookies = $_COOKIE; // phpcs:ignore WordPress.Security.NonceVerification -- Restore the customer's original native request cookies.
 		$this->later(
-			static function () use ( $email ): void {
-				$orders = wc_get_orders(
-					array(
-						'billing_email' => $email,
-						'limit'         => -1,
-					)
-				);
-				self::assertIsArray( $orders );
-				foreach ( $orders as $order ) {
-					$order->delete( true );
-				}
+			static function () use ( $cookies ): void {
+				$_COOKIE = $cookies;
 			}
 		);
-		$marker  = self::newest_mail_job();
-		$workers = array();
-		$start   = (string) ( microtime( true ) + 8 );
-		for ( $i = 0; $i < 8; ++$i ) {
-			$door  = 0 === $i % 2 ? 'request' : 'contact';
-			$pipes = array();
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- independent requests are necessary to exercise database serialization.
-			$process = proc_open(
-				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/public-submit.php', $email, $door, $start ),
-				array(
-					1 => array( 'pipe', 'w' ),
-					2 => array( 'pipe', 'w' ),
-				),
-				$pipes
-			);
-			$this->assertIsResource( $process );
-			$workers[] = array( $process, $pipes, $door );
-		}
-		$accepted = 0;
-		$outcomes = array();
-		foreach ( $workers as list( $process, $pipes, $door ) ) {
-			$output = trim( (string) stream_get_contents( $pipes[1] ) );
-			$error  = (string) stream_get_contents( $pipes[2] );
-			fclose( $pipes[1] );
-			fclose( $pipes[2] );
-			$this->assertSame( 0, proc_close( $process ), $error . $output );
-			$outcomes[] = $door . '=' . $output;
-			$accepted  += ( 'contact' === $door ? 'receipt_pending' : 'sent' ) === $output ? 1 : 0;
-		}
-		// Other PHP requests invalidated persistent caches; discard this process's stale runtime cache.
-		wp_cache_flush_runtime();
-		$this->assertSame( 3, $accepted, 'Expected three accepted inquiries from the concurrent workers: ' . implode( ', ', $outcomes ) );
-		$orders = wc_get_orders(
-			array(
-				'billing_email' => $email,
-				'limit'         => -1,
-			)
-		);
-		$this->assertIsArray( $orders );
-		$this->assertCount( 3, $orders );
-		foreach ( $orders as $accepted_order ) {
-			$native = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $accepted_order->get_id() );
-			$this->assertIsArray( $native );
-			$this->assertSame( 0, $native['attempts'], 'The submitting child must not let an unrelated background request consume this fixture source before the parent installs its typed service.' );
-			$accepted_order->read_meta_data( true );
-			$this->assertSame( 'yes', $accepted_order->get_meta( \Linker\Commerce\Inquiry\Assessment\Queue::PENDING ) );
-			self::fixed_receipt_job( $accepted_order );
-			$this->assertSame( 'Parallel public inquiry.', $accepted_order->get_customer_note() );
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $accepted_order->get_id() );
-			$this->authorization->process( $accepted_order );
-		}
-		$this->authorization->drain();
-		$this->assertCount( 6, self::mail_jobs_after( $marker ), 'Only the three accepted inquiries produce a team row and receipt.' );
-	}
-
-	/**
-	 * Ten receipts are the chosen tenth of the sourced 100/day host quota.
-	 * A later inquiry still creates its record and team mail through either door.
-	 *
-	 * @dataProvider doors
-	 * @param string $door Public door used after the site-wide cap.
-	 */
-	public function test_receipt_cap_keeps_the_inquiry_and_team_mail_and_discloses_the_omitted_receipt( string $door ): void {
-		$this->as_user( 0 );
-		wc_load_cart();
-		WC()->cart->empty_cart();
-		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
-		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
-		$seed_email = 'tester246-seed-' . self::tag() . '@example.test';
-		$details    = \Linker\Commerce\Contact\Submission::from_handoff(
-			array(
-				'email'   => $seed_email,
-				'message' => 'Please contact me.',
-				'consent' => '1',
-			)
-		);
-		$this->assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
-		$before = self::newest_mail_job();
-		$orders = array();
-		for ( $i = 0; $i < 10; ++$i ) {
-			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
-			$this->assertInstanceOf( \WC_Order::class, $order );
-			$orders[] = $order;
-			$this->assertSame( '', $order->get_billing_first_name(), 'A hand-off name is optional.' );
-			$this->later(
-				static function () use ( $order ): void {
-					$order->delete( true );
-				}
-			);
-		}
-		$this->authorization->drain();
-		$this->assertCount( 20, self::mail_jobs_after( $before ), 'Each allowed nameless message still gets the ordinary receipt and team mail.' );
-		foreach ( $orders as $order ) {
-			self::deliver_fixed_receipt( $order );
-		}
-		$this->assertCount( 10, self::mail_jobs_after( $before ), 'The ten original team notices remain.' );
-		$stamp  = (string) ( time() - 5 );
-		$email  = 'tester246-cap-' . self::tag() . '@example.test';
+		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'c', 32 );
+		$email                       = 'repeat-recipient-' . self::tag() . '@example.test';
+		$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
+		$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
 		$post   = array(
-			'name'                 => '246 Tester',
+			'name'                 => 'Installer',
 			'email'                => $email,
-			'message'              => 'A test inquiry.',
+			'message'              => 'Please advise on this storage project.',
 			'consent'              => '1',
-			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			'linker_request_id'    => wp_generate_uuid4(),
+			'linker_draft_hash'    => WC()->cart->get_cart_hash(),
+			'linker_inquiry_nonce' => wp_create_nonce( Handler::ACTION ),
+			'linker_contact_nonce' => wp_create_nonce( ContactForm::NONCE_ACTION ),
 		);
-		$marker = self::newest_mail_job();
-		$result = 'request' === $door ? ( new Handler() )->process( $post ) : ( new ContactHandler() )->process( $post );
-		$orders = wc_get_orders(
-			array(
-				'billing_email' => $email,
-				'limit'         => -1,
-			)
-		);
+		$result = 'contact' === $door ? ( new ContactHandler() )->process( $post ) : ( new Handler() )->process( $post );
+		$orders = wc_get_orders( array( 'billing_email' => $email ) );
 		$this->assertIsArray( $orders );
-		foreach ( $orders as $order ) {
-			$this->later(
-				static function () use ( $order ): void {
-					$order->delete( true );
-				}
-			); }
 		$this->assertCount( 1, $orders );
-		$this->assertSame( 'inquiry-received', $orders[0]->get_status() );
-		if ( 'contact' === $door ) {
-			$this->assertSame( 'sent_no_receipt', $result, 'An exhausted receipt allowance is not reported as a sent receipt.' );
-			$this->assertSame( 'sent_no_receipt', \Linker\Commerce\Contact\Handler::receipt_state( $orders[0] ) );
-			$before_handoff = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- retain and restore the display state in this test.
-			$_GET           = array(
-				\Linker\Commerce\Contact\Form::STATE_PARAM => 'sent_no_receipt',
-			);
-			$pending_html   = ( new \Linker\Commerce\Contact\Form() )->render();
-			$_GET           = $before_handoff;
-			$this->assertStringContainsString( 'linker-form-success', $pending_html );
-			$this->assertStringContainsString( 'We have not sent a confirmation email.', $pending_html );
-		}
-		$this->authorization->drain();
-		$jobs = self::mail_jobs_after( $marker );
-		$this->assertCount( 1, $jobs, 'Only the team notification is queued after the receipt cap.' );
-		$message = json_decode( (string) get_post_meta( $jobs[0], '_linker_mail_message', true ), true );
-		$this->assertSame( array( ( new \Linker\Commerce\Settings\Options() )->notify_to() ), $message['to'] );
-		$this->assertNotContains( $email, $message['to'] );
-		$orders[0]->read_meta_data( true );
-		$this->assertSame( 'daily_cap', $orders[0]->get_meta( '_linker_receipt_skipped' ) );
-		if ( 'contact' === $door ) {
-			$this->assertSame( 'sent_no_receipt', $result, 'Saving must not report an exhausted receipt allowance as sent.' );
-			$this->assertSame( 'sent_no_receipt', \Linker\Commerce\Contact\Handler::receipt_state( $orders[0] ) );
-			$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- retain and restore the display state in this test.
-			try {
-				$_GET = array(
-					\Linker\Commerce\Contact\Form::STATE_PARAM => 'receipt_pending',
-					\Linker\Commerce\Contact\Form::ORDER_PARAM => $orders[0]->get_order_key(),
-				);
-				$html = ( new \Linker\Commerce\Contact\Form() )->render();
-				$this->assertStringNotContainsString( 'http-equiv="refresh"', $html, 'A decided omission does not keep reloading.' );
-				switch_to_locale( 'de_DE_formal' );
-				$german = ( new \Linker\Commerce\Contact\Form() )->render();
-			} finally {
-				restore_previous_locale();
-				$_GET = $previous;
+		$order = $orders[0];
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
 			}
-			$this->assertStringContainsString( 'Eine Bestätigung per E-Mail wurde nicht versendet.', $german );
+		);
+		$this->assertSame( 'inquiry-received', $order->get_status() );
+		$this->assertSame( $post['message'], $order->get_customer_note() );
+		if ( 'contact' === $door ) {
+			$this->assertSame( 'sent_no_receipt', $result );
 		} else {
 			$this->assertInstanceOf( WC_Order::class, $result );
-			ob_start();
-			( new \Linker\Commerce\Inquiry\Checkout() )->next_steps( $orders[0]->get_id() );
-			$html = (string) ob_get_clean();
+			$this->assertSame( $order->get_id(), $result->get_id() );
 		}
-		$this->assertStringContainsString( 'linker-form-success', $html );
-		$this->assertStringContainsString( 'We have not sent a confirmation email.', $html );
+		$state = $this->authorization->process( $order );
+		$this->assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
+		$job = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['jobs']['team']['id'] );
+		$this->assertNotNull( $job );
+		$this->assertStringContainsString( $post['message'], $job['message']->body );
+		$this->assertNotContains( $email, $job['message']->to );
+		$order->read_meta_data( true );
+		$this->assertSame( 'target_cap', $order->get_meta( ReceiptLimit::SKIPPED_META ) );
+
+		$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification -- Render the receipt returned by the form.
+		$_GET     = array(
+			ContactForm::STATE_PARAM => 'receipt_pending',
+			ContactForm::ORDER_PARAM => $order->get_order_key(),
+		);
+		try {
+			foreach ( array( 'en_US', 'de_DE_formal' ) as $locale ) {
+				$switch = new LocaleSwitch();
+				$switch->to( $locale );
+				try {
+					if ( 'contact' === $door ) {
+						$html    = ( new ContactForm() )->render();
+						$message = 'en_US' === $locale ? 'We have not sent a confirmation email.' : 'Eine Bestätigung per E-Mail wurde nicht versendet.';
+					} else {
+						ob_start();
+						( new \Linker\Commerce\Inquiry\Checkout() )->next_steps( $order->get_id() );
+						$html    = (string) ob_get_clean();
+						$message = 'en_US' === $locale ? 'We have not sent a confirmation email.' : 'Es wurde keine Bestätigungs-E-Mail versendet.';
+					}
+					$this->assertStringContainsString( $message, $html );
+					$this->assertStringContainsString( '#' . $order->get_order_number(), $html );
+				} finally {
+					$switch->back();
+				}
+			}
+		} finally {
+			$_GET = $previous;
+		}
 	}
 
 	/**

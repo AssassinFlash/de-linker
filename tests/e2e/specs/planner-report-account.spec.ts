@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { seedConsentCookies } from '../lib/consent';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const PASSWORD = 'e2e-Report-Account-2026!';
 
@@ -67,7 +67,7 @@ for (const locale of ['en', 'de'] as const) {
 			const login = `e2e-report-account-${locale}-${width}-${Date.now()}`;
 			const email = `${login}@example.test`;
 			const title = `E2E report ${locale} ${width} ${Date.now()}`;
-			const restoreBudgets = isolateVisitorBudgets();
+			const restoreBudgets = isolateMailBudgets();
 			let customer = 0;
 			try {
 				customer = Number(
@@ -95,8 +95,6 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(page).toHaveURL(url + account);
 					await page.locator('#username').fill(login);
 					await page.locator('#password').fill(PASSWORD);
-					// PublicGuard requires three seconds on the rendered login form.
-					await page.waitForTimeout(3_300);
 					await page.locator('button[name="login"]').click();
 					await expect(
 						page.getByRole('search', {
@@ -218,8 +216,6 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(form.locator('[name="email"]')).toHaveValue(
 						email
 					);
-					// This form is also admitted by PublicGuard.
-					await page.waitForTimeout(3_100);
 					await form
 						.getByRole('button', { name: name('Send inquiry') })
 						.click();

@@ -8,7 +8,7 @@
  * External dependencies
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -44,7 +44,7 @@ function route(
 			method,
 			body: init?.body ? JSON.parse( String( init.body ) ) : null,
 		} );
-		const answer = 'GET' === method ? state : reply;
+		const answer = 'GET' === method ? { source: '7:2', ...state } : reply;
 		return new Response( JSON.stringify( answer ), {
 			status: 'GET' === method ? 200 : status,
 		} );
@@ -64,6 +64,67 @@ function card( fetcher: typeof fetch, reason: ContactReason = 'asked' ) {
 		/>
 	);
 }
+
+afterEach( () => {
+	delete window.linkerTurnstile;
+} );
+
+test( 'one guest click waits for verification and an edit cancels that intent', async () => {
+	const { calls, fetcher } = route( {
+		email: null,
+		sent: null,
+		mailbox: 'sales@de-linker.com',
+	} );
+	let answer: ( value: string ) => void;
+	window.linkerTurnstile = {
+		mount: ( _node, _action, ready ) => {
+			answer = ready;
+			return () => {};
+		},
+		refresh: vi.fn(),
+	};
+	card( fetcher );
+	const email = await screen.findByRole( 'textbox', { name: /email/i } );
+	fireEvent.change( email, { target: { value: 'maria@example.test' } } );
+	fireEvent.click( screen.getByRole( 'checkbox' ) );
+	const send = screen.getByRole( 'button', { name: 'Contact me' } );
+	fireEvent.click( send );
+	expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+		0
+	);
+	fireEvent.change( email, { target: { value: 'ellen@example.test' } } );
+	answer!( 'verified-after-edit' );
+	expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+		0
+	);
+	answer!( '' );
+	fireEvent.click( send );
+	fireEvent.click( send );
+	answer!( 'fresh' );
+	await waitFor( () =>
+		expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+			1
+		)
+	);
+	expect( calls.at( -1 )?.body?.email ).toBe( 'ellen@example.test' );
+} );
+
+test( 'an anonymous contact submits its widget answer with the native request', async () => {
+	const { calls, fetcher } = route( { email: null }, { sent: true } );
+	const mount = vi.fn( ( _node, _action, ready ) => {
+		ready( 'widget-answer' );
+		return () => {};
+	} );
+	window.linkerTurnstile = { mount, refresh: vi.fn() };
+	card( fetcher );
+	await waitFor( () => expect( mount ).toHaveBeenCalledOnce() );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Contact me' } ) );
+	await waitFor( () =>
+		expect( calls.at( -1 )?.body?.[ 'cf-turnstile-response' ] ).toBe(
+			'widget-answer'
+		)
+	);
+} );
 
 test( 'a guest leaves an address and reads the one-business-day promise', async () => {
 	const { calls, fetcher } = route(
@@ -105,10 +166,10 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 	).toBeTruthy();
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body ).toEqual( {
+		source: '7:2',
+		'cf-turnstile-response': 'native-test-response',
 		email: 'maria@example.test',
 		website: '',
-		started: '100',
-		started_nonce: 'sig',
 		consent: '1',
 		reason: 'asked',
 		locale: 'en',
@@ -156,8 +217,6 @@ test( 'a received contact has no mail omission while delivery is pending', async
 
 test( 'a request already with the team shows as sent', async () => {
 	const { fetcher } = route( {
-		started: '100',
-		started_nonce: 'sig',
 		email: null,
 		sent: { email: 'maria@example.test', receipt: false },
 	} );

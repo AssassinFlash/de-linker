@@ -19,7 +19,7 @@ foreach ( array(
 	'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
 	'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 	'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
-	'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
+	'LINKER_TURNSTILE_HOSTNAME'     => 'example.com',
 ) as $linker_commerce_key => $linker_commerce_value ) {
 	putenv( $linker_commerce_key . '=' . $linker_commerce_value );
 }

@@ -99,7 +99,6 @@ final class Handler {
 		$locale                     = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard       = new PublicGuard();
 			$nonce       = $post[ self::NONCE ] ?? '';
 			$project     = $post[ Context::PROJECT_FIELD ] ?? '';
 			$transfer    = InquiryTransfer::read( $post[ InquiryTransfer::FIELD ] ?? null );
@@ -113,7 +112,7 @@ final class Handler {
 			// the nonce and original UUID still allow the native ledger to return a prior receipt.
 			$retry_matches              = ! is_array( $retained ) || ( ( $retained[ Context::PROJECT_FIELD ] ?? '' ) === $project && ( $retained['linker_request_id'] ?? '' ) === ( $post['linker_request_id'] ?? '' ) );
 			$this->preliminary_verified = $nonce_valid && $retry_matches && '' !== $project;
-			if ( ! $nonce_valid || ! $retry_matches || ! $guard->allows( $post, ! Business::enabled() ) ) {
+			if ( ! $nonce_valid || ! $retry_matches || ! PublicGuard::allows( $post ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {
@@ -132,9 +131,6 @@ final class Handler {
 			if ( $details instanceof WP_Error ) {
 				return $details;
 			}
-			if ( ! Business::enabled() && '1' !== ( $post['linker_inquiry_receipt_only'] ?? '' ) && ! $guard->take() ) {
-				return new WP_Error( 'linker_inquiry_throttled', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
-			}
 			$draft   = isset( $post['linker_draft_hash'] ) && is_string( $post['linker_draft_hash'] ) ? $post['linker_draft_hash'] : '';
 			$payload = array(
 				'details' => get_object_vars( $details ),
@@ -147,9 +143,8 @@ final class Handler {
 			if ( '' !== $project ) {
 				$payload['preliminary_project'] = $project;
 			}
-			$sender      = new Sender();
-			$bound_draft = $this->preliminary_verified;
-			$current     = ( ! $bound_draft && ! Business::enabled() ) || hash_equals( WC()->cart->get_cart_hash(), $draft );
+			$sender  = new Sender();
+			$current = hash_equals( WC()->cart->get_cart_hash(), $draft );
 			if ( isset( $post['linker_planner_handoff_id'] ) || isset( $post['linker_planner_draft_sha256'] ) ) {
 				$id                 = $post['linker_planner_handoff_id'] ?? '';
 				$fingerprint        = $post['linker_planner_draft_sha256'] ?? '';
@@ -161,17 +156,12 @@ final class Handler {
 				$current            = is_string( $id ) && isset( $contexts[ $id ] )
 					&& is_string( $fingerprint ) && hash_equals( DraftPreview::fingerprint(), $fingerprint )
 					&& hash_equals( WC()->cart->get_cart_hash(), $draft );
-				$bound_draft        = true;
 			}
 			if ( null !== $transfer ) {
 				$payload['report_transfer'] = $transfer->value();
 				$current                    = $current && $transfer->current();
 				$result                     = $this->send_report( $sender, $details, $post, $payload, $transfer, $project, $current );
 				return $result;
-			}
-			// Enforce mode first recovers an already-sent native order, even after the cart was emptied.
-			if ( $bound_draft && ! $current && 'enforce' !== Configuration::active_mode() ) {
-				return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
 			}
 			// Conversation summaries belong to the separately reviewed Genie confirmation.
 			return \Linker\Commerce\Planning\Context::with_submission(
@@ -196,9 +186,6 @@ final class Handler {
 	 * @param bool                $current Current native draft still equals the review.
 	 */
 	private function send_report( Sender $sender, Submission $details, array $post, array $payload, InquiryTransfer $transfer, string $project, bool $current ): WC_Order|WP_Error {
-		if ( ! $current && 'enforce' !== Configuration::active_mode() ) {
-			return self::draft_changed();
-		}
 		$frozen  = null;
 		$prepare = static function () use ( $transfer, $project, &$frozen ): ?WP_Error {
 			$owned = Context::read_preliminary_project( $project );

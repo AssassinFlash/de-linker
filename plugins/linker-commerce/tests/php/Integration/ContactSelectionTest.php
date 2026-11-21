@@ -25,7 +25,6 @@ use Linker\Commerce\Protection\Fingerprint;
 use Linker\Commerce\Protection\FormRecovery;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
-use Linker\Commerce\Protection\Proof;
 
 /**
  * No SMTP delivery: full throttle holds native rendered notifications in the Outbox.
@@ -56,7 +55,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 			'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
 			'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 			'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
-			'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
+			'LINKER_TURNSTILE_HOSTNAME'     => 'example.com',
 		) as $key => $value ) {
 			$env[ $key ] = getenv( $key );
 			putenv( $key . '=' . $value );
@@ -122,24 +121,16 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$this->assertIsString( $raw );
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
-		$challenge    = wp_generate_uuid4();
-		$challenge_fp = hash( 'sha256', $challenge );
-		$ledger       = new Ledger();
-		$this->assertIsArray( $ledger->reserve( $challenge, $challenge_fp, array( new Allowance( 'fixture_verify', $identity->browser, 100, HOUR_IN_SECONDS ) ), 10, array(), 'verification_contact', $identity->binding() ) );
-		$this->assertIsArray( $ledger->dispatch( $challenge, $challenge_fp ) );
-		$this->assertIsArray( $ledger->complete( $challenge, $challenge_fp, 1 ) );
-		$started = (string) time();
-		$post    = array(
+
+		$post = array(
 			'name'                          => 'Context Fixture',
 			'email'                         => 'context-' . self::tag() . '@example.test',
 			'message'                       => "My unchanged message.\nCustomer's second line.",
 			'intent'                        => 'product',
 			'consent'                       => '1',
 			'linker_request_id'             => wp_generate_uuid4(),
-			'linker_proof'                  => ( new Proof() )->issue( 'verified', 'contact', $identity, $challenge ),
+			'cf-turnstile-response'         => 'XXXX.DUMMY.TOKEN.XXXX',
 			Form::NONCE_FIELD               => wp_create_nonce( Form::NONCE_ACTION ),
-			'linker_started'                => $started,
-			'linker_started_nonce'          => wp_create_nonce( 'linker_inquiry_started_' . $started ),
 			SelectionContext::FIELD         => $raw,
 			SelectionContext::INCLUDE_FIELD => '0',
 		);

@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import shutil
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -681,6 +682,45 @@ def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
         {"title": "Unicode fixture", "inputs": {"text": value}, "key": "text"},
     )
     assert project["inputs"] == {"text": value}
+
+
+def test_storage_pressure_preserves_the_guests_project_and_allows_retry(
+    rig: Rig,
+) -> None:
+    guest = Actor("guest", "existing-browser")
+    original = rig.create("original-project", guest)
+    removable = rig.create("removable", guest)
+    command = {
+        "schema_version": 1,
+        "key": "second-project",
+        "title": "Another project",
+        "inputs": {},
+    }
+    store = rig.workspace.blobs
+    store.minimum_free_bytes = shutil.disk_usage(store.directory).total
+    assert rig.create("original-project", guest) == original
+    read = rig.post("/projects/read", {"project_id": original}, guest)
+    assert read["revision"] == 1
+    deletion: FixtureObject = {
+        "project_id": removable,
+        "key": "delete",
+        "expected_revision": 1,
+    }
+    removed = rig.post(
+        "/projects/delete-after-inquiry-check",
+        {**deletion, "inquiry_generation": 0},
+        guest,
+    )
+    assert removed["deleted"] is True
+    assert rig.post("/projects/delete", deletion, guest) == removed
+    refused = rig.client.post("/projects/create", headers=headers(guest), json=command)
+    assert refused.status_code == 503
+    assert refused.json()["error"]["code"] == "storage_unavailable"
+    assert rig.replay("/projects/create", command, guest)["status"] == "absent"
+    store.minimum_free_bytes = 0
+    result = rig.post("/projects/create", command, guest)
+    assert result["id"] != original
+    assert rig.post("/projects/create", command, guest)["id"] == result["id"]
 
 
 def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(

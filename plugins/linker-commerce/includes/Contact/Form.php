@@ -115,6 +115,9 @@ final class Form {
 			// itself (its own panel), so the wrapper carries no card styling.
 			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $this->rail() . '</div>';
 		}
+		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
+			return $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) );
+		}
 		return '<div class="linker-contact-card">' . $this->form( $state ) . $this->rail() . '</div>';
 	}
 
@@ -124,10 +127,9 @@ final class Form {
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
 	 */
 	private function form( string $state ): string {
-		$previous   = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
-		$individual = isset( $previous['linker_individual_review'] ) && '1' === $previous['linker_individual_review'];
-		$field      = 'linker-form-input';
-		$label      = 'linker-form-label';
+		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
+		$field    = 'linker-form-input';
+		$label    = 'linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
 		$query    = wp_unslash( $_GET );
 		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
@@ -144,11 +146,7 @@ final class Form {
 		// Selection transport is submitted only by the inclusion checkbox.
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
-		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
-
-		$recover = ! isset( $previous['linker_recovery_available'] ) || '1' === $previous['linker_recovery_available'];
-
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual, $recover );
+		$html .= \Linker\Commerce\Inquiry\PublicGuard::fields();
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -195,6 +193,7 @@ final class Form {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
 			. '<p class="linker-form-note">' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';

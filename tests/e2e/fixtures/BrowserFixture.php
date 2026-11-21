@@ -1,6 +1,6 @@
 <?php
 /**
- * Isolated records, mail and limits for local browser tests.
+ * Isolated records and local mail for local browser tests.
  *
  * @package Linker\Commerce
  */
@@ -48,22 +48,17 @@ final class BrowserFixture {
 		}
 		global $wpdb;
 		$state = array(
-			'email'     => $email,
-			'options'   => array(
+			'email'    => $email,
+			'options'  => array(
 				Throttle::OPTION           => get_option( Throttle::OPTION ),
 				OptionBudgetLedger::OPTION => get_option( OptionBudgetLedger::OPTION ),
 				TestMode::OPTION           => get_option( TestMode::OPTION ),
 			),
-			'marker'    => (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" ),
-			'limits'    => $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'linker_commerce_limit_' ) . '%' ), ARRAY_A ),
-			'ledger'    => get_option( \Linker\Commerce\Protection\Ledger::OPTION ),
-			'transient' => get_transient( 'linker_contact_' . md5( '127.0.0.1' ) ),
-			'products'  => array(),
-			'time'      => time(),
+			'marker'   => (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" ),
+			'products' => array(),
+			'time'     => time(),
 		);
 		update_option( $this->key, $state, false );
-		$this->clear_limits();
-		delete_transient( 'linker_contact_' . md5( '127.0.0.1' ) );
 		( new TestMode() )->enable( $this->tester );
 		delete_option( OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ), false );
@@ -192,38 +187,6 @@ final class BrowserFixture {
 		);
 	}
 
-	/** Removes only this local run's atomic public rate counters. */
-	private function clear_limits(): void {
-		global $wpdb;
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'linker_commerce_limit_' ) . '%' ) );
-		// Every full-chain browser test consumes real verification and
-		// admission allowances (shared per connection on a local instance);
-		// without this reset one suite exhausts its own hourly quota. The
-		// pre-test journal is snapshotted and restored by cleanup.
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name = %s", \Linker\Commerce\Protection\Ledger::OPTION ) );
-		wp_cache_delete( \Linker\Commerce\Protection\Ledger::OPTION, 'options' );
-	}
-
-	/**
-	 * Put the rate counters and admission journal back as this run found them.
-	 *
-	 * @param array<string, mixed> $state Saved setup state.
-	 */
-	private function restore_limits( array $state ): void {
-		global $wpdb;
-		$ledger = $state['ledger'] ?? false;
-		if ( is_string( $ledger ) && '' !== $ledger ) {
-			update_option( \Linker\Commerce\Protection\Ledger::OPTION, $ledger, false );
-		} else {
-			delete_option( \Linker\Commerce\Protection\Ledger::OPTION );
-		}
-		wp_cache_delete( \Linker\Commerce\Protection\Ledger::OPTION, 'options' );
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'linker_commerce_limit_' ) . '%' ) );
-		foreach ( is_array( $state['limits'] ?? null ) ? $state['limits'] : array() as $row ) {
-			$wpdb->insert( $wpdb->options, array_merge( $row, array( 'autoload' => 'off' ) ) );
-		}
-	}
-
 	/**
 	 * Restores saved state and removes owned records even after a failed assertion.
 	 *
@@ -264,14 +227,7 @@ final class BrowserFixture {
 				}
 				wp_cache_delete( $option, 'options' );
 			}
-			delete_transient( 'linker_contact_' . md5( '127.0.0.1' ) );
-			if ( false !== $state['transient'] ) {
-				set_transient( 'linker_contact_' . md5( '127.0.0.1' ), $state['transient'], HOUR_IN_SECONDS );
-			}
 		} finally {
-			// Whatever happened above, later suites must see the counters and
-			// journal this run started from, and the fixture must uninstall.
-			$this->restore_limits( $state );
 			delete_option( $this->key );
 			wp_cache_delete( $this->key, 'options' );
 		}

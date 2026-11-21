@@ -342,9 +342,6 @@ async function signIn(
 	await expect(page).toHaveURL(base() + account);
 	await page.fill('#username', customer.login);
 	await page.fill('#password', PASSWORD);
-	// PublicGuard's minimum fill time is three seconds; every suite that posts
-	// through these doors waits for it before submitting.
-	await page.waitForTimeout(3_300);
 	await page.locator('button[name="login"]').click();
 	await page.waitForLoadState('load');
 	await page.waitForFunction(

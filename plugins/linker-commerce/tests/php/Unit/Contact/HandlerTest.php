@@ -103,15 +103,6 @@ final class HandlerTest extends TestCase {
 	}
 
 	/**
-	 * A missing signed fill-time is refused before creating an inquiry.
-	 */
-	public function test_complete_form_without_signed_time_is_refused(): void {
-		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
-		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
-		$this->assertSame( 'invalid', $this->handler()->process( $this->post() ) );
-	}
-
-	/**
 	 * A complete form as posted by the browser.
 	 *
 	 * @param  array<string, string> $overrides Fields to change.

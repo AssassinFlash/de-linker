@@ -15,7 +15,7 @@ use WP_REST_Response;
 
 /**
  * GET linker-ai/v1/genie/contact tells the contact card what it needs when it
- * appears: a signed start time (FormGuard), the signed-in customer's
+ * appears: the conversation revision, the signed-in customer's
  * address (a customer with an account is never asked for one, #243),
  * whether this conversation's request is already with the team, and the team
  * mailbox customers see (MAILBOX_FILTER).
@@ -53,23 +53,7 @@ class ContactRequest {
 	 */
 	public const MAILBOX_FILTER = 'linker_genie_team_mailbox';
 
-	/**
-	 * Requests one connection may send per hour: the contact form's limit
-	 * (Linker\Commerce\Contact\Handler::LIMIT, three an hour), the site's
-	 * other public door to the team.
-	 */
-	public const LIMIT = 3;
 
-	/**
-	 * Requests the whole site passes on per day. Every request is one team
-	 * mail; the site takes at most 80 of the host's 100 mails a day
-	 * (Linker\Commerce\Mail\Throttle::PER_DAY). With Genie's own
-	 * conversation mail (ConversationMail::DAILY_CAP, 10) Genie takes at most
-	 * 30 of them, which leaves 50 for registrations, inquiries and their
-	 * receipts. On 2026-10-17, the busiest day the live mail log holds (the
-	 * owner's test of the account chain), the site sent 7.
-	 */
-	public const DAILY = 20;
 
 	/**
 	 * Meta key of the hand-off notes on the conversation post.
@@ -91,26 +75,15 @@ class ContactRequest {
 	/**
 	 * Sets up the route.
 	 *
-	 * @param Conversations  $conversations The visitor's conversation.
-	 * @param Thread         $thread        Its stored messages.
-	 * @param PageContext    $pages         The page context the card sends.
-	 * @param FormGuard|null $guard The public form's protections; this door's when omitted.
+	 * @param Conversations $conversations The visitor's conversation.
+	 * @param Thread        $thread        Its stored messages.
+	 * @param PageContext   $pages         The page context the card sends.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
 		private readonly Thread $thread,
-		private readonly PageContext $pages,
-		?FormGuard $guard = null
-	) {
-		$this->guard = $guard ?? new FormGuard( 'genie_contact', self::LIMIT, self::DAILY );
-	}
-
-	/**
-	 * The public form's protections (FormGuard).
-	 *
-	 * @var FormGuard
-	 */
-	private readonly FormGuard $guard;
+		private readonly PageContext $pages
+	) {}
 
 	/**
 	 * Why Genie offered the contact, in words: the one place the reasons
@@ -147,20 +120,22 @@ class ContactRequest {
 					'callback'            => array( $this, 'send' ),
 					'permission_callback' => '__return_true',
 					'args'                => array(
-						'email'         => array( 'type' => 'string' ),
-						'website'       => array( 'type' => 'string' ),
-						'started'       => array( 'type' => 'string' ),
-						'started_nonce' => array( 'type' => 'string' ),
-						'consent'       => array( 'type' => 'string' ),
-						'reason'        => array(
+						'source'  => array(
+							'type'     => 'string',
+							'required' => true,
+						),
+						'email'   => array( 'type' => 'string' ),
+						'website' => array( 'type' => 'string' ),
+						'consent' => array( 'type' => 'string' ),
+						'reason'  => array(
 							'type' => 'string',
 							'enum' => self::REASONS,
 						),
-						'locale'        => array(
+						'locale'  => array(
 							'type' => 'string',
 							'enum' => array( 'en', 'de' ),
 						),
-						'page'          => array( 'type' => 'object' ),
+						'page'    => array( 'type' => 'object' ),
 					),
 				),
 			)
@@ -173,14 +148,12 @@ class ContactRequest {
 	public function state(): WP_REST_Response {
 		$conversation = $this->conversations->existing_id();
 		$sent         = $conversation > 0 ? $this->sent( $conversation ) : null;
-		$stamp        = $this->guard->stamp();
 		$reply        = new WP_REST_Response(
 			array(
-				'started'       => $stamp['started'],
-				'started_nonce' => $stamp['nonce'],
-				'email'         => $this->customer()['email'] ?? null,
-				'sent'          => $sent,
-				'mailbox'       => $this->mailbox(),
+				'source'  => NativeTransfer::source( $conversation, $this->thread->read( $conversation ), $this->draft() ),
+				'email'   => $this->customer()['email'] ?? null,
+				'sent'    => $sent,
+				'mailbox' => $this->mailbox(),
 			)
 		);
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
@@ -201,17 +174,12 @@ class ContactRequest {
 		$customer = $this->customer();
 		if ( null === $customer ) {
 			$guard = array(
-				'website'       => $request->get_param( 'website' ) ?? '',
-				'started'       => $request->get_param( 'started' ),
-				'started_nonce' => $request->get_param( 'started_nonce' ),
+				'website' => $request->get_param( 'website' ) ?? '',
 			);
 			$email = sanitize_email( (string) $request->get_param( 'email' ) );
-			if ( $this->guard->trapped( $guard ) ) {
+			if ( FormGuard::trapped( $guard ) ) {
 				// A bot: answered like a delivery, sent nowhere (the contact form's rule).
 				return $this->reply( $email );
-			}
-			if ( ! $this->guard->passes( $guard ) ) {
-				return $this->error( 'linker_genie_contact_retry', 400 );
 			}
 			if ( ! is_email( $email ) ) {
 				return $this->error( 'linker_genie_contact_email', 400 );
@@ -227,47 +195,34 @@ class ContactRequest {
 				'name'    => '',
 			);
 		}
-		$sent = $this->sent( $conversation );
-		if ( null !== $sent && $sent['email'] === $customer['email'] ) {
-			// Nothing new since the team got this conversation: not twice.
-			return $this->reply( $customer['email'], $sent['receipt'] );
-		}
 		if ( ! has_filter( self::CONTACT_FILTER ) ) {
 			return $this->error( 'linker_genie_contact_unavailable', 503 );
 		}
-		if ( '' !== $this->guard->take() ) {
-			return $this->error( 'linker_genie_contact_limited', 429 );
-		}
 		$handoff = $this->handoff( $conversation, $customer, $request );
-		/**
-		 * A customer asked Genie for the team's contact (#243): linker-commerce
-		 * sends it through #246's Sender::message() and answers with the record.
-		 *
-		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool|null}.
-		 * @param array<string, mixed> $handoff See handoff().
-		 * @since 0.1.0
-		 */
-		$sent = apply_filters( self::CONTACT_FILTER, null, $handoff ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::CONTACT_FILTER is linker_tools_genie_contact_team.
-		if ( ! is_array( $sent ) || ! isset( $sent['order'] ) ) {
-			return $this->error( 'linker_genie_contact_unavailable', 503 );
-		}
-		$receipt = $sent['receipt'] ?? null;
-		add_post_meta(
+		$note    = array(
+			'reason'   => $handoff['reason'],
+			'label'    => $handoff['reason_label'],
+			'email'    => $customer['email'],
+			'user_id'  => $customer['user_id'],
+			'page'     => $handoff['page'],
+			'messages' => $handoff['conversation']['messages'],
+			'source'   => $handoff['conversation']['source'],
+		);
+		$order   = NativeTransfer::send(
+			'genie_contact',
 			$conversation,
 			self::NOTE,
+			$note,
 			array(
-				'at'       => time(),
-				'reason'   => $handoff['reason'],
-				'label'    => $handoff['reason_label'],
-				'email'    => $customer['email'],
-				'user_id'  => $customer['user_id'],
-				'page'     => $handoff['page'],
-				'messages' => $handoff['conversation']['messages'],
-				'order'    => (int) $sent['order'],
-				'receipt'  => $receipt,
-			)
+				'reason' => $handoff['reason'],
+				'locale' => $handoff['locale'],
+				'page'   => $handoff['page'],
+			),
+			$request,
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native contact handoff to Commerce.
+			static fn () => apply_filters( self::CONTACT_FILTER, null, $handoff )
 		);
-		return $this->reply( $customer['email'], $receipt );
+		return is_wp_error( $order ) ? $order : $this->reply( $customer['email'], self::current_receipt( array( 'order' => $order->get_id() ) ) );
 	}
 
 	/**
@@ -276,11 +231,13 @@ class ContactRequest {
 	 * @param int                                              $conversation Conversation post ID.
 	 * @param array{user_id: int, email: string, name: string} $customer     Who asks.
 	 * @param WP_REST_Request                                  $request      The card's request.
-	 * @return array{conversation: array{id: int, url: string, messages: int}, reason: string, reason_label: string, locale: string, customer: array{user_id: int, email: string, name: string}, summary: list<string>, page: array{type: string, url: string, title: string}, draft: list<array{product_id: int, name: string, sku: string, quantity: int}>}
+	 * @return array{conversation: array{id: int, url: string, messages: int, source: string}, reason: string, reason_label: string, locale: string, customer: array{user_id: int, email: string, name: string}, summary: list<string>, page: array{type: string, url: string, title: string}, draft: list<array{product_id: int, name: string, sku: string, quantity: int}>}
 	 */
 	public function handoff( int $conversation, array $customer, WP_REST_Request $request ): array {
-		$messages = $this->thread->read( $conversation )['messages'];
+		$thread   = $this->thread->read( $conversation );
+		$messages = $thread['messages'];
 		$asked    = array();
+		$draft    = $this->draft();
 		foreach ( array_reverse( $messages ) as $message ) {
 			if ( 'user' === ( $message['role'] ?? '' ) && '' !== trim( (string) ( $message['content'] ?? '' ) ) ) {
 				$asked[] = trim( (string) $message['content'] );
@@ -294,6 +251,7 @@ class ContactRequest {
 				'id'       => $conversation,
 				'url'      => add_query_arg( 'conversation', $conversation, admin_url( 'admin.php?page=' . QualityPage::SLUG ) ),
 				'messages' => count( $messages ),
+				'source'   => NativeTransfer::source( $conversation, $thread, $draft ),
 			),
 			'reason'       => $reason,
 			// The staff's words for it, in the site's language: the team
@@ -307,7 +265,7 @@ class ContactRequest {
 				'url'   => $this->own_url( $page['url'] ?? '' ),
 				'title' => $page['title'] ?? '',
 			),
-			'draft'        => $this->draft(),
+			'draft'        => $draft,
 		);
 	}
 
@@ -428,8 +386,8 @@ class ContactRequest {
 		if ( ! is_array( $last ) ) {
 			return null;
 		}
-		$count = count( $this->thread->read( $conversation )['messages'] );
-		if ( (int) ( $last['messages'] ?? -1 ) !== $count ) {
+		$thread = $this->thread->read( $conversation );
+		if ( isset( $last['source'] ) ? NativeTransfer::source( $conversation, $thread, $this->draft() ) !== $last['source'] : (int) ( $last['messages'] ?? -1 ) !== count( $thread['messages'] ) ) {
 			return null;
 		}
 		return array(

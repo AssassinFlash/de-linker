@@ -54,7 +54,7 @@ final class Sender {
 	 */
 	public function request( Submission $details, array $billing = array(), array|false|null $summary = null, array $context = array(), ?array $review = null ): WC_Order|WP_Error {
 		$handoff = $review['handoff'] ?? null;
-		$error   = \Linker\Commerce\Protection\BusinessCapacity::preflight() ?? Context::preflight( $handoff );
+		$error   = Context::preflight( $handoff );
 		if ( null === $error && null === $review ) {
 			$error = $this->cart_preflight( $details );
 		}
@@ -125,9 +125,9 @@ final class Sender {
 	 * @param bool                              $lock_refused New order stopped at its pre-save project lock check.
 	 */
 	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references, array $projects, bool &$lock_refused ): WC_Order|WP_Error {
-		$prepared_key = '';
-		$transaction  = null;
-		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $projects, &$lock_refused, &$prepared_key, &$transaction ): void {
+		$expected    = array();
+		$transaction = null;
+		$prepare     = function ( WC_Order $order ) use ( $details, $summary, $context, $projects, &$lock_refused, &$expected, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
 			if ( array() !== $projects ) {
@@ -140,15 +140,14 @@ final class Sender {
 				$lock_refused = false;
 			}
 			if ( $awaited ) {
-				$this->prepare( $order, $details, 'inquiry', $context, true );
+				$this->prepare( $order, $details, 'inquiry', $context );
 				$this->attach_summary( $order, $summary );
 				Assessment\Queue::refresh_summary( $order );
-				\Linker\Commerce\Protection\BusinessCapacity::finalize( $order );
 			} else {
 				$this->attach_summary( $order, $summary );
 				$this->prepare( $order, $details, 'inquiry', $context );
 			}
-			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
+			$expected = self::prepared_meta( $order );
 			// Optional summary/provider work has finished before the first native write.
 			if ( null === $transaction ) {
 				$transaction = new NativeTransaction();
@@ -166,7 +165,7 @@ final class Sender {
 			if ( ! $order instanceof WC_Order ) {
 				return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 			}
-			$stored = \Linker\Commerce\Protection\BusinessCapacity::verify( $order, $prepared_key );
+			$stored = $this->verify_saved( $order, $expected );
 			if ( $stored instanceof WP_Error ) {
 				return $stored;
 			}
@@ -228,10 +227,6 @@ final class Sender {
 	 * @param array<string, mixed> $meta    Record meta a door adds before the mail goes (Genie's hand-off, #243).
 	 */
 	public function message( Submission $details, array $meta = array() ): WC_Order|WP_Error {
-		$capacity = \Linker\Commerce\Protection\BusinessCapacity::preflight();
-		if ( $capacity instanceof WP_Error ) {
-			return $capacity;
-		}
 		$order = new WC_Order();
 		$order->set_customer_id( get_current_user_id() );
 		$order->set_created_via( 'linker_contact' );
@@ -294,9 +289,8 @@ final class Sender {
 	 * @param Submission           $details Validated reply details.
 	 * @param string               $source inquiry or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
-	 * @param bool                 $summary_awaited Reserve the proven native summary before dispatch.
 	 */
-	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array(), bool $summary_awaited = false ): void {
+	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
 		$order->set_payment_method_title( '' );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
@@ -308,7 +302,7 @@ final class Sender {
 		Assessment\Queue::prepare( $order, $context );
 		if ( 0 === $order->get_id() ) {
 			$order->update_meta_data( Assessment\SendAuthorization::MARKER, Assessment\SendVerdict::POLICY ); }
-		\Linker\Commerce\Protection\BusinessCapacity::prepare( $order, $summary_awaited ? SummaryEnvelope::additional_bytes( $order ) : 0 );
+		( new \Linker\Commerce\Protection\BusinessRecord() )->stamp( $order );
 	}
 
 	/**
@@ -327,9 +321,10 @@ final class Sender {
 		}
 		NativeTransaction::run(
 			function () use ( $order ): void {
+				$expected = self::prepared_meta( $order );
 				// A real native id stabilizes the receipt reservation across a resumed save.
 				$order->save();
-				$stored = \Linker\Commerce\Protection\BusinessCapacity::verify( $order );
+				$stored = $this->verify_saved( $order, $expected );
 				if ( $stored instanceof WP_Error ) {
 					throw new \Linker\Commerce\Protection\CapacityFull( $stored ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped by the native form consumer.
 				}
@@ -345,6 +340,43 @@ final class Sender {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Woo stores scalar metadata as strings. The legacy data store unslashes arrays.
+	 *
+	 * @param WC_Order $order Prepared inquiry.
+	 * @return array<string,mixed>
+	 */
+	private static function prepared_meta( WC_Order $order ): array {
+		$legacy   = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
+		$expected = array();
+		foreach ( $order->get_meta_data() as $meta ) {
+			$value                           = $legacy && is_array( $meta->value ) ? wp_unslash( $meta->value ) : $meta->value;
+			$expected[ (string) $meta->key ] = is_scalar( $value ) ? (string) $value : $value;
+		}
+		return $expected;
+	}
+
+	/**
+	 * Read the native order before acknowledging the customer's submission.
+	 *
+	 * @param WC_Order            $order Saved inquiry.
+	 * @param array<string,mixed> $expected Values prepared for this write.
+	 */
+	private function verify_saved( WC_Order $order, array $expected ): ?WP_Error {
+		$fresh = $order->get_id() > 0 ? Assessment\CurrentSource::order( $order->get_id() ) : null;
+		if ( ! $fresh instanceof WC_Order ) {
+			return $this->unknown();
+		}
+		foreach ( $expected as $name => $value ) {
+			$actual = $fresh->get_meta( $name );
+			$actual = is_scalar( $actual ) ? (string) $actual : $actual;
+			if ( $value !== $actual ) {
+				return $this->unknown();
+			}
+		}
+		return null;
 	}
 
 	/** Native writes were not confirmed; preserve the original customer inputs/draft. */

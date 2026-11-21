@@ -209,8 +209,8 @@ msgstr "邮件 %1$d/%2$d PHP，%3$d/%4$d SMTP"
 msgid "intake unreadable"
 msgstr "询盘占用无法读取"
 
-msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
-msgstr "询盘 %1$d/%2$d 未处理，%3$d 条隔离"
+msgid "intake %1$d unhandled, %2$d quarantined"
+msgstr "询盘 %1$d 条待处理，%2$d 条隔离"
 
 msgid "publication unreadable"
 msgstr "发布状态无法读取"

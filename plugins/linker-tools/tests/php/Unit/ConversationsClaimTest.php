@@ -44,7 +44,7 @@ final class ConversationsClaimTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->db   = new ClaimOptionsDouble();
-		$this->name = Conversations::BROWSER_CLAIM_PREFIX . substr( hash( 'sha256', self::TAB ), 0, 32 );
+		$this->name = Conversations::BROWSER_CLAIM_PREFIX . sprintf( 't%010d_', intdiv( time(), Conversations::BROWSER_CLAIM_SECONDS ) ) . substr( hash( 'sha256', self::TAB ), 0, 32 );
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the double stands in for the options table.
 		$GLOBALS['wpdb'] = $this->db;
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
@@ -127,6 +127,23 @@ final class ConversationsClaimTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** A sibling request can reuse the tab's first claim even when new allocations are busy. */
+	public function test_sibling_first_request_reuses_the_existing_claim_without_spending_write_capacity(): void {
+		$_COOKIE = array();
+		$key     = str_repeat( 'a', 32 );
+		$this->db->set(
+			$this->name,
+			array(
+				'key'   => $key,
+				'until' => time() + 20,
+			)
+		);
+		WP_Mock::expectAction( Conversations::BROWSER_ACTION, $key, 1000000, '/', '', false );
+		$scope = $this->conversations()->entry_scope( self::TAB );
+		$this->assertNotSame( '', $scope );
+		$this->assertSame( array(), $this->db->queries );
+	}
+
 	/**
 	 * A concurrent loser's insert is ignored, not applied: the first writer
 	 * keeps its key and the loser adopts it. add_option()'s ON DUPLICATE KEY
@@ -145,8 +162,10 @@ final class ConversationsClaimTest extends TestCase {
 
 		$this->conversations()->entry_scope( self::TAB );
 
-		$this->assertStringContainsString( 'INSERT IGNORE', $this->db->queries[0], 'Publication inserts ignoring a duplicate key.' );
-		$this->assertStringNotContainsString( 'ON DUPLICATE', $this->db->queries[0], 'A losing insert never overwrites the winner.' );
+		$insert = end( $this->db->queries );
+		$this->assertIsString( $insert );
+		$this->assertStringContainsString( 'INSERT IGNORE', $insert, 'Publication inserts ignoring a duplicate key.' );
+		$this->assertStringNotContainsString( 'ON DUPLICATE', $insert, 'A losing insert never overwrites the winner.' );
 		$this->assertArrayNotHasKey( $this->name, $this->db->updated, 'The winner was not rewritten.' );
 		$this->assertConditionsMet();
 	}

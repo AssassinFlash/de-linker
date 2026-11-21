@@ -558,8 +558,6 @@ for (const lang of LANGS) {
 				await contact
 					.getByLabel(/I agree|Ich bin damit einverstanden/)
 					.check();
-				// The signed start time is three seconds old at the least.
-				await page.waitForTimeout(3_000);
 				await contact.locator('.linker-genie-contact__send').click();
 				await expect(contact).toContainText(
 					/Your request is with the Linker team|Ihre Kontaktanfrage liegt beim Linker-Team/,

@@ -109,65 +109,62 @@ final class TransportTest extends TestCase {
 		}
 	}
 
-	/** A rejected owned receipt lookup must not create a standard-profile asset. */
-	public function test_standard_profile_refusal_does_not_bypass_write_admission(): void {
-		$writes    = 0;
+	/** A signed-in project edit uses the engine's owned, idempotent revision command. */
+	public function test_account_edit_preserves_native_project_revision_command(): void {
+		$principal = new Principal( 'user', 'wp:1:user:17' );
+		$command   = array(
+			'key'               => 'ae4899d0-07b7-4f82-abc1-0b532f04be92',
+			'project_id'        => str_repeat( 'a', 32 ),
+			'expected_revision' => 3,
+		);
+		$body      = (string) wp_json_encode( $command );
 		$transport = new Transport(
-			static function ( string $url ) use ( &$writes ): array {
-				if ( 'https://engine.test/operations/replay/profiles/standard' === $url ) {
-					return array(
-						'status' => 422,
-						'body'   => '{"error":{"code":"invalid_input"}}',
-						'type'   => 'application/json',
-					);
-				}
-				++$writes;
+			function ( string $url, array $args ) use ( $principal, $body ): array {
+				$this->assertSame( 'https://engine.test/projects/revise', $url );
+				$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
+				$this->assertSame( $body, $args['body'] );
 				return array(
 					'status' => 200,
-					'body'   => '{"schema_version":1}',
 					'type'   => 'application/json',
+					'body'   => '{"revision":4}',
 				);
 			}
 		);
-		$reply     = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:1' ), 'profiles/standard', array(), '{}', $transport );
-		$this->assertIsArray( $reply );
-		$this->assertSame( 422, $reply['status'] );
-		$this->assertSame( 0, $writes );
+		$result    = ( new Admission() )->send( $principal, 'projects/revise', $command, $body, $transport );
+		$this->assertIsArray( $result );
+		$this->assertSame( '{"revision":4}', $result['body'] );
 	}
 
-	/** Current-input retries return their original snapshot without dispatching a new job. */
-	public function test_current_input_commands_replay_their_owned_snapshot(): void {
-		foreach ( array( 'calculate', 'find-equipment', 'check-equipment' ) as $operation ) {
-			$calls     = array();
-			$payload   = array(
-				'schema_version' => 1,
-				'project'        => array( 'revision' => 2 ),
-				'run'            => array( 'id' => str_repeat( 'b', 32 ) ),
-			);
+	/** The verified project owner sends each command to its private handler with its original key. */
+	public function test_guest_workspace_commands_use_the_owned_engine_request(): void {
+		$owner   = new Principal( 'guest', 'synthetic-guest' );
+		$command = array( 'key' => 'guest-project-command' );
+		$body    = (string) wp_json_encode( $command );
+		foreach ( array( 'projects/create', 'projects/revise', 'profiles/csv', 'profiles/standard', 'geometry/import', 'runs/calculate', 'runs/report' ) as $path ) {
 			$transport = new Transport(
-				static function ( string $url ) use ( &$calls, $operation, $payload ): array {
-					$calls[] = $url;
+				function ( string $url, array $args ) use ( $owner, $body, $path ): array {
+					$this->assertSame( 'https://engine.test/' . $path, $url );
+					$this->assertSame( $owner->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
+					$this->assertSame( $body, $args['body'] );
 					return array(
 						'status' => 200,
-						'type'   => 'application/json',
-						'body'   => wp_json_encode(
-							array(
-								'schema_version' => 1,
-								'status'         => 'replayed',
-								'command_scope'  => $operation . ':' . str_repeat( 'a', 32 ),
-								'command_sha256' => str_repeat( 'c', 64 ),
-								'result'         => $payload,
-							)
-						),
+						'body'   => '{"schema_version":1}',
 					);
 				}
 			);
-			$reply     = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:1' ), 'runs/' . $operation, array(), '{}', $transport );
-			$this->assertIsArray( $reply, $operation );
-			$this->assertSame( 200, $reply['status'] );
-			$this->assertSame( $payload, json_decode( $reply['body'], true ) );
-			$this->assertSame( array( 'https://engine.test/operations/replay/runs/' . $operation ), $calls );
+			$result    = ( new Admission() )->send( $owner, $path, $command, $body, $transport );
+			$this->assertIsArray( $result );
+			$this->assertSame( 200, $result['status'] );
 		}
+	}
+
+	/** The private profile handler's rejection reaches the customer unchanged. */
+	public function test_standard_profile_preserves_private_validation_errors(): void {
+		$body  = '{"error":{"code":"invalid_input"}}';
+		$reply = ( new Admission() )->send( new Principal( 'user', 'wp:1:user:1' ), 'profiles/standard', array(), '{}', $this->replying( 422, $body ) );
+		$this->assertIsArray( $reply );
+		$this->assertSame( 422, $reply['status'] );
+		$this->assertSame( $body, $reply['body'] );
 	}
 
 	/** An unreadable or unexpected body still yields the generic status code. */

@@ -12,7 +12,6 @@ namespace Linker\Commerce\Protection;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Registration\Approval;
 use WP_Error;
-use Linker\Commerce\Mail\Capacity;
 use Linker\Commerce\Mail\ConnectionFence;
 
 /**
@@ -24,41 +23,9 @@ final class RegistrationSlots {
 	public const OPTION = 'linker_public_registration_slots';
 	public const META   = '_linker_public_registration_operation';
 	// Operating allocation, not a customer-traffic measurement: specification 569.
-	public const MAX_PENDING = 128;
-	public const MAX_BYTES   = 8388608;
-	private const MUTEX      = 'registration-capacity';
-
-	/**
-	 * Reserve before native account creation, with no password or business payload.
-	 *
-	 * @param  string $operation Server-admitted registration UUID.
-	 * @param  int    $bytes     Proven native business-profile envelope, excluding credentials.
-	 * @param  string $recipient HMAC of the original verified recipient.
-	 * @return array<string,mixed>|WP_Error Durable slot.
-	 */
-	public static function reserve( string $operation, int $bytes, string $recipient = '' ): array|WP_Error {
-		if ( 1 > $bytes || self::MAX_BYTES < $bytes ) {
-			return self::unavailable();
-		}
-		$key = hash_hmac( 'sha256', 'registration|' . $operation, wp_salt( 'auth' ) );
-		return self::edit(
-			static function ( array &$state ) use ( $key, $bytes, $recipient ): array|WP_Error {
-				if ( isset( $state[ $key ] ) ) {
-					return new WP_Error( 'linker_registration_pending', __( 'This request has already been processed. Please check the result before sending it again.', 'linker-commerce' ) );
-				}
-				$pending = self::pending_users();
-				if ( $pending['count'] + count( $state ) >= self::MAX_PENDING || $pending['bytes'] + array_sum( array_column( $state, 'bytes' ) ) + $bytes > self::MAX_BYTES ) {
-					return self::unavailable();
-				}
-				$state[ $key ] = array(
-					'at'    => time(),
-					'bytes' => $bytes,
-					'owner' => $recipient,
-				);
-				return array( 'key' => $key );
-			}
-		);
-	}
+	private const AUDIT_HISTORY = 128;
+	public const MAX_BYTES      = 8388608;
+	private const MUTEX         = 'registration-capacity';
 
 	/**
 	 * Native schema bounds core columns; all prospective Woo business meta is exact.
@@ -87,45 +54,6 @@ final class RegistrationSlots {
 			$meta[ 'billing_' . $field ] = $value;
 		}
 		return $meta;
-	}
-
-	/**
-	 * Upper bound from native users schema and complete native billing metadata.
-	 *
-	 * @param array<string,string> $values Native business fields.
-	 * @param string               $email  Native email.
-	 * @param string               $locale Native locale.
-	 */
-	public static function profile_bytes( array $values, string $email, string $locale ): int {
-		// wp-admin/includes/schema.php: UTF8MB4 maximum for the five counted
-		// native columns, never the password/hash/session/activation key.
-		$bytes = 4 * ( 60 + 50 + 100 + 100 + 250 );
-		foreach ( self::profile_fields( $values, $email, $locale ) as $key => $value ) {
-			$bytes += strlen( $key ) + strlen( (string) $value );
-		}
-		return $bytes;
-	}
-
-	/**
-	 * Only a caller that proved native insertion never started/rolled back may cancel.
-	 * Unknown crash placeholders are never refunded by age.
-	 *
-	 * @param string $key Server reservation key.
-	 */
-	public static function cancel_uncreated( string $key ): bool {
-		$result = self::edit(
-			static function ( array &$state ) use ( $key ): array|WP_Error {
-				global $wpdb;
-       // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Prove no native association before releasing a known uncreated slot.
-				$id = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %s LIMIT 1", self::META, $key ) );
-				if ( '' !== $wpdb->last_error || null !== $id || ! isset( $state[ $key ] ) ) {
-					return self::unavailable();
-				}
-				unset( $state[ $key ] );
-				return array();
-			}
-		);
-		return is_array( $result );
 	}
 
 	/**
@@ -213,7 +141,7 @@ final class RegistrationSlots {
 								'reason' => $reason,
 								'owner'  => $state[ $key ]['owner'] ?? '',
 							);
-							$audit   = array_slice( $audit, -self::MAX_PENDING );
+							$audit   = array_slice( $audit, -self::AUDIT_HISTORY );
 							update_option( 'linker_registration_dispositions', $audit, false );
 							if ( self::audit() !== $audit ) {
 								return self::unavailable();
@@ -317,202 +245,6 @@ final class RegistrationSlots {
 	}
 
 	/**
-	 * Begin one native pending business-profile write under the same global mutex.
-	 *
-	 * @param  int                  $id                 Native pending user.
-	 * @param  array<string,string> $columns            Changed native public columns.
-	 * @param  array<string,string> $meta               Changed business metadata.
-	 * @param  bool                 $protect_extensions Hold a rollback-only scope if core extensions would otherwise write before WP_Error.
-	 * @return array<string,mixed>|WP_Error Connection-owned native write scope.
-	 */
-	public static function begin_change( int $id, array $columns, array $meta, bool $protect_extensions = false ): array|WP_Error {
-		global $wpdb;
-		$fence       = ConnectionFence::enter();
-		$locked      = false;
-		$transaction = null;
-		try {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- The original connection is fenced before this first mutex query.
-			$locked = '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', self::lock_name() ) );
-			if ( ! $locked && ! $protect_extensions ) {
-				$fence->close();
-				return self::unavailable();
-			}
-			$transaction = new \Linker\Commerce\Mail\NativeTransaction();
-		} catch ( \Throwable $error ) {
-			try {
-				$fence->assert_current();
-				if ( $locked ) {
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Only this still-live original connection may release its just-acquired mutex.
-					$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) );
-				}
-			} catch ( \Throwable $release_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Unknown original connection: never compensate on a replacement.
-			} finally {
-				$fence->close();
-			}
-			return self::unavailable();
-		}
-		$context = array(
-			'id'          => $id,
-			'fence'       => $fence,
-			'locked'      => $locked,
-			'transaction' => $transaction,
-		);
-		if ( ! $locked ) {
-			return $context + array( 'rejected' => true );
-		}
-		try {
-			$before = self::native_profile( $id );
-			if ( is_wp_error( $before ) ) {
-				self::end_change( $context, false );
-				return $before;
-			}
-			$context['old_bytes'] = $before['bytes'];
-			$result               = self::check_change( $context, $columns, $meta );
-			if ( ! $result ) {
-				self::end_change( $context, false );
-				return self::unavailable();
-			}
-			return $context;
-		} catch ( \Throwable $error ) {
-			self::end_change( $context, false );
-			return self::unavailable();
-		}
-	}
-
-	/**
-	 * Exact current native profile plus changed values; only positive growth needs room.
-	 *
-	 * @param array<string,mixed>  $context Held native scope.
-	 * @param array<string,string> $columns Changed public columns.
-	 * @param array<string,string> $meta    Changed public metadata.
-	 */
-	public static function check_change( array $context, array $columns = array(), array $meta = array() ): bool {
-		$result = self::edit(
-			static function ( array &$state ) use ( $context, $columns, $meta ): array|WP_Error {
-				$current = self::native_profile( $context['id'] );
-				if ( is_wp_error( $current ) ) {
-					return $current;
-				}
-				$proposed_columns = array_replace( $current['columns'], $columns );
-				$bytes            = array_sum( array_map( 'strlen', $proposed_columns ) );
-				$seen             = array();
-				foreach ( $current['rows'] as $row ) {
-					$key          = $row['meta_key'];
-					$bytes       += strlen( $key ) + strlen( $meta[ $key ] ?? $row['meta_value'] );
-					$seen[ $key ] = true;
-				}
-				foreach ( $meta as $key => $value ) {
-					if ( ! isset( $seen[ $key ] ) ) {
-						$bytes += strlen( $key ) + strlen( $value );
-					}
-				}
-				$pending = self::pending_users();
-				return $bytes <= $context['old_bytes'] || $pending['bytes'] - $current['bytes'] + $bytes + array_sum( array_column( $state, 'bytes' ) ) <= self::MAX_BYTES ? array() : self::unavailable();
-			}
-		);
-		return is_array( $result );
-	}
-
-	/**
-	 * Commit only after native writer readback; a failed scope rolls back itself only.
-	 *
-	 * @param array<string,mixed> $context Native owner/savepoint.
-	 * @param bool                $commit  Whether the native writer reached its verified after hook.
-	 * @throws \RuntimeException Original mutex release cannot be confirmed inside the native scope.
-	 */
-	public static function end_change( array $context, bool $commit ): bool|WP_Error {
-		global $wpdb;
-		try {
-			$okay = $commit && self::check_change( $context );
-			if ( $okay ) {
-				$context['transaction']->commit();
-			} else {
-				$context['transaction']->rollback();
-			}
-			$context['fence']->assert_current();
-			if ( ! empty( $context['locked'] ) ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Release only the same connection after confirmed native commit/rollback.
-				if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) ) ) {
-					throw new \RuntimeException( 'registration_profile_release_unknown' );
-				}
-			}
-			$context['fence']->assert_current();
-			return $okay;
-		} catch ( \Throwable $error ) {
-			try {
-				$context['transaction']->rollback(); } catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- The lost original connection cannot compensate on a new client.
-				/* A lost original connection cannot compensate. */ }
-				return new WP_Error( 'linker_registration_profile_unknown', 'Native profile transaction could not be confirmed.' );
-		} finally {
-			$context['fence']->close();
-			clean_user_cache( $context['id'] );
-			wp_cache_delete( $context['id'], 'user_meta' );
-		}
-	}
-
-	/**
-	 * Read only native business columns/metadata; never hashes, passwords or tokens.
-	 *
-	 * @param  int $id Native user.
-	 * @return array<string,mixed>|WP_Error Exact native logical bytes and values.
-	 */
-	public static function native_profile( int $id ): array|WP_Error {
-		return ConnectionFence::run( static fn () => self::profile_owned( $id ) );
-	}
-
-	/** Native business data inside its first-statement connection fence.
-	 *
-	 * @param int $id Native owner.
-	 * @return array<string,mixed>|WP_Error Actual profile or unavailable.
-	 */
-	private static function profile_owned( int $id ): array|WP_Error {
-		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Capacity must inspect this writer connection, not object-cache snapshots.
-		$columns      = $wpdb->get_row( $wpdb->prepare( "SELECT user_login, user_nicename, user_email, user_url, display_name FROM {$wpdb->users} WHERE ID = %d", $id ), ARRAY_A );
-		$column_error = $wpdb->last_error;
-		if ( ! is_array( $columns ) ) {
-			return self::unavailable();
-		}
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->usermeta} WHERE user_id = %d AND (meta_key LIKE %s OR meta_key IN ('first_name','last_name','linker_customer_role','linker_company_website','locale')) ORDER BY umeta_id", $id, $wpdb->esc_like( 'billing_' ) . '%' ), ARRAY_A );
-		// phpcs:enable
-		if ( ! is_array( $rows ) || '' !== implode( '', array( $column_error, $wpdb->last_error ) ) ) {
-			return self::unavailable();
-		}
-		$meta  = array();
-		$bytes = array_sum( array_map( 'strlen', $columns ) );
-		foreach ( $rows as $row ) {
-			$meta[ $row['meta_key'] ] = $row['meta_value'];
-			$bytes                   += strlen( $row['meta_key'] ) + strlen( $row['meta_value'] );
-		}
-		return array(
-			'columns' => $columns,
-			'meta'    => $meta,
-			'rows'    => $rows,
-			'bytes'   => $bytes,
-		);
-	}
-
-	/**
-	 * Exchange a placeholder only after the native user and association exist.
-	 * The native pending account then occupies capacity until staff disposition.
-	 *
-	 * @param  string $key     Server reservation key.
-	 * @param  int    $user_id Created native user.
-	 * @return array<string,mixed>|WP_Error Confirmed association.
-	 */
-	public static function bind( string $key, int $user_id ): array|WP_Error {
-		return self::edit(
-			static function ( array &$state ) use ( $key, $user_id ): array|WP_Error {
-				if ( ! isset( $state[ $key ] ) || 0 >= $user_id || ! get_userdata( $user_id ) || get_user_meta( $user_id, self::META, true ) !== $key ) {
-					return self::unavailable();
-				}
-				unset( $state[ $key ] );
-				return array( 'user' => $user_id );
-			}
-		);
-	}
-
-	/**
 	 * Read current native unresolved accounts without loading private fields.
 	 * Existing customers are counted without importing or changing their data.
 	 *
@@ -565,7 +297,6 @@ final class RegistrationSlots {
 				return array(
 					'pending_users'  => $pending['count'],
 					'interrupted'    => count( $state ),
-					'capacity'       => self::MAX_PENDING,
 					'business_bytes' => $pending['bytes'],
 					'reserved_bytes' => array_sum( array_column( $state, 'bytes' ) ),
 					'byte_capacity'  => self::MAX_BYTES,
@@ -603,7 +334,7 @@ final class RegistrationSlots {
 				try {
 					$raw   = self::read();
 					$state = null === $raw ? array() : maybe_unserialize( $raw );
-					if ( ! is_array( $state ) || count( $state ) > self::MAX_PENDING ) {
+					if ( ! is_array( $state ) ) {
 						return;
 					}
 					foreach ( $state as $key => $entry ) {
@@ -669,7 +400,7 @@ final class RegistrationSlots {
 			throw new \RuntimeException( 'registration_audit_read_failed' );
 		}
 		$audit = null === $row['value'] ? array() : maybe_unserialize( $row['value'] );
-		if ( ! is_array( $audit ) || count( $audit ) > self::MAX_PENDING || count( array_filter( $audit, 'is_array' ) ) !== count( $audit ) ) {
+		if ( ! is_array( $audit ) || count( $audit ) > self::AUDIT_HISTORY || count( array_filter( $audit, 'is_array' ) ) !== count( $audit ) ) {
 			throw new \RuntimeException( 'registration_audit_invalid' );
 		}
 		return array_values( $audit );

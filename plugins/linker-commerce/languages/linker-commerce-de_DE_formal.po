@@ -145,7 +145,7 @@ msgstr ""
 msgid "The request failed. Please try again."
 msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut."
 
-#: build/accounts.js:1 includes/Inquiry/Form.php:308
+#: build/accounts.js:1 build/protection.js:1 includes/Inquiry/Form.php:308
 msgid "Try again"
 msgstr "Erneut versuchen"
 
@@ -1656,8 +1656,8 @@ msgstr "Eingang nicht lesbar"
 #. translators: 1: unhandled inquiries, 2: the site envelope, 3: quarantined inquiries.
 #: includes/Health/OperationsHealth.php:238
 #, php-format
-msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
-msgstr "Eingang %1$d/%2$d unerledigt, %3$d in Quarantäne"
+msgid "intake %1$d unhandled, %2$d quarantined"
+msgstr "Eingang: %1$d unerledigt, %2$d in Quarantäne"
 
 #: includes/Health/OperationsHealth.php:246
 msgid "publication unreadable"
@@ -7620,3 +7620,7 @@ msgstr ""
 #~ msgid_plural "products"
 #~ msgstr[0] "Produkt"
 #~ msgstr[1] "Produkte"
+
+#: includes/Protection/Login.php
+msgid "Too many failed sign-in attempts. Please try again later."
+msgstr "Zu viele fehlgeschlagene Anmeldeversuche. Bitte versuchen Sie es später erneut."

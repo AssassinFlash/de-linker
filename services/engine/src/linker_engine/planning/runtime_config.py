@@ -51,6 +51,7 @@ type PositiveInteger = Annotated[int, Field(strict=True, gt=0)]
 class RuntimeConfig(Document):
     schema_version: SchemaVersion
     directory: str
+    minimum_free_bytes: Annotated[int, Field(strict=True, ge=0)] = 0
     max_body_bytes: PositiveInteger
     max_csv_bytes: PositiveInteger
     max_page_size: PositiveInteger
@@ -101,6 +102,7 @@ class RuntimeConfig(Document):
             Path(self.directory),
             runtime=RuntimeSnapshot.capture(),
             temporary_id=temporary_id,
+            minimum_free_bytes=self.minimum_free_bytes,
         )
         source = products or ProductSources(worker_product_provider)
         kernel = EnergyKernel(

@@ -1,6 +1,6 @@
 <?php
 /**
- * Freeze native registration mail before creation, with two typed template holes.
+ * Render native registration mail from the original registered identity.
  *
  * @package Linker\Commerce
  */
@@ -26,6 +26,75 @@ use WP_User;
 final class RegistrationMessage {
 	public const POLICY      = 'registration-native-plan-v1';
 	private const ACK_POLICY = 'registration-native-ack-v1';
+
+	/**
+	 * Store just the original registration fields on the new native account.
+	 *
+	 * @param WP_User              $user Created account.
+	 * @param array<string,string> $values Validated business fields.
+	 * @param string               $locale Original language.
+	 * @param string               $operation Native registration identifier.
+	 * @param string               $slot Native account marker.
+	 * @return array<string,mixed> Pending notices for the two native producers.
+	 */
+	public static function pending( WP_User $user, array $values, string $locale, string $operation, string $slot ): array {
+		$original = array(
+			'ID'              => $user->ID,
+			'user_email'      => $user->user_email,
+			'user_login'      => $user->user_login,
+			'display_name'    => $user->display_name,
+			'user_registered' => $user->user_registered,
+		);
+		$plans    = array();
+		foreach ( array( 'team', 'received' ) as $kind ) {
+			$plan            = array(
+				'state'       => 'pending',
+				'reservation' => '',
+				'binding'     => array(
+					'policy'    => self::POLICY,
+					'operation' => $operation,
+					'owner'     => Identity::recipient( $user->user_email ),
+					'kind'      => $kind,
+					'account'   => $user->ID,
+					'slot'      => $slot,
+					'stage'     => 'bound',
+				),
+				'source'      => array(
+					'user'   => $original,
+					'values' => 'team' === $kind ? $values : array(),
+					'locale' => $locale,
+				),
+			);
+			$plan['witness'] = self::signature( $plan );
+			$plans[ $kind ]  = $plan;
+		}
+		return $plans;
+	}
+
+	/**
+	 * Render from the stored original account, even if its address has since changed.
+	 *
+	 * @param array<string,mixed>                        $pending Authenticated pending source.
+	 * @param NewCustomerEmail|RegistrationReceivedEmail $producer Configured native email.
+	 * @return array<string,mixed>|WP_Error Rendered, identity-bound mail plan.
+	 */
+	public static function render( array $pending, NewCustomerEmail|RegistrationReceivedEmail $producer ): array|WP_Error {
+		if ( ! self::valid( $pending ) || 'bound' !== $pending['binding']['stage'] ) {
+			return self::problem();
+		}
+		$binding = $pending['binding'];
+		$source  = $pending['source'];
+		$plan    = self::prepare( $producer, new WP_User( (object) $source['user'] ), $source['values'], $source['locale'], $binding['operation'] );
+		if ( is_wp_error( $plan ) ) {
+			return $plan;
+		}
+		if ( $plan['binding']['kind'] !== $binding['kind'] || $plan['binding']['owner'] !== $binding['owner'] ) {
+			return self::problem();
+		}
+		$plan['binding'] = $binding;
+		$plan['witness'] = self::signature( $plan );
+		return $plan;
+	}
 
 	/**
 	 * Capture the actual configured native notification without user/VIES/mail writes.
@@ -264,48 +333,21 @@ final class RegistrationMessage {
 	}
 
 
-	/** Bind only the existing native reservation to its authenticated preview.
+	/**
+	 * Attach a mail slot once the registered customer's notice is ready for delivery.
 	 *
-	 * @param array<string,mixed> $plan Frozen native producer.
-	 * @param string              $reservation Actual count-one reservation HMAC.
-	 * @return array<string,mixed>|WP_Error Bound source.
+	 * @param array<string,mixed> $plan Stored notice.
+	 * @param int                 $id Registered account.
+	 * @param string              $reservation Native mail reservation.
+	 * @return array<string,mixed>|WP_Error
 	 */
-	public static function reserved( array $plan, string $reservation ): array|WP_Error {
-		if ( ! self::valid( $plan ) || 'prepared' !== $plan['binding']['stage'] || 1 !== preg_match( '/^[a-f0-9]{64}$/', $reservation ) ) {
-			return self::problem(); }
-		$plan['reservation']      = $reservation;
-		$plan['binding']['stage'] = 'reserved';
-		$plan['witness']          = self::signature( $plan );
+	public static function reserve_delivery( array $plan, int $id, string $reservation ): array|WP_Error {
+		if ( ! self::owned( $plan, $id ) || '' !== $plan['reservation'] || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $reservation ) ) {
+			return self::problem();
+		}
+		$plan['reservation'] = $reservation;
+		$plan['witness']     = self::signature( $plan );
 		return $plan;
-	}
-
-	/** Earliest native insert binds the final identity before the first meta write.
-	 *
-	 * @param array<string,mixed> $plan Reserved native producer.
-	 * @param int                 $id Actual new account.
-	 * @param string              $slot Current server registration slot.
-	 * @return array<string,mixed>|WP_Error Identity-bound source.
-	 */
-	public static function bind( array $plan, int $id, string $slot ): array|WP_Error {
-		if ( ! self::valid( $plan ) || 'reserved' !== $plan['binding']['stage'] || $id < 1 || 1 !== preg_match( '/^[a-f0-9]{64}$/', $slot ) ) {
-			return self::problem(); }
-		clean_user_cache( $id );
-		$user = get_userdata( $id );
-		if ( ! $user instanceof WP_User || Identity::recipient( $user->user_email ) !== $plan['binding']['owner'] ) {
-			return self::problem(); }
-		$plan['binding']['account'] = $id;
-		$plan['binding']['slot']    = $slot;
-		$plan['binding']['stage']   = 'bound';
-		$plan['witness']            = self::signature( $plan );
-		return $plan;
-	}
-
-	/** Only this authenticated preview's never-started native reservation may be canceled.
-	 *
-	 * @param array<string,mixed> $plan Private pre-account source.
-	 */
-	public static function uncreated( array $plan ): bool {
-		return self::valid( $plan ) && 'reserved' === $plan['binding']['stage'] && 0 === $plan['binding']['account'] && '' === $plan['binding']['slot'] && is_string( $plan['reservation'] ?? null ) && 1 === preg_match( '/^[a-f0-9]{64}$/D', $plan['reservation'] );
 	}
 
 	/** An explicit native policy skip keeps a verifiable owner until its scope cancellation ACK.

@@ -86,8 +86,14 @@ final class Ledger {
 	 */
 	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array(), string $purpose = 'operation', string $binding = '', array $owners = array() ): array|WP_Error {
 		$id = strtolower( $id );
-		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || array() === $allowances || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
+		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
 			return self::error( 'input' );
+		}
+		if ( array() === $allowances ) {
+			$native_action = 'genie' === $purpose || ( in_array( $purpose, array( 'solution_save', 'conversation_create' ), true ) && is_user_logged_in() );
+			if ( ! $native_action || '' === $binding || array() === $owners ) {
+				return self::error( 'input' );
+			}
 		}
 		if ( count( $owners ) > self::MAX_DIMENSIONS || count( array_filter( $owners, static fn ( string $owner ): bool => 1 === preg_match( '/\A[a-f0-9]{64}\z/', $owner ) ) ) !== count( $owners ) ) {
 			return self::error( 'input' );
@@ -237,73 +243,17 @@ final class Ledger {
 	}
 
 	/**
-	 * Read-only proof decision for the bounded business intake adapter.
-	 *
-	 * @param array{id:string,binding:string,action:string,single:bool} $proof Checked signed scope.
-	 * @param string                                                    $operation Business UUID.
-	 */
-	public function proof_valid( array $proof, string $operation ): bool {
-		$result = $this->edit(
-			static function ( array &$state, int $now ) use ( $proof, $operation ): array|WP_Error {
-				return self::proof_error( $state, $proof, $operation, $now ) ?? array( 'valid' => true );
-			}
-		);
-		return is_array( $result ) && ! empty( $result['valid'] );
-	}
-
-	/**
-	 * Check the native verification receipt before expensive reversible parsing.
-	 * Dispatch still repeats this check inside its atomic transition (#521).
-	 *
-	 * @param array{id:string,binding:string,action:string,single:bool} $proof Signed proof reference.
-	 * @param string                                                    $operation Reserved operation UUID.
-	 * @return array<string,mixed>|WP_Error Safe validity, no provider work.
-	 */
-	public function verified( array $proof, string $operation ): array|WP_Error {
-		return $this->edit(
-			static function ( array &$state, int $now ) use ( $proof, $operation ): array|WP_Error {
-				$receipt = $state['receipts'][ $operation ] ?? null;
-				if ( ! is_array( $receipt ) || 'reserved' !== $receipt['status'] || $proof['action'] !== $receipt['purpose'] || $proof['binding'] !== $receipt['binding'] ) {
-					return self::error( 'proof' );
-				}
-				return self::proof_error( $state, $proof, $operation, $now ) ?? array( 'valid' => true );
-			}
-		);
-	}
-
-	/**
-	 * One predicate at pre-parse and atomic dispatch; neither trusts the MAC alone.
-	 *
-	 * @param array<string,mixed>                                       $state Private journal.
-	 * @param array{id:string,binding:string,action:string,single:bool} $proof Checked reference.
-	 * @param string                                                    $operation Current logical operation.
-	 * @param int                                                       $now Server clock.
-	 */
-	private static function proof_error( array $state, array $proof, string $operation, int $now ): ?WP_Error {
-		$parent  = $state['receipts'][ $proof['id'] ] ?? null;
-		$purpose = 'verification_' . $proof['action'];
-		if ( ! is_array( $parent ) || $purpose !== $parent['purpose'] || $proof['binding'] !== $parent['binding'] || 'completed' !== $parent['status'] || 1 !== $parent['outcome'] || $parent['created_at'] + Proof::LIFETIME <= $now ) {
-			return self::error( 'proof' );
-		}
-		if ( $proof['single'] && isset( $parent['consumed_by'] ) && $parent['consumed_by'] !== $operation ) {
-			return self::error( 'proof_reused' );
-		}
-		return null;
-	}
-
-	/**
 	 * Mark the irreversible boundary before any upstream/business side effect.
 	 *
 	 * @phpstan-impure
 	 * Only the winner dispatches; a replay cannot dispatch a second time.
 	 *
-	 * @param string                                                            $id UUID.
-	 * @param string                                                            $fingerprint Bound input fingerprint.
-	 * @param array{id:string,binding:string,action:string,single:bool}|array{} $proof Validated signed proof reference; empty for trusted background work.
+	 * @param string $id UUID.
+	 * @param string $fingerprint Bound input fingerprint.
 	 * @return array<string,mixed>|WP_Error Updated receipt.
 	 */
-	public function dispatch( string $id, string $fingerprint, array $proof = array() ): array|WP_Error {
-		return $this->transition( $id, $fingerprint, 'dispatch', 0, $proof );
+	public function dispatch( string $id, string $fingerprint ): array|WP_Error {
+		return $this->transition( $id, $fingerprint, 'dispatch', 0 );
 	}
 
 	/**
@@ -555,35 +505,25 @@ final class Ledger {
 	/**
 	 * Serialized compare-and-transition, with no provider or business I/O.
 	 *
-	 * @param string                                                            $id UUID.
-	 * @param string                                                            $fingerprint Bound input.
-	 * @param string                                                            $operation Transition.
-	 * @param int                                                               $outcome Native result.
-	 * @param array{id:string,binding:string,action:string,single:bool}|array{} $proof Checked proof reference.
+	 * @param string $id UUID.
+	 * @param string $fingerprint Bound input.
+	 * @param string $operation Transition.
+	 * @param int    $outcome Native result.
 	 * @return array<string,mixed>|WP_Error Current state.
 	 */
-	private function transition( string $id, string $fingerprint, string $operation, int $outcome, array $proof = array() ): array|WP_Error {
+	private function transition( string $id, string $fingerprint, string $operation, int $outcome ): array|WP_Error {
 		$id = strtolower( $id );
 		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) ) {
 			return self::error( 'input' );
 		}
 		return $this->edit(
-			static function ( array &$state, int $now ) use ( $id, $fingerprint, $operation, $outcome, $proof ): array|WP_Error {
+			static function ( array &$state ) use ( $id, $fingerprint, $operation, $outcome ): array|WP_Error {
 				$receipt = $state['receipts'][ $id ] ?? null;
 				if ( ! is_array( $receipt ) || ! hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ) {
 					return self::error( 'unknown_receipt' );
 				}
 				$status = (string) $receipt['status'];
 				if ( 'dispatch' === $operation && 'reserved' === $status ) {
-					if ( array() !== $proof ) {
-						$invalid = self::proof_error( $state, $proof, $id, $now );
-						if ( null !== $invalid ) {
-							return $invalid;
-						}
-						if ( $proof['single'] ) {
-							$state['receipts'][ $proof['id'] ]['consumed_by'] = $id;
-						}
-					}
 					$receipt['status'] = 'dispatched';
 				} elseif ( 'cancel' === $operation && 'reserved' === $status ) {
 					self::release( $state, $receipt, true );

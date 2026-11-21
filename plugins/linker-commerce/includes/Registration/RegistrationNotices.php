@@ -18,7 +18,6 @@ use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Protection\ReceiptBudget;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\RegistrationReceivedEmail;
-use WP_Error;
 use WP_User;
 
 /**
@@ -29,71 +28,6 @@ final class RegistrationNotices {
 	public const META    = '_linker_registration_notices';
 	public const PENDING = '_linker_registration_notice_pending';
 	public const OWNER   = '_linker_registration_notice_owner';
-
-	/**
-	 * Freeze and pre-reserve each count-one native producer before creating a user.
-	 *
-	 * @param  array<string,string> $values    Validated business fields.
-	 * @param  string               $email     Native validated email.
-	 * @param  string               $username  Native login, when already chosen.
-	 * @param  string               $locale    Native customer locale.
-	 * @param  string               $operation Verified native operation.
-	 * @return array<string,mixed>|WP_Error Two independently reserved notices.
-	 */
-	public static function prepare( array $values, string $email, string $username, string $locale, string $operation ): array|WP_Error {
-		$user   = new WP_User(
-			(object) array(
-				'ID'              => 0,
-				'user_login'      => $username,
-				'user_email'      => $email,
-				'display_name'    => trim( ( $values['billing_first_name'] ?? '' ) . ' ' . ( $values['billing_last_name'] ?? '' ) ),
-				'user_registered' => gmdate( 'Y-m-d H:i:s' ),
-			)
-		);
-		$emails = WC()->mailer()->get_emails();
-		$result = array();
-		foreach ( array(
-			'team'     => NewCustomerEmail::class,
-			'received' => RegistrationReceivedEmail::class,
-		) as $kind => $class ) {
-			$producer = $emails[ $class ] ?? null;
-			if ( ! $producer instanceof NewCustomerEmail && ! $producer instanceof RegistrationReceivedEmail ) {
-				self::cancel_uncreated( $result );
-				return self::problem();
-			}
-			$plan = RegistrationMessage::prepare( $producer, $user, $values, $locale, $operation );
-			if ( is_wp_error( $plan ) ) {
-				self::cancel_uncreated( $result );
-				return $plan;
-			}
-			$scope = Capacity::reserve_critical( 'registration|' . $operation . '|' . $kind, 1, $plan['max_bytes'] );
-			if ( is_wp_error( $scope ) ) {
-				self::cancel_uncreated( $result );
-				return self::problem();
-			}
-			$bound = RegistrationMessage::reserved( $plan, $scope['key'] );
-			if ( is_wp_error( $bound ) ) {
-				Capacity::cancel_before_side_effect( $scope['key'] );
-				self::cancel_uncreated( $result );
-				return $bound;
-			}
-			$result[ $kind ] = $bound;
-		}
-		return $result;
-	}
-
-	/**
-	 * Only the pre-create caller can prove these notices never started.
-	 *
-	 * @param array<string,mixed> $plans Native prepared notices.
-	 */
-	public static function cancel_uncreated( array $plans ): void {
-		foreach ( $plans as $plan ) {
-			if ( is_array( $plan ) && RegistrationMessage::uncreated( $plan ) ) {
-				Capacity::cancel_before_side_effect( $plan['reservation'] );
-			}
-		}
-	}
 
 	/**
 	 * Existing unprotected/admin-created accounts retain their native mail path.
@@ -124,6 +58,32 @@ final class RegistrationNotices {
 					$plan = $state[ $kind ];
 					if ( ! RegistrationMessage::owned( $plan, $id ) ) {
 						return; }
+					if ( isset( $plan['source'] ) ) {
+						$emails   = WC()->mailer()->get_emails();
+						$class    = 'team' === $kind ? NewCustomerEmail::class : RegistrationReceivedEmail::class;
+						$producer = $emails[ $class ] ?? null;
+						if ( ! $producer instanceof $class ) {
+							return;
+						}
+						$rendered = RegistrationMessage::render( $plan, $producer );
+						if ( is_wp_error( $rendered ) ) {
+							return;
+						}
+						$next          = $state;
+						$next[ $kind ] = $rendered;
+						if ( ! self::transition(
+							$id,
+							$state,
+							static function () use ( $id, $next ): bool {
+								self::write( $id, $next );
+								return true;
+							}
+						) ) {
+							return;
+						}
+						$state = $next;
+						$plan  = $rendered;
+					}
 					if ( 'skipped' === ( $plan['state'] ?? '' ) ) {
 						self::cancel_skipped( $id, $kind, $state );
 						return;
@@ -157,6 +117,29 @@ final class RegistrationNotices {
 					}
 					if ( '' !== $reason ) {
 						return; // Unknown receipt policy never becomes an explicit policy skip.
+					}
+					if ( '' === $plan['reservation'] ) {
+						$ready = self::transition(
+							$id,
+							$state,
+							static function () use ( $id, $kind, &$state, &$plan ): bool {
+								$scope = Capacity::reserve_critical( 'registration|' . $plan['binding']['operation'] . '|' . $kind, 1, $plan['max_bytes'] );
+								if ( is_wp_error( $scope ) ) {
+									return false;
+								}
+								$bound = RegistrationMessage::reserve_delivery( $plan, $id, $scope['key'] );
+								if ( is_wp_error( $bound ) ) {
+									return false;
+								}
+								$plan           = $bound;
+								$state[ $kind ] = $bound;
+								self::write( $id, $state );
+								return true;
+							}
+						);
+						if ( ! $ready ) {
+							return;
+						}
 					}
 					$vat = (string) get_user_meta( $id, VatProfile::STATUS_META, true );
 					if ( '' === $vat ) {
@@ -215,14 +198,14 @@ final class RegistrationNotices {
 	 */
 	private static function cancel_skipped( int $id, string $kind, array $state ): void {
 		$scope = $state[ $kind ]['reservation'] ?? '';
-		if ( ! is_string( $scope ) || '' === $scope ) {
+		if ( ! is_string( $scope ) ) {
 			return;
 		}
 		self::transition(
 			$id,
 			$state,
 			static function () use ( $id, $kind, $state, $scope ): bool {
-				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ! Capacity::cancel_before_side_effect( $scope ) ) {
+				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ( '' !== $scope && ! Capacity::cancel_before_side_effect( $scope ) ) ) {
 					return false;
 				}
 				$state[ $kind ] = RegistrationMessage::terminal( $state[ $kind ], $id, $kind, 'skipped' );
@@ -337,7 +320,7 @@ final class RegistrationNotices {
 														return false;
 													}
 													$state[ $kind ] = RegistrationMessage::terminal( $plan, $id, $kind, 'erased' );
-													if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
+													if ( ! empty( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
 														return false;
 													}
 												}
@@ -552,12 +535,5 @@ final class RegistrationNotices {
 				throw new \RuntimeException( 'registration_notice_index_failed' );
 			}
 		}
-	}
-
-	/**
-	 * Honest pre-create refusal; later failures keep an existing account pending.
-	 */
-	private static function problem(): WP_Error {
-		return new WP_Error( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
 	}
 }

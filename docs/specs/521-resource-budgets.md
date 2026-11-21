@@ -1,5 +1,7 @@
 # #521: resource admission and actual provider dispatch budgets
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Status: implementation in `codex/521-resource-budgets`, stacked on #519. Local
 fixtures are evidence for this branch. Production activation and the #511 initial
 assessment outlet are part of the planned combined #522 acceptance, before the

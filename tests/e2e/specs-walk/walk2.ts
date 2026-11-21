@@ -2,8 +2,14 @@
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { instance, REPO_ROOT, wp } from '../lib/instance';
+import {
+	applyTurnstileProfile,
+	instance,
+	REPO_ROOT,
+	wp,
+} from '../lib/instance';
 import { since } from '../lib/mail';
+import { waitForTurnstile } from '../lib/turnstile';
 
 const fixture = join(REPO_ROOT, 'tests/e2e/fixtures/public-inquiry.php');
 const run = (...args: string[]) => wp(['eval-file', fixture, ...args]);
@@ -30,6 +36,7 @@ async function main() {
 	const page = await context.newPage();
 	const url = `${instance().url}/proforma-request/`;
 	const evidence: Record<string, unknown> = { email, product: setup.product };
+	const restoreTurnstile = applyTurnstileProfile();
 	try {
 		await page.goto(url);
 		const form = page.locator('form.linker-inquiry-form');
@@ -50,61 +57,17 @@ async function main() {
 			.fill('Please quote the draft product for a project in Bavaria.');
 		await form.locator('[name="consent"]').check();
 		await form.locator('[type="submit"]').click();
-		await page.waitForTimeout(1_500);
 		evidence.validationANativeBlocked =
 			page.url() === url &&
-			(await page.locator('.linker-inquiry-error').textContent()) === '';
-		t(`validation A native blocked=${evidence.validationANativeBlocked}`);
+			(await form
+				.locator('[name="email"]')
+				.evaluate(
+					(field: HTMLInputElement) => field.validity.typeMismatch
+				));
 
-		// Validation B: submit inside the 3-second minimum fill window.
-		await page.reload();
-		await page.locator('.linker-inquiry-line').first().waitFor();
-		const fill = (
-			name: string,
-			address: string,
-			company: string,
-			message: string
-		) =>
-			`(() => { const f = document.querySelector('form.linker-inquiry-form');
-				const set = (field, value) => { const c = f.elements.namedItem(field); if (c) { c.value = value; c.dispatchEvent(new Event('input', { bubbles: true })); } };
-				set('name', ${JSON.stringify(name)}); set('email', ${JSON.stringify(address)}); set('company', ${JSON.stringify(company)}); set('message', ${JSON.stringify(message)});
-				f.elements.namedItem('consent').checked = true; })()`;
-		await page.evaluate(
-			fill(
-				'B2 Walk Guest',
-				email,
-				'Walk GmbH',
-				'Please quote the draft product for a project in Bavaria.'
-			)
-		);
+		await form.locator('[name="email"]').fill(email);
+		await waitForTurnstile(form);
 		await form.locator('[type="submit"]').click();
-		await page.waitForTimeout(1_500);
-		evidence.validationBError = await page
-			.locator('.linker-inquiry-error')
-			.textContent();
-		evidence.validationBUrl = page.url();
-		t(
-			`validation B error=${JSON.stringify(evidence.validationBError)} url=${page.url()}`
-		);
-		const retainedName = await form.locator('[name="name"]').inputValue();
-		const retainedEmail = await form.locator('[name="email"]').inputValue();
-		const retainedMessage = await form
-			.locator('[name="message"]')
-			.inputValue();
-		evidence.validationBRetained = {
-			retainedName,
-			retainedEmail,
-			retainedMessage,
-		};
-		t(`retained=${JSON.stringify(evidence.validationBRetained)}`);
-
-		// Recovery: wait out the fill window and send again.
-		await page.waitForTimeout(3_100);
-		await Promise.all([
-			page.waitForNavigation({ timeout: 30_000 }),
-			form.locator('[type="submit"]').click(),
-		]).catch(() => {});
-		t(`after recovery submit url=${page.url()}`);
 		await page
 			.locator('.linker-form-success')
 			.first()
@@ -225,6 +188,7 @@ async function main() {
 			);
 		}
 	} finally {
+		restoreTurnstile();
 		await context.close().catch(() => {});
 		await browser.close().catch(() => {});
 		writeFileSync(

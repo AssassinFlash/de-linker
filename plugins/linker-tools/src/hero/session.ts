@@ -20,7 +20,7 @@ import {
 	type SentInquiryCard,
 	type Turn,
 	type TurnMessage,
-	type TurnVerification,
+	type TurnOwner,
 } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import {
@@ -59,7 +59,7 @@ export type HeroReadThread = typeof readThread;
 export type HeroSendTurn = typeof sendTurn;
 
 export interface HeroTurnGuard {
-	verification?: TurnVerification;
+	owner?: TurnOwner;
 	authorize: () => Promise< boolean >;
 	settle: () => Promise< boolean >;
 }
@@ -306,9 +306,7 @@ export class HeroSession {
 		this.requestWitness = null;
 		const page = this.config.page;
 		const answer = await this.send( {
-			...( current?.verification
-				? { verification: current.verification }
-				: {} ),
+			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,

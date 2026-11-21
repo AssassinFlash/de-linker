@@ -285,18 +285,6 @@ export class UnfinishedStreamError extends Error {
 export const TURN_TIMEOUT_MS = 90_000;
 
 /**
- * Preparation bound for a turn that carries a verification context: the shared
- * client's own attempt lifetime, three 15-second network steps (prepare,
- * official script, verify) plus its 120-second human interaction window (spec
- * 519, "Shared runtime and initial verification bounds", 2026-10-28). A turn
- * without verification never uses it.
- *
- * The numbers live once, in the Commerce client (src/protection/client.ts);
- * turnPublicVerification.test.ts fails if the two drift apart.
- */
-export const TURN_VERIFICATION_TIMEOUT_MS = 165_000;
-
-/**
  * The commit was refused because the stored thread moved while Genie was
  * answering (#373). The model did answer; the shell must not say it failed.
  *
@@ -394,7 +382,7 @@ export interface ConversationList {
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
 	/** Current mounted surface, pre-dispatch cancellation and actual transport stage. */
-	verification?: TurnVerification;
+	owner?: TurnOwner;
 	/** Existing planner guest CSRF proof; never part of page data or logs. */
 	plannerNonce?: string;
 	/** Current REST root for document presentation from existing product metadata. */
@@ -422,34 +410,10 @@ export interface TurnRequest {
 	timeoutMs?: number;
 }
 
-/**
- * Browser-only ownership of one pre-dispatch verification; none of these
- * values enter the model request. `slot` answers the mounted node the native
- * widget lives in, which is why this contract exists in a browser (jsdom in
- * the tests) and nowhere else.
- */
-export interface TurnVerification {
-	/** The mounted verification slot; null while it is not in the document. */
-	slot: () => HTMLElement | null;
-	/** Aborted when the visitor withdraws the attempt before dispatch. */
+export interface TurnOwner {
 	signal: AbortSignal;
-	/**
-	 * Whether a challenge can run for this attempt: true only in enforce
-	 * mode. A trusted genie session may complete its turn without any
-	 * challenge (session trust admits it), so this bounds the preparation
-	 * window, it does not promise a widget.
-	 */
-	challenge: boolean;
-	/** Runs after the proof is ready and before the request leaves. */
-	beforeDispatch?: () => Promise< void >;
-	/**
-	 * Called immediately before each transport use, with whether this use is
-	 * the turn's final dispatch: true when it carries the settled proof, or
-	 * when no challenge can run at all. The genie action's proofless first
-	 * attempt (admission decides trust on demand) is not final — a challenge
-	 * may still follow it. The calls are idempotent.
-	 */
-	onDispatch: ( final: boolean ) => void;
+	beforeDispatch: () => Promise< void >;
+	onDispatch: () => void;
 }
 
 /**
@@ -483,7 +447,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 			{ once: true }
 		);
 	} );
-	const external = request.verification?.signal;
+	const external = request.owner?.signal;
 	const cancel = () =>
 		controller.abort(
 			external?.reason ?? new Error( 'verification_cancelled' )
@@ -499,15 +463,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		}
 		timer = setTimeout( () => controller.abort( timeoutError ), duration );
 	};
-	// Only a real challenge may take the shared client's whole attempt bound:
-	// three network steps plus the human interaction window. An ordinary turn,
-	// or one whose protection is off or only observing, keeps its single
-	// response limit for everything it does.
-	restartDeadline(
-		request.verification?.challenge
-			? TURN_VERIFICATION_TIMEOUT_MS
-			: timeoutMs
-	);
+	restartDeadline();
 	// `fetcher` is called inside the promise. A throw before the request
 	// leaves is a rejection, so the timer below is cleared with every other
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
@@ -515,30 +471,11 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		.then( () =>
 			resourceFetch(
 				async ( ...args ) => {
-					// resourceFetch dispatches its transport once a proof is
-					// ready — or, for the genie action, when the attempt is
-					// admitted without one. A late proof must never dispatch
-					// an already timed-out turn.
 					controller.signal.throwIfAborted();
-					await request.verification?.beforeDispatch?.();
+					await request.owner?.beforeDispatch();
 					controller.signal.throwIfAborted();
-					// The transport init carries `linkerFinalDispatch`: true
-					// on the one attempt that really carries the turn, false
-					// on the genie action's proofless trust probe (refused by
-					// admission before any work). The final dispatch starts
-					// the response window and moves the surface past
-					// cancellation; a probe keeps the preparation window so a
-					// challenge that follows it cannot be cut by the response
-					// deadline, and the visitor can still withdraw.
-					const final =
-						(
-							args[ 1 ] as
-								{ linkerFinalDispatch?: boolean } | undefined
-						 )?.linkerFinalDispatch !== false;
-					request.verification?.onDispatch( final );
-					if ( final ) {
-						restartDeadline();
-					}
+					request.owner?.onDispatch();
+
 					return fetcher( ...args );
 				},
 				turnUrl,
@@ -565,8 +502,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 					} ),
 					signal: controller.signal,
 				},
-				request.onOperation,
-				request.verification?.slot
+				request.onOperation
 			)
 		)
 		.then(
@@ -967,8 +903,6 @@ export const EMAIL_OUTCOMES = [
 	'invalid',
 	'unknown',
 	'empty',
-	'throttled',
-	'capped',
 	'expired',
 	'unavailable',
 ] as const;
@@ -984,19 +918,15 @@ export function emailOutcome( word: unknown ): EmailOutcome {
 		: 'unavailable';
 }
 
-/** The answer of an email request: the outcome, where it went, the limit. */
+/** The result of the handoff and its destination. */
 export interface EmailResult {
 	outcome: EmailOutcome;
 	/** The address it concerns (the account's for a signed-in customer). */
 	to: string;
-	/** Emails one connection may ask for per hour, named by a refusal. */
-	limit: number;
 }
 
-/** A guest's bot-guard fields (ConversationMail::passes()). */
+/** The guest form’s hidden website field. */
 export interface EmailGuard {
-	started: string;
-	started_nonce: string;
 	website: string;
 }
 
@@ -1032,7 +962,7 @@ export async function emailConversation(
 				cache: 'no-store',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': nonce,
+					...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 				},
 				body: JSON.stringify(
 					email ? { locale, email, ...guard } : { locale }
@@ -1043,7 +973,6 @@ export async function emailConversation(
 			status?: string;
 			to?: string;
 			code?: string;
-			data?: { limit?: number };
 		};
 		return {
 			outcome: emailOutcome(
@@ -1052,10 +981,9 @@ export async function emailConversation(
 					: ( body.code ?? '' ).replace( /^linker_genie_email_/, '' )
 			),
 			to: body.to ?? '',
-			limit: body.data?.limit ?? 0,
 		};
 	} catch {
-		return { outcome: 'unavailable', to: '', limit: 0 };
+		return { outcome: 'unavailable', to: '' };
 	}
 }
 

@@ -15,8 +15,6 @@
 import type { Locale } from '../../configurator/types';
 import type { PageContext } from './turn';
 
-import { resourceFetch } from '../../protection/request';
-
 type Fetch = typeof fetch;
 
 /** One line of the solution draft, as the request page lists it. */
@@ -50,10 +48,8 @@ export interface SentInquiry {
 }
 
 export interface InquiryState {
+	source: string;
 	conversation: number;
-	/** The signed start time the send returns (FormGuard). */
-	started: string;
-	startedNonce: string;
 	account: InquiryAccount | null;
 	lines: InquiryLine[];
 	/** The lines the card showed: a draft that moved is refused. */
@@ -81,7 +77,8 @@ export type InquiryFailure =
 	| 'unavailable';
 
 export type InquiryResult =
-	{ ok: true; inquiry: SentInquiry } | { ok: false; failure: InquiryFailure };
+	| { ok: true; inquiry: SentInquiry }
+	| { ok: false; failure: InquiryFailure; unconfirmed?: true };
 
 function sent( raw: unknown ): SentInquiry | null {
 	if ( ! raw || typeof raw !== 'object' ) {
@@ -124,7 +121,7 @@ export async function readInquiry(
 			{
 				credentials: 'same-origin',
 				cache: 'no-store',
-				headers: { 'X-WP-Nonce': nonce },
+				headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 			}
 		);
 		if ( ! response.ok ) {
@@ -148,12 +145,8 @@ export async function readInquiry(
 				)
 			: [];
 		return {
+			source: typeof body.source === 'string' ? body.source : '',
 			conversation: Number( body.conversation ) || 0,
-			started: typeof body.started === 'string' ? body.started : '',
-			startedNonce:
-				typeof body.started_nonce === 'string'
-					? body.started_nonce
-					: '',
 			account:
 				account && typeof account.email === 'string'
 					? {
@@ -187,6 +180,7 @@ export async function readInquiry(
  * @param url                   The inquiry route.
  * @param nonce                 wp_rest nonce.
  * @param request               What the card sends.
+ * @param request.source        The stored conversation revision the customer reviewed.
  * @param request.name          A guest's name; omitted for a signed-in customer.
  * @param request.email         A guest's reply address.
  * @param request.company       A guest's company, optional.
@@ -194,8 +188,6 @@ export async function readInquiry(
  * @param request.attachSummary Whether #244's conversation summary goes with it.
  * @param request.lines         The draft's digest the card showed.
  * @param request.website       The honeypot's value (empty for a person).
- * @param request.started       The signed start time readInquiry() returned.
- * @param request.started_nonce Its signature.
  * @param request.consent       A guest's consent, the site's public doors' own.
  * @param request.locale        The page's language.
  * @param request.page          The page context the turn carries (the note keeps it).
@@ -205,6 +197,8 @@ export async function sendInquiry(
 	url: string,
 	nonce: string,
 	request: {
+		source: string;
+		'cf-turnstile-response'?: string;
 		name?: string;
 		email?: string;
 		company?: string;
@@ -212,8 +206,6 @@ export async function sendInquiry(
 		attachSummary: boolean;
 		lines: string;
 		website: string;
-		started: string;
-		started_nonce: string;
 		consent?: '1';
 		locale: Locale;
 		page?: PageContext;
@@ -221,15 +213,22 @@ export async function sendInquiry(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< InquiryResult > {
 	try {
-		const response = await resourceFetch( fetcher, url, {
+		const response = await fetcher( url, {
 			method: 'POST',
 			credentials: 'same-origin',
 			cache: 'no-store',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
+				...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 			},
 			body: JSON.stringify( {
+				source: request.source,
+				...( request[ 'cf-turnstile-response' ] !== undefined
+					? {
+							'cf-turnstile-response':
+								request[ 'cf-turnstile-response' ],
+						}
+					: {} ),
 				name: request.name ?? '',
 				email: request.email ?? '',
 				company: request.company ?? '',
@@ -237,8 +236,6 @@ export async function sendInquiry(
 				attach_summary: request.attachSummary ? '1' : '',
 				lines: request.lines,
 				website: request.website,
-				started: request.started,
-				started_nonce: request.started_nonce,
 				consent: request.consent ?? '',
 				locale: request.locale,
 				...( request.page ? { page: request.page } : {} ),
@@ -260,7 +257,7 @@ export async function sendInquiry(
 			failure: failure( response.status, body?.code ),
 		};
 	} catch {
-		return { ok: false, failure: 'retry' };
+		return { ok: false, failure: 'retry', unconfirmed: true };
 	}
 }
 

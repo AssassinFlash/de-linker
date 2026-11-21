@@ -329,14 +329,10 @@
 			if ( form.matches( '.linker-inquiry-form' ) && saveBeforeContinuing( event, () => form.requestSubmit( send ) ) ) {
 				return;
 			}
-			// Verification waits on the original submit. Mark busy only when
-			// its verified resubmit reaches this native UI handler. The server
-			// still validates the proof; this marker grants no permission.
-			const protection = window.linkerPublicProtectionConfig;
-			const marker = form.querySelector( '[data-linker-protected-action]' );
-			const nativeInquiry = marker?.dataset.linkerProtectedAction === 'inquiry' &&
-				( protection?.businessVerification === 'optional' || marker.dataset.linkerProtectionRecovery === 'true' );
-			if ( protection?.mode === 'enforce' && marker && ! nativeInquiry && form.dataset.linkerProtectionVerified !== 'true' ) {
+			if ( event.defaultPrevented ) {
+				return;
+			}
+			if ( form.querySelector( '[data-linker-turnstile]' ) && ! form.querySelector( '[name="cf-turnstile-response"]' )?.value ) {
 				return;
 			}
 			if ( 'submitting' === form.dataset.accountState ) {
@@ -560,6 +556,45 @@
 			back.addEventListener( 'click', () => {
 				step = 1;
 				paint( true );
+			} );
+		}
+
+		// Keep credentials in the current form if its native POST is refused.
+		const challenge = register.querySelector( '[data-linker-turnstile="registration"]' );
+		const registrationError = register.querySelector( '[data-registration-error]' );
+		if ( challenge && registrationError && typeof window.fetch === 'function' ) {
+			register.addEventListener( 'submit', async ( event ) => {
+				if ( event.defaultPrevented || step !== 2 ) {
+					return;
+				}
+				event.preventDefault();
+				const submitter = event.submitter || register.querySelector( '[name="register"]' );
+				const body = new FormData( register );
+				body.set( submitter.name, submitter.value );
+				registrationError.hidden = true;
+				let message = registrationError.dataset.failure;
+				try {
+					const response = await window.fetch( register.action, { method: 'POST', body, credentials: 'same-origin' } );
+					if ( response.ok ) {
+						const page = new DOMParser().parseFromString( await response.text(), 'text/html' );
+						const notices = page.querySelector( '[data-registration-notices] .woocommerce-error, [data-registration-notices] .wc-block-components-notice-banner.is-error' );
+						if ( notices?.textContent.trim() ) {
+							message = notices.textContent.trim();
+						} else if ( response.redirected && new URL( response.url ).origin === window.location.origin ) {
+							window.location.assign( response.url );
+							return;
+						}
+					}
+				} catch {
+					// A disconnected response can leave the creation result unknown.
+				}
+				registrationError.textContent = message;
+				registrationError.hidden = false;
+				delete register.dataset.accountState;
+				submitter.classList.remove( 'is-loading' );
+				submitter.removeAttribute( 'aria-busy' );
+				submittingButtons.delete( register );
+				window.linkerTurnstile?.refresh( challenge );
 			} );
 		}
 

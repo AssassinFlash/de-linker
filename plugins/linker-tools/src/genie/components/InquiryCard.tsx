@@ -24,6 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useTransferWidget } from '../shared/useTransferWidget';
 import type { Locale } from '../../configurator/types';
 import type { PageContext } from '../api/turn';
 import {
@@ -249,11 +250,16 @@ export function InquiryCard( {
 	}, [ inquiryUrl, nonce, locale, fetcher ] );
 
 	const account = state?.account ?? null;
+	const widget = useTransferWidget(
+		'genie_inquiry',
+		!! state && ! account && ! sent,
+		nonce + '|' + ( state?.source ?? '' )
+	);
 	const lines = state?.lines ?? [];
 	const empty = 0 === lines.length && '' === message.trim();
 
-	async function submit( event: { preventDefault: () => void } ) {
-		event.preventDefault();
+	async function submit( event?: { preventDefault: () => void } ) {
+		event?.preventDefault();
 		if ( 'ready' !== phase || ! state ) {
 			return;
 		}
@@ -276,15 +282,23 @@ export function InquiryCard( {
 				return;
 			}
 		}
+		if ( ! account && ! widget.token.current ) {
+			if ( ! widget.wait( () => void submit() ) ) {
+				setFailure( 'unavailable' );
+			}
+			return;
+		}
 		setPhase( 'sending' );
 		const result = await sendInquiry(
 			inquiryUrl,
 			nonce,
 			{
+				source: state.source,
 				...( account
 					? {}
 					: {
 							name: name.trim(),
+							'cf-turnstile-response': widget.token.current,
 							email: email.trim(),
 							company: company.trim(),
 							...( consent ? { consent: '1' as const } : {} ),
@@ -293,8 +307,6 @@ export function InquiryCard( {
 				attachSummary: attach && '' !== state.summary,
 				lines: state.linesDigest,
 				website: trap,
-				started: state.started,
-				started_nonce: state.startedNonce,
 				locale,
 				...( page ? { page } : {} ),
 			},
@@ -305,6 +317,9 @@ export function InquiryCard( {
 			setPhase( 'ready' );
 			notify.current?.( result.inquiry );
 			return;
+		}
+		if ( ! result.unconfirmed ) {
+			widget.refresh();
 		}
 		setFailure( result.failure );
 		setPhase( 'ready' );
@@ -340,6 +355,7 @@ export function InquiryCard( {
 	return (
 		<section
 			className="linker-genie-inquiry"
+			onChangeCapture={ widget.cancel }
 			aria-live="polite"
 			aria-busy={ loading || sending }
 		>
@@ -494,6 +510,7 @@ export function InquiryCard( {
 							}
 						/>
 					</label>
+					{ state && <div ref={ widget.container } /> }
 					<div className="linker-genie-inquiry__consent">
 						<input
 							id={ consentField }

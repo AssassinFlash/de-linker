@@ -61,9 +61,6 @@ async function signIn(page: Page, login: string): Promise<void> {
 	await page.goto(`${instance().url}/my-account/`);
 	await page.fill('#username', login);
 	await page.fill('#password', PASSWORD);
-	// PublicGuard's minimum fill time; every suite posting through these doors
-	// waits for it before submitting.
-	await page.waitForTimeout(3_300);
 	await page.locator('button[name="login"]').click();
 	await page.waitForLoadState('load');
 	await page.waitForFunction(

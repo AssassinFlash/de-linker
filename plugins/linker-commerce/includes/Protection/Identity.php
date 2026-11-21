@@ -30,10 +30,23 @@ final class Identity {
 	 * @return self|WP_Error Server identity or explicit cookie/header failure.
 	 */
 	public static function current(): self|WP_Error {
-		$key = isset( $_COOKIE[ self::COOKIE ] ) && is_string( $_COOKIE[ self::COOKIE ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ self::COOKIE ] ) ) : '';
+		if ( ! self::ensure_browser_cookie() ) {
+			return new WP_Error( 'linker_admission_cookie', 'Public admission could not start.' );
+		}
+		$key  = (string) $_COOKIE[ self::COOKIE ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- ensure_browser_cookie has validated the exact hexadecimal value.
+		$user = get_current_user_id();
+		return new self(
+			hash_hmac( 'sha256', 'public-browser|' . $key, wp_salt( 'auth' ) ),
+			self::account( $user )
+		);
+	}
+
+	/** Establish the same anonymous owner on the displayed form and on its submission. */
+	public static function ensure_browser_cookie(): bool {
+		$key = isset( $_COOKIE[ self::COOKIE ] ) && is_string( $_COOKIE[ self::COOKIE ] ) ? $_COOKIE[ self::COOKIE ] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Must match the complete fixed-format cookie below.
 		if ( 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $key ) ) {
 			if ( headers_sent() ) {
-				return new WP_Error( 'linker_admission_cookie', 'Public admission could not start.' );
+				return false;
 			}
 			$key = bin2hex( random_bytes( 16 ) );
 			if ( ! setcookie(
@@ -47,15 +60,11 @@ final class Identity {
 					'samesite' => 'Lax',
 				)
 			) ) {
-				return new WP_Error( 'linker_admission_cookie', 'Public admission could not start.' );
+				return false;
 			}
 			$_COOKIE[ self::COOKIE ] = $key;
 		}
-		$user = get_current_user_id();
-		return new self(
-			hash_hmac( 'sha256', 'public-browser|' . $key, wp_salt( 'auth' ) ),
-			self::account( $user )
-		);
+		return true;
 	}
 
 	/**

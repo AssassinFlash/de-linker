@@ -23,6 +23,7 @@ PUBLICATION_URL="https://de-linker.com/wp-json/linker/v1/publication/manifest"
 DRY_RUN=0
 HOST="linker-services"
 ROOT="/opt/linker-planner"
+RECOVERY_MIB=4096
 
 while [ "$#" -gt 0 ]; do
 	case "$1" in
@@ -91,8 +92,8 @@ for line in open('/proc/meminfo'):
         mem[parts[0].rstrip(':')] = int(parts[1]) // 1024
 headroom_mb = mem.get('MemAvailable', 0) + mem.get('SwapFree', 0)
 print(f'preflight       disk_free={free_mb}MB mem_plus_swap_free={headroom_mb}MB')
-if free_mb < 4096:
-    sys.exit(f'refusing publish: root disk free {free_mb}MB < 4096MB')
+if free_mb < $RECOVERY_MIB:
+    sys.exit(f'refusing publish: root disk free {free_mb}MB < ${RECOVERY_MIB}MB')
 if headroom_mb < 1536:
     sys.exit(f'refusing publish: available memory+swap {headroom_mb}MB < 1536MB')
 PY"
@@ -123,6 +124,10 @@ new, old, map_key = sys.argv[1], sys.argv[2], sys.argv[3].strip()
 spec = json.load(open(old + '/.deploy/spec.json'))
 spec['release'] = new
 pathlib.Path(new + '/.deploy/spec.json').write_text(json.dumps(spec, indent=2) + '\n')
+runtime_path = pathlib.Path(new) / '.deploy' / 'runtime.json'
+runtime = json.loads(runtime_path.read_text())
+runtime['minimum_free_bytes'] = $RECOVERY_MIB * 1024**2
+runtime_path.write_text(json.dumps(runtime, indent=2) + '\n')
 for name in ('http.env', 'worker.env'):
     path = pathlib.Path(new) / '.deploy' / name
     text = path.read_text().replace(old, new)

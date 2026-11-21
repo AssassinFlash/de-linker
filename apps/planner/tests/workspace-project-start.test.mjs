@@ -1525,10 +1525,10 @@ async function lostReceipt(
 				schema_version: 1,
 				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php" data-linker-inquiry-replay-seconds="${replaySeconds}">
 					<input type="hidden" name="linker_preliminary_project" value="${projectId}:7">
-					<input type="hidden" name="linker_request_id" value="${requestIds[n]}" data-linker-protected-action="inquiry">
+					<input type="hidden" name="linker_request_id" value="${requestIds[n]}">
 					<input type="hidden" name="linker_draft_hash" value="${n ? "" : "original-cart"}">
 					<input type="hidden" name="lang" value="en">
-					<input type="hidden" name="linker_proof" value="${n ? "" : "fixture-old-proof"}">
+					<input type="hidden" name="cf-turnstile-response" value="${n ? "" : "previous-turnstile-response"}">
 					<input type="hidden" name="linker_inquiry_nonce" value="current-nonce-${n}">
 					${n ? "" : '<input type="hidden" name="linker_project_notes_present" value="1"><input type="hidden" name="linker_project_note_revisions[project_source]" value="old-note-revision">'}
 					<input name="name" required><input name="email" type="email" required>
@@ -1619,10 +1619,7 @@ async function lostReceipt(
 		form().querySelector('button[type="submit"]').textContent,
 		"Check inquiry status",
 	);
-	assert.equal(
-		field("linker_request_id").dataset.linkerProtectionRecovery,
-		"true",
-	);
+
 	assert.equal(
 		fixture.element.querySelector(".sc-draft-transfer aside button").disabled,
 		true,
@@ -1649,7 +1646,7 @@ async function lostReceipt(
 	])
 		assert.equal(replay.get(key), original.get(key), key);
 	assert.equal(replay.get("linker_inquiry_nonce"), "current-nonce-1");
-	assert.equal(replay.get("linker_proof"), "");
+	assert.equal(replay.get("cf-turnstile-response"), "");
 
 	if (!storageAllowed) return;
 
@@ -1787,7 +1784,7 @@ test("reopening a pending preliminary review reads its original revision after a
 				inquiry_lines: [],
 				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php" data-linker-inquiry-replay-seconds="10">
 					<input type="hidden" name="linker_preliminary_project" value="${projectId}:${command.revision}">
-					<input type="hidden" name="linker_request_id" data-linker-protected-action="inquiry" value="${crypto.randomUUID()}">
+					<input type="hidden" name="linker_request_id" value="${crypto.randomUUID()}">
 					<textarea name="message"></textarea><button type="submit">Send inquiry</button>
 				</form>`,
 			};

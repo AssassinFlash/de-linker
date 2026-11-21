@@ -101,7 +101,7 @@ import { newEntryId } from './shared/entryDraft';
 import { useEntryInbox } from './shared/useEntryInbox';
 import { useHelperDialog } from './shared/useHelperDialog';
 import { useComposerSize } from './shared/useComposerSize';
-import { useVerificationStage } from './shared/useVerificationStage';
+import { useTurnOwner } from './shared/useTurnOwner';
 import { isVerificationFailure } from './shared/resourceFailure';
 import { MissingFiles } from './components/MissingFiles';
 import { OwnedRecovery } from './components/OwnedRecovery';
@@ -344,12 +344,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// there, whatever is asked after it.
 	const turnAt = useRef( -1 );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
-	const {
-		slot: verificationSlot,
-		pending: verificationPending,
-		begin: beginVerification,
-		cancel: cancelVerification,
-	} = useVerificationStage( phase === 'waiting' );
+	const { begin: beginTurn, cancel: cancelTurn } = useTurnOwner();
 	// The request still returns one complete answer. This index only opts the
 	// newly received answer into a short local reveal; stored history is instant.
 	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
@@ -582,7 +577,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	const shownId = useRef( 0 );
 	const [ mail, setMail ] = useState< MailPhase >( 'idle' );
 	const [ mailTo, setMailTo ] = useState( '' );
-	const [ mailLimit, setMailLimit ] = useState( 0 );
 	// How a confirmation link this page was opened from ended, if it was.
 	const [ linkResult ] = useState( readLinkResult );
 	const show = useCallback( ( id: number ) => {
@@ -1179,7 +1173,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			requestWitness.current = null;
 			setOpen( true );
 			setDockHistory( false );
-			const turnVerification = beginVerification( {
+			const turnOwner = beginTurn( {
 				owns: () => draftContext.owns( lease ),
 				settle: () => draftContext.settle( lease ),
 				valid: () => draftContext.valid( lease ),
@@ -1246,7 +1240,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					};
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
-						verification: turnVerification,
+						owner: turnOwner,
 						turnUrl: config.turnUrl,
 						restUrl: config.restUrl,
 						nonce: config.restNonce,
@@ -1330,7 +1324,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			onTurnError,
 			retainUnverifiedTurn,
-			beginVerification,
+			beginTurn,
 		]
 	);
 
@@ -1349,7 +1343,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		sending.current = true;
 		setOpen( true );
 		setDockHistory( false );
-		const turnVerification = beginVerification( {
+		const turnOwner = beginTurn( {
 			owns: () => draftContext.owns( lease ),
 			settle: () => draftContext.settle( lease ),
 			valid: () => draftContext.valid( lease ),
@@ -1429,7 +1423,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				};
 				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
-					verification: turnVerification,
+					owner: turnOwner,
 					turnUrl: config.turnUrl,
 					restUrl: config.restUrl,
 					nonce: config.restNonce,
@@ -1509,7 +1503,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		payloadOrRestore,
 		draftContext,
 		retainUnverifiedTurn,
-		beginVerification,
+		beginTurn,
 	] );
 
 	// "Type the model": the way out of a nameplate the customer does not
@@ -1621,7 +1615,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			// this switch captured the old epoch and must drop itself.
 			historyEpoch += 1;
 			stopDictation();
-			cancelVerification();
+			cancelTurn();
 			draftContext.invalidate();
 			const departedFailure = captureFailure();
 			setInput( '' );
@@ -1670,7 +1664,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			draftContext,
 			setOmitted,
 			stopDictation,
-			cancelVerification,
+			cancelTurn,
 			captureFailure,
 			abandonCaptured,
 		]
@@ -1685,7 +1679,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			let departedFailure: ReturnType< typeof captureFailure > = null;
 			if ( id === shownId.current ) {
 				stopDictation();
-				cancelVerification();
+				cancelTurn();
 				draftContext.invalidate();
 				departedFailure = captureFailure();
 				setInput( '' );
@@ -1740,7 +1734,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			draftContext,
 			setOmitted,
 			stopDictation,
-			cancelVerification,
+			cancelTurn,
 			captureFailure,
 			abandonCaptured,
 		]
@@ -1753,28 +1747,24 @@ export function App( { config }: { config: GenieConfig } ) {
 			setMail( 'sending' );
 			const result = await emailConversation(
 				config.conversationsUrl,
-				config.restNonce,
+				config.signedIn ? config.restNonce : '',
 				shownId.current,
 				config.locale,
 				address,
 				address
 					? {
-							started: config.mailStarted,
-							started_nonce: config.mailStartedNonce,
 							website,
 						}
 					: undefined
 			);
 			setMailTo( result.to || address || '' );
-			setMailLimit( result.limit );
 			setMail( result.outcome );
 		},
 		[
 			config.conversationsUrl,
 			config.restNonce,
 			config.locale,
-			config.mailStarted,
-			config.mailStartedNonce,
+			config.signedIn,
 		]
 	);
 
@@ -2172,7 +2162,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	) : (
 		<InquiryCard
 			inquiryUrl={ config.inquiryUrl }
-			nonce={ config.restNonce }
+			nonce={ config.signedIn ? config.restNonce : '' }
 			locale={ config.locale }
 			page={ page }
 			onSent={ inquirySent }
@@ -2643,13 +2633,7 @@ export function App( { config }: { config: GenieConfig } ) {
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
-										<TurnProgress
-											verificationPending={
-												verificationPending
-											}
-											onCancel={ cancelVerification }
-											skeleton
-										/>
+										<TurnProgress skeleton />
 									) : null }
 								</ol>
 								{ /* The turn's text already stands in the thread
@@ -2703,6 +2687,23 @@ export function App( { config }: { config: GenieConfig } ) {
 											} }
 										/>
 									) ) }
+								{ config.requestPageUrl &&
+								turn?.meta?.fallback &&
+								turn.blocks.some(
+									( block ) => block.type === 'handoff'
+								) &&
+								! offersInquiry &&
+								! currentInquiry ? (
+									<a
+										className="linker-genie-app__prompt"
+										href={ config.requestPageUrl }
+									>
+										{ __(
+											'Send an inquiry',
+											'linker-tools'
+										) }
+									</a>
+								) : null }
 								{ turn?.blocks.some(
 									( block ) => 'cards' === block.type
 								) ? (
@@ -2752,7 +2753,6 @@ export function App( { config }: { config: GenieConfig } ) {
 									<EmailConversation
 										phase={ mail }
 										to={ mailTo }
-										limit={ mailLimit }
 										onStart={ () => {
 											if ( config.signedIn ) {
 												void sendByEmail();
@@ -2788,7 +2788,11 @@ export function App( { config }: { config: GenieConfig } ) {
 											key={ `${ turn.meta?.turn_id ?? 0 }-${ block.reason }` }
 											block={ block }
 											contactUrl={ config.contactUrl }
-											nonce={ config.restNonce }
+											nonce={
+												config.signedIn
+													? config.restNonce
+													: ''
+											}
 											locale={ config.locale }
 											page={ page }
 											onSent={ sent }
@@ -3154,12 +3158,6 @@ export function App( { config }: { config: GenieConfig } ) {
 										) }
 							</p>
 						) : null }
-						<div
-							ref={ verificationSlot }
-							data-linker-resource-verification-slot
-							className="linker-genie-app__status"
-							hidden
-						/>
 						{ ! historyView ? (
 							<form
 								className="linker-genie-app__composer"

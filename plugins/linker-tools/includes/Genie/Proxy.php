@@ -270,31 +270,23 @@ class Proxy {
 				'callback'            => array( $this, 'email_conversation' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'id'            => array(
+					'id'      => array(
 						'type'              => 'integer',
 						'required'          => true,
 						'sanitize_callback' => 'absint',
 					),
 					// Checked by ConversationMail, so a bad address is the
 					// route's own 400 with its own code.
-					'email'         => array(
+					'email'   => array(
 						'type'     => 'string',
 						'required' => false,
 					),
-					'locale'        => array(
+					'locale'  => array(
 						'type' => 'string',
 						'enum' => array( 'en', 'de' ),
 					),
-					// A guest's bot guard (ConversationMail::passes()).
-					'website'       => array(
-						'type'     => 'string',
-						'required' => false,
-					),
-					'started'       => array(
-						'type'     => 'string',
-						'required' => false,
-					),
-					'started_nonce' => array(
+					// The guest form's hidden field.
+					'website' => array(
 						'type'     => 'string',
 						'required' => false,
 					),
@@ -330,22 +322,16 @@ class Proxy {
 			(string) $request->get_param( 'email' ),
 			$this->locale( $request->get_param( 'locale' ) ),
 			array(
-				'website'       => (string) $request->get_param( 'website' ),
-				'started'       => (string) $request->get_param( 'started' ),
-				'started_nonce' => (string) $request->get_param( 'started_nonce' ),
+				'website' => (string) $request->get_param( 'website' ),
+
 			)
 		);
-		$http    = ConversationMail::HTTP[ $outcome['status'] ] ?? 503;
+		$http = ConversationMail::HTTP[ $outcome['status'] ] ?? 503;
 		if ( $http >= 400 ) {
-			// The limits ride with a refusal, so the panel names the same
-			// numbers ConversationMail counts to.
 			return new WP_Error(
 				'linker_genie_email_' . $outcome['status'],
 				'The conversation was not sent.',
-				array(
-					'status' => $http,
-					'limit'  => ConversationMail::LIMIT,
-				)
+				array( 'status' => $http )
 			);
 		}
 		// The address goes back to the visitor who sent it: a signed-in
@@ -361,7 +347,6 @@ class Proxy {
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
 		return $reply;
 	}
-
 
 	/**
 	 * The stored thread of this request's conversation, empty when there is none.
@@ -435,6 +420,8 @@ class Proxy {
 			if ( ! $this->conversations->activate( $id ) ) {
 				return new WP_Error( 'linker_genie_conversation', 'Unknown conversation.', array( 'status' => 404 ) );
 			}
+		} elseif ( ! is_user_logged_in() ) {
+			$this->conversations->start_guest_conversation();
 		} else {
 			$id = $this->conversations->open();
 			if ( $id < 1 ) {
@@ -468,10 +455,26 @@ class Proxy {
 		if ( is_wp_error( $files ) ) {
 			return self::unrecorded( $files );
 		}
-		$conversation = $this->conversations->current_id();
+		$conversation = $this->conversations->begin_turn();
 		if ( $conversation < 1 ) {
 			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
+		try {
+			return $this->answer( $request, $base, $files, $conversation );
+		} finally {
+			$this->conversations->discard_unanswered_guest();
+		}
+	}
+
+	/** Send and record one native conversation turn.
+	 *
+	 * @param WP_REST_Request           $request Native turn.
+	 * @param string                    $base Private transport base.
+	 * @param list<array<string,mixed>> $files Verified attachments.
+	 * @param int                       $conversation Existing or provisional conversation.
+	 * @return WP_Error|WP_REST_Response The recorded answer or the native refusal.
+	 */
+	private function answer( WP_REST_Request $request, string $base, array $files, int $conversation ): WP_Error|WP_REST_Response {
 		$locale = $this->locale( $request->get_param( 'locale' ) );
 		// The page the browser names, checked key by key; the service reads
 		// the page's content itself from it (#234). A solution draft's
@@ -576,6 +579,9 @@ class Proxy {
 					array( 'status' => 409 )
 				)
 			);
+		}
+		if ( ! $this->conversations->publish_answer( $conversation ) ) {
+			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
 		// Action tokens are issued only for this live checked answer; history stays unsigned.
 		// The answer is already stored: these refusals are not a turn that

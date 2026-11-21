@@ -111,6 +111,31 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 	}
 
+	/** Recreate the guest form owner and public test widget used by a real contact page. */
+	private function guest_form(): void {
+		$previous = $_COOKIE;
+		$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = bin2hex( random_bytes( 16 ) );
+		$env = array();
+		foreach ( array(
+			'LINKER_TURNSTILE_SITE_KEY'   => '1x00000000000000000000AA',
+			'LINKER_TURNSTILE_SECRET_KEY' => '1x0000000000000000000000000000000AA',
+			'LINKER_TURNSTILE_HOSTNAME'   => 'example.com',
+		) as $key => $value ) {
+			$env[ $key ] = getenv( $key );
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Use the official testing keys only for this CLI fixture.
+			putenv( $key . '=' . $value );
+		}
+		$this->later(
+			static function () use ( $previous, $env ): void {
+				$_COOKIE = $previous;
+				foreach ( $env as $key => $value ) {
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the original process environment.
+					putenv( false === $value ? $key : $key . '=' . $value );
+				}
+			}
+		);
+	}
+
 	/**
 	 * Woo's native settings save stores the internal sender.
 	 */
@@ -208,22 +233,23 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 * @param string $from       Effective sender.
 	 */
 	public function test_contact_notification_routing( string $saved_from, string $from ): void {
+		$this->guest_form();
 		update_option( Options::NOTIFY_FROM, $saved_from );
 		$this->as_user( 0 );
-		$stamp         = (string) ( time() - 5 );
+
 		$contact_email = 'linker-it-' . self::tag() . '@example.test';
 		$marker        = self::newest_mail_job();
 		$this->assertSame(
 			'receipt_pending',
 			( new Handler() )->process(
 				array(
-					'name'                 => 'Maria Beispiel',
-					'email'                => $contact_email,
-					'message'              => 'A question about a storage system.',
-					'consent'              => '1',
-					Form::NONCE_FIELD      => wp_create_nonce( Form::NONCE_ACTION ),
-					'linker_started'       => $stamp,
-					'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+					'name'                  => 'Maria Beispiel',
+					'email'                 => $contact_email,
+					'message'               => 'A question about a storage system.',
+					'linker_request_id'     => wp_generate_uuid4(),
+					'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
+					'consent'               => '1',
+					Form::NONCE_FIELD       => wp_create_nonce( Form::NONCE_ACTION ),
 				)
 			)
 		);
@@ -363,6 +389,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 * band — stay sales@de-linker.com while internal mail goes elsewhere.
 	 */
 	public function test_every_customer_visible_address_stays_the_team_mailbox(): void {
+		$this->guest_form();
 		$this->assertSame( self::PUBLIC, ( new Options() )->contact()['email'] );
 
 		$handoff = ( new HandoffTeam() )->execute();

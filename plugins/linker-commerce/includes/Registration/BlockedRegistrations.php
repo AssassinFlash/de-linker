@@ -31,7 +31,7 @@ final class BlockedRegistrations {
 	/**
 	 * Counts one refusal.
 	 *
-	 * @param string $reason Short reason key: honeypot, clock, too_fast or limit.
+	 * @param string $reason Refusal reason.
 	 */
 	public static function record( string $reason ): void {
 		$stored                      = self::stored();

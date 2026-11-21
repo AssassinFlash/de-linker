@@ -22,9 +22,16 @@ use WC_Order;
  * @coversNothing
  */
 final class PreSendAuthorizationTest extends IntegrationTestCase {
+	/**
+	 * The recipient whose delivery history belongs to this case.
+	 *
+	 * @var string
+	 */
+	private string $recipient;
 	/** Preserve native options and isolate the local provider configuration. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->recipient = 'receipt-native-' . self::tag() . '@example.test';
 		foreach ( array( Queue::ENABLED, Queue::HEARTBEAT, 'linker_genie_url' ) as $name ) {
 			$old = get_option( $name );
 			$this->later(
@@ -41,7 +48,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *
 	 * @param string $email Customer destination.
 	 */
-	private function submit( string $email = self::TESTER ): WC_Order {
+	private function submit( ?string $email = null ): WC_Order {
+		$email ??= $this->recipient;
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic installer',
@@ -95,6 +103,33 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertStringNotContainsString( 'records@example.test', implode( "\n", $job['message']->headers ) );
 	}
 
+	/** A confirmed mailbox can receive each of its owner's separate inquiry receipts. */
+	public function test_recipient_suppression_applies_only_to_unconfirmed_destinations(): void {
+		$customer = $this->customer();
+		$email    = $customer->get_email();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		for ( $i = 0; $i < 2; ++$i ) {
+			self::assertSame( '', \Linker\Commerce\Protection\ReceiptBudget::reason( $email, wp_generate_uuid4() ) );
+		}
+		$order = new \WC_Order();
+		$order->set_billing_email( $email );
+		$order->set_customer_id( $customer->get_id() );
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce fires its own password-reset hook after verification.
+		do_action( 'woocommerce_customer_reset_password', $user );
+		self::assertSame( '', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$order->set_customer_id( 0 );
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$order->set_customer_id( $customer->get_id() );
+		$customer->set_email( 'changed-' . $email );
+		$customer->save();
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		$customer->set_email( $email );
+		$customer->save();
+		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+	}
+
 	/** The accepted native source grants one fixed customer receipt while content remains pending. */
 	public function test_saved_inquiry_has_one_fixed_receipt_while_assessment_is_unavailable(): void {
 		$attempts = 0;
@@ -133,7 +168,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *
 	 * @param string $email Customer destination.
 	 */
-	private function submit_before_outbox_recovery( string $email = self::TESTER ): WC_Order {
+	private function submit_before_outbox_recovery( ?string $email = null ): WC_Order {
 		$unavailable = static function ( int $id, \WP_Post $post ): void {
 			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
 				throw new \RuntimeException( 'fixture_queue_unavailable' );
@@ -169,27 +204,27 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			$order->save_meta_data();
 		}
 		if ( 'budget_unavailable' === $disposition ) {
-			$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
-			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
-			$this->later(
-				static function () use ( $mode ): void {
-					putenv( false === $mode ? 'LINKER_PUBLIC_PROTECTION_MODE' : 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode );
+			global $wpdb;
+			self::assertSame( 0, $order->get_customer_id() );
+			$attempted   = false;
+			$unavailable = static function ( string $sql ) use ( &$attempted ): string {
+				if ( str_starts_with( $sql, 'SELECT option_value FROM' ) && str_contains( $sql, 'linker_mail_target_v1.' ) ) {
+					$attempted = true;
+					return 'SELECT unavailable_native_recipient_store';
 				}
-			);
-			$ledger  = \Linker\Commerce\Protection\Ledger::OPTION;
-			$prior   = get_option( $ledger );
-			$restore = static function () use ( $ledger, $prior ): void {
-				delete_option( $ledger );
-				if ( false !== $prior ) {
-					update_option( $ledger, $prior, false );
-				}
+				return $sql;
 			};
-			$this->later( $restore );
-			update_option( $ledger, 'fixture_unavailable', false );
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			$previous    = $wpdb->suppress_errors( true );
+			add_filter( 'query', $unavailable );
+			try {
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			} finally {
+				remove_filter( 'query', $unavailable );
+				$wpdb->suppress_errors( $previous );
+			}
+			self::assertTrue( $attempted, 'The unverified address requires its own recipient history.' );
 			self::assertSame( array(), $this->permissions( $id )['jobs'] );
 			self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
-			$restore();
 		}
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
 		$after = $this->permissions( $id );
@@ -1339,7 +1374,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			}
 		);
 		$marker  = self::newest_mail_job();
-		$receipt = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
+		$receipt = \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false );
 		add_action( 'wp_insert_post', $cut, 10, 2 );
 		try {
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
@@ -1350,7 +1385,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 1, $hits );
 		self::assertSame( array(), self::mail_jobs_after( $marker ) );
 		self::assertSame( '0', $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key='_linker_mail_message' AND post_id=%d", $created ) ), 'No replayed orphan Message meta survives a lost transaction.' );
-		self::assertSame( $receipt, ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' ) );
+		self::assertSame( $receipt, \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'approved', $state['status'] );
@@ -1406,24 +1441,15 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		);
 		self::assertSame( 'enforce', \Linker\Commerce\Protection\Configuration::active_mode() );
 		$this->provider( $decision );
-		global $wpdb;
-		$old = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s", \Linker\Commerce\Protection\Ledger::OPTION ) );
-		$this->later(
-			static function () use ( $old ): void {
-				null === $old ? delete_option( \Linker\Commerce\Protection\Ledger::OPTION ) : update_option( \Linker\Commerce\Protection\Ledger::OPTION, $old, false );
-			}
-		);
-		$legacy   = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
-		$order    = $this->submit();
+		$email    = 'assessment-receipt-' . self::tag() . '@example.test';
+		$order    = $this->submit( $email );
 		$admitted = $this->permissions( $order->get_id() );
 		self::assertSame( array( 'receipt' ), array_keys( $admitted['jobs'] ) );
-		$charged = get_option( \Linker\Commerce\Protection\Ledger::OPTION );
-		self::assertNotEmpty( $charged );
+		$charged = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
 		$state = $this->permissions( $order->get_id() );
 		self::assertSame( $admitted['jobs']['receipt'], $state['jobs']['receipt'] );
-		self::assertSame( $charged, get_option( \Linker\Commerce\Protection\Ledger::OPTION ) );
-		self::assertSame( $legacy, ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' ) );
+		self::assertSame( $charged, \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false ) );
 		$receipt = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['jobs']['receipt']['id'] );
 		self::assertNotNull( $receipt );
 		self::assertStringContainsString( '#' . $order->get_order_number(), $receipt['message']->subject );
@@ -1463,26 +1489,18 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $usage );
 		self::assertArrayNotHasKey( 'customer_receipt', $usage['counts'] );
 		$this->provider( 'normal' );
-		$orders     = array( $this->submit(), $this->submit(), $this->submit() );
-		$recovering = $this->permissions( $orders[0]->get_id() )['jobs']['receipt']['id'];
-		$healthy    = get_option( $ledger );
-		update_option( $ledger, 'fixture_unavailable', false );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $recovering );
-		self::assertSame( 0, ( new Throttle() )->used( time() ) );
-		self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $orders[0] ) );
-		self::assertTrue( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $recovering ), \Linker\Commerce\Mail\Outbox::GROUP ) );
-		update_option( $ledger, $healthy, false );
+		$email  = 'receipt-' . self::tag() . '@example.test';
+		$orders = array( $this->submit( $email ), $this->submit( $email ), $this->submit( $email ) );
+		update_option( $ledger, 'unrelated_tools_journal_unavailable', false );
 		foreach ( $orders as $index => $order ) {
 			$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
 			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
 			self::assertSame( $index < 2 ? 'sent' : 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
 		}
-		$usage = ( new \Linker\Commerce\Protection\Ledger() )->summary();
-		self::assertIsArray( $usage );
-		self::assertSame( 2, $usage['counts']['customer_receipt']['completed'] );
+		self::assertSame( 'unrelated_tools_journal_unavailable', get_option( $ledger ) );
 		self::assertSame( 2, ( new Throttle() )->used( time() ) );
 		self::assertSame( 'target_cap', $orders[2]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-		$limited = $this->submit();
+		$limited = $this->submit( $email );
 		$limited->read_meta_data( true );
 		self::assertSame( 'target_cap', $limited->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 	}

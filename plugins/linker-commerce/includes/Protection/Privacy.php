@@ -13,6 +13,7 @@ namespace Linker\Commerce\Protection;
 final class Privacy {
 	/** Use the native verified-email export/removal path. */
 	public function register(): void {
+		add_action( Module::MAINTENANCE, array( ReceiptRecipients::class, 'expire' ) );
 		add_filter( 'wp_privacy_personal_data_exporters', array( $this, 'exporters' ) );
 		add_filter( 'wp_privacy_personal_data_erasers', array( $this, 'erasers' ) );
 	}
@@ -82,7 +83,8 @@ final class Privacy {
 				),
 			);
 		}
-		foreach ( $result['data'] as $record ) {
+		$requests = array_column( array_merge( ReceiptRecipients::privacy( $email, false ), $result['data'] ), null, 'id' );
+		foreach ( $requests as $record ) {
 			$data[] = array(
 				'group_id'    => 'linker-public-protection',
 				'group_label' => __( 'Public request protection', 'linker-commerce' ),
@@ -139,7 +141,8 @@ final class Privacy {
 		if ( is_wp_error( $review ) ) {
 			throw new \RuntimeException( 'public_review_erasure_unavailable' );
 		}
-		$removed = $result['removed'] > 0 || $review['removed'] > 0;
+		$recipients = ReceiptRecipients::privacy( $email, true );
+		$removed    = $result['removed'] > 0 || $review['removed'] > 0 || array() !== $recipients;
 
 		return array(
 			'items_removed'  => $removed,

@@ -1,6 +1,6 @@
 <?php
 /**
- * Browser-facing project RPC, with native identity, CSRF and resource admission.
+ * Browser-facing project RPC, with native identity and CSRF protection.
  *
  * @package Linker\Tools
  */
@@ -36,7 +36,7 @@ final class Gateway {
 	 * @param NativeIdentity $identity Native ownership.
 	 * @param Transport      $transport Private service.
 	 * @param ClaimOutbox    $claims Durable native login transition.
-	 * @param Admission      $admission Native write quota, never ownership.
+	 * @param Admission      $admission Owned command dispatch and coordinated project deletion.
 	 */
 	public function __construct( private readonly NativeIdentity $identity = new NativeIdentity(), private readonly Transport $transport = new Transport(), private readonly ClaimOutbox $claims = new ClaimOutbox(), private readonly Admission $admission = new Admission() ) {
 		$this->refusals = new \WeakMap();
@@ -405,9 +405,6 @@ final class Gateway {
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );
 		}
-		// Commercial sizing is the engine's own legacy design route, not a
-		// planner operation: it has no engine-side command receipt, so it must
-		// not enter the planner admission journal.
 		if ( 'design/commercial' === $path ) {
 			$sized = ( new CommercialDesign() )->forward( $principal, $command );
 			if ( is_wp_error( $sized ) ) {

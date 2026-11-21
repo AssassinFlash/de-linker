@@ -112,8 +112,6 @@ for (const language of ['en', 'de'] as const) {
 				await page.fill('#reg_email', email);
 				await page.fill('#reg_password', password);
 				await shot(page, `${prefix}-register`);
-				// PublicGuard's minimum fill time is three seconds.
-				await page.waitForTimeout(3_300);
 				await Promise.all([
 					page.waitForURL((url) => url.pathname === account, {
 						timeout: 60_000,
@@ -175,8 +173,6 @@ for (const language of ['en', 'de'] as const) {
 					.locator('[name="message"]')
 					.fill('Please contact me about this product.');
 				await form.locator('[name="consent"]').check();
-				// PublicGuard's sourced minimum form time is three seconds.
-				await page.waitForTimeout(3_100);
 				await form.locator('[type="submit"]').click();
 				await expect(
 					page.locator('.linker-form-success')

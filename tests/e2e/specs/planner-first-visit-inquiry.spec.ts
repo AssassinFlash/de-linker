@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
 	applyTurnstileProfile,
-	isolateVisitorBudgets,
+	isolateMailBudgets,
 	instance,
 	instanceName,
 	wp,
@@ -14,8 +14,8 @@ let inquiryEmail: string | undefined;
 let bareProject: { path: string; id: string } | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
-	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
-	restoreBudgets = isolateVisitorBudgets();
+	restoreProtection = applyTurnstileProfile(instanceName());
+	restoreBudgets = isolateMailBudgets();
 });
 test.afterAll(() => {
 	restoreBudgets?.();

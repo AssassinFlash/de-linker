@@ -81,7 +81,7 @@ final class OperationsHealthTest extends TestCase {
 
 		$this->assertSame( array(), $block->entries() );
 		$this->assertSame(
-			'All within bounds — queue 17 (nothing late), mail 12/80 PHP, 4/400 SMTP, intake 15/128 unhandled, 0 quarantined, publication 88/88 engineering, 85 knowledge.',
+			'All within bounds — queue 17 (nothing late), mail 12/80 PHP, 4/400 SMTP, intake 15 unhandled, 0 quarantined, publication 88/88 engineering, 85 knowledge.',
 			$block->empty_text()
 		);
 	}
@@ -176,39 +176,15 @@ final class OperationsHealthTest extends TestCase {
 		$this->assertStringContainsString( 'Ordinary mail stops at 64; the last 16 attempts', $rows[0]['detail'] );
 	}
 
-	/**
-	 * The backlog line opens at three quarters of the 128-inquiry envelope,
-	 * the point #568 measured at 102 unhandled during the 2026-10-22 wave.
-	 */
-	public function test_backlog_alert_boundary_is_three_quarters_of_the_envelope(): void {
-		$limit = (int) floor( BusinessCapacity::LIMITS['ordinary']['count'] * OperationsHealth::BACKLOG_SHARE );
-		$this->assertSame( 96, $limit );
-
-		$below = $this->block(
-			$this->queue(),
-			$this->mail(),
-			array(
-				'unhandled'   => 95,
-				'bytes'       => 1_000,
-				'quarantined' => 0,
-			),
-			$this->publication()
+	/** Total native inquiries alone are not an operations alert. */
+	public function test_unhandled_records_do_not_trip_a_site_admission_limit(): void {
+		$intake = array(
+			'unhandled'   => 200,
+			'bytes'       => 1000000,
+			'quarantined' => 0,
 		);
-		$this->assertSame( array(), $below->entries() );
-
-		$at   = $this->block(
-			$this->queue(),
-			$this->mail(),
-			array(
-				'unhandled'   => 96,
-				'bytes'       => 1_000,
-				'quarantined' => 0,
-			),
-			$this->publication()
-		);
-		$rows = $at->entries();
-		$this->assertCount( 1, $rows );
-		$this->assertSame( '96 unhandled inquiries are near the site envelope of 128.', $rows[0]['label'] );
+		$health = $this->block( $this->queue(), $this->mail(), $intake, $this->publication() );
+		$this->assertSame( array(), $health->entries() );
 	}
 
 	/**

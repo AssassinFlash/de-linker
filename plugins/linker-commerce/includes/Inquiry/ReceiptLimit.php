@@ -1,6 +1,6 @@
 <?php
 /**
- * Site-wide allowance for automated public-door customer receipts.
+ * Delivery state and recipient protection of inquiry acknowledgements.
  *
  * @package Linker\Commerce
  */
@@ -13,20 +13,37 @@ use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
 use Linker\Commerce\Inquiry\Assessment\Reviews;
 use Linker\Commerce\Inquiry\Assessment\SendAuthorization;
 use WC_Order;
+use WP_User;
 
 /** Only receipts consume this allowance; inquiries and team notifications continue. */
 final class ReceiptLimit {
 
-	/**
-	 * PR #290 round 2: a tenth of Hostinger's shared 100/24h allowance
-	 * (AGENTS.md §4; docs/research/2026-10-09/mail-root-cause.md §3, §9).
-	 * Same small allocation as #235. This is a fixed UTC-day window, as in
-	 * #235's RateLimit, not a claim to measure the host's rolling usage.
-	 */
-	public const DAILY_CAP = 10;
-
 	/** The saved reason a public-door receipt was omitted. */
 	public const SKIPPED_META = '_linker_receipt_skipped';
+
+	/** The current account email has been confirmed by an existing mailbox flow. */
+	private const MAILBOX_CONFIRMED = '_linker_receipt_mailbox_confirmed';
+
+	/** Woo validated the reset link delivered to this customer's mailbox.
+	 *
+	 * @param WP_User $user Confirmed account.
+	 */
+	public static function confirmed_mailbox( WP_User $user ): void {
+		update_user_meta( $user->ID, self::MAILBOX_CONFIRMED, 'yes' );
+	}
+
+	/**
+	 * A change of account email clears confirmation for the previous mailbox.
+	 *
+	 * @param int     $id Account being updated.
+	 * @param WP_User $previous Account before the update.
+	 */
+	public static function account_updated( int $id, WP_User $previous ): void {
+		$current = get_userdata( $id );
+		if ( $current && 0 !== strcasecmp( $previous->user_email, $current->user_email ) ) {
+			delete_user_meta( $id, self::MAILBOX_CONFIRMED );
+		}
+	}
 
 	/** Read the delivery of this order's customer acknowledgement.
 	 *
@@ -58,29 +75,19 @@ final class ReceiptLimit {
 
 	/** Determine the allowance for the real destination of this native receipt.
 	 *
+	 * @phpstan-impure
 	 * @param WC_Order $order Native recipient and order.
 	 * @param bool     $spend Charge at dispatch, or check current availability at handoff.
 	 */
 	public static function reason( WC_Order $order, bool $spend ): string {
-		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
-			return \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id(), 'inquiry', $spend );
+		$owner = $order->get_customer_id();
+		$email = $order->get_billing_email();
+		if ( $owner > 0 && 'yes' === get_user_meta( $owner, self::MAILBOX_CONFIRMED, true ) ) {
+			$user = get_userdata( $owner );
+			if ( $user && 0 === strcasecmp( $user->user_email, $email ) ) {
+				return '';
+			}
 		}
-		$limit = new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS );
-		$used  = $limit->spent( '' );
-		if ( null === $used ) {
-			return 'unavailable';
-		}
-		if ( $used >= self::DAILY_CAP ) {
-			return 'daily_cap';
-		}
-		if ( ! $spend || $limit->take( '' ) ) {
-			return '';
-		}
-		return ( $limit->spent( '' ) ?? 0 ) >= self::DAILY_CAP ? 'daily_cap' : 'unavailable';
-	}
-
-	/** Reserve a receipt atomically, independently of the connection address. */
-	public function take(): bool {
-		return ( new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS ) )->take( '' );
+		return \Linker\Commerce\Protection\ReceiptBudget::reason( $email, $order->get_id(), 'inquiry', $spend );
 	}
 }

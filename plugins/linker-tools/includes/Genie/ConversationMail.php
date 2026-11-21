@@ -9,23 +9,12 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
-use Linker\Tools\Protection\Resources;
-
 /**
  * A visitor can have any of their conversations emailed to themselves
  * (docs/specs/13-genie.md, goal 7; acceptance A12).
  *
- * - A signed-in customer's goes to the account's address at once.
- * - A guest's address is confirmed first (review round 1 of #235): the guest
- *   gets a short email with a one-time link and no conversation content;
- *   the conversation goes out only when that link is opened, so the
- *   transcript only ever reaches a mailbox that asked for it. The request
- *   carries a honeypot and a signed start time (FormGuard, shared with
- *   "Let Linker contact me"); a request that fails it is answered like a
- *   success and sends nothing.
- * - Every email of this kind counts against a site-wide daily cap and, per
- *   connection, an hourly limit (FormGuard's two RateLimits). Over either,
- *   the request is refused; nothing is queued for later.
+ * Signed-in customers use their account address. Guests receive a one-time
+ * email link to confirm the address before the transcript is sent.
  *
  * This class decides whether an email may go and to whom; the emails
  * themselves are the site's mail chain, owned by linker-commerce (every site
@@ -39,14 +28,13 @@ class ConversationMail {
 	 * The outcomes, one definition (Proxy maps them to HTTP, the shell's
 	 * `EmailOutcome` in src/genie/api/turn.ts names the same words).
 	 */
-	public const SENT        = 'sent';
-	public const CONFIRM     = 'confirm';
-	public const AWAITING    = 'pending';
-	public const INVALID     = 'invalid';
-	public const UNKNOWN     = 'unknown';
-	public const EMPTY       = 'empty';
-	public const THROTTLED   = 'throttled';
-	public const CAPPED      = 'capped';
+	public const SENT     = 'sent';
+	public const CONFIRM  = 'confirm';
+	public const AWAITING = 'pending';
+	public const INVALID  = 'invalid';
+	public const UNKNOWN  = 'unknown';
+	public const EMPTY    = 'empty';
+
 	public const EXPIRED     = 'expired';
 	public const UNAVAILABLE = 'unavailable';
 
@@ -60,8 +48,7 @@ class ConversationMail {
 		self::INVALID     => 400,
 		self::UNKNOWN     => 404,
 		self::EMPTY       => 409,
-		self::THROTTLED   => 429,
-		self::CAPPED      => 429,
+
 		self::UNAVAILABLE => 503,
 	);
 
@@ -95,19 +82,6 @@ class ConversationMail {
 	public const ACCEPTED = 'linker_genie_email_accepted';
 
 	/**
-	 * Emails one connection may ask for per hour: the contact form's
-	 * allowance (Linker\Commerce\Contact\Handler::LIMIT, 3 per hour).
-	 */
-	public const LIMIT = 3;
-
-	/**
-	 * Emails of this kind the whole site sends per day: a tenth of the
-	 * host's 100 emails in 24 hours (AGENTS.md §4, mail), which four sites
-	 * share. Inquiry, approval and contact mail keep the rest.
-	 */
-	public const DAILY_CAP = 10;
-
-	/**
 	 * How long a confirmation link works: WordPress's own lifetime of an
 	 * emailed one-time link, the password reset key (DAY_IN_SECONDS,
 	 * `password_reset_expiration`, wp-includes/user.php).
@@ -115,28 +89,15 @@ class ConversationMail {
 	public const LINK_LIFETIME = DAY_IN_SECONDS;
 
 	/**
-	 * The bot guard and the limits of this door (FormGuard).
-	 *
-	 * @var FormGuard
-	 */
-	private readonly FormGuard $guard;
-
-	/**
 	 * Sets up the sender.
 	 *
-	 * @param Conversations  $conversations Who may use which conversation.
-	 * @param Thread         $thread        The stored conversation.
-	 * @param RateLimit|null $connection    Per-connection hourly limit; the default when omitted.
-	 * @param RateLimit|null $site          Site-wide daily cap; the default when omitted.
+	 * @param Conversations $conversations Who may use which conversation.
+	 * @param Thread        $thread        The stored conversation.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
-		private readonly Thread $thread,
-		?RateLimit $connection = null,
-		?RateLimit $site = null
-	) {
-		$this->guard = self::guard( $connection, $site );
-	}
+		private readonly Thread $thread
+	) {}
 
 	/**
 	 * Adds the confirmation link's handler (guests and signed-in alike:
@@ -168,34 +129,13 @@ class ConversationMail {
 	}
 
 	/**
-	 * The signed start time a guest's request carries back: when the page
-	 * with the form was made, and a signature over it (FormGuard::stamp()).
-	 *
-	 * @param int|null $at Unix time of the stamp; now when omitted.
-	 * @return array{started: string, nonce: string}
-	 */
-	public static function stamp( ?int $at = null ): array {
-		return self::guard()->stamp( $at );
-	}
-
-	/**
-	 * This door's guard: its name and its sourced caps (LIMIT, DAILY_CAP).
-	 *
-	 * @param RateLimit|null $connection The hourly limit; the default when omitted.
-	 * @param RateLimit|null $site       The daily cap; the default when omitted.
-	 */
-	private static function guard( ?RateLimit $connection = null, ?RateLimit $site = null ): FormGuard {
-		return new FormGuard( 'genie_mail', self::LIMIT, self::DAILY_CAP, $connection, $site );
-	}
-
-	/**
 	 * Sends one conversation to the visitor, or asks a guest to confirm the
 	 * address first.
 	 *
 	 * @param int                  $id      Conversation post ID.
 	 * @param string               $address The address a guest typed; a signed-in customer's is the account's.
 	 * @param string               $locale  `en` or `de`, the page's language.
-	 * @param array<string, mixed> $guard   A guest's `website`, `started` and `started_nonce`.
+	 * @param array<string, mixed> $guard   The guest form's hidden website field.
 	 * @return array{status: string, to: string} The outcome, and the address it concerns.
 	 */
 	public function send( int $id, string $address, string $locale, array $guard = array() ): array {
@@ -211,22 +151,23 @@ class ConversationMail {
 			if ( '' === $to ) {
 				return self::outcome( self::INVALID );
 			}
-			$refused = $this->take();
-			return '' !== $refused ? self::outcome( $refused ) : $this->deliver( $id, $to, $locale );
+			return $this->deliver( $id, $to, $locale );
 		}
 		$to = strtolower( trim( $address ) );
 		if ( ! is_email( $to ) ) {
 			return self::outcome( self::INVALID );
 		}
-		if ( ! $this->guard->passes( $guard ) ) {
-			// Answered like a real request, so a bot learns nothing.
-			return self::outcome( self::CONFIRM, $to );
+		if ( FormGuard::trapped( $guard ) ) {
+			return self::outcome( self::UNAVAILABLE );
 		}
-		$refused = $this->take();
-		if ( '' !== $refused ) {
-			return self::outcome( $refused );
-		}
-		return $this->ask_to_confirm( $id, $to, $locale );
+		$outcome  = self::outcome( self::UNAVAILABLE );
+		$recorded = $this->confirmation_lock(
+			$id,
+			function () use ( $id, $to, $locale, &$outcome ): void {
+				$outcome = $this->ask_to_confirm( $id, $to, $locale );
+			}
+		);
+		return $recorded ? $outcome : self::outcome( self::UNAVAILABLE );
 	}
 
 	/**
@@ -255,10 +196,6 @@ class ConversationMail {
 				if ( (int) ( $pending['expires'] ?? 0 ) < time() ) {
 					delete_post_meta( $id, self::PENDING, $pending );
 					$result = self::result( self::EXPIRED, $locale );
-					return;
-				}
-				if ( ! $this->guard->take_site() ) {
-					$result = self::result( self::CAPPED, $locale );
 					return;
 				}
 				// This native closure is never populated from an HTTP request. The
@@ -341,19 +278,6 @@ class ConversationMail {
 	}
 
 	/**
-	 * The per-connection limit and the site's daily cap, taken together.
-	 *
-	 * @return string '' when both allow, else the refusal.
-	 */
-	private function take(): string {
-		return match ( $this->guard->take() ) {
-			'connection' => self::THROTTLED,
-			'site'       => self::CAPPED,
-			default      => '',
-		};
-	}
-
-	/**
 	 * Hands the conversation to linker-commerce's email.
 	 *
 	 * @param int           $id     Conversation post ID.
@@ -405,37 +329,29 @@ class ConversationMail {
 	 * @return array{status: string, to: string}
 	 */
 	private function ask_to_confirm( int $id, string $to, string $locale ): array {
-		if ( Resources::verified() ) {
-			/**
-			 * Native server-only admission context.
-			 *
-			 * @since 0.2.0
-			 */
-			$context = apply_filters( 'linker_commerce_public_business_context', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the shared trusted callback seam.
-
-			$reference = is_array( $context ) ? (string) ( $context['id'] ?? '' ) : '';
-			/**
-			 * The shared Commerce optional-receipt budget owns recipient/site limits.
-			 * A missing dependency fails closed before any secret or email is made.
-			 *
-			 * @since 0.2.0
-			 */
-			$reason = '' === $reference ? null : apply_filters( 'linker_commerce_receipt_budget_reason', null, $to, $reference, 'conversation_confirmation' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the optional receipt policy.
-			if ( '' !== $reason ) {
-				return self::outcome( self::UNAVAILABLE );
-			}
+		$prior    = get_post_meta( $id, self::PENDING, true );
+		$previous = is_array( $prior ) ? $prior : get_post_meta( $id, self::ACCEPTED, true );
+		// A retry after a refused queue handoff spends the same recipient allowance.
+		$attempt = hash( 'sha256', $id . '|' . $to . '|' . ( $previous['hash'] ?? '' ) );
+		/**
+		 * Charge the unverified recipient before generating or dispatching a new confirmation link.
+		 *
+		 * @since 0.2.0
+		 */
+		$reason = apply_filters( 'linker_commerce_receipt_budget_reason', null, $to, $attempt, 'conversation_confirmation' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns recipient-level mail protection.
+		if ( '' !== $reason ) {
+			return self::outcome( self::UNAVAILABLE );
 		}
-		$secret = bin2hex( random_bytes( 32 ) );
-		update_post_meta(
-			$id,
-			self::PENDING,
-			array(
-				'hash'    => hash( 'sha256', $secret ),
-				'to'      => $to,
-				'locale'  => $locale,
-				'expires' => time() + self::LINK_LIFETIME,
-			)
+		$secret  = bin2hex( random_bytes( 32 ) );
+		$pending = array(
+			'hash'    => hash( 'sha256', $secret ),
+			'to'      => $to,
+			'locale'  => $locale,
+			'expires' => time() + self::LINK_LIFETIME,
 		);
+		if ( false === update_post_meta( $id, self::PENDING, $pending ) ) {
+			return self::outcome( self::UNAVAILABLE );
+		}
 		$link = add_query_arg(
 			array(
 				'action' => self::CONFIRM_ACTION,
@@ -464,10 +380,14 @@ class ConversationMail {
 			)
 		);
 		if ( true !== $sent ) {
-			delete_post_meta( $id, self::PENDING );
+			if ( is_array( $prior ) ) {
+				update_post_meta( $id, self::PENDING, $prior, $pending );
+			} else {
+				delete_post_meta( $id, self::PENDING, $pending );
+			}
 			return self::outcome( self::UNAVAILABLE );
 		}
-		return self::outcome( self::CONFIRM, $to );
+		return get_post_meta( $id, self::PENDING, true ) === $pending ? self::outcome( self::CONFIRM, $to ) : self::outcome( self::UNAVAILABLE );
 	}
 
 	/**

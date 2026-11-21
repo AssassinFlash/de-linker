@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const de = {
 	'Reject all': 'Alle ablehnen',
@@ -41,7 +41,7 @@ for (const locale of ['en', 'de'] as const) {
 		}) => {
 			const url = instance().url;
 			expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
-			const restoreBudgets = isolateVisitorBudgets();
+			const restoreBudgets = isolateMailBudgets();
 			try {
 				const name = (english: keyof typeof de) =>
 					locale === 'de' ? de[english] : english;
@@ -283,8 +283,6 @@ for (const locale of ['en', 'de'] as const) {
 					.fill('E2E Product Report Guest');
 				await form.locator('[name="email"]').fill(email);
 				await form.locator('[name="consent"]').check();
-				// The legacy PublicGuard accepts submission three seconds after render.
-				await page.waitForTimeout(3100);
 				await form
 					.getByRole('button', {
 						name: name('Send inquiry'),

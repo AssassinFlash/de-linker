@@ -17,19 +17,18 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\GenieVerificationFixture;
 use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 
 use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Inquiry\OrderLocale;
-use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Settings\Options;
 use Linker\Tools\Genie\Conversations;
-use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\RateLimit;
@@ -87,6 +86,9 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->use_empty_mail_queue();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/GenieVerificationFixture.php';
+		GenieVerificationFixture::install( $this->later( ... ) );
 		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		$this->authorization = NormalMailAuthorizationFixture::install(
 			function ( callable $remove ): void {
@@ -261,7 +263,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			) + self::fields()
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$data = $response->get_data();
 		$this->assertTrue( $data['sent'] );
 		$this->assertSame( $guest, $data['email'] );
@@ -355,7 +357,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'locale'         => 'en',
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $guest );
 		$this->assertSame( '', $record->get_meta( Sender::SUMMARY_META ) );
 		$this->authorization->drain();
@@ -427,7 +429,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'lines'          => $again['lines_digest'],
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $guest );
 		$items  = array_values( $record->get_items() );
 		$this->assertCount( 2, $items );
@@ -550,7 +552,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $customer->get_billing_email() );
 		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
 		$this->assertSame( $customer->get_billing_company(), $record->get_billing_company() );
@@ -578,7 +580,9 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			'lines'          => $state['lines_digest'],
 		) + self::fields();
 		$first  = $this->send( $params );
-		$second = $this->send( $params );
+		delete_post_meta( $this->conversation, InquiryRequest::NOTE );
+		$params['cf-turnstile-response'] = ''; // Recover the saved Woo inquiry after the original cart was emptied.
+		$second                          = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		$this->assertSame( $first->get_data()['inquiry'], $second->get_data()['inquiry'] );
 		$this->authorization->drain();
@@ -627,44 +631,12 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'lines'          => $state['lines_digest'],
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'a message alone is an inquiry' );
 	}
 
-	/**
-	 * Over the site's receipt cap the inquiry still reaches the team; the
-	 * receipt alone is held back, and the card is told.
-	 */
-	public function test_over_the_receipt_cap_the_card_reports_no_receipt(): void {
-		$receipts = new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS );
-		while ( $receipts->take( '' ) ) {
-			continue;
-		}
-		$product = $this->product( '1000' );
-		$this->thread( 'Please send an inquiry.' );
-		$this->cart( array( array( $product, 1 ) ) );
-		$state    = $this->state();
-		$marker   = self::newest_mail_job();
-		$guest    = 'linker-it-' . self::tag() . '@example.test';
-		$response = $this->send(
-			array(
-				'name'           => 'Maria Weber',
-				'email'          => $guest,
-				'message'        => 'Please send a Proforma invoice.',
-				'attach_summary' => '1',
-				'lines'          => $state['lines_digest'],
-			) + self::fields()
-		);
-		$this->assertSame( 200, $response->get_status() );
-		$this->assertFalse( $response->get_data()['inquiry']['receipt'] );
-		$this->authorization->drain();
-		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows, 'the team mail only' );
-		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
-		$this->assertSame( 'daily_cap', $this->record( $guest )->get_meta( ReceiptLimit::SKIPPED_META ) );
-		$this->assertFalse( $this->state()['sent']['receipt'] );
-	}
+
 
 	/**
 	 * The card's state, read through the REST server.
@@ -677,7 +649,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$request->set_param( 'locale', $locale );
 		$response = rest_do_request( $request );
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		return $response->get_data();
 	}
 
@@ -688,6 +660,8 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 */
 	private function send( array $params ): WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/inquiry' );
+		$source  = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/inquiry' ) );
+		$params += array( 'source' => $source->get_data()['source'] ?? '' );
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );
 		}
@@ -759,7 +733,13 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'content' => $text,
 			);
 		}
-		( new Thread() )->record( $this->conversation, $messages, '' );
+		$stream = "event: block\ndata: " . wp_json_encode(
+			array(
+				'type' => 'text',
+				'text' => 'An answer.',
+			)
+		) . "\n\nevent: done\ndata: {}\n\n";
+		$this->assertTrue( ( new Thread() )->record( $this->conversation, $messages, $stream ) );
 	}
 
 	/**
@@ -776,18 +756,15 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		WC()->cart->calculate_totals();
 	}
 
-	/**
-	 * A person's guard fields: a stamp of this door from ten seconds ago.
+	/** Native anonymous form fields with Cloudflare's official integration-test response.
 	 *
-	 * @return array{website: string, started: string, started_nonce: string, consent: string}
+	 * @return array<string,string>
 	 */
 	private static function fields(): array {
-		$stamp = ( new FormGuard( 'genie_inquiry', InquiryRequest::LIMIT, InquiryRequest::DAILY ) )->stamp( time() - 10 );
 		return array(
-			'website'       => '',
-			'started'       => $stamp['started'],
-			'started_nonce' => $stamp['nonce'],
-			'consent'       => '1',
+			'website'               => '',
+			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
+			'consent'               => '1',
 		);
 	}
 

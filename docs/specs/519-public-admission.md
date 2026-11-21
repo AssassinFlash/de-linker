@@ -1,5 +1,7 @@
 # Shared public admission
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Issue: #519. Policies: #507 and #508 (resolution comments
 6324053873 / 6324114050). Part of #505. This implements reusable mechanisms;
 #520 and #521 connect the actual business/resource doors, and #522 owns rollout.

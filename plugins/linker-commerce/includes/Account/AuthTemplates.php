@@ -225,7 +225,15 @@ final class AuthTemplates {
 	 */
 	public function register_redirect(): void {
 		$register = self::is_register_request();
-		$args     = AccountLink::request_args();
+		if ( $register && ! is_user_logged_in() ) {
+			// Woo binds the registration nonce to the guest session on submission.
+			\Linker\Commerce\Cache\DynamicHtml::forbid( 'account registration' );
+			$session = WC()->session;
+			if ( $session instanceof \WC_Session_Handler && ! $session->has_session() ) {
+				$session->set_customer_session_cookie( true );
+			}
+		}
+		$args = AccountLink::request_args();
 		if ( ( ! $register && ( ! $args || ! is_account_page() || is_wc_endpoint_url() ) ) || ! is_user_logged_in() ) {
 			return;
 		}

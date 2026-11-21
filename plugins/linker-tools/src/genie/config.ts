@@ -25,8 +25,6 @@
  *   emailed to the account's address (no address field);
  * - `data-retention-days`: how long a guest's conversations are kept
  *   (Retention::RETENTION_DAYS), named under a guest's list;
- * - `data-mail-started`, `data-mail-started-nonce`: the signed time the page
- *   was made, a guest's bot guard for "email me" (ConversationMail::stamp()).
  * - `data-contact-url`: the contact card's route
  *   (linker-ai/v1/genie/contact, #243).
  * - `data-inquiry-url`: the inquiry confirmation card's route
@@ -62,8 +60,6 @@ export interface GenieConfig {
 	page: PageContext;
 	signedIn: boolean;
 	retentionDays: number;
-	mailStarted: string;
-	mailStartedNonce: string;
 	/** The contact card's route ("Let Linker contact me", #243). */
 	contactUrl: string;
 	/** The inquiry confirmation card's route (#250). */
@@ -127,8 +123,6 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		// Only the page names the days (Retention::RETENTION_DAYS); a
 		// mount without them names none, and the note stays away.
 		retentionDays: Number( data.retentionDays ) || 0,
-		mailStarted: data.mailStarted ?? '',
-		mailStartedNonce: data.mailStartedNonce ?? '',
 		contactUrl: data.contactUrl ?? '/wp-json/linker-ai/v1/genie/contact',
 		requestPageUrl: data.requestPageUrl,
 		inquiryUrl: data.inquiryUrl ?? '/wp-json/linker-ai/v1/genie/inquiry',

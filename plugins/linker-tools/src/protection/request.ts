@@ -1,31 +1,5 @@
-/** Shared proof/UUID transport; no customer input is persisted outside app memory. */
-import { __ } from '@wordpress/i18n';
-
-interface PublicClient {
-	/** A current cached proof for this container, '' when there is none. */
-	ready?: ( action: string, container: HTMLElement ) => string;
-	proof: ( action: string, container: HTMLElement ) => Promise< string >;
-	complete?: ( action: string, proof: string ) => boolean;
-	cancel?: ( action: string, container: HTMLElement ) => boolean;
-	reset: ( action: string ) => void;
-}
-
-declare global {
-	interface Window {
-		linkerPublicProtectionConfig?: {
-			api: string;
-			nonce: string;
-			mode: string;
-			language: 'en' | 'de';
-		};
-		linkerPublicProtection?: PublicClient;
-	}
-}
-
+/** Retain the native write identity across an uncertain response. */
 const operations = new Map< string, string >();
-const containers = new Map< string, HTMLElement >();
-const statuses = new WeakMap< HTMLElement, HTMLElement >();
-const displayOwners = new WeakMap< HTMLElement, symbol >();
 
 /**
  * Only writes that the native resource adapter owns; reads stay ordinary reads.
@@ -38,414 +12,87 @@ export function resourceAction(
 	method = 'GET',
 	body?: BodyInit | null
 ): string {
-	if ( ! [ 'POST', 'DELETE' ].includes( method.toUpperCase() ) ) {
+	if ( method.toUpperCase() !== 'POST' ) {
 		return '';
 	}
 	const parsed = new URL( url, window.location.href );
-	const path = (
+	const route = (
 		parsed.searchParams.get( 'rest_route' ) ??
 		parsed.pathname.replace( /^.*\/wp-json/i, '' )
 	).toLowerCase();
-	if ( path.endsWith( '/genie/draft' ) ) {
-		return 'draft_write';
-	}
-	if ( path.endsWith( '/genie/solution' ) ) {
-		return 'solution_save';
-	}
-	if ( path.endsWith( '/genie/turn' ) ) {
+	if ( route === '/linker-ai/v1/genie/turn' ) {
 		return 'genie';
 	}
-	if ( path.endsWith( '/genie/contact' ) ) {
-		return 'genie_contact';
-	}
-	if ( path.endsWith( '/genie/inquiry' ) ) {
-		return 'genie_inquiry';
-	}
-	if ( /\/genie\/conversations\/\d+\/email$/.test( path ) ) {
-		return 'conversation_mail';
-	}
-	if ( /\/genie\/turn\/\d+\/vote$/.test( path ) ) {
-		return 'vote';
-	}
-	if ( path.endsWith( '/genie/conversations' ) ) {
-		try {
-			return JSON.parse( String( body ?? '{}' ) ).id
-				? 'conversation_write'
-				: 'conversation_create';
-		} catch {
-			return 'conversation_create';
-		}
-	}
-	if ( /\/genie\/conversations\/\d+$/.test( path ) ) {
-		return 'conversation_write';
-	}
-	if ( /\/engine\/design\/(residential|commercial)$/.test( path ) ) {
-		return 'design';
-	}
-	if ( /\/engine\/roof\/(outline|pack)$/.test( path ) ) {
-		return 'roof';
-	}
-	if ( path.endsWith( '/engine/report/pdf' ) ) {
-		return 'report_pdf';
-	}
-	if ( path.endsWith( '/linker/v1/solutions/draft' ) ) {
-		return 'draft_write';
-	}
-	if ( path.endsWith( '/linker/v1/solutions' ) ) {
+	if ( route === '/linker-ai/v1/genie/solution' ) {
 		return 'solution_save';
+	}
+	if (
+		route === '/linker-ai/v1/genie/conversations' &&
+		! JSON.parse( String( body ?? '{}' ) ).id
+	) {
+		return 'conversation_create';
 	}
 	return '';
 }
 
-// Capture the interaction before React disables/moves focus during submission.
-let lastForm: HTMLFormElement | null = null;
-if ( typeof document !== 'undefined' ) {
-	document.addEventListener( 'focusin', ( event ) => {
-		if ( event.target instanceof Element ) {
-			lastForm = event.target.closest( 'form' );
-		}
-	} );
-}
-
-function containerFor(
-	action: string,
-	ownedSlot?: () => HTMLElement | null
-): HTMLElement {
-	const slot = ownedSlot?.();
-	if ( ownedSlot && ! slot?.isConnected ) {
-		throw new Error( 'verification_cancelled' );
-	}
-	const visible = ( element: Element ) => element.getClientRects().length > 0;
-	const forms = Array.from(
-		document.querySelectorAll< HTMLFormElement >(
-			'form.linker-genie-app__composer, form'
-		)
-	);
-	const form =
-		lastForm?.isConnected && visible( lastForm )
-			? lastForm
-			: forms.find(
-					( candidate ) =>
-						visible( candidate ) &&
-						candidate.querySelector( 'textarea' )
-				);
-	const old = containers.get( action );
-	if (
-		old?.isConnected &&
-		( slot
-			? old.parentElement === slot
-			: ! form || old.parentElement === form.parentElement )
-	) {
-		if ( slot ) {
-			slot.hidden = false;
-		}
-		return old;
-	}
-	if ( old ) {
-		statuses.get( old )?.remove();
-	}
-	old?.remove();
-	const container = document.createElement( 'div' );
-	container.dataset.linkerResourceVerification = action;
-	const status = document.createElement( 'p' );
-	status.setAttribute( 'role', 'status' );
-	status.setAttribute( 'aria-live', 'polite' );
-	container.addEventListener( 'linker:protection', ( event ) => {
-		const state = ( event as CustomEvent< { state: string } > ).detail
-			.state;
-		if ( state === 'checking' ) {
-			status.textContent = __(
-				'Checking verification. No request has been sent in this attempt.',
-				'linker-tools'
-			);
-		} else if ( state === 'interactive' ) {
-			status.textContent = __(
-				'No request has been sent in this attempt. Please complete the verification.',
-				'linker-tools'
-			);
-		} else if ( state === 'retrying' ) {
-			status.textContent = __(
-				'Verification is being retried. No request has been sent in this attempt.',
-				'linker-tools'
-			);
-		} else if ( state === 'ready' ) {
-			status.textContent = '';
-		} else if ( 'failed' === state || 'expired' === state ) {
-			// A terminal proof state. The failure owner above the transport —
-			// the App/Hero banner, the configurator's own error — is what
-			// speaks; this transport node has nothing left to say. Every
-			// action cleans up its own container, with or without a slot
-			// (#901: only genie ever did, so every other action left a
-			// second role="status" in the DOM after a failed proof).
-			if ( containers.get( action ) === container ) {
-				const ownerSlot = container.closest< HTMLElement >(
-					'[data-linker-resource-verification-slot]'
-				);
-				status.remove();
-				container.remove();
-				if ( ownerSlot ) {
-					ownerSlot.hidden = ownerSlot.children.length === 0;
-				}
-			}
-		} else {
-			status.textContent = __(
-				'Verification could not be completed. No request has been sent in this attempt. Please try again.',
-				'linker-tools'
-			);
-		}
-	} );
-	if ( slot ) {
-		slot.hidden = false;
-		slot.append( status, container );
-	} else if ( form?.parentElement ) {
-		form.before( status, container );
-	} else {
-		( document.querySelector( 'main' ) ?? document.body ).append(
-			status,
-			container
-		);
-	}
-	statuses.set( container, status );
-	containers.set( action, container );
-	return container;
-}
-
 /**
- * One logical operation keeps its UUID across an ambiguous network retry. A
- * successful response releases that UUID; a new explicit action gets a new one.
- * The server chooses dimensions, identity, version and engine deduplication.
- * @param fetcher
- * @param input
- * @param init
- * @param onOperation Receives the actual enforced operation just before sending.
- * @param ownedSlot   Explicit slot-owning caller (Genie's send). Other resources keep their native form/main placement; their cleanup is owned by their own attempt, not by a slot.
+ * Send the business request once. An explicit retry of an uncertain write uses its original operation.
+ *
+ * @param fetcher     Native transport.
+ * @param input       Route.
+ * @param init        Request data and native WordPress nonce.
+ * @param onOperation Notifies the composer which persisted turn to recover.
  */
 export async function resourceFetch(
 	fetcher: typeof fetch,
 	input: RequestInfo | URL,
 	init?: RequestInit,
-	onOperation?: ( id: string ) => void,
-	ownedSlot?: () => HTMLElement | null
+	onOperation?: ( id: string ) => void
 ): Promise< Response > {
 	if ( typeof window === 'undefined' ) {
 		return fetcher( input, init );
 	}
-	init?.signal?.throwIfAborted();
-	const config = window.linkerPublicProtectionConfig;
-	let url: string;
-	if ( typeof input === 'string' ) {
-		url = input;
-	} else if ( input instanceof URL ) {
-		url = input.href;
-	} else {
-		url = input.url;
-	}
+	const url =
+		typeof input === 'string' || input instanceof URL
+			? String( input )
+			: input.url;
 	const action = resourceAction( url, init?.method, init?.body );
-	if ( ! config || config.mode === 'off' || ! action ) {
+	if ( ! action ) {
 		return fetcher( input, init );
 	}
-	const observe = config.mode === 'observe';
-	const client = window.linkerPublicProtection;
-	if ( ! observe && ! client ) {
-		throw new Error( 'verification_unavailable' );
+	init?.signal?.throwIfAborted();
+	// Keep just the digest of potentially large uploaded files in browser memory.
+	const digest = await crypto.subtle.digest(
+		'SHA-256',
+		new TextEncoder().encode(
+			`${ init?.method }|${ url }|${ String( init?.body ?? '' ) }`
+		)
+	);
+	const key = Array.from( new Uint8Array( digest ), ( n ) =>
+		n.toString( 16 ).padStart( 2, '0' )
+	).join( '' );
+	const id = operations.get( key ) ?? crypto.randomUUID();
+	if ( ! operations.has( key ) ) {
+		if ( operations.size >= 8 ) {
+			operations.delete( operations.keys().next().value as string );
+		}
+		operations.set( key, id );
 	}
 	const headers = new Headers( init?.headers );
-	if ( ! headers.has( 'X-WP-Nonce' ) ) {
-		headers.set( 'X-WP-Nonce', config.nonce );
-	}
-	let key = '';
-	let id = '';
-	try {
-		// Hash keys avoid retaining an extra copy of an uploaded file in the map.
-		const hash = await crypto.subtle.digest(
-			'SHA-256',
-			new TextEncoder().encode(
-				`${ init?.method }|${ url }|${ String( init?.body ?? '' ) }`
-			)
-		);
-		key = Array.from( new Uint8Array( hash ), ( value ) =>
-			value.toString( 16 ).padStart( 2, '0' )
-		).join( '' );
-		id = operations.get( key ) ?? crypto.randomUUID();
-		if ( ! operations.has( key ) ) {
-			if ( operations.size >= 8 ) {
-				operations.delete( operations.keys().next().value as string );
-			}
-			operations.set( key, id );
-		}
-	} catch ( error ) {
-		if ( ! observe ) {
-			throw error;
-		}
-		// Shadow diagnostics cannot prevent the original authenticated request.
-	}
-	if ( id ) {
-		headers.set( 'X-Linker-Operation', id );
-	}
-	let proof = '';
-	let verification: HTMLElement | undefined;
-	const displayOwner = Symbol();
-	let challenged = false;
-	let response: Response;
-	/**
-	 * The transport init this attempt leaves with. `linkerFinalDispatch`
-	 * tells the caller's transport wrapper whether this use is the turn's
-	 * final dispatch — fetch itself ignores the extra member — so the
-	 * response window and cancellation boundary stay on the one attempt
-	 * that really carries the turn (a proofless genie probe is not it).
-	 */
-	type FinalInit = RequestInit & { linkerFinalDispatch?: boolean };
-	const send = ( final: boolean ) => {
-		const transport: FinalInit = {
-			...init,
-			headers,
-			credentials: 'same-origin',
-		};
-		transport.linkerFinalDispatch = final;
-		return fetcher( input, transport );
-	};
-	/**
-	 * Runs the challenge for this attempt and arms its proof. For the genie
-	 * action this only happens on demand: the server's admission refusal, or
-	 * a cached proof that the server no longer accepts.
-	 */
-	const challenge = async (): Promise< void > => {
-		challenged = true;
-		proof = await client!.proof( action, verification! );
-		if ( typeof proof !== 'string' || ! proof ) {
-			throw new Error( 'verification_unavailable' );
-		}
-		headers.set( 'X-Linker-Proof', proof );
-	};
-	try {
-		init?.signal?.throwIfAborted();
-		if ( ! observe ) {
-			verification = containerFor( action, ownedSlot );
-			displayOwners.set( verification, displayOwner );
-			if ( 'genie' === action ) {
-				// An already-verified genie session sends its turn without a
-				// fresh challenge: the server admits an identity whose solved
-				// challenge is still trusted, so the wall never appears for
-				// an ongoing conversation. Only the admission refusal below
-				// runs the challenge.
-				proof = client!.ready?.( action, verification ) ?? '';
-				if ( proof ) {
-					headers.set( 'X-Linker-Proof', proof );
-				}
-			} else {
-				await challenge();
-			}
-		}
-		init?.signal?.throwIfAborted();
-		if ( id && ! observe ) {
-			onOperation?.( id );
-		}
-		init?.signal?.throwIfAborted();
-		// A genie attempt that leaves without a proof is a probe of the
-		// session's trust, not the turn's dispatch; everything else is final.
-		response = await send( ! ( 'genie' === action && '' === proof ) );
-		if (
-			! observe &&
-			'genie' === action &&
-			! challenged &&
-			400 === response.status
-		) {
-			const refusal = await response
-				.clone()
-				.json()
-				.catch( () => null );
-			if (
-				refusal &&
-				typeof refusal === 'object' &&
-				refusal.code === 'linker_admission_proof'
-			) {
-				// The one specific verification-required refusal: this
-				// identity is not trusted yet (or the cached proof was no
-				// longer accepted). Run the challenge and send the same
-				// operation once more; any other 400 stands as answered.
-				init?.signal?.throwIfAborted();
-				await challenge();
-				init?.signal?.throwIfAborted();
-				response = await send( true );
-			}
-		}
-	} finally {
-		if (
-			verification &&
-			displayOwners.get( verification ) === displayOwner
-		) {
-			const slot = verification.closest< HTMLElement >(
-				'[data-linker-resource-verification-slot]'
-			);
-			if ( slot ) {
-				const status = statuses.get( verification );
-				if ( status ) {
-					status.textContent = '';
-				}
-				slot.hidden = true;
-			}
-		}
-	}
-
-	if ( response.ok ) {
-		operations.delete( key );
-		if ( ! observe && client?.complete ) {
-			if ( client.complete( action, proof ) ) {
-				const container = verification;
-				if (
-					! container ||
-					displayOwners.get( container ) !== displayOwner
-				) {
-					return response;
-				}
-				const status = statuses.get( container );
-				const slot = container.closest< HTMLElement >(
-					'[data-linker-resource-verification-slot]'
-				);
-				status?.remove();
-				container.remove();
-				if ( slot ) {
-					slot.hidden = slot.children.length === 0;
-				}
-			}
-		} else if (
-			// Preserve the prior reset contract with an older protection bundle.
-			[ 'genie_contact', 'genie_inquiry', 'conversation_mail' ].includes(
-				action
-			)
-		) {
-			if ( ! observe ) {
-				client?.reset( action );
-			}
-		}
-	} else if ( [ 429, 500, 502, 503 ].includes( response.status ) ) {
-		// A gateway status alone says nothing about a completed business write.
-		// Only the native adapter's known pure-work failure, or a refusal the
-		// proxy marked as one that stored nothing, permits a fresh UUID.
-		const pure = [ 'design', 'roof', 'report_pdf' ].includes( action );
-		let code = '';
-		try {
-			const data: unknown = await response.clone().json();
-			if ( data && typeof data === 'object' && 'code' in data ) {
-				code = String( data.code );
-			}
-		} catch {
-			// An absent/untrusted body preserves the original operation identity.
-		}
-		if (
-			( ( pure || action === 'genie' ) &&
-				response.headers.get( 'X-Linker-Resource-Outcome' ) ===
-					'failed' ) ||
-			code === 'linker_admission_quota' ||
-			( action === 'genie' && code === 'linker_genie_quota' )
-		) {
+	headers.set( 'X-Linker-Operation', id );
+	init?.signal?.throwIfAborted();
+	onOperation?.( id );
+	const response = await fetcher( input, {
+		...init,
+		headers,
+		credentials: 'same-origin',
+	} );
+	if (
+		response.ok ||
+		response.headers.get( 'X-Linker-Resource-Outcome' ) === 'failed'
+	) {
+		if ( operations.get( key ) === id ) {
 			operations.delete( key );
-		}
-	} else if ( [ 400, 409 ].includes( response.status ) ) {
-		// Proof expiry needs a new proof, not another side effect. The UUID
-		// remains stable so the journal can recover an already completed write.
-		if ( ! observe ) {
-			client?.reset( action );
 		}
 	}
 	return response;

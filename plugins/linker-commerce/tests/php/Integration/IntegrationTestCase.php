@@ -238,6 +238,21 @@ abstract class IntegrationTestCase extends TestCase {
 		wp_cache_delete( 'alloptions', 'options' );
 	}
 
+	/** Start an isolated mail queue without importing the review database's historical jobs. */
+	protected function use_empty_mail_queue(): void {
+		$result = IntakeStore::edit(
+			static function ( array &$state ): array {
+				$state['mail_capacity'] = array(
+					'entries'      => array(),
+					'reservations' => array(),
+				);
+				IntakeStore::save( $state );
+				return array();
+			}
+		);
+		self::assertIsArray( $result );
+	}
+
 	/**
 	 * The newest Outbox queue row's id, 0 when the queue is empty.
 	 */

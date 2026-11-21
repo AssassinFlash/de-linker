@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, expect, test } from 'vitest';
 import germanGenie from '../../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
-import germanHero from '../../../languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json';
 import type { PlanningSourcesAvailableBlock } from '../api/turn';
 import { PlanningSourcesCard } from './PlanningSourcesCard';
 import { TurnProgress } from './TurnProgress';
@@ -10,16 +9,11 @@ import { TurnProgress } from './TurnProgress';
 afterEach( () => resetLocaleData( {}, 'linker-tools' ) );
 
 test.each( [ 'en', 'de' ] )(
-	'%s distinguishes unsent verification and historical sources using the shipped catalogs',
+	'%s shows turn progress and identifies historical sources using the shipped catalogs',
 	( locale ) => {
-		expect(
-			germanHero.locale_data.messages[ 'Cancel verification' ]
-		).toEqual( [ 'Prüfung abbrechen' ] );
 		if ( locale === 'de' ) {
-			setLocaleData( germanHero.locale_data.messages, 'linker-tools' );
 			setLocaleData( germanGenie.locale_data.messages, 'linker-tools' );
 		}
-		const cancel = vi.fn();
 		const source: PlanningSourcesAvailableBlock = {
 			type: 'planning_sources',
 			schema_version: 1,
@@ -46,25 +40,12 @@ test.each( [ 'en', 'de' ] )(
 				: 'This source card belongs to an earlier response, not the current request.';
 		const view = render(
 			<ol>
-				<TurnProgress
-					verificationPending
-					onCancel={ cancel }
-					skeleton
-				/>
+				<TurnProgress skeleton />
 			</ol>
 		);
-		fireEvent.click(
-			screen.getByRole( 'button', {
-				name:
-					locale === 'de'
-						? 'Prüfung abbrechen'
-						: 'Cancel verification',
-			} )
-		);
-		expect( cancel ).toHaveBeenCalledOnce();
 		expect(
 			view.container.querySelector( '.linker-genie-wait__lines' )
-		).toBeNull();
+		).toBeVisible();
 		view.rerender(
 			<PlanningSourcesCard
 				block={ source }

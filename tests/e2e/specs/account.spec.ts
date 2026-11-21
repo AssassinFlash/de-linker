@@ -20,7 +20,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import {
 	applyTurnstileProfile,
-	isolateVisitorBudgets,
+	isolateMailBudgets,
 	instance,
 	wp,
 	REPO_ROOT,
@@ -169,8 +169,8 @@ test.describe('first-time account and recovery journeys', () => {
 	let restoreProtection: (() => void) | undefined;
 	let restoreBudgets: (() => void) | undefined;
 	test.beforeAll(() => {
-		restoreProtection = applyTurnstileProfile(instance().name, 'optional');
-		restoreBudgets = isolateVisitorBudgets();
+		restoreProtection = applyTurnstileProfile(instance().name);
+		restoreBudgets = isolateMailBudgets();
 	});
 	test.afterAll(() => {
 		try {

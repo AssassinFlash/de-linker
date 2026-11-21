@@ -3,8 +3,31 @@
  */
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, beforeEach } from 'vitest';
+import { webcrypto } from 'node:crypto';
 
+if ( ! globalThis.crypto.subtle ) {
+	Object.defineProperty( globalThis.crypto, 'subtle', {
+		value: webcrypto.subtle,
+		configurable: true,
+	} );
+}
+
+// Simulate the commerce widget's callback at the cross-bundle boundary.
+if ( typeof window !== 'undefined' ) {
+	beforeEach( () => {
+		window.linkerTurnstile = {
+			mount: ( _node, _action, onToken ) => {
+				onToken( 'native-test-response' );
+				return () => {};
+			},
+			refresh: () => {},
+		};
+	} );
+	afterEach( () => {
+		delete window.linkerTurnstile;
+	} );
+}
 afterEach( cleanup );
 
 // jsdom has no layout, so it does not implement scrolling; the apps call it.

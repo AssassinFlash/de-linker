@@ -57,6 +57,19 @@ for retained releases sharing a store. Rollback likewise uses the previous
 executable and matching configuration after a successful drain; never rewrite
 frozen request or result bytes to make a version appear compatible.
 
+## Workspace capacity
+
+The publisher sets `minimum_free_bytes` in the deployed runtime policy to the
+free space it needs for a release. New projects, revisions, imports and queued
+calculations use available workspace storage. Under storage pressure, an
+uncommitted command returns HTTP 503 and can be retried with its original key.
+Reads, committed receipts and authorised deletions remain available. Workers
+resume the same queued calculation once the host has space, for example after
+retired deployment artifacts are reclaimed. A storage retry waits for the
+configured retry delay and preserves the calculation's remaining attempts.
+Collection of unreferenced project blobs follows the existing maintenance
+procedure with the queue drained.
+
 ## Expanded clear-roof jobs
 
 The optional `geometric_pv_clear_flat_roof` runtime policy may only be enabled

@@ -1102,13 +1102,6 @@ body:has(.linker-genie-workspace)
 	margin: 0;
 }
 
-/* The verification slot is a live flex child of the panel, so this class would
- * otherwise defeat the native hidden state the proof lifecycle toggles and leave
- * its bottom padding above the composer. */
-.linker-genie-app__status[hidden] {
-	display: none;
-}
-
 /* What Genie read from a file (#236): a card in the answer, like a product
  * card's frame; its buttons are the opening prompts' pills. */
 .linker-genie-attachment {
@@ -2309,26 +2302,4 @@ body:has(.pdp-buy-inner)
 		grid-column: 1 / -1;
 		text-align: left;
 	}
-}
-
-/* The flexible provider mounts into an initially empty flex item. Stretch the
- * owned host instead of shrinking it to its empty max-content width. Reserve
- * the existing control-height token while the provider inserts its own frame;
- * the provider remains responsible for its eventual frame dimensions. */
-.linker-genie-app__status[data-linker-resource-verification-slot]
-	> [data-linker-resource-verification="genie"] {
-	align-self: stretch;
-	flex: 0 0 auto;
-	width: 100%;
-	min-width: 0;
-	min-height: var(--proto-control-height, 44px);
-}
-
-.linker-genie-app__verification {
-	padding-block: 8px;
-}
-.linker-genie-app__verification p {
-	margin: 0 0 8px;
-	color: #5d5d5d;
-	font-size: 14px;
 }

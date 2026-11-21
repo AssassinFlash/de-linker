@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry\Assessment;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use Linker\Commerce\Protection\BusinessCapacity;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
@@ -32,6 +31,9 @@ final class Queue {
 	// Recovery is a real once-per-minute CLI cron, not traffic-driven WP-Cron.
 	// Two missed minute ticks make readiness stale; sending still requires a normal permit.
 	public const RECOVERY_STALE = 120;
+
+	/** Maximum orders examined in one background recovery pass. */
+	public const RECOVERY_BATCH = 192;
 
 	/** Legacy observation display switch; it never bypasses mandatory sending authorization. */
 	public static function enabled(): bool {
@@ -165,8 +167,8 @@ final class Queue {
 		// Cron loads WC email base classes lazily, before invoking native rebuilders.
 		WC()->mailer();
 		\Linker\Commerce\Registration\VatNotice::recover();
-		// Reuse the approved complete native intake envelope, not a new quota.
-		$limit  = array_sum( array_column( BusinessCapacity::LIMITS, 'count' ) );
+		// Page through pending records in the same bounded recovery batches.
+		$limit  = self::RECOVERY_BATCH;
 		$offset = max( 0, (int) get_option( self::RECOVERY_OFFSET, 0 ) );
 		$ids    = self::pending_ids( $offset, $limit );
 		if ( array() === $ids && $offset > 0 ) {

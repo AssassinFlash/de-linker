@@ -33,11 +33,21 @@ final class Form {
 		add_shortcode( 'linker_inquiry_billing', fn (): string => BillingFields::render( $this->flash['fields']['billing'] ?? array() ) );
 		add_shortcode( 'linker_inquiry_restriction', array( new \Linker\Commerce\Presentation\LoginGate(), 'restricted_notice' ) );
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
+		add_action( 'template_redirect', array( $this, 'prepare_form_owner' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
+		add_shortcode( 'linker_inquiry_verification', fn (): string => \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ) ) );
 		add_shortcode( 'linker_inquiry_hidden', array( $this, 'hidden' ) );
 		add_shortcode( 'linker_inquiry_project_notes', array( $this, 'project_notes' ) );
 		add_shortcode( 'linker_inquiry_lines', array( $this, 'lines' ) );
 		add_shortcode( 'linker_inquiry_draft_nonce', array( $this, 'draft_nonce' ) );
+	}
+
+	/** Bind the native checkout form to its owner before rendering the theme. */
+	public function prepare_form_owner(): void {
+		if ( is_checkout() && ! is_wc_endpoint_url() ) {
+			\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
+			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
+		}
 	}
 
 	/**
@@ -97,7 +107,7 @@ final class Form {
 	 * @param string|null         $handle Existing attempt handle, or empty for a fresh authorized attempt.
 	 */
 	public function retry( array $fields, \WP_Error $error, string $locale, ?string $handle = null ): void {
-		if ( null !== $handle && \Linker\Commerce\Protection\Business::enabled() && ! wp_is_uuid( (string) ( $fields['linker_request_id'] ?? '' ), 4 ) ) {
+		if ( null !== $handle && ! wp_is_uuid( (string) ( $fields['linker_request_id'] ?? '' ), 4 ) ) {
 			$fields['linker_request_id'] = wp_generate_uuid4();
 		}
 		$this->flash = array(
@@ -117,6 +127,9 @@ final class Form {
 	 */
 	public function render(): string {
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
+		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
+			return '<p role="alert">' . esc_html( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ) . '</p>';
+		}
 		// This opaque handle reads only server-validated fields from the current Woo session.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only recovery in the native session.
 		if ( array() === $this->flash && isset( $_GET[ CheckoutRetry::HANDLE ] ) ) {
@@ -172,9 +185,7 @@ final class Form {
 				),
 				do_shortcode( self::fields_template() )
 			) ?? '';
-			$replay   = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
-				? \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS
-				: 0;
+			$replay   = \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS;
 			$previous = $this->flash['fields'] ?? array();
 			$error    = $this->value( array( 'key' => 'error' ) );
 			$notes    = '1' === ( $previous['linker_inquiry_receipt_only'] ?? '' )
@@ -292,15 +303,14 @@ final class Form {
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
-		. wp_nonce_field( Handler::nonce_action( $project, $transfer ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
-		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ), $this->flash['grouped'] ?? null );
+		. wp_nonce_field( Handler::nonce_action( $project, $transfer ), Handler::NONCE, true, false ) . PublicGuard::fields();
 	}
 
 	/**
 	 * Woo's own draft update handler consumes these fields.
 	 */
 	public function draft_nonce(): string {
-		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' );
+		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false );
 	}
 
 	/**

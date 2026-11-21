@@ -1,6 +1,6 @@
 <?php
 /**
- * Native optional-summary reservation and shared mutex boundaries (#568).
+ * Native inquiry summaries, recovery and mail handoff.
  *
  * @package Linker\Commerce
  */
@@ -25,9 +25,17 @@ use WC_Order;
  * @coversNothing
  */
 final class SummaryEnvelopeTest extends IntegrationTestCase {
+	/**
+	 * Customer destination unique to this case.
+	 *
+	 * @var string
+	 */
+	private string $recipient;
+
 	/** Local native state is restored, not inferred from a previous fixture. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->recipient = wp_generate_uuid4() . '@example.test';
 		foreach ( array( IntakeStore::OPTION, Queue::ENABLED, Queue::HEARTBEAT ) as $name ) {
 			$old = get_option( $name );
 			$this->later(
@@ -44,6 +52,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 				return array();
 			}
 		);
+		$this->use_empty_mail_queue();
 		update_option( Queue::ENABLED, 'yes' );
 		update_option( Queue::HEARTBEAT, microtime( true ) );
 		$old = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
@@ -86,49 +95,31 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		self::assertSame( 'Keep this customer sentence.', $order->get_customer_note() );
 	}
 
-	/** Full prospective bytes stop before paid work, retaining the native solution draft. */
-	public function test_insufficient_summary_envelope_does_not_dispatch_summary_or_save_a_record(): void {
+	/** Existing inquiries occupying the former shared pool do not veto the customer's write. */
+	public function test_historical_business_occupancy_leaves_the_native_inquiry_available(): void {
 		IntakeStore::edit(
 			static function ( array &$state ): array {
-				$state['business'] = array(
-					'synthetic-debt' => array(
-						'pool'  => 'ordinary',
-						'order' => 0,
-						'bytes' => BusinessCapacity::LIMITS['ordinary']['bytes'] - 1000,
-					),
+				$state['business']['historical'] = array(
+					'id'    => 42,
+					'pool'  => 'ordinary',
+					'bytes' => 40 * MB_IN_BYTES,
 				);
 				IntakeStore::save( $state );
 				return array();
-			}
-		);
-		$calls = 0;
-		$this->summary_filter(
-			static function () use ( &$calls ): array {
-				++$calls;
-				return SummaryEnvelope::maximum();
-			}
-		);
-		$before = wc_get_orders(
-			array(
-				'limit'  => -1,
-				'return' => 'ids',
-			)
+			},
+			1
 		);
 		$result = ( new Sender() )->request( $this->details() );
-		self::assertInstanceOf( \WP_Error::class, $result );
-		self::assertSame( 0, $calls );
-		self::assertSame(
-			$before,
-			wc_get_orders(
-				array(
-					'limit'  => -1,
-					'return' => 'ids',
-				)
-			)
+		self::assertInstanceOf( WC_Order::class, $result );
+		$this->later(
+			static function () use ( $result ): void {
+				$result->delete( true );
+			}
 		);
+		self::assertTrue( $result->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) );
 	}
 
-	/** The same complete summary fits its pre-reservation, with no site lock across I/O. */
+	/** Collecting a summary and delivering mail do not reserve the shared business pool. */
 	public function test_summary_and_actual_mail_transport_never_hold_the_shared_capacity_mutex(): void {
 		$calls = 0;
 		$this->summary_filter(
@@ -136,7 +127,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 				++$calls;
 				self::assert_capacity_mutex_free();
 				$state = get_option( IntakeStore::OPTION );
-				self::assertCount( 1, $state['business'], 'The prospective complete draft is already durably charged.' );
+				self::assertSame( array(), $state['business'] );
 				return SummaryEnvelope::maximum();
 			}
 		);
@@ -148,8 +139,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 			}
 		);
 		self::assertSame( 1, $calls );
-		$key = $order->get_meta( BusinessCapacity::KEY );
-		self::assertSame( $order->get_id(), get_option( IntakeStore::OPTION )['business'][ $key ]['order'] );
+		self::assertSame( '', $order->get_meta( BusinessCapacity::KEY ) );
 		self::assertSame( SummaryEnvelope::maximum(), $order->get_meta( Sender::SUMMARY_META ) );
 		$transport = 0;
 		$observer  = static function () use ( &$transport ): void {
@@ -168,42 +158,40 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		self::assertSame( 1, $transport );
 	}
 
-	/** Review keeps optional summaries while freeing the shared lock for other customers. */
-	public function test_held_review_summary_runs_outside_shared_mutex_and_retry_recovers_the_same_record(): void {
-		$previous_ledger = get_option( \Linker\Commerce\Protection\Ledger::OPTION );
-		delete_option( \Linker\Commerce\Protection\Ledger::OPTION );
-		$this->later(
-			static function () use ( $previous_ledger ): void {
-				false === $previous_ledger ? delete_option( \Linker\Commerce\Protection\Ledger::OPTION ) : update_option( \Linker\Commerce\Protection\Ledger::OPTION, $previous_ledger, false );
-			}
-		);
-		$id       = wp_generate_uuid4();
-		$fp       = hash( 'sha256', $id );
-		$identity = new \Linker\Commerce\Protection\Identity( str_repeat( 'a', 64 ), '' );
-		$calls    = 0;
+	/** The customer recovers the saved summary and a single receipt after a lost response. */
+	public function test_retry_keeps_the_same_order_summary_and_receipt(): void {
+		$calls = 0;
 		$this->summary_filter(
-			static function () use ( &$calls, $id ): array {
+			static function () use ( &$calls ): array {
 				++$calls;
 				self::assert_capacity_mutex_free();
-				self::assertTrue( get_option( IntakeStore::OPTION )['entries'][ $id ]['creating'] );
 				return SummaryEnvelope::maximum();
 			}
 		);
-		$work   = fn () => ( new Sender() )->request( $this->details() );
+		$intent = wp_generate_uuid4();
+		$owner  = new \Linker\Commerce\Protection\Identity( wp_generate_uuid4(), '' );
+		$send   = fn () => \Linker\Commerce\Protection\Business::write_once(
+			$intent,
+			'inquiry',
+			array( 'message' => 'Please review our solution.' ),
+			fn () => ( new Sender() )->request( $this->details() ),
+			static fn (): bool => true,
+			$owner
+		);
 		$before = self::newest_mail_job();
-		$order  = \Linker\Commerce\Protection\Intake::run( 'verification', 'inquiry', $id, $fp, $identity, array(), array( new \Linker\Commerce\Protection\Allowance( 'synthetic_review', $id, 2, HOUR_IN_SECONDS ) ), array(), array(), $work );
+		$order  = $send();
 		self::assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				$order->delete( true );
 			}
 		);
-		self::assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
-		self::assertSame( SummaryEnvelope::maximum(), $order->get_meta( Sender::SUMMARY_META ) );
-		$retry = \Linker\Commerce\Protection\Intake::run( 'verification', 'inquiry', $id, $fp, $identity, array(), array( new \Linker\Commerce\Protection\Allowance( 'synthetic_review', $id, 2, HOUR_IN_SECONDS ) ), array(), array(), $work );
+		$retry = $send();
 		self::assertInstanceOf( WC_Order::class, $retry );
 		self::assertSame( $order->get_id(), $retry->get_id() );
+		self::assertSame( SummaryEnvelope::maximum(), $retry->get_meta( Sender::SUMMARY_META ) );
 		self::assertSame( 1, $calls );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
 		self::assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $before ) );
 	}
 
@@ -267,7 +255,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic summary fixture',
-				'email'   => self::TESTER,
+				'email'   => $this->recipient,
 				'message' => 'Please review our solution.',
 				'consent' => '1',
 				'lang'    => 'en',

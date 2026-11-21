@@ -78,6 +78,16 @@ final class ProjectDelete {
 		} catch ( \Throwable ) {
 			return Failure::make( 'inquiry_unavailable', 503 );
 		}
-		return $taken && null !== $reply ? $reply : Failure::make( 'inquiry_unavailable', 503 );
+		if ( ! $taken || null === $reply ) {
+			return Failure::make( 'inquiry_unavailable', 503 );
+		}
+		if ( is_wp_error( $reply ) || 400 <= $reply['status'] ) {
+			return $reply;
+		}
+		$result = json_decode( $reply['body'], true );
+		if ( 200 !== $reply['status'] || ! str_starts_with( $reply['type'], 'application/json' ) || true !== ( $result['deleted'] ?? null ) || ( $result['project_id'] ?? null ) !== $command['project_id'] || ( $result['revision'] ?? null ) !== $command['expected_revision'] ) {
+			return Failure::make( 'invalid_reply', 502 );
+		}
+		return $reply;
 	}
 }

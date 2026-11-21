@@ -1,5 +1,7 @@
 # Public business and account guards
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Issue #520; accepted policy #507/#508; shared mechanism #519 / PR #523.
 This specification describes this branch. Activation and production readback
 belong to the combined #522 rollout, not this ticket.

@@ -9,20 +9,14 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use WP_Error;
+
 /** Siteverify's result never grants account, conversation or private-data access. */
 final class Turnstile {
 	// Official server-side validation, fixed research #506, captured 2026-10-21.
 	private const ENDPOINT    = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 	private const TOKEN_LIMIT = 2048;
-	/**
-	 * Provider round-trip ceiling. Measured 2026-11-05 from this network:
-	 * fourteen consecutive siteverify calls took 2.45 s to 3.47 s, so the
-	 * earlier three-second bound cut off normal provider latency and turned
-	 * genuine customer challenges into `unavailable`. Eight seconds covers
-	 * that distribution and stays under both this endpoint's verification
-	 * lease (Protection\Controller::LEASE, ten seconds) and the client's
-	 * fifteen-second request bound (src/protection/client.ts NETWORK_MS).
-	 */
+	// The measured provider round trip from this deployment is 2.45–3.47 seconds.
 	private const TIMEOUT = 8;
 
 	/**
@@ -33,33 +27,50 @@ final class Turnstile {
 	public function __construct( private readonly Configuration $configuration ) {}
 
 	/**
-	 * A retry uses its original UUID; optional remoteip is deliberately omitted.
+	 * Check a native submission immediately before its business action.
 	 *
-	 * @param string $token Client challenge response, never logged or stored.
-	 * @param string $action Expected server-selected action.
-	 * @param string $request_id Stable UUID for this verification attempt.
+	 * @param string              $action Server-selected form action.
+	 * @param array<string,mixed> $submitted Native form or REST fields.
+	 * @return true|WP_Error
 	 */
-	public function verify( string $token, string $action, string $request_id ): Verification {
-		if ( ! $this->configuration->ready() ) {
+	public static function check( string $action, array $submitted ): true|WP_Error {
+		if ( ! Configuration::verification_required( $action ) ) {
+			return new WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) );
+		}
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		$token = $submitted['cf-turnstile-response'] ?? '';
+		if ( ! is_string( $token ) || '' === $token ) {
+			return new WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) );
+		}
+		$result = ( new self( Configuration::current() ) )->verify( $token, $action );
+		return match ( $result->status ) {
+			'valid' => true,
+			'unavailable' => new WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) ),
+			default => new WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) ),
+		};
+	}
+
+	/**
+	 * Bind the one-time provider token to this hostname and form.
+	 *
+	 * @param string $token  Native cf-turnstile-response.
+	 * @param string $action Server-selected anonymous submit action.
+	 */
+	public function verify( string $token, string $action ): Verification {
+		if ( ! $this->configuration->configured() ) {
 			return new Verification( 'unavailable', 'configuration' );
 		}
-		if ( '' === $token || strlen( $token ) > self::TOKEN_LIMIT || 1 !== preg_match( '/\A[a-zA-Z0-9_-]{1,32}\z/', $action ) || ! wp_is_uuid( $request_id, 4 ) ) {
+		if ( '' === $token || strlen( $token ) > self::TOKEN_LIMIT || ! Configuration::verification_required( $action ) ) {
 			return new Verification( 'invalid', 'input' );
-		}
-		if ( defined( 'LINKER_TURNSTILE_LOCAL_VERIFY' ) && LINKER_TURNSTILE_LOCAL_VERIFY ) {
-			// Local e2e determinism: the e2e Turnstile profile pairs the
-			// official always-pass dummy keys with this constant, so the
-			// siteverify round-trip stops depending on this machine's
-			// network (the dummy keys pass at Cloudflare anyway; production
-			// never defines the constant and always calls the provider).
-			return new Verification( 'valid', 'verified' );
 		}
 		$response = wp_remote_post(
 			self::ENDPOINT,
 			array(
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 0,
-				'body'        => $this->configuration->verification_body( $token, $request_id ),
+				'body'        => $this->configuration->verification_body( $token ),
 			)
 		);
 		if ( is_wp_error( $response ) ) {
