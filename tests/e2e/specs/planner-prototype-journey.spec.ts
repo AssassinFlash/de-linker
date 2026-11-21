@@ -321,6 +321,15 @@ for (const lang of ['en', 'de'] as const) {
 				exact: true,
 			});
 			await expect(preview).toBeVisible({ timeout: 90_000 });
+			const logoPicker = workspace.locator(
+				'.sc-report-logo .sc-file-picker'
+			);
+			await expect(logoPicker.locator('.sc-file-button')).toHaveText(
+				lang === 'de' ? 'Logo auswählen' : 'Choose logo'
+			);
+			await expect(logoPicker.locator('.sc-file-name')).toHaveText(
+				'test-logo.png'
+			);
 			await page.evaluate(() =>
 				window.scrollTo({ top: 0, behavior: 'instant' })
 			);

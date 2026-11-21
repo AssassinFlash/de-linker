@@ -84,21 +84,6 @@
     padding-block-start: var(--proto-space-4);
     border-block-start: 1px solid var(--proto-color-line);
   }
-  .sc-report-logo input[type="file"] {
-    width: 100%;
-    max-width: 100%;
-    padding: var(--proto-space-2);
-    font-size: var(--proto-size-sm);
-  }
-  .sc-report-logo input::file-selector-button {
-    border: 1px solid var(--proto-color-line);
-    border-radius: var(--proto-radius-sm);
-    background: var(--proto-neutral-0);
-    padding: var(--proto-space-1) var(--proto-space-2);
-    margin-inline-end: var(--proto-space-2);
-    color: inherit;
-    cursor: pointer;
-  }
   .sc-report-workspace .sc-report-versions {
     display: flex; align-items: stretch; flex-wrap: wrap;
     gap: var(--proto-space-2); margin-block: var(--proto-space-4);

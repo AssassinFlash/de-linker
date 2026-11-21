@@ -809,7 +809,7 @@ msgstr "Anderes Foto auswählen"
 msgid "Choose file"
 msgstr "Datei auswählen"
 
-#: src/configurator/report/ReportView.tsx:89 build/configurator.js
+#: src/configurator/report/ReportView.tsx:89 build/configurator.js ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "Choose logo"
 msgstr "Logo auswählen"
 

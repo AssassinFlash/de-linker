@@ -539,7 +539,7 @@ export function ReviewProposal({
 	const selected = history?.selected != null;
 	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
-	const [logo, setLogo] = useState<string | null>(null),
+	const [logo, setLogo] = useState<{ name: string; data: string } | null>(null),
 		[logoError, setLogoError] = useState(false),
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
@@ -572,40 +572,52 @@ export function ReviewProposal({
 		<div className="sc-report-logo">
 			<label className="sc-field">
 				<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-				<input
-					ref={logoInput}
-					type="file"
-					accept="image/png,image/jpeg"
-					disabled={blocked || operations.busy}
-					onChange={(event) => {
-						resetLogo();
-						const file = event.currentTarget.files?.[0];
-						if (!file) return;
-						if (
-							file.size > 500000 ||
-							!["image/png", "image/jpeg"].includes(file.type)
-						) {
-							setLogoError(true);
-							return;
-						}
-						const next = new FileReader();
-						reader.current = next;
-						setReading(true);
-						next.onload = () => {
-							if (reader.current === next && typeof next.result === "string") {
-								setLogo(next.result);
-								setReading(false);
-							}
-						};
-						next.onerror = () => {
-							if (reader.current === next) {
+				<span className="sc-file-picker">
+					<span className="sc-file-button" aria-hidden="true">
+						{__("Choose logo", "linker-tools")}
+					</span>
+					<span className="sc-file-name" aria-hidden="true">
+						{logo?.name ?? __("No file chosen", "linker-tools")}
+					</span>
+					<input
+						ref={logoInput}
+						aria-label={__("Your logo on the PDF (optional)", "linker-tools")}
+						type="file"
+						accept="image/png,image/jpeg"
+						disabled={blocked || operations.busy}
+						onChange={(event) => {
+							resetLogo();
+							const file = event.currentTarget.files?.[0];
+							if (!file) return;
+							if (
+								file.size > 500000 ||
+								!["image/png", "image/jpeg"].includes(file.type)
+							) {
 								setLogoError(true);
-								setReading(false);
+								return;
 							}
-						};
-						next.readAsDataURL(file);
-					}}
-				/>
+							const next = new FileReader();
+							reader.current = next;
+							setReading(true);
+							next.onload = () => {
+								if (
+									reader.current === next &&
+									typeof next.result === "string"
+								) {
+									setLogo({ name: file.name, data: next.result });
+									setReading(false);
+								}
+							};
+							next.onerror = () => {
+								if (reader.current === next) {
+									setLogoError(true);
+									setReading(false);
+								}
+							};
+							next.readAsDataURL(file);
+						}}
+					/>
+				</span>
 				<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
 				{logoError && (
 					<small role="alert">
@@ -618,7 +630,9 @@ export function ReviewProposal({
 			</label>
 			{(logo || logoError || reading) && (
 				<div className="sc-actions">
-					{logo && <img src={logo} alt={__("Report logo", "linker-tools")} />}
+					{logo && (
+						<img src={logo.data} alt={__("Report logo", "linker-tools")} />
+					)}
 					<button
 						type="button"
 						className="sc-button"
@@ -899,7 +913,7 @@ export function ReviewProposal({
 							type="button"
 							className="sc-button sc-primary"
 							disabled={disabled}
-							onClick={() => generate(logo)}
+							onClick={() => generate(logo?.data ?? null)}
 						>
 							{__("Generate project report", "linker-tools")}
 						</button>
@@ -984,7 +998,7 @@ export function ReviewProposal({
 												type="button"
 												className="sc-button"
 												disabled={disabled}
-												onClick={() => generate(logo)}
+												onClick={() => generate(logo?.data ?? null)}
 											>
 												{reportLanguageDiffers(report.locale, locale)
 													? locale.startsWith("de")
