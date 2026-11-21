@@ -51,12 +51,26 @@ import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
 import {
 	PLANNER_NAVIGATION,
+	publicProjectView,
 	replacePlannerLocation,
 } from "../data/plannerLocation.ts";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
 	return value && /^[a-f0-9]{32}$/.test(value) ? value : null;
+}
+function entryRoute(url: URL): string {
+	if (url.hash) return url.hash.slice(1);
+	if (url.searchParams.has("project")) return "";
+	if (publicProjectView(url.searchParams)) return "sc-project";
+	const standaloneRetrofit =
+		url.searchParams.get("scope") === "storage_addition" &&
+		!ENTRY_QUERY_KEYS.some(
+			(key) => key !== "scope" && url.searchParams.has(key),
+		);
+	return url.searchParams.get("compare") === "preliminary" || standaloneRetrofit
+		? "sc-preliminary-options"
+		: "";
 }
 function preliminaryRoute(route: string): boolean {
 	return (
@@ -109,14 +123,9 @@ export function Workspace({
 			: "",
 	);
 	const [newProjectOpen, setNewProjectOpen] = useState(false);
-	const [route, setRoute] = useState(
-		() =>
-			location.hash.slice(1) ||
-			(!currentProject() &&
-			new URL(location.href).searchParams.get("compare") === "preliminary"
-				? "sc-preliminary-options"
-				: ""),
-	);
+	const [route, setRoute] = useState(() => entryRoute(new URL(location.href)));
+	const publicView = publicProjectView(new URL(location.href).searchParams);
+
 	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
 		currentGuidedRetryRevision,
 	);
@@ -181,7 +190,7 @@ export function Workspace({
 	}, [cache, session]);
 	useEffect(() => {
 		const restore = () => {
-			const destination = location.hash.slice(1);
+			const destination = entryRoute(new URL(location.href));
 			if (!preliminaryRoute(route) && !preliminaryRoute(destination)) return;
 			const id = currentProject();
 			if (
@@ -205,7 +214,7 @@ export function Workspace({
 		(id: string | null, destination = "", guided = false) => {
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
-			const from = url.hash.slice(1);
+			const from = entryRoute(url);
 			if (guided) url.searchParams.set("guided", "inquiry");
 			else if (
 				id !== url.searchParams.get("project") ||
@@ -227,6 +236,7 @@ export function Workspace({
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
 			url.searchParams.delete("compare");
+			url.searchParams.delete("view");
 			url.searchParams.delete("energy_view");
 			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
@@ -664,6 +674,8 @@ export function Workspace({
 			: "workspace";
 	function showCreationPage(anchor: "sc-project" | "sc-preliminary-options") {
 		const url = new URL(location.href);
+		url.searchParams.delete("view");
+		url.searchParams.set("compare", "preliminary");
 		url.hash = anchor;
 		window.history.pushState(null, "", url);
 		setRoute(anchor);
@@ -775,8 +787,15 @@ export function Workspace({
 								route === "sc-project"
 							}
 							workspaceHeading={directEntry}
+							equipmentFirst={publicView === "equipment"}
 							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
+							{...(route === "sc-project" &&
+								new URL(location.href).searchParams.get("compare") ===
+									"preliminary" && {
+									returnToComparison: () =>
+										showCreationPage("sc-preliminary-options"),
+								})}
 
 							creationPending={creationPending}
 							beginCreation={() => beginCreation(entryKey)}

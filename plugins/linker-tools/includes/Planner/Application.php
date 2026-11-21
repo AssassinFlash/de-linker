@@ -106,11 +106,24 @@ final class Application {
 	/** Register only; the module loads where its shortcode is rendered. */
 	public function register(): void {
 		add_action( 'init', array( $this, 'assets' ) );
+		add_action( 'template_redirect', array( $this, 'inquiry_entry' ) );
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
 		add_filter( 'load_script_translations', array( $this, 'filter_translations' ), 10, 4 );
 		add_action( 'wp_footer', array( $this, 'print_translation_loader' ), 22 );
 		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
+	}
+
+	/** Open the native translated Woo inquiry from the public configurator showcase. */
+	public function inquiry_entry(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Exact public view discriminator, never written or rendered.
+		if ( 'inquiry' !== ( $_GET['view'] ?? null ) || isset( $_GET['project'] ) || ! is_page() || ! function_exists( 'wc_get_checkout_url' ) ) {
+			return;
+		}
+		if ( get_permalink( get_queried_object_id() ) === PageUrls::translated( 'solution-configurator' ) ) {
+			wp_safe_redirect( wc_get_checkout_url() );
+			exit;
+		}
 	}
 
 	/**

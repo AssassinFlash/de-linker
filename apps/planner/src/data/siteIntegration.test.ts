@@ -263,3 +263,17 @@ test("language switches keep a product proposal and do not treat roof as a saved
 	assert.equal(saved.searchParams.has("product_id"), false);
 	assert.equal(saved.searchParams.has("nonce"), false);
 });
+
+test("public showcase links retain their equipment or project view in the other language", () => {
+	for (const view of ["equipment", "project"])
+		assert.equal(
+			new URL(
+				projectLanguageUrl(
+					"/de/",
+					"https://site.example/en/?view=" + view,
+					null,
+				),
+			).searchParams.get("view"),
+			view,
+		);
+});

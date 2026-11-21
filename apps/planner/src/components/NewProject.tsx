@@ -59,7 +59,10 @@ import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
 import { ProjectHeading } from "./configurator/ProjectHeading.tsx";
 import { ProjectSummary, projectFacts } from "./configurator/ProjectFacts.tsx";
 import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
-import { ProjectEquipment } from "./configurator/ProjectEquipment.tsx";
+import {
+	changeExistingSystem,
+	ProjectEquipment,
+} from "./configurator/ProjectEquipment.tsx";
 import {
 	AnnualElectricityUse,
 	HomepageDemand,
@@ -96,6 +99,7 @@ export function NewProject({
 	compareOnLoad = false,
 	directComparison = false,
 	workspaceHeading = false,
+	equipmentFirst = false,
 	opened,
 	enterDetails,
 	returnToComparison,
@@ -124,6 +128,7 @@ export function NewProject({
 	compareOnLoad?: boolean;
 	directComparison?: boolean;
 	workspaceHeading?: boolean;
+	equipmentFirst?: boolean;
 	opened?: () => void;
 	enterDetails?: () => void;
 	returnToComparison?: () => void;
@@ -509,6 +514,13 @@ export function NewProject({
 			useAddress = false,
 			openRoof = false,
 			useRoofPlan = false,
+			keepInverter,
+		}: {
+			discardProfile?: boolean;
+			useAddress?: boolean;
+			openRoof?: boolean;
+			useRoofPlan?: boolean;
+			keepInverter?: boolean;
 		} = {},
 	) {
 		const roofPlan = useRoofPlan || destination.current === "roof-plan";
@@ -633,7 +645,10 @@ export function NewProject({
 			}
 			if (lifetime.current !== instance) return;
 			if (!intent.current) {
-				let submittedInputs = inputs;
+				let submittedInputs =
+					keepInverter === undefined
+						? inputs
+						: changeExistingSystem(inputs, { keep_inverter: keepInverter });
 				if ((roof && !roofPlan) || (compareOnSubmit && useAddress)) {
 					try {
 						if (roof && config) {
@@ -996,6 +1011,9 @@ export function NewProject({
 						inputs={inputs}
 						disabled={disabled || retry}
 						choose={(direction) => void submit(direction)}
+						chooseRetrofit={(keepInverter) =>
+							void submit("storage_addition", { keepInverter })
+						}
 						action={
 							enterDetails && (
 								<div className="sc-actions">
@@ -1339,10 +1357,12 @@ export function NewProject({
 						roofAction={mapAction}
 						edit={edit}
 						creation={{
-							...(returnToComparison && {
-								returnToComparison,
-								comparisonDisabled: invalidDemand.has("annual"),
-							}),
+							...(returnToComparison &&
+								!profileForm.file &&
+								Object.keys(inputs).every((key) => key === "brief") && {
+									returnToComparison,
+									comparisonDisabled: invalidDemand.has("annual"),
+								}),
 							title,
 							changeTitle: setTitle,
 							locked: Boolean(intent.current),
@@ -1402,6 +1422,7 @@ export function NewProject({
 								/>
 							)
 						}
+						equipmentFirst={equipmentFirst}
 						existingEquipment={
 							config && (
 								<ProjectEquipment
@@ -1410,6 +1431,7 @@ export function NewProject({
 									scope={session.query_scope}
 									disabled={busy || Boolean(intent.current)}
 									edit={edit}
+									initiallyOpen={equipmentFirst}
 									intake={Boolean(homeComparison)}
 								/>
 							)

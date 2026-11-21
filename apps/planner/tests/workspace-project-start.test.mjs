@@ -908,8 +908,13 @@ test("visitors with project data can open setup from the comparison and keep the
 		purpose.value = "backup";
 		purpose.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
+	const basis = document.querySelector('select[name="annual_load_basis"]');
+	await act(async () => {
+		basis.value = "user_estimate";
+		basis.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
 	const next = [...document.querySelectorAll("button")].find(
-		(item) => item.textContent === "Continue with storage",
+		(item) => item.textContent === "Compare systems",
 	);
 	await act(async () => {
 		next.click();
@@ -1936,6 +1941,14 @@ async function compareRetrofit(t, goal) {
 				},
 				annual_load: { kwh: 6200, basis: "bill_total", source_note: "" },
 			},
+			...(goal === "backup" && {
+				existing_system: {
+					schema_version: 1,
+					name: "Workshop inverter",
+					inverter_power_kw: 7.5,
+					keep_inverter: true,
+				},
+			}),
 			equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 8 },
 		},
 		goal,
@@ -2035,7 +2048,7 @@ async function compareRetrofit(t, goal) {
 			".sc-preliminary-review:not([hidden]) form.linker-inquiry-form",
 		),
 	);
-	assert.equal(review.revision, 2);
+	assert.equal(review.revision, goal === "backup" ? 1 : 2);
 	assert.equal(review.project_id, projectId);
 	assert.equal(review.report_run_id, undefined);
 	assert.deepEqual(project.inputs.brief, inputs.brief);
@@ -2047,9 +2060,13 @@ async function compareRetrofit(t, goal) {
 	);
 }
 
-test("the bare configurator compares a retrofit and opens its Woo inquiry with no invented project data", async (t) => {
+for (const view of ["", "project", "equipment"])
+	test(`${view || "bare"} entry compares a retrofit and opens its Woo inquiry`, (t) =>
+		compareEntryRetrofit(t, view));
+
+async function compareEntryRetrofit(t, view) {
 	const fixture = setupDom();
-	history.replaceState(null, "", "/workspace/");
+	history.replaceState(null, "", "/workspace/" + (view ? "?view=" + view : ""));
 	const style = Object.getOwnPropertyDescriptor(globalThis, "getComputedStyle");
 	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
 	t.after(() => {
@@ -2138,7 +2155,12 @@ test("the bare configurator compares a retrofit and opens its Woo inquiry with n
 	await until(() => document.querySelector(selector));
 	const scope = document.querySelector(selector);
 	const equipment = scope.form.querySelector("details.sc-project-equipment");
-	assert.equal(equipment.open, false);
+	assert.equal(equipment.open, view === "equipment");
+	if (view === "equipment")
+		assert.ok(
+			equipment.compareDocumentPosition(scope) &
+				window.Node.DOCUMENT_POSITION_FOLLOWING,
+		);
 	assert.equal(
 		equipment.querySelector('button[aria-pressed="true"]').textContent,
 		"Single system",
@@ -2173,4 +2195,4 @@ test("the bare configurator compares a retrofit and opens its Woo inquiry with n
 	);
 	assert.equal(inquiry.project_id, project.id);
 	assert.equal(inquiry.revision, 2);
-});
+}

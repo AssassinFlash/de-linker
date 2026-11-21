@@ -14,6 +14,21 @@ const energyViews = [
 ] as const;
 export type EnergyView = (typeof energyViews)[number];
 
+/** Public showcase views open the relevant part of the new-project form. */
+export function publicProjectView(
+	params: URLSearchParams,
+): "equipment" | "project" | null {
+	if (
+		params.has("project") ||
+		params.has("projects") ||
+		params.has("brief") ||
+		params.has("saved_solution")
+	)
+		return null;
+	const view = params.get("view");
+	return view === "equipment" || view === "project" ? view : null;
+}
+
 /** A saved result/comparison takes precedence over a form-view preference. */
 export function initialEnergyView(url: URL): EnergyView {
 	if (url.searchParams.has("compare")) return "comparison";

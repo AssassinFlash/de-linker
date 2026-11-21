@@ -32,7 +32,9 @@ function demands(inputs: JsonObject) {
 export function needsPhaseConfirmation(inputs: JsonObject) {
 	return (
 		demands(inputs).equipment.grid_phase === null &&
-		!retainsUnverifiedInverter(inputs)
+		(!retainsUnverifiedInverter(inputs) ||
+			!inputs.brief ||
+			!hasComparisonDemand(inputs, readBrief(inputs.brief)))
 	);
 }
 

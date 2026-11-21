@@ -1,7 +1,11 @@
 import { savedSolutionId } from "../domain/savedSolution.ts";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { useEffect } from "react";
-import { initialEnergyView, PLANNER_NAVIGATION } from "./plannerLocation.ts";
+import {
+	initialEnergyView,
+	PLANNER_NAVIGATION,
+	publicProjectView,
+} from "./plannerLocation.ts";
 import {
 	armHashReveal,
 	disarmHashReveal,
@@ -63,6 +67,8 @@ export function projectLanguageUrl(
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
 	const brief = id === null ? projectBriefId(page.searchParams) : null;
 	if (brief !== null && brief !== "") target.searchParams.set("brief", brief);
+	const publicView = id === null ? publicProjectView(page.searchParams) : null;
+	if (publicView) target.searchParams.set("view", publicView);
 	const hints = id === null ? readEntryHints(page.searchParams) : null;
 	if (hints?.invalid) {
 		for (const key of ENTRY_QUERY_KEYS) {
