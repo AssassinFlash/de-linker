@@ -573,3 +573,31 @@ for (const locale of ['en', 'de'] as const) {
 		});
 	}
 }
+
+for (const [faq, reference] of [
+	['/faq-download/', 'invoice or order reference'],
+	['/de/faq-dokumente/', 'Rechnungs- oder Bestellreferenz'],
+] as const) {
+	test(`warranty contact includes the FAQ the visitor read: ${faq}`, async ({
+		page,
+	}) => {
+		const source = new URL(faq, instance().url).href;
+		await page.goto(source);
+		const answer = page
+			.locator('details.linker-library-qa')
+			.filter({ hasText: reference });
+		await answer.locator('summary').click();
+		await answer.getByRole('link').click();
+		await expect(page.locator('select[name="intent"]')).toHaveValue(
+			'support'
+		);
+		await expect(
+			page.locator('.linker-contact-selection__summary a')
+		).toHaveAttribute('href', source);
+		const included = page.locator(
+			'input[type="checkbox"][name="linker_contact_selection"]'
+		);
+		await expect(included).toBeChecked();
+		expect(JSON.parse(await included.inputValue()).source).toBe(source);
+	});
+}
