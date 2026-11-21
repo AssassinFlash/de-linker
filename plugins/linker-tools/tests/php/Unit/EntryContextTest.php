@@ -160,12 +160,26 @@ final class EntryContextTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 17 ) );
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => 'private-auth-token' ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'private-site-salt' ) );
-		$response = $this->entry()->read( $this->request() );
+		$response = $this->entry( array( 0, 0 ) )->read( $this->request() );
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertSame( array( 'scope' ), array_keys( $response->get_data() ) );
 		$this->assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
 		$this->assertSame( 'Cookie', $response->get_headers()['Vary'] );
 		$this->assertStringNotContainsString( 'private-auth-token', $response->get_data()['scope'] );
+	}
+
+	/** An established guest's scope read allocates no cold-claim storage. */
+	public function test_existing_browser_can_read_scope_with_no_new_browser_allocation(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'unit-test-private' ) );
+		$_COOKIE[ Conversations::BROWSER_COOKIE ] = str_repeat( 'b', 32 );
+		try {
+			$response = $this->entry( array( 0, 0 ) )->read( $this->request() );
+			$this->assertInstanceOf( WP_REST_Response::class, $response );
+			$this->assertSame( array(), $this->db->queries );
+		} finally {
+			unset( $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+		}
 	}
 
 	/**
@@ -174,6 +188,7 @@ final class EntryContextTest extends TestCase {
 	 * reaching the scope would fail this test by itself).
 	 */
 	public function test_a_spent_connection_allowance_is_a_429(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$refusal = $this->entry( array( 0 ) )->read( $this->request() );
 
 		$this->assertInstanceOf( WP_Error::class, $refusal );
@@ -183,6 +198,7 @@ final class EntryContextTest extends TestCase {
 
 	/** The site-wide daily cap spent: the same plain 429. */
 	public function test_a_spent_site_cap_is_the_same_429(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$refusal = $this->entry( array( 1, 0 ) )->read( $this->request() );
 
 		$this->assertInstanceOf( WP_Error::class, $refusal );

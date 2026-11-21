@@ -25,7 +25,7 @@ final class ResourcePolicyTest extends TestCase {
 	/** Account activity uses provider and concurrent work capacity, independent of earlier finished turns. */
 	public function test_account_turn_reserves_only_running_work(): void {
 		$identity = new Identity( str_repeat( 'a', 64 ), str_repeat( 'b', 64 ) );
-		$plan     = ResourcePolicy::plan( 'genie', $identity, 1 );
+		$plan     = ResourcePolicy::plan( 'genie', $identity );
 		$this->assertNotEmpty( $plan['limits'] );
 		foreach ( $plan['limits'] as $limit ) {
 			$this->assertSame( 0, $limit->window );
@@ -34,6 +34,13 @@ final class ResourcePolicyTest extends TestCase {
 		foreach ( array( 'conversation_create', 'solution_save' ) as $action ) {
 			$this->assertSame( array(), ResourcePolicy::plan( $action, $identity )['limits'] );
 		}
+	}
+
+	/** Guest chat uses running-work slots and the provider's actual resource budget. */
+	public function test_guest_turn_does_not_charge_past_messages_or_uploads(): void {
+		$guest = new Identity( str_repeat( 'a', 64 ), '' );
+		$plan  = ResourcePolicy::plan( 'genie', $guest );
+		$this->assertSame( array( 'genie_busy', 'genie_site_busy' ), array_map( static fn ( Allowance $limit ): string => $limit->name, $plan['limits'] ) );
 	}
 
 	/** Guest conversations and saved snapshots consume storage write capacity. */

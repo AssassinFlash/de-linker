@@ -74,16 +74,23 @@ final class Admission {
 			return $this->refusal( $quota );
 		}
 		list( $name, $guest, $account, $window, $site ) = $policy;
-		$signed = '' !== $quota->account;
-		$limits = array( new Allowance( $name, $quota->browser, $signed ? $account : $guest, $window ), new Allowance( $name . '_site', 'site', $site, $window ) );
-		$carry  = array();
+		$signed        = '' !== $quota->account;
+		$owned_project = $signed && 'user' === $principal->kind && in_array( $path, array( 'projects/create', 'battery/scenario' ), true );
+		$limits        = array();
+		$carry         = array();
+		if ( ! $owned_project ) {
+			$limits[] = new Allowance( $name, $quota->browser, $signed ? $account : $guest, $window );
+			$limits[] = new Allowance( $name . '_site', 'site', $site, $window );
+		}
 		if ( $signed ) {
 			$target   = new Allowance( $name, $quota->account, $account, $window );
 			$limits[] = $target;
-			$carry[]  = array(
-				'source' => new Allowance( $name, $quota->browser, $guest, $window ),
-				'target' => $target,
-			);
+			if ( ! $owned_project ) {
+				$carry[] = array(
+					'source' => new Allowance( $name, $quota->browser, $guest, $window ),
+					'target' => $target,
+				);
+			}
 		}
 		$fingerprint = $this->fingerprint( $principal, $path, $known->command_scope, $known->command_sha256 );
 		$id          = $this->operation_id( $principal, $command['key'], $quota->binding(), $fingerprint );

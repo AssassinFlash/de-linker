@@ -41,24 +41,17 @@ final class ResourcePolicy {
 	 *
 	 * @param string   $action Server-selected resource operation.
 	 * @param Identity $identity Native browser and account identity.
-	 * @param int      $files Number of accepted attachment descriptors.
 	 * @return array{limits:list<Allowance>,carry:array{}}
 	 */
-	public static function plan( string $action, Identity $identity, int $files = 0 ): array {
+	public static function plan( string $action, Identity $identity ): array {
 		$guest  = '' === $identity->account;
 		$limits = array();
 		if ( 'genie' === $action ) {
-			if ( $guest ) {
-				$limits[] = new Allowance( 'genie_day', $identity->browser, 30, DAY_IN_SECONDS );
-				$limits[] = new Allowance( 'genie_burst', $identity->browser, 10, 10 * MINUTE_IN_SECONDS );
-			} else {
+			if ( ! $guest ) {
 				$limits[] = new Allowance( 'genie_busy', $identity->account, 1, 0 );
 			}
 			$limits[] = new Allowance( 'genie_busy', $identity->browser, 1, 0 );
 			$limits[] = new Allowance( 'genie_site_busy', 'site', 2, 0 );
-			if ( $guest && $files > 0 ) {
-				$limits[] = new Allowance( 'genie_files_day', $identity->browser, 10, DAY_IN_SECONDS, $files );
-			}
 		} elseif ( $guest && in_array( $action, array( 'solution_save', 'conversation_create' ), true ) ) {
 			$limits[] = new Allowance( 'tool_write_day', $identity->browser, 500, DAY_IN_SECONDS );
 			$limits[] = new Allowance( 'tool_write_site_day', 'site', 2000, DAY_IN_SECONDS );

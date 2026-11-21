@@ -22,7 +22,7 @@ use WP_REST_Response;
 final class EntryContext {
 
 	/**
-	 * Entry-context reads one connection may send per hour.
+	 * New guest browser claims one connection may allocate per hour.
 	 *
 	 * One request every two seconds, sustained: far past any human browser
 	 * (the client coalesces concurrent bootstraps and re-reads identity only
@@ -45,7 +45,7 @@ final class EntryContext {
 	public const CONNECTION_HOURLY = 1800;
 
 	/**
-	 * Entry-context reads the whole site takes per day. The site's entire
+	 * New anonymous browser claims the option store can accept per day. The site's entire
 	 * history minted ≈786 browser keys (#906 §2.2); 20 000 is ~200× that
 	 * traffic and bounds the option-table churn the hourly sweep then
 	 * reclaims.
@@ -126,11 +126,13 @@ final class EntryContext {
 		if ( ! Origin::allows( $request ) ) {
 			return Failure::make( 'origin', 403 );
 		}
-		$who = FormGuard::address();
-		if ( ! $this->connection->take( $who ) || ! $this->site->take( '' ) ) {
-			return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
+		$conversations = new Conversations();
+		if ( $conversations->needs_browser_claim() ) {
+			if ( ! $this->connection->take( FormGuard::address() ) || ! $this->site->take( '' ) ) {
+				return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
+			}
 		}
-		$response = new WP_REST_Response( array( 'scope' => ( new Conversations() )->entry_scope( (string) $request->get_param( 'tab' ) ) ) );
+		$response = new WP_REST_Response( array( 'scope' => $conversations->entry_scope( (string) $request->get_param( 'tab' ) ) ) );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		$response->header( 'Vary', 'Cookie' );
 		return $response;

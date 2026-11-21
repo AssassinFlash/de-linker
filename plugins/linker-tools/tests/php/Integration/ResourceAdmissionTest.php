@@ -384,28 +384,54 @@ final class ResourceAdmissionTest extends TestCase {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
 		$plan = ResourcePolicy::plan( 'genie', $identity );
-		$this->assertSame( array( 'genie_day', 'genie_burst', 'genie_busy', 'genie_site_busy' ), array_map( static fn( Allowance $a ): string => $a->name, $plan['limits'] ) );
-		// Burst advances must stay within one synthetic UTC day, even near midnight.
-		$now    = intdiv( time(), DAY_IN_SECONDS ) * DAY_IN_SECONDS + HOUR_IN_SECONDS;
-		$ledger = new Ledger(
-			static function () use ( &$now ): int {
-				return $now;
-			}
-		);
-		for ( $i = 0; $i < 30; ++$i ) {
-			if ( 0 === $i % 10 ) {
-				$now += 601;
-			}
-			$id = wp_generate_uuid4();
-			$fp = hash( 'sha256', $id );
-			$this->assertIsArray( $ledger->reserve( $id, $fp, $plan['limits'], 90 ) );
-			$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
-			$this->assertIsArray( $ledger->complete( $id, $fp ) );
-		}
-		$now += 601;
-		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'next' ), $plan['limits'], 90 ) );
+		$this->assertSame( array( 'genie_busy', 'genie_site_busy' ), array_map( static fn( Allowance $a ): string => $a->name, $plan['limits'] ) );
+		$ledger = new Ledger();
+		$id     = wp_generate_uuid4();
+		$fp     = hash( 'sha256', $id );
+		$this->assertIsArray( $ledger->reserve( $id, $fp, $plan['limits'], 90 ) );
+		$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
+		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'busy' ), $plan['limits'], 90 ) );
+		$this->assertIsArray( $ledger->complete( $id, $fp ) );
+		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'next' ), $plan['limits'], 90 ) );
 		$writes = ResourcePolicy::plan( 'solution_save', $identity );
 		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'saved' ), $writes['limits'], 90 ), 'Saved input remains independent from model turns.' );
+	}
+
+	/** A signed-in project is owned by the account and independent of guest creation traffic. */
+	public function test_account_project_creation_is_independent_of_guest_storage_traffic(): void {
+		$user = wp_create_user( 'planner-owner-' . wp_generate_uuid4(), wp_generate_password() );
+		$this->assertIsInt( $user );
+		try {
+			wp_set_current_user( $user );
+			$ledger    = new Ledger();
+			$allowance = new Allowance( 'planner_projects_site', 'site', 500, DAY_IN_SECONDS, 500 );
+			$id        = wp_generate_uuid4();
+			$fp        = hash( 'sha256', $id );
+			$this->assertIsArray( $ledger->reserve( $id, $fp, array( $allowance ), 90 ) );
+			$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
+			$this->assertIsArray( $ledger->complete( $id, $fp ) );
+
+			$command   = array( 'key' => wp_generate_uuid4(), 'title' => 'Owned project', 'inputs' => array() );
+			$body      = (string) wp_json_encode( $command );
+			$principal = new \Linker\Tools\Planner\Principal( 'user', 'wp:1:user:' . $user );
+			$transport = new \Linker\Tools\Planner\Transport(
+				function ( string $url, array $args ) use ( $body, $principal ): array {
+					$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
+					$this->assertSame( $body, $args['body'] );
+					$reply = str_contains( $url, '/operations/replay/' )
+						? array( 'schema_version' => 1, 'status' => 'absent', 'command_sha256' => hash( 'sha256', $body ), 'command_scope' => 'create' )
+						: array( 'revision' => 1 );
+					return array( 'response' => array( 'code' => 200 ), 'headers' => array( 'content-type' => 'application/json' ), 'body' => wp_json_encode( $reply ) );
+				}
+			);
+			$result = ( new \Linker\Tools\Planner\Admission() )->send( $principal, 'projects/create', $command, $body, $transport );
+			$this->assertIsArray( $result );
+			$this->assertSame( '{"revision":1}', $result['body'] );
+		} finally {
+			wp_set_current_user( 0 );
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $user );
+		}
 	}
 
 	/** The same signed-in save returns its first result without consuming another usage allowance. */

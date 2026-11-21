@@ -954,6 +954,11 @@ class Conversations {
 		return hash( 'sha256', $database . '/' . $prefix . self::BROWSER_CLAIM_PREFIX . $tab );
 	}
 
+	/** Only a cookieless guest needs the shared first-request claim. */
+	public function needs_browser_claim(): bool {
+		return 0 === get_current_user_id() && '' === $this->browser_key();
+	}
+
 	/**
 	 * This browser's key, '' when it has none.
 	 */

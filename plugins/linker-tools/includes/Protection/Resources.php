@@ -163,7 +163,7 @@ final class Resources {
 		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
 			return self::error( 'files', 400 );
 		}
-		$plan      = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) && count( $raw_files ) <= Attachments::MAX_FILES ? count( $raw_files ) : 0 );
+		$plan      = ResourcePolicy::plan( $action, $identity );
 		$operation = (string) $request->get_header( 'X-Linker-Operation' );
 		$version   = '';
 		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {
