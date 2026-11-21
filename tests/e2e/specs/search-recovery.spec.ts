@@ -11,7 +11,7 @@ import { instance } from '../lib/instance';
 for (const [locale, path, label, heading] of [
 	['en', '/page/999/', 'Search the site', 'Search'],
 	['de', '/de/seite/999/', 'Website durchsuchen', 'Suche'],
-]) {
+] as const) {
 	test(`${locale}: retry an out-of-range search without retyping`, async ({
 		page,
 	}) => {
