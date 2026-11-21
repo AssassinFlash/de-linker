@@ -661,11 +661,18 @@ def _answer(
             else "Choose a model below to add to your solution draft or save to your account."
         )
         if not any(prepared.card_quantities.values()):
-            text = (
-                "Wie viele Stück möchten Sie?"
-                if language == "de"
-                else "How many units would you like?"
-            )
+            if len(ids) > 1:
+                text = (
+                    "Welches Modell meinen Sie und wie viele Stück möchten Sie?"
+                    if language == "de"
+                    else "Which model do you mean, and how many units would you like?"
+                )
+            else:
+                text = (
+                    "Wie viele Stück möchten Sie?"
+                    if language == "de"
+                    else "How many units would you like?"
+                )
         output = TurnOutput(
             language=language,
             blocks=[TextBlock(text=text), CardsBlock(product_ids=ids)],

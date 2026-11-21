@@ -363,7 +363,7 @@ class Understander:
             )
             return prepared
         selection = parts.previous_card_selection(
-            message, request.previous_card_quantities
+            message, request.previous_card_quantities, vocabulary
         )
         if selection and not request.attachments:
             route = Route("card_selection", no_handoff=True)

@@ -413,6 +413,12 @@ def catalog_turn(vocabulary: Any, monkeypatch: pytest.MonkeyPatch) -> None:
         ("I'd take 2 of the H2-10K-T3 for this project.", 2),
         ("I would like two units of the SAJ H2-10K-T3.", 2),
         ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", 0),
+        ("Save 2-3 SAJ H2-10K-T3.", 0),
+        ("Save 2 to 3 SAJ H2-10K-T3.", 0),
+        ("Bitte 2 bis 3 SAJ H2-10K-T3 speichern.", 0),
+        ("Bitte SAJ H2-10K-T3, 4 Stück, speichern.", 4),
+        ("Please add SAJ H2-10K-T3, 2 to 3 units.", 0),
+        ("Please add SAJ H2-10K-T3 x4.", 4),
         ("Save 12000 SAJ H2-10K-T3 inverters to my account.", 0),
     ],
 )
@@ -423,6 +429,11 @@ def test_product_card_and_actions_use_the_current_request(
         request: TurnRequest, retry: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
         output, facts = _generate(request, retry)
+        if request.locale == "de":
+            output.blocks[0] = TextBlock(
+                text="Dieser Wechselrichter hat {fact:p4107.ac_power_kw} kW.",
+                refs=["4107"],
+            )
         for name in ("add_to_draft", "save_solution"):
             output.blocks.append(
                 ActionBlock(name=name, args={"product_id": 4107, "quantity": 4})
@@ -430,7 +441,14 @@ def test_product_card_and_actions_use_the_current_request(
         return output, facts
 
     app.state.generate = generate
-    blocks = _blocks(_post("c1", "We considered 4 SAJ H2-10K-T3 inverters.", current))
+    blocks = _blocks(
+        _post(
+            "c1",
+            "We considered 4 SAJ H2-10K-T3 inverters.",
+            current,
+            locale="de" if current.startswith("Bitte") else "en",
+        )
+    )
     assert {
         block["name"]: block["args"] for block in blocks if block["type"] == "action"
     } == {
@@ -476,6 +494,10 @@ def test_customer_can_choose_either_inverter_at_the_requested_count(
         ("de", "Zwei", {6528: 0}, {6528: 2}),
         ("en", "2 units", {6527: 0}, {6527: 2}),
         ("de", "2 Stück", {6528: 0}, {6528: 2}),
+        ("en", "2 units", {6527: 0, 6528: 0}, {6527: 2, 6528: 2}),
+        ("de", "2 Stück", {6527: 0, 6528: 0}, {6527: 2, 6528: 2}),
+        ("en", "2 units", {6527: 0, 3582: 0}, {6527: 0, 3582: 0}),
+        ("de", "2 davon", {6527: 0, 3582: 0}, {6527: 0, 3582: 0}),
         ("en", "2 of those", {6527: 1}, {6527: 2}),
         ("en", "Add 2 of those", {6527: 1}, {6527: 2}),
         ("en", "2 or 3 of those", {6527: 1}, {6527: 0}),
@@ -512,7 +534,13 @@ def test_follow_up_uses_the_options_actually_shown(
     assert card["product_ids"] == list(expected)
     assert card["quantities"] == {str(pid): count for pid, count in expected.items()}
     assert not any(b["type"] == "parts" for b in blocks)
-    if 0 in expected.values():
+    if len(expected) > 1 and 0 in expected.values():
+        assert blocks[0]["text"] == (
+            "Welches Modell meinen Sie und wie viele Stück möchten Sie?"
+            if language == "de"
+            else "Which model do you mean, and how many units would you like?"
+        )
+    elif 0 in expected.values():
         assert blocks[0]["text"] == "How many units would you like?"
     elif language == "en":
         assert "solution draft" in blocks[0]["text"]
