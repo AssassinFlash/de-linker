@@ -790,3 +790,33 @@ for (const [locale, width] of [
 		}
 	});
 }
+
+test('the pinned label leaves the German model and SKU visible on a phone', async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto(instance().url + '/de/produkte-vergleichen/?ids=6528,6527');
+	const scroll = page.locator('#linker-compare .linker-compare-scroll');
+	await expect(scroll.locator('.linker-compare-column')).toHaveCount(2);
+	await scroll.evaluate((el) => {
+		el.scrollLeft = el.scrollWidth;
+	});
+	const edges = await scroll.evaluate((el) => {
+		const edge = el
+			.querySelector('thead th')!
+			.getBoundingClientRect().right;
+		const name = el
+			.querySelectorAll('.linker-compare-name')[1]
+			.getBoundingClientRect();
+		const sku = el.querySelector('tbody tr td:last-child')!;
+		const range = document.createRange();
+		range.selectNodeContents(sku);
+		return {
+			edge,
+			name: name.left,
+			sku: range.getBoundingClientRect().left,
+		};
+	});
+	expect(edges.name).toBeGreaterThanOrEqual(edges.edge);
+	expect(edges.sku).toBeGreaterThanOrEqual(edges.edge);
+});
