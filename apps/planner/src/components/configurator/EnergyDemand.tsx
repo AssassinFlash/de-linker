@@ -1,3 +1,4 @@
+import { Icon } from "../Icon.tsx";
 import { attachGrossLoad } from "../../domain/grossLoad.ts";
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -232,7 +233,10 @@ export function EnergyDemand({
 		);
 	});
 	const [zone, setZone] = useState(brief.site.timezone ?? "");
-	const [csv, setCsv] = useState(false);
+	const [profileMethod, setProfileMethod] = useState<"typical" | "csv" | null>(
+		null,
+	);
+	const csv = profileMethod === "csv";
 	const [content, setContent] = useState("");
 	const [delimiter, setDelimiter] = useState(";");
 	const [inspection, setInspection] = useState<CsvInspection | null>(null);
@@ -394,7 +398,7 @@ export function EnergyDemand({
 			importedAsset.current = asset.id;
 			setPreview(result);
 			pending.current = null;
-			setCsv(false);
+			setProfileMethod(null);
 			setContent("");
 			setInspection(null);
 		}
@@ -454,369 +458,384 @@ export function EnergyDemand({
 					"linker-tools",
 				)}
 			</p>
-			<div className="sc-actions">
-				<button
-					className="sc-button"
-					type="button"
-					disabled={demandBlocked}
-					onClick={() => setCsv(!csv)}
-				>
-					{csv
-						? __("Use a typical profile", "linker-tools")
-						: __("Import CSV", "linker-tools")}
-				</button>
+			<div
+				className="sc-profile-methods"
+				role="group"
+				aria-label={__("Electricity use over time", "linker-tools")}
+			>
+				{(["typical", "csv"] as const).map((method) => (
+					<button
+						key={method}
+						className="sc-button"
+						type="button"
+						disabled={demandBlocked || pending.current !== null}
+						aria-pressed={profileMethod === method}
+						onClick={() => setProfileMethod(method)}
+					>
+						<Icon name={method === "csv" ? "report" : "energy"} />
+						{method === "csv"
+							? __("Import CSV", "linker-tools")
+							: __("Use a typical profile", "linker-tools")}
+					</button>
+				))}
 			</div>
-			<fieldset disabled={demandBlocked}>
-				<div className="sc-fields">
-					<label className="sc-field">
-						<span>{__("Time zone", "linker-tools")}</span>
-						<input
-							value={zone}
-							placeholder="Europe/Berlin"
-							onChange={(event) => setZone(event.currentTarget.value)}
-						/>
-					</label>
-					{!csv && (
-						<>
-							<label className="sc-field">
-								<span>{__("Typical use", "linker-tools")}</span>
-								<select
-									name="load-pattern"
-									value={pattern}
-									onChange={(event) => setPattern(event.currentTarget.value)}
-								>
-									<option value="">
-										{__("Choose a template", "linker-tools")}
-									</option>
-									{[
-										["H0", __("Household", "linker-tools")],
-										["G0", __("General business", "linker-tools")],
-										["G1", __("Business hours, weekdays", "linker-tools")],
-										["G2", __("Evening business", "linker-tools")],
-										["G3", __("Continuous operation", "linker-tools")],
-										["G4", __("Retail", "linker-tools")],
-										["G5", __("Bakery", "linker-tools")],
-										["G6", __("Weekend business", "linker-tools")],
-										["H25", __("Household (2025)", "linker-tools")],
-										["G25", __("Business (2025)", "linker-tools")],
-										["L25", __("Agriculture (2025)", "linker-tools")],
-									].map(([value, text]) => (
-										<option key={value} value={value}>
-											{text} · {value}
+			{profileMethod && (
+				<fieldset disabled={demandBlocked} className="sc-profile-fields">
+					<div className="sc-fields sc-profile-sources">
+						<label className="sc-field">
+							<span>{__("Time zone", "linker-tools")}</span>
+							<input
+								value={zone}
+								placeholder="Europe/Berlin"
+								onChange={(event) => setZone(event.currentTarget.value)}
+							/>
+						</label>
+						{!csv && (
+							<>
+								<label className="sc-field">
+									<span>{__("Typical use", "linker-tools")}</span>
+									<select
+										name="load-pattern"
+										value={pattern}
+										onChange={(event) => setPattern(event.currentTarget.value)}
+									>
+										<option value="">
+											{__("Choose a template", "linker-tools")}
 										</option>
-									))}
-								</select>
-							</label>
-							<label className="sc-field">
-								<span>{__("Profile year", "linker-tools")}</span>
-								<input
-									type="number"
-									min="2000"
-									max="2100"
-									step="1"
-									value={year}
-									onChange={(event) => setYear(event.currentTarget.value)}
-								/>
-							</label>
-						</>
-					)}
-				</div>
-				{!csv ? (
-					<>
-						<p className="sc-muted">
-							{__(
-								"BDEW/VDEW templates use the German calendar and are scaled to your annual consumption. For other sites, use them as an explicit template or import local meter data.",
-								"linker-tools",
-							)}
-						</p>
-						<button
-							type="button"
-							className="sc-button"
-							disabled={!canStandard || pending.current !== null}
-							onClick={() =>
-								void run(() =>
-									importProfile({
-										path: "profiles/standard",
-										body: readProfileImport({
-											schema_version: 1,
-											project_id: projectId,
-											edition: pattern.endsWith("25") ? 2025 : 1999,
-											profile: pattern,
-											year: Number(year),
-											annual_kwh: brief.annual_load.kwh,
-											timezone: zone.trim(),
-											key: crypto.randomUUID(),
-										}),
-									}),
-								)
-							}
-						>
-							{__("Use this load profile", "linker-tools")}
-						</button>
-					</>
-				) : (
-					<>
-						<div className="sc-fields">
-							<label className="sc-field">
-								<span>{__("CSV file", "linker-tools")}</span>
-								<input
-									type="file"
-									accept=".csv,text/csv,text/plain"
-									onChange={(event) => {
-										const file = event.currentTarget.files?.[0];
-										if (file)
-											void run(async () => {
-												const encoded = await fileBase64(
-													file,
-													session.runtime.limits.max_csv_bytes,
-												);
-												setContent(encoded);
-												setInspection(null);
-												setLabel(file.name);
-											});
-									}}
-								/>
-							</label>
-							<label className="sc-field">
-								<span>{__("Column delimiter", "linker-tools")}</span>
-								<select
-									value={delimiter}
-									onChange={(event) => {
-										setDelimiter(event.currentTarget.value);
-										setInspection(null);
-									}}
-								>
-									<option value=";">{__("Semicolon", "linker-tools")}</option>
-									<option value=",">{__("Comma", "linker-tools")}</option>
-									<option value={"\t"}>{__("Tab", "linker-tools")}</option>
-								</select>
-							</label>
-						</div>
-						<button
-							className="sc-button"
-							type="button"
-							disabled={!content || pending.current !== null}
-							onClick={() =>
-								void run(async () => {
-									const result = readInspection(
-										await client.query(
-											"profiles/inspect",
-											{
+										{[
+											["H0", __("Household", "linker-tools")],
+											["G0", __("General business", "linker-tools")],
+											["G1", __("Business hours, weekdays", "linker-tools")],
+											["G2", __("Evening business", "linker-tools")],
+											["G3", __("Continuous operation", "linker-tools")],
+											["G4", __("Retail", "linker-tools")],
+											["G5", __("Bakery", "linker-tools")],
+											["G6", __("Weekend business", "linker-tools")],
+											["H25", __("Household (2025)", "linker-tools")],
+											["G25", __("Business (2025)", "linker-tools")],
+											["L25", __("Agriculture (2025)", "linker-tools")],
+										].map(([value, text]) => (
+											<option key={value} value={value}>
+												{text} · {value}
+											</option>
+										))}
+									</select>
+								</label>
+								<label className="sc-field">
+									<span>{__("Profile year", "linker-tools")}</span>
+									<input
+										type="number"
+										min="2000"
+										max="2100"
+										step="1"
+										value={year}
+										onChange={(event) => setYear(event.currentTarget.value)}
+									/>
+								</label>
+							</>
+						)}
+					</div>
+					{!csv ? (
+						<>
+							<p className="sc-muted">
+								{__(
+									"BDEW/VDEW templates use the German calendar and are scaled to your annual consumption. For other sites, use them as an explicit template or import local meter data.",
+									"linker-tools",
+								)}
+							</p>
+							<button
+								type="button"
+								className="sc-button"
+								disabled={!canStandard || pending.current !== null}
+								onClick={() =>
+									void run(() =>
+										importProfile({
+											path: "profiles/standard",
+											body: readProfileImport({
 												schema_version: 1,
 												project_id: projectId,
-												content_base64: content,
-												delimiter,
-												page_size: Math.min(
-													10,
-													session.runtime.limits.max_page_size,
-												),
-											},
-											session.query_scope,
-										),
-										delimiter,
-									);
-									setInspection(result);
-								})
-							}
-						>
-							{__("Read CSV columns", "linker-tools")}
-						</button>
-						{inspection && (
-							<>
-								<p>
-									{inspection.record_count}{" "}
-									{__("readings found", "linker-tools")}
-								</p>
-								<div className="sc-fields">
-									{(
-										[
-											["timestamp", __("Timestamp column", "linker-tools")],
-											["value", __("Consumption column", "linker-tools")],
-										] as const
-									).map(([key, text]) => (
-										<label className="sc-field" key={key}>
-											<span>{text}</span>
+												edition: pattern.endsWith("25") ? 2025 : 1999,
+												profile: pattern,
+												year: Number(year),
+												annual_kwh: brief.annual_load.kwh,
+												timezone: zone.trim(),
+												key: crypto.randomUUID(),
+											}),
+										}),
+									)
+								}
+							>
+								{__("Use this load profile", "linker-tools")}
+							</button>
+						</>
+					) : (
+						<>
+							<div className="sc-fields">
+								<label className="sc-field">
+									<span>{__("CSV file", "linker-tools")}</span>
+									<input
+										type="file"
+										accept=".csv,text/csv,text/plain"
+										onChange={(event) => {
+											const file = event.currentTarget.files?.[0];
+											if (file)
+												void run(async () => {
+													const encoded = await fileBase64(
+														file,
+														session.runtime.limits.max_csv_bytes,
+													);
+													setContent(encoded);
+													setInspection(null);
+													setLabel(file.name);
+												});
+										}}
+									/>
+								</label>
+								<label className="sc-field">
+									<span>{__("Column delimiter", "linker-tools")}</span>
+									<select
+										value={delimiter}
+										onChange={(event) => {
+											setDelimiter(event.currentTarget.value);
+											setInspection(null);
+										}}
+									>
+										<option value=";">{__("Semicolon", "linker-tools")}</option>
+										<option value=",">{__("Comma", "linker-tools")}</option>
+										<option value={"\t"}>{__("Tab", "linker-tools")}</option>
+									</select>
+								</label>
+							</div>
+							<button
+								className="sc-button"
+								type="button"
+								disabled={!content || pending.current !== null}
+								onClick={() =>
+									void run(async () => {
+										const result = readInspection(
+											await client.query(
+												"profiles/inspect",
+												{
+													schema_version: 1,
+													project_id: projectId,
+													content_base64: content,
+													delimiter,
+													page_size: Math.min(
+														10,
+														session.runtime.limits.max_page_size,
+													),
+												},
+												session.query_scope,
+											),
+											delimiter,
+										);
+										setInspection(result);
+									})
+								}
+							>
+								{__("Read CSV columns", "linker-tools")}
+							</button>
+							{inspection && (
+								<>
+									<p>
+										{inspection.record_count}{" "}
+										{__("readings found", "linker-tools")}
+									</p>
+									<div className="sc-fields">
+										{(
+											[
+												["timestamp", __("Timestamp column", "linker-tools")],
+												["value", __("Consumption column", "linker-tools")],
+											] as const
+										).map(([key, text]) => (
+											<label className="sc-field" key={key}>
+												<span>{text}</span>
+												<select
+													value={mapping[key]}
+													onChange={(event) =>
+														setMapping({
+															...mapping,
+															[key]: event.currentTarget.value,
+														})
+													}
+												>
+													<option value="">
+														{__("Choose a column", "linker-tools")}
+													</option>
+													{inspection.columns.map((column) => (
+														<option key={column} value={column}>
+															{column}
+														</option>
+													))}
+												</select>
+											</label>
+										))}
+										<label className="sc-field">
+											<span>{__("Values represent", "linker-tools")}</span>
 											<select
-												value={mapping[key]}
+												value={mapping.unit}
 												onChange={(event) =>
 													setMapping({
 														...mapping,
-														[key]: event.currentTarget.value,
+														unit: event.currentTarget.value,
 													})
 												}
 											>
 												<option value="">
-													{__("Choose a column", "linker-tools")}
+													{__("Choose a unit", "linker-tools")}
 												</option>
-												{inspection.columns.map((column) => (
-													<option key={column} value={column}>
-														{column}
-													</option>
-												))}
+												<option value="interval_average_kw">kW</option>
+												<option value="interval_energy_kwh">kWh</option>
 											</select>
 										</label>
-									))}
-									<label className="sc-field">
-										<span>{__("Values represent", "linker-tools")}</span>
-										<select
-											value={mapping.unit}
-											onChange={(event) =>
+										<label className="sc-field">
+											<span>{__("Timestamp marks", "linker-tools")}</span>
+											<select
+												value={mapping.timeRole}
+												onChange={(event) =>
+													setMapping({
+														...mapping,
+														timeRole: event.currentTarget.value,
+														durationMode: "fixed",
+													})
+												}
+											>
+												<option value="">
+													{__("Choose an option", "linker-tools")}
+												</option>
+												<option value="start">
+													{__("Interval start", "linker-tools")}
+												</option>
+												<option value="end">
+													{__("Interval end", "linker-tools")}
+												</option>
+											</select>
+										</label>
+										{number(
+											"csv-minutes",
+											__("Interval length", "linker-tools"),
+											"min",
+											mapping.minutes,
+											(value) =>
 												setMapping({
 													...mapping,
-													unit: event.currentTarget.value,
-												})
-											}
-										>
-											<option value="">
-												{__("Choose a unit", "linker-tools")}
-											</option>
-											<option value="interval_average_kw">kW</option>
-											<option value="interval_energy_kwh">kWh</option>
-										</select>
-									</label>
-									<label className="sc-field">
-										<span>{__("Timestamp marks", "linker-tools")}</span>
-										<select
-											value={mapping.timeRole}
-											onChange={(event) =>
-												setMapping({
-													...mapping,
-													timeRole: event.currentTarget.value,
+													minutes: value,
 													durationMode: "fixed",
-												})
-											}
-										>
-											<option value="">
-												{__("Choose an option", "linker-tools")}
-											</option>
-											<option value="start">
-												{__("Interval start", "linker-tools")}
-											</option>
-											<option value="end">
-												{__("Interval end", "linker-tools")}
-											</option>
-										</select>
-									</label>
-									{number(
-										"csv-minutes",
-										__("Interval length", "linker-tools"),
-										"min",
-										mapping.minutes,
-										(value) =>
-											setMapping({
-												...mapping,
-												minutes: value,
-												durationMode: "fixed",
-											}),
-									)}
-									<label className="sc-field">
-										<span>{__("Decimal separator", "linker-tools")}</span>
-										<select
-											value={mapping.decimal}
-											onChange={(event) =>
-												setMapping({
-													...mapping,
-													decimal: event.currentTarget.value,
-												})
-											}
-										>
-											<option value="">
-												{__("Choose an option", "linker-tools")}
-											</option>
-											<option value=".">.</option>
-											<option value=",">,</option>
-										</select>
-									</label>
-									<label className="sc-field">
-										<span>{__("Data source", "linker-tools")}</span>
-										<select
-											value={mapping.origin}
-											onChange={(event) =>
-												setMapping({
-													...mapping,
-													origin: event.currentTarget.value,
-												})
-											}
-										>
-											<option value="">
-												{__("Choose an option", "linker-tools")}
-											</option>
-											<option value="measured">
-												{__("Meter readings", "linker-tools")}
-											</option>
-											<option value="modelled">
-												{__("Modelled data", "linker-tools")}
-											</option>
-											<option value="template">
-												{__("Template", "linker-tools")}
-											</option>
-											<option value="synthetic">
-												{__("Synthetic data", "linker-tools")}
-											</option>
-										</select>
-									</label>
-									<label className="sc-field">
-										<span>{__("Source name", "linker-tools")}</span>
-										<input
-											value={label}
-											maxLength={256}
-											onChange={(event) => setLabel(event.currentTarget.value)}
-										/>
-									</label>
-									<label className="sc-field">
-										<span>
-											{__(
-												"Source and permission to store privately",
-												"linker-tools",
-											)}
-										</span>
-										<textarea
-											value={rights}
-											maxLength={4096}
-											onChange={(event) => setRights(event.currentTarget.value)}
-										/>
-									</label>
-								</div>
-								<p className="sc-muted">
-									{__(
-										"Import total site consumption, rather than net grid import. Use ISO timestamps with UTC offsets for repeated daylight-saving hours. The original data and gaps are preserved.",
-										"linker-tools",
-									)}
-								</p>
-								<button
-									className="sc-button"
-									type="button"
-									disabled={
-										!csvMapping ||
-										!rights.trim() ||
-										!label.trim() ||
-										invalid.size > 0 ||
-										pending.current !== null
-									}
-									onClick={() =>
-										void run(() =>
-											importProfile({
-												path: "profiles/csv",
-												body: readProfileImport({
-													schema_version: 1,
-													project_id: projectId,
-													content_base64: content,
-													mapping: csvMapping,
-													source_label: label.trim(),
-													rights_note: rights.trim(),
-													key: crypto.randomUUID(),
 												}),
-											}),
-										)
-									}
-								>
-									{__("Use CSV consumption", "linker-tools")}
-								</button>
-							</>
-						)}
-					</>
-				)}
-			</fieldset>
+										)}
+										<label className="sc-field">
+											<span>{__("Decimal separator", "linker-tools")}</span>
+											<select
+												value={mapping.decimal}
+												onChange={(event) =>
+													setMapping({
+														...mapping,
+														decimal: event.currentTarget.value,
+													})
+												}
+											>
+												<option value="">
+													{__("Choose an option", "linker-tools")}
+												</option>
+												<option value=".">.</option>
+												<option value=",">,</option>
+											</select>
+										</label>
+										<label className="sc-field">
+											<span>{__("Data source", "linker-tools")}</span>
+											<select
+												value={mapping.origin}
+												onChange={(event) =>
+													setMapping({
+														...mapping,
+														origin: event.currentTarget.value,
+													})
+												}
+											>
+												<option value="">
+													{__("Choose an option", "linker-tools")}
+												</option>
+												<option value="measured">
+													{__("Meter readings", "linker-tools")}
+												</option>
+												<option value="modelled">
+													{__("Modelled data", "linker-tools")}
+												</option>
+												<option value="template">
+													{__("Template", "linker-tools")}
+												</option>
+												<option value="synthetic">
+													{__("Synthetic data", "linker-tools")}
+												</option>
+											</select>
+										</label>
+										<label className="sc-field">
+											<span>{__("Source name", "linker-tools")}</span>
+											<input
+												value={label}
+												maxLength={256}
+												onChange={(event) =>
+													setLabel(event.currentTarget.value)
+												}
+											/>
+										</label>
+										<label className="sc-field">
+											<span>
+												{__(
+													"Source and permission to store privately",
+													"linker-tools",
+												)}
+											</span>
+											<textarea
+												value={rights}
+												maxLength={4096}
+												onChange={(event) =>
+													setRights(event.currentTarget.value)
+												}
+											/>
+										</label>
+									</div>
+									<p className="sc-muted">
+										{__(
+											"Import total site consumption, rather than net grid import. Use ISO timestamps with UTC offsets for repeated daylight-saving hours. The original data and gaps are preserved.",
+											"linker-tools",
+										)}
+									</p>
+									<button
+										className="sc-button"
+										type="button"
+										disabled={
+											!csvMapping ||
+											!rights.trim() ||
+											!label.trim() ||
+											invalid.size > 0 ||
+											pending.current !== null
+										}
+										onClick={() =>
+											void run(() =>
+												importProfile({
+													path: "profiles/csv",
+													body: readProfileImport({
+														schema_version: 1,
+														project_id: projectId,
+														content_base64: content,
+														mapping: csvMapping,
+														source_label: label.trim(),
+														rights_note: rights.trim(),
+														key: crypto.randomUUID(),
+													}),
+												}),
+											)
+										}
+									>
+										{__("Use CSV consumption", "linker-tools")}
+									</button>
+								</>
+							)}
+						</>
+					)}
+				</fieldset>
+			)}
 		</>
 	);
 	return (
@@ -1013,7 +1032,7 @@ export function EnergyDemand({
 						)}
 						<details>
 							<summary>{__("View readings", "linker-tools")}</summary>
-							<div className="lp-table-scroll">
+							<div className="sc-readings-table">
 								<table>
 									<thead>
 										<tr>
@@ -1062,7 +1081,7 @@ export function EnergyDemand({
 				)}
 			</section>
 			{!solarOnly && (
-				<details className="sc-card">
+				<details className="sc-card sc-demand-requirements">
 					<summary>
 						{__("Required power and capacity already known?", "linker-tools")}
 					</summary>

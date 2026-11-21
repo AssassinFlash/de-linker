@@ -13,6 +13,7 @@ import {
 	panelLabel,
 	panelSpecification,
 } from "../../domain/panelParameters.ts";
+import { Icon } from "../Icon.tsx";
 import { SiteCoordinates } from "./SiteCoordinates.tsx";
 import { PanelMeasurementFields } from "../PanelMeasurementFields.tsx";
 import type {
@@ -1302,7 +1303,7 @@ export function SolarInstallation({
 				</p>
 			</header>
 			<fieldset disabled={blocked || calibrationOpen}>
-				<div className="sc-option-row">
+				<div className="sc-option-row sc-solar-methods">
 					{(
 						[
 							[
@@ -1343,7 +1344,14 @@ export function SolarInstallation({
 								startTool("select");
 							}}
 						>
-							<span>{label}</span>
+							<Icon
+								name={value === "known" ? "solar" : "layers"}
+								className="sc-method-icon"
+							/>
+							<span className="sc-method-label">{label}</span>
+							<span aria-hidden="true" className="sc-method-check">
+								{mode === value && <Icon name="check" />}
+							</span>
 							<small
 								className="sc-solar-choice-note"
 								id={`${choicesId}-${value}-help`}
@@ -1353,8 +1361,7 @@ export function SolarInstallation({
 						</button>
 					))}
 				</div>
-				<div className="sc-card">
-					{mode === "roof" && !placingOnMap && moduleChoice}
+				<div className="sc-card sc-solar-inputs">
 					{mode === "known" ? (
 						<>
 							<p className="sc-muted">
@@ -1364,6 +1371,33 @@ export function SolarInstallation({
 								)}
 							</p>
 							<div className="sc-fields">
+								<label className="sc-field">
+									<span>{__("Solar capacity", "linker-tools")} (kWp)</span>
+									<input
+										type="number"
+										min="0"
+										step="any"
+										value={
+											(knownPanels
+												? knownPanels.system_kwp
+												: known?.peak_power_kwp) ?? ""
+										}
+										placeholder={
+											knownPanels?.count &&
+											knownPanels.power_w &&
+											known?.peak_power_kwp
+												? String(known.peak_power_kwp)
+												: undefined
+										}
+										onChange={(e) => {
+											const power = e.currentTarget.valueAsNumber;
+											panelPowerChange(
+												"system_kwp",
+												Number.isFinite(power) && power > 0 ? power : null,
+											);
+										}}
+									/>
+								</label>
 								<label className="sc-field">
 									<span>{__("Power per panel", "linker-tools")} (Wp)</span>
 									<input
@@ -1396,33 +1430,7 @@ export function SolarInstallation({
 										}}
 									/>
 								</label>
-								<label className="sc-field">
-									<span>{__("Solar capacity", "linker-tools")} (kWp)</span>
-									<input
-										type="number"
-										min="0"
-										step="any"
-										value={
-											(knownPanels
-												? knownPanels.system_kwp
-												: known?.peak_power_kwp) ?? ""
-										}
-										placeholder={
-											knownPanels?.count &&
-											knownPanels.power_w &&
-											known?.peak_power_kwp
-												? String(known.peak_power_kwp)
-												: undefined
-										}
-										onChange={(e) => {
-											const power = e.currentTarget.valueAsNumber;
-											panelPowerChange(
-												"system_kwp",
-												Number.isFinite(power) && power > 0 ? power : null,
-											);
-										}}
-									/>
-								</label>
+
 								{(["tilt_deg", "azimuth_north_clockwise_deg"] as const).map(
 									(key) => (
 										<label className="sc-field" key={key}>
@@ -1499,7 +1507,7 @@ export function SolarInstallation({
 							{!editingLayout && (
 								<button
 									type="button"
-									className="sc-button sc-primary"
+									className="sc-button sc-primary sc-open-layout"
 									ref={openLayout}
 									onClick={() => {
 										setLayoutOpen(true);
@@ -1508,18 +1516,28 @@ export function SolarInstallation({
 										);
 									}}
 								>
+									<Icon name="layers" />
 									{__("Open roof layout", "linker-tools")}
 								</button>
 							)}
 						</>
 					)}
-					<p className="sc-solar-total">
-						{mode === "roof" && geometry.roofs.length > 0
-							? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
-							: mode === "known" && known?.peak_power_kwp != null
-								? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
-								: __("Solar capacity not entered", "linker-tools")}
-					</p>
+					{mode === "roof" && !placingOnMap && (
+						<div className="sc-layout-panels">{moduleChoice}</div>
+					)}
+					<div className="sc-solar-total">
+						<Icon name="solar" />
+						<div>
+							<span>{__("Solar capacity", "linker-tools")}</span>
+							<strong>
+								{mode === "roof" && geometry.roofs.length > 0
+									? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
+									: mode === "known" && known?.peak_power_kwp != null
+										? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
+										: __("Not specified", "linker-tools")}
+							</strong>
+						</div>
+					</div>
 				</div>
 			</fieldset>
 			{editingLayout && (
@@ -2301,7 +2319,7 @@ export function SolarInstallation({
 				</div>
 			)}
 			{wiring}
-			<footer className="sc-next">
+			<footer className="sc-next sc-site-next">
 				<button
 					type="button"
 					disabled={
@@ -2317,7 +2335,7 @@ export function SolarInstallation({
 						if (mode !== "roof" || applyPanelChanges()) next();
 					}}
 				>
-					{__("Continue with energy use", "linker-tools")}
+					{__("Continue with energy use", "linker-tools")} <Icon name="arrow" />
 				</button>
 			</footer>
 		</section>

@@ -120,9 +120,7 @@ export function NumberField({
 				value={text}
 				aria-invalid={!valid || Boolean(error)}
 				aria-labelledby={id + "-label"}
-				aria-describedby={
-					id + "-format" + (!valid || error ? " " + id + "-error" : "")
-				}
+				aria-describedby={!valid || error ? id + "-error" : undefined}
 				onChange={(event) => update(event.currentTarget.value)}
 				onKeyDown={(event) => {
 					if (event.key !== "Escape") return;
@@ -131,21 +129,31 @@ export function NumberField({
 					onValidity(true);
 				}}
 			/>
-			<small id={id + "-format"}>
-				{integer
-					? __("Whole numbers; no thousands separators.", "linker-tools")
-					: notation === "point-or-comma"
-						? __(
-								"Decimal point or comma; no thousands separators.",
-								"linker-tools",
-							)
-						: decimalSeparator(locale) === ","
-							? __("Decimal comma; no thousands separators.", "linker-tools")
-							: __("Decimal point; no thousands separators.", "linker-tools")}
-			</small>
 			{(!valid || error) && (
 				<small className="lp-field-error" id={id + "-error"}>
-					{!valid ? invalidNumberText(integer, min, max, locale) : error}
+					{!valid ? (
+						<>
+							{invalidNumberText(integer, min, max, locale)}{" "}
+							{integer
+								? __("Whole numbers; no thousands separators.", "linker-tools")
+								: notation === "point-or-comma"
+									? __(
+											"Decimal point or comma; no thousands separators.",
+											"linker-tools",
+										)
+									: decimalSeparator(locale) === ","
+										? __(
+												"Decimal comma; no thousands separators.",
+												"linker-tools",
+											)
+										: __(
+												"Decimal point; no thousands separators.",
+												"linker-tools",
+											)}
+						</>
+					) : (
+						error
+					)}
 				</small>
 			)}
 		</label>
