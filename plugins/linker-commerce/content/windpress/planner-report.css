@@ -15,6 +15,9 @@
     gap: var(--proto-space-3) var(--proto-space-5);
     align-items: center;
   }
+  .sc-report-citation { display: grid; gap: var(--proto-space-2); padding-block: var(--proto-space-3); }
+  .sc-report-citation dt { font-weight: var(--proto-weight-semibold); }
+  .sc-report-citation dd { margin: 0; }
   .sc-report-workspace .sc-report-site { margin-block-start: var(--proto-space-4); }
   .sc-report-workspace .sc-report-title {
     margin: 0;

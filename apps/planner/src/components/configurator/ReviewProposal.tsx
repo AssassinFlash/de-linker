@@ -25,6 +25,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { readBrief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
+import { EvidenceCard } from "../shared/EvidenceCard.tsx";
 import { Icon } from "../Icon.tsx";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
@@ -44,13 +45,14 @@ function ReportContent({ section }: { section: ReportSection }) {
 			{section.rows.length > 0 && (
 				<dl>
 					{section.rows.map((row, index) => (
-						<div className="sc-summary" key={index}>
+						<div
+							className={row.href ? "sc-report-citation" : "sc-summary"}
+							key={index}
+						>
 							<dt>{row.label}</dt>
 							<dd>
 								{row.href ? (
-									<a href={row.href} target="_blank" rel="noreferrer">
-										{row.value}
-									</a>
+									<EvidenceCard title={row.value} url={row.href} />
 								) : (
 									row.value
 								)}

@@ -378,6 +378,35 @@ test("an unusable optional logo can be removed and the project report generated"
 	assert.deepEqual(generated, [null]);
 });
 
+test("a report citation keeps the document and exact page pinned to its revision", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	const link =
+		"https://de-linker.com/wp-content/uploads/2026/legacy-manual.pdf#page=37";
+	value.run.result.report.sections = [
+		{
+			id: "pv",
+			title: "PV generation",
+			paragraphs: [],
+			rows: [
+				{ label: "Data source", value: "Commissioning manual", href: link },
+			],
+			table: null,
+		},
+	];
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const source = page.element.querySelector("details .linker-source-card");
+	assert.equal(
+		source.querySelector("strong").textContent,
+		"Commissioning manual",
+	);
+	assert.equal(source.querySelector("a").href, link);
+});
+
 test("report preview opens the complete pinned report and its original PDF", async (t) => {
 	const page = setupDom(),
 		root = createRoot(page.element);
