@@ -83,14 +83,14 @@ final class WindPress {
 				'content' => Tokens::read( $path ),
 			);
 		}
-		$inquiry   = glob( $root . '/content/livecanvas/inquiry/*.html' );
-		$account   = glob( $root . '/content/livecanvas/account/*.html' );
-		$fragments = array_merge( false === $inquiry ? array() : $inquiry, false === $account ? array() : $account );
-		foreach ( $fragments as $path ) {
-			$contents[] = array(
-				'name'    => 'livecanvas/' . basename( dirname( $path ) ) . '/' . basename( $path ),
-				'content' => Tokens::read( $path ),
-			);
+		foreach ( array( 'inquiry', 'account', 'home-configurator' ) as $directory ) {
+			$paths = glob( $root . '/content/livecanvas/' . $directory . '/*.html' );
+			foreach ( false === $paths ? array() : $paths as $path ) {
+				$contents[] = array(
+					'name'    => 'livecanvas/' . $directory . '/' . basename( $path ),
+					'content' => Tokens::read( $path ),
+				);
+			}
 		}
 		foreach ( $this->php_files( $root . '/includes/Presentation' ) as $path ) {
 			$contents[] = array(
