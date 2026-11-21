@@ -264,6 +264,37 @@ final class ThreadTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** A service answer and its original feedback target survive later turns. */
+	public function test_service_answers_keep_the_server_turn_id_in_history(): void {
+		$this->remember_meta();
+		$thread   = new Thread();
+		$question = array(
+			'role'    => 'user',
+			'content' => 'Do you deliver to Austria?',
+		);
+		$followup = array(
+			'role'    => 'user',
+			'content' => 'And Germany?',
+		);
+		$answer   = array(
+			'role'    => 'assistant',
+			'content' => 'Email sales@de-linker.com.',
+		);
+		$stream   = "event: meta\ndata: " . '{"turn_id":41}' . "\n\nevent: block\ndata: " . '{"type":"handoff","summary":"Email sales@de-linker.com."}' . "\n\nevent: done\ndata: {}\n\n";
+		$this->assertTrue( $thread->record( 51, array( $question ), $stream ) );
+		$sent = array( $question, $answer + array( 'turnId' => 999 ), $followup );
+		$this->assertTrue( $thread->record( 51, $sent, str_replace( ':41', ':42', $stream ) ) );
+		$sent[] = $answer;
+		$sent[] = array(
+			'role'    => 'user',
+			'content' => 'Thanks.',
+		);
+		$this->assertTrue( $thread->record( 51, $sent, $this->stream( 'You are welcome.' ) ) );
+		$history = $thread->read( 51 )['messages'];
+		$this->assertSame( $answer + array( 'turnId' => 41 ), $history[1] );
+		$this->assertSame( $answer + array( 'turnId' => 42 ), $history[3] );
+	}
+
 	/** Server-recorded source cards stay with their answers when a later turn is committed. */
 	public function test_prior_planning_source_stays_with_its_answer(): void {
 		$source   = array(

@@ -11,7 +11,6 @@ import type { GenieConfig } from '../config';
 import { ActionView } from './ActionView';
 import { Ask } from './Ask';
 import { DocumentLink } from './DocumentLink';
-import { Handoff } from './Handoff';
 import { PartsCard, type PartsActions } from './PartsCard';
 import { PlanningSourcesCard } from './PlanningSourcesCard';
 
@@ -50,9 +49,6 @@ export function BlockView( {
 				configuratorLinks={ configuratorLinks }
 			/>
 		);
-	}
-	if ( block.type === 'handoff' ) {
-		return <Handoff block={ block } />;
 	}
 	if ( block.type === 'document' ) {
 		return <DocumentLink block={ block } />;

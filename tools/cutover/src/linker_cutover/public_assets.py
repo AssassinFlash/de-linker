@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shlex
@@ -34,11 +35,17 @@ _BROWSER_SUFFIXES = (
     ".wasm",
 )
 _PUBLIC_TREES = ("assets", "build")
+# WordPress names JS translations after the MD5 of the public script path.
+_PLANNER_CATALOG = re.compile(
+    r"linker-tools-[a-zA-Z0-9_]+-"
+    + hashlib.md5(b"build/planner/assets/planner.js", usedforsecurity=False).hexdigest()
+    + r"\.json"
+)
 
 # Executed on the candidate's host, not on the source/private staging. The same
 # read-only check is also prepended to the final SSH before the rename trap.
 _REMOTE = r"""
-import hashlib,json,os,stat,sys
+import hashlib,json,os,re,stat,sys
 from pathlib import Path
 plans=json.loads(sys.argv[1]);normalize=sys.argv[2]=='normalize'
 suffixes=set(json.loads(sys.argv[3]));expected=sys.argv[4];nodes={}
@@ -55,6 +62,13 @@ for plan in plans:
  if not plan['directory']:
   browser_file(root);continue
  regular(root,True);nodes[root]=0o755
+ if plan['catalog']:
+  languages=root/'languages'
+  if languages.is_symlink():fail(languages)
+  if languages.is_dir():
+   for path in languages.iterdir():
+    if re.fullmatch(plan['catalog'],path.name):
+     browser_file(path);nodes[languages]=0o755
  roots=[]
  for name in ('assets','build'):
   tree=root/name
@@ -112,13 +126,21 @@ def _command(
             and path.suffix.lower() in _BROWSER_SUFFIXES
             and (theme or (len(parts) > 4 and parts[3] in _PUBLIC_TREES))
         )
-        if tree or file:
+        tools = parts[:3] == ("wp-content", "plugins", "linker-tools")
+        catalog = (
+            tools
+            and len(parts) == 5
+            and parts[3] == "languages"
+            and _PLANNER_CATALOG.fullmatch(parts[4])
+        )
+        if tree or file or (not directory and catalog):
             candidate = str(path.with_name(f".{path.name}.next"))
             plans.append(
                 {
                     "path": target.path_of(candidate),
                     "directory": directory,
                     "theme": theme,
+                    "catalog": _PLANNER_CATALOG.pattern if tools and tree else "",
                 }
             )
     if not plans:

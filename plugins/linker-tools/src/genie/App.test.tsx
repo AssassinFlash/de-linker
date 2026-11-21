@@ -3869,6 +3869,7 @@ test.each( [
 			: 'Contact our team.';
 		vi.mocked( sendTurn ).mockResolvedValue( {
 			meta: {
+				turn_id: 42,
 				grounded: ! failed,
 				fallback: failed,
 				attempts: 1,
@@ -3886,7 +3887,26 @@ test.each( [
 				screen.getByRole( 'button', { name: 'Ask Genie' } )
 			)
 		);
-		expect( screen.getByText( summary ) ).toBeVisible();
+		const reply = screen.getByText( summary );
+		expect( reply ).toBeVisible();
+		const copy = screen.getByRole( 'button', { name: 'Copy response' } );
+		const helpful = screen.getByRole( 'button', { name: 'Helpful' } );
+		expect( reply.closest( 'li' ) ).toContainElement( copy );
+		expect( reply.closest( 'li' ) ).toContainElement( helpful );
+		const writeText = vi.fn( async () => undefined );
+		Object.defineProperty( navigator, 'clipboard', {
+			configurable: true,
+			value: { writeText },
+		} );
+		await act( async () => fireEvent.click( copy ) );
+		expect( writeText ).toHaveBeenCalledWith( summary );
+		fireEvent.click( helpful );
+		expect( sendVote ).toHaveBeenCalledWith(
+			'/wp-json/linker-ai/v1/genie/turn',
+			'n',
+			42,
+			1
+		);
 		const link = screen.queryByRole( 'link', { name: 'Send an inquiry' } );
 		expect( link?.getAttribute( 'href' ) ).toBe( failed ? url : undefined );
 		expect( sendTurn ).toHaveBeenCalledTimes( 1 );

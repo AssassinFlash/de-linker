@@ -586,8 +586,13 @@ export function assistantMessage( turn: Turn ): TurnMessage {
 		...( source ? { planning_sources: source } : {} ),
 		role: 'assistant',
 		content: turn.blocks
-			.filter( ( block ): block is TextBlock => block.type === 'text' )
-			.map( ( block ) => block.text )
+			.filter(
+				( block ): block is TextBlock | HandoffBlock =>
+					block.type === 'text' || block.type === 'handoff'
+			)
+			.map( ( block ) =>
+				block.type === 'handoff' ? block.summary : block.text
+			)
 			.join( ' ' ),
 		turnId: turn.meta?.turn_id,
 	};
@@ -670,6 +675,11 @@ export async function readThread(
 			.map( ( message ) => ( {
 				role: message.role,
 				content: message.content,
+				...( message.role === 'assistant' &&
+				Number.isSafeInteger( message.turnId ) &&
+				( message.turnId ?? 0 ) > 0
+					? { turnId: message.turnId }
+					: {} ),
 				...( message.role === 'assistant' &&
 				message.planning_sources?.type === 'planning_sources' &&
 				validPlanningSources( message.planning_sources )
