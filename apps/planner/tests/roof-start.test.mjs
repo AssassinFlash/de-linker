@@ -83,7 +83,10 @@ async function fixture(t, search = "", locale = "en", comparison = false) {
 		async send(path, body, scope) {
 			assert.equal(path, "projects/create");
 			assert.equal(scope, session.query_scope);
-			assert.equal(records[0].body, body, "persist recovery before sending");
+			assert.ok(
+				records.some((record) => record.body === body),
+				"persist recovery before sending",
+			);
 			requests.push(body);
 			if (createFailure) throw new Error("response_lost");
 			const command = JSON.parse(body);
@@ -177,7 +180,9 @@ async function fixture(t, search = "", locale = "en", comparison = false) {
 		async click(label) {
 			await act(async () => button(label).click());
 		},
-		async reload() {
+		async reload(nextSearch = search, nextComparison = comparison) {
+			search = nextSearch;
+			comparison = nextComparison;
 			await act(async () => root.render(null));
 			await render();
 		},
@@ -393,4 +398,40 @@ test("a lost creation reply is retried using the original request after reload",
 	assert.equal(page.opened[0].destination, "roof");
 	assert.equal(page.searches.length, 1);
 	assert.equal(page.records.length, 0);
+});
+
+test("a roof comparison restores its own site and retries the same command after a lost reply", async (t) => {
+	const page = await fixture(t, "", "en", true);
+	page.loseReceipt(true);
+	await page.fill("Hamburg");
+	await page.click("Compare systems");
+	await until(() => button("Try again"));
+	const ordinaryRequest = page.requests[0];
+
+	await page.reload("step=roof", false);
+	await page.fill("Bergstraße 7, Berlin");
+	await act(async () =>
+		document.querySelector('a[href="?compare=preliminary"]').click(),
+	);
+	await until(() => button("Retry project creation"));
+	const roofRequest = page.requests[1];
+	await page.reload();
+	await until(
+		() =>
+			button("Retry project creation") &&
+			!button("Retry project creation").disabled,
+	);
+	assert.equal(field("country").value, "DE");
+	assert.equal(field("location_label").value, "Bergstraße 7, Berlin");
+
+	page.loseReceipt(false);
+	await page.click("Retry project creation");
+	await until(() => page.opened.length === 1);
+	assert.deepEqual(page.requests, [ordinaryRequest, roofRequest, roofRequest]);
+	assert.equal(page.opened[0].destination, "guided-comparison");
+	assert.equal(page.searches.length, 0);
+	assert.deepEqual(
+		page.records.map((record) => record.body),
+		[ordinaryRequest],
+	);
 });

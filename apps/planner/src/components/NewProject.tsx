@@ -412,6 +412,7 @@ export function NewProject({
 			.then((records) => {
 				if (!active || !client.isCurrentScope(session.query_scope)) return;
 				const matching = records.filter((record) => {
+					if (record.destination === "roof-comparison") return roofEntry;
 					if (
 						directComparison &&
 						(record.destination === "guided-comparison" ||
@@ -440,11 +441,7 @@ export function NewProject({
 				// Earlier roof entries and the regular project form both stored "design".
 				// Offer those receipts by title until the customer chooses one.
 				const resume = roofEntry
-					? matching.find(
-							(record) =>
-								record.destination === "roof" ||
-								record.destination === "roof-plan",
-						)
+					? matching.find((record) => record.destination !== "design")
 					: matching[0];
 				if (resume) restoreCreation(resume);
 			})
@@ -688,17 +685,19 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = roofPlan
-					? "roof-plan"
-					: roof
-						? "roof"
-						: directComparison || compareRoofSite
-							? "guided-comparison"
-							: direction
-								? "preliminary-review"
-								: brief.system_scope === "storage_only"
-									? null
-									: "design";
+				destination.current = compareRoofSite
+					? "roof-comparison"
+					: roofPlan
+						? "roof-plan"
+						: roof
+							? "roof"
+							: directComparison
+								? "guided-comparison"
+								: direction
+									? "preliminary-review"
+									: brief.system_scope === "storage_only"
+										? null
+										: "design";
 			}
 			await store
 				.writeCreation(
@@ -783,10 +782,12 @@ export function NewProject({
 			if (
 				!created(
 					project,
-					destination.current ??
-						(createdBrief?.system_scope === "storage_only"
-							? "energy"
-							: undefined),
+					destination.current === "roof-comparison"
+						? "guided-comparison"
+						: (destination.current ??
+								(createdBrief?.system_scope === "storage_only"
+									? "energy"
+									: undefined)),
 					location.href === submittedFrom,
 				)
 			) {
