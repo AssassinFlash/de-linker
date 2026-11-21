@@ -203,6 +203,10 @@ REVISIONS = {
                 "Our team prepares the quote and prepares the Proforma with you.",
                 "Our team prepares your quotation and works with you on any subsequent order.",
             ),
+            order_wording(
+                "your invoice or proforma reference, serial number",
+                "your invoice or order reference, serial number",
+            ),
             ("Proforma &amp; Delivery", "Quotation &amp; Delivery"),
             (
                 "STAGE 04 · PROFORMA &amp; DELIVERY",
@@ -221,6 +225,10 @@ REVISIONS = {
             (
                 "Lagerbestand in Deutschland, bestätigte Liefertermine und Projektdokumentation zu Ihrer Anfrage.",
                 "Lagerware in Deutschland, Unterlagen zu Ihrer Anfrage und Lieferplanung für Ihren Auftrag.",
+            ),
+            order_wording(
+                "Ihrer Rechnungs- oder Proforma-Referenz, Seriennummer",
+                "Ihrer Rechnungs- oder Bestellreferenz, Seriennummer",
             ),
             ("Proforma &amp; Lieferung", "Angebot &amp; Lieferung"),
             ("PHASE 04 · PROFORMA & LIEFERUNG", "PHASE 04 · ANGEBOT & LIEFERUNG"),

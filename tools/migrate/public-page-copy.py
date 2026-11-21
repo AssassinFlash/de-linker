@@ -1,6 +1,6 @@
-"""Publish or restore the reviewed About, Services, Utility, Privacy and Imprint pairs.
+"""Publish or restore the reviewed bilingual public pages.
 
-With --wp alone, preview all five pairs. --write and --restore also require
+With --wp alone, preview all pairs. --write and --restore also require
 --backup-dir. Production writes also require --full-backup with the completed
 site backup manifest in addition to the cutover database snapshot. Use --page
 to publish or restore a single pair.
@@ -23,6 +23,11 @@ PAGES = {
     "utility": (1755, 6917),
     "privacy": (1673, 6827),
     "imprint": (1672, 6829),
+    "capability": (874, 6919),
+    "epc": (842, 6867),
+    "installer": (826, 6869),
+    "home": (13, 6913),
+    "faq": (932, 6863),
 }
 
 
@@ -37,7 +42,7 @@ def source(name: str) -> Any:
 
 def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
     ids, pages = PAGES[page], snapshot["pages"]
-    if page == "privacy":
+    if page in {"privacy", "capability", "epc", "installer"}:
         payload = source("quotation-page-copy").plan_pair(
             ids, snapshot, require_current=False
         )
@@ -50,11 +55,16 @@ def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
         transform = source("industry-standards").plan_pair
     else:
         marketing = source("marketing-controls")
-        transform = {
-            "imprint": marketing.plan_imprint_operator,
-            "about": marketing.plan_about_registration,
-            "utility": marketing.plan_utility_equipment_tools,
-        }[page]
+        transform = getattr(
+            marketing,
+            {
+                "imprint": "plan_imprint_operator",
+                "about": "plan_about_registration",
+                "utility": "plan_utility_equipment_tools",
+                "home": "plan_home_delivery_documents",
+                "faq": "plan_faq_warranty_reference",
+            }[page],
+        )
     en, de = ids
     results = transform(pages[str(en)], pages[str(de)])
     return dict(zip(map(str, ids), results, strict=True))
@@ -63,7 +73,7 @@ def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="WP-CLI prefix")
-    parser.add_argument("--page", choices=PAGES, help="Default: all five pairs")
+    parser.add_argument("--page", choices=PAGES, help="Default: all pairs")
     parser.add_argument("--backup-dir", type=Path)
     parser.add_argument(
         "--full-backup", type=Path, help="Completed production backup directory"

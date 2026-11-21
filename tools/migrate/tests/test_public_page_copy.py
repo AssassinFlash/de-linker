@@ -1,4 +1,4 @@
-"""The public-page command supports all five published bilingual pairs."""
+"""The public-page command supports the published bilingual pairs."""
 
 import subprocess
 import sys
@@ -20,7 +20,18 @@ def test_public_page_command_lists_each_native_pair() -> None:
         check=True,
     )
     assert "--full-backup" in result.stdout
-    for page in ("about", "services", "utility", "privacy", "imprint"):
+    for page in (
+        "about",
+        "services",
+        "utility",
+        "privacy",
+        "imprint",
+        "capability",
+        "epc",
+        "installer",
+        "home",
+        "faq",
+    ):
         assert page in result.stdout
 
 
