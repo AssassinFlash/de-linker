@@ -16,18 +16,31 @@ for (const [lang, base] of [
 		const root = document.getElementById('configurator-showcase');
 		dom.window.eval(readFileSync(script, 'utf8'));
 		const tabs = [...root.querySelectorAll('[role=tab]')];
+		const tablist = root.querySelector('[role=tablist]');
+		tablist.getBoundingClientRect = () => ({ left: 20, right: 320 });
+		for (const [index, tab] of tabs.entries()) {
+			tab.getBoundingClientRect = () => {
+				const left = 20 + index * 90 - tablist.scrollLeft;
+				return { left, right: left + 90 };
+			};
+		}
 		const active = () => root.querySelector('[role=tabpanel]:not([hidden])');
 		assert.equal(tabs.length, 5);
 		assert.equal(active().id, tabs[0].getAttribute('aria-controls'));
 		tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
 		assert.equal(document.activeElement, tabs[1]);
+		assert.equal(tablist.scrollLeft, 0);
 		assert.equal(tabs[1].getAttribute('aria-selected'), 'true');
 		assert.equal(active().querySelector('figcaption a').getAttribute('href'), base + '?view=equipment');
 		assert.match(active().querySelector('picture img').src, new RegExp('equipment-' + lang + '-1440.webp$'));
 		assert.match(active().querySelector('picture source').srcset, new RegExp('equipment-' + lang + '-390.webp$'));
 		assert.match(root.querySelector('[data-showcase-address]').textContent, /view=equipment$/);
-		tabs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+		tabs[3].click();
+		assert.equal(tablist.scrollLeft, 270);
+		tabs[3].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
 		assert.equal(active().querySelector('figcaption a').getAttribute('href'), base + '?view=inquiry');
+		tabs[4].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+		assert.equal(tablist.scrollLeft, 0);
 		tabs[2].click();
 		assert.equal(active().querySelector('figcaption a').getAttribute('href'), base + '?step=roof');
 		assert.equal(root.querySelectorAll('[role=tab][tabindex="0"]').length, 1);

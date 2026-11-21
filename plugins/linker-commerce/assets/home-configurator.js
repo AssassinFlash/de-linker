@@ -15,6 +15,11 @@
 			document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
 		}
 		address.textContent = 'de-linker.com' + tab.pathname + tab.search;
+		const listBounds = tablist.getBoundingClientRect();
+		const tabBounds = tab.getBoundingClientRect();
+		if (tabBounds.left < listBounds.left || tabBounds.right > listBounds.right) {
+			tablist.scrollLeft += tabBounds.left - listBounds.left;
+		}
 	}
 
 	for (const [index, tab] of tabs.entries()) {
@@ -35,7 +40,7 @@
 			}
 			event.preventDefault();
 			select(tabs[next]);
-			tabs[next].focus();
+			tabs[next].focus({ preventScroll: true });
 		});
 	}
 })();
