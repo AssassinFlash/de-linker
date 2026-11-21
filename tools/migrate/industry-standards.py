@@ -241,6 +241,27 @@ def prune_page_backups(backup_dir: Path, keep: int = 3) -> list[str]:
     return removed
 
 
+def published_metadata(prefix: str, backup: dict[str, Any]) -> dict[str, Any]:
+    if "published_metadata" in backup:
+        return backup["published_metadata"]
+    if not backup.get("readback_verified"):
+        raise RuntimeError("The legacy receipt has no verified publication")
+    original = backup["snapshot"]
+    if not original["current"]:
+        # Pending manual pairs kept the native metadata in the recovery point.
+        return original["metadata"]
+    changes = backup["changes"]
+    # The legacy publisher adopted a synced pair. Rebuild the old receipt first
+    # so any intervening title, excerpt or baseline changes stop the restore.
+    preimage = [{**row, "after": row["before"]} for row in changes]
+    before = pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": preimage})
+    if before["expected_metadata"] != original["metadata"]:
+        raise RuntimeError("The legacy translation baseline cannot be reconstructed")
+    return pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": changes})[
+        "expected_metadata"
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True)
@@ -257,11 +278,11 @@ def main() -> None:
         backup = json.loads(args.rollback.read_text())
         current = pair.read(args.wp, args.en, args.de)
         changes = backup["changes"]
-        if current["pages"] != {
+        if current["home"] != backup["snapshot"]["home"] or current["pages"] != {
             str(change["id"]): change["after"] for change in changes
         }:
             raise RuntimeError("The reviewed pages changed after the backup was made")
-        if current["metadata"] != backup.get("published_metadata"):
+        if current["metadata"] != published_metadata(args.wp, backup):
             raise RuntimeError(
                 "The translation metadata differs from the release receipt"
             )

@@ -258,3 +258,47 @@ def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
     )
     with pytest.raises(RuntimeError, match="translation metadata"):
         standards.main()
+
+
+@pytest.mark.parametrize("was_current", [True, False])
+def test_legacy_verified_release_derives_native_translation_postimage(
+    monkeypatch, was_current
+) -> None:
+    old = {
+        "2748": {
+            "_linker_i18n_status": ["synced" if was_current else "structure_mismatch"]
+        }
+    }
+    saved = {
+        "2748": {"_linker_i18n_status": ["synced"]},
+        "6700": {"_linker_i18n_units": ["published"]},
+    }
+    changes = [
+        {"id": 2748, "before": "old", "after": "final"},
+        {"id": 6700, "before": "alt", "after": "fertig"},
+    ]
+    receipt = {
+        "readback_verified": True,
+        "snapshot": {"current": was_current, "metadata": old},
+        "changes": changes,
+    }
+
+    def preview(prefix, payload):
+        assert payload["mode"] == "preview_page_adoption"
+        return {
+            "expected_metadata": old
+            if payload["changes"][0]["after"] == "old"
+            else saved
+        }
+
+    monkeypatch.setattr(standards.pair, "invoke", preview)
+    assert standards.published_metadata("wp", receipt) == (
+        saved if was_current else old
+    )
+
+
+def test_unverified_legacy_receipt_cannot_authorize_restore() -> None:
+    with pytest.raises(RuntimeError, match="verified"):
+        standards.published_metadata(
+            "wp", {"snapshot": {"current": False, "metadata": {}}}
+        )
