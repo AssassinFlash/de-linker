@@ -3,6 +3,7 @@ import { emptyBrief } from "./brief.ts";
 import { equipmentDraft } from "./equipment.ts";
 
 export const ENTRY_QUERY_KEYS = [
+	"scope",
 	"pv_kwp",
 	"annual_kwh",
 	"phase",
@@ -14,6 +15,7 @@ export const ENTRY_QUERY_KEYS = [
 ] as const;
 export type ProductEntryField = "inverter" | "battery" | "accessory";
 export interface EntryHints {
+	projectScope?: "storage_addition" | "new_pv_storage";
 	pvKw: number | null;
 	annualKwh: number | null;
 	annualBasis: "bill_total" | "user_estimate" | null;
@@ -55,6 +57,13 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		}
 		return value;
 	};
+	const scope = one("scope");
+	if (
+		scope !== null &&
+		scope !== "storage_addition" &&
+		scope !== "new_pv_storage"
+	)
+		invalid = true;
 	const pvKw = positive("pv_kwp"),
 		annualKwh = positive("annual_kwh");
 	const phaseValue = one("phase"),
@@ -90,6 +99,9 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 	)
 		invalid = true;
 	return {
+		...(scope === "storage_addition" || scope === "new_pv_storage"
+			? { projectScope: scope }
+			: {}),
 		pvKw,
 		annualKwh,
 		annualBasis: annualKwh === null ? null : "user_estimate",
@@ -145,6 +157,7 @@ export function entryInputs(
 	const inputs: Record<string, Json> = {
 		brief: {
 			...brief,
+			system_scope: hints.projectScope ?? brief.system_scope,
 			site: { ...brief.site, location_label: hints.postalCode ?? "" },
 			annual_load: {
 				kwh: hints.annualKwh,

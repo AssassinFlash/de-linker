@@ -107,7 +107,14 @@ export function Workspace({
 			: "",
 	);
 	const [newProjectOpen, setNewProjectOpen] = useState(false);
-	const [route, setRoute] = useState(() => location.hash.slice(1));
+	const [route, setRoute] = useState(
+		() =>
+			location.hash.slice(1) ||
+			(!currentProject() &&
+			new URL(location.href).searchParams.get("compare") === "preliminary"
+				? "sc-preliminary-options"
+				: ""),
+	);
 	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
 		currentGuidedRetryRevision,
 	);
@@ -558,6 +565,13 @@ export function Workspace({
 					recoveryScopes={recovery.data}
 					recoveryChecking={recovery.isFetching}
 					recoveryFailed={recovery.isError}
+					comparePreliminary={(saved) => {
+						cache.setQueryData(
+							[session.query_scope, "project", selected, session.claim_pending],
+							saved,
+						);
+						select(saved.id, "sc-preliminary-options");
+					}}
 					close={() => {
 						if (!client.isCurrentScope(session.query_scope)) return false;
 						void cache.invalidateQueries({
@@ -626,7 +640,7 @@ export function Workspace({
 		!entryHints?.roof &&
 		!entryHints?.equipment;
 
-	const bareComparison = canCompareDirections && !entryHints && !route;
+	const bareComparison = canCompareDirections && !route;
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
 	const directEntry =
@@ -706,6 +720,7 @@ export function Workspace({
 				<div>
 					{projectIndex ? null : savedSource !== null ? (
 						<SavedSolutionStart
+							directComparison
 							solutionId={savedSource}
 							config={config}
 							dismiss={() => {
@@ -726,6 +741,7 @@ export function Workspace({
 						/>
 					) : briefSource !== null ? (
 						<ProjectBriefStart
+							directComparison
 							briefId={briefSource}
 							config={config}
 							entryHints={entryHints}
@@ -749,15 +765,15 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
-							directComparison={bareComparison}
+							directComparison={
+								bareComparison ||
+								entryHints?.equipment === true ||
+								route === "sc-project"
+							}
 							workspaceHeading={directEntry}
 							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
-							{...(canCompareDirections &&
-								route === "sc-project" && {
-									returnToComparison: () =>
-										showCreationPage("sc-preliminary-options"),
-								})}
+
 							creationPending={creationPending}
 							beginCreation={() => beginCreation(entryKey)}
 							config={config}

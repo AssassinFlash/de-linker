@@ -83,6 +83,7 @@ import {
 	PLANNER_NAVIGATION,
 	replacePlannerLocation,
 } from "../../data/plannerLocation.ts";
+import { needsPhaseConfirmation } from "./HomepageDemand.tsx";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
@@ -108,26 +109,14 @@ import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
-type Step = "project" | "solar" | "energy" | "system" | "review";
-const steps: Step[] = ["project", "solar", "energy", "system", "review"];
-const roofMapLinks = new Set([
-	"#sc-roof",
-	"#lp-map-roof-properties",
-	"#lp-map-ring-properties",
-	"#lp-map-feature-properties",
-]);
+import {
+	ProjectNavigation,
+	projectChapter,
+	type ProjectChapter as Step,
+} from "./ProjectNavigation.tsx";
+
 function initialStep(): Step {
-	const hash = location.hash.slice(1);
-	if (
-		hash === "sc-solar" ||
-		hash === "lp-design" ||
-		roofMapLinks.has(location.hash)
-	)
-		return "solar";
-	if (hash === "sc-energy" || hash === "lp-load") return "energy";
-	if (hash === "sc-system" || hash === "lp-equipment") return "system";
-	if (hash === "sc-review" || hash === "lp-calculations") return "review";
-	return "project";
+	return projectChapter(new URL(location.href));
 }
 
 function useProjectResult(
@@ -169,6 +158,7 @@ export default function Configurator({
 	config,
 	recheck,
 	close,
+	comparePreliminary,
 	recoveryScopes,
 	recoveryChecking = false,
 	recoveryFailed = false,
@@ -180,6 +170,7 @@ export default function Configurator({
 	config: Configuration;
 	recheck: () => void;
 	close: () => boolean;
+	comparePreliminary?: (project: Project) => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryFailed?: boolean;
@@ -203,6 +194,7 @@ export default function Configurator({
 	const workbench = useRef<HTMLDivElement>(null);
 	const [assessmentPending, setAssessmentPending] = useState(false);
 	const [energyValid, setEnergyValid] = useState(true);
+	const [coordinatesValid, setCoordinatesValid] = useState(true);
 	const [energyOpened, setEnergyOpened] = useState(() =>
 		["energy", "solar"].includes(initialStep()),
 	);
@@ -654,6 +646,45 @@ export default function Configurator({
 		if (!mayLeave()) return;
 		showStep(next);
 	}
+	async function closeProject() {
+		const current = latest.current;
+		if (!mayLeave() || !current) return;
+		if (isDirty(current) || current.pending) {
+			if (await controller.save()) close();
+		} else if (!controller.recoveries.length || (await controller.flush()))
+			close();
+	}
+	async function openChapter(next: Step) {
+		const current = latest.current;
+		if (!mayLeave() || !current || controller.busy || operations.busy) return;
+		if (next === "system" && !coordinatesValid) {
+			showStep("solar");
+			return;
+		}
+		if (
+			next === "system" &&
+			comparePreliminary &&
+			needsPhaseConfirmation(current.history.current) &&
+			(!searchRun || isDirty(current))
+		) {
+			const saved = await controller.save();
+			if (saved && client.isCurrentScope(session.query_scope))
+				comparePreliminary(saved);
+			return;
+		}
+		if (
+			next === "system" &&
+			next !== step &&
+			!modelsUnavailable &&
+			history.isSuccess &&
+			(!searchRun || isDirty(current))
+		) {
+			await compare();
+			return;
+		}
+		if (next !== step && isDirty(current) && !(await controller.save())) return;
+		showStep(next);
+	}
 	function showStep(next: Step) {
 		setGenieReportId(null);
 		const url = new URL(location.href);
@@ -733,7 +764,8 @@ export default function Configurator({
 		}
 	}
 	async function compare() {
-		if (blocked || modelsUnavailable || !latest.current) return;
+		if (blocked || modelsUnavailable || !latest.current || !coordinatesValid)
+			return;
 		setError(null);
 		const instance = lifetime.current;
 		const reply = await operations.start("runs/find-equipment", {
@@ -1008,16 +1040,6 @@ export default function Configurator({
 	const inputs = draft.history.current;
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
-	const visible = steps.filter(
-		(s) => s !== "solar" || brief.system_scope !== "storage_only",
-	);
-	const labels: Record<Step, string> = {
-		project: __("Project", "linker-tools"),
-		solar: __("Solar", "linker-tools"),
-		energy: __("Energy use", "linker-tools"),
-		system: __("System", "linker-tools"),
-		review: __("Report & inquiry", "linker-tools"),
-	};
 	const failedRead = [
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
 		...(step === "system" ? [systemRead] : []),
@@ -1209,9 +1231,7 @@ export default function Configurator({
 								className="sc-button"
 								onClick={() => {
 									if (!mayLeave()) return;
-									void controller.flush().then((ok) => {
-										if (ok) close();
-									});
+									void closeProject();
 								}}
 							>
 								{__("Projects", "linker-tools")}
@@ -1223,21 +1243,11 @@ export default function Configurator({
 			{guidedView ? (
 				<InquiryStages guided reviewing={guidedReview} />
 			) : (
-				<nav
-					className="sc-nav"
-					aria-label={__("Project navigation", "linker-tools")}
-				>
-					{visible.map((s, i) => (
-						<button
-							key={s}
-							aria-current={activeStep === s ? "step" : undefined}
-							onClick={() => navigate(s)}
-						>
-							<span className="sc-step-number">{i + 1}</span>
-							{labels[s]}
-						</button>
-					))}
-				</nav>
+				<ProjectNavigation
+					current={activeStep}
+					storageOnly={brief.system_scope === "storage_only"}
+					open={(chapter) => void openChapter(chapter)}
+				/>
 			)}
 			{navigationRefused &&
 				navigationBlocked &&
@@ -1395,9 +1405,9 @@ export default function Configurator({
 					</button>
 				</div>
 			))}
-			<div className={guidedReview ? undefined : "sc-layout"}>
+			<div className={activeStep === "review" ? undefined : "sc-layout"}>
 				<main
-					id={activeStep === "review" ? "lp-calculations" : undefined}
+					id={"sc-" + activeStep}
 					ref={main}
 					tabIndex={-1}
 					className="sc-main"
@@ -1428,87 +1438,92 @@ export default function Configurator({
 							}
 						/>
 					)}
-					{activeStep === "solar" && (
-						<SolarInstallation
-							inputs={inputs}
-							config={config}
-							client={client}
-							session={session}
-							disabled={blocked || modelsUnavailable}
-							edit={edit}
-							onLayoutChange={() => {
-								requestedRoofSave.current =
-									latest.current?.history.current ?? null;
-							}}
-							next={() => navigate("energy")}
-							wiring={
-								wiringPlant
-									? wiringPlant.units.map((unit, index) => {
-											const hasPlan = plantWiring.some(
-												(row) => row.unit_id === unit.id,
-											);
-											if (
-												!hasPlan &&
-												(!hasRoofModules ||
-													typeof equipmentDraft(unit.inputs)
-														.inverter_product_id !== "number")
+					{(activeStep === "solar" || !coordinatesValid) && (
+						<div hidden={activeStep !== "solar"}>
+							<SolarInstallation
+								active={activeStep === "solar"}
+								onCoordinateValidity={setCoordinatesValid}
+								inputs={inputs}
+								config={config}
+								client={client}
+								session={session}
+								disabled={blocked || modelsUnavailable}
+								edit={edit}
+								onLayoutChange={() => {
+									requestedRoofSave.current =
+										latest.current?.history.current ?? null;
+								}}
+								next={() => navigate("energy")}
+								wiring={
+									wiringPlant
+										? wiringPlant.units.map((unit, index) => {
+												const hasPlan = plantWiring.some(
+													(row) => row.unit_id === unit.id,
+												);
+												if (
+													!hasPlan &&
+													(!hasRoofModules ||
+														typeof equipmentDraft(unit.inputs)
+															.inverter_product_id !== "number")
+												)
+													return null;
+												return (
+													<fieldset className="sc-card" key={unit.id}>
+														<legend>
+															{unit.name ||
+																sprintf(
+																	__("System %d", "linker-tools"),
+																	index + 1,
+																)}
+														</legend>
+														<PlantPvStringSetup
+															draft={draft}
+															unit={unit}
+															units={wiringPlant.units}
+															edit={editWiring}
+															locale={config.locale}
+															disabled={blocked || modelsUnavailable}
+															onValidity={wiringCallbacks[unit.id]!}
+															checkedInReport
+														/>
+													</fieldset>
+												);
+											})
+										: (typeof inverterId === "number" ||
+												inputs.pv_string_plan != null) && (
+												<PvStringSetup
+													draft={draft}
+													edit={editWiring}
+													inverterId={
+														typeof inverterId === "number" ? inverterId : null
+													}
+													locale={config.locale}
+													disabled={blocked || modelsUnavailable}
+													onValidity={wiringCallbacks[""]!}
+													checkedInReport
+												/>
 											)
-												return null;
-											return (
-												<fieldset className="sc-card" key={unit.id}>
-													<legend>
-														{unit.name ||
-															sprintf(
-																__("System %d", "linker-tools"),
-																index + 1,
-															)}
-													</legend>
-													<PlantPvStringSetup
-														draft={draft}
-														unit={unit}
-														units={wiringPlant.units}
-														edit={editWiring}
-														locale={config.locale}
-														disabled={blocked || modelsUnavailable}
-														onValidity={wiringCallbacks[unit.id]!}
-														checkedInReport
-													/>
-												</fieldset>
-											);
-										})
-									: (typeof inverterId === "number" ||
-											inputs.pv_string_plan != null) && (
-											<PvStringSetup
-												draft={draft}
-												edit={editWiring}
-												inverterId={
-													typeof inverterId === "number" ? inverterId : null
-												}
-												locale={config.locale}
-												disabled={blocked || modelsUnavailable}
-												onValidity={wiringCallbacks[""]!}
-												checkedInReport
-											/>
-										)
-							}
-							initialMap={roofMapLinks.has(location.hash)}
-							takeImageryConsent={(source) =>
-								takeRoofImageryConsent(project.id, source)
-							}
-							onEditing={setRoofEditing}
-							geometryImport={{
-								projectId: project.id,
-								recheck,
-								confirmedInputs: draft.baseline.inputs,
-								onActivity: setImportOpen,
-								recoveryScopes,
-								recoveryChecking,
-							}}
-						/>
+								}
+								initialMap={location.hash === "#sc-roof"}
+								takeImageryConsent={(source) =>
+									takeRoofImageryConsent(project.id, source)
+								}
+								onEditing={setRoofEditing}
+								geometryImport={{
+									projectId: project.id,
+									recheck,
+									confirmedInputs: draft.baseline.inputs,
+									onActivity: setImportOpen,
+									recoveryScopes,
+									recoveryChecking,
+								}}
+							/>
+						</div>
 					)}
 					{(energyOpened || activeStep === "energy") && (
 						<div hidden={activeStep !== "energy"}>
 							<EnergyDemand
+								coordinatesInvalid={!coordinatesValid}
 								projectId={project.id}
 								inputs={inputs}
 								locale={config.locale}
@@ -1797,9 +1812,11 @@ export default function Configurator({
 								hasMore: olderHistory.data
 									? olderHistory.hasNextPage
 									: firstCursor !== null,
-								loading: olderHistory.isFetching,
-								loadFailed: olderHistory.isError,
-								loadMore: () => void olderHistory.fetchNextPage(),
+								loading: history.isPending || olderHistory.isFetching,
+								loadFailed: history.isError || olderHistory.isError,
+								loadMore: history.isError
+									? () => void history.refetch()
+									: () => void olderHistory.fetchNextPage(),
 							}}
 							client={client}
 							session={session}
@@ -1814,7 +1831,7 @@ export default function Configurator({
 						/>
 					)}
 				</main>
-				{!guidedReview && (
+				{activeStep !== "review" && (
 					<aside className="sc-sidebar">
 						<section className="sc-card">
 							<p className="sc-muted">

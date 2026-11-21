@@ -81,6 +81,7 @@ export function projectLanguageUrl(
 		}
 	} else if (hints)
 		for (const [key, value] of Object.entries({
+			scope: hints.projectScope ?? null,
 			pv_kwp: hints.pvKw,
 			annual_kwh: hints.annualKwh,
 			phase: hints.phase,
@@ -90,6 +91,8 @@ export function projectLanguageUrl(
 			product_id: hints.productId,
 		}))
 			if (value !== null) target.searchParams.set(key, String(value));
+	if (!id && page.searchParams.get("compare") === "preliminary")
+		target.searchParams.set("compare", "preliminary");
 	target.hash =
 		id === null &&
 		["#sc-preliminary-options", "#sc-project"].includes(page.hash)
