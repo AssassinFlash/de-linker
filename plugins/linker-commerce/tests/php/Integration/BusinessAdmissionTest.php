@@ -657,7 +657,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$delivered = array_values( array_diff( $files(), $before ) );
 		$this->assertCount( 1, $delivered );
 		try {
-			$mail = html_entity_decode( quoted_printable_decode( (string) file_get_contents( $delivered[0] ) ), ENT_QUOTES );
+			$mail = (string) file_get_contents( $delivered[0] );
+			if ( preg_match( '/^Content-Transfer-Encoding: quoted-printable\s*$/mi', $mail ) ) {
+				$mail = quoted_printable_decode( $mail );
+			}
+			$mail = html_entity_decode( $mail, ENT_QUOTES );
 			$this->assertTrue( 1 === preg_match( '/^To: .*' . preg_quote( self::TESTER, '/' ) . '/mi', $mail ) );
 			$this->assertTrue( 1 === preg_match( '/href="([^"]+[?&]key=[^"]+)"/i', $mail, $matches ) );
 			wp_parse_str( (string) wp_parse_url( $matches[1], PHP_URL_QUERY ), $args );

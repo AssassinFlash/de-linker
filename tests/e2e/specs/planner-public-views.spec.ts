@@ -82,11 +82,9 @@ for (const [lang, routes] of Object.entries(pages)) {
 			expect(project).toMatch(/^[a-f0-9]{32}$/);
 			try {
 				await page.goto(entry + '?projects=1');
-				const row = page
-					.getByRole('listitem')
-					.filter({
-						has: page.locator('[id="sc-project-' + project + '"]'),
-					});
+				const row = page.getByRole('listitem').filter({
+					has: page.locator('[id="sc-project-' + project + '"]'),
+				});
 				await row.locator('a[href*="guided=inquiry"]').click();
 				await directions.first().getByRole('button').click();
 				await expect(form).toBeVisible();
@@ -95,11 +93,9 @@ for (const [lang, routes] of Object.entries(pages)) {
 				);
 			} finally {
 				await page.goto(entry + '?projects=1');
-				const row = page
-					.getByRole('listitem')
-					.filter({
-						has: page.locator('[id="sc-project-' + project + '"]'),
-					});
+				const row = page.getByRole('listitem').filter({
+					has: page.locator('[id="sc-project-' + project + '"]'),
+				});
 				await row.locator('button[aria-label]').click();
 				await row
 					.getByRole('group')
