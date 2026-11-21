@@ -418,7 +418,9 @@ class EquipmentSearchSpace:
 
     def combination_fitness(
         self, candidate: Json
-    ) -> tuple[int, int, int, int, int, str]:
+    ) -> tuple[
+        int, int, int, int, int, tuple[tuple[int, ...], ...], tuple[int, ...], str
+    ]:
         record = cast(Object, candidate)
         value = cast(Object, record.get("selection") or record.get("plant") or {})
         selections = (
@@ -429,9 +431,8 @@ class EquipmentSearchSpace:
                 for unit in cast(list[Object], value.get("units", []))
             ]
         )
-        # After the canonical product id, the documented assembly (smallest
-        # stack level, then module count) keeps the order total and stable;
-        # the candidate digest is the last resort, never the visible order.
+        # Ties on the smallest inverter ID, stack count and module count follow
+        # the equipment assigned to each unit and group in the declared order.
         return (
             (
                 0
@@ -444,6 +445,20 @@ class EquipmentSearchSpace:
             min(int(cast(int, row["inverter_product_id"])) for row in selections),
             min(int(cast(int, row["parallel_stacks"] or 0)) for row in selections),
             min(int(cast(int, row["modules_per_stack"] or 0)) for row in selections),
+            tuple(
+                (
+                    cast(int, row["inverter_product_id"]),
+                    cast(int, row["battery_product_id"] or 0),
+                    cast(int, row["parallel_stacks"] or 0),
+                    cast(int, row["modules_per_stack"] or 0),
+                    *cast(list[int], row["accessory_product_ids"]),
+                )
+                for row in selections
+            ),
+            tuple(
+                cast(int, group["controller_product_id"] or 0)
+                for group in cast(list[Object], value.get("parallel_groups", []))
+            ),
             str(record["id"]),
         )
 

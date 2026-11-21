@@ -5780,6 +5780,75 @@ def test_plant_search_keeps_unknown_allocations_and_joint_delivery_unresolved(
         PlantSearchPlan.from_inputs(changed)
 
 
+def test_backup_plant_material_order_is_independent_of_system_ids(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    from linker_engine.planning.plant_search import search_plant
+
+    battery = next(p for p in feed["products"] if p["id"] == 2090)
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": 2,
+        "unit": None,
+        "citation": battery["figures"]["modules_per_stack_max"]["citation"],
+    }
+    stacked = publication_feed(feed, feed["compatibility"])
+    basis = {
+        "products": [p for p in stacked["products"] if p["id"] in (4107, 2090, 2092)],
+        "compatibility": stacked["compatibility"],
+    }
+    requirements = {
+        "schema_version": 1,
+        "grid_phase": 3,
+        "operating_mode": "backup",
+        "pv_dc_kw": None,
+        "required_usable_kwh": None,
+        "required_discharge_ac_kw": None,
+    }
+    layouts = []
+    for ids in (("north-a", "south-a"), ("north-b", "south-b")):
+        authored: FixtureObject = {
+            "brief": {"system_scope": "storage_only"},
+            "backup_demand": {"schema_version": 1, "load_kw": 5, "duration_hours": 8},
+            "equipment_plant_setup": {
+                "schema_version": 1,
+                "requirements": requirements,
+                "units": [
+                    {
+                        "id": uid,
+                        "name": name,
+                        "inputs": {"equipment_setup": requirements},
+                    }
+                    for uid, name in zip(ids, ("North", "South"), strict=True)
+                ],
+                "parallel_groups": [],
+            },
+        }
+        found = json_object(
+            search_plant(
+                compile_discovery_inputs(authored),
+                basis,
+                EquipmentSearchLimits(work_budget=300),
+                EquipmentCandidateStore(workspace),
+                lambda: None,
+            )
+        )
+        layouts.append(
+            [
+                tuple(
+                    (
+                        u["selection"]["parallel_stacks"],
+                        u["selection"]["modules_per_stack"],
+                    )
+                    for u in c["plant"]["units"]
+                )
+                for c in found["candidates"]
+            ]
+        )
+    assert len(set(layouts[0])) == 64
+    assert layouts[0][0] == ((1, 3), (2, 3))
+    assert layouts[0] == layouts[1]
+
+
 def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible(
     feed: FixtureObject, workspace: Workspace
 ) -> None:
