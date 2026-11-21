@@ -117,6 +117,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$_COOKIE = $cookie;
 			}
 		);
+		$this->isolate_registration_mail_capacity();
 	}
 
 	/** Restore only the exclusive instance's exact pre-fixture options after all native cleanup.
@@ -281,7 +282,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 
 	/** A customer can register while the native worker is waiting for mail capacity. */
 	public function test_registration_keeps_pending_notices_until_the_mail_worker_can_accept_them(): void {
-		$this->isolate_registration_mail_capacity();
 		$held = Capacity::reserve_critical( 'fixture-busy-registration-mail', Capacity::LIMITS['critical']['count'], 1 );
 		$this->assertIsArray( $held );
 		$post   = $this->public_post( 33 );
@@ -393,7 +393,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	public function test_final_native_registration_witness_requires_exact_account_slot_and_plan(): void {
 		$post = $this->public_post( 69 );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
-		$this->isolate_registration_mail_capacity();
 		$held = Capacity::reserve_critical( 'fixture-retained-registration-plan', Capacity::LIMITS['critical']['count'], 1 );
 		$this->assertIsArray( $held );
 		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
@@ -786,7 +785,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 
 	/** A broken team template leaves the account and its independently deliverable receipt intact. */
 	public function test_registration_keeps_native_account_while_team_mail_template_recovers(): void {
-		$this->isolate_registration_mail_capacity();
 		$rewrite = static fn ( string $body ): string => str_replace( 'https://registration.invalid/', 'https://override.invalid/', $body );
 		add_filter( 'woocommerce_mail_content', $rewrite );
 		try {
