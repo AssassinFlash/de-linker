@@ -1,6 +1,6 @@
 {
-  "_planner-core-B8jZ5P7I.js": {
-    "file": "assets/planner-core-B8jZ5P7I.js",
+  "_planner-core-BG4hSnja.js": {
+    "file": "assets/planner-core-BG4hSnja.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
@@ -14,13 +14,13 @@
     "name": "rolldown-runtime"
   },
   "src/components/configurator/ProjectWorkbench.tsx": {
-    "file": "assets/ProjectWorkbench-B4cU5fmy.js",
+    "file": "assets/ProjectWorkbench-DkIMZIpm.js",
     "name": "ProjectWorkbench",
     "src": "src/components/configurator/ProjectWorkbench.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-B8jZ5P7I.js"
+      "_planner-core-BG4hSnja.js"
     ],
     "dynamicImports": [
       "src/components/design/SceneViewport.tsx",
@@ -28,24 +28,24 @@
     ]
   },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-Cqc1LDq7.js",
+    "file": "assets/MapViewport-BYwPBa81.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-B8jZ5P7I.js",
+      "_planner-core-BG4hSnja.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-BunXiZo1.js",
+    "file": "assets/SceneViewport-pziT7ani.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-B8jZ5P7I.js",
+      "_planner-core-BG4hSnja.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
@@ -56,7 +56,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-B8jZ5P7I.js"
+      "_planner-core-BG4hSnja.js"
     ]
   }
 }

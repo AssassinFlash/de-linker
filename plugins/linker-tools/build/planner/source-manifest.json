@@ -9,7 +9,7 @@
     "src/components/CreditText.tsx": "a2e029484473c16a10bc0ed04a88907d04e382d738f920666eee94c5210f1acb",
     "src/components/GridConnectionForm.tsx": "c3f30316be7c639e0ffd85378735d26c84e56619ea845cc5fa3a0002c46df62d",
     "src/components/Icon.tsx": "eb20aed3b7b12c60865dc0f7136fe51db3bedc64aa667d110229e278b7d10871",
-    "src/components/NewProject.tsx": "18f1da16ac9451b03ef7a343e6a933fcf5530ff0da01dc77c5f4c8651ac28f5f",
+    "src/components/NewProject.tsx": "f53896ef8c6dc74244accce1bbc0d633f1fecb46bb3530e270f1556fb49d769d",
     "src/components/Notice.tsx": "087ffdefda0791ede0bcaffb6c7677b13539a8ba9b883423edc9503110c5ffa5",
     "src/components/NumberField.tsx": "de5dd3a7d33e9415e935be5aad1855138fa141c94e2670ec28c343efdfd35e1c",
     "src/components/OwnedProfile.tsx": "c2f401f74dffd1bd18b2a70428d448007732e3094526ec00afe941a3d6db529e",
@@ -207,7 +207,7 @@
     "src/contracts/pvgis-roof-reference.schema.json": "7757b7ebd37121adc5bc9910090ded6405293ed3218fe04b885fc0b32b796029",
     "src/contracts/weather-acquisition.schema.json": "f851249627d0d499d856bbb43f75473d75cd9b84f1641b37ef756354442cca8b",
     "src/contracts/wgs84-ellipsoid.json": "6eb345c4434248190de923c9f280463a202c86fd1facbba428df80fd2069952e",
-    "src/data/DraftStore.ts": "534aaf990965466ccc46456b395d11fb32f16f05cc2fee51a2b0aa149b93718f",
+    "src/data/DraftStore.ts": "fe001deda7a9c1a65c826e9383f00c40a3b11cca62a0caa46078bad7b0bfc106",
     "src/data/GeometryImportStore.ts": "5d26925d79049deb934b94a4771f24152e551c74a9a3614dd3212c0751f7de6d",
     "src/data/MapDrawingController.ts": "06d87364b45b351cfbb20ca381a5d259c284f7561169551354911d1303305386",
     "src/data/MapDrawingDraftStore.ts": "c2f3f6f15372ee2e36b3a379d66822f6c2b38bfee4efb35b8944fd4af0cd7800",
@@ -343,13 +343,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-Cqc1LDq7.js": "4d57fc82a6aa209b7b884d9d09e7828902c7b184d7dd6701080d12fd277550f4",
-    "assets/ProjectWorkbench-B4cU5fmy.js": "bcc6a83debeb04c49c35050209f011649c14fcbe75222c9707ac8502b75449da",
-    "assets/SceneViewport-BunXiZo1.js": "a4f17b3c06aafb5f0567b944c2673ae4a3c70a38886d0b7c7411009494b13d35",
-    "assets/planner-core-B8jZ5P7I.js": "00d684eaa73a6a25e16512885792458abd915cc40fa49ff7477ef39d76f05548",
-    "assets/planner.js": "44df01447af74d9e431f0f4de1d30e2c31c3bd297b46783ff896ffb83d3e3b46",
+    "assets/MapViewport-BYwPBa81.js": "6bf9c88bdd50e6eccc20738a1bd952555c6c45e10ebeff20a6e8ce4661c40678",
+    "assets/ProjectWorkbench-DkIMZIpm.js": "4a652c87a33690764437d6dd4b09d8ff1323d3c224018287ddaa4b7407d19252",
+    "assets/SceneViewport-pziT7ani.js": "675eae734f1b459c97eaa19b743dbc0d405633eb11f2e08c905f4c2cfb4b10e6",
+    "assets/planner-core-BG4hSnja.js": "7b3e4f6217b017ce6e6a7ab95282a256f3c1123184ed27932a5b4026990fc514",
+    "assets/planner.js": "8d85e4382d3adc24e5a65c5179f3f901837fab694a86e651a05da4f1c6163c42",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "f7b87c9a3f05c9efb2068ed219952f4713e15dc893c9c4e689280c64ac5f2e0c",
+    "vite-manifest.json": "5a736938abebd4ff38abc28096960db796e4f77356182e9d4c58f7ff03e3d6f3",
     "windpress.scan.txt": "f4f9ddcfc8c6297c508d0415c378127f94468ce5c745d5bf2a776ab6b55c1fab"
   },
   "project_input_contracts": [
