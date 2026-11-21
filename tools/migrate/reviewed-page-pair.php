@@ -91,6 +91,77 @@ use Linker\I18n\Woo\Projection;
 	$fields     = new Fields();
 	$planner    = new Planner( new Segmenter( $tokenizer ), new Aligner() );
 	$translator = new Translator( $languages, $planner, $fields, $state, $client, new Validator( $rules ), $twins, $links );
+	if ( in_array( $pair['mode'], array( 'read_descriptions', 'save_descriptions' ), true ) ) {
+		$read_descriptions = static function () use ( $pair ): array {
+			$result = array();
+			foreach ( $pair['changes'] as $change ) {
+				$id = (int) $change['id'];
+				wp_cache_delete( $id, 'post_meta' );
+				foreach ( $change['keys'] as $key ) {
+					if ( ! in_array( $key, array( '_seopress_titles_desc', '_seopress_social_fb_desc', '_seopress_social_twitter_desc' ), true ) ) {
+						throw new RuntimeException( 'Expected a SEOPress description.' );
+					}
+					$values = get_post_meta( $id, $key, false );
+					if ( 1 !== count( $values ) ) {
+						throw new RuntimeException( 'Expected one published value for ' . $id . ' ' . $key );
+					}
+					$result[ $id ][ $key ] = $values[0];
+				}
+			}
+			return $result;
+		};
+		if ( 'read_descriptions' === $pair['mode'] ) {
+			$snapshot = array(
+				'home'     => home_url(),
+				'values'   => $read_descriptions(),
+				'metadata' => $read(),
+				'current'  => $translator->current( State::POST, $en ),
+			);
+			echo '@@reviewed-pair@@' . wp_json_encode( $snapshot );
+			return;
+		}
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
+			throw new RuntimeException( 'Cannot start the paired description update.' );
+		}
+		try {
+			if ( false === $wpdb->query( $wpdb->prepare( 'SELECT ID FROM %i WHERE ID IN (%d,%d) FOR UPDATE', $wpdb->posts, $en, $de ) )
+				|| false === $wpdb->query( $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d,%d) ORDER BY post_id, meta_id FOR UPDATE', $wpdb->postmeta, $en, $de ) ) ) {
+				throw new RuntimeException( 'Cannot lock the reviewed page pair.' );
+			}
+			if ( $read_descriptions() !== $pair['before'] || $read() !== $pair['metadata_before'] || ! $translator->current( State::POST, $en ) ) {
+				throw new RuntimeException( 'The published descriptions or their translation baseline changed.' );
+			}
+			foreach ( $pair['after'] as $id => $values ) {
+				foreach ( $values as $key => $value ) {
+					if ( ! isset( $pair['before'][ $id ][ $key ] ) ) {
+						throw new RuntimeException( 'Description is outside the reviewed fields.' );
+					}
+					update_post_meta( (int) $id, $key, wp_slash( $value ) );
+				}
+			}
+			foreach ( array( State::SOURCE_HASH, State::UNITS ) as $key ) {
+				$expected = $pair['expected_metadata'][ $de ][ $key ];
+				if ( 1 !== count( $expected ) ) {
+					throw new RuntimeException( 'Expected the existing bilingual description baseline.' );
+				}
+				update_post_meta( $de, $key, wp_slash( $expected[0] ) );
+			}
+			if ( $read_descriptions() !== $pair['after'] || $read() !== $pair['expected_metadata'] || ! $translator->current( State::POST, $en ) ) {
+				throw new RuntimeException( 'The reviewed descriptions or translation failed readback.' );
+			}
+			if ( false === $wpdb->query( 'COMMIT' ) ) {
+				throw new RuntimeException( 'Cannot commit the paired description update.' );
+			}
+		} catch ( Throwable $error ) {
+			$wpdb->query( 'ROLLBACK' );
+			throw $error;
+		} finally {
+			clean_post_cache( $en );
+			clean_post_cache( $de );
+		}
+		echo '@@reviewed-pair@@{}';
+		return;
+	}
 	if ( 'read' === $pair['mode'] ) {
 		$snapshot = array(
 			'home'     => home_url(),
@@ -111,20 +182,28 @@ use Linker\I18n\Woo\Projection;
 		$texts = array();
 		foreach ( $pair['changes'] as $change ) {
 			$post               = clone $posts[ (int) $change['id'] ];
-			$post->post_content = $change['after'];
-			$texts[]            = $fields->of_post( $post, $de === $post->ID );
+			$post->post_content = $change['after'] ?? $post->post_content;
+			$values             = $fields->of_post( $post, $de === $post->ID );
+			foreach ( $change['descriptions'] ?? array() as $key => $description ) {
+				$values[ Fields::META . $key ] = array( $description, false );
+			}
+			$texts[] = $values;
 		}
 		list( $source, $german ) = $texts;
-		$units                   = array();
+		$descriptions            = $pair['changes'][0]['descriptions'] ?? array();
+		$units                   = $descriptions ? json_decode( get_post_meta( $de, State::UNITS, true ), true, 512, JSON_THROW_ON_ERROR ) : array();
 		$parts                   = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
+			$parts[] = $field . "\0" . $value;
+			if ( $descriptions && ! isset( $descriptions[ substr( $field, strlen( Fields::META ) ) ] ) ) {
+				continue;
+			}
 			$translated      = $german[ $field ][0] ?? '';
 			$units[ $field ] = array(
 				'src'      => $planner->split( $value, $html )->hashes(),
 				'out'      => $planner->split( $translated, $html )->hashes(),
 				'conflict' => false,
 			);
-			$parts[]         = $field . "\0" . $value;
 		}
 		// The paired writer checks this preview against native adopt_current() before COMMIT.
 		/**
@@ -134,14 +213,16 @@ use Linker\I18n\Woo\Projection;
 		 */
 		$expected = $read();
 		$updates  = array(
-			array( $en, State::STATUS, State::SYNCED ),
 			array( $de, State::SOURCE_HASH, sha1( implode( "\1", $parts ) ) ),
 			array( $de, State::UNITS, wp_json_encode( $units ) ),
 		);
+		if ( ! $descriptions ) {
+			$updates[]                      = array( $en, State::STATUS, State::SYNCED );
+			$expected[ $en ][ State::NOTE ] = array();
+		}
 		foreach ( $updates as list( $id, $key, $value ) ) {
 			$expected[ $id ][ $key ] = array_fill( 0, max( 1, count( $expected[ $id ][ $key ] ) ), $value );
 		}
-		$expected[ $en ][ State::NOTE ] = array();
 		echo '@@reviewed-pair@@' . wp_json_encode( array( 'expected_metadata' => $expected ) );
 		return;
 	}
