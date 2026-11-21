@@ -99,7 +99,6 @@ final class Handler {
 		$locale                     = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
-			$guard       = new PublicGuard();
 			$nonce       = $post[ self::NONCE ] ?? '';
 			$project     = $post[ Context::PROJECT_FIELD ] ?? '';
 			$transfer    = InquiryTransfer::read( $post[ InquiryTransfer::FIELD ] ?? null );
@@ -113,7 +112,7 @@ final class Handler {
 			// the nonce and original UUID still allow the native ledger to return a prior receipt.
 			$retry_matches              = ! is_array( $retained ) || ( ( $retained[ Context::PROJECT_FIELD ] ?? '' ) === $project && ( $retained['linker_request_id'] ?? '' ) === ( $post['linker_request_id'] ?? '' ) );
 			$this->preliminary_verified = $nonce_valid && $retry_matches && '' !== $project;
-			if ( ! $nonce_valid || ! $retry_matches || ! $guard->allows( $post, false ) ) {
+			if ( ! $nonce_valid || ! $retry_matches || ! PublicGuard::allows( $post ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			if ( '' !== $project && isset( $post['linker_without_project'] ) ) {

@@ -192,8 +192,6 @@ for (const locale of ['en', 'de'] as const) {
 			await form.locator('[name="name"]').fill('E2E Report Guest');
 			await form.locator('[name="email"]').fill(email);
 			await form.locator('[name="consent"]').check();
-			// PublicGuard requires three seconds on a rendered form.
-			await page.waitForTimeout(3100);
 			await form
 				.getByRole('button', { name: name('Send inquiry') })
 				.click();

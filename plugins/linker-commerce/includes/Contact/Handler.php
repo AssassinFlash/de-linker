@@ -97,7 +97,7 @@ final class Handler {
 			$this->last_error = $submission;
 			return 'invalid';
 		}
-		if ( ! ( new PublicGuard() )->allows( $post, false ) ) {
+		if ( ! PublicGuard::allows( $post ) ) {
 			$this->last_error = new WP_Error( 'linker_contact_invalid', 'The form was refused.' );
 			return 'invalid';
 		}

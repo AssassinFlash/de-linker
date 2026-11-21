@@ -146,7 +146,7 @@ final class Form {
 		// Selection transport is submitted only by the inclusion checkbox.
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
-		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
+		$html .= \Linker\Commerce\Inquiry\PublicGuard::fields();
 
 		if ( '' !== $state ) {
 			$html .= $state;

@@ -85,7 +85,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 * @return array<string,string>
 	 */
 	private function post( bool $verified = false ): array {
-		$started = (string) time();
+
 		$post    = array(
 			'name'                  => 'Safe intake fixture',
 			'email'                 => 'intake-' . self::tag() . '@example.test',
@@ -95,8 +95,6 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			'lang'                  => 'en',
 			'linker_request_id'     => wp_generate_uuid4(),
 			'cf-turnstile-response' => $verified ? 'XXXX.DUMMY.TOKEN.XXXX' : '',
-			'linker_started'        => $started,
-			'linker_started_nonce'  => wp_create_nonce( 'linker_inquiry_started_' . $started ),
 			'linker_inquiry_nonce'  => wp_create_nonce( Handler::ACTION ),
 			'linker_contact_nonce'  => wp_create_nonce( ContactForm::NONCE_ACTION ),
 			'linker_draft_hash'     => WC()->cart->get_cart_hash(),

@@ -2213,7 +2213,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 * @return array<string,string>
 	 */
 	private function public_post( int $number ): array {
-		$start = (string) ( time() - 5 );
+
 		$_POST = $this->request( $number ) + array(
 			'billing_company'      => 'Capacity Fixture GmbH',
 			'billing_first_name'   => 'Maria',
@@ -2225,8 +2225,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			'email'                => 'capacity-' . self::tag() . '@example.test',
 			'password'             => 'Native-fixture-2026!',
 			'register'             => 'Register',
-			'linker_started'       => $start,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $start ),
 		);
 		return $_POST;
 	}

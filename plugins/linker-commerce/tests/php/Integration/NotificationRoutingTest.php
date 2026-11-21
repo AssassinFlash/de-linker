@@ -210,7 +210,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	public function test_contact_notification_routing( string $saved_from, string $from ): void {
 		update_option( Options::NOTIFY_FROM, $saved_from );
 		$this->as_user( 0 );
-		$stamp         = (string) ( time() - 5 );
+
 		$contact_email = 'linker-it-' . self::tag() . '@example.test';
 		$marker        = self::newest_mail_job();
 		$this->assertSame(
@@ -222,8 +222,6 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 					'message'              => 'A question about a storage system.',
 					'consent'              => '1',
 					Form::NONCE_FIELD      => wp_create_nonce( Form::NONCE_ACTION ),
-					'linker_started'       => $stamp,
-					'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 				)
 			)
 		);

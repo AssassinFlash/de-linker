@@ -303,7 +303,7 @@ final class Form {
 		return $binding . '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( $language ) . '" />'
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. '<input type="hidden" name="linker_draft_hash" value="' . $this->value( array( 'key' => 'draft-hash' ) ) . '" />'
-		. wp_nonce_field( Handler::nonce_action( $project, $transfer ), Handler::NONCE, true, false ) . ( new PublicGuard() )->fields();
+		. wp_nonce_field( Handler::nonce_action( $project, $transfer ), Handler::NONCE, true, false ) . PublicGuard::fields();
 	}
 
 	/**

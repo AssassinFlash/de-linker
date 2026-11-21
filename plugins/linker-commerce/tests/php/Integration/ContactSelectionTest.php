@@ -121,7 +121,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$this->assertIsString( $raw );
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
-		$started = (string) time();
+
 		$post    = array(
 			'name'                          => 'Context Fixture',
 			'email'                         => 'context-' . self::tag() . '@example.test',
@@ -131,8 +131,6 @@ final class ContactSelectionTest extends IntegrationTestCase {
 			'linker_request_id'             => wp_generate_uuid4(),
 			'cf-turnstile-response'         => 'XXXX.DUMMY.TOKEN.XXXX',
 			Form::NONCE_FIELD               => wp_create_nonce( Form::NONCE_ACTION ),
-			'linker_started'                => $started,
-			'linker_started_nonce'          => wp_create_nonce( 'linker_inquiry_started_' . $started ),
 			SelectionContext::FIELD         => $raw,
 			SelectionContext::INCLUDE_FIELD => '0',
 		);

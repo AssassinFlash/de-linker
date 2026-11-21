@@ -271,8 +271,6 @@ async function register(
 	await page.fill('#billing_last_name', 'Mustermann');
 	await page.fill('#reg_email', email);
 	await page.fill('#reg_password', PASSWORD);
-	// PublicGuard's minimum fill time is three seconds.
-	await page.waitForTimeout(3_300);
 	await page.locator('button[name="register"]').click();
 	await page.waitForLoadState('load');
 	try {
@@ -423,8 +421,6 @@ test.describe('the commercial chain', () => {
 			if ((await terms.count()) > 0 && !(await terms.isChecked())) {
 				await terms.check();
 			}
-			// PublicGuard's minimum fill time applies to the inquiry form too.
-			await page.waitForTimeout(3_300);
 			await placeOrder.click();
 			await expect(
 				page

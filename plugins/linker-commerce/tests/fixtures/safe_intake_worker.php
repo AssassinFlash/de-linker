@@ -34,14 +34,12 @@ $_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = substr( hash( 'sha256
 $_SERVER['REMOTE_ADDR']                                  = '127.0.0.245';
 wc_load_cart();
 WC()->cart->empty_cart();
-$linker_commerce_started = (string) time();
+
 $linker_commerce_post    = array(
 	'name'                 => 'Concurrent fixture',
 	'email'                => $linker_commerce_email,
 	'message'              => 'Please advise on a battery.',
 	'consent'              => '1',
-	'linker_started'       => $linker_commerce_started,
-	'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $linker_commerce_started ),
 	'linker_inquiry_nonce' => wp_create_nonce( \Linker\Commerce\Inquiry\Handler::ACTION ),
 	'linker_request_id'    => wp_generate_uuid4(),
 	'linker_proof'         => '',

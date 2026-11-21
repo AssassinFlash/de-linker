@@ -305,10 +305,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	private function post( string $action = 'inquiry' ): array {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
-		$started = (string) time();
+
 		return array(
-			'linker_started'        => $started,
-			'linker_started_nonce'  => wp_create_nonce( 'linker_inquiry_started_' . $started ),
 			'name'                  => 'Fixture Installer',
 			'email'                 => 'fixture-' . self::tag() . '@example.test',
 			'company'               => 'Fixture Company',
@@ -360,12 +358,12 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Verified autofill keeps the native signature and empty honeypot checks.
+	 * An anonymous contact requires its native form nonce and an empty honeypot.
 	 */
-	public function test_verified_submission_still_rejects_filled_traps_and_forged_starts(): void {
+	public function test_contact_rejects_a_filled_honeypot_or_invalid_form_nonce(): void {
 		$post   = $this->post( 'contact' );
 		$marker = self::newest_mail_job();
-		foreach ( array( array( 'website' => 'https://spam.example.test' ), array( 'linker_started_nonce' => 'forged' ) ) as $bad ) {
+		foreach ( array( array( 'website' => 'https://spam.example.test' ), array( ContactForm::NONCE_FIELD => 'invalid-test-form-nonce' ) ) as $bad ) {
 			$this->assertSame( 'invalid', ( new ContactHandler() )->process( array_replace( $post, $bad ) ) );
 		}
 		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );

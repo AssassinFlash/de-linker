@@ -86,7 +86,6 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		WC()->cart->empty_cart();
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
-		$stamp = (string) ( time() - 5 );
 		$post  = array(
 			'name'                 => '246 Tester',
 			'email'                => 'tester246-limit-' . self::tag() . '@example.test',
@@ -94,8 +93,6 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
 			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		for ( $attempt = 0; $attempt < 3; ++$attempt ) {
 			$order = ( new Handler() )->process( $post );
@@ -238,7 +235,6 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			self::deliver_fixed_receipt( $order );
 		}
 		$this->assertCount( 10, self::mail_jobs_after( $before ), 'The ten original team notices remain.' );
-		$stamp  = (string) ( time() - 5 );
 		$email  = 'tester246-cap-' . self::tag() . '@example.test';
 		$post   = array(
 			'name'                 => '246 Tester',
@@ -247,8 +243,6 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
 			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		$marker = self::newest_mail_job();
 		$result = 'request' === $door ? ( new Handler() )->process( $post ) : ( new ContactHandler() )->process( $post );

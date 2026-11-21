@@ -283,8 +283,6 @@ for (const locale of ['en', 'de'] as const) {
 					.fill('E2E Product Report Guest');
 				await form.locator('[name="email"]').fill(email);
 				await form.locator('[name="consent"]').check();
-				// The legacy PublicGuard accepts submission three seconds after render.
-				await page.waitForTimeout(3100);
 				await form
 					.getByRole('button', {
 						name: name('Send inquiry'),

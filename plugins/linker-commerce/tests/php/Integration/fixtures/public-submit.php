@@ -38,7 +38,7 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.246';
 wp_set_current_user( 0 );
 wc_load_cart();
 WC()->cart->empty_cart();
-$linker_commerce_stamp = (string) ( time() - 5 );
+
 $linker_commerce_post  = array(
 	'name'                 => 'Parallel tester',
 	'email'                => $linker_commerce_email,
@@ -46,8 +46,6 @@ $linker_commerce_post  = array(
 	'consent'              => '1',
 	'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
 	'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-	'linker_started'       => $linker_commerce_stamp,
-	'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $linker_commerce_stamp ),
 );
 // Widen the write interval to exercise contenders passing a non-atomic check.
 add_action(

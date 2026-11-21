@@ -278,13 +278,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertFalse( $old_transfer->current() );
 		$this->assertSame( 1, preg_match( '/name="linker_inquiry_nonce" value="([^"]+)"/', $review['inquiry_form_html'], $nonce ) );
 		$this->assertSame( 1, preg_match( '/name="linker_project_note_revisions\[' . $handoff['id'] . '\]" value="([^"]+)"/', $review['inquiry_form_html'], $note_revision ) );
-		$stamp                             = (string) ( time() - 5 );
+
 		$post                              = array(
 			'linker_preliminary_project'    => $id . ':1',
 			'linker_report_transfer'        => ( $token[1] ?? '' ),
 			'linker_inquiry_nonce'          => ( $nonce[1] ?? '' ),
-			'linker_started'                => $stamp,
-			'linker_started_nonce'          => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			'linker_draft_hash'             => WC()->cart->get_cart_hash(),
 			'linker_project_notes_present'  => '1',
 			'linker_include_project_notes'  => '1',
@@ -512,14 +510,12 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		);
 		$email   = 'roof-' . self::tag() . '@example.test';
 		$project = str_repeat( '7', 32 ) . ':3';
-		$stamp   = (string) ( time() - 5 );
+
 		$_POST   = array(
 			'action'                     => 'linker_inquiry',
 			'linker_preliminary_project' => $project,
 			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
 			'linker_draft_hash'          => WC()->cart->get_cart_hash(),
-			'linker_started'             => $stamp,
-			'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			'name'                       => 'Maria Weber',
 			'message'                    => 'Please call about my roof.',
 			'email'                      => $email,
@@ -618,15 +614,13 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			$this->assertStringContainsString( 'name="linker_request_id" value="' . $uuid . '"', $retry );
 		}
 		$other = $project . ':6';
-		$stamp = (string) ( time() - 5 );
+
 		$error = ( new \Linker\Commerce\Inquiry\Handler() )->process(
 			array(
 				'linker_inquiry_retry'       => $handle,
 				'linker_preliminary_project' => $other,
 				'linker_request_id'          => $uuid,
 				'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $other ),
-				'linker_started'             => $stamp,
-				'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 				'name'                       => 'Separate Customer Action',
 				'email'                      => 'wrong-retry@example.test',
 				'consent'                    => '1',
@@ -661,13 +655,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		WC()->cart->add_to_cart( $product->get_id() );
 		$this->assertNotSame( $reviewed, WC()->cart->get_cart_hash() );
 		$project = str_repeat( 'c', 32 ) . ':9';
-		$stamp   = (string) ( time() - 5 );
+
 		$post    = array(
 			'linker_preliminary_project' => $project,
 			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
 			'linker_draft_hash'          => $reviewed,
-			'linker_started'             => $stamp,
-			'linker_started_nonce'       => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			'name'                       => 'Marta Becker',
 			'email'                      => 'reviewed-project@example.test',
 			'consent'                    => '1',
@@ -859,7 +851,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				remove_filter( 'linker_genie_inquiry_summary', $old_summary, 999 );
 			}
 		);
-		$stamp = (string) ( time() - 5 );
+
 		$order = ( new \Linker\Commerce\Inquiry\Handler() )->process(
 			array(
 				'name'                 => 'Maria Weber',
@@ -868,8 +860,6 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'consent'              => '1',
 				'lang'                 => 'de',
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-				'linker_started'       => $stamp,
-				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			)
 		);
 		$this->assertInstanceOf( WC_Order::class, $order );
@@ -935,24 +925,16 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	public function test_bots_and_invalid_details_cannot_create_an_inquiry_or_mail(): void {
 		$this->as_user( 0 );
 		$marker = self::newest_mail_job();
-		$stamp  = (string) ( time() - 5 );
+
 		$post   = array(
 			'name'                 => 'Maria Weber',
 			'email'                => 'bot-' . self::tag() . '@example.test',
 			'message'              => 'A question.',
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
-		$now    = (string) time();
 		foreach ( array(
 			array( 'website' => 'spam' ),
-			array(
-				'linker_started'       => $now,
-				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $now ),
-			),
-			array( 'linker_started_nonce' => 'forged' ),
 			array( 'linker_inquiry_nonce' => 'forged' ),
 			array( 'name' => '' ),
 			array( 'email' => 'invalid' ),
@@ -1096,20 +1078,13 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	/**
 	 * Bots must be stopped before a record or email can be created.
 	 */
-	public function test_public_guard_requires_a_signed_time_and_an_empty_honeypot(): void {
-		$stamp  = (string) ( time() - 5 );
-		$post   = array(
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
-			'website'              => '',
-		);
-		$fields = ( new PublicGuard() )->fields();
+	public function test_autofill_needs_only_an_empty_honeypot_from_the_public_guard(): void {
+		$fields = PublicGuard::fields();
 		$this->assertStringContainsString( 'name="website"', $fields, 'Both doors receive the trap from the shared guard.' );
 		$this->assertStringContainsString( 'aria-label="Website"', $fields );
-		$this->assertTrue( ( new PublicGuard() )->allows( $post ) );
-		$this->assertFalse( ( new PublicGuard() )->allows( array_replace( $post, array( 'website' => 'spam' ) ) ) );
-		$this->assertFalse( ( new PublicGuard() )->allows( array_replace( $post, array( 'linker_started' => (string) time() ) ) ) );
-		$this->assertFalse( ( new PublicGuard() )->allows( array_replace( $post, array( 'linker_started_nonce' => 'forged' ) ) ) );
+		$this->assertSame( 1, substr_count( $fields, '<input ' ) );
+		$this->assertTrue( PublicGuard::allows( array( 'website' => '' ) ) );
+		$this->assertFalse( PublicGuard::allows( array( 'website' => 'spam' ) ) );
 	}
 	/**
 	 * Contact submissions must be visible in the same native inquiry list.
@@ -1121,7 +1096,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->later( static fn () => WC()->cart->empty_cart() );
 		$product = $this->product( '100' );
 		WC()->cart->add_to_cart( $product->get_id(), 1 );
-		$stamp = (string) ( time() - 5 );
+
 		$email = 'contact-' . self::tag() . '@example.test';
 		$post  = array(
 			'name'                 => 'Maria Weber',
@@ -1129,8 +1104,6 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'message'              => 'A contact question.',
 			'consent'              => '1',
 			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		WC()->mailer();
 		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Preserve the exact test runner value for restoration.
@@ -1192,14 +1165,12 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->later( static fn () => WC()->cart->empty_cart() );
 		$product = $this->product( '125' );
 		WC()->cart->add_to_cart( $product->get_id(), 2 );
-		$stamp  = (string) ( time() - 5 );
+
 		$post   = array(
 			'name'                 => 'Maria Beispiel',
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
@@ -1262,14 +1233,12 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		WC()->cart->add_to_cart( $product->get_id(), 1 );
 		$user = get_userdata( $customer->get_id() );
 		$this->assertInstanceOf( \WP_User::class, $user );
-		$stamp  = (string) ( time() - 5 );
+
 		$post   = array(
 			'name'                 => (string) $user->display_name,
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
@@ -1310,7 +1279,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'value="Teststraße 1"', $fields );
 		$this->assertStringContainsString( 'name="billing_vat_id"', $fields );
 		$this->assertStringContainsString( 'value="DE123456789"', $fields );
-		$stamp  = (string) ( time() - 5 );
+
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process(
 			array(
 				'name'                 => 'Maria Beispiel',
@@ -1320,8 +1289,6 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'billing_address_1'    => 'Teststraße 246',
 				'billing_vat_id'       => $vat,
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-				'linker_started'       => $stamp,
-				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			)
 		);
 		$this->assertInstanceOf( WC_Order::class, $result );

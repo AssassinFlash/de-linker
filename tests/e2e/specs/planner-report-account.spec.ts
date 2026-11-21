@@ -95,8 +95,6 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(page).toHaveURL(url + account);
 					await page.locator('#username').fill(login);
 					await page.locator('#password').fill(PASSWORD);
-					// PublicGuard requires three seconds on the rendered login form.
-					await page.waitForTimeout(3_300);
 					await page.locator('button[name="login"]').click();
 					await expect(
 						page.getByRole('search', {
@@ -218,8 +216,6 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(form.locator('[name="email"]')).toHaveValue(
 						email
 					);
-					// This form is also admitted by PublicGuard.
-					await page.waitForTimeout(3_100);
 					await form
 						.getByRole('button', { name: name('Send inquiry') })
 						.click();
