@@ -38,7 +38,7 @@ export function ProfileCurve({
 	const peakLabel =
 		new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(peak) +
 		" kW";
-	const axisX = 18 + peakLabel.length * 10;
+	const axisX = 18 + peakLabel.length * 14;
 	// Drawing coordinates are a display layout, not calculation time resolution.
 	const x = (instant: string) =>
 			axisX + ((Date.parse(instant) - start) / (end - start)) * (624 - axisX),
