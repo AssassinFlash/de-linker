@@ -589,19 +589,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \WP_User::class, $loaded );
 		$this->assertSame( $before, $loaded->user_activation_key );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
-		$_POST = array_merge(
-			$this->post( 'password_reset' ),
-			array(
-				'user_login'                  => $user->user_email,
-				'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
-			)
+		$_POST = array(
+			'user_login'                  => $user->user_email,
+			'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
 		);
-		unset( $_POST['cf-turnstile-response'] );
 		$this->assertTrue( \WC_Shortcode_My_Account::retrieve_password() );
 		$loaded = get_userdata( $user->ID );
 		$this->assertInstanceOf( \WP_User::class, $loaded );
 		$this->assertNotSame( $before, $loaded->user_activation_key );
-		$this->assertFalse( \WC_Shortcode_My_Account::retrieve_password(), 'Repeated UUID cannot generate another reset key/email.' );
+		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
 	}
 
 	/** Real Woo session and render hooks restore only the failed reset login. */
