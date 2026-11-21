@@ -35,6 +35,9 @@ const labels = {
 		preview: 'Preview report',
 		download: 'Download PDF',
 		materials: 'Download bill of materials (CSV)',
+		removeLogo: 'Remove logo',
+		updateReport: 'Update project report',
+		history: 'Calculation history',
 		logo: 'Your logo on the PDF (optional)',
 		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
@@ -72,6 +75,9 @@ const labels = {
 		preview: 'Berichtsvorschau',
 		download: 'PDF herunterladen',
 		materials: 'Stückliste herunterladen (CSV)',
+		removeLogo: 'Logo entfernen',
+		updateReport: 'Projektbericht aktualisieren',
+		history: 'Bisherige Berechnungen',
 		logo: 'Ihr Logo im PDF (optional)',
 		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
@@ -389,6 +395,33 @@ for (const lang of ['en', 'de'] as const) {
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)
 			).toBe(width);
+			await workspace
+				.getByRole('button', { name: words.removeLogo, exact: true })
+				.click();
+			await workspace
+				.getByRole('button', { name: words.updateReport, exact: true })
+				.click();
+			const history = workspace.getByRole('region', {
+				name: words.history,
+				exact: true,
+			});
+			const earlier = history.getByRole('button', {
+				name: new RegExp(`^(?:Revision|Version) ${revision}\\b`),
+			});
+			await earlier.click({ timeout: 90_000 });
+			await expect(page).toHaveURL(/[?&]run=[a-f0-9]{32}/);
+			await page.reload();
+			const historicalFile = page.waitForEvent('download');
+			await history
+				.getByRole('button', { name: words.download, exact: true })
+				.click();
+			const historicalPdf = await historicalFile;
+			expect(historicalPdf.suggestedFilename()).toBe(
+				pdf.suggestedFilename()
+			);
+			expect(readFileSync((await historicalPdf.path())!)).toEqual(
+				downloaded
+			);
 			await navigation
 				.getByRole('button', { name: words.solarChapter })
 				.click();
