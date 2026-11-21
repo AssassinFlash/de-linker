@@ -22,14 +22,21 @@ export function RoofStart({
 }) {
 	return (
 		<>
-			<button
-				className="sc-button sc-roof-plan-entry"
-				type="button"
-				disabled={disabled || locked}
-				onClick={openPlan}
-			>
-				{__("Use a roof plan or measurements", "linker-tools")}
-			</button>
+			<div className="sc-actions sc-roof-plan-entry">
+				<button
+					className="sc-button"
+					type="button"
+					disabled={disabled || locked}
+					onClick={openPlan}
+				>
+					{__("Use a roof plan or measurements", "linker-tools")}
+				</button>
+				{!locked && (
+					<a className="sc-button" href="?compare=preliminary">
+						{__("Compare options", "linker-tools")}
+					</a>
+				)}
+			</div>
 			<section className="sc-card">
 				<header className="sc-section-head">
 					<div>

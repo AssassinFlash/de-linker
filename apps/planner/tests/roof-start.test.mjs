@@ -215,6 +215,15 @@ test("a roof starts from its country and address and opens directly on the locat
 	assert.equal(project.inputs.brief.system_scope, null);
 });
 
+test("a roof visitor can compare options without a drawing, address or map consent", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await until(() => button("Use a roof plan or measurements"));
+	const compare = document.querySelector('a[href="?compare=preliminary"]');
+	assert.equal(compare?.textContent.trim(), "Compare options");
+	assert.equal(page.searches.length, 0);
+	assert.equal(page.opened.length, 0);
+});
+
 test("a local roof plan opens without an address, a map lookup or imagery consent", async (t) => {
 	const page = await fixture(t, "step=roof");
 	await until(() => button("Use a roof plan or measurements"));
