@@ -81,7 +81,9 @@ def test_turn_keeps_model_scope_with_or_without_jev(
     if pairing:
         question = "Which battery is compatible with the H2-25K-T3?"
     jev = (
-        SimpleNamespace(read=lambda *_: Reading("compare", 0.99, 0, 0, 0, 0, 0))
+        SimpleNamespace(
+            read=lambda *_: Reading("compare", 0.6 if indexed else 0.99, 0, 0, 0, 0, 0)
+        )
         if compare
         else None
     )
@@ -231,7 +233,9 @@ def test_turn_keeps_model_scope_with_or_without_jev(
         ),
     }
     calls: list[tuple[str, dict[str, Any]]]
-    if compare:
+    if indexed:
+        calls = []  # The question names both models and asks for the two current ratings.
+    elif compare:
         calls = [knowledge]
     elif pairing:
         calls = [pair_search]

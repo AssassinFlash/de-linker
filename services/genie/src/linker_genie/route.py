@@ -970,7 +970,10 @@ def _plan_turn(
                 hint="The pairing result is fetched; answer from it.",
                 reasons=tuple(reasons),
             )
-    if intent == "compare" and len(subject.ids) >= 2:
+    explicit_compare = re.match(r"\s*(?:compare|vergleichen Sie)\b", message, re.I)
+    if (intent == "compare" or (intent is None and explicit_compare)) and len(
+        subject.ids
+    ) >= 2:
         ids = subject.ids[:4]
         compare = Call(
             "linker/compare-products", {"product_ids": list(ids), "lang": lang}
@@ -981,20 +984,28 @@ def _plan_turn(
             message,
             re.I,
         ):
+            comparison_calls = [
+                compare,
+                *(
+                    Call("linker/get-product", {"product_id": pid, "lang": lang})
+                    for pid in ids
+                ),
+            ]
+            if re.search(r"\bAC\b", message, re.I):
+                comparison_calls.append(
+                    Call(
+                        "linker/search-knowledge",
+                        _knowledge_input(message, matches, subject, lang),
+                    )
+                )
             return Route(
                 "compare",
-                (
-                    compare,
-                    *(
-                        Call("linker/get-product", {"product_id": pid, "lang": lang})
-                        for pid in ids
-                    ),
-                ),
+                tuple(comparison_calls),
                 no_handoff=True,
                 hint=(
                     "Answer with a compare block. Use the fetched Woo per-input current "
                     "facts for qualified charge or discharge limits, each fact alone on a line. "
-                    "If other figures need sources, search the hosted documents for both models in one call."
+                    "Use the hosted documents for both models to answer other current ratings, keeping battery and AC values separate."
                 ),
                 reasons=tuple(reasons),
             )
