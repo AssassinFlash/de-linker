@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { seedConsentCookies } from '../lib/consent';
 import { instance } from '../lib/instance';
@@ -33,6 +34,7 @@ const labels = {
 		report: 'Generate project report',
 		preview: 'Preview report',
 		download: 'Download PDF',
+		materials: 'Download bill of materials (CSV)',
 		logo: 'Your logo on the PDF (optional)',
 		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
@@ -69,6 +71,7 @@ const labels = {
 		report: 'Projektbericht erstellen',
 		preview: 'Berichtsvorschau',
 		download: 'PDF herunterladen',
+		materials: 'Stückliste herunterladen (CSV)',
 		logo: 'Ihr Logo im PDF (optional)',
 		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
@@ -338,11 +341,48 @@ for (const lang of ['en', 'de'] as const) {
 			await workspace
 				.getByRole('button', { name: words.download, exact: true })
 				.click();
-			const path = await (await file).path();
-			expect(path).toBeTruthy();
-			const downloaded = readFileSync(path!);
+			const pdf = await file;
+			const basename = pdf.suggestedFilename().replace(/\.pdf$/, '');
+			const version = basename.match(
+				new RegExp(`^linker-planning-${project}-r([0-9]+)-${lang}$`)
+			);
+			expect(version).toBeTruthy();
+			const revision = version![1];
+			const pdfPath = test.info().outputPath('report.pdf');
+			await pdf.saveAs(pdfPath);
+			const downloaded = readFileSync(pdfPath);
 			expect(downloaded.subarray(0, 5).toString()).toBe('%PDF-');
 			expect(downloaded.equals(Buffer.from(originalBytes))).toBe(true);
+			const text = execFileSync('pdftotext', ['-layout', pdfPath, '-'], {
+				encoding: 'utf8',
+			});
+			expect(text).toContain(title);
+			expect(text).toContain(project);
+			expect(text).toMatch(
+				new RegExp(
+					`(?:Input revision|Eingabeversion)\\s+${revision}\\b`
+				)
+			);
+			const images = execFileSync('pdfimages', ['-list', pdfPath], {
+				encoding: 'utf8',
+			});
+			expect(images).toMatch(/^\s*1\s+\d+\s+image\s+12\s+8\s+rgb\b/m);
+
+			const materialFile = page.waitForEvent('download');
+			await workspace
+				.getByRole('button', { name: words.materials, exact: true })
+				.click();
+			const csv = await materialFile;
+			expect(csv.suggestedFilename()).toBe(basename + '.csv');
+			const csvPath = test.info().outputPath('materials.csv');
+			await csv.saveAs(csvPath);
+			const rows = readFileSync(csvPath, 'utf8')
+				.trim()
+				.split(/\r?\n/)
+				.slice(1);
+			expect(rows.length).toBeGreaterThan(0);
+			for (const row of rows)
+				expect(row.startsWith(`${project},${revision},`)).toBe(true);
 			expect(new URL(page.url()).searchParams.get('project')).toBe(
 				project
 			);

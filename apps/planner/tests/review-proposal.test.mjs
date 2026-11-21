@@ -71,6 +71,26 @@ test("review shows the report's actual BOM and supports generation before a repo
 	assert.equal(generated, 1);
 });
 
+test("the review overview shows the customer’s actual design inputs", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	value.inputs = {
+		known_panel_details: { count: 12, power_w: 430 },
+		backup_demand: { load_kw: 3, duration_hours: 2 },
+	};
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const overview = page.element.querySelector(".sc-report-overview");
+	assert.match(overview.textContent, /12/);
+	assert.match(overview.textContent, /430 Wp/);
+	assert.match(overview.textContent, /3 kW/);
+	assert.match(overview.textContent, /2 h/);
+	assert.doesNotMatch(overview.textContent, /Canal house/);
+});
+
 test("site installation requirements have their own section alongside equipment and panel layout", async (t) => {
 	const page = setupDom(),
 		root = createRoot(page.element);

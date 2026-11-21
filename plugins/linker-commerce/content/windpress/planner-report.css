@@ -8,7 +8,7 @@
     margin: 0;
     padding: clamp(var(--proto-space-4), 3vw, var(--proto-space-6));
   }
-  .sc-report-workspace :is(.sc-report-items-head, .sc-report-site) {
+  .sc-report-workspace .sc-report-items-head {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -18,22 +18,25 @@
   .sc-report-citation { display: grid; gap: var(--proto-space-2); padding-block: var(--proto-space-3); }
   .sc-report-citation dt { font-weight: var(--proto-weight-semibold); }
   .sc-report-citation dd { margin: 0; }
-  .sc-report-workspace .sc-report-site { margin-block-start: var(--proto-space-4); }
-  .sc-report-workspace .sc-report-title {
-    margin: 0;
-    color: var(--proto-ink-deep);
-    font-size: var(--proto-size-xl);
-    line-height: var(--proto-leading-title);
-    font-weight: var(--proto-weight-semibold);
-    overflow-wrap: anywhere;
+  .sc-report-overview .sc-project-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: var(--proto-space-4);
+    margin: var(--proto-space-4) 0;
   }
-  .sc-report-workspace .sc-report-demand { margin: 0; }
-  .sc-report-demand dt, .sc-report-workspace :is(.sc-report-meta, .sc-report-file-info time) {
+  .sc-report-overview .sc-project-facts > div {
+    display: grid;
+    align-content: start;
+    gap: var(--proto-space-1);
+    padding-block: var(--proto-space-2);
+    border-block-start: 1px solid var(--proto-color-line);
+  }
+  .sc-report-overview .sc-project-facts dt, .sc-report-workspace :is(.sc-report-meta, .sc-report-file-info time) {
     color: var(--proto-neutral-600);
     font-size: var(--proto-size-xs);
     line-height: var(--proto-leading-caption);
   }
-  .sc-report-demand dd { margin: 0; font-size: var(--proto-size-lg); font-weight: var(--proto-weight-semibold); }
+  .sc-report-overview .sc-project-facts dd { margin: 0; font-size: var(--proto-size-md); font-weight: var(--proto-weight-semibold); overflow-wrap: anywhere; }
   .sc-report-workspace .sc-report-items .sc-report-table { margin: var(--proto-space-4) 0 0; }
   .sc-report-workspace .sc-report-items th { background: var(--proto-neutral-50); }
   .sc-report-workspace .sc-report-items :is(th, td):first-child { padding-inline-start: var(--proto-space-3); }

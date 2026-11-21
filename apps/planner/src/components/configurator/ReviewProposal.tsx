@@ -23,7 +23,7 @@ import {
 } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
-import { readBrief } from "../../domain/brief.ts";
+import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
 import { Icon } from "../Icon.tsx";
@@ -644,15 +644,20 @@ export function ReviewProposal({
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable = reportCanTransfer(run, report);
 
-	const brief = inputs.brief === undefined ? null : readBrief(inputs.brief);
-	const country = brief?.site.country_code;
-	const location = [
-		brief?.site.location_label,
-		country && new Intl.DisplayNames([locale], { type: "region" }).of(country),
-	]
-		.filter(Boolean)
-		.join(" · ");
-	const annualLoad = brief?.annual_load.kwh;
+	const facts = projectFacts(inputs, locale);
+	const overviewSections =
+		current && report
+			? report.sections.filter(
+					(section) =>
+						[
+							"pv",
+							"energy",
+							"existing-system",
+							"retained-energy-baseline",
+						].includes(section.id) ||
+						section.id.startsWith("declared-equipment-demand"),
+				)
+			: [];
 	const reportDescription = __(
 		"Project inputs, layout, equipment and selection basis.",
 		"linker-tools",
@@ -837,7 +842,10 @@ export function ReviewProposal({
 			</section>
 		);
 	return (
-		<article className="sc-review sc-report-workspace">
+		<article
+			className="sc-review sc-report-workspace"
+			aria-label={project.title}
+		>
 			<header className="sc-section-head">
 				<div>
 					<h1>{__("Ready to discuss", "linker-tools")}</h1>
@@ -849,40 +857,18 @@ export function ReviewProposal({
 					</p>
 				</div>
 			</header>
-			{!selected && (
+			{!selected && (facts.length > 0 || overviewSections.length > 0) && (
 				<section className="sc-card sc-report-overview">
 					<h2>{__("Project overview", "linker-tools")}</h2>
-					<div className="sc-report-site">
-						<div>
-							<p className="sc-report-title">{project.title}</p>
-							{location && <p className="sc-muted">{location}</p>}
-						</div>
-						{annualLoad != null && (
-							<dl className="sc-report-demand">
-								<dt>{__("Annual electricity use", "linker-tools")}</dt>
-								<dd>{new Intl.NumberFormat(locale).format(annualLoad)} kWh</dd>
-							</dl>
-						)}
-					</div>
-					{current && report && (
-						<div lang={report.locale}>
-							{report.sections
-								.filter(
-									(section) =>
-										[
-											"pv",
-											"energy",
-											"existing-system",
-											"retained-energy-baseline",
-										].includes(section.id) ||
-										section.id.startsWith("declared-equipment-demand"),
-								)
-								.map((section) => (
-									<details key={section.id} className="sc-review-details">
-										<summary>{section.title}</summary>
-										<ReportContent section={section} />
-									</details>
-								))}
+					{facts.length > 0 && <ProjectFacts facts={facts} />}
+					{overviewSections.length > 0 && (
+						<div lang={report?.locale}>
+							{overviewSections.map((section) => (
+								<details key={section.id} className="sc-review-details">
+									<summary>{section.title}</summary>
+									<ReportContent section={section} />
+								</details>
+							))}
 						</div>
 					)}
 				</section>
