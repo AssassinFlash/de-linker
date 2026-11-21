@@ -203,3 +203,39 @@ def test_page_snapshot_retention_keeps_the_latest_three_verified_files(
         "industry-standards-before-03.json",
         "industry-standards-before-04.json",
     ]
+
+
+def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
+    monkeypatch, tmp_path
+) -> None:
+    import sys
+
+    source = {
+        "home": "http://127.0.0.1:8894",
+        "current": False,
+        "metadata": {"2748": {"_linker_i18n_status": ["structure_mismatch"]}},
+        "pages": {"2748": page(), "6700": page()},
+    }
+    state = {**source}
+    monkeypatch.setattr(standards.pair, "read", lambda *_: state)
+
+    def store(prefix, payload):
+        assert payload["mode"] == "restore"
+        assert payload["metadata_restore"] == source["metadata"]
+        state["pages"] = {str(row["id"]): row["after"] for row in payload["changes"]}
+
+    monkeypatch.setattr(standards.pair, "invoke", store)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "industry-standards.py",
+            "--wp",
+            "wp",
+            "--write",
+            "--backup-dir",
+            str(tmp_path),
+        ],
+    )
+    standards.main()
+    assert list(tmp_path.glob("industry-standards-before-*.json"))

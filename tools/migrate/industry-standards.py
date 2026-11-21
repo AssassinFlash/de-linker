@@ -324,16 +324,19 @@ def main() -> None:
     with backup_path.open("x") as handle:
         json.dump({"snapshot": snapshot, "changes": changes}, handle, indent=2)
     backup_path.chmod(0o600)
-    pair.invoke(
-        args.wp,
-        {
-            "mode": "adopt",
-            "changes": changes,
-            "metadata_before": snapshot["metadata"],
-        },
-    )
+    payload = {
+        "mode": "adopt" if snapshot["current"] else "restore",
+        "changes": changes,
+        "metadata_before": snapshot["metadata"],
+    }
+    if not snapshot["current"]:
+        # A warranty correction does not review earlier translation differences.
+        payload["metadata_restore"] = snapshot["metadata"]
+    pair.invoke(args.wp, payload)
     readback = pair.read(args.wp, args.en, args.de)
-    if readback["pages"] != {str(args.en): after[0], str(args.de): after[1]}:
+    if readback["pages"] != {str(args.en): after[0], str(args.de): after[1]} or (
+        not snapshot["current"] and readback["metadata"] != snapshot["metadata"]
+    ):
         raise RuntimeError(f"Paired readback differs; backup: {backup_path}")
     saved = json.loads(backup_path.read_text())
     saved["readback_verified"] = True
