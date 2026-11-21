@@ -109,6 +109,32 @@ final class TransportTest extends TestCase {
 		}
 	}
 
+	/** A signed-in project edit uses the engine's owned, idempotent revision command. */
+	public function test_account_edit_preserves_native_project_revision_command(): void {
+		$principal = new Principal( 'user', 'wp:1:user:17' );
+		$command   = array(
+			'key'               => 'ae4899d0-07b7-4f82-abc1-0b532f04be92',
+			'project_id'        => str_repeat( 'a', 32 ),
+			'expected_revision' => 3,
+		);
+		$body      = (string) wp_json_encode( $command );
+		$transport = new Transport(
+			function ( string $url, array $args ) use ( $principal, $body ): array {
+				$this->assertSame( 'https://engine.test/projects/revise', $url );
+				$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
+				$this->assertSame( $body, $args['body'] );
+				return array(
+					'status' => 200,
+					'type'   => 'application/json',
+					'body'   => '{"revision":4}',
+				);
+			}
+		);
+		$result    = ( new Admission() )->send( $principal, 'projects/revise', $command, $body, $transport );
+		$this->assertIsArray( $result );
+		$this->assertSame( '{"revision":4}', $result['body'] );
+	}
+
 	/** A rejected owned receipt lookup must not create a standard-profile asset. */
 	public function test_standard_profile_refusal_does_not_bypass_write_admission(): void {
 		$writes    = 0;

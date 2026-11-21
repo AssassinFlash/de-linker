@@ -36,59 +36,36 @@ final class ResourcePolicy {
 	}
 
 	/**
-	 * Atomic dimensions and account carry, using the browser identity across login.
+	 * Account saves retain native replay. Anonymous snapshots also consume storage.
+	 * Concurrent turns share the running-work budget; provider costs are metered at dispatch.
 	 *
-	 * @param string   $action Server action.
-	 * @param Identity $identity Current private identity.
-	 * @param int      $files Files in this turn, checked before decode.
-	 * @return array{limits:Allowance[],carry:list<array{source:Allowance,target:Allowance}>}
+	 * @param string   $action Server-selected resource operation.
+	 * @param Identity $identity Native browser and account identity.
+	 * @param int      $files Number of accepted attachment descriptors.
+	 * @return array{limits:list<Allowance>,carry:array{}}
 	 */
 	public static function plan( string $action, Identity $identity, int $files = 0 ): array {
-		$limits  = array();
-		$carry   = array();
-		$account = '' !== $identity->account;
-		$add     = static function ( string $name, int $anonymous, int $signed, int $window, int $units = 1 ) use ( $identity, $account, &$limits, &$carry ): void {
-			$capacity = $account ? $signed : $anonymous;
-			$limits[] = new Allowance( $name, $identity->browser, $capacity, $window, $units );
-			if ( $account ) {
-				$target   = new Allowance( $name, $identity->account, $signed, $window, $units );
-				$limits[] = $target;
-				if ( $window > 0 ) {
-					$carry[] = array(
-						'source' => new Allowance( $name, $identity->browser, $anonymous, $window ),
-						'target' => $target,
-					);
-				}
-			}
-		};
+		$guest  = '' === $identity->account;
+		$limits = array();
 		if ( 'genie' === $action ) {
-			$add( 'genie_day', 30, 120, DAY_IN_SECONDS );
-			$add( 'genie_burst', 10, 30, 10 * MINUTE_IN_SECONDS );
-			$add( 'genie_busy', 1, 1, 0 );
-			$limits[] = new Allowance( 'genie_site_busy', 'site', 2, 0 );
-			if ( $files > 0 ) {
-				$add( 'genie_files_day', 10, 40, DAY_IN_SECONDS, $files );
+			if ( $guest ) {
+				$limits[] = new Allowance( 'genie_day', $identity->browser, 30, DAY_IN_SECONDS );
+				$limits[] = new Allowance( 'genie_burst', $identity->browser, 10, 10 * MINUTE_IN_SECONDS );
+			} else {
+				$limits[] = new Allowance( 'genie_busy', $identity->account, 1, 0 );
 			}
-		} elseif ( in_array( $action, array( 'design', 'roof' ), true ) ) {
-			// Roof and sizing share this allowance: changing the entrance is
-			// not a new budget. #508 approved 30/120 recomputations per hour.
-			$add( 'design_hour', 30, 120, HOUR_IN_SECONDS );
-			$add( 'design_busy', 1, 1, 0 );
-			$limits[] = new Allowance( 'design_site_busy', 'site', 4, 0 );
-		} elseif ( 'report_pdf' === $action ) {
-			$add( 'report_day', 10, 10, DAY_IN_SECONDS );
-			$add( 'design_busy', 1, 1, 0 );
-			$limits[] = new Allowance( 'report_site_day', 'site', 100, DAY_IN_SECONDS );
-			$limits[] = new Allowance( 'design_site_busy', 'site', 4, 0 );
-		} else {
-			// Recommended storage-only ceiling, #521: 4 mutations per maximum
-			// signed-in turn (120/day), rounded to 500. No model work or mail.
-			$add( 'tool_write_day', 500, 500, DAY_IN_SECONDS );
+			$limits[] = new Allowance( 'genie_busy', $identity->browser, 1, 0 );
+			$limits[] = new Allowance( 'genie_site_busy', 'site', 2, 0 );
+			if ( $guest && $files > 0 ) {
+				$limits[] = new Allowance( 'genie_files_day', $identity->browser, 10, DAY_IN_SECONDS, $files );
+			}
+		} elseif ( $guest && in_array( $action, array( 'solution_save', 'conversation_create' ), true ) ) {
+			$limits[] = new Allowance( 'tool_write_day', $identity->browser, 500, DAY_IN_SECONDS );
 			$limits[] = new Allowance( 'tool_write_site_day', 'site', 2000, DAY_IN_SECONDS );
 		}
 		return array(
 			'limits' => $limits,
-			'carry'  => $carry,
+			'carry'  => array(),
 		);
 	}
 }

@@ -109,14 +109,14 @@ final class Resources {
 	public function assets(): void {
 		if ( ! is_admin() ) {
 			wp_enqueue_script( 'linker-tools-inquiry-handoff' );
-			/**
-			 * The global Genie dock mounts the widget only on an anonymous transfer card.
-			 *
-			 * @since 0.1.0
-			 */
 			if ( ! is_user_logged_in() ) {
-				do_action( 'linker_commerce_public_protection_assets' );
-			} // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns this public integration seam.
+				/**
+				 * Load the native form widget client for anonymous Genie transfer cards.
+				 *
+				 * @since 0.1.0
+				 */
+				do_action( 'linker_commerce_public_protection_assets' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns this public integration seam.
+			}
 		}
 	}
 
@@ -155,7 +155,7 @@ final class Resources {
 		}
 		$payload['_route']  = strtolower( $request->get_route() );
 		$payload['_method'] = $request->get_method();
-		$identity = Identity::current();
+		$identity           = Identity::current();
 		if ( is_wp_error( $identity ) ) {
 			return $identity;
 		}
@@ -163,11 +163,7 @@ final class Resources {
 		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
 			return self::error( 'files', 400 );
 		}
-		$plan = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) && count( $raw_files ) <= Attachments::MAX_FILES ? count( $raw_files ) : 0 );
-		if ( array() === $plan['limits'] ) {
-			// The shared Commerce business policy is a required dependency.
-			return self::error( 'configuration', 503 );
-		}
+		$plan      = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) && count( $raw_files ) <= Attachments::MAX_FILES ? count( $raw_files ) : 0 );
 		$operation = (string) $request->get_header( 'X-Linker-Operation' );
 		$version   = '';
 		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {

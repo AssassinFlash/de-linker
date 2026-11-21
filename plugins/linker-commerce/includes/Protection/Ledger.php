@@ -86,7 +86,10 @@ final class Ledger {
 	 */
 	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array(), string $purpose = 'operation', string $binding = '', array $owners = array() ): array|WP_Error {
 		$id = strtolower( $id );
-		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || array() === $allowances || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
+		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
+			return self::error( 'input' );
+		}
+		if ( array() === $allowances && ( ! in_array( $purpose, array( 'solution_save', 'conversation_create' ), true ) || '' === $binding || array() === $owners || ! is_user_logged_in() ) ) {
 			return self::error( 'input' );
 		}
 		if ( count( $owners ) > self::MAX_DIMENSIONS || count( array_filter( $owners, static fn ( string $owner ): bool => 1 === preg_match( '/\A[a-f0-9]{64}\z/', $owner ) ) ) !== count( $owners ) ) {
@@ -242,8 +245,8 @@ final class Ledger {
 	 * @phpstan-impure
 	 * Only the winner dispatches; a replay cannot dispatch a second time.
 	 *
-	 * @param string                                                            $id UUID.
-	 * @param string                                                            $fingerprint Bound input fingerprint.
+	 * @param string $id UUID.
+	 * @param string $fingerprint Bound input fingerprint.
 	 * @return array<string,mixed>|WP_Error Updated receipt.
 	 */
 	public function dispatch( string $id, string $fingerprint ): array|WP_Error {
@@ -499,10 +502,10 @@ final class Ledger {
 	/**
 	 * Serialized compare-and-transition, with no provider or business I/O.
 	 *
-	 * @param string                                                            $id UUID.
-	 * @param string                                                            $fingerprint Bound input.
-	 * @param string                                                            $operation Transition.
-	 * @param int                                                               $outcome Native result.
+	 * @param string $id UUID.
+	 * @param string $fingerprint Bound input.
+	 * @param string $operation Transition.
+	 * @param int    $outcome Native result.
 	 * @return array<string,mixed>|WP_Error Current state.
 	 */
 	private function transition( string $id, string $fingerprint, string $operation, int $outcome ): array|WP_Error {

@@ -147,7 +147,16 @@ final class ResourceAdmissionTest extends TestCase {
 	/** Reject an oversized attachment list before file parsing and private transport. */
 	public function test_too_many_files_never_dispatch(): void {
 		$request = $this->request( '/linker-ai/v1/genie/turn', array( 'attachments' => array_fill( 0, Attachments::MAX_FILES + 1, array() ) ), 'genie' );
-		$result  = ( new Resources() )->dispatch( null, $request, '', array( 'callback' => static function () { self::fail( 'Too many files reached transport.' ); } ) );
+		$result  = ( new Resources() )->dispatch(
+			null,
+			$request,
+			'',
+			array(
+				'callback' => static function () {
+					self::fail( 'Too many files reached transport.' );
+				},
+			)
+		);
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertSame( 'linker_resource_files', $result->get_error_code() );
 	}
@@ -399,6 +408,35 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'saved' ), $writes['limits'], 90 ), 'Saved input remains independent from model turns.' );
 	}
 
+	/** The same signed-in save returns its first result without consuming another usage allowance. */
+	public function test_account_save_replays_the_same_result_without_a_customer_allowance(): void {
+		$user = wp_create_user( 'solution-owner-' . wp_generate_uuid4(), wp_generate_password() );
+		$this->assertIsInt( $user );
+		try {
+			wp_set_current_user( $user );
+			$identity = Identity::current();
+			$this->assertInstanceOf( Identity::class, $identity );
+			$plan = ResourcePolicy::plan( 'solution_save', $identity );
+			$this->assertSame( array(), $plan['limits'] );
+			$ledger  = new Ledger();
+			$key     = wp_generate_uuid4();
+			$payload = hash( 'sha256', 'owned solution input' );
+			$args    = array( $key, $payload, $plan['limits'], 90, $plan['carry'], 'solution_save', $identity->binding(), $identity->owners() );
+			$this->assertIsArray( $ledger->reserve( ...$args ) );
+			$this->assertIsArray( $ledger->dispatch( $key, $payload ) );
+			$this->assertIsArray( $ledger->complete( $key, $payload, 201 ) );
+			$replay = $ledger->reserve( ...$args );
+			$this->assertIsArray( $replay );
+			$this->assertSame( 201, $replay['outcome'] );
+			$this->assertSame( 'completed', $replay['status'] );
+			$this->assertSame( array(), $replay['allowances'] );
+		} finally {
+			wp_set_current_user( 0 );
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $user );
+		}
+	}
+
 	/** Native form handlers own these submissions and their server-side human check. */
 	public function test_forms_do_not_enter_the_tool_work_journal(): void {
 		foreach ( array( 'contact', 'inquiry' ) as $entry ) {
@@ -428,8 +466,20 @@ final class ResourceAdmissionTest extends TestCase {
 	public function test_conversation_mail_ownership_is_bound_to_the_native_url_id(): void {
 		$user = wp_create_user( 'resource-owner-' . wp_generate_uuid4(), wp_generate_password() );
 		$this->assertIsInt( $user );
-		$own = wp_insert_post( array( 'post_type' => Conversations::POST_TYPE, 'post_status' => 'private', 'post_author' => $user ) );
-		$foreign = wp_insert_post( array( 'post_type' => Conversations::POST_TYPE, 'post_status' => 'private', 'post_author' => 0 ) );
+		$own                         = wp_insert_post(
+			array(
+				'post_type'   => Conversations::POST_TYPE,
+				'post_status' => 'private',
+				'post_author' => $user,
+			)
+		);
+		$foreign                     = wp_insert_post(
+			array(
+				'post_type'   => Conversations::POST_TYPE,
+				'post_status' => 'private',
+				'post_author' => 0,
+			)
+		);
 		$this->created_conversations = array( $own, $foreign );
 		try {
 			wp_set_current_user( $user );

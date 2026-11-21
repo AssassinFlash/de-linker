@@ -33,6 +33,10 @@ final class Admission {
 		if ( 'projects/delete' === $path && array_diff( array_keys( $command ), array( 'schema_version', 'key', 'project_id', 'expected_revision' ) ) ) {
 			return Failure::make( 'input', 422 );
 		}
+		if ( 'user' === $principal->kind && 'projects/revise' === $path ) {
+			// The project store checks the owner and revision and replays the same command key.
+			return $transport->call( $principal, $path, $body );
+		}
 		$policy = $this->policy( $path );
 		if ( null === $policy ) {
 			return 'projects/delete' === $path ? ProjectDelete::checked( $principal, $command, $transport ) : $transport->call( $principal, $path, $body );
