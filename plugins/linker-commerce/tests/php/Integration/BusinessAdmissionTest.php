@@ -587,7 +587,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \WP_User::class, $loaded );
 		$this->assertSame( $before, $loaded->user_activation_key );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
-		$_POST = array(
+		$_POST   = array(
 			'user_login'                  => $user->user_email,
 			'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
 		);

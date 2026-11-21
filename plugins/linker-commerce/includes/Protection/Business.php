@@ -133,7 +133,9 @@ final class Business {
 			if ( $order->has_status( 'pending' ) && $order->get_meta( Intake::META ) ) {
 				$order->update_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META, 'review_hold' );
 				WC()->mailer();
-				$order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED );
+				if ( ! $order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {
+					return self::unconfirmed_receipt();
+				}
 			}
 			if ( null !== $on_order ) {
 				$linked = $on_order( $order );

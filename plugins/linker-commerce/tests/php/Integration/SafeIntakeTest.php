@@ -575,7 +575,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			$post['company'] = 'EPC Köln / 光伏工程';
 			$post['message'] = $message;
 			$order           = ( new Handler() )->process( $post );
-			self::assertInstanceOf( WC_Order::class, $order, is_wp_error( $order ) ? $order->get_error_code() : '' );
+			self::assertInstanceOf( WC_Order::class, $order, is_wp_error( $order ) ? $order->get_error_message() : '' );
 			self::assertFalse( NotificationHold::held( $order ) );
 		}
 		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. получить тут https://fredmer.buzz/x' ) );
