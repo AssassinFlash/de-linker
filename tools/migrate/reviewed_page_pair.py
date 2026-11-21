@@ -102,9 +102,7 @@ def write(
     )
     saved = read(prefix, *ids)
     if saved["pages"] != after or saved["metadata"] != metadata:
-        raise RuntimeError(
-            "The paired content or translation did not read back"
-        )
+        raise RuntimeError("The paired content or translation did not read back")
     return saved
 
 
