@@ -306,6 +306,7 @@ class Thread {
 		$history[] = array(
 			'role'    => 'assistant',
 			'content' => $text,
+			...( isset( $answer['turnId'] ) ? array( 'turnId' => $answer['turnId'] ) : array() ),
 			...( isset( $answer['planning_sources'] ) ? array( 'planning_sources' => $answer['planning_sources'] ) : array() ),
 		);
 		return $history;
@@ -333,6 +334,7 @@ class Thread {
 			$kept[] = array(
 				'role'    => $role,
 				'content' => $content,
+				...( $from_store && 'assistant' === $role && isset( $message['turnId'] ) && is_int( $message['turnId'] ) && $message['turnId'] > 0 ? array( 'turnId' => $message['turnId'] ) : array() ),
 				...( null !== $source ? array( 'planning_sources' => $source ) : array() ),
 			);
 		}
@@ -902,7 +904,7 @@ class Thread {
 	 * empty when it did not finish.
 	 *
 	 * @param string $stream SSE text.
-	 * @return array{text: string, products: list<int>, quantities: array<int, int>, planning_sources?: array<string, mixed>}
+	 * @return array{text: string, products: list<int>, quantities: array<int, int>, turnId?: int, planning_sources?: array<string, mixed>}
 	 */
 	private static function answer( string $stream ): array {
 		$texts      = array();
@@ -911,6 +913,7 @@ class Thread {
 		$source     = null;
 		$actions    = array();
 		$quantities = array();
+		$turn_id    = null;
 		$done       = false;
 		$accepts    = false;
 		foreach ( explode( "\n\n", $stream ) as $event ) {
@@ -923,6 +926,7 @@ class Thread {
 			}
 			$block = json_decode( $data[1], true );
 			if ( 'meta' === $name[1] ) {
+				$turn_id = is_int( $block['turn_id'] ?? null ) && $block['turn_id'] > 0 ? $block['turn_id'] : null;
 				$accepts = true === ( $block['accepts_previous_card_quantities'] ?? false );
 				continue;
 			}
@@ -934,6 +938,8 @@ class Thread {
 			}
 			if ( 'text' === ( $block['type'] ?? '' ) && is_string( $block['text'] ?? null ) ) {
 				$texts[] = $block['text'];
+			} elseif ( 'handoff' === ( $block['type'] ?? '' ) && is_string( $block['summary'] ?? null ) ) {
+				$texts[] = $block['summary'];
 			}
 			if ( 'cards' === ( $block['type'] ?? '' ) && is_array( $block['product_ids'] ?? null ) ) {
 				$cards ??= $block; // The dock and hero display the first cards block.
@@ -957,6 +963,7 @@ class Thread {
 			'text'       => implode( ' ', $texts ),
 			'products'   => array_values( array_unique( array_filter( $products ) ) ),
 			'quantities' => $accepts ? $quantities : array(),
+			...( null !== $turn_id ? array( 'turnId' => $turn_id ) : array() ),
 			...( null === $source ? array() : array( 'planning_sources' => $source ) ),
 		) : array(
 			'text'       => '',

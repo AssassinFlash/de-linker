@@ -556,6 +556,26 @@ test( 'a reload without a conversation answers empty, and a truncated stream kee
 	} );
 } );
 
+test( 'reopening two service answers keeps the response and feedback turn for each question', async () => {
+	const summary = 'Email sales@de-linker.com.';
+	const stream =
+		'event: meta\ndata: {"turn_id":42}\n\nevent: block\ndata: {"type":"handoff","summary":"Email sales@de-linker.com."}\n\nevent: done\ndata: {}\n\n';
+	const messages = [
+		{ role: 'user', content: 'Do you deliver to Austria?' },
+		{ role: 'assistant', content: summary, turnId: 41 },
+		{ role: 'user', content: 'And Germany?' },
+	];
+	const result = await readThread(
+		'/thread',
+		'',
+		async () => new Response( JSON.stringify( { messages, stream } ) )
+	);
+	expect( result.messages ).toEqual( [
+		...messages,
+		{ role: 'assistant', content: summary, turnId: 42 },
+	] );
+} );
+
 test( 'an assistant message is the turn text, wherever it came from', () => {
 	const turn = parseStream(
 		'event: meta\n' +

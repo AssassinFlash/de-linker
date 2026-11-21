@@ -2676,13 +2676,8 @@ export function App( { config }: { config: GenieConfig } ) {
 										<TurnProgress skeleton />
 									) : null }
 								</ol>
-								{ /* The turn's text already stands in the thread
-								 * item above (assistantMessage carries the text
-								 * blocks); rendering the blocks verbatim printed
-								 * every answer twice, on the reference instance
-								 * and in production alike (seen 2026-10-14).
-								 * The blocks own what the thread item cannot
-								 * carry: chips, cards, compare, handoff. */ }
+								{ /* Reply text and handoff summaries belong to their message.
+								 * The remaining blocks supply the latest turn's controls. */ }
 								{ /* What Genie read from this turn's files
 								 * (#236), with the nameplate's confirmation. */ }
 								{ 'waiting' !== phase

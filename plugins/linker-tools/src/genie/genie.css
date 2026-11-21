@@ -979,8 +979,7 @@ body:has(.linker-genie-workspace)
 /* A conversation in a 400px card reads smaller than the 768px column's —
  * the Advisor's 13.5px, on this app's scale. */
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message,
-.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__text,
-.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__handoff {
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__text {
 	font-size: 14px;
 }
 
@@ -1489,13 +1488,6 @@ body:has(.linker-genie-workspace)
 	margin: 0;
 	font-size: 0.875rem;
 	color: var(--proto-color-muted);
-}
-
-.linker-genie-app .linker-genie-app__handoff {
-	margin: 10px 0;
-	font-size: 16px;
-	line-height: 1.65;
-	color: inherit;
 }
 
 /* The loader's failure card, built in includes/Genie/Entries.php. */
