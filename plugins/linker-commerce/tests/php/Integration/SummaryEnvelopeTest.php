@@ -66,7 +66,11 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		WC()->cart->empty_cart();
 	}
 
-	/** A multi-product inquiry covers the former 12-line and 40-product cutoffs. */
+	/**
+	 * A multi-product inquiry covers the former 12-line and 40-product cutoffs.
+	 *
+	 * @return array{summary:string,quantities:list<array{product_id:int,quantity:int}>,conditions:array{},note:string,source:string}
+	 */
 	private static function project_summary(): array {
 		$quantities = array();
 		foreach ( range( 1, 42 ) as $id ) {
