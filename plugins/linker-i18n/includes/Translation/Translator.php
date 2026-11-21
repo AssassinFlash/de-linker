@@ -239,6 +239,8 @@ final class Translator {
 	/**
 	 * Whether the German version was made from the English as it is now.
 	 *
+	 * @phpstan-impure Reads the current published content and translation metadata.
+	 *
 	 * @param string $kind      State::POST or State::TERM.
 	 * @param int    $source_id English object ID.
 	 */
