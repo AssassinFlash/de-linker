@@ -329,7 +329,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$queue->process( $order->get_id() );
 		$queue->expire( $order->get_id() );
 		$queue->finish( $order->get_id(), Result::unknown( 'late' ) );
-		self::assertSame( array( $receipt ), self::mail_jobs_after( $jobs ) );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( $receipt, $state['jobs']['receipt']['id'] );
+		self::assertEqualsCanonicalizing( array_column( $state['jobs'], 'id' ), self::mail_jobs_after( $jobs ) );
 	}
 
 	/**
@@ -565,15 +568,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Technical Russian, quotations, normal links and domain substrings stay normal. */
 	public function test_campaign_rule_does_not_generalize_language_or_links(): void {
+		$this->as_user( $this->customer()->get_id() );
 		$messages = array( 'Нужна батарея 10 кВт·ч https://fredmer.buzz/manual', 'Вам перевод 100 руб. забрать тут https://fredmer.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://example.test/fredmer.buzz', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://fredmer.buzz/x', "Вам перевод 100 руб. забрать тут https://fredmer.buzz/x\nPlease quote an inverter.", 'Нужна батарея 10 кВт·ч https://xtimex.buzz/manual', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz@example.test/x', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://xtimex.buzz/x', "Вам перевод 100 руб. забрать тут https://xtimex.buzz/x\nPlease quote an inverter." );
 		foreach ( $messages as $message ) {
 			self::assertFalse( Campaign::matches( $message ) );
-			$post            = $this->post( true );
+			$post            = $this->post();
 			$post['name']    = 'Александр Müller';
 			$post['company'] = 'EPC Köln / 光伏工程';
 			$post['message'] = $message;
 			$order           = ( new Handler() )->process( $post );
-			self::assertInstanceOf( WC_Order::class, $order );
+			self::assertInstanceOf( WC_Order::class, $order, is_wp_error( $order ) ? $order->get_error_code() : '' );
 			self::assertFalse( NotificationHold::held( $order ) );
 		}
 		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. получить тут https://fredmer.buzz/x' ) );
@@ -819,7 +823,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** A crash after the first native save recovers the same full record. */
 	public function test_interrupted_native_save_recovers_original_without_second_debit(): void {
-		$post      = $this->post( true );
+		$this->as_user( $this->customer()->get_id() );
+		$post      = $this->post();
 		$armed     = false;
 		$committed = false;
 		$arm       = static function ( WC_Order $order ) use ( $post, &$armed ): void {
@@ -847,16 +852,38 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 			self::assertIsArray( $orders );
 			self::assertCount( 1, $orders );
-			$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+			$before = get_option( Ledger::OPTION );
 			self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$recovered = wc_get_order( $orders[0]->get_id() );
 			self::assertInstanceOf( WC_Order::class, $recovered );
 			self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
 			self::assertSame( $post['message'], $recovered->get_customer_note() );
 			self::assertFalse( NotificationHold::held( $recovered ) );
-			$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-			self::assertSame( $before['buckets'], $after['buckets'] );
+			self::assertSame( $before, get_option( Ledger::OPTION ) );
 			self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
+	}
+
+	/** Reloading the form after a lost response recovers the original contact and receipt. */
+	public function test_contact_recovers_original_when_the_browser_did_not_receive_the_first_response(): void {
+		$post    = $this->post( true );
+		$handler = new ContactHandler();
+		$handler->process( $post );
+		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $orders );
+		self::assertCount( 1, $orders );
+		$order = $orders[0];
+		self::assertSame( $post['message'], $order->get_customer_note() );
+		self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $order->get_status() );
+		$receipt = self::fixed_receipt_job( $order );
+		$before  = self::newest_mail_job();
+		unset( $post['cf-turnstile-response'] );
+		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
+		$again = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $again );
+		self::assertCount( 1, $again );
+		self::assertSame( $order->get_id(), $again[0]->get_id() );
+		self::assertSame( $receipt, self::fixed_receipt_job( $again[0] ) );
+		self::assertSame( array(), self::mail_jobs_after( $before ) );
 	}
 	/** The native order keeps the complete native product draft for guest/pending/approved customers. */
 	public function test_native_submission_retains_product_and_quantity_for_all_customer_states(): void {

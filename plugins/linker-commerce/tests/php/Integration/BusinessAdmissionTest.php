@@ -593,11 +593,22 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			'user_login'                  => $user->user_email,
 			'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
 		);
-		$this->assertTrue( \WC_Shortcode_My_Account::retrieve_password() );
+		$results = array();
+		$observe = static function ( bool $accepted, string $id ) use ( &$results ): void {
+			if ( 'customer_reset_password' === $id ) {
+				$results[] = $accepted;
+			}
+		};
+		add_action( 'woocommerce_email_sent', $observe, 10, 2 );
+		try {
+			$this->assertTrue( \WC_Shortcode_My_Account::retrieve_password() );
+		} finally {
+			remove_action( 'woocommerce_email_sent', $observe, 10 );
+		}
 		$loaded = get_userdata( $user->ID );
 		$this->assertInstanceOf( \WP_User::class, $loaded );
 		$this->assertNotSame( $before, $loaded->user_activation_key );
-		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
+		$this->assertSame( array( true ), $results );
 	}
 
 	/** Real Woo session and render hooks restore only the failed reset login. */
