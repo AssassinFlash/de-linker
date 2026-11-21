@@ -20,6 +20,24 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def test_utility_equipment_tools_keep_the_project_contact_path() -> None:
+    after = controls.plan_pair(
+        "utility_equipment_tools",
+        """<p>Linker's team works through the equipment requirements with you.\n            </p>\n</div><a href="/contact/">Discuss a project</a>""",
+        '<p>Das Linker Team klärt die technischen Anforderungen mit Ihnen.\n            </p>\n</div><a href="/de/kontakt/">Projekt besprechen</a>',
+    )
+    for content, path, label in zip(
+        after,
+        ("/solution-configurator/", "/de/loesungskonfigurator/"),
+        ("Ask Genie", "Genie fragen"),
+        strict=True,
+    ):
+        assert f'href="{path}"' in content and label in content
+        assert content.count("lk-runway-actions") == 1
+    assert "/contact/" in after[0] and "/de/kontakt/" in after[1]
+    assert controls.plan_pair("utility_equipment_tools", *after) == after
+
+
 def test_about_registration_cards_open_the_localized_business_signup() -> None:
     before = (
         '<a class="row" href="/my-account/"><span class="no">03</span><span class="row-body"><strong>Create a partner account</strong></span></a>',

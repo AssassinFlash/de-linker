@@ -280,11 +280,19 @@ REVISIONS = {
                 "inquiry documents (proforma, invoice). Used to answer inquiries, issue Proformas and meet statutory bookkeeping duties.",
                 "inquiry documents (including quotations) and invoices. Used to answer inquiries, issue quotations and meet statutory bookkeeping duties.",
             ),
+            order_wording(
+                ") before the Proforma is issued, we record the declaration text version",
+                "), we record the declaration text version",
+            ),
         ),
         (
             (
                 "Anfragedokumente (Proforma, Rechnung). Verwendet zur Beantwortung von Anfragen, zur Ausstellung von Proformarechnungen und zur Erfüllung gesetzlicher Buchführungspflichten.",
                 "Anfrageunterlagen (einschließlich Angeboten) und Rechnungen. Die Daten dienen der Beantwortung von Anfragen, der Erstellung von Angeboten und der Erfüllung gesetzlicher Buchführungspflichten.",
+            ),
+            order_wording(
+                "Wenn Sie vor Ausstellung der Proformarechnung den deutschen 0 %-Umsatzsteuersatz",
+                "Wenn Sie den deutschen 0 %-Umsatzsteuersatz",
             ),
         ),
     ),

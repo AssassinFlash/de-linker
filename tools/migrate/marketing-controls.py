@@ -164,6 +164,40 @@ def _capability(content: str) -> tuple[str, str]:
     return content, "old"
 
 
+def plan_utility_equipment_tools(english: str, german: str) -> tuple[str, str]:
+    """Keep the engineering consultation and offer both self-service entries."""
+    rows = (
+        (
+            english,
+            "Linker's team works through the equipment requirements with you.",
+            "/solution-configurator/",
+            "Open the Solution Configurator",
+            "/genie/",
+            "Ask Genie",
+        ),
+        (
+            german,
+            "Das Linker Team klärt die technischen Anforderungen mit Ihnen.",
+            "/de/loesungskonfigurator/",
+            "Lösungskonfigurator öffnen",
+            "/de/genie/",
+            "Genie fragen",
+        ),
+    )
+    pages = []
+    for content, lead, configurator, configure, genie, ask in rows:
+        paragraph = lead + "\n            </p>\n"
+        links = (
+            '<div class="lk-runway-actions">'
+            f'<a class="lk-btn-secondary" href="{configurator}">{configure}</a> '
+            f'<a class="lk-btn-secondary" href="{genie}">{ask}</a></div>\n'
+        )
+        old = paragraph + "</div>"
+        new = paragraph + links + "</div>"
+        pages.append(_apply_edits(content, ((old, new),), "Utility equipment links")[0])
+    return pages[0], pages[1]
+
+
 def plan_about_registration(english: str, german: str) -> tuple[str, str]:
     card = (
         '<a class="row" href="{}"><span class="no">03</span>'
@@ -999,6 +1033,7 @@ def plan_home_account(english: str, german: str) -> tuple[str, str]:
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
+        "utility_equipment_tools": plan_utility_equipment_tools,
         "about_registration": plan_about_registration,
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
