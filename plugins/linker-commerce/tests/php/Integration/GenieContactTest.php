@@ -336,9 +336,22 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( array(), $this->jobs_after( $marker ) );
 	}
 
-
-
-
+	/** A second tab that still shows the earlier turn cannot send the later conversation. */
+	public function test_earlier_card_asks_customer_to_retry_after_a_new_turn(): void {
+		$this->thread( 'Can I talk to a person?' );
+		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
+		$this->thread( 'Can I talk to a person?', 'I need storage for another site.' );
+		$marker = self::newest_mail_job();
+		$result = $this->send(
+			array(
+				'email'  => 'linker-it-' . self::tag() . '@example.test',
+				'source' => $state['source'],
+			) + self::fields()
+		);
+		$this->assertSame( 409, $result->get_status() );
+		$this->assertSame( 'linker_genie_contact_retry', $result->get_data()['code'] );
+		$this->assertSame( array(), $this->jobs_after( $marker ) );
+	}
 
 	/**
 	 * The same request twice, with nothing said in between, reaches the team
@@ -352,6 +365,8 @@ final class GenieContactTest extends IntegrationTestCase {
 		);
 		$marker = self::newest_mail_job();
 		$first  = $this->send( $params );
+		delete_post_meta( $this->conversation, ContactRequest::NOTE );
+		$params['cf-turnstile-response'] = ''; // The first submission already redeemed its single-use token.
 		$second = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		// Once: one team mail and one receipt.
@@ -548,6 +563,8 @@ final class GenieContactTest extends IntegrationTestCase {
 	 */
 	private function send( array $params ): WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/contact' );
+		$source = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
+		$params += array( 'source' => $source->get_data()['source'] ?? '' );
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );
 		}

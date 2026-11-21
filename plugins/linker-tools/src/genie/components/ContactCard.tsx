@@ -4,8 +4,7 @@
  *
  * A signed-in customer is never asked for an address: the card names the
  * account's and sends with one click. A guest leaves an email address; the
- * route guards it as a public form (a hidden honeypot field and a signed
- * start time the card fetches when it appears). The card promises a reply
+ * route verifies the guest form's native Turnstile response on submit. The card promises a reply
  * within one business day (AGENTS.md 2026-10-09) and says Genie keeps
  * answering: the offer never mutes the assistant. Copy review:
  * docs/acceptance/2026-10-18/243/copy-review.md.
@@ -54,7 +53,7 @@ export interface ContactCardProps {
  *
  * @param props         The card.
  * @param props.email   Where the team replies.
- * @param props.receipt False when the site's receipt cap held the receipt back.
+ * @param props.receipt False when the confirmation email was withheld.
  */
 export function ContactSent( {
 	email,
@@ -186,22 +185,29 @@ export function ContactCard( {
 	const account = state?.email ?? null;
 	const widget = useTransferWidget(
 		'genie_contact',
-		!! state && ! account && 'sent' !== phase
+		!! state && ! account && 'sent' !== phase,
+		nonce + '|' + ( state?.source ?? '' )
 	);
 	const proactive =
 		'dissatisfied' === block.reason || 'repeat' === block.reason;
 
-	async function submit( event: { preventDefault: () => void } ) {
-		event.preventDefault();
-		if ( 'ready' !== phase ) {
+	async function submit( event?: { preventDefault: () => void } ) {
+		event?.preventDefault();
+		if ( 'ready' !== phase || ! state ) {
 			return;
 		}
 		setFailure( null );
+		if ( ! account && ! widget.token.current ) {
+			if ( ! widget.wait( () => void submit() ) )
+				setFailure( 'unavailable' );
+			return;
+		}
 		setPhase( 'sending' );
 		const result = await sendContact(
 			contactUrl,
 			nonce,
 			{
+				source: state.source,
 				...( account
 					? {}
 					: {
@@ -225,6 +231,19 @@ export function ContactCard( {
 		}
 		widget.refresh();
 		setFailure( result.failure );
+		if ( 'retry' === result.failure ) {
+			const again = await readContact( contactUrl, nonce, fetcher );
+			if ( again ) {
+				setState( again );
+				if ( again.sent ) {
+					setSentTo( again.sent.email );
+					setReceipt( again.sent.receipt );
+					setPhase( 'sent' );
+					notify.current?.( again.sent.email, again.sent.receipt );
+					return;
+				}
+			}
+		}
 		setPhase( 'ready' );
 	}
 
@@ -272,6 +291,7 @@ export function ContactCard( {
 			) : (
 				<form
 					className="linker-genie-contact__form"
+					onChangeCapture={ widget.cancel }
 					onSubmit={ submit }
 					noValidate
 				>

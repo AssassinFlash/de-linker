@@ -74,9 +74,9 @@ class InquiryRequest {
 	/**
 	 * Sets up the route.
 	 *
-	 * @param Conversations  $conversations The visitor's conversation.
-	 * @param Thread         $thread        Its stored messages.
-	 * @param PageContext    $pages         The page context the card sends.
+	 * @param Conversations $conversations The visitor's conversation.
+	 * @param Thread        $thread        Its stored messages.
+	 * @param PageContext   $pages         The page context the card sends.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
@@ -108,6 +108,10 @@ class InquiryRequest {
 					'callback'            => array( $this, 'send' ),
 					'permission_callback' => '__return_true',
 					'args'                => array(
+						'source'         => array(
+							'type'     => 'string',
+							'required' => true,
+						),
 						'name'           => array( 'type' => 'string' ),
 						'email'          => array( 'type' => 'string' ),
 						'company'        => array( 'type' => 'string' ),
@@ -142,16 +146,17 @@ class InquiryRequest {
 		$message      = null !== $summary ? (string) ( $summary['note'] ?? '' ) : '';
 		$reply        = new WP_REST_Response(
 			array(
-				'conversation'  => $conversation,
-				'account'       => $this->customer(),
-				'lines'         => $draft['lines'],
-				'lines_digest'  => $draft['digest'],
-				'message'       => $message,
-				'summary'       => null !== $summary ? (string) ( $summary['summary'] ?? '' ) : '',
-				'sent'          => $conversation > 0 ? $this->sent( $conversation, $locale ) : null,
-				'page_url'      => $this->page_url( $locale ),
+				'conversation' => $conversation,
+				'source'       => NativeTransfer::source( $conversation, $this->thread->read( $conversation ) ),
+				'account'      => $this->customer(),
+				'lines'        => $draft['lines'],
+				'lines_digest' => $draft['digest'],
+				'message'      => $message,
+				'summary'      => null !== $summary ? (string) ( $summary['summary'] ?? '' ) : '',
+				'sent'         => $conversation > 0 ? $this->sent( $conversation, $locale ) : null,
+				'page_url'     => $this->page_url( $locale ),
 				// Nothing to send: the card leads to the request page.
-				'ready'         => array() !== $draft['lines'] || '' !== trim( $message ),
+				'ready'        => array() !== $draft['lines'] || '' !== trim( $message ),
 			)
 		);
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
@@ -173,7 +178,7 @@ class InquiryRequest {
 		$customer = $this->customer();
 		if ( null === $customer ) {
 			$guard    = array(
-				'website'       => $request->get_param( 'website' ) ?? '',
+				'website' => $request->get_param( 'website' ) ?? '',
 			);
 			$customer = array(
 				'user_id' => 0,
@@ -195,84 +200,66 @@ class InquiryRequest {
 				return $this->error( 'linker_genie_inquiry_consent', 400 );
 			}
 		}
-		$existing = $this->existing( $conversation, $locale );
-		if ( null !== $existing ) {
-			// Nothing was said since this conversation's inquiry went out: not twice.
-			return $this->reply( (string) $existing['email'], $existing );
-		}
-		$draft = $this->draft( $locale );
-		if ( ! hash_equals( (string) $draft['digest'], (string) $request->get_param( 'lines' ) ) ) {
-			// The solution draft changed after the card showed it (review and send again).
-			return $this->error( 'linker_genie_inquiry_changed', 409 );
-		}
-		$message = trim( sanitize_textarea_field( (string) $request->get_param( 'message' ) ) );
-		if ( array() === $draft['lines'] && '' === $message ) {
-			return $this->error( 'linker_genie_inquiry_empty', 409 );
-		}
 		if ( ! has_filter( self::SEND_FILTER ) ) {
 			return $this->error( 'linker_genie_inquiry_unavailable', 503 );
 		}
-		if ( ! is_user_logged_in() ) {
-			if ( ! class_exists( \Linker\Commerce\Protection\Turnstile::class ) ) {
-				return $this->error( 'linker_genie_inquiry_unavailable', 503 );
-			}
-			$checked = \Linker\Commerce\Protection\Turnstile::check( 'genie_inquiry', array( 'cf-turnstile-response' => $request->get_param( 'cf-turnstile-response' ) ) );
-			if ( is_wp_error( $checked ) ) {
-				return $checked;
-			}
-		}
-		$summary = '1' === (string) $request->get_param( 'attach_summary' ) ? $this->summary( $conversation, $locale ) : null;
+		$message = trim( sanitize_textarea_field( (string) $request->get_param( 'message' ) ) );
+		$attach  = '1' === (string) $request->get_param( 'attach_summary' );
 		$page    = $this->pages->sanitize( $request->get_param( 'page' ) );
-		/**
-		 * The inquiry confirmation card hands its details to the site's one
-		 * writer (#250): linker-commerce answers with Sender::request()'s record
-		 * and whether the receipt went, or with the WP_Error Woo returned.
-		 *
-		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool|null} or WP_Error.
-		 * @param array<string, mixed> $details See send().
-		 * @since 0.1.0
-		 */
-		$sent = apply_filters(
-			self::SEND_FILTER, // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::SEND_FILTER is linker_tools_genie_inquiry_send.
-			null,
-			array(
-				'conversation' => $conversation,
-				'customer'     => $customer,
-				'message'      => $message,
-				'locale'       => $locale,
-				// false tells the sender the customer turned the summary off;
-				// an array is the exact summary the card showed.
-				'summary'      => null === $summary ? false : $summary,
-				'page'         => $page,
-			)
+		$lines   = (string) $request->get_param( 'lines' );
+		$thread  = $this->thread->read( $conversation );
+		$note    = array(
+			'email'    => $customer['email'],
+			'user_id'  => (int) $customer['user_id'],
+			'messages' => count( $thread['messages'] ),
+			'source'   => NativeTransfer::source( $conversation, $thread ),
+			'summary'  => $attach,
+			'page'     => $this->own_url( (string) ( $page['url'] ?? '' ) ),
 		);
-		if ( ! is_array( $sent ) || ! isset( $sent['order'] ) ) {
-			if ( is_wp_error( $sent ) ) {
-				// Woo refused the card's lines (stock, an empty record): the card
-				// names the request page rather than guessing a cause.
-				return $this->error( 'linker_genie_inquiry_refused', 409 );
-			}
-			return $this->error( 'linker_genie_inquiry_unavailable', 503 );
-		}
-		$inquiry = $this->inquiry( (int) $sent['order'], $locale );
-		if ( null === $inquiry ) {
-			return $this->error( 'linker_genie_inquiry_unavailable', 503 );
-		}
-		add_post_meta(
+		$order   = NativeTransfer::send(
+			'genie_inquiry',
 			$conversation,
 			self::NOTE,
+			$note,
 			array(
-				'at'       => time(),
-				'order'    => (int) $sent['order'],
-				'email'    => $customer['email'],
-				'user_id'  => (int) $customer['user_id'],
-				'messages' => count( $this->thread->read( $conversation )['messages'] ),
-				'summary'  => null !== $summary,
-				'receipt'  => $sent['receipt'] ?? null,
-				'page'     => $this->own_url( (string) ( $page['url'] ?? '' ) ),
-			)
+				'customer' => $customer,
+				'locale'   => $locale,
+				'message'  => $message,
+				'lines'    => $lines,
+				'summary'  => $attach,
+				'page'     => $page,
+			),
+			$request,
+			function () use ( $conversation, $customer, $message, $locale, $attach, $page ) {
+				$summary = $attach ? $this->summary( $conversation, $locale ) : null;
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native inquiry handoff to Commerce.
+				$result = apply_filters(
+					self::SEND_FILTER, // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Commerce owns the native handoff.
+					null,
+					array(
+						'conversation' => $conversation,
+						'customer'     => $customer,
+						'message'      => $message,
+						'locale'       => $locale,
+						'summary'      => $summary ?? false,
+						'page'         => $page,
+					)
+				);
+				return is_wp_error( $result ) ? $this->error( 'linker_genie_inquiry_refused', 409 ) : $result;
+			},
+			function () use ( $lines, $locale, $message ) {
+				$draft = $this->draft( $locale );
+				if ( ! hash_equals( (string) $draft['digest'], $lines ) ) {
+					return $this->error( 'linker_genie_inquiry_changed', 409 );
+				}
+				return array() === $draft['lines'] && '' === $message ? $this->error( 'linker_genie_inquiry_empty', 409 ) : null;
+			}
 		);
-		return $this->reply( $customer['email'], $inquiry );
+		if ( is_wp_error( $order ) ) {
+			return $order;
+		}
+		$inquiry = $this->inquiry( $order->get_id(), $locale );
+		return null === $inquiry ? $this->error( 'linker_genie_inquiry_unavailable', 503 ) : $this->reply( $customer['email'], $inquiry );
 	}
 
 	/**
@@ -418,7 +405,8 @@ class InquiryRequest {
 		if ( ! is_array( $last ) || (int) ( $last['order'] ?? 0 ) < 1 ) {
 			return null;
 		}
-		if ( (int) ( $last['messages'] ?? -1 ) !== count( $this->thread->read( $conversation )['messages'] ) ) {
+		$thread = $this->thread->read( $conversation );
+		if ( isset( $last['source'] ) ? NativeTransfer::source( $conversation, $thread ) !== $last['source'] : (int) ( $last['messages'] ?? -1 ) !== count( $thread['messages'] ) ) {
 			return null;
 		}
 		$inquiry = $this->inquiry( (int) $last['order'], $locale );

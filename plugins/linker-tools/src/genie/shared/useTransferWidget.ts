@@ -16,9 +16,14 @@ declare global {
 }
 
 /** Mount the shared widget only while an anonymous customer's transfer card is visible. */
-export function useTransferWidget( action: Action, visible: boolean ) {
+export function useTransferWidget(
+	action: Action,
+	visible: boolean,
+	source: string
+) {
 	const container = useRef< HTMLDivElement >( null );
 	const token = useRef( '' );
+	const pending = useRef< ( () => void ) | null >( null );
 	useEffect( () => {
 		const node = container.current;
 		if ( ! visible || ! node ) {
@@ -29,16 +34,31 @@ export function useTransferWidget( action: Action, visible: boolean ) {
 			action,
 			( value ) => {
 				token.current = value;
+				if ( value && pending.current ) {
+					const send = pending.current;
+					pending.current = null;
+					send();
+				}
 			}
 		);
 		return () => {
+			pending.current = null;
 			token.current = '';
 			dispose?.();
 		};
-	}, [ action, visible ] );
+	}, [ action, visible, source ] );
 	return {
 		container,
 		token,
+		wait: ( send: () => void ) => {
+			if ( ! window.linkerTurnstile ) return false;
+			pending.current = send;
+			container.current?.scrollIntoView( { block: 'nearest' } );
+			return true;
+		},
+		cancel: () => {
+			pending.current = null;
+		},
 		refresh: () => {
 			if ( visible && container.current ) {
 				window.linkerTurnstile?.refresh( container.current );

@@ -2167,7 +2167,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	) : (
 		<InquiryCard
 			inquiryUrl={ config.inquiryUrl }
-			nonce={ config.restNonce }
+			nonce={ config.signedIn ? config.restNonce : '' }
 			locale={ config.locale }
 			page={ page }
 			onSent={ inquirySent }
@@ -2777,7 +2777,11 @@ export function App( { config }: { config: GenieConfig } ) {
 											key={ `${ turn.meta?.turn_id ?? 0 }-${ block.reason }` }
 											block={ block }
 											contactUrl={ config.contactUrl }
-											nonce={ config.restNonce }
+											nonce={
+												config.signedIn
+													? config.restNonce
+													: ''
+											}
 											locale={ config.locale }
 											page={ page }
 											onSent={ sent }

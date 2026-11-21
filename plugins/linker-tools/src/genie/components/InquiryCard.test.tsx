@@ -25,6 +25,7 @@ interface Call {
 
 function state( overrides: Partial< InquiryState > = {} ): InquiryState {
 	return {
+		source: '7:2',
 		conversation: 7,
 		account: null,
 		lines: [
@@ -62,6 +63,7 @@ const SENT: SentInquiry = {
  */
 function wire( value: InquiryState ) {
 	return {
+		source: value.source,
 		conversation: value.conversation,
 		account: value.account,
 		lines: value.lines,
@@ -171,7 +173,8 @@ test( 'a guest fills name, address and consent, and the send carries the card', 
 	expect( onSent ).toHaveBeenCalledWith( SENT );
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body ).toEqual( {
-		'cf-turnstile-response': '',
+		source: '7:2',
+		'cf-turnstile-response': 'native-test-response',
 		name: 'Maria Weber',
 		email: 'maria@example.test',
 		company: '',

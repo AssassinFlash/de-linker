@@ -252,13 +252,14 @@ export function InquiryCard( {
 	const account = state?.account ?? null;
 	const widget = useTransferWidget(
 		'genie_inquiry',
-		!! state && ! account && ! sent
+		!! state && ! account && ! sent,
+		nonce + '|' + ( state?.source ?? '' )
 	);
 	const lines = state?.lines ?? [];
 	const empty = 0 === lines.length && '' === message.trim();
 
-	async function submit( event: { preventDefault: () => void } ) {
-		event.preventDefault();
+	async function submit( event?: { preventDefault: () => void } ) {
+		event?.preventDefault();
 		if ( 'ready' !== phase || ! state ) {
 			return;
 		}
@@ -281,11 +282,17 @@ export function InquiryCard( {
 				return;
 			}
 		}
+		if ( ! account && ! widget.token.current ) {
+			if ( ! widget.wait( () => void submit() ) )
+				setFailure( 'unavailable' );
+			return;
+		}
 		setPhase( 'sending' );
 		const result = await sendInquiry(
 			inquiryUrl,
 			nonce,
 			{
+				source: state.source,
 				...( account
 					? {}
 					: {
@@ -345,6 +352,7 @@ export function InquiryCard( {
 	return (
 		<section
 			className="linker-genie-inquiry"
+			onChangeCapture={ widget.cancel }
 			aria-live="polite"
 			aria-busy={ loading || sending }
 		>

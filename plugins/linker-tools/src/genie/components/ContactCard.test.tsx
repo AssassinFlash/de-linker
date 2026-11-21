@@ -44,7 +44,7 @@ function route(
 			method,
 			body: init?.body ? JSON.parse( String( init.body ) ) : null,
 		} );
-		const answer = 'GET' === method ? state : reply;
+		const answer = 'GET' === method ? { source: '7:2', ...state } : reply;
 		return new Response( JSON.stringify( answer ), {
 			status: 'GET' === method ? 200 : status,
 		} );
@@ -67,6 +67,46 @@ function card( fetcher: typeof fetch, reason: ContactReason = 'asked' ) {
 
 afterEach( () => {
 	delete window.linkerTurnstile;
+} );
+
+test( 'one guest click waits for verification and an edit cancels that intent', async () => {
+	const { calls, fetcher } = route( {
+		email: null,
+		sent: null,
+		mailbox: 'sales@de-linker.com',
+	} );
+	let answer: ( value: string ) => void;
+	window.linkerTurnstile = {
+		mount: ( _node, _action, ready ) => {
+			answer = ready;
+			return () => {};
+		},
+		refresh: vi.fn(),
+	};
+	card( fetcher );
+	const email = await screen.findByRole( 'textbox', { name: /email/i } );
+	fireEvent.change( email, { target: { value: 'maria@example.test' } } );
+	fireEvent.click( screen.getByRole( 'checkbox' ) );
+	const send = screen.getByRole( 'button', { name: 'Contact me' } );
+	fireEvent.click( send );
+	expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+		0
+	);
+	fireEvent.change( email, { target: { value: 'ellen@example.test' } } );
+	answer!( 'verified-after-edit' );
+	expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+		0
+	);
+	answer!( '' );
+	fireEvent.click( send );
+	fireEvent.click( send );
+	answer!( 'fresh' );
+	await waitFor( () =>
+		expect( calls.filter( ( row ) => row.method === 'POST' ) ).toHaveLength(
+			1
+		)
+	);
+	expect( calls.at( -1 )?.body?.email ).toBe( 'ellen@example.test' );
 } );
 
 test( 'an anonymous contact submits its widget answer with the native request', async () => {
@@ -126,7 +166,8 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 	).toBeTruthy();
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body ).toEqual( {
-		'cf-turnstile-response': '',
+		source: '7:2',
+		'cf-turnstile-response': 'native-test-response',
 		email: 'maria@example.test',
 		website: '',
 		consent: '1',

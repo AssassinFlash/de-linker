@@ -55,7 +55,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 } );
 vi.mock( './api/contact', () => ( {
 	readContact: vi.fn( async () => ( {
-		started: '100.sig',
+		source: '5:2',
 		email: null,
 		sent: null,
 		mailbox: 'sales@de-linker.com',
@@ -68,8 +68,7 @@ vi.mock( './api/product', () => ( {
 vi.mock( './api/inquiry', () => ( {
 	readInquiry: vi.fn( async () => ( {
 		conversation: 5,
-		started: '100',
-		startedNonce: 'sig',
+		source: '5:2',
 		account: null,
 		lines: [
 			{
@@ -3436,6 +3435,7 @@ test( 'the sent contact card stays in the history on the next turn', async () =>
 	// From now on the route says this conversation's request is sent: a card
 	// that mounts again while the next turn runs reports it once more.
 	vi.mocked( readContact ).mockResolvedValue( {
+		source: '5:2',
 		email: null,
 		sent: { email: 'maria@example.test', receipt: true },
 		mailbox: 'sales@de-linker.com',
@@ -3586,6 +3586,7 @@ test( 'the inquiry card follows the answer and the sent card stays on the next t
 	// From now on the route says this conversation's inquiry is sent: the
 	// next turn keeps the sent card in the history.
 	vi.mocked( readInquiry ).mockResolvedValue( {
+		source: '5:2',
 		conversation: 5,
 		account: null,
 		lines: [],

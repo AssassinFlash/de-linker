@@ -2,7 +2,7 @@
  * "Let Linker contact me" (#243): the contact card's route
  * (includes/Genie/ContactRequest.php).
  *
- * GET tells the card what it needs when it appears: a signed start time, the
+ * GET tells the card what it needs when it appears: the conversation revision, the
  * signed-in customer's address (never asked again) and whether this
  * conversation's request is already with the team, and the team mailbox
  * customers see (for a refusal). POST passes the
@@ -18,6 +18,7 @@ import type { ContactReason, PageContext } from './turn';
 type Fetch = typeof fetch;
 
 export interface ContactState {
+	source: string;
 	/** The signed-in customer's address; null for a guest. */
 	email: string | null;
 	/** The request already with the team, when nothing was said since. */
@@ -50,15 +51,14 @@ export async function readContact(
 		const response = await fetcher( url, {
 			credentials: 'same-origin',
 			cache: 'no-store',
-			headers: { 'X-WP-Nonce': nonce },
+			headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 		} );
 		if ( ! response.ok ) {
 			return null;
 		}
-		const body = ( await response.json() ) as Partial< ContactState > & {
-			started_nonce?: unknown;
-		};
+		const body = ( await response.json() ) as Partial< ContactState >;
 		return {
+			source: typeof body.source === 'string' ? body.source : '',
 			email: typeof body.email === 'string' ? body.email : null,
 			sent:
 				body.sent && typeof body.sent.email === 'string'
@@ -95,6 +95,7 @@ export async function sendContact(
 	url: string,
 	nonce: string,
 	request: {
+		source: string;
 		'cf-turnstile-response'?: string;
 		email?: string;
 		website: string;
@@ -112,7 +113,7 @@ export async function sendContact(
 			cache: 'no-store',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
+				...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 			},
 			body: JSON.stringify( request ),
 		} );

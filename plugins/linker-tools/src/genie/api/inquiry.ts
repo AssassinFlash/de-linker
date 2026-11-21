@@ -48,6 +48,7 @@ export interface SentInquiry {
 }
 
 export interface InquiryState {
+	source: string;
 	conversation: number;
 	account: InquiryAccount | null;
 	lines: InquiryLine[];
@@ -119,7 +120,7 @@ export async function readInquiry(
 			{
 				credentials: 'same-origin',
 				cache: 'no-store',
-				headers: { 'X-WP-Nonce': nonce },
+				headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 			}
 		);
 		if ( ! response.ok ) {
@@ -143,6 +144,7 @@ export async function readInquiry(
 				)
 			: [];
 		return {
+			source: typeof body.source === 'string' ? body.source : '',
 			conversation: Number( body.conversation ) || 0,
 			account:
 				account && typeof account.email === 'string'
@@ -193,6 +195,7 @@ export async function sendInquiry(
 	url: string,
 	nonce: string,
 	request: {
+		source: string;
 		'cf-turnstile-response'?: string;
 		name?: string;
 		email?: string;
@@ -214,9 +217,10 @@ export async function sendInquiry(
 			cache: 'no-store',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
+				...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 			},
 			body: JSON.stringify( {
+				source: request.source,
 				...( request[ 'cf-turnstile-response' ] !== undefined
 					? {
 							'cf-turnstile-response':

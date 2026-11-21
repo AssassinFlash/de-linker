@@ -576,6 +576,8 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			'lines'          => $state['lines_digest'],
 		) + self::fields();
 		$first  = $this->send( $params );
+		delete_post_meta( $this->conversation, InquiryRequest::NOTE );
+		$params['cf-turnstile-response'] = ''; // Recover the saved Woo inquiry after the original cart was emptied.
 		$second = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		$this->assertSame( $first->get_data()['inquiry'], $second->get_data()['inquiry'] );
@@ -654,6 +656,8 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 */
 	private function send( array $params ): WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/inquiry' );
+		$source = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/inquiry' ) );
+		$params += array( 'source' => $source->get_data()['source'] ?? '' );
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );
 		}
