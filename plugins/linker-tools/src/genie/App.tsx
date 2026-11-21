@@ -932,7 +932,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			return;
 		}
 		const messages = snapshot.map( ( message, index ) => {
-			if ( ! message.planning_sources ) return message;
+			if ( ! message.planning_sources ) {
+				return message;
+			}
 			const verified = refreshed.messages[ index ]?.planning_sources;
 			return { ...message, planning_sources: verified };
 		} );

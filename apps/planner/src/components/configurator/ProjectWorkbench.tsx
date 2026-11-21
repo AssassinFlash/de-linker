@@ -1709,7 +1709,9 @@ export default function ProjectWorkbench({
 								/>
 							</section>
 						) : energyRun.isPending ? (
-							<p role="status">{__("Loading…", "linker-tools")}</p>
+							<p role="status">
+								{__("Reading the saved calculation…", "linker-tools")}
+							</p>
 						) : (
 							<div role="alert">
 								<p>{energyErrorText(energyRun.error)}</p>

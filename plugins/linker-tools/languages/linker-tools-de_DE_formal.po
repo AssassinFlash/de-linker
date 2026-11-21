@@ -7076,6 +7076,7 @@ msgstr ""
 msgid "Save the source file with UTF-8 encoding."
 msgstr "Die Quelldatei muss UTF-8-kodiert sein."
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js build/hero.js
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/RunResult.tsx:93
 msgid "Saved calculation"
@@ -10570,6 +10571,7 @@ msgstr "Geforderte Mindestenergie am Ende"
 msgid "Save comparison in planning report"
 msgstr "Vergleich im Planungsbericht speichern"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js build/hero.js
 #: build/planner/assets/planner.js
 msgid "Saved calculation comparison"
 msgstr "Vergleich gespeicherter Berechnungen"
