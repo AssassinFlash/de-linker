@@ -5,6 +5,7 @@
  * @package Linker\Commerce
  */
 
+use Linker\Commerce\Mail\NativeTransaction;
 use Linker\I18n\Languages;
 use Linker\I18n\LinkLocalizer;
 use Linker\I18n\Twins;
@@ -103,7 +104,7 @@ use Linker\I18n\Woo\Projection;
 					}
 					$values = get_post_meta( $id, $key, false );
 					if ( 1 !== count( $values ) ) {
-						throw new RuntimeException( 'Expected one published value for ' . $id . ' ' . $key );
+						throw new RuntimeException( esc_html( sprintf( 'Expected one published value for %d %s.', $id, $key ) ) );
 					}
 					$result[ $id ][ $key ] = $values[0];
 				}
@@ -120,10 +121,7 @@ use Linker\I18n\Woo\Projection;
 			echo '@@reviewed-pair@@' . wp_json_encode( $snapshot );
 			return;
 		}
-		if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
-			throw new RuntimeException( 'Cannot start the paired description update.' );
-		}
-		try {
+		$write = static function () use ( $wpdb, $en, $de, $pair, $read_descriptions, $read, $translator ): void {
 			if ( false === $wpdb->query( $wpdb->prepare( 'SELECT ID FROM %i WHERE ID IN (%d,%d) FOR UPDATE', $wpdb->posts, $en, $de ) )
 				|| false === $wpdb->query( $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d,%d) ORDER BY post_id, meta_id FOR UPDATE', $wpdb->postmeta, $en, $de ) ) ) {
 				throw new RuntimeException( 'Cannot lock the reviewed page pair.' );
@@ -149,15 +147,13 @@ use Linker\I18n\Woo\Projection;
 			if ( $read_descriptions() !== $pair['after'] || $read() !== $pair['expected_metadata'] || ! $translator->current( State::POST, $en ) ) {
 				throw new RuntimeException( 'The reviewed descriptions or translation failed readback.' );
 			}
-			if ( false === $wpdb->query( 'COMMIT' ) ) {
-				throw new RuntimeException( 'Cannot commit the paired description update.' );
-			}
-		} catch ( Throwable $error ) {
-			$wpdb->query( 'ROLLBACK' );
-			throw $error;
+		};
+		try {
+			NativeTransaction::run( $write );
 		} finally {
-			clean_post_cache( $en );
-			clean_post_cache( $de );
+			foreach ( array( $en, $de ) as $id ) {
+				wp_cache_delete( $id, 'post_meta' );
+			}
 		}
 		echo '@@reviewed-pair@@{}';
 		return;

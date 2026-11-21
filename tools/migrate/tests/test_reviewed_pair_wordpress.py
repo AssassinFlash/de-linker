@@ -458,3 +458,71 @@ def test_native_blog_pair_saves_excerpts_and_restores_copy(pages: list[int]) -> 
         },
     )
     assert pair.read(WP, *pages, post_type="post") == before
+
+
+def test_description_pair_uses_one_connection_for_publish_and_restore(
+    pages: list[int],
+) -> None:
+    key = "_seopress_titles_desc"
+    changes = [{"id": post, "keys": [key]} for post in pages]
+    read = {"mode": "read_descriptions", "changes": changes}
+    php(
+        f"foreach ({json.dumps(pages)} as $id) {{"
+        f"update_post_meta($id,'{key}','Original '.$id);"
+        "} echo '@@fixture@@{}';"
+    )
+    # Seed the newly created private pair's native baseline.
+    baseline = pair.invoke(
+        WP,
+        {"mode": "preview_page_adoption", "changes": [{"id": post} for post in pages]},
+    )["expected_metadata"]
+    php(
+        "$baseline=json_decode(base64_decode('"
+        + base64.b64encode(json.dumps(baseline).encode()).decode()
+        + "'),true);foreach($baseline as $id=>$meta){foreach($meta as $key=>$values){"
+        "delete_post_meta($id,$key);foreach($values as $v)add_post_meta($id,$key,wp_slash($v));"
+        "}}echo '@@fixture@@{}';"
+    )
+    before = pair.invoke(WP, read)
+    assert before["current"]
+    final = {str(post): {key: f"Reviewed {post}"} for post in pages}
+    preview = pair.invoke(
+        WP,
+        {
+            "mode": "preview_page_adoption",
+            "changes": [
+                {"id": post, "descriptions": final[str(post)]} for post in pages
+            ],
+        },
+    )
+    published = {**before, "values": final, "metadata": preview["expected_metadata"]}
+    for original, target in ((before, published), (published, before)):
+        write = {
+            "mode": "save_descriptions",
+            "changes": changes,
+            "before": original["values"],
+            "after": target["values"],
+            "metadata_before": original["metadata"],
+            "expected_metadata": target["metadata"],
+        }
+        source = base64.b64encode(pair.render(write).encode()).decode()
+        result = php(
+            f"$id={pages[0]};"
+            + r"""
+$changed=false;
+add_action('updated_post_meta',static function($mid,$post,$key) use ($id,&$changed) {
+    if ($id !== $post || '_seopress_titles_desc' !== $key || $changed) return;
+    global $wpdb;
+    $changed=true;
+    $wpdb->dbh->close();
+    $wpdb->db_connect(false);
+},10,3);
+$failure=false;
+try { eval(base64_decode('__SOURCE__')); } catch (Throwable $e) { $failure=true; }
+echo '@@fixture@@'.wp_json_encode(['changed'=>$changed,'failure'=>$failure]);
+""".replace("__SOURCE__", source)
+        )
+        assert result == {"changed": True, "failure": True}
+        assert pair.invoke(WP, read) == original
+        pair.invoke(WP, write)
+        assert pair.invoke(WP, read) == target
