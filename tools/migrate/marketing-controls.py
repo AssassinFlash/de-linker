@@ -971,30 +971,12 @@ def plan_home_account(english: str, german: str) -> tuple[str, str]:
     return en, de
 
 
-def plan_home_project_comparison(english: str, german: str) -> tuple[str, str]:
-    anchor = '<section class="home-trust" id="capabilities">'
-    mount = '[linker_planner mode="home"]\n'
-    pages = (english, german)
-    if any(page.count(anchor) != 1 for page in pages):
-        raise ValueError("Expected one existing homepage capabilities section")
-    states = [page.count(mount) for page in pages]
-    if states == [1, 1] and all(mount + anchor in page for page in pages):
-        return english, german
-    if states != [0, 0] or any("[linker_planner" in page for page in pages):
-        raise ValueError("Partially changed homepage project comparison pair")
-    return (
-        english.replace(anchor, mount + anchor),
-        german.replace(anchor, mount + anchor),
-    )
-
-
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
         "home_configurator": plan_home_configurator,
-        "home_project_comparison": plan_home_project_comparison,
         "home_account": plan_home_account,
         "home_testimonials": plan_home_testimonials,
         "residential_storage": plan_residential_storage,
