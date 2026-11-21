@@ -37,22 +37,17 @@ final class ResourcePolicy {
 
 	/**
 	 * Account saves retain native replay. Anonymous snapshots also consume storage.
-	 * Concurrent turns share the running-work budget; provider costs are metered at dispatch.
+	 * The private turn handler owns model work. A first guest turn can also create a conversation.
 	 *
 	 * @param string   $action Server-selected resource operation.
 	 * @param Identity $identity Native browser and account identity.
+	 * @param bool     $opens_conversation A guest turn needs a new native conversation.
 	 * @return array{limits:list<Allowance>,carry:array{}}
 	 */
-	public static function plan( string $action, Identity $identity ): array {
-		$guest  = '' === $identity->account;
+	public static function plan( string $action, Identity $identity, bool $opens_conversation = false ): array {
 		$limits = array();
-		if ( 'genie' === $action ) {
-			if ( ! $guest ) {
-				$limits[] = new Allowance( 'genie_busy', $identity->account, 1, 0 );
-			}
-			$limits[] = new Allowance( 'genie_busy', $identity->browser, 1, 0 );
-			$limits[] = new Allowance( 'genie_site_busy', 'site', 2, 0 );
-		} elseif ( $guest && in_array( $action, array( 'solution_save', 'conversation_create' ), true ) ) {
+		$writes = in_array( $action, array( 'solution_save', 'conversation_create' ), true ) || ( 'genie' === $action && $opens_conversation );
+		if ( '' === $identity->account && $writes ) {
 			$limits[] = new Allowance( 'tool_write_day', $identity->browser, 500, DAY_IN_SECONDS );
 			$limits[] = new Allowance( 'tool_write_site_day', 'site', 2000, DAY_IN_SECONDS );
 		}

@@ -384,15 +384,19 @@ final class ResourceAdmissionTest extends TestCase {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
 		$plan = ResourcePolicy::plan( 'genie', $identity );
-		$this->assertSame( array( 'genie_busy', 'genie_site_busy' ), array_map( static fn( Allowance $a ): string => $a->name, $plan['limits'] ) );
+		$this->assertSame( array(), $plan['limits'] );
 		$ledger = new Ledger();
 		$id     = wp_generate_uuid4();
 		$fp     = hash( 'sha256', $id );
-		$this->assertIsArray( $ledger->reserve( $id, $fp, $plan['limits'], 90 ) );
+		$owners = array( Allowance::owner_for( $identity->browser ) );
+		$args   = array( $id, $fp, $plan['limits'], 90, $plan['carry'], 'genie', $identity->binding(), $owners );
+		$this->assertIsArray( $ledger->reserve( ...$args ) );
 		$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
-		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'busy' ), $plan['limits'], 90 ) );
-		$this->assertIsArray( $ledger->complete( $id, $fp ) );
-		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'next' ), $plan['limits'], 90 ) );
+		$this->assertIsArray( $ledger->complete( $id, $fp, 17 ) );
+		$replay = $ledger->reserve( ...$args );
+		$this->assertIsArray( $replay );
+		$this->assertSame( 17, $replay['outcome'] );
+		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), $fp, array(), 90, array(), 'genie' ) );
 		$writes = ResourcePolicy::plan( 'solution_save', $identity );
 		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'saved' ), $writes['limits'], 90 ), 'Saved input remains independent from model turns.' );
 	}

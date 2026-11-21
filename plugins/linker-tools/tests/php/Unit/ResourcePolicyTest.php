@@ -22,25 +22,17 @@ require_once dirname( __DIR__, 4 ) . '/linker-commerce/vendor/autoload.php';
  * @covers \Linker\Tools\Protection\ResourcePolicy
  */
 final class ResourcePolicyTest extends TestCase {
-	/** Account activity uses provider and concurrent work capacity, independent of earlier finished turns. */
-	public function test_account_turn_reserves_only_running_work(): void {
-		$identity = new Identity( str_repeat( 'a', 64 ), str_repeat( 'b', 64 ) );
-		$plan     = ResourcePolicy::plan( 'genie', $identity );
-		$this->assertNotEmpty( $plan['limits'] );
-		foreach ( $plan['limits'] as $limit ) {
-			$this->assertSame( 0, $limit->window );
+	/** The private Genie service admits model work; these routes retain the native operation identity. */
+	public function test_owned_turns_and_account_saves_need_only_idempotency(): void {
+		$account = new Identity( str_repeat( 'a', 64 ), str_repeat( 'b', 64 ) );
+		$guest   = new Identity( str_repeat( 'c', 64 ), '' );
+		foreach ( array( $account, $guest ) as $identity ) {
+			$this->assertSame( array(), ResourcePolicy::plan( 'genie', $identity )['limits'] );
 		}
-		$this->assertContains( 'genie_site_busy', array_map( static fn ( Allowance $limit ): string => $limit->name, $plan['limits'] ) );
 		foreach ( array( 'conversation_create', 'solution_save' ) as $action ) {
-			$this->assertSame( array(), ResourcePolicy::plan( $action, $identity )['limits'] );
+			$this->assertSame( array(), ResourcePolicy::plan( $action, $account )['limits'] );
 		}
-	}
-
-	/** Guest chat uses running-work slots and the provider's actual resource budget. */
-	public function test_guest_turn_does_not_charge_past_messages_or_uploads(): void {
-		$guest = new Identity( str_repeat( 'a', 64 ), '' );
-		$plan  = ResourcePolicy::plan( 'genie', $guest );
-		$this->assertSame( array( 'genie_busy', 'genie_site_busy' ), array_map( static fn ( Allowance $limit ): string => $limit->name, $plan['limits'] ) );
+		$this->assertEquals( ResourcePolicy::plan( 'conversation_create', $guest ), ResourcePolicy::plan( 'genie', $guest, true ) );
 	}
 
 	/** Guest conversations and saved snapshots consume storage write capacity. */

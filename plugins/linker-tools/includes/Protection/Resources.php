@@ -163,9 +163,10 @@ final class Resources {
 		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
 			return self::error( 'files', 400 );
 		}
-		$plan      = ResourcePolicy::plan( $action, $identity );
-		$operation = (string) $request->get_header( 'X-Linker-Operation' );
-		$version   = '';
+		$opens_conversation = 'genie' === $action && '' === $identity->account && 0 === ( new \Linker\Tools\Genie\Conversations() )->existing_id();
+		$plan               = ResourcePolicy::plan( $action, $identity, $opens_conversation );
+		$operation          = (string) $request->get_header( 'X-Linker-Operation' );
+		$version            = '';
 		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {
 			$version = $this->version->current( $request );
 			if ( is_wp_error( $version ) ) {
@@ -328,7 +329,11 @@ final class Resources {
 	 * @return array<string,mixed>|WP_Error
 	 */
 	private function reserve( Ledger $ledger, Identity $identity, string $action, string $id, string $fingerprint, array $plan ): array|WP_Error {
-		$receipt = $ledger->reserve( $id, $fingerprint, $plan['limits'], 90, $plan['carry'], $action, $identity->binding(), $identity->owners() );
+		$owners = $identity->owners();
+		if ( 'genie' === $action ) {
+			$owners[] = \Linker\Commerce\Protection\Allowance::owner_for( $identity->browser );
+		}
+		$receipt = $ledger->reserve( $id, $fingerprint, $plan['limits'], 90, $plan['carry'], $action, $identity->binding(), $owners );
 		if ( is_wp_error( $receipt ) ) {
 			$status = match ( $receipt->get_error_code() ) {
 				'linker_admission_quota' => 429,

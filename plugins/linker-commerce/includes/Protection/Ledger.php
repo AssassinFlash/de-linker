@@ -89,8 +89,11 @@ final class Ledger {
 		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
 			return self::error( 'input' );
 		}
-		if ( array() === $allowances && ( ! in_array( $purpose, array( 'solution_save', 'conversation_create' ), true ) || '' === $binding || array() === $owners || ! is_user_logged_in() ) ) {
-			return self::error( 'input' );
+		if ( array() === $allowances ) {
+			$native_action = 'genie' === $purpose || ( in_array( $purpose, array( 'solution_save', 'conversation_create' ), true ) && is_user_logged_in() );
+			if ( ! $native_action || '' === $binding || array() === $owners ) {
+				return self::error( 'input' );
+			}
 		}
 		if ( count( $owners ) > self::MAX_DIMENSIONS || count( array_filter( $owners, static fn ( string $owner ): bool => 1 === preg_match( '/\A[a-f0-9]{64}\z/', $owner ) ) ) !== count( $owners ) ) {
 			return self::error( 'input' );
