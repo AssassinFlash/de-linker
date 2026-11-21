@@ -65,8 +65,7 @@ test.afterAll(() => {
 });
 
 /**
- * Asks Genie through the dock loader's own event (the entry the product
- * page's ask button uses) and waits for the answer's first product card.
+ * Opens Genie from the visible catalogue entry and waits for the selected product.
  *
  * @param page   The page.
  * @param launch The question to send.
@@ -76,10 +75,31 @@ async function askGenie(
 	launch: string,
 	saveLabel: string
 ): Promise<void> {
-	await page.locator('.linker-genie-open').first().click();
+	await page
+		.getByRole('button', { name: /^(Ask Genie|Genie fragen)$/ })
+		.filter({ visible: true })
+		.first()
+		.click();
 	await page.locator('#linker-genie-input').fill(launch);
+	const result = page.waitForResponse(
+		(r) =>
+			r.url().includes('/genie/turn') && r.request().method() === 'POST',
+		{ timeout: 180_000 }
+	);
 	await page.locator('.linker-genie-app__send').click();
-	const card = page.locator('.linker-genie-app article.linker-card').first();
+	const answer = await result;
+	expect(
+		answer.ok(),
+		'the newly requested quantities have an answered turn: ' +
+			answer.status()
+	).toBe(true);
+	const card = page
+		.locator('.linker-genie-app article.linker-card')
+		.filter({ hasText: 'H2-10K-T3' })
+		.last();
+	await expect(card.locator('.linker-card__quantity')).toHaveText('× 3', {
+		timeout: 35_000,
+	});
 	await expect(card).toBeVisible({ timeout: 180_000 });
 	// The card is complete once its model line has come in too.
 	await expect(card.locator('.linker-card__model')).toBeVisible({
@@ -111,7 +131,8 @@ for (const locale of ['en', 'de'] as const) {
 			await askGenie(page, words.ask, words.save);
 			const card = page
 				.locator('.linker-genie-app article.linker-card')
-				.first();
+				.filter({ hasText: 'H2-10K-T3' })
+				.last();
 
 			// The save posts the live card's proof; the account store answers
 			// with the saved solution's own id and address.

@@ -127,6 +127,14 @@ export async function ask(page: Page, question: string): Promise<void> {
 	);
 }
 
+/** Give the local HTTP workers their configured interval to reload wp-config.php. */
+async function waitForProfileReload(): Promise<void> {
+	const seconds = Number(
+		wp(['eval', "echo (int) ini_get('opcache.revalidate_freq');"])
+	);
+	await new Promise((resolve) => setTimeout(resolve, (seconds + 1) * 1000));
+}
+
 /** A failure from the official always-reject secret, followed by the passing key. */
 export async function rejected(
 	page: Page,
@@ -136,6 +144,7 @@ export async function rejected(
 	await waitForTurnstile(card);
 	const restore = applyTurnstileProfile(undefined, 'fail');
 	try {
+		await waitForProfileReload();
 		const [response] = await Promise.all([
 			page.waitForResponse(
 				(r) =>
@@ -153,6 +162,7 @@ export async function rejected(
 		await expect(card.getByRole('alert')).toBeVisible();
 	} finally {
 		restore();
+		await waitForProfileReload();
 	}
 }
 
