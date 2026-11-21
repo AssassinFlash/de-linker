@@ -609,6 +609,128 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertSame( array( true ), $results );
 	}
 
+	/** One mailbox's repeated resets and unrelated tool records cannot close password recovery for another. */
+	public function test_password_reset_reaches_another_registered_mailbox_when_the_tools_journal_is_unavailable(): void {
+		$first  = $this->customer();
+		$second = $this->customer();
+		$this->as_user( 0 );
+		$post = $_POST;
+		$this->later(
+			static function () use ( $post ): void {
+				$_POST = $post;
+			}
+		);
+		$_POST = array( 'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ) );
+		update_option( Ledger::OPTION, 'unavailable-tool-history', false );
+		$marker = self::newest_mail_job();
+		$send   = static function ( \WC_Customer $customer ): bool {
+			$_POST['user_login'] = $customer->get_email();
+			return \WC_Shortcode_My_Account::retrieve_password();
+		};
+		// Hold the native outbox at its transport boundary so the saved recipient and key can be checked.
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
+		$this->assertTrue( $send( $first ) );
+		$this->assertTrue( $send( $first ) );
+		$this->assertFalse( $send( $first ) );
+		wc_clear_notices();
+		$this->assertTrue( $send( $second ) );
+		$jobs = self::mail_jobs_after( $marker );
+		$this->assertCount( 3, $jobs );
+		$store = new \Linker\Commerce\Mail\JobStore();
+		$to    = array();
+		foreach ( $jobs as $job ) {
+			$record = $store->load( $job );
+			$this->assertNotNull( $record );
+			$to[] = $record['message']->to;
+		}
+		$this->assertSame( array( array( $first->get_email() ), array( $first->get_email() ), array( $second->get_email() ) ), $to );
+		$this->assertSame( 'unavailable-tool-history', get_option( Ledger::OPTION ) );
+		$files  = function (): array {
+			$paths = glob( (string) constant( 'LINKER_LOCAL_MAIL_DIR' ) . '/*.eml' );
+			$this->assertIsArray( $paths );
+			return $paths;
+		};
+		$before = $files();
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
+		delete_option( \Linker\Commerce\Mail\Throttle::OPTION );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $jobs[2] ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Run the existing native queue worker for the second mailbox.
+		$delivered = array_values( array_diff( $files(), $before ) );
+		$this->assertCount( 1, $delivered );
+		try {
+			$mail = html_entity_decode( quoted_printable_decode( (string) file_get_contents( $delivered[0] ) ), ENT_QUOTES );
+			$this->assertTrue( 1 === preg_match( '/^To: .*' . preg_quote( self::TESTER, '/' ) . '/mi', $mail ) );
+			$this->assertTrue( 1 === preg_match( '/href="([^"]+[?&]key=[^"]+)"/i', $mail, $matches ) );
+			wp_parse_str( (string) wp_parse_url( $matches[1], PHP_URL_QUERY ), $args );
+			$this->assertArrayHasKey( 'key', $args );
+			$this->assertArrayHasKey( 'login', $args );
+			$this->assertTrue( is_string( $args['key'] ) && is_string( $args['login'] ) );
+			$user = check_password_reset_key( $args['key'], $args['login'] );
+			$this->assertInstanceOf( \WP_User::class, $user );
+			$this->assertSame( $second->get_id(), $user->ID );
+		} finally {
+			wp_delete_file( $delivered[0] );
+		}
+	}
+
+	/** An unavailable mail queue leaves the account key and the recipient's next attempt intact. */
+	public function test_password_reset_reports_mail_capacity_failure_and_preserves_the_retry(): void {
+		$user = get_userdata( $this->customer()->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$this->as_user( 0 );
+		$post = $_POST;
+		$this->later(
+			static function () use ( $post ): void {
+				$_POST = $post;
+			}
+		);
+		$_POST = array(
+			'user_login'                  => $user->user_email,
+			'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
+		);
+		$queue = \Linker\Commerce\Mail\Capacity::reserve_critical( self::tag(), \Linker\Commerce\Mail\Capacity::LIMITS['critical']['count'], 1 );
+		$this->assertIsArray( $queue );
+		$result = retrieve_password( $user->user_email );
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_reset_capacity', $result->get_error_code() );
+		$loaded = get_userdata( $user->ID );
+		$this->assertInstanceOf( \WP_User::class, $loaded );
+		$this->assertSame( $user->user_activation_key, $loaded->user_activation_key );
+		$this->assertSame( array(), \Linker\Commerce\Protection\ReceiptRecipients::privacy( $user->user_email, false ) );
+		$this->assertTrue( \Linker\Commerce\Mail\Capacity::cancel_before_side_effect( $queue ) );
+		$this->assertTrue( retrieve_password( $user->user_email ) );
+	}
+
+	/** Previous reset deliveries remain charged to the corresponding registered address after cutover. */
+	public function test_an_active_legacy_reset_window_survives_independently_of_inquiry_receipts(): void {
+		$customer  = $this->customer();
+		$email     = $customer->get_email();
+		$recipient = Identity::recipient( $email );
+		$ledger    = new Ledger();
+		$marker    = 'linker_reset_target_imported_v1';
+		$saved     = get_option( $marker );
+		delete_option( $marker );
+		$this->later(
+			static function () use ( $email, $marker, $saved ): void {
+				\Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, true );
+				delete_option( $marker );
+				if ( false !== $saved ) {
+					add_option( $marker, $saved, '', false );
+				}
+			}
+		);
+		for ( $i = 0; $i < 2; ++$i ) {
+			$id = wp_generate_uuid4();
+			$fp = hash( 'sha256', $id );
+			$this->assertIsArray( $ledger->reserve( $id, $fp, array( new Allowance( 'password_reset_target_hour', $recipient, 2, HOUR_IN_SECONDS ), new Allowance( 'password_reset_target_day', $recipient, 5, DAY_IN_SECONDS ) ), 120, array(), 'password_reset' ) );
+			$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
+			$this->assertIsArray( $ledger->complete( $id, $fp, $customer->get_id() ) );
+		}
+		$this->assertSame( 'target_cap', \Linker\Commerce\Protection\ReceiptRecipients::password_reset( $email, wp_generate_uuid4(), false ) );
+		$this->assertSame( '', ReceiptBudget::reason( $email, wp_generate_uuid4(), 'inquiry', false ) );
+		$records = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false );
+		$this->assertSame( array( 'password_reset', 'password_reset' ), array_column( $records, 'purpose' ) );
+	}
+
 	/** Real Woo session and render hooks restore only the failed reset login. */
 	public function test_password_reset_recovery_renders_only_the_saved_login_inside_the_card(): void {
 		$session_key = 'linker_form_recovery_password_reset';

@@ -32,19 +32,6 @@ final class Accounts {
 	 */
 	private ?array $registration = null;
 	/**
-	 * Current native reset dispatch.
-	 *
-	 * @var array<string,mixed>|null
-	 */
-	private ?array $reset = null;
-	/**
-	 * Native reset subject; no reset key is stored here.
-	 *
-	 * @var int
-	 */
-	private int $reset_user = 0;
-
-	/**
 	 * Native form hooks preserve their own nonce and permission mechanisms.
 	 */
 	public function register(): void {
@@ -69,7 +56,6 @@ final class Accounts {
 		add_action( 'woocommerce_lostpassword_form', array( $this, 'reset_fields' ) );
 		add_action( 'lostpassword_form', array( $this, 'reset_fields' ) );
 		add_action( 'lostpassword_post', array( $this, 'password_reset' ), 30, 2 );
-		add_action( 'profile_update', array( $this, 'reset_created' ) );
 	}
 
 	/**
@@ -363,29 +349,9 @@ final class Accounts {
 			$errors->add( 'linker_reset_verification', __( 'Please verify your request and try again.', 'linker-commerce' ) );
 			return;
 		}
-		$result = Operation::password_reset( array( 'email' => strtolower( $user->user_email ) ) );
-		if ( is_wp_error( $result ) ) {
-			$errors->add( $result->get_error_code(), $result->get_error_message() );
-		} else {
-			$reserved = \Linker\Commerce\Mail\ResetNotice::reserve( $user, (string) ( $result['id'] ?? wp_generate_uuid4() ) );
-			if ( is_wp_error( $reserved ) ) {
-				$errors->add( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
-				return;
-			}
-			$this->reset      = $result;
-			$this->reset_user = $user->ID;
-		}
-	}
-
-	/**
-	 * The reset key was saved; delivered mail is still owned by the native mail pipeline.
-	 *
-	 * @param int $id Native updated user id.
-	 */
-	public function reset_created( int $id ): void {
-		if ( null !== $this->reset && $id === $this->reset_user ) {
-			Operation::finish( $this->reset );
-			$this->reset = null;
+		$reserved = \Linker\Commerce\Mail\ResetNotice::reserve( $user, wp_generate_uuid4() );
+		if ( is_wp_error( $reserved ) ) {
+			$errors->add( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
 		}
 	}
 

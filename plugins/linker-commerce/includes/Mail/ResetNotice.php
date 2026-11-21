@@ -198,6 +198,10 @@ final class ResetNotice {
 	 * @return array<string,mixed>|WP_Error
 	 */
 	public static function reserve( WP_User $user, string $operation ): array|WP_Error {
+		$unavailable = new WP_Error( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+		if ( '' !== \Linker\Commerce\Protection\ReceiptRecipients::password_reset( $user->user_email, $operation, false ) ) {
+			return $unavailable;
+		}
 		$key      = str_repeat( 'A', 20 );
 		$messages = array( self::core_message( $user, $key ) );
 		foreach ( WC()->mailer()->get_emails() as $email ) {
@@ -212,7 +216,19 @@ final class ResetNotice {
 				$bytes   = max( $bytes, is_string( $encoded ) ? strlen( $encoded ) : 0 );
 			}
 		}
-		$result = Capacity::reserve_critical( 'reset:' . $operation, 1, $bytes );
+		try {
+			$result = NativeTransaction::run(
+				static function () use ( $user, $operation, $bytes ): array|WP_Error {
+					$scope = Capacity::reserve_critical( 'reset:' . $operation, 1, $bytes );
+					if ( is_array( $scope ) && '' !== \Linker\Commerce\Protection\ReceiptRecipients::password_reset( $user->user_email, $operation, true ) ) {
+						throw new \RuntimeException( 'reset_recipient_unavailable' );
+					}
+					return $scope;
+				}
+			);
+		} catch ( \Throwable $error ) {
+			return $unavailable;
+		}
 		if ( is_array( $result ) ) {
 			self::$scopes[ $user->ID ] = $result;
 		}

@@ -13,8 +13,23 @@ use Linker\Commerce\Mail\ConnectionFence;
 
 /** Indexed, non-autoloaded options expire independently of unrelated recipients and tools. */
 final class ReceiptRecipients {
-	private const PREFIX   = 'linker_mail_target_v1.';
-	private const IMPORTED = 'linker_mail_target_imported_v1';
+	private const PREFIX         = 'linker_mail_target_v1.';
+	private const IMPORTED       = 'linker_mail_target_imported_v1';
+	private const RESET_IMPORTED = 'linker_reset_target_imported_v1';
+	private const RESET_LOCK     = 'native-reset-recipient-';
+
+	/** Check a reset against only the mailbox WordPress resolved for its account.
+	 *
+	 * @param string $email Registered native address.
+	 * @param string $operation Server-generated reset request ID.
+	 * @param bool   $spend Reserve the actual delivery.
+	 */
+	public static function password_reset( string $email, string $operation, bool $spend ): string {
+		$recipient = Identity::recipient( $email );
+		$owner     = Allowance::owner_for( $recipient );
+		$binding   = hash_hmac( 'sha256', 'password_reset|' . $operation . '|' . $owner, wp_salt( 'nonce' ) );
+		return self::admit( array( $owner ), $operation, $binding, $spend, true );
+	}
 
 	/**
 	 * Check a receipt before handoff, or charge it before transport.
@@ -23,14 +38,15 @@ final class ReceiptRecipients {
 	 * @param string   $id Original native source.
 	 * @param string   $fingerprint Original destination binding.
 	 * @param bool     $spend Whether the actual transport is ready.
+	 * @param bool     $reset Native password recovery uses its own recipient history.
 	 */
-	public static function admit( array $owners, string $id, string $fingerprint, bool $spend ): string {
+	public static function admit( array $owners, string $id, string $fingerprint, bool $spend, bool $reset = false ): string {
 		$result = 'unavailable';
 		try {
 			Lock::run(
-				'recipient-delivery',
-				static function () use ( $owners, $id, $fingerprint, $spend, &$result ) {
-					$result = ConnectionFence::run( static fn () => self::charge( $owners, $id, $fingerprint, $spend ) );
+				$reset ? self::RESET_LOCK . $owners[0] : 'recipient-delivery',
+				static function () use ( $owners, $id, $fingerprint, $spend, $reset, &$result ) {
+					$result = ConnectionFence::run( static fn () => self::charge( $owners, $id, $fingerprint, $spend, $reset ) );
 				},
 				1,
 				true
@@ -48,10 +64,11 @@ final class ReceiptRecipients {
 	 * @param string   $id Source.
 	 * @param string   $fingerprint Destination binding.
 	 * @param bool     $spend Commit an allowance.
+	 * @param bool     $reset Native password recovery.
 	 */
-	private static function charge( array $owners, string $id, string $fingerprint, bool $spend ): string {
+	private static function charge( array $owners, string $id, string $fingerprint, bool $spend, bool $reset ): string {
 		$now = time();
-		self::import( $now );
+		self::import( $now, $reset );
 		$day = intdiv( $now, DAY_IN_SECONDS );
 		foreach ( array( $day, $day - 1 ) as $when ) {
 			$source = self::value( self::key( $when, 's.' . $id ) );
@@ -64,7 +81,7 @@ final class ReceiptRecipients {
 		}
 		$writes = array( self::key( $day, 's.' . $id ) => ( $now + DAY_IN_SECONDS ) . '|' . $fingerprint );
 		foreach ( $owners as $owner ) {
-			$prefix = self::key( $day, 'r.' . $owner . '.' );
+			$prefix = self::key( $day, ( $reset ? 'p.' : 'r.' ) . $owner . '.' );
 			$rows   = self::rows( $prefix );
 			$hour   = intdiv( $now, HOUR_IN_SECONDS );
 			$recent = array_filter( $rows, static fn ( $row ) => intdiv( (int) $row['option_value'], HOUR_IN_SECONDS ) === $hour );
@@ -153,18 +170,20 @@ final class ReceiptRecipients {
 
 	/** Copy unexpired source bindings once, including a previously full tools journal.
 	 *
-	 * @param int $now Current Unix time.
+	 * @param int  $now Current Unix time.
+	 * @param bool $reset Import the native password-reset history.
 	 * @throws \RuntimeException The migration cannot be saved.
 	 */
-	private static function import( int $now ): void {
-		if ( get_option( self::IMPORTED ) ) {
+	private static function import( int $now, bool $reset = false ): void {
+		$marker = $reset ? self::RESET_IMPORTED : self::IMPORTED;
+		if ( get_option( $marker ) ) {
 			return;
 		}
 		$legacy = json_decode( self::value( Ledger::OPTION ) ?? '', true );
 		$writes = array();
 		$counts = array();
 		foreach ( (array) ( $legacy['receipts'] ?? array() ) as $id => $entry ) {
-			if ( 'customer_receipt' !== ( $entry['purpose'] ?? '' ) || ( $entry['retry_until'] ?? 0 ) <= $now || in_array( $entry['status'], array( 'cancelled', 'expired' ), true ) ) {
+			if ( ( $reset ? 'password_reset' : 'customer_receipt' ) !== ( $entry['purpose'] ?? '' ) || ( $entry['retry_until'] ?? 0 ) <= $now || in_array( $entry['status'], array( 'cancelled', 'expired' ), true ) ) {
 				continue;
 			}
 			$at                                      = (int) $entry['created_at'];
@@ -173,8 +192,19 @@ final class ReceiptRecipients {
 			if ( 'erased' === $entry['status'] ) {
 				continue;
 			}
-			foreach ( array_diff( $entry['owners'], array( Allowance::owner_for( 'site' ) ) ) as $owner ) {
-				$prefix                    = self::key( $day, 'r.' . $owner . '.' );
+			if ( $reset ) {
+				$owners = array();
+				foreach ( array_keys( $entry['debits'] ) as $key ) {
+					$bucket = $legacy['buckets'][ $key ] ?? array();
+					if ( 'password_reset_target_day' === ( $bucket['name'] ?? '' ) ) {
+						$owners[] = $bucket['owner'];
+					}
+				}
+			} else {
+				$owners = array_diff( $entry['owners'], array( Allowance::owner_for( 'site' ) ) );
+			}
+			foreach ( $owners as $owner ) {
+				$prefix                    = self::key( $day, ( $reset ? 'p.' : 'r.' ) . $owner . '.' );
 				$slot                      = $counts[ $prefix ] ?? 0;
 				$writes[ $prefix . $slot ] = $at . '|' . $id;
 				$counts[ $prefix ]         = $slot + 1;
@@ -183,7 +213,7 @@ final class ReceiptRecipients {
 		foreach ( array_chunk( $writes, 250, true ) as $batch ) {
 			self::insert( $batch, true );
 		}
-		if ( ! add_option( self::IMPORTED, '1', '', false ) && ! get_option( self::IMPORTED ) ) {
+		if ( ! add_option( $marker, '1', '', false ) && '1' !== self::value( $marker ) ) {
 			throw new \RuntimeException( 'recipient_history_migration_failed' );
 		}
 	}
@@ -198,31 +228,37 @@ final class ReceiptRecipients {
 	public static function privacy( string $email, bool $erase ): array {
 		global $wpdb;
 		$records = array();
-		$read    = static function () use ( $email, $erase, &$records, $wpdb ) {
-			$now = time();
-			self::import( $now );
-			$today = intdiv( $now, DAY_IN_SECONDS );
-			$owner = Allowance::owner_for( Identity::recipient( $email ) );
-			foreach ( array( $today, $today - 1 ) as $day ) {
-				foreach ( self::rows( self::key( $day, 'r.' . $owner . '.' ) ) as $row ) {
-					[ $at, $id ] = explode( '|', $row['option_value'], 2 );
-					if ( $now - (int) $at < DAY_IN_SECONDS ) {
-						$records[] = array(
-							'id'         => $id,
-							'purpose'    => 'customer_receipt',
-							'created_at' => (int) $at,
-						);
-					}
-					if ( $erase ) {
-						if ( false === $wpdb->update( $wpdb->options, array( 'option_value' => ( (int) $at + DAY_IN_SECONDS ) . '|erased' ), array( 'option_name' => self::key( $day, 's.' . $id ) ) ) || false === $wpdb->delete( $wpdb->options, array( 'option_name' => $row['option_name'] ) ) ) {
-							throw new \RuntimeException( 'recipient_history_erasure_failed' );
+		$owner   = Allowance::owner_for( Identity::recipient( $email ) );
+		foreach ( array(
+			'r.' => 'customer_receipt',
+			'p.' => 'password_reset',
+		) as $lane => $purpose ) {
+			$reset = 'password_reset' === $purpose;
+			$read  = static function () use ( $owner, $lane, $purpose, $reset, $erase, &$records, $wpdb ) {
+				$now = time();
+				self::import( $now, $reset );
+				$today = intdiv( $now, DAY_IN_SECONDS );
+				foreach ( array( $today, $today - 1 ) as $day ) {
+					foreach ( self::rows( self::key( $day, $lane . $owner . '.' ) ) as $row ) {
+						[ $at, $id ] = explode( '|', $row['option_value'], 2 );
+						if ( $now - (int) $at < DAY_IN_SECONDS ) {
+							$records[] = array(
+								'id'         => $id,
+								'purpose'    => $purpose,
+								'created_at' => (int) $at,
+							);
+						}
+						if ( $erase ) {
+							if ( false === $wpdb->update( $wpdb->options, array( 'option_value' => ( (int) $at + DAY_IN_SECONDS ) . '|erased' ), array( 'option_name' => self::key( $day, 's.' . $id ) ) ) || false === $wpdb->delete( $wpdb->options, array( 'option_name' => $row['option_name'] ) ) ) {
+								throw new \RuntimeException( 'recipient_history_erasure_failed' );
+							}
 						}
 					}
 				}
+			};
+			if ( ! Lock::run( $reset ? self::RESET_LOCK . $owner : 'recipient-delivery', static fn () => ConnectionFence::run( $read ), 1, true ) ) {
+				throw new \RuntimeException( 'recipient_history_busy' );
 			}
-		};
-		if ( ! Lock::run( 'recipient-delivery', static fn () => ConnectionFence::run( $read ), 1, true ) ) {
-			throw new \RuntimeException( 'recipient_history_busy' );
 		}
 		return $records;
 	}
