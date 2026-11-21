@@ -183,14 +183,25 @@ async function enterProject(
 			.fill(scenario.retainedInverter.power);
 		await intake.getByLabel(text.keep).check();
 	}
+	if (scenario.selectedInverter || scenario.systems) {
+		const equipment = intake.locator('details.sc-project-equipment');
+		if (
+			!(await equipment.evaluate(
+				(section: HTMLDetailsElement) => section.open
+			))
+		)
+			await equipment.locator('summary').first().click();
+	}
 	if (scenario.selectedInverter)
 		await intake
 			.getByLabel(text.inverter)
 			.selectOption({ label: scenario.selectedInverter });
 	if (scenario.systems) {
 		await intake
-			.locator('select[name=system_arrangement]')
-			.selectOption('multiple');
+			.getByRole('button', {
+				name: /^Multiple systems$|^Mehrere Systeme$/,
+			})
+			.click();
 		const names = intake.getByLabel(text.systemName, { exact: true });
 		await expect(names).toHaveCount(scenario.systems.length);
 		for (const [index, name] of scenario.systems.entries()) {

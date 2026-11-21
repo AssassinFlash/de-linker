@@ -20,7 +20,7 @@ const button = (label) =>
 	);
 const field = (name) => document.querySelector(`[name="${name}"]`);
 
-async function fixture(t, search = "", locale = "en", home = false) {
+async function fixture(t, search = "", locale = "en", comparison = false) {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
@@ -132,13 +132,7 @@ async function fixture(t, search = "", locale = "en", home = false) {
 						client,
 						store,
 						openOnLoad: true,
-						...(home && {
-							homeComparison: {
-								picker: null,
-								savedProject: "",
-								compareSaved: () => assert.fail(),
-							},
-						}),
+						directComparison: comparison,
 						config: {
 							locale,
 							countries: { DE: "Germany" },
@@ -171,7 +165,7 @@ async function fixture(t, search = "", locale = "en", home = false) {
 			await until(
 				() => field("country") && !field("country").matches(":disabled"),
 			);
-			if (!home && field("project_title"))
+			if (!comparison && field("project_title"))
 				await enter(field("project_title"), "Munich PV");
 			await act(async () => {
 				const country = field("country");
@@ -252,7 +246,7 @@ test("a local roof plan opens without an address, a map lookup or imagery consen
 	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
 });
 
-test("from the homepage a country, street address and provider choice open the roof without a comparison", async (t) => {
+test("from project details a country, street address and provider choice open the roof without a comparison", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	assert.equal(field("project_title").value, "");
@@ -279,7 +273,7 @@ test("from the homepage a country, street address and provider choice open the r
 	);
 });
 
-test("changing privacy settings withdraws a roof permission before the homepage submission", async (t) => {
+test("changing privacy settings withdraws a roof permission before submitting the project details", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	await until(() => field("roof_imagery_consent"));
@@ -298,7 +292,7 @@ test("changing privacy settings withdraws a roof permission before the homepage 
 	);
 });
 
-test("a different imagery source cannot consume the homepage choice as its own permission", async (t) => {
+test("a different imagery source cannot consume the project’s choice as its own permission", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	await until(() => field("roof_imagery_consent"));

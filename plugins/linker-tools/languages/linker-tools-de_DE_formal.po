@@ -17221,14 +17221,6 @@ msgstr "Projektdaten eingeben"
 msgid "This report is no longer in your solution draft."
 msgstr "Dieser Bericht ist nicht mehr in Ihrem Lösungsentwurf."
 
-#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
-msgid "Compare options for your project"
-msgstr "Anlagenoptionen für Ihr Projekt vergleichen"
-
-#: ../../apps/planner/src/components/HomepageComparison.tsx build/planner/assets/planner.js
-msgid "Enter your project details or use a saved project."
-msgstr "Geben Sie Ihre Projektdaten ein oder wählen Sie ein gespeichertes Projekt."
-
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "Compare project options"
 msgstr "Projektoptionen vergleichen"

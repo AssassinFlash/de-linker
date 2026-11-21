@@ -245,23 +245,10 @@ final class Application {
 	 * @param array<string,string>|string $attributes Native shortcode attributes.
 	 */
 	public function mount( array|string $attributes = array() ): string {
-		if ( is_admin() || $this->mounted ) {
+		if ( is_admin() || $this->mounted || ( is_array( $attributes ) && 'home' === ( $attributes['mode'] ?? '' ) ) ) {
 			return '';
 		}
-		$homepage = is_array( $attributes ) && 'home' === ( $attributes['mode'] ?? '' );
-		$target   = '';
-		if ( $homepage ) {
-			if ( ! is_front_page() ) {
-				return '';
-			}
-			$target = $this->configurator_url();
-			if ( '' === $target ) {
-				return '';
-			}
-		}
-		if ( ! $homepage || is_user_logged_in() ) {
-			\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
-		}
+		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
 		$this->mounted = true;
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );
@@ -292,9 +279,8 @@ final class Application {
 			)
 		);
 		return sprintf(
-			'<section data-linker-planner data-planner-config="%s"%s><p role="status">%s</p></section>',
+			'<section data-linker-planner data-planner-config="%s"><p role="status">%s</p></section>',
 			esc_attr( is_string( $config ) ? $config : '{}' ),
-			$homepage ? sprintf( ' data-planner-home-url="%s"', esc_url( $target ) ) : '',
 			esc_html__( 'Opening your workspace…', 'linker-tools' )
 		);
 	}
