@@ -727,6 +727,8 @@
 		text.textContent = label("empty");
 		var link = scope.document.createElement("a");
 		link.className = "linker-library-genie";
+		link.setAttribute("data-linker-genie-open", "");
+		link.setAttribute("data-page-type", "faq");
 		link.href = genieUrl;
 		link.textContent = label("askGenie");
 		empty.appendChild(text);

@@ -198,3 +198,41 @@ def test_legal_copy_keeps_order_and_payment_conditions_and_replays(
         assert "proforma" not in change["after"].lower()
         current["pages"][str(change["id"])] = change["after"]
     assert copy.plan_pair(ids, current) is None
+
+
+def test_privacy_preserves_tax_evidence_without_an_unverified_proforma_timing() -> None:
+    ids = (1673, 6827)
+    en, de = [revisions[0][0] for revisions in copy.REVISIONS[ids]]
+    en += " (§ 12 Abs. 3 UStG) before the Proforma is issued, we record the declaration text version, timestamp, your VAT ID, IP address, and browser user agent."
+    de += " Wenn Sie vor Ausstellung der Proformarechnung den deutschen 0 %-Umsatzsteuersatz beantragen, erfassen wir den Text der Erklärung, den Zeitstempel, Ihre USt-IdNr., Ihre IP-Adresse und den Browser-User-Agent."
+    planned = copy.plan_pair(ids, snapshot(ids, (en, de)))
+    assert planned is not None
+    after_en, after_de = [change["after"] for change in planned["changes"]]
+    assert "Proforma" not in after_en + after_de
+    assert (
+        "(§ 12 Abs. 3 UStG), we record the declaration text version, timestamp, your VAT ID, IP address, and browser user agent."
+        in after_en
+    )
+    assert (
+        "Wenn Sie den deutschen 0 %-Umsatzsteuersatz beantragen, erfassen wir den Text der Erklärung, den Zeitstempel, Ihre USt-IdNr., Ihre IP-Adresse und den Browser-User-Agent."
+        in after_de
+    )
+
+
+def test_installer_warranty_identifies_the_offline_order_or_invoice() -> None:
+    ids = (826, 6869)
+    warranty = (
+        "your invoice or proforma reference, serial number",
+        "Ihrer Rechnungs- oder Proforma-Referenz, Seriennummer",
+    )
+    original = tuple(
+        " ".join(row[0] for row in revisions if row[0] not in warranty) + " " + text
+        for revisions, text in zip(copy.REVISIONS[ids], warranty, strict=True)
+    )
+    source = snapshot(ids, (original[0], original[1]))
+    result = copy.plan_pair(ids, source)
+    assert result
+    en, de = [change["after"] for change in result["changes"]]
+    assert "your invoice or order reference, serial number" in en
+    assert "Ihrer Rechnungs- oder Bestellreferenz, Seriennummer" in de
+    assert "proforma" not in (en + de).lower()

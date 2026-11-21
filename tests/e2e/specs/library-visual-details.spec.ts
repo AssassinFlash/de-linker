@@ -212,6 +212,18 @@ for (const locale of ['en', 'de'] as const) {
 			await dismissConsent(page);
 			const root = page.locator('#linker-faq-page');
 			const input = root.locator('#linker-library-q');
+			const separation = await root.evaluate((library) => {
+				const help = library.querySelector('.linker-library-help')!;
+				const ask = library.querySelector('[data-linker-genie-open]')!;
+				return (
+					ask.getBoundingClientRect().top -
+					help.getBoundingClientRect().bottom
+				);
+			});
+			expect(
+				separation,
+				'the contact line clears the Genie button'
+			).toBeGreaterThanOrEqual(12);
 			// A directory click must identify its destination immediately; a
 			// reduced-motion jump may finish before the scroll-spy lock expires.
 			const directory = root.locator(
@@ -560,4 +572,32 @@ for (const locale of ['en', 'de'] as const) {
 			});
 		});
 	}
+}
+
+for (const [faq, reference] of [
+	['/faq-download/', 'invoice or order reference'],
+	['/de/faq-dokumente/', 'Rechnungs- oder Bestellreferenz'],
+] as const) {
+	test(`warranty contact includes the FAQ the visitor read: ${faq}`, async ({
+		page,
+	}) => {
+		const source = new URL(faq, instance().url).href;
+		await page.goto(source);
+		const answer = page
+			.locator('details.linker-library-qa')
+			.filter({ hasText: reference });
+		await answer.locator('summary').click();
+		await answer.getByRole('link').click();
+		await expect(page.locator('select[name="intent"]')).toHaveValue(
+			'support'
+		);
+		await expect(
+			page.locator('.linker-contact-selection__summary a')
+		).toHaveAttribute('href', source);
+		const included = page.locator(
+			'input[type="checkbox"][name="linker_contact_selection"]'
+		);
+		await expect(included).toBeChecked();
+		expect(JSON.parse(await included.inputValue()).source).toBe(source);
+	});
 }

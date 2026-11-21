@@ -2,6 +2,7 @@
 
 import importlib.util
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -62,6 +63,33 @@ def test_the_previous_english_accessible_name_is_upgraded_without_a_second_row()
     )
     assert upgraded.count('class="lk-trade-standards"') == 1
     assert standards.plan_page(upgraded, "en") == upgraded
+
+
+def test_installed_proforma_rows_are_replaced_in_place_in_both_languages() -> None:
+    en, de = standards.plan_pair(page(), page())
+    installed_en = en.replace(
+        "Orders ship from our warehouse.", "Stock ships from our warehouse."
+    ).replace("Warranty terms follow the order.", "Warranty terms follow the Proforma.")
+    installed_de = de.replace(
+        "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
+    ).replace(
+        "Garantiebedingungen richten sich nach der Bestellung.",
+        "Garantiebedingungen richten sich nach der Proformarechnung.",
+    )
+    expected = (
+        installed_en.replace(
+            "Warranty terms follow the Proforma.", "Warranty terms follow the order."
+        ),
+        installed_de.replace(
+            "Garantiebedingungen richten sich nach der Proformarechnung.",
+            "Garantiebedingungen richten sich nach der Bestellung.",
+        ),
+    )
+    updated = standards.plan_pair(installed_en, installed_de)
+    assert updated == expected
+    assert "Stock ships from our warehouse." in updated[0]
+    assert "Aus dem Lager liefern wir ab." in updated[1]
+    assert standards.plan_pair(*updated) == updated
 
 
 def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
@@ -176,3 +204,102 @@ def test_page_snapshot_retention_keeps_the_latest_three_verified_files(
         "industry-standards-before-03.json",
         "industry-standards-before-04.json",
     ]
+
+
+def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    import sys
+
+    source = {
+        "home": "http://127.0.0.1:8894",
+        "current": False,
+        "metadata": {"2748": {"_linker_i18n_status": ["structure_mismatch"]}},
+        "pages": {"2748": page(), "6700": page()},
+    }
+    state = {**source}
+    monkeypatch.setattr(standards.pair, "read", lambda *_: state)
+
+    def store(prefix: str, payload: dict[str, Any]) -> None:
+        import json
+
+        saved = json.loads(
+            next(tmp_path.glob("industry-standards-before-*.json")).read_text()
+        )
+        assert saved["published_metadata"] == source["metadata"]
+        assert payload["mode"] == "restore"
+        assert payload["metadata_restore"] == source["metadata"]
+        state["pages"] = {str(row["id"]): row["after"] for row in payload["changes"]}
+
+    monkeypatch.setattr(standards.pair, "invoke", store)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "industry-standards.py",
+            "--wp",
+            "wp",
+            "--write",
+            "--backup-dir",
+            str(tmp_path),
+        ],
+    )
+    standards.main()
+    import json
+
+    backup = next(tmp_path.glob("industry-standards-before-*.json"))
+    saved = json.loads(backup.read_text())
+    assert saved["published_metadata"] == source["metadata"]
+    state["metadata"] = {"2748": {"_linker_i18n_status": ["synced"]}}
+    monkeypatch.setattr(
+        standards.pair, "invoke", lambda *_: pytest.fail("late review overwritten")
+    )
+    monkeypatch.setattr(
+        sys, "argv", ["industry-standards.py", "--wp", "wp", "--rollback", str(backup)]
+    )
+    with pytest.raises(RuntimeError, match="translation metadata"):
+        standards.main()
+
+
+@pytest.mark.parametrize("was_current", [True, False])
+def test_legacy_verified_release_derives_native_translation_postimage(
+    monkeypatch: pytest.MonkeyPatch, was_current: bool
+) -> None:
+    old = {
+        "2748": {
+            "_linker_i18n_status": ["synced" if was_current else "structure_mismatch"]
+        }
+    }
+    saved = {
+        "2748": {"_linker_i18n_status": ["synced"]},
+        "6700": {"_linker_i18n_units": ["published"]},
+    }
+    changes = [
+        {"id": 2748, "before": "old", "after": "final"},
+        {"id": 6700, "before": "alt", "after": "fertig"},
+    ]
+    receipt = {
+        "readback_verified": True,
+        "snapshot": {"current": was_current, "metadata": old},
+        "changes": changes,
+    }
+
+    def preview(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
+        assert payload["mode"] == "preview_page_adoption"
+        return {
+            "expected_metadata": old
+            if payload["changes"][0]["after"] == "old"
+            else saved
+        }
+
+    monkeypatch.setattr(standards.pair, "invoke", preview)
+    assert standards.published_metadata("wp", receipt) == (
+        saved if was_current else old
+    )
+
+
+def test_unverified_legacy_receipt_cannot_authorize_restore() -> None:
+    with pytest.raises(RuntimeError, match="verified"):
+        standards.published_metadata(
+            "wp", {"snapshot": {"current": False, "metadata": {}}}
+        )

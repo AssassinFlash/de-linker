@@ -20,6 +20,38 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def test_utility_equipment_tools_keep_the_project_contact_path() -> None:
+    after = controls.plan_pair(
+        "utility_equipment_tools",
+        """<p>Linker's team works through the equipment requirements with you.\n            </p>\n</div><a href="/contact/">Discuss a project</a>""",
+        '<p>Das Linker Team klärt die technischen Anforderungen mit Ihnen.\n            </p>\n</div><a href="/de/kontakt/">Projekt besprechen</a>',
+    )
+    for content, path, label in zip(
+        after,
+        ("/solution-configurator/", "/de/loesungskonfigurator/"),
+        ("Ask Genie", "Genie fragen"),
+        strict=True,
+    ):
+        assert f'href="{path}"' in content and label in content
+        assert content.count("lk-runway-actions") == 1
+    assert "/contact/" in after[0] and "/de/kontakt/" in after[1]
+    assert controls.plan_pair("utility_equipment_tools", *after) == after
+
+
+def test_about_registration_cards_open_the_localized_business_signup() -> None:
+    before = (
+        '<a class="row" href="/my-account/"><span class="no">03</span><span class="row-body"><strong>Create a partner account</strong></span></a>',
+        '<a class="row" href="/de/mein-konto/"><span class="no">03</span><span class="row-body"><strong>Partnerkonto erstellen</strong></span></a>',
+    )
+    portal = '<a href="/my-account/">Partner Portal</a>'
+    after = controls.plan_pair("about_registration", portal + before[0], before[1])
+    assert after == (
+        portal + before[0].replace("/my-account/", "/my-account/register/"),
+        before[1].replace("/de/mein-konto/", "/de/mein-konto/registrieren/"),
+    )
+    assert controls.plan_pair("about_registration", *after) == after
+
+
 def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
     hero = '<div class="hero-capsules" data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="'
     en = "/solution-configurator/"
@@ -500,3 +532,63 @@ def test_commercial_and_residential_prompts_and_inquiry_copy_are_idempotent() ->
     )
     with pytest.raises(ValueError, match="Partially changed Commercial Storage"):
         controls.plan_pair("commercial_storage", cs_after[0], cs_de)
+
+
+def test_imprint_labels_identify_the_operator_in_english_and_keep_registry_values() -> (
+    None
+):
+    labels = (
+        "Geschäftsführer",
+        "Registergericht",
+        "Handelsregister",
+        "USt-IdNr.",
+        "Telefon",
+    )
+    contact = "".join(
+        f'<dt lang="de">{label}</dt><dd>{value}</dd>'
+        for label, value in zip(
+            labels,
+            ("Director", "Amtsgericht Stendal", "HRB 33824", "VAT", "Phone"),
+            strict=True,
+        )
+    )
+    before = (contact, contact)
+    english, german = controls.plan_pair("imprint_operator", *before)
+    assert [s.split("</dt>")[0] for s in english.split("<dt>")[1:]] == [
+        "Managing director",
+        "Register court",
+        "Commercial register",
+        "VAT ID",
+        "Telephone",
+    ]
+    assert english.count("<dd>") == 5 and "<dd>Amtsgericht Stendal</dd>" in english
+    assert german == contact
+    assert controls.plan_pair("imprint_operator", english, german) == (english, german)
+
+
+def test_home_delivery_documents_preserve_german_and_the_showcase() -> None:
+    en = UNCHANGED + "<p>Commercial invoice and Proforma confirmation</p>"
+    de = UNCHANGED + "<p>Handelsrechnung und Auftragsbestätigung</p>"
+    corrected = controls.plan_home_delivery_documents(en, de)
+    assert corrected == (en.replace("Proforma confirmation", "order confirmation"), de)
+    assert controls.plan_home_delivery_documents(*corrected) == corrected
+
+
+def test_warranty_references_match_the_document_library_and_preserve_support_links() -> (
+    None
+):
+    en = UNCHANGED + "<p>Contact us with your invoice or proforma reference.</p>"
+    de = UNCHANGED + "<p>Nennen Sie Ihre Rechnungs- oder Proforma-Referenz.</p>"
+    corrected = controls.plan_faq_warranty_reference(en, de)
+    assert corrected == (
+        en.replace("invoice or proforma reference", "invoice or order reference"),
+        de.replace(
+            "Rechnungs- oder Proforma-Referenz", "Rechnungs- oder Bestellreferenz"
+        ),
+    )
+    assert controls.plan_faq_warranty_reference(*corrected) == corrected
+    source = Path(__file__).parents[3] / "plugins/linker-commerce/data/faq-trade.json"
+    content = source.read_text()
+    assert "invoice or order reference" in content
+    assert "Rechnungs- oder Bestellreferenz" in content
+    assert "proforma" not in content.lower()

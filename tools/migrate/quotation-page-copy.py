@@ -203,6 +203,10 @@ REVISIONS = {
                 "Our team prepares the quote and prepares the Proforma with you.",
                 "Our team prepares your quotation and works with you on any subsequent order.",
             ),
+            order_wording(
+                "your invoice or proforma reference, serial number",
+                "your invoice or order reference, serial number",
+            ),
             ("Proforma &amp; Delivery", "Quotation &amp; Delivery"),
             (
                 "STAGE 04 · PROFORMA &amp; DELIVERY",
@@ -221,6 +225,10 @@ REVISIONS = {
             (
                 "Lagerbestand in Deutschland, bestätigte Liefertermine und Projektdokumentation zu Ihrer Anfrage.",
                 "Lagerware in Deutschland, Unterlagen zu Ihrer Anfrage und Lieferplanung für Ihren Auftrag.",
+            ),
+            order_wording(
+                "Ihrer Rechnungs- oder Proforma-Referenz, Seriennummer",
+                "Ihrer Rechnungs- oder Bestellreferenz, Seriennummer",
             ),
             ("Proforma &amp; Lieferung", "Angebot &amp; Lieferung"),
             ("PHASE 04 · PROFORMA & LIEFERUNG", "PHASE 04 · ANGEBOT & LIEFERUNG"),
@@ -280,11 +288,19 @@ REVISIONS = {
                 "inquiry documents (proforma, invoice). Used to answer inquiries, issue Proformas and meet statutory bookkeeping duties.",
                 "inquiry documents (including quotations) and invoices. Used to answer inquiries, issue quotations and meet statutory bookkeeping duties.",
             ),
+            order_wording(
+                ") before the Proforma is issued, we record the declaration text version",
+                "), we record the declaration text version",
+            ),
         ),
         (
             (
                 "Anfragedokumente (Proforma, Rechnung). Verwendet zur Beantwortung von Anfragen, zur Ausstellung von Proformarechnungen und zur Erfüllung gesetzlicher Buchführungspflichten.",
                 "Anfrageunterlagen (einschließlich Angeboten) und Rechnungen. Die Daten dienen der Beantwortung von Anfragen, der Erstellung von Angeboten und der Erfüllung gesetzlicher Buchführungspflichten.",
+            ),
+            order_wording(
+                "Wenn Sie vor Ausstellung der Proformarechnung den deutschen 0 %-Umsatzsteuersatz",
+                "Wenn Sie den deutschen 0 %-Umsatzsteuersatz",
             ),
         ),
     ),
@@ -292,7 +308,7 @@ REVISIONS = {
 
 
 def _plan_pair(
-    ids: tuple[int, int], snapshot: dict[str, Any]
+    ids: tuple[int, int], snapshot: dict[str, Any], *, require_current: bool = True
 ) -> tuple[dict[str, Any] | None, list[tuple[int, str, str]]]:
     changes = []
     diff = []
@@ -321,7 +337,7 @@ def _plan_pair(
     if not states:
         raise ValueError(f"Pair {ids} contains a partial revision of the reviewed copy")
     if "final" in states:
-        if not snapshot["current"]:
+        if require_current and not snapshot["current"]:
             raise ValueError(
                 f"Pair {ids} has final copy but a stale translation baseline. Recover the native baseline before retrying."
             )
@@ -333,9 +349,11 @@ def _plan_pair(
     }, diff
 
 
-def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] | None:
+def plan_pair(
+    ids: tuple[int, int], snapshot: dict[str, Any], *, require_current: bool = True
+) -> dict[str, Any] | None:
     """Return a native adopt payload or None for final copy with a current baseline."""
-    payload, _ = _plan_pair(ids, snapshot)
+    payload, _ = _plan_pair(ids, snapshot, require_current=require_current)
     return payload
 
 

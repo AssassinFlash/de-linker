@@ -55,6 +55,7 @@ final class Templates {
 		'is_single_post'                   => 'blog_single',
 		'is_blog_posts_index'              => 'blog_index',
 		'is_search'                        => 'search',
+		'is_404'                           => 'not_found',
 		'is_archive_for_tax_category'      => 'category_archive',
 	);
 
@@ -71,6 +72,7 @@ final class Templates {
 		'is_single_post'                   => 'Blog single post',
 		'is_blog_posts_index'              => 'Blog posts index',
 		'is_search'                        => 'Blog search results',
+		'is_404'                           => 'Page not found',
 		'is_archive_for_tax_category'      => 'Blog category archive',
 	);
 
@@ -125,6 +127,7 @@ final class Templates {
 		'is_single_post'                   => 'de/blog_single',
 		'is_blog_posts_index'              => 'de/blog_index',
 		'is_search'                        => 'de/search',
+		'is_404'                           => 'de/not_found',
 		'is_archive_for_tax_category'      => 'de/category_archive',
 	);
 

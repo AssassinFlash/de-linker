@@ -10,28 +10,28 @@
 		"type": "page",
 		"source": "cart",
 		"set": {
-			"meta:_seopress_titles_desc": "Überprüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+			"meta:_seopress_titles_desc": "Prüfen Sie die Produkte in Ihrem Lösungsentwurf, passen Sie die Mengen an und senden Sie Ihre Anfrage an Linker. Freigeschaltete Partner sehen Nettopreise."
 		}
 	},
 	{
 		"type": "page",
 		"source": "proforma-request",
 		"set": {
-			"meta:_seopress_titles_desc": "Bestätigen Sie Ihr Konto, Ihre Rechnungs- und Lieferadresse, Ihre Umsatzsteuerangaben und die Zahlungsart; senden Sie dann Ihre Anfrage. Die Unterlagen stellen wir in Ihrem Partnerkonto bereit."
+			"meta:_seopress_titles_desc": "Senden Sie Linker eine Produktanfrage oder eine Frage zu Ihrem Projekt. Sie können Produkte aus Ihrem Lösungsentwurf hinzufügen oder ohne Konto eine Nachricht senden."
 		}
 	},
 	{
 		"type": "page",
 		"source": "my-account",
 		"set": {
-			"meta:_seopress_titles_desc": "Melden Sie sich an, um Preise für Ihr Konto, Ihre Anfragen, Adressen und Unterlagen zu sehen, oder registrieren Sie Ihr Unternehmen. Nur für Gewerbekunden; jede Registrierung wird geprüft."
+			"meta:_seopress_titles_desc": "Melden Sie sich an, um Ihre Anfragen zu verfolgen, gespeicherte Lösungen zu öffnen und Angebote herunterzuladen. Hier können Sie auch ein Partnerkonto für Ihr Unternehmen beantragen."
 		}
 	},
 	{
 		"type": "page",
 		"source": "for-installer",
 		"set": {
-			"meta:_seopress_titles_desc": "Komplette Speicherpakete, im Lösungskonfigurator ausgelegt, mit den für Ihre Anfrage angeforderten Netzanschlussdokumenten, Lagerware in Deutschland und bestätigten Versandterminen."
+			"meta:_seopress_titles_desc": "Passende Solar- und Speicherlösungen für Ihre Installationen: Lagerware in Deutschland, Hilfe bei der Auslegung und technischer Support von Linker."
 		}
 	},
 	{

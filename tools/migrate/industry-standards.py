@@ -17,7 +17,7 @@ import re
 from datetime import UTC, datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from urllib.parse import urlsplit
 
 HERE = Path(__file__).resolve().parent
@@ -58,6 +58,22 @@ DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachp
 <div><dt>Wiederverkäufer</dt><dd>Wir arbeiten mit Distributoren und Wiederverkäufern zusammen.</dd></div>
 </dl>
 </div>"""
+
+INSTALLED_ROWS = {
+    "en": EN_MARKUP.replace(
+        "Orders ship from our warehouse.", "Stock ships from our warehouse."
+    ),
+    "de": DE_MARKUP.replace(
+        "Bestellungen versenden wir ab Lager.", "Aus dem Lager liefern wir ab."
+    ),
+}
+WARRANTY_REVISION = {
+    "en": ("Warranty terms follow the Proforma.", "Warranty terms follow the order."),
+    "de": (
+        "Garantiebedingungen richten sich nach der Proformarechnung.",
+        "Garantiebedingungen richten sich nach der Bestellung.",
+    ),
+}
 
 MARKUP = (EN_MARKUP, DE_MARKUP)
 FORBIDDEN_PATTERNS = (
@@ -187,14 +203,20 @@ def plan_page(content: str, language: str) -> str:
     assert_supported_content(content)
     markup = EN_MARKUP if language == "en" else DE_MARKUP
     assert_supported_content(markup)
-    if markup in content:
-        return content
-    if language == "en":
-        previous_count = content.count(PREVIOUS_EN_MARKUP)
-        if previous_count == 1:
-            return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
-        if previous_count > 1:
-            raise ValueError("Services page holds more than one previous reviewed row")
+    if '<div class="lk-trade-standards"' in content:
+        if content.count('<div class="lk-trade-standards"') == 1:
+            installed = INSTALLED_ROWS[language]
+            old, new = WARRANTY_REVISION[language]
+            if markup in content or installed in content:
+                return content
+            previous = installed.replace(new, old, 1)
+            if previous in content:
+                return content.replace(previous, installed, 1)
+            if language == "en" and PREVIOUS_EN_MARKUP in content:
+                return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
+        raise ValueError(
+            "Services standards row changed or is duplicated; inspect the page"
+        )
     return _insert_block(content, markup, SERVICE_LEDGER_INSERTION_POINT)
 
 
@@ -219,6 +241,26 @@ def prune_page_backups(backup_dir: Path, keep: int = 3) -> list[str]:
     return removed
 
 
+def published_metadata(prefix: str, backup: dict[str, Any]) -> dict[str, Any]:
+    if "published_metadata" in backup:
+        return cast(dict[str, Any], backup["published_metadata"])
+    if not backup.get("readback_verified"):
+        raise RuntimeError("The legacy receipt has no verified publication")
+    original = backup["snapshot"]
+    if not original["current"]:
+        # Pending manual pairs kept the native metadata in the recovery point.
+        return cast(dict[str, Any], original["metadata"])
+    changes = backup["changes"]
+    # The legacy publisher adopted a synced pair. Rebuild the old receipt first
+    # so any intervening title, excerpt or baseline changes stop the restore.
+    preimage = [{**row, "after": row["before"]} for row in changes]
+    before = pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": preimage})
+    if before["expected_metadata"] != original["metadata"]:
+        raise RuntimeError("The legacy translation baseline cannot be reconstructed")
+    preview = pair.invoke(prefix, {"mode": "preview_page_adoption", "changes": changes})
+    return cast(dict[str, Any], preview["expected_metadata"])
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True)
@@ -235,10 +277,14 @@ def main() -> None:
         backup = json.loads(args.rollback.read_text())
         current = pair.read(args.wp, args.en, args.de)
         changes = backup["changes"]
-        if current["pages"] != {
+        if current["home"] != backup["snapshot"]["home"] or current["pages"] != {
             str(change["id"]): change["after"] for change in changes
         }:
             raise RuntimeError("The reviewed pages changed after the backup was made")
+        if current["metadata"] != published_metadata(args.wp, backup):
+            raise RuntimeError(
+                "The translation metadata differs from the release receipt"
+            )
         pair.invoke(
             args.wp,
             {
@@ -299,23 +345,34 @@ def main() -> None:
     args.backup_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     backup_path = args.backup_dir / f"industry-standards-before-{stamp}.json"
+    published_meta = snapshot["metadata"]
+    if snapshot["current"]:
+        preview = pair.invoke(
+            args.wp, {"mode": "preview_page_adoption", "changes": changes}
+        )
+        published_meta = preview["expected_metadata"]
+    receipt = {
+        "snapshot": snapshot,
+        "changes": changes,
+        "published_metadata": published_meta,
+    }
     with backup_path.open("x") as handle:
-        json.dump({"snapshot": snapshot, "changes": changes}, handle, indent=2)
-    backup_path.chmod(0o600)
-    pair.invoke(
+        backup_path.chmod(0o600)
+        json.dump(receipt, handle, indent=2)
+    pair.write(
         args.wp,
-        {
-            "mode": "adopt",
-            "changes": changes,
-            "metadata_before": snapshot["metadata"],
-        },
+        (args.en, args.de),
+        snapshot,
+        {str(args.en): after[0], str(args.de): after[1]},
+        published_meta,
+        adopt=snapshot["current"],
     )
-    readback = pair.read(args.wp, args.en, args.de)
-    if readback["pages"] != {str(args.en): after[0], str(args.de): after[1]}:
-        raise RuntimeError(f"Paired readback differs; backup: {backup_path}")
-    saved = json.loads(backup_path.read_text())
-    saved["readback_verified"] = True
-    backup_path.write_text(json.dumps(saved, indent=2))
+    receipt["readback_verified"] = True
+    verified = backup_path.with_suffix(".tmp")
+    with verified.open("x") as handle:
+        verified.chmod(0o600)
+        json.dump(receipt, handle, indent=2)
+    verified.replace(backup_path)
     removed = prune_page_backups(args.backup_dir)
     print(
         json.dumps(

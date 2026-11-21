@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Products\SearchScope;
 use WP_Post;
 use WP_Term;
 
@@ -67,30 +68,31 @@ final class BlogShortcodes {
 	}
 
 	/**
-	 * Name the cleared journal search after SEOPress and the German title filter
+	 * Name a cleared search after SEOPress and the German title filter
 	 * have composed the browser title. Keep its site suffix and other searches.
 	 *
 	 * @param string $title The composed browser title.
 	 */
 	public function empty_search_title( string $title ): string {
-		if ( ! is_search() || 'post' !== get_query_var( 'post_type' ) || '' !== get_search_query( false ) ) {
+		if ( ! is_search() || '' !== get_search_query( false ) ) {
 			return $title;
 		}
-		$heading = __( 'All posts', 'linker-commerce' );
-		$suffix  = strstr( $title, '|' );
+		$type = get_query_var( 'post_type' );
+		if ( 'post' === $type ) {
+			$heading = __( 'All posts', 'linker-commerce' );
+		} elseif ( SearchScope::POST_TYPES === $type ) {
+			$heading = __( 'Search', 'linker-commerce' );
+		} else {
+			return $title;
+		}
+		$suffix = strstr( $title, '|' );
 		return $heading . ( false === $suffix ? '' : ' ' . $suffix );
 	}
 
 	/**
 	 * The article's share row in the request's language.
 	 *
-	 * LiveCanvas's own sharing shortcode carries English titles ("Share on
-	 * Facebook") and the plugin ships no German pack; the German template
-	 * therefore composes the same four networks itself (#264 M1). The markup
-	 * and icon set mirror what LiveCanvas printed on the live face, so the
-	 * reader workspace's stylesheet draws both rows the same way. The label
-	 * text is the link's accessible name and travels into title/aria-label;
-	 * the German template's script keeps the server-provided values.
+	 * Each link carries the current article permalink and a localized accessible name.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -112,7 +114,7 @@ final class BlogShortcodes {
 		foreach ( $networks as $network => list( $label, $href ) ) {
 			/* translators: %s: social network name. */
 			$text  = sprintf( __( 'Share on %s', 'linker-commerce' ), $label );
-			$html .= '<a class="btn btn-outline-dark btn-sm btn-' . esc_attr( $network ) . '" href="' . esc_url( $href ) . '" target="_blank" rel="nofollow noopener" title="' . esc_attr( $text ) . '" aria-label="' . esc_attr( $text ) . '">' . $this->share_icon( $network ) . '<span class="d-none d-lg-inline"> ' . esc_html( $label ) . '</span></a>';
+			$html .= '<a href="' . esc_url( $href ) . '" target="_blank" rel="nofollow noopener" title="' . esc_attr( $text ) . '" aria-label="' . esc_attr( $text ) . '">' . $this->share_icon( $network ) . '</a>';
 		}
 		return $html . '</div>';
 	}

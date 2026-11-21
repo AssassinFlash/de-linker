@@ -66,8 +66,7 @@
 	outline-offset: 2px;
 }
 
-#linker-products .sf-container,
-#linker-products .container {
+#linker-products .sf-container {
 	width: min(var(--sf-container), calc(100% - 2rem));
 	margin: 0 auto;
 }

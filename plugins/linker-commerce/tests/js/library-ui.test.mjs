@@ -719,7 +719,10 @@ test('an empty result offers Genie, and clearing restores the tabs', () => {
  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
  const empty = doc.querySelector('[data-library-results] .linker-library-empty');
  assert.ok(empty);
- assert.equal(empty.querySelector('.linker-library-genie').textContent, 'Ask Genie');
+ const ask = empty.querySelector('.linker-library-genie');
+ assert.equal(ask.textContent, 'Ask Genie');
+ assert.ok(ask.matches('a[data-linker-genie-open][data-page-type=faq]'));
+ assert.equal(new URL(ask.href).pathname, '/genie/');
  doc.querySelector('[data-library-clear]').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
  assert.equal(doc.querySelector('[data-library-results]').hidden, true);
  assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, false);

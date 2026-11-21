@@ -183,6 +183,32 @@ for (const locale of ['en', 'de'] as const) {
 			).toBeFocused();
 		});
 
+		test(`${locale} ${width}: footer service topics open their own section`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			const home = locale === 'en' ? '/' : '/de/';
+			const services =
+				locale === 'en' ? '/services-support/' : '/de/kundendienst/';
+			for (const [index, id] of [
+				'services',
+				'mt-service-topic-2',
+				'mt-service-topic-3',
+			].entries()) {
+				await page.goto(instance().url + home);
+				await dismissConsent(page);
+				await page.locator('#footer-tab-services').click();
+				const link = page
+					.locator('#footer-panel-services a')
+					.nth(index);
+				await link.click();
+				await expect(page).toHaveURL(
+					instance().url + services + '#' + id
+				);
+				await expect(page.locator('#' + id)).toBeInViewport();
+			}
+		});
+
 		test(`${locale} ${width}: service status bar and inline behaviours survive WordPress`, async ({
 			page,
 		}) => {

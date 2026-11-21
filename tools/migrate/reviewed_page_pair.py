@@ -70,3 +70,48 @@ def read(prefix: str, en: int, de: int, *, post_type: str = "page") -> dict[str,
         prefix,
         {"mode": "read", "post_type": post_type, "changes": [{"id": en}, {"id": de}]},
     )
+
+
+def changes(
+    ids: tuple[int, int], before: dict[str, str], after: dict[str, str]
+) -> list[dict[str, Any]]:
+    return [
+        {"id": post, "before": before[str(post)], "after": after[str(post)]}
+        for post in ids
+    ]
+
+
+def write(
+    prefix: str,
+    ids: tuple[int, int],
+    before: dict[str, Any],
+    after: dict[str, str],
+    metadata: dict[str, Any],
+    *,
+    adopt: bool = False,
+) -> dict[str, Any]:
+    invoke(
+        prefix,
+        {
+            "mode": "adopt" if adopt else "restore",
+            "changes": changes(ids, before["pages"], after),
+            "metadata_before": before["metadata"],
+            "require_current": before["current"],
+            "expected_metadata" if adopt else "metadata_restore": metadata,
+        },
+    )
+    saved = read(prefix, *ids)
+    if saved["pages"] != after or saved["metadata"] != metadata:
+        raise RuntimeError("The paired content or translation did not read back")
+    return saved
+
+
+def verify_published(backup: dict[str, Any], current: dict[str, Any]) -> None:
+    if (
+        current["home"] != backup["before"]["home"]
+        or (backup["before"]["current"] and not current["current"])
+        or current["pages"] != backup["published_pages"]
+        or current["metadata"]
+        != backup.get("published_metadata", backup["before"]["metadata"])
+    ):
+        raise ValueError("The bilingual pair changed since publication")

@@ -27,10 +27,6 @@
 			function buildArticleMap() {
 				var root = document.getElementById('tv-blog-single-v1');
 				if (!root) return;
-				root.querySelectorAll('.reader-share-links a').forEach(function (link) {
-					var name = link.textContent.trim();
-					if (name && !link.getAttribute('aria-label')) { link.setAttribute('aria-label', name); link.setAttribute('title', name); }
-				});
 				var disclosure = root.querySelector('.reader-toc');
 				var desktop = window.matchMedia('(min-width:1000px)');
 				function sizeDisclosure() { disclosure.open = desktop.matches; }

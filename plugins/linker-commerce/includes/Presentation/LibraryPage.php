@@ -322,11 +322,15 @@ final class LibraryPage {
 		foreach ( $model['trade'] as $category ) {
 			$rows = '';
 			foreach ( $category['questions'] as $question ) {
-				$rows .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $category['name'] ) . '">';
-				$rows .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
-				$rows .= '<span class="linker-library-qa-q">' . esc_html( $question['question'] ) . '</span>' . $where;
-				$rows .= '</span></summary>';
-				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $question['answer'] ) . '</p></div>';
+				$rows  .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $category['name'] ) . '">';
+				$rows  .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
+				$rows  .= '<span class="linker-library-qa-q">' . esc_html( $question['question'] ) . '</span>' . $where;
+				$rows  .= '</span></summary>';
+				$answer = $question['answer'];
+				if ( str_contains( $answer, '?intent=support"' ) ) {
+					$answer = str_replace( '?intent=support"', '?intent=support&amp;source=' . rawurlencode( (string) get_permalink() ) . '"', $answer );
+				}
+				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer ) . '</p></div>';
 				$rows .= '</details>';
 			}
 			$cards .= $this->card( $category['id'], 'trade', $category['name'], $category['count'], '', $rows, '' );
