@@ -223,19 +223,20 @@ def build_report(source: Object) -> Report:
         # A row the visitor never declared is left out rather than printed as a
         # dash: "Time zone —" reads as a field the report failed to fill, and a
         # postcode does not establish a time zone on its own.
-        site_rows = [row("location", site["location_label"])]
-        if site.get("country_code"):
-            site_rows.append(row("country", site["country_code"]))
-        if site.get("timezone"):
-            site_rows.append(row("timezone", site["timezone"]))
-        site_rows.append(row("note", brief["project_note"]))
-        sections.append(
-            ReportSection(
-                id="site",
-                title=text("site", locale),
-                rows=site_rows,
+        site_rows = [
+            row(label, value)
+            for label, value in (
+                ("location", site.get("location_label")),
+                ("country", brief_country_code),
+                ("timezone", site.get("timezone")),
+                ("note", brief.get("project_note")),
             )
-        )
+            if value
+        ]
+        if site_rows:
+            sections.append(
+                ReportSection(id="site", title=text("site", locale), rows=site_rows)
+            )
 
     existing = source.get("existing_system")
     if isinstance(existing, dict):

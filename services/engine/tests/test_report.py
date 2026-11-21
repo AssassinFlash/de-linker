@@ -165,6 +165,19 @@ def test_the_pdf_carries_the_linker_mark_without_an_uploaded_logo(
     assert len(more) > len(cast(DictionaryObject, resources["/XObject"].get_object()))
 
 
+@pytest.mark.parametrize(
+    ("locale", "printed"),
+    [("en", "2026-11-21 07:56 UTC"), ("de", "21.11.2026 07:56 UTC")],
+)
+def test_pdf_prints_localized_utc_minutes(
+    engine: Engine, locale: str, printed: str
+) -> None:
+    built = build(engine, locale).model_copy(
+        update={"generated_at": "2026-11-21T07:56:58.626650+00:00"}
+    )
+    assert printed in text_of(pdf.render(built))
+
+
 def test_the_pdf_prints_the_revision_it_was_built_from(engine: Engine) -> None:
     built = report.residential(
         residential.design(

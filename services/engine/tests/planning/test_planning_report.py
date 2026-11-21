@@ -206,6 +206,18 @@ def frozen_plant_report_source() -> FixtureObject:
     return source
 
 
+def test_report_omits_empty_optional_site_declarations() -> None:
+    source = frozen_ac_report_source()
+    source["brief"] = {
+        "site": {"location_label": "", "country_code": "DE"},
+        "project_note": "",
+    }
+    site = next(
+        section for section in build_report(source).sections if section.id == "site"
+    )
+    assert [(row.label, row.value) for row in site.rows] == [("Country", "DE")]
+
+
 @pytest.mark.parametrize(
     ("locale", "rows"),
     [
