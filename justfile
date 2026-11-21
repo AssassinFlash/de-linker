@@ -324,7 +324,7 @@ ci-native groups name:
             echo "pdftotext is required for the Proforma price-gate test" >&2
             exit 1
         fi
-        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ProformaPriceGateTest)
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter QuotationPriceGateTest)
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'GenieInquiryTest|test_planning_report_submission')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PreSendAuthorizationTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest')
     }
