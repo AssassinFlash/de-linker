@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlite3
 
 from .canonical import Object, digest, encode
-from .errors import Conflict, InvalidInput, VersionUnavailable
+from .errors import Conflict, InvalidInput, StorageUnavailable, VersionUnavailable
 from .records import Actor
 from .storage import Blobs
 
@@ -76,11 +76,16 @@ def remember(
     receipt: Object,
     now: float,
 ) -> None:
+    # A fresh command also grows SQLite if all of its blobs already exist.
+    deletion = scope.startswith("delete:")
+    if not deletion and not blobs.has_space():
+        raise StorageUnavailable("insufficient workspace capacity for a new receipt")
+    result = blobs.recovery_record(receipt) if deletion else blobs.put_object(receipt)
     connection.execute(
         "INSERT INTO idempotency "
         "(actor, scope, key, command_sha256, receipt_sha256, created_at) "
         "VALUES (?, ?, ?, ?, ?, ?)",
-        (actor.key, scope, key, command_sha256, blobs.put_object(receipt), now),
+        (actor.key, scope, key, command_sha256, result, now),
     )
 
 

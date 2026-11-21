@@ -58,6 +58,7 @@ from .errors import (
     NumericalFailure,
     PlanningError,
     ServiceDraining,
+    StorageUnavailable,
     VersionUnavailable,
 )
 from .execution_identity import storage_binding
@@ -459,6 +460,7 @@ def create_private_app(
             CsvIssue: 422,
             VersionUnavailable: 503,
             ServiceDraining: 503,
+            StorageUnavailable: 503,
             LeaseLost: 409,
             NumericalFailure: 422,
         }

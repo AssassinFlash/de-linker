@@ -1,8 +1,7 @@
-"""Read existing owned mutation receipts before public admission is charged.
+"""Read an owned mutation result without repeating its work.
 
 No writes, CSV parsing, new source capture, context compilation or numerical
-execution occur here. An absent receipt cannot authorise a mutation: WP still
-admits its command, and the actual command repeats ownership/idempotency checks.
+execution occur here. Every mutation checks its owner and original command key.
 """
 
 from __future__ import annotations

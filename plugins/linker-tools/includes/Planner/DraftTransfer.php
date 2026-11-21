@@ -15,11 +15,11 @@ use WP_REST_Response;
 /** No browser product list or copied Woo field grants project access. */
 final class DraftTransfer {
 	/**
-	 * Reuse the owned command and native write admission, then ask Commerce to write.
+	 * Resolve the owned handoff, then ask Commerce to apply the selected products.
 	 *
 	 * @param Principal           $principal Native authenticated owner.
 	 * @param array<string,mixed> $command Bounded intent.
-	 * @param Admission           $admission Existing native resource journal.
+	 * @param Admission           $admission Owned command dispatcher.
 	 * @param Transport           $transport Private engine transport.
 	 * @param string              $mode Server-selected preview, apply or read operation.
 	 */

@@ -16,6 +16,7 @@ from .errors import (
     InvalidInput,
     LeaseLost,
     PlanningError,
+    StorageUnavailable,
     VersionUnavailable,
     log_unavailable,
 )
@@ -171,7 +172,7 @@ class Worker:
                 control.checkpoint()
         except LeaseLost:
             control.revoke()
-        except RetryableExecution as error:
+        except (RetryableExecution, StorageUnavailable) as error:
             failure = {"code": error.code, "retryable": True}
             retry_after = self.retry_seconds
         except PlanningError as error:
@@ -215,6 +216,15 @@ class Worker:
             # Cancellation/another worker wins; no result or failure is written
             # over its state. A lost heartbeat leaves durable retry recovery.
             LOG.info("planning publication fenced for job %s", lease.id)
+        except StorageUnavailable as error:
+            try:
+                self.jobs.fail(
+                    lease,
+                    {"code": error.code, "retryable": True},
+                    retry_after=self.retry_seconds,
+                )
+            except LeaseLost:
+                LOG.info("planning storage retry fenced for job %s", lease.id)
         except PlanningError as error:
             if isinstance(error, VersionUnavailable):
                 log_unavailable(lease.id, "publish", error)

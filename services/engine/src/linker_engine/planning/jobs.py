@@ -73,6 +73,12 @@ class Jobs:
             raise InvalidInput("worker and supported job kinds required")
         _duration(lease_seconds, "lease duration")
         workspace = self.workspace
+        if not workspace.blobs.has_space():
+            kinds = tuple(
+                kind for kind in kinds if kind in ("abort_weather", "reconcile_weather")
+            )
+            if not kinds:
+                return None
         routes = self._routes if routing is not None else None
         if routes is not None:
             if kinds != ("evaluate",):
@@ -326,7 +332,7 @@ class Jobs:
         if retry_after is not None:
             _duration(retry_after, "retry delay", zero=True)
         workspace = self.workspace
-        content = workspace.blobs.put_object(error)
+        content = workspace.blobs.recovery_record(error)
         with workspace.database.transaction() as connection:
             now = workspace.clock()
             row = self.require_active(connection, lease, now)

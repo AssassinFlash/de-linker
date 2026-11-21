@@ -401,8 +401,8 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'saved' ), $writes['limits'], 90 ), 'Saved input remains independent from model turns.' );
 	}
 
-	/** A signed-in project is owned by the account and independent of guest creation traffic. */
-	public function test_account_project_creation_is_independent_of_guest_storage_traffic(): void {
+	/** A filled historical site allowance cannot reject a new guest or account project. */
+	public function test_guest_and_account_projects_ignore_historical_site_counts(): void {
 		$user = wp_create_user( 'planner-owner-' . wp_generate_uuid4(), wp_generate_password() );
 		$this->assertIsInt( $user );
 		if ( ! defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ) {
@@ -420,35 +420,33 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
 			$this->assertIsArray( $ledger->complete( $id, $fp ) );
 
-			$command   = array(
+			$command = array(
 				'key'    => wp_generate_uuid4(),
 				'title'  => 'Owned project',
 				'inputs' => array(),
 			);
-			$body      = (string) wp_json_encode( $command );
-			$principal = new \Linker\Tools\Planner\Principal( 'user', \Linker\Tools\Planner\NativeIdentity::user_subject( $user ) );
-			$transport = new \Linker\Tools\Planner\Transport(
-				function ( string $url, array $args ) use ( $body, $principal ): array {
-					$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
-					$this->assertSame( $body, $args['body'] );
-					$reply = str_contains( $url, '/operations/replay/' )
-						? array(
-							'schema_version' => 1,
-							'status'         => 'absent',
-							'command_sha256' => hash( 'sha256', $body ),
-							'command_scope'  => 'create',
-						)
-						: array( 'revision' => 1 );
-					return array(
-						'response' => array( 'code' => 200 ),
-						'headers'  => array( 'content-type' => 'application/json' ),
-						'body'     => wp_json_encode( $reply ),
-					);
-				}
-			);
-			$result    = ( new \Linker\Tools\Planner\Admission() )->send( $principal, 'projects/create', $command, $body, $transport );
-			$this->assertIsArray( $result );
-			$this->assertSame( '{"revision":1}', $result['body'] );
+			$body    = (string) wp_json_encode( $command );
+			foreach ( array(
+				0     => new \Linker\Tools\Planner\Principal( 'guest', 'owned-test-session' ),
+				$user => new \Linker\Tools\Planner\Principal( 'user', \Linker\Tools\Planner\NativeIdentity::user_subject( $user ) ),
+			) as $user_id => $principal ) {
+				wp_set_current_user( $user_id );
+				$transport = new \Linker\Tools\Planner\Transport(
+					function ( string $url, array $args ) use ( $body, $principal ): array {
+						$this->assertSame( 'https://planner.example.test/projects/create', $url );
+						$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
+						$this->assertSame( $body, $args['body'] );
+						return array(
+							'response' => array( 'code' => 200 ),
+							'headers'  => array( 'content-type' => 'application/json' ),
+							'body'     => '{"revision":1}',
+						);
+					}
+				);
+				$result    = ( new \Linker\Tools\Planner\Admission() )->send( $principal, 'projects/create', $command, $body, $transport );
+				$this->assertIsArray( $result );
+				$this->assertSame( '{"revision":1}', $result['body'] );
+			}
 		} finally {
 			remove_filter( 'pre_option_linker_planner_url', $endpoint );
 			wp_set_current_user( 0 );

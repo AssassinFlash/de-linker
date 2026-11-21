@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shutil
 import time
 from dataclasses import replace
 from threading import Event, Thread
@@ -16,6 +17,62 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context, Lease
 from linker_engine.planning.worker import Control, Published, RetryableExecution, Worker
 from linker_engine.planning.workspace import Workspace
+
+from .conftest import Clock
+
+
+def test_queued_work_waits_for_workspace_capacity(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Storage recovery", {}, key="project")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    worker = Worker(
+        Jobs(workspace),
+        "worker",
+        {"evaluate": lambda _lease, _control: {"ready": True}},
+        lease_seconds=30,
+        heartbeat_seconds=5,
+        retry_seconds=1,
+    )
+    workspace.blobs.minimum_free_bytes = shutil.disk_usage(
+        workspace.blobs.directory
+    ).total
+    assert not worker.run_once()
+    assert workspace.run(owner, run.id).state == "queued"
+    workspace.blobs.minimum_free_bytes = 0
+    assert worker.run_once()
+    assert workspace.run(owner, run.id).state == "succeeded"
+
+
+def test_running_job_can_record_and_retry_a_storage_failure(
+    workspace: Workspace, owner: Actor, context: Context, clock: Clock
+) -> None:
+    project = workspace.create(owner, "Storage retry", {}, key="project")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+
+    def execute(lease: Lease, _control: Control) -> Object:
+        if lease.attempt == 1:
+            workspace.blobs.minimum_free_bytes = shutil.disk_usage(
+                workspace.blobs.directory
+            ).total
+        return {"ready": True}
+
+    worker = Worker(
+        Jobs(workspace),
+        "worker",
+        {"evaluate": execute},
+        lease_seconds=30,
+        heartbeat_seconds=5,
+        retry_seconds=1,
+    )
+    assert worker.run_once()
+    pending = workspace.run(owner, run.id)
+    assert pending.state == "retry_wait"
+    assert pending.error == {"code": "storage_unavailable", "retryable": True}
+    workspace.blobs.minimum_free_bytes = 0
+    clock.advance(1)
+    assert worker.run_once()
+    assert workspace.run(owner, run.id).state == "succeeded"
 
 
 def test_resource_class_routing_keeps_ordinary_work_moving(

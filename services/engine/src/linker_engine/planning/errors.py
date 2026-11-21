@@ -76,6 +76,12 @@ class VersionUnavailable(PlanningError):
     code = "version_unavailable"
 
 
+class StorageUnavailable(PlanningError):
+    """A new allocation would consume the workspace host's recovery headroom."""
+
+    code = "storage_unavailable"
+
+
 class ServiceDraining(PlanningError):
     """An operator closed new evaluation admission while preserving old work."""
 
