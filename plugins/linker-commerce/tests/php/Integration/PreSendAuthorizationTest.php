@@ -22,9 +22,12 @@ use WC_Order;
  * @coversNothing
  */
 final class PreSendAuthorizationTest extends IntegrationTestCase {
+	/** Each case owns the delivery history of a different customer. */
+	private string $recipient;
 	/** Preserve native options and isolate the local provider configuration. */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->recipient = 'receipt-native-' . self::tag() . '@example.test';
 		foreach ( array( Queue::ENABLED, Queue::HEARTBEAT, 'linker_genie_url' ) as $name ) {
 			$old = get_option( $name );
 			$this->later(
@@ -41,7 +44,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *
 	 * @param string $email Customer destination.
 	 */
-	private function submit( string $email = self::TESTER ): WC_Order {
+	private function submit( ?string $email = null ): WC_Order {
+		$email ??= $this->recipient;
 		$details = Submission::from_post(
 			array(
 				'name'    => 'Synthetic installer',
@@ -159,7 +163,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *
 	 * @param string $email Customer destination.
 	 */
-	private function submit_before_outbox_recovery( string $email = self::TESTER ): WC_Order {
+	private function submit_before_outbox_recovery( ?string $email = null ): WC_Order {
 		$unavailable = static function ( int $id, \WP_Post $post ): void {
 			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
 				throw new \RuntimeException( 'fixture_queue_unavailable' );
