@@ -116,6 +116,10 @@
     overscroll-behavior: contain;
   }
   .sc-report-dialog > .sc-section-head {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    background: var(--proto-neutral-0);
     padding: var(--proto-space-4) var(--proto-space-5);
     margin: 0;
     border-block-end: 1px solid var(--proto-color-line);
@@ -124,9 +128,7 @@
     margin: 0;
     padding: var(--proto-space-4) var(--proto-space-5);
   }
-  .sc-report-document { width: 100%; height: min(52vh, 38rem); border: 0; background: var(--proto-neutral-50); }
   .sc-report-preview { min-width: 0; overflow-wrap: anywhere; }
-  .sc-report-workspace .sc-report-readable summary { display: list-item; }
   @media (max-width: 767px) {
     .sc-report-workspace .sc-report-actions { grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-5); }
     .sc-report-workspace .sc-report-actions > :not(:first-child) {

@@ -219,12 +219,6 @@ function ReportPreview({
 				<div className="sc-report-pdf">
 					{pdfUrl && allowed ? (
 						<>
-							<object
-								className="sc-report-document"
-								type="application/pdf"
-								data={pdfUrl}
-								aria-label={report.title}
-							/>
 							<a
 								className="sc-button"
 								href={pdfUrl}
@@ -259,8 +253,10 @@ function ReportPreview({
 						<p role="status">{__("Preparing PDF…", "linker-tools")}</p>
 					)}
 				</div>
-				<details className="sc-report-readable" open>
-					<summary>{__("Report details", "linker-tools")}</summary>
+				<section
+					className="sc-report-readable"
+					aria-label={__("Report details", "linker-tools")}
+				>
 					<div className="sc-report-preview" lang={report.locale}>
 						<p className="sc-muted">{report.subtitle}</p>
 						{open &&
@@ -271,7 +267,7 @@ function ReportPreview({
 								</section>
 							))}
 					</div>
-				</details>
+				</section>
 			</dialog>
 		</>
 	);

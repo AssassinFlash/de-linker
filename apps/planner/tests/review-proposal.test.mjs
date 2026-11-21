@@ -474,10 +474,8 @@ test("report preview opens the complete pinned report and its original PDF", asy
 		scope,
 	]);
 	assert.equal(requested[0][4], asset.content_sha256);
-	assert.equal(
-		dialog.querySelector('object[type="application/pdf"]').getAttribute("data"),
-		"blob:https://fixture.invalid/current-report",
-	);
+	assert.equal(dialog.querySelector("object,embed"), null);
+	assert.ok(dialog.querySelector(".sc-report-readable section h3"));
 	const pdfLink = dialog.querySelector("a[target='_blank'][href^='blob:']");
 	assert.equal(pdfLink.textContent, "Open report PDF");
 	assert.equal(pdfLink.rel, "noopener noreferrer");
