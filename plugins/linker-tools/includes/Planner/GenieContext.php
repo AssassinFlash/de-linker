@@ -15,6 +15,9 @@ use WP_REST_Request;
 /** Browser data selects a reference; it never supplies project facts. */
 final class GenieContext {
 
+	/** Native energy result kinds with a saved calculation view. */
+	public const ENERGY_KINDS = array( 'single_ac_energy_replay_v1', 'shared_dc_energy_replay_v1', 'plant_ac_energy_replay_v1', 'plant_shared_dc_energy_replay_v1' );
+
 	/**
 	 * Existing private owner verification and transport.
 	 *
@@ -96,13 +99,16 @@ final class GenieContext {
 		if ( '' === $url ) {
 			return $unavailable;
 		}
-		$query = array( 'project' => $reference['planning_project_id'] );
+		$query   = array( 'project' => $reference['planning_project_id'] );
+		$chapter = '#sc-project';
 		if ( 1 === count( $reference['planning_run_ids'] ) ) {
 			$query['run'] = $reference['planning_run_ids'][0];
+			$chapter      = in_array( $reply['runs'][0]['kind'] ?? null, self::ENERGY_KINDS, true ) ? '#sc-energy' : '#sc-review';
 		} elseif ( 2 === count( $reference['planning_run_ids'] ) ) {
 			$query['compare'] = implode( ',', $reference['planning_run_ids'] );
+			$chapter          = '#sc-energy';
 		}
-		$reply['workspace_url'] = add_query_arg( $query, $url ) . ( array() === $reference['planning_run_ids'] ? '#sc-project' : '#sc-review' );
+		$reply['workspace_url'] = add_query_arg( $query, $url ) . $chapter;
 		return $reply;
 	}
 }

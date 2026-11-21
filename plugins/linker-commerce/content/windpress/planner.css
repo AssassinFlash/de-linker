@@ -601,6 +601,7 @@
   }
   @media (max-width: 600px) {
     .sc-configurator { padding: 5px 16px 35px; }
+    .sc-configurator #sc-energy { scroll-margin-top: calc(var(--sc-header-height, 0px) + var(--sc-navigation-height, 0px) + 24px); }
     .sc-intake .sc-entry-toolbar { gap: 6px 12px; padding-block: 10px 16px; }
     .sc-intake .sc-entry-toolbar .sc-actions { gap: 4px; }
     .sc-intake .sc-entry-toolbar .sc-button { padding-inline: 9px; font-size: 13px; }

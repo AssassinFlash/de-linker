@@ -35,9 +35,13 @@ export function ProfileCurve({
 		return null;
 	const peak = Math.max(0, ...rows.map((row) => row.interval_mean_kw)),
 		scale = peak || 1;
+	const peakLabel =
+		new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(peak) +
+		" kW";
+	const axisX = 18 + peakLabel.length * 10;
 	// Drawing coordinates are a display layout, not calculation time resolution.
 	const x = (instant: string) =>
-			44 + ((Date.parse(instant) - start) / (end - start)) * 580,
+			axisX + ((Date.parse(instant) - start) / (end - start)) * (624 - axisX),
 		y = (power: number) => 164 - (power / scale) * 140;
 	let path = "";
 	for (let i = 0; i < rows.length; i++) {
@@ -56,19 +60,16 @@ export function ProfileCurve({
 			>
 				<title>{title}</title>
 				<path
-					d="M44 16 V164 H624"
+					d={`M${axisX} 16 V164 H624`}
 					fill="none"
 					stroke="currentColor"
 					strokeWidth="1"
 				/>
 				<path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
-				<text x="4" y="28" fill="currentColor">
-					{new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
-						peak,
-					)}{" "}
-					kW
+				<text x={axisX - 8} textAnchor="end" y="28" fill="currentColor">
+					{peakLabel}
 				</text>
-				<text x="12" y="180" fill="currentColor">
+				<text x={axisX - 8} textAnchor="end" y="164" fill="currentColor">
 					0
 				</text>
 			</svg>

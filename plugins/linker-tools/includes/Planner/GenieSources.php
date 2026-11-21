@@ -124,6 +124,12 @@ final class GenieSources {
 				return null;
 			}
 			$source = $run['calculation_sources'] ?? null;
+			if ( null === $source && in_array( $run['kind'] ?? null, GenieContext::ENERGY_KINDS, true ) ) {
+				$source = array(
+					'schema_version' => 1,
+					'groups'         => array(),
+				);
+			}
 			if ( null === $source ) {
 				continue;
 			}

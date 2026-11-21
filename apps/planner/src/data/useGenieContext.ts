@@ -12,9 +12,11 @@ export function useGenieContext(
 		client: Pick<PlannerClient, "isCurrentScope">;
 		report: { id: string; revision: number } | null;
 		openReport?: { id: string; revision: number } | null;
+		energyComparison?: boolean;
 	},
 ) {
 	const client = selection?.client;
+	const energyComparison = selection?.energyComparison;
 	const reportId = selection?.report?.id;
 	const reportRevision = selection?.report?.revision;
 	const openReportId = selection?.openReport?.id;
@@ -49,7 +51,8 @@ export function useGenieContext(
 				clear();
 				return;
 			}
-			const comparison = client ? null : params.get("compare");
+			const comparison =
+				!client || energyComparison ? params.get("compare") : null;
 			const run = client ? (choice ?? reportId) : params.get("run");
 			const savedReportRevision =
 				choice === null
@@ -103,6 +106,7 @@ export function useGenieContext(
 		};
 	}, [
 		client,
+		energyComparison,
 		project.id,
 		project.title,
 		project.revision,

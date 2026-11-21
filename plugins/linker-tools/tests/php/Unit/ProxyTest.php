@@ -1235,6 +1235,12 @@ final class ProxyTest extends TestCase {
 		$this->assertInstanceOf( WP_REST_Response::class, $replayed );
 		$this->assertStringContainsString( '"status":"unavailable"', $replayed->get_data()['stream'] );
 		$this->assertStringNotContainsString( 'planning_project_id', $replayed->get_data()['stream'] );
+		$energy_card                         = $card;
+		$energy_card['results'][0]['groups'] = array();
+		$energy_stream                       = "event: block\ndata: " . wp_json_encode( $energy_card ) . "\n\n";
+		$fresh['runs'][0]['kind']            = 'single_ac_energy_replay_v1';
+		unset( $fresh['runs'][0]['calculation_sources'] );
+		$this->assertStringContainsString( 'planning_run_ids', $reader->restore( $energy_stream, $request, 'de' ) );
 		$fresh['runs'][0]['result_sha256'] = str_repeat( 'f', 64 );
 		$this->assertStringNotContainsString( '2023-06-16', $reader->restore( $stream, $request, 'de' ) );
 		$fresh = null;
