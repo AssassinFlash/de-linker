@@ -20,6 +20,9 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { parseStream } from '../lib/genie';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { seedConsentCookies } from '../lib/consent';
 
 /** The question whose live answer is proven to carry a product card. */
@@ -80,6 +83,8 @@ async function askGenie(
 		.filter({ visible: true })
 		.first()
 		.click();
+	const votes = page.locator('.linker-genie-app__votes');
+	const previous = await votes.count();
 	await page.locator('#linker-genie-input').fill(launch);
 	const result = page.waitForResponse(
 		(r) =>
@@ -93,6 +98,14 @@ async function askGenie(
 		'the newly requested quantities have an answered turn: ' +
 			answer.status()
 	).toBe(true);
+	const { blocks } = parseStream((await answer.json()).stream);
+	const savedCard = blocks.find((block) => block.type === 'cards');
+	expect(savedCard?.product_ids).toHaveLength(1);
+	expect(
+		savedCard?.quantities?.[savedCard.product_ids[0]!],
+		'requested units in the new answer'
+	).toBe(3);
+	await expect(votes).toHaveCount(previous + 1);
 	const card = page
 		.locator('.linker-genie-app article.linker-card')
 		.filter({ hasText: 'H2-10K-T3' })
@@ -193,6 +206,17 @@ for (const locale of ['en', 'de'] as const) {
 				'href',
 				/h2-10k-t3/i
 			);
+			if (process.env.LINKER_E2E_SHOTS) {
+				mkdirSync(process.env.LINKER_E2E_SHOTS, { recursive: true });
+				await selected.scrollIntoViewIfNeeded();
+				await page.screenshot({
+					path: join(
+						process.env.LINKER_E2E_SHOTS,
+						`saved-equipment-${locale}-${width}.png`
+					),
+					animations: 'disabled',
+				});
+			}
 			await page.goto(instance().url + words.account);
 
 			// And returns it to the solution draft.

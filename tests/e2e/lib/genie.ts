@@ -30,6 +30,7 @@ export interface AskBlock {
 export interface CardsBlock {
 	type: 'cards';
 	product_ids: number[];
+	quantities?: Record<string, number>;
 }
 
 export interface CompareBlock {

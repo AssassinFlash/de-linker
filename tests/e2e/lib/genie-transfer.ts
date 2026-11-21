@@ -116,15 +116,22 @@ export const test = base.extend<{ customer: Customer }, { officialKeys: void }>(
 );
 
 export async function ask(page: Page, question: string): Promise<void> {
-	const answers = page.locator('.linker-genie-app__message--assistant');
+	const answers = page.locator('.linker-genie-app__votes');
 	const before = await answers.count();
 	await page.locator('#linker-genie-input:visible').fill(question);
-	await page.locator('.linker-genie-app__send:visible').click();
-	await expect(answers).toHaveCount(before + 1, { timeout: 120_000 });
-	await expect(answers.last()).not.toHaveText(
-		/^(Genie is thinking|Genie denkt nach|\s*$)/,
+	const incoming = page.waitForResponse(
+		(r) =>
+			r.url().includes('/genie/turn') && r.request().method() === 'POST',
 		{ timeout: 120_000 }
 	);
+	await page.locator('.linker-genie-app__send:visible').click();
+	const response = await incoming;
+	const result = await response.json();
+	expect(
+		response.ok(),
+		'Genie turn: ' + response.status() + ' ' + (result.code ?? '')
+	).toBe(true);
+	await expect(answers).toHaveCount(before + 1, { timeout: 120_000 });
 }
 
 /** Give the local HTTP workers their configured interval to reload wp-config.php. */
