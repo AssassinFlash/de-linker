@@ -2051,7 +2051,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 * @return array<string,mixed> Actual committed received state and original job.
 	 */
 	private function notice_handoff_from_another_process( int $id ): array {
-		$command = array( PHP_BINARY, dirname( __DIR__, 2 ) . '/fixtures/registration_notice_deliver_writer.php' );
+		$command = array( PHP_BINARY, '-c', dirname( (string) getenv( 'LINKER_WP_ROOT' ) ) . '/php.ini', dirname( __DIR__, 2 ) . '/fixtures/registration_notice_deliver_writer.php' );
 		$process = proc_open( $command, array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes );
 		$this->assertIsResource( $process );
 		fwrite( $pipes[0], (string) wp_json_encode( array( 'user' => $id ) ) );
