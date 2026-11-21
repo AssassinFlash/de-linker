@@ -9,8 +9,8 @@ Chunk IDs come from search-knowledge, and so do the figures of each chunk
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass, field, replace
+from typing import Any, Literal
 
 from linker_genie.figures import chunk_of, swap_decimals, tag
 from linker_genie.hs3_evidence import (
@@ -33,6 +33,46 @@ class Fact:
     id: str
     value: str
     source: str
+    qualifier: dict[str, Any] | None = None
+    product_label: str | None = None
+
+    @property
+    def per_input_current_direction(self) -> Literal["charge", "discharge"] | None:
+        qualifier = self.qualifier or {}
+        if (
+            qualifier.get("scope") != "per_battery_port"
+            or qualifier.get("quantity_kind") != "maximum"
+        ):
+            return None
+        if qualifier.get("direction") == "charge":
+            return "charge"
+        if qualifier.get("direction") == "discharge":
+            return "discharge"
+        return None
+
+
+@dataclass(frozen=True)
+class DocumentEvidence:
+    """The exact published association used by a tool's evidence."""
+
+    document_id: str
+    document_revision: str
+    product_id: int
+
+    @classmethod
+    def read(cls, row: dict[str, Any], product_id: Any) -> DocumentEvidence | None:
+        document_id = row.get("document_id")
+        revision = row.get("document_revision")
+        if (
+            isinstance(document_id, str)
+            and document_id
+            and isinstance(revision, str)
+            and revision
+            and type(product_id) is int
+            and product_id > 0
+        ):
+            return cls(document_id, revision, product_id)
+        return None
 
 
 @dataclass(frozen=True)
@@ -42,6 +82,12 @@ class Document:
     url: str
     title: str
     page: int | None
+    evidence: DocumentEvidence | None = None
+    figure_product_id: int | None = None
+
+    @property
+    def citation_owner(self) -> int | None:
+        return self.evidence.product_id if self.evidence else self.figure_product_id
 
 
 @dataclass(frozen=True)
@@ -111,7 +157,9 @@ class TurnFacts:
         )
 
 
-def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
+def collect(
+    name: str, payload: Any, locale: str = "en", *, evidence_owner: int | None = None
+) -> TurnFacts:
     """Facts and IDs from one ability JSON body, in the turn's language.
 
     The compatibility contract writes its conditions in pairs (`{en, de}`,
@@ -130,7 +178,7 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     if name.endswith("search-products"):
         _from_search(gathered, payload, locale)
     elif name.endswith("get-product"):
-        _from_product(gathered, payload, locale)
+        _from_product(gathered, payload, locale, evidence_owner)
     elif name.endswith("compare-products"):
         _from_compare(gathered, payload)
     elif name.endswith("check-compatibility"):
@@ -403,7 +451,7 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
                 value = f"{url} · p.{page}" if isinstance(page, int) else url
                 fact_id = f"compat.document.{paired_id}.{document_index}"
                 gathered.add(Fact(id=fact_id, value=value, source="search-products"))
-                gathered.documents[fact_id] = _document(document, url, page)
+                gathered.documents[fact_id] = _compat_document(document, url, page)
     extreme = payload.get("extreme")
     if isinstance(extreme, dict):
         # The ability's aggregate (#368). The model names this product; grounding
@@ -440,7 +488,10 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
 
 
 def _from_product(
-    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+    gathered: TurnFacts,
+    payload: dict[str, Any],
+    locale: str,
+    evidence_owner: int | None,
 ) -> None:
     product_id = payload.get("product_id")
     if isinstance(product_id, int) and product_id > 0:
@@ -449,8 +500,17 @@ def _from_product(
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
         raw_figures = payload.get("figures")
+        documents = payload.get("documents") or []
         if isinstance(raw_figures, dict):
-            _add_figures(gathered, product_id, raw_figures, locale)
+            _add_figures(
+                gathered,
+                product_id,
+                raw_figures,
+                documents,
+                locale,
+                evidence_owner or product_id,
+                payload.get("model") or payload.get("title"),
+            )
         _add_commerce(
             gathered,
             product_id,
@@ -461,7 +521,7 @@ def _from_product(
         )
         # The product's hosted documents (datasheet, manual): linkable as
         # document blocks `pID.document.N`, never as a URL in the text (#233).
-        for index, document in enumerate(payload.get("documents") or []):
+        for index, document in enumerate(documents):
             if not isinstance(document, dict):
                 continue
             url = document.get("url")
@@ -598,7 +658,7 @@ def _from_compatibility(
         value = f"{url} · p.{page}" if isinstance(page, int) else url
         fact_id = f"compat.document.{index}"
         gathered.add(Fact(id=fact_id, value=value, source="check-compatibility"))
-        gathered.documents[fact_id] = _document(document, url, page)
+        gathered.documents[fact_id] = _compat_document(document, url, page)
 
 
 def _from_size_hint(gathered: TurnFacts, payload: dict[str, Any]) -> None:
@@ -969,10 +1029,12 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
             )
         url = hit.get("doc_url")
         if isinstance(url, str) and url:
+            evidence = DocumentEvidence.read(hit, hit.get("evidence_product_id"))
             gathered.documents[chunk_id] = Document(
                 url=url,
                 title=str(title) or _file_name(url),
                 page=page if isinstance(page, int) else None,
+                evidence=evidence,
             )
             support_ids: list[str] = []
             for support in hit.get("supporting_documents", []):
@@ -996,6 +1058,9 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                     url=support_url,
                     title=str(support.get("title") or _file_name(support_url)),
                     page=support_page,
+                    evidence=DocumentEvidence.read(
+                        support, support.get("evidence_product_id")
+                    ),
                 )
                 gathered.chunk_ids.add(ref)
                 support_ids.append(ref)
@@ -1016,6 +1081,7 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                         url=url,
                         title=str(title) or _file_name(url),
                         page=note.page,
+                        evidence=evidence,
                     )
         figures = hit.get("figures")
         for figure, value in (figures if isinstance(figures, dict) else {}).items():
@@ -1079,7 +1145,13 @@ def _from_handoff(
 
 
 def _add_figures(
-    gathered: TurnFacts, product_id: int, figures: dict[str, Any], locale: str
+    gathered: TurnFacts,
+    product_id: int,
+    figures: dict[str, Any],
+    documents: list[Any],
+    locale: str,
+    evidence_owner: int,
+    product_label: str | None,
 ) -> None:
     """The datasheet figures get-product returns (n_mppt, max_pv_input_v, …).
 
@@ -1089,6 +1161,13 @@ def _add_figures(
     turn reads `value_de` where the figure has one. A selection fact of the same
     key stays: it is the one search-products filters on.
     """
+    published_by_url = {
+        document["url"]: document
+        for document in documents
+        if isinstance(document, dict)
+        and isinstance(document.get("url"), str)
+        and isinstance(document.get("document_id"), str)
+    }
     for key, figure in figures.items():
         if not isinstance(figure, dict):
             continue
@@ -1103,15 +1182,85 @@ def _add_figures(
             continue
         unit = figure.get("unit")
         rendered = f"{value} {unit}" if isinstance(unit, str) and unit else value
-        gathered.add(Fact(id=fact_id, value=rendered, source="datasheet-figures"))
+        qualifier = figure.get("qualifier")
+        gathered.add(
+            Fact(
+                id=fact_id,
+                value=rendered,
+                source="datasheet-figures",
+                qualifier=qualifier if isinstance(qualifier, dict) else None,
+                product_label=product_label,
+            )
+        )
+        citation = figure.get("citation")
+        if isinstance(citation, dict):
+            url = citation.get("url")
+            page = citation.get("page")
+            if isinstance(url, str) and url and type(page) is int and page > 0:
+                ref = f"{fact_id}.source"
+                published = published_by_url.get(url, {})
+                primary = _document(
+                    citation,
+                    url,
+                    page,
+                    evidence=DocumentEvidence.read(published, evidence_owner),
+                    figure_product_id=product_id,
+                )
+                gathered.documents[ref] = primary
+                supporting = [ref]
+                for extra_page in _figure_evidence_pages(
+                    figure, published.get("document_id")
+                ):
+                    if extra_page == page:
+                        continue
+                    extra_ref = f"{ref}.{len(supporting)}"
+                    gathered.documents[extra_ref] = replace(primary, page=extra_page)
+                    supporting.append(extra_ref)
+                gathered.supporting_documents[fact_id] = tuple(supporting)
 
 
-def _document(document: dict[str, Any], url: str, page: Any) -> Document:
+def _figure_evidence_pages(
+    figure: dict[str, Any], document_id: str | None
+) -> list[int]:
+    # Woo checks the primary citation against this PDF's bytes. A reference to a
+    # different document ID carries no such binding, even while it is published.
+    refs = figure.get("evidence_refs")
+    if document_id is None or not figure.get("qualifier") or not isinstance(refs, list):
+        return []
+    pages = []
+    for ref in refs:
+        if not isinstance(ref, str):
+            continue
+        owner, _, page = ref.rpartition(":p")
+        if owner == document_id and re.fullmatch(r"[1-9][0-9]*", page):
+            pages.append(int(page))
+    return pages
+
+
+def _compat_document(document: dict[str, Any], url: str, page: Any) -> Document:
+    return _document(
+        document,
+        url,
+        page,
+        evidence=DocumentEvidence.read(document, document.get("product_id")),
+    )
+
+
+def _document(
+    document: dict[str, Any],
+    url: str,
+    page: Any,
+    *,
+    evidence: DocumentEvidence | None = None,
+    figure_product_id: int | None = None,
+) -> Document:
     title = document.get("title")
     return Document(
         url=url,
         title=title if isinstance(title, str) and title else _file_name(url),
         page=page if isinstance(page, int) else None,
+        evidence=evidence,
+        figure_product_id=figure_product_id,
     )
 
 

@@ -409,6 +409,7 @@ def test_shared_manual_revocation_filters_fallback_and_same_page_neighbours(
     assert hits[0].document_id == "doc"
     assert hits[0].document_revision == "doc-1"
     assert hits[0].product_ids == (1,)
+    assert hits[0].evidence_product_id == 1
     assert hits[0].doc_url == "https://site.test/shared.pdf"
     assert not any("MODEL-2" in h.text for h in hits)
 

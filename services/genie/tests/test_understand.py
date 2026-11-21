@@ -168,6 +168,36 @@ def test_saved_report_weather_uses_only_matching_native_planning_context(
             assert prepared.facts.facts == {}
 
 
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        (
+            "Please prepare a product list with 2 SAJ H2-10K-T3 inverters. I want to save the list to my account.",
+            {4107: 2},
+        ),
+        (
+            "Bitte 2 Stück SAJ H2-10K-T3 und SAJ CB2-100.3-HV5 aufnehmen.",
+            {4107: 2, 4106: 1},
+        ),
+        ("Please save DLK-SAJ-H210KT3 × 3 inverters to my account.", {4107: 3}),
+        ("Bitte zwei Stück vom SAJ H2-10K-T3 aufnehmen.", {4107: 2}),
+        ("Save SAJ H2-10K-T3 for a 10 kW site.", {4107: 1}),
+        ("Show me EcoFlow OCEAN 2 hybrid inverters.", {}),
+        ("Show me the EcoFlow OCEAN 2 HD-P1-6K-S2 inverter.", {6488: 1}),
+        ("Please save 3 EcoFlow OCEAN 2 HD-P1-6K-S2 inverters.", {6488: 3}),
+        ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", {4107: 0}),
+        ("Save 12000 SAJ H2-10K-T3 inverters to my account.", {4107: 0}),
+    ],
+)
+def test_named_product_counts_in_the_customer_message(
+    vocabulary: Vocabulary, message: str, expected: dict[int, int]
+) -> None:
+    prepared = Understander(lambda: vocabulary, None).prepare(
+        _request(message), _abilities([])
+    )
+    assert prepared.card_quantities == expected
+
+
 def test_saj_is_searched_by_code_before_the_model(vocabulary: Vocabulary) -> None:
     seen: list[httpx.Request] = []
     understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))
@@ -395,6 +425,41 @@ def test_a_csv_attachment_becomes_a_parts_turn(vocabulary: Vocabulary) -> None:
     ]
     assert [reading.kind for reading in prepared.readings] == ["list"]
     assert prepared.cards[0]["kind"] == "list"
+
+
+@pytest.mark.parametrize("locale, prefix", [("en", "Attached"), ("de", "Anhang")])
+def test_upload_only_reads_the_document_without_searching_for_its_filename(
+    vocabulary: Vocabulary, locale: str, prefix: str
+) -> None:
+    import base64
+
+    from test_attachments import PROBE_PDF, See
+
+    from linker_genie.knowledge import KnowledgeUnavailable
+    from linker_genie.schema import Upload
+
+    def search(_: dict[str, Any] | None) -> dict[str, Any]:
+        raise KnowledgeUnavailable(
+            "managed knowledge index needs matching serving rules"
+        )
+
+    request = _request(f"{prefix}: {PROBE_PDF.name}", locale)
+    request.attachments.append(
+        Upload(
+            name=PROBE_PDF.name,
+            type="application/pdf",
+            data=base64.b64encode(PROBE_PDF.read_bytes()).decode(),
+        )
+    )
+    prepared = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("documents_specs")),
+        see=See(),
+        search=search,
+    ).prepare(request, _abilities([]))
+    assert prepared.knowledge_error is None
+    assert any(fact.value == "10000 W" for fact in prepared.facts.facts.values())
+    assert [card["name"] for card in prepared.cards] == [PROBE_PDF.name]
 
 
 def test_the_layer_times_its_own_phases(vocabulary: Vocabulary) -> None:

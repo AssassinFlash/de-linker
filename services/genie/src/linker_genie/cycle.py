@@ -28,7 +28,7 @@ from linker_genie.ground import (
     drop_bare_numbers,
     frame_warranty_technical,
 )
-from linker_genie.hydrate import complete_pairing_cards, hydrate
+from linker_genie.hydrate import complete_pairing_cards, hydrate, used_figure_sources
 from linker_genie.language import (
     LANGUAGE_RETRY_PREFIX,
     customer_message,
@@ -51,6 +51,7 @@ from linker_genie.template import (
     clearance_question,
     fallback,
     finish,
+    rated_ac_power_answer,
     seal,
 )
 
@@ -153,10 +154,8 @@ def _hydrate_priced(
             replacements[marker] = value
             return marker
 
-        if facts.qualifications:
-            # Rehydrate from the exact original placeholders. Only the
-            # qualified placeholder occurrence and its appended source quote
-            # are masked; equal values from other facts stay visible to seal.
+        if facts.qualifications or used_figure_sources(completed, facts):
+            # Protect the exact cited figure occurrence through the final seal.
             protected = hydrate(completed, facts, expected, qualified_mask=token)
             protected, _, _ = fill(protected, priced_facts)
         else:
@@ -434,6 +433,11 @@ def run(
         raised = False
         _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
+        rated = rated_ac_power_answer(
+            last_facts, route, customer_message(request), expected
+        )
+        if rated is not None:
+            output = rated
         with timing.phase(clock, timing.GROUND):
             result = check(
                 output,

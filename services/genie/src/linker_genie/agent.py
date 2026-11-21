@@ -30,6 +30,7 @@ from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import note
 from linker_genie.language import LANGUAGE_RETRY_PREFIX, turn_language, with_tool_lang
 from linker_genie.prefill import stated_size_hint
+from linker_genie.publication import Snapshot, product_ids
 from linker_genie.route import NAMED_MODEL_RULE
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
@@ -258,6 +259,7 @@ def make_generate(
     search: knowledge.Search | None = None,
     pages: page.Reader | None = None,
     clock: timing.Timing | None = None,
+    publication: Snapshot | None = None,
 ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
     """A `cycle.Generate` that runs the Pydantic AI agent with the ability client.
 
@@ -285,11 +287,25 @@ def make_generate(
         # Instructions, tool lang and fact collection follow the answer
         # language. The user prompt still names the page as locale=.
         expected = turn_language(request)
+        scope = prepared.product_scope if prepared else ()
+        allowed = (
+            frozenset(
+                pid
+                for canonical in {publication.canonical(pid) for pid in scope}
+                if canonical is not None
+                for pid in (
+                    canonical,
+                    *publication.products[canonical].get("published_locale_ids", []),
+                )
+            )
+            if publication is not None and scope
+            else frozenset(scope)
+        )
         tools = []
         for name in TOOL_NAMES:
             if name == knowledge.NAME:
                 runner = _knowledge_runner(
-                    document_search, budget, expected, clock, prepared
+                    document_search, budget, expected, clock, prepared, allowed, scope
                 )
             elif name == page.NAME:
                 runner = _page_runner(pages, budget, request, clock)
@@ -307,6 +323,7 @@ def make_generate(
                     customer,
                     clock,
                     prepared,
+                    allowed,
                 )
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
@@ -462,6 +479,11 @@ def without_class_text(
     return {key: value for key, value in arguments.items() if key != "text"}
 
 
+_OUTSIDE_PRODUCT_SUBJECT = {
+    "error": "Look up only the products in the customer's question."
+}
+
+
 def _ability_runner(
     client: Abilities,
     budget: ToolBudget,
@@ -471,6 +493,7 @@ def _ability_runner(
     message: str | Sequence[str] = "",
     clock: timing.Timing | None = None,
     prepared: Prepared | None = None,
+    allowed: frozenset[int] = frozenset(),
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
         # size-hint ignores `arguments` (#365): the model's object is not a
@@ -483,11 +506,32 @@ def _ability_runner(
             if name == "linker/size-hint"
             else without_class_text(name, with_tool_lang(name, arguments, locale))
         )
+        pairing_search = name == "linker/search-products" and str(
+            (sent or {}).get("with_pairings")
+        ).lower() in {"true", "1"}
+        if allowed and (
+            set(product_ids(sent)).difference(allowed)
+            or (pairing_search and not (prepared and prepared.discover_pairings))
+        ):
+            return _OUTSIDE_PRODUCT_SUBJECT
         try:
             payload, gathered = client.record(name, sent, user_context, locale)
         except AbilityError as error:
             _note_call_failure(prepared, error, prefix=name)
             raise
+        # A permitted pairing search may discover linked batteries, but its
+        # searched inverter rows must still be the customer's subjects.
+        returned = (
+            {
+                row["product_id"]
+                for row in payload.get("qualified", ())
+                if "product_id" in row
+            }
+            if allowed and pairing_search
+            else gathered.product_ids
+        )
+        if allowed and returned.difference(allowed):
+            return _OUTSIDE_PRODUCT_SUBJECT
         budget.parts.append(gathered)
         return payload
 
@@ -511,12 +555,22 @@ def _knowledge_runner(
     locale: str = "en",
     clock: timing.Timing | None = None,
     prepared: Prepared | None = None,
+    allowed: frozenset[int] = frozenset(),
+    scope: tuple[int, ...] = (),
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
+        sent = with_tool_lang(knowledge.NAME, arguments, locale)
+        if scope:
+            sent = sent or {}
+            try:
+                _, _, requested = knowledge.validate(sent)
+            except ValueError as error:
+                return {"error": str(error)}
+            if set(requested).difference(allowed):
+                return _OUTSIDE_PRODUCT_SUBJECT
+            sent = {**sent, "product_ids": requested or list(scope)}
         try:
-            payload, gathered = knowledge.record(
-                search, with_tool_lang(knowledge.NAME, arguments, locale), locale
-            )
+            payload, gathered = knowledge.record(search, sent, locale)
         except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
             _note_call_failure(prepared, error, prefix=knowledge.NAME)
             raise
@@ -815,7 +869,20 @@ def _user_prompt(
         "placeholder renders the whole range. A figure from a document chunk "
         "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
         "put the chunk IDs you rely on in refs, the service links their "
-        "documents. Or leave the number unsaid. A price is never written in "
+        "documents. Use each get-product figure with its qualifier and its "
+        "product-fact placeholder. The service adds the figure's Woo evidence "
+        "pages. For a maximum charge or discharge current with scope "
+        "per_battery_port, place the complete {fact:PRODUCTID.FIELD} on its own "
+        "text line, with no other words or punctuation on that line. The service "
+        "writes the full sentence with the direction and per-input limit. "
+        "Do not restate or reinterpret that limit elsewhere in the answer. "
+        "For a qualified product figure, use its Woo evidence pages as its source. "
+        "Include a retrieved chunk in refs only when its passage supports a "
+        "separate claim you actually make, including prose without numbers. "
+        "Only add a separate document block for a document the customer asked "
+        "for or that you cite for another claim. A matching number in a "
+        "passage does not establish the figure's qualifier. "
+        "Or leave the number unsaid. A price is never written in "
         "text, not even as a placeholder: show the product as a card, whose "
         "price line the service fills for this account; with partner=True say "
         "the card shows the net price, otherwise say once that approved partner "

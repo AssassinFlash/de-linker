@@ -16,10 +16,12 @@ import pytest
 from conftest import SHELL
 from fastapi.testclient import TestClient
 
+import turn_latency
 from linker_genie.abilities import Abilities, AbilityClient, AbilityError, gather
-from linker_genie.facts import Document, TurnFacts
+from linker_genie.facts import Document, DocumentEvidence, TurnFacts
 from linker_genie.lexicon import Vocabulary
 from linker_genie.log import TurnLog
+from linker_genie.page import PageReader
 from linker_genie.prices import Lookup, commerce_lookup
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.schema import (
@@ -291,10 +293,23 @@ def test_native_integer_ids_and_published_locale_ids_allow_verdict_only_response
 
 
 @pytest.mark.parametrize(
-    "failure", [None, "draft", "bytes", "outage", "new_member", "new_url"]
+    "failure",
+    [
+        None,
+        "draft",
+        "bytes",
+        "outage",
+        "new_member",
+        "new_url",
+        "new_owner",
+        "page_revoked",
+    ],
 )
 def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_changes(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str | None
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    failure: str | None,
 ) -> None:
     import json
 
@@ -302,6 +317,14 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
 
     seen: list[Abilities] = []
     raw = manifest()
+    if failure == "new_owner":
+        raw["products"].extend(manifest(2)["products"])
+    refused_before_validation = failure in {
+        "new_member",
+        "new_url",
+        "new_owner",
+        "page_revoked",
+    }
     model_finished = False
     validated: list[dict[str, Any]] = []
 
@@ -331,7 +354,28 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                     "price_reason": "login",
                 },
             }
-        return {"qualified": [{"product_id": 1}]}
+        return {
+            "qualified": [
+                {
+                    "product_id": 1,
+                    "pairings": [
+                        {
+                            "product_id": 1,
+                            "verdict": "released",
+                            "documents": [
+                                {
+                                    "document_id": "doc-1",
+                                    "document_revision": "revision-1",
+                                    "product_id": 1,
+                                    "url": "https://wp.test/alias-1.pdf",
+                                    "page": 2,
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
 
     def prepare(
         body: TurnRequest,
@@ -341,6 +385,13 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
     ) -> Prepared:
         assert get_vocabulary is not None
         seen.append(tools)
+        if failure == "page_revoked":
+            raw["products"] = []
+            pages = PageReader("https://wp.test", publication=authority)
+            try:
+                pages.read(body.page_context, "Show current products.", False)
+            finally:
+                pages.close()
         result = nothing(body)
         _payload, result.facts = tools.record(
             "linker/search-products", {"text": "initial"}
@@ -387,13 +438,21 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                 raw["documents"].append(
                     {**raw["documents"][0], "document_id": "new", "url": document_url}
                 )
-            facts.documents["fixture-document"] = Document(document_url, "Manual", 1)
+            evidence = (
+                DocumentEvidence("doc-1", "revision-1", 2)
+                if failure == "new_owner"
+                else None
+            )
+            facts.documents["fixture-document"] = Document(
+                document_url, "Manual", 1, evidence
+            )
             return TurnOutput(
                 language="en",
                 blocks=[
                     TextBlock(text="Current results.", refs=[str(product_id)]),
                     CardsBlock(product_ids=[product_id]),
                     DocumentBlock(ref="fixture-document"),
+                    DocumentBlock(ref="compat.document.1.0"),
                 ],
             ), facts
 
@@ -414,20 +473,34 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
         monkeypatch.setattr(service, "make_generate", make_generate)
         monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
         response = TestClient(service.app, headers=SHELL).post(
-            "/turn",
+            "/assistant/turn",
             json={
                 "conversation_id": "scoped-turn",
                 "messages": [{"role": "user", "content": "Show current products."}],
+                "page_context": {"type": "product", "product_id": 1}
+                if failure == "page_revoked"
+                else {},
             },
         )
+    if refused_before_validation:
+        # Give any start note left by the request time to pass the report's grace period.
+        with log._db:
+            log._db.execute("UPDATE turn_starts SET created_at = '2020-01-01 00:00:00'")
     log.close()
 
-    assert len(seen) == 3 and all(tools is seen[0] for tools in seen)
-    if failure in {"new_member", "new_url"}:
+    assert len(seen) == (1 if failure == "page_revoked" else 3)
+    assert all(tools is seen[0] for tools in seen)
+    if refused_before_validation:
         assert response.status_code == 409, response.text
+        assert response.json() == {"detail": "publication_changed"}
         assert "event: block" not in response.text
         assert validated == []
-        assert Counter(request.url.path for request in requests)[MANIFEST] == 1
+        assert Counter(request.url.path for request in requests)[MANIFEST] == (
+            2 if failure == "page_revoked" else 1
+        )
+        assert turn_latency.main([str(log.path)]) == 1  # No completed turns.
+        report = capsys.readouterr().out
+        assert "completed=0 incomplete=1 unfinished=0" in report
         return
     assert validated[0]["products"] == [
         {"product_id": 1, "product_revision": "product-1"}
@@ -453,9 +526,388 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
         document = next(block for block in blocks if block["type"] == "document")
         assert document["document_id"] == "doc-1"
         assert document["document_revision"] == "revision-1"
+        compat = next(
+            block for block in blocks if block.get("ref") == "compat.document.1.0"
+        )
+        assert compat["evidence_product_id"] == 1
+        assert compat["document_id"] == "doc-1"
+        assert compat["document_revision"] == "revision-1"
     else:
         assert response.status_code == (503 if failure == "outage" else 409), (
             response.text
         )
         assert "Current results." not in response.text
         assert "event: block" not in response.text
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "one-model",
+        "same-model-follow-up",
+        "comparison",
+        "no-jev",
+        "page-comparison",
+        "port-count",
+        "mixed-claim",
+    ],
+)
+def test_named_document_turn_cites_the_evidence_for_its_models(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scenario: str
+) -> None:
+    import asyncio
+    import json
+
+    from pydantic_ai.messages import (
+        ModelMessage,
+        ModelResponse,
+        ToolCallPart,
+        ToolReturnPart,
+        UserPromptPart,
+    )
+    from pydantic_ai.models.function import AgentInfo, FunctionModel
+
+    import linker_genie.app as service
+    from linker_genie.agent import make_generate
+    from linker_genie.jev import Reading
+    from linker_genie.lexicon import Entry, normalize
+    from linker_genie.understand import Understander
+
+    # Turn 825: the first search found a datasheet and manual excerpts, but not
+    # the charging/discharging row. The Woo figures already name the row's page.
+    uploads = "https://de-linker.com/wp-content/uploads"
+    manual = f"{uploads}/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+    datasheet = f"{uploads}/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    german_sheet = f"{uploads}/2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf"
+    goodwe = f"{uploads}/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf"
+    wrong_ref = "be488dc6630c-p2-model-c306bdd9d52ddb78"
+    manual_excerpt = "770ccafa080c-p38-model-6360f4a8d9a0e6ce"
+    other_ref = "0adfb3d5e6df-p94-model-22fab7a3876a695b"
+    question = (
+        "How many battery inputs does the SAJ H2-25K-T3 have, and what is the "
+        "maximum charge and discharge current per input?"
+    )
+    page_comparison = scenario == "page-comparison"
+    figure_id = 1279 if page_comparison else 1179
+    comparison = scenario == "comparison" or page_comparison
+    follow_up = scenario == "same-model-follow-up"
+    no_jev = scenario == "no-jev"
+    port_count = scenario == "port-count"
+    mixed_claim = scenario == "mixed-claim"
+    # Page context uses the translated ID while Woo also accepts its canonical ID.
+    page_context = {"type": "product", "product_id": 1279} if page_comparison else {}
+    if page_comparison:
+        question = "Compare this inverter's battery inputs and current with GW125/261-ESA-LCN-G10."
+    elif comparison:
+        question += " Compare the battery inputs with the GoodWe GW125/261-ESA-LCN-G10."
+    elif port_count:
+        question = "How many battery inputs does the SAJ H2-25K-T3 have?"
+    elif mixed_claim:
+        question += " Does the battery input also have reverse polarity protection?"
+    vocabulary = Vocabulary()
+    for model, pid in (("H2-25K-T3", 1179), ("GW125/261-ESA-LCN-G10", 6321)):
+        vocabulary.add(normalize(model), Entry("model", model, model, frozenset({pid})))
+    reading = Reading("documents_specs", 0.99, float(page_comparison), 0, 0, 0, 0)
+    jev = None if no_jev else SimpleNamespace(read=lambda *_args: reading)
+
+    def hit(ref: str, url: str, page: int, pid: int, text: str) -> dict[str, Any]:
+        document = next(doc for doc in raw["documents"] if doc["url"] == url)
+        return {
+            "chunk_id": ref,
+            "doc_url": url,
+            "page": page,
+            "document_id": document["document_id"],
+            "document_revision": document["document_revision"],
+            "evidence_product_id": pid,
+            "product_ids": [pid],
+            "text": text,
+        }
+
+    searches: list[list[int]] = []
+
+    def search(arguments: dict[str, Any] | None) -> dict[str, Any]:
+        assert arguments is not None
+        searches.append(arguments.get("product_ids", [1179, 6321]))
+        scope = [1179 if pid == 1279 else pid for pid in searches[-1]]
+        hits = []
+        if 1179 in scope:
+            hits.extend(
+                [
+                    hit(
+                        wrong_ref,
+                        german_sheet,
+                        2,
+                        1179,
+                        "| Max. Lade-/Entladestrom [A] | 50/50 |\n"
+                        "| Schutz vor Verpolung des Akku-Eingangs | Integriert |",
+                    ),
+                    hit(
+                        manual_excerpt,
+                        manual,
+                        38,
+                        1179,
+                        "| Model | H2-25K-T3 |\n| Battery Voltage Range [V] | 180 - 800 |",
+                    ),
+                ]
+            )
+        if 6321 in scope:
+            hits.append(
+                hit(other_ref, goodwe, 94, 6321, "GoodWe technical specifications")
+            )
+        return {"hits": hits, "ranking": "vector"}
+
+    def product(request: httpx.Request) -> dict[str, Any]:
+        if request.url.path == SEARCH:
+            return {"qualified": [{"product_id": 1179, "title": "SAJ H2-25K-T3"}]}
+        pid = int(request.url.params["input[product_id]"])
+        if pid == 6321:
+            return {"product_id": pid, "title": "GoodWe GW125/261-ESA-LCN-G10"}
+        figures = {
+            "n_battery_ports": {
+                "value": "2",
+                "unit": "",
+                "citation": {"url": datasheet, "page": 2},
+            },
+            **{
+                f"max_battery_{direction}_a": {
+                    "value": "50",
+                    "unit": "A",
+                    "citation": {"url": manual, "page": 38},
+                    "evidence_refs": ["doc-0:p38", "doc-0:p43", "doc-1:p2"],
+                    "qualifier": {
+                        "quantity_kind": "maximum",
+                        "scope": "per_battery_port",
+                        "direction": direction,
+                        "ports": ["BAT1", "BAT2"],
+                        "source_expression": "2*50 A",
+                    },
+                }
+                for direction in ("charge", "discharge")
+            },
+        }
+        return {
+            "product_id": pid,
+            "title": "SAJ H2-25K-T3",
+            "figures": figures,
+            "documents": [
+                document
+                for document in raw["documents"]
+                if (1179 if pid == 1279 else pid) in document["product_ids"]
+            ],
+        }
+
+    understander = Understander(None, jev, search=search)
+
+    def respond(messages: list[ModelMessage], _info: AgentInfo) -> ModelResponse:
+        returns = [
+            part
+            for message in messages
+            for part in message.parts
+            if isinstance(part, ToolReturnPart)
+        ]
+        lookups = [part for part in returns if part.tool_name == "linker_get_product"]
+        if not lookups and not port_count and (not comparison or page_comparison):
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "linker_get_product",
+                        {
+                            "arguments": {
+                                "product_id": figure_id
+                                if follow_up or no_jev or page_comparison
+                                else 6321
+                            },
+                        },
+                    )
+                ]
+            )
+        if len(lookups) == 1 and no_jev and len(returns) == 1:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "linker_get_product",
+                        {
+                            "arguments": {"product_id": 6321},
+                        },
+                    )
+                ]
+            )
+        if not (page_comparison or port_count) and not any(
+            part.tool_name == "linker_search_knowledge" for part in returns
+        ):
+            arguments = (
+                {"query": "Maximum battery charging current"}
+                if follow_up
+                else {
+                    "query": "GoodWe ESA GW125/261-ESA-LCN-G10 technical data",
+                    "product_ids": [6321],
+                }
+            )
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "linker_search_knowledge",
+                        {"arguments": arguments},
+                    )
+                ]
+            )
+        if follow_up or page_comparison:
+            product_result = returns[0].content
+            assert isinstance(product_result, dict)
+            assert product_result.get("product_id") == figure_id
+        search_result = returns[-1].content if returns else {}
+        assert isinstance(search_result, dict)
+        other_found = page_comparison or any(
+            item["chunk_id"] == other_ref for item in search_result.get("hits", [])
+        )
+        text = (
+            f"The SAJ inverter has {{fact:{figure_id}.n_battery_ports}} battery inputs."
+        )
+        if not port_count:
+            text += f"\n\n{{fact:p{figure_id}.max_battery_charge_a}}\n\n{{fact:{figure_id}.max_battery_discharge_a}}"
+        prompt = next(
+            part.content
+            for message in messages
+            for part in message.parts
+            if isinstance(part, UserPromptPart)
+        )
+        assert isinstance(prompt, str)
+        refs = [str(figure_id)]
+        if mixed_claim:
+            text += "\n\nThe battery input has reverse polarity protection."
+            refs.append(wrong_ref)
+        elif (
+            not (no_jev or port_count)
+            and "separate claim you actually make" not in prompt
+        ):
+            refs.append(wrong_ref)
+        blocks: list[dict[str, Any]] = (
+            []
+            if no_jev or port_count
+            else [{"type": "document", "ref": manual_excerpt}]
+        )
+        if other_found:
+            text += "\n\nThe GoodWe manual gives the other product's technical specifications."
+            refs.extend(["6321", other_ref])
+            blocks.append({"type": "cards", "product_ids": [figure_id, 6321]})
+        blocks.insert(0, {"type": "text", "text": text, "refs": refs})
+        return ModelResponse(
+            parts=[ToolCallPart("final_result", {"language": "en", "blocks": blocks})]
+        )
+
+    raw = manifest(1179)
+    raw["products"].extend(manifest(6321)["products"] + manifest(1181)["products"])
+    raw["documents"] = [
+        {
+            "document_id": f"doc-{index}",
+            "document_revision": f"revision-{index}",
+            "blob_sha256": "a" * 64,
+            "url": url,
+            "product_ids": associated_ids,
+        }
+        for index, (url, associated_ids) in enumerate(
+            [
+                (manual, [1179, 1181]),
+                (datasheet, [1179, 1181]),
+                (german_sheet, [1179]),
+                (goodwe, [6321]),
+            ]
+        )
+    ]
+    log = TurnLog(tmp_path / "turns.sqlite")
+    with clients(raw, product) as (client, authority, requests):
+        for attribute in ("prepare", "generate"):
+            monkeypatch.delattr(service.app.state, attribute, raising=False)
+        monkeypatch.setattr(service, "_client", client)
+        monkeypatch.setattr(service, "_log", log)
+        monkeypatch.setattr(service.app.state, "publication", authority, raising=False)
+        monkeypatch.setattr(
+            service.app.state, "commerce", lambda _ids: (TurnFacts(), []), raising=False
+        )
+        monkeypatch.setattr(service, "understander", lambda: understander)
+        monkeypatch.setattr(
+            service,
+            "store_vocabulary",
+            lambda: SimpleNamespace(get=lambda _permission: vocabulary),
+        )
+        monkeypatch.setattr(service, "page_reader", lambda: SimpleNamespace(read=None))
+
+        def generate_with_model(
+            tools: Abilities, **kwargs: Any
+        ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
+            generate = make_generate(
+                tools, model=FunctionModel(respond), search=search, **kwargs
+            )
+
+            def run_model(
+                body: TurnRequest, retry: str | None
+            ) -> tuple[TurnOutput, TurnFacts]:
+                with asyncio.Runner() as runner:
+                    runner.get_loop()
+                    return generate(body, retry)
+
+            return run_model
+
+        monkeypatch.setattr(service, "make_generate", generate_with_model)
+        monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
+        response = TestClient(service.app, headers=SHELL).post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "turn-825",
+                "messages": [{"role": "user", "content": question}],
+                "page_context": page_context,
+            },
+        )
+    log.close()
+
+    assert response.status_code == 200, response.text
+    blocks = [
+        json.loads(event.split("data: ", 1)[1])
+        for event in response.text.split("\n\n")
+        if event.startswith("event: block\n")
+    ]
+    urls = {block["url"] for block in blocks if block["type"] == "document"}
+    text = next(block["text"] for block in blocks if block["type"] == "text")
+    assert "2 battery inputs" in text, response.text
+    if port_count:
+        assert urls == {f"{datasheet}#page=2"}
+        return
+    subject = " for SAJ H2-25K-T3" if comparison else ""
+    assert f"The maximum charge current{subject} is 50 A per battery input." in text
+    assert f"The maximum discharge current{subject} is 50 A per battery input." in text
+    if comparison:
+        assert set(searches[0]) == ({1279, 6321} if page_comparison else {1179, 6321})
+        assert searches[1:] == ([] if page_comparison else [[6321]])
+        assert f"{goodwe}#page=94" in urls
+        assert any(block.get("product_ids") == [figure_id, 6321] for block in blocks)
+    else:
+        assert all(6321 not in block.get("product_ids", []) for block in blocks)
+        assert f"{goodwe}#page=94" not in urls
+        assert "GoodWe" not in text
+        assert searches == (
+            [[1179], [1179]] if follow_up else ([] if no_jev else [[1179]])
+        )
+        product_requests = [
+            request.url.params["input[product_id]"]
+            for request in requests
+            if request.url.path.endswith("get-product/run")
+        ]
+        assert product_requests == (["1179", "1179"] if follow_up else ["1179"])
+    # Both current placeholders use Woo's reviewed page 38 citation. The only
+    # retrieved excerpt on that page lacks the 2*50 A row and is not its source.
+    current_links = [
+        block for block in blocks if block.get("url") == f"{manual}#page=38"
+    ]
+    assert [block["ref"] for block in current_links] == [
+        f"p{figure_id}.max_battery_charge_a.source"
+    ]
+    assert current_links[0]["evidence_product_id"] == 1179
+    assert current_links[0]["document_id"] == "doc-0"
+    assert current_links[0]["document_revision"] == "revision-0"
+    assert all(block.get("ref") != manual_excerpt for block in blocks)
+    assert len(current_links) == 1 and current_links[0]["label"].endswith("pp. 38, 43")
+    assert f"{manual}#page=43" not in urls
+    assert f"{datasheet}#page=2" in urls
+    assert (f"{german_sheet}#page=2" in urls) == mixed_claim
+    if mixed_claim:
+        assert "The battery input has reverse polarity protection." in text

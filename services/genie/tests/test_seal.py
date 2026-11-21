@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Literal
 
-from baseline.grade import Turn, answer_text, check, untraceable_numbers
+from baseline.grade import Turn, answer_text, check, clauses, untraceable_numbers
 
 from linker_genie.cycle import run
 from linker_genie.facts import Fact, Qualification, TurnFacts, collect, merge
@@ -21,7 +21,6 @@ from linker_genie.ground import (
     blob_has_figure,
     cites_outside_turn,
     drop_bare_numbers,
-    rebind_figures_past_decimal,
     strip_detached_code_tails,
     strip_unlicensed_numbers,
 )
@@ -1219,7 +1218,7 @@ def test_a_series_digit_is_stripped_before_the_question_can_keep_it() -> None:
     assert result.attempts == 1
     text = _text(result.output)
     assert "2" not in text.split()
-    assert "10" not in text
+    assert "10 kW" in text
     assert any(block.type == "cards" for block in result.output.blocks)
 
 
@@ -1422,33 +1421,33 @@ def test_a_figure_fact_does_not_license_a_detached_grid_code() -> None:
     assert not any("4105" in item for item in _grade("b25-en", sealed))
 
 
-def test_a_figure_after_a_decimal_stays_with_the_model_on_that_line() -> None:
-    line = "- **H2-30K-T3-DE** — AC power 29.999 kW, PV input 45 kW"
-    rebound = rebind_figures_past_decimal(
-        TurnOutput(language="en", blocks=[TextBlock(text=line)])
-    )
-    text = _text(rebound)
-    assert "29.999 kW" in text
-    assert "H2-30K-T3-DE PV input 45 kW" in text
-    untouched = "- **H2-30K-T3-DE** — AC power 29.999 kW"
-    assert (
-        _text(
-            rebind_figures_past_decimal(
-                TurnOutput(language="en", blocks=[TextBlock(text=untouched)])
-            )
+def test_sentences_and_decimal_marks_do_not_rename_a_model() -> None:
+    language: Literal["en", "de"]
+    for language, model_line, next_sentence in (
+        (
+            "en",
+            "The H2-30K-T3-DE has 8.5 kW and a 45 kW PV input.",
+            "The total is 45 kW.",
+        ),
+        (
+            "de",
+            "Der H2-30K-T3-DE hat 8,5 kW und einen PV-Eingang von 45 kW.",
+            "Insgesamt sind es 45 kW.",
+        ),
+    ):
+        text = f"{model_line} {next_sentence}"
+        sealed = seal(
+            TurnOutput(language=language, blocks=[TextBlock(text=text)]),
+            TurnFacts(),
+            Route("documents"),
+            "What does the datasheet say?",
+            "other",
         )
-        == untouched
-    )
-    ranged = "The voltage is 702.5 V to 936 V."
-    assert (
-        _text(
-            rebind_figures_past_decimal(
-                TurnOutput(language="en", blocks=[TextBlock(text=ranged)])
-            )
-        )
-        == ranged
-    )
+        assert _text(sealed) == text
+        assert clauses(text) == [model_line[:-1], next_sentence[:-1]]
 
+
+def test_a_figure_after_a_decimal_remains_attributed_in_quality_grading() -> None:
     output = TurnOutput(
         language="en",
         blocks=[

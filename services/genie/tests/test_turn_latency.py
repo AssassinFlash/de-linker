@@ -2,7 +2,9 @@
 
 import re
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier
 from typing import Any
 
 import pytest
@@ -123,6 +125,43 @@ def test_a_start_note_left_by_an_unfinished_turn_is_counted(
     assert turn_latency.main([str(tmp_path / "turns.sqlite")]) == 0
     out = capsys.readouterr().out
     assert _counts(out) == {"completed": 1, "incomplete": 0, "unfinished": 1}
+
+
+def test_parallel_turns_record_and_close_their_own_starts(tmp_path: Path) -> None:
+    log = TurnLog(tmp_path / "turns.sqlite")
+    workers = 12
+    turns = 24
+    ready = Barrier(workers)
+
+    def complete(worker: int) -> list[tuple[int, str]]:
+        ready.wait()
+        finished = []
+        for turn in range(turns):
+            conversation = f"{worker}:{turn}"
+            start = log.start(conversation, "en")
+            turn_id = log.record(conversation_id=conversation, **COMMON)
+            log.finish(start)
+            log.set_timing(turn_id, {"total": 1.0})
+            finished.append((turn_id, conversation))
+        return finished
+
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            finished = [
+                entry for batch in pool.map(complete, range(workers)) for entry in batch
+            ]
+        rows = (
+            _db(log)
+            .execute("SELECT id, conversation_id, timing FROM turns ORDER BY id")
+            .fetchall()
+        )
+        assert [(turn_id, conversation) for turn_id, conversation, _ in rows] == sorted(
+            finished
+        )
+        assert all(timing == '{"total": 1.0}' for _, _, timing in rows)
+        assert _db(log).execute("SELECT count(*) FROM turn_starts").fetchone() == (0,)
+    finally:
+        log.close()
 
 
 def test_the_filters_slice_one_log(

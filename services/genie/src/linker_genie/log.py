@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 from linker_genie.failure import failure_text
@@ -101,10 +102,9 @@ class TurnLog:
     def __init__(self, path: Path) -> None:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
-        # The service's sync endpoints run in uvicorn's threadpool, so one
-        # request can log from a different thread than the one that opened
-        # the connection; SQLite must allow that (writes stay serialized by
-        # the connection's own lock).
+        # Sync endpoints share this connection across worker threads. Serialize
+        # each statement, its cursor result and its commit as one operation.
+        self._lock = Lock()
         self._db = sqlite3.connect(path, check_same_thread=False)
         self._db.execute(SCHEMA)
         self._db.execute(STARTS_SCHEMA)
@@ -116,7 +116,8 @@ class TurnLog:
         self._db.commit()
 
     def close(self) -> None:
-        self._db.close()
+        with self._lock:
+            self._db.close()
 
     def record(
         self,
@@ -136,8 +137,7 @@ class TurnLog:
         contact: str | None = None,
         timing: dict[str, float] | None = None,
     ) -> int:
-        cursor = self._db.execute(
-            """
+        sql = """
             INSERT INTO turns (
                 id, conversation_id, locale, grounded, failures, fallback,
                 provider, model, tool_calls, output, question, page,
@@ -146,62 +146,63 @@ class TurnLog:
                 (SELECT MAX(COALESCE((SELECT MAX(id) FROM turns), 0),
                     (SELECT last_id FROM turn_sequence WHERE id = 1)) + 1),
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                conversation_id,
-                locale,
-                int(grounded),
-                json.dumps(list(failures)),
-                int(fallback),
-                provider,
-                model,
-                json.dumps(tool_calls),
-                json.dumps(output),
-                question,
-                json.dumps(page or {}),
-                json.dumps(understanding or {}, ensure_ascii=False),
-                int(approved),
-                contact,
-                json.dumps(timing) if timing else None,
-            ),
+            """
+        values = (
+            conversation_id,
+            locale,
+            int(grounded),
+            json.dumps(list(failures)),
+            int(fallback),
+            provider,
+            model,
+            json.dumps(tool_calls),
+            json.dumps(output),
+            question,
+            json.dumps(page or {}),
+            json.dumps(understanding or {}, ensure_ascii=False),
+            int(approved),
+            contact,
+            json.dumps(timing) if timing else None,
         )
-        self._db.commit()
-        return int(cursor.lastrowid or 0)
+        with self._lock, self._db:
+            cursor = self._db.execute(sql, values)
+            return int(cursor.lastrowid or 0)
 
     def set_timing(self, turn_id: int, timing: dict[str, float]) -> None:
         """Complete a turn's timing record when its stream ends (#336): the phases
         were written with the row, the final `total` and `first_event` exist only
         after the customer's stream is done. A passive second write of the row."""
-        self._db.execute(
-            "UPDATE turns SET timing = ? WHERE id = ?",
-            (json.dumps(timing), turn_id),
-        )
-        self._db.commit()
+        with self._lock, self._db:
+            self._db.execute(
+                "UPDATE turns SET timing = ? WHERE id = ?",
+                (json.dumps(timing), turn_id),
+            )
 
     def start(self, conversation_id: str, locale: str) -> int:
         """Note that a turn has begun, before any wait; `finish` closes the note
         when the turn's row lands. A note left behind is an unfinished turn
         (turn_starts, #336)."""
-        cursor = self._db.execute(
-            "INSERT INTO turn_starts (conversation_id, locale) VALUES (?, ?)",
-            (conversation_id, locale),
-        )
-        self._db.commit()
-        return int(cursor.lastrowid or 0)
+        with self._lock, self._db:
+            cursor = self._db.execute(
+                "INSERT INTO turn_starts (conversation_id, locale) VALUES (?, ?)",
+                (conversation_id, locale),
+            )
+            return int(cursor.lastrowid or 0)
 
     def finish(self, token: int) -> None:
         """The turn's row landed: close its start note. A note the service died
         before closing stays for ops/turn_latency.py to count (#336)."""
-        self._db.execute("DELETE FROM turn_starts WHERE token = ?", (token,))
-        self._db.commit()
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM turn_starts WHERE token = ?", (token,))
 
     def offers(self, conversation_id: str, limit: int) -> list[bool]:
         """Whether each of the conversation's last `limit` turns carried the contact
         offer, newest first (contact.decide: never twice in a row, once a question)."""
-        rows = self._db.execute(
-            "SELECT contact FROM turns WHERE conversation_id = ? ORDER BY id DESC LIMIT ?",
-            (conversation_id, max(0, limit)),
-        ).fetchall()
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT contact FROM turns WHERE conversation_id = ? ORDER BY id DESC LIMIT ?",
+                (conversation_id, max(0, limit)),
+            ).fetchall()
         return [row[0] is not None for row in rows]
 
     def forget(self, conversation_id: str) -> int:
@@ -215,6 +216,10 @@ class TurnLog:
         arguments and result the same way. The rest of the turn stays for the quality
         check. Returns how many turns changed.
         """
+        with self._lock, self._db:
+            return self._forget(conversation_id)
+
+    def _forget(self, conversation_id: str) -> int:
         rows = self._db.execute(
             "SELECT id, tool_calls, understanding, output FROM turns "
             "WHERE conversation_id = ?",
@@ -315,13 +320,12 @@ class TurnLog:
                     ),
                 )
                 changed += 1
-        self._db.commit()
         return changed
 
     def vote(self, turn_id: int, value: int) -> bool:
         """Record a vote; False when the turn id is unknown."""
-        cursor = self._db.execute(
-            "UPDATE turns SET vote = ? WHERE id = ?", (value, turn_id)
-        )
-        self._db.commit()
-        return cursor.rowcount > 0
+        with self._lock, self._db:
+            cursor = self._db.execute(
+                "UPDATE turns SET vote = ? WHERE id = ?", (value, turn_id)
+            )
+            return cursor.rowcount > 0

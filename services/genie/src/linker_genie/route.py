@@ -331,6 +331,7 @@ _NOT_SEARCHED_HINT = (
 )
 
 RouteName = Literal[
+    "card_selection",
     "nameplate",
     "parts",
     "products",
@@ -970,14 +971,36 @@ def _plan_turn(
                 reasons=tuple(reasons),
             )
     if intent == "compare" and len(subject.ids) >= 2:
+        ids = subject.ids[:4]
+        compare = Call(
+            "linker/compare-products", {"product_ids": list(ids), "lang": lang}
+        )
+        if len(ids) == 2 and re.search(
+            r"\b(?:battery|charg(?:e|ing)|discharg(?:e|ing))\b[^.?!]*\bcurrents?\b"
+            r"|\b(?:batterie(?:lade|entlade)?|lade|entlade)str(?:om|öme)\b",
+            message,
+            re.I,
+        ):
+            return Route(
+                "compare",
+                (
+                    compare,
+                    *(
+                        Call("linker/get-product", {"product_id": pid, "lang": lang})
+                        for pid in ids
+                    ),
+                ),
+                no_handoff=True,
+                hint=(
+                    "Answer with a compare block. Use the fetched Woo per-input current "
+                    "facts for qualified charge or discharge limits, each fact alone on a line. "
+                    "If other figures need sources, search the hosted documents for both models in one call."
+                ),
+                reasons=tuple(reasons),
+            )
         return Route(
             "compare",
-            (
-                Call(
-                    "linker/compare-products",
-                    {"product_ids": list(subject.ids[:4]), "lang": lang},
-                ),
-            ),
+            (compare,),
             no_handoff=True,
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),

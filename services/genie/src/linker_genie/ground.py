@@ -326,6 +326,7 @@ def check(
     failures.extend(_not_released_answer_shape(output, facts))
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
+    failures.extend(_qualified_figure_placement(output, facts))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
@@ -1109,108 +1110,6 @@ def _strip_code_tail_text(text: str, bindings: dict[float, set[str]]) -> str:
     return result
 
 
-# A decimal point is a clause break for the acceptance check, the same way a
-# full stop is. `29.999` therefore ends the clause that names the model, and a
-# figure written after it is not tied to that model. The code already on the
-# line is repeated after the decimal. No new sentence.
-_HYPHEN_CODE = re.compile(
-    r"(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+)(?![A-Za-z0-9])"
-)
-_UNIT_AFTER = re.compile(r"[ \t]*(?:kWh|kWp|kW|mm|%)\b", re.IGNORECASE)
-_LATER_FIGURE = re.compile(
-    r"(?<![A-Za-z0-9])\d+(?:[.,]\d+)*"
-    r"(?=(?:(?i:kwh|kwp|kw|mm|%))(?![A-Za-z0-9])|(?![A-Za-z0-9]))"
-)
-
-
-def _digit_code(token: str) -> bool:
-    return any(character.isdigit() for character in token)
-
-
-def _codes_in(text: str) -> list[str]:
-    return [
-        match.group(1)
-        for match in _HYPHEN_CODE.finditer(text)
-        if _digit_code(match.group(1))
-    ]
-
-
-def _rebind_line(line: str) -> str:
-    """Repeat the line's model code in a clause a decimal point has split off."""
-    pieces = re.split(r"([.!?;])", line)
-    rebuilt: list[str] = []
-    seen: str | None = None
-    for piece in pieces:
-        if piece in ".!?;":
-            rebuilt.append(piece)
-            continue
-        codes = _codes_in(piece)
-        if codes:
-            seen = codes[-1]
-            rebuilt.append(piece)
-            continue
-        if seen is None:
-            rebuilt.append(piece)
-            continue
-        scan_from = 0
-        if rebuilt and rebuilt[-1] == ".":
-            fraction = re.match(r"\d+", piece)
-            if fraction is not None:
-                scan_from = fraction.end()
-        if _LATER_FIGURE.search(piece, scan_from) is None:
-            rebuilt.append(piece)
-            continue
-        insert_at = scan_from
-        unit = _UNIT_AFTER.match(piece, insert_at)
-        if unit is not None:
-            insert_at = unit.end()
-        comma = re.match(r"[ \t]*,[ \t]*", piece[insert_at:])
-        if comma is not None:
-            insert_at += comma.end()
-        else:
-            lead = re.match(r"[ \t]*", piece[insert_at:])
-            insert_at += lead.end() if lead is not None else 0
-        piece = f"{piece[:insert_at]}{seen} {piece[insert_at:]}"
-        rebuilt.append(piece)
-    return "".join(rebuilt)
-
-
-def _rebind_text(text: str) -> str:
-    return "\n".join(_rebind_line(line) for line in text.split("\n"))
-
-
-def rebind_figures_past_decimal(output: TurnOutput) -> TurnOutput:
-    """Keep a figure after a decimal in the clause of the model named before it.
-
-    The acceptance check splits a clause on `.`, so `29.999` hides the model
-    from a figure written after it. The model code already on that line is
-    repeated after the decimal. A line with no later figure is left as written.
-    This is not a new sentence.
-    """
-    blocks: list[Block] = []
-    changed = False
-    for block in output.blocks:
-        if isinstance(block, TextBlock):
-            text = _rebind_text(block.text)
-            if text != block.text:
-                changed = True
-                blocks.append(block.model_copy(update={"text": text}))
-            else:
-                blocks.append(block)
-        elif isinstance(block, HandoffBlock):
-            summary = _rebind_text(block.summary)
-            if summary != block.summary:
-                changed = True
-                blocks.append(block.model_copy(update={"summary": summary}))
-            else:
-                blocks.append(block)
-        else:
-            blocks.append(block)
-    if not changed:
-        return output
-    return output.model_copy(update={"blocks": blocks})
-
-
 def strip_detached_code_tails(output: TurnOutput, blob: str) -> TurnOutput:
     """Drop a code's number unless the answer keeps that code immediately before it.
 
@@ -1318,6 +1217,111 @@ def _droppable_tokens(text: str) -> list[str]:
                 continue
             tokens.append(token.group())
     return tokens
+
+
+# A second scope assertion can contradict the sourced sentence even in another
+# paragraph or block. Other facts about the ports (count, voltage, protection)
+# can still be answered alongside it.
+_COMBINED_INPUTS = re.compile(
+    r"\b(?:shared|split|divided|total|combined)\b[^.!?\n]*\b(?:ports?|inputs?)\b"
+    r"|\b(?:both|all) (?:battery )?(?:inputs|ports)\b[^.!?\n]*\b(?:share|combined|together)\b"
+    r"|\b(?:beide[nr]?|alle[nr]?) (?:batterie)?eingänge[n]?\b[^.!?\n]*\b(?:zusammen|gemeinsam|geteilt)\b"
+    r"|\b(?:geteilt|verteilt|insgesamt|gemeinsam)\b[^.!?\n]*\b(?:batterie)?eingänge[n]?\b",
+    re.I,
+)
+
+
+def _qualified_figure_placement(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """The service writes the entire claim for a qualified input current."""
+    failures = []
+    qualified: dict[int, list[Fact]] = {}
+    for candidate in facts.facts.values():
+        if candidate.per_input_current_direction is not None:
+            pid = int(candidate.id.split(".", 1)[0].removeprefix("p"))
+            qualified.setdefault(pid, []).append(candidate)
+    has_qualified_current = False
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            lines = block.text.splitlines()
+        elif isinstance(block, HandoffBlock):
+            lines = [block.summary]
+        elif isinstance(block, AskBlock):
+            lines = block.options
+        else:
+            continue
+        for line in lines:
+            for fact_id in leftover_placeholders(line):
+                fact = _fact_known(facts, fact_id)
+                if fact is None:
+                    continue
+                if fact.per_input_current_direction is None:
+                    chunk = chunk_of(fact.id)
+                    owners = facts.knowledge_products.get(chunk or "", ())
+                    if len(owners) != 1 or owners[0] not in qualified:
+                        continue
+                    original = facts.facts.get(f"{chunk}.text")
+                    if original is None:
+                        continue
+                    token = f"[{fact.id.rsplit('.', 1)[-1]}="
+                    for row in original.value.splitlines():
+                        label, _, cells = row.lstrip("| ").partition("|")
+                        if token not in cells or not re.search(
+                            r"\b(?:(?:charg(?:e|ing)|discharg(?:e|ing)).*current|(?:ent)?ladestrom)\b",
+                            label,
+                            re.I,
+                        ):
+                            continue
+                        placeholders = " and ".join(
+                            f"{{fact:{candidate.id}}}"
+                            for candidate in qualified[owners[0]]
+                        )
+                        failures.append(
+                            f"Use the verified per-input current facts {placeholders}, "
+                            "each alone on a text line, instead of the indexed battery current digits."
+                        )
+                        break
+                    continue
+                has_qualified_current = True
+                if (
+                    not isinstance(block, TextBlock)
+                    or line.strip() != f"{{fact:{fact_id}}}"
+                ):
+                    failures.append(
+                        f"Place {{fact:{fact_id}}} alone on a text line. "
+                        "The service writes the complete per-input current sentence."
+                    )
+    if has_qualified_current:
+        for text in _model_texts(output):
+            for prose in re.split(r"[,;\n]|[.!?](?=\s|$)", PLACEHOLDER.sub("", text)):
+                if not re.search(
+                    r"\b(?:limit|current|grenzwert|(?:lade|entlade)?strom)\b"
+                    r"|^\s*(?:it|er|dieser|dieses)\b|\bshare it\b",
+                    prose,
+                    re.I,
+                ):
+                    continue
+                # Each assertion has its own polarity, even when two of them
+                # end at the same “both inputs”.
+                start = 0
+                while scope := _COMBINED_INPUTS.search(prose, start):
+                    if not (
+                        re.search(
+                            r"\b(?:not\s+(?:use\s+)?(?:a\s+)?|nicht\s+(?:für\s+)?|kein(?:e[nmrs]?)?\s+)$",
+                            prose[: scope.start()],
+                            re.I,
+                        )
+                        or re.search(
+                            r"\b(?:not|nicht)\s+(?:share|gemeinsam|zusammen|geteil)",
+                            scope.group(),
+                            re.I,
+                        )
+                    ):
+                        failures.append(
+                            "Keep the service-written per-input limit without a second scope assertion."
+                        )
+                        return failures
+                    start = scope.start() + 1
+    return failures
 
 
 def _model_texts(output: TurnOutput) -> list[str]:
