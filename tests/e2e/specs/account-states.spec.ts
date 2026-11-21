@@ -64,7 +64,7 @@ interface Language {
 	statusReceived: string;
 	productCount: string;
 	invalidOrder: string;
-	newProject: string;
+	compareProjects: string;
 }
 
 const LANGUAGES: Language[] = [
@@ -94,7 +94,7 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Inquiry received',
 		productCount: '1 product',
 		invalidOrder: 'Invalid order.',
-		newProject: 'New project',
+		compareProjects: 'Compare project options',
 	},
 	{
 		lang: 'de',
@@ -123,7 +123,7 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Anfrage eingegangen',
 		productCount: '1 Produkt',
 		invalidOrder: 'Ungültige Bestellung.',
-		newProject: 'Neues Projekt',
+		compareProjects: 'Projektoptionen vergleichen',
 	},
 ];
 
@@ -360,6 +360,89 @@ for (const language of LANGUAGES) {
 	for (const width of [1440, 390]) {
 		const tag = `${language.lang}-${width}`;
 
+		test(`${tag}: the account keeps inquiry access while product prices follow its approval`, async ({
+			page,
+			context,
+		}) => {
+			const customer = makeCustomer('pending', `price-${tag}`);
+			const reason =
+				language.lang === 'de'
+					? 'Bitte prüfen Sie Ihre Firmendaten.'
+					: 'Please check your company details.';
+			try {
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				await seedConsentCookies(context);
+				await signIn(page, customer, language.account);
+				const product = wp([
+					'eval',
+					`echo get_permalink(pll_get_post(${PRODUCT}, '${language.lang}'));`,
+				]).trim();
+				for (const state of ['pending', 'approved', 'restricted']) {
+					if (state !== 'pending') {
+						wp([
+							'user',
+							'meta',
+							'update',
+							String(customer.id),
+							'linker_approval_status',
+							state,
+						]);
+					}
+					if (state === 'restricted') {
+						wp([
+							'user',
+							'meta',
+							'update',
+							String(customer.id),
+							'linker_approval_reason',
+							reason,
+						]);
+					}
+					await page.goto(product);
+					const price = page.locator(
+						width === 390
+							? '.pdp-mobile-action .pdp-price'
+							: '.pdp-purchase .pdp-price'
+					);
+					await expect(price).toBeVisible();
+					const amount = price.locator('.woocommerce-Price-amount');
+					if (state === 'approved') {
+						await expect(amount.first()).toBeVisible();
+					} else {
+						await expect(amount).toHaveCount(0);
+						await expect(price).toContainText(/\S/);
+					}
+					await page.goto(base() + language.account);
+					const status = page.locator('.linker-account-status');
+					if (state === 'restricted')
+						await expect(status).toContainText(reason);
+					if (state === 'pending')
+						await expect(status).toContainText(
+							language.pendingTitle
+						);
+					await expect(
+						page.locator('.linker-account-mast a.is-primary')
+					).toBeVisible();
+					await shot(page, `${tag}-${state}-workspace`);
+					await page
+						.locator('.linker-account-mast a.is-primary')
+						.click();
+					await expect(
+						page.locator('form.linker-inquiry-form')
+					).toBeVisible();
+					if (state === 'restricted')
+						await expect(
+							page.locator('.linker-inquiry-restriction')
+						).toContainText(reason);
+				}
+			} finally {
+				remove([customer]);
+			}
+		});
+
 		test(`${tag}: the empty account endpoints read their designed empty states`, async ({
 			browser,
 		}) => {
@@ -546,7 +629,7 @@ for (const language of LANGUAGES) {
 				// private index - never from a second store.
 				await page.goto(base() + language.configuratorPath);
 				const creation = page.getByRole('form', {
-					name: language.newProject,
+					name: language.compareProjects,
 				});
 				await expect(creation).toBeVisible();
 
@@ -622,6 +705,26 @@ for (const language of LANGUAGES) {
 				await expect(found).toBeVisible();
 				await shot(page, `${language.lang}-${width}-solutions-search`);
 				await found.click();
+				await expect(page).toHaveURL(
+					(url) => url.searchParams.get('project') === projectId
+				);
+				await expect(
+					page.getByRole('heading', {
+						level: 1,
+						name: title,
+						exact: true,
+					})
+				).toBeVisible();
+
+				await page.goto(base() + language.solutions);
+				const accountProject = page.getByRole('link', {
+					name: new RegExp(title),
+				});
+				await expect(accountProject).toHaveAttribute(
+					'href',
+					new RegExp(`project=${projectId}#sc-project$`)
+				);
+				await accountProject.click();
 				await expect(page).toHaveURL(
 					(url) =>
 						url.searchParams.get('project') === projectId &&
