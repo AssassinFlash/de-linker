@@ -20,6 +20,10 @@ import {
 	hasReportWiring,
 	sharedDcReportRun,
 } from "../../data/configuratorReportSources.ts";
+import {
+	measurePlannerChrome,
+	revealHashTarget,
+} from "../../data/measurePlannerChrome.ts";
 import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
@@ -231,6 +235,15 @@ export default function ProjectWorkbench({
 		return () => window.removeEventListener("popstate", restore);
 	}, [guided, project.id]);
 	const main = useRef<HTMLElement>(null);
+	const energyReady = Boolean(draft && step === "energy");
+	useEffect(() => {
+		if (!energyReady || location.hash !== "#sc-energy") return;
+		const root = main.current?.closest<HTMLElement>("[data-linker-planner]");
+		if (root) {
+			measurePlannerChrome(root);
+			revealHashTarget(root);
+		}
+	}, [energyReady]);
 	const workbench = useRef<HTMLDivElement>(null);
 	const [assessmentPending, setAssessmentPending] = useState(false);
 	const [energyValid, setEnergyValid] = useState(true);
