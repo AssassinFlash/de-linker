@@ -784,10 +784,6 @@ msgstr "Prüfen Sie die Angaben und senden Sie die Anfrage an das Linker-Team."
 msgid "Check this value."
 msgstr "Prüfen Sie diesen Wert."
 
-#: build/genie.js build/hero.js
-msgid "Checking verification…"
-msgstr "Die Überprüfung läuft …"
-
 #: src/configurator/report/ReportView.tsx:52 build/configurator.js
 msgid "Choose a PNG or JPEG file."
 msgstr "Wählen Sie eine PNG- oder JPEG-Datei."
@@ -13575,19 +13571,7 @@ msgstr "Berichtssprache: Deutsch"
 msgid "Saved weather source"
 msgstr "Gespeicherte Wetterquelle"
 
-#: build/genie.js build/hero.js build/configurator.js
-msgid "Checking verification. No request has been sent in this attempt."
-msgstr "Die Prüfung läuft. Bei diesem Versuch wurde noch keine Anfrage gesendet."
-
-#: build/genie.js build/hero.js build/configurator.js
-msgid "No request has been sent in this attempt. Please complete the verification."
-msgstr "Bei diesem Versuch wurde noch keine Anfrage gesendet. Bitte schließen Sie die Prüfung ab."
-
-#: build/genie.js build/hero.js build/configurator.js
-msgid "Verification is being retried. No request has been sent in this attempt."
-msgstr "Die Prüfung wird wiederholt. Bei diesem Versuch wurde noch keine Anfrage gesendet."
-
-#: build/genie.js build/hero.js build/configurator.js
+#: build/genie.js build/hero.js
 msgid "Verification could not be completed. No request has been sent in this attempt. Please try again."
 msgstr "Die Prüfung konnte nicht abgeschlossen werden. Bei diesem Versuch wurde noch keine Anfrage gesendet. Bitte versuchen Sie es erneut."
 
@@ -13826,11 +13810,6 @@ msgstr "Diese Quellen dienen als Hintergrund. Sie belegen weder die für dieses 
 #: build/planner/assets/planner.js:1
 msgid "Evidence snapshot date"
 msgstr "Stand der Quellenprüfung"
-
-
-#: build/genie.js:1 build/hero.js:1
-msgid "Cancel verification"
-msgstr "Prüfung abbrechen"
 
 #: build/genie.js:1
 msgid "This source card belongs to an earlier response, not the current request."
