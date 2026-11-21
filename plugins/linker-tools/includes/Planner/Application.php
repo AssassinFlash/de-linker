@@ -117,7 +117,7 @@ final class Application {
 	/** Open the native translated Woo inquiry from the public configurator showcase. */
 	public function inquiry_entry(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Exact public view discriminator, never written or rendered.
-		if ( 'inquiry' !== ( $_GET['view'] ?? null ) || isset( $_GET['project'] ) || ! is_page() || ! function_exists( 'wc_get_checkout_url' ) ) {
+		if ( 'inquiry' !== ( $_GET['view'] ?? null ) || isset( $_GET['project'] ) || ! is_page() || ! function_exists( 'wc_get_checkout_url' ) || ! class_exists( PageUrls::class ) ) {
 			return;
 		}
 		if ( get_permalink( get_queried_object_id() ) === PageUrls::translated( 'solution-configurator' ) ) {

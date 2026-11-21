@@ -32,7 +32,7 @@ import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
-import { needsPhaseConfirmation } from "./configurator/HomepageDemand.tsx";
+import { needsPreliminaryComparison } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
@@ -342,7 +342,7 @@ export function Workspace({
 		project.data &&
 		route === "sc-system" &&
 		new URL(location.href).searchParams.get("guided") === "inquiry" &&
-		needsPhaseConfirmation(project.data.inputs),
+		needsPreliminaryComparison(project.data.inputs),
 	);
 	useEffect(() => {
 		if (startPreliminary) select(selected, "sc-preliminary-options");

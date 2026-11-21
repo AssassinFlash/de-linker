@@ -83,7 +83,7 @@ import {
 	PLANNER_NAVIGATION,
 	replacePlannerLocation,
 } from "../../data/plannerLocation.ts";
-import { needsPhaseConfirmation } from "./HomepageDemand.tsx";
+import { needsPreliminaryComparison } from "./HomepageDemand.tsx";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
@@ -662,7 +662,7 @@ export default function ProjectWorkbench({
 			step === "project" &&
 			comparePreliminary &&
 			!searchId &&
-			needsPhaseConfirmation(current.history.current),
+			needsPreliminaryComparison(current.history.current),
 		);
 		showStep(next);
 	}

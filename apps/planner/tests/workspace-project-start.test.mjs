@@ -1908,7 +1908,10 @@ for (const goal of ["self", "peak", "backup"])
 	test(`a retrofit with an unknown phase compares ${goal} inverter options and sends its reviewed project revision`, (t) =>
 		compareRetrofit(t, goal));
 
-async function compareRetrofit(t, goal) {
+test("incomplete backup requirements still open preliminary choices when grid phase is known", (t) =>
+	compareRetrofit(t, "backup", 3));
+
+async function compareRetrofit(t, goal, gridPhase = null) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { QueryClient, QueryClientProvider } =
@@ -1949,7 +1952,11 @@ async function compareRetrofit(t, goal) {
 					keep_inverter: true,
 				},
 			}),
-			equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 8 },
+			equipment_setup: {
+				...equipmentDraft({}),
+				pv_dc_kw: 8,
+				grid_phase: gridPhase,
+			},
 		},
 		goal,
 	);
@@ -2023,7 +2030,7 @@ async function compareRetrofit(t, goal) {
 			peak: "Reduce peak demand",
 			backup: "Backup supply",
 		}[goal],
-		"To confirm",
+		gridPhase ? "Three phase" : "To confirm",
 	])
 		assert.ok(facts.includes(value), value);
 	const keep = [...options().querySelectorAll("tr")].find((row) =>
@@ -2052,7 +2059,7 @@ async function compareRetrofit(t, goal) {
 	assert.equal(review.project_id, projectId);
 	assert.equal(review.report_run_id, undefined);
 	assert.deepEqual(project.inputs.brief, inputs.brief);
-	assert.equal(project.inputs.equipment_setup.grid_phase, null);
+	assert.equal(project.inputs.equipment_setup.grid_phase, gridPhase);
 	assert.equal(project.inputs.existing_system.keep_inverter, true);
 	assert.match(
 		document.querySelector(".sc-inquiry-overview").textContent,

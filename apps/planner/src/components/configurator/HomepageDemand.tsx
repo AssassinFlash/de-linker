@@ -29,12 +29,14 @@ function demands(inputs: JsonObject) {
 	return { equipment, backup, goal: energyGoal(inputs) };
 }
 
-export function needsPhaseConfirmation(inputs: JsonObject) {
+export function needsPreliminaryComparison(inputs: JsonObject) {
+	const { equipment, backup } = demands(inputs);
+	const demandReady =
+		!!inputs.brief && hasComparisonDemand(inputs, readBrief(inputs.brief));
+	if (backup && !demandReady) return true;
 	return (
-		demands(inputs).equipment.grid_phase === null &&
-		(!retainsUnverifiedInverter(inputs) ||
-			!inputs.brief ||
-			!hasComparisonDemand(inputs, readBrief(inputs.brief)))
+		equipment.grid_phase === null &&
+		!(retainsUnverifiedInverter(inputs) && demandReady)
 	);
 }
 
