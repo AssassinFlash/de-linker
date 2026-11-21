@@ -15,7 +15,6 @@ use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\StructuredMeta;
 use Linker\Commerce\Inquiry\Sender;
-use Linker\Commerce\Inquiry\SummaryEnvelope;
 use Linker\Commerce\Protection\BusinessCapacity;
 use Linker\Commerce\Protection\IntakeStore;
 use WC_Order;
@@ -67,31 +66,35 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		WC()->cart->empty_cart();
 	}
 
-	/** Schema drift fails this seam; actual pending metadata is measured three times. */
-	public function test_generated_summary_bound_tracks_real_schema_and_native_three_copy_serialization(): void {
-		$schema  = new \ReflectionClass( \Linker\Tools\Genie\InquirySummary::class );
-		$maximum = SummaryEnvelope::maximum();
-		self::assertSame( $schema->getConstant( 'MAX_SUMMARY' ), mb_strlen( $maximum['summary'] ) );
-		self::assertSame( $schema->getConstant( 'MAX_NOTE' ), mb_strlen( $maximum['note'] ) );
-		self::assertSame( $schema->getConstant( 'MAX_CONDITIONS' ), count( $maximum['conditions'] ) );
-		self::assertSame( $schema->getConstant( 'MAX_CONDITION' ), mb_strlen( $maximum['conditions'][0] ) );
-		self::assertSame( $schema->getConstant( 'MAX_QUANTITIES' ), count( $maximum['quantities'] ) );
-		foreach ( array( PHP_FLOAT_MAX, -PHP_FLOAT_MAX, PHP_FLOAT_MIN, -PHP_FLOAT_MIN, microtime( true ) ) as $value ) {
-			self::assertLessThanOrEqual( 24, strlen( (string) wp_json_encode( $value ) ) );
+	/** A multi-product inquiry covers the former 12-line and 40-product cutoffs. */
+	private static function project_summary(): array {
+		$quantities = array();
+		foreach ( range( 1, 42 ) as $id ) {
+			$quantities[] = array(
+				'product_id' => $id,
+				'quantity'   => 2 * $id,
+			);
 		}
-		$order = new WC_Order();
+		return array(
+			'summary'    => 'Equipment requested for the project.',
+			'quantities' => $quantities,
+			'conditions' => array(),
+			'note'       => '',
+			'source'     => 'model',
+		);
+	}
+
+	/** The native submission and customer record retain every confirmed quantity. */
+	public function test_all_summary_quantities_survive_native_order_storage(): void {
+		$summary = self::project_summary();
+		$order   = new WC_Order();
 		$order->set_billing_email( self::TESTER );
 		$order->set_customer_note( 'Keep this customer sentence.' );
 		Queue::prepare( $order );
-		$before   = BusinessCapacity::bytes( $order );
-		$headroom = SummaryEnvelope::additional_bytes( $order );
-		self::assertSame( $before, BusinessCapacity::bytes( $order ), 'Deep preview does not alter the actual draft.' );
-		self::assertSame( '', $order->get_meta( Sender::SUMMARY_META ) );
-		StructuredMeta::update( $order, Sender::SUMMARY_META, $maximum );
+		StructuredMeta::update( $order, Sender::SUMMARY_META, $summary );
 		Queue::refresh_summary( $order );
-		self::assertLessThanOrEqual( $before + $headroom, BusinessCapacity::bytes( $order ) );
-		self::assertSame( $maximum, Queue::data( $order )['snapshot']['submission']['summary'] );
-		self::assertSame( $maximum, $order->get_meta( \Linker\Commerce\Inquiry\Assessment\CustomerEvidence::META )['request']['summary'] );
+		self::assertSame( $summary, Queue::data( $order )['snapshot']['submission']['summary'] );
+		self::assertSame( $summary, $order->get_meta( \Linker\Commerce\Inquiry\Assessment\CustomerEvidence::META )['request']['summary'] );
 		self::assertSame( 'Keep this customer sentence.', $order->get_customer_note() );
 	}
 
@@ -128,7 +131,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 				self::assert_capacity_mutex_free();
 				$state = get_option( IntakeStore::OPTION );
 				self::assertSame( array(), $state['business'] );
-				return SummaryEnvelope::maximum();
+				return self::project_summary();
 			}
 		);
 		$order = ( new Sender() )->request( $this->details() );
@@ -140,7 +143,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		);
 		self::assertSame( 1, $calls );
 		self::assertSame( '', $order->get_meta( BusinessCapacity::KEY ) );
-		self::assertSame( SummaryEnvelope::maximum(), $order->get_meta( Sender::SUMMARY_META ) );
+		self::assertSame( self::project_summary(), $order->get_meta( Sender::SUMMARY_META ) );
 		$transport = 0;
 		$observer  = static function () use ( &$transport ): void {
 			++$transport;
@@ -165,7 +168,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 			static function () use ( &$calls ): array {
 				++$calls;
 				self::assert_capacity_mutex_free();
-				return SummaryEnvelope::maximum();
+				return self::project_summary();
 			}
 		);
 		$intent = wp_generate_uuid4();
@@ -189,7 +192,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		$retry = $send();
 		self::assertInstanceOf( WC_Order::class, $retry );
 		self::assertSame( $order->get_id(), $retry->get_id() );
-		self::assertSame( SummaryEnvelope::maximum(), $retry->get_meta( Sender::SUMMARY_META ) );
+		self::assertSame( self::project_summary(), $retry->get_meta( Sender::SUMMARY_META ) );
 		self::assertSame( 1, $calls );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
 		self::assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $before ) );
