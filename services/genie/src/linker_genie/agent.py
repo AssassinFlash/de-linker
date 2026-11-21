@@ -793,6 +793,14 @@ def _user_prompt(
         )
     if request.page_context.solution_id:
         lines.append(f"solution_id={request.page_context.solution_id}")
+    if prepared is not None and any(
+        count != 1 for count in prepared.card_quantities.values()
+    ):
+        lines.append(
+            "The customer specified a unit count or a range. Several units of one named model "
+            "need one product card. For alternative models the count applies to whichever model "
+            "the customer selects. Ask for the intended count when a range was given."
+        )
     if prepared is not None and prepared.route.hint:
         lines.append("Service routing: " + prepared.route.hint)
     if prepared is not None and prepared.results:

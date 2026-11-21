@@ -357,6 +357,14 @@ def card_quantities(
         if brands:
             brand = "|".join(re.escape(name) for name in brands)
             model = rf"(?:(?:{brand})\s+)?{model}"
+        nouns = {
+            re.escape(entry.words)
+            for entry in matches
+            if entry.kind == "category"
+            and entry.value == vocabulary.device_class.get(product_id)
+        }
+        if nouns:
+            model = rf"(?:(?:{'|'.join(sorted(nouns))})\s+)?{model}"
         for named in re.finditer(rf"(?<![\w-]){model}(?![\w-])", message, re.I):
             before = _CARD_COUNT_BEFORE.search(message[: named.start()])
             after = _CARD_COUNT_AFTER.match(message[named.end() :])
