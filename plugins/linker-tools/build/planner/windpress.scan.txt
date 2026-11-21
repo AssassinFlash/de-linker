@@ -240,6 +240,7 @@ sc-roof-editor
 sc-roof-editor-fields
 sc-roof-layout
 sc-roof-picker
+sc-roof-plan-entry
 sc-roof-preview
 sc-roof-props
 sc-roof-shape
