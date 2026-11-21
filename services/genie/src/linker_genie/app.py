@@ -656,9 +656,9 @@ def _answer(
     if prepared.route.name == "card_selection":
         ids = list(prepared.card_quantities)
         text = (
-            "Über die Produktkarte können Sie das Modell zum Lösungsentwurf hinzufügen oder in Ihrem Konto speichern."
+            "Über die Produktkarte können Sie das Modell zum Lösungsentwurf hinzufügen oder für später speichern."
             if language == "de"
-            else "Choose a model below to add to your solution draft or save to your account."
+            else "Use the product card to add the model to your solution draft or save it for later."
         )
         if not any(prepared.card_quantities.values()):
             if len(ids) > 1:
