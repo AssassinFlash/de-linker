@@ -480,11 +480,20 @@ def test_a_sku_a_spaced_code_a_category_and_a_brand_match(
     )
 
 
+@pytest.mark.parametrize(
+    "question",
+    [
+        "H2-10K-T3 datasheet",
+        "Show me the datasheet for the SAJ H2-10K-T3 in my parts list.",
+        "Zeigen Sie mir das Datenblatt des SAJ H2-10K-T3 aus meiner Stückliste.",
+    ],
+)
 def test_a_datasheet_question_after_a_settled_list_goes_to_the_model(
     vocabulary: Vocabulary,
+    question: str,
 ) -> None:
     text = "2x SAJ H2-10K-T3\n1 x GoodWe GW10K-ETA-G20"
-    messages = [_msg(text), _msg("Attached: x"), _msg("H2-10K-T3 datasheet")]
+    messages = [_msg(text), _msg("Attached: x"), _msg(question)]
     source = parts.Source("text", tuple(parts.parse_text(text)), since=0)
     assert parts.find(messages, [], [], vocabulary) is None
     # The service did not settle anything; the list itself is untouched.

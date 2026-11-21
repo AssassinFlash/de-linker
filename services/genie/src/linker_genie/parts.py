@@ -850,8 +850,12 @@ def _continues(
     latest = messages[-1].content if messages else ""
     if not latest.strip():
         return False
-    if _LIST_NOUNS.search(latest) and re.search(
-        r"\b(?:show|reopen|anzeigen|öffnen|zeig(?:en)?)\b", latest, re.I
+    listing = _LIST_NOUNS.search(latest)
+    if listing and re.search(
+        r"\b(?:show(?: me)?|reopen|zeig(?:en|e)?(?: Sie)?(?: mir)?|öffnen(?: Sie)?)\s+"
+        r"(?:(?:my|the|that|meine|unsere|die)\s+)?$",
+        latest[: listing.start()],
+        re.I,
     ):
         return True
     if _row_number(latest) is not None or skip(latest):
