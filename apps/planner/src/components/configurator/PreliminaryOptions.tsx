@@ -230,6 +230,7 @@ export function PreliminaryOptions({
 						</p>
 					</div>
 				</header>
+				{action && <div className="sc-direction-tools">{action}</div>}
 				<table
 					role="table"
 					aria-label={__("Compare system options", "linker-tools")}
@@ -280,7 +281,6 @@ export function PreliminaryOptions({
 						))}
 					</tbody>
 				</table>
-				{action && <footer className="sc-direction-tools">{action}</footer>}
 			</section>
 			{facts.length > 0 && (
 				<ProjectSummary

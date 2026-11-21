@@ -1107,7 +1107,7 @@
   .sc-configurator .sc-direction-details > span { display: none; }
   .sc-configurator .sc-direction-action .sc-button { white-space: nowrap; }
   .sc-configurator .sc-direction-action svg { width: 1rem; height: 1rem; }
-  .sc-configurator .sc-direction-tools { margin-top: var(--proto-space-5); }
+  .sc-configurator .sc-direction-tools { margin-block: var(--proto-space-3) var(--proto-space-5); }
   .sc-configurator .sc-preliminary-layout .sc-sidebar p { margin-block-start: 12px; color: var(--proto-neutral-600); }
   .sc-configurator .sc-direction-comparison h2:focus, .sc-configurator .sc-draft-transfer h2:focus { outline: none; }
   .sc-configurator .sc-direction-comparison .sc-button { color: var(--proto-teal-800); font-size: var(--proto-size-sm); }
