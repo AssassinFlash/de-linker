@@ -17,11 +17,9 @@ export async function resumePlannerProject(
 			exact: true,
 		})
 		.click();
-	const saved = workspace
-		.getByRole('listitem')
-		.filter({
-			has: page.getByRole('heading', { name: title, exact: true }),
-		});
+	const saved = workspace.getByRole('listitem').filter({
+		has: page.getByRole('heading', { name: title, exact: true }),
+	});
 	await saved
 		.getByRole('button', {
 			name: de ? 'Projekt öffnen' : 'Open project',
