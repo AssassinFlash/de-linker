@@ -54,8 +54,12 @@ def test_pair_preserves_the_existing_livecanvas_bytes_and_repeats_without_change
 
 
 @pytest.mark.parametrize("synced", [False, True])
+@pytest.mark.parametrize("interruption", [None, "commit_ack", "readback"])
 def test_publish_and_restore_use_the_same_native_page_pair(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, synced: bool
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    synced: bool,
+    interruption: str | None,
 ) -> None:
     import copy
     import json
@@ -84,19 +88,42 @@ def test_publish_and_restore_use_the_same_native_page_pair(
     calls = []
     backup = tmp_path / "homepages.json"
 
+    adopted_metadata = {"13": {"status": ["reviewed"]}}
+    interrupt = interruption
+
+    def read(*_: Any) -> dict[str, Any]:
+        nonlocal interrupt
+        if interrupt == "readback" and calls:
+            interrupt = None
+            raise ConnectionError("readback")
+        return copy.deepcopy(state)
+
     def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
-        assert json.loads(backup.read_text())["before"] == original
+        nonlocal interrupt
+        if payload["mode"] == "preview_page_adoption":
+            assert synced and not calls
+            return {"expected_metadata": adopted_metadata}
+        snapshot = json.loads(backup.read_text())
+        assert snapshot["before"] == original
+        assert snapshot.get("published_metadata", original["metadata"]) == (
+            adopted_metadata if synced else original["metadata"]
+        )
         assert payload["metadata_before"] == state["metadata"]
         calls.append(payload["mode"])
         for change in payload["changes"]:
             assert state["pages"][str(change["id"])] == change["before"]
             state["pages"][str(change["id"])] = change["after"]
-        state["metadata"] = payload.get(
-            "metadata_restore", {"13": {"status": ["reviewed"]}}
-        )
+        if payload["mode"] == "adopt":
+            assert payload["expected_metadata"] == adopted_metadata
+            state["metadata"] = adopted_metadata
+        else:
+            state["metadata"] = payload["metadata_restore"]
+        if interrupt == "commit_ack":
+            interrupt = None
+            raise ConnectionError("commit_ack")
         return {"expected_metadata": state["metadata"]}
 
-    monkeypatch.setattr(showcase.wp, "read", lambda *args: copy.deepcopy(state))
+    monkeypatch.setattr(showcase.wp, "read", read)
     monkeypatch.setattr(showcase.wp, "invoke", invoke)
     cli = ["homepage", "--en", "13", "--de", "6913", "--wp", "wp"]
     monkeypatch.setattr(sys, "argv", cli)
@@ -104,8 +131,14 @@ def test_publish_and_restore_use_the_same_native_page_pair(
     assert state == original and not backup.exists()
 
     monkeypatch.setattr(sys, "argv", cli + ["--remove", "--backup", str(backup)])
-    showcase.main()
-    showcase.main()
+    if interruption:
+        with pytest.raises(ConnectionError, match=interruption):
+            showcase.main()
+    else:
+        showcase.main()
+    # A lost commit acknowledgement may be followed immediately by rollback.
+    if interruption != "commit_ack":
+        showcase.main()
     assert calls == ["adopt" if synced else "restore"]
     published = copy.deepcopy(state)
     for name, id_ in (("en", "13"), ("de", "6913")):
@@ -118,7 +151,15 @@ def test_publish_and_restore_use_the_same_native_page_pair(
     state["pages"]["13"] += "<p>Subsequent edit</p>"
     with pytest.raises(ValueError, match="changed"):
         showcase.main()
+    state.update(copy.deepcopy(published))
+    state["metadata"]["13"]["status"] = ["later manual review"]
+    with pytest.raises(ValueError, match="changed"):
+        showcase.main()
+    monkeypatch.setattr(sys, "argv", cli + ["--remove", "--backup", str(backup)])
+    with pytest.raises(ValueError, match="changed"):
+        showcase.main()
     state.update(published)
+    monkeypatch.setattr(sys, "argv", cli + ["--restore", str(backup)])
     showcase.main()
     showcase.main()
     assert state == original

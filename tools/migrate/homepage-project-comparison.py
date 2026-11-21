@@ -61,34 +61,51 @@ def planned(pages: dict[str, str], ids: tuple[int, int]) -> dict[str, str]:
     }
 
 
+def changes(
+    ids: tuple[int, int], before: dict[str, str], after: dict[str, str]
+) -> list[dict[str, Any]]:
+    return [
+        {"id": post, "before": before[str(post)], "after": after[str(post)]}
+        for post in ids
+    ]
+
+
 def write(
     prefix: str,
     ids: tuple[int, int],
     before: dict[str, Any],
     after: dict[str, str],
-    restore: dict[str, Any] | None,
+    metadata: dict[str, Any],
+    *,
+    adopt: bool = False,
 ) -> dict[str, Any]:
-    payload: dict[str, Any] = {
-        "mode": "adopt" if restore is None else "restore",
-        "changes": [
-            {
-                "id": post,
-                "before": before["pages"][str(post)],
-                "after": after[str(post)],
-            }
-            for post in ids
-        ],
-        "metadata_before": before["metadata"],
-    }
-    if restore is not None:
-        payload["metadata_restore"] = restore
-    result = wp.invoke(prefix, payload)
+    wp.invoke(
+        prefix,
+        {
+            "mode": "adopt" if adopt else "restore",
+            "changes": changes(ids, before["pages"], after),
+            "metadata_before": before["metadata"],
+            "require_current": before["current"],
+            "expected_metadata" if adopt else "metadata_restore": metadata,
+        },
+    )
     saved = wp.read(prefix, *ids)
-    if saved["pages"] != after or saved["metadata"] != result["expected_metadata"]:
+    if saved["pages"] != after or saved["metadata"] != metadata:
         raise RuntimeError(
             "The paired homepage content or translation did not read back"
         )
     return saved
+
+
+def verify_published(backup: dict[str, Any], current: dict[str, Any]) -> None:
+    if (
+        current["home"] != backup["before"]["home"]
+        or (backup["before"]["current"] and not current["current"])
+        or current["pages"] != backup["published_pages"]
+        or current["metadata"]
+        != backup.get("published_metadata", backup["before"]["metadata"])
+    ):
+        raise ValueError("The homepage pair changed since the showcase was published")
 
 
 def main() -> None:
@@ -116,12 +133,7 @@ def main() -> None:
         if current == original:
             print(f"{site} {ids}: homepage pair already restored")
             return
-        if current["pages"] != backup["published_pages"] or current[
-            "metadata"
-        ] != backup.get("published_metadata", original["metadata"]):
-            raise ValueError(
-                "The homepage pair changed since the showcase was published"
-            )
+        verify_published(backup, current)
         saved = write(args.wp, ids, current, original["pages"], original["metadata"])
         if saved != original:
             raise RuntimeError("The original homepage pair did not read back")
@@ -129,14 +141,6 @@ def main() -> None:
         return
 
     after = planned(current["pages"], ids)
-    if after == current["pages"]:
-        print(f"{site} {ids}: localized showcases already in place")
-        return
-    if not args.remove:
-        print(
-            f"{site} {ids}: replace the embedded planner and insert the EN/DE showcases"
-        )
-        return
     path = args.backup or (
         Path.home()
         / "de-linker-data"
@@ -144,28 +148,40 @@ def main() -> None:
         / "home-showcase"
         / f"{urlsplit(site).netloc.replace(':', '-')}-{args.en}-{args.de}.json"
     )
+    if after == current["pages"]:
+        if args.remove and path.exists():
+            verify_published(json.loads(path.read_text()), current)
+        print(f"{site} {ids}: localized showcases already in place")
+        return
+    if not args.remove:
+        print(
+            f"{site} {ids}: replace the embedded planner and insert the EN/DE showcases"
+        )
+        return
+    # Pending source edits retain their translator state. A synced pair records
+    # the complete native postimage before WordPress can commit either page.
+    metadata = current["metadata"]
+    if current["current"]:
+        preview = wp.invoke(
+            args.wp,
+            {
+                "mode": "preview_page_adoption",
+                "changes": changes(ids, current["pages"], after),
+            },
+        )
+        metadata = preview["expected_metadata"]
     snapshot = {"before": current, "published_pages": after}
+    if metadata != current["metadata"]:
+        snapshot["published_metadata"] = metadata
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         backup = json.loads(path.read_text())
-        if backup["before"] != current or backup["published_pages"] != after:
+        if backup != snapshot:
             raise ValueError("The recovery point contains a different homepage pair")
     else:
         with path.open("x") as backup_file:
             json.dump(snapshot, backup_file, ensure_ascii=False)
-    # A stale source retains its existing translator state, including pending edits.
-    saved = write(
-        args.wp,
-        ids,
-        current,
-        after,
-        None if current["current"] else current["metadata"],
-    )
-    if saved["metadata"] != current["metadata"]:
-        snapshot["published_metadata"] = saved["metadata"]
-        receipt = path.with_suffix(".tmp")
-        receipt.write_text(json.dumps(snapshot, ensure_ascii=False))
-        receipt.replace(path)
+    write(args.wp, ids, current, after, metadata, adopt=current["current"])
     print(f"{site} {ids}: published and verified both showcases; recovery point {path}")
 
 

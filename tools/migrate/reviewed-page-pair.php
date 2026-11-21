@@ -86,7 +86,9 @@ use Linker\I18n\Woo\Projection;
 	$links      = new LinkLocalizer( $languages, $tokenizer );
 	$twins      = new Twins( $languages, $links, new Projection( $languages ) );
 	$rules      = Rules::load( WP_PLUGIN_DIR . '/linker-i18n/data' );
-	$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, $client, new Validator( $rules ), $twins, $links );
+	$fields     = new Fields();
+	$planner    = new Planner( new Segmenter( $tokenizer ), new Aligner() );
+	$translator = new Translator( $languages, $planner, $fields, $state, $client, new Validator( $rules ), $twins, $links );
 	if ( 'read' === $pair['mode'] ) {
 		$snapshot = array(
 			'home'     => home_url(),
@@ -98,6 +100,42 @@ use Linker\I18n\Woo\Projection;
 			$snapshot['excerpts'] = $excerpts;
 		}
 		echo '@@reviewed-pair@@' . wp_json_encode( $snapshot );
+		return;
+	}
+	if ( 'preview_page_adoption' === $pair['mode'] ) {
+		if ( 'page' !== $post_type ) {
+			throw new RuntimeException( 'Expected a page pair for adoption preview.' );
+		}
+		$texts = array();
+		foreach ( $pair['changes'] as $change ) {
+			$post               = clone get_post( $change['id'] );
+			$post->post_content = $change['after'];
+			$texts[]            = $fields->of_post( $post, $de === $post->ID );
+		}
+		list( $source, $german ) = $texts;
+		$units                   = array();
+		$parts                   = array();
+		foreach ( $source as $field => list( $value, $html ) ) {
+			$translated      = $german[ $field ][0] ?? '';
+			$units[ $field ] = array(
+				'src'      => $planner->split( $value, $html )->hashes(),
+				'out'      => $planner->split( $translated, $html )->hashes(),
+				'conflict' => false,
+			);
+			$parts[]         = $field . "\0" . $value;
+		}
+		// The paired writer checks this preview against native adopt_current() before COMMIT.
+		$expected = $read();
+		$updates  = array(
+			array( $en, State::STATUS, State::SYNCED ),
+			array( $de, State::SOURCE_HASH, sha1( implode( "\1", $parts ) ) ),
+			array( $de, State::UNITS, wp_json_encode( $units ) ),
+		);
+		foreach ( $updates as list( $id, $key, $value ) ) {
+			$expected[ $id ][ $key ] = array_fill( 0, max( 1, count( $expected[ $id ][ $key ] ) ), $value );
+		}
+		$expected[ $en ][ State::NOTE ] = array();
+		echo '@@reviewed-pair@@' . wp_json_encode( array( 'expected_metadata' => $expected ) );
 		return;
 	}
 	if ( ! in_array( $pair['mode'], array( 'adopt', 'restore' ), true ) ) {

@@ -93,6 +93,32 @@ echo '@@fixture@@'.wp_json_encode(['ids'=>$ids]);
             print(f"Removed private blog fixtures: {ids}")
 
 
+def test_page_adoption_preview_matches_native_commit(pages: list[int]) -> None:
+    before = pair.read(WP, *pages)
+    changes = [
+        {
+            "id": post,
+            "before": before["pages"][str(post)],
+            "after": f'<section aria-label="View {language}"><p>Plan {language}.</p></section>',
+        }
+        for post, language in zip(pages, ("EN", "DE"), strict=True)
+    ]
+    preview = pair.invoke(WP, {"mode": "preview_page_adoption", "changes": changes})
+    assert pair.read(WP, *pages) == before
+    pair.invoke(
+        WP,
+        {
+            "mode": "adopt",
+            "changes": changes,
+            "metadata_before": before["metadata"],
+            "expected_metadata": preview["expected_metadata"],
+        },
+    )
+    saved = pair.read(WP, *pages)
+    assert saved["pages"] == {str(row["id"]): row["after"] for row in changes}
+    assert saved["metadata"] == preview["expected_metadata"]
+
+
 @pytest.mark.parametrize(
     "case",
     [
