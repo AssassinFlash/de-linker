@@ -2,9 +2,6 @@
  * The home hero's unfolded conversation (ticket #232, variant B). These
  * rules apply only after the visitor asked or picked a file: the resting
  * hero is the LiveCanvas page's own markup and stylesheet, untouched.
- *
- * This is the Genie tool's own surface (AGENTS.md 2026-10-10: tool pages may
- * have their own design), so the colors are the dock's, not the page's.
  */
 
 /* The owner's variant B: the hero's own words fold away and the dialog
@@ -42,11 +39,11 @@
 .linker-genie-hero__surface {
 	margin: 0 0 10px;
 	padding: 0 0 10px;
-	border-bottom: 1px solid #eef1f3;
-	font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif;
+	border-bottom: 1px solid var(--proto-neutral-100);
+	font-family: var(--proto-font-sans);
 	font-size: 14px;
 	line-height: 1.55;
-	color: #172636;
+	color: var(--proto-color-ink);
 	text-align: left;
 }
 
@@ -62,7 +59,7 @@
 	margin: 0;
 	font-size: 13px;
 	font-weight: 650;
-	color: #0b1f33;
+	color: var(--proto-color-ink);
 }
 
 .linker-genie-hero__actions {
@@ -76,7 +73,7 @@
 	border: 0;
 	border-radius: 8px;
 	background: none;
-	color: #087c73;
+	color: var(--proto-color-accent);
 	font: inherit;
 	font-size: 13px;
 	font-weight: 600;
@@ -85,7 +82,7 @@
 }
 
 .linker-genie-hero__continue:hover {
-	background: #eef7f6;
+	background: var(--proto-teal-50);
 }
 
 .linker-genie-hero__close {
@@ -96,7 +93,7 @@
 	border: 0;
 	border-radius: 9px;
 	background: transparent;
-	color: #5f6b7c;
+	color: var(--proto-color-muted);
 	font: inherit;
 	font-size: 20px;
 	line-height: 1;
@@ -104,20 +101,20 @@
 }
 
 .linker-genie-hero__close:hover {
-	background: #f1f4f6;
-	color: #172636;
+	background: var(--proto-neutral-50);
+	color: var(--proto-color-ink);
 }
 
 .linker-genie-hero__intro {
 	margin: 0 2px 8px;
 	font-size: 12px;
 	line-height: 1.5;
-	color: #5f6b7c;
+	color: var(--proto-color-muted);
 }
 
 .linker-genie-hero__intro strong {
 	font-weight: 600;
-	color: #172636;
+	color: var(--proto-color-ink);
 }
 
 /* The transcript is the scroll box: a long answer never pushes the
@@ -270,11 +267,11 @@
 	align-items: center;
 	gap: 8px;
 	padding: 9px 14px;
-	border: 1px solid #dfe7ec;
+	border: 1px solid var(--proto-color-line);
 	border-radius: 999px;
-	background: #fff;
-	color: #172636;
-	font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif;
+	background: var(--proto-color-surface);
+	color: var(--proto-color-ink);
+	font-family: var(--proto-font-sans);
 	font-size: 13px;
 	font-weight: 600;
 	line-height: 1;
@@ -287,8 +284,8 @@
 }
 
 .linker-genie-hero-pill:hover {
-	border-color: #087c73;
-	color: #087c73;
+	border-color: var(--proto-color-accent);
+	color: var(--proto-color-accent);
 }
 
 /* Below 860px the standing Genie button is hidden (genie.css): the way back

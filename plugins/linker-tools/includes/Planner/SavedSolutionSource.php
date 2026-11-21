@@ -48,6 +48,10 @@ final class SavedSolutionSource {
 		}
 		$design = json_decode( $raw, false, Gateway::MAX_JSON_DEPTH );
 		$items  = json_decode( $raw_items, false, Gateway::MAX_JSON_DEPTH );
+		// Genie product lists saved with no project inputs used an empty JSON array.
+		if ( 'genie' === ( $design->kind ?? null ) && array() === ( $design->input ?? null ) ) {
+			$design->input = new \stdClass();
+		}
 		if ( ! $design instanceof \stdClass || ! is_string( $design->kind ?? null ) || ! ( ( $design->input ?? null ) instanceof \stdClass ) || ! JsonNumbers::supported( $design->input ) || ! is_array( $items ) || ! JsonNumbers::supported( $items ) ) {
 			return Failure::make( 'saved_solution_unavailable', 404 );
 		}

@@ -25,7 +25,7 @@ import { seedConsentCookies } from '../lib/consent';
 /** The question whose live answer is proven to carry a product card. */
 const QUESTIONS = {
 	en: {
-		ask: 'What does the SAJ H2-10K-T3 cost?',
+		ask: 'Please show me 3 SAJ H2-10K-T3 inverters.',
 		products: '/products/',
 		save: 'Save solution',
 		saved: 'Saved to your account.',
@@ -34,7 +34,7 @@ const QUESTIONS = {
 		notice: 'The products of the saved solution are in your solution draft.',
 	},
 	de: {
-		ask: 'Was kostet der SAJ H2-10K-T3?',
+		ask: 'Bitte zeigen Sie mir 3 Wechselrichter SAJ H2-10K-T3.',
 		products: '/de/produkte/',
 		save: 'L\u00f6sung speichern',
 		saved: 'Im Konto gespeichert.',
@@ -76,11 +76,9 @@ async function askGenie(
 	launch: string,
 	saveLabel: string
 ): Promise<void> {
-	await page.evaluate((message) => {
-		window.dispatchEvent(
-			new CustomEvent('linker-genie-ask', { detail: { message } })
-		);
-	}, launch);
+	await page.locator('.linker-genie-open').first().click();
+	await page.locator('#linker-genie-input').fill(launch);
+	await page.locator('.linker-genie-app__send').click();
 	const card = page.locator('.linker-genie-app article.linker-card').first();
 	await expect(card).toBeVisible({ timeout: 180_000 });
 	// The card is complete once its model line has come in too.
@@ -142,7 +140,39 @@ for (const locale of ['en', 'de'] as const) {
 			const row = page.locator(`#linker-solution-${payload.id}`);
 			await expect(row).toBeVisible();
 			await expect(row).toContainText('H2-10K-T3');
-			await expect(row).toContainText('1 × ');
+			await expect(row).toContainText('3 × ');
+
+			const configurator = row.getByRole('link', {
+				name:
+					locale === 'de'
+						? 'Lösungskonfigurator öffnen'
+						: 'Open the Solution Configurator',
+			});
+			await expect(configurator).toBeVisible();
+			await expect(configurator).toHaveAttribute(
+				'href',
+				new RegExp(`[?&]saved_solution=${payload.id}(?:&|$)`)
+			);
+
+			await configurator.click();
+			await expect(page).toHaveURL(
+				new RegExp(
+					(locale === 'de'
+						? '/de/loesungskonfigurator/'
+						: '/solution-configurator/') +
+						'\\?saved_solution=' +
+						payload.id
+				)
+			);
+			const selected = page
+				.locator('.linker-product-card')
+				.filter({ hasText: 'H2-10K-T3' });
+			await expect(selected).toContainText('× 3');
+			await expect(selected.getByRole('link')).toHaveAttribute(
+				'href',
+				/h2-10k-t3/i
+			);
+			await page.goto(instance().url + words.account);
 
 			// And returns it to the solution draft.
 			await row.getByRole('button', { name: words.addToDraft }).click();

@@ -38,6 +38,33 @@ export function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
 	return [];
 }
 
+/** The unit counts displayed and signed for individual product cards. */
+export function quantitiesOf( blocks: Block[] ): Record< string, number > {
+	const quantities: Record< string, number > = {};
+	for ( const block of blocks ) {
+		if ( block.type === 'action' && block.name === 'add_to_draft' ) {
+			const { product_id: id, quantity } = block.args;
+			if (
+				typeof id === 'number' &&
+				typeof quantity === 'number' &&
+				Number.isSafeInteger( quantity ) &&
+				quantity > 0
+			) {
+				quantities[ id ] = quantity;
+			}
+		}
+	}
+	for ( const block of blocks ) {
+		if ( block.type === 'cards' && block.quantities ) {
+			for ( const id of block.product_ids ) {
+				// WordPress omits a count from the live map when it cannot sign it.
+				quantities[ id ] = block.quantities[ id ] ?? 0;
+			}
+		}
+	}
+	return quantities;
+}
+
 /**
  * Exact live product-card actions; history never creates replacement proofs.
  * @param blocks Current normalized turn blocks.

@@ -10,7 +10,7 @@
  * External dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -51,10 +51,12 @@ export function priceLine(
 type Load =
 	| { id: number; phase: 'loading' }
 	| { id: number; phase: 'ready'; product: StoreProduct }
+	| { id: number; phase: 'unavailable' }
 	| { id: number; phase: 'failed' };
 
 export function GenieCard( {
 	productId,
+	quantity,
 	restUrl,
 	store,
 	locale,
@@ -64,12 +66,13 @@ export function GenieCard( {
 	onSave,
 }: {
 	productId: number;
+	quantity?: number;
 	restUrl: string;
 	store: ReturnType< typeof storeClient >;
 	locale: string;
 	status: { state: CardState; text: string };
 	price?: CardPrice;
-	onAdd: ( productId: number ) => void;
+	onAdd: ( productId: number, quantity: number ) => void;
 	onSave: ( productId: number, title: string ) => void;
 } ) {
 	const [ load, setLoad ] = useState< Load >( {
@@ -77,6 +80,7 @@ export function GenieCard( {
 		phase: 'loading',
 	} );
 	const [ model, setModel ] = useState( '' );
+	const [ attempt, setAttempt ] = useState( 0 );
 
 	useEffect( () => {
 		let alive = true;
@@ -89,7 +93,7 @@ export function GenieCard( {
 				setLoad(
 					first
 						? { id: productId, phase: 'ready', product: first }
-						: { id: productId, phase: 'failed' }
+						: { id: productId, phase: 'unavailable' }
 				);
 			} )
 			.catch( () => {
@@ -110,16 +114,38 @@ export function GenieCard( {
 		return () => {
 			alive = false;
 		};
-	}, [ productId, restUrl, store, locale ] );
+	}, [ productId, restUrl, store, locale, attempt ] );
 
 	if ( load.id !== productId || 'loading' === load.phase ) {
 		return null;
 	}
+	if ( 'unavailable' === load.phase ) {
+		return (
+			<p className="linker-product-card">
+				{ __( 'Saved product unavailable', 'linker-tools' ) }
+			</p>
+		);
+	}
 	if ( 'failed' === load.phase ) {
 		return (
-			<p className="linker-genie-app__missing" role="alert">
-				{ __( 'Genie could not load this product.', 'linker-tools' ) }
-			</p>
+			<div className="linker-product-card" role="alert">
+				<span>
+					{ __(
+						'Genie could not load this product.',
+						'linker-tools'
+					) }
+				</span>
+				<button
+					type="button"
+					className="linker-genie-app__card-action"
+					onClick={ () => {
+						setLoad( { id: productId, phase: 'loading' } );
+						setAttempt( ( previous ) => previous + 1 );
+					} }
+				>
+					{ __( 'Try again', 'linker-tools' ) }
+				</button>
+			</div>
 		);
 	}
 	const product = load.product;
@@ -132,6 +158,15 @@ export function GenieCard( {
 			role={ __( 'Product', 'linker-tools' ) }
 			title={ product.name }
 			model={ modelText }
+			quantity={
+				quantity
+					? sprintf(
+							/* translators: %d is the product quantity. */
+							__( '× %d', 'linker-tools' ),
+							quantity
+						)
+					: undefined
+			}
 			price={ priceLine( price ) }
 			url={ product.permalink }
 			image={ product.images[ 0 ] }
@@ -147,26 +182,28 @@ export function GenieCard( {
 						},
 			] }
 			status={ status }
-			actions={ [
-				<button
-					key="draft"
-					type="button"
-					className="linker-genie-app__card-action linker-genie-app__card-action--primary"
-					disabled={ 'pending' === status.state }
-					onClick={ () => onAdd( productId ) }
-				>
-					{ __( 'Add to solution draft', 'linker-tools' ) }
-				</button>,
-				<button
-					key="save"
-					type="button"
-					className="linker-genie-app__card-action"
-					disabled={ 'pending' === status.state }
-					onClick={ () => onSave( productId, product.name ) }
-				>
-					{ __( 'Save solution', 'linker-tools' ) }
-				</button>,
-			] }
+			actions={
+				quantity !== 0 && [
+					<button
+						key="draft"
+						type="button"
+						className="linker-genie-app__card-action linker-genie-app__card-action--primary"
+						disabled={ 'pending' === status.state }
+						onClick={ () => onAdd( productId, quantity ?? 1 ) }
+					>
+						{ __( 'Add to solution draft', 'linker-tools' ) }
+					</button>,
+					<button
+						key="save"
+						type="button"
+						className="linker-genie-app__card-action"
+						disabled={ 'pending' === status.state }
+						onClick={ () => onSave( productId, product.name ) }
+					>
+						{ __( 'Save solution', 'linker-tools' ) }
+					</button>,
+				]
+			}
 		/>
 	);
 }

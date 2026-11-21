@@ -62,6 +62,21 @@ function documentPages(
 	};
 }
 
+function documentOwner( block: DocumentBlock ): number | undefined {
+	if ( block.evidence_product_id !== undefined ) {
+		return block.evidence_product_id;
+	}
+	const match = block.ref.match(
+		/^p(\d+)\.(?:document\.\d+|.+\.source(?:\.\d+)?)$/
+	);
+	return match ? Number( match[ 1 ] ) : undefined;
+}
+
+function requiresDocumentOwner( ref: string ): boolean {
+	// Legacy compatibility and indexed PDF refs do not encode their evidence owner.
+	return /^(?:compat\.document\.|[a-f0-9]{12}-p\d+-)/.test( ref );
+}
+
 function documentLabel(
 	block: DocumentBlock,
 	products: ProductPresentation[],
@@ -73,12 +88,11 @@ function documentLabel(
 	}
 	const baseUrl = block.url.split( '#' )[ 0 ];
 	const { title, suffix } = documentPages( block, locale );
-	const owner = block.ref.match( /^p(\d+)\.document\.\d+$/ );
-	const candidates = owner
-		? products.filter(
-				( product ) => product.product_id === Number( owner[ 1 ] )
-			)
-		: products;
+	const owner = documentOwner( block );
+	const candidates =
+		owner === undefined
+			? products
+			: products.filter( ( product ) => product.product_id === owner );
 	const matches = candidates.filter( ( product ) =>
 		product.documents?.some(
 			( document ) => document.url?.split( '#' )[ 0 ] === baseUrl
@@ -142,6 +156,7 @@ async function publicationManifest(
 	documents: Array< {
 		document_id: string;
 		document_revision: string;
+		product_ids: number[];
 		title?: string;
 		title_de?: string;
 		url: string;
@@ -209,9 +224,9 @@ export async function restoreArtifacts(
 		if ( block.type === 'cards' || block.type === 'compare' ) {
 			block.product_ids.forEach( ( id ) => ids.add( id ) );
 		} else if ( block.type === 'document' ) {
-			const product = block.ref.match( /^p(\d+)\.document\.\d+$/ );
-			if ( product ) {
-				ids.add( Number( product[ 1 ] ) );
+			const owner = documentOwner( block );
+			if ( owner !== undefined ) {
+				ids.add( owner );
 			}
 		}
 	}
@@ -232,12 +247,13 @@ export async function restoreArtifacts(
 	// Historical text remains a snapshot; active links require matching content identity.
 	const manifest = await permission;
 	const documents = manifest?.documents ?? [];
-	const allowed = new Set< number >(
-		manifest?.products.flatMap( ( product ) => [
-			product.product_id,
-			...product.published_locale_ids,
-		] ) ?? []
-	);
+	const allowed = new Map< number, number >();
+	for ( const product of manifest?.products ?? [] ) {
+		allowed.set( product.product_id, product.product_id );
+		for ( const id of product.published_locale_ids ) {
+			allowed.set( id, product.product_id );
+		}
+	}
 	const prices = new Map< number, CardPrice >();
 	for ( const product of products ) {
 		const commerce = product.commerce;
@@ -302,10 +318,17 @@ export async function restoreArtifacts(
 				return { ...block, add: { ...block.add, proof: undefined } };
 			}
 			if ( block.type === 'document' ) {
+				const owner = documentOwner( block );
+				const canonical =
+					owner === undefined ? undefined : allowed.get( owner );
 				const current = documents.find(
 					( item ) =>
 						item.document_id === block.document_id &&
 						item.document_revision === block.document_revision &&
+						( owner === undefined
+							? ! requiresDocumentOwner( block.ref )
+							: canonical !== undefined &&
+								item.product_ids?.includes( canonical ) ) &&
 						[ item.url, ...( item.aliases ?? [] ) ].includes(
 							block.url?.split( '#' )[ 0 ] ?? ''
 						)

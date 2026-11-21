@@ -55,10 +55,13 @@ final class CheckCompatibility {
 		$document = array(
 			'type'                 => 'object',
 			'properties'           => array(
-				'url'  => array( 'type' => 'string' ),
-				'page' => array( 'type' => 'integer' ),
+				'document_id'       => array( 'type' => 'string' ),
+				'document_revision' => array( 'type' => 'string' ),
+				'product_id'        => array( 'type' => 'integer' ),
+				'url'               => array( 'type' => 'string' ),
+				'page'              => array( 'type' => 'integer' ),
 			),
-			'required'             => array( 'url' ),
+			'required'             => array( 'document_id', 'document_revision', 'product_id', 'url' ),
 			'additionalProperties' => false,
 		);
 
@@ -135,7 +138,7 @@ final class CheckCompatibility {
 	 * The verdict for one inverter and one battery.
 	 *
 	 * @param array<string, mixed>|object $input inverter_id+battery_id or product_ids.
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>}
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>}
 	 */
 	public function execute( $input = array() ): array {
 		$this->publication_snapshot = $this->publication->manifest();

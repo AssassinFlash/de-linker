@@ -11,7 +11,10 @@ export interface SavedSolutionSource extends JsonObject {
 	readonly title: string;
 	readonly kind: string;
 	readonly input: JsonObject;
-	readonly recorded_items: readonly JsonObject[];
+	readonly recorded_items: readonly (JsonObject & {
+		product_id: number;
+		quantity: number;
+	})[];
 	readonly source_sha256: string;
 }
 
@@ -73,6 +76,8 @@ export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 		source.kind === "industrial"
 			? source.kind
 			: null;
+	if (source.kind === "genie" && Object.keys(source.input).length === 0)
+		return { ...empty, invalid: false };
 	if (projectUse === null) return empty;
 	const params = new URLSearchParams();
 	let unsupported = false;

@@ -532,6 +532,11 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
+		$messages   = is_array( $body['messages'] ) ? $body['messages'] : array();
+		$quantities = $this->thread->previous_card_quantities( $conversation, $messages );
+		if ( array() !== $quantities ) {
+			$body['previous_card_quantities'] = $quantities;
+		}
 		$publication = $this->publication->dependencies();
 		if ( is_wp_error( $publication ) ) {
 			return self::unrecorded( $publication );
@@ -550,8 +555,7 @@ class Proxy {
 		// appended, not dropped (#373, Thread::record). The first customer
 		// message names the conversation, which is the only title the
 		// history rail has.
-		$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
-		$first    = $messages[0] ?? null;
+		$first = $messages[0] ?? null;
 		if ( is_array( $first ) && isset( $first['content'] ) ) {
 			$this->conversations->title_from_first_message(
 				$conversation,
@@ -706,9 +710,10 @@ class Proxy {
 	 *
 	 * @param string               $url  Service URL.
 	 * @param array<string, mixed> $body Request body.
+	 * @param float                $timeout Remaining HTTP budget in seconds.
 	 * @return string|WP_Error
 	 */
-	private function post( string $url, array $body ) {
+	private function post( string $url, array $body, float $timeout = self::TURN_BUDGET ) {
 		if ( is_callable( $this->fetch ) ) {
 			// A turn answers with its body string; anything else (the vote
 			// test contract's int status) is no stream and maps to 502.
@@ -718,6 +723,7 @@ class Proxy {
 			}
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
+		$started  = microtime( true );
 		$response = wp_remote_post(
 			$url,
 			array(
@@ -731,13 +737,24 @@ class Proxy {
 				// Current Woo checks surround the service's bounded work.
 				// HTTP and the later commit lock share the native operation
 				// window; this does not extend model or price work limits.
-				'timeout' => (float) self::TURN_BUDGET,
+				'timeout' => $timeout,
 			)
 		);
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( 422 === $code && isset( $body['previous_card_quantities'] ) ) {
+			// A service rolled back since the stored answer may reject this field before executing the turn.
+			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			$errors  = $failure['detail'] ?? null;
+			$left    = floor( $timeout - ( microtime( true ) - $started ) );
+			if ( is_array( $errors ) && 1 === count( $errors ) && 'extra_forbidden' === ( $errors[0]['type'] ?? null ) &&
+				array( 'body', 'previous_card_quantities' ) === ( $errors[0]['loc'] ?? null ) && $left >= 1 ) {
+				unset( $body['previous_card_quantities'] );
+				return $this->post( $url, $body, $left );
+			}
+		}
 		if ( in_array( $code, array( 409, 503 ), true ) ) {
 			$failure  = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			$expected = 409 === $code ? 'publication_changed' : 'publication_unavailable';

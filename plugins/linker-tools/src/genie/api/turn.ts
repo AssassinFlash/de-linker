@@ -61,6 +61,7 @@ export interface CardsBlock {
 	prices?: CardPrice[] | null;
 	/** Exact live action proofs, signed by WordPress after current validation. */
 	draft_proofs?: Record< string, string >;
+	quantities?: Record< string, number >;
 }
 
 /** A comparison of two to four products. */
@@ -101,6 +102,7 @@ export interface DocumentBlock {
 	ref: string;
 	document_id?: string;
 	document_revision?: string;
+	evidence_product_id?: number;
 	label: string | null;
 	url: string | null;
 	/** Original document title, preserved when history UI is localized. */

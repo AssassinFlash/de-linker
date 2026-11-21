@@ -27,11 +27,34 @@ use WP_Post;
 final class SavedSolutionSourceTest extends TestCase {
 
 	/**
-	 * The archive is input-only and remains private after ownership/status changes.
+	 * Original input shapes persisted by project types.
+	 *
+	 * @return array<string, array{string, array<string, mixed>}>
 	 */
-	public function test_only_active_owner_can_read_original_inputs_without_old_results(): void {
-		$user  = 5;
-		$post  = new WP_Post(
+	public static function designs(): array {
+		return array(
+			'configurator inputs' => array(
+				'residential',
+				array(
+					'annual_kwh' => 4500,
+					'heat_pump'  => true,
+					'extra'      => array( 'preserved' => true ),
+				),
+			),
+			'Genie product list'  => array( 'genie', array() ),
+		);
+	}
+
+	/**
+	 * The archive is input-only and remains private after ownership/status changes.
+	 *
+	 * @dataProvider designs
+	 * @param string               $kind  Saved design type.
+	 * @param array<string, mixed> $input Saved project inputs.
+	 */
+	public function test_only_active_owner_can_read_original_inputs_without_old_results( string $kind, array $input ): void {
+		$user = 5;
+		$post = new WP_Post(
 			(object) array(
 				'ID'          => 45,
 				'post_type'   => SavedSolutions::POST_TYPE,
@@ -40,15 +63,10 @@ final class SavedSolutionSourceTest extends TestCase {
 				'post_title'  => 'Original project',
 			)
 		);
-		$input = array(
-			'annual_kwh' => 4500,
-			'heat_pump'  => true,
-			'extra'      => array( 'preserved' => true ),
-		);
      // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Deterministic JSON fixture codec without a WordPress runtime.
 		$raw = (string) json_encode(
 			array(
-				'kind'     => 'residential',
+				'kind'     => $kind,
 				'input'    => $input,
 				'snapshot' => array( 'old_result' => 987 ),
 			)
@@ -93,7 +111,9 @@ final class SavedSolutionSourceTest extends TestCase {
 		$source  = $read->read( new Principal( 'user', 'wp:1:user:5' ), $command );
 		$this->assertIsArray( $source );
      // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Deterministic JSON fixture codec without a WordPress runtime.
-		$this->assertEquals( json_decode( (string) json_encode( $input ) ), $source['input'] );
+		$this->assertEquals( json_decode( (string) json_encode( (object) $input ) ), $source['input'] );
+		$this->assertSame( 1946, $source['recorded_items'][0]->product_id );
+		$this->assertSame( 1, $source['recorded_items'][0]->quantity );
 		$this->assertSame( hash( 'sha256', $raw ), $source['source_sha256'] );
 		$this->assertArrayNotHasKey( 'snapshot', $source );
 		$this->assertInstanceOf( WP_Error::class, $read->read( new Principal( 'guest', 'guest5' ), $command ) );

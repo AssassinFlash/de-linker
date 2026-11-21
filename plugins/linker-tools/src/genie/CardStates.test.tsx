@@ -92,7 +92,7 @@ function config(): GenieConfig {
 	};
 }
 
-async function openCardTurn() {
+async function openCardTurn( quantities?: Record< string, number > ) {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
 			grounded: true,
@@ -101,7 +101,20 @@ async function openCardTurn() {
 			failures: [],
 			language: 'en',
 		},
-		blocks: [ { type: 'cards', product_ids: [ 3556 ] } ],
+		blocks: [
+			{
+				type: 'cards',
+				product_ids: [ 3556 ],
+				...( quantities
+					? {
+							quantities,
+							draft_proofs: quantities[ 3556 ]
+								? { 3556: 'signed-two' }
+								: {},
+						}
+					: {} ),
+			},
+		],
 	} );
 	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
@@ -159,6 +172,39 @@ test( 'the card walks every action state inside the card', async () => {
 		expect( card.getAttribute( 'data-state' ) ).toBe( state );
 		expect( within( card ).getByText( text ) ).toBeInTheDocument();
 	}
+} );
+
+const unresolvedCounts: Record< string, number >[] = [ { 3556: 0 }, {} ];
+test.each( unresolvedCounts )(
+	'an unresolved quantity leaves the product visible without draft or save actions (%j)',
+	async ( quantities ) => {
+		await openCardTurn( quantities );
+		const card = within( screen.getByRole( 'article' ) );
+		expect(
+			card.getByRole( 'link', { name: PRODUCT.name } )
+		).toBeVisible();
+		for ( const name of [ 'Add to solution draft', 'Save solution' ] ) {
+			expect(
+				card.queryByRole( 'button', { name } )
+			).not.toBeInTheDocument();
+		}
+	}
+);
+
+test( 'the customer sees and adds the quantity on the signed product card', async () => {
+	const add = vi.fn( async () => true );
+	storeFactory = () => storeDouble( add );
+	await openCardTurn( { 3556: 2 } );
+	const card = within( screen.getByRole( 'article' ) );
+	expect( card.getByText( '× 2' ) ).toBeVisible();
+	fireEvent.click(
+		card.getByRole( 'button', { name: 'Add to solution draft' } )
+	);
+	expect( add ).toHaveBeenCalledWith(
+		[ { productId: 3556, quantity: 2 } ],
+		expect.any( Function ),
+		{ kind: 'genie', token: 'signed-two' }
+	);
 } );
 
 test( 'a failed save shows the retry sentence inside the card', async () => {

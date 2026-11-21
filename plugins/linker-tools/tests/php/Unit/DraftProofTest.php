@@ -121,6 +121,36 @@ final class DraftProofTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, $proof->verify( $token ) );
 	}
 
+	/** A product card may precede its quantity-bearing action in the original turn. */
+	public function test_product_card_signs_and_displays_the_same_quantity_as_its_action(): void {
+		$proof  = $this->proof();
+		$stream = $proof->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6]}\n\nevent: block\ndata: {\"type\":\"action\",\"name\":\"add_to_draft\",\"args\":{\"product_id\":5,\"quantity\":2}}\n\nevent: block\ndata: {\"type\":\"action\",\"name\":\"save_solution\",\"args\":{}}\n\n", $this->dependencies() );
+		$this->assertIsString( $stream );
+		preg_match( '/^data: (.+)$/m', $stream, $data );
+		$block = json_decode( $data[1], true );
+		foreach ( array(
+			5 => 2,
+			6 => 1,
+		) as $id => $quantity ) {
+			$result = $proof->verify( $block['draft_proofs'][ $id ] );
+			$this->assertIsArray( $result );
+			$this->assertSame( $quantity, $result['selected']['lines'][0]['quantity'] );
+			$this->assertSame( $quantity, $block['quantities'][ $id ] );
+		}
+	}
+
+	/** A conflicting customer count leaves the other product card usable. */
+	public function test_unresolved_card_quantity_cannot_be_saved_as_one(): void {
+		$stream = $this->proof()->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6],\"quantities\":{\"5\":0}}\n\n", $this->dependencies() );
+		$this->assertIsString( $stream );
+		preg_match( '/^data: (.+)$/m', $stream, $data );
+		$block = json_decode( $data[1], true );
+		$this->assertArrayNotHasKey( 5, $block['draft_proofs'] );
+		$this->assertArrayNotHasKey( 5, $block['quantities'] );
+		$this->assertArrayHasKey( 6, $block['draft_proofs'] );
+		$this->assertSame( 1, $block['quantities'][6] );
+	}
+
 	/** An old transcript is never offered to stream() for token minting. */
 	public function test_current_product_cards_get_only_their_own_exact_action(): void {
 		$proof  = $this->proof();

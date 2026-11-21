@@ -49,7 +49,12 @@ import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
-import { idsOf, pricesOf, proofsOf } from '../genie/shared/blocks';
+import {
+	idsOf,
+	pricesOf,
+	proofsOf,
+	quantitiesOf,
+} from '../genie/shared/blocks';
 import { useCardActions } from '../genie/shared/cardActions';
 import { buildQuestion, typeModelPrompt } from '../genie/shared/conversation';
 import {
@@ -86,6 +91,7 @@ export interface HeroBridge {
 	 * @param files The files just picked, if any.
 	 */
 	ask: ( text: string, files?: ArrayLike< File > ) => void;
+	attach: ( files: ArrayLike< File > ) => void;
 	mode: ( mode: 'attach' | 'nameplate' | 'voice' ) => void;
 }
 
@@ -863,8 +869,7 @@ export function HeroConversation( {
 		}
 	}, [ files.uploads, updateMissing ] );
 
-	// Files were picked for the hero: once they are prepared, send them as
-	// the turn's question (a photo or a document is itself the question).
+	// Only a submit made during preparation waits for the files.
 	useEffect( () => {
 		if ( ! pendingSend || files.busy ) {
 			return;
@@ -877,7 +882,7 @@ export function HeroConversation( {
 
 	const bridgeAsk = useCallback(
 		( text: string, picked?: ArrayLike< File > ) => {
-			if ( picked && picked.length > 0 ) {
+			if ( picked?.length || filesRef.current.busy ) {
 				if ( ! draftContext.acceptEditor() ) {
 					return;
 				}
@@ -886,7 +891,9 @@ export function HeroConversation( {
 				if ( ! sending.current ) {
 					setPendingSend( { text } );
 				}
-				filesRef.current.add( picked );
+				if ( picked?.length ) {
+					filesRef.current.add( picked );
+				}
 				return;
 			}
 			void sendRef.current( text );
@@ -911,7 +918,15 @@ export function HeroConversation( {
 
 	useEffect( () => {
 		if ( draftContext.phase === 'ready' && hydrated ) {
-			onReady( { ask: bridgeAsk, mode: setRetainedMode } );
+			onReady( {
+				ask: bridgeAsk,
+				attach: ( picked ) => {
+					if ( draftContext.capture() ) {
+						filesRef.current.add( picked );
+					}
+				},
+				mode: setRetainedMode,
+			} );
 		}
 	}, [ onReady, bridgeAsk, draftContext, draftContext.phase, hydrated ] );
 
@@ -920,6 +935,7 @@ export function HeroConversation( {
 	const compareIds = idsOf( blocks, 'compare' );
 	const cardPrices = pricesOf( blocks );
 	const cardProofs = proofsOf( blocks );
+	const cardQuantities = quantitiesOf( blocks );
 	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
 	const offersInquiry = blocks.some(
@@ -1096,6 +1112,7 @@ export function HeroConversation( {
 								<GenieCard
 									key={ productId }
 									productId={ productId }
+									quantity={ cardQuantities[ productId ] }
 									restUrl={ config.restUrl }
 									store={ store }
 									locale={ locale }
@@ -1104,8 +1121,12 @@ export function HeroConversation( {
 										( line ) =>
 											line.product_id === productId
 									) }
-									onAdd={ ( id ) =>
-										addCardToDraft( id, cardProofs[ id ] )
+									onAdd={ ( id, quantity ) =>
+										addCardToDraft(
+											id,
+											cardProofs[ id ],
+											quantity
+										)
 									}
 									onSave={ ( id, title ) =>
 										saveCardSolution(

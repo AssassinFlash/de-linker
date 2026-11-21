@@ -837,6 +837,35 @@ class Thread {
 	}
 
 	/**
+	 * Cards in the finished native answer immediately before the new user message.
+	 *
+	 * @param int                     $conversation Current conversation post ID.
+	 * @param array<array-key, mixed> $messages     Submitted messages.
+	 * @return array<int, int> Canonical product ID to offered quantity (0 if unresolved).
+	 */
+	public function previous_card_quantities( int $conversation, array $messages ): array {
+		$previous = $messages[ count( $messages ) - 2 ] ?? null;
+		$last     = $messages[ count( $messages ) - 1 ] ?? null;
+		if ( 'user' !== ( $last['role'] ?? null ) || 'assistant' !== ( $previous['role'] ?? null ) || ! is_string( $previous['content'] ?? null ) ) {
+			return array();
+		}
+		$stored = $this->read( $conversation );
+		$answer = self::answer( $stored['stream'] );
+		if ( array() === $stored['messages'] || '' === $answer['text'] || self::flat( $previous['content'] ) !== self::flat( $answer['text'] ) ) {
+			return array();
+		}
+		// A stale tab can show the same wording for an earlier set of cards.
+		$history = self::normalize( $stored['messages'] );
+		if ( null !== self::find_span( $history, self::normalize( array( $previous ) ) ) ) {
+			$prefix = self::normalize( array_slice( $messages, 0, -2 ) );
+			if ( self::prefix_length( $history, array_slice( $prefix, -count( $history ) ) ) !== count( $history ) ) {
+				return array();
+			}
+		}
+		return $answer['quantities'];
+	}
+
+	/**
 	 * The stored products by answer.
 	 *
 	 * @param int $conversation Conversation post ID.
@@ -867,12 +896,16 @@ class Thread {
 	 * empty when it did not finish.
 	 *
 	 * @param string $stream SSE text.
-	 * @return array{text: string, products: list<int>}
+	 * @return array{text: string, products: list<int>, quantities: array<int, int>}
 	 */
 	private static function answer( string $stream ): array {
-		$texts    = array();
-		$products = array();
-		$done     = false;
+		$texts      = array();
+		$products   = array();
+		$cards      = null;
+		$actions    = array();
+		$quantities = array();
+		$done       = false;
+		$accepts    = false;
 		foreach ( explode( "\n\n", $stream ) as $event ) {
 			if ( 1 !== preg_match( '/^event: (.+)$/m', $event, $name ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
 				continue;
@@ -882,6 +915,10 @@ class Thread {
 				continue;
 			}
 			$block = json_decode( $data[1], true );
+			if ( 'meta' === $name[1] ) {
+				$accepts = true === ( $block['accepts_previous_card_quantities'] ?? false );
+				continue;
+			}
 			if ( 'block' !== $name[1] || ! is_array( $block ) ) {
 				continue;
 			}
@@ -889,17 +926,31 @@ class Thread {
 				$texts[] = $block['text'];
 			}
 			if ( 'cards' === ( $block['type'] ?? '' ) && is_array( $block['product_ids'] ?? null ) ) {
+				$cards ??= $block; // The dock and hero display the first cards block.
 				foreach ( $block['product_ids'] as $id ) {
 					$products[] = (int) $id;
 				}
+			} elseif ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
+				$id = $block['args']['product_id'] ?? null;
+				if ( is_int( $id ) ) {
+					$actions[ $id ] = $block['args']['quantity'] ?? 1;
+				}
+			}
+		}
+		foreach ( $cards['product_ids'] ?? array() as $id ) {
+			if ( is_int( $id ) && $id > 0 ) {
+				$quantity          = $cards['quantities'][ $id ] ?? $actions[ $id ] ?? 1;
+				$quantities[ $id ] = is_int( $quantity ) && $quantity >= 0 ? $quantity : 0;
 			}
 		}
 		return $done ? array(
-			'text'     => implode( ' ', $texts ),
-			'products' => array_values( array_unique( array_filter( $products ) ) ),
+			'text'       => implode( ' ', $texts ),
+			'products'   => array_values( array_unique( array_filter( $products ) ) ),
+			'quantities' => $accepts ? $quantities : array(),
 		) : array(
-			'text'     => '',
-			'products' => array(),
+			'text'       => '',
+			'products'   => array(),
+			'quantities' => array(),
 		);
 	}
 }

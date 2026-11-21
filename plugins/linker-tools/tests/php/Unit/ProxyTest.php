@@ -162,6 +162,102 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * Only the last finished answer can supply card quantities for a follow-up.
+	 *
+	 * @dataProvider previous_card_answers
+	 *
+	 * @param string          $previous_role Role immediately before the new question.
+	 * @param string          $previous_text Submitted text at that position.
+	 * @param bool            $cards         Whether the stored answer displayed cards.
+	 * @param bool            $done          Whether the stored answer finished.
+	 * @param array<int, int> $expected      Card quantities sent to Genie.
+	 * @param bool            $stale         Whether this tab still shows the earlier identical answer.
+	 * @param bool            $capable       Whether the answering service advertised support.
+	 */
+	public function test_turn_uses_only_the_previous_stored_card_answer( string $previous_role, string $previous_text, bool $cards, bool $done, array $expected, bool $stale = false, bool $capable = true ): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread  = new RecordingThread();
+		$stream  = $capable ? "event: meta\ndata: {\"accepts_previous_card_quantities\":true}\n\n" : "event: meta\ndata: {}\n\n";
+		$stream .= "event: block\ndata: {\"type\":\"text\",\"text\":\"These options fit.\"}\n\n";
+		if ( $cards ) {
+			$stream .= "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[31,32,33,34],\"quantities\":{\"31\":4,\"32\":0,\"99\":8}}\n\n";
+			$stream .= "event: block\ndata: {\"type\":\"action\",\"name\":\"add_to_draft\",\"args\":{\"product_id\":34,\"quantity\":2}}\n\n";
+			$stream .= "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[35]}\n\n";
+		}
+		$thread->stored['stream']   = $stream . ( $done ? "event: done\ndata: {}\n\n" : '' );
+		$messages                   = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Which batteries fit?',
+			),
+			array(
+				'role'    => 'assistant',
+				'content' => 'These options fit.',
+			),
+			array(
+				'role'    => 'user',
+				'content' => 'And for my inverter?',
+			),
+		);
+		$thread->stored['messages'] = $messages;
+		if ( $stale ) {
+			$messages = array_slice( $messages, 0, 1 );
+		}
+		$messages[] = array(
+			'role'    => $previous_role,
+			'content' => $previous_text,
+		);
+		$messages[] = array(
+			'role'    => 'user',
+			'content' => 'Two of those.',
+		);
+		$request    = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param( 'messages', $messages );
+		$request->set_param( 'previous_card_quantities', array( 99 => 8 ) );
+		$caught = array();
+		$fetch  = static function ( string $url, array $body ) use ( &$caught ): string {
+			$caught = $body;
+			return "event: done\ndata: {}\n\n";
+		};
+		$this->proxy( $fetch, $thread )->turn( $request );
+		$this->assertSame( '51', $caught['conversation_id'] );
+		if ( array() === $expected ) {
+			$this->assertArrayNotHasKey( 'previous_card_quantities', $caught );
+		} else {
+			$this->assertSame( $expected, $caught['previous_card_quantities'] );
+		}
+	}
+
+	/**
+	 * Submitted histories and the options available for their follow-up.
+	 *
+	 * @return array<string, array{string, string, bool, bool, array<int, int>, 5?: bool, 6?: bool}>
+	 */
+	public static function previous_card_answers(): array {
+		return array(
+			'completed card answer' => array(
+				'assistant',
+				"These\noptions fit.",
+				true,
+				true,
+				array(
+					31 => 4,
+					32 => 0,
+					33 => 1,
+					34 => 2,
+				),
+			),
+			'legacy card answer'    => array( 'assistant', 'These options fit.', true, true, array(), false, false ),
+			'stale identical text'  => array( 'assistant', 'These options fit.', true, true, array(), true ),
+			'older text matches'    => array( 'assistant', 'Different answer.', true, true, array() ),
+			'intervening user'      => array( 'user', 'These options fit.', true, true, array() ),
+			'answer without cards'  => array( 'assistant', 'These options fit.', false, true, array() ),
+			'incomplete stream'     => array( 'assistant', 'These options fit.', true, false, array() ),
+		);
+	}
+
+	/**
 	 * A turn's files ride apart from its messages (#236): checked, sent to
 	 * the service in `attachments`, never into the thread the proxy keeps;
 	 * the conversation's earlier readings go with them.
@@ -538,6 +634,90 @@ final class ProxyTest extends TestCase {
 		$this->assertSame( $stream, $answer->get_data()['stream'] );
 		$this->assertNotNull( $thread->recorded );
 		$this->assertSame( $stream, $thread->recorded['stream'] );
+	}
+
+	/**
+	 * A rollback between the card answer and its follow-up rejects only the new field.
+	 *
+	 * @dataProvider rollback_errors
+	 * @param string $errors Legacy FastAPI response body.
+	 * @param bool   $recover Whether the response proves this field alone was refused.
+	 */
+	public function test_card_follow_up_after_service_rollback( string $errors, bool $recover ): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Wire fixture.
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'fixture' ) );
+		$thread                     = new RecordingThread();
+		$thread->stored['messages'] = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Options?',
+			),
+		);
+		$thread->stored['stream']   = "event: meta\ndata: {\"accepts_previous_card_quantities\":true}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"These fit.\"}\n\nevent: block\ndata: {\"type\":\"cards\",\"product_ids\":[31]}\n\nevent: done\ndata: {}\n\n";
+		$request                    = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param(
+			'messages',
+			array_merge(
+				$thread->stored['messages'],
+				array(
+					array(
+						'role'    => 'assistant',
+						'content' => 'These fit.',
+					),
+					array(
+						'role'    => 'user',
+						'content' => 'Two of those.',
+					),
+				)
+			)
+		);
+		$calls  = array();
+		$stream = "event: done\ndata: {\"ok\":true}\n\n";
+		WP_Mock::userFunction(
+			'wp_remote_post',
+			array(
+				'return' => static function ( string $url, array $args ) use ( &$calls, $errors, $stream ): array {
+					$calls[] = $args;
+					return 1 === count( $calls ) ? array( 422, $errors ) : array( 200, $stream );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => static fn( $response ) => $response[0] ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => static fn( $response ) => $response[1] ) );
+		$answer = $this->proxy( null, $thread )->turn( $request );
+		$first  = json_decode( $calls[0]['body'], true );
+		$this->assertSame( array( 31 => 1 ), $first['previous_card_quantities'] );
+		if ( $recover ) {
+			$this->assertInstanceOf( WP_REST_Response::class, $answer );
+			$this->assertNotNull( $thread->recorded );
+			$this->assertSame( $stream, $thread->recorded['stream'] );
+			$this->assertCount( 2, $calls );
+			unset( $first['previous_card_quantities'] );
+			$this->assertSame( $first, json_decode( $calls[1]['body'], true ) );
+			$this->assertSame( $calls[0]['headers'], $calls[1]['headers'] );
+			$this->assertLessThanOrEqual( $calls[0]['timeout'], $calls[1]['timeout'] );
+		} else {
+			$this->assertInstanceOf( WP_Error::class, $answer );
+			$this->assertSame( 502, $answer->get_error_data()['status'] );
+			$this->assertNull( $thread->recorded );
+			$this->assertCount( 1, $calls );
+		}
+	}
+
+	/**
+	 * Validation failures returned before the turn runs.
+	 *
+	 * @return array<string, array{string, bool}>
+	 */
+	public static function rollback_errors(): array {
+		return array(
+			'only unsupported field' => array( '{"detail":[{"type":"extra_forbidden","loc":["body","previous_card_quantities"]}]}', true ),
+			'other invalid field'    => array( '{"detail":[{"type":"extra_forbidden","loc":["body","user","extra"]}]}', false ),
+			'multiple errors'        => array( '{"detail":[{"type":"extra_forbidden","loc":["body","previous_card_quantities"]},{"type":"missing","loc":["body","messages"]}]}', false ),
+		);
 	}
 
 	/**

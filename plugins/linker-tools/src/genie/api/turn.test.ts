@@ -688,6 +688,7 @@ test( 'a complete answer near its connection deadline survives a slow auxiliary 
 						{
 							document_id: 'doc',
 							document_revision: 'revision-1',
+							product_ids: [ 3573 ],
 							url: 'https://de-linker.test/file.pdf',
 						},
 					],

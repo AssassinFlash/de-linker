@@ -70,10 +70,14 @@ export function useCardActions( {
 	);
 
 	const addToDraft = useCallback(
-		async ( productId: number, token = '' ) => {
+		async (
+			productId: number,
+			token: string | undefined,
+			quantity: number
+		) => {
 			status( productId, 'pending', __( 'Adding…', 'linker-tools' ) );
 			await store.addAll(
-				[ { productId, quantity: 1 } ],
+				[ { productId, quantity } ],
 				( id, state ) =>
 					status(
 						id,
@@ -95,7 +99,7 @@ export function useCardActions( {
 							),
 						}[ state ]
 					),
-				{ kind: 'genie', token }
+				token ? { kind: 'genie', token } : undefined
 			);
 		},
 		[ status, store ]

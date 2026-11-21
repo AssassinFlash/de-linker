@@ -5,7 +5,7 @@
  *
  * External dependencies
  */
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 
 /**
@@ -66,12 +66,27 @@ test( 'a refused Store API read is a failure the card announces', async () => {
 	);
 } );
 
-test( 'a read that returns no product is the same failure', async () => {
+test( 'a product removed from the shop retains its unavailable state', async () => {
 	card( async () => [] );
 
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'Genie could not load this product.'
+	expect(
+		await screen.findByText( 'Saved product unavailable' )
+	).toBeVisible();
+	expect( screen.queryByRole( 'button', { name: 'Try again' } ) ).toBeNull();
+} );
+
+test( 'a failed product read retries in the same conversation', async () => {
+	const products = vi
+		.fn()
+		.mockRejectedValueOnce( new Error( 'unavailable' ) )
+		.mockResolvedValueOnce( [ PRODUCT ] );
+	card( products );
+	fireEvent.click(
+		await screen.findByRole( 'button', { name: 'Try again' } )
 	);
+	expect(
+		await screen.findByRole( 'link', { name: PRODUCT.name } )
+	).toBeVisible();
 } );
 
 test( 'a resolving read renders the card', async () => {
