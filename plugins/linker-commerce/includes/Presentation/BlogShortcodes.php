@@ -84,13 +84,7 @@ final class BlogShortcodes {
 	/**
 	 * The article's share row in the request's language.
 	 *
-	 * LiveCanvas's own sharing shortcode carries English titles ("Share on
-	 * Facebook") and the plugin ships no German pack; the German template
-	 * therefore composes the same four networks itself (#264 M1). The markup
-	 * and icon set mirror what LiveCanvas printed on the live face, so the
-	 * reader workspace's stylesheet draws both rows the same way. The label
-	 * text is the link's accessible name and travels into title/aria-label;
-	 * the German template's script keeps the server-provided values.
+	 * Each link carries the current article permalink and a localized accessible name.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -112,7 +106,7 @@ final class BlogShortcodes {
 		foreach ( $networks as $network => list( $label, $href ) ) {
 			/* translators: %s: social network name. */
 			$text  = sprintf( __( 'Share on %s', 'linker-commerce' ), $label );
-			$html .= '<a class="btn btn-outline-dark btn-sm btn-' . esc_attr( $network ) . '" href="' . esc_url( $href ) . '" target="_blank" rel="nofollow noopener" title="' . esc_attr( $text ) . '" aria-label="' . esc_attr( $text ) . '">' . $this->share_icon( $network ) . '<span class="d-none d-lg-inline"> ' . esc_html( $label ) . '</span></a>';
+			$html .= '<a href="' . esc_url( $href ) . '" target="_blank" rel="nofollow noopener" title="' . esc_attr( $text ) . '" aria-label="' . esc_attr( $text ) . '">' . $this->share_icon( $network ) . '</a>';
 		}
 		return $html . '</div>';
 	}
