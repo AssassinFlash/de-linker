@@ -360,12 +360,16 @@ class Proxy {
 	public function conversation( ?WP_REST_Request $request = null ): WP_REST_Response {
 		$id              = $this->conversations->existing_id();
 		$store           = $this->thread->read( $id );
-		$store['stream'] = ( new \Linker\Tools\Planner\GenieSources() )->restore(
-			$store['stream'],
-			$request ?? new WP_REST_Request( 'GET' ),
-			'de' === $request?->get_param( 'locale' ) ? 'de' : 'en'
-		);
-		$reply           = new WP_REST_Response(
+		$source          = new \Linker\Tools\Planner\GenieSources();
+		$owner_request   = $request ?? new WP_REST_Request( 'GET' );
+		$locale          = 'de' === $request?->get_param( 'locale' ) ? 'de' : 'en';
+		$store['stream'] = $source->restore( $store['stream'], $owner_request, $locale );
+		foreach ( $store['messages'] as $index => $message ) {
+			if ( is_array( $message['planning_sources'] ?? null ) ) {
+				$store['messages'][ $index ]['planning_sources'] = $source->restore_block( $message['planning_sources'], $owner_request, $locale );
+			}
+		}
+		$reply = new WP_REST_Response(
 			array(
 				'conversation_id' => $id,
 				'messages'        => $store['messages'],

@@ -36,6 +36,22 @@ final class GenieSources {
 	}
 
 	/**
+	 * Verify an earlier answer's persisted source against the current visitor.
+	 *
+	 * @param array<string, mixed> $block Stored source.
+	 * @param WP_REST_Request      $request Current request.
+	 * @param string               $locale Requested language.
+	 * @return array<string, mixed> Verified presentation or unavailable state.
+	 */
+	public function restore_block( array $block, WP_REST_Request $request, string $locale ): array {
+		return $this->verified( $block, $request, $locale ) ?? array(
+			'type'           => 'planning_sources',
+			'schema_version' => 1,
+			'status'         => 'unavailable',
+		);
+	}
+
+	/**
 	 * Replayed resource receipts do not carry a fresh native project request.
 	 *
 	 * @param WP_REST_Response|WP_Error $reply Current permitted replay response.

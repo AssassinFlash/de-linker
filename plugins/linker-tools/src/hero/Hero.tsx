@@ -38,6 +38,7 @@ import {
 	AttachmentChips,
 	refusalText,
 } from '../genie/components/AttachmentChips';
+import { PlanningSourcesCard } from '../genie/components/PlanningSourcesCard';
 import { BlockView } from '../genie/components/BlockView';
 import { Compare } from '../genie/components/Compare';
 import { ContactCard, ContactSent } from '../genie/components/ContactCard';
@@ -1036,6 +1037,16 @@ export function HeroConversation( {
 								) : (
 									message.content
 								) }
+								{ index !== turnAt.current &&
+								message.planning_sources ? (
+									<PlanningSourcesCard
+										block={ message.planning_sources }
+										configuratorLinks={
+											config.configuratorLinks
+										}
+										currentPage={ config.page }
+									/>
+								) : null }
 								{ 'assistant' === message.role
 									? contacts
 											.filter(

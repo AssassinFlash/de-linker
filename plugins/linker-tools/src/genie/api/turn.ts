@@ -311,6 +311,7 @@ export function turnConflictText(): string {
 }
 
 export interface TurnMessage {
+	planning_sources?: PlanningSourcesBlock;
 	role: 'user' | 'assistant';
 	content: string;
 	/** The logged turn this assistant message came from. */
@@ -578,7 +579,11 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
  * @param turn The parsed turn.
  */
 export function assistantMessage( turn: Turn ): TurnMessage {
+	const source = turn.blocks.find(
+		( block ) => block.type === 'planning_sources'
+	);
 	return {
+		...( source ? { planning_sources: source } : {} ),
 		role: 'assistant',
 		content: turn.blocks
 			.filter( ( block ): block is TextBlock => block.type === 'text' )
@@ -665,6 +670,11 @@ export async function readThread(
 			.map( ( message ) => ( {
 				role: message.role,
 				content: message.content,
+				...( message.role === 'assistant' &&
+				message.planning_sources?.type === 'planning_sources' &&
+				validPlanningSources( message.planning_sources )
+					? { planning_sources: message.planning_sources }
+					: {} ),
 			} ) );
 		const identity =
 			Number.isInteger( stored.conversation_id ) &&
@@ -689,11 +699,15 @@ export async function readThread(
 			identity.conversationId &&
 			artifacts &&
 			proof?.allowExistingOwnerBootstrap &&
-			turn.blocks.some(
-				( block ) =>
-					block.type === 'planning_sources' &&
-					block.status === 'unavailable'
-			)
+			( messages.some(
+				( message ) =>
+					message.planning_sources?.status === 'unavailable'
+			) ||
+				turn.blocks.some(
+					( block ) =>
+						block.type === 'planning_sources' &&
+						block.status === 'unavailable'
+				) )
 		) {
 			// This mode cannot create/reset/claim a Woo owner. A fresh native
 			// cookie proof only authorizes the stored references in the reread.

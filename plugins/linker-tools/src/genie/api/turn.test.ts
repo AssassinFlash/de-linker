@@ -28,6 +28,43 @@ afterEach( () => {
 	vi.restoreAllMocks();
 } );
 
+test( 'a historical source stays on its own assistant message after another answer', async () => {
+	const unavailable = {
+		type: 'planning_sources',
+		schema_version: 1,
+		status: 'unavailable',
+	};
+	const fetcher = vi.fn(
+		async () =>
+			new Response(
+				JSON.stringify( {
+					conversation_id: 5,
+					messages: [
+						{
+							role: 'user',
+							content: 'Open the first run.',
+							planning_sources: unavailable,
+						},
+						{
+							role: 'assistant',
+							content: 'The first run.',
+							planning_sources: unavailable,
+						},
+						{ role: 'user', content: 'Now compare my two runs.' },
+					],
+					stream: 'event: block\ndata: {"type":"text","text":"Both runs."}\n\nevent: done\ndata: {}\n\n',
+				} )
+			)
+	);
+	const result = await readThread( '/conversation', '', fetcher );
+	expect( result.messages[ 0 ] ).not.toHaveProperty( 'planning_sources' );
+	expect( result.messages[ 1 ] ).toHaveProperty(
+		'planning_sources',
+		unavailable
+	);
+	expect( result.messages[ 3 ] ).not.toHaveProperty( 'planning_sources' );
+} );
+
 test( 'meta and every block come out in order', () => {
 	const turn = parseStream(
 		'event: meta\n' +

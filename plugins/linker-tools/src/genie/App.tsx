@@ -281,11 +281,16 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( rememberSource ) {
 					savedSourceRead.current =
 						stored.conversationId &&
-						stored.turn?.blocks.some(
-							( block ) =>
-								block.type === 'planning_sources' &&
-								block.status === 'unavailable'
-						)
+						( stored.messages.some(
+							( message ) =>
+								message.planning_sources?.status ===
+								'unavailable'
+						) ||
+							stored.turn?.blocks.some(
+								( block ) =>
+									block.type === 'planning_sources' &&
+									block.status === 'unavailable'
+							) )
 							? stored
 							: null;
 				}
@@ -926,6 +931,13 @@ export function App( { config }: { config: GenieConfig } ) {
 		if ( words( refreshed.messages ) !== words( snapshot ) ) {
 			return;
 		}
+		const messages = snapshot.map( ( message, index ) => {
+			if ( ! message.planning_sources ) return message;
+			const verified = refreshed.messages[ index ]?.planning_sources;
+			return { ...message, planning_sources: verified };
+		} );
+		currentThread.current = messages;
+		setThread( messages );
 		const prior = saved.turn.blocks.filter(
 			( block ) => block.type === 'planning_sources'
 		);
@@ -933,6 +945,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			( block ) => block.type === 'planning_sources'
 		);
 		if ( prior.length !== 1 || next.length !== 1 ) {
+			savedSourceRead.current = messages.some(
+				( message ) =>
+					message.planning_sources?.status === 'unavailable'
+			)
+				? { ...saved, messages }
+				: null;
 			return;
 		}
 		// Refresh this server-owned block only. Reapplying ordinary history or
@@ -945,8 +963,12 @@ export function App( { config }: { config: GenieConfig } ) {
 		};
 		setTurn( updated );
 		savedSourceRead.current =
-			next[ 0 ].status === 'unavailable'
-				? { ...saved, turn: updated }
+			next[ 0 ].status === 'unavailable' ||
+			messages.some(
+				( message ) =>
+					message.planning_sources?.status === 'unavailable'
+			)
+				? { ...saved, turn: updated, messages }
 				: null;
 	}, [ loadThread, draftContext ] );
 
@@ -2546,6 +2568,18 @@ export function App( { config }: { config: GenieConfig } ) {
 														}
 													/>
 												</div>
+											) : null }
+											{ index !== turnAt.current &&
+											message.planning_sources ? (
+												<PlanningSourcesCard
+													block={
+														message.planning_sources
+													}
+													configuratorLinks={
+														config.configuratorLinks
+													}
+													currentPage={ page }
+												/>
 											) : null }
 											{ index === turnAt.current &&
 											message.role === 'assistant'
