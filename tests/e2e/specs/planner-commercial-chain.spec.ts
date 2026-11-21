@@ -54,10 +54,7 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 
 	// The site's use is what offers the commercial sizing panel; it lives in
 	// the brief's own section, not the project-location section beside it.
-	await page
-		.locator('#sc-project select')
-		.first()
-		.selectOption('commercial');
+	await page.locator('#sc-project select').first().selectOption('commercial');
 	// The annual consumption is the brief's declared load.
 	const annual = page.locator('#sc-project input[inputmode="decimal"]');
 	if (await annual.count()) await annual.first().fill('380000');

@@ -17523,6 +17523,7 @@ msgstr "Ihre Änderungen an der CSV-Datei und ihrer Zuordnung sind noch vorhande
 msgid "Add a battery while keeping your existing PV inverter."
 msgstr "Sie ergänzen einen Batteriespeicher und behalten Ihren vorhandenen PV-Wechselrichter."
 
+#: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/configurator/ReviewProposal.tsx
 msgid "Report details"
 msgstr "Berichtsdetails"

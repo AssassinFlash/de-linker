@@ -198,7 +198,9 @@ for (const lang of ['en', 'de'] as const) {
 		).toHaveValue('');
 		await openSection(page, 'site');
 		await expect(
-			page.locator('#sc-project').getByLabel(words.address, { exact: true })
+			page
+				.locator('#sc-project')
+				.getByLabel(words.address, { exact: true })
 		).toHaveValue('');
 		await expect(page.locator('#sc-project textarea')).toHaveValue(
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
@@ -369,7 +371,9 @@ for (const lang of ['en', 'de'] as const) {
 			{ timeout: 60_000 }
 		);
 		await page
-			.locator('.sc-project-navigation button', { hasText: words.projects })
+			.locator('.sc-project-navigation button', {
+				hasText: words.projects,
+			})
 			.click();
 		await expect(page.locator('.sc-workspace')).toBeVisible();
 		await expect(page.locator('.sc-project-rows')).toContainText(

@@ -114,13 +114,18 @@ final class Application {
 		( new WindPress( $this->plugin_file ) )->register();
 	}
 
+	/** Public configurator URL for the current site language. */
+	private function configurator_url(): string {
+		return class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator' ) : '';
+	}
+
 	/** Open the native translated Woo inquiry from the public configurator showcase. */
 	public function inquiry_entry(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Exact public view discriminator, never written or rendered.
-		if ( 'inquiry' !== ( $_GET['view'] ?? null ) || isset( $_GET['project'] ) || ! is_page() || ! function_exists( 'wc_get_checkout_url' ) || ! class_exists( PageUrls::class ) ) {
+		if ( 'inquiry' !== ( $_GET['view'] ?? null ) || isset( $_GET['project'] ) || ! is_page() || ! function_exists( 'wc_get_checkout_url' ) ) {
 			return;
 		}
-		if ( get_permalink( get_queried_object_id() ) === PageUrls::translated( 'solution-configurator' ) ) {
+		if ( get_permalink( get_queried_object_id() ) === $this->configurator_url() ) {
 			wp_safe_redirect( wc_get_checkout_url() );
 			exit;
 		}
@@ -249,7 +254,7 @@ final class Application {
 			if ( ! is_front_page() ) {
 				return '';
 			}
-			$target = class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator' ) : '';
+			$target = $this->configurator_url();
 			if ( '' === $target ) {
 				return '';
 			}
