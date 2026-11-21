@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
 import { IDBFactory } from "fake-indexeddb";
+import dcPlant from "./fixtures/dc-plant-energy-run.json" with { type: "json" };
+import {
+	plantEnergyDraft,
+	plantEnergyEquipment,
+} from "../src/domain/plantEnergy.ts";
 import { DraftStore } from "../src/data/DraftStore.ts";
 import { setupDom, until, deferred, enter } from "./dom-fixture.mjs";
 
@@ -155,14 +160,15 @@ async function rig(
 		realRecovery = false,
 		storageDown = false,
 		cleanupGate = null,
-		editor = false,
+		workbench = false,
+		saveGate = null,
 		focusGate = null,
 		recoveryOrigin = scope,
 	} = {},
 ) {
 	const dom = setupDom();
 	let durableStore;
-	if (realRecovery) {
+	if (realRecovery || workbench) {
 		const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 		Object.defineProperty(globalThis, "indexedDB", {
 			value: new IDBFactory(),
@@ -172,6 +178,8 @@ async function rig(
 			if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
 			else delete globalThis.indexedDB;
 		});
+	}
+	if (realRecovery) {
 		durableStore = new DraftStore();
 		for (const body of bodies)
 			await durableStore.writeProfileImport(recoveryOrigin, body);
@@ -180,7 +188,8 @@ async function rig(
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { ProfileIntake } = await import("../src/components/ProfileIntake.tsx");
-	const { ProjectEditor } = await import("../src/components/ProjectEditor.tsx");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	let owner = session,
@@ -198,6 +207,19 @@ async function rig(
 		input_sha256: "9".repeat(64),
 		inputs: { brief: emptyBrief() },
 	};
+	if (workbench) {
+		window.history.replaceState(
+			null,
+			"",
+			"?project=" + projectId + "#sc-energy",
+		);
+		project.inputs.equipment_plant = dcPlant.project.inputs.equipment_plant;
+		project.inputs.energy_plant_setup = {
+			...plantEnergyDraft(project.inputs, plantEnergyEquipment(project.inputs)),
+			coupling: "plant_shared_dc",
+			controller: "proportional_available_power_self_consumption_v1",
+		};
+	}
 	const opening = project;
 	const recoveryScopes = [...new Set([scope, recoveryOrigin])];
 	const refusedBodies = new Set();
@@ -329,7 +351,10 @@ async function rig(
 			}
 			if (path.endsWith("/assets/read")) return json(asset);
 			if (path.endsWith("/profiles/preview")) return json(preview);
+			if (path.endsWith("/projects/runs"))
+				return json({ items: [], next: null });
 			if (path.endsWith("/projects/revise")) {
+				if (saveGate) await saveGate.promise;
 				const command = JSON.parse(init.body);
 				project = {
 					...project,
@@ -352,8 +377,8 @@ async function rig(
 					SessionBoundary,
 					{ client },
 					(confirmed, recheck) =>
-						editor
-							? React.createElement(ProjectEditor, {
+						workbench
+							? React.createElement(Configurator, {
 									key: confirmed.query_scope,
 									project: opening,
 									session: confirmed,
@@ -389,6 +414,12 @@ async function rig(
 			),
 		),
 	);
+	if (workbench) {
+		await until(
+			() => button("Interval sources") && !button("Interval sources").disabled,
+		);
+		await act(async () => button("Interval sources").click());
+	}
 	return {
 		client,
 		uploads,
@@ -575,7 +606,7 @@ async function prepareFile(t, options = {}) {
 		input.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await until(() => !field("Column delimiter").disabled);
-	if (!options.editor)
+	if (!options.workbench)
 		await act(async () => assert.equal(fixture.guard(), false));
 	await choose("Column delimiter", ";");
 	await act(async () => button("Preview columns").click());
@@ -740,11 +771,18 @@ test("a refused recovery is removed before slow cleanup and cannot regain false 
 });
 
 test("confirmed server selection releases the source workflow despite unavailable browser recovery", async (t) => {
-	const fixture = await prepareFile(t, { storageDown: true, editor: true });
+	const gate = deferred();
+	const fixture = await prepareFile(t, {
+		storageDown: true,
+		workbench: true,
+		saveGate: gate,
+	});
 	await act(async () => button("Import and review data").click());
 	await until(() => button("Use this profile in the open draft"));
 	await act(async () => button("Use this profile in the open draft").click());
-	await until(() => button("Remove draft selection"));
+	await until(() =>
+		fixture.calls.some((path) => path.endsWith("/projects/revise")),
+	);
 	assert.equal(
 		document.body.textContent.includes(
 			"This profile selection is saved with the project.",
@@ -753,7 +791,7 @@ test("confirmed server selection releases the source workflow despite unavailabl
 	);
 	await act(async () => button("Projects").click());
 	assert.equal(fixture.closes, 0);
-	await act(async () => button("Save project").click());
+	await act(async () => gate.resolve());
 	await until(() =>
 		document.body.textContent.includes(
 			"This profile selection is saved with the project.",
@@ -769,49 +807,43 @@ test("confirmed server selection releases the source workflow despite unavailabl
 	assert.equal(fixture.closes, 1);
 });
 
-test("selection notices follow current draft undo and redo independently of the saved baseline", async (t) => {
-	await prepareFile(t, { editor: true });
+test("an automatically saved selection follows draft undo and redo without moving focus", async (t) => {
+	const fixture = await prepareFile(t, { workbench: true });
 	await act(async () => button("Import and review data").click());
 	await until(() => button("Use this profile in the open draft"));
 	await act(async () => button("Use this profile in the open draft").click());
-	const draftNotice = () =>
-		document.body.textContent.includes(
-			"The profile is selected in the open draft.",
-		);
 	const savedNotice = () =>
 		document.body.textContent.includes(
 			"This profile selection is saved with the project.",
 		);
-	await until(draftNotice);
+	await until(savedNotice);
+	assert.ok(
+		button("Remove draft selection"),
+		"The selected net import profile is visible in interval sources.",
+	);
+	assert.equal(
+		fixture.project.inputs.profile_selections.selected.net_import,
+		assetId,
+	);
 	assert.ok(
 		document.activeElement.textContent.startsWith(
-			"The profile is selected in the open draft.",
+			"This profile selection is saved with the project.",
 		),
 	);
-	assert.ok(button("Remove draft selection"));
 	button("Undo").focus();
 	await act(async () => button("Undo").click());
-	assert.equal(button("Remove draft selection"), undefined);
-	assert.equal(draftNotice(), false);
 	assert.equal(savedNotice(), false);
+	assert.ok(!button("Remove draft selection"));
+	assert.equal(document.activeElement, button("Undo"));
+	assert.equal(
+		fixture.project.inputs.profile_selections.selected.net_import,
+		assetId,
+	);
 	button("Redo").focus();
 	await act(async () => button("Redo").click());
-	assert.ok(button("Remove draft selection"));
-	assert.equal(draftNotice(), true);
-	assert.equal(
-		document.activeElement,
-		button("Redo"),
-		"history does not replay import-completion focus",
-	);
-	await act(async () => button("Save project").click());
-	await until(savedNotice);
-	await act(async () => button("Undo").click());
-	assert.equal(button("Remove draft selection"), undefined);
-	assert.equal(draftNotice(), false);
-	assert.equal(savedNotice(), false);
-	await act(async () => button("Redo").click());
-	assert.ok(button("Remove draft selection"));
 	assert.equal(savedNotice(), true);
+	assert.ok(button("Remove draft selection"));
+	assert.equal(document.activeElement, button("Redo"));
 });
 
 test("a different native scope confirmed during the recovery write prevents an old upload dispatch", async (t) => {
@@ -975,7 +1007,7 @@ test("same-scope revalidation does not fence a deferred completion", async (t) =
 	const gate = deferred();
 	const fixture = await rig(t, {
 		bodies: [command()],
-		editor: true,
+		workbench: true,
 		focusGate: gate,
 	});
 	await until(() => button("Check or retry this import"));
@@ -985,7 +1017,15 @@ test("same-scope revalidation does not fence a deferred completion", async (t) =
 	// The focus dispatched inside the read's continuation runs one light
 	// probe; admission is never dropped, so the completion is not deferred
 	// behind a re-verification and no bootstrap is replayed.
-	await until(() => button("Import interval data"));
+	await until(() =>
+		document.body.textContent.includes(
+			"This profile selection is saved with the project.",
+		),
+	);
+	assert.equal(
+		fixture.project.inputs.profile_selections.selected.net_import,
+		assetId,
+	);
 	assert.equal(fixture.client.isCurrentScope(scope), true);
 	const bootstraps = fixture.calls.filter((path) =>
 		path.endsWith("/bootstrap"),
@@ -993,7 +1033,7 @@ test("same-scope revalidation does not fence a deferred completion", async (t) =
 	assert.ok(bootstraps >= 1);
 	assert.ok(
 		document.activeElement.textContent.startsWith(
-			"The profile is selected in the open draft.",
+			"This profile selection is saved with the project.",
 		),
 	);
 	button("Undo").focus();

@@ -333,6 +333,7 @@ export function useProjectDraft(
 		// latest snapshot, including edits made during an earlier IDB write.
 		while (latest.current) {
 			const snapshot = latest.current;
+			if (!snapshot.pending && !isDirty(snapshot)) return true;
 			try {
 				await persist(snapshot);
 			} catch {

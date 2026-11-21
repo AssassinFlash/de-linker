@@ -9,15 +9,16 @@ import { setupDom, until, enter } from "./dom-fixture.mjs";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { geometryImportStore } from "../src/data/GeometryImportStore.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
+import geometryAsset from "../../../fixtures/planning/geometry-import-asset.json" with { type: "json" };
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
-import { workspaceFromHash } from "../src/components/ProjectEditor.tsx";
 
 register("./map-library-loader.mjs", import.meta.url);
 
-test("editing the site address or country drops the old search postcode and retains coordinates", async (t) => {
+test("changing the site clears its previous geocoding while keeping roof and interval data", async (t) => {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
-	const { BriefForm } = await import("../src/components/BriefForm.tsx");
+	const { ProjectDetails } =
+		await import("../src/components/configurator/ProjectDetails.tsx");
 	const root = createRoot(dom.element);
 	t.after(() => dom.dispose(root));
 	const brief = {
@@ -32,70 +33,121 @@ test("editing the site address or country drops the old search postcode and reta
 			coordinate_basis: "user_entered",
 		},
 	};
+	const inputs = {
+		brief,
+		geometry: geometryAsset.metadata.geometry_import.geometry,
+		profile_selections: {
+			schema_version: 1,
+			selected: { gross_load: "d".repeat(32) },
+		},
+	};
 	const changes = [];
 	await act(async () =>
 		root.render(
-			React.createElement(BriefForm, {
-				brief,
+			React.createElement(ProjectDetails, {
+				inputs,
+				disabled: false,
 				config: {
 					locale: "en",
 					countries: { DE: "Germany", NL: "Netherlands" },
 				},
-				onChange: (value) => changes.push(value),
-				onValidity: () => {},
-				workspace: "site",
+				edit: (apply) => {
+					changes.push(apply(inputs));
+					return true;
+				},
 			}),
 		),
 	);
 	await enter(
-		document.querySelector('#lp-site input[autocomplete="off"]'),
+		document.querySelector('input[name="location_label"]'),
 		"10115 Berlin",
 	);
-	const country = document.querySelector("#lp-site select[aria-labelledby]");
+	const country = document.querySelector('select[name="country"]');
 	await act(async () => {
 		country.value = "NL";
 		country.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	assert.equal(changes.length, 2);
 	for (const value of changes) {
-		assert.equal(value.site.postal_code, null);
-		assert.equal(value.site.latitude, brief.site.latitude);
-		assert.equal(value.site.longitude, brief.site.longitude);
+		assert.equal(value.brief.site.postal_code, null);
+		assert.equal(value.brief.site.latitude, null);
+		assert.equal(value.brief.site.longitude, null);
+		assert.equal(value.brief.site.coordinate_basis, "not_provided");
+		assert.deepEqual(value.geometry, inputs.geometry);
+		assert.deepEqual(value.profile_selections, inputs.profile_selections);
 	}
 });
 
-test("saved roof projects reopen in design while energy projects and explicit routes keep their entry", async (t) => {
+test("opening a saved project honors the requested workspace and sends storage-only projects to energy use", async (t) => {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
+	const { default: Configurator } =
+		await import("../src/components/configurator/Configurator.tsx");
 	const root = createRoot(dom.element);
-	t.after(() => dom.dispose(root));
-	const brief = {
-		...emptyBrief(),
-		site: {
-			...emptyBrief().site,
-			country_code: "DE",
-			location_label: "Synthetic address",
-			latitude: 50.94,
-			longitude: 6.96,
-			coordinate_basis: "user_entered",
+	const cache = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	globalThis.indexedDB = new IDBFactory();
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else delete globalThis.indexedDB;
+	});
+	const client = {
+		isCurrentScope: () => true,
+		async query(path) {
+			assert.equal(path, "projects/runs");
+			return { items: [], next: null };
 		},
 	};
-	assert.equal(workspaceFromHash({ brief }), "design");
-	assert.equal(workspaceFromHash({ brief, geometry: {} }), "design");
-	assert.equal(
-		workspaceFromHash({ brief: { ...brief, system_scope: "new_pv_storage" } }),
-		"design",
-	);
-	assert.equal(
-		workspaceFromHash({ brief: { ...brief, system_scope: "storage_only" } }),
-		"site",
-	);
-	assert.equal(workspaceFromHash({ brief, equipment_setup: {} }), "site");
-	assert.equal(workspaceFromHash({ brief: emptyBrief() }), "site");
-	location.hash = "#lp-overview";
-	assert.equal(workspaceFromHash({ brief }), "site");
-	location.hash = "#lp-load";
-	assert.equal(workspaceFromHash({ brief }), "energy");
+	const store = {
+		read: async () => null,
+		candidates: async () => [],
+		readProfileImports: async () => [],
+	};
+	const session = {
+		query_scope: "3".repeat(64),
+		kind: "guest",
+		runtime: { limits: { max_page_size: 20 }, models: {} },
+	};
+	for (const [systemScope, hash, label] of [
+		["new_pv_storage", "", "Project"],
+		["new_pv_storage", "#sc-solar", "Solar"],
+		["new_pv_storage", "#sc-energy", "Energy use"],
+		["storage_only", "#sc-solar", "Energy use"],
+	]) {
+		const project = {
+			...knownPv.project,
+			inputs: { brief: { ...emptyBrief(), system_scope: systemScope } },
+		};
+		window.history.replaceState(null, "", "?project=" + project.id + hash);
+		await act(async () =>
+			root.render(
+				React.createElement(
+					QueryClientProvider,
+					{ client: cache },
+					React.createElement(Configurator, {
+						key: systemScope + hash,
+						project,
+						session,
+						client,
+						store,
+						config: { locale: "en-GB", countries: { DE: "Germany" } },
+						recheck() {},
+						close: () => true,
+					}),
+				),
+			),
+		);
+		await until(() =>
+			document
+				.querySelector('nav [aria-current="step"]')
+				?.textContent.endsWith(label),
+		);
+		assert.equal(location.hash, hash);
+	}
 });
 
 test("a failed aerial lookup retries on request without changing saved coordinates or roof geometry", async (t) => {
@@ -119,16 +171,8 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	const { maps } = await import("./map-library-fixture.mjs");
 	const { default: Configurator } =
 		await import("../src/components/configurator/Configurator.tsx");
-	location.hash = "#lp-map-roof-properties";
-	const geometry = JSON.parse(
-		readFileSync(
-			new URL(
-				"../../../fixtures/planning/geometry-import-asset.json",
-				import.meta.url,
-			),
-			"utf8",
-		),
-	).metadata.geometry_import.geometry;
+	location.hash = "#sc-roof";
+	const geometry = geometryAsset.metadata.geometry_import.geometry;
 	const project = {
 		id: "1".repeat(32),
 		title: "Synthetic aerial retry",
@@ -280,15 +324,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	const { default: Configurator } =
 		await import("../src/components/configurator/Configurator.tsx");
 	const { createRoot } = await import("react-dom/client");
-	const asset = JSON.parse(
-			readFileSync(
-				new URL(
-					"../../../fixtures/planning/geometry-import-asset.json",
-					import.meta.url,
-				),
-				"utf8",
-			),
-		),
+	const asset = geometryAsset,
 		raw = readFileSync(
 			new URL(
 				"../../../fixtures/planning/source-roof-wgs84.geojson",

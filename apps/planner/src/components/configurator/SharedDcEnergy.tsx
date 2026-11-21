@@ -34,6 +34,7 @@ import {
 } from "../../domain/plantEnergy.ts";
 import { sharedProfileRange } from "../../domain/profileCoverage.ts";
 import {
+	MEASUREMENTS,
 	matchesProfileRole,
 	readAsset,
 	readPreview,
@@ -304,6 +305,10 @@ export function SharedDcEnergy({
 			? ["critical_load" as const]
 			: []),
 	];
+	const displayedRoles = [
+		...roles,
+		...MEASUREMENTS.filter((role) => selected[role] && !roles.includes(role)),
+	];
 	async function useRange() {
 		if (rangeRequest.current || blocked) return;
 		const request = new AbortController();
@@ -464,7 +469,7 @@ export function SharedDcEnergy({
 					{Boolean(actionError) && <EnergyError error={actionError} />}
 					{section === "sources" && (
 						<div className="sc-energy-work">
-							{roles.map((role) =>
+							{displayedRoles.map((role) =>
 								selected[role] ? (
 									<details key={role}>
 										<summary>{measurementLabel(role)}</summary>
