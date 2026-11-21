@@ -262,7 +262,9 @@ def main() -> None:
         }:
             raise RuntimeError("The reviewed pages changed after the backup was made")
         if current["metadata"] != backup.get("published_metadata"):
-            raise RuntimeError("The translation metadata differs from the release receipt")
+            raise RuntimeError(
+                "The translation metadata differs from the release receipt"
+            )
         pair.invoke(
             args.wp,
             {
@@ -323,27 +325,34 @@ def main() -> None:
     args.backup_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     backup_path = args.backup_dir / f"industry-standards-before-{stamp}.json"
-    with backup_path.open("x") as handle:
-        json.dump({"snapshot": snapshot, "changes": changes}, handle, indent=2)
-    backup_path.chmod(0o600)
-    payload = {
-        "mode": "adopt" if snapshot["current"] else "restore",
+    published_meta = snapshot["metadata"]
+    if snapshot["current"]:
+        preview = pair.invoke(
+            args.wp, {"mode": "preview_page_adoption", "changes": changes}
+        )
+        published_meta = preview["expected_metadata"]
+    receipt = {
+        "snapshot": snapshot,
         "changes": changes,
-        "metadata_before": snapshot["metadata"],
+        "published_metadata": published_meta,
     }
-    if not snapshot["current"]:
-        # A warranty correction does not review earlier translation differences.
-        payload["metadata_restore"] = snapshot["metadata"]
-    pair.invoke(args.wp, payload)
-    readback = pair.read(args.wp, args.en, args.de)
-    if readback["pages"] != {str(args.en): after[0], str(args.de): after[1]} or (
-        not snapshot["current"] and readback["metadata"] != snapshot["metadata"]
-    ):
-        raise RuntimeError(f"Paired readback differs; backup: {backup_path}")
-    saved = json.loads(backup_path.read_text())
-    saved["published_metadata"] = readback["metadata"]
-    saved["readback_verified"] = True
-    backup_path.write_text(json.dumps(saved, indent=2))
+    with backup_path.open("x") as handle:
+        backup_path.chmod(0o600)
+        json.dump(receipt, handle, indent=2)
+    pair.write(
+        args.wp,
+        (args.en, args.de),
+        snapshot,
+        {str(args.en): after[0], str(args.de): after[1]},
+        published_meta,
+        adopt=snapshot["current"],
+    )
+    receipt["readback_verified"] = True
+    verified = backup_path.with_suffix(".tmp")
+    with verified.open("x") as handle:
+        verified.chmod(0o600)
+        json.dump(receipt, handle, indent=2)
+    verified.replace(backup_path)
     removed = prune_page_backups(args.backup_dir)
     print(
         json.dumps(

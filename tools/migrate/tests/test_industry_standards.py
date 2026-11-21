@@ -220,6 +220,12 @@ def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
     monkeypatch.setattr(standards.pair, "read", lambda *_: state)
 
     def store(prefix, payload):
+        import json
+
+        saved = json.loads(
+            next(tmp_path.glob("industry-standards-before-*.json")).read_text()
+        )
+        assert saved["published_metadata"] == source["metadata"]
         assert payload["mode"] == "restore"
         assert payload["metadata_restore"] == source["metadata"]
         state["pages"] = {str(row["id"]): row["after"] for row in payload["changes"]}

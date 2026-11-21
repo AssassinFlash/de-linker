@@ -16,6 +16,7 @@ def test_public_page_command_lists_each_native_pair() -> None:
         text=True,
         check=True,
     )
+    assert "--full-backup" in result.stdout
     for page in ("about", "services", "utility", "privacy", "imprint"):
         assert page in result.stdout
 

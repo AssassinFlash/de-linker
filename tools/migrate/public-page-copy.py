@@ -1,7 +1,8 @@
 """Publish or restore the reviewed About, Services, Utility, Privacy and Imprint pairs.
 
 With --wp alone, preview all five pairs. --write and --restore also require
---backup-dir. Run after taking the cutover database snapshot. Use --page
+--backup-dir. Production writes also require --full-backup with the completed
+site backup manifest in addition to the cutover database snapshot. Use --page
 to publish or restore a single pair.
 """
 
@@ -64,12 +65,16 @@ def main() -> None:
     parser.add_argument("--wp", required=True, help="WP-CLI prefix")
     parser.add_argument("--page", choices=PAGES, help="Default: all five pairs")
     parser.add_argument("--backup-dir", type=Path)
+    parser.add_argument(
+        "--full-backup", type=Path, help="Completed production backup directory"
+    )
     action = parser.add_mutually_exclusive_group()
     action.add_argument("--write", action="store_true")
     action.add_argument("--restore", action="store_true")
     args = parser.parse_args()
     if (args.write or args.restore) and not args.backup_dir:
         parser.error("--write and --restore require --backup-dir")
+    full_backup_verified = False
     for page in (args.page,) if args.page else PAGES:
         ids = PAGES[page]
         current = wp.read(args.wp, *ids)
@@ -107,6 +112,17 @@ def main() -> None:
         if not args.write:
             print(f"{site} {page}: ready to publish")
             continue
+        if (
+            urlsplit(site).hostname in {"de-linker.com", "www.de-linker.com"}
+            and not full_backup_verified
+        ):
+            if (
+                not args.full_backup
+                or not (args.full_backup / "manifest.json").is_file()
+            ):
+                parser.error("Production requires a completed --full-backup")
+            source("repair-legal-script").verify_full_backup(args.full_backup)
+            full_backup_verified = True
         meta = current["metadata"]
         if current["current"]:
             preview = wp.invoke(
