@@ -1549,7 +1549,7 @@ class ScopeTest(unittest.TestCase):
             "GlobalBusinessCapacityTest",
             "run_inquiry()",
             "PublicAdmissionOwnersTest",
-            "ProformaPriceGateTest",
+            "QuotationPriceGateTest",
             "GenieInquiryTest",
             "InquiryAssessmentTest",
             "MessageIdWitnessTest",
