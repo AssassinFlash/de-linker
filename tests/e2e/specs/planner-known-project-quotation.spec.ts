@@ -524,9 +524,15 @@ test('an unfinished CSV mapping stays in place until the customer removes it', a
 	await expect(field(form, 'load_profile_source')).toHaveValue(
 		'Konstanz meter reading'
 	);
-	await expect(form.getByText(/your CSV is still here/i)).toBeVisible();
+	const csvNotice = page
+		.locator('[data-linker-planner]')
+		.getByRole('alert')
+		.filter({ hasText: /your CSV is still here/i });
+	await expect(csvNotice).toBeVisible();
 	await shot(page, 'csv-language-recovery');
-	await form.getByRole('button', { name: 'Remove CSV', exact: true }).click();
+	await csvNotice
+		.getByRole('button', { name: 'Remove CSV', exact: true })
+		.click();
 	await changeLanguage(page, 'de');
 	await checkFacts(projectForm(page));
 });

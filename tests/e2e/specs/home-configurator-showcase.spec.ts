@@ -227,7 +227,20 @@ for (const language of ['en', 'de'] as const) {
 						() => document.documentElement.scrollWidth
 					)
 				).toBeLessThanOrEqual(width);
-				await section.screenshot({
+				const clip = await section.evaluate((node) => {
+					window.scrollTo({ top: 0, behavior: 'instant' });
+					const { x, y, width, height } =
+						node.getBoundingClientRect();
+					return {
+						x: x + window.scrollX,
+						y: y + window.scrollY,
+						width,
+						height,
+					};
+				});
+				await page.screenshot({
+					fullPage: true,
+					clip,
 					path: test
 						.info()
 						.outputPath(
