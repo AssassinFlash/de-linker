@@ -32,6 +32,9 @@ final class Queue {
 	// Two missed minute ticks make readiness stale; sending still requires a normal permit.
 	public const RECOVERY_STALE = 120;
 
+	/** Maximum orders examined in one background recovery pass. */
+	public const RECOVERY_BATCH = 192;
+
 	/** Legacy observation display switch; it never bypasses mandatory sending authorization. */
 	public static function enabled(): bool {
 		return 'yes' === get_option( self::ENABLED, 'no' );
@@ -165,7 +168,7 @@ final class Queue {
 		WC()->mailer();
 		\Linker\Commerce\Registration\VatNotice::recover();
 		// Page through pending records in the same bounded recovery batches.
-		$limit  = 192;
+		$limit  = self::RECOVERY_BATCH;
 		$offset = max( 0, (int) get_option( self::RECOVERY_OFFSET, 0 ) );
 		$ids    = self::pending_ids( $offset, $limit );
 		if ( array() === $ids && $offset > 0 ) {

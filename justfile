@@ -315,7 +315,7 @@ ci-native groups name:
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter "$filter")
     }
     run_inquiry() {
-        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'NativeFormRoutesTest|PublicLedgerTest|PublicVerificationTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest')
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'NativeFormRoutesTest|PublicLedgerTest|PublicVerificationTest|PublicAdmissionOwnersTest|NativeInquirySubmissionTest|BusinessAdmissionTest')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter InquiryStatusRestTest)
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ReadSolutionRestTest)
         just --justfile "$root/justfile" page-cache-chain "$name"

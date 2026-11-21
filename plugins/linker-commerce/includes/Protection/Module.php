@@ -29,7 +29,6 @@ final class Module {
 		add_action( 'init', array( $this, 'schedule' ) );
 		add_action( self::MAINTENANCE, array( $this, 'maintain' ) );
 		( new Privacy() )->register();
-		( new BusinessPolicy() )->register();
 		add_filter( 'linker_commerce_receipt_budget_reason', array( $this, 'receipt_budget' ), 10, 4 );
 		( new BusinessRecord() )->register();
 		( new BusinessCapacity() )->register();

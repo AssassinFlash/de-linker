@@ -1339,7 +1339,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			}
 		);
 		$marker  = self::newest_mail_job();
-		$receipt = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
+		$receipt = \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false );
 		add_action( 'wp_insert_post', $cut, 10, 2 );
 		try {
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
@@ -1350,7 +1350,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 1, $hits );
 		self::assertSame( array(), self::mail_jobs_after( $marker ) );
 		self::assertSame( '0', $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key='_linker_mail_message' AND post_id=%d", $created ) ), 'No replayed orphan Message meta survives a lost transaction.' );
-		self::assertSame( $receipt, ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' ) );
+		self::assertSame( $receipt, \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'approved', $state['status'] );
@@ -1413,7 +1413,6 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				null === $old ? delete_option( \Linker\Commerce\Protection\Ledger::OPTION ) : update_option( \Linker\Commerce\Protection\Ledger::OPTION, $old, false );
 			}
 		);
-		$legacy   = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
 		$order    = $this->submit();
 		$admitted = $this->permissions( $order->get_id() );
 		self::assertSame( array( 'receipt' ), array_keys( $admitted['jobs'] ) );
@@ -1423,7 +1422,6 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$state = $this->permissions( $order->get_id() );
 		self::assertSame( $admitted['jobs']['receipt'], $state['jobs']['receipt'] );
 		self::assertSame( $charged, get_option( \Linker\Commerce\Protection\Ledger::OPTION ) );
-		self::assertSame( $legacy, ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', \Linker\Commerce\Inquiry\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' ) );
 		$receipt = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['jobs']['receipt']['id'] );
 		self::assertNotNull( $receipt );
 		self::assertStringContainsString( '#' . $order->get_order_number(), $receipt['message']->subject );
