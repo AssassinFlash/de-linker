@@ -25,6 +25,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { readBrief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
+import { Icon } from "../Icon.tsx";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
@@ -112,14 +113,21 @@ function ReportContent({ section }: { section: ReportSection }) {
 function ReportItemSections({
 	report,
 	heading: Heading = "h2",
+	materials,
 }: {
 	report: PlanningReport;
 	heading?: "h2" | "h4";
+	materials: ReactNode;
 }) {
-	return report.sections.filter(isReportItemSection).map((section) => (
-		<section key={section.id} className="sc-card" lang={report.locale}>
-			<Heading>{section.title}</Heading>
-			<ReportContent section={section} />
+	return report.sections.filter(isReportItemSection).map((section, index) => (
+		<section key={section.id} className="sc-card sc-report-items">
+			<header className="sc-report-items-head">
+				<Heading lang={report.locale}>{section.title}</Heading>
+				{index === 0 && materials}
+			</header>
+			<div lang={report.locale}>
+				<ReportContent section={section} />
+			</div>
 		</section>
 	));
 }
@@ -138,6 +146,7 @@ function ReportPreview({
 	const objectUrl = useRef<string | null>(null);
 	const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 	const [pdfFailed, setPdfFailed] = useState(false);
+	const [open, setOpen] = useState(false);
 	const name = useId();
 
 	const releasePdf = useCallback(() => {
@@ -172,10 +181,11 @@ function ReportPreview({
 		<>
 			<button
 				type="button"
-				className="sc-button"
+				className="sc-button sc-report-preview-button"
 				disabled={!allowed}
 				onClick={() => {
 					dialog.current?.showModal();
+					setOpen(true);
 					void preparePdf();
 				}}
 			>
@@ -187,6 +197,7 @@ function ReportPreview({
 				aria-labelledby={name}
 				onClose={() => {
 					releasePdf();
+					setOpen(false);
 					setPdfUrl(null);
 					setPdfFailed(false);
 				}}
@@ -206,6 +217,12 @@ function ReportPreview({
 				<div className="sc-report-pdf">
 					{pdfUrl && allowed ? (
 						<>
+							<object
+								className="sc-report-document"
+								type="application/pdf"
+								data={pdfUrl}
+								aria-label={report.title}
+							/>
 							<a
 								className="sc-button"
 								href={pdfUrl}
@@ -240,15 +257,19 @@ function ReportPreview({
 						<p role="status">{__("Preparing PDF…", "linker-tools")}</p>
 					)}
 				</div>
-				<div className="sc-report-preview" lang={report.locale}>
-					<p className="sc-muted">{report.subtitle}</p>
-					{report.sections.map((section) => (
-						<section key={section.id}>
-							<h3>{section.title}</h3>
-							<ReportContent section={section} />
-						</section>
-					))}
-				</div>
+				<details className="sc-report-readable" open={!pdfUrl || !allowed}>
+					<summary>{__("Report details", "linker-tools")}</summary>
+					<div className="sc-report-preview" lang={report.locale}>
+						<p className="sc-muted">{report.subtitle}</p>
+						{open &&
+							report.sections.map((section) => (
+								<section key={section.id}>
+									<h3>{section.title}</h3>
+									<ReportContent section={section} />
+								</section>
+							))}
+					</div>
+				</details>
 			</dialog>
 		</>
 	);
@@ -671,13 +692,17 @@ export function ReviewProposal({
 		</section>
 	);
 	const historyPanel = history &&
-		(selected || history.items.length > 0 || history.hasMore) && (
+		(selected ||
+			history.items.length > 0 ||
+			history.hasMore ||
+			history.loading ||
+			history.loadFailed) && (
 			<section
-				className="sc-card"
+				className="sc-card sc-report-history"
 				aria-label={__("Calculation history", "linker-tools")}
 			>
 				<h2>{__("Calculation history", "linker-tools")}</h2>
-				<div className="sc-actions">
+				<div className="sc-report-versions">
 					{history.items.map((item) => (
 						<button
 							type="button"
@@ -689,12 +714,15 @@ export function ReviewProposal({
 								history.select(history.selected === item.id ? null : item.id)
 							}
 						>
-							{sprintf(__("Revision %d", "linker-tools"), item.revision)}
-							{" · "}
-							{new Intl.DateTimeFormat(locale, {
-								dateStyle: "short",
-								timeStyle: "short",
-							}).format(item.created_at * 1000)}
+							<strong>
+								{sprintf(__("Revision %d", "linker-tools"), item.revision)}
+							</strong>
+							<time dateTime={new Date(item.created_at * 1000).toISOString()}>
+								{new Intl.DateTimeFormat(locale, {
+									dateStyle: "short",
+									timeStyle: "short",
+								}).format(item.created_at * 1000)}
+							</time>
 						</button>
 					))}
 					{selected && (
@@ -707,7 +735,7 @@ export function ReviewProposal({
 							{__("Close", "linker-tools")}
 						</button>
 					)}
-					{history.hasMore && (
+					{history.hasMore && !history.loadFailed && (
 						<button
 							type="button"
 							className="sc-button"
@@ -718,13 +746,28 @@ export function ReviewProposal({
 						</button>
 					)}
 				</div>
-				{history.loadFailed && (
-					<p role="alert">
-						{__(
-							"Saved calculation history could not be refreshed.",
-							"linker-tools",
-						)}
+				{history.loading && (
+					<p role="status">
+						{__("Reading saved calculation results…", "linker-tools")}
 					</p>
+				)}
+				{history.loadFailed && (
+					<div role="alert">
+						<p>
+							{__(
+								"Saved calculation history could not be refreshed.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="sc-button"
+							disabled={history.loading || !client.isCurrentScope(scope)}
+							onClick={history.loadMore}
+						>
+							{__("Try again", "linker-tools")}
+						</button>
+					</div>
 				)}
 				{history.reading && (
 					<p role="status">
@@ -760,7 +803,9 @@ export function ReviewProposal({
 				{earlierRun && earlierReport && (
 					<>
 						<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
-						<ReportItemSections report={earlierReport} heading="h4" />
+						<p className="sc-report-meta">
+							{sprintf(__("Revision %d", "linker-tools"), earlierRun.revision)}
+						</p>
 						<ReportDownloads
 							run={earlierRun}
 							report={earlierReport}
@@ -768,13 +813,29 @@ export function ReviewProposal({
 							scope={scope}
 							recheck={recheck}
 							askGenie={() => askGenie(earlierRun)}
-						/>
+						>
+							{({ actions, materials, error }) => (
+								<>
+									<ReportItemSections
+										report={earlierReport}
+										heading="h4"
+										materials={materials}
+									/>
+									<div className="sc-actions">
+										{actions}
+										{!earlierReport.sections.some(isReportItemSection) &&
+											materials}
+									</div>
+									{error}
+								</>
+							)}
+						</ReportDownloads>
 					</>
 				)}
 			</section>
 		);
 	return (
-		<article className="sc-review">
+		<article className="sc-review sc-report-workspace">
 			<header className="sc-section-head">
 				<div>
 					<h1>{__("Ready to discuss", "linker-tools")}</h1>
@@ -787,18 +848,20 @@ export function ReviewProposal({
 				</div>
 			</header>
 			{!selected && (
-				<section className="sc-card">
+				<section className="sc-card sc-report-overview">
 					<h2>{__("Project overview", "linker-tools")}</h2>
-					<p>{project.title}</p>
-					{location && <p className="sc-muted">{location}</p>}
-					{annualLoad != null && (
-						<dl>
-							<div className="sc-summary">
+					<div className="sc-report-site">
+						<div>
+							<p className="sc-report-title">{project.title}</p>
+							{location && <p className="sc-muted">{location}</p>}
+						</div>
+						{annualLoad != null && (
+							<dl className="sc-report-demand">
 								<dt>{__("Annual electricity use", "linker-tools")}</dt>
 								<dd>{new Intl.NumberFormat(locale).format(annualLoad)} kWh</dd>
-							</div>
-						</dl>
-					)}
+							</dl>
+						)}
+					</div>
 					{current && report && (
 						<div lang={report.locale}>
 							{report.sections
@@ -813,7 +876,7 @@ export function ReviewProposal({
 										section.id.startsWith("declared-equipment-demand"),
 								)
 								.map((section) => (
-									<details key={section.id}>
+									<details key={section.id} className="sc-review-details">
 										<summary>{section.title}</summary>
 										<ReportContent section={section} />
 									</details>
@@ -831,8 +894,11 @@ export function ReviewProposal({
 				</p>
 			)}
 			{!selected && (!report || !run) && (
-				<section className="sc-card">
-					<h2>{__("Project report", "linker-tools")}</h2>
+				<section className="sc-card sc-report-create">
+					<h2>
+						<Icon name="report" />
+						{__("Project report", "linker-tools")}
+					</h2>
 					<p className="sc-muted">{reportDescription}</p>
 					{run && <p role="status">{runStateLabel(run.state, REPORT_TASK)}</p>}
 					{run?.error && (
@@ -869,34 +935,64 @@ export function ReviewProposal({
 				>
 					{({ actions, materials, error }) => (
 						<>
-							{!selected && <ReportItemSections report={report} />}
+							{!selected && (
+								<ReportItemSections report={report} materials={materials} />
+							)}
 							{(!selected || draftTransfer) && (
 								<div
 									className={selected ? "sc-card" : "sc-card sc-report-actions"}
 								>
 									{!selected && (
-										<section>
-											<h2>{__("Project report", "linker-tools")}</h2>
+										<section className="sc-report-files">
+											<h2>
+												<Icon name="report" />
+												{__("Project report", "linker-tools")}
+											</h2>
 											<p className="sc-muted">{reportDescription}</p>
-											<p lang={report.locale}>{report.title}</p>
-											{reportLanguageDiffers(report.locale, locale) && (
-												<p className="sc-muted">
-													{report.locale === "de"
-														? __("Report language: German", "linker-tools")
-														: __("Report language: English", "linker-tools")}
-												</p>
-											)}
-											<time className="sc-muted" dateTime={report.generated_at}>
-												{new Intl.DateTimeFormat(locale, {
-													dateStyle: "medium",
-													timeStyle: "short",
-													timeZone: "UTC",
-												}).format(new Date(report.generated_at))}{" "}
-												UTC
-											</time>
+											<div className="sc-report-file-info">
+												<span className="sc-report-filetype" aria-hidden="true">
+													PDF
+												</span>
+												<div>
+													<p
+														lang={report.locale}
+														className="sc-report-filename"
+													>
+														{report.title}
+													</p>
+													<p className="sc-report-meta">
+														{sprintf(
+															__("Revision %d", "linker-tools"),
+															run.revision,
+														)}
+													</p>
+													{reportLanguageDiffers(report.locale, locale) && (
+														<p className="sc-muted">
+															{report.locale === "de"
+																? __("Report language: German", "linker-tools")
+																: __(
+																		"Report language: English",
+																		"linker-tools",
+																	)}
+														</p>
+													)}
+													<time
+														className="sc-muted"
+														dateTime={report.generated_at}
+													>
+														{new Intl.DateTimeFormat(locale, {
+															dateStyle: "medium",
+															timeStyle: "short",
+															timeZone: "UTC",
+														}).format(new Date(report.generated_at))}{" "}
+														UTC
+													</time>
+												</div>
+											</div>
 											<div className="sc-actions">
 												{actions}
-												{materials}
+												{!report.sections.some(isReportItemSection) &&
+													materials}
 											</div>
 											{error}
 											{logoField}

@@ -115,6 +115,94 @@ test("site installation requirements have their own section alongside equipment 
 	);
 	assert.match(areas[1].textContent, /Mounting rails/);
 });
+test("the itemised report keeps its CSV with the material rows and identifies the PDF revision", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const csv = button("Download bill of materials (CSV)");
+	assert.ok(
+		csv
+			?.closest("section")
+			?.querySelector(":scope > div > .sc-report-table table"),
+		"download is beside the frozen parts it exports",
+	);
+	assert.equal(
+		[...page.element.querySelectorAll("button")].filter(
+			(b) => b.textContent === csv.textContent,
+		).length,
+		1,
+	);
+	const pdf = button("Download PDF");
+	assert.equal(
+		pdf.closest("section").querySelector(".sc-report-meta")?.textContent,
+		`Revision ${value.run.revision}`,
+	);
+});
+
+test("a brief-only project can retry an unavailable report list and open the frozen PDF", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	value.inputs = {
+		brief: { ...emptyBrief(), system_scope: "storage_addition" },
+	};
+	const saved = props().run;
+	const render = () => root.render(React.createElement(ReviewProposal, value));
+	const downloaded = [];
+	value.client.reportPdf = async (project, asset, _scope, _signal, sha) => {
+		downloaded.push([project, asset, sha]);
+		return new Blob(["%PDF-"]);
+	};
+	t.mock.method(window.HTMLAnchorElement.prototype, "click", function () {});
+	value.history = {
+		items: [],
+		selected: null,
+		loadFailed: true,
+		hasMore: false,
+		loadMore() {
+			Object.assign(value.history, {
+				loadFailed: false,
+				items: [
+					{ id: saved.id, revision: saved.revision, created_at: 1700000000 },
+				],
+			});
+			render();
+		},
+		select(id) {
+			Object.assign(value.history, { selected: id, run: saved });
+			render();
+		},
+	};
+	await act(async () => render());
+	const history = () =>
+		page.element.querySelector('[aria-label="Calculation history"]');
+	assert.ok(
+		history()?.querySelector('[role="alert"]'),
+		"failed first page must stay visible",
+	);
+	await act(async () =>
+		[...history().querySelectorAll("button")]
+			.find((b) => b.textContent === "Try again")
+			.click(),
+	);
+	await act(async () => history().querySelector("button").click());
+	await act(async () => button("Download PDF").click());
+	assert.deepEqual(downloaded, [
+		[
+			saved.project_id,
+			saved.result.prepared_asset.id,
+			saved.result.prepared_asset.content_sha256,
+		],
+	]);
+	assert.equal(button("Add selected products to solution draft"), undefined);
+});
+
 for (const historical of [false, true]) {
 	test(
 		"a panel-only " +
@@ -144,8 +232,8 @@ for (const historical of [false, true]) {
 			);
 			const layouts = [...document.querySelectorAll("section")].filter(
 				(section) =>
-					section.firstElementChild?.textContent === "Solar panel layout" &&
-					!section.closest("dialog"),
+					section.querySelector(":scope > header > :is(h2,h4)")?.textContent ===
+						"Solar panel layout" && !section.closest("dialog"),
 			);
 			assert.equal(layouts.length, 1);
 			assert.match(layouts[0].textContent, /460 Wp/);
@@ -337,6 +425,10 @@ test("report preview opens the complete pinned report and its original PDF", asy
 		scope,
 	]);
 	assert.equal(requested[0][4], asset.content_sha256);
+	assert.equal(
+		dialog.querySelector('object[type="application/pdf"]').getAttribute("data"),
+		"blob:https://fixture.invalid/current-report",
+	);
 	const pdfLink = dialog.querySelector("a[target='_blank'][href^='blob:']");
 	assert.equal(pdfLink.textContent, "Open report PDF");
 	assert.equal(pdfLink.rel, "noopener noreferrer");

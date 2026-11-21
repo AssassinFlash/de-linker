@@ -1,0 +1,134 @@
+@layer components {
+  .sc-configurator .sc-report-workspace {
+    display: grid;
+    gap: var(--proto-space-5);
+    min-width: 0;
+  }
+  .sc-report-workspace > .sc-card {
+    margin: 0;
+    padding: clamp(var(--proto-space-4), 3vw, var(--proto-space-6));
+  }
+  .sc-report-workspace :is(.sc-report-items-head, .sc-report-site) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--proto-space-3) var(--proto-space-5);
+    align-items: center;
+  }
+  .sc-report-workspace .sc-report-site { margin-block-start: var(--proto-space-4); }
+  .sc-report-workspace .sc-report-title {
+    margin: 0;
+    color: var(--proto-ink-deep);
+    font-size: var(--proto-size-xl);
+    line-height: var(--proto-leading-title);
+    font-weight: var(--proto-weight-semibold);
+    overflow-wrap: anywhere;
+  }
+  .sc-report-workspace .sc-report-demand { margin: 0; }
+  .sc-report-demand dt, .sc-report-workspace :is(.sc-report-meta, .sc-report-file-info time) {
+    color: var(--proto-neutral-600);
+    font-size: var(--proto-size-xs);
+    line-height: var(--proto-leading-caption);
+  }
+  .sc-report-demand dd { margin: 0; font-size: var(--proto-size-lg); font-weight: var(--proto-weight-semibold); }
+  .sc-report-workspace .sc-report-items .sc-report-table { margin: var(--proto-space-4) 0 0; }
+  .sc-report-workspace .sc-report-items th { background: var(--proto-neutral-50); }
+  .sc-report-workspace .sc-report-items :is(th, td):first-child { padding-inline-start: var(--proto-space-3); }
+  .sc-report-workspace .sc-report-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--proto-space-6);
+  }
+  .sc-report-workspace .sc-report-actions:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
+  .sc-report-workspace .sc-report-actions > :not(:first-child) {
+    padding-inline-start: var(--proto-space-6);
+    border-inline-start: 1px solid var(--proto-color-line);
+  }
+  .sc-report-workspace :is(.sc-report-create, .sc-report-files) > h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--proto-space-2);
+  }
+  .sc-report-workspace :is(.sc-report-create, .sc-report-files) > h2 svg {
+    flex: none;
+    color: var(--proto-accent);
+  }
+  .sc-report-workspace .sc-report-file-info {
+    display: flex;
+    align-items: center;
+    gap: var(--proto-space-3);
+    margin-block-start: var(--proto-space-5);
+  }
+  .sc-report-workspace .sc-report-filetype {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 3rem;
+    height: 3.5rem;
+    border-radius: var(--proto-radius-md);
+    color: var(--proto-teal-800);
+    background: var(--proto-teal-50);
+    font: var(--proto-weight-bold) var(--proto-size-xs) / 1 var(--proto-font-sans);
+  }
+  .sc-report-workspace .sc-report-filename { font-weight: var(--proto-weight-semibold); overflow-wrap: anywhere; }
+  .sc-report-workspace :is(.sc-report-file-info, .sc-report-file-info > div, .sc-report-versions button) { min-width: 0; }
+  .sc-report-workspace .sc-report-logo {
+    margin-block: var(--proto-space-5) var(--proto-space-3);
+    padding-block-start: var(--proto-space-4);
+    border-block-start: 1px solid var(--proto-color-line);
+  }
+  .sc-report-logo input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--proto-space-2);
+    font-size: var(--proto-size-sm);
+  }
+  .sc-report-logo input::file-selector-button {
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-sm);
+    background: var(--proto-neutral-0);
+    padding: var(--proto-space-1) var(--proto-space-2);
+    margin-inline-end: var(--proto-space-2);
+    color: inherit;
+    cursor: pointer;
+  }
+  .sc-report-workspace .sc-report-versions {
+    display: flex; align-items: stretch; flex-wrap: wrap;
+    gap: var(--proto-space-2); margin-block: var(--proto-space-4);
+  }
+  .sc-report-versions .sc-button[aria-pressed] { display: grid; gap: var(--proto-space-1); text-align: start; }
+  .sc-report-versions .sc-button time { color: var(--proto-neutral-600); font-size: var(--proto-size-xs); font-weight: var(--proto-weight-regular); }
+  .sc-report-versions .sc-button[aria-pressed="true"] { border-color: var(--proto-accent); background: var(--proto-teal-50); }
+  .sc-report-history .sc-report-items { margin-block: var(--proto-space-4); }
+  .sc-report-workspace .sc-draft-operation { display: grid; gap: var(--proto-space-3); margin-block-start: var(--proto-space-4); }
+  .sc-report-workspace .sc-draft-operation .sc-actions { margin: 0; }
+  .sc-report-workspace .sc-report-dialog {
+    width: min(54rem, calc(100% - var(--proto-space-6)));
+    max-height: calc(100dvh - var(--proto-space-6));
+    padding: 0;
+    overscroll-behavior: contain;
+  }
+  .sc-report-dialog > .sc-section-head {
+    padding: var(--proto-space-4) var(--proto-space-5);
+    margin: 0;
+    border-block-end: 1px solid var(--proto-color-line);
+  }
+  .sc-report-dialog > .sc-report-pdf, .sc-report-dialog > .sc-report-readable {
+    margin: 0;
+    padding: var(--proto-space-4) var(--proto-space-5);
+  }
+  .sc-report-document { width: 100%; height: min(52vh, 38rem); border: 0; background: var(--proto-neutral-50); }
+  .sc-report-preview { min-width: 0; overflow-wrap: anywhere; }
+  .sc-report-workspace .sc-report-readable summary { display: list-item; }
+  @media (max-width: 767px) {
+    .sc-report-workspace .sc-report-actions { grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-5); }
+    .sc-report-workspace .sc-report-actions > :not(:first-child) {
+      padding-inline-start: 0; border-inline-start: none;
+      padding-block-start: var(--proto-space-5); border-block-start: 1px solid var(--proto-color-line);
+    }
+    .sc-report-workspace .sc-report-items-head { align-items: start; }
+    .sc-report-dialog > .sc-section-head, .sc-report-dialog > .sc-report-pdf, .sc-report-dialog > .sc-report-readable { padding-inline: var(--proto-space-4); }
+    .sc-report-workspace .sc-report-items .sc-bom-table td:first-child { padding-inline-start: 0; }
+  }
+}

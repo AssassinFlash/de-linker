@@ -284,7 +284,7 @@ export function DraftTransferButton({
 		? __("Attach report to inquiry", "linker-tools")
 		: __("Add selected products to solution draft", "linker-tools");
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-draft-operation">
 			{!reportOnly && (
 				<p>
 					{__(
@@ -308,17 +308,15 @@ export function DraftTransferButton({
 									)}
 						</p>
 					)}
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						{inquiryUrl && (
-							<a className="lp-button" href={inquiryUrl}>
+							<a className="sc-button sc-primary" href={inquiryUrl}>
 								{__("Continue to inquiry", "linker-tools")}
 							</a>
 						)}
 						{!reportOnly && (
 							<a
-								className={
-									inquiryUrl ? "lp-button lp-button-secondary" : "lp-button"
-								}
+								className={inquiryUrl ? "sc-button" : "sc-button sc-primary"}
 								href={readyUrls[language]}
 							>
 								{__("View solution draft", "linker-tools")}
@@ -326,7 +324,7 @@ export function DraftTransferButton({
 						)}
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={transferBusy || !current}
 							onClick={() => {
 								setReceipt(null);
@@ -348,7 +346,7 @@ export function DraftTransferButton({
 					</p>
 					<button
 						type="button"
-						className="lp-button"
+						className="sc-button sc-primary"
 						disabled={retryBlocked}
 						onClick={() => void retry(record)}
 					>
@@ -381,7 +379,7 @@ export function DraftTransferButton({
 					{!preview ? (
 						<button
 							type="button"
-							className="lp-button"
+							className="sc-button sc-primary"
 							disabled={
 								transferBusy ||
 								!current ||
@@ -402,8 +400,8 @@ export function DraftTransferButton({
 											"linker-tools",
 										)}
 									</p>
-									<div className="lp-table-scroll">
-										<table className="lp-data-table">
+									<div className="sc-report-table">
+										<table className="sc-transfer-lines">
 											<thead>
 												<tr>
 													<th>{__("Product", "linker-tools")}</th>
@@ -438,11 +436,11 @@ export function DraftTransferButton({
 									)}
 								</Notice>
 							))}
-							<div className="lp-inline-actions">
+							<div className="sc-actions">
 								{preview.inquiryUrls && (
 									<button
 										type="button"
-										className="lp-button"
+										className="sc-button sc-primary"
 										disabled={
 											transferBusy || !current || operations.storageFailed
 										}
@@ -454,9 +452,7 @@ export function DraftTransferButton({
 								<button
 									type="button"
 									className={
-										preview.inquiryUrls
-											? "lp-button lp-button-secondary"
-											: "lp-button"
+										preview.inquiryUrls ? "sc-button" : "sc-button sc-primary"
 									}
 									disabled={
 										transferBusy || !current || operations.storageFailed
