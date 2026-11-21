@@ -174,6 +174,16 @@ def test_a_pdf_with_a_text_layer_is_read_without_the_model() -> None:
     assert "--- page 1 ---" in reading.text
 
 
+def test_rendered_transcript_does_not_duplicate_the_pdf_text_layer() -> None:
+    text = "SAJ H2-10K-T3 datasheet excerpt (probe fixture)\nRated power 10000 W\nBattery voltage 180-750 V"
+    [reading] = attachments.read(
+        [_upload(PROBE_PDF.read_bytes(), "application/pdf", "list.pdf")],
+        [],
+        lambda *_: {"text": text},
+    )
+    assert reading.text.count("SAJ H2-10K-T3") == 1
+
+
 def test_scanned_pages_are_rendered_up_to_the_cap_and_the_rest_named() -> None:
     see = See()
     raw = _image_pdf(MAX_RENDERED_PAGES + 2)

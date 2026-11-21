@@ -265,7 +265,9 @@ class Understander:
             for item in readings:
                 if item.model and statuses.get(item.model.casefold()) != "published":
                     blocked[item.id] = statuses.get(item.model.casefold(), "unknown")
-                elif item.kind == "document":
+                elif item.kind == "document" or (
+                    item.kind == "photo" and source and source.reading_id == item.id
+                ):
                     # A transcribed parts list may use the row-matching route,
                     # never the technical-answer route or another file's identity.
                     if source and source.reading_id == item.id and vocabulary:

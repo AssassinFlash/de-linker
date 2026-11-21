@@ -341,6 +341,9 @@ def test_the_stream_carries_the_card_and_the_reading(
         "inquiry-filename",
         "typed-inquiry",
         "mixed-list",
+        "photo-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
         "pasted-mixed-list",
         "continued-mixed-list",
         "after-mixed-list",
@@ -442,10 +445,19 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
             b"SAJ H2-10K-T3".ljust(46),
         ).replace(b"Battery voltage 180-750 V", b"SAJ ZZ-90K-T4".ljust(25))
         uploads = [upload(manual)]
+    elif scenario == "photo-mixed-list":
+        typed = "Here is my parts list."
+        uploads = [{"name": "list.jpg", "type": "image/jpeg", "data": _photo()}]
     elif scenario == "pasted-mixed-list":
         typed = "2 x H2-10K-T3\n1 x ZZ-90K-T4\nSMA Sunny Boy 5.0"
         uploads = []
-    elif scenario in {"mixed-list", "continued-mixed-list", "after-mixed-list"}:
+    elif scenario in {
+        "mixed-list",
+        "continued-mixed-list",
+        "after-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
+    }:
         typed = "Here is my parts list."
         list_bytes = raw
         for old, row in [
@@ -476,7 +488,19 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         monkeypatch.setattr(
             app_module,
             "_understander",
-            Understander(lambda: vocabulary, None, publication=authority),
+            Understander(
+                lambda: vocabulary,
+                None,
+                publication=authority,
+                see=See(
+                    {
+                        "kind": "photo",
+                        "text": "Item | Qty\nSAJ H2-10K-T3 | 2\nSAJ ZZ-90K-T4 | 1\nSMA Sunny Boy 5.0 | 4",
+                    }
+                )
+                if scenario == "photo-mixed-list"
+                else None,
+            ),
         )
         monkeypatch.setattr(
             app_module,
@@ -546,7 +570,12 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
                 message = "What rated power does datasheet.pdf give?"
             else:
                 assert refused["id"] == "att1"
-        if scenario in {"continued-mixed-list", "after-mixed-list"}:
+        if scenario in {
+            "continued-mixed-list",
+            "after-mixed-list",
+            "reopen-list",
+            "reopen-list-de",
+        }:
             messages.append({"role": "user", "content": message})
             first = client.post(
                 "/assistant/turn",
@@ -566,7 +595,10 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
                 message = "What is the rated power?\nAttached: new.pdf"
                 uploads = [{**upload(raw), "name": "new.pdf"}]
             else:
-                message = "Add these to my draft"
+                message = {
+                    "reopen-list": "Show me my parts list again.",
+                    "reopen-list-de": "Zeigen Sie mir meine Stückliste noch einmal.",
+                }.get(scenario, "Add these to my draft")
                 uploads = []
         messages.append({"role": "user", "content": message})
         response = client.post(
@@ -589,7 +621,14 @@ def test_pdf_text_is_authorized_by_its_own_current_model(
         for kind, record in events
         if kind == "event: block" and record.get("type") == "text"
     ]
-    if scenario in {"mixed-list", "pasted-mixed-list", "continued-mixed-list"}:
+    if scenario in {
+        "mixed-list",
+        "pasted-mixed-list",
+        "continued-mixed-list",
+        "photo-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
+    }:
         assert events[0][1]["route"] == "parts", texts
         [card] = [record for _, record in events if record.get("type") == "parts"]
         assert [

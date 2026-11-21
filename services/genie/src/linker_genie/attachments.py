@@ -526,7 +526,9 @@ def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
         if seen and (job.answer or {}).get("truncated"):
             seen += "\n[the rest of this page was not read]"
         if seen:
-            pages[job.page] = (pages.get(job.page, "") + "\n" + seen).strip()
+            embedded = pages.get(job.page, "")
+            if embedded.split() != seen.split():
+                pages[job.page] = (embedded + "\n" + seen).strip()
         elif job.answer is None:
             failed_pages.append(job.page)
     parts = [f"--- page {number} ---\n{pages[number]}" for number in sorted(pages)]

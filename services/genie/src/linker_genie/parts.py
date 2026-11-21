@@ -850,6 +850,10 @@ def _continues(
     latest = messages[-1].content if messages else ""
     if not latest.strip():
         return False
+    if _LIST_NOUNS.search(latest) and re.search(
+        r"\b(?:show|reopen|anzeigen|öffnen|zeig(?:en)?)\b", latest, re.I
+    ):
+        return True
     if _row_number(latest) is not None or skip(latest):
         return True
     if _add_request(latest):
