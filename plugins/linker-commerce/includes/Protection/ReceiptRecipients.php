@@ -118,6 +118,11 @@ final class ReceiptRecipients {
 		if ( ! is_array( $rows ) || '' !== $wpdb->last_error ) {
 			throw new \RuntimeException( 'recipient_history_read_failed' );
 		}
+		/**
+		 * ARRAY_A returns the two non-null text columns selected above.
+		 *
+		 * @var list<array{option_name:string,option_value:string}> $rows
+		 */
 		return $rows;
 	}
 
