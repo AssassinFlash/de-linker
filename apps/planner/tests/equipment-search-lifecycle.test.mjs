@@ -813,41 +813,69 @@ for (const state of ["succeeded", "queued"])
 		assert.equal(searchRequests(app).length, 0);
 	});
 
-for (const changed of [true, false])
-	test(`System ${changed ? "refreshes" : "reuses"} an older search after reading its frozen settings`, async (t) => {
-		const id = "9".repeat(32);
-		const { emptyBrief } = await import("../src/domain/brief.ts");
-		const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
-		const original = { brief, equipment_setup: savedSetup };
-		const app = await equipmentApp(t, {
-			projectId: id,
-			projectRevision: 2,
-			hash: "#sc-project",
-			inputs: changed
-				? {
-						...original,
-						equipment_setup: { ...savedSetup, inverter_product_id: 101 },
-					}
-				: original,
-			savedRun: makeRun(id, "succeeded", 1),
-			legacyInputs: original,
-			legacyUnavailable: true,
-		});
-		await untilRun(() => app.fieldSelect("Planned system"));
-		await app.step("System");
-		await untilRun(() => app.button("Try again"));
-		assert.equal(app.button("Use this configuration"), undefined);
-		app.recoverLegacyInputs();
-		await act(async () => app.button("Try again").click());
-		if (changed) {
-			await untilRun(() => searchRequests(app).length === 1);
-			assert.equal(searchRequests(app)[0].body.expected_revision, 2);
+for (const entry of ["navigation", "direct"])
+	for (const changed of [true, false])
+		test(`${entry} System ${changed ? "refreshes" : "reuses"} an older search after reading its frozen settings`, async (t) => {
+			const id = "9".repeat(32);
+			const { emptyBrief } = await import("../src/domain/brief.ts");
+			const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+			const original = { brief, equipment_setup: savedSetup };
+			const app = await equipmentApp(t, {
+				projectId: id,
+				projectRevision: 2,
+				hash: entry === "direct" ? "#sc-system" : "#sc-project",
+				inputs: changed
+					? {
+							...original,
+							equipment_setup: { ...savedSetup, inverter_product_id: 101 },
+						}
+					: original,
+				savedRun: makeRun(id, "succeeded", 1),
+				legacyInputs: original,
+				legacyUnavailable: true,
+			});
+			if (entry === "navigation") {
+				await untilRun(() => app.fieldSelect("Planned system"));
+				await app.step("System");
+			}
+			await untilRun(() => app.button("Try again"));
 			assert.equal(app.button("Use this configuration"), undefined);
-		} else {
-			await untilRun(() => app.button("Use this configuration"));
-			assert.deepEqual(app.requests, []);
-		}
+			app.recoverLegacyInputs();
+			await act(async () => app.button("Try again").click());
+			if (changed) {
+				await untilRun(() => searchRequests(app).length === 1);
+				assert.equal(searchRequests(app)[0].body.expected_revision, 2);
+				assert.equal(app.button("Use this configuration"), undefined);
+			} else {
+				await untilRun(() => app.button("Use this configuration"));
+				assert.deepEqual(app.requests, []);
+			}
+		});
+
+test("Solar opens System using the edited array capacity rather than a previous result", async (t) => {
+	const id = "e".repeat(32);
+	const app = await equipmentApp(t, {
+		projectId: id,
+		hash: "#sc-solar",
+		inputs: { equipment_setup: savedSetup },
+		savedRun: makeRun(id, "succeeded"),
 	});
+	const field = () => app.fieldInput("Solar capacity (kWp)");
+	await untilRun(() =>
+		document.querySelector('[aria-label="Use module details"]'),
+	);
+	const option = document.querySelector('[aria-label="Use module details"]');
+	if (option.getAttribute("aria-pressed") !== "true")
+		await act(async () => option.click());
+	await untilRun(field);
+	await enter(field(), "13.7");
+	await app.step("System");
+	await untilRun(() => searchRequests(app).length === 1);
+	assert.equal(app.button("Use this configuration"), undefined);
+	assert.ok(
+		JSON.stringify(searchRequests(app)[0].body.inputs).includes("13.7"),
+	);
+});
 
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;

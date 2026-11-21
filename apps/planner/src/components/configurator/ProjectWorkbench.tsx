@@ -209,11 +209,18 @@ export default function ProjectWorkbench({
 	const guided =
 		params.get("guided") === "inquiry" && params.get("project") === project.id;
 	const [step, setStep] = useState<Step>(initialStep);
+	const [systemRequest, setSystemRequest] = useState<
+		"existing" | "navigation" | null
+	>(() => (step === "system" ? "existing" : null));
+	const checkingSystem = systemRequest !== null;
 	useEffect(() => {
 		if (!guided) return;
 		const restore = () => {
-			if (new URL(location.href).searchParams.get("project") === project.id)
-				setStep(initialStep());
+			if (new URL(location.href).searchParams.get("project") === project.id) {
+				const restored = initialStep();
+				setSystemRequest(restored === "system" ? "existing" : null);
+				setStep(restored);
+			}
 		};
 		window.addEventListener("popstate", restore);
 		return () => window.removeEventListener("popstate", restore);
@@ -307,7 +314,6 @@ export default function ProjectWorkbench({
 	const [selecting, setSelecting] = useState(false);
 	const reportPreparation = useRef<AbortController | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
-	const [checkingSystem, setCheckingSystem] = useState(false);
 	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
@@ -687,8 +693,6 @@ export default function ProjectWorkbench({
 			showStep("solar");
 			return;
 		}
-		if (next === "system" && (step === "project" || step === "energy"))
-			setCheckingSystem(true);
 		showStep(next);
 	}
 	const checkCurrentComparison = useEffectEvent(async () => {
@@ -697,7 +701,8 @@ export default function ProjectWorkbench({
 		const run = search.data;
 		const frozen = oldRevision ? recordedInputs.data : current.baseline.inputs;
 		if (run && !frozen) return;
-		setCheckingSystem(false);
+		setSystemRequest(null);
+		if (!run && systemRequest === "existing") return;
 		const inputs = current.history.current;
 		if (run) {
 			if (run.revision === current.baseline.revision && !isDirty(current)) {
@@ -756,7 +761,8 @@ export default function ProjectWorkbench({
 	]);
 
 	function showStep(next: Step) {
-		if (next !== "system") setCheckingSystem(false);
+		if (next !== step)
+			setSystemRequest(next === "system" ? "navigation" : null);
 		setGenieReportId(null);
 		const url = new URL(location.href);
 		const previous = url.hash;
@@ -1752,7 +1758,7 @@ export default function ProjectWorkbench({
 														disabled={blocked || modelsUnavailable}
 														onClick={() =>
 															replacedSearch
-																? setCheckingSystem(true)
+																? setSystemRequest("navigation")
 																: void compare()
 														}
 													>
