@@ -42,15 +42,12 @@ final class Configuration {
 	}
 
 	/**
-	 * Owner availability priority, 2026-10-22: ordinary business messages can
-	 * retain strict quotas without depending on a third-party challenge. Only
-	 * the private opt-in can select this; client-supplied flags have no effect.
+	 * Public actions that require an anonymous visitor's Turnstile response.
 	 *
-	 * @param string $action Trusted native operation.
+	 * @param string $action Server-selected form action.
 	 */
 	public static function verification_required( string $action ): bool {
-		return ! in_array( $action, array( 'contact', 'inquiry' ), true )
-			|| 'optional' !== self::value( 'LINKER_BUSINESS_VERIFICATION', 'required' );
+		return in_array( $action, array( 'contact', 'inquiry', 'registration', 'genie_contact', 'genie_inquiry' ), true );
 	}
 
 	/** Do not treat an invalid mode or incomplete key pair as usable protection. */
@@ -68,14 +65,12 @@ final class Configuration {
 	 * The private value appears only in the canonical outgoing validation body.
 	 *
 	 * @param string $token Current challenge token.
-	 * @param string $request_id Stable verification UUID.
-	 * @return array{secret: string, response: string, idempotency_key: string}
+	 * @return array{secret: string, response: string}
 	 */
-	public function verification_body( string $token, string $request_id ): array {
+	public function verification_body( string $token ): array {
 		return array(
-			'secret'          => $this->secret,
-			'response'        => $token,
-			'idempotency_key' => $request_id,
+			'secret'   => $this->secret,
+			'response' => $token,
 		);
 	}
 

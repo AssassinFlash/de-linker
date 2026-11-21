@@ -145,7 +145,7 @@ msgstr ""
 msgid "The request failed. Please try again."
 msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut."
 
-#: build/accounts.js:1 includes/Inquiry/Form.php:308
+#: build/accounts.js:1 build/protection.js:1 includes/Inquiry/Form.php:308
 msgid "Try again"
 msgstr "Erneut versuchen"
 

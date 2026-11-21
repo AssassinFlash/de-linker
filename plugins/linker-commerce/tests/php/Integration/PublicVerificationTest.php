@@ -25,18 +25,17 @@ final class PublicVerificationTest extends IntegrationTestCase {
 
 	/**
 	 * Local fixture configuration never reads the saved production file.
-	 *
-	 * @param string $mode Explicit test mode.
 	 */
-	private function configuration( string $mode = 'enforce' ): Configuration {
-		return new Configuration( $mode, self::SITE_KEY, self::SECRET, 'example.test' );
+	private function configuration(): Configuration {
+		return new Configuration( 'enforce', self::SITE_KEY, self::SECRET, 'example.test' );
 	}
 
-	/** Exact hostname/action/Boolean binding, stable retry UUID and no extra data. */
+	/** Exact hostname/action/Boolean binding, one provider request and no extra data. */
 	public function test_valid_verification_uses_the_canonical_private_transport(): void {
-		$id   = wp_generate_uuid4();
-		$seen = array();
-		$http = static function ( $pre, $args, $url ) use ( &$seen ) {
+		$calls = 0;
+		$seen  = array();
+		$http  = static function ( $pre, $args, $url ) use ( &$seen, &$calls ) {
+			++$calls;
 			$seen = array( $args, $url );
 			return array(
 				'response' => array( 'code' => 200 ),
@@ -51,23 +50,22 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		};
 		add_filter( 'pre_http_request', $http, 10, 3 );
 		try {
-			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'inquiry', $id );
+			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'inquiry' );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}
 		$this->assertSame( 'valid', $result->status );
+		$this->assertSame( 1, $calls );
 		$this->assertSame( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $seen[1] );
 		$this->assertSame(
 			array(
-				'secret'          => self::SECRET,
-				'response'        => 'synthetic-token',
-				'idempotency_key' => $id,
+				'secret'   => self::SECRET,
+				'response' => 'synthetic-token',
 			),
 			$seen[0]['body']
 		);
 		$this->assertSame( 0, $seen[0]['redirection'] );
-		// Protection\Turnstile::TIMEOUT: above the measured provider round trip
-		// (2.45–3.47 s on 2026-11-05), below the ten-second verification lease.
+		// The provider timeout exceeds the measured 2.45–3.47 second round trip.
 		$this->assertSame( 8, $seen[0]['timeout'] );
 		$this->assertStringNotContainsString( self::SECRET, (string) wp_json_encode( $this->configuration() ) );
 		$this->assertStringNotContainsString( 'synthetic-token', (string) wp_json_encode( $result ) );
@@ -89,7 +87,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		);
 		add_filter( 'pre_http_request', $http );
 		try {
-			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'inquiry', wp_generate_uuid4() );
+			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'inquiry' );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}
@@ -119,8 +117,8 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		);
 	}
 
-	/** Local invalid input never spends a provider request; off is explicit. */
-	public function test_invalid_input_and_disabled_configuration_do_not_call_upstream(): void {
+	/** Missing credentials and invalid native actions never call the provider. */
+	public function test_invalid_input_and_missing_configuration_do_not_call_upstream(): void {
 		$calls = 0;
 		$http  = static function () use ( &$calls ) {
 			++$calls;
@@ -129,13 +127,12 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		add_filter( 'pre_http_request', $http );
 		try {
 			$client = new Turnstile( $this->configuration() );
-			foreach ( array( array( '', 'inquiry', wp_generate_uuid4() ), array( str_repeat( 'x', 2049 ), 'inquiry', wp_generate_uuid4() ), array( 'synthetic', 'wrong action', wp_generate_uuid4() ), array( 'synthetic', 'inquiry', 'not-a-uuid' ) ) as $values ) {
+			foreach ( array( array( '', 'inquiry' ), array( str_repeat( 'x', 2049 ), 'inquiry' ), array( 'synthetic', 'draft_write' ) ) as $values ) {
 				$this->assertSame( 'invalid', $client->verify( ...$values )->status );
 			}
-			$off = $this->configuration( 'off' );
-			$this->assertTrue( $off->health()['configured'] );
-			$this->assertFalse( $off->health()['ready'] );
-			$this->assertSame( 'unavailable', ( new Turnstile( $off ) )->verify( 'synthetic', 'inquiry', wp_generate_uuid4() )->status );
+			$missing = new Configuration( 'enforce', self::SITE_KEY, '', 'example.test' );
+			$this->assertFalse( $missing->configured() );
+			$this->assertSame( 'unavailable', ( new Turnstile( $missing ) )->verify( 'synthetic', 'inquiry' )->status );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}
@@ -147,7 +144,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		$http = static fn () => new WP_Error( 'http_request_failed', 'synthetic secret text must not be copied' );
 		add_filter( 'pre_http_request', $http );
 		try {
-			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic', 'inquiry', wp_generate_uuid4() );
+			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic', 'inquiry' );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}
@@ -158,7 +155,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 
 	/**
 	 * Cloudflare's official testing keys report no action field; the exact
-	 * local browser chain (widget → verify → proof) depends on that shape.
+	 * local browser chain (widget → native form → Siteverify) depends on that shape.
 	 */
 	public function test_testing_keys_accept_the_official_testing_response_without_action(): void {
 		$http = static fn () => array(
@@ -167,7 +164,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		);
 		add_filter( 'pre_http_request', $http );
 		try {
-			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'draft_write', wp_generate_uuid4() );
+			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'registration' );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}
@@ -183,7 +180,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		);
 		add_filter( 'pre_http_request', $http );
 		try {
-			$result = ( new Turnstile( $real ) )->verify( 'synthetic-token', 'draft_write', wp_generate_uuid4() );
+			$result = ( new Turnstile( $real ) )->verify( 'synthetic-token', 'registration' );
 		} finally {
 			remove_filter( 'pre_http_request', $http );
 		}

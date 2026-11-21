@@ -425,6 +425,9 @@ final class FormTest extends TestCase {
 	 * @param string $locale The locale the page is rendered in.
 	 */
 	private function form_environment( string $locale = 'en_US' ): void {
+		WP_Mock::userFunction( 'wp_is_uuid' )->andReturnUsing( static fn ( string $id ): bool => '' !== $id );
+		WP_Mock::userFunction( 'wp_generate_uuid4' )->andReturn( '01234567-0123-4123-8123-0123456789ab' );
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( true );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( mixed $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => 'test-session' ) );

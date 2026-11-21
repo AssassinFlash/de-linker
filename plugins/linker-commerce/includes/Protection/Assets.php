@@ -23,6 +23,9 @@ final class Assets {
 
 	/** Native consumers enqueue this shared client on their own surfaces. */
 	public function enqueue(): void {
+		if ( is_user_logged_in() || wp_script_is( self::HANDLE, 'enqueued' ) ) {
+			return;
+		}
 		$path = plugin_dir_path( $this->file ) . 'build/protection.asset.php';
 		if ( ! is_file( $path ) ) {
 			return;
@@ -32,13 +35,10 @@ final class Assets {
 		wp_set_script_translations( self::HANDLE, 'linker-commerce', plugin_dir_path( $this->file ) . 'languages' );
 		wp_add_inline_script(
 			self::HANDLE,
-			'window.linkerPublicProtectionConfig=' . wp_json_encode(
+			'window.linkerTurnstileConfig=' . wp_json_encode(
 				array(
-					'api'                  => rest_url( Controller::NAMESPACE . Controller::ROUTE ),
-					'nonce'                => wp_create_nonce( 'wp_rest' ),
-					'mode'                 => $this->configuration->mode,
-					'businessVerification' => Configuration::verification_required( 'contact' ) ? 'required' : 'optional',
-					'language'             => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
+					'siteKey'  => $this->configuration->site_key,
+					'language' => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
 				),
 				JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
 			) . ';',
