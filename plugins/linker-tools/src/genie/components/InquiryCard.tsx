@@ -317,7 +317,9 @@ export function InquiryCard( {
 			notify.current?.( result.inquiry );
 			return;
 		}
-		widget.refresh();
+		if ( ! result.unconfirmed ) {
+			widget.refresh();
+		}
 		setFailure( result.failure );
 		setPhase( 'ready' );
 		if ( 'changed' === result.failure ) {

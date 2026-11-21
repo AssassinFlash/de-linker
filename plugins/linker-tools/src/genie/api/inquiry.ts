@@ -77,7 +77,8 @@ export type InquiryFailure =
 	| 'unavailable';
 
 export type InquiryResult =
-	{ ok: true; inquiry: SentInquiry } | { ok: false; failure: InquiryFailure };
+	| { ok: true; inquiry: SentInquiry }
+	| { ok: false; failure: InquiryFailure; unconfirmed?: true };
 
 function sent( raw: unknown ): SentInquiry | null {
 	if ( ! raw || typeof raw !== 'object' ) {
@@ -255,7 +256,7 @@ export async function sendInquiry(
 			failure: failure( response.status, body?.code ),
 		};
 	} catch {
-		return { ok: false, failure: 'retry' };
+		return { ok: false, failure: 'retry', unconfirmed: true };
 	}
 }
 

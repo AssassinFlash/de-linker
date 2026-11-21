@@ -229,7 +229,9 @@ export function ContactCard( {
 			onSent?.( result.email, result.receipt );
 			return;
 		}
-		widget.refresh();
+		if ( ! result.unconfirmed ) {
+			widget.refresh();
+		}
 		setFailure( result.failure );
 		if ( 'retry' === result.failure ) {
 			const again = await readContact( contactUrl, nonce, fetcher );

@@ -33,7 +33,7 @@ export type ContactFailure =
 
 export type ContactResult =
 	| { ok: true; email: string; receipt: boolean | null }
-	| { ok: false; failure: ContactFailure };
+	| { ok: false; failure: ContactFailure; unconfirmed?: true };
 
 /**
  * The card's state from the route; null when the route cannot be read.
@@ -118,14 +118,22 @@ export async function sendContact(
 			body: JSON.stringify( request ),
 		} );
 		const body = ( await response.json().catch( () => ( {} ) ) ) as {
+			sent?: boolean;
 			email?: string;
 			code?: string;
 			receipt?: boolean | null;
 		};
 		if ( response.ok ) {
+			if (
+				body.sent !== true ||
+				typeof body.email !== 'string' ||
+				! body.email
+			) {
+				return { ok: false, failure: 'unavailable', unconfirmed: true };
+			}
 			return {
 				ok: true,
-				email: body.email ?? request.email ?? '',
+				email: body.email,
 				receipt:
 					typeof body.receipt === 'boolean' ? body.receipt : null,
 			};
@@ -141,6 +149,6 @@ export async function sendContact(
 			failure: failures[ body.code ?? '' ] ?? 'unavailable',
 		};
 	} catch {
-		return { ok: false, failure: 'unavailable' };
+		return { ok: false, failure: 'unavailable', unconfirmed: true };
 	}
 }
