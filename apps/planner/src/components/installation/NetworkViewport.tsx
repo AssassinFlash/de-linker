@@ -58,7 +58,7 @@ export function NetworkViewport({
 	const line = (points: readonly RoutePoint[]) =>
 		points.map((p) => `${p.east_m},${-p.north_m}`).join(" ");
 	return (
-		<div className="lp-plan-view">
+		<div className="sc-plan-view">
 			<svg
 				ref={svg}
 				role="img"
@@ -140,7 +140,7 @@ export function NetworkViewport({
 					}),
 				)}
 			</svg>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{pick
 					? __(
 							"Click to add a plan point, then enter its height from the source measurement or drawing.",

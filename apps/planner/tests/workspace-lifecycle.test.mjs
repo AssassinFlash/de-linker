@@ -272,9 +272,9 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 });
 
 for (const hash of [
-	"#lp-map-roof-properties",
-	"#lp-map-ring-properties",
-	"#lp-map-feature-properties",
+	"#sc-map-roof-properties",
+	"#sc-map-ring-properties",
+	"#sc-map-feature-properties",
 ])
 	test(`reopening the ${hash} property link preserves the roof workspace and map recovery entry`, async (t) => {
 		await workspaceFixture(t, "available", () => {
@@ -564,22 +564,22 @@ test("the native site header is measured on resize and before revealing a result
 		};
 	});
 	const root = app.fixture.element;
-	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "72px");
+	assert.equal(root.style.getPropertyValue("--sc-header-height"), "72px");
 	height = 108;
 	for (const observer of observers)
 		if ([...observer.targets].some((target) => target.id === "lc-header"))
 			observer.callback();
-	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "108px");
+	assert.equal(root.style.getPropertyValue("--sc-header-height"), "108px");
 	// An explicit reveal can run before ResizeObserver/effect delivery, as it
 	// does while a saved calculation opens after a route reload.
 	height = 144;
-	root.style.removeProperty("--lp-site-header-height");
+	root.style.removeProperty("--sc-header-height");
 	const target = button("Projects", root);
 	let measuredAtScroll;
 	target.scrollIntoView = () => {
 		measuredAtScroll = [
-			root.style.getPropertyValue("--lp-site-header-height"),
-			root.style.getPropertyValue("--lp-project-bar-height"),
+			root.style.getPropertyValue("--sc-header-height"),
+			root.style.getPropertyValue("--sc-navigation-height"),
 		];
 	};
 	const { revealActionResult } =
@@ -595,7 +595,7 @@ test("the native site header is measured on resize and before revealing a result
 	assert.equal(revealActionResult(heading), true);
 	assert.equal(document.activeElement, heading);
 	assert.equal(heading.tabIndex, -1);
-	assert.equal(heading.classList.contains("lp-focus-target"), true);
+	assert.equal(heading.classList.contains("sc-focus-target"), true);
 });
 
 test("creation authentication failure rechecks once and explicitly retries the exact intent", async (t) => {

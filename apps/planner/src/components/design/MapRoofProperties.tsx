@@ -39,7 +39,7 @@ export function MapRoofProperties({
 		optional = false,
 		multiline = false,
 	) => (
-		<label className="lp-field" key={name}>
+		<label className="sc-field" key={name}>
 			<span>{label}</span>
 			{multiline ? (
 				<textarea
@@ -66,7 +66,7 @@ export function MapRoofProperties({
 			)}
 			{help && <small>{help}</small>}
 			{invalidField === name && error && (
-				<small id={errorId} className="lp-field-error" role="alert">
+				<small id={errorId} className="sc-field-error" role="alert">
 					{error}
 				</small>
 			)}
@@ -75,8 +75,8 @@ export function MapRoofProperties({
 	return (
 		<form
 			ref={form}
-			className="lp-drawing-properties lp-focus-target"
-			id="lp-map-roof-properties"
+			className="sc-drawing-properties sc-focus-target"
+			id="sc-map-roof-properties"
 			onInvalid={(event) => {
 				const details = (event.target as HTMLElement).closest("details");
 				if (details) details.open = true;
@@ -94,7 +94,7 @@ export function MapRoofProperties({
 				)}
 			</p>
 			<fieldset disabled={busy}>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{fieldInput("name", __("Roof face name", "linker-tools"))}
 					{fieldInput(
 						"pitch",
@@ -112,7 +112,7 @@ export function MapRoofProperties({
 						true,
 					)}
 				</div>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{decimalSeparator(drawing.locale) === ","
 						? __("Decimal comma; no thousands separators.", "linker-tools")
 						: __("Decimal point; no thousands separators.", "linker-tools")}
@@ -147,7 +147,7 @@ export function MapRoofProperties({
 						false,
 						true,
 					)}
-					<div className="lp-geometry-fields">
+					<div className="sc-geometry-fields">
 						{fieldInput(
 							"precision",
 							__("Declared spatial precision (m)", "linker-tools"),
@@ -175,7 +175,7 @@ export function MapRoofProperties({
 						false,
 						true,
 					)}
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Permission to export geometry", "linker-tools")}</span>
 						<select
 							value={drawing.fields.export}
@@ -194,7 +194,7 @@ export function MapRoofProperties({
 					</label>
 				</details>
 				{!(sourceProvided && drawing.fields.permission) && (
-					<label className="lp-geometry-check">
+					<label className="sc-geometry-check">
 						<input
 							type="checkbox"
 							checked={drawing.fields.permission}
@@ -208,17 +208,17 @@ export function MapRoofProperties({
 					</label>
 				)}
 				{error && !invalidField && (
-					<div ref={result} tabIndex={-1} className="lp-focus-target">
+					<div ref={result} tabIndex={-1} className="sc-focus-target">
 						<Notice error>{error}</Notice>
 					</div>
 				)}
-				<div className="lp-inline-actions">
-					<button type="submit" className="lp-button">
+				<div className="sc-actions">
+					<button type="submit" className="sc-button sc-primary">
 						{__("Check and add roof face", "linker-tools")}
 					</button>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={continueDrawing}
 					>
 						{__("Continue adding corners", "linker-tools")}

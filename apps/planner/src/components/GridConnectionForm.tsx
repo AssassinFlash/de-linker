@@ -55,7 +55,7 @@ export function GridConnectionForm({
 			? editing.tab[key as keyof GridConnection["tab"]]
 			: editing[key];
 		return (
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{label}</span>
 				<input
 					type="text"
@@ -83,7 +83,7 @@ export function GridConnectionForm({
 		);
 	}
 	return (
-		<section className="lp-section" aria-labelledby={id + "-heading"}>
+		<section className="sc-section" aria-labelledby={id + "-heading"}>
 			<h2 id={id + "-heading"}>
 				{__("Grid connection information", "linker-tools")}
 			</h2>
@@ -96,7 +96,7 @@ export function GridConnectionForm({
 			{!editing ? (
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					onClick={() => change(emptyGridConnection())}
 				>
 					{__("Add grid connection information", "linker-tools")}
@@ -112,7 +112,7 @@ export function GridConnectionForm({
 							"dso_name",
 						)}
 						{field(__("DSO source URL", "linker-tools"), "dso_source_url")}
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{__(
 									"Voltage level at the grid connection point",
@@ -179,7 +179,7 @@ export function GridConnectionForm({
 					)}
 					<button
 						type="button"
-						className="lp-button"
+						className="sc-button sc-primary"
 						onClick={() => change(undefined)}
 					>
 						{hasRules

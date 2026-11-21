@@ -135,12 +135,12 @@ async function openDrawingWorkspace(page: Page, lang: Lang) {
 	// The section navigation only answers once the app has hydrated - a
 	// click on the overview link before that is swallowed (observed on the
 	// German page). The save-state status is the hydrated app chrome.
-	await expect(page.locator('.lp-save-state')).toBeVisible({
+	await expect(page.locator('.sc-save-state')).toBeVisible({
 		timeout: 30_000,
 	});
 
 	// 2. The site anchor: country, address and coordinates.
-	const site = page.locator('#lp-site');
+	const site = page.locator('#sc-project');
 	await site.locator('select').first().selectOption('DE');
 	await site.locator('input').nth(0).fill('Triftstrasse 5');
 	await site.locator('input').nth(1).fill(num(lang, '48.1689'));
@@ -156,22 +156,22 @@ async function openDrawingWorkspace(page: Page, lang: Lang) {
 		await page
 			.getByRole('combobox', { name: words.sections })
 			.selectOption('overview');
-	const roofEntry = page.locator('.lp-overview-empty .lp-button');
+	const roofEntry = page.locator('.sc-overview-empty .sc-button');
 	// A plain click waits for the button to be visible and stable - an
 	// evaluate-click can land before hydration binds the handler (observed
 	// on the German page, whose catalog loads make hydration slower).
 	await roofEntry.click();
-	await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
+	await expect(page).toHaveURL(/#sc-solar/, { timeout: 15_000 });
 
 	// 4. The first roof face: every field including the rights note, which is
 	// the one required field a quick pass misses.
 	// Exact role name: on the German page a substring also matches the
 	// empty-state's "Erste Dachfläche hinzufügen".
 	await page
-		.locator('#lp-design button.lp-button', { hasText: words.addRoofFace })
+		.locator('#sc-solar button.sc-button', { hasText: words.addRoofFace })
 		.first()
 		.click();
-	const faceForm = page.locator('#lp-design form');
+	const faceForm = page.locator('#sc-solar form');
 	await faceForm.locator('[name="name"]').fill('Main roof');
 	await faceForm.locator('[name="width"]').fill('10');
 	await faceForm.locator('[name="length"]').fill('6');
@@ -187,11 +187,11 @@ async function openDrawingWorkspace(page: Page, lang: Lang) {
 	// 5. Coordinate references: true north with the anchor coordinates and a
 	// source - drawingBridge requires both halves.
 	await page
-		.locator('#lp-design button', {
+		.locator('#sc-solar button', {
 			hasText: words.coordRefs,
 		})
 		.click();
-	const coordForm = page.locator('#lp-design form');
+	const coordForm = page.locator('#sc-solar form');
 	await coordForm.locator('select[name="north"]').selectOption('true_north');
 	await coordForm.locator('[name="latitude"]').fill(num(lang, '48.1689'));
 	await coordForm.locator('[name="longitude"]').fill(num(lang, '11.5844'));
@@ -206,9 +206,9 @@ async function openDrawingWorkspace(page: Page, lang: Lang) {
 	await coordForm.locator('button[type="submit"]').click();
 
 	// 6-7. The Map tab's Start roof drawing gate opens and the canvas mounts.
-	await page.locator('#lp-design button', { hasText: words.mapTab }).click();
+	await page.locator('#sc-solar button', { hasText: words.mapTab }).click();
 	const start = page
-		.locator('#lp-design button', { hasText: words.startDrawing })
+		.locator('#sc-solar button', { hasText: words.startDrawing })
 		.first();
 	await expect(start, 'the geographic gate opens').toBeEnabled({
 		timeout: 30_000,
@@ -229,12 +229,12 @@ async function openDrawingWorkspace(page: Page, lang: Lang) {
 	// records). The role=status counter is the live evidence.
 	await page.evaluate(() => {
 		document
-			.querySelector('.lp-map-surface')
+			.querySelector('.sc-map-surface')
 			?.scrollIntoView({ block: 'center' });
 	});
 	// Let the scroll settle: a click during the settling misses the map.
 	await page.waitForTimeout(800);
-	const counter = page.locator('#lp-design [role="status"]');
+	const counter = page.locator('#sc-solar [role="status"]');
 	await expect(counter).toContainText(`${words.corners}0`);
 	return { counter };
 }
@@ -266,14 +266,14 @@ for (const lang of ['en', 'de'] as const) {
 		// land on the panel instead of the canvas record nothing; the surface must
 		// be scrolled back and settle before the canvas accepts clicks again.
 		await page
-			.locator('#lp-design button', { hasText: words.removeLast })
+			.locator('#sc-solar button', { hasText: words.removeLast })
 			.click();
 		await expect(counter).toContainText(`${words.corners}3`, {
 			timeout: 10_000,
 		});
 		await page.evaluate(() => {
 			document
-				.querySelector('.lp-map-surface')
+				.querySelector('.sc-map-surface')
 				?.scrollIntoView({ block: 'center' });
 		});
 		await page.waitForTimeout(800);
@@ -290,29 +290,29 @@ for (const lang of ['en', 'de'] as const) {
 		// properties (Add module array itself waits for a module specification,
 		// the next state row).
 		await page
-			.locator('#lp-design button', { hasText: words.closeOutline })
+			.locator('#sc-solar button', { hasText: words.closeOutline })
 			.click();
 		await expect(
-			page.locator('#lp-design a', { hasText: words.roofProps })
+			page.locator('#sc-solar a', { hasText: words.roofProps })
 		).toBeVisible({ timeout: 30_000 });
 
 		// The staged drawing keeps the drawing panel open, which gates the
 		// design forms; parking it with Pause drawing closes the panel.
 		await page
-			.locator('#lp-design button', { hasText: words.pauseDrawing })
+			.locator('#sc-solar button', { hasText: words.pauseDrawing })
 			.click();
 		await page
-			.locator('#lp-design button', { hasText: words.addModuleSpec })
+			.locator('#sc-solar button', { hasText: words.addModuleSpec })
 			.click({ timeout: 15_000 });
 
-		const moduleForm = page.locator('#lp-design form');
+		const moduleForm = page.locator('#sc-solar form');
 		await moduleForm.locator('[name="panel_length_mm"]').fill('1800');
 		await moduleForm.locator('[name="panel_width_mm"]').fill('1100');
 		await moduleForm.locator('[name="panel_thickness_mm"]').fill('30');
 		await moduleForm.locator('[name="panel_power_w"]').fill('430');
 		await moduleForm.locator('button[type="submit"]').click();
 		await expect(
-			page.locator('#lp-design button', { hasText: words.addModuleArray })
+			page.locator('#sc-solar button', { hasText: words.addModuleArray })
 		).toBeEnabled({ timeout: 30_000 });
 
 		// The parked drawing went stale: the module specification changed the
@@ -320,20 +320,20 @@ for (const lang of ['en', 'de'] as const) {
 		// drawing can no longer be applied to it (Resume stays disabled by
 		// design). The stale notice says so and discarding frees the workspace.
 		await expect(counter).toContainText(words.pausedRetained);
-		await expect(page.locator('#lp-design')).toContainText(
+		await expect(page.locator('#sc-solar')).toContainText(
 			words.geometryChanged
 		);
 		await page
-			.locator('#lp-design button', { hasText: words.discard })
+			.locator('#sc-solar button', { hasText: words.discard })
 			.click();
-		const restart = page.locator('#lp-design button', {
+		const restart = page.locator('#sc-solar button', {
 			hasText: words.startDrawing,
 		});
 		await expect(restart.first()).toBeEnabled({ timeout: 15_000 });
 		await restart.first().click();
 		await page.evaluate(() => {
 			document
-				.querySelector('.lp-map-surface')
+				.querySelector('.sc-map-surface')
 				?.scrollIntoView({ block: 'center' });
 		});
 		await page.waitForTimeout(800);
@@ -354,7 +354,7 @@ for (const lang of ['en', 'de'] as const) {
 			});
 		}
 		await page
-			.locator('#lp-design button', { hasText: words.closeOutline })
+			.locator('#sc-solar button', { hasText: words.closeOutline })
 			.click();
 
 		// The edit-vertices state: the staged outline switches the canvas to the
@@ -364,7 +364,7 @@ for (const lang of ['en', 'de'] as const) {
 		// corners because the map camera never moved.
 		await page.evaluate(() => {
 			document
-				.querySelector('.lp-map-surface')
+				.querySelector('.sc-map-surface')
 				?.scrollIntoView({ block: 'center' });
 		});
 		await page.waitForTimeout(800);
@@ -390,7 +390,7 @@ for (const lang of ['en', 'de'] as const) {
 		// so the submission reaches the domain check, where pitch 90 breaks the
 		// 0 <= pitch < 90 rule. The field-level alert names the field and keeps
 		// every entry; the geometry check is never reached.
-		const roofForm = page.locator('#lp-map-roof-properties');
+		const roofForm = page.locator('#sc-map-roof-properties');
 		await expect(roofForm).toBeVisible({ timeout: 15_000 });
 		await roofForm.locator('[name="name"]').fill('Map roof');
 		await roofForm.locator('[name="pitch"]').fill('90');
@@ -410,7 +410,7 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(
 			roofForm.locator('[aria-invalid="true"][name="pitch"]')
 		).toBeVisible();
-		await expect(roofForm.locator('.lp-field-error')).toContainText(
+		await expect(roofForm.locator('.sc-field-error')).toContainText(
 			words.fieldInvalid
 		);
 
@@ -424,7 +424,7 @@ for (const lang of ['en', 'de'] as const) {
 			timeout: 60_000,
 		});
 		await page.getByRole('button', { name: words.saveProject }).click();
-		await expect(page.locator('.lp-save-state')).toContainText(
+		await expect(page.locator('.sc-save-state')).toContainText(
 			words.savedState,
 			{
 				timeout: 60_000,
@@ -458,7 +458,7 @@ for (const lang of ['en', 'de'] as const) {
 		await page.getByRole('button', { name: words.drawFeature }).click();
 		await page.evaluate(() => {
 			document
-				.querySelector('.lp-map-surface')
+				.querySelector('.sc-map-surface')
 				?.scrollIntoView({ block: 'center' });
 		});
 		await page.waitForTimeout(800);
@@ -486,9 +486,9 @@ for (const lang of ['en', 'de'] as const) {
 			});
 		}
 		await page
-			.locator('#lp-design button', { hasText: words.closeOutline })
+			.locator('#sc-solar button', { hasText: words.closeOutline })
 			.click();
-		const featureForm = page.locator('#lp-map-feature-properties');
+		const featureForm = page.locator('#sc-map-feature-properties');
 		await expect(featureForm).toBeVisible({ timeout: 15_000 });
 		await featureForm.locator('[name="name"]').fill('Chimney');
 		await featureForm.locator('[name="height"]').fill(num(lang, '1.5'));
@@ -501,7 +501,7 @@ for (const lang of ['en', 'de'] as const) {
 			timeout: 60_000,
 		});
 		await page.getByRole('button', { name: words.saveProject }).click();
-		await expect(page.locator('.lp-save-state')).toContainText(
+		await expect(page.locator('.sc-save-state')).toContainText(
 			words.savedState,
 			{
 				timeout: 60_000,
@@ -550,7 +550,7 @@ for (const lang of ['en', 'de'] as const) {
 		await page.getByRole('button', { name: words.hideStreet }).click();
 		await page.getByRole('button', { name: words.loadStreet }).click();
 		const notice = page
-			.locator('.lp-map-view')
+			.locator('.sc-map-view')
 			.getByText(words.mapNotDisplayed);
 		await expect(notice).toBeVisible({ timeout: 30_000 });
 		await expect(counter).toContainText(`${words.corners}2`);
@@ -567,7 +567,7 @@ for (const lang of ['en', 'de'] as const) {
 		// The view switch stays locked while a drawing is open; discarding the
 		// empty drawing frees the triad.
 		await page
-			.locator('#lp-design button', { hasText: words.discard })
+			.locator('#sc-solar button', { hasText: words.discard })
 			.click();
 		const views = page.getByRole('group', { name: words.designView });
 		const third = views.getByRole('button', { name: '3D', exact: true });
@@ -585,7 +585,7 @@ for (const lang of ['en', 'de'] as const) {
 
 		// Plan and map keep serving the same geometry.
 		await views.getByRole('button', { name: words.planBtn }).click();
-		await expect(page.locator('#lp-design .lp-plan-svg')).toBeVisible({
+		await expect(page.locator('#sc-solar .sc-plan-svg')).toBeVisible({
 			timeout: 30_000,
 		});
 		await views.getByRole('button', { name: words.viewMap }).click();

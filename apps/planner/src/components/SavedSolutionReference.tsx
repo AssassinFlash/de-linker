@@ -7,11 +7,11 @@ export function SavedSolutionReference({ value }: { value: Json | undefined }) {
 	const source = value as JsonObject;
 	if (source.authority !== "historical_user_input") return null;
 	return (
-		<details className="lp-section">
+		<details className="sc-section">
 			<summary>{__("Original inputs", "linker-tools")}</summary>
 			<p>{typeof source.title === "string" ? source.title : ""}</p>
 			<a
-				className="lp-text-button"
+				className="sc-text-button"
 				download="saved-solution-inputs.json"
 				href={
 					"data:application/json;charset=utf-8," +

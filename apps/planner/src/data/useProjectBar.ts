@@ -20,7 +20,7 @@ export function useProjectBar() {
 		measure();
 		return () => {
 			observer.disconnect();
-			root.style.removeProperty("--lp-project-bar-height");
+			root.style.removeProperty("--sc-navigation-height");
 		};
 	}, []);
 }

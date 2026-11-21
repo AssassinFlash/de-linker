@@ -38,8 +38,8 @@ export function WeatherForm({
 	);
 	const request = value.request;
 	return (
-		<fieldset className="lp-scenario-fields" disabled={disabled}>
-			<section className="lp-scenario-block">
+		<fieldset className="sc-scenario-fields" disabled={disabled}>
+			<section className="sc-scenario-block">
 				<h3>{__("Typical-year weather", "linker-tools")}</h3>
 				<p>
 					{__(
@@ -47,7 +47,7 @@ export function WeatherForm({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					<ScenarioNumber
 						key={"latitude-" + locationReset}
 						field="weather-latitude"
@@ -79,7 +79,7 @@ export function WeatherForm({
 				</div>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={!anchor}
 					onClick={() => {
 						if (anchor) {
@@ -99,13 +99,13 @@ export function WeatherForm({
 				>
 					{__("Use roof coordinates", "linker-tools")}
 				</button>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"The roof reference point can supply WGS 84 coordinates. A postcode alone does not locate the roof.",
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					<ScenarioNumber
 						field="weather-start-year"
 						integer
@@ -135,13 +135,13 @@ export function WeatherForm({
 						}
 					/>
 				</div>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"PVGIS selects representative months from this period. Use whole calendar years. Availability depends on the location and database.",
 						"linker-tools",
 					)}
 				</p>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Expected radiation database", "linker-tools")}</span>
 					<select
 						value={request.expected_radiation_database ?? ""}
@@ -164,13 +164,13 @@ export function WeatherForm({
 						<option value="PVGIS-ERA5">PVGIS-ERA5</option>
 					</select>
 				</label>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"PVGIS chooses the radiation database for the location. This field checks that choice; it does not change it. Meteorological data must come from ERA5.",
 						"linker-tools",
 					)}
 				</p>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Terrain horizon", "linker-tools")}</span>
 					<select
 						value={
@@ -200,14 +200,14 @@ export function WeatherForm({
 						</option>
 					</select>
 				</label>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"A terrain horizon does not include nearby buildings, trees or roof obstacles.",
 						"linker-tools",
 					)}
 				</p>
 			</section>
-			<section className="lp-scenario-block">
+			<section className="sc-scenario-block">
 				<h3>{__("Calculation year", "linker-tools")}</h3>
 				<ScenarioNumber
 					field="weather-output-year"
@@ -229,7 +229,7 @@ export function WeatherForm({
 						})
 					}
 				/>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"A non-leap year places the 8,760 typical-year hours on a shared UTC timeline. Solar positions still use the original source dates and the provider's irradiance-time offset. The result is not a forecast for the chosen year.",
 						"linker-tools",

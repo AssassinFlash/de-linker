@@ -521,7 +521,7 @@ async function equipmentApp(
 		[...document.querySelectorAll("button")].find(
 			(node) =>
 				(node.getAttribute("aria-label") === text ||
-					node.textContent === text) &&
+					node.textContent.trim() === text) &&
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
@@ -815,7 +815,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
-			.querySelector(".sc-roof-editor .lp-panel-shape")
+			.querySelector(".sc-roof-editor .sc-panel-shape")
 			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
 	);
 	await act(async () => app.button("Remove selected").click());

@@ -93,19 +93,19 @@ export function ProfileReview({
 		],
 	];
 	return (
-		<div className="lp-profile-review">
+		<div className="sc-profile-review">
 			<h3
 				ref={headingRef}
 				tabIndex={headingRef ? -1 : undefined}
-				className="lp-focus-target"
+				className="sc-focus-target"
 			>
 				{__("Data interpretation", "linker-tools")}
 			</h3>
-			<p className="lp-profile-range">
+			<p className="sc-profile-range">
 				<time dateTime={s.start_utc}>{s.start_utc}</time> →{" "}
 				<time dateTime={s.end_utc}>{s.end_utc}</time> · UTC
 			</p>
-			<dl className="lp-profile-facts">
+			<dl className="sc-profile-facts">
 				{facts.map(([label, value]) => (
 					<div key={label}>
 						<dt>{label}</dt>
@@ -152,12 +152,12 @@ export function ProfileReview({
 				</Notice>
 			)}
 			<div
-				className="lp-table-scroll"
+				className="sc-table-scroll"
 				role="region"
 				aria-label={__("Interpreted intervals", "linker-tools")}
 				tabIndex={0}
 			>
-				<table className="lp-data-table">
+				<table className="sc-data-table">
 					<caption>
 						{__("Interpreted intervals · UTC · average kW", "linker-tools")}
 					</caption>
@@ -182,7 +182,7 @@ export function ProfileReview({
 			{preview.next_offset !== null && (
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={busy}
 					onClick={loadMore}
 				>
@@ -190,7 +190,7 @@ export function ProfileReview({
 				</button>
 			)}
 			{preview.first_gaps.length > 0 && (
-				<details className="lp-comparison">
+				<details className="sc-disclosure">
 					<summary>{__("Gap locations · UTC", "linker-tools")}</summary>
 					<ul>
 						{preview.first_gaps.map((gap) => (
@@ -209,11 +209,11 @@ export function ProfileReview({
 					)}
 				</details>
 			)}
-			<details className="lp-comparison">
+			<details className="sc-disclosure">
 				<summary>
 					{__("Original source and interpretation record", "linker-tools")}
 				</summary>
-				<dl className="lp-source-hashes">
+				<dl className="sc-source-hashes">
 					<dt>{__("Original file SHA-256", "linker-tools")}</dt>
 					<dd>{asset.content_sha256}</dd>
 					<dt>{__("Import metadata SHA-256", "linker-tools")}</dt>

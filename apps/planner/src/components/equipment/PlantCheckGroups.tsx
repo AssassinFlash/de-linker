@@ -54,7 +54,7 @@ export function PlantCheckGroups({
 	return (
 		<>
 			{project.length > 0 && (
-				<details className="lp-comparison" open>
+				<details className="sc-disclosure" open>
 					<summary>
 						{__("Project requirements and joint checks", "linker-tools")} ·{" "}
 						{equipmentStatus(status(project))}
@@ -63,7 +63,7 @@ export function PlantCheckGroups({
 				</details>
 			)}
 			{units.map((u) => (
-				<details className="lp-comparison" key={u.id}>
+				<details className="sc-disclosure" key={u.id}>
 					<summary>
 						{u.name} · {u.model} · {equipmentStatus(status(u.items))}
 					</summary>
@@ -71,7 +71,7 @@ export function PlantCheckGroups({
 				</details>
 			))}
 			{[...groups.entries()].map(([id, group]) => (
-				<details className="lp-comparison" key={id}>
+				<details className="sc-disclosure" key={id}>
 					<summary>
 						{__("Coordination group", "linker-tools")} {group.name} ·{" "}
 						{equipmentStatus(status(group.items))}

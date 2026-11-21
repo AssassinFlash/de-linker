@@ -11,7 +11,7 @@ export function MapSourceDetails({
 	locale: string;
 }) {
 	return (
-		<dl className="lp-drawing-source">
+		<dl className="sc-drawing-source">
 			<dt>{__("Measurement or drawing reference", "linker-tools")}</dt>
 			<dd>{source.note}</dd>
 			<SourceMeasurements source={source} locale={locale} />

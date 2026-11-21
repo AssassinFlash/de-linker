@@ -15,9 +15,9 @@ export function PvgisRoofFacts({
 		n = (v: number) =>
 			new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(v);
 	return (
-		<div className="lp-scenario-sources">
+		<div className="sc-scenario-sources">
 			<h4>{__("Inputs from the roof design", "linker-tools")}</h4>
-			<dl className="lp-run-facts">
+			<dl className="sc-run-facts">
 				<dt>{__("Included modules", "linker-tools")}</dt>
 				<dd>{n(poses.length)}</dd>
 				<dt>{__("Module nameplate power", "linker-tools")}</dt>
@@ -30,8 +30,8 @@ export function PvgisRoofFacts({
 					{geometry.coordinate_system.anchor!.longitude_deg}°
 				</dd>
 			</dl>
-			<div className="lp-table-scroll">
-				<table className="lp-data-table">
+			<div className="sc-table-scroll">
+				<table className="sc-data-table">
 					<thead>
 						<tr>
 							{[

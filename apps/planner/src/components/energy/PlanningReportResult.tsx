@@ -23,7 +23,7 @@ function SectionContent({ section }: { section: ReportSection }) {
 				<p key={i}>{p}</p>
 			))}
 			{section.rows.length > 0 && (
-				<dl className="lp-field-summary">
+				<dl className="sc-field-summary">
 					{section.rows.map((row, i) => (
 						<div key={i}>
 							<dt>{row.label}</dt>
@@ -42,8 +42,8 @@ function SectionContent({ section }: { section: ReportSection }) {
 			)}
 			{section.table && (
 				<>
-					<div className="lp-table-scroll lp-report-table">
-						<table className="lp-data-table">
+					<div className="sc-table-scroll sc-report-table">
+						<table className="sc-data-table">
 							<thead>
 								<tr>
 									{section.table.columns.map((label, i) => (
@@ -62,7 +62,7 @@ function SectionContent({ section }: { section: ReportSection }) {
 							</tbody>
 						</table>
 					</div>
-					<ol className="lp-report-cards">
+					<ol className="sc-report-cards">
 						{section.table.rows.map((row, i) => (
 							<li key={i}>
 								<dl>
@@ -202,7 +202,7 @@ export function PlanningReportResult({
 	}
 	if (!report)
 		return (
-			<div className="lp-run-result lp-work-panel">
+			<div className="sc-run-result sc-work-panel">
 				<h3>{__("Planning report", "linker-tools")}</h3>
 				<p role="status">{runStateLabel(run.state, REPORT_TASK)}</p>
 				{run.error && (
@@ -219,9 +219,9 @@ export function PlanningReportResult({
 			? __("Report language: English", "linker-tools")
 			: __("Report language: German", "linker-tools");
 	return (
-		<article className="lp-run-result lp-report-detail">
+		<article className="sc-run-result sc-report-detail">
 			{!current && (
-				<div className="lp-notice" data-report-outdated="" role="status">
+				<div className="sc-notice" data-report-outdated="" role="status">
 					<p>
 						{__(
 							"This report describes an earlier version of the project.",
@@ -230,7 +230,7 @@ export function PlanningReportResult({
 					</p>
 				</div>
 			)}
-			<header className="lp-run-heading lp-work-panel lp-report-heading">
+			<header className="sc-run-heading sc-work-panel sc-report-heading">
 				<div>
 					<h3 lang={report.locale}>{report.title}</h3>
 					<p lang={report.locale}>{report.subtitle}</p>
@@ -251,12 +251,12 @@ export function PlanningReportResult({
 					</p>
 				</div>
 			</header>
-			<div className="lp-report-detail-layout">
-				<aside className="lp-report-actions lp-work-panel">
-					<div className="lp-report-downloads">
+			<div className="sc-report-detail-layout">
+				<aside className="sc-report-actions sc-work-panel">
+					<div className="sc-report-downloads">
 						<button
 							type="button"
-							className="lp-button"
+							className="sc-button sc-primary"
 							disabled={busy || !client.isCurrentScope(scope)}
 							onClick={() => void download("pdf")}
 						>
@@ -265,7 +265,7 @@ export function PlanningReportResult({
 						{csv && (
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={busy || !client.isCurrentScope(scope)}
 								onClick={() => void download("materials")}
 							>
@@ -275,7 +275,7 @@ export function PlanningReportResult({
 						{ruleCsv && (
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={busy || !client.isCurrentScope(scope)}
 								onClick={() => void download("rules")}
 							>
@@ -285,7 +285,7 @@ export function PlanningReportResult({
 						{seriesCsv && (
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={busy || !client.isCurrentScope(scope)}
 								onClick={() => void download("series")}
 							>
@@ -326,13 +326,13 @@ export function PlanningReportResult({
 						/>
 					)}
 				</aside>
-				<div className="lp-report-content">
+				<div className="sc-report-content">
 					{report.sections.map((section) =>
 						section.id.startsWith("check-") ||
 						["basis", "conditions"].includes(section.id) ? (
 							<details
 								key={section.id}
-								className="lp-comparison lp-work-panel"
+								className="sc-disclosure sc-work-panel"
 								lang={report.locale}
 							>
 								<summary>{section.title}</summary>
@@ -341,10 +341,10 @@ export function PlanningReportResult({
 						) : (
 							<section
 								key={section.id}
-								className="lp-scenario-block lp-work-panel"
+								className="sc-scenario-block sc-work-panel"
 								lang={report.locale}
 							>
-								<h4 className="lp-work-panel-heading">{section.title}</h4>
+								<h4 className="sc-work-panel-heading">{section.title}</h4>
 								<SectionContent section={section} />
 							</section>
 						),

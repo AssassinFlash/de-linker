@@ -40,7 +40,7 @@ export function EquipmentConditions({
 	)
 		return null;
 	return (
-		<details className="lp-comparison">
+		<details className="sc-disclosure">
 			<summary>
 				{__("Components and manufacturer conditions", "linker-tools")}
 			</summary>

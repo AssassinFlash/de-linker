@@ -187,8 +187,8 @@ export function SessionBoundary({
 	return (
 		<>
 			{gate && (
-				<div className="lp-session-state">
-					<span className="lp-eyebrow">
+				<div className="sc-session-state">
+					<span className="sc-eyebrow">
 						{__("Solution Configurator", "linker-tools")}
 					</span>
 					{failed ? (
@@ -199,7 +199,7 @@ export function SessionBoundary({
 									"linker-tools",
 								)}
 							</p>
-							<button className="lp-button" onClick={recheck}>
+							<button className="sc-button sc-primary" onClick={recheck}>
 								{__("Try again", "linker-tools")}
 							</button>
 						</Notice>
@@ -216,7 +216,7 @@ export function SessionBoundary({
 				</QueryClientProvider>
 			)}
 			{refreshFailed && !gate && (
-				<div className="lp-session-state" role="status">
+				<div className="sc-session-state" role="status">
 					<Notice error>
 						<p>
 							{__(
@@ -224,7 +224,7 @@ export function SessionBoundary({
 								"linker-tools",
 							)}
 						</p>
-						<button className="lp-button" onClick={() => verify("probe")}>
+						<button className="sc-button sc-primary" onClick={() => verify("probe")}>
 							{__("Try again", "linker-tools")}
 						</button>
 					</Notice>

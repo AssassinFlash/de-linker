@@ -95,14 +95,14 @@ export function DcStorageForm({
 				: value.battery_binding,
 		});
 	return (
-		<section className="lp-scenario-block lp-work-main">
-			<section className="lp-work-panel">
-				<h3 className="lp-work-panel-heading">
+		<section className="sc-scenario-block sc-work-main">
+			<section className="sc-work-panel">
+				<h3 className="sc-work-panel-heading">
 					{storageOnly
 						? __("Storage converter and battery", "linker-tools")
 						: __("Shared inverter and battery", "linker-tools")}
 				</h3>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"The selected products supply battery capacity, voltage, current and equipment power limits where documented. Losses and auxiliary consumption remain separate calculation assumptions.",
 						"linker-tools",
@@ -110,7 +110,7 @@ export function DcStorageForm({
 				</p>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={openEquipment}
 				>
 					{equipmentSelected
@@ -127,8 +127,8 @@ export function DcStorageForm({
 						{__("Current product data is being prepared.", "linker-tools")}
 					</p>
 				)}
-				<div className="lp-geometry-fields">
-					<label className="lp-field">
+				<div className="sc-geometry-fields">
+					<label className="sc-field">
 						<span>{__("Capacity model", "linker-tools")}</span>
 						<select
 							disabled={!referenceCapacitySupported}
@@ -154,16 +154,16 @@ export function DcStorageForm({
 						</select>
 					</label>
 					{!storageOnly && showPvAssignment && (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("PV conversion group", "linker-tools")}</span>
 							<input
 								value={dc.pv_converter_id}
-								list="lp-dc-converters"
+								list="sc-dc-converters"
 								onChange={(e) =>
 									change({ pv_converter_id: e.currentTarget.value })
 								}
 							/>
-							<datalist id="lp-dc-converters">
+							<datalist id="sc-dc-converters">
 								{converters.map((id) => (
 									<option key={id} value={id} />
 								))}
@@ -171,7 +171,7 @@ export function DcStorageForm({
 						</label>
 					)}
 					{ports !== undefined ? (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Connected battery port", "linker-tools")}</span>
 							<select
 								value={dc.battery_port_id}
@@ -214,7 +214,7 @@ export function DcStorageForm({
 							}
 						/>
 					) : (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Connected battery port", "linker-tools")}</span>
 							<input disabled readOnly value="" />
 						</label>
@@ -243,34 +243,34 @@ export function DcStorageForm({
 					)}
 				</div>
 				{dc.capacity_window_basis === REFERENCE_CAPACITY && (
-					<p className="lp-profile-help">{capacityReferenceText()}</p>
+					<p className="sc-field-help">{capacityReferenceText()}</p>
 				)}
 				{!storageOnly && showPvAssignment && (
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"The selected PV source must retain DC power for this conversion group. A CSV containing AC generation cannot supply this input. The battery port is checked against the selected inverter.",
 							"linker-tools",
 						)}
 					</p>
 				)}
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Battery temperature is a fixed scenario condition used to check the documented charging and discharging temperature ranges. It is not inferred from outdoor weather. This model uses fixed loss assumptions and does not simulate temperature changes.",
 						"linker-tools",
 					)}
 				</p>
 			</section>
-			<section className="lp-work-panel">
-				<h4 className="lp-work-panel-heading">
+			<section className="sc-work-panel">
+				<h4 className="sc-work-panel-heading">
 					{__("Loss assumptions", "linker-tools")}
 				</h4>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Efficiencies apply separately to the DC converter, stored energy and inverter. A reverse-efficiency assumption is required to calculate grid charging. Zero auxiliary demand or standing loss is an explicit assumption.",
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{DC_LOSS_FIELDS.map((field) => {
 						const efficiency = field.startsWith("eta_");
 						return (
@@ -299,7 +299,7 @@ export function DcStorageForm({
 						);
 					})}
 				</div>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>
 						{__("Source or assumption for storage parameters", "linker-tools")}
 					</span>

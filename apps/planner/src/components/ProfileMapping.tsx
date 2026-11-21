@@ -113,7 +113,7 @@ function Choice({
 }) {
 	const id = useId();
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span id={id + "-label"}>{label}</span>
 			<select
 				value={value}
@@ -165,7 +165,7 @@ export function ProfileMapping({
 		const id = mappingId + "-" + field;
 		if (columns === null)
 			return (
-				<label className="lp-field">
+				<label className="sc-field">
 					<span id={id}>{label}</span>
 					<input
 						aria-labelledby={id}
@@ -188,7 +188,7 @@ export function ProfileMapping({
 		);
 	}
 	return (
-		<div className="lp-profile-mapping grid gap-5 md:grid-cols-2">
+		<div className="sc-profile-mapping grid gap-5 md:grid-cols-2">
 			{column("timestamp", __("Timestamp column", "linker-tools"), {
 				help: __(
 					"ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",

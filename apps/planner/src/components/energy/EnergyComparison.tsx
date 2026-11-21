@@ -130,9 +130,9 @@ export function EnergyComparison({
 			? __("Not defined", "linker-tools")
 			: `${new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value * (unit === "%" ? 100 : 1))} ${unit}`;
 	return (
-		<section className="lp-scenario-block lp-energy-comparison lp-work-main">
-			<div className="lp-work-panel">
-				<h3 className="lp-work-panel-heading">
+		<section className="sc-scenario-block sc-energy-comparison sc-work-main">
+			<div className="sc-work-panel">
+				<h3 className="sc-work-panel-heading">
 					{__("Saved calculation comparison", "linker-tools")}
 				</h3>
 				{!supported && (
@@ -149,9 +149,9 @@ export function EnergyComparison({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-comparison-variants">
+				<div className="sc-comparison-variants">
 					{([0, 1] as const).map((index) => (
-						<label className="lp-field" key={index}>
+						<label className="sc-field" key={index}>
 							<span>
 								{index === 0
 									? __("Baseline calculation", "linker-tools")
@@ -207,7 +207,7 @@ export function EnergyComparison({
 						</p>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={() => void query.refetch()}
 						>
 							{__("Read comparison again", "linker-tools")}
@@ -217,10 +217,10 @@ export function EnergyComparison({
 			</div>
 			{data && !query.error && (
 				<>
-					<div className="lp-comparison-detail">
-						<div className="lp-comparison-main">
-							<section className="lp-work-panel">
-								<h4 className="lp-work-panel-heading">
+					<div className="sc-comparison-detail">
+						<div className="sc-comparison-main">
+							<section className="sc-work-panel">
+								<h4 className="sc-work-panel-heading">
 									{__("Result", "linker-tools")}
 								</h4>
 								{!data.conditions_aligned && (
@@ -237,8 +237,8 @@ export function EnergyComparison({
 										"linker-tools",
 									)}
 								</p>
-								<div className="lp-table-scroll">
-									<table className="lp-data-table">
+								<div className="sc-table-scroll">
+									<table className="sc-data-table">
 										<thead>
 											<tr>
 												<th>{__("Result", "linker-tools")}</th>
@@ -274,10 +274,10 @@ export function EnergyComparison({
 									</table>
 								</div>
 							</section>
-							<div className="lp-comparison-variants">
-								<details className="lp-comparison lp-work-panel">
+							<div className="sc-comparison-variants">
+								<details className="sc-disclosure sc-work-panel">
 									<summary>{__("Comparison basis", "linker-tools")}</summary>
-									<dl className="lp-field-summary">
+									<dl className="sc-field-summary">
 										{data.conditions.map((c) => (
 											<div key={c.id}>
 												<dt>{comparisonLabel(c.id)}</dt>
@@ -286,11 +286,11 @@ export function EnergyComparison({
 										))}
 									</dl>
 								</details>
-								<details className="lp-comparison lp-work-panel">
+								<details className="sc-disclosure sc-work-panel">
 									<summary>
 										{__("Design and assumption changes", "linker-tools")}
 									</summary>
-									<dl className="lp-field-summary">
+									<dl className="sc-field-summary">
 										{data.differences.map((d) => (
 											<div key={d.id}>
 												<dt>{comparisonLabel(d.id)}</dt>
@@ -305,17 +305,17 @@ export function EnergyComparison({
 								</details>
 							</div>
 						</div>
-						<aside className="lp-comparison-sidebar">
-							<div className="lp-comparison-variants">
+						<aside className="sc-comparison-sidebar">
+							<div className="sc-comparison-variants">
 								{([data.baseline, data.candidate] as const).map((ref) => (
-									<section className="lp-work-panel" key={ref.run_id}>
-										<h4 className="lp-work-panel-heading">
+									<section className="sc-work-panel" key={ref.run_id}>
+										<h4 className="sc-work-panel-heading">
 											{label(ref.revision)}
 										</h4>
 										{ref.equipment_models.map((name, i) => (
 											<p key={i}>{name}</p>
 										))}
-										<dl className="lp-field-summary">
+										<dl className="sc-field-summary">
 											<div>
 												<dt>{equipmentCheckLabel("usable_energy")}</dt>
 												<dd>{format(ref.usable_window_kwh, "kWh")}</dd>
@@ -368,7 +368,7 @@ export function EnergyComparison({
 										</p>
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											onClick={() => openRun(ref.run_id)}
 										>
 											{__("Open saved calculation", "linker-tools")}
@@ -376,7 +376,7 @@ export function EnergyComparison({
 									</section>
 								))}
 							</div>
-							<div className="lp-work-panel lp-work-toolbar">
+							<div className="sc-work-panel sc-work-toolbar">
 								<p>
 									{__(
 										"Matching comparison conditions do not establish manufacturer performance or installation approval.",
@@ -385,7 +385,7 @@ export function EnergyComparison({
 								</p>
 								<button
 									type="button"
-									className="lp-button"
+									className="sc-button sc-primary"
 									disabled={reportDisabled || query.isFetching}
 									onClick={() =>
 										void generateReport({

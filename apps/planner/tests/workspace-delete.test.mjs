@@ -137,7 +137,7 @@ const confirmButton = () =>
 		...document.querySelectorAll(
 			'[role="group"][aria-label="Delete this project"] button',
 		),
-	].find((button) => button.className.includes("lp-button-danger"));
+	].find((button) => button.className.includes("sc-button-danger"));
 
 test("the account search opens directly at the older project list", async (t) => {
 	const listRequests = [];

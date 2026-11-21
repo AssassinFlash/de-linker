@@ -32,7 +32,7 @@ test.each( [ 'en', 'de' ] )(
 				],
 			},
 			results: [ { revision: 4, groups: [] } ],
-			url: '/solution-configurator/?project=project&run=older-run#lp-calculations',
+			url: '/solution-configurator/?project=project&run=older-run#sc-review',
 		};
 		const notice =
 			locale === 'de'

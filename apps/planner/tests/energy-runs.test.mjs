@@ -16,7 +16,7 @@ test("opening history after its first page loads pins the verified visible run i
 	window.history.replaceState(
 		null,
 		"",
-		`?project=${actualRun.project_id}#lp-calculations`,
+		`?project=${actualRun.project_id}#sc-review`,
 	);
 	const cache = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
@@ -120,7 +120,7 @@ test("opening history after its first page loads pins the verified visible run i
 	await until(
 		() => new URL(location.href).searchParams.get("run") === actualRun.id,
 	);
-	assert.equal(location.hash, "#lp-calculations");
+	assert.equal(location.hash, "#sc-review");
 	assert.equal(current.runId, actualRun.id);
 	assert.deepEqual(calls.slice(0, 2), ["projects/runs", "runs/read"]);
 });

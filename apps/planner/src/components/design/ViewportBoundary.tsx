@@ -22,7 +22,7 @@ export class ViewportBoundary extends Component<
 				<p>{this.props.failure}</p>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					onClick={this.props.retry}
 				>
 					{this.props.retryLabel}

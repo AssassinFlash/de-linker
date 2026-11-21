@@ -76,7 +76,7 @@ function SourceChoice({
 	value?: string;
 }) {
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{__("Source reference", "linker-tools")}</span>
 			<select name="source" defaultValue={value ?? ""} required>
 				<option value="">{__("Choose a source", "linker-tools")}</option>
@@ -99,7 +99,7 @@ function Position({
 	locale: string;
 }) {
 	return (
-		<div className="lp-scenario-fields">
+		<div className="sc-scenario-fields">
 			<GeometryNumber
 				name={prefix + "east"}
 				label={__("East", "linker-tools")}
@@ -228,7 +228,7 @@ export function InstanceForm({
 				label={__("Name", "linker-tools")}
 				value={instance?.name ?? ""}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Device or site connection", "linker-tools")}</span>
 				<select
 					name="product"
@@ -257,7 +257,7 @@ export function InstanceForm({
 				geometry={geometry}
 				{...(instance ? { value: instance.source_id } : {})}
 			/>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Give each physical device its own name. Connection point names and positions describe your site; manufacturer ratings remain in the product data.",
 					"linker-tools",
@@ -291,7 +291,7 @@ export function InstanceForm({
 							value={p.before?.position ?? null}
 							locale={locale}
 						/>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{t(
 									"Manufacturer terminal (optional)",
@@ -348,7 +348,7 @@ export function InstanceForm({
 							</select>
 						</label>
 						{!candidates.length && (
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{t(
 									"No documented terminal choices are available for the selected product revision. A saved selection remains until you change or clear it.",
 									"Für die ausgewählte Produktrevision sind keine dokumentierten Anschlussoptionen verfügbar. Eine gespeicherte Auswahl bleibt erhalten, bis Sie sie ändern oder entfernen.",
@@ -356,7 +356,7 @@ export function InstanceForm({
 							</p>
 						)}
 						{binding && !candidate && (
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{t("Saved source", "Gespeicherte Quelle")}:{" "}
 								<RevisionCode value={binding.document_id} /> ·{" "}
 								<RevisionCode value={binding.document_revision} />
@@ -387,7 +387,7 @@ export function InstanceForm({
 						)}
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={ports.length === 1 || locked.has(p.id)}
 							onClick={() =>
 								setPorts((old) => old.filter((row) => row.id !== p.id))
@@ -400,7 +400,7 @@ export function InstanceForm({
 			})}
 			<button
 				type="button"
-				className="lp-button lp-button-secondary"
+				className="sc-button"
 				onClick={() =>
 					setPorts((old) => [
 						...old,
@@ -424,7 +424,7 @@ function EndpointChoice({
 	value?: Endpoint;
 }) {
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>
 				{name === "start"
 					? __("From connection point", "linker-tools")
@@ -522,7 +522,7 @@ export function CircuitForm({
 				label={__("Name", "linker-tools")}
 				value={circuit?.name ?? ""}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Connection type", "linker-tools")}</span>
 				<select
 					name="kind"
@@ -552,7 +552,7 @@ export function CircuitForm({
 				</select>
 			</label>
 			{kind === "control" && (
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>
 						{t(
 							"Communication use (optional)",
@@ -589,7 +589,7 @@ export function CircuitForm({
 				name="end"
 				{...(circuit ? { value: circuit.end } : {})}
 			/>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{t(
 					"Operating conditions are optional. Enter the actual current, voltage, temperature and source. No electrical assumptions are supplied.",
 					"Betriebsbedingungen sind optional. Geben Sie tatsächlichen Strom, Spannung, Temperatur und Quelle an. Elektrische Annahmen werden nicht ergänzt.",
@@ -604,7 +604,7 @@ export function CircuitForm({
 					/>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={() => {
 							setConditionsTouched(true);
 							setConditions((old) => old.filter((r) => r.id !== row.id));
@@ -616,7 +616,7 @@ export function CircuitForm({
 			))}
 			<button
 				type="button"
-				className="lp-button lp-button-secondary"
+				className="sc-button"
 				onClick={() => {
 					setConditionsTouched(true);
 					setConditions((old) => [
@@ -689,7 +689,7 @@ export function RouteForm({
 				geometry={geometry}
 				{...(route ? { value: route.source_id } : {})}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Use current circuit endpoints", "linker-tools")}</span>
 				<select value="" onChange={(e) => endpoints(e.currentTarget.value)}>
 					<option value="">
@@ -702,7 +702,7 @@ export function RouteForm({
 					))}
 				</select>
 			</label>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Record every bend and vertical section in project metres. A blank height keeps the complete cable length unconfirmed.",
 					"linker-tools",
@@ -729,10 +729,10 @@ export function RouteForm({
 						: undefined
 				}
 			/>
-			<div className="lp-inline-actions">
+			<div className="sc-actions">
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					onClick={() => setDrawing((v) => !v)}
 				>
 					{drawing
@@ -741,7 +741,7 @@ export function RouteForm({
 				</button>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={() =>
 						setPoints((old) =>
 							old.length >= 2
@@ -763,7 +763,7 @@ export function RouteForm({
 					<Position prefix={p.id} value={p.before} locale={locale} />
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={() =>
 							setPoints((old) => old.filter((_, index) => index !== i))
 						}
@@ -786,7 +786,7 @@ export function RouteForm({
 				optional
 				multiline
 			/>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Enter 0 and its basis when the recorded path already includes all required length. No allowance is added automatically.",
 					"linker-tools",
@@ -1033,7 +1033,7 @@ export function CableForm({
 				label={__("Name", "linker-tools")}
 				value={cable?.name ?? ""}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Circuit", "linker-tools")}</span>
 				<select
 					name="circuit"
@@ -1052,7 +1052,7 @@ export function CableForm({
 					))}
 				</select>
 			</label>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Recorded route", "linker-tools")}</span>
 				<select
 					name="route"
@@ -1068,7 +1068,7 @@ export function CableForm({
 					))}
 				</select>
 			</label>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Physical construction", "linker-tools")}</span>
 				<select
 					name="construction"
@@ -1088,7 +1088,7 @@ export function CableForm({
 					</option>
 				</select>
 			</label>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Add one row for each physical length. Two separate DC conductors need two rows; one multicore cable needs one row.",
 					"linker-tools",
@@ -1140,7 +1140,7 @@ export function CableForm({
 					)}
 				/>
 			</div>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>
 					{t(
 						"Cable manufacturer reference (optional)",
@@ -1190,7 +1190,7 @@ export function CableForm({
 					))}
 				</select>
 			</label>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{t(
 					"Selecting a reference does not change your declared cross-section or construction. They must match the manufacturer's facts. A saved revision is retained until you explicitly select a current one.",
 					"Die Auswahl ändert Ihren erklärten Querschnitt oder Aufbau nicht. Beide müssen den Herstellerdaten entsprechen. Eine gespeicherte Revision bleibt erhalten, bis Sie ausdrücklich eine aktuelle auswählen.",
@@ -1199,7 +1199,7 @@ export function CableForm({
 			{selectedReference && (
 				<CableReferenceFacts reference={selectedReference} locale={locale} />
 			)}
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>
 					{t(
 						"Equipment manufacturer cross-section instruction (optional)",
@@ -1345,7 +1345,7 @@ export function CableForm({
 						/>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={() => {
 								invalidateCurrentConfirmation();
 								setRolesTouched(true);
@@ -1358,7 +1358,7 @@ export function CableForm({
 				))}
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={() => {
 						invalidateCurrentConfirmation();
 						setRolesTouched(true);

@@ -59,8 +59,8 @@ export function PvOperatingResult({
 				</Notice>
 			)}
 			{points.length > 0 && (
-				<div className="lp-table-scroll">
-					<table className="lp-data-table">
+				<div className="sc-table-scroll">
+					<table className="sc-data-table">
 						<caption>
 							{__("Operating points by string", "linker-tools")}
 						</caption>
@@ -107,7 +107,7 @@ export function PvOperatingResult({
 						d = readObject(model.diagnostics),
 						n = d.noct ? readObject(d.noct) : null;
 					return (
-						<details className="lp-comparison">
+						<details className="sc-disclosure">
 							<summary>
 								{__("Model, inputs and datasheet comparisons", "linker-tools")}
 							</summary>
@@ -143,7 +143,7 @@ export function PvOperatingResult({
 									{__("Temperature translation", "linker-tools")}
 								</a>
 							</p>
-							<dl className="lp-field-summary">
+							<dl className="sc-field-summary">
 								{row("a,ref", p.a_ref, "V")}
 								{row("IL,ref", p.I_L_ref, "A")}
 								{row("I0,ref", p.I_o_ref, "A")}
@@ -190,7 +190,7 @@ export function PvOperatingResult({
 								)}
 							</p>
 							{n && (
-								<dl className="lp-field-summary">
+								<dl className="sc-field-summary">
 									{row(
 										__("NOCT reference irradiance", "linker-tools"),
 										n.reference_irradiance_w_m2,
@@ -236,8 +236,8 @@ export function PvOperatingResult({
 									</div>
 								</dl>
 							)}
-							<div className="lp-table-scroll">
-								<table className="lp-data-table">
+							<div className="sc-table-scroll">
+								<table className="sc-data-table">
 									<caption>
 										{__("Module facts used by the model", "linker-tools")}
 									</caption>

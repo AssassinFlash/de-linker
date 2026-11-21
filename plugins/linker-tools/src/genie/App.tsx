@@ -226,7 +226,7 @@ export function reportRecoveryUrl(
 			runs.length === 1 ? 'run' : 'compare',
 			runs.length === 1 ? runs[ 0 ] : runs.join( ',' )
 		);
-		target.hash = 'lp-calculations';
+		target.hash = 'sc-review';
 		return target.href;
 	} catch {
 		return null;

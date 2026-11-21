@@ -50,10 +50,10 @@ export function EquipmentDemandSetup({
 	}, [valid, onValidity]);
 	return (
 		<fieldset
-			className="lp-scenario-fields lp-scenario-block"
+			className="sc-scenario-fields sc-scenario-block"
 			disabled={disabled}
 		>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>
 					<input
 						type="checkbox"
@@ -77,13 +77,13 @@ export function EquipmentDemandSetup({
 			</label>
 			{value !== undefined && (
 				<>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"The comparison uses the periods and load in Energy use and the efficiency and power settings in Storage. Usable capacity comes from each equipment combination.",
 							"linker-tools",
 						)}
 					</p>
-					<div className="lp-geometry-fields">
+					<div className="sc-geometry-fields">
 						<NumberField
 							name="equipment_demand.initial_usable_fraction"
 							label={__("Initial usable capacity", "linker-tools")}
@@ -114,7 +114,7 @@ export function EquipmentDemandSetup({
 							onValidity={callbacks.unserved!}
 						/>
 					</div>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Source note", "linker-tools")}</span>
 						<textarea
 							name="equipment_demand.source_note"
@@ -127,7 +127,7 @@ export function EquipmentDemandSetup({
 						/>
 					</label>
 					{!complete && (
-						<p role="status" className="lp-profile-help">
+						<p role="status" className="sc-field-help">
 							{__(
 								"Enter the initial usable capacity, allowed unserved load and source note to compare energy needs.",
 								"linker-tools",

@@ -155,7 +155,7 @@ export function RoofForm({
 				value={roof?.name ?? ""}
 			/>
 			{(!roof || orientation) && (
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{!roof && (
 						<>
 							<GeometryNumber
@@ -199,13 +199,13 @@ export function RoofForm({
 					/>
 				</div>
 			)}
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"The origin is the high corner of the roof face. East, north and height are relative to the project origin; height is not altitude above sea level.",
 					"linker-tools",
 				)}
 			</p>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				<GeometryNumber
 					{...numberProps}
 					name="east"
@@ -268,7 +268,7 @@ export function RoofForm({
 						multiline
 					/>
 					<GeometryExportPermission />
-					<label className="lp-geometry-check">
+					<label className="sc-geometry-check">
 						<input name="rights" type="checkbox" required />
 						{__(
 							"I have permission to retain these measurements and derive an editable design from them.",

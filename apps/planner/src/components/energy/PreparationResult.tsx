@@ -169,8 +169,8 @@ export function PreparationResult({
 			? `${new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC", hourCycle: "h23" }).format(new Date(value))} UTC`
 			: "—";
 	return (
-		<div className="lp-run-result">
-			<div className="lp-run-heading">
+		<div className="sc-run-result">
+			<div className="sc-run-heading">
 				<h3 tabIndex={-1}>{taskLabel(kind)}</h3>
 				<span role="status">{runStateLabel(run.state, kind)}</span>
 			</div>
@@ -208,7 +208,7 @@ export function PreparationResult({
 			{summary && (
 				<>
 					{weather ? (
-						<dl className="lp-run-facts">
+						<dl className="sc-run-facts">
 							<dt>{__("Latitude", "linker-tools")}</dt>
 							<dd>{format(summary.latitude_deg)} °</dd>
 							<dt>{__("Longitude", "linker-tools")}</dt>
@@ -220,7 +220,7 @@ export function PreparationResult({
 						</dl>
 					) : (
 						<>
-							<dl className="lp-run-facts">
+							<dl className="sc-run-facts">
 								<dt>{__("Modelled PV generation", "linker-tools")}</dt>
 								<dd>{format(summary.energy_kwh)} kWh</dd>
 								<dt>{__("Start", "linker-tools")}</dt>
@@ -272,7 +272,7 @@ export function PreparationResult({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => void source.refetch()}
 							>
 								{__("Try again", "linker-tools")}
@@ -323,7 +323,7 @@ export function PreparationResult({
 					)}
 					<button
 						type="button"
-						className="lp-button"
+						className="sc-button sc-primary"
 						disabled={
 							blocked ||
 							!active ||
@@ -384,9 +384,9 @@ export function PreparationResult({
 							showCurve
 						/>
 					)}
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>{__("Source and task checksums", "linker-tools")}</summary>
-						<dl className="lp-run-facts">
+						<dl className="sc-run-facts">
 							<dt>{__("Input SHA-256", "linker-tools")}</dt>
 							<dd>{String(run.manifest.input_sha256)}</dd>
 							<dt>{__("Task manifest SHA-256", "linker-tools")}</dt>

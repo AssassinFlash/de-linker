@@ -20,7 +20,7 @@ async function configurator(t, callbacks = {}) {
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { DraftStore } = await import("../src/data/DraftStore.ts");
 	const project = structuredClone(fixture.project);
 	delete project.inputs.energy_plant;

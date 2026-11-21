@@ -47,7 +47,7 @@ for (const { name, source, uncertain, changed, failure, copied } of [
 		const { QueryClient, QueryClientProvider } =
 			await import("@tanstack/react-query");
 		const { default: Configurator } =
-			await import("../src/components/configurator/Configurator.tsx");
+			await import("../src/components/configurator/ProjectWorkbench.tsx");
 		const { DraftStore } = await import("../src/data/DraftStore.ts");
 		const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 		const { emptyBrief } = await import("../src/domain/brief.ts");

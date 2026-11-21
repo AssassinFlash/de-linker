@@ -189,7 +189,7 @@ async function rig(
 		await import("../src/components/SessionBoundary.tsx");
 	const { ProfileIntake } = await import("../src/components/ProfileIntake.tsx");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	let owner = session,

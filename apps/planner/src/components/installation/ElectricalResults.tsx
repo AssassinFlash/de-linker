@@ -71,7 +71,7 @@ export function ElectricalResults({
 		),
 	};
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>
 				{t(
 					"Circuit voltage drop and conductor loss",

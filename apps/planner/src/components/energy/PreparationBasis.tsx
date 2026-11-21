@@ -20,8 +20,8 @@ export function PreparationBasis({
 		),
 		provenance = readObject(weather.provenance);
 	return (
-		<section className="lp-comparison">
-			<dl className="lp-run-facts">
+		<section className="sc-disclosure">
+			<dl className="sc-run-facts">
 				<dt>{__("Weather source", "linker-tools")}</dt>
 				<dd>
 					{String(provenance.label)} · PVGIS {String(request.api_version)}
@@ -51,7 +51,7 @@ export function PreparationBasis({
 					)}
 				</p>
 			)}
-			<details className="lp-comparison">
+			<details className="sc-disclosure">
 				<summary>
 					{__("Original source and interpretation record", "linker-tools")}
 				</summary>

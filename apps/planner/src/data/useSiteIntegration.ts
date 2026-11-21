@@ -21,19 +21,9 @@ const workspaceHashes = new Set([
 	"#sc-review",
 	"#sc-preliminary-options",
 	"#sc-preliminary-review",
-	"#lp-overview",
-	"#lp-site",
-	"#lp-brief-use",
-	"#lp-notes",
-	"#lp-load",
-	"#lp-profiles",
-	"#lp-design",
-	"#lp-calculations",
-	"#lp-equipment",
-	"#lp-installation",
-	"#lp-map-roof-properties",
-	"#lp-map-ring-properties",
-	"#lp-map-feature-properties",
+	"#sc-map-roof-properties",
+	"#sc-map-ring-properties",
+	"#sc-map-feature-properties",
 ]);
 /** Keep native Polylang destinations and the same owned project/result view.
  * Current-page credentials and arbitrary query/hash content never travel. */
@@ -131,8 +121,8 @@ export function projectLanguageUrl(
 		)
 			target.hash =
 				page.searchParams.get("step") === "equipment"
-					? "#lp-equipment"
-					: "#lp-design";
+					? "#sc-system"
+					: "#sc-solar";
 	}
 	return target.href;
 }
@@ -180,7 +170,7 @@ export function useSiteIntegration(projectId: string | null): void {
 			window.removeEventListener("touchstart", disarm);
 			document.removeEventListener("click", updateLinks, true);
 			observer.disconnect();
-			root.style.removeProperty("--lp-site-header-height");
+			root.style.removeProperty("--sc-header-height");
 			for (const [link, href] of originals) link.setAttribute("href", href);
 		};
 	}, [projectId]);

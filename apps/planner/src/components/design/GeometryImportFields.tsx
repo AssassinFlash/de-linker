@@ -46,7 +46,7 @@ export function GeometryImportFields({
 	return (
 		<>
 			<section data-import-step="0" hidden={step !== 0}>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Roof in this file", "linker-tools")}</span>
 					<select
 						name="selection"
@@ -63,14 +63,14 @@ export function GeometryImportFields({
 					</select>
 				</label>
 				{current && (
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{sprintf(
 							__("Openings in source: %d", "linker-tools"),
 							current.openingCount,
 						)}
 					</p>
 				)}
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Roof face name", "linker-tools")}</span>
 					<input
 						name="roof"
@@ -88,7 +88,7 @@ export function GeometryImportFields({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					<GeometryNumber
 						locale={locale}
 						name="pitch"
@@ -110,7 +110,7 @@ export function GeometryImportFields({
 						)}
 					/>
 				</div>
-				<label className="lp-geometry-check">
+				<label className="sc-geometry-check">
 					<input
 						type="checkbox"
 						checked={zeroHeight}
@@ -123,7 +123,7 @@ export function GeometryImportFields({
 						)}
 					</span>
 				</label>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"0 m uses the project's height reference. It does not establish ground level or height above sea level. Other roofs and obstacles must use the same height reference.",
 						"linker-tools",
@@ -154,7 +154,7 @@ export function GeometryImportFields({
 					)}
 					multiline
 				/>
-				<details className="lp-comparison">
+				<details className="sc-disclosure">
 					<summary>
 						{__("Position and coordinate reference", "linker-tools")}
 					</summary>
@@ -203,7 +203,7 @@ export function GeometryImportFields({
 					)}
 					multiline
 				/>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Permission to export geometry", "linker-tools")}</span>
 					<select
 						name="export"
@@ -216,7 +216,7 @@ export function GeometryImportFields({
 						</option>
 					</select>
 				</label>
-				<label className="lp-geometry-check">
+				<label className="sc-geometry-check">
 					<input name="retention" type="checkbox" required />
 					<span>
 						{__(

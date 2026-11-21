@@ -328,7 +328,7 @@ export function GridConnectionResult({
 					</p>
 				</>
 			)}
-			<dl className="lp-profile-facts">
+			<dl className="sc-profile-facts">
 				<div>
 					<dt>{labels.country_code}</dt>
 					<dd>{countryLabel}</dd>

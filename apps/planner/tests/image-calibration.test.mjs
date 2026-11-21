@@ -50,7 +50,7 @@ async function submit() {
 }
 /** A click at a pixel of the calibration surface, using its own reported box. */
 async function mark(x, y) {
-	const svg = document.querySelector(".lp-plan-svg");
+	const svg = document.querySelector(".sc-plan-svg");
 	assert.ok(svg);
 	// jsdom has no layout: give the surface the image's own aspect at 2 CSS px
 	// per image pixel, so the meet-scale mapping is exercised exactly.
@@ -168,7 +168,7 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 	assert.equal(harness.activity(), true);
 	await chooseDrawing();
 	assert.match(
-		document.querySelector(".lp-file-name").textContent,
+		document.querySelector(".sc-file-name").textContent,
 		/roof-plan\.png/,
 	);
 	await typeInto("roof", "Calibrated roof");
@@ -187,7 +187,7 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 	assert.equal(
 		document.querySelector("h3").textContent,
 		"Outline",
-		document.querySelector(".lp-notice")?.textContent ?? "",
+		document.querySelector(".sc-notice")?.textContent ?? "",
 	);
 	await clickText("Roof outline (0 points)");
 	await mark(100, 100);
@@ -202,7 +202,7 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 			.querySelector('[name="retention"]')
 			.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	const review = document.querySelector(".lp-import-review");
+	const review = document.querySelector(".sc-import-review");
 	assert.ok(review, "the review is shown before the outline is added");
 	assert.match(review.textContent, /Roof-plane area/);
 	// 600 x 600 px at 0.02 m/px is a 12 m x 12 m outline.
@@ -272,7 +272,7 @@ test("a perspective photo never becomes engineering geometry", async (t) => {
 	await mark(700, 700);
 	await mark(100, 700);
 	assert.match(
-		document.querySelector(".lp-import-review").textContent,
+		document.querySelector(".sc-import-review").textContent,
 		/Reference only/,
 	);
 	await typeInto("rights", "Owner photo; reference only");
@@ -286,7 +286,7 @@ test("a perspective photo never becomes engineering geometry", async (t) => {
 	// One uniform scale cannot rectify a photo, so it may not create a roof.
 	assert.equal(harness.edits(), 0);
 	assert.match(
-		document.querySelector(".lp-notice").textContent,
+		document.querySelector(".sc-notice").textContent,
 		/reference only, so it cannot measure the roof/,
 	);
 	assert.equal(harness.geometry().roofs.length, 0);
@@ -326,7 +326,7 @@ test("German calibration uses the local decimal mark for tolerance, scale and ou
 	await mark(701, 700);
 	await mark(100, 700);
 	assert.match(
-		document.querySelector(".lp-import-review").textContent,
+		document.querySelector(".sc-import-review").textContent,
 		/144,24\s*m²/,
 	);
 });
@@ -349,7 +349,7 @@ test("the scale needs two distinct points and a positive length", async (t) => {
 	await submit();
 	assert.equal(harness.edits(), 0);
 	assert.match(
-		document.querySelector(".lp-notice").textContent,
+		document.querySelector(".sc-notice").textContent,
 		/The scale could not be recorded|Complete this field|Mark both ends/,
 	);
 });

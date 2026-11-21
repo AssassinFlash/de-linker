@@ -42,12 +42,12 @@ export function SolarEnergySetup({
 		return () => onValidity(true);
 	}, [validity, onValidity]);
 	return (
-		<fieldset disabled={disabled} className="lp-scenario-fields lp-work-main">
-			<section className="lp-work-panel" hidden={section !== "storage"}>
-				<h3 className="lp-work-panel-heading">
+		<fieldset disabled={disabled} className="sc-scenario-fields sc-work-main">
+			<section className="sc-work-panel" hidden={section !== "storage"}>
+				<h3 className="sc-work-panel-heading">
 					{__("Solar-only energy flows", "linker-tools")}
 				</h3>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Use available AC PV generation and load at the common metering point. This project has no battery storage.",
 						"linker-tools",

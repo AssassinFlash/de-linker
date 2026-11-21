@@ -358,11 +358,11 @@ export function GeometryIntake({
 		__("Source", "linker-tools"),
 	];
 	return (
-		<div className="lp-geometry-intake">
-			<div className="lp-inline-actions">
+		<div className="sc-geometry-intake">
+			<div className="sc-actions">
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					ref={trigger}
 					disabled={
 						disabled || open || flow.busy || flow.checking || recoveryChecking
@@ -391,7 +391,7 @@ export function GeometryIntake({
 				</Notice>
 			)}
 			{!open && flow.records.length > 0 && (
-				<details className="lp-comparison">
+				<details className="sc-disclosure">
 					<summary>{__("Imports to review", "linker-tools")}</summary>
 					<p>
 						{__(
@@ -402,7 +402,7 @@ export function GeometryIntake({
 					{flow.records.map((record) => (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							key={record.scope + record.key}
 							disabled={disabled}
 							onClick={() => start(record)}
@@ -413,8 +413,8 @@ export function GeometryIntake({
 				</details>
 			)}
 			{open && (
-				<div className="lp-import-panel">
-					<div className="lp-section-heading">
+				<div className="sc-import-panel">
+					<div className="sc-section-heading">
 						<div>
 							<h3 ref={heading} tabIndex={-1}>
 								{asset
@@ -452,10 +452,10 @@ export function GeometryIntake({
 						/>
 					)}
 					{frozen && !asset && (
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							<button
 								type="button"
-								className="lp-button"
+								className="sc-button sc-primary"
 								disabled={flow.busy}
 								onClick={() => {
 									focusStep.current = true;
@@ -471,7 +471,7 @@ export function GeometryIntake({
 								recovery && (
 									<button
 										type="button"
-										className="lp-button lp-button-secondary"
+										className="sc-button"
 										onClick={() => {
 											try {
 												const original = readGeometryImportCommand(
@@ -524,7 +524,7 @@ export function GeometryIntake({
 							}}
 						>
 							<ol
-								className="lp-import-steps"
+								className="sc-import-steps"
 								aria-label={__("Import progress", "linker-tools")}
 							>
 								{stepNames.map((name, index) => (
@@ -547,16 +547,16 @@ export function GeometryIntake({
 							)}
 							<fieldset disabled={reading || flow.busy || !!frozen || !aligned}>
 								<div hidden={step !== 0}>
-									<label className="lp-field">
+									<label className="sc-field">
 										<span id={id + "-file"}>
 											{__("Roof file", "linker-tools")}
 										</span>
-										<div className="lp-file-picker">
-											<span className="lp-file-button" aria-hidden="true">
+										<div className="sc-file-picker">
+											<span className="sc-file-button" aria-hidden="true">
 												{__("Choose file", "linker-tools")}
 											</span>
 											<span
-												className="lp-file-name"
+												className="sc-file-name"
 												id={id + "-file-name"}
 												aria-live="polite"
 											>
@@ -598,11 +598,11 @@ export function GeometryIntake({
 									zeroHeight={zeroHeight}
 									setZeroHeight={setZeroHeight}
 								/>
-								<div className="lp-inline-actions">
+								<div className="sc-actions">
 									{step > 0 && (
 										<button
 											type="button"
-											className="lp-button lp-button-secondary"
+											className="sc-button"
 											onClick={() => {
 												setError(null);
 												move(step - 1);
@@ -613,7 +613,7 @@ export function GeometryIntake({
 									)}
 									<button
 										type="submit"
-										className="lp-button"
+										className="sc-button sc-primary"
 										disabled={!content || reading || flow.busy}
 									>
 										{step < 2
@@ -625,7 +625,7 @@ export function GeometryIntake({
 						</form>
 					}
 					{asset && (
-						<div className="lp-import-review">
+						<div className="sc-import-review">
 							<PlanViewport
 								document={asset.geometry}
 								roof={asset.geometry.roofs[0]!}
@@ -636,7 +636,7 @@ export function GeometryIntake({
 								disabled
 								previewOnly
 							/>
-							<dl className="lp-field-summary">
+							<dl className="sc-field-summary">
 								<div>
 									<dt>{__("Roof-plane area", "linker-tools")}</dt>
 									<dd>
@@ -655,7 +655,7 @@ export function GeometryIntake({
 							</dl>
 							<button
 								type="button"
-								className="lp-button"
+								className="sc-button sc-primary"
 								disabled={flow.busy || currentAssetIds.includes(asset.id)}
 								onClick={() => {
 									if (!client.isCurrentScope(session.query_scope)) return;
@@ -673,7 +673,7 @@ export function GeometryIntake({
 							>
 								{__("Add roof to current design", "linker-tools")}
 							</button>
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{__(
 									"One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design.",
 									"linker-tools",
@@ -681,10 +681,10 @@ export function GeometryIntake({
 							</p>
 						</div>
 					)}
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={reading || (flow.busy && !flow.durable)}
 							onClick={close}
 						>

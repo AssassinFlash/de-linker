@@ -50,6 +50,7 @@ export function NumberField({
 	name,
 	error,
 	disabled = false,
+	required = false,
 }: {
 	label: string;
 	value: number | null;
@@ -64,6 +65,7 @@ export function NumberField({
 	name?: string;
 	error?: string | null;
 	disabled?: boolean;
+	required?: boolean;
 }) {
 	const id = useId();
 	const [text, setText] = useState(formatDecimal(value, locale));
@@ -106,7 +108,7 @@ export function NumberField({
 		}
 	}
 	return (
-		<label className="lp-field" htmlFor={id}>
+		<label className="sc-field" htmlFor={id}>
 			<span id={id + "-label"}>
 				{label} <small>{unit}</small>
 			</span>
@@ -114,6 +116,7 @@ export function NumberField({
 				id={id}
 				name={name}
 				disabled={disabled}
+				required={required}
 				type="text"
 				inputMode={integer ? "numeric" : "decimal"}
 				autoComplete="off"
@@ -130,7 +133,7 @@ export function NumberField({
 				}}
 			/>
 			{(!valid || error) && (
-				<small className="lp-field-error" id={id + "-error"}>
+				<small className="sc-field-error" id={id + "-error"}>
 					{!valid ? (
 						<>
 							{invalidNumberText(integer, min, max, locale)}{" "}

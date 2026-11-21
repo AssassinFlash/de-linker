@@ -84,13 +84,13 @@ export function PlantEnergyForm({
 			units: value.units.map((u) => (u.unit_id === next.unit_id ? next : u)),
 		});
 	return (
-		<fieldset className="lp-scenario-fields lp-work-main" disabled={disabled}>
-			<section className="lp-work-panel" hidden={section !== "storage"}>
-				<h3 className="lp-work-panel-heading">
+		<fieldset className="sc-scenario-fields sc-work-main" disabled={disabled}>
+			<section className="sc-work-panel" hidden={section !== "storage"}>
+				<h3 className="sc-work-panel-heading">
 					{__("System connection", "linker-tools")}
 				</h3>
 				{section === "storage" && !sharedDcOnly && (
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("PV connection for this plant", "linker-tools")}</span>
 						<select
 							disabled={!numbersValid}
@@ -119,7 +119,7 @@ export function PlantEnergyForm({
 						</select>
 					</label>
 				)}
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"This calculation uses one shared AC metering point. Stored energy and its origin, power limits and loss assumptions are kept separately for each storage unit.",
 						"linker-tools",
@@ -135,7 +135,7 @@ export function PlantEnergyForm({
 							)}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={openEquipment}
 							>
 								{__("Review equipment selection", "linker-tools")}
@@ -144,18 +144,18 @@ export function PlantEnergyForm({
 					)}
 			</section>
 			{section === "storage" && dcPlant && (
-				<section className="lp-scenario-block lp-work-panel">
-					<h3 className="lp-work-panel-heading">
+				<section className="sc-scenario-block sc-work-panel">
+					<h3 className="sc-work-panel-heading">
 						{__("PV groups at the common AC bus", "linker-tools")}
 					</h3>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"Assign each roof PV group once: to one storage converter below or to the common AC bus here. Select the prepared roof PV source for this calculation. Any additional AC generation profile must represent a different source.",
 							"linker-tools",
 						)}
 					</p>
 					{converters.map((id) => (
-						<label className="lp-field" key={id}>
+						<label className="sc-field" key={id}>
 							<span>
 								<input
 									type="checkbox"
@@ -191,8 +191,8 @@ export function PlantEnergyForm({
 				</section>
 			)}
 			{section !== "operation" && (
-				<div className="lp-work-panel lp-work-toolbar">
-					<label className="lp-field">
+				<div className="sc-work-panel sc-work-toolbar">
+					<label className="sc-field">
 						<span>{__("Storage unit", "linker-tools")}</span>
 						<select
 							disabled={!numbersValid}
@@ -209,14 +209,14 @@ export function PlantEnergyForm({
 				</div>
 			)}
 			{section === "storage" && (
-				<div key={hardware.id} className="lp-work-main">
-					<section className="lp-work-panel">
-						<h3 className="lp-work-panel-heading">
+				<div key={hardware.id} className="sc-work-main">
+					<section className="sc-work-panel">
+						<h3 className="sc-work-panel-heading">
 							{__("Storage unit", "linker-tools")} · {hardware.name}
 						</h3>
 						{dcPlant ? (
 							<>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__("PV connection on this converter", "linker-tools")}
 									</span>
@@ -252,7 +252,7 @@ export function PlantEnergyForm({
 										</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__("Charging from the common AC bus", "linker-tools")}
 									</span>
@@ -290,7 +290,7 @@ export function PlantEnergyForm({
 								</label>
 							</>
 						) : (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									<input
 										type="checkbox"
@@ -335,7 +335,7 @@ export function PlantEnergyForm({
 				</div>
 			)}
 			{section === "initial" && (
-				<div key={hardware.id} className="lp-work-panel">
+				<div key={hardware.id} className="sc-work-panel">
 					<InitialInventoryForm
 						value={unit.settings.initial_inventory}
 						onChange={(initial_inventory) =>
@@ -356,7 +356,7 @@ export function PlantEnergyForm({
 						report={reportUnit}
 						onChange={(reserve_kwh) => change({ ...unit, reserve_kwh })}
 					/>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{__(
 								"Stored energy at the end of the calculation",
@@ -404,13 +404,13 @@ export function PlantEnergyForm({
 				</div>
 			)}
 			{section === "operation" && (
-				<section className="lp-scenario-block lp-work-main">
+				<section className="sc-scenario-block sc-work-main">
 					{!dcPlant && (
-						<section className="lp-work-panel">
-							<h3 className="lp-work-panel-heading">
+						<section className="sc-work-panel">
+							<h3 className="sc-work-panel-heading">
 								{__("Operating strategy", "linker-tools")}
 							</h3>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Operating strategy", "linker-tools")}</span>
 								<select
 									value={
@@ -447,7 +447,7 @@ export function PlantEnergyForm({
 									"linker-tools",
 								)}
 							</p>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									<input
 										type="checkbox"
@@ -489,9 +489,9 @@ export function PlantEnergyForm({
 						rangeBusy={rangeBusy}
 						perUnitReserve
 					/>
-					<details className="lp-comparison lp-work-panel">
+					<details className="sc-disclosure sc-work-panel">
 						<summary>{__("How storage is operated", "linker-tools")}</summary>
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{dcPlant
 								? __(
 										"In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
@@ -502,7 +502,7 @@ export function PlantEnergyForm({
 										"linker-tools",
 									)}
 						</p>
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"These results describe the declared scenario. Joint operating capability, continuous equipment performance, backup transfer and country-specific grid compliance are not established by this calculation.",
 								"linker-tools",

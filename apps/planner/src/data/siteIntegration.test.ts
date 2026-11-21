@@ -88,8 +88,8 @@ test("language switches keep only validated result/workspace references for the 
 	const project = "a".repeat(32),
 		run = "b".repeat(32),
 		target = "/de/native/";
-	const current = `https://site.example/en/?project=${project}&run=${run}&nonce=private#lp-calculations`;
-	const reportPage = `https://site.example/en/?project=${project}&energy_view=reports&nonce=private#lp-calculations`;
+	const current = `https://site.example/en/?project=${project}&run=${run}&nonce=private#sc-review`;
+	const reportPage = `https://site.example/en/?project=${project}&energy_view=reports&nonce=private#sc-review`;
 	const reportDestination = new URL(
 		projectLanguageUrl(target, reportPage, project),
 	);
@@ -119,7 +119,7 @@ test("language switches keep only validated result/workspace references for the 
 				project,
 			),
 		).hash,
-		"#lp-design",
+		"#sc-solar",
 	);
 	assert.equal(
 		new URL(
@@ -129,7 +129,7 @@ test("language switches keep only validated result/workspace references for the 
 				project,
 			),
 		).href,
-		`https://site.example/de/native/?project=${project}#lp-equipment`,
+		`https://site.example/de/native/?project=${project}#sc-system`,
 	);
 	assert.equal(
 		new URL(
@@ -155,15 +155,15 @@ test("language switches keep only validated result/workspace references for the 
 		new URL(
 			projectLanguageUrl(
 				target,
-				current.replace("#lp-calculations", "#lp-equipment"),
+				current.replace("#sc-review", "#sc-system"),
 				project,
 			),
 		).hash,
-		"#lp-equipment",
+		"#sc-system",
 	);
 	assert.equal(
 		projectLanguageUrl(target, current, project),
-		`https://site.example/de/native/?project=${project}&run=${run}#lp-calculations`,
+		`https://site.example/de/native/?project=${project}&run=${run}#sc-review`,
 	);
 	assert.equal(
 		projectLanguageUrl(target, current, null),
@@ -175,7 +175,7 @@ test("language switches keep only validated result/workspace references for the 
 	);
 	assert.equal(
 		projectLanguageUrl(
-			`/de/?run=${run}#lp-calculations`,
+			`/de/?run=${run}#sc-review`,
 			`https://site.example/en/?project=${project}&run=invalid#unknown`,
 			project,
 		),
@@ -185,18 +185,18 @@ test("language switches keep only validated result/workspace references for the 
 	assert.equal(
 		projectLanguageUrl(
 			target,
-			`https://site.example/en/?project=${project}&run=${run}&compare=${pair}&nonce=private#lp-calculations`,
+			`https://site.example/en/?project=${project}&run=${run}&compare=${pair}&nonce=private#sc-review`,
 			project,
 		),
-		`https://site.example/de/native/?project=${project}&compare=${encodeURIComponent(pair)}#lp-calculations`,
+		`https://site.example/de/native/?project=${project}&compare=${encodeURIComponent(pair)}#sc-review`,
 	);
 	assert.equal(
 		projectLanguageUrl(
 			`/de/?compare=old-secret`,
-			`https://site.example/en/?project=${project}&compare=invalid&nonce=private#lp-calculations`,
+			`https://site.example/en/?project=${project}&compare=invalid&nonce=private#sc-review`,
 			project,
 		),
-		`https://site.example/de/?project=${project}#lp-calculations`,
+		`https://site.example/de/?project=${project}#sc-review`,
 	);
 });
 
@@ -219,7 +219,7 @@ test("language switches keep a product proposal and do not treat roof as a saved
 			project,
 		),
 	);
-	assert.equal(owned.hash, "#lp-equipment");
+	assert.equal(owned.hash, "#sc-system");
 	assert.equal(owned.searchParams.has("step"), false);
 	assert.equal(owned.searchParams.has("product_id"), false);
 	assert.equal(owned.searchParams.has("nonce"), false);

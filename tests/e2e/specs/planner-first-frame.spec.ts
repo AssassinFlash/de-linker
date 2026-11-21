@@ -45,10 +45,10 @@ test('de: the first New project dialog is German while the catalog load is delay
 		page.getByRole('button', { name: 'Neues Projekt' })
 	).toBeVisible({ timeout: 120_000 });
 	await page.getByRole('button', { name: 'Neues Projekt' }).click();
-	const dialog = page.locator('.lp-new-project');
+	const dialog = page.locator('.sc-new-project');
 	await expect(dialog).toBeVisible();
 	await expect(dialog).toContainText('Projektname');
-	const actions = dialog.locator('.lp-inline-actions button');
+	const actions = dialog.locator('.sc-actions button');
 	await expect(actions.filter({ hasText: 'Projekt anlegen' })).toBeVisible();
 	await expect(actions.filter({ hasText: 'Abbrechen' })).toBeVisible();
 	await expect(dialog).not.toContainText('Create project');

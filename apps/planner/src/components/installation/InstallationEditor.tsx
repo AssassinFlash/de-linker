@@ -367,15 +367,15 @@ export function InstallationEditor({
 		);
 	return (
 		<section
-			className="lp-focus-target"
-			id="lp-installation"
+			className="sc-focus-target"
+			id="sc-system"
 			tabIndex={-1}
-			aria-labelledby="lp-installation-title"
+			aria-labelledby="sc-installation-title"
 		>
-			<header className="lp-section-title">
-				<span className="lp-index">09</span>
+			<header className="sc-section-title">
+				<span className="sc-index">09</span>
 				<div>
-					<h2 id="lp-installation-title">
+					<h2 id="sc-installation-title">
 						{__("Installation routing", "linker-tools")}
 					</h2>
 					<p>
@@ -432,7 +432,7 @@ export function InstallationEditor({
 			)}
 			{products.error && (
 				<button
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={() => void products.refetch()}
 				>
 					{__("Reload product data", "linker-tools")}
@@ -480,7 +480,7 @@ export function InstallationEditor({
 						value=""
 						multiline
 					/>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Source type", "linker-tools")}</span>
 						<select name="kind" required defaultValue="">
 							<option value="">
@@ -513,7 +513,7 @@ export function InstallationEditor({
 						value=""
 						multiline
 					/>
-					<label className="lp-check">
+					<label className="sc-check">
 						<input name="rights" type="checkbox" required />
 						{__(
 							"I may save, use and export these project measurements or drawing data.",
@@ -566,22 +566,22 @@ export function InstallationEditor({
 				<>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						disabled={!linksValid || !materialsValid || !protectionValid}
 						onClick={() => setNewSource(true)}
 					>
 						{__("Add measurement or drawing source", "linker-tools")}
 					</button>
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						<button
-							className="lp-text-button"
+							className="sc-text-button"
 							aria-pressed={view === "plan"}
 							onClick={() => setView("plan")}
 						>
 							{__("Plan view", "linker-tools")}
 						</button>
 						<button
-							className="lp-text-button"
+							className="sc-text-button"
 							aria-pressed={view === "3d"}
 							onClick={() => setView("3d")}
 						>
@@ -603,7 +603,7 @@ export function InstallationEditor({
 						/>
 					)}
 					{(Object.keys(headings) as Kind[]).map((kind) => (
-						<section className="lp-scenario-block" key={kind}>
+						<section className="sc-scenario-block" key={kind}>
 							<h3>{headings[kind]}</h3>
 							{plan[kind].map((row) => {
 								const dependent =
@@ -619,11 +619,11 @@ export function InstallationEditor({
 												? plan.cable_runs.some((c) => c.route_id === row.id)
 												: false;
 								return (
-									<div className="lp-selected-profile" key={row.id}>
+									<div className="sc-selected-profile" key={row.id}>
 										<strong>{row.name}</strong>
-										<div className="lp-inline-actions">
+										<div className="sc-actions">
 											<button
-												className="lp-text-button"
+												className="sc-text-button"
 												disabled={
 													!linksValid || !materialsValid || !protectionValid
 												}
@@ -632,7 +632,7 @@ export function InstallationEditor({
 												{__("Edit", "linker-tools")}
 											</button>
 											<button
-												className="lp-text-button"
+												className="sc-text-button"
 												disabled={
 													dependent ||
 													!linksValid ||
@@ -660,7 +660,7 @@ export function InstallationEditor({
 														p.product_revision !== row.product_revision,
 												) && (
 													<button
-														className="lp-text-button"
+														className="sc-text-button"
 														disabled={
 															!linksValid || !materialsValid || !protectionValid
 														}
@@ -682,7 +682,7 @@ export function InstallationEditor({
 								);
 							})}
 							<button
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={
 									!linksValid ||
 									!materialsValid ||
@@ -736,7 +736,7 @@ export function InstallationEditor({
 						onValidity={setLinksValid}
 					/>
 					<button
-						className="lp-button"
+						className="sc-button sc-primary"
 						disabled={
 							busy ||
 							!linksValid ||
@@ -795,8 +795,8 @@ export function InstallationEditor({
 						/>
 					)}
 					{shown && shown.cables.length > 0 && (
-						<div className="lp-table-scroll" tabIndex={0}>
-							<table className="lp-data-table">
+						<div className="sc-table-scroll" tabIndex={0}>
+							<table className="sc-data-table">
 								<thead>
 									<tr>
 										<th>{__("Name", "linker-tools")}</th>

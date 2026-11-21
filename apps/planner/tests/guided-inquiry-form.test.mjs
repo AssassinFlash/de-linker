@@ -105,11 +105,17 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			},
 		],
 	]);
-	assert.match(fixture.element.textContent, /Existing draft cable × 2/);
 	const cable = fixture.element.querySelector(
 		'a[href="https://fixture.invalid/product/cable/"]',
 	);
 	assert.match(cable?.textContent ?? "", /Existing draft cable/);
+	assert.equal(
+		cable
+			.closest("article")
+			.querySelector(".linker-product-card__qty")
+			.textContent.trim(),
+		"× 2",
+	);
 	assert.equal(
 		cable.querySelector("img")?.getAttribute("src"),
 		"https://fixture.invalid/uploads/cable.png",

@@ -152,7 +152,7 @@ export function InstallationMaterials({
 		],
 	];
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{t("Installation materials", "Installationsmaterialien")}</h3>
 			<p>
 				{t(
@@ -169,7 +169,7 @@ export function InstallationMaterials({
 				</p>
 			)}
 			{(plan.materials ?? []).map((item) => (
-				<div className="lp-selected-profile" key={item.id}>
+				<div className="sc-selected-profile" key={item.id}>
 					<strong>{item.name}</strong>
 					{" · "}
 					{item.mounting_quantity_basis
@@ -243,9 +243,9 @@ export function InstallationMaterials({
 							})()}
 						</p>
 					)}
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						<button
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled || editing !== null}
 							onClick={() => {
 								setShowComparison(Boolean(item.comparison));
@@ -288,7 +288,7 @@ export function InstallationMaterials({
 							{t("Edit", "Bearbeiten")}
 						</button>
 						<button
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled || editing !== null}
 							onClick={() =>
 								change(
@@ -308,7 +308,7 @@ export function InstallationMaterials({
 			))}
 			{editing === null ? (
 				<button
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={disabled}
 					onClick={() => {
 						setShowComparison(false);
@@ -459,7 +459,7 @@ export function InstallationMaterials({
 						label={t("Item name", "Bezeichnung")}
 						value={before?.name ?? ""}
 					/>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{t("Material type", "Materialart")}</span>
 						<select
 							name="kind"
@@ -475,7 +475,7 @@ export function InstallationMaterials({
 							))}
 						</select>
 					</label>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{t(
 								"Linked circuit (optional)",
@@ -502,7 +502,7 @@ export function InstallationMaterials({
 							))}
 						</select>
 					</label>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{t("Unit", "Einheit")}</span>
 						<select
 							name="unit"
@@ -542,7 +542,7 @@ export function InstallationMaterials({
 							multiline
 						/>
 					</div>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{t(
 								"Calculate mounting pieces from an array (optional)",
@@ -667,7 +667,7 @@ export function InstallationMaterials({
 							</label>
 						</>
 					)}
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{t(
 								"Compare with a manufacturer fact (optional)",

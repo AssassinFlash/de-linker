@@ -30,15 +30,15 @@ export function PvConverterParameters({
 	removeDisabled: boolean;
 }) {
 	return (
-		<section className="lp-scenario-block lp-pv-parameters">
+		<section className="sc-scenario-block sc-pv-parameters">
 			<h4>{sprintf(__("Conversion group %d", "linker-tools"), index + 1)}</h4>
-			<fieldset className="lp-pv-membership">
+			<fieldset className="sc-pv-membership">
 				<legend>{__("Arrays converted together", "linker-tools")}</legend>
 				{arrays.map((array) => {
 					const owner = assignments.get(array.id),
 						selected = value.array_ids.includes(array.id);
 					return (
-						<label key={array.id} className="lp-pv-array-choice">
+						<label key={array.id} className="sc-pv-array-choice">
 							<input
 								type="checkbox"
 								checked={selected}
@@ -57,7 +57,7 @@ export function PvConverterParameters({
 					);
 				})}
 			</fieldset>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				<ScenarioNumber
 					field={value.id + "-reference"}
 					label={__("PVWatts DC reference power", "linker-tools")}
@@ -105,7 +105,7 @@ export function PvConverterParameters({
 			/>
 			<button
 				type="button"
-				className="lp-text-button"
+				className="sc-text-button"
 				onClick={remove}
 				disabled={removeDisabled}
 			>

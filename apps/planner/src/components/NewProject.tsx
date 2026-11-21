@@ -1210,7 +1210,7 @@ export function NewProject({
 								</p>
 							)}
 							{!intent.current && hasCarriedValues && (
-								<label className="lp-checkbox">
+								<label className="sc-checkbox">
 									<input
 										type="checkbox"
 										checked={useHints}

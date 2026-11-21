@@ -118,7 +118,7 @@ export function PlantPvStringSetup({
 				}}
 			/>
 			{wiring && (
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>
 						{__("Inverter in the saved installation", "linker-tools")}
 					</span>

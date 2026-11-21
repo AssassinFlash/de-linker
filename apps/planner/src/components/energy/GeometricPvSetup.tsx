@@ -247,7 +247,7 @@ export function GeometricPvSetup({
 			</Notice>
 		);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{__("PV reference with roof shading", "linker-tools")}</h3>
 			<p>
 				{parsed?.model === GEOMETRIC_PV_MODEL_V1
@@ -287,7 +287,7 @@ export function GeometricPvSetup({
 							"linker-tools",
 						)}
 					</p>
-					<button type="button" className="lp-text-button" onClick={openDesign}>
+					<button type="button" className="sc-text-button" onClick={openDesign}>
 						{__("Open roof design", "linker-tools")}
 					</button>
 				</Notice>
@@ -302,7 +302,7 @@ export function GeometricPvSetup({
 			) : (
 				<>
 					<fieldset disabled={disabled}>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Electrical scenario", "linker-tools")}</span>
 							<select
 								value={
@@ -350,7 +350,7 @@ export function GeometricPvSetup({
 								)}
 							</p>
 						)}
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Project weather source", "linker-tools")}</span>
 							<select
 								value={parsed.weather_asset_id ?? ""}
@@ -380,14 +380,14 @@ export function GeometricPvSetup({
 						{weather.sources.hasNextPage && (
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={weather.sources.isFetchingNextPage}
 								onClick={() => void weather.sources.fetchNextPage()}
 							>
 								{__("More weather sources", "linker-tools")}
 							</button>
 						)}
-						<div className="lp-geometry-fields">
+						<div className="sc-geometry-fields">
 							{(["coarse_cells_per_edge", "fine_cells_per_edge"] as const).map(
 								(key) => (
 									<ScenarioNumber
@@ -434,7 +434,7 @@ export function GeometricPvSetup({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => {
 									void weather.sources.refetch();
 									if (parsed.weather_asset_id) void weather.binding.refetch();
@@ -456,7 +456,7 @@ export function GeometricPvSetup({
 								</p>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={openWeather}
 								>
 									{__("Open weather preparation", "linker-tools")}
@@ -601,7 +601,7 @@ export function GeometricPvSetup({
 			{inputs.geometric_pv_preparation !== undefined && (
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={disabled}
 					onClick={() => {
 						if (!edit(removeGeometricPv)) return;
@@ -636,7 +636,7 @@ export function GeometricPvSetup({
 			)}
 			<button
 				type="button"
-				className="lp-button"
+				className="sc-button sc-primary"
 				disabled={
 					actionsDisabled ||
 					!supported ||

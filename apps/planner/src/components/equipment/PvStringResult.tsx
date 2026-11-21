@@ -53,7 +53,7 @@ export function PvStringResult({
 					"linker-tools",
 				)}
 			</p>
-			<dl className="lp-field-summary">
+			<dl className="sc-field-summary">
 				<div>
 					<dt>{__("Lowest design ambient temperature", "linker-tools")}</dt>
 					<dd>{format(value.minimum_ambient_c)} °C</dd>
@@ -67,8 +67,8 @@ export function PvStringResult({
 					</dd>
 				</div>
 			</dl>
-			<div className="lp-table-scroll">
-				<table className="lp-data-table">
+			<div className="sc-table-scroll">
+				<table className="sc-data-table">
 					<caption>{__("PV strings and inputs", "linker-tools")}</caption>
 					<thead>
 						<tr>
@@ -126,8 +126,8 @@ export function PvStringResult({
 							</>
 						)}
 					</p>
-					<div className="lp-table-scroll">
-						<table className="lp-data-table">
+					<div className="sc-table-scroll">
+						<table className="sc-data-table">
 							<thead>
 								<tr>
 									<th>{__("String", "linker-tools")}</th>

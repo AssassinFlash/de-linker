@@ -150,7 +150,7 @@ export function usePlanningRuns({
 		url.searchParams.set("run", id);
 		url.searchParams.delete("compare");
 		url.searchParams.delete("energy_view");
-		url.hash = "lp-calculations";
+		url.hash = "sc-review";
 		replacePlannerLocation(url);
 	}
 	function accepted(value: PlanningRun) {

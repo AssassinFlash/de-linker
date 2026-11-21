@@ -109,10 +109,10 @@ export function PvModuleSelection({
 								free.filter((pose) => selected.includes(pose.id)).length,
 							)}
 						</p>
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={
 									disabled || !free.some((p) => !selected.includes(p.id))
 								}
@@ -126,7 +126,7 @@ export function PvModuleSelection({
 							</button>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={
 									disabled || !modules.some((p) => selected.includes(p.id))
 								}
@@ -141,12 +141,12 @@ export function PvModuleSelection({
 								{__("Clear this array selection", "linker-tools")}
 							</button>
 						</div>
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							{rows.map((row) => (
 								<button
 									key={row}
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									disabled={
 										disabled ||
 										!free.some((p) => p.row === row && !selected.includes(p.id))
@@ -166,9 +166,9 @@ export function PvModuleSelection({
 							<summary>
 								{__("Choose individual modules", "linker-tools")}
 							</summary>
-							<div className="lp-scenario-fields">
+							<div className="sc-scenario-fields">
 								{modules.map((pose) => (
-									<label className="lp-field" key={pose.id}>
+									<label className="sc-field" key={pose.id}>
 										<span>
 											<input
 												type="checkbox"
@@ -210,10 +210,10 @@ export function PvModuleSelection({
 							"linker-tools",
 						)}
 					</p>
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled}
 							onClick={() => order("row")}
 						>
@@ -221,7 +221,7 @@ export function PvModuleSelection({
 						</button>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled}
 							onClick={() => order("column")}
 						>
@@ -229,7 +229,7 @@ export function PvModuleSelection({
 						</button>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled}
 							onClick={() => change([...selected].reverse())}
 						>
@@ -237,7 +237,7 @@ export function PvModuleSelection({
 						</button>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={disabled}
 							onClick={() => change([])}
 						>
@@ -251,10 +251,10 @@ export function PvModuleSelection({
 								<li key={id}>
 									<span>{label}</span>
 									{assigned.has(id) && <strong> · {assigned.get(id)}</strong>}
-									<div className="lp-inline-actions">
+									<div className="sc-actions">
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											aria-label={sprintf(
 												__("Move %s earlier", "linker-tools"),
 												label,
@@ -266,7 +266,7 @@ export function PvModuleSelection({
 										</button>
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											aria-label={sprintf(
 												__("Move %s later", "linker-tools"),
 												label,
@@ -278,7 +278,7 @@ export function PvModuleSelection({
 										</button>
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											aria-label={sprintf(
 												__("Remove %s from selection", "linker-tools"),
 												label,

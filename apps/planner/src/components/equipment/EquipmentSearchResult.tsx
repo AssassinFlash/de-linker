@@ -144,11 +144,11 @@ export function EquipmentSearchResult({
 			}
 		>
 			{search && (
-				<section className="lp-work-panel lp-equipment-candidates">
-					<header className="lp-work-panel-heading">
+				<section className="sc-work-panel sc-equipment-candidates">
+					<header className="sc-work-panel-heading">
 						<div>
 							<h3>{__("Equipment combination", "linker-tools")}</h3>
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{search.completion === "budget_exhausted"
 									? __(
 											"Search incomplete: the search limit was reached. Some configurations remain unchecked.",
@@ -160,12 +160,12 @@ export function EquipmentSearchResult({
 										)}
 							</p>
 						</div>
-						<p className="lp-equipment-count">
+						<p className="sc-equipment-count">
 							{__("Combinations assessed", "linker-tools")}:{" "}
 							{new Intl.NumberFormat(locale).format(candidates.length)}
 						</p>
 					</header>
-					<div className="lp-work-panel-body">
+					<div className="sc-work-panel-body">
 						{differentArrangement && (
 							<Notice>
 								{__(
@@ -174,7 +174,7 @@ export function EquipmentSearchResult({
 								)}
 							</Notice>
 						)}
-						<details className="lp-comparison">
+						<details className="sc-disclosure">
 							<summary>{__("Search scope", "linker-tools")}</summary>
 							<p>
 								{plantSearch
@@ -199,7 +199,7 @@ export function EquipmentSearchResult({
 							</Notice>
 						)}
 						{search.demand !== undefined && (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Demand results", "linker-tools")}</span>
 								<select
 									value={demandFilter}
@@ -231,7 +231,7 @@ export function EquipmentSearchResult({
 									)}
 								</Notice>
 							)}
-						<div className="lp-work-grid lp-equipment-candidate-picker">
+						<div className="sc-work-grid sc-equipment-candidate-picker">
 							{visibleCandidates.length === 0 ? (
 								<Notice>
 									{candidates.length > 0
@@ -245,7 +245,7 @@ export function EquipmentSearchResult({
 											)}
 								</Notice>
 							) : (
-								<label className="lp-field lp-work-main">
+								<label className="sc-field sc-work-main">
 									<span>{__("Equipment combination", "linker-tools")}</span>
 									<select
 										value={candidate?.id ?? ""}
@@ -272,9 +272,9 @@ export function EquipmentSearchResult({
 								</label>
 							)}
 							{candidate && (
-								<div className="lp-work-aside lp-work-toolbar">
+								<div className="sc-work-aside sc-work-toolbar">
 									<button
-										className="lp-button"
+										className="sc-button sc-primary"
 										type="button"
 										disabled={
 											disabled ||
@@ -292,7 +292,7 @@ export function EquipmentSearchResult({
 							)}
 						</div>
 						{candidate?.demand && (
-							<section className="lp-work-panel">
+							<section className="sc-work-panel">
 								<h4>{__("Energy demand comparison", "linker-tools")}</h4>
 								<p>
 									{candidate.demand.status === "satisfied"
@@ -327,7 +327,7 @@ export function EquipmentSearchResult({
 									</p>
 								)}
 								{candidate.demand.metrics && (
-									<dl className="lp-field-summary">
+									<dl className="sc-field-summary">
 										<dt>{__("Unserved load", "linker-tools")}</dt>
 										<dd>
 											{new Intl.NumberFormat(locale, {

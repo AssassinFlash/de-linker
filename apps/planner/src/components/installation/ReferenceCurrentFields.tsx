@@ -187,7 +187,7 @@ export function ReferenceCurrentFields({
 					"Wählen Sie eine dokumentierte Tabellenzeile für diesen physischen Leiter. Die Leitertemperatur von 120 °C ist eine Bedingung der Herstellertabelle und kein vor Ort gemessener Wert. Der Vergleich ist keine Kabelauslegung oder Installationsfreigabe.",
 				)}
 			</p>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>
 					{t("Manufacturer table row", "Zeile der Herstellertabelle")}
 				</span>
@@ -282,7 +282,7 @@ export function ReferenceCurrentFields({
 						]}
 					/>
 					{showPair && (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{t(
 									"Other touching conductor",
@@ -323,7 +323,7 @@ export function ReferenceCurrentFields({
 							</small>
 						</label>
 					)}
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							<input
 								type="checkbox"

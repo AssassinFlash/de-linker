@@ -154,16 +154,16 @@ export function LayoutReviewPanel({
 	}
 	return (
 		<section
-			className="lp-layout-review"
-			aria-labelledby="lp-layout-review-heading"
+			className="sc-layout-review"
+			aria-labelledby="sc-layout-review-heading"
 		>
-			<div className="lp-inline-actions">
-				<h3 id="lp-layout-review-heading">
+			<div className="sc-actions">
+				<h3 id="sc-layout-review-heading">
 					{__("Layout check", "linker-tools")}
 				</h3>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					onClick={() => void review()}
 					disabled={busy || disabled || !geometry.roofs.length}
 				>
@@ -172,7 +172,7 @@ export function LayoutReviewPanel({
 						: __("Check layout", "linker-tools")}
 				</button>
 			</div>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.",
 					"linker-tools",
@@ -190,7 +190,7 @@ export function LayoutReviewPanel({
 				<>
 					<p
 						role="status"
-						className="lp-review-status"
+						className="sc-review-status"
 						data-stale={!current || undefined}
 					>
 						{!current
@@ -211,12 +211,12 @@ export function LayoutReviewPanel({
 										)}
 					</p>
 					{result.report.issues.length > 0 && (
-						<ul className="lp-diagnostics">
+						<ul className="sc-diagnostics">
 							{result.report.issues.map((issue, index) => (
 								<li key={index} data-category={issue.category}>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										disabled={disabled || !current}
 										onClick={() => select(issue.object_id)}
 									>
@@ -248,7 +248,7 @@ export function LayoutReviewPanel({
 							)}
 						</Notice>
 					)}
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>
 							{__("Method, inputs and numerical limits", "linker-tools")}
 						</summary>
@@ -258,7 +258,7 @@ export function LayoutReviewPanel({
 								"linker-tools",
 							)}
 						</p>
-						<dl className="lp-source-hashes">
+						<dl className="sc-source-hashes">
 							<dt>{__("Checker and geometry library", "linker-tools")}</dt>
 							<dd>
 								{result.report.checker} · Shapely{" "}

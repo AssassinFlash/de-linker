@@ -126,7 +126,7 @@ export function OwnedProfile({
 					canReveal={canReveal}
 				/>
 				<button
-					className="lp-text-button"
+					className="sc-text-button"
 					type="button"
 					onClick={() => {
 						if (
@@ -166,7 +166,7 @@ export function OwnedProfile({
 			/>
 			{offset > 0 && (
 				<button
-					className="lp-text-button"
+					className="sc-text-button"
 					type="button"
 					onClick={() => setOffset(0)}
 				>
@@ -175,7 +175,7 @@ export function OwnedProfile({
 			)}
 			{onSelect && (
 				<button
-					className="lp-button"
+					className="sc-button sc-primary"
 					type="button"
 					onClick={() => onSelect(page.data.asset, page.data.preview)}
 				>

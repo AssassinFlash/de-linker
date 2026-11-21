@@ -226,6 +226,7 @@ export function HomepagePvReference({
 					)}
 					{(!addressLookup || !useAddress) && (
 						<SiteCoordinates
+							required
 							site={brief.site}
 							locale={locale}
 							change={coordinate}

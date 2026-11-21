@@ -59,8 +59,8 @@ export function PvForm({
 		return isCurrentRoofModule(specification);
 	});
 	return (
-		<fieldset className="lp-scenario-fields" disabled={disabled}>
-			<section className="lp-scenario-block">
+		<fieldset className="sc-scenario-fields" disabled={disabled}>
+			<section className="sc-scenario-block">
 				<h3>{__("PV generation model", "linker-tools")}</h3>
 				<p>
 					{geometric
@@ -81,7 +81,7 @@ export function PvForm({
 				</p>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={!valid || !moduleSelectionCurrent}
 					onClick={() => onChange(alignPv(value, geometry))}
 				>
@@ -94,7 +94,7 @@ export function PvForm({
 					)}
 				</p>
 			</section>
-			<ol className="lp-scenario-steps">
+			<ol className="sc-scenario-steps">
 				{(["modules", "arrays", "conversion"] as const).map((step, index) => (
 					<li key={step} aria-current={section === step ? "step" : undefined}>
 						<button type="button" onClick={() => setSection(step)}>
@@ -159,7 +159,7 @@ export function PvForm({
 				))}
 			</div>
 			<div hidden={section !== "conversion"}>
-				<section className="lp-scenario-block">
+				<section className="sc-scenario-block">
 					<h3>{__("Shared power conversion", "linker-tools")}</h3>
 					<p>
 						{series
@@ -209,7 +209,7 @@ export function PvForm({
 				))}
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={!valid || arrays.length === 0}
 					onClick={() =>
 						onChange({

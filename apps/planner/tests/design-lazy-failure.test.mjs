@@ -60,7 +60,7 @@ test("3D and map chunk failures and retries preserve unapplied raw properties an
 	await until(() => caught.length >= 2);
 	assert.equal(document.querySelector('[name="east"]').value, "2.5");
 	await act(async () => button("Plan").click());
-	assert.ok(document.querySelector(".lp-plan-svg"));
+	assert.ok(document.querySelector(".sc-plan-svg"));
 	assert.equal(document.querySelector('[name="east"]').value, "2.5");
 	assert.ok(
 		caught.every((error) => error.message === "synthetic_3d_chunk_unavailable"),
@@ -85,6 +85,6 @@ test("3D and map chunk failures and retries preserve unapplied raw properties an
 		"1",
 	);
 	await act(async () => button("Plan").click());
-	assert.ok(document.querySelector(".lp-plan-svg"));
+	assert.ok(document.querySelector(".sc-plan-svg"));
 	assert.equal(document.querySelector('[name="east"]').value, "2.5");
 });

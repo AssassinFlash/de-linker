@@ -13,7 +13,7 @@ export function Notice({
 		<div
 			ref={focusTarget}
 			tabIndex={focusTarget ? -1 : undefined}
-			className="lp-notice"
+			className="sc-notice"
 			data-error={error || undefined}
 			role={error ? "alert" : "status"}
 		>

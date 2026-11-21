@@ -478,7 +478,7 @@ export function ReviewInquiry({
 							</ul>
 						)}
 						{!checkingInquiry && changes.length > 0 && (
-							<table className="lp-data-table">
+							<table className="sc-data-table">
 								<thead>
 									<tr>
 										<th scope="col">{__("Product", "linker-tools")}</th>

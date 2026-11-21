@@ -38,7 +38,7 @@ import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
-const Configurator = lazy(() => import("./configurator/Configurator.tsx"));
+const ProjectWorkbench = lazy(() => import("./configurator/ProjectWorkbench.tsx"));
 import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
 import {
 	InquiryStages,
@@ -549,12 +549,12 @@ export function Workspace({
 		return !session.claim_pending && project.data ? (
 			<Suspense
 				fallback={
-					<p className="lp-session-state" role="status">
+					<p className="sc-session-state" role="status">
 						{__("Opening the project…", "linker-tools")}
 					</p>
 				}
 			>
-				<Configurator
+				<ProjectWorkbench
 					key={session.query_scope + ":" + selected}
 					project={project.data}
 					client={client}
@@ -810,10 +810,10 @@ export function Workspace({
 				<section
 					className="sc-card sc-saved-projects"
 					hidden={firstVisitComparison || Boolean(entryHints?.roof)}
-					aria-labelledby="lp-projects-heading"
+					aria-labelledby="sc-projects-heading"
 				>
 					<div className="sc-section-head">
-						<h2 id="lp-projects-heading">
+						<h2 id="sc-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
 						<button
@@ -954,7 +954,7 @@ export function Workspace({
 										</p>
 										<div className="sc-actions">
 											<button
-												className="sc-button lp-button-danger"
+												className="sc-button sc-button-danger"
 												disabled={deleteBusy}
 												onClick={() => {
 													void remove(item);

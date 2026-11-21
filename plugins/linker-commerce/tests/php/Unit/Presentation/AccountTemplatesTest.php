@@ -56,7 +56,7 @@ final class AccountTemplatesTest extends TestCase {
 			)
 		);
 		$html = $adapter->rows( array( 'type' => 'planning-projects' ) );
-		$this->assertStringContainsString( 'https://example.test/de/loesungskonfigurator/?project=' . $id . '#lp-overview', $html );
+		$this->assertStringContainsString( 'https://example.test/de/loesungskonfigurator/?project=' . $id . '#sc-project', $html );
 		$this->assertStringContainsString( 'Same owned project', $html );
 		$this->assertStringNotContainsString( 'saved_solution=', $html );
 		$this->assertStringNotContainsString( 'linker_solution_to_draft', $html );

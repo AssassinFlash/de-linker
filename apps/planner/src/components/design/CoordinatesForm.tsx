@@ -54,13 +54,13 @@ export function CoordinatesForm({
 				});
 			}}
 		>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"The project uses metres in a local east/north/up frame. A north reference records the stated basis for that frame; it does not rotate existing objects or verify a survey.",
 					"linker-tools",
 				)}
 			</p>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("North reference", "linker-tools")}</span>
 				<select name="north" defaultValue={coordinate.north_reference}>
 					<option value="unreferenced">
@@ -74,7 +74,7 @@ export function CoordinatesForm({
 					</option>
 				</select>
 			</label>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("North reference source", "linker-tools")}</span>
 				<select
 					name="north_source"
@@ -88,7 +88,7 @@ export function CoordinatesForm({
 					))}
 				</select>
 			</label>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				<GeometryNumber
 					locale={locale}
 					name="latitude"
@@ -111,7 +111,7 @@ export function CoordinatesForm({
 					help={__("−180 to 180, WGS 84 (EPSG:4326).", "linker-tools")}
 				/>
 			</div>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Geographic anchor source", "linker-tools")}</span>
 				<select
 					name="anchor_source"

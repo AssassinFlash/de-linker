@@ -46,7 +46,7 @@ const session = {
 	},
 };
 const selectButton = () =>
-	document.querySelector(".lp-run-result > .lp-button");
+	document.querySelector(".sc-run-result > .sc-button");
 
 for (const locale of ["en-GB", "de-DE"]) {
 	test(`${locale}: controller network results load the shipped translations and keep historical checks readable`, async (t) => {
@@ -253,17 +253,17 @@ test("a frozen English report marks its own language inside a German planner pag
 			locale: "de-DE",
 		}),
 	);
-	const result = document.querySelector(".lp-run-result");
+	const result = document.querySelector(".sc-run-result");
 	assert.equal(result.querySelector("h3").lang, "en");
 	assert.equal(
-		result.querySelector(".lp-run-heading > div > p:nth-of-type(1)").lang,
+		result.querySelector(".sc-run-heading > div > p:nth-of-type(1)").lang,
 		"en",
 	);
 	const notice = result.querySelector("[role=status]");
 	assert.equal(notice.textContent, "Report language: English");
 	assert.equal(notice.lang, "de-DE");
 	const reportSections = [
-		...result.querySelectorAll(".lp-scenario-block, details.lp-comparison"),
+		...result.querySelectorAll(".sc-scenario-block, details.sc-disclosure"),
 	];
 	assert.ok(reportSections.length > 0);
 	assert.ok(reportSections.every((section) => section.lang === "en"));
@@ -310,7 +310,7 @@ for (const locale of ["en-GB", "de-DE"]) {
 			});
 		}
 		await mount(t, React.createElement(Harness));
-		const reportTables = [...document.querySelectorAll(".lp-report-table")];
+		const reportTables = [...document.querySelectorAll(".sc-report-table")];
 		assert.ok(reportTables.length > 0);
 		for (const tableContainer of reportTables) {
 			const table = tableContainer.querySelector("table"),
@@ -655,9 +655,9 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 			button("Use this PV profile") && !button("Use this PV profile").disabled,
 	);
 	await until(() => document.querySelector('svg[role="img"]'));
-	assert.match(document.querySelector(".lp-run-result").textContent, /8,760/);
+	assert.match(document.querySelector(".sc-run-result").textContent, /8,760/);
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/unobstructed reference components/,
 	);
 	assert.equal(current.history.current.profile_selections, undefined);
@@ -695,14 +695,14 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	});
 	await act(async () => button("Generate planning report").click());
 	const wiringWarning = () =>
-		[...document.querySelectorAll(".lp-notice")].find((node) =>
+		[...document.querySelectorAll(".sc-notice")].find((node) =>
 			node.textContent.includes("saved PV strings"),
 		);
 	await until(() => Boolean(wiringWarning()));
 	const recovery = wiringWarning().querySelector("button");
 	assert.equal(recovery.textContent, "Equipment");
 	await act(async () => recovery.click());
-	assert.equal(document.getElementById("lp-equipment").hidden, false);
+	assert.equal(document.getElementById("sc-system").hidden, false);
 	await act(async () => button("Planning report").click());
 	assert.equal(choice.value, native.run.id);
 	await act(async () => button("Generate planning report").click());
@@ -868,12 +868,12 @@ test("owned geometric setup saves with the cumulative contract and shows frozen 
 	await act(async () => button("Calculate direct-beam visibility").click());
 	await until(
 		() =>
-			document.querySelector(".lp-run-result h3")?.textContent ===
+			document.querySelector(".sc-run-result h3")?.textContent ===
 			"Geometric direct-beam visibility",
 	);
 	assert.equal(sent[0].path, "runs/direct-beam");
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/Sun at or below horizon/,
 	);
 	const timestamp = [...document.querySelectorAll("label")]
@@ -885,26 +885,26 @@ test("owned geometric setup saves with the cumulative contract and shows frozen 
 		timestamp.value = "1";
 		timestamp.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	assert.match(document.querySelector(".lp-run-result").textContent, /Sampled/);
+	assert.match(document.querySelector(".sc-run-result").textContent, /Sampled/);
 	assert.ok(
 		document
-			.querySelector(".lp-run-result")
+			.querySelector(".sc-run-result")
 			.textContent.includes(
 				native.run.result.visibility.rows[1].irradiance_at_utc,
 			),
 	);
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/frozen geometry/,
 	);
 	await act(async () => button("Planning report").click());
 	await until(() =>
-		[...document.querySelectorAll(".lp-scenario-fields select")].some(
+		[...document.querySelectorAll(".sc-scenario-fields select")].some(
 			(select) => [...select.options].some((o) => o.value === native.run.id),
 		),
 	);
 	const reportChoice = [
-		...document.querySelectorAll(".lp-scenario-fields select"),
+		...document.querySelectorAll(".sc-scenario-fields select"),
 	].find((select) =>
 		[...select.options].some((o) => o.value === native.run.id),
 	);
@@ -1311,7 +1311,7 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 		window.history.replaceState(
 			null,
 			"",
-			`?project=${project.id}&run=${run.id}#lp-calculations`,
+			`?project=${project.id}&run=${run.id}#sc-review`,
 		);
 		const client = {
 			isCurrentScope: (value) => value === scope,
@@ -1361,11 +1361,11 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 	await mount(t, React.createElement(Harness));
 	await until(() => selectButton() && !selectButton().disabled);
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/2,943.945/,
 	);
 	assert.doesNotMatch(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/Battery parameters|Self-sufficiency/,
 	);
 	assert.ok(calls.includes("runs/read"));
@@ -1678,13 +1678,13 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 		window.history.replaceState(
 			null,
 			"",
-			`?project=${initial.id}&energy_view=pvgis-reference#lp-calculations`,
+			`?project=${initial.id}&energy_view=pvgis-reference#sc-review`,
 		);
 		return React.createElement(Harness);
 	}
 	await mount(t, React.createElement(MethodHarness));
 	const form = () =>
-		[...document.querySelectorAll("section.lp-scenario-block")].find(
+		[...document.querySelectorAll("section.sc-scenario-block")].find(
 			(node) =>
 				node.querySelector("h3")?.textContent === "PVGIS annual AC reference",
 		);
@@ -1774,19 +1774,19 @@ test("PVGIS method keeps explicit saved choices, recovers its exact request and 
 	assert.equal(attempts, 2);
 	assert.equal(JSON.parse(sent[0]).expected_revision, 2);
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/PVGIS-ERA5/,
 	);
 	assert.match(
-		document.querySelector(".lp-run-result").textContent,
+		document.querySelector(".sc-run-result").textContent,
 		/SARAH3 sample/,
 	);
 	assert.equal(
-		document.querySelector(".lp-run-result pre"),
+		document.querySelector(".sc-run-result pre"),
 		null,
 		"source details are semantic fields, not an internal JSON dump",
 	);
-	assert.ok(document.querySelector(".lp-run-result table"));
+	assert.ok(document.querySelector(".sc-run-result table"));
 	await act(async () => selectButton().click());
 	assert.equal(
 		current.history.current.profile_selections.selected.pv_available_ac,

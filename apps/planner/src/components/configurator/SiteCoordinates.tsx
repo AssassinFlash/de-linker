@@ -8,11 +8,13 @@ export function SiteCoordinates({
 	locale,
 	change,
 	onValidity,
+	required = false,
 }: {
 	site: Brief["site"];
 	locale: string;
 	change: (field: "latitude" | "longitude", value: number | null) => void;
 	onValidity: (valid: boolean) => void;
+	required?: boolean;
 }) {
 	const [latitudeValid, setLatitudeValid] = useState(true);
 	const [longitudeValid, setLongitudeValid] = useState(true);
@@ -31,6 +33,7 @@ export function SiteCoordinates({
 				max={90}
 				value={site.latitude}
 				notation="point-or-comma"
+				required={required}
 				onChange={(value) => change("latitude", value)}
 				onValidity={setLatitudeValid}
 			/>
@@ -43,6 +46,7 @@ export function SiteCoordinates({
 				max={180}
 				value={site.longitude}
 				notation="point-or-comma"
+				required={required}
 				onChange={(value) => change("longitude", value)}
 				onValidity={setLongitudeValid}
 			/>

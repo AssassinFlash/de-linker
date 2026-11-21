@@ -82,7 +82,7 @@ test("opening a saved project honors the requested workspace and sends storage-o
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const root = createRoot(dom.element);
 	const cache = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
@@ -165,12 +165,12 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	}
 	const css = document.createElement("style");
 	css.textContent =
-		".lp-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
+		".sc-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
 	document.head.append(css);
 	const { createRoot } = await import("react-dom/client");
 	const { maps } = await import("./map-library-fixture.mjs");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	location.hash = "#sc-roof";
 	const geometry = geometryAsset.metadata.geometry_import.geometry;
 	const project = {
@@ -322,7 +322,7 @@ test("import and history changes save their roof revision and release the exact 
 	});
 	location.hash = "#sc-solar";
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { createRoot } = await import("react-dom/client");
 	const asset = geometryAsset,
 		raw = readFileSync(
@@ -497,7 +497,7 @@ test("import and history changes save their roof revision and release the exact 
 		saved.inputs.geometry.roofs[0].holes_uv,
 		asset.metadata.geometry_import.geometry.roofs[0].holes_uv,
 	);
-	await until(() => !document.querySelector(".lp-geometry-intake details"));
+	await until(() => !document.querySelector(".sc-geometry-intake details"));
 	assert.deepEqual(
 		await geometryImportStore.list([session.query_scope], project.id),
 		[],

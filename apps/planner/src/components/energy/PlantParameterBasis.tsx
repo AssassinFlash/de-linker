@@ -15,7 +15,7 @@ export function PlantParameterBasis({
 }) {
 	if (readObject(result.model).pv_boundary === PLANT_NO_STORAGE_BOUNDARY)
 		return (
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"No battery parameters are used in this PV-only calculation.",
 					"linker-tools",
@@ -31,16 +31,16 @@ export function PlantParameterBasis({
 			? new Intl.NumberFormat(locale, { maximumSignificantDigits: 9 }).format(v)
 			: "—";
 	return (
-		<div className="lp-plant-parameter-basis">
+		<div className="sc-plant-parameter-basis">
 			{(plant.units as readonly JsonObject[]).map((unit) => {
 				const entry = entries.find((u) => u.unit_id === unit.id)!;
 				const proof = readObject(pool[String(entry.parameter_sha256)]),
 					losses = readObject(proof.loss_scenario);
 				return (
-					<details className="lp-comparison" key={String(unit.id)}>
+					<details className="sc-disclosure" key={String(unit.id)}>
 						<summary>{String(unit.name)}</summary>
 						<p>{String(losses.source_note)}</p>
-						<dl className="lp-field-summary">
+						<dl className="sc-field-summary">
 							<div>
 								<dt>{__("Connected battery port", "linker-tools")}</dt>
 								<dd>{String(losses.battery_port_id)}</dd>

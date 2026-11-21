@@ -43,9 +43,9 @@ export function PvArrayParameters({
 	onChange: (value: ArrayDraft) => void;
 }) {
 	return (
-		<section className="lp-scenario-block lp-pv-parameters">
+		<section className="sc-scenario-block sc-pv-parameters">
 			<h4>{name}</h4>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Irradiance transposition", "linker-tools")}</span>
 				<select
 					value={value.transposition ?? ""}
@@ -70,7 +70,7 @@ export function PvArrayParameters({
 					"linker-tools",
 				)}
 			</p>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				{ARRAY_FACTORS.map((field) => {
 					const scale = field === "beam_iam_b" ? 1 : 100,
 						number = value[field];
@@ -99,7 +99,7 @@ export function PvArrayParameters({
 				value={value.source_note}
 				onChange={(source_note) => onChange({ ...value, source_note })}
 			/>
-			<details className="lp-comparison" open>
+			<details className="sc-disclosure" open>
 				<summary>{__("Cell temperature model", "linker-tools")}</summary>
 				<p>
 					{__(
@@ -107,7 +107,7 @@ export function PvArrayParameters({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{(["a", "b", "delta_t_c"] as const).map((field) => (
 						<ScenarioNumber
 							key={field}

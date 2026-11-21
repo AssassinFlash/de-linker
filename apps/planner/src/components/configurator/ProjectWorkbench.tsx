@@ -111,6 +111,7 @@ import { __, sprintf } from "../../i18n.ts";
 
 import {
 	ProjectNavigation,
+	isRoofLocation,
 	projectChapter,
 	type ProjectChapter as Step,
 } from "./ProjectNavigation.tsx";
@@ -150,7 +151,7 @@ function useProjectResult(
 	});
 }
 
-export default function Configurator({
+export default function ProjectWorkbench({
 	project,
 	session,
 	client,
@@ -646,42 +647,29 @@ export default function Configurator({
 		showStep(next);
 	}
 	async function closeProject() {
-		const current = latest.current;
-		if (!mayLeave() || !current) return;
-		if (isDirty(current) || current.pending) {
-			if (await controller.save()) close();
-		} else if (!controller.recoveries.length || (await controller.flush()))
-			close();
+		if (mayLeave() && (await controller.flush())) close();
 	}
 	async function openChapter(next: Step) {
 		const current = latest.current;
-		if (!mayLeave() || !current || controller.busy || operations.busy) return;
+		if (!current || !mayLeave()) return;
 		if (next === "system" && !coordinatesValid) {
 			showStep("solar");
 			return;
 		}
 		if (
 			next === "system" &&
+			step === "project" &&
 			comparePreliminary &&
+			history.isSuccess &&
+			!searchId &&
 			needsPhaseConfirmation(current.history.current) &&
-			(!searchRun || isDirty(current))
+			isDirty(current)
 		) {
 			const saved = await controller.save();
 			if (saved && client.isCurrentScope(session.query_scope))
 				comparePreliminary(saved);
 			return;
 		}
-		if (
-			next === "system" &&
-			next !== step &&
-			!modelsUnavailable &&
-			history.isSuccess &&
-			(!searchRun || isDirty(current))
-		) {
-			await compare();
-			return;
-		}
-		if (next !== step && isDirty(current) && !(await controller.save())) return;
 		showStep(next);
 	}
 	function showStep(next: Step) {
@@ -1503,7 +1491,7 @@ export default function Configurator({
 												/>
 											)
 								}
-								initialMap={location.hash === "#sc-roof"}
+								initialMap={isRoofLocation(location.hash)}
 								takeImageryConsent={(source) =>
 									takeRoofImageryConsent(project.id, source)
 								}

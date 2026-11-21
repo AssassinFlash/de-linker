@@ -95,7 +95,7 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(
 				page.locator('input[name="project_title"]')
 			).toBeVisible();
-			await expect(page.locator('.lp-roof-start')).toHaveCount(0);
+			await expect(page.locator('.sc-roof-start')).toHaveCount(0);
 		});
 
 		test(`${locale} ${width}: footer links, current language and keyboard panel agree`, async ({

@@ -14,15 +14,15 @@ export function InitialInventoryForm({
 	report: (field: string, valid: boolean) => void;
 }) {
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{__("Initial stored energy", "linker-tools")}</h3>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Stored energy keeps its origin throughout the calculation. Energy from the grid or an unknown source is excluded from the solar-supplied total.",
 					"linker-tools",
 				)}
 			</p>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				{(["pv_kwh", "grid_kwh", "initial_unknown_kwh"] as const).map(
 					(field) => (
 						<ScenarioNumber
@@ -46,7 +46,7 @@ export function InitialInventoryForm({
 			</div>
 			<button
 				type="button"
-				className="lp-text-button"
+				className="sc-text-button"
 				onClick={() =>
 					onChange({
 						pv_kwh: 0,
@@ -61,7 +61,7 @@ export function InitialInventoryForm({
 			>
 				{__("Start with an empty battery", "linker-tools")}
 			</button>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Basis for the initial state", "linker-tools")}</span>
 				<textarea
 					rows={2}

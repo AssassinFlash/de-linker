@@ -462,7 +462,7 @@ export function EnergyWorkspace({
 		// Let the parent/native bar layout commit before restoring a result route.
 		const frame = window.requestAnimationFrame(() =>
 			revealActionResult(
-				runTarget.current?.querySelector<HTMLElement>(".lp-run-result h3") ??
+				runTarget.current?.querySelector<HTMLElement>(".sc-run-result h3") ??
 					null,
 				() => client.isCurrentScope(session.query_scope),
 			),
@@ -1191,17 +1191,17 @@ export function EnergyWorkspace({
 	}
 	return (
 		<section
-			className="lp-section lp-energy-workspace"
-			id="lp-calculations"
+			className="sc-section sc-energy-workspace"
+			id="sc-review"
 			tabIndex={-1}
 			aria-labelledby={
-				equipmentFocus ? "lp-equipment-title" : "lp-calculations-heading"
+				equipmentFocus ? "sc-equipment-title" : "sc-calculations-heading"
 			}
 		>
-			<div className="lp-section-heading" hidden={equipmentFocus}>
-				<span className="lp-index">07</span>
+			<div className="sc-section-heading" hidden={equipmentFocus}>
+				<span className="sc-index">07</span>
 				<div>
-					<h2 id="lp-calculations-heading">
+					<h2 id="sc-calculations-heading">
 						{__("Energy calculation", "linker-tools")}
 					</h2>
 					<p>
@@ -1213,7 +1213,7 @@ export function EnergyWorkspace({
 				</div>
 			</div>
 			<div
-				className="lp-energy-switch lp-work-toolbar"
+				className="sc-energy-switch sc-work-toolbar"
 				role="group"
 				aria-label={__("Calculation workspace view", "linker-tools")}
 				hidden={equipmentFocus}
@@ -1294,7 +1294,7 @@ export function EnergyWorkspace({
 				</button>
 			</div>
 			{Boolean(actionError) && (
-				<div ref={errorTarget} className="lp-focus-target" tabIndex={-1}>
+				<div ref={errorTarget} className="sc-focus-target" tabIndex={-1}>
 					<EnergyError
 						error={actionError}
 						openEquipment={showEquipment}
@@ -1312,7 +1312,7 @@ export function EnergyWorkspace({
 					</p>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={operations.refresh}
 					>
 						{__("Check browser storage", "linker-tools")}
@@ -1321,7 +1321,7 @@ export function EnergyWorkspace({
 			)}
 			{operations.records.length > 0 && (
 				<details
-					className="lp-comparison lp-energy-recovery lp-work-panel"
+					className="sc-disclosure sc-energy-recovery sc-work-panel"
 					open={unconfirmed.length > 0}
 				>
 					<summary>{__("Stored requests", "linker-tools")}</summary>
@@ -1342,7 +1342,7 @@ export function EnergyWorkspace({
 					{operations.records.map((record) => (
 						<div
 							key={record.scope + record.path + record.key}
-							className="lp-energy-recovery-row"
+							className="sc-energy-recovery-row"
 						>
 							<span>
 								{record.path === "battery/scenario"
@@ -1368,7 +1368,7 @@ export function EnergyWorkspace({
 							</span>
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={operations.busy || blocked || !syntaxValid}
 								onClick={() => void recover(record)}
 							>
@@ -1380,7 +1380,7 @@ export function EnergyWorkspace({
 							</button>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={operations.busy || operations.checking}
 								onClick={() => void operations.discard(record)}
 							>
@@ -1389,7 +1389,7 @@ export function EnergyWorkspace({
 							{record.resultId !== null && (
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									disabled={operations.busy || operations.checking}
 									onClick={() => void operations.dismissAcknowledged(record)}
 								>
@@ -1451,7 +1451,7 @@ export function EnergyWorkspace({
 				}
 			>
 				<div
-					className="lp-energy-switch lp-work-toolbar"
+					className="sc-energy-switch sc-work-toolbar"
 					role="group"
 					aria-label={__("PV generation method", "linker-tools")}
 				>
@@ -1548,8 +1548,8 @@ export function EnergyWorkspace({
 			</div>
 			<div
 				hidden={view !== "equipment"}
-				id="lp-equipment"
-				className="lp-focus-target"
+				id="sc-system"
+				className="sc-focus-target"
 				tabIndex={-1}
 			>
 				<EquipmentWorkspace
@@ -1609,10 +1609,10 @@ export function EnergyWorkspace({
 				)}
 				{currentSetup && (
 					<>
-						<div className="lp-setup-layout">
-							<aside className="lp-setup-nav">
+						<div className="sc-setup-layout">
+							<aside className="sc-setup-nav">
 								<nav aria-label={__("Scenario settings", "linker-tools")}>
-									<ol className="lp-scenario-steps">
+									<ol className="sc-scenario-steps">
 										{(pvOnly
 											? (["storage", "operation"] as const)
 											: (["storage", "initial", "operation"] as const)
@@ -1639,7 +1639,7 @@ export function EnergyWorkspace({
 															? "step"
 															: undefined
 													}
-													aria-controls="lp-energy-chapter"
+													aria-controls="sc-energy-chapter"
 													onClick={() => setSection(step)}
 												>
 													<span>{String(index + 1).padStart(2, "0")}</span>
@@ -1655,8 +1655,8 @@ export function EnergyWorkspace({
 										))}
 									</ol>
 								</nav>
-								<section className="lp-scenario-sources lp-work-panel">
-									<h3 className="lp-work-panel-heading">
+								<section className="sc-scenario-sources sc-work-panel">
+									<h3 className="sc-work-panel-heading">
 										{__("Interval sources", "linker-tools")}
 									</h3>
 									<ul>
@@ -1700,7 +1700,7 @@ export function EnergyWorkspace({
 									</ul>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={openProfiles}
 										disabled={!syntaxValid}
 									>
@@ -1709,8 +1709,8 @@ export function EnergyWorkspace({
 								</section>
 							</aside>
 							<div
-								className="lp-setup-content lp-work-main"
-								id="lp-energy-chapter"
+								className="sc-setup-content sc-work-main"
+								id="sc-energy-chapter"
 							>
 								{pvOnly ? (
 									<SolarEnergySetup
@@ -1795,7 +1795,7 @@ export function EnergyWorkspace({
 										)}
 									</Notice>
 								)}
-								<div className="lp-energy-submit lp-work-panel lp-work-toolbar">
+								<div className="sc-energy-submit sc-work-panel sc-work-toolbar">
 									<p>
 										{__(
 											"Calculate using the current project inputs. The result retains its inputs and sources.",
@@ -1804,7 +1804,7 @@ export function EnergyWorkspace({
 									</p>
 									<button
 										type="button"
-										className="lp-button"
+										className="sc-button sc-primary"
 										disabled={!canCalculate}
 										onClick={() => void calculate()}
 									>
@@ -1819,11 +1819,11 @@ export function EnergyWorkspace({
 				)}
 			</div>
 			<div hidden={view !== "comparison"}>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					{runs.hasPrevious && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={runs.page.isFetching}
 							onClick={runs.first}
 						>
@@ -1833,7 +1833,7 @@ export function EnergyWorkspace({
 					{runs.page.data?.next && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={runs.page.isFetching}
 							onClick={runs.next}
 						>
@@ -1880,7 +1880,7 @@ export function EnergyWorkspace({
 						</p>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={() => void runs.page.refetch()}
 						>
 							{__("Refresh calculation history", "linker-tools")}
@@ -1892,11 +1892,11 @@ export function EnergyWorkspace({
 						{__("Reading saved calculations…", "linker-tools")}
 					</p>
 				)}
-				<div className="lp-run-pagination">
+				<div className="sc-run-pagination">
 					{runs.hasPrevious && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={runs.page.isFetching}
 							onClick={runs.first}
 						>
@@ -1906,7 +1906,7 @@ export function EnergyWorkspace({
 					{runs.page.data?.next && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={runs.page.isFetching}
 							onClick={runs.next}
 						>
@@ -1941,7 +1941,7 @@ export function EnergyWorkspace({
 					generate={generateReport}
 				/>
 			</div>
-			<div className="lp-energy-runs" hidden={view !== "runs"}>
+			<div className="sc-energy-runs" hidden={view !== "runs"}>
 				{runs.page.error && (
 					<Notice error>
 						<p>
@@ -1952,7 +1952,7 @@ export function EnergyWorkspace({
 						</p>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={() => void runs.page.refetch()}
 						>
 							{__("Refresh calculation history", "linker-tools")}
@@ -1964,10 +1964,10 @@ export function EnergyWorkspace({
 						{__("Reading saved calculations…", "linker-tools")}
 					</p>
 				)}
-				<div className="lp-work-grid">
+				<div className="sc-work-grid">
 					{runs.page.data && (
-						<aside className="lp-run-history lp-work-aside lp-work-panel">
-							<h3 className="lp-work-panel-heading">
+						<aside className="sc-run-history sc-work-aside sc-work-panel">
+							<h3 className="sc-work-panel-heading">
 								{__("Calculation history", "linker-tools")}
 							</h3>
 							{!runs.page.data.items.length && (
@@ -1998,11 +1998,11 @@ export function EnergyWorkspace({
 									</small>
 								</button>
 							))}
-							<div className="lp-inline-actions">
+							<div className="sc-actions">
 								{runs.hasPrevious && (
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={runs.first}
 									>
 										{__("Latest calculations", "linker-tools")}
@@ -2011,7 +2011,7 @@ export function EnergyWorkspace({
 								{runs.page.data.next && (
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={runs.next}
 									>
 										{__("Earlier calculations", "linker-tools")}
@@ -2020,7 +2020,7 @@ export function EnergyWorkspace({
 							</div>
 						</aside>
 					)}
-					<div ref={runTarget} className="lp-run-content lp-work-main">
+					<div ref={runTarget} className="sc-run-content sc-work-main">
 						{runs.run.error && (
 							<Notice error>
 								<p>
@@ -2031,7 +2031,7 @@ export function EnergyWorkspace({
 								</p>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={() => void runs.run.refetch()}
 								>
 									{__("Refresh calculation status", "linker-tools")}
@@ -2175,7 +2175,7 @@ export function EnergyWorkspace({
 								{runPending(runs.run.data.state) && (
 									<button
 										type="button"
-										className="lp-button lp-button-secondary"
+										className="sc-button"
 										disabled={runs.cancelPending}
 										onClick={() => void runs.cancel()}
 									>

@@ -45,7 +45,7 @@ async function mount(
 	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
 	const style = document.createElement("style");
 	style.textContent =
-		".lp-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#112233;--proto-neutral-600:#445566;--proto-teal-700:#007777;--proto-teal-400:#44bbbb;--proto-neutral-100:#eeeeee;}";
+		".sc-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#112233;--proto-neutral-600:#445566;--proto-teal-700:#007777;--proto-teal-400:#44bbbb;--proto-neutral-100:#eeeeee;}";
 	document.head.append(style);
 	const { createRoot } = await import("react-dom/client");
 	const { SolarInstallation } =
@@ -475,7 +475,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	await click("Add roof to current design");
 	assert.ok(
 		app.inputs.geometry,
-		document.querySelector(".lp-import-panel [role=alert]")?.textContent,
+		document.querySelector(".sc-import-panel [role=alert]")?.textContent,
 	);
 	const { roofs, sources, coordinate_system: frame } = app.inputs.geometry;
 	assert.equal(roofs.length, 1);
@@ -504,7 +504,7 @@ async function openRoof(locale = "en") {
 async function traceRoofImage(t, image, roofId, length = "12") {
 	if (!document.querySelector(".sc-roof-editor")) await openRoof();
 	await click("Calibrate a roof image");
-	const form = document.querySelector(".lp-import-panel form");
+	const form = document.querySelector(".sc-import-panel form");
 	if (roofId) {
 		const target = form.elements.namedItem("target");
 		await act(async () => {
@@ -533,9 +533,9 @@ async function traceRoofImage(t, image, roofId, length = "12") {
 	await act(async () =>
 		fileInput.dispatchEvent(new window.Event("change", { bubbles: true })),
 	);
-	assert.equal(form.querySelector(".lp-file-name").textContent, image);
+	assert.equal(form.querySelector(".sc-file-name").textContent, image);
 	const mark = async (x, y) => {
-		const svg = form.querySelector(".lp-plan-svg");
+		const svg = form.querySelector(".sc-plan-svg");
 		svg.getBoundingClientRect = () => ({
 			left: 0,
 			top: 0,
@@ -776,11 +776,11 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 			/not_authorized/,
 		);
 	assert.match(
-		document.querySelector(".lp-map-provider").textContent,
+		document.querySelector(".sc-map-provider").textContent,
 		/Copernicus Land Monitoring Service/,
 	);
 	assert.equal(
-		document.querySelector(".lp-map-provider a").href,
+		document.querySelector(".sc-map-provider a").href,
 		official.licence_url,
 	);
 	await act(async () => {

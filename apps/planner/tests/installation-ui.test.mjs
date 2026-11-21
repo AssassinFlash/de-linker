@@ -1207,7 +1207,7 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 					),
 				),
 			),
-		preview = () => document.querySelector("table.lp-data-table");
+		preview = () => document.querySelector("table.sc-data-table");
 	await renderEditor();
 	assert.equal(preview(), null);
 	await act(async () => button("Review routes and string links").click());

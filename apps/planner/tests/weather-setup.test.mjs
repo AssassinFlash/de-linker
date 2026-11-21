@@ -187,7 +187,7 @@ test("weather controls retain unfinished negative coordinates across views, requ
 	assert.equal(control("Latitude").value, "");
 	await click("Prepare weather settings");
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
+		document.querySelector(".sc-focus-target").textContent,
 		/Weather settings need/,
 	);
 	assert.equal(requests.length, 0);
@@ -233,7 +233,7 @@ test("weather controls retain unfinished negative coordinates across views, requ
 	await enter(control("Synthetic calculation year"), "2024");
 	await click("Prepare weather settings");
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
+		document.querySelector(".sc-focus-target").textContent,
 		/non-leap year/,
 	);
 	assert.equal(requests.length, 0);

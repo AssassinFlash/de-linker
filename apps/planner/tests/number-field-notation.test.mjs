@@ -61,7 +61,7 @@ test("a point-or-comma field accepts the point a map shows, and still refuses tw
 	await enter(input, "");
 	assert.equal(number, null);
 	assert.equal(save.disabled, false);
-	assert.equal(document.querySelector(".lp-field-error"), null);
+	assert.equal(document.querySelector(".sc-field-error"), null);
 });
 
 test("a locale field keeps its own declared mark, so the fix stays scoped to coordinates", async (t) => {

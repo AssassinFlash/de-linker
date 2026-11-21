@@ -56,12 +56,12 @@ export function OperatingPeriodForm({
 		onChange({ ...period, ...values });
 	}
 	return (
-		<fieldset className="lp-scenario-period">
+		<fieldset className="sc-scenario-period">
 			<legend>
 				{sprintf(__("Operating period %d", "linker-tools"), index + 1)}
 			</legend>
-			<div className="lp-geometry-fields">
-				<label className="lp-field">
+			<div className="sc-geometry-fields">
+				<label className="sc-field">
 					<span>{__("Start with UTC or offset", "linker-tools")}</span>
 					<input
 						type="text"
@@ -73,12 +73,12 @@ export function OperatingPeriodForm({
 						onChange={(e) => patch({ start_utc: e.currentTarget.value })}
 					/>
 					{startError && (
-						<small className="lp-field-error" id={errorId + "-start"}>
+						<small className="sc-field-error" id={errorId + "-start"}>
 							{dateError}
 						</small>
 					)}
 				</label>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("End with UTC or offset", "linker-tools")}</span>
 					<input
 						type="text"
@@ -90,12 +90,12 @@ export function OperatingPeriodForm({
 						onChange={(e) => patch({ end_utc: e.currentTarget.value })}
 					/>
 					{endError && (
-						<small className="lp-field-error" id={errorId + "-end"}>
+						<small className="sc-field-error" id={errorId + "-end"}>
 							{dateError}
 						</small>
 					)}
 				</label>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Grid condition", "linker-tools")}</span>
 					<select
 						value={period.mode ?? ""}
@@ -125,7 +125,7 @@ export function OperatingPeriodForm({
 						onChange={(value) => patch({ reserve_kwh: value })}
 					/>
 				)}
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("PV available in this period", "linker-tools")}</span>
 					<select
 						value={period.pv_enabled === null ? "" : String(period.pv_enabled)}
@@ -144,7 +144,7 @@ export function OperatingPeriodForm({
 					</select>
 				</label>
 				{hasStorage && period.mode !== "outage" && (
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Grid charging allowed", "linker-tools")}</span>
 						<select
 							value={
@@ -169,7 +169,7 @@ export function OperatingPeriodForm({
 				)}
 				{period.mode !== "outage" && (
 					<>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Grid import limit", "linker-tools")}</span>
 							<select
 								value={period.import_policy ?? ""}
@@ -202,7 +202,7 @@ export function OperatingPeriodForm({
 								onChange={(value) => patch({ import_cap_kw: value })}
 							/>
 						)}
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Grid export limit", "linker-tools")}</span>
 							<select
 								value={period.export_policy ?? ""}
@@ -239,7 +239,7 @@ export function OperatingPeriodForm({
 				)}
 			</div>
 			{period.mode === "outage" && (
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"During an outage, grid import, export and charging are zero. A critical-load profile and an explicit PV availability choice are required.",
 						"linker-tools",
@@ -247,7 +247,7 @@ export function OperatingPeriodForm({
 				</p>
 			)}
 			{remove && (
-				<button type="button" className="lp-text-button" onClick={remove}>
+				<button type="button" className="sc-text-button" onClick={remove}>
 					{__("Remove operating period", "linker-tools")}
 				</button>
 			)}

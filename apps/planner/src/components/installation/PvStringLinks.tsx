@@ -128,15 +128,15 @@ export function PvStringLinks({
 			availableStrings.some((s) => s.id === stringId) &&
 			availableCircuits.some((c) => c.id === circuitId);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{__("PV string connections", "linker-tools")}</h3>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Link saved PV strings to recorded circuits. Cable sizes, conductor counts, connector compatibility and electrical approval require separate checks.",
 					"linker-tools",
 				)}
 			</p>
-			<label className="lp-check">
+			<label className="sc-check">
 				<input
 					type="checkbox"
 					checked={enabled}
@@ -155,7 +155,7 @@ export function PvStringLinks({
 				{__("Review PV string connections", "linker-tools")}
 			</label>
 			{links.length > 0 && (
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Remove the links before turning off this review.",
 						"linker-tools",
@@ -176,7 +176,7 @@ export function PvStringLinks({
 						const string = strings.find((s) => s.id === link.string_id),
 							circuit = plan.circuits.find((c) => c.id === link.circuit_id);
 						return (
-							<div className="lp-selected-profile" key={link.string_id}>
+							<div className="sc-selected-profile" key={link.string_id}>
 								<div>
 									<strong>
 										{string
@@ -194,10 +194,10 @@ export function PvStringLinks({
 											)}
 									</p>
 								</div>
-								<div className="lp-inline-actions">
+								<div className="sc-actions">
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										disabled={disabled || editing !== undefined}
 										onClick={() => edit(link)}
 									>
@@ -205,7 +205,7 @@ export function PvStringLinks({
 									</button>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										disabled={disabled || editing !== undefined}
 										onClick={() =>
 											apply({
@@ -247,8 +247,8 @@ export function PvStringLinks({
 									setEditing(undefined);
 							}}
 						>
-							<div className="lp-geometry-fields">
-								<label className="lp-field">
+							<div className="sc-geometry-fields">
+								<label className="sc-field">
 									<span>{__("PV string", "linker-tools")}</span>
 									<select
 										required
@@ -275,7 +275,7 @@ export function PvStringLinks({
 										))}
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Circuit", "linker-tools")}</span>
 									<select
 										required
@@ -303,13 +303,13 @@ export function PvStringLinks({
 									</select>
 								</label>
 							</div>
-							<div className="lp-inline-actions">
-								<button className="lp-button" disabled={!canApply}>
+							<div className="sc-actions">
+								<button className="sc-button sc-primary" disabled={!canApply}>
 									{__("Apply changes", "linker-tools")}
 								</button>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={() => setEditing(undefined)}
 								>
 									{__("Cancel", "linker-tools")}
@@ -319,7 +319,7 @@ export function PvStringLinks({
 					) : (
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={
 								disabled ||
 								stringPlanChanged ||
@@ -346,8 +346,8 @@ export function PvStringLinks({
 											)}
 								</Notice>
 							)}
-							<div className="lp-table-scroll">
-								<table className="lp-data-table">
+							<div className="sc-table-scroll">
+								<table className="sc-data-table">
 									<thead>
 										<tr>
 											<th>{__("PV string", "linker-tools")}</th>

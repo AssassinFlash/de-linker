@@ -164,20 +164,20 @@ export function TraceExplorer({
 	}
 	return (
 		<details
-			className="lp-trace-explorer"
+			className="sc-trace-explorer"
 			onToggle={(event) => setOpen(event.currentTarget.open)}
 		>
 			<summary>{__("Energy flows", "linker-tools")}</summary>
 			{open && (
 				<>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"These saved values show mean power for each interval and stored energy at its end.",
 							"linker-tools",
 						)}
 					</p>
 					{joint && (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Storage unit", "linker-tools")}</span>
 							<select
 								value={unitId ?? ""}
@@ -195,7 +195,7 @@ export function TraceExplorer({
 						</label>
 					)}
 					{joint && (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{plantDc
 								? __(
 										"Load, PV generation and grid import/export are shown at the common AC bus. The charging and discharging curves show the sum of the power at each battery’s DC terminals. Total stored energy is shown for reference. Select a storage unit to show its DC power and stored energy in the table.",
@@ -217,7 +217,7 @@ export function TraceExplorer({
 							{__("Interval values could not be loaded.", "linker-tools")}{" "}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => void query.refetch()}
 							>
 								{__("Try again", "linker-tools")}
@@ -250,7 +250,7 @@ export function TraceExplorer({
 								</Suspense>
 							</ChartBoundary>
 							{unitId && (
-								<div className="lp-table-scroll" tabIndex={0}>
+								<div className="sc-table-scroll" tabIndex={0}>
 									<table>
 										<caption>
 											{String(units.find((u) => u.id === unitId)?.name)}
@@ -289,10 +289,10 @@ export function TraceExplorer({
 									</table>
 								</div>
 							)}
-							<div className="lp-trace-controls">
+							<div className="sc-trace-controls">
 								<button
 									type="button"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									disabled={!page.offset || query.isFetching}
 									onClick={() => move(Math.max(0, page.offset - pageSize))}
 								>
@@ -300,7 +300,7 @@ export function TraceExplorer({
 								</button>
 								<button
 									type="button"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									disabled={page.next_offset === null || query.isFetching}
 									onClick={() => {
 										if (page.next_offset !== null) move(page.next_offset);
@@ -310,14 +310,14 @@ export function TraceExplorer({
 								</button>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={download}
 								>
 									{__("Download displayed intervals (CSV)", "linker-tools")}
 								</button>
 							</div>
 							<form
-								className="lp-trace-controls"
+								className="sc-trace-controls"
 								onSubmit={(event) => {
 									event.preventDefault();
 									const number = Number(first);
@@ -329,7 +329,7 @@ export function TraceExplorer({
 										move(number - 1);
 								}}
 							>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("First interval", "linker-tools")}</span>
 									<input
 										type="number"
@@ -343,15 +343,15 @@ export function TraceExplorer({
 								</label>
 								<button
 									type="submit"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									disabled={query.isFetching}
 								>
 									{__("Show intervals", "linker-tools")}
 								</button>
 							</form>
-							<details className="lp-comparison">
+							<details className="sc-disclosure">
 								<summary>{__("Interval values", "linker-tools")}</summary>
-								<div className="lp-table-scroll lp-trace-table" tabIndex={0}>
+								<div className="sc-table-scroll sc-trace-table" tabIndex={0}>
 									<table>
 										<caption>
 											{__("Interval values", "linker-tools")} · UTC

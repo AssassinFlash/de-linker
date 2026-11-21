@@ -111,12 +111,12 @@ export function HomepageLoadProfile({
 				<span id={fileId}>
 					{__("Measured site load (CSV, optional)", "linker-tools")}
 				</span>
-				<span className="lp-file-picker">
-					<span className="lp-file-button" aria-hidden="true">
+				<span className="sc-file-picker">
+					<span className="sc-file-button" aria-hidden="true">
 						{__("Choose CSV file", "linker-tools")}
 					</span>
 					<span
-						className="lp-file-name"
+						className="sc-file-name"
 						id={fileId + "-name"}
 						aria-live="polite"
 					>

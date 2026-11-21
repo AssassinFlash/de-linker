@@ -157,7 +157,7 @@ export function EquipmentResult({
 				? check.unit
 				: "");
 		return (
-			<details className="lp-comparison" key={String(check.id)}>
+			<details className="sc-disclosure" key={String(check.id)}>
 				<summary>
 					{prefix}
 					{equipmentCheckLabel(semantic)} · {equipmentStatus(check.status)}
@@ -172,7 +172,7 @@ export function EquipmentResult({
 					</p>
 				)}
 				{(check.actual !== null || check.required !== null) && (
-					<dl className="lp-field-summary">
+					<dl className="sc-field-summary">
 						{networkCount && (
 							<div>
 								<dt>{__("Controller communication", "linker-tools")}</dt>
@@ -278,15 +278,15 @@ export function EquipmentResult({
 		);
 	};
 	return (
-		<div className="lp-run-result">
+		<div className="sc-run-result">
 			{!embedded && (
 				<div
-					className="lp-run-heading lp-focus-target"
+					className="sc-run-heading sc-focus-target"
 					data-action-result-context=""
 				>
 					<div>
-						<span className="lp-eyebrow">{taskLabel(runTask(run))}</span>
-						<h3 className="lp-focus-target" tabIndex={-1}>
+						<span className="sc-eyebrow">{taskLabel(runTask(run))}</span>
+						<h3 className="sc-focus-target" tabIndex={-1}>
 							{runStateLabel(run.state, runTask(run))}
 						</h3>
 					</div>
@@ -391,7 +391,7 @@ export function EquipmentResult({
 							"linker-tools",
 						)}
 					</p>
-					<div className="lp-table-scroll">
+					<div className="sc-table-scroll">
 						<table>
 							<thead>
 								<tr>

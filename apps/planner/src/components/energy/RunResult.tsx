@@ -107,20 +107,20 @@ export function RunResult({
 			: "—";
 	};
 	return (
-		<div className="lp-run-result lp-work-panel">
+		<div className="sc-run-result sc-work-panel">
 			<div
-				className="lp-run-heading lp-focus-target lp-work-panel-heading"
+				className="sc-run-heading sc-focus-target sc-work-panel-heading"
 				data-action-result-context=""
 			>
 				<div>
-					<span className="lp-eyebrow">
+					<span className="sc-eyebrow">
 						{__("Saved calculation", "linker-tools")}
 					</span>
-					<h3 className="lp-focus-target" tabIndex={-1}>
+					<h3 className="sc-focus-target" tabIndex={-1}>
 						{runStateLabel(run.state)}
 					</h3>
 				</div>
-				<span className="lp-run-revision">
+				<span className="sc-run-revision">
 					{sprintf(__("Input revision %d", "linker-tools"), run.revision)}
 				</span>
 			</div>
@@ -173,7 +173,7 @@ export function RunResult({
 							</ul>
 						</Notice>
 					)}
-					<dl className="lp-energy-metrics">
+					<dl className="sc-energy-metrics">
 						<div>
 							<dt>{__("Solar supplied to load", "linker-tools")}</dt>
 							<dd>
@@ -198,14 +198,14 @@ export function RunResult({
 					{isPlantEnergyTask(result.kind) && (
 						<PlantStorageSummary result={result} locale={locale} />
 					)}
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.",
 							"linker-tools",
 						)}
 					</p>
 					{metrics.load_measurement_scope !== "gross_load" && (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"This calculation includes critical-load periods. A whole-site gross-demand percentage is therefore undefined.",
 								"linker-tools",
@@ -214,7 +214,7 @@ export function RunResult({
 					)}
 					{readObject(metrics.solar_autarky).undefined_reason ===
 						"gross_load_is_zero" && (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"The solar share is undefined when gross demand is zero.",
 								"linker-tools",
@@ -222,7 +222,7 @@ export function RunResult({
 						</p>
 					)}
 					{result.kind === DC_PLANT_ENERGY_TASK ? (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"PV generation is shown separately at each DC bus and at the common AC bus. No combined PV self-consumption rate is calculated across these stages.",
 								"linker-tools",
@@ -230,7 +230,7 @@ export function RunResult({
 						</p>
 					) : (
 						readObject(metrics.pv_input_self_use).value === null && (
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{__(
 									"The PV-use percentage is undefined when generated PV energy is zero.",
 									"linker-tools",
@@ -238,9 +238,9 @@ export function RunResult({
 							</p>
 						)
 					)}
-					<div className="lp-run-boundaries">
+					<div className="sc-run-boundaries">
 						{equipment ? (
-							<details className="lp-comparison">
+							<details className="sc-disclosure">
 								<summary>
 									{__("Energy scenario and selected equipment", "linker-tools")}{" "}
 									· {equipmentStatus(equipment.overall_status)}
@@ -277,18 +277,18 @@ export function RunResult({
 						</p>
 					</div>
 					{dc && (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
 								"linker-tools",
 							)}
 						</p>
 					)}
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>
 							{__("Energy totals and definitions", "linker-tools")}
 						</summary>
-						<dl className="lp-field-summary">
+						<dl className="sc-field-summary">
 							<div>
 								<dt>{__("Simulated load demand", "linker-tools")}</dt>
 								<dd>{format(metrics.load_demand_kwh)} kWh</dd>
@@ -335,7 +335,7 @@ export function RunResult({
 									)}
 						</p>
 					</details>
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>
 							{__("Numerical verification details", "linker-tools")}
 						</summary>
@@ -345,7 +345,7 @@ export function RunResult({
 								"linker-tools",
 							)}
 						</p>
-						<div className="lp-table-scroll" tabIndex={0}>
+						<div className="sc-table-scroll" tabIndex={0}>
 							<table>
 								<caption>
 									{__("Checks recorded with this result", "linker-tools")}
@@ -387,9 +387,9 @@ export function RunResult({
 							</table>
 						</div>
 					</details>
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>{__("Calculation records", "linker-tools")}</summary>
-						<dl className="lp-run-records">
+						<dl className="sc-run-records">
 							<div>
 								<dt>{__("Input SHA-256", "linker-tools")}</dt>
 								<dd>

@@ -36,7 +36,7 @@ export function ProfileCurve({
 		path += `${i > 0 && row.start_utc === rows[i - 1]!.end_utc ? "L" : "M"}${x(row.start_utc)},${y(row.interval_mean_kw)} H${x(row.end_utc)} `;
 	}
 	return (
-		<figure className="lp-profile-review">
+		<figure className="sc-profile-review">
 			<figcaption>{title}</figcaption>
 			<svg
 				width="100%"

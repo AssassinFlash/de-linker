@@ -447,7 +447,7 @@ export function InstallationProtection({
 					: null;
 	return (
 		<section
-			className="lp-profile-panel"
+			className="sc-profile-panel"
 			aria-label={t("Protection evidence", "Schutznachweise")}
 		>
 			<h3>
@@ -456,7 +456,7 @@ export function InstallationProtection({
 					"Schutz je Betriebszustand",
 				)}
 			</h3>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{t(
 					"Start with a circuit and condition. Add fault currents, device data and core evidence as they become available. The comparison uses your declared evidence; it does not approve the complete installation.",
 					"Beginnen Sie mit Stromkreis und Betriebszustand. Ergänzen Sie Fehlerströme, Gerätedaten und Adernachweise, sobald sie vorliegen. Der Vergleich verwendet Ihre erklärten Nachweise; er erteilt keine Freigabe für die gesamte Installation.",
@@ -464,7 +464,7 @@ export function InstallationProtection({
 			</p>
 			<button
 				type="button"
-				className="lp-button lp-button-secondary"
+				className="sc-button"
 				disabled={blocked || !plan.circuits.length}
 				onClick={() => open("context")}
 			>
@@ -490,7 +490,7 @@ export function InstallationProtection({
 					),
 					assessed = review?.assessments.find((row) => row.id === item.id);
 				return (
-					<article key={item.id} className="lp-profile-panel">
+					<article key={item.id} className="sc-profile-panel">
 						<h4>{item.scenario}</h4>
 						<p>
 							{selectedCircuit
@@ -503,10 +503,10 @@ export function InstallationProtection({
 							{t("Operating condition", "Betriebszustand")}:{" "}
 							{condition?.name ?? t("Not selected", "Nicht ausgewählt")}
 						</p>
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={blocked}
 								onClick={() => open("context", item)}
 							>
@@ -514,7 +514,7 @@ export function InstallationProtection({
 							</button>
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={blocked}
 								onClick={() =>
 									change({
@@ -566,10 +566,10 @@ export function InstallationProtection({
 									)}
 									{part !== "fault_range" &&
 										result(assessed?.[part], part === "breaking" ? "A" : "s")}
-									<div className="lp-inline-actions">
+									<div className="sc-actions">
 										<button
 											type="button"
-											className="lp-button lp-button-secondary"
+											className="sc-button"
 											disabled={blocked}
 											onClick={() => open(part, item)}
 										>
@@ -580,7 +580,7 @@ export function InstallationProtection({
 										{item[part] && (
 											<button
 												type="button"
-												className="lp-button lp-button-secondary"
+												className="sc-button"
 												disabled={blocked}
 												onClick={() =>
 													update(item.id, (old) => ({ ...old, [part]: null }))
@@ -629,10 +629,10 @@ export function InstallationProtection({
 											))}
 										</dl>
 									</details>
-									<div className="lp-inline-actions">
+									<div className="sc-actions">
 										<button
 											type="button"
-											className="lp-button lp-button-secondary"
+											className="sc-button"
 											disabled={blocked}
 											onClick={() => open("thermal", item, coreKey(core))}
 										>
@@ -640,7 +640,7 @@ export function InstallationProtection({
 										</button>
 										<button
 											type="button"
-											className="lp-button lp-button-secondary"
+											className="sc-button"
 											disabled={blocked}
 											onClick={() =>
 												update(item.id, (old) => ({
@@ -659,7 +659,7 @@ export function InstallationProtection({
 						})}
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={
 								blocked ||
 								!protectedCores(plan, selectedCircuit).some(
@@ -674,7 +674,7 @@ export function InstallationProtection({
 							{t("Add core evidence", "Adernachweis hinzufügen")}
 						</button>
 						{!protectedCores(plan, selectedCircuit).length && (
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{t(
 									"Record core roles and conductor cross-sections on this circuit's cable runs first. A separate PE run must connect the same two devices and declare a PE core.",
 									"Erfassen Sie zuerst Aderfunktionen und Leiterquerschnitte an den Kabelstrecken dieses Stromkreises. Eine separate PE-Strecke muss dieselben beiden Geräte verbinden und eine PE-Ader enthalten.",
@@ -699,7 +699,7 @@ export function InstallationProtection({
 						</p>
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={
 								blocked ||
 								!assessed?.confirmation_context_sha256 ||
@@ -743,7 +743,7 @@ export function InstallationProtection({
 					<fieldset disabled={disabled} onInput={() => setError("")}>
 						{editing.section === "context" ? (
 							<>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{t("Which circuit?", "Welcher Stromkreis?")}</span>
 									<select
 										name="circuit"
@@ -765,7 +765,7 @@ export function InstallationProtection({
 										))}
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{t(
 											"Which recorded protection item?",
@@ -800,7 +800,7 @@ export function InstallationProtection({
 											))}
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{t(
 											"Which recorded operating condition?",
@@ -836,14 +836,14 @@ export function InstallationProtection({
 											m.unit === "piece" &&
 											m.quantity === 1,
 									) && (
-										<p className="lp-profile-help">
+										<p className="sc-field-help">
 											{t(
 												"First record one protection item for this circuit under Materials: unit piece, quantity 1.",
 												"Erfassen Sie zuerst unter Materialien einen Schutzartikel für diesen Stromkreis: Einheit Stück, Menge 1.",
 											)}
 										</p>
 									)}
-								<p className="lp-profile-help">
+								<p className="sc-field-help">
 									{t(
 										"Protection items and operating conditions come from your existing materials and circuit properties. You can add this condition now and complete its evidence later.",
 										"Schutzartikel und Betriebszustände stammen aus Ihren vorhandenen Materialien und Stromkreiseigenschaften. Sie können diesen Betriebszustand jetzt anlegen und die Nachweise später ergänzen.",
@@ -861,7 +861,7 @@ export function InstallationProtection({
 						) : (
 							<>
 								{editing.section === "thermal" && (
-									<label className="lp-field">
+									<label className="sc-field">
 										<span>
 											{t(
 												"Which recorded cable run and core?",
@@ -912,7 +912,7 @@ export function InstallationProtection({
 									);
 								})}
 								{editing.section === "breaking" && (
-									<label className="lp-field">
+									<label className="sc-field">
 										<span>
 											{t(
 												"Current kind for the declared capacity",

@@ -750,7 +750,7 @@ export default function MapViewport({
 			point = interaction?.referencePosition;
 		if (!map || map !== readyMap || status !== "ready" || !point) return;
 		const element = globalThis.document.createElement("span");
-		element.className = "lp-map-height-reference";
+		element.className = "sc-map-height-reference";
 		element.textContent = __("Height reference", "linker-tools");
 		const marker = new Marker({ element, anchor: "bottom", offset: [0, -12] })
 			.setLngLat([...point])
@@ -801,7 +801,7 @@ export default function MapViewport({
 				</p>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={disabled}
 					onClick={openReferences}
 				>
@@ -811,15 +811,15 @@ export default function MapViewport({
 		);
 	return (
 		<section
-			className="lp-map-view"
+			className="sc-map-view"
 			aria-labelledby={label}
 			data-map-status={status}
 			data-map-failure={failure}
 			data-array-placement={placement ? true : undefined}
 		>
-			<div className="lp-map-heading">
+			<div className="sc-map-heading">
 				<h3 id={label}>{__("Project map", "linker-tools")}</h3>
-				<span className="lp-eyebrow">
+				<span className="sc-eyebrow">
 					{external
 						? imagery
 							? __("Aerial imagery", "linker-tools")
@@ -828,7 +828,7 @@ export default function MapViewport({
 				</span>
 			</div>
 			{viewOnly && (
-				<p className="lp-profile-help" id={`${label}-viewing`}>
+				<p className="sc-field-help" id={`${label}-viewing`}>
 					{__(
 						"This aerial imagery is for viewing only. Showing it sends your IP address and the area shown to the imagery provider.",
 						"linker-tools",
@@ -836,13 +836,13 @@ export default function MapViewport({
 				</p>
 			)}
 			<div
-				className="lp-map-toolbar"
+				className="sc-map-toolbar"
 				role="group"
 				aria-label={__("Map controls", "linker-tools")}
 			>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					aria-describedby={viewOnly ? `${label}-viewing` : undefined}
 					aria-pressed={external}
 					onClick={() => {
@@ -860,7 +860,7 @@ export default function MapViewport({
 				</button>
 				{placement && (
 					<>
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"Click inside the roof to position the panels.",
 								"linker-tools",
@@ -868,7 +868,7 @@ export default function MapViewport({
 						</p>
 						<button
 							type="button"
-							className="lp-button"
+							className="sc-button sc-primary"
 							disabled={status !== "ready"}
 							onClick={() => {
 								const map = mapRef.current;
@@ -882,7 +882,7 @@ export default function MapViewport({
 						</button>
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							onClick={placement.review}
 						>
 							{__("Review panel layout", "linker-tools")}
@@ -891,7 +891,7 @@ export default function MapViewport({
 				)}
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={status !== "ready"}
 					onClick={() => {
 						if (mapRef.current) fit(mapRef.current);
@@ -901,7 +901,7 @@ export default function MapViewport({
 				</button>
 				<button
 					type="button"
-					className="lp-icon-button"
+					className="sc-icon-button"
 					aria-label={__("Zoom in", "linker-tools")}
 					disabled={status !== "ready"}
 					onClick={() => mapRef.current?.zoomIn({ duration: 0 })}
@@ -910,7 +910,7 @@ export default function MapViewport({
 				</button>
 				<button
 					type="button"
-					className="lp-icon-button"
+					className="sc-icon-button"
 					aria-label={__("Zoom out", "linker-tools")}
 					disabled={status !== "ready"}
 					onClick={() => mapRef.current?.zoomOut({ duration: 0 })}
@@ -919,7 +919,7 @@ export default function MapViewport({
 				</button>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={status !== "ready"}
 					onClick={() => mapRef.current?.jumpTo({ bearing: 0, pitch: 0 })}
 				>
@@ -944,7 +944,7 @@ export default function MapViewport({
 					</p>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={() => setAttempt((value) => value + 1)}
 					>
 						{__("Retry loading map", "linker-tools")}
@@ -952,18 +952,18 @@ export default function MapViewport({
 				</Notice>
 			)}
 			<div
-				className="lp-map-surface"
+				className="sc-map-surface"
 				data-collecting={drawing?.phase === "collecting" || undefined}
 			>
-				<div className="lp-map-host" ref={host} />
+				<div className="sc-map-host" ref={host} />
 				{drawing?.phase === "collecting" && (
-					<span className="lp-map-reticle" aria-hidden="true" />
+					<span className="sc-map-reticle" aria-hidden="true" />
 				)}
 			</div>
 			{drawing?.phase === "collecting" && (
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={status !== "ready"}
 					onClick={() => {
 						const centre = mapRef.current?.getCenter();
@@ -973,8 +973,8 @@ export default function MapViewport({
 					{__("Add corner at map centre", "linker-tools")}
 				</button>
 			)}
-			<div className="lp-map-provider">
-				<p className="lp-profile-help">
+			<div className="sc-map-provider">
+				<p className="sc-field-help">
 					{imagery
 						? `${imagery.credit} — ${imagery.licence}`
 						: __(
@@ -982,7 +982,7 @@ export default function MapViewport({
 								"linker-tools",
 							)}
 				</p>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					{imagery ? (
 						<a
 							href={imagery.licence_url}
@@ -1001,7 +1001,7 @@ export default function MapViewport({
 						</a>
 					)}
 					{!imagery && (
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
 								"linker-tools",

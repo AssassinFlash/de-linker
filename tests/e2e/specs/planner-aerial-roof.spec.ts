@@ -227,7 +227,7 @@ for (const lang of ['en', 'de'] as const) {
 						name: /Add corner at map centre|Eckpunkt.*Kartenmitte/i,
 					})
 				).toBeEnabled({ timeout: 35000 });
-				const aerial = reopened.locator('.lp-map-surface');
+				const aerial = reopened.locator('.sc-map-surface');
 				await aerial.scrollIntoViewIfNeeded();
 				await aerial.screenshot({
 					path: test.info().outputPath('reopened-layout.png'),
@@ -263,7 +263,7 @@ test('a Berlin street address opens the disclosed state aerial layer', async ({
 			name: 'Eckpunkt in der Kartenmitte hinzufügen',
 		})
 	).toBeEnabled({ timeout: 60000 });
-	await expect(page.locator('.lp-map-surface').locator('..')).toContainText(
+	await expect(page.locator('.sc-map-surface').locator('..')).toContainText(
 		'Berlin'
 	);
 });

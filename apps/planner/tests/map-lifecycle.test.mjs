@@ -24,7 +24,7 @@ test("map view requires consent, releases provider requests on withdrawal, and p
 	}
 	const css = document.createElement("style");
 	css.textContent =
-		".lp-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
+		".sc-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
 	document.head.append(css);
 	const { createRoot } = await import("react-dom/client");
 	const { default: MapViewport } =
@@ -107,16 +107,16 @@ test("map view requires consent, releases provider requests on withdrawal, and p
 		unavailable.emit("error", { error: new Error("synthetic offline") }),
 	);
 	assert.equal(
-		document.querySelector(".lp-map-view").dataset.mapStatus,
+		document.querySelector(".sc-map-view").dataset.mapStatus,
 		"failed",
 	);
 	assert.equal(
-		document.querySelector('.lp-map-view [role="status"]'),
+		document.querySelector('.sc-map-view [role="status"]'),
 		null,
 		"a terminal provider refusal must not keep announcing loading",
 	);
 	assert.equal(
-		JSON.parse(document.querySelector(".lp-map-view").dataset.mapFailure).stage,
+		JSON.parse(document.querySelector(".sc-map-view").dataset.mapFailure).stage,
 		"resource",
 	);
 	behavior.autoLoad = true;
@@ -179,7 +179,7 @@ test("late imagery needs its own grant and changing providers revokes it", async
 	}
 	const css = document.createElement("style");
 	css.textContent =
-		".lp-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
+		".sc-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
 	document.head.append(css);
 	const { createRoot } = await import("react-dom/client");
 	const { default: MapViewport } =

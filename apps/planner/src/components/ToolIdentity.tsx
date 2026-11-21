@@ -4,8 +4,8 @@ import { CreditText } from "./CreditText.tsx";
 /** Application-level identity shared by the project list and every workspace. */
 export function ToolIdentity() {
 	return (
-		<footer className="lp-tool-identity">
-			<div className="lp-tool-product">
+		<footer className="sc-tool-identity">
+			<div className="sc-tool-product">
 				<strong>{__("Solution Configurator", "linker-tools")}</strong>
 				<span>{__("by Linker", "linker-tools")}</span>
 				<p>
@@ -15,7 +15,7 @@ export function ToolIdentity() {
 					)}
 				</p>
 			</div>
-			<details className="lp-tool-about">
+			<details className="sc-tool-about">
 				<summary>{__("About this tool", "linker-tools")}</summary>
 				<div>
 					<p>
@@ -24,7 +24,7 @@ export function ToolIdentity() {
 							"linker-tools",
 						)}
 					</p>
-					<p className="lp-tool-boundary">
+					<p className="sc-tool-boundary">
 						{__(
 							"All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.",
 							"linker-tools",

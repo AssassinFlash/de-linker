@@ -25,10 +25,10 @@ export function OperatingPeriodsForm({
 	inputErrors?: readonly string[] | undefined;
 }) {
 	return (
-		<section className="lp-work-panel">
-			<div className="lp-work-panel-heading">
+		<section className="sc-work-panel">
+			<div className="sc-work-panel-heading">
 				<h3>{__("Operating periods", "linker-tools")}</h3>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Periods must join without gaps or overlaps and stay within the source data. Timestamps include Z for UTC or an explicit offset, such as +01:00.",
 						"linker-tools",
@@ -36,7 +36,7 @@ export function OperatingPeriodsForm({
 				</p>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={rangeBusy}
 					onClick={useProfileRange}
 				>
@@ -70,7 +70,7 @@ export function OperatingPeriodsForm({
 			))}
 			<button
 				type="button"
-				className="lp-text-button"
+				className="sc-text-button"
 				onClick={() =>
 					onChange([
 						...periods,

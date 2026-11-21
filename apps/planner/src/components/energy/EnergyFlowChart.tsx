@@ -113,5 +113,5 @@ export default function EnergyFlowChart({
 			chart.dispose();
 		};
 	}, [page, labels, locale]);
-	return <div className="lp-energy-chart" ref={element} aria-hidden="true" />;
+	return <div className="sc-energy-chart" ref={element} aria-hidden="true" />;
 }

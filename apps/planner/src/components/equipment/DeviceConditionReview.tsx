@@ -120,7 +120,7 @@ export function DeviceConditionReview({
 	documents: CertificateDocument[];
 }) {
 	return (
-		<section className="lp-result-section">
+		<section className="sc-result-section">
 			<h4>{__("Project device details", "linker-tools")}</h4>
 			<p>
 				{__(
@@ -129,11 +129,11 @@ export function DeviceConditionReview({
 				)}
 			</p>
 			{review.devices.map((device, index) => (
-				<section className="lp-result-section" key={index}>
+				<section className="sc-result-section" key={index}>
 					<h5>
 						{deviceLabel(device.selection_ref)} · {device.woo_model}
 					</h5>
-					<dl className="lp-run-records">
+					<dl className="sc-run-records">
 						<div>
 							<dt>{__("Model identity", "linker-tools")}</dt>
 							<dd>
@@ -187,11 +187,11 @@ export function DeviceConditionReview({
 							(d) => d.document_id === doc.document_id,
 						)!;
 						return (
-							<details className="lp-comparison" key={doc.document_id}>
+							<details className="sc-disclosure" key={doc.document_id}>
 								<summary>
 									{source.title || __("Source document", "linker-tools")}
 								</summary>
-								<dl className="lp-run-records">
+								<dl className="sc-run-records">
 									<div>
 										<dt>{__("Model comparison", "linker-tools")}</dt>
 										<dd>
@@ -246,7 +246,7 @@ export function DeviceConditionReview({
 									</div>
 								</dl>
 								{doc.model.comparison_basis === "selected_woo_model" && (
-									<p className="lp-profile-help">
+									<p className="sc-field-help">
 										{__(
 											"The product model is a selection reference. No model was declared as planned or observed for this device.",
 											"linker-tools",
@@ -256,7 +256,7 @@ export function DeviceConditionReview({
 								<p>{reasonLabel(doc.model.reason)}</p>
 								<p>{reasonLabel(doc.firmware.reason)}</p>
 								{(doc.model.page === 1 || doc.firmware.page === 1) && (
-									<p className="lp-profile-help">
+									<p className="sc-field-help">
 										{sprintf(__("Page %d", "linker-tools"), 1)}
 									</p>
 								)}
@@ -269,11 +269,11 @@ export function DeviceConditionReview({
 								{typeof doc.annex.source?.quote === "string" && (
 									<blockquote>{doc.annex.source.quote}</blockquote>
 								)}
-								<details className="lp-comparison">
+								<details className="sc-disclosure">
 									<summary>
 										{__("Recorded source details", "linker-tools")}
 									</summary>
-									<dl className="lp-run-records">
+									<dl className="sc-run-records">
 										<div>
 											<dt>{__("Recorded product revision", "linker-tools")}</dt>
 											<dd>
@@ -301,7 +301,7 @@ export function DeviceConditionReview({
 					})}
 				</section>
 			))}
-			<details className="lp-comparison">
+			<details className="sc-disclosure">
 				<summary>
 					{__("Still requires separate review", "linker-tools")}
 				</summary>

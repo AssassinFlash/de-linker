@@ -14,7 +14,7 @@ export function ConductorManufacturerResults({
 	if (!rows.length) return null;
 	const t = (en: string, de: string) => electricalText(locale, en, de);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>
 				{t(
 					"Manufacturer conductor cross-section comparisons",
@@ -52,7 +52,7 @@ export function ConductorManufacturerResults({
 						? readObject(specification.recommended_conductor_mm2)
 						: null;
 				return (
-					<div key={cable.id} className="lp-selected-profile">
+					<div key={cable.id} className="sc-selected-profile">
 						<strong>{cable.name}</strong>
 						{cable.conductor && (
 							<p>

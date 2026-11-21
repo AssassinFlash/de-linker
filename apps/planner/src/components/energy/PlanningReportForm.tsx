@@ -73,7 +73,7 @@ export function PlanningReportForm({
 		set: (v: string) => void,
 		label: string,
 	) => (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{label}</span>
 			<select
 				value={value}
@@ -134,8 +134,8 @@ export function PlanningReportForm({
 			: {}),
 	};
 	return (
-		<section className="lp-scenario-block lp-work-main">
-			<div className="lp-work-panel-heading">
+		<section className="sc-scenario-block sc-work-main">
+			<div className="sc-work-panel-heading">
 				<h3>{__("Planning report", "linker-tools")}</h3>
 				<p>
 					{__(
@@ -144,12 +144,12 @@ export function PlanningReportForm({
 					)}
 				</p>
 			</div>
-			<div className="lp-work-grid">
-				<section className="lp-work-main lp-work-panel">
-					<h4 className="lp-work-panel-heading">
+			<div className="sc-work-grid">
+				<section className="sc-work-main sc-work-panel">
+					<h4 className="sc-work-panel-heading">
 						{__("Saved calculations", "linker-tools")}
 					</h4>
-					<div className="lp-scenario-fields">
+					<div className="sc-scenario-fields">
 						{choose(
 							"single_ac_energy_replay_v1",
 							energy,
@@ -193,13 +193,13 @@ export function PlanningReportForm({
 							)}
 					</div>
 				</section>
-				<aside className="lp-work-aside lp-work-panel">
-					<h4 className="lp-work-panel-heading">
+				<aside className="sc-work-aside sc-work-panel">
+					<h4 className="sc-work-panel-heading">
 						{__("Planning report", "linker-tools")}
 					</h4>
-					<div className="lp-scenario-fields">
+					<div className="sc-scenario-fields">
 						{hasInstallation && (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									<input
 										type="checkbox"
@@ -214,7 +214,7 @@ export function PlanningReportForm({
 							</label>
 						)}
 						{(hasCandidate || equipment) && (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									<input
 										type="checkbox"
@@ -239,7 +239,7 @@ export function PlanningReportForm({
 								</small>
 							</label>
 						)}
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{__("Your logo on the PDF (optional)", "linker-tools")}
 							</span>
@@ -287,7 +287,7 @@ export function PlanningReportForm({
 					</div>
 				</aside>
 			</div>
-			<div className="lp-work-toolbar">
+			<div className="sc-work-toolbar">
 				{error && (
 					<Notice error>
 						{__(
@@ -298,7 +298,7 @@ export function PlanningReportForm({
 				)}
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					disabled={
 						disabled ||
 						error ||

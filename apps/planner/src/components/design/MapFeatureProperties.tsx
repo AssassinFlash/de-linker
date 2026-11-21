@@ -43,8 +43,8 @@ export function MapFeatureProperties({
 	return (
 		<form
 			ref={form}
-			id="lp-map-feature-properties"
-			className="lp-drawing-properties lp-focus-target"
+			id="sc-map-feature-properties"
+			className="sc-drawing-properties sc-focus-target"
 			onSubmit={(event) => {
 				event.preventDefault();
 				submit();
@@ -61,7 +61,7 @@ export function MapFeatureProperties({
 			<fieldset disabled={busy}>
 				{drawing.target.kind !== "hole" && (
 					<>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Object name", "linker-tools")}</span>
 							<input
 								name="name"
@@ -72,7 +72,7 @@ export function MapFeatureProperties({
 								{...invalid("name")}
 							/>
 						</label>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Source reference", "linker-tools")}</span>
 							<select
 								name="source_id"
@@ -93,8 +93,8 @@ export function MapFeatureProperties({
 					</>
 				)}
 				{drawing.target.kind === "obstacle" && (
-					<div className="lp-geometry-fields">
-						<label className="lp-field">
+					<div className="sc-geometry-fields">
+						<label className="sc-field">
 							<span>{__("Obstacle height", "linker-tools")} (m)</span>
 							<input
 								name="height"
@@ -112,7 +112,7 @@ export function MapFeatureProperties({
 								)}
 							</small>
 						</label>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Extrusion direction", "linker-tools")}</span>
 							<select
 								name="axis"
@@ -137,7 +137,7 @@ export function MapFeatureProperties({
 								</option>
 							</select>
 						</label>
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{decimalSeparator(drawing.locale) === ","
 								? __("Decimal comma; no thousands separators.", "linker-tools")
 								: __("Decimal point; no thousands separators.", "linker-tools")}
@@ -145,7 +145,7 @@ export function MapFeatureProperties({
 					</div>
 				)}
 				{drawing.target.kind === "keepout" && (
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Reason or requirement", "linker-tools")}</span>
 						<textarea
 							name="reason"
@@ -159,7 +159,7 @@ export function MapFeatureProperties({
 					</label>
 				)}
 				<MapSourceDetails source={mapFeatureSource(drawing)} locale={locale} />
-				<label className="lp-geometry-check">
+				<label className="sc-geometry-check">
 					<input
 						name="source_confirmed"
 						type="checkbox"
@@ -176,29 +176,29 @@ export function MapFeatureProperties({
 					)}
 				</label>
 				{invalidField && error && (
-					<small id={errorId} className="lp-field-error" role="alert">
+					<small id={errorId} className="sc-field-error" role="alert">
 						{error}
 					</small>
 				)}
 				{!invalidField && error && (
-					<div ref={result} tabIndex={-1} className="lp-focus-target">
+					<div ref={result} tabIndex={-1} className="sc-focus-target">
 						<Notice error>{error}</Notice>
 					</div>
 				)}
-				<div className="lp-inline-actions">
-					<button type="submit" className="lp-button">
+				<div className="sc-actions">
+					<button type="submit" className="sc-button sc-primary">
 						{__("Check and add feature", "linker-tools")}
 					</button>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={continueDrawing}
 					>
 						{__("Continue adding corners", "linker-tools")}
 					</button>
 				</div>
 			</fieldset>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"The geometry check does not verify measurements or source permissions. Your confirmation does not change the recorded export permission. If the source or permissions do not cover your changes, pause the drawing and review the project's source details.",
 					"linker-tools",
