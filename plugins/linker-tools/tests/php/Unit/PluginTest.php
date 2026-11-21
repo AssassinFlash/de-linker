@@ -22,7 +22,6 @@ use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\PageCache;
 use Linker\Tools\Genie\PageIndexing;
 use Linker\Tools\Genie\Preview;
-use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
 use Linker\Tools\Genie\QualityRoute;
@@ -83,7 +82,7 @@ final class PluginTest extends TestCase {
 		$quality_route = new QualityRoute( $quality, 'token' );
 		$quality_page  = new QualityPage( $quality, new Thread() );
 		$preview       = new Preview();
-		$mail          = new ConversationMail( $conversations, new Thread(), new RateLimit( 'a', 1, 1 ), new RateLimit( 'b', 1, 1 ) );
+		$mail          = new ConversationMail( $conversations, new Thread() );
 		$contact       = new ContactRequest( $conversations, new Thread(), new PageContext() );
 		$inquiry       = new \Linker\Tools\Genie\InquirySummary( $conversations, new Thread() );
 		$inquiry_card  = new InquiryRequest( $conversations, new Thread(), new PageContext() );

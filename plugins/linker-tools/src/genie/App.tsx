@@ -577,7 +577,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	const shownId = useRef( 0 );
 	const [ mail, setMail ] = useState< MailPhase >( 'idle' );
 	const [ mailTo, setMailTo ] = useState( '' );
-	const [ mailLimit, setMailLimit ] = useState( 0 );
 	// How a confirmation link this page was opened from ended, if it was.
 	const [ linkResult ] = useState( readLinkResult );
 	const show = useCallback( ( id: number ) => {
@@ -1748,28 +1747,24 @@ export function App( { config }: { config: GenieConfig } ) {
 			setMail( 'sending' );
 			const result = await emailConversation(
 				config.conversationsUrl,
-				config.restNonce,
+				config.signedIn ? config.restNonce : '',
 				shownId.current,
 				config.locale,
 				address,
 				address
 					? {
-							started: config.mailStarted,
-							started_nonce: config.mailStartedNonce,
 							website,
 						}
 					: undefined
 			);
 			setMailTo( result.to || address || '' );
-			setMailLimit( result.limit );
 			setMail( result.outcome );
 		},
 		[
 			config.conversationsUrl,
 			config.restNonce,
 			config.locale,
-			config.mailStarted,
-			config.mailStartedNonce,
+			config.signedIn,
 		]
 	);
 
@@ -2758,7 +2753,6 @@ export function App( { config }: { config: GenieConfig } ) {
 									<EmailConversation
 										phase={ mail }
 										to={ mailTo }
-										limit={ mailLimit }
 										onStart={ () => {
 											if ( config.signedIn ) {
 												void sendByEmail();

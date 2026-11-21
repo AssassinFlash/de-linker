@@ -903,8 +903,6 @@ export const EMAIL_OUTCOMES = [
 	'invalid',
 	'unknown',
 	'empty',
-	'throttled',
-	'capped',
 	'expired',
 	'unavailable',
 ] as const;
@@ -920,19 +918,15 @@ export function emailOutcome( word: unknown ): EmailOutcome {
 		: 'unavailable';
 }
 
-/** The answer of an email request: the outcome, where it went, the limit. */
+/** The result of the handoff and its destination. */
 export interface EmailResult {
 	outcome: EmailOutcome;
 	/** The address it concerns (the account's for a signed-in customer). */
 	to: string;
-	/** Emails one connection may ask for per hour, named by a refusal. */
-	limit: number;
 }
 
-/** A guest's bot-guard fields (ConversationMail::passes()). */
+/** The guest form’s hidden website field. */
 export interface EmailGuard {
-	started: string;
-	started_nonce: string;
 	website: string;
 }
 
@@ -968,7 +962,7 @@ export async function emailConversation(
 				cache: 'no-store',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': nonce,
+					...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 				},
 				body: JSON.stringify(
 					email ? { locale, email, ...guard } : { locale }
@@ -979,7 +973,6 @@ export async function emailConversation(
 			status?: string;
 			to?: string;
 			code?: string;
-			data?: { limit?: number };
 		};
 		return {
 			outcome: emailOutcome(
@@ -988,10 +981,9 @@ export async function emailConversation(
 					: ( body.code ?? '' ).replace( /^linker_genie_email_/, '' )
 			),
 			to: body.to ?? '',
-			limit: body.data?.limit ?? 0,
 		};
 	} catch {
-		return { outcome: 'unavailable', to: '', limit: 0 };
+		return { outcome: 'unavailable', to: '' };
 	}
 }
 

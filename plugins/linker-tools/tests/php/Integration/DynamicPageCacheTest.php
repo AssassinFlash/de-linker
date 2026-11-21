@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Integration;
 
-use Linker\Tools\Genie\FormGuard;
 use PHPUnit\Framework\TestCase;
 use WC_Product_Simple;
 
@@ -80,8 +79,6 @@ final class DynamicPageCacheTest extends TestCase {
 	/**
 	 * Two anonymous reads share a wp_rest nonce that is not a per-visitor secret.
 	 *
-	 * The mail stamp is a site HMAC. It still verifies after the public TTL.
-	 *
 	 * @param string $home    Clean homepage URL.
 	 * @param string $product Clean product URL.
 	 */
@@ -97,18 +94,7 @@ final class DynamicPageCacheTest extends TestCase {
 		$this->assertSame( $home_nonce, $this->attr( $second['body'], 'data-rest-nonce' ) );
 		$this->assertSame( $home_nonce, $this->attr( $product_page['body'], 'data-rest-nonce' ) );
 
-		$started = $this->attr( $first['body'], 'data-mail-started' );
-		$stamp   = $this->attr( $first['body'], 'data-mail-started-nonce' );
-		$this->assertMatchesRegularExpression( '/\A[0-9]+\z/', $started );
-		$this->assertMatchesRegularExpression( '/\A[a-f0-9]{64}\z/', $stamp );
-		$guard  = new FormGuard( 'genie_mail', 5, 10 );
-		$fields = array(
-			'website'       => '',
-			'started'       => $started,
-			'started_nonce' => $stamp,
-		);
-		$this->assertTrue( $guard->passes( $fields, (int) $started + 21600 ) );
-		$this->assertFalse( $guard->passes( $fields, (int) $started + DAY_IN_SECONDS + 1 ) );
+		$this->assertStringNotContainsString( 'data-mail-started', $first['body'] );
 	}
 
 	/**

@@ -23,7 +23,6 @@ type Phase = 'idle' | 'form' | 'sending' | EmailOutcome;
  * @param root0
  * @param root0.phase    Where the request stands.
  * @param root0.to       The address it concerns.
- * @param root0.limit    Emails per hour, named when the limit is reached.
  * @param root0.onStart  The action button.
  * @param root0.onCancel The guest form's cancel.
  * @param root0.onSend   The guest form's send: the typed address and the honeypot.
@@ -31,14 +30,12 @@ type Phase = 'idle' | 'form' | 'sending' | EmailOutcome;
 export function EmailConversation( {
 	phase,
 	to,
-	limit,
 	onStart,
 	onCancel,
 	onSend,
 }: {
 	phase: Phase;
 	to: string;
-	limit: number;
 	onStart: () => void;
 	onCancel: () => void;
 	onSend: ( address: string, website: string ) => void;
@@ -46,10 +43,14 @@ export function EmailConversation( {
 	const [ address, setAddress ] = useState( to );
 	// The honeypot: hidden from people, so only a bot fills it.
 	const [ website, setWebsite ] = useState( '' );
-	const status = statusText( phase, to, limit );
+	const status = statusText( phase, to );
+	const showForm =
+		'form' === phase ||
+		'invalid' === phase ||
+		( 'unavailable' === phase && '' !== address );
 	return (
 		<div className="linker-genie-app__email">
-			{ 'form' === phase || 'invalid' === phase ? (
+			{ showForm ? (
 				<form
 					className="linker-genie-app__email-form"
 					onSubmit={ ( event ) => {
@@ -137,9 +138,8 @@ export function EmailConversation( {
  *
  * @param phase Where the request stands.
  * @param to    The address it concerns.
- * @param limit Emails per hour one connection may ask for.
  */
-function statusText( phase: Phase, to: string, limit: number ): string {
+function statusText( phase: Phase, to: string ): string {
 	switch ( phase ) {
 		case 'idle':
 		case 'form':
@@ -170,20 +170,6 @@ function statusText( phase: Phase, to: string, limit: number ): string {
 			);
 		case 'invalid':
 			return __( 'Please enter a valid email address.', 'linker-tools' );
-		case 'throttled':
-			return sprintf(
-				// translators: %d is how many emails one connection may ask for per hour (ConversationMail::LIMIT).
-				__(
-					'This connection has reached the limit of %d emails per hour. Please try again later.',
-					'linker-tools'
-				),
-				limit
-			);
-		case 'capped':
-			return __(
-				"Today's email limit has been reached. Please try again tomorrow.",
-				'linker-tools'
-			);
 		default:
 			return __(
 				'The email could not be sent. Please try again.',
@@ -255,11 +241,6 @@ function linkResultText( outcome: EmailOutcome ): string {
 		case 'expired':
 			return __(
 				'This link has expired or has already been used.',
-				'linker-tools'
-			);
-		case 'capped':
-			return __(
-				"Today's email limit has been reached. Please try again tomorrow.",
 				'linker-tools'
 			);
 		default:

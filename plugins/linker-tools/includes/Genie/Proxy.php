@@ -270,31 +270,23 @@ class Proxy {
 				'callback'            => array( $this, 'email_conversation' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'id'            => array(
+					'id'      => array(
 						'type'              => 'integer',
 						'required'          => true,
 						'sanitize_callback' => 'absint',
 					),
 					// Checked by ConversationMail, so a bad address is the
 					// route's own 400 with its own code.
-					'email'         => array(
+					'email'   => array(
 						'type'     => 'string',
 						'required' => false,
 					),
-					'locale'        => array(
+					'locale'  => array(
 						'type' => 'string',
 						'enum' => array( 'en', 'de' ),
 					),
-					// A guest's bot guard (ConversationMail::passes()).
-					'website'       => array(
-						'type'     => 'string',
-						'required' => false,
-					),
-					'started'       => array(
-						'type'     => 'string',
-						'required' => false,
-					),
-					'started_nonce' => array(
+					// The guest form's hidden field.
+					'website' => array(
 						'type'     => 'string',
 						'required' => false,
 					),
@@ -330,22 +322,16 @@ class Proxy {
 			(string) $request->get_param( 'email' ),
 			$this->locale( $request->get_param( 'locale' ) ),
 			array(
-				'website'       => (string) $request->get_param( 'website' ),
-				'started'       => (string) $request->get_param( 'started' ),
-				'started_nonce' => (string) $request->get_param( 'started_nonce' ),
+				'website' => (string) $request->get_param( 'website' ),
+
 			)
 		);
-		$http    = ConversationMail::HTTP[ $outcome['status'] ] ?? 503;
+		$http = ConversationMail::HTTP[ $outcome['status'] ] ?? 503;
 		if ( $http >= 400 ) {
-			// The limits ride with a refusal, so the panel names the same
-			// numbers ConversationMail counts to.
 			return new WP_Error(
 				'linker_genie_email_' . $outcome['status'],
 				'The conversation was not sent.',
-				array(
-					'status' => $http,
-					'limit'  => ConversationMail::LIMIT,
-				)
+				array( 'status' => $http )
 			);
 		}
 		// The address goes back to the visitor who sent it: a signed-in
@@ -361,7 +347,6 @@ class Proxy {
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
 		return $reply;
 	}
-
 
 	/**
 	 * The stored thread of this request's conversation, empty when there is none.

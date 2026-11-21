@@ -86,8 +86,6 @@ const CONFIG: GenieConfig = {
 	page: { type: 'home', url: '/', title: 'Home page' },
 	signedIn: false,
 	retentionDays: 90,
-	mailStarted: '100.sig',
-	mailStartedNonce: 'sig',
 	contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 	inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 };

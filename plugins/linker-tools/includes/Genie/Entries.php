@@ -665,14 +665,11 @@ JS,
 	 * @param string $surface `helper` on every page, `workspace` on the advisor page.
 	 */
 	private function mount_markup( string $surface ): string {
-		$locale = $this->locale();
-		$page   = $this->page_context();
-		// The bot guard of a guest's "email me this conversation": when this
-		// page was made, signed (ConversationMail::stamp()).
-		$stamp       = ConversationMail::stamp();
+		$locale      = $this->locale();
+		$page        = $this->page_context();
 		$guest_links = shortcode_exists( 'linker_guest_account_links' ) ? do_shortcode( '[linker_guest_account_links]' ) : '';
 		return $guest_links . sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s" data-contact-url="%20$s" data-inquiry-url="%21$s" data-request-page-url="%22$s" data-configurator-en-url="%23$s" data-configurator-de-url="%24$s"></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -691,8 +688,6 @@ JS,
 			esc_attr( (string) wp_json_encode( $page ) ),
 			is_user_logged_in() ? '1' : '0',
 			esc_attr( (string) Retention::RETENTION_DAYS ),
-			esc_attr( $stamp['started'] ),
-			esc_attr( $stamp['nonce'] ),
 			// The contact card's route, "Let Linker contact me" (#243).
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) ),
 			// The inquiry confirmation card's route (#250).

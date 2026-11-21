@@ -544,20 +544,20 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 		vi.fn< typeof fetch >(
 			async () => new Response( JSON.stringify( body ), { status } )
 		);
-	const guard = { started: '1', started_nonce: 'n', website: '' };
+	const guard = { website: '' };
 
 	const confirm = answer( 202, { status: 'confirm', to: 'a@example.test' } );
 	expect(
 		await emailConversation(
 			'/c',
-			'n',
+			'',
 			9,
 			'de',
 			'a@example.test',
 			guard,
 			confirm
 		)
-	).toEqual( { outcome: 'confirm', to: 'a@example.test', limit: 0 } );
+	).toEqual( { outcome: 'confirm', to: 'a@example.test' } );
 	expect(
 		await emailConversation(
 			'/c',
@@ -568,14 +568,17 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 			undefined,
 			answer( 202, { status: 'pending', to: 'a@example.test' } )
 		)
-	).toEqual( { outcome: 'pending', to: 'a@example.test', limit: 0 } );
+	).toEqual( { outcome: 'pending', to: 'a@example.test' } );
+	expect(
+		new Headers( confirm.mock.calls[ 0 ]?.[ 1 ]?.headers ).has(
+			'X-WP-Nonce'
+		)
+	).toBe( false );
 	expect(
 		JSON.parse( String( confirm.mock.calls[ 0 ]?.[ 1 ]?.body ) )
 	).toEqual( {
 		locale: 'de',
 		email: 'a@example.test',
-		started: '1',
-		started_nonce: 'n',
 		website: '',
 	} );
 
@@ -587,12 +590,9 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 			'en',
 			undefined,
 			undefined,
-			answer( 429, {
-				code: 'linker_genie_email_capped',
-				data: { status: 429, limit: 3 },
-			} )
+			answer( 503, { code: 'linker_genie_email_unavailable' } )
 		)
-	).toEqual( { outcome: 'capped', to: '', limit: 3 } );
+	).toEqual( { outcome: 'unavailable', to: '' } );
 	expect(
 		await emailConversation(
 			'/c',
@@ -603,7 +603,7 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 			undefined,
 			answer( 500, { code: 'rest_error' } )
 		)
-	).toEqual( { outcome: 'unavailable', to: '', limit: 0 } );
+	).toEqual( { outcome: 'unavailable', to: '' } );
 } );
 
 test( 'a reload keeps the sent contact cards where they were (#243)', async () => {

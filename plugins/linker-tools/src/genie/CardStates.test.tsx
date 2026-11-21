@@ -89,8 +89,6 @@ function config(): GenieConfig {
 		prompts: [],
 		signedIn: false,
 		retentionDays: 90,
-		mailStarted: '1800000000',
-		mailStartedNonce: 'stamp-nonce',
 	};
 }
 

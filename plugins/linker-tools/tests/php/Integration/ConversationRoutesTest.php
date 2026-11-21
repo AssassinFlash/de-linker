@@ -11,8 +11,6 @@ namespace Linker\Tools\Tests\Integration;
 
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\ConversationMail;
-use Linker\Tools\Genie\FormGuard;
-use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Retention;
 use Linker\Tools\Genie\Thread;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +33,6 @@ final class ConversationRoutesTest extends TestCase {
 	 */
 	private string $recipient;
 
-
 	/**
 	 * A stream as the service writes it: meta, one text block, done.
 	 */
@@ -50,13 +47,6 @@ final class ConversationRoutesTest extends TestCase {
 	 * @var list<array<string, mixed>>
 	 */
 	private array $mail = array();
-
-	/**
-	 * The instance's limiter rows from before the test.
-	 *
-	 * @var array<int, array<string, string>>
-	 */
-	private array $limits = array();
 
 	/**
 	 * Hooks and cookies held while a test runs.
@@ -102,17 +92,8 @@ final class ConversationRoutesTest extends TestCase {
 		}
 		add_filter( 'wp_mail', array( $this, 'record' ), PHP_INT_MAX );
 		add_filter( 'pre_wp_mail', array( $this, 'stop' ), 1, 2 );
-		$this->held['limit'] = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- held to be put back unchanged.
-		// A connection of its own, so a run starts with a full allowance
-		// and never spends another test's.
-		$_SERVER['REMOTE_ADDR'] = '192.0.2.' . wp_rand( 1, 254 );
-		$_COOKIE                = array();
+		$_COOKIE = array();
 		wp_set_current_user( 0 );
-		// The site's daily cap is shared state: this run starts with a fresh
-		// count and the instance gets its own count back afterwards.
-		global $wpdb;
-		$this->limits = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_mail' ) . '%' ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows.
-		self::clear_limits();
 	}
 
 	/**
@@ -122,22 +103,12 @@ final class ConversationRoutesTest extends TestCase {
 		global $wp_filter;
 		remove_filter( 'wp_mail', array( $this, 'record' ), PHP_INT_MAX );
 		remove_filter( 'pre_wp_mail', array( $this, 'stop' ), 1 );
-		self::clear_limits();
-		global $wpdb;
-		foreach ( $this->limits as $row ) {
-			$wpdb->insert( $wpdb->options, $row + array( 'autoload' => 'off' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows, put back.
-		}
 		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
 			if ( null === $this->held[ $hook ] ) {
 				unset( $wp_filter[ $hook ] );
 			} else {
 				$wp_filter[ $hook ] = $this->held[ $hook ]; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restores the hook this test held.
 			}
-		}
-		if ( null === $this->held['limit'] ) {
-			unset( $_SERVER['REMOTE_ADDR'] );
-		} else {
-			$_SERVER['REMOTE_ADDR'] = $this->held['limit'];
 		}
 		$this->held = array();
 		wp_set_current_user( 0 );
@@ -248,7 +219,7 @@ final class ConversationRoutesTest extends TestCase {
 			array(
 				'email'  => $this->recipient,
 				'locale' => 'en',
-			) + self::guard()
+			)
 		);
 
 		$this->assertSame( 202, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
@@ -292,7 +263,7 @@ final class ConversationRoutesTest extends TestCase {
 				array(
 					'email'  => $this->recipient,
 					'locale' => 'de',
-				) + self::guard()
+				)
 			)->get_status()
 		);
 		$this->assertSame( 'Gespräch mit Genie für diese E-Mail-Adresse angefordert', $this->mail[0]['subject'] );
@@ -311,25 +282,20 @@ final class ConversationRoutesTest extends TestCase {
 	 * A filled honeypot, a start time a moment old, one this site did not
 	 * sign, or one older than a day: answered like a request, nothing sent.
 	 */
-	public function test_the_bot_guard_sends_nothing(): void {
-		$id = $this->answered( 'linker-it-bots' );
-		foreach (
+	public function test_a_filled_honeypot_cannot_claim_a_confirmation_was_sent(): void {
+		$id       = $this->answered( 'linker-it-honeypot' );
+		$response = $this->call(
+			'POST',
+			$id,
+			'/email',
 			array(
-				array( 'website' => 'https://spam.example' ) + self::guard(),
-				self::guard( 0 ),
-				array(
-					'started'       => (string) ( time() - 60 ),
-					'started_nonce' => 'forged',
-				),
-				self::guard( FormGuard::STAMP_LIFETIME + 60 ),
-				array(),
-			) as $guard
-		) {
-			$response = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + $guard );
-			$this->assertSame( 202, $response->get_status() );
-		}
+				'email'   => $this->recipient,
+				'website' => 'https://example.test',
+			)
+		);
+		$this->assertSame( 503, $response->get_status() );
 		$this->assertSame( array(), $this->mail );
-		$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ), 'No link was made.' );
+		$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
 	}
 
 	/**
@@ -433,7 +399,7 @@ final class ConversationRoutesTest extends TestCase {
 	/** A confirmed guest link saves a real ACK-owned pending copy from another browser. */
 	public function test_a_guest_confirmation_preserves_pending_in_another_browser(): void {
 		$id = $this->answered( 'Please email this complete conversation.' );
-		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) )->get_status() );
 		$this->assertCount( 1, $this->mail, 'Only the fixed address confirmation may go first.' );
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
 		$_COOKIE  = array();
@@ -467,7 +433,7 @@ final class ConversationRoutesTest extends TestCase {
 	/** An unacknowledged producer cannot consume the capability; a real retry saves once. */
 	public function test_unacknowledged_pending_retains_the_capability_for_one_native_retry(): void {
 		$id = $this->answered( 'Please keep this conversation.' );
-		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) )->get_status() );
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
 		$secret  = (string) ( $token[1] ?? '' );
 		$pending = get_post_meta( $id, ConversationMail::PENDING, true );
@@ -532,43 +498,54 @@ final class ConversationRoutesTest extends TestCase {
 	 */
 	public function test_the_route_refuses_what_it_must_not_send(): void {
 		$id = $this->answered( 'linker-it-refusals' );
-		$this->assertSame( 400, $this->call( 'POST', $id, '/email', array( 'email' => 'not an address' ) + self::guard() )->get_status() );
+		$this->assertSame( 400, $this->call( 'POST', $id, '/email', array( 'email' => 'not an address' ) )->get_status() );
 
 		$empty                    = ( new Conversations() )->open();
 		$this->created['posts'][] = $empty;
-		$this->assertSame( 409, $this->call( 'POST', $empty, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status(), 'Nothing answered yet, nothing to send.' );
+		$this->assertSame( 409, $this->call( 'POST', $empty, '/email', array( 'email' => $this->recipient ) )->get_status(), 'Nothing answered yet, nothing to send.' );
 
 		$jar     = $_COOKIE;
 		$_COOKIE = array();
-		$this->assertSame( 404, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
+		$this->assertSame( 404, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) )->get_status() );
 		$_COOKIE = $jar;
-
-		for ( $sent = 0; $sent < ConversationMail::LIMIT; ++$sent ) {
-			$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $sent . '-' . $this->recipient ) + self::guard() )->get_status() );
-		}
-		$refused = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() );
-		$this->assertSame( 429, $refused->get_status() );
-		$this->assertSame( 'linker_genie_email_throttled', $refused->get_data()['code'] );
-		$this->assertSame( ConversationMail::LIMIT, $refused->get_data()['data']['limit'], 'The refusal names the limit the panel shows.' );
-		$this->assertCount( ConversationMail::LIMIT, $this->mail, 'Only the allowed ones reached wp_mail().' );
 	}
 
-	/**
-	 * At the site's daily cap the request is refused, and nothing reaches
-	 * wp_mail() (so nothing waits in the Outbox either).
-	 */
-	public function test_at_the_daily_cap_nothing_is_sent_or_queued(): void {
-		$id   = $this->answered( 'linker-it-cap' );
-		$site = new RateLimit( 'genie_mail_day', ConversationMail::DAILY_CAP, DAY_IN_SECONDS );
-		for ( $taken = 0; $taken < ConversationMail::DAILY_CAP; ++$taken ) {
-			$this->assertTrue( $site->take( '' ) );
+	/** An already open ownership-verified conversation can request a link after its page ages out. */
+	public function test_an_old_guest_page_still_queues_its_confirmation(): void {
+		$id       = $this->answered( 'linker-it-open-page' );
+		$response = $this->call(
+			'POST',
+			$id,
+			'/email',
+			array(
+				'email'         => $this->recipient,
+				'started'       => (string) ( time() - 2 * DAY_IN_SECONDS ),
+				'started_nonce' => 'old-page',
+			)
+		);
+		$this->assertSame( 202, $response->get_status() );
+		$this->assertSame( ConversationMail::CONFIRM, $response->get_data()['status'] );
+		$this->assertCount( 1, $this->mail );
+		$this->assertNotEmpty( get_post_meta( $id, ConversationMail::PENDING, true ) );
+	}
+
+	/** A failed handoff preserves the previously issued link; the customer can retry. */
+	public function test_failed_confirmation_handoff_keeps_the_old_link_and_reports_failure(): void {
+		$id     = $this->answered( 'linker-it-mail-retry' );
+		$params = array( 'email' => $this->recipient );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', $params )->get_status() );
+		$prior  = get_post_meta( $id, ConversationMail::PENDING, true );
+		$refuse = static fn (): bool => false;
+		add_filter( 'woocommerce_email_enabled_linker_genie_confirm_address', $refuse );
+		try {
+			$this->assertSame( 503, $this->call( 'POST', $id, '/email', $params )->get_status() );
+			$this->assertSame( $prior, get_post_meta( $id, ConversationMail::PENDING, true ) );
+			$this->assertCount( 1, $this->mail );
+		} finally {
+			remove_filter( 'woocommerce_email_enabled_linker_genie_confirm_address', $refuse );
 		}
-
-		$refused = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() );
-
-		$this->assertSame( 429, $refused->get_status() );
-		$this->assertSame( 'linker_genie_email_capped', $refused->get_data()['code'] );
-		$this->assertSame( array(), $this->mail );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', $params )->get_status() );
+		$this->assertCount( 2, $this->mail );
 	}
 
 	/**
@@ -641,34 +618,11 @@ ANSWER;
 		$this->assertSame( array(), $transcript[3]['products'] );
 	}
 
-	/**
-	 * A guest's bot-guard fields as the page would have given them, signed
-	 * by this site `$age` seconds ago.
-	 *
-	 * @param int $age Seconds since the page was made.
-	 * @return array{started: string, started_nonce: string}
-	 */
-	private static function guard( int $age = 10 ): array {
-		$stamp = ConversationMail::stamp( time() - $age );
-		return array(
-			'started'       => $stamp['started'],
-			'started_nonce' => $stamp['nonce'],
-		);
-	}
-
 	/** Keep a distinct native hook object before a fixture removes its callbacks. */
 	private static function producer_hook(): ?\WP_Hook {
 		global $wp_filter;
 		$hook = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
 		return $hook instanceof \WP_Hook ? clone $hook : null;
-	}
-
-	/**
-	 * Removes every row of the two Genie mail limiters.
-	 */
-	private static function clear_limits(): void {
-		global $wpdb;
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_mail' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows.
 	}
 
 	/**

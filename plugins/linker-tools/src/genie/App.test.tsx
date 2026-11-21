@@ -139,8 +139,6 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		workspaceUrl: '/genie/',
 		signedIn: false,
 		retentionDays: 90,
-		mailStarted: '1800000000',
-		mailStartedNonce: 'stamp-nonce',
 		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 		prompts: [
@@ -3117,7 +3115,6 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'confirm',
 		to: 'tester@example.test',
-		limit: 0,
 	} );
 	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
@@ -3132,17 +3129,14 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Send email' } ) );
 	} );
-	// The page's signed start time and the empty honeypot ride along
-	// (ConversationMail::passes()).
+
 	expect( emailConversation ).toHaveBeenCalledWith(
 		'/wp-json/linker-ai/v1/genie/conversations',
-		'n',
+		'',
 		9,
 		'en',
 		'tester@example.test',
 		{
-			started: '1800000000',
-			started_nonce: 'stamp-nonce',
 			website: '',
 		}
 	);
@@ -3170,7 +3164,6 @@ test( 'a signed-in customer gets the email at the account address, no form', asy
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'sent',
 		to: 'buyer@example.test',
-		limit: 0,
 	} );
 	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
@@ -3194,72 +3187,6 @@ test( 'a signed-in customer gets the email at the account address, no form', asy
 			'Your email to buyer@example.test is on its way.'
 		)
 	).toBeVisible();
-} );
-
-test( 'the limit is named with the number the server counts to', async () => {
-	resetTurnLane();
-	vi.mocked( listConversations ).mockResolvedValue( {
-		currentId: 9,
-		ok: true,
-		conversations: THREE,
-	} );
-	vi.mocked( readThread ).mockResolvedValue( {
-		messages: [
-			{ role: 'user', content: 'Third question' },
-			{ role: 'assistant', content: 'An answer.' },
-		],
-		turn: null,
-		contacts: [],
-	} );
-	vi.mocked( emailConversation ).mockResolvedValue( {
-		outcome: 'throttled',
-		to: '',
-		limit: 3,
-	} );
-	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	const start = await screen.findByRole( 'button', {
-		name: 'Email me this conversation',
-	} );
-	await act( async () => {
-		fireEvent.click( start );
-	} );
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'This connection has reached the limit of 3 emails per hour. Please try again later.'
-	);
-} );
-
-test( 'at the daily cap the panel says when emailing works again', async () => {
-	resetTurnLane();
-	vi.mocked( listConversations ).mockResolvedValue( {
-		currentId: 9,
-		ok: true,
-		conversations: THREE,
-	} );
-	vi.mocked( readThread ).mockResolvedValue( {
-		messages: [
-			{ role: 'user', content: 'Third question' },
-			{ role: 'assistant', content: 'An answer.' },
-		],
-		turn: null,
-		contacts: [],
-	} );
-	vi.mocked( emailConversation ).mockResolvedValue( {
-		outcome: 'capped',
-		to: '',
-		limit: 3,
-	} );
-	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	const start = await screen.findByRole( 'button', {
-		name: 'Email me this conversation',
-	} );
-	await act( async () => {
-		fireEvent.click( start );
-	} );
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		"Today's email limit has been reached. Please try again tomorrow."
-	);
 } );
 
 test( 'the page a confirmation link opens says how it went, once', async () => {

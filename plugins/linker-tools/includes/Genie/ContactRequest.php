@@ -15,7 +15,7 @@ use WP_REST_Response;
 
 /**
  * GET linker-ai/v1/genie/contact tells the contact card what it needs when it
- * appears: a signed start time (FormGuard), the signed-in customer's
+ * appears: the conversation revision, the signed-in customer's
  * address (a customer with an account is never asked for one, #243),
  * whether this conversation's request is already with the team, and the team
  * mailbox customers see (MAILBOX_FILTER).
