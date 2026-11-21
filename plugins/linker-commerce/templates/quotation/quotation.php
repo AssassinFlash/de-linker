@@ -164,7 +164,6 @@ $linker_buyer  = $quotation['buyer'];
 		?>
 	</p>
 </div>
-div>
 
 </body>
 </html>
