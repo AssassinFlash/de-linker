@@ -282,6 +282,8 @@ for (const locale of ['en', 'de'] as Locale[]) {
 		await page.setViewportSize({ width: 390, height: 844 });
 		await page.goto(`${instance().url}${ARCHIVE[locale]}`);
 
+		await expect(page.locator('.wb-scope a').nth(1)).toBeVisible();
+
 		const controls = page.locator('[data-compare-product]');
 		expect(
 			await controls.count(),

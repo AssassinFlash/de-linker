@@ -190,7 +190,7 @@ final class ProductShortcodes {
 		// archive read "STARTSEITE / PRODUKTE / INVERTERS" above its own
 		// "Wechselrichter" heading; that copy is the defect, not the
 		// reference.
-		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( PageUrls::home() ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / ';
+		$html .= '<div class="wb-metarow sf-container"><span class="wbm-l"><a href="' . esc_url( PageUrls::home() ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / ';
 		if ( $is_term ) {
 			$html .= '<a href="' . esc_url( $shop_url ) . '">' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</a>';
 			foreach ( $this->term_ancestors( $queried ) as $ancestor ) {
@@ -201,7 +201,7 @@ final class ProductShortcodes {
 			$html .= '<b>' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</b>';
 		}
 		$html .= '</span></div>';
-		$html .= '<div class="wb-bar container">';
+		$html .= '<div class="wb-bar sf-container">';
 		$html .= '<div class="wb-copy"><h1 class="wb-title">' . esc_html( $is_term ? $queried->name : __( 'Products', 'linker-commerce' ) ) . '</h1>';
 		// The live shop and archives both carry the generic subtitle; the
 		// category's own description is not printed on the page.
@@ -246,7 +246,7 @@ final class ProductShortcodes {
 		if ( ! \is_array( $categories ) || array() === $categories ) {
 			return '';
 		}
-		$html  = '<nav class="wb-scope container" aria-label="' . esc_attr__( 'Product categories', 'linker-commerce' ) . '">';
+		$html  = '<nav class="wb-scope sf-container" aria-label="' . esc_attr__( 'Product categories', 'linker-commerce' ) . '">';
 		$html .= '<a class="wbs' . ( 0 === $current_term ? ' on' : '' ) . '" href="' . esc_url( $shop_url ) . '">' . esc_html__( 'All products', 'linker-commerce' ) . '</a>';
 		foreach ( $categories as $category ) {
 			$on    = $category->term_id === $current_term ? ' on' : '';

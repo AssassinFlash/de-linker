@@ -212,6 +212,18 @@ for (const locale of ['en', 'de'] as const) {
 			await dismissConsent(page);
 			const root = page.locator('#linker-faq-page');
 			const input = root.locator('#linker-library-q');
+			const separation = await root.evaluate((library) => {
+				const help = library.querySelector('.linker-library-help')!;
+				const ask = library.querySelector('[data-linker-genie-open]')!;
+				return (
+					ask.getBoundingClientRect().top -
+					help.getBoundingClientRect().bottom
+				);
+			});
+			expect(
+				separation,
+				'the contact line clears the Genie button'
+			).toBeGreaterThanOrEqual(12);
 			// A directory click must identify its destination immediately; a
 			// reduced-motion jump may finish before the scroll-spy lock expires.
 			const directory = root.locator(

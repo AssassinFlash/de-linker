@@ -17,12 +17,12 @@
 #linker-faq-page {
 	--ll-ink: var(--proto-ink-deep);
 	--ll-accent: var(--proto-accent);
-	--ll-accent-dark: #0a5c53;
+	--ll-accent-dark: var(--proto-teal-700);
 	--ll-canvas: #f1f4f3;
 	--ll-mist: #edf1f5;
 	--ll-line: var(--proto-line-journal);
 	--ll-muted: #5c6e68;
-	--ll-paper: #fff;
+	--ll-paper: var(--proto-color-surface);
 	--ll-radius: 16px;
 	--ll-shadow: 0 8px 28px rgba(21, 53, 47, 0.05);
 	--ll-card-bg: rgba(255, 255, 255, 0.52);
@@ -85,6 +85,17 @@
 #linker-faq-page .linker-library-help { margin: 10px auto 0; font-size: 15px; color: var(--ll-muted); }
 #linker-faq-page .linker-library-contact { color: var(--ll-accent-dark); font-weight: 700; text-underline-offset: 3px; }
 #linker-faq-page .linker-library-contact:hover { color: var(--ll-accent); }
+
+#linker-faq-page .linker-library-hero .linker-genie-chip {
+	margin-block-start: var(--proto-space-4);
+	border-color: var(--ll-accent);
+	background: var(--ll-paper);
+	color: var(--ll-accent-dark);
+}
+#linker-faq-page .linker-library-hero .linker-genie-chip:hover {
+	background: var(--proto-teal-50);
+	border-color: var(--ll-accent-dark);
+}
 
 /* ---- search + suggestions ---- */
 #linker-faq-page .linker-library-searchbox { position: relative; z-index: 46; width: min(640px, 100%); margin: 20px auto 8px; text-align: left; }
