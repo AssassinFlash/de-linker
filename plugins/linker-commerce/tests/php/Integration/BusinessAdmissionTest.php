@@ -595,7 +595,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$results = array();
 		$observe = static function ( bool $accepted, string $id ) use ( &$results ): void {
-			if ( 'customer_reset_password' === $id ) {
+			if ( 'customer_reset_password' === $id && ! \Linker\Commerce\Mail\Prepared::is_preview() ) {
 				$results[] = $accepted;
 			}
 		};
