@@ -116,7 +116,6 @@ sc-google3d-compact
 sc-google3d-host
 sc-google3d-view
 sc-hint
-sc-home-comparison
 sc-icon-button
 sc-import-panel
 sc-import-review
