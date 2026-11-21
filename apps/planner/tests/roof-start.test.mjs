@@ -224,6 +224,22 @@ test("a roof visitor can compare options without a drawing, address or map conse
 	assert.equal(page.opened.length, 0);
 });
 
+test("comparing from the roof entry keeps the declared site without looking up its address", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await page.fill("Bergstraße 7, Berlin");
+	await act(async () =>
+		document.querySelector('a[href="?compare=preliminary"]').click(),
+	);
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].destination, "guided-comparison");
+	assert.equal(page.opened[0].project.inputs.brief.site.country_code, "DE");
+	assert.equal(
+		page.opened[0].project.inputs.brief.site.location_label,
+		"Bergstraße 7, Berlin",
+	);
+	assert.equal(page.searches.length, 0);
+});
+
 test("a local roof plan opens without an address, a map lookup or imagery consent", async (t) => {
 	const page = await fixture(t, "step=roof");
 	await until(() => button("Use a roof plan or measurements"));

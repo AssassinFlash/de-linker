@@ -514,17 +514,21 @@ export function NewProject({
 			useAddress = false,
 			openRoof = false,
 			useRoofPlan = false,
+			compareRoofSite = false,
 			keepInverter,
 		}: {
 			discardProfile?: boolean;
 			useAddress?: boolean;
 			openRoof?: boolean;
 			useRoofPlan?: boolean;
+			compareRoofSite?: boolean;
 			keepInverter?: boolean;
 		} = {},
 	) {
 		const roofPlan = useRoofPlan || destination.current === "roof-plan";
-		const roof = roofEntry || openRoof || destination.current === "roof";
+		const roof =
+			!compareRoofSite &&
+			(roofEntry || openRoof || destination.current === "roof");
 		if (
 			sending.current ||
 			creationPending ||
@@ -535,6 +539,7 @@ export function NewProject({
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
 				!direction &&
+				!compareRoofSite &&
 				(roof
 					? !roofPlan &&
 						(!brief.site.country_code || !brief.site.location_label.trim())
@@ -708,7 +713,7 @@ export function NewProject({
 					? "roof-plan"
 					: roof
 						? "roof"
-						: compareOnSubmit
+						: compareOnSubmit || compareRoofSite
 							? "guided-comparison"
 							: direction
 								? "preliminary-review"
@@ -1341,6 +1346,9 @@ export function NewProject({
 						disabled={editingDisabled || inputContractRequired}
 						locked={Boolean(intent.current)}
 						action={mapAction}
+						compareSite={() =>
+							void submit(undefined, { compareRoofSite: true })
+						}
 						openPlan={() => {
 							roofPermission.current = null;
 							void submit(undefined, { useRoofPlan: true });

@@ -10,6 +10,7 @@ export function RoofStart({
 	locked,
 	action,
 	openPlan,
+	compareSite,
 	change,
 }: {
 	config: Configuration;
@@ -18,6 +19,7 @@ export function RoofStart({
 	locked: boolean;
 	action: ReactNode;
 	openPlan: () => void;
+	compareSite: () => void;
 	change: (site: Brief["site"]) => void;
 }) {
 	return (
@@ -31,8 +33,17 @@ export function RoofStart({
 				>
 					{__("Use a roof plan or measurements", "linker-tools")}
 				</button>
-				{!locked && (
-					<a className="sc-button" href="?compare=preliminary">
+				{!locked && !disabled && (
+					<a
+						className="sc-button"
+						href="?compare=preliminary"
+						onClick={(event) => {
+							if (site.country_code || site.location_label.trim()) {
+								event.preventDefault();
+								compareSite();
+							}
+						}}
+					>
 						{__("Compare options", "linker-tools")}
 					</a>
 				)}
