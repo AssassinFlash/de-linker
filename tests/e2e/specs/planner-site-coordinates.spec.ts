@@ -1,172 +1,202 @@
-/**
- * The project brief's site coordinates are a datum, not a local convention.
- *
- * The first save after an address was typed used to be blocked by the
- * coordinate fields: the brief reported a format error for a coordinate the
- * customer had copied, because the parser demanded the interface language's
- * own decimal mark. Every map, receiver and datasheet writes latitude and
- * longitude with a point, so a German site refused `48.1689` and an English
- * site refused `48,1689` — the same value, unreadable with the reader's
- * keyboard layout swapped. Empty coordinates were the same defect's other
- * face: the field asked for a number where the brief means "not provided".
- *
- * Asserted here, on the deployed planner:
- * - an address alone is saveable, with both coordinates left empty, in both
- *   languages (this is what blocked the first save);
- * - a coordinate pasted with the other language's mark is accepted, and the
- *   saved revision reads back as the number it denotes;
- * - the field states which marks it accepts, so the customer is not left
- *   guessing at the format.
- */
-/**
- * External dependencies
- */
-import { expect, test } from '@playwright/test';
-
-/**
- * Internal dependencies
- */
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import { seedConsentCookies } from '../lib/consent';
-import { instance } from '../lib/instance';
+import {
+	startSolarProject,
+	removeSiteProject,
+	type SiteLanguage,
+} from '../lib/configurator-site';
 
-type Lang = 'en' | 'de';
-
-const WORDS = {
+const words = {
 	en: {
-		configurator: '/solution-configurator/',
-		newProject: 'New project',
-		createProject: 'Create project',
-		saveProject: 'Save project',
-		latitude: 'Latitude',
-		longitude: 'Longitude',
-		address: 'Address or location reference',
-		format: 'Decimal point or comma; no thousands separators.',
-		saved: /^Saved/i,
+		solar: /Solar$/,
+		energy: /Energy use$/,
+		purpose: 'Purpose',
+		grid: 'Grid connection',
+		import: 'Import CSV',
+		zone: 'Time zone',
+		file: 'CSV file',
+		delimiter: 'Column delimiter',
+		inspect: 'Read CSV columns',
+		time: 'Timestamp column',
+		load: 'Consumption column',
+		unit: 'Values represent',
+		position: 'Timestamp marks',
+		interval: 'Interval length',
+		decimal: 'Decimal separator',
+		origin: 'Data source',
+		source: 'Source name',
+		rights: 'Source and permission to store privately',
+		apply: 'Use CSV consumption',
+		compare: 'Compare systems',
+		format: 'Decimal point or comma',
 	},
 	de: {
-		configurator: '/de/loesungskonfigurator/',
-		newProject: 'Neues Projekt',
-		createProject: 'Projekt anlegen',
-		saveProject: 'Projekt speichern',
-		latitude: 'Breitengrad',
-		longitude: 'Längengrad',
-		address: 'Adresse oder Standortbezeichnung',
-		format: 'Dezimalpunkt oder Dezimalkomma; keine Tausendertrennzeichen.',
-		saved: /^Gespeichert/i,
+		solar: /Photovoltaik$/,
+		energy: /Strombedarf$/,
+		purpose: 'Ziel',
+		grid: 'Netzanschluss',
+		import: 'CSV importieren',
+		zone: 'Zeitzone',
+		file: 'CSV-Datei',
+		delimiter: 'Spaltentrennzeichen',
+		inspect: 'CSV-Spalten einlesen',
+		time: 'Zeitstempelspalte',
+		load: 'Verbrauchsspalte',
+		unit: 'Einheit der Messwerte',
+		position: 'Zeitstempel kennzeichnet',
+		interval: 'Intervalllänge',
+		decimal: 'Dezimaltrennzeichen',
+		origin: 'Datenquelle',
+		source: 'Name der Quelle',
+		rights: 'Quelle und Erlaubnis zur privaten Speicherung',
+		apply: 'Verbrauchsdaten übernehmen',
+		compare: 'Systeme vergleichen',
+		format: 'Dezimalpunkt oder Dezimalkomma',
 	},
 } as const;
+const file = fileURLToPath(
+	new URL('../fixtures/cossmic-konstanz-load-2017-06-19.csv', import.meta.url)
+);
 
-async function openProject(
-	page: import('@playwright/test').Page,
-	lang: Lang,
-	title: string
-): Promise<void> {
-	const words = WORDS[lang];
-	await page.goto(instance().url + words.configurator, {
-		waitUntil: 'networkidle',
-	});
-	await page.getByRole('button', { name: words.newProject }).first().click();
-	await page.locator('input[maxlength="256"]').first().fill(title);
-	await page.getByRole('button', { name: words.createProject }).click();
-	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-}
-
-for (const lang of ['en', 'de'] as const) {
-	const words = WORDS[lang];
-
-	test(`${lang}: an address alone saves, with the coordinates left empty`, async ({
-		page,
-	}) => {
-		await page.setViewportSize({ width: 1440, height: 900 });
-		await openProject(
-			page,
-			lang,
-			`Coordinate notation ${lang} ${Date.now()}`
-		);
-
-		const site = page.locator('#lp-site');
-		await site.getByLabel(words.address).fill('Triftstrasse 5');
-
-		// Empty means "not provided": no error, no refused save.
-		for (const label of [words.latitude, words.longitude]) {
-			const field = site.getByLabel(label);
-			await expect(field).toHaveValue('');
-			await expect(field).toHaveAttribute('aria-invalid', 'false');
-		}
-		await expect(page.locator('#lp-site .lp-field-error')).toHaveCount(0);
-		await expect(page.locator('.lp-save-state')).not.toContainText(
-			lang === 'en' ? 'Input needs attention' : 'Eingabe prüfen'
-		);
-
-		const save = page.getByRole('button', { name: words.saveProject });
-		await expect(save).toBeEnabled();
-		await save.click();
-		await expect(page.locator('.lp-save-state')).toContainText(
-			words.saved,
-			{
-				timeout: 120_000,
-			}
-		);
-	});
-
-	test(`${lang}: a coordinate keeps its own notation whatever the interface language`, async ({
-		page,
-	}) => {
-		await page.setViewportSize({ width: 1440, height: 900 });
-		await openProject(page, lang, `Coordinate marks ${lang} ${Date.now()}`);
-
-		const site = page.locator('#lp-site');
-		await site.getByLabel(words.address).fill('Triftstrasse 5');
-
-		const latitude = site.getByLabel(words.latitude);
-		const longitude = site.getByLabel(words.longitude);
-		// The point a map link carries, in both languages. This is the defect:
-		// the German field used to refuse it as a format error and keep the
-		// project unsaveable.
-		await latitude.fill('48.1689');
-		await longitude.fill('11.5844');
-		await expect(latitude).toHaveAttribute('aria-invalid', 'false');
-		await expect(page.locator('#lp-site .lp-field-error')).toHaveCount(0);
-
-		const save = page.getByRole('button', { name: words.saveProject });
-		await expect(save).toBeEnabled();
-		await save.click();
-		await expect(page.locator('.lp-save-state')).toContainText(
-			words.saved,
-			{
-				timeout: 120_000,
-			}
-		);
-
-		// The saved revision holds the number the mark denotes, not a shifted
-		// one: reloading shows the value formatted for this interface.
-		await page.reload({ waitUntil: 'networkidle' });
-		await expect(site.getByLabel(words.latitude)).toHaveValue(
-			lang === 'en' ? '48.1689' : '48,1689'
-		);
-		await expect(site.getByLabel(words.longitude)).toHaveValue(
-			lang === 'en' ? '11.5844' : '11,5844'
-		);
-
-		// The field says which marks it reads, so the customer does not have to
-		// discover the rule from a red message. Both coordinates carry it.
-		await expect(
-			page.locator('#lp-site .lp-field small', { hasText: words.format })
-		).toHaveCount(2);
-
-		// The reader's own mark reads the same value, and two marks in one value
-		// stay refused rather than guessed at.
-		await latitude.fill(lang === 'en' ? '48,1689' : '48.1689');
-		await expect(latitude).toHaveAttribute('aria-invalid', 'false');
-		await latitude.fill('1.234,5');
-		await expect(latitude).toHaveAttribute('aria-invalid', 'true');
-		await expect(page.locator('#lp-site .lp-field-error')).toHaveCount(1);
-		await expect(
-			page.getByRole('button', { name: words.saveProject })
-		).toBeDisabled();
-	});
+async function importMeterReadings(
+	page: Page,
+	panel: Locator,
+	lang: SiteLanguage
+) {
+	const text = words[lang];
+	await panel.getByRole('button', { name: text.import, exact: true }).click();
+	await panel.getByLabel(text.zone, { exact: true }).fill('UTC');
+	await panel.getByLabel(text.file, { exact: true }).setInputFiles(file);
+	await panel.getByLabel(text.delimiter, { exact: true }).selectOption(';');
+	await panel.getByRole('button', { name: text.inspect }).click();
+	await panel.getByLabel(text.time, { exact: true }).selectOption('Time');
+	await panel.getByLabel(text.load, { exact: true }).selectOption('Load');
+	await panel
+		.getByLabel(text.unit, { exact: true })
+		.selectOption('interval_energy_kwh');
+	await panel
+		.getByLabel(text.position, { exact: true })
+		.selectOption('start');
+	await panel.getByLabel(text.interval).fill('60');
+	await panel.getByLabel(text.decimal, { exact: true }).selectOption('.');
+	await panel
+		.getByLabel(text.origin, { exact: true })
+		.selectOption('measured');
+	await panel
+		.getByLabel(text.source, { exact: true })
+		.fill('CoSSMic Konstanz');
+	await panel
+		.getByLabel(text.rights, { exact: true })
+		.fill('Open Power System Data, Household Data 2020-04-15, CC BY 4.0.');
+	const result = page.waitForResponse((r) =>
+		new URL(r.url()).pathname.endsWith('/profiles/preview')
+	);
+	await panel.getByRole('button', { name: text.apply, exact: true }).click();
+	const response = await result;
+	expect(response.ok()).toBe(true);
+	const preview = response.request().postDataJSON();
+	await expect(panel.locator('figure svg')).toBeVisible();
+	return preview.asset_id;
 }
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
+for (const lang of ['en', 'de'] as const) {
+	for (const width of [1440, 390]) {
+		test(`${lang} ${width}: site coordinates can be corrected independently of an imported meter file`, async ({
+			page,
+		}) => {
+			test.setTimeout(150_000);
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const text = words[lang];
+			const title = `Konstanz meter ${lang} ${width}`;
+			const created = page.waitForResponse((r) =>
+				new URL(r.url()).pathname.endsWith('/projects/create')
+			);
+			const workspace = await startSolarProject(page, lang, title);
+			const creation = await created;
+			expect(creation.ok()).toBe(true);
+			const initial = creation.request().postDataJSON();
+			const projectId = new URL(page.url()).searchParams.get('project');
+			expect(initial.inputs.brief.site).toMatchObject({
+				location_label: title,
+				latitude: null,
+				longitude: null,
+			});
+			const nav = workspace.getByRole('navigation');
+			const site = workspace
+				.locator('details')
+				.filter({ has: page.locator('input[name="latitude"]') });
+			await site.locator('summary').click();
+			const latitude = site.locator('input[name="latitude"]'),
+				longitude = site.locator('input[name="longitude"]');
+			await expect(latitude).toHaveValue('');
+			await expect(longitude).toHaveValue('');
+			await longitude.fill('9,1732');
+			await latitude.fill('1.234,5');
+			await expect(latitude).toHaveAttribute('aria-invalid', 'true');
+			await expect(latitude).toHaveAccessibleDescription(
+				new RegExp(text.format)
+			);
+			await nav.getByRole('button', { name: text.energy }).click();
+			const panel = workspace.locator('.sc-energy-demand');
+			await panel
+				.getByLabel(text.purpose, { exact: true })
+				.selectOption('self');
+			await panel
+				.getByLabel(text.grid, { exact: true })
+				.selectOption('3');
+			const asset = await importMeterReadings(page, panel, lang);
+			await expect(
+				panel.getByRole('button', { name: text.compare, exact: true })
+			).toBeDisabled();
+			await nav.getByRole('button', { name: text.solar }).click();
+			await expect(latitude).toHaveValue('1.234,5');
+			await expect(longitude).toHaveValue('9,1732');
+			await latitude.fill('47.6636');
+			await expect(latitude).toHaveAttribute('aria-invalid', 'false');
+			await nav.getByRole('button', { name: text.energy }).click();
+			await expect(panel.locator('figure svg')).toBeVisible();
+			await panel
+				.getByRole('heading', {
+					name:
+						lang === 'de'
+							? 'Stromverbrauch im Zeitverlauf'
+							: 'Electricity use over time',
+				})
+				.scrollIntoViewIfNeeded();
+			await page.screenshot({
+				path: test.info().outputPath('meter-profile.png'),
+				animations: 'disabled',
+			});
+			const saved = page.waitForResponse(
+				(r) =>
+					new URL(r.url()).pathname.endsWith(
+						'/runs/find-equipment'
+					) &&
+					r.request().postDataJSON()?.inputs?.profile_selections
+						?.selected?.gross_load === asset
+			);
+			await panel
+				.getByRole('button', { name: text.compare, exact: true })
+				.click();
+			const comparison = await saved;
+			expect(comparison.ok()).toBe(true);
+			const project = comparison.request().postDataJSON();
+			expect(project.project_id).toBe(projectId);
+			expect(project.inputs.brief.site).toMatchObject({
+				latitude: 47.6636,
+				longitude: 9.1732,
+			});
+			expect(project.inputs.profile_selections.selected.gross_load).toBe(
+				asset
+			);
+			await removeSiteProject(page, lang, title);
+		});
+	}
+}

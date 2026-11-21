@@ -6,7 +6,12 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { seedConsentCookies } from '../lib/consent';
-import { instance, REPO_ROOT } from '../lib/instance';
+import { REPO_ROOT } from '../lib/instance';
+import {
+	startSolarProject,
+	removeSiteProject,
+	type SiteLanguage as Lang,
+} from '../lib/configurator-site';
 
 test.setTimeout(240_000);
 
@@ -14,18 +19,10 @@ test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
 
-type Lang = 'en' | 'de';
-
 /** The wizard's own words, each language's page as it ships. */
 const WORDS = {
 	en: {
-		home: '/',
-		configurator: '/solution-configurator/',
-		details: 'Enter project details',
-		newProject: 'New project',
-		solar: 'Continue with solar',
-		roofChoice: 'Place modules on the roof',
-		openRoof: 'Open roof layout',
+		useLayout: 'Use this layout',
 		importRoof: 'Import roof geometry',
 		roofFile: 'Roof file',
 		stepPlane: 'Roof plane',
@@ -37,16 +34,9 @@ const WORDS = {
 		openings: 'Openings retained',
 		attach: 'Add roof to current design',
 		saved: 'The roof import is included in the saved project.',
-		deleteProject: 'Delete project',
 	},
 	de: {
-		home: '/de/',
-		configurator: '/de/loesungskonfigurator/',
-		details: 'Projektdaten eingeben',
-		newProject: 'Neues Projekt',
-		solar: 'Weiter zur PV-Anlage',
-		roofChoice: 'Module auf dem Dach platzieren',
-		openRoof: 'Dachbelegung öffnen',
+		useLayout: 'Belegung übernehmen',
 		importRoof: 'Dachgeometrie importieren',
 		roofFile: 'Dachdatei',
 		stepPlane: 'Dachebene',
@@ -58,7 +48,6 @@ const WORDS = {
 		openings: 'Übernommene Aussparungen',
 		attach: 'Dachfläche in den Entwurf übernehmen',
 		saved: 'Der Dachimport ist im gespeicherten Projekt enthalten.',
-		deleteProject: 'Projekt löschen',
 	},
 } as const;
 
@@ -69,37 +58,6 @@ function num(lang: Lang, value: string): string {
 
 /** The repository's own WGS 84 fixture: a 3-4-5 roof carrying one opening. */
 const SOURCE = join(REPO_ROOT, 'fixtures/planning/source-roof-wgs84.geojson');
-
-async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
-	const words = WORDS[lang];
-	await page.goto(instance().url + words.home);
-	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
-	const workspace = page.locator('[data-linker-planner]');
-	await workspace
-		.getByRole('button', { name: words.details, exact: true })
-		.click();
-	const project = workspace.getByRole('form', {
-		name: words.newProject,
-		exact: true,
-	});
-	await project.locator('[name="project_title"]').fill(title);
-	await project.locator('[name="country"]').selectOption('DE');
-	await project
-		.locator('[name="system_scope"]')
-		.selectOption('new_pv_storage');
-	await project
-		.getByRole('button', { name: words.solar, exact: true })
-		.click();
-	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/, {
-		timeout: 60_000,
-	});
-	await workspace
-		.getByRole('button', { name: words.roofChoice, exact: true })
-		.click();
-	await workspace
-		.getByRole('button', { name: words.openRoof, exact: true })
-		.click();
-}
 
 /** Fill the three wizard steps and prepare the server preview. */
 async function fillWizard(page: Page, lang: Lang) {
@@ -181,7 +139,7 @@ test.describe('native roof import', () => {
 					height: width === 390 ? 844 : 900,
 				});
 				const title = `m-roof import ${lang} ${width}`;
-				await emptyRoofWorkspace(page, lang, title);
+				await startSolarProject(page, lang, title);
 
 				const panel = await fillWizard(page, lang);
 
@@ -210,15 +168,29 @@ test.describe('native roof import', () => {
 					panel.getByText(words.saved, { exact: true })
 				).toBeVisible();
 
-				const read = page.waitForResponse((r) =>
-					new URL(r.url()).pathname.endsWith('/projects/read')
+				const reopened = await page.context().newPage();
+				await reopened.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				const read = reopened.waitForRequest(
+					(r) =>
+						new URL(r.url()).pathname.endsWith('/projects/read') &&
+						r.method() === 'POST'
 				);
-				await page.reload();
-				const saved = await (await read).json();
+				await reopened.goto(page.url(), {
+					waitUntil: 'domcontentloaded',
+				});
+				const response = await reopened.request.fetch(await read);
+				expect(response.ok()).toBe(true);
+				const saved = await response.json();
 				expect(saved.title).toBe(title);
 				expect(saved.inputs.geometry.roofs).toHaveLength(1);
 				expect(saved.inputs.geometry.roofs[0].holes_uv).toHaveLength(1);
-				const outline = panel.locator(
+				await reopened
+					.getByRole('button', { name: words.useLayout, exact: true })
+					.click();
+				const outline = reopened.locator(
 					'.sc-roof-preview path[fill-rule="evenodd"]'
 				);
 				await expect(outline).toBeVisible();
@@ -226,38 +198,13 @@ test.describe('native roof import', () => {
 					(await outline.getAttribute('d'))?.match(/M/g)
 				).toHaveLength(2);
 				await outline.scrollIntoViewIfNeeded();
-				await page.screenshot({
+				await reopened.screenshot({
 					path: test.info().outputPath('saved-roof.png'),
 					animations: 'disabled',
 				});
 
-				await page.goto(
-					instance().url + words.configurator + '?projects=1'
-				);
-				const row = page
-					.getByRole('listitem')
-					.filter({
-						has: page.getByRole('heading', {
-							name: title,
-							exact: true,
-						}),
-					});
-				await row
-					.getByRole('button', {
-						name: new RegExp(
-							lang === 'en'
-								? '^Delete project '
-								: '^Projekt .* löschen$'
-						),
-					})
-					.click();
-				await row
-					.getByRole('button', {
-						name: words.deleteProject,
-						exact: true,
-					})
-					.click();
-				await expect(row).toHaveCount(0);
+				await reopened.close();
+				await removeSiteProject(page, lang, title);
 			});
 		}
 	}

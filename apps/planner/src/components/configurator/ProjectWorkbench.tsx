@@ -1492,6 +1492,7 @@ export default function ProjectWorkbench({
 											)
 								}
 								initialMap={isRoofLocation(location.hash)}
+								initialPlan={location.hash === "#sc-roof-plan"}
 								takeImageryConsent={(source) =>
 									takeRoofImageryConsent(project.id, source)
 								}

@@ -17542,3 +17542,7 @@ msgstr "Keine passenden Produkte gefunden."
 #: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
 msgid "Choose this product"
 msgstr "Dieses Produkt auswählen"
+
+#: ../../apps/planner/src/components/RoofStart.tsx build/planner/assets/planner.js:1
+msgid "Use a roof plan or measurements"
+msgstr "Dachplan oder Aufmaß verwenden"

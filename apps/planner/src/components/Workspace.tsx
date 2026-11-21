@@ -383,11 +383,13 @@ export function Workspace({
 							? "sc-energy"
 							: destination === "equipment"
 								? "sc-system"
-								: destination === "roof"
-									? "sc-roof"
-									: destination === "design"
-										? "sc-solar"
-										: "sc-project",
+								: destination === "roof-plan"
+									? "sc-roof-plan"
+									: destination === "roof"
+										? "sc-roof"
+										: destination === "design"
+											? "sc-solar"
+											: "sc-project",
 				destination === "guided-comparison",
 			);
 		return true;

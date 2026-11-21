@@ -15,7 +15,7 @@ export function isRoofLocation(hash: string) {
 export function projectChapter(url: URL): ProjectChapter {
 	const chapter = chapters.find((value) => url.hash === "#sc-" + value);
 	if (chapter) return chapter;
-	if (isRoofLocation(url.hash) || url.searchParams.get("step") === "roof")
+	if (isRoofLocation(url.hash) || url.hash === "#sc-roof-plan" || url.searchParams.get("step") === "roof")
 		return "solar";
 	if (/^[a-f0-9]{32}$/.test(url.searchParams.get("run") ?? "")) return "review";
 	return url.searchParams.get("step") === "equipment" ? "system" : "project";

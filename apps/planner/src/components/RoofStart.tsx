@@ -9,6 +9,7 @@ export function RoofStart({
 	disabled,
 	locked,
 	action,
+	openPlan,
 	change,
 }: {
 	config: Configuration;
@@ -16,60 +17,71 @@ export function RoofStart({
 	disabled: boolean;
 	locked: boolean;
 	action: ReactNode;
+	openPlan: () => void;
 	change: (site: Brief["site"]) => void;
 }) {
 	return (
-		<section className="sc-card">
-			<header className="sc-section-head">
-				<div>
-					<p>
-						{__(
-							"Find your building on the aerial image, then draw the roof and place panels.",
-							"linker-tools",
-						)}
-					</p>
-				</div>
-			</header>
-			<fieldset className="sc-fields" disabled={disabled || locked}>
-				<label className="sc-field">
-					<span>{__("Country", "linker-tools")}</span>
-					<select
-						name="country"
-						required
-						autoComplete="country"
-						value={site.country_code ?? ""}
-						onChange={(event) =>
-							change({
-								...site,
-								country_code: event.currentTarget.value || null,
-							})
-						}
-					>
-						<option value="">{__("Select a country", "linker-tools")}</option>
-						{Object.entries(config.countries)
-							.sort((a, b) => a[1].localeCompare(b[1], config.locale))
-							.map(([code, name]) => (
-								<option key={code} value={code}>
-									{name}
-								</option>
-							))}
-					</select>
-				</label>
-				<label className="sc-field">
-					<span>{__("Address or postcode", "linker-tools")}</span>
-					<input
-						type="text"
-						name="location_label"
-						autoComplete="street-address"
-						required
-						value={site.location_label}
-						onChange={(event) =>
-							change({ ...site, location_label: event.currentTarget.value })
-						}
-					/>
-				</label>
-			</fieldset>
-			{action}
-		</section>
+		<>
+			<button
+				className="sc-button sc-roof-plan-entry"
+				type="button"
+				disabled={disabled || locked}
+				onClick={openPlan}
+			>
+				{__("Use a roof plan or measurements", "linker-tools")}
+			</button>
+			<section className="sc-card">
+				<header className="sc-section-head">
+					<div>
+						<p>
+							{__(
+								"Find your building on the aerial image, then draw the roof and place panels.",
+								"linker-tools",
+							)}
+						</p>
+					</div>
+				</header>
+				<fieldset className="sc-fields" disabled={disabled || locked}>
+					<label className="sc-field">
+						<span>{__("Country", "linker-tools")}</span>
+						<select
+							name="country"
+							required
+							autoComplete="country"
+							value={site.country_code ?? ""}
+							onChange={(event) =>
+								change({
+									...site,
+									country_code: event.currentTarget.value || null,
+								})
+							}
+						>
+							<option value="">{__("Select a country", "linker-tools")}</option>
+							{Object.entries(config.countries)
+								.sort((a, b) => a[1].localeCompare(b[1], config.locale))
+								.map(([code, name]) => (
+									<option key={code} value={code}>
+										{name}
+									</option>
+								))}
+						</select>
+					</label>
+					<label className="sc-field">
+						<span>{__("Address or postcode", "linker-tools")}</span>
+						<input
+							type="text"
+							name="location_label"
+							autoComplete="street-address"
+							required
+							value={site.location_label}
+							onChange={(event) =>
+								change({ ...site, location_label: event.currentTarget.value })
+							}
+						/>
+					</label>
+				</fieldset>
+				{action}
+			</section>
+		</>
 	);
 }

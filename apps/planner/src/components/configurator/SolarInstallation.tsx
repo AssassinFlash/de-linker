@@ -83,6 +83,7 @@ export interface SolarInstallationProps {
 	next: () => void;
 	wiring?: ReactNode;
 	initialMap?: boolean;
+	initialPlan?: boolean;
 	takeImageryConsent?: (source: PlaceImagery) => boolean;
 	onEditing?: (editing: boolean) => void;
 	onLayoutChange?: () => void;
@@ -163,6 +164,7 @@ export function SolarInstallation({
 	next,
 	wiring,
 	initialMap = false,
+	initialPlan = false,
 	active = true,
 	onCoordinateValidity,
 	takeImageryConsent,
@@ -185,11 +187,12 @@ export function SolarInstallation({
 		geometry.coordinate_system.north_reference === "true_north";
 	const [mode, setMode] = useState<"known" | "roof">(
 		initialMap ||
+			initialPlan ||
 			(reference.model !== KNOWN_PV_MODEL && geometry.roofs.length > 0)
 			? "roof"
 			: "known",
 	);
-	const [layoutOpen, setLayoutOpen] = useState(initialMap);
+	const [layoutOpen, setLayoutOpen] = useState(initialMap || initialPlan);
 	const choicesId = useId();
 	const layoutHeading = useRef<HTMLHeadingElement>(null);
 	const openLayout = useRef<HTMLButtonElement>(null);
@@ -220,10 +223,11 @@ export function SolarInstallation({
 	const [roofPropertyInvalid, setRoofPropertyInvalid] = useState(false);
 	const roofPropertiesPanel = useRef<HTMLDivElement>(null);
 	const [view, setView] = useState<"plan" | "map" | "scene">(
-		initialMap ||
-			recordedCentre !== null ||
-			mapReferenced ||
-			(site.country_code && site.location_label.trim())
+		!initialPlan &&
+			(initialMap ||
+				recordedCentre !== null ||
+				mapReferenced ||
+				(site.country_code && site.location_label.trim()))
 			? "map"
 			: "plan",
 	);

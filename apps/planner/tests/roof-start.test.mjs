@@ -215,6 +215,18 @@ test("a roof starts from its country and address and opens directly on the locat
 	assert.equal(project.inputs.brief.system_scope, null);
 });
 
+test("a local roof plan opens without an address, a map lookup or imagery consent", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await until(() => button("Use a roof plan or measurements"));
+	await page.click("Use a roof plan or measurements");
+	await until(() => page.opened.length === 1);
+	assert.equal(page.searches.length, 0);
+	assert.equal(page.offeredAreas.length, 0);
+	assert.equal(page.opened[0].project.title, "New project");
+	assert.equal(page.opened[0].destination, "roof-plan");
+	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
+});
+
 test("from the homepage a country, street address and provider choice open the roof without a comparison", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");

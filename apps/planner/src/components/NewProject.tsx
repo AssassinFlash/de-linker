@@ -433,9 +433,15 @@ export function NewProject({
 					if (roofEntry)
 						return (
 							!record.profile &&
-							(record.destination === "roof" || record.destination === "design")
+							(record.destination === "roof" ||
+								record.destination === "roof-plan" ||
+								record.destination === "design")
 						);
-					if (record.destination === "roof") return false;
+					if (
+						record.destination === "roof" ||
+						record.destination === "roof-plan"
+					)
+						return false;
 					return (
 						record.destination !== "guided-comparison" &&
 						(record.destination === "preliminary-review") === compareOnLoad
@@ -446,7 +452,11 @@ export function NewProject({
 				// Earlier roof entries and the regular project form both stored "design".
 				// Offer those receipts by title until the customer chooses one.
 				const resume = roofEntry
-					? matching.find((record) => record.destination === "roof")
+					? matching.find(
+							(record) =>
+								record.destination === "roof" ||
+								record.destination === "roof-plan",
+						)
 					: matching[0];
 				if (resume) restoreCreation(resume);
 			})
@@ -494,8 +504,14 @@ export function NewProject({
 	}
 	async function submit(
 		direction?: NonNullable<Brief["system_scope"]>,
-		{ discardProfile = false, useAddress = false, openRoof = false } = {},
+		{
+			discardProfile = false,
+			useAddress = false,
+			openRoof = false,
+			useRoofPlan = false,
+		} = {},
 	) {
+		const roofPlan = useRoofPlan || destination.current === "roof-plan";
 		const roof = roofEntry || openRoof || destination.current === "roof";
 		if (
 			sending.current ||
@@ -508,7 +524,8 @@ export function NewProject({
 			(!intent.current &&
 				!direction &&
 				(roof
-					? !brief.site.country_code || !brief.site.location_label.trim()
+					? !roofPlan &&
+						(!brief.site.country_code || !brief.site.location_label.trim())
 					: !directComparison && (!title.trim() || !brief.system_scope)))
 		)
 			return;
@@ -617,7 +634,7 @@ export function NewProject({
 			if (lifetime.current !== instance) return;
 			if (!intent.current) {
 				let submittedInputs = inputs;
-				if (roof || (compareOnSubmit && useAddress)) {
+				if ((roof && !roofPlan) || (compareOnSubmit && useAddress)) {
 					try {
 						if (roof && config) {
 							if (!config.googleMapsApiKey) {
@@ -651,11 +668,10 @@ export function NewProject({
 						input_contract: projectInputContract,
 						title:
 							title.trim() ||
-							(roof
-								? submittedBrief.site.location_label.slice(
-										0,
-										MAX_PROJECT_TITLE_LENGTH,
-									)
+							(roof && submittedBrief.site.location_label.trim()
+								? submittedBrief.site.location_label
+										.trim()
+										.slice(0, MAX_PROJECT_TITLE_LENGTH)
 								: __("New project", "linker-tools")),
 						inputs: {
 							...submittedInputs,
@@ -673,15 +689,17 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = roof
-					? "roof"
-					: compareOnSubmit
-						? "guided-comparison"
-						: direction
-							? "preliminary-review"
-							: brief.system_scope === "storage_only"
-								? null
-								: "design";
+				destination.current = roofPlan
+					? "roof-plan"
+					: roof
+						? "roof"
+						: compareOnSubmit
+							? "guided-comparison"
+							: direction
+								? "preliminary-review"
+								: brief.system_scope === "storage_only"
+									? null
+									: "design";
 			}
 			await store
 				.writeCreation(
@@ -1305,6 +1323,10 @@ export function NewProject({
 						disabled={editingDisabled || inputContractRequired}
 						locked={Boolean(intent.current)}
 						action={mapAction}
+						openPlan={() => {
+							roofPermission.current = null;
+							void submit(undefined, { useRoofPlan: true });
+						}}
 						change={(site) =>
 							edit((current) => ({ ...current, brief: { ...brief, site } }))
 						}
