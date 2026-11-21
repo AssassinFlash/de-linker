@@ -1,0 +1,125 @@
+/* Woo equipment presentation and recorded engineering sources share the site tokens. */
+@layer components {
+  .linker-product-list,
+  .linker-source-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--proto-space-3);
+  }
+  .linker-product-card,
+  .linker-source-card {
+    min-width: 0;
+    padding: var(--proto-space-4);
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-lg);
+    background: var(--proto-color-surface);
+    overflow-wrap: anywhere;
+  }
+  .linker-product-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--proto-space-3);
+  }
+  .linker-product-card__identity {
+    display: flex;
+    align-items: center;
+    gap: var(--proto-space-3);
+    min-width: 0;
+    color: var(--proto-color-ink);
+    text-decoration: none;
+  }
+  .linker-product-card__identity img {
+    flex: none;
+    width: 3.75rem;
+    height: 3.75rem;
+    padding: var(--proto-space-1);
+    object-fit: contain;
+    border-radius: var(--proto-radius-md);
+    background: var(--proto-canvas-white);
+  }
+  .linker-product-card__copy,
+  .linker-product-card__details,
+  .linker-source-card,
+  .linker-source-card__identity {
+    display: grid;
+    align-content: start;
+    gap: var(--proto-space-1);
+    min-width: 0;
+  }
+  .linker-product-card__copy strong,
+  .linker-source-card__identity strong { font-size: 1rem; line-height: 1.4; }
+  .linker-product-card small,
+  .linker-source-card small { color: var(--proto-color-muted); font-size: .8125rem; line-height: 1.5; }
+  a.linker-product-card__identity:hover strong,
+  a.linker-product-card__identity:focus-visible strong { text-decoration: underline; text-underline-offset: .15em; }
+  .linker-product-card__details { grid-column: 1 / -1; }
+  .linker-product-card__qty { align-self: start; white-space: normal; }
+  .linker-source-card { gap: var(--proto-space-2); }
+  .linker-source-card__links { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); }
+  .linker-source-card__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: var(--proto-space-3);
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-md);
+    color: var(--proto-teal-800);
+  }
+  .linker-source-card__links a:hover { background: var(--proto-teal-50); }
+  .sc-evidence-metadata { display: grid; gap: var(--proto-space-2); margin: 0; }
+  .sc-evidence-metadata dd { margin: 0; }
+  .sc-selected-products,
+  .sc-model-field,
+  .sc-project-equipment[open],
+  .sc-selection-evidence[open],
+  .sc-product-picker[open] { min-width: 0; }
+  .sc-selected-products,
+  .sc-project-equipment { margin-block-start: var(--proto-space-5); }
+  .sc-selected-products h3,
+  .sc-selection-evidence .sc-check-list + .linker-source-list { margin-block-start: var(--proto-space-4); }
+  .sc-configurator .sc-selected-products > h3 { margin-block-end: var(--proto-space-3); }
+  .sc-project-equipment,
+  .sc-selection-evidence {
+    padding: var(--proto-space-4);
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-lg);
+    background: var(--proto-color-surface);
+  }
+  :is(.sc-selection-evidence,.sc-product-picker,.sc-project-equipment) > summary {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--proto-space-3); min-height: 2.75rem;
+    font-weight: 600; cursor: pointer; list-style: none; color: var(--proto-color-ink);
+  }
+  :is(.sc-selection-evidence,.sc-product-picker,.sc-project-equipment) > summary::-webkit-details-marker {display: none;}
+  :is(.sc-selection-evidence,.sc-product-picker,.sc-project-equipment) > summary::after {
+    content: ""; flex: none; width: .55rem; height: .55rem;
+    border: solid currentColor; border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg); margin-inline: var(--proto-space-2);
+  }
+  :is(.sc-selection-evidence,.sc-product-picker,.sc-project-equipment)[open] > summary::after { transform: rotate(225deg); }
+  :is(.sc-selection-evidence,.sc-project-equipment)[open] > summary { margin-block-end: var(--proto-space-4); }
+  .sc-product-picker { margin-block-start: var(--proto-space-1); }
+  .sc-product-picker > summary { justify-content: start; color: var(--proto-teal-800); font-size: .875rem; }
+  .sc-product-picker .linker-product-list { margin-block-start: var(--proto-space-3); }
+  .sc-product-picker .linker-product-card__details:has(button) { justify-items: start; }
+  .sc-project-equipment > .sc-fields,
+  .sc-project-equipment > fieldset { margin-block-start: var(--proto-space-4); }
+  .sc-configurator .sc-material-row { display: block; border: 0; padding: 0; }
+  .sc-configurator .sc-system-equipment { display: grid; gap: var(--proto-space-3); margin-block: var(--proto-space-3) var(--proto-space-5); }
+  .sc-option-products { display: grid; gap: var(--proto-space-2); }
+  .sc-option-products .linker-product-card { border: 0; padding: 0; background: transparent; }
+  .sc-option-products .linker-product-card__identity img { width: 3rem; height: 3rem; }
+  .sc-card-state { display: flex; flex-wrap: wrap; align-items: center; gap: var(--proto-space-3); }
+  .sc-check-list { display: grid; list-style: none; margin: var(--proto-space-3) 0; padding: 0; }
+  .sc-check-list > li { padding-block: var(--proto-space-3); border-bottom: 1px solid var(--proto-color-line); }
+  .sc-check-list > li > p { margin-block-start: var(--proto-space-1); }
+  .sc-check-status { display:inline-block; margin-inline-start: var(--proto-space-2); font-size: .8125rem; color: var(--proto-color-muted); }
+  .sc-check-status[data-status=satisfied] { color: var(--proto-teal-800); }
+  .sc-table-scroll { max-width: 100%; overflow-x: auto; }
+  @media (max-width: 40rem) {
+    .linker-product-list,.linker-source-list { grid-template-columns: minmax(0,1fr); }
+    .linker-product-card,.linker-source-card { padding: var(--proto-space-3); }
+    .sc-project-equipment,.sc-selection-evidence { padding: var(--proto-space-3); }
+  }
+}

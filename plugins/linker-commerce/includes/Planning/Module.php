@@ -12,6 +12,7 @@ namespace Linker\Commerce\Planning;
 use Linker\Commerce\Abilities\ProductText;
 use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\Publication;
 
 /** All visual output remains native semantic data; no page template or CSS. */
 final class Module {
@@ -92,18 +93,16 @@ final class Module {
 			}
 		}
 		$changes = array_values( array_filter( $preview['changes'] ?? array(), static fn ( array $line ): bool => $line['before'] > 0 && $line['before'] !== $line['after'] ) );
-		$display = array();
-		$locale  = new \Linker\Commerce\Mail\LocaleSwitch();
+
+		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
 		$locale->to( \Linker\Commerce\Inquiry\OrderLocale::current( $language ) );
 		try {
 			$facts = Context::review_facts( $project );
-			foreach ( array_unique( array_column( array_merge( $lines, $changes ), 'product_id' ) ) as $id ) {
-				$display[ $id ] = $this->product_details( $id, ProductText::lang( $language ) );
-			}
 		} finally {
 			$locale->back();
 		}
-		$with_details = static fn ( array $line ): array => $line + $display[ $line['product_id'] ];
+		$display      = self::product_cards( array_column( array_merge( $lines, $changes ), 'product_id' ), $language );
+		$with_details = static fn ( array $line ): array => $line + ( $display[ $line['product_id'] ] ?? array() );
 		return array(
 			'schema_version'          => 1,
 			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $bound, $handoff, $retry ),
@@ -115,29 +114,68 @@ final class Module {
 	}
 
 	/**
-	 * Present a current shop product beside the quantity retained in the customer's project.
+	 * Current shop cards for the native planner, keyed by the original Woo identity.
 	 *
-	 * @param int       $id   Woo product on the handoff or current cart.
-	 * @param 'en'|'de' $lang Display language.
-	 * @return array<string,string>
+	 * @param int[]  $ids  Requested product IDs.
+	 * @param string $language Page language.
+	 * @return array<int,array<string,string>>
+	 * @phpstan-impure Current Woo publication and visibility can change during a request.
 	 */
-	private function product_details( int $id, string $lang ): array {
-		$translated = ProductText::translated_id( $id, $lang );
-		if ( ! $translated || EngineeringReference::is_reference( $translated ) ) {
+	public static function product_cards( array $ids, string $language ): array {
+		if ( array() === $ids ) {
 			return array();
 		}
-		$product = wc_get_product( $translated );
-		if ( ! $product instanceof \WC_Product ) {
-			return array();
-		}
-		$fact = Materials::card_facts( $product, 1 )[0] ?? null;
-		return array_filter(
-			array(
-				'product_url' => (string) get_permalink( $translated ),
-				'image_url'   => (string) wp_get_attachment_image_url( (int) $product->get_image_id(), 'woocommerce_thumbnail' ),
-				'highlight'   => $fact ? $fact['label'] . ' · ' . $fact['value'] : wp_strip_all_tags( $product->get_short_description(), true ),
-			)
+		$lang       = ProductText::lang( $language );
+		$translated = array();
+		$published  = Publication::published_ids(
+			static function () use ( $ids, $lang, &$translated ): array {
+				$posts = get_posts(
+					array(
+						'post_type'        => 'product',
+						'post_status'      => 'publish',
+						'post__in'         => array_values( array_unique( $ids ) ),
+						'posts_per_page'   => -1,
+						'suppress_filters' => true,
+						'lang'             => '',
+					)
+				);
+				foreach ( $posts as $post ) {
+					$id                = $post->ID;
+					$translated[ $id ] = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $id, $lang ) : $id;
+				}
+				return array_values( array_unique( array_merge( array_keys( $translated ), array_values( $translated ) ) ) );
+			}
 		);
+		$public     = array();
+		foreach ( $published as $id ) {
+			$product = wc_get_product( $id );
+			if ( $product instanceof \WC_Product && 'hidden' !== $product->get_catalog_visibility() && '' === get_post_field( 'post_password', $id ) && ! EngineeringReference::is_reference( $id ) ) {
+				$public[ $id ] = $product;
+			}
+		}
+		$cards  = array();
+		$locale = new \Linker\Commerce\Mail\LocaleSwitch();
+		$locale->to( ProductText::locale( $lang ) );
+		try {
+			foreach ( $translated as $id => $twin ) {
+				if ( ! isset( $public[ $id ], $public[ $twin ] ) ) {
+					continue;
+				}
+				$product      = $public[ $twin ];
+				$fact         = Materials::card_facts( $product, 1 )[0] ?? null;
+				$cards[ $id ] = array_filter(
+					array(
+						'label'       => $product->get_name(),
+						'product_url' => (string) get_permalink( $twin ),
+						'image_url'   => (string) wp_get_attachment_image_url( (int) $product->get_image_id(), 'woocommerce_thumbnail' ),
+						'highlight'   => $fact ? $fact['label'] . ' · ' . $fact['value'] : wp_strip_all_tags( $product->get_short_description(), true ),
+					)
+				);
+			}
+		} finally {
+			$locale->back();
+		}
+		return $cards;
 	}
 
 	/**

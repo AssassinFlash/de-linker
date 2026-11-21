@@ -1237,7 +1237,10 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	try {
 		app.setServerRun("succeeded");
 		await untilRun(option);
-		assert.match(option().textContent, /Linker ESS 5K \+ Linker Battery HV/);
+		assert.equal(
+			option().querySelector(".sc-option-products").getAttribute("aria-label"),
+			"Linker ESS 5K + Linker Battery HV",
+		);
 		assert.match(option().textContent, /80 kWh/);
 		assert.doesNotMatch(option().textContent, /100 kWh/);
 		assert.match(

@@ -1,3 +1,4 @@
+import { ProductCard } from "../shared/ProductCard.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
@@ -128,41 +129,6 @@ function takeNavigationDraft(
 	} catch {
 		return null;
 	}
-}
-
-type InquiryProduct = ReturnType<typeof readInquiryForm>["lines"][number];
-
-function ProductSummary({
-	product,
-	quantity,
-}: {
-	product: Pick<
-		InquiryProduct,
-		"label" | "productUrl" | "imageUrl" | "highlight"
-	>;
-	quantity?: number;
-}) {
-	const heading = (
-		<>
-			{product.imageUrl && <img src={product.imageUrl} alt="" loading="lazy" />}
-			<span>
-				{product.label}
-				{quantity !== undefined && ` × ${quantity}`}
-			</span>
-		</>
-	);
-	return (
-		<div className="sc-inquiry-product">
-			{product.productUrl ? (
-				<a href={product.productUrl} target="_blank" rel="noopener noreferrer">
-					{heading}
-				</a>
-			) : (
-				heading
-			)}
-			{product.highlight && <small>{product.highlight}</small>}
-		</div>
-	);
 }
 
 export function ReviewInquiry({
@@ -506,7 +472,7 @@ export function ReviewInquiry({
 							<ul className="sc-inquiry-products">
 								{lines?.map((line, index) => (
 									<li key={index}>
-										<ProductSummary product={line} quantity={line.quantity} />
+										<ProductCard {...line} quantity={`× ${line.quantity}`} />
 									</li>
 								))}
 							</ul>
@@ -526,7 +492,7 @@ export function ReviewInquiry({
 									{changes.map((line) => (
 										<tr key={line.productId}>
 											<th scope="row">
-												<ProductSummary product={line} />
+												<ProductCard {...line} />
 											</th>
 											<td>{line.before}</td>
 											<td>{line.after}</td>

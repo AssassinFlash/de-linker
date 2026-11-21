@@ -17526,3 +17526,19 @@ msgstr "Sie ergänzen einen Batteriespeicher und behalten Ihren vorhandenen PV-W
 #: ../../apps/planner/src/components/configurator/ReviewProposal.tsx
 msgid "Report details"
 msgstr "Berichtsdetails"
+
+#: ../../apps/planner/src/components/equipment/AssessmentSources.tsx build/planner/assets/planner.js:1
+msgid "No source documents recorded."
+msgstr "Keine Quelldokumente hinterlegt."
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "Browse product details"
+msgstr "Produktdetails ansehen"
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "No matching products."
+msgstr "Keine passenden Produkte gefunden."
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "Choose this product"
+msgstr "Dieses Produkt auswählen"

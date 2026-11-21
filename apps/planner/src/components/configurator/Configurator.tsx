@@ -1867,6 +1867,8 @@ export default function Configurator({
 								<details>
 									<summary>{__("View parts list", "linker-tools")}</summary>
 									<CandidateMaterials
+										client={client}
+										scope={session.query_scope}
 										candidate={selectedCandidate}
 										assessment={assessment}
 										locale={config.locale}

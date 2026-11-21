@@ -69,6 +69,7 @@ export const RPC_PATHS = [
 	"draft/apply",
 	"draft/read",
 	"products/current",
+	"products/cards",
 	"sources/saved-solution",
 	"sources/project-brief",
 	"sources/project-brief/stage",

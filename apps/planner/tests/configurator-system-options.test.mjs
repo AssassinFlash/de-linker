@@ -87,7 +87,27 @@ const run = {
 		},
 	},
 };
-async function mount(t, props) {
+const currentProducts = products.map((p) => ({
+	...p,
+	id: p.product_id,
+	product_revision: "a".repeat(64),
+	device_class: p.sku === "INV" ? "inverters" : "battery-systems",
+	figures: {},
+	documents:
+		p.sku === "BAT"
+			? [
+					{
+						url: "https://de-linker.com/uploads/battery.pdf",
+						title: "Battery data",
+					},
+					{
+						url: "https://de-linker.com/uploads/Battery-data.pdf",
+						title: "Battery-data.pdf",
+					},
+				]
+			: [],
+}));
+async function mount(t, props, catalog = currentProducts) {
 	const dom = setupDom();
 	const cache = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
@@ -106,7 +126,30 @@ async function mount(t, props) {
 				React.createElement(
 					QueryClientProvider,
 					{ client: cache },
-					React.createElement(SystemOptions, next),
+					React.createElement(SystemOptions, {
+						...next,
+						client: {
+							...next.client,
+							async query(path, ...args) {
+								if (path === "products/current")
+									return {
+										schema_version: 1,
+										provider: "woocommerce",
+										products: catalog,
+									};
+								if (path === "products/cards")
+									return {
+										cards: products.map((p) => ({
+											id: p.product_id,
+											label: p.model,
+											product_url:
+												"https://fixture.invalid/product/" + p.product_id,
+										})),
+									};
+								return next.client.query(path, ...args);
+							},
+						},
+					}),
 				),
 			),
 		);
@@ -216,9 +259,15 @@ test("system cards use real candidate data, inspect evidence and select without 
 				/2/.test(row.textContent),
 		),
 	);
+	await act(async () =>
+		document.querySelector(".sc-selection-evidence > summary").click(),
+	);
+	await until(() => document.querySelector(".linker-source-card a"));
 	assert.equal(
 		document
-			.querySelector('a[href="https://de-linker.com/uploads/battery.pdf"]')
+			.querySelector(
+				'a[href="https://de-linker.com/uploads/battery.pdf#page=2"]',
+			)
 			?.textContent.includes("2"),
 		true,
 	);
@@ -244,6 +293,93 @@ test("system cards use real candidate data, inspect evidence and select without 
 	await enter(document.querySelector('input[type="search"]'), "not a model");
 	assert.equal(document.querySelectorAll(".sc-package").length, 0);
 	assert.match(document.body.textContent, /No configurations match/);
+});
+
+test("selection evidence groups duplicate references by model and opens the cited PDF page", async (t) => {
+	const item = candidates[0];
+	const base = assessment(item);
+	const citation = {
+		url: "https://de-linker.com/uploads/Battery-data.pdf",
+		page: 3,
+		product_id: 201,
+	};
+	base.checks[0].facts = [{ value: 5, unit: "kWh", source: citation }];
+	base.checks[0].documents = [citation, { ...citation, page: 11 }];
+	await mount(t, {
+		solarOnly: false,
+		run,
+		scope: "scope",
+		locale: "en",
+		selectedId: item.id,
+		client: {
+			isCurrentScope: () => true,
+			query: async () => ({
+				run_id: run.id,
+				candidate_id: item.id,
+				assessment_sha256: item.assessment_sha256,
+				assessment: base,
+			}),
+		},
+	});
+	await until(() => document.body.textContent.includes("Retained on site"));
+	await act(async () =>
+		document.querySelector(".sc-selection-evidence > summary").click(),
+	);
+	await until(() => document.querySelector(".linker-source-card a"));
+	const source = [...document.querySelectorAll("article")].find((card) =>
+		card.textContent.includes("Battery-data.pdf"),
+	);
+	assert.ok(source, "readers can identify the source file");
+	assert.match(source.textContent, /Battery Actual/);
+	assert.deepEqual(
+		[...source.querySelectorAll("a")].map((a) => a.href),
+		[citation.url + "#page=3", citation.url + "#page=11"],
+	);
+});
+
+test("withdrawn evidence keeps its identity and never links to replacement bytes", async (t) => {
+	const item = candidates[0];
+	const original = assessment(item);
+	const citation = original.checks[0].facts[0].source;
+	Object.assign(citation, {
+		product_id: 201,
+		document_id: "battery-doc",
+		blob_sha256: "a".repeat(64),
+	});
+	await mount(
+		t,
+		{
+			run,
+			client: {
+				isCurrentScope: () => true,
+				query: async () => ({
+					run_id: run.id,
+					candidate_id: item.id,
+					assessment_sha256: item.assessment_sha256,
+					assessment: original,
+				}),
+			},
+			scope: "scope",
+			locale: "en",
+			solarOnly: false,
+			selectedId: item.id,
+		},
+		[],
+	);
+	await until(() => document.querySelector(".sc-selection-evidence > summary"));
+	await act(async () =>
+		document.querySelector(".sc-selection-evidence > summary").click(),
+	);
+	await until(() =>
+		document
+			.querySelector(".linker-source-card")
+			?.textContent.includes("This document is currently unavailable."),
+	);
+	assert.match(
+		document.querySelector(".linker-source-card").textContent,
+		/Battery Actual/,
+	);
+	assert.equal(document.querySelector(".linker-source-card a"), null);
 });
 
 test("shared plant materials keep one merged quantity and distinguish same-model retained and new units", async (t) => {
@@ -331,7 +467,10 @@ test("shared plant materials keep one merged quantity and distinguish same-model
 		/Existing system · Retained on site · × 1/,
 	);
 	assert.match(inverter.textContent, /Extension · New equipment · × 1/);
-	assert.equal(inverter.querySelector("strong").textContent, "× 2");
+	assert.equal(
+		inverter.querySelector(".linker-product-card__qty").textContent,
+		"× 2",
+	);
 	assert.match(
 		document.querySelectorAll(".sc-equipment")[1].textContent,
 		/Replacement equipment/,
@@ -391,7 +530,9 @@ test("backup comparison shows the closest evidence-supported options first and k
 	});
 	const cards = () => [...document.querySelectorAll(".sc-package")];
 	const capacities = () =>
-		cards().map((card) => card.querySelector("strong").textContent);
+		cards().map(
+			(card) => card.querySelector(".sc-package-capacity strong").textContent,
+		);
 	assert.deepEqual(capacities(), [
 		"22.5 kWh",
 		"27 kWh",
