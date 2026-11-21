@@ -36,8 +36,8 @@ final class HandoffTeamTest extends TestCase {
 	public function test_default_mailbox_sentence(): void {
 		$result = ( new HandoffTeam() )->execute( array( 'summary' => 'Need a delivery date.' ) );
 
-		$this->assertSame( 'Our team will answer that at sales@de-linker.com.', $result['sentence_en'] );
-		$this->assertSame( 'Unser Team beantwortet das unter sales@de-linker.com.', $result['sentence_de'] );
+		$this->assertSame( 'Email sales@de-linker.com and our team will reply within one working day.', $result['sentence_en'] );
+		$this->assertSame( 'Schreiben Sie an sales@de-linker.com, und unser Team antwortet Ihnen innerhalb eines Werktags.', $result['sentence_de'] );
 		$this->assertStringStartsWith( 'mailto:sales@de-linker.com?body=', $result['mailto'] );
 		$this->assertStringContainsString( rawurlencode( 'Need a delivery date.' ), $result['mailto'] );
 		$this->assertTrue( ( new HandoffTeam() )->can_execute() );

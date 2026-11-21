@@ -90,8 +90,8 @@ final class HandoffTeam {
 		}
 
 		return array(
-			'sentence_en' => sprintf( 'Our team will answer that at %s.', $to ),
-			'sentence_de' => sprintf( 'Unser Team beantwortet das unter %s.', $to ),
+			'sentence_en' => sprintf( 'Email %s and our team will reply within one working day.', $to ),
+			'sentence_de' => sprintf( 'Schreiben Sie an %s, und unser Team antwortet Ihnen innerhalb eines Werktags.', $to ),
 			'mailto'      => $mailto,
 		);
 	}
