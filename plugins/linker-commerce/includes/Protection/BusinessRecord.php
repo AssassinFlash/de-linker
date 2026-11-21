@@ -24,7 +24,7 @@ final class BusinessRecord {
 	public function register(): void {
 		add_action( 'woocommerce_before_order_object_save', array( $this, 'stamp' ) );
 		add_filter( 'woocommerce_privacy_remove_order_personal_data_meta', array( $this, 'erase_fields' ) );
-		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( $this, 'mark_erasure' ) );
+		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( $this, 'mark_erasure' ), PHP_INT_MAX );
 	}
 
 	/**
@@ -40,6 +40,11 @@ final class BusinessRecord {
 		}
 	}
 
+	/**
+	 * Private marker left after the native eraser removes the submitted UUID.
+	 *
+	 * @param string $id Original submission UUID.
+	 */
 	private static function erased_reference( string $id ): string {
 		return hash_hmac( 'sha256', 'erased-inquiry|' . $id, wp_salt( 'nonce' ) );
 	}
@@ -110,7 +115,7 @@ final class BusinessRecord {
 			if ( ! is_array( $old ) || (int) ( $old['retry_until'] ?? 0 ) <= time() ) {
 				return null;
 			}
-			if ( $binding === ( $old['binding'] ?? '' ) && $fingerprint !== ( $old['fingerprint'] ?? '' ) && 'erased' !== ( $old['status'] ?? '' ) ) {
+			if ( ( $old['binding'] ?? '' ) === $binding && ( $old['fingerprint'] ?? '' ) !== $fingerprint && 'erased' !== ( $old['status'] ?? '' ) ) {
 				return self::changed();
 			}
 			return self::unconfirmed();
@@ -128,10 +133,12 @@ final class BusinessRecord {
 		return self::matches( $order, $id, $fingerprint, $binding ) ? $order : self::unconfirmed();
 	}
 
+	/** The owner can resubmit edited details under a fresh submission ID. */
 	private static function changed(): WP_Error {
 		return new WP_Error( 'linker_admission_payload_changed', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 	}
 
+	/** A missing or private result carries no customer or order information. */
 	private static function unconfirmed(): WP_Error {
 		return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 	}

@@ -87,6 +87,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$_COOKIE = $cookie;
 			}
 		);
+		$this->use_empty_mail_queue();
 		wc_load_cart();
 		WC()->cart->empty_cart();
 		$this->later( static fn () => WC()->cart->empty_cart() );
@@ -122,8 +123,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$unknown = Business::run(
 					$action,
 					array(
-						'linker_request_id' => $id,
-						'cf-turnstile-response'      => '',
+						'linker_request_id'     => $id,
+						'cf-turnstile-response' => '',
 					),
 					$payload,
 					$work
@@ -135,8 +136,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$fresh = Business::run(
 				$action,
 				array(
-					'linker_request_id' => wp_generate_uuid4(),
-					'cf-turnstile-response'      => '',
+					'linker_request_id'     => wp_generate_uuid4(),
+					'cf-turnstile-response' => '',
 				),
 				$payload,
 				$work
@@ -261,9 +262,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$ledger = new Ledger();
 			$this->assertIsArray( $ledger->reserve( $original, hash( 'sha256', 'earlier-input-' . self::tag() ), array( new Allowance( 'fixture_changed_input', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
 			// The customer then edits the question and sends again from the native form.
-			$post['message']     .= ' Additional detail.';
+			$post['message']              .= ' Additional detail.';
 			$post['cf-turnstile-response'] = '';
-			$_POST                = $post;
+			$_POST                         = $post;
 			add_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
 			try {
 				( 'contact' === $action ? new ContactHandler() : new Handler() )->handle();
@@ -306,18 +307,18 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( Identity::class, $identity );
 		$started = (string) time();
 		return array(
-			'linker_started'       => $started,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $started ),
-			'name'                 => 'Fixture Installer',
-			'email'                => 'fixture-' . self::tag() . '@example.test',
-			'company'              => 'Fixture Company',
-			'message'              => 'Please provide product guidance.',
-			'consent'              => '1',
-			'linker_request_id'    => wp_generate_uuid4(),
+			'linker_started'        => $started,
+			'linker_started_nonce'  => wp_create_nonce( 'linker_inquiry_started_' . $started ),
+			'name'                  => 'Fixture Installer',
+			'email'                 => 'fixture-' . self::tag() . '@example.test',
+			'company'               => 'Fixture Company',
+			'message'               => 'Please provide product guidance.',
+			'consent'               => '1',
+			'linker_request_id'     => wp_generate_uuid4(),
 			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
-			'linker_inquiry_nonce' => wp_create_nonce( Handler::ACTION ),
-			'linker_contact_nonce' => wp_create_nonce( ContactForm::NONCE_ACTION ),
-			'linker_draft_hash'    => WC()->cart->get_cart_hash(),
+			'linker_inquiry_nonce'  => wp_create_nonce( Handler::ACTION ),
+			'linker_contact_nonce'  => wp_create_nonce( ContactForm::NONCE_ACTION ),
+			'linker_draft_hash'     => WC()->cart->get_cart_hash(),
 		);
 	}
 
@@ -621,11 +622,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			array( 'user_login' => 'previous@example.test' )
 		);
 		$_POST = array(
-			'wc_reset_password' => 'true',
-			'user_login'        => '<b>installer@example.test</b>',
-			'password_1'        => 'never-store-password',
-			'reset_key'         => 'never-store-key',
-			'cf-turnstile-response'      => 'never-store-proof',
+			'wc_reset_password'     => 'true',
+			'user_login'            => '<b>installer@example.test</b>',
+			'password_1'            => 'never-store-password',
+			'reset_key'             => 'never-store-key',
+			'cf-turnstile-response' => 'never-store-proof',
 		);
 		$this->assertNotFalse( has_action( 'lostpassword_post', array( \Linker\Commerce\Mail\ResetNotice::class, 'capture_submission' ) ) );
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error(), new \WP_User() );

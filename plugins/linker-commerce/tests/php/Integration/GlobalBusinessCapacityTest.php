@@ -46,6 +46,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 				}
 			);
 		}
+		$this->use_empty_mail_queue();
 	}
 
 	/** A previous capacity snapshot cannot refuse a customer's new inquiry. */
