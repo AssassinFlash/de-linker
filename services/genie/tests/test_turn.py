@@ -460,9 +460,17 @@ def test_product_card_and_actions_use_the_current_request(
     assert card["quantities"] == {"4107": expected}
 
 
-@pytest.mark.parametrize(("quantity", "expected"), [("2", 2), ("2 or 3", 0)])
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [
+        ("2 hybrid inverters", 2),
+        ("2 or 3 hybrid inverters", 0),
+        ("2 bis 3 Hybridwechselrichter", 0),
+        ("2 Hybridwechselrichter", 2),
+    ],
+)
 def test_customer_can_choose_either_inverter_at_the_requested_count(
-    log: TurnLog, catalog_turn: None, quantity: str, expected: int
+    log: TurnLog, catalog_turn: None, description: str, expected: int
 ) -> None:
     def generate(
         request: TurnRequest, retry: str | None
@@ -480,7 +488,7 @@ def test_customer_can_choose_either_inverter_at_the_requested_count(
     blocks = _blocks(
         _post(
             "choices",
-            f"Please prepare a product list with {quantity} hybrid inverters around 10 kW. I want to save the list to my account.",
+            f"Please prepare a product list with {description} around 10 kW. I want to save the list to my account.",
         )
     )
     assert [b["type"] for b in blocks] == ["text", "cards"]
