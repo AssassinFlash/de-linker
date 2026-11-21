@@ -117,7 +117,7 @@ final class BlogShortcodesTest extends TestCase {
 			'empty English journal' => array( true, 'post', '', 'All posts', '" " | Linker', 'All posts | Linker' ),
 			'zero is a query'       => array( true, 'post', '0', 'Alle Beiträge', '0 | Linker', '0 | Linker' ),
 			'normal journal'        => array( true, 'post', 'backup', 'All posts', 'backup | Linker', 'backup | Linker' ),
-			'general search'        => array( true, array( 'post', 'page', 'product' ), '', 'Alle Beiträge', 'Search | Linker', 'Search | Linker' ),
+			'cleared site search'   => array( true, array( 'post', 'page', 'product' ), '', 'Search', '“” | Linker', 'Search | Linker' ),
 			'not search'            => array( false, 'post', '', 'All posts', 'Page | Linker', 'Page | Linker' ),
 		);
 	}

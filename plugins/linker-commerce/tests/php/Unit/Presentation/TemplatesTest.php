@@ -57,6 +57,7 @@ final class TemplatesTest extends TestCase {
 				'is_single_post',
 				'is_blog_posts_index',
 				'is_search',
+				'is_404',
 				'is_archive_for_tax_category',
 				'linker-compare',
 				'linker-compare-de',
@@ -74,6 +75,7 @@ final class TemplatesTest extends TestCase {
 				'is_single_post__de',
 				'is_blog_posts_index__de',
 				'is_search__de',
+				'is_404__de',
 				'is_archive_for_tax_category__de',
 			),
 			array_keys( $paths )
@@ -643,14 +645,14 @@ final class TemplatesTest extends TestCase {
 		$first     = $templates->sync();
 		$second    = $templates->sync();
 
-			$this->assertSame( 18, $created, 'the ten templates and the eight tool-page templates' );
-			$this->assertSame( 18, $first['created'] );
+			$this->assertSame( 19, $created, 'the eleven templates and the eight tool-page templates' );
+			$this->assertSame( 19, $first['created'] );
 		$this->assertSame( 0, $first['updated'] );
 		$this->assertSame( 0, $second['created'] );
-			$this->assertSame( 18, $second['updated'] );
-			$this->assertSame( 18, $updated );
+			$this->assertSame( 19, $second['updated'] );
+			$this->assertSame( 19, $updated );
 			// Every insert and every update slashes its content — both write paths.
-			$this->assertSame( 36, $slashes );
+			$this->assertSame( 2 * $created, $slashes );
 	}
 
 	/**
@@ -721,7 +723,7 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 0, $report['created'] );
 		$this->assertSame( 0, $report['updated'] );
-			$this->assertSame( 18, $report['unchanged'] );
+			$this->assertSame( 19, $report['unchanged'] );
 		$this->assertSame( 0, $inserts + $updated );
 	}
 
@@ -825,8 +827,8 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-			$this->assertCount( 18, $assigned, 'the ten templates and the eight tool-page templates' );
-			$this->assertSame( array_fill( 0, 18, 'en' ), array_values( $assigned ) );
+			$this->assertCount( 19, $assigned, 'the eleven templates and the eight tool-page templates' );
+			$this->assertSame( array_fill( 0, 19, 'en' ), array_values( $assigned ) );
 	}
 
 	/**
@@ -869,7 +871,7 @@ final class TemplatesTest extends TestCase {
 		$report = ( new Templates() )->sync();
 
 		$this->assertSame( array(), $assigned );
-			$this->assertSame( 18, $report['created'] );
+			$this->assertSame( 19, $report['created'] );
 	}
 
 	/**

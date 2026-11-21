@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Products\SearchScope;
 use WP_Post;
 use WP_Term;
 
@@ -67,17 +68,24 @@ final class BlogShortcodes {
 	}
 
 	/**
-	 * Name the cleared journal search after SEOPress and the German title filter
+	 * Name a cleared search after SEOPress and the German title filter
 	 * have composed the browser title. Keep its site suffix and other searches.
 	 *
 	 * @param string $title The composed browser title.
 	 */
 	public function empty_search_title( string $title ): string {
-		if ( ! is_search() || 'post' !== get_query_var( 'post_type' ) || '' !== get_search_query( false ) ) {
+		if ( ! is_search() || '' !== get_search_query( false ) ) {
 			return $title;
 		}
-		$heading = __( 'All posts', 'linker-commerce' );
-		$suffix  = strstr( $title, '|' );
+		$type = get_query_var( 'post_type' );
+		if ( 'post' === $type ) {
+			$heading = __( 'All posts', 'linker-commerce' );
+		} elseif ( SearchScope::POST_TYPES === $type ) {
+			$heading = __( 'Search', 'linker-commerce' );
+		} else {
+			return $title;
+		}
+		$suffix = strstr( $title, '|' );
 		return $heading . ( false === $suffix ? '' : ' ' . $suffix );
 	}
 

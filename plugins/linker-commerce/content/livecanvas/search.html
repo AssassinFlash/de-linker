@@ -43,7 +43,7 @@
       </nav>
     </aside>
     <div class="journal-main">
-      <div class="journal-topbar"><div class="journal-intro"><p class="journal-eyebrow">Search results</p><h1><escape><url query="s" /></escape></h1></div>
+      <div class="journal-topbar"><div class="journal-intro"><p class="journal-eyebrow">Search results</p><h1><if check="{Url query=s}" is_not=""><escape><url query="s" /></escape><else>Search</else></if></h1></div>
         <form role="search" method="get" action="/" class="journal-search">
           <label for="site-search" class="sr-only">Search the site</label>
           <input id="site-search" type="search" name="s" value="{Url query=s}" placeholder="Search the site">
