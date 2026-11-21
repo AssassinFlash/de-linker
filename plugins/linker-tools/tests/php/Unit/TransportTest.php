@@ -138,7 +138,7 @@ final class TransportTest extends TestCase {
 	/** The verified project owner sends each command to its private handler with its original key. */
 	public function test_guest_workspace_commands_use_the_owned_engine_request(): void {
 		$owner   = new Principal( 'guest', 'synthetic-guest' );
-		$command = array( 'key' => 'be0e47ad-800d-49bd-bc38-a0efce1eff92' );
+		$command = array( 'key' => 'guest-project-command' );
 		$body    = (string) wp_json_encode( $command );
 		foreach ( array( 'projects/create', 'projects/revise', 'profiles/csv', 'profiles/standard', 'geometry/import', 'runs/calculate', 'runs/report' ) as $path ) {
 			$transport = new Transport(
