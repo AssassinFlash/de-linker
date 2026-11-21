@@ -151,6 +151,33 @@ function useProjectResult(
 	});
 }
 
+function useSearchInputs(
+	client: PlannerClient,
+	scope: string,
+	projectId: string,
+	run: PlanningRun | null,
+) {
+	return useQuery({
+		queryKey: [
+			scope,
+			"configurator-comparison-models",
+			projectId,
+			run?.id ?? null,
+		],
+		enabled: !!run && client.isCurrentScope(scope),
+		queryFn: async ({ signal }) =>
+			readRunInputs(
+				await client.query(
+					"runs/inputs",
+					{ schema_version: 1, project_id: projectId, run_id: run!.id },
+					scope,
+					signal,
+				),
+				run!,
+			),
+	});
+}
+
 export default function ProjectWorkbench({
 	project,
 	session,
@@ -280,6 +307,8 @@ export default function ProjectWorkbench({
 	const [selecting, setSelecting] = useState(false);
 	const reportPreparation = useRef<AbortController | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
+	const [checkingSystem, setCheckingSystem] = useState(false);
+	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
@@ -434,7 +463,10 @@ export default function ProjectWorkbench({
 		url.searchParams.delete("energy_view");
 		replacePlannerLocation(url);
 	}
-	const searchRun = search.data ?? null,
+	const searchRun =
+			checkingSystem || search.data?.id === replacedSearch
+				? null
+				: (search.data ?? null),
 		reportRun = report.data ?? null;
 	const reviewedReportId =
 		guided &&
@@ -481,28 +513,25 @@ export default function ProjectWorkbench({
 	const legacyModels = draft
 		? needsComparisonModels(draft.history.current)
 		: false;
-	const comparisonSource = useQuery({
-		queryKey: [
-			session.query_scope,
-			"configurator-comparison-models",
-			project.id,
-			selectedSearch,
-		],
-		enabled:
-			legacyModels &&
-			adoptedRun !== null &&
-			client.isCurrentScope(session.query_scope),
-		queryFn: async ({ signal }) =>
-			readRunInputs(
-				await client.query(
-					"runs/inputs",
-					{ schema_version: 1, project_id: project.id, run_id: adoptedRun!.id },
-					session.query_scope,
-					signal,
-				),
-				adoptedRun!,
-			),
-	});
+	const comparisonSource = useSearchInputs(
+		client,
+		session.query_scope,
+		project.id,
+		legacyModels ? adoptedRun : null,
+	);
+	const oldRevision =
+		checkingSystem &&
+		search.data &&
+		search.data.revision !== draft?.baseline.revision
+			? search.data
+			: null;
+	const recordedInputs = useSearchInputs(
+		client,
+		session.query_scope,
+		project.id,
+		oldRevision,
+	);
+
 	const comparisonInputs = legacyModels ? comparisonSource.data : undefined;
 	const frozenSearch = adoptedRun?.result?.search
 		? readObject(adoptedRun.result.search)
@@ -535,8 +564,10 @@ export default function ProjectWorkbench({
 			[session.query_scope, "configurator-result", project.id, task, run.id],
 			run,
 		);
-		if (task === SEARCH_TASK) setSubmittedSearch(run.id);
-		else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		if (task === SEARCH_TASK) {
+			setReplacedSearch(null);
+			setSubmittedSearch(run.id);
+		} else if (task === REPORT_TASK) setSubmittedReport(run.id);
 		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
@@ -649,7 +680,6 @@ export default function ProjectWorkbench({
 	async function closeProject() {
 		if (mayLeave() && (await controller.flush())) close();
 	}
-	const preliminaryRequested = useRef(false);
 	function openChapter(next: Step) {
 		const current = latest.current;
 		if (!current || !mayLeave()) return;
@@ -657,38 +687,76 @@ export default function ProjectWorkbench({
 			showStep("solar");
 			return;
 		}
-		preliminaryRequested.current = Boolean(
-			next === "system" &&
-			step === "project" &&
-			comparePreliminary &&
-			!searchId &&
-			needsPreliminaryComparison(current.history.current),
-		);
+		if (next === "system" && (step === "project" || step === "energy"))
+			setCheckingSystem(true);
 		showStep(next);
 	}
-	const confirmComparisonRevision = useEffectEvent(async () => {
-		const instance = lifetime.current;
-		const saved = await controller.save();
-		if (
-			saved &&
-			instance === lifetime.current &&
-			location.hash === "#sc-system" &&
-			client.isCurrentScope(session.query_scope)
-		)
-			comparePreliminary?.(saved);
+	const checkCurrentComparison = useEffectEvent(async () => {
+		const current = latest.current;
+		if (!current) return;
+		const run = search.data;
+		const frozen = oldRevision ? recordedInputs.data : current.baseline.inputs;
+		if (run && !frozen) return;
+		setCheckingSystem(false);
+		const inputs = current.history.current;
+		if (run) {
+			if (run.revision === current.baseline.revision && !isDirty(current)) {
+				setReplacedSearch(null);
+				return;
+			}
+			const saved = frozen!;
+			const authored =
+				comparisonInputs && needsComparisonModels(inputs)
+					? restoreComparisonModels(inputs, comparisonInputs)
+					: inputs;
+			const settingsChanged =
+				!authored.equipment_candidate &&
+				["equipment_setup", "equipment_plant_setup"].some(
+					(key) => !sameJson(authored[key] ?? null, saved[key] ?? null),
+				);
+			if (!settingsChanged && sameEquipmentDemand(authored, saved)) {
+				setReplacedSearch(null);
+				return;
+			}
+			setReplacedSearch(run.id);
+		}
+		if (comparePreliminary && needsPreliminaryComparison(inputs)) {
+			const instance = lifetime.current;
+			const saved = await controller.save();
+			if (
+				saved &&
+				instance === lifetime.current &&
+				location.hash === "#sc-system" &&
+				client.isCurrentScope(session.query_scope)
+			)
+				comparePreliminary(saved);
+		} else if (run) await compare();
 	});
 	useEffect(() => {
 		if (
-			step !== "system" ||
-			!preliminaryRequested.current ||
-			!history.isSuccess
+			step === "system" &&
+			checkingSystem &&
+			history.isSuccess &&
+			(!searchId || search.isSuccess) &&
+			(!oldRevision || recordedInputs.isSuccess) &&
+			!modelsUnavailable &&
+			!blocked
 		)
-			return;
-		preliminaryRequested.current = false;
-		if (!searchId) void confirmComparisonRevision();
-	}, [step, searchId, history.isSuccess]);
+			void checkCurrentComparison();
+	}, [
+		step,
+		checkingSystem,
+		history.isSuccess,
+		searchId,
+		search.isSuccess,
+		oldRevision,
+		recordedInputs.isSuccess,
+		modelsUnavailable,
+		blocked,
+	]);
+
 	function showStep(next: Step) {
-		if (next !== "system") preliminaryRequested.current = false;
+		if (next !== "system") setCheckingSystem(false);
 		setGenieReportId(null);
 		const url = new URL(location.href);
 		const previous = url.hash;
@@ -1045,7 +1113,9 @@ export default function ProjectWorkbench({
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
 	const failedRead = [
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
-		...(step === "system" ? [systemRead] : []),
+		...(step === "system"
+			? [systemRead, ...(oldRevision ? [recordedInputs] : [])]
+			: []),
 	].find((query) => query.isError);
 	const confirmedIntent = operations.intent?.resultId
 		? operations.intent
@@ -1628,11 +1698,13 @@ export default function ProjectWorkbench({
 									onSelectionPending={setAssessmentPending}
 									onSelect={select}
 								/>
-							) : !searchRun && systemRead.isPending ? (
+							) : !searchRun &&
+							  !failedRead &&
+							  (checkingSystem || systemRead.isPending) ? (
 								<p className="sc-card" role="status">
 									{__("Reading saved calculation results…", "linker-tools")}
 								</p>
-							) : !searchRun && systemRead.isError ? null : (
+							) : !searchRun && failedRead ? null : (
 								<section className="sc-card">
 									{searchRun && runPending(searchRun.state) ? (
 										<p role="status">
@@ -1672,13 +1744,17 @@ export default function ProjectWorkbench({
 																"linker-tools",
 															)}
 											</p>
-											{guided &&
+											{(guided || replacedSearch) &&
 												((searchRun && !runPending(searchRun.state)) ||
 													Boolean(error ?? operations.error)) && (
 													<button
 														className="sc-button sc-primary"
 														disabled={blocked || modelsUnavailable}
-														onClick={() => void compare()}
+														onClick={() =>
+															replacedSearch
+																? setCheckingSystem(true)
+																: void compare()
+														}
 													>
 														{__("Try again", "linker-tools")}
 													</button>

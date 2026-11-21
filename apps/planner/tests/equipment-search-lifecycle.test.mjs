@@ -225,6 +225,7 @@ async function equipmentApp(
 	t,
 	{
 		projectId,
+		projectRevision = 1,
 		inputs,
 		hash,
 		guided = false,
@@ -296,7 +297,7 @@ async function equipmentApp(
 	const project = {
 		id: projectId,
 		title: "Equipment lifecycle fixture",
-		revision: 1,
+		revision: projectRevision,
 		input_sha256: "2".repeat(64),
 		inputs: { brief, ...inputs },
 	};
@@ -794,6 +795,59 @@ for (const waitingForHistory of [true, false]) {
 		);
 	});
 }
+
+for (const state of ["succeeded", "queued"])
+	test(`System opens preliminary comparison for incomplete backup inputs after a ${state} search`, async (t) => {
+		const id = "c".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId: id,
+			hash: "#sc-energy",
+			inputs: { equipment_setup: savedSetup },
+			savedRun: makeRun(id, state),
+		});
+		await chooseGoal(app, "backup");
+		await app.step("System");
+		await untilRun(() => document.querySelector(".sc-direction-comparison"));
+		assert.equal(app.button("Use this configuration"), undefined);
+		assert.equal(app.project.inputs.backup_demand.duration_hours, null);
+		assert.equal(searchRequests(app).length, 0);
+	});
+
+for (const changed of [true, false])
+	test(`System ${changed ? "refreshes" : "reuses"} an older search after reading its frozen settings`, async (t) => {
+		const id = "9".repeat(32);
+		const { emptyBrief } = await import("../src/domain/brief.ts");
+		const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+		const original = { brief, equipment_setup: savedSetup };
+		const app = await equipmentApp(t, {
+			projectId: id,
+			projectRevision: 2,
+			hash: "#sc-project",
+			inputs: changed
+				? {
+						...original,
+						equipment_setup: { ...savedSetup, inverter_product_id: 101 },
+					}
+				: original,
+			savedRun: makeRun(id, "succeeded", 1),
+			legacyInputs: original,
+			legacyUnavailable: true,
+		});
+		await untilRun(() => app.fieldSelect("Planned system"));
+		await app.step("System");
+		await untilRun(() => app.button("Try again"));
+		assert.equal(app.button("Use this configuration"), undefined);
+		app.recoverLegacyInputs();
+		await act(async () => app.button("Try again").click());
+		if (changed) {
+			await untilRun(() => searchRequests(app).length === 1);
+			assert.equal(searchRequests(app)[0].body.expected_revision, 2);
+			assert.equal(app.button("Use this configuration"), undefined);
+		} else {
+			await untilRun(() => app.button("Use this configuration"));
+			assert.deepEqual(app.requests, []);
+		}
+	});
 
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
@@ -1776,7 +1830,7 @@ for (const change of [
 	"foreign snapshot",
 	"session scope",
 ]) {
-	test(`selection refuses a ${change} change without saving a candidate`, async (t) => {
+	test(`${change}: a previous equipment result cannot be used for changed inputs`, async (t) => {
 		const gate = change === "session scope" ? deferred() : null;
 		const app = await equipmentApp(t, {
 			projectId: "4".repeat(32),
@@ -1819,6 +1873,32 @@ for (const change of [
 			await app.step("Project");
 			await app.updateSelect("Planned system", "storage_only");
 			await app.step("System");
+		}
+		if (change !== "foreign snapshot" && change !== "session scope") {
+			await untilRun(() => searchRequests(app).length === 2);
+			assert.equal(
+				app.button("Use this configuration"),
+				undefined,
+				"the earlier options are hidden during recalculation",
+			);
+			const updated = searchRequests(app)[1].body.inputs;
+			if (change === "single model preference")
+				assert.equal(updated.equipment_setup.inverter_product_id, 101);
+			if (change === "plant model preference")
+				assert.equal(
+					updated.equipment_plant_setup.units[0].inputs.equipment_setup
+						.inverter_product_id,
+					101,
+				);
+			if (change === "system scope")
+				assert.equal(updated.brief.system_scope, "storage_only");
+			if (change === "purpose")
+				assert.ok(
+					updated.energy_scenario.schedule.some(
+						(period) => period.import_policy === "limited",
+					),
+				);
+			return;
 		}
 		await act(async () => app.button("Use this configuration").click());
 		if (gate) {
