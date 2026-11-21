@@ -1,6 +1,6 @@
 <?php
 /**
- * Resource budgets for account and guest work.
+ * Native routes that create a recoverable result.
  *
  * @package Linker\Tools
  */
@@ -9,39 +9,22 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Unit;
 
-use Linker\Commerce\Protection\Allowance;
-use Linker\Commerce\Protection\Identity;
 use Linker\Tools\Protection\ResourcePolicy;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname( __DIR__, 4 ) . '/linker-commerce/vendor/autoload.php';
-
 /**
- * Native resource dimensions for signed-in and anonymous work.
+ * Private writes and native reads.
  *
  * @covers \Linker\Tools\Protection\ResourcePolicy
  */
 final class ResourcePolicyTest extends TestCase {
-	/** The private Genie service admits model work; these routes retain the native operation identity. */
-	public function test_owned_turns_and_account_saves_need_only_idempotency(): void {
-		$account = new Identity( str_repeat( 'a', 64 ), str_repeat( 'b', 64 ) );
-		$guest   = new Identity( str_repeat( 'c', 64 ), '' );
-		foreach ( array( $account, $guest ) as $identity ) {
-			$this->assertSame( array(), ResourcePolicy::plan( 'genie', $identity )['limits'] );
-		}
-		foreach ( array( 'conversation_create', 'solution_save' ) as $action ) {
-			$this->assertSame( array(), ResourcePolicy::plan( $action, $account )['limits'] );
-		}
-		$this->assertEquals( ResourcePolicy::plan( 'conversation_create', $guest ), ResourcePolicy::plan( 'genie', $guest, true ) );
-	}
-
-	/** Guest conversations and saved snapshots consume storage write capacity. */
-	public function test_anonymous_persistent_writes_stay_bounded(): void {
-		$guest = new Identity( str_repeat( 'a', 64 ), '' );
-		foreach ( array( 'conversation_create', 'solution_save' ) as $action ) {
-			$plan  = ResourcePolicy::plan( $action, $guest );
-			$names = array_map( static fn ( Allowance $limit ): string => $limit->name, $plan['limits'] );
-			$this->assertContains( 'tool_write_site_day', $names );
-		}
+	/** Page reads and selecting an existing conversation have no write receipt. */
+	public function test_only_result_producing_actions_enter_the_write_path(): void {
+		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/draft', 'POST' ) );
+		$this->assertSame( 'genie', ResourcePolicy::action( '/linker-ai/v1/genie/turn', 'POST' ) );
+		$this->assertSame( 'solution_save', ResourcePolicy::action( '/linker-ai/v1/genie/solution', 'POST' ) );
+		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'GET' ) );
+		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST', true ) );
+		$this->assertSame( 'conversation_create', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST' ) );
 	}
 }

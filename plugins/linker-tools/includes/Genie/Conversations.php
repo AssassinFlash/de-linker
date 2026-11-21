@@ -78,7 +78,7 @@ class Conversations {
 	 * this claim. A longer window only widens sibling deduplication; rows
 	 * no sibling closes are reclaimed hourly (BrowserClaim).
 	 */
-	private const BROWSER_CLAIM_SECONDS = 20;
+	public const BROWSER_CLAIM_SECONDS = 20;
 
 	/**
 	 * How long to wait for a concurrent cold mint to publish its claim.
@@ -366,6 +366,14 @@ class Conversations {
 			);
 		}
 		return $list;
+	}
+
+	/** Start an empty guest editor while preserving access to the previous conversation. */
+	public function start_guest_conversation(): void {
+		if ( $this->selected_id() > 0 ) {
+			$this->adopt_cookie_conversation( $this->ensure_browser_key() );
+			$this->clear_cookie();
+		}
 	}
 
 	/**
@@ -717,11 +725,10 @@ class Conversations {
 	 * An irreversible current-identity comparison for same-tab entry recovery.
 	 * No conversation or account data is returned and this grants no authority.
 	 *
-	 * @param string                 $tab Random tab identity.
-	 * @param (callable():bool)|null $may_create Check new anonymous claim storage when supplied.
+	 * @param string $tab Random tab identity.
 	 * @return string Opaque scope or an empty string when a new claim cannot be allocated.
 	 */
-	public function entry_scope( string $tab, ?callable $may_create = null ): string {
+	public function entry_scope( string $tab ): string {
 		$user = get_current_user_id();
 		if ( $user > 0 ) {
 			$principal = 'user:' . $user . ':' . wp_get_session_token();
@@ -734,7 +741,7 @@ class Conversations {
 			// first requests that both arrive without the cookie still
 			// share one claimed key.
 			if ( '' === $browser ) {
-				$claim = $this->claimed_browser_key( $tab, $may_create );
+				$claim = $this->claimed_browser_key( $tab );
 				if ( '' === $claim ) {
 					return '';
 				}
@@ -768,7 +775,7 @@ class Conversations {
 			return;
 		}
 		$this->forget_browser_claim_cache( $tab );
-		if ( false === get_option( $this->browser_claim_option( $tab ), false ) ) {
+		if ( array() === array_filter( $this->browser_claim_options( $tab ), static fn( string $name ): bool => false !== get_option( $name, false ) ) ) {
 			return;
 		}
 		if ( ! $this->lock_browser_claim( $tab ) ) {
@@ -797,7 +804,9 @@ class Conversations {
 	 */
 	private function delete_browser_claim( string $tab ): void {
 		$this->forget_browser_claim_cache( $tab );
-		delete_option( $this->browser_claim_option( $tab ) );
+		foreach ( $this->browser_claim_options( $tab ) as $name ) {
+			delete_option( $name );
+		}
 		$this->forget_browser_claim_cache( $tab );
 	}
 
@@ -808,10 +817,9 @@ class Conversations {
 	 * cannot present the key. The claim is the shared read. An existing
 	 * cookie is never passed here.
 	 *
-	 * @param string                 $tab Client tab shared by the two requests.
-	 * @param (callable():bool)|null $may_create Check before a new storage write.
+	 * @param string $tab Client tab shared by the two requests.
 	 */
-	private function claimed_browser_key( string $tab, ?callable $may_create ): string {
+	private function claimed_browser_key( string $tab ): string {
 		$existing = $this->read_browser_claim( $tab );
 		if ( '' !== $existing ) {
 			return $existing;
@@ -819,7 +827,7 @@ class Conversations {
 		if ( ! $this->lock_browser_claim( $tab ) ) {
 			$this->forget_browser_claim_cache( $tab );
 			$existing = $this->read_browser_claim( $tab );
-			return '' !== $existing ? $existing : $this->publish_browser_claim( $tab, $may_create );
+			return '' !== $existing ? $existing : $this->publish_browser_claim( $tab );
 		}
 		try {
 			$this->forget_browser_claim_cache( $tab );
@@ -827,7 +835,7 @@ class Conversations {
 			if ( '' !== $existing ) {
 				return $existing;
 			}
-			return $this->publish_browser_claim( $tab, $may_create );
+			return $this->publish_browser_claim( $tab );
 		} finally {
 			$this->unlock_browser_claim( $tab );
 		}
@@ -839,19 +847,13 @@ class Conversations {
 	 * @param string $tab Client tab identity.
 	 */
 	private function read_browser_claim( string $tab ): string {
-		$stored = get_option( $this->browser_claim_option( $tab ), false );
-		if ( ! is_array( $stored ) ) {
-			return '';
+		foreach ( $this->browser_claim_options( $tab ) as $name ) {
+			$stored = get_option( $name, false );
+			if ( is_array( $stored ) && is_string( $stored['key'] ?? null ) && 1 === preg_match( '/^[0-9a-f]{32}$/', $stored['key'] ) && ( $stored['until'] ?? 0 ) >= time() ) {
+				return $stored['key'];
+			}
 		}
-		$key   = $stored['key'] ?? '';
-		$until = $stored['until'] ?? 0;
-		if ( ! is_string( $key ) || 1 !== preg_match( '/^[0-9a-f]{32}$/', $key ) ) {
-			return '';
-		}
-		if ( ! is_numeric( $until ) || (int) $until < time() ) {
-			return '';
-		}
-		return $key;
+		return '';
 	}
 
 	/**
@@ -866,20 +868,21 @@ class Conversations {
 	 * read-back cannot serve — one already expired or damaged, never a
 	 * live winner.
 	 *
-	 * @param string                 $tab Client tab identity.
-	 * @param (callable():bool)|null $may_create Check before a new storage write.
+	 * @param string $tab Client tab identity.
 	 */
-	private function publish_browser_claim( string $tab, ?callable $may_create ): string {
-		if ( null !== $may_create && ! $may_create() ) {
-			return '';
-		}
+	private function publish_browser_claim( string $tab ): string {
 		global $wpdb;
 		$key   = $this->new_browser_key();
-		$name  = $this->browser_claim_option( $tab );
+		$names = $this->browser_claim_options( $tab );
+		$name  = $names[0];
 		$value = array(
 			'key'   => $key,
 			'until' => time() + self::BROWSER_CLAIM_SECONDS,
 		);
+		// Replace one retired sibling claim for each new one. Both boundaries use
+		// the option_name index; activity in the two live periods stays untouched.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Indexed private expiry; expired period names cannot be read by an active request.
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name >= %s AND option_name < %s ORDER BY option_name LIMIT 1", self::BROWSER_CLAIM_PREFIX . 't', substr( $names[1], 0, -32 ) ) );
 		$this->forget_browser_claim_cache( $tab );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- first-writer-wins insert; the object cache is deliberately not consulted (see RateLimit).
 		$inserted = $wpdb->query(
@@ -897,8 +900,7 @@ class Conversations {
 		if ( '' !== $existing ) {
 			return $existing;
 		}
-		update_option( $name, $value, false );
-		return $key;
+		return update_option( $name, $value, false ) ? $key : $this->read_browser_claim( $tab );
 	}
 
 	/**
@@ -907,18 +909,27 @@ class Conversations {
 	 * @param string $tab Client tab identity.
 	 */
 	private function forget_browser_claim_cache( string $tab ): void {
-		$name = $this->browser_claim_option( $tab );
-		wp_cache_delete( $name, 'options' );
+		foreach ( $this->browser_claim_options( $tab ) as $name ) {
+			wp_cache_delete( $name, 'options' );
+		}
 		wp_cache_delete( 'notoptions', 'options' );
 	}
 
 	/**
-	 * Option name for this tab's claim. Not autoloaded.
+	 * The current or preceding period can contain a live claim. The unprefixed
+	 * tab key reads an existing cold claim across a release.
 	 *
 	 * @param string $tab Client tab identity.
+	 * @return list<string> Current, preceding and previous-format option names.
 	 */
-	private function browser_claim_option( string $tab ): string {
-		return self::BROWSER_CLAIM_PREFIX . substr( hash( 'sha256', $tab ), 0, 32 );
+	private function browser_claim_options( string $tab ): array {
+		$suffix = substr( hash( 'sha256', $tab ), 0, 32 );
+		$period = intdiv( time(), self::BROWSER_CLAIM_SECONDS );
+		return array(
+			self::BROWSER_CLAIM_PREFIX . sprintf( 't%010d_', $period ) . $suffix,
+			self::BROWSER_CLAIM_PREFIX . sprintf( 't%010d_', $period - 1 ) . $suffix,
+			self::BROWSER_CLAIM_PREFIX . $suffix,
+		);
 	}
 
 	/**

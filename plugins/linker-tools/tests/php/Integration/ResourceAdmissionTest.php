@@ -325,16 +325,18 @@ final class ResourceAdmissionTest extends TestCase {
 		}
 		$this->assertSame( 1, $calls );
 		$this->assertTrue( Resources::completed_genie_operation( $id, $fingerprint ) );
-		$receipt = ( new Ledger() )->lookup( $id, $fingerprint );
-		$this->assertIsArray( $receipt );
+		$outcome = ( new Replies() )->operation( $id );
+		$this->assertGreaterThan( 0, $outcome );
 		if ( 'delete-reply' === $lifetime ) {
-			wp_delete_post( $receipt['outcome'], true );
+			wp_delete_post( $outcome, true );
 		} elseif ( 'expire-reply' === $lifetime ) {
-			update_post_meta( $receipt['outcome'], '_linker_expires', time() - 1 );
-		} elseif ( 'erase-ledger' === $lifetime ) {
-			$identity = Identity::current();
-			$this->assertInstanceOf( Identity::class, $identity );
-			$this->assertIsArray( ( new Ledger() )->privacy( array( Allowance::owner_for( $identity->browser ) ), true ) );
+			update_post_meta( $outcome, '_linker_expires', time() - 1 );
+		} elseif ( 'erase-reply' === $lifetime ) {
+			$email = 'genie-privacy@example.test';
+			update_post_meta( $outcome, '_linker_recipient', Identity::recipient( $email ) );
+			$this->assertTrue( ( new \Linker\Tools\Protection\ReplyPrivacy() )->erase( $email )['items_removed'] );
+			$this->assertInstanceOf( WP_Error::class, $resources->dispatch( null, $request, '', $handler ) );
+			$this->assertSame( 1, $calls );
 		} else {
 			wp_delete_post( $conversation, true );
 			$this->assertSame( '', get_post_meta( $conversation, Thread::COMPLETION, true ) );
@@ -348,7 +350,7 @@ final class ResourceAdmissionTest extends TestCase {
 	 * @return list<array{string}>
 	 */
 	public static function completion_lifetimes(): array {
-		return array( array( 'delete-reply' ), array( 'expire-reply' ), array( 'erase-ledger' ), array( 'clear-conversation' ) );
+		return array( array( 'delete-reply' ), array( 'expire-reply' ), array( 'erase-reply' ), array( 'clear-conversation' ) );
 	}
 
 	/** An exception leaves quota spent and removes trusted native context. */
@@ -373,32 +375,125 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertSame( 409, $retry->get_error_data()['status'] );
 	}
 
-	/** Reads and conversation writes never consume Genie/model-turn dimensions. */
-	public function test_policy_reads_writes_and_native_budget_exhaustion(): void {
-		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/draft', 'POST' ) );
-		$this->assertSame( 'solution_save', ResourcePolicy::action( '/linker-ai/v1/genie/solution', 'POST' ) );
-		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversation', 'GET' ) );
-		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'GET' ) );
-		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST', true ) );
-		$this->assertSame( 'conversation_create', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST' ) );
+	/** A completed result from the previous release is still replayed by its owner. */
+	public function test_previous_release_result_is_recovered_without_running_its_callback(): void {
+		$request  = $this->request( '/linker-ai/v1/genie/turn', array(), 'genie' );
+		$id       = $request->get_header( 'X-Linker-Operation' );
+		$this->assertIsString( $id );
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
-		$plan = ResourcePolicy::plan( 'genie', $identity );
-		$this->assertSame( array(), $plan['limits'] );
+		$payload = array(
+			'_route'  => $request->get_route(),
+			'_method' => 'POST',
+		);
+		$input   = \Linker\Commerce\Protection\Fingerprint::make( $identity, 'genie', $payload );
+		$this->assertIsString( $input );
+		$ledger   = new Ledger();
+		$replies  = new Replies();
+		$reply_id = $replies->open( $identity->binding() );
+		$this->assertGreaterThan( 0, $reply_id );
+		$this->assertIsArray( $ledger->reserve( $id, $input, array(), 90, array(), 'genie', $identity->binding(), array( Allowance::owner_for( $identity->browser ) ) ) );
+		$this->assertIsArray( $ledger->dispatch( $id, $input ) );
+		$this->assertSame( $reply_id, $replies->finish( $reply_id, new WP_REST_Response( array( 'previous' => true ) ) ) );
+		$this->assertIsArray( $ledger->complete( $id, $input, $reply_id ) );
+		$handler  = array(
+			'callback' => static function (): never {
+						self::fail( 'The old request must not run twice.' );
+			},
+		);
+		$resource = new Resources();
+		$response = $resource->dispatch( null, $request, '', $handler );
+		$this->assertInstanceOf( WP_REST_Response::class, $response );
+		$this->assertSame( array( 'previous' => true ), $response->get_data() );
+		$this->assertTrue( Resources::completed_genie_operation( $id, $input ) );
+		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'e', 32 );
+		$foreign                     = $resource->dispatch( null, $request, '', $handler );
+		$this->assertInstanceOf( WP_Error::class, $foreign );
+		$this->assertSame( 409, $foreign->get_error_data()['status'] );
+	}
+
+	/** A blank guest editor holds no records; the first question belongs to a new conversation. */
+	public function test_guest_opens_blank_with_history_and_first_question_uses_its_own_conversation(): void {
+		global $wp_filter;
+		$held = array();
+		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
+			remove_all_actions( $hook );
+		}
+		try {
+			$store     = new Conversations();
+			$proxy     = new Proxy( $store );
+			$handler   = array( 'callback' => array( $proxy, 'select_conversation' ) );
+			$resources = new Resources();
+			$new       = $this->request( '/linker-ai/v1/genie/conversations', array(), 'conversation_create' );
+			$fresh     = $resources->dispatch( null, $new, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $fresh );
+			$this->assertSame( 0, $fresh->get_data()['conversation_id'] );
+			$key = $new->get_header( 'X-Linker-Operation' );
+			$this->assertIsString( $key );
+			$this->assertSame( 0, ( new Replies() )->operation( $key ) );
+			$old                           = $store->current_id();
+			$this->created_conversations[] = $old;
+			$previous_tab                  = $_COOKIE;
+			$from_old                      = $this->request( '/linker-ai/v1/genie/conversations', array(), 'conversation_create' );
+			$blank                         = $resources->dispatch( null, $from_old, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $blank );
+			$this->assertSame( 0, $blank->get_data()['conversation_id'] );
+			$this->assertContains( $old, array_column( $blank->get_data()['conversations'], 'id' ) );
+			$this->assertSame( 0, ( new Conversations() )->existing_id() );
+			$first_question                = ( new Conversations() )->current_id();
+			$this->created_conversations[] = $first_question;
+			$this->assertNotSame( $old, $first_question );
+			$this->assertSame( $first_question, ( new Conversations() )->existing_id() );
+			$retry = $resources->dispatch( null, $from_old, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $retry );
+			$this->assertSame( $first_question, ( new Conversations() )->existing_id() );
+			$_COOKIE = $previous_tab;
+			$this->assertSame( $old, ( new Conversations() )->existing_id() );
+		} finally {
+			foreach ( $held as $hook => $callbacks ) {
+				if ( null === $callbacks ) {
+					unset( $wp_filter[ $hook ] );
+				} else {
+					$wp_filter[ $hook ] = $callbacks; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restore this fixture's held cookie hooks.
+				}
+			}
+		}
+	}
+
+	/** Guest actions continue independently of traffic recorded by the previous site policy. */
+	public function test_guest_solution_and_conversation_writes_are_independent_of_the_shared_site_journal(): void {
 		$ledger = new Ledger();
 		$id     = wp_generate_uuid4();
 		$fp     = hash( 'sha256', $id );
-		$owners = array( Allowance::owner_for( $identity->browser ) );
-		$args   = array( $id, $fp, $plan['limits'], 90, $plan['carry'], 'genie', $identity->binding(), $owners );
-		$this->assertIsArray( $ledger->reserve( ...$args ) );
+		$old    = new Allowance( 'tool_write_site_day', 'site', 2000, DAY_IN_SECONDS, 2000 );
+		$this->assertIsArray( $ledger->reserve( $id, $fp, array( $old ), 90 ) );
 		$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
-		$this->assertIsArray( $ledger->complete( $id, $fp, 17 ) );
-		$replay = $ledger->reserve( ...$args );
-		$this->assertIsArray( $replay );
-		$this->assertSame( 17, $replay['outcome'] );
-		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), $fp, array(), 90, array(), 'genie' ) );
-		$writes = ResourcePolicy::plan( 'solution_save', $identity );
-		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), hash( 'sha256', 'saved' ), $writes['limits'], 90 ), 'Saved input remains independent from model turns.' );
+		$this->assertIsArray( $ledger->complete( $id, $fp ) );
+		$before = get_option( Ledger::OPTION );
+		foreach ( array( 'solution', 'turn' ) as $route ) {
+			$calls     = 0;
+			$request   = $this->request( '/linker-ai/v1/genie/' . $route, array(), $route );
+			$handler   = array(
+				'callback' => function () use ( &$calls ): WP_REST_Response {
+					++$calls;
+					$response = new WP_REST_Response( array( 'saved' => true ) );
+					$guard    = new PublicationGuard();
+					$dependencies = $guard->dependencies();
+					$this->assertIsArray( $dependencies );
+					$guard->remember( $response, $dependencies );
+					return $response;
+				},
+			);
+			$resources = new Resources();
+			foreach ( array( 'send', 'retry' ) as $attempt ) {
+				$result = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_REST_Response::class, $result, $route . ' ' . $attempt );
+				$this->assertSame( 200, $result->get_status() );
+			}
+			$this->assertSame( 1, $calls );
+		}
+		$this->assertSame( $before, get_option( Ledger::OPTION ) );
 	}
 
 	/** A filled historical site allowance cannot reject a new guest or account project. */
@@ -461,22 +556,27 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertIsInt( $user );
 		try {
 			wp_set_current_user( $user );
-			$identity = Identity::current();
-			$this->assertInstanceOf( Identity::class, $identity );
-			$plan = ResourcePolicy::plan( 'solution_save', $identity );
-			$this->assertSame( array(), $plan['limits'] );
-			$ledger  = new Ledger();
-			$key     = wp_generate_uuid4();
-			$payload = hash( 'sha256', 'owned solution input' );
-			$args    = array( $key, $payload, $plan['limits'], 90, $plan['carry'], 'solution_save', $identity->binding(), $identity->owners() );
-			$this->assertIsArray( $ledger->reserve( ...$args ) );
-			$this->assertIsArray( $ledger->dispatch( $key, $payload ) );
-			$this->assertIsArray( $ledger->complete( $key, $payload, 201 ) );
-			$replay = $ledger->reserve( ...$args );
-			$this->assertIsArray( $replay );
-			$this->assertSame( 201, $replay['outcome'] );
-			$this->assertSame( 'completed', $replay['status'] );
-			$this->assertSame( array(), $replay['allowances'] );
+			$request   = $this->request( '/linker-ai/v1/genie/solution', array(), 'solution_save' );
+			$calls     = 0;
+			$handler   = array(
+				'callback' => function () use ( &$calls ): WP_REST_Response {
+								++$calls;
+								$response = new WP_REST_Response( array( 'saved' => true ), 201 );
+								$guard = new PublicationGuard();
+								$dependencies = $guard->dependencies();
+								$this->assertIsArray( $dependencies );
+								$guard->remember( $response, $dependencies );
+								return $response;
+				},
+			);
+			$resources = new Resources();
+			foreach ( array( 'save', 'retry' ) as $attempt ) {
+				$result = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_REST_Response::class, $result, $attempt );
+				$this->assertSame( 201, $result->get_status() );
+			}
+			$this->assertSame( 1, $calls );
+			$this->assertFalse( get_option( Ledger::OPTION ) );
 		} finally {
 			wp_set_current_user( 0 );
 			require_once ABSPATH . 'wp-admin/includes/user.php';

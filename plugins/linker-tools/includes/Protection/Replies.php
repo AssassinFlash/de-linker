@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Protection;
 
+use Linker\Commerce\Protection\Ledger;
 use WP_Error;
 use WP_REST_Response;
 
@@ -37,8 +38,10 @@ final class Replies {
 	 *
 	 * @param string $binding Verified identity binding.
 	 * @param string $email Optional native-validated guest privacy address.
+	 * @param string $operation Native request UUID.
+	 * @param string $fingerprint Owner-bound semantic input.
 	 */
-	public function open( string $binding, string $email = '' ): int {
+	public function open( string $binding, string $email = '', string $operation = '', string $fingerprint = '' ): int {
 		if ( '' === $email && get_current_user_id() > 0 ) {
 			$email = (string) wp_get_current_user()->user_email;
 		}
@@ -48,8 +51,10 @@ final class Replies {
 				'post_status'  => 'private',
 				'post_author'  => get_current_user_id(),
 				'post_content' => '',
+				'post_name'    => $operation,
 				'meta_input'   => array(
 					'_linker_binding'   => $binding,
+					'_linker_input'     => $fingerprint,
 					'_linker_recipient' => is_email( $email ) ? \Linker\Commerce\Protection\Identity::recipient( $email ) : '',
 					'_linker_expires'   => time() + DAY_IN_SECONDS,
 				),
@@ -59,6 +64,28 @@ final class Replies {
 		return is_wp_error( $id ) ? 0 : $id;
 	}
 
+	/** Find the short-lived native operation by its indexed private post slug.
+	 *
+	 * @param string $operation Native UUID.
+	 */
+	public function operation( string $operation ): int {
+		$post = get_page_by_path( $operation, OBJECT, array( self::TYPE ) );
+		return $post instanceof \WP_Post ? $post->ID : 0;
+	}
+
+	/** Match a still-live result from before the individual receipt was introduced.
+	 *
+	 * @param string $operation Validated UUID.
+	 * @return array<string,mixed>|null Previous receipt, if still inside its retry window.
+	 */
+	public function previous( string $operation ): ?array {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Read only the keyed entry of the old journal without taking its write lock.
+		$raw   = $wpdb->get_var( $wpdb->prepare( "SELECT JSON_EXTRACT(option_value, %s) FROM {$wpdb->options} WHERE option_name = %s", '$.receipts."' . $operation . '"', Ledger::OPTION ) );
+		$entry = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		return is_array( $entry ) && ( $entry['retry_until'] ?? 0 ) > time() ? $entry : null;
+	}
+
 	/**
 	 * Update only the allocated record; an erased receipt cannot be recreated.
 	 *
@@ -66,7 +93,7 @@ final class Replies {
 	 * @param WP_REST_Response $reply Native response, PDF bytes encoded as JSON.
 	 */
 	public function finish( int $id, WP_REST_Response $reply ): int {
-		if ( self::TYPE !== get_post_type( $id ) ) {
+		if ( self::TYPE !== get_post_type( $id ) || '' === (string) get_post_meta( $id, '_linker_binding', true ) ) {
 			return 0;
 		}
 		$data    = $reply->get_data();
@@ -130,7 +157,7 @@ final class Replies {
 				'post_type'      => self::TYPE,
 				'post_status'    => 'any',
 				'fields'         => 'ids',
-				'posts_per_page' => 1000, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Hourly cleanup can clear more than the journal's daily 10k receipt ceiling.
+				'posts_per_page' => 1000, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Keep each hourly cleanup bounded.
 				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Bounded private native receipt expiry, with no storefront query.
 					array(
 						'key'     => '_linker_expires',

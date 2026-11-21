@@ -44,7 +44,7 @@ final class ConversationsClaimTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->db   = new ClaimOptionsDouble();
-		$this->name = Conversations::BROWSER_CLAIM_PREFIX . substr( hash( 'sha256', self::TAB ), 0, 32 );
+		$this->name = Conversations::BROWSER_CLAIM_PREFIX . sprintf( 't%010d_', intdiv( time(), Conversations::BROWSER_CLAIM_SECONDS ) ) . substr( hash( 'sha256', self::TAB ), 0, 32 );
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the double stands in for the options table.
 		$GLOBALS['wpdb'] = $this->db;
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
@@ -139,12 +139,7 @@ final class ConversationsClaimTest extends TestCase {
 			)
 		);
 		WP_Mock::expectAction( Conversations::BROWSER_ACTION, $key, 1000000, '/', '', false );
-		$scope = $this->conversations()->entry_scope(
-			self::TAB,
-			function (): bool {
-				$this->fail( 'The existing claim must be read without allocating another row.' );
-			}
-		);
+		$scope = $this->conversations()->entry_scope( self::TAB );
 		$this->assertNotSame( '', $scope );
 		$this->assertSame( array(), $this->db->queries );
 	}
@@ -167,8 +162,10 @@ final class ConversationsClaimTest extends TestCase {
 
 		$this->conversations()->entry_scope( self::TAB );
 
-		$this->assertStringContainsString( 'INSERT IGNORE', $this->db->queries[0], 'Publication inserts ignoring a duplicate key.' );
-		$this->assertStringNotContainsString( 'ON DUPLICATE', $this->db->queries[0], 'A losing insert never overwrites the winner.' );
+		$insert = end( $this->db->queries );
+		$this->assertIsString( $insert );
+		$this->assertStringContainsString( 'INSERT IGNORE', $insert, 'Publication inserts ignoring a duplicate key.' );
+		$this->assertStringNotContainsString( 'ON DUPLICATE', $insert, 'A losing insert never overwrites the winner.' );
 		$this->assertArrayNotHasKey( $this->name, $this->db->updated, 'The winner was not rewritten.' );
 		$this->assertConditionsMet();
 	}

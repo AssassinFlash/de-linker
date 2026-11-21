@@ -1106,8 +1106,8 @@ final class ProxyTest extends TestCase {
 	/**
 	 * A selection without an id opens a new conversation.
 	 */
-	public function test_selecting_without_an_id_opens_a_conversation(): void {
-		$this->wp_functions();
+	public function test_an_account_selecting_without_an_id_opens_a_conversation(): void {
+		$this->wp_functions( true );
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
 
 			$opened = $this->proxy()->select_conversation( $request );

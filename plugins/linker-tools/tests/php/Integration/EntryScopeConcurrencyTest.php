@@ -99,6 +99,40 @@ final class EntryScopeConcurrencyTest extends TestCase {
 		parent::tearDown();
 	}
 
+	/** A new anonymous entry reclaims a retired claim even when the old shared allowance is spent. */
+	public function test_new_entry_reclaims_stale_identity_without_using_the_daily_allowance(): void {
+		$this->silence_browser_cookie();
+		$stale    = Conversations::BROWSER_CLAIM_PREFIX . 't0000000000_' . str_repeat( '0', 32 );
+		$old      = \Linker\Tools\Genie\RateLimit::PREFIX . 'genie_entry_context_day.' . substr( md5( '' ), 0, 12 ) . '.' . sprintf( '%010d', intdiv( time(), DAY_IN_SECONDS ) );
+		$previous = get_option( $old );
+		update_option( $old, '20000', false );
+		update_option(
+			$stale,
+			array(
+				'key'   => str_repeat( 'a', 32 ),
+				'until' => time() - DAY_IN_SECONDS,
+			),
+			false
+		);
+		try {
+			$request = new \WP_REST_Request( 'POST', '/linker-ai/v1/genie/entry-context' );
+			$request->set_param( 'tab', self::TAB );
+			$request->set_header( 'origin', home_url() );
+			$result = ( new \Linker\Tools\Genie\EntryContext() )->read( $request );
+			$this->assertInstanceOf( \WP_REST_Response::class, $result );
+			$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $result->get_data()['scope'] );
+			wp_cache_delete( $stale, 'options' );
+			$this->assertFalse( get_option( $stale ) );
+		} finally {
+			delete_option( $stale );
+			if ( false === $previous ) {
+				delete_option( $old );
+			} else {
+				update_option( $old, $previous, false );
+			}
+		}
+	}
+
 	/**
 	 * The second request has not stored Set-Cookie yet. It must adopt the
 	 * first key. A later request that presents that cookie keeps the scope.
@@ -304,7 +338,10 @@ final class EntryScopeConcurrencyTest extends TestCase {
 			$this->assertLessThan( 6.0, $elapsed, 'entry_scope left no headroom under the 20-second client budget' );
 			$data = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			$this->assertIsArray( $data, (string) wp_remote_retrieve_body( $response ) );
-			$claim = get_option( $this->claim_name( self::LOCKED_TAB ), false );
+			$claim = get_option( $this->claim_name( self::LOCKED_TAB ) );
+			if ( false === $claim ) {
+				$claim = get_option( $this->claim_name( self::LOCKED_TAB, 1 ) );
+			}
 			$this->assertIsArray( $claim );
 			$key = $claim['key'] ?? '';
 			$this->assertMatchesRegularExpression( '/^[0-9a-f]{32}$/', is_string( $key ) ? $key : '' );
@@ -382,15 +419,18 @@ final class EntryScopeConcurrencyTest extends TestCase {
 	 * @param string $tab Client tab identity.
 	 */
 	private function delete_claim( string $tab ): void {
-		delete_option( $this->claim_name( $tab ) );
+		foreach ( array( 0, 1 ) as $age ) {
+			delete_option( $this->claim_name( $tab, $age ) );
+		}
 	}
 
 	/**
 	 * Option name of one tab's claim.
 	 *
 	 * @param string $tab Client tab identity.
+	 * @param int    $age Previous periods to look back.
 	 */
-	private function claim_name( string $tab ): string {
-		return Conversations::BROWSER_CLAIM_PREFIX . substr( hash( 'sha256', $tab ), 0, 32 );
+	private function claim_name( string $tab, int $age = 0 ): string {
+		return Conversations::BROWSER_CLAIM_PREFIX . sprintf( 't%010d_', intdiv( time(), Conversations::BROWSER_CLAIM_SECONDS ) - $age ) . substr( hash( 'sha256', $tab ), 0, 32 );
 	}
 }

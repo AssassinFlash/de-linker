@@ -420,6 +420,8 @@ class Proxy {
 			if ( ! $this->conversations->activate( $id ) ) {
 				return new WP_Error( 'linker_genie_conversation', 'Unknown conversation.', array( 'status' => 404 ) );
 			}
+		} elseif ( ! is_user_logged_in() ) {
+			$this->conversations->start_guest_conversation();
 		} else {
 			$id = $this->conversations->open();
 			if ( $id < 1 ) {

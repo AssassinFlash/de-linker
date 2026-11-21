@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Protection;
 
 use Linker\Commerce\Protection\Identity;
-use Linker\Commerce\Protection\Ledger;
+use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Protection\Fingerprint;
 use Linker\Tools\Genie\Attachments;
 use WP_Error;
@@ -19,14 +19,6 @@ use WP_REST_Response;
 
 /** The callback stack is trusted server state, never a browser field. */
 final class Resources {
-	/**
-	 * Successor entries one request may advance through, past attempts that
-	 * stored nothing. A retry chain grows by one entry per failed Try again;
-	 * this bound keeps a single request's work finite, as the journal's own
-	 * attempt chain does.
-	 */
-	private const MAX_UNRECORDED_CHAIN = 8;
-
 	/**
 	 * The currently dispatched native operation.
 	 *
@@ -39,9 +31,8 @@ final class Resources {
 	 *
 	 * @param Replies          $replies Private receipts.
 	 * @param Attachments|null $attachments Heavy validation seam.
-	 * @param EngineVersion    $version Running data snapshot readback.
 	 */
-	public function __construct( private readonly Replies $replies = new Replies(), private readonly ?Attachments $attachments = null, private readonly EngineVersion $version = new EngineVersion() ) {}
+	public function __construct( private readonly Replies $replies = new Replies(), private readonly ?Attachments $attachments = null ) {}
 
 	/** Wire native boundaries; do not replace endpoint callbacks or permissions. */
 	public function register(): void {
@@ -79,20 +70,26 @@ final class Resources {
 	 * @param string $fingerprint Internal native input fingerprint.
 	 */
 	public static function completed_genie_operation( string $id, string $fingerprint ): bool {
-		if ( ! class_exists( Ledger::class ) || '' === $id || '' === $fingerprint ) {
+		if ( ! wp_is_uuid( $id, 4 ) || '' === $fingerprint ) {
 			return false;
 		}
-		$receipt = ( new Ledger() )->lookup( $id, $fingerprint );
-		if ( is_wp_error( $receipt ) || 'genie' !== $receipt['purpose'] || 'completed' !== $receipt['status'] || $receipt['outcome'] < 1 ) {
-			return false;
+		$replies = new Replies();
+		$outcome = $replies->operation( $id );
+		if ( $outcome > 0 ) {
+			if ( ! hash_equals( (string) get_post_meta( $outcome, '_linker_input', true ), $fingerprint ) ) {
+				return false;
+			}
+			$binding = (string) get_post_meta( $outcome, '_linker_binding', true );
+		} else {
+			$previous = $replies->previous( $id );
+			if ( ! $previous || 'genie' !== $previous['purpose'] || 'completed' !== $previous['status'] || ! hash_equals( $previous['fingerprint'], $fingerprint ) ) {
+				return false;
+			}
+			$outcome = (int) $previous['outcome'];
+			$binding = (string) $previous['binding'];
 		}
-		$reply = ( new Replies() )->read( $receipt['outcome'], $receipt['binding'] );
+		$reply = $replies->read( $outcome, $binding );
 		return ! is_wp_error( $reply ) && $reply->get_status() < 400;
-	}
-
-	/** Expected snapshot for the trusted currently running native engine callback. */
-	public static function engine_version(): string {
-		return (string) ( self::$context['engine_version'] ?? '' );
 	}
 
 	/**
@@ -136,154 +133,140 @@ final class Resources {
 		if ( null !== $result || '' === $action ) {
 			return $result;
 		}
-		if ( ! class_exists( Ledger::class ) ) {
-			return self::error( 'configuration', 503 );
+		$operation = strtolower( (string) $request->get_header( 'X-Linker-Operation' ) );
+		if ( ! wp_is_uuid( $operation, 4 ) || '' !== (string) $request->get_param( 'website' ) ) {
+			return self::error( 'input', 400 );
 		}
-		// Encoded 20 MiB files need <28 MiB JSON. Two MiB of metadata is
-		// ample for the bounded native history (schema.MAX_REQUEST_BYTES).
-		$ceiling = 'genie' === $action ? 30 * 1024 * 1024 : 6 * 1024 * 1024;
-		if ( strlen( (string) $request->get_body() ) > $ceiling ) {
+		$ceiling = 'genie' === $action ? 30 * MB_IN_BYTES : 6 * MB_IN_BYTES;
+		if ( strlen( $request->get_body() ) > $ceiling ) {
 			return self::error( 'body', 413 );
 		}
-		$engineering        = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
-		$publication_action = $engineering || in_array( $action, array( 'solution_save', 'draft_write' ), true );
-		$payload            = $engineering ? array( 'input' => (array) $request->get_json_params() ) : $request->get_params();
-		if ( ! $engineering ) {
-			foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
-				unset( $payload[ $field ] );
-			}
-		}
-		$payload['_route']  = strtolower( $request->get_route() );
-		$payload['_method'] = $request->get_method();
-		$identity           = Identity::current();
+		$identity = Identity::current();
 		if ( is_wp_error( $identity ) ) {
 			return $identity;
 		}
-		$raw_files = $request->get_param( 'attachments' );
-		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
-			return self::error( 'files', 400 );
-		}
-		$opens_conversation = 'genie' === $action && '' === $identity->account && 0 === ( new \Linker\Tools\Genie\Conversations() )->existing_id();
-		$plan               = ResourcePolicy::plan( $action, $identity, $opens_conversation );
-		$operation          = (string) $request->get_header( 'X-Linker-Operation' );
-		$version            = '';
-		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {
-			$version = $this->version->current( $request );
-			if ( is_wp_error( $version ) ) {
-				return $version;
+		$files = $request->get_param( 'attachments' );
+		if ( 'genie' === $action && null !== $files ) {
+			if ( ! is_array( $files ) || count( $files ) > Attachments::MAX_FILES ) {
+				return self::error( 'files', 400 );
 			}
-			// The live loaded snapshot, rather than a deployment stamp, scopes reuse.
-			// Identical input/version/subject/day cannot spend another unit.
-			$semantic = Fingerprint::make( $identity, $action, $payload );
-			if ( is_wp_error( $semantic ) ) {
-				return self::error( 'input', 400 );
-			}
-			$hash      = hash_hmac( 'sha256', (string) wp_json_encode( array( $identity->binding(), $version, $semantic, intdiv( time(), DAY_IN_SECONDS ) ) ), wp_salt( 'nonce' ) );
-			$operation = substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-a' . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
 		}
-		$ledger      = new Ledger();
-		$fingerprint = Fingerprint::make( $identity, $action, $payload );
+		$payload = $request->get_params();
+		foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
+			unset( $payload[ $field ] );
+		}
+		$payload['_route']  = strtolower( $request->get_route() );
+		$payload['_method'] = $request->get_method();
+		$fingerprint        = Fingerprint::make( $identity, $action, $payload );
 		if ( is_wp_error( $fingerprint ) ) {
 			return self::error( 'input', 400 );
 		}
-		$permit = $this->reserve( $ledger, $identity, $action, $operation, $fingerprint, $plan );
+		$binding = $identity->binding();
+		$reply   = self::error( 'pending', 409 );
+		Lock::run(
+			'genie-operation-' . $operation,
+			function () use ( &$reply, $operation, $binding, $fingerprint, $action, $request, $handler ): void {
+				$reply = $this->run( $operation, $binding, $fingerprint, $action, $request, $handler['callback'] );
+			}
+		);
+		return $reply;
+	}
 
-		if ( is_wp_error( $permit ) ) {
-			return $permit;
-		}
-		$canonical_reply = 0;
-		// A turn the proxy refused before it stored an answer keeps that fact on
-		// its saved reply (Proxy::unrecorded). Try again is a new attempt at the
-		// same question, never a replay of that refusal, so each such predecessor
-		// advances this operation to a successor journal entry. Bounded: every
-		// step is a distinct id, and a step that is not reused is dispatched.
-		for ( $step = 0, $unrecorded = self::unrecorded_reply( $permit, $this->replies, $action, $identity->binding() ); $step < self::MAX_UNRECORDED_CHAIN && false !== $unrecorded; ++$step ) {
-			$permit = $this->reserve( $ledger, $identity, $action, self::successor( (string) $permit['id'] ), $fingerprint, $plan );
-			if ( is_wp_error( $permit ) ) {
-				return $permit;
+	/**
+	 * Execute one request under its own lock. A placeholder left by interrupted
+	 * work cannot dispatch a second time. Only an explicitly unrecorded turn can retry.
+	 *
+	 * @param string          $operation Native UUID.
+	 * @param string          $binding Current owner.
+	 * @param string          $fingerprint Authenticated request content.
+	 * @param string          $action Server-selected operation.
+	 * @param WP_REST_Request $request Native request.
+	 * @param mixed           $callback Native handler.
+	 */
+	private function run( string $operation, string $binding, string $fingerprint, string $action, WP_REST_Request $request, mixed $callback ): WP_REST_Response|WP_Error {
+		$id = $this->replies->operation( $operation );
+		if ( $id > 0 ) {
+			if ( ! hash_equals( (string) get_post_meta( $id, '_linker_input', true ), $fingerprint ) ) {
+				return self::changed();
 			}
-			$unrecorded = self::unrecorded_reply( $permit, $this->replies, $action, $identity->binding() );
-		}
-		if ( ! empty( $permit['reused'] ) ) {
-			$old   = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
-			$again = ! in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) || is_wp_error( $old ) || $old->get_status() < 400;
-			if ( ! $again ) {
-				// A definite failed pure calculation can be attempted explicitly again.
-				// Unknown/dispatched operations and business writes never enter here.
-				$canonical_reply = (int) $permit['receipt']['outcome'];
-				$retry           = hash( 'sha256', $operation . '|' . $request->get_header( 'X-Linker-Operation' ) );
-				$operation       = substr( $retry, 0, 8 ) . '-' . substr( $retry, 8, 4 ) . '-4' . substr( $retry, 13, 3 ) . '-a' . substr( $retry, 17, 3 ) . '-' . substr( $retry, 20, 12 );
-				$permit          = $this->reserve( $ledger, $identity, $action, $operation, $fingerprint, $plan );
-				if ( is_wp_error( $permit ) ) {
-					return $permit;
+			$stored = $this->replies->read( $id, $binding );
+			if ( ! self::retryable( $action, $stored ) ) {
+				return 'solution_save' === $action ? EnginePublication::reply( $stored ) : $stored;
+			}
+			$reset = wp_update_post(
+				array(
+					'ID'           => $id,
+					'post_content' => '',
+				),
+				true
+			);
+			if ( is_wp_error( $reset ) ) {
+				return self::error( 'storage', 503 );
+			}
+		} else {
+			$legacy_id = $operation;
+			$entry     = $this->replies->previous( $legacy_id );
+			while ( null !== $entry ) {
+				if ( $entry['purpose'] !== $action || ! hash_equals( $entry['binding'], $binding ) || ! hash_equals( $entry['fingerprint'], $fingerprint ) ) {
+					return self::changed();
 				}
-				if ( ! empty( $permit['reused'] ) ) {
-					$retry_reply = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
-					return EnginePublication::reply( $retry_reply );
+				if ( 'completed' !== $entry['status'] ) {
+					return self::error( 'pending', 409 );
 				}
-			} else {
-				return $publication_action ? EnginePublication::reply( $old ) : $old;
+				$stored = $this->replies->read( (int) $entry['outcome'], $binding );
+				if ( ! self::retryable( $action, $stored ) ) {
+					return 'solution_save' === $action ? EnginePublication::reply( $stored ) : $stored;
+				}
+				// Earlier explicitly retried turns used a new UUID for each failed attempt.
+				$hash      = hash( 'sha256', 'linker-genie-unrecorded|' . $legacy_id );
+				$legacy_id = substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-a' . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
+				$entry     = $this->replies->previous( $legacy_id );
+			}
+			if ( 'conversation_create' === $action && ! is_user_logged_in() && 0 === ( new \Linker\Tools\Genie\Conversations() )->selected_id() && is_callable( $callback ) ) {
+				// A blank guest editor with no selected conversation has no mutation to replay.
+				$result = $callback( $request );
+				return is_wp_error( $result ) ? $result : rest_ensure_response( $result );
+			}
+			$files = $request->get_param( 'attachments' );
+			if ( 'genie' === $action && null !== $files ) {
+				$checked = ( $this->attachments ?? new Attachments( static fn (): bool => true ) )->check( $files );
+				if ( is_wp_error( $checked ) ) {
+					return $checked;
+				}
+			}
+			$id = $this->replies->open( $binding, (string) $request->get_param( 'email' ), $operation, $fingerprint );
+			if ( $id < 1 ) {
+				return self::error( 'storage', 503 );
 			}
 		}
-
-		if ( '' !== (string) $request->get_param( 'website' ) ) {
-			$ledger->cancel( $permit['id'], $fingerprint );
-			return self::error( 'form', 400 );
+		if ( ! is_callable( $callback ) ) {
+			return self::error( 'handler', 503 );
 		}
-		if ( 'genie' === $action ) {
-			// A verified reservation exists before decoding; invalid bytes can
-			// return it before dispatch. No parsing/model/conversation write yet.
-			$checked = ( $this->attachments ?? new Attachments( static fn ( string $who, int $units ): bool => '' !== $who || $units > 0 ) )->check( $raw_files );
-			if ( is_wp_error( $checked ) ) {
-				$ledger->cancel( $permit['id'], $fingerprint );
-				return $checked;
-			}
-		}
-		$sent = $ledger->dispatch( $permit['id'], $fingerprint );
-		if ( is_wp_error( $sent ) ) {
-			return $sent;
-		}
-		$reply_id      = $this->replies->open( $identity->binding(), (string) $request->get_param( 'email' ) );
 		$previous      = self::$context;
-		self::$context = array_merge(
-			$permit,
-			array(
-				'action'         => $action,
-				'binding'        => $identity->binding(),
-				'engine_version' => $version,
-			)
+		self::$context = array(
+			'id'          => $operation,
+			'fingerprint' => $fingerprint,
+			'binding'     => $binding,
+			'action'      => $action,
+			'enforced'    => true,
 		);
 		try {
-			$callback = $handler['callback'];
-			if ( ! is_callable( $callback ) ) {
-				return self::error( 'handler', 503 );
-			}
-			$reply    = call_user_func( $callback, $request );
-			$response = is_wp_error( $reply ) ? rest_convert_error_to_response( $reply ) : rest_ensure_response( $reply );
-			if ( $publication_action && $response->get_status() < 400 ) {
+			$raw      = $callback( $request );
+			$response = is_wp_error( $raw ) ? rest_convert_error_to_response( $raw ) : rest_ensure_response( $raw );
+			if ( 'solution_save' === $action && $response->get_status() < 400 ) {
 				$checked = EnginePublication::reply( $response );
 				if ( is_wp_error( $checked ) ) {
 					$response = rest_convert_error_to_response( $checked );
 				}
 			}
 			$response->header( 'Cache-Control', 'private, no-store' );
-			if ( $engineering && $response->get_status() >= 400 ) {
-				// A native completed pure failure is safe to retry explicitly. A
-				// reverse proxy's ambiguous 5xx never carries this trusted marker.
+			if ( 'genie' === $action && $response->get_status() >= 400 && self::states_unrecorded( $raw, $response ) ) {
 				$response->header( 'X-Linker-Resource-Outcome', 'failed' );
 			}
-			if ( 'genie' === $action && $response->get_status() >= 400 && self::states_unrecorded( $reply, $response ) ) {
-				// The proxy itself refused before storing any answer, so this turn
-				// is not a result a later Try again may receive again.
-				$response->header( 'X-Linker-Resource-Outcome', 'failed' );
-			}
-			if ( $canonical_reply > 0 && $response->get_status() < 400 ) {
-				$this->replies->finish( $canonical_reply, $response );
-			}
-			$outcome   = $reply_id > 0 ? $this->replies->finish( $reply_id, $response ) : 0;
-			$completed = $ledger->complete( $permit['id'], $fingerprint, $outcome );
-			if ( is_wp_error( $completed ) && $outcome > 0 ) {
-				wp_delete_post( $outcome, true );
+			if ( 'failed' === ( $response->get_headers()['X-Linker-Resource-Outcome'] ?? '' ) || ( 'solution_save' === $action && is_wp_error( $raw ) && 'linker_solution_changed' === $raw->get_error_code() ) ) {
+				wp_delete_post( $id, true );
+			} else {
+				$this->replies->finish( $id, $response );
 			}
 			return $response;
 		} finally {
@@ -291,68 +274,18 @@ final class Resources {
 		}
 	}
 
-	/**
-	 * Whether this permit's saved reply says the turn stored no answer.
+	/** Only a turn explicitly refused before recording may be dispatched again.
 	 *
-	 * @param array<string,mixed> $permit Server permit.
-	 * @param Replies             $replies Native reply store.
-	 * @param string              $action Server action.
-	 * @param string              $binding Current identity.
-	 * @return WP_REST_Response|false The refused reply, or false when this is not one.
+	 * @param string                    $action Native operation.
+	 * @param WP_REST_Response|WP_Error $reply Stored native result.
 	 */
-	private static function unrecorded_reply( array $permit, Replies $replies, string $action, string $binding ): WP_REST_Response|false {
-		if ( 'genie' !== $action || empty( $permit['reused'] ) ) {
-			return false;
-		}
-		$old = $replies->read( (int) $permit['receipt']['outcome'], $binding );
-		return ! is_wp_error( $old ) && 'failed' === ( $old->get_headers()['X-Linker-Resource-Outcome'] ?? '' ) ? $old : false;
+	private static function retryable( string $action, WP_REST_Response|WP_Error $reply ): bool {
+		return 'genie' === $action && ! is_wp_error( $reply ) && 'failed' === ( $reply->get_headers()['X-Linker-Resource-Outcome'] ?? '' );
 	}
 
-	/** Key for an explicit retry of a turn that stored no answer.
-	 *
-	 * @param string $id Current operation.
-	 */
-	private static function successor( string $id ): string {
-		$seed = hash( 'sha256', 'linker-genie-unrecorded|' . $id );
-		return substr( $seed, 0, 8 ) . '-' . substr( $seed, 8, 4 ) . '-4' . substr( $seed, 13, 3 ) . '-a' . substr( $seed, 17, 3 ) . '-' . substr( $seed, 20, 12 );
-	}
-
-	/**
-	 * Associate a tool operation with its native owner and replay only a completed reply.
-	 *
-	 * @param Ledger              $ledger Private journal.
-	 * @param Identity            $identity Native session.
-	 * @param string              $action Server-selected operation.
-	 * @param string              $id Operation identifier.
-	 * @param string              $fingerprint Canonical request.
-	 * @param array<string,mixed> $plan Resource dimensions.
-	 * @return array<string,mixed>|WP_Error
-	 */
-	private function reserve( Ledger $ledger, Identity $identity, string $action, string $id, string $fingerprint, array $plan ): array|WP_Error {
-		$owners = $identity->owners();
-		if ( 'genie' === $action ) {
-			$owners[] = \Linker\Commerce\Protection\Allowance::owner_for( $identity->browser );
-		}
-		$receipt = $ledger->reserve( $id, $fingerprint, $plan['limits'], 90, $plan['carry'], $action, $identity->binding(), $owners );
-		if ( is_wp_error( $receipt ) ) {
-			$status = match ( $receipt->get_error_code() ) {
-				'linker_admission_quota' => 429,
-				'linker_admission_payload_changed', 'linker_admission_input' => 409,
-				default => 503,
-			};
-			$receipt->add_data( array_merge( (array) $receipt->get_error_data(), array( 'status' => $status ) ) );
-			return $receipt;
-		}
-		if ( ! in_array( $receipt['status'], array( 'completed', 'reserved' ), true ) ) {
-			return self::error( 'pending', 409 );
-		}
-		return array(
-			'enforced'    => true,
-			'reused'      => 'completed' === $receipt['status'],
-			'receipt'     => $receipt,
-			'id'          => $id,
-			'fingerprint' => $fingerprint,
-		);
+	/** A reused operation key names one owner and one payload. */
+	private static function changed(): WP_Error {
+		return new WP_Error( 'linker_admission_payload_changed', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => 409 ) );
 	}
 
 	/**

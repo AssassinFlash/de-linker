@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Protection;
 
 use Linker\Commerce\Protection\Identity;
+use Linker\Commerce\Inquiry\Assessment\Lock;
 
 /** Guest unlinked answers expire; linked receipts follow verified-email requests. */
 final class ReplyPrivacy {
@@ -89,17 +90,44 @@ final class ReplyPrivacy {
 		if ( $page < 1 ) {
 			throw new \InvalidArgumentException( 'invalid_privacy_page' );
 		}
-		$ids = $this->ids( $email );
+		$ids  = $this->ids( $email );
+		$busy = false;
 		foreach ( $ids as $id ) {
-			if ( ! wp_delete_post( $id, true ) ) {
-				throw new \RuntimeException( 'tool_reply_erasure_unavailable' );
+			$operation = (string) get_post_field( 'post_name', $id );
+			if ( ! wp_is_uuid( $operation, 4 ) ) {
+				if ( ! wp_delete_post( $id, true ) ) {
+					throw new \RuntimeException( 'tool_reply_erasure_unavailable' );
+				}
+				continue;
 			}
+			$removed = Lock::run(
+				'genie-operation-' . $operation,
+				static function () use ( $id ): void {
+					// The anonymous operation key prevents duplicate dispatch until the
+					// original retry window expires. No customer data remains attached.
+					$updated = wp_update_post(
+						array(
+							'ID'           => $id,
+							'post_content' => '',
+							'post_author'  => 0,
+						),
+						true
+					);
+					if ( is_wp_error( $updated ) ) {
+						throw new \RuntimeException( 'tool_reply_erasure_unavailable' );
+					}
+					foreach ( array( '_linker_input', '_linker_recipient', '_linker_binding' ) as $meta ) {
+						delete_post_meta( $id, $meta );
+					}
+				}
+			);
+			$busy    = $busy || ! $removed;
 		}
 		return array(
 			'items_removed'  => array() !== $ids,
 			'items_retained' => false,
 			'messages'       => array(),
-			'done'           => count( $ids ) < 100,
+			'done'           => ! $busy && count( $ids ) < 100,
 		);
 	}
 
