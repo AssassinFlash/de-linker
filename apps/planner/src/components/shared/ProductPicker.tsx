@@ -69,7 +69,7 @@ export function ProductPicker({
 					)}
 					<div className="linker-product-list">
 						{matches.map((p) => {
-							const card = cards.data?.get(p.id);
+							const card = cards.isSuccess ? cards.data.get(p.id) : undefined;
 							return card ? (
 								<ProductCard key={p.id} {...card}>
 									<button

@@ -155,7 +155,9 @@ export function CandidateMaterials({
 							})
 						: [];
 				const product = { ...selectedProducts.get(line.product_id), ...line };
-				const card = cards.data?.get(Number(line.product_id));
+				const card = cards.isSuccess
+					? cards.data.get(Number(line.product_id))
+					: undefined;
 				return (
 					<div className="sc-equipment sc-material-row" key={index}>
 						<ProductCard
@@ -907,7 +909,7 @@ export function SystemOptions({
 					>
 						<div className="sc-option-products" aria-label={title(item)}>
 							{optionIds(item).map((id) => {
-								const card = shop.data?.get(id);
+								const card = shop.isSuccess ? shop.data.get(id) : undefined;
 								return (
 									<ProductCard
 										key={id}

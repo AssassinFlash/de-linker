@@ -529,10 +529,11 @@ export function ProjectEquipment({
 					/>
 					<div className="linker-product-list">
 						{[...new Set(productIds)].map((id) => {
-							const card = cards.data?.get(id);
+							const card = cards.isSuccess ? cards.data.get(id) : undefined;
 							const known = productData?.products.find(
 								(item) => item.id === id,
 							);
+							if (!known && !card && !cards.isSuccess) return null;
 							const label =
 								card?.label ||
 								(known

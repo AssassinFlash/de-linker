@@ -370,3 +370,21 @@ test("a visitor chooses a model from its photograph, verified fact and shop deta
 	assert.equal(picker.open, false);
 	await until(() => document.querySelector("[data-selected-equipment] img"));
 });
+
+test("a saved model is only labelled unavailable after Woo answers", async (t) => {
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	let complete;
+	const read = new Promise((resolve) => {
+		complete = resolve;
+	});
+	await mount(
+		t,
+		{ equipment_setup: { ...equipmentDraft({}), inverter_product_id: 999 } },
+		() => read,
+	);
+	const group = document.querySelector("[data-selected-equipment]");
+	assert.ok(group.querySelector('[role="status"]'));
+	assert.doesNotMatch(group.textContent, /unavailable/);
+	await act(async () => complete({ cards: [] }));
+	await until(() => group.textContent.includes("Saved product unavailable"));
+});
