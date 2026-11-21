@@ -72,6 +72,44 @@ for (const [lang, routes] of Object.entries(pages)) {
 			await expect(
 				page.locator('.sc-direction-comparison tbody tr')
 			).toHaveCount(2);
+			const directions = page.locator(
+				'.sc-direction-comparison tbody tr'
+			);
+			await directions.first().getByRole('button').click();
+			const form = page.locator('form.linker-inquiry-form:visible');
+			await expect(form).toBeVisible();
+			const project = new URL(page.url()).searchParams.get('project');
+			expect(project).toMatch(/^[a-f0-9]{32}$/);
+			try {
+				await page.goto(entry + '?projects=1');
+				const row = page
+					.getByRole('listitem')
+					.filter({
+						has: page.locator('[id="sc-project-' + project + '"]'),
+					});
+				await row.locator('a[href*="guided=inquiry"]').click();
+				await directions.first().getByRole('button').click();
+				await expect(form).toBeVisible();
+				expect(new URL(page.url()).searchParams.get('project')).toBe(
+					project
+				);
+			} finally {
+				await page.goto(entry + '?projects=1');
+				const row = page
+					.getByRole('listitem')
+					.filter({
+						has: page.locator('[id="sc-project-' + project + '"]'),
+					});
+				await row.locator('button[aria-label]').click();
+				await row
+					.getByRole('group')
+					.getByRole('button', {
+						name: /^Delete project$|^Projekt löschen$/,
+					})
+					.click();
+				await expect(row).toHaveCount(0);
+			}
+
 			await page.goto(entry + '?projects=1');
 			await expect(page.locator('.sc-saved-projects')).toBeVisible();
 			await expect(page.locator('[name=project_title]')).toHaveCount(0);

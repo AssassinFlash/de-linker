@@ -722,10 +722,7 @@ export function Workspace({
 					</div>
 					<div className="sc-actions">
 						{projectIndex && (
-							<a
-								className="sc-button sc-primary"
-								href="?compare=preliminary"
-							>
+							<a className="sc-button sc-primary" href="?compare=preliminary">
 								{__("New project", "linker-tools")}
 							</a>
 						)}
@@ -929,6 +926,14 @@ export function Workspace({
 										</p>
 									</div>
 									<div className="sc-actions">
+										{projectIndex && (
+											<a
+												className="sc-button sc-primary"
+												href={`?project=${item.id}&guided=inquiry#sc-system`}
+											>
+												{__("Compare options", "linker-tools")}
+											</a>
+										)}
 										<button
 											className="sc-button"
 											type="button"
