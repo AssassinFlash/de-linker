@@ -234,6 +234,7 @@ async function equipmentApp(
 		foreignSelection = false,
 		selectionGate = null,
 		searchGate = null,
+		reviseGate = null,
 		readGate = null,
 		findRefusal = null,
 		pvReference = null,
@@ -434,6 +435,7 @@ async function equipmentApp(
 			}
 			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
+				if (reviseGate) await reviseGate.promise;
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
@@ -759,6 +761,40 @@ async function chooseGoal(app, goal = "self") {
 	await until(() => app.fieldSelect("Purpose"));
 	await app.updateSelect("Purpose", goal);
 }
+for (const waitingForHistory of [true, false]) {
+	test(`project navigation confirms the edited revision before preliminary comparison (history pending: ${waitingForHistory})`, async (t) => {
+		const historyGate = deferred(),
+			reviseGate = deferred();
+		const app = await equipmentApp(t, {
+			projectId: "4".repeat(32),
+			hash: "#sc-project",
+			reviseGate,
+			inputs: { equipment_setup: { ...emptySetup, required_usable_kwh: 24 } },
+			readGate: waitingForHistory
+				? { path: "projects/runs", wait: () => historyGate.promise }
+				: null,
+		});
+		const field = () => document.querySelector('input[name="location_label"]');
+		await until(field);
+		await enter(field(), "North quay");
+		await app.step("System");
+		await act(async () => historyGate.resolve());
+		await untilRun(() =>
+			app.requests.some(({ path }) => path === "projects/revise"),
+		);
+		assert.equal(document.querySelector(".sc-direction-comparison"), null);
+		await act(async () => reviseGate.resolve());
+		await untilRun(() => document.querySelector(".sc-direction-comparison"));
+		assert.equal(app.project.inputs.brief.site.location_label, "North quay");
+		assert.equal(app.project.inputs.equipment_setup.required_usable_kwh, 24);
+		assert.equal(location.hash, "#sc-preliminary-options");
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["projects/revise"],
+		);
+	});
+}
+
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
 	const app = await equipmentApp(t, {
@@ -1605,9 +1641,8 @@ for (const adopted of [true, false]) {
 			await untilRun(() => app.button("Selected"));
 			assert.match(option().textContent, /ESS 5K/);
 		} else {
-			await untilRun(() =>
-				empty.test(document.querySelector("main").textContent),
-			);
+			await untilRun(() => document.querySelector(".sc-direction-comparison"));
+			assert.equal(location.hash, "#sc-preliminary-options");
 		}
 		assert.deepEqual(app.requests, []);
 	});

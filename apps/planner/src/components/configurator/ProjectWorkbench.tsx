@@ -649,30 +649,46 @@ export default function ProjectWorkbench({
 	async function closeProject() {
 		if (mayLeave() && (await controller.flush())) close();
 	}
-	async function openChapter(next: Step) {
+	const preliminaryRequested = useRef(false);
+	function openChapter(next: Step) {
 		const current = latest.current;
 		if (!current || !mayLeave()) return;
 		if (next === "system" && !coordinatesValid) {
 			showStep("solar");
 			return;
 		}
-		if (
+		preliminaryRequested.current = Boolean(
 			next === "system" &&
 			step === "project" &&
 			comparePreliminary &&
-			history.isSuccess &&
 			!searchId &&
-			needsPhaseConfirmation(current.history.current) &&
-			isDirty(current)
-		) {
-			const saved = await controller.save();
-			if (saved && client.isCurrentScope(session.query_scope))
-				comparePreliminary(saved);
-			return;
-		}
+			needsPhaseConfirmation(current.history.current),
+		);
 		showStep(next);
 	}
+	const confirmComparisonRevision = useEffectEvent(async () => {
+		const instance = lifetime.current;
+		const saved = await controller.save();
+		if (
+			saved &&
+			instance === lifetime.current &&
+			location.hash === "#sc-system" &&
+			client.isCurrentScope(session.query_scope)
+		)
+			comparePreliminary?.(saved);
+	});
+	useEffect(() => {
+		if (
+			step !== "system" ||
+			!preliminaryRequested.current ||
+			!history.isSuccess
+		)
+			return;
+		preliminaryRequested.current = false;
+		if (!searchId) void confirmComparisonRevision();
+	}, [step, searchId, history.isSuccess]);
 	function showStep(next: Step) {
+		if (next !== "system") preliminaryRequested.current = false;
 		setGenieReportId(null);
 		const url = new URL(location.href);
 		const previous = url.hash;
@@ -1233,7 +1249,7 @@ export default function ProjectWorkbench({
 				<ProjectNavigation
 					current={activeStep}
 					storageOnly={brief.system_scope === "storage_only"}
-					open={(chapter) => void openChapter(chapter)}
+					open={openChapter}
 				/>
 			)}
 			{navigationRefused &&
