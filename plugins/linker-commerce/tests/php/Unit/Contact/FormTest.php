@@ -25,6 +25,29 @@ use WP_Mock;
 final class FormTest extends TestCase {
 
 
+	/** Cookie value held by the PHPUnit process.
+	 *
+	 * @var string|null
+	 */
+	private ?string $original_browser = null;
+
+	/** Represent a form rendered after its template redirect. */
+	public function setUp(): void {
+		parent::setUp();
+		$this->original_browser                                  = $_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] ?? null;
+		$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = str_repeat( 'a', 32 );
+	}
+
+	/** Restore the original test-process cookie. */
+	public function tearDown(): void {
+		if ( null === $this->original_browser ) {
+			unset( $_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] );
+		} else {
+			$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = $this->original_browser;
+		}
+		parent::tearDown();
+	}
+
 	/**
 	 * The card carries the live card's blocks in their order — heading,
 	 * question, topic, reply details, consent and the send row — and, inside

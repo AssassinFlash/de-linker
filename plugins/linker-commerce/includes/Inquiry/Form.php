@@ -33,12 +33,21 @@ final class Form {
 		add_shortcode( 'linker_inquiry_billing', fn (): string => BillingFields::render( $this->flash['fields']['billing'] ?? array() ) );
 		add_shortcode( 'linker_inquiry_restriction', array( new \Linker\Commerce\Presentation\LoginGate(), 'restricted_notice' ) );
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
+		add_action( 'template_redirect', array( $this, 'prepare_form_owner' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
 		add_shortcode( 'linker_inquiry_verification', fn (): string => \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ) ) );
 		add_shortcode( 'linker_inquiry_hidden', array( $this, 'hidden' ) );
 		add_shortcode( 'linker_inquiry_project_notes', array( $this, 'project_notes' ) );
 		add_shortcode( 'linker_inquiry_lines', array( $this, 'lines' ) );
 		add_shortcode( 'linker_inquiry_draft_nonce', array( $this, 'draft_nonce' ) );
+	}
+
+	/** Bind the native checkout form to its owner before rendering the theme. */
+	public function prepare_form_owner(): void {
+		if ( is_checkout() && ! is_wc_endpoint_url() ) {
+			\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
+			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
+		}
 	}
 
 	/**
@@ -118,6 +127,9 @@ final class Form {
 	 */
 	public function render(): string {
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
+		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
+			return '<p role="alert">' . esc_html( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ) . '</p>';
+		}
 		// This opaque handle reads only server-validated fields from the current Woo session.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only recovery in the native session.
 		if ( array() === $this->flash && isset( $_GET[ CheckoutRetry::HANDLE ] ) ) {

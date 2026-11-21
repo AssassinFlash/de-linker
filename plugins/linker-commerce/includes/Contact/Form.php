@@ -115,6 +115,9 @@ final class Form {
 			// itself (its own panel), so the wrapper carries no card styling.
 			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $this->rail() . '</div>';
 		}
+		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
+			return $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) );
+		}
 		return '<div class="linker-contact-card">' . $this->form( $state ) . $this->rail() . '</div>';
 	}
 
@@ -124,9 +127,9 @@ final class Form {
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
 	 */
 	private function form( string $state ): string {
-		$previous   = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
-		$field      = 'linker-form-input';
-		$label      = 'linker-form-label';
+		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
+		$field    = 'linker-form-input';
+		$label    = 'linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
 		$query    = wp_unslash( $_GET );
 		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );

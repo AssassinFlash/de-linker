@@ -34,9 +34,19 @@ final class Module {
 		( new Handler() )->register();
 		( new SelectionView() )->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_language' ) );
+		add_action( 'template_redirect', array( $this, 'prepare_form_owner' ) );
 		// Before do_shortcode (priority 11 on the_content, WordPress default):
 		// the replacement has to be a shortcode by the time that filter runs.
 		add_filter( 'the_content', array( $this, 'mount_form' ), 9 );
+	}
+
+	/** Bind the displayed contact form before the theme sends the first HTML bytes. */
+	public function prepare_form_owner(): void {
+		$page = get_queried_object();
+		if ( $page instanceof \WP_Post && $this->is_contact_page( $page ) ) {
+			\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
+			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
+		}
 	}
 
 	/**
