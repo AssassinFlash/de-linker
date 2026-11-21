@@ -429,17 +429,24 @@ class Conversations {
 		}
 		$browser = $this->browser_key();
 		if ( '' === $browser ) {
-			// The signed conversation cookie still owns this thread. Recover only
-			// that thread, without replacing its original browser's history key.
-			$browser = $this->write_browser_key( $this->recovery_key( $id ) );
-			$mark    = self::hash( $browser );
-			if ( ! in_array( $mark, (array) get_post_meta( $id, self::BROWSER_META, false ), true ) ) {
-				add_post_meta( $id, self::BROWSER_META, $mark );
-			}
+			$this->recover_browser( $id );
 		} else {
 			$this->adopt_cookie_conversation( $browser );
 		}
 		$this->clear_cookie();
+	}
+
+	/** Keep the verified guest's selected thread when its separate browser cookie has expired.
+	 *
+	 * @param int $id Guest conversation already verified by selected_id().
+	 */
+	private function recover_browser( int $id ): string {
+		$browser = $this->recovery_key( $id );
+		$mark    = self::hash( $browser );
+		if ( ! in_array( $mark, (array) get_post_meta( $id, self::BROWSER_META, false ), true ) ) {
+			add_post_meta( $id, self::BROWSER_META, $mark );
+		}
+		return $this->write_browser_key( $browser );
 	}
 
 	/** Replacement browser key scoped to a single verified signed conversation.
@@ -828,11 +835,16 @@ class Conversations {
 			// first requests that both arrive without the cookie still
 			// share one claimed key.
 			if ( '' === $browser ) {
-				$claim = $this->claimed_browser_key( $tab );
-				if ( '' === $claim ) {
-					return '';
+				$selected = $this->selected_id();
+				if ( $selected > 0 ) {
+					$browser = $this->recover_browser( $selected );
+				} else {
+					$claim = $this->claimed_browser_key( $tab );
+					if ( '' === $claim ) {
+						return '';
+					}
+					$browser = $this->write_browser_key( $claim );
 				}
-				$browser = $this->write_browser_key( $claim );
 			} else {
 				$this->close_browser_claim( $tab );
 			}

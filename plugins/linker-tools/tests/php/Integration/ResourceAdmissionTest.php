@@ -463,6 +463,11 @@ final class ResourceAdmissionTest extends TestCase {
 			$old_group                     = sanitize_text_field( wp_unslash( $_COOKIE[ Conversations::BROWSER_COOKIE ] ?? '' ) );
 			$this->assertMatchesRegularExpression( '/^[0-9a-f]{32}$/', $old_group );
 			unset( $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+			$signed_cookie_only = $_COOKIE;
+			$entry              = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/entry-context' );
+			$entry->set_param( 'tab', wp_generate_uuid4() );
+			$entry->set_header( 'origin', home_url() );
+			$this->assertSame( 200, rest_do_request( $entry )->get_status() );
 			$previous_tab = $_COOKIE;
 			$from_old     = $this->request( '/linker-ai/v1/genie/conversations', array(), 'conversation_create' );
 			$blank        = $resources->dispatch( null, $from_old, '', $handler );
@@ -487,6 +492,29 @@ final class ResourceAdmissionTest extends TestCase {
 			unset( $_COOKIE[ Conversations::COOKIE ] );
 			$_COOKIE[ Conversations::BROWSER_COOKIE ] = $old_group;
 			$this->assertTrue( ( new Conversations() )->may_use( $old ) );
+			$_COOKIE                          = $signed_cookie_only;
+			$_COOKIE[ Conversations::COOKIE ] = $old . '.' . str_repeat( '0', 64 );
+			$this->assertSame( 200, rest_do_request( $entry )->get_status() );
+			$this->assertFalse( ( new Conversations() )->may_use( $old ) );
+
+			$owner = wp_create_user( 'entry-owner-' . wp_generate_uuid4(), wp_generate_password() );
+			$this->assertIsInt( $owner );
+			try {
+				wp_update_post(
+					array(
+						'ID'          => $old,
+						'post_author' => $owner,
+					)
+				);
+				$_COOKIE = $signed_cookie_only;
+				$marks   = get_post_meta( $old, Conversations::BROWSER_META, false );
+				$this->assertSame( 200, rest_do_request( $entry )->get_status() );
+				$this->assertFalse( ( new Conversations() )->may_use( $old ) );
+				$this->assertSame( $marks, get_post_meta( $old, Conversations::BROWSER_META, false ) );
+			} finally {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+				wp_delete_user( $owner );
+			}
 		} finally {
 			foreach ( $held as $hook => $callbacks ) {
 				if ( null === $callbacks ) {
