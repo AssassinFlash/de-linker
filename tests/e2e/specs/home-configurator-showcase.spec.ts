@@ -42,7 +42,7 @@ async function reviewFromEntry(
 					name:
 						language === 'en'
 							? 'Compare options'
-							: 'Optionen vergleichen',
+							: 'Varianten vergleichen',
 					exact: true,
 				})
 				.click();
@@ -131,6 +131,7 @@ for (const language of ['en', 'de'] as const) {
 			baseURL,
 		}) => {
 			test.setTimeout(480_000);
+			page.setDefaultTimeout(20_000);
 			await page.setViewportSize({
 				width,
 				height: width === 390 ? 844 : 900,
@@ -199,6 +200,21 @@ for (const language of ['en', 'de'] as const) {
 				if (i) await openHome();
 				const tab = list.getByRole('tab', { name: label, exact: true });
 				await tab.click();
+				await expect
+					.poll(() =>
+						tab.evaluate((selected) => {
+							const { left, right } =
+								selected.getBoundingClientRect();
+							const strip = selected
+								.closest('[role="tablist"]')!
+								.getBoundingClientRect();
+							return (
+								left >= strip.left - 1 &&
+								right <= strip.right + 1
+							);
+						})
+					)
+					.toBe(true);
 				await expect(tab).toHaveAttribute('aria-selected', 'true');
 				await expect(panel).toBeVisible();
 				const img = panel.locator('img');

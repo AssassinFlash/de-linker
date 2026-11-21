@@ -51,7 +51,7 @@ export async function compareSavedFromHome(
 	await row
 		.getByRole('link', {
 			name:
-				language === 'en' ? 'Compare options' : 'Optionen vergleichen',
+				language === 'en' ? 'Compare options' : 'Varianten vergleichen',
 			exact: true,
 		})
 		.click();
