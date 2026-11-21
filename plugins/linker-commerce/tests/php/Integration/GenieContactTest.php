@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\GenieVerificationFixture;
 use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 
 use Linker\Commerce\Genie\Module;
@@ -72,6 +73,9 @@ final class GenieContactTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->use_empty_mail_queue();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/GenieVerificationFixture.php';
+		GenieVerificationFixture::install( $this->later( ... ) );
 		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		$this->authorization = NormalMailAuthorizationFixture::install(
 			function ( callable $remove ): void {
