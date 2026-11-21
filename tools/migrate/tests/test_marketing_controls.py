@@ -532,3 +532,33 @@ def test_commercial_and_residential_prompts_and_inquiry_copy_are_idempotent() ->
     )
     with pytest.raises(ValueError, match="Partially changed Commercial Storage"):
         controls.plan_pair("commercial_storage", cs_after[0], cs_de)
+
+
+def test_imprint_labels_identify_the_operator_in_english_and_keep_registry_values():
+    labels = (
+        "Geschäftsführer",
+        "Registergericht",
+        "Handelsregister",
+        "USt-IdNr.",
+        "Telefon",
+    )
+    contact = "".join(
+        f'<dt lang="de">{label}</dt><dd>{value}</dd>'
+        for label, value in zip(
+            labels,
+            ("Director", "Amtsgericht Stendal", "HRB 33824", "VAT", "Phone"),
+            strict=True,
+        )
+    )
+    before = (contact, contact)
+    english, german = controls.plan_pair("imprint_operator", *before)
+    assert [s.split("</dt>")[0] for s in english.split("<dt>")[1:]] == [
+        "Managing director",
+        "Register court",
+        "Commercial register",
+        "VAT ID",
+        "Telephone",
+    ]
+    assert english.count("<dd>") == 5 and "<dd>Amtsgericht Stendal</dd>" in english
+    assert german == contact
+    assert controls.plan_pair("imprint_operator", english, german) == (english, german)

@@ -198,6 +198,21 @@ def plan_utility_equipment_tools(english: str, german: str) -> tuple[str, str]:
     return pages[0], pages[1]
 
 
+def plan_imprint_operator(english: str, german: str) -> tuple[str, str]:
+    """Localize the English labels while preserving the official registry entries."""
+    labels = (
+        ("Geschäftsführer", "Managing director"),
+        ("Registergericht", "Register court"),
+        ("Handelsregister", "Commercial register"),
+        ("USt-IdNr.", "VAT ID"),
+        ("Telefon", "Telephone"),
+    )
+    edits = tuple(
+        (f'<dt lang="de">{old}</dt>', f"<dt>{new}</dt>") for old, new in labels
+    )
+    return _apply_edits(english, edits, "English Imprint")[0], german
+
+
 def plan_about_registration(english: str, german: str) -> tuple[str, str]:
     card = (
         '<a class="row" href="{}"><span class="no">03</span>'
@@ -1034,6 +1049,7 @@ def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     paired_families = {
         "utility_equipment_tools": plan_utility_equipment_tools,
+        "imprint_operator": plan_imprint_operator,
         "about_registration": plan_about_registration,
         "thank_you_blog": plan_thank_you_blog,
         "thank_you_inquiry": plan_thank_you_inquiry,
