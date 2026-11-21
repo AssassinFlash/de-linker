@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
+import { buildCalibration } from "../src/domain/imageCalibration.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -44,7 +45,7 @@ async function mount(
 	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
 	const style = document.createElement("style");
 	style.textContent =
-		".lp-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#112233;--proto-neutral-600:#445566;--proto-teal-700:#007777;--proto-teal-400:#44bbbb;--proto-neutral-100:#eeeeee;}";
+		".sc-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#112233;--proto-neutral-600:#445566;--proto-teal-700:#007777;--proto-teal-400:#44bbbb;--proto-neutral-100:#eeeeee;}";
 	document.head.append(style);
 	const { createRoot } = await import("react-dom/client");
 	const { SolarInstallation } =
@@ -131,6 +132,87 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("reopened roof source shows its declared precision, measurement note and recorded image scale", async (t) => {
+	const geometry = structuredClone(flat);
+	Object.assign(geometry.sources[0], {
+		kind: "user_drawing",
+		rights_basis: "user_attestation",
+		note: "roof-plan.png",
+		spatial_precision_m: 0.05,
+		calibration_note: "Installer checked the second span.",
+		calibration: buildCalibration({
+			view: "horizontal_plan",
+			image: { media_type: "image/png", pixel_width: 800, pixel_height: 800 },
+			controlPoints: { first: [100, 100], second: [400, 100] },
+			knownLength: 6,
+			downslopeBearingDeg: 0,
+			checkPoints: { first: [100, 200], second: [700, 200] },
+			checkLength: 12,
+			checkToleranceRatio: 0.01,
+			pitchDeg: 0,
+			note: "Drawing scale verified.",
+		}),
+	});
+	await mount(t, { brief: emptyBrief(), geometry }, aerial, null, "de");
+	const properties = [...document.querySelectorAll("fieldset")].find(
+		(field) =>
+			field.querySelector(":scope > legend")?.textContent === "roof-plan.png",
+	);
+	assert.ok(properties);
+	assert.match(properties.textContent, /0,05/);
+	assert.match(properties.textContent, /Installer checked the second span\./);
+	assert.match(properties.textContent, /0,02 m je Pixel/);
+});
+test("saved roof openings survive preview, editing and reopening the same layout", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.roofs[0].holes_uv = [
+		[
+			[9, 9],
+			[11, 9],
+			[11, 11],
+			[9, 11],
+		],
+	];
+	const app = await mount(t, { brief: emptyBrief(), geometry });
+	function checkOpening(label) {
+		const outline = document.querySelector(
+			`svg[aria-label="${label}"] path[fill-rule="evenodd"]`,
+		);
+		assert.ok(outline, label);
+		assert.equal(
+			outline.getAttribute("d"),
+			"M0,0 L20,0 L20,20 L0,20Z M9,9 L11,9 L11,11 L9,11Z",
+		);
+	}
+	checkOpening("Roof layout preview");
+	await click("Open roof layout");
+	checkOpening("Editable roof plan");
+	await click("Use this layout");
+	checkOpening("Roof layout preview");
+	assert.deepEqual(app.inputs.geometry, geometry);
+});
+test("site coordinates retain an invalid edit and accept a corrected decimal comma", async (t) => {
+	const validation = [];
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry: structuredClone(flat) },
+		aerial,
+		null,
+		"en",
+		{},
+		{ onCoordinateValidity: (valid) => validation.push(valid) },
+	);
+	await click("Use module details");
+	await enter(input("Latitude"), "91,7");
+	assert.equal(input("Latitude").value, "91,7");
+	assert.equal(input("Latitude").getAttribute("aria-invalid"), "true");
+	assert.equal(validation.at(-1), false);
+	await enter(input("Latitude"), "51,72");
+	await enter(input("Longitude"), "9.17");
+	assert.equal(validation.at(-1), true);
+	assert.equal(app.inputs.brief.site.latitude, 51.72);
+	assert.equal(app.inputs.brief.site.longitude, 9.17);
+});
 test("German panel choices save the cell technology expected by the electrical calculation", async (t) => {
 	const inputs = { brief: emptyBrief(), geometry: structuredClone(flat) };
 	const app = await mount(t, inputs, aerial, null, "de");
@@ -393,7 +475,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	await click("Add roof to current design");
 	assert.ok(
 		app.inputs.geometry,
-		document.querySelector(".lp-import-panel [role=alert]")?.textContent,
+		document.querySelector(".sc-import-panel [role=alert]")?.textContent,
 	);
 	const { roofs, sources, coordinate_system: frame } = app.inputs.geometry;
 	assert.equal(roofs.length, 1);
@@ -422,7 +504,7 @@ async function openRoof(locale = "en") {
 async function traceRoofImage(t, image, roofId, length = "12") {
 	if (!document.querySelector(".sc-roof-editor")) await openRoof();
 	await click("Calibrate a roof image");
-	const form = document.querySelector(".lp-import-panel form");
+	const form = document.querySelector(".sc-import-panel form");
 	if (roofId) {
 		const target = form.elements.namedItem("target");
 		await act(async () => {
@@ -451,9 +533,9 @@ async function traceRoofImage(t, image, roofId, length = "12") {
 	await act(async () =>
 		fileInput.dispatchEvent(new window.Event("change", { bubbles: true })),
 	);
-	assert.equal(form.querySelector(".lp-file-name").textContent, image);
+	assert.equal(form.querySelector(".sc-file-name").textContent, image);
 	const mark = async (x, y) => {
-		const svg = form.querySelector(".lp-plan-svg");
+		const svg = form.querySelector(".sc-plan-svg");
 		svg.getBoundingClientRect = () => ({
 			left: 0,
 			top: 0,
@@ -694,11 +776,11 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 			/not_authorized/,
 		);
 	assert.match(
-		document.querySelector(".lp-map-provider").textContent,
+		document.querySelector(".sc-map-provider").textContent,
 		/Copernicus Land Monitoring Service/,
 	);
 	assert.equal(
-		document.querySelector(".lp-map-provider a").href,
+		document.querySelector(".sc-map-provider a").href,
 		official.licence_url,
 	);
 	await act(async () => {

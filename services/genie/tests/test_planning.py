@@ -25,7 +25,7 @@ from linker_genie.template import seal
 
 PROJECT = "a" * 32
 RUN = "b" * 32
-URL = f"https://de-linker.test/solution-configurator/?project={PROJECT}&run={RUN}#lp-calculations"
+URL = f"https://de-linker.test/solution-configurator/?project={PROJECT}&run={RUN}#sc-review"
 
 
 def source() -> tuple[dict[str, Any], PageContext]:

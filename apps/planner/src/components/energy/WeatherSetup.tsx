@@ -92,7 +92,7 @@ export function WeatherSetup({
 					onError(null);
 				}}
 			/>
-			<div className="lp-energy-submit">
+			<div className="sc-energy-submit">
 				<div>
 					<strong>
 						{prepared
@@ -116,7 +116,7 @@ export function WeatherSetup({
 				</div>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={actionsDisabled || !valid}
 					onClick={() => {
 						try {
@@ -133,7 +133,7 @@ export function WeatherSetup({
 				</button>
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					disabled={
 						actionsDisabled ||
 						!valid ||

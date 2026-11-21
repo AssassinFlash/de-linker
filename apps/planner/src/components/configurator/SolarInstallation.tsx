@@ -13,6 +13,8 @@ import {
 	panelLabel,
 	panelSpecification,
 } from "../../domain/panelParameters.ts";
+import { Icon } from "../Icon.tsx";
+import { SiteCoordinates } from "./SiteCoordinates.tsx";
 import { PanelMeasurementFields } from "../PanelMeasurementFields.tsx";
 import type {
 	GeometryDocument,
@@ -40,6 +42,7 @@ import {
 	ImageCalibrationWorkspace,
 	type CalibrationCommand,
 } from "../design/ImageCalibrationWorkspace.tsx";
+import { SourceMeasurements } from "../design/MapSourceDetails.tsx";
 import { GeometryIntake } from "../design/GeometryIntake.tsx";
 import { GeometryExportPermission } from "../design/GeometryForm.tsx";
 import policy from "../../contracts/geometry-policy.json" with { type: "json" };
@@ -80,9 +83,12 @@ export interface SolarInstallationProps {
 	next: () => void;
 	wiring?: ReactNode;
 	initialMap?: boolean;
+	initialPlan?: boolean;
 	takeImageryConsent?: (source: PlaceImagery) => boolean;
 	onEditing?: (editing: boolean) => void;
 	onLayoutChange?: () => void;
+	onCoordinateValidity?: (valid: boolean) => void;
+	active?: boolean;
 	geometryImport?: {
 		projectId: string;
 		recheck: () => void;
@@ -158,6 +164,9 @@ export function SolarInstallation({
 	next,
 	wiring,
 	initialMap = false,
+	initialPlan = false,
+	active = true,
+	onCoordinateValidity,
 	takeImageryConsent,
 	onEditing,
 	onLayoutChange,
@@ -178,11 +187,12 @@ export function SolarInstallation({
 		geometry.coordinate_system.north_reference === "true_north";
 	const [mode, setMode] = useState<"known" | "roof">(
 		initialMap ||
+			initialPlan ||
 			(reference.model !== KNOWN_PV_MODEL && geometry.roofs.length > 0)
 			? "roof"
 			: "known",
 	);
-	const [layoutOpen, setLayoutOpen] = useState(initialMap);
+	const [layoutOpen, setLayoutOpen] = useState(initialMap || initialPlan);
 	const choicesId = useId();
 	const layoutHeading = useRef<HTMLHeadingElement>(null);
 	const openLayout = useRef<HTMLButtonElement>(null);
@@ -213,14 +223,25 @@ export function SolarInstallation({
 	const [roofPropertyInvalid, setRoofPropertyInvalid] = useState(false);
 	const roofPropertiesPanel = useRef<HTMLDivElement>(null);
 	const [view, setView] = useState<"plan" | "map" | "scene">(
-		initialMap ||
-			recordedCentre !== null ||
-			mapReferenced ||
-			(site.country_code && site.location_label.trim())
+		!initialPlan &&
+			(initialMap ||
+				recordedCentre !== null ||
+				mapReferenced ||
+				(site.country_code && site.location_label.trim()))
 			? "map"
 			: "plan",
 	);
-	const editingLayout = mode === "roof" && layoutOpen;
+	const [coordinatesValid, setCoordinatesValid] = useState(true);
+	const [keepCoordinates, setKeepCoordinates] = useState(false);
+	useEffect(() => {
+		onCoordinateValidity?.(coordinatesValid);
+	}, [coordinatesValid, onCoordinateValidity]);
+	const showCoordinates =
+		mode === "known" ||
+		!geometry.coordinate_system.anchor ||
+		keepCoordinates ||
+		!coordinatesValid;
+	const editingLayout = active && mode === "roof" && layoutOpen;
 	const map = editingLayout && view === "map";
 	const blocked = disabled || !client.isCurrentScope(session.query_scope);
 	const placeQuery = site.postal_code || site.location_label;
@@ -1116,6 +1137,11 @@ export function SolarInstallation({
 		}
 	}
 	const allPoints = roof?.boundary_uv ?? [];
+	const roofPath = roof
+		? [roof.boundary_uv, ...roof.holes_uv]
+				.map((ring) => `M${ring.map((point) => point.join(",")).join(" L")}Z`)
+				.join(" ")
+		: undefined;
 	const minU = allPoints.length ? Math.min(...allPoints.map((p) => p[0])) : 0,
 		minV = allPoints.length ? Math.min(...allPoints.map((p) => p[1])) : 0;
 	const width = allPoints.length
@@ -1281,7 +1307,7 @@ export function SolarInstallation({
 				</p>
 			</header>
 			<fieldset disabled={blocked || calibrationOpen}>
-				<div className="sc-option-row">
+				<div className="sc-option-row sc-solar-methods">
 					{(
 						[
 							[
@@ -1316,12 +1342,20 @@ export function SolarInstallation({
 										reference.model === KNOWN_PV_MODEL)
 								)
 									referenceChange({}, value);
+								setKeepCoordinates(value === "roof" && !coordinatesValid);
 								setMode(value);
 								setLayoutOpen(false);
 								startTool("select");
 							}}
 						>
-							<span>{label}</span>
+							<Icon
+								name={value === "known" ? "solar" : "layers"}
+								className="sc-method-icon"
+							/>
+							<span className="sc-method-label">{label}</span>
+							<span aria-hidden="true" className="sc-method-check">
+								{mode === value && <Icon name="check" />}
+							</span>
 							<small
 								className="sc-solar-choice-note"
 								id={`${choicesId}-${value}-help`}
@@ -1331,8 +1365,7 @@ export function SolarInstallation({
 						</button>
 					))}
 				</div>
-				<div className="sc-card">
-					{mode === "roof" && !placingOnMap && moduleChoice}
+				<div className="sc-card sc-solar-inputs">
 					{mode === "known" ? (
 						<>
 							<p className="sc-muted">
@@ -1342,6 +1375,33 @@ export function SolarInstallation({
 								)}
 							</p>
 							<div className="sc-fields">
+								<label className="sc-field">
+									<span>{__("Solar capacity", "linker-tools")} (kWp)</span>
+									<input
+										type="number"
+										min="0"
+										step="any"
+										value={
+											(knownPanels
+												? knownPanels.system_kwp
+												: known?.peak_power_kwp) ?? ""
+										}
+										placeholder={
+											knownPanels?.count &&
+											knownPanels.power_w &&
+											known?.peak_power_kwp
+												? String(known.peak_power_kwp)
+												: undefined
+										}
+										onChange={(e) => {
+											const power = e.currentTarget.valueAsNumber;
+											panelPowerChange(
+												"system_kwp",
+												Number.isFinite(power) && power > 0 ? power : null,
+											);
+										}}
+									/>
+								</label>
 								<label className="sc-field">
 									<span>{__("Power per panel", "linker-tools")} (Wp)</span>
 									<input
@@ -1374,33 +1434,7 @@ export function SolarInstallation({
 										}}
 									/>
 								</label>
-								<label className="sc-field">
-									<span>{__("Solar capacity", "linker-tools")} (kWp)</span>
-									<input
-										type="number"
-										min="0"
-										step="any"
-										value={
-											(knownPanels
-												? knownPanels.system_kwp
-												: known?.peak_power_kwp) ?? ""
-										}
-										placeholder={
-											knownPanels?.count &&
-											knownPanels.power_w &&
-											known?.peak_power_kwp
-												? String(known.peak_power_kwp)
-												: undefined
-										}
-										onChange={(e) => {
-											const power = e.currentTarget.valueAsNumber;
-											panelPowerChange(
-												"system_kwp",
-												Number.isFinite(power) && power > 0 ? power : null,
-											);
-										}}
-									/>
-								</label>
+
 								{(["tilt_deg", "azimuth_north_clockwise_deg"] as const).map(
 									(key) => (
 										<label className="sc-field" key={key}>
@@ -1445,18 +1479,28 @@ export function SolarInstallation({
 									role="img"
 									aria-label={__("Roof layout preview", "linker-tools")}
 								>
-									<polygon
-										className="lp-roof-shape"
-										points={roof.boundary_uv
-											.map((point) => point.join(","))
-											.join(" ")}
+									<path
+										className="sc-roof-shape"
+										fillRule="evenodd"
+										d={roofPath}
 									/>
+									{geometry.obstacles
+										.filter((obstacle) => obstacle.roof_id === roof.id)
+										.map((obstacle) => (
+											<polygon
+												key={obstacle.id}
+												className="sc-obstacle-shape"
+												points={obstacle.footprint_uv
+													.map((point) => point.join(","))
+													.join(" ")}
+											/>
+										))}
 									{poses
 										.filter((pose) => pose.roof_id === roof.id && pose.included)
 										.map((pose) => (
 											<polygon
 												key={pose.id}
-												className="lp-panel-shape"
+												className="sc-panel-shape"
 												points={pose.footprint_uv
 													.map((point) => point.join(","))
 													.join(" ")}
@@ -1467,7 +1511,7 @@ export function SolarInstallation({
 							{!editingLayout && (
 								<button
 									type="button"
-									className="sc-button sc-primary"
+									className="sc-button sc-primary sc-open-layout"
 									ref={openLayout}
 									onClick={() => {
 										setLayoutOpen(true);
@@ -1476,18 +1520,28 @@ export function SolarInstallation({
 										);
 									}}
 								>
+									<Icon name="layers" />
 									{__("Open roof layout", "linker-tools")}
 								</button>
 							)}
 						</>
 					)}
-					<p className="sc-solar-total">
-						{mode === "roof" && geometry.roofs.length > 0
-							? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
-							: mode === "known" && known?.peak_power_kwp != null
-								? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
-								: __("Solar capacity not entered", "linker-tools")}
-					</p>
+					{mode === "roof" && !placingOnMap && (
+						<div className="sc-layout-panels">{moduleChoice}</div>
+					)}
+					<div className="sc-solar-total">
+						<Icon name="solar" />
+						<div>
+							<span>{__("Solar capacity", "linker-tools")}</span>
+							<strong>
+								{mode === "roof" && geometry.roofs.length > 0
+									? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
+									: mode === "known" && known?.peak_power_kwp != null
+										? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
+										: __("Not specified", "linker-tools")}
+							</strong>
+						</div>
+					</div>
 				</div>
 			</fieldset>
 			{editingLayout && (
@@ -1723,11 +1777,10 @@ export function SolarInstallation({
 										}}
 									>
 										{roof && (
-											<polygon
-												points={roof.boundary_uv
-													.map((p) => p.join(","))
-													.join(" ")}
-												className="lp-roof-shape"
+											<path
+												className="sc-roof-shape"
+												fillRule="evenodd"
+												d={roofPath}
 												onClick={() => select(roof.id)}
 											/>
 										)}
@@ -1740,7 +1793,7 @@ export function SolarInstallation({
 													points={o.footprint_uv
 														.map((p) => p.join(","))
 														.join(" ")}
-													className="lp-obstacle-shape"
+													className="sc-obstacle-shape"
 													onClick={(e) => {
 														e.stopPropagation();
 														select(o.id);
@@ -1758,7 +1811,7 @@ export function SolarInstallation({
 													points={p.footprint_uv
 														.map((v) => v.join(","))
 														.join(" ")}
-													className="lp-panel-shape"
+													className="sc-panel-shape"
 													data-selected={selected === p.array_id || undefined}
 													onClick={(e) => {
 														e.stopPropagation();
@@ -2041,35 +2094,14 @@ export function SolarInstallation({
 						)}
 					</p>
 					<div className="sc-fields">
-						{(mode === "known" || !geometry.coordinate_system.anchor) &&
-							(["latitude", "longitude"] as const).map((key) => {
-								const bound = key === "latitude" ? 90 : 180;
-								return (
-									<label className="sc-field" key={key}>
-										<span>
-											{key === "latitude"
-												? __("Latitude", "linker-tools")
-												: __("Longitude", "linker-tools")}
-										</span>
-										<input
-											type="number"
-											step="any"
-											min={-bound}
-											max={bound}
-											value={site[key] ?? ""}
-											onChange={(e) =>
-												coordinateChange(
-													key,
-													e.currentTarget.validity.valid &&
-														e.currentTarget.value
-														? e.currentTarget.valueAsNumber
-														: null,
-												)
-											}
-										/>
-									</label>
-								);
-							})}
+						{showCoordinates && (
+							<SiteCoordinates
+								site={site}
+								locale={config.locale}
+								change={coordinateChange}
+								onValidity={setCoordinatesValid}
+							/>
+						)}
 						<label className="sc-field">
 							<span>{__("Calendar year", "linker-tools")}</span>
 							<input
@@ -2213,6 +2245,9 @@ export function SolarInstallation({
 						{geometry.sources.map((source) => (
 							<fieldset key={source.id}>
 								<legend>{source.note}</legend>
+								<dl className="sc-source-measurements">
+									<SourceMeasurements source={source} locale={config.locale} />
+								</dl>
 								<GeometryExportPermission
 									value={source.permissions.export}
 									disabled={
@@ -2270,6 +2305,7 @@ export function SolarInstallation({
 							} catch {
 								return false;
 							}
+							onLayoutChange?.();
 							setMode("roof");
 							select(asset.geometry.roofs[0]!.id);
 							return true;
@@ -2288,10 +2324,11 @@ export function SolarInstallation({
 				</div>
 			)}
 			{wiring}
-			<footer className="sc-next">
+			<footer className="sc-next sc-site-next">
 				<button
 					type="button"
 					disabled={
+						!coordinatesValid ||
 						blocked ||
 						calibrationOpen ||
 						importOpen ||
@@ -2303,7 +2340,7 @@ export function SolarInstallation({
 						if (mode !== "roof" || applyPanelChanges()) next();
 					}}
 				>
-					{__("Continue with energy use", "linker-tools")}
+					{__("Continue with energy use", "linker-tools")} <Icon name="arrow" />
 				</button>
 			</footer>
 		</section>

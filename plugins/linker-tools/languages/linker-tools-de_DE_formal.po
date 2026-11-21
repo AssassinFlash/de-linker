@@ -809,7 +809,7 @@ msgstr "Anderes Foto auswählen"
 msgid "Choose file"
 msgstr "Datei auswählen"
 
-#: src/configurator/report/ReportView.tsx:89 build/configurator.js
+#: src/configurator/report/ReportView.tsx:89 build/configurator.js ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "Choose logo"
 msgstr "Logo auswählen"
 
@@ -16349,79 +16349,79 @@ msgstr "Konfiguration wird übernommen…"
 msgid "Use this configuration"
 msgstr "Konfiguration übernehmen"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Your project"
 msgstr "Ihr Projekt"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Save snapshot"
 msgstr "Projektstand speichern"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Project navigation"
 msgstr "Projektnavigation"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "The project has changed. Compare systems again to update the choices."
 msgstr "Das Projekt wurde geändert. Ein erneuter Systemvergleich aktualisiert die Auswahl."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "The wiring check could not finish. Review the equipment and PV strings, then generate the report again."
 msgstr "Die Prüfung der PV-Verschaltung konnte nicht abgeschlossen werden. Prüfen Sie die Geräte und PV-Strings und erstellen Sie den Bericht erneut."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "This action could not be completed. Your project inputs are retained."
 msgstr "Der Vorgang konnte nicht abgeschlossen werden. Ihre Projektangaben bleiben erhalten."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "The project could not be saved or recovered. Keep this page open and try again."
 msgstr "Das Projekt konnte nicht gespeichert oder wiederhergestellt werden. Lassen Sie diese Seite geöffnet und versuchen Sie es erneut."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "This project was changed elsewhere. Choose which inputs to continue with."
 msgstr "Das Projekt wurde an anderer Stelle geändert. Wählen Sie den Stand, mit dem Sie weiterarbeiten möchten."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Keep my changes"
 msgstr "Meine Änderungen behalten"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Use saved project"
 msgstr "Gespeicherten Stand verwenden"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Restore local changes"
 msgstr "Lokale Änderungen wiederherstellen"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Confirm the result of your previous request before continuing."
 msgstr "Prüfen Sie das Ergebnis des vorherigen Vorgangs, bevor Sie fortfahren."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Check previous request"
 msgstr "Vorherigen Vorgang prüfen"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Finding equipment for your project…"
 msgstr "Geräte für Ihr Projekt werden gesucht…"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "The equipment search could not finish. Your inputs are saved."
 msgstr "Die Gerätesuche wurde nicht abgeschlossen. Ihre Angaben sind gespeichert."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Enter your energy needs to compare equipment for this project."
 msgstr "Ihre Angaben zum Energiebedarf bilden die Grundlage für den Gerätevergleich."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Review the proposal"
 msgstr "Lösungsvorschlag prüfen"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Current configuration"
 msgstr "Aktuelle Konfiguration"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "View parts list"
 msgstr "Stückliste ansehen"
 
@@ -16641,23 +16641,23 @@ msgstr "Standortkoordinaten gefunden"
 msgid "Product from the link is unavailable"
 msgstr "Das verlinkte Produkt ist nicht verfügbar"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Preparing the solar generation profile…"
 msgstr "PV-Erzeugungsprofil wird erstellt…"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "PVGIS could not estimate generation. Check the site coordinates, array orientation and reference settings, then compare systems again."
 msgstr "PVGIS konnte den PV-Ertrag nicht abschätzen. Prüfen Sie die Standortkoordinaten, die Ausrichtung der PV-Module und die PVGIS-Einstellungen. Starten Sie anschließend den Systemvergleich erneut."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "The solar year does not overlap the energy use profile. Choose a matching year in Solar or change the energy use profile."
 msgstr "Das Jahr des PV-Erzeugungsprofils überschneidet sich zeitlich nicht mit dem Lastprofil. Wählen Sie im Schritt Photovoltaik ein passendes Jahr oder ändern Sie das Lastprofil."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Complete the site coordinates, array details and PVGIS settings to compare systems."
 msgstr "Ergänzen Sie die Standortkoordinaten, die Angaben zur PV-Anlage und die PVGIS-Einstellungen für den Systemvergleich."
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Inverter power"
 msgstr "Wechselrichterleistung"
 
@@ -17116,7 +17116,7 @@ msgstr "Varianten vergleichen"
 msgid "Review and send"
 msgstr "Prüfen und senden"
 
-#: ../../apps/planner/src/components/configurator/Configurator.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ProjectWorkbench.tsx build/planner/assets/planner.js:1
 msgid "Report & inquiry"
 msgstr "Bericht und Anfrage"
 
@@ -17522,3 +17522,28 @@ msgstr "Ihre Änderungen an der CSV-Datei und ihrer Zuordnung sind noch vorhande
 #: apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
 msgid "Add a battery while keeping your existing PV inverter."
 msgstr "Sie ergänzen einen Batteriespeicher und behalten Ihren vorhandenen PV-Wechselrichter."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx
+msgid "Report details"
+msgstr "Berichtsdetails"
+
+#: ../../apps/planner/src/components/equipment/AssessmentSources.tsx build/planner/assets/planner.js:1
+msgid "No source documents recorded."
+msgstr "Keine Quelldokumente hinterlegt."
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "Browse product details"
+msgstr "Produktdetails ansehen"
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "No matching products."
+msgstr "Keine passenden Produkte gefunden."
+
+#: ../../apps/planner/src/components/shared/ProductPicker.tsx build/planner/assets/planner.js:1
+msgid "Choose this product"
+msgstr "Dieses Produkt auswählen"
+
+#: ../../apps/planner/src/components/RoofStart.tsx build/planner/assets/planner.js:1
+msgid "Use a roof plan or measurements"
+msgstr "Dachplan oder Aufmaß verwenden"

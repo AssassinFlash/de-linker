@@ -86,10 +86,10 @@ function Goals({
 	labels: Readonly<Record<string, string>>;
 }) {
 	return (
-		<fieldset className="lp-brief-fields">
+		<fieldset className="sc-brief-fields">
 			<legend>{__("Goals", "linker-tools")}</legend>
 			{Object.entries(labels).map(([goal, label]) => (
-				<label className="lp-field" key={goal}>
+				<label className="sc-field" key={goal}>
 					<span>
 						<input
 							type="checkbox"
@@ -247,11 +247,11 @@ export function CommercialSizing({
 	if (!active) return null;
 
 	return (
-		<section className="lp-section" aria-labelledby="lp-commercial-title">
-			<div className="lp-section-heading">
-				<span className="lp-index">06</span>
+		<section className="sc-section" aria-labelledby="sc-commercial-title">
+			<div className="sc-section-heading">
+				<span className="sc-index">06</span>
 				<div>
-					<h3 id="lp-commercial-title">
+					<h3 id="sc-commercial-title">
 						{__("Commercial storage sizing", "linker-tools")}
 					</h3>
 					<p>
@@ -268,9 +268,9 @@ export function CommercialSizing({
 					void size();
 				}}
 			>
-				<fieldset className="lp-brief-fields">
+				<fieldset className="sc-brief-fields">
 					<legend>{__("Site and demand", "linker-tools")}</legend>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Postcode of the site", "linker-tools")}</span>
 						<input
 							inputMode="text"
@@ -324,7 +324,7 @@ export function CommercialSizing({
 					}}
 				/>
 				{wantsPeak ? (
-					<fieldset className="lp-brief-fields">
+					<fieldset className="sc-brief-fields">
 						<legend>{__("Peak", "linker-tools")}</legend>
 						<NumberField
 							label={__("Peak from the bill", "linker-tools")}
@@ -354,7 +354,7 @@ export function CommercialSizing({
 								)
 							}
 						/>
-						<p className="lp-profile-help">
+						<p className="sc-field-help">
 							{__(
 								"The target is the highest demand you want to keep importing. The storage covers everything above it.",
 								"linker-tools",
@@ -363,7 +363,7 @@ export function CommercialSizing({
 					</fieldset>
 				) : null}
 				{goals.includes("self_consumption") ? (
-					<fieldset className="lp-brief-fields">
+					<fieldset className="sc-brief-fields">
 						<legend>{__("PV", "linker-tools")}</legend>
 						<NumberField
 							label={__("PV array, existing or planned", "linker-tools")}
@@ -382,7 +382,7 @@ export function CommercialSizing({
 					</fieldset>
 				) : null}
 				{goals.includes("backup") ? (
-					<fieldset className="lp-brief-fields">
+					<fieldset className="sc-brief-fields">
 						<legend>{__("Backup", "linker-tools")}</legend>
 						<NumberField
 							label={__("Load to keep running", "linker-tools")}
@@ -414,15 +414,15 @@ export function CommercialSizing({
 						/>
 					</fieldset>
 				) : null}
-				<fieldset className="lp-brief-fields">
+				<fieldset className="sc-brief-fields">
 					<legend>{__("Load profile", "linker-tools")}</legend>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("15-minute load profile (CSV)", "linker-tools")}</span>
-						<span className="lp-file-picker">
-							<span className="lp-file-button">
+						<span className="sc-file-picker">
+							<span className="sc-file-button">
 								{__("Choose file", "linker-tools")}
 							</span>
-							<span className="lp-file-name">
+							<span className="sc-file-name">
 								{profile?.name ?? __("No file chosen", "linker-tools")}
 							</span>
 							<input
@@ -466,7 +466,7 @@ export function CommercialSizing({
 							)}
 						</small>
 					</label>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Values in the file", "linker-tools")}</span>
 						<select
 							value={unit}
@@ -488,7 +488,7 @@ export function CommercialSizing({
 						</Notice>
 					) : null}
 					{profile && !profileIssue ? (
-						<p className="lp-profile-help" role="status">
+						<p className="sc-field-help" role="status">
 							{sprintf(
 								__("%s intervals read from the file.", "linker-tools"),
 								new Intl.NumberFormat(locale).format(rows.length),
@@ -496,9 +496,9 @@ export function CommercialSizing({
 						</p>
 					) : null}
 				</fieldset>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					{ready || !missing.length ? null : (
-						<p className="lp-profile-help" role="status">
+						<p className="sc-field-help" role="status">
 							{sprintf(
 								__("Still needed: %s.", "linker-tools"),
 								missing.join(", "),
@@ -507,7 +507,7 @@ export function CommercialSizing({
 					)}
 					<button
 						type="submit"
-						className="lp-button"
+						className="sc-button sc-primary"
 						disabled={disabled || busy || !ready}
 						aria-busy={busy}
 					>
@@ -550,14 +550,14 @@ function CommercialOutcome({
 }) {
 	const sized = result.status === "sized";
 	return (
-		<div className="lp-commercial-outcome">
+		<div className="sc-commercial-outcome">
 			<h4>
 				{sized
 					? __("Sized storage", "linker-tools")
 					: __("Indicative ranges", "linker-tools")}
 			</h4>
 			{result.load ? (
-				<dl className="lp-profile-facts">
+				<dl className="sc-profile-facts">
 					<div>
 						<dt>{__("Peak in the profile", "linker-tools")}</dt>
 						<dd>{kW(result.load.peak_kw, locale)}</dd>
@@ -605,8 +605,8 @@ function CommercialOutcome({
 				</p>
 			) : null}
 			{sized && result.systems.length ? (
-				<div className="lp-table-scroll">
-					<table className="lp-data-table">
+				<div className="sc-table-scroll">
+					<table className="sc-data-table">
 						<caption>
 							{__(
 								"Systems from the current range that reach this power and energy",
@@ -653,14 +653,14 @@ function CommercialOutcome({
 				</Notice>
 			) : null}
 			{result.warnings.length ? (
-				<ul className="lp-profile-help">
+				<ul className="sc-field-help">
 					{result.warnings.map((warning) => (
 						<li key={warning}>{warning}</li>
 					))}
 				</ul>
 			) : null}
 			{result.basis.length ? (
-				<ul className="lp-profile-help">
+				<ul className="sc-field-help">
 					{result.basis.map((line) => (
 						<li key={line}>{line}</li>
 					))}

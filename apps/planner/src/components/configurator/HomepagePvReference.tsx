@@ -1,3 +1,4 @@
+import { SiteCoordinates } from "./SiteCoordinates.tsx";
 import { useState } from "react";
 import type { Configuration } from "../../data/config.ts";
 import { locateProjectSite } from "../../data/googleMaps.ts";
@@ -85,6 +86,8 @@ export function HomepagePvReference({
 	power,
 	addressLookup = false,
 	initialUseAddress = false,
+	locale,
+	onCoordinateValidity,
 	edit,
 }: {
 	inputs: JsonObject;
@@ -92,6 +95,8 @@ export function HomepagePvReference({
 	power: number | null;
 	addressLookup?: boolean;
 	initialUseAddress?: boolean;
+	locale: string;
+	onCoordinateValidity: (valid: boolean) => void;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 }) {
 	const [useAddress, setUseAddress] = useState(initialUseAddress);
@@ -220,24 +225,13 @@ export function HomepagePvReference({
 						</label>
 					)}
 					{(!addressLookup || !useAddress) && (
-						<>
-							{number(
-								"latitude",
-								__("Latitude", "linker-tools"),
-								brief.site.latitude,
-								-90,
-								90,
-								(value) => coordinate("latitude", value),
-							)}
-							{number(
-								"longitude",
-								__("Longitude", "linker-tools"),
-								brief.site.longitude,
-								-180,
-								180,
-								(value) => coordinate("longitude", value),
-							)}
-						</>
+						<SiteCoordinates
+							required
+							site={brief.site}
+							locale={locale}
+							change={coordinate}
+							onValidity={onCoordinateValidity}
+						/>
 					)}
 					{number(
 						"pv_tilt_deg",

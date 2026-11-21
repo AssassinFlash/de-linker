@@ -36,7 +36,7 @@ export function LayoutRulesForm({
 				})
 			}
 		>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Clearances are project inputs with a stated basis. Empty fields remain unknown. A value of 0 explicitly allows contact in the plan check; it is not a country, fire-safety or mounting approval.",
 					"linker-tools",
@@ -64,7 +64,7 @@ export function LayoutRulesForm({
 					"linker-tools",
 				)}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Clearance source", "linker-tools")}</span>
 				<select name="source" defaultValue={rules?.source_id ?? roof.source_id}>
 					{document.sources.map((source) => (

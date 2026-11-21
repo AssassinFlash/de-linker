@@ -71,6 +71,26 @@ test("review shows the report's actual BOM and supports generation before a repo
 	assert.equal(generated, 1);
 });
 
+test("the review overview shows the customer’s actual design inputs", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	value.inputs = {
+		known_panel_details: { count: 12, power_w: 430 },
+		backup_demand: { load_kw: 3, duration_hours: 2 },
+	};
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const overview = page.element.querySelector(".sc-report-overview");
+	assert.match(overview.textContent, /12/);
+	assert.match(overview.textContent, /430 Wp/);
+	assert.match(overview.textContent, /3 kW/);
+	assert.match(overview.textContent, /2 h/);
+	assert.doesNotMatch(overview.textContent, /Canal house/);
+});
+
 test("site installation requirements have their own section alongside equipment and panel layout", async (t) => {
 	const page = setupDom(),
 		root = createRoot(page.element);
@@ -115,6 +135,94 @@ test("site installation requirements have their own section alongside equipment 
 	);
 	assert.match(areas[1].textContent, /Mounting rails/);
 });
+test("the itemised report keeps its CSV with the material rows and identifies the PDF revision", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const csv = button("Download bill of materials (CSV)");
+	assert.ok(
+		csv
+			?.closest("section")
+			?.querySelector(":scope > div > .sc-report-table table"),
+		"download is beside the frozen parts it exports",
+	);
+	assert.equal(
+		[...page.element.querySelectorAll("button")].filter(
+			(b) => b.textContent === csv.textContent,
+		).length,
+		1,
+	);
+	const pdf = button("Download PDF");
+	assert.equal(
+		pdf.closest("section").querySelector(".sc-report-meta")?.textContent,
+		`Revision ${value.run.revision}`,
+	);
+});
+
+test("a brief-only project can retry an unavailable report list and open the frozen PDF", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(null);
+	t.after(() => page.dispose(root));
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	value.inputs = {
+		brief: { ...emptyBrief(), system_scope: "storage_addition" },
+	};
+	const saved = props().run;
+	const render = () => root.render(React.createElement(ReviewProposal, value));
+	const downloaded = [];
+	value.client.reportPdf = async (project, asset, _scope, _signal, sha) => {
+		downloaded.push([project, asset, sha]);
+		return new Blob(["%PDF-"]);
+	};
+	t.mock.method(window.HTMLAnchorElement.prototype, "click", function () {});
+	value.history = {
+		items: [],
+		selected: null,
+		loadFailed: true,
+		hasMore: false,
+		loadMore() {
+			Object.assign(value.history, {
+				loadFailed: false,
+				items: [
+					{ id: saved.id, revision: saved.revision, created_at: 1700000000 },
+				],
+			});
+			render();
+		},
+		select(id) {
+			Object.assign(value.history, { selected: id, run: saved });
+			render();
+		},
+	};
+	await act(async () => render());
+	const history = () =>
+		page.element.querySelector('[aria-label="Calculation history"]');
+	assert.ok(
+		history()?.querySelector('[role="alert"]'),
+		"failed first page must stay visible",
+	);
+	await act(async () =>
+		[...history().querySelectorAll("button")]
+			.find((b) => b.textContent === "Try again")
+			.click(),
+	);
+	await act(async () => history().querySelector("button").click());
+	await act(async () => button("Download PDF").click());
+	assert.deepEqual(downloaded, [
+		[
+			saved.project_id,
+			saved.result.prepared_asset.id,
+			saved.result.prepared_asset.content_sha256,
+		],
+	]);
+	assert.equal(button("Add selected products to solution draft"), undefined);
+});
+
 for (const historical of [false, true]) {
 	test(
 		"a panel-only " +
@@ -144,8 +252,8 @@ for (const historical of [false, true]) {
 			);
 			const layouts = [...document.querySelectorAll("section")].filter(
 				(section) =>
-					section.firstElementChild?.textContent === "Solar panel layout" &&
-					!section.closest("dialog"),
+					section.querySelector(":scope > header > :is(h2,h4)")?.textContent ===
+						"Solar panel layout" && !section.closest("dialog"),
 			);
 			assert.equal(layouts.length, 1);
 			assert.match(layouts[0].textContent, /460 Wp/);
@@ -290,6 +398,35 @@ test("an unusable optional logo can be removed and the project report generated"
 	assert.deepEqual(generated, [null]);
 });
 
+test("a report citation keeps the document and exact page pinned to its revision", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	const link =
+		"https://de-linker.com/wp-content/uploads/2026/legacy-manual.pdf#page=37";
+	value.run.result.report.sections = [
+		{
+			id: "pv",
+			title: "PV generation",
+			paragraphs: [],
+			rows: [
+				{ label: "Data source", value: "Commissioning manual", href: link },
+			],
+			table: null,
+		},
+	];
+	await act(async () =>
+		root.render(React.createElement(ReviewProposal, value)),
+	);
+	const source = page.element.querySelector("details .linker-source-card");
+	assert.equal(
+		source.querySelector("strong").textContent,
+		"Commissioning manual",
+	);
+	assert.equal(source.querySelector("a").href, link);
+});
+
 test("report preview opens the complete pinned report and its original PDF", async (t) => {
 	const page = setupDom(),
 		root = createRoot(page.element);
@@ -337,6 +474,8 @@ test("report preview opens the complete pinned report and its original PDF", asy
 		scope,
 	]);
 	assert.equal(requested[0][4], asset.content_sha256);
+	assert.equal(dialog.querySelector("object,embed"), null);
+	assert.ok(dialog.querySelector(".sc-report-readable section h3"));
 	const pdfLink = dialog.querySelector("a[target='_blank'][href^='blob:']");
 	assert.equal(pdfLink.textContent, "Open report PDF");
 	assert.equal(pdfLink.rel, "noopener noreferrer");

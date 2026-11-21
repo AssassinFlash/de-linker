@@ -82,7 +82,7 @@ export function TerminalResults({
 		),
 	};
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>
 				{t(
 					"Manufacturer terminal mapping",

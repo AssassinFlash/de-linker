@@ -56,9 +56,9 @@ export function CapacityReferenceBasis({
 			: {};
 	const language = locale.startsWith("de") ? "de" : "en";
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h4>{capacityReferenceTitle()}</h4>
-			<dl className="lp-field-summary">
+			<dl className="sc-field-summary">
 				<div>
 					<dt>{__("Manufacturer’s stated usable energy", "linker-tools")}</dt>
 					<dd>
@@ -70,7 +70,7 @@ export function CapacityReferenceBasis({
 				</div>
 			</dl>
 			{typeof conditions[language] === "string" && (
-				<p className="lp-profile-help">{String(conditions[language])}</p>
+				<p className="sc-field-help">{String(conditions[language])}</p>
 			)}
 		</section>
 	);

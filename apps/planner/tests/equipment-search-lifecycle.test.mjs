@@ -225,6 +225,7 @@ async function equipmentApp(
 	t,
 	{
 		projectId,
+		projectRevision = 1,
 		inputs,
 		hash,
 		guided = false,
@@ -234,6 +235,7 @@ async function equipmentApp(
 		foreignSelection = false,
 		selectionGate = null,
 		searchGate = null,
+		reviseGate = null,
 		readGate = null,
 		findRefusal = null,
 		pvReference = null,
@@ -295,7 +297,7 @@ async function equipmentApp(
 	const project = {
 		id: projectId,
 		title: "Equipment lifecycle fixture",
-		revision: 1,
+		revision: projectRevision,
 		input_sha256: "2".repeat(64),
 		inputs: { brief, ...inputs },
 	};
@@ -434,6 +436,7 @@ async function equipmentApp(
 			}
 			assert.equal(command.expected_revision, project.revision);
 			if (path === "projects/revise") {
+				if (reviseGate) await reviseGate.promise;
 				project.inputs = structuredClone(command.inputs);
 				project.revision += 1;
 				project.input_sha256 = "8".repeat(64);
@@ -521,7 +524,7 @@ async function equipmentApp(
 		[...document.querySelectorAll("button")].find(
 			(node) =>
 				(node.getAttribute("aria-label") === text ||
-					node.textContent === text) &&
+					node.textContent.trim() === text) &&
 				!node.closest("[hidden]") &&
 				node.getAttribute("aria-hidden") !== "true",
 		);
@@ -759,6 +762,121 @@ async function chooseGoal(app, goal = "self") {
 	await until(() => app.fieldSelect("Purpose"));
 	await app.updateSelect("Purpose", goal);
 }
+for (const waitingForHistory of [true, false]) {
+	test(`project navigation confirms the edited revision before preliminary comparison (history pending: ${waitingForHistory})`, async (t) => {
+		const historyGate = deferred(),
+			reviseGate = deferred();
+		const app = await equipmentApp(t, {
+			projectId: "4".repeat(32),
+			hash: "#sc-project",
+			reviseGate,
+			inputs: { equipment_setup: { ...emptySetup, required_usable_kwh: 24 } },
+			readGate: waitingForHistory
+				? { path: "projects/runs", wait: () => historyGate.promise }
+				: null,
+		});
+		const field = () => document.querySelector('input[name="location_label"]');
+		await until(field);
+		await enter(field(), "North quay");
+		await app.step("System");
+		await act(async () => historyGate.resolve());
+		await untilRun(() =>
+			app.requests.some(({ path }) => path === "projects/revise"),
+		);
+		assert.equal(document.querySelector(".sc-direction-comparison"), null);
+		await act(async () => reviseGate.resolve());
+		await untilRun(() => document.querySelector(".sc-direction-comparison"));
+		assert.equal(app.project.inputs.brief.site.location_label, "North quay");
+		assert.equal(app.project.inputs.equipment_setup.required_usable_kwh, 24);
+		assert.equal(location.hash, "#sc-preliminary-options");
+		assert.deepEqual(
+			app.requests.map(({ path }) => path),
+			["projects/revise"],
+		);
+	});
+}
+
+for (const state of ["succeeded", "queued"])
+	test(`System opens preliminary comparison for incomplete backup inputs after a ${state} search`, async (t) => {
+		const id = "c".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId: id,
+			hash: "#sc-energy",
+			inputs: { equipment_setup: savedSetup },
+			savedRun: makeRun(id, state),
+		});
+		await chooseGoal(app, "backup");
+		await app.step("System");
+		await untilRun(() => document.querySelector(".sc-direction-comparison"));
+		assert.equal(app.button("Use this configuration"), undefined);
+		assert.equal(app.project.inputs.backup_demand.duration_hours, null);
+		assert.equal(searchRequests(app).length, 0);
+	});
+
+for (const entry of ["navigation", "direct"])
+	for (const changed of [true, false])
+		test(`${entry} System ${changed ? "refreshes" : "reuses"} an older search after reading its frozen settings`, async (t) => {
+			const id = "9".repeat(32);
+			const { emptyBrief } = await import("../src/domain/brief.ts");
+			const brief = { ...emptyBrief(), system_scope: "new_pv_storage" };
+			const original = { brief, equipment_setup: savedSetup };
+			const app = await equipmentApp(t, {
+				projectId: id,
+				projectRevision: 2,
+				hash: entry === "direct" ? "#sc-system" : "#sc-project",
+				inputs: changed
+					? {
+							...original,
+							equipment_setup: { ...savedSetup, inverter_product_id: 101 },
+						}
+					: original,
+				savedRun: makeRun(id, "succeeded", 1),
+				legacyInputs: original,
+				legacyUnavailable: true,
+			});
+			if (entry === "navigation") {
+				await untilRun(() => app.fieldSelect("Planned system"));
+				await app.step("System");
+			}
+			await untilRun(() => app.button("Try again"));
+			assert.equal(app.button("Use this configuration"), undefined);
+			app.recoverLegacyInputs();
+			await act(async () => app.button("Try again").click());
+			if (changed) {
+				await untilRun(() => searchRequests(app).length === 1);
+				assert.equal(searchRequests(app)[0].body.expected_revision, 2);
+				assert.equal(app.button("Use this configuration"), undefined);
+			} else {
+				await untilRun(() => app.button("Use this configuration"));
+				assert.deepEqual(app.requests, []);
+			}
+		});
+
+test("Solar opens System using the edited array capacity rather than a previous result", async (t) => {
+	const id = "e".repeat(32);
+	const app = await equipmentApp(t, {
+		projectId: id,
+		hash: "#sc-solar",
+		inputs: { equipment_setup: savedSetup },
+		savedRun: makeRun(id, "succeeded"),
+	});
+	const field = () => app.fieldInput("Solar capacity (kWp)");
+	await untilRun(() =>
+		document.querySelector('[aria-label="Use module details"]'),
+	);
+	const option = document.querySelector('[aria-label="Use module details"]');
+	if (option.getAttribute("aria-pressed") !== "true")
+		await act(async () => option.click());
+	await untilRun(field);
+	await enter(field(), "13.7");
+	await app.step("System");
+	await untilRun(() => searchRequests(app).length === 1);
+	assert.equal(app.button("Use this configuration"), undefined);
+	assert.ok(
+		JSON.stringify(searchRequests(app)[0].body.inputs).includes("13.7"),
+	);
+});
+
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;
 	const app = await equipmentApp(t, {
@@ -815,7 +933,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
 		document
-			.querySelector(".sc-roof-editor .lp-panel-shape")
+			.querySelector(".sc-roof-editor .sc-panel-shape")
 			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
 	);
 	await act(async () => app.button("Remove selected").click());
@@ -1237,7 +1355,10 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	try {
 		app.setServerRun("succeeded");
 		await untilRun(option);
-		assert.match(option().textContent, /Linker ESS 5K \+ Linker Battery HV/);
+		assert.equal(
+			option().querySelector(".sc-option-products").getAttribute("aria-label"),
+			"Linker ESS 5K + Linker Battery HV",
+		);
 		assert.match(option().textContent, /80 kWh/);
 		assert.doesNotMatch(option().textContent, /100 kWh/);
 		assert.match(
@@ -1602,9 +1723,8 @@ for (const adopted of [true, false]) {
 			await untilRun(() => app.button("Selected"));
 			assert.match(option().textContent, /ESS 5K/);
 		} else {
-			await untilRun(() =>
-				empty.test(document.querySelector("main").textContent),
-			);
+			await untilRun(() => document.querySelector(".sc-direction-comparison"));
+			assert.equal(location.hash, "#sc-preliminary-options");
 		}
 		assert.deepEqual(app.requests, []);
 	});
@@ -1738,7 +1858,7 @@ for (const change of [
 	"foreign snapshot",
 	"session scope",
 ]) {
-	test(`selection refuses a ${change} change without saving a candidate`, async (t) => {
+	test(`${change}: a previous equipment result cannot be used for changed inputs`, async (t) => {
 		const gate = change === "session scope" ? deferred() : null;
 		const app = await equipmentApp(t, {
 			projectId: "4".repeat(32),
@@ -1781,6 +1901,32 @@ for (const change of [
 			await app.step("Project");
 			await app.updateSelect("Planned system", "storage_only");
 			await app.step("System");
+		}
+		if (change !== "foreign snapshot" && change !== "session scope") {
+			await untilRun(() => searchRequests(app).length === 2);
+			assert.equal(
+				app.button("Use this configuration"),
+				undefined,
+				"the earlier options are hidden during recalculation",
+			);
+			const updated = searchRequests(app)[1].body.inputs;
+			if (change === "single model preference")
+				assert.equal(updated.equipment_setup.inverter_product_id, 101);
+			if (change === "plant model preference")
+				assert.equal(
+					updated.equipment_plant_setup.units[0].inputs.equipment_setup
+						.inverter_product_id,
+					101,
+				);
+			if (change === "system scope")
+				assert.equal(updated.brief.system_scope, "storage_only");
+			if (change === "purpose")
+				assert.ok(
+					updated.energy_scenario.schedule.some(
+						(period) => period.import_policy === "limited",
+					),
+				);
+			return;
 		}
 		await act(async () => app.button("Use this configuration").click());
 		if (gate) {

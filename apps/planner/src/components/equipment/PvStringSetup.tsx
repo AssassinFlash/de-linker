@@ -234,7 +234,7 @@ export function PvStringSetup({
 				</Notice>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={disabled}
 					onClick={removePlan}
 				>
@@ -243,7 +243,7 @@ export function PvStringSetup({
 			</section>
 		) : null;
 	return (
-		<details className="lp-comparison">
+		<details className="sc-disclosure">
 			<summary>{__("PV strings and inputs", "linker-tools")}</summary>
 			<p>
 				{__(
@@ -254,7 +254,7 @@ export function PvStringSetup({
 			{!plan ? (
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={disabled || !inverterId}
 					onClick={() => {
 						if (inverterId)
@@ -279,7 +279,7 @@ export function PvStringSetup({
 							)}
 						</Notice>
 					)}
-					<div className="lp-scenario-fields">
+					<div className="sc-scenario-fields">
 						<NumberField
 							label={__("Lowest design ambient temperature", "linker-tools")}
 							unit="°C"
@@ -289,7 +289,7 @@ export function PvStringSetup({
 							onChange={(v) => change({ ...plan, minimum_ambient_c: v })}
 							onValidity={validity.temperature!}
 						/>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{__("Temperature source and location", "linker-tools")}
 							</span>
@@ -307,7 +307,7 @@ export function PvStringSetup({
 							/>
 						</label>
 					</div>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"Use a documented local design minimum. A typical weather year's lowest temperature is not a design extreme.",
 							"linker-tools",
@@ -333,7 +333,7 @@ export function PvStringSetup({
 						</Notice>
 					)}
 					{plan.strings.map((s, i) => (
-						<div className="lp-comparison" key={s.id}>
+						<div className="sc-disclosure" key={s.id}>
 							<strong>{sprintf(__("String %d", "linker-tools"), i + 1)}</strong>
 							<p>
 								{sprintf(
@@ -353,7 +353,7 @@ export function PvStringSetup({
 							</details>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={disabled || editing !== null || !fieldsValid}
 								onClick={() => {
 									backup.current = { selected, mppt, port, batchSize };
@@ -369,7 +369,7 @@ export function PvStringSetup({
 							</button>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => {
 									if (
 										change({
@@ -424,7 +424,7 @@ export function PvStringSetup({
 							)}
 						</Notice>
 					)}
-					<div className="lp-scenario-fields" key={editing?.id ?? "new"}>
+					<div className="sc-scenario-fields" key={editing?.id ?? "new"}>
 						<NumberField
 							label="MPPT"
 							unit=""
@@ -479,7 +479,7 @@ export function PvStringSetup({
 								onChange={setBatchSize}
 								onValidity={validity.selectionSize!}
 							/>
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{__(
 									"Leave this blank to use the complete selection. A smaller group uses the first modules in the displayed order; the remainder stays selected for the next string.",
 									"linker-tools",
@@ -516,7 +516,7 @@ export function PvStringSetup({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() =>
 									setSelected(
 										selected.filter(
@@ -532,10 +532,10 @@ export function PvStringSetup({
 							</button>
 						</Notice>
 					)}
-					<div className="lp-energy-submit">
+					<div className="sc-energy-submit">
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={!canApply}
 							onClick={() => {
 								if (!canApply || mppt === null || port === null) return;
@@ -568,7 +568,7 @@ export function PvStringSetup({
 						{editing && (
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={resetEditor}
 							>
 								{__("Cancel editing", "linker-tools")}
@@ -576,13 +576,13 @@ export function PvStringSetup({
 						)}
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={removePlan}
 						>
 							{__("Remove wiring plan", "linker-tools")}
 						</button>
 					</div>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{checkedInReport
 							? __(
 									"Generate the project report to check the saved wiring plan.",

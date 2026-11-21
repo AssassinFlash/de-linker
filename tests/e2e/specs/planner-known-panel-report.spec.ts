@@ -205,7 +205,7 @@ for (const lang of ['en', 'de'] as const)
 					});
 				await button(dialog, t.close).click();
 				await workspace
-					.locator('#lp-calculations [data-linker-genie-planning]')
+					.locator('#sc-review [data-linker-genie-planning]')
 					.click();
 				const panel = page.locator('.linker-genie-app__panel');
 				await panel

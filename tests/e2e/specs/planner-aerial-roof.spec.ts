@@ -1,5 +1,11 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { instance } from '../lib/instance';
+import { roofEntry, removeSiteProject } from '../lib/configurator-site';
+import { seedConsentCookies } from '../lib/consent';
+
+test.beforeEach(async ({ context, page }) => {
+	await seedConsentCookies(context);
+	page.setDefaultTimeout(20_000);
+});
 
 const words = {
 	en: {
@@ -101,14 +107,27 @@ for (const lang of ['en', 'de'] as const) {
 				width,
 				height: width === 390 ? 844 : 900,
 			});
-			await page.goto(instance().url + text.home);
-			const homeForm = page.getByRole('form').filter({
-				has: page.locator(
-					'[name="roof_imagery_consent"], [name="location_label"]'
-				),
+			const requestedTiles: string[] = [];
+			page.on('request', (r) => {
+				if (new URL(r.url()).hostname === 'service.pdok.nl')
+					requestedTiles.push(r.url());
 			});
+			const homeForm = await roofEntry(page, lang);
 			await homeForm.locator('[name="country"]').selectOption('NL');
+			const offer = page.waitForRequest(
+				(r) =>
+					r.method() === 'POST' &&
+					new URL(r.url()).pathname.endsWith('/places/lookup') &&
+					r.postDataJSON()?.country === 'NL'
+			);
 			await homeForm.locator('[name="location_label"]').fill(address);
+			const sourceRead = await page.request.fetch(await offer);
+			expect(sourceRead.ok()).toBe(true);
+			const { imagery } = await sourceRead.json();
+			await expect(
+				homeForm.locator('[name="roof_imagery_consent"]')
+			).toBeVisible();
+			expect(requestedTiles).toEqual([]);
 			await homeForm.locator('[name="roof_imagery_consent"]').check();
 			const image = page.waitForResponse(
 				(r) =>
@@ -123,6 +142,50 @@ for (const lang of ['en', 'de'] as const) {
 			const id = new URL(page.url()).searchParams.get('project');
 			const map = page.locator('.maplibregl-canvas');
 			await image;
+			const show =
+				lang === 'en' ? 'Show aerial map' : 'Luftbildkarte anzeigen';
+			const hide =
+				lang === 'en' ? 'Hide aerial map' : 'Luftbildkarte ausblenden';
+			const view = page.locator('[data-map-status]');
+			await expect(
+				view.getByRole('link', {
+					name:
+						lang === 'en'
+							? 'Map attribution'
+							: 'Quellenangaben zur Karte',
+				})
+			).toBeVisible();
+			await expect(view).toContainText(
+				imagery.credit + ' — ' + imagery.licence
+			);
+			await expect(
+				view.getByRole('link', {
+					name:
+						lang === 'en'
+							? 'Map attribution'
+							: 'Quellenangaben zur Karte',
+				})
+			).toHaveAttribute('href', imagery.licence_url);
+			await view.getByRole('button', { name: hide, exact: true }).click();
+			const hidden = view.getByRole('button', {
+				name: show,
+				exact: true,
+			});
+			await expect(hidden).toHaveAttribute('aria-pressed', 'false');
+			const afterWithdrawal = requestedTiles.length;
+			// Changing the map area with the aerial layer off must stay local.
+			await view
+				.getByRole('button', {
+					name: lang === 'en' ? 'Zoom in' : 'Vergrößern',
+					exact: true,
+				})
+				.click();
+			await expect(view).toHaveAttribute('data-map-status', 'ready');
+			expect(requestedTiles.length).toBe(afterWithdrawal);
+			await hidden.click();
+			await expect(
+				view.getByRole('button', { name: hide, exact: true })
+			).toHaveAttribute('aria-pressed', 'true');
 			await expect(
 				page.getByRole('button', {
 					name: /Add corner at map centre|Eckpunkt.*Kartenmitte/i,
@@ -184,7 +247,10 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			const counter = '4 ' + text.placed;
 			await expect(editor).toContainText(counter);
-			await page.reload();
+			const title = await page
+				.locator('.sc-project-heading h1')
+				.innerText();
+			await page.reload({ waitUntil: 'domcontentloaded' });
 			await expect(editor).toContainText(counter);
 			const clean = await browser.newContext({
 				viewport: page.viewportSize(),
@@ -192,7 +258,9 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			try {
 				const reopened = await clean.newPage();
-				await reopened.goto(page.url());
+				await reopened.goto(page.url(), {
+					waitUntil: 'domcontentloaded',
+				});
 				await expect(reopened.locator('.sc-solar-total')).toContainText(
 					counter
 				);
@@ -227,7 +295,7 @@ for (const lang of ['en', 'de'] as const) {
 						name: /Add corner at map centre|Eckpunkt.*Kartenmitte/i,
 					})
 				).toBeEnabled({ timeout: 35000 });
-				const aerial = reopened.locator('.lp-map-surface');
+				const aerial = reopened.locator('[data-map-status]');
 				await aerial.scrollIntoViewIfNeeded();
 				await aerial.screenshot({
 					path: test.info().outputPath('reopened-layout.png'),
@@ -235,6 +303,7 @@ for (const lang of ['en', 'de'] as const) {
 			} finally {
 				await clean.close();
 			}
+			await removeSiteProject(page, lang, title);
 		});
 	}
 }
@@ -242,10 +311,7 @@ for (const lang of ['en', 'de'] as const) {
 test('a Berlin street address opens the disclosed state aerial layer', async ({
 	page,
 }) => {
-	await page.goto(instance().url + '/de/');
-	const form = page
-		.getByRole('form')
-		.filter({ has: page.locator('[name="location_label"]') });
+	const form = await roofEntry(page, 'de');
 	await form.locator('[name="country"]').selectOption('DE');
 	await form
 		.locator('[name="location_label"]')
@@ -263,18 +329,18 @@ test('a Berlin street address opens the disclosed state aerial layer', async ({
 			name: 'Eckpunkt in der Kartenmitte hinzufügen',
 		})
 	).toBeEnabled({ timeout: 60000 });
-	await expect(page.locator('.lp-map-surface').locator('..')).toContainText(
-		'Berlin'
+	await expect(page.locator('[data-map-status]')).toContainText('Berlin');
+	await removeSiteProject(
+		page,
+		'de',
+		await page.locator('.sc-project-heading h1').innerText()
 	);
 });
 
 test('a site without an aerial layer can continue with a measured roof', async ({
 	page,
 }) => {
-	await page.goto(instance().url + '/');
-	const form = page
-		.getByRole('form')
-		.filter({ has: page.locator('[name="location_label"]') });
+	const form = await roofEntry(page, 'en');
 	await form.locator('[name="country"]').selectOption('BA');
 	await form
 		.locator('[name="location_label"]')
@@ -287,4 +353,9 @@ test('a site without an aerial layer can continue with a measured roof', async (
 		.getByRole('button', { name: 'Enter roof measurements', exact: true })
 		.click();
 	await expect(page.getByLabel('Width (m)', { exact: true })).toBeVisible();
+	await removeSiteProject(
+		page,
+		'en',
+		await page.locator('.sc-project-heading h1').innerText()
+	);
 });

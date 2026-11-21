@@ -13,7 +13,7 @@ export function PlantStorageSummary({
 }) {
 	if (readObject(result.model).pv_boundary === PLANT_NO_STORAGE_BOUNDARY)
 		return (
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"This PV-only calculation includes no battery storage.",
 					"linker-tools",
@@ -33,10 +33,10 @@ export function PlantStorageSummary({
 			0,
 		);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h4>{__("Stored energy by unit", "linker-tools")}</h4>
-			<div className="lp-table-scroll" tabIndex={0}>
-				<table className="lp-data-table">
+			<div className="sc-table-scroll" tabIndex={0}>
+				<table className="sc-data-table">
 					<caption>
 						{__(
 							"Initial and final stored energy (kWh), with final energy shown by origin",
@@ -73,8 +73,8 @@ export function PlantStorageSummary({
 				</table>
 			</div>
 			{result.kind === DC_PLANT_ENERGY_TASK && (
-				<div className="lp-table-scroll" tabIndex={0}>
-					<table className="lp-data-table">
+				<div className="sc-table-scroll" tabIndex={0}>
+					<table className="sc-data-table">
 						<caption>
 							{__("DC PV generation after curtailment", "linker-tools")} (kWh)
 						</caption>

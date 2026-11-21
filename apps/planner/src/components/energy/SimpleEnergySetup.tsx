@@ -46,9 +46,9 @@ export function SimpleEnergySetup({
 		});
 	}
 	return (
-		<fieldset disabled={disabled} className="lp-brief-fields">
-			<section className="lp-work-panel">
-				<h3 className="lp-work-panel-heading">
+		<fieldset disabled={disabled} className="sc-brief-fields">
+			<section className="sc-work-panel">
+				<h3 className="sc-work-panel-heading">
 					{__("Energy use and storage", "linker-tools")}
 				</h3>
 				{storageOnly && (
@@ -59,7 +59,7 @@ export function SimpleEnergySetup({
 						)}
 					</p>
 				)}
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Operating goal", "linker-tools")}</span>
 					<select
 						value={purpose}
@@ -84,7 +84,11 @@ export function SimpleEnergySetup({
 					)}
 				</p>
 				{!hasEquipment && (
-					<button type="button" className="lp-button" onClick={chooseEquipment}>
+					<button
+						type="button"
+						className="sc-button sc-primary"
+						onClick={chooseEquipment}
+					>
 						{__("Choose equipment", "linker-tools")}
 					</button>
 				)}

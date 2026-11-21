@@ -1,3 +1,4 @@
+import { EvidenceCard } from "../shared/EvidenceCard.tsx";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -56,7 +57,7 @@ function Sources({
 				</p>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-button"
 					onClick={() => void query.refetch()}
 				>
 					{__("Try again", "linker-tools")}
@@ -77,7 +78,7 @@ function Sources({
 					"linker-tools",
 				)}
 			</p>
-			<p className="lp-profile-help">
+			<p className="sc-muted">
 				{sprintf(__("Input revision %d", "linker-tools"), run.revision)}
 			</p>
 			{query.data.condition_review && (
@@ -95,29 +96,28 @@ function Sources({
 				</p>
 			) : (
 				query.data.documents.map((doc) => (
-					<section className="lp-result-section" key={doc.document_id}>
-						<h5>{doc.title || __("Source document", "linker-tools")}</h5>
-						<p>{doc.product_ids.map((id) => products.get(id)).join(" · ")}</p>
-						{doc.access.status === "available" && doc.access.url ? (
-							<a href={doc.access.url} target="_blank" rel="noreferrer">
-								{__("Open document", "linker-tools")}
-							</a>
-						) : (
-							<p>
-								{doc.access.status === "source_changed"
+					<EvidenceCard
+						key={doc.document_id}
+						title={doc.title || __("Source document", "linker-tools")}
+						models={doc.product_ids.flatMap((id) => products.get(id) ?? [])}
+						url={doc.access.url}
+						unavailable={
+							doc.access.status === "source_changed"
+								? __(
+										"This file differs from the version recorded with this result.",
+										"linker-tools",
+									)
+								: doc.access.status === "unavailable"
 									? __(
-											"This file differs from the version recorded with this result.",
-											"linker-tools",
-										)
-									: __(
 											"This document is currently unavailable.",
 											"linker-tools",
-										)}
-							</p>
-						)}
-						<details className="lp-comparison">
+										)
+									: ""
+						}
+					>
+						<details className="sc-selection-evidence">
 							<summary>{__("Recorded source details", "linker-tools")}</summary>
-							<dl className="lp-run-records">
+							<dl className="sc-evidence-metadata">
 								<div>
 									<dt>SHA-256</dt>
 									<dd>
@@ -132,7 +132,7 @@ function Sources({
 								</div>
 							</dl>
 						</details>
-					</section>
+					</EvidenceCard>
 				))
 			)}
 		</>
@@ -149,7 +149,7 @@ export function CertificateEvidence(props: {
 	const [open, setOpen] = useState(false);
 	return (
 		<details
-			className="lp-comparison"
+			className="sc-selection-evidence"
 			onToggle={(event) => setOpen(event.currentTarget.open)}
 		>
 			<summary>

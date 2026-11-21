@@ -70,6 +70,8 @@ test("one homepage comparison resolves the disclosed street address within the c
 					brief: inputs.brief,
 					power: 6.4,
 					addressLookup: true,
+					locale: config.locale,
+					onCoordinateValidity() {},
 					edit: () => true,
 				}),
 				React.createElement("button", { type: "submit" }, "Compare systems"),

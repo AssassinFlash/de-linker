@@ -175,7 +175,7 @@ export function RunBasis({
 			: "—";
 	return (
 		<details
-			className="lp-comparison lp-run-basis lp-work-panel"
+			className="sc-disclosure sc-run-basis sc-work-panel"
 			onToggle={(e) => setOpen(e.currentTarget.open)}
 		>
 			<summary>
@@ -198,7 +198,7 @@ export function RunBasis({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => void sources.refetch()}
 							>
 								{__("Retry reading sources", "linker-tools")}
@@ -208,12 +208,12 @@ export function RunBasis({
 					{sources.data && (
 						<>
 							<p>{sources.data.note}</p>
-							<ul className="lp-run-source-list">
+							<ul className="sc-run-source-list">
 								{sources.data.entries.map(({ role, asset, label }) => (
 									<li key={role}>
 										<strong>{measurementLabel(role)}</strong>
 										<p>{label}</p>
-										<dl className="lp-run-records">
+										<dl className="sc-run-records">
 											<div>
 												<dt>
 													{__("Original content SHA-256", "linker-tools")}
@@ -237,7 +237,7 @@ export function RunBasis({
 					{joint ? (
 						<PlantParameterBasis result={run.result!} locale={locale} />
 					) : (
-						<dl className="lp-field-summary">
+						<dl className="sc-field-summary">
 							{dc && (
 								<div>
 									<dt>
@@ -335,7 +335,7 @@ export function RunBasis({
 											"linker-tools",
 										)}
 					</p>
-					<div className="lp-table-scroll" tabIndex={0}>
+					<div className="sc-table-scroll" tabIndex={0}>
 						<table>
 							<caption>
 								{__("Calculated operating periods (UTC)", "linker-tools")}

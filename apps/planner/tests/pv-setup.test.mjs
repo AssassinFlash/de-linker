@@ -226,12 +226,12 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 	assert.equal(button("Calculate PV for saved inputs").disabled, true);
 	await click("Prepare PV model");
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
+		document.querySelector(".sc-focus-target").textContent,
 		/complete module, array and conversion/,
 	);
 	await click("Update parameters for current roof layout");
 	assert.equal(control("Temperature coefficient of maximum power"), undefined);
-	assert.match(document.querySelector(".lp-pv-parameters").textContent, /-0.4/);
+	assert.match(document.querySelector(".sc-pv-parameters").textContent, /-0.4/);
 	await click("Array models");
 	const reflectance = control("Ground reflectance");
 	await enter(reflectance, "-");
@@ -272,7 +272,7 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 	assert.equal(control("PVWatts DC reference power").value, "");
 	assert.equal(control("Nominal conversion efficiency").value, "");
 	await act(async () =>
-		document.querySelector('.lp-pv-membership input[type="checkbox"]').click(),
+		document.querySelector('.sc-pv-membership input[type="checkbox"]').click(),
 	);
 	await enter(control("PVWatts DC reference power"), "10000");
 	await enter(control("Nominal conversion efficiency"), "96");
@@ -314,7 +314,7 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 	]);
 	await until(() =>
 		/Roof-to-PV|PV generation/.test(
-			document.querySelector(".lp-run-history")?.textContent ?? "",
+			document.querySelector(".sc-run-history")?.textContent ?? "",
 		),
 	);
 });
@@ -326,7 +326,7 @@ test("conversion membership prevents a second assignment and requires complete m
 	await click("Power conversion");
 	await click("Add conversion group");
 	let boxes = [
-		...document.querySelectorAll('.lp-pv-membership input[type="checkbox"]'),
+		...document.querySelectorAll('.sc-pv-membership input[type="checkbox"]'),
 	];
 	assert.equal(boxes[0].checked, true);
 	assert.equal(boxes[1].disabled, true);
@@ -334,17 +334,17 @@ test("conversion membership prevents a second assignment and requires complete m
 	assert.equal(h.current().history.current.energy_replay, undefined);
 	await act(async () => boxes[0].click());
 	boxes = [
-		...document.querySelectorAll('.lp-pv-membership input[type="checkbox"]'),
+		...document.querySelectorAll('.sc-pv-membership input[type="checkbox"]'),
 	];
 	assert.equal(boxes[1].disabled, false);
 	await act(async () => boxes[1].click());
 	assert.equal(
-		document.querySelector('.lp-pv-membership input[type="checkbox"]').disabled,
+		document.querySelector('.sc-pv-membership input[type="checkbox"]').disabled,
 		true,
 	);
 	await click("Prepare PV model");
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
+		document.querySelector(".sc-focus-target").textContent,
 		/complete module, array and conversion/,
 	);
 	assert.equal(h.requests.length, 0);
@@ -356,13 +356,13 @@ test("PV dispatch refuses a weather/roof location mismatch and tolerates unsuppo
 	const h = await mount(t, inputs);
 	await click("Calculate PV for saved inputs");
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
+		document.querySelector(".sc-focus-target").textContent,
 		/weather coordinates differ/i,
 	);
 	assert.equal(h.requests.length, 0);
 	await h.edit((current) => ({ ...current, pv_preparation: "unsupported" }));
 	assert.equal(button("Calculate PV for saved inputs").disabled, true);
-	assert.ok(document.querySelector(".lp-energy-workspace"));
+	assert.ok(document.querySelector(".sc-energy-workspace"));
 });
 
 test("module evidence is read-only and historical missing bindings explain the required selection", async (t) => {
@@ -386,7 +386,7 @@ test("module evidence is read-only and historical missing bindings explain the r
 		};
 	});
 	assert.match(
-		document.querySelector(".lp-pv-parameters").textContent,
+		document.querySelector(".sc-pv-parameters").textContent,
 		/Update the parameters to use the coefficient/,
 	);
 	assert.equal(h.requests.length, 0);
@@ -406,11 +406,11 @@ test("module evidence is read-only and historical missing bindings explain the r
 		},
 	}));
 	assert.match(
-		document.querySelector(".lp-pv-parameters h4").textContent,
+		document.querySelector(".sc-pv-parameters h4").textContent,
 		/Module specification outside the current layout/,
 	);
 	assert.doesNotMatch(
-		document.querySelector(".lp-energy-workspace").textContent,
+		document.querySelector(".sc-energy-workspace").textContent,
 		/module_private_X/,
 	);
 });
@@ -418,7 +418,7 @@ test("module evidence is read-only and historical missing bindings explain the r
 test("German percentage edits retain exact text and decimal separators while storing model fractions", async (t) => {
 	const h = await mount(t, structuredClone(fixture.pv_project.inputs), "de-DE");
 	assert.equal(control("Temperature coefficient of maximum power"), undefined);
-	assert.match(document.querySelector(".lp-pv-parameters").textContent, /-0,4/);
+	assert.match(document.querySelector(".sc-pv-parameters").textContent, /-0,4/);
 	await click("Array models");
 	await enter(control("Ground reflectance"), "57");
 	assert.equal(control("Ground reflectance").value, "57");

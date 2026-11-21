@@ -32,13 +32,15 @@ import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
-import { needsPhaseConfirmation } from "./configurator/HomepageDemand.tsx";
+import { needsPreliminaryComparison } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
-const Configurator = lazy(() => import("./configurator/Configurator.tsx"));
+const ProjectWorkbench = lazy(
+	() => import("./configurator/ProjectWorkbench.tsx"),
+);
 import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
 import {
 	InquiryStages,
@@ -49,12 +51,26 @@ import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
 import {
 	PLANNER_NAVIGATION,
+	publicProjectView,
 	replacePlannerLocation,
 } from "../data/plannerLocation.ts";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
 	return value && /^[a-f0-9]{32}$/.test(value) ? value : null;
+}
+function entryRoute(url: URL): string {
+	if (url.hash) return url.hash.slice(1);
+	if (url.searchParams.has("project")) return "";
+	if (publicProjectView(url.searchParams)) return "sc-project";
+	const standaloneRetrofit =
+		url.searchParams.get("scope") === "storage_addition" &&
+		!ENTRY_QUERY_KEYS.some(
+			(key) => key !== "scope" && url.searchParams.has(key),
+		);
+	return url.searchParams.get("compare") === "preliminary" || standaloneRetrofit
+		? "sc-preliminary-options"
+		: "";
 }
 function preliminaryRoute(route: string): boolean {
 	return (
@@ -107,7 +123,9 @@ export function Workspace({
 			: "",
 	);
 	const [newProjectOpen, setNewProjectOpen] = useState(false);
-	const [route, setRoute] = useState(() => location.hash.slice(1));
+	const [route, setRoute] = useState(() => entryRoute(new URL(location.href)));
+	const publicView = publicProjectView(new URL(location.href).searchParams);
+
 	const [guidedRetryRevision, setGuidedRetryRevision] = useState(
 		currentGuidedRetryRevision,
 	);
@@ -172,7 +190,7 @@ export function Workspace({
 	}, [cache, session]);
 	useEffect(() => {
 		const restore = () => {
-			const destination = location.hash.slice(1);
+			const destination = entryRoute(new URL(location.href));
 			if (!preliminaryRoute(route) && !preliminaryRoute(destination)) return;
 			const id = currentProject();
 			if (
@@ -196,7 +214,7 @@ export function Workspace({
 		(id: string | null, destination = "", guided = false) => {
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
-			const from = url.hash.slice(1);
+			const from = entryRoute(url);
 			if (guided) url.searchParams.set("guided", "inquiry");
 			else if (
 				id !== url.searchParams.get("project") ||
@@ -218,6 +236,7 @@ export function Workspace({
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
 			url.searchParams.delete("compare");
+			url.searchParams.delete("view");
 			url.searchParams.delete("energy_view");
 			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
@@ -323,7 +342,7 @@ export function Workspace({
 		project.data &&
 		route === "sc-system" &&
 		new URL(location.href).searchParams.get("guided") === "inquiry" &&
-		needsPhaseConfirmation(project.data.inputs),
+		needsPreliminaryComparison(project.data.inputs),
 	);
 	useEffect(() => {
 		if (startPreliminary) select(selected, "sc-preliminary-options");
@@ -374,11 +393,13 @@ export function Workspace({
 							? "sc-energy"
 							: destination === "equipment"
 								? "sc-system"
-								: destination === "roof"
-									? "sc-roof"
-									: destination === "design"
-										? "sc-solar"
-										: "sc-project",
+								: destination === "roof-plan"
+									? "sc-roof-plan"
+									: destination === "roof"
+										? "sc-roof"
+										: destination === "design"
+											? "sc-solar"
+											: "sc-project",
 				destination === "guided-comparison",
 			);
 		return true;
@@ -542,12 +563,12 @@ export function Workspace({
 		return !session.claim_pending && project.data ? (
 			<Suspense
 				fallback={
-					<p className="lp-session-state" role="status">
+					<p className="sc-session-state" role="status">
 						{__("Opening the project…", "linker-tools")}
 					</p>
 				}
 			>
-				<Configurator
+				<ProjectWorkbench
 					key={session.query_scope + ":" + selected}
 					project={project.data}
 					client={client}
@@ -558,6 +579,13 @@ export function Workspace({
 					recoveryScopes={recovery.data}
 					recoveryChecking={recovery.isFetching}
 					recoveryFailed={recovery.isError}
+					comparePreliminary={(saved) => {
+						cache.setQueryData(
+							[session.query_scope, "project", selected, session.claim_pending],
+							saved,
+						);
+						select(saved.id, "sc-preliminary-options");
+					}}
 					close={() => {
 						if (!client.isCurrentScope(session.query_scope)) return false;
 						void cache.invalidateQueries({
@@ -626,7 +654,7 @@ export function Workspace({
 		!entryHints?.roof &&
 		!entryHints?.equipment;
 
-	const bareComparison = canCompareDirections && !entryHints && !route;
+	const bareComparison = canCompareDirections && !route;
 	const firstVisitComparison =
 		canCompareDirections && route === "sc-preliminary-options";
 	const directEntry =
@@ -646,6 +674,8 @@ export function Workspace({
 			: "workspace";
 	function showCreationPage(anchor: "sc-project" | "sc-preliminary-options") {
 		const url = new URL(location.href);
+		url.searchParams.delete("view");
+		url.searchParams.set("compare", "preliminary");
 		url.hash = anchor;
 		window.history.pushState(null, "", url);
 		setRoute(anchor);
@@ -691,6 +721,11 @@ export function Workspace({
 						)}
 					</div>
 					<div className="sc-actions">
+						{projectIndex && (
+							<a className="sc-button sc-primary" href="?compare=preliminary">
+								{__("New project", "linker-tools")}
+							</a>
+						)}
 						{!entryHints && !projectIndex && !savedSource && !briefSource && (
 							<a className="sc-button" href="?step=roof">
 								{__("Start with your roof", "linker-tools")}
@@ -706,6 +741,7 @@ export function Workspace({
 				<div>
 					{projectIndex ? null : savedSource !== null ? (
 						<SavedSolutionStart
+							directComparison
 							solutionId={savedSource}
 							config={config}
 							dismiss={() => {
@@ -726,6 +762,7 @@ export function Workspace({
 						/>
 					) : briefSource !== null ? (
 						<ProjectBriefStart
+							directComparison
 							briefId={briefSource}
 							config={config}
 							entryHints={entryHints}
@@ -749,15 +786,22 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
-							directComparison={bareComparison}
+							directComparison={
+								bareComparison ||
+								entryHints?.equipment === true ||
+								route === "sc-project"
+							}
 							workspaceHeading={directEntry}
+							equipmentFirst={publicView === "equipment"}
 							opened={() => setNewProjectOpen(true)}
 							enterDetails={() => showCreationPage("sc-project")}
-							{...(canCompareDirections &&
-								route === "sc-project" && {
+							{...(route === "sc-project" &&
+								new URL(location.href).searchParams.get("compare") ===
+									"preliminary" && {
 									returnToComparison: () =>
 										showCreationPage("sc-preliminary-options"),
 								})}
+
 							creationPending={creationPending}
 							beginCreation={() => beginCreation(entryKey)}
 							config={config}
@@ -794,10 +838,10 @@ export function Workspace({
 				<section
 					className="sc-card sc-saved-projects"
 					hidden={firstVisitComparison || Boolean(entryHints?.roof)}
-					aria-labelledby="lp-projects-heading"
+					aria-labelledby="sc-projects-heading"
 				>
 					<div className="sc-section-head">
-						<h2 id="lp-projects-heading">
+						<h2 id="sc-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
 						<button
@@ -882,6 +926,14 @@ export function Workspace({
 										</p>
 									</div>
 									<div className="sc-actions">
+										{projectIndex && (
+											<a
+												className="sc-button sc-primary"
+												href={`?project=${item.id}&guided=inquiry#sc-system`}
+											>
+												{__("Compare options", "linker-tools")}
+											</a>
+										)}
 										<button
 											className="sc-button"
 											type="button"
@@ -938,7 +990,7 @@ export function Workspace({
 										</p>
 										<div className="sc-actions">
 											<button
-												className="sc-button lp-button-danger"
+												className="sc-button sc-button-danger"
 												disabled={deleteBusy}
 												onClick={() => {
 													void remove(item);

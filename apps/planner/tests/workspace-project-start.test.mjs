@@ -486,6 +486,14 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	assert.equal(external.mock.callCount(), 0);
 	const submit = form.querySelector('button[type="submit"]');
 	assert.equal(submit.textContent.trim(), "Compare systems");
+	if (!rejectFirstMapping && !unknownPhase) {
+		await enter(field("latitude"), "91,8");
+		assert.equal(field("latitude").value, "91,8");
+		await act(async () => submit.click());
+		assert.deepEqual(calls, []);
+		assert.equal(field("load_profile_source").value, "workshop-meter.csv");
+		await enter(field("latitude"), "47,66");
+	}
 	await act(async () => submit.click());
 	if (rejectFirstMapping) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);
@@ -900,8 +908,13 @@ test("visitors with project data can open setup from the comparison and keep the
 		purpose.value = "backup";
 		purpose.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
+	const basis = document.querySelector('select[name="annual_load_basis"]');
+	await act(async () => {
+		basis.value = "user_estimate";
+		basis.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
 	const next = [...document.querySelectorAll("button")].find(
-		(item) => item.textContent === "Continue with storage",
+		(item) => item.textContent === "Compare systems",
 	);
 	await act(async () => {
 		next.click();
@@ -1895,7 +1908,10 @@ for (const goal of ["self", "peak", "backup"])
 	test(`a retrofit with an unknown phase compares ${goal} inverter options and sends its reviewed project revision`, (t) =>
 		compareRetrofit(t, goal));
 
-async function compareRetrofit(t, goal) {
+test("incomplete backup requirements still open preliminary choices when grid phase is known", (t) =>
+	compareRetrofit(t, "backup", 3));
+
+async function compareRetrofit(t, goal, gridPhase = null) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { QueryClient, QueryClientProvider } =
@@ -1928,7 +1944,19 @@ async function compareRetrofit(t, goal) {
 				},
 				annual_load: { kwh: 6200, basis: "bill_total", source_note: "" },
 			},
-			equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 8 },
+			...(goal === "backup" && {
+				existing_system: {
+					schema_version: 1,
+					name: "Workshop inverter",
+					inverter_power_kw: 7.5,
+					keep_inverter: true,
+				},
+			}),
+			equipment_setup: {
+				...equipmentDraft({}),
+				pv_dc_kw: 8,
+				grid_phase: gridPhase,
+			},
 		},
 		goal,
 	);
@@ -2002,7 +2030,7 @@ async function compareRetrofit(t, goal) {
 			peak: "Reduce peak demand",
 			backup: "Backup supply",
 		}[goal],
-		"To confirm",
+		gridPhase ? "Three phase" : "To confirm",
 	])
 		assert.ok(facts.includes(value), value);
 	const keep = [...options().querySelectorAll("tr")].find((row) =>
@@ -2027,11 +2055,11 @@ async function compareRetrofit(t, goal) {
 			".sc-preliminary-review:not([hidden]) form.linker-inquiry-form",
 		),
 	);
-	assert.equal(review.revision, 2);
+	assert.equal(review.revision, goal === "backup" ? 1 : 2);
 	assert.equal(review.project_id, projectId);
 	assert.equal(review.report_run_id, undefined);
 	assert.deepEqual(project.inputs.brief, inputs.brief);
-	assert.equal(project.inputs.equipment_setup.grid_phase, null);
+	assert.equal(project.inputs.equipment_setup.grid_phase, gridPhase);
 	assert.equal(project.inputs.existing_system.keep_inverter, true);
 	assert.match(
 		document.querySelector(".sc-inquiry-overview").textContent,
@@ -2039,9 +2067,13 @@ async function compareRetrofit(t, goal) {
 	);
 }
 
-test("the bare configurator compares a retrofit and opens its Woo inquiry with no invented project data", async (t) => {
+for (const view of ["", "project", "equipment"])
+	test(`${view || "bare"} entry compares a retrofit and opens its Woo inquiry`, (t) =>
+		compareEntryRetrofit(t, view));
+
+async function compareEntryRetrofit(t, view) {
 	const fixture = setupDom();
-	history.replaceState(null, "", "/workspace/");
+	history.replaceState(null, "", "/workspace/" + (view ? "?view=" + view : ""));
 	const style = Object.getOwnPropertyDescriptor(globalThis, "getComputedStyle");
 	globalThis.getComputedStyle = window.getComputedStyle.bind(window);
 	t.after(() => {
@@ -2130,7 +2162,12 @@ test("the bare configurator compares a retrofit and opens its Woo inquiry with n
 	await until(() => document.querySelector(selector));
 	const scope = document.querySelector(selector);
 	const equipment = scope.form.querySelector("details.sc-project-equipment");
-	assert.equal(equipment.open, false);
+	assert.equal(equipment.open, view === "equipment");
+	if (view === "equipment")
+		assert.ok(
+			equipment.compareDocumentPosition(scope) &
+				window.Node.DOCUMENT_POSITION_FOLLOWING,
+		);
 	assert.equal(
 		equipment.querySelector('button[aria-pressed="true"]').textContent,
 		"Single system",
@@ -2165,4 +2202,4 @@ test("the bare configurator compares a retrofit and opens its Woo inquiry with n
 	);
 	assert.equal(inquiry.project_id, project.id);
 	assert.equal(inquiry.revision, 2);
-});
+}

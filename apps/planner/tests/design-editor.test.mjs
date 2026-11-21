@@ -52,7 +52,7 @@ async function mount(
 		});
 		const css = document.createElement("style");
 		css.textContent =
-			".lp-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#123456;--proto-neutral-600:#456789;--proto-teal-700:#0a665c;--proto-teal-400:#44bbcc;--proto-neutral-100:#eeeeee;}";
+			".sc-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#123456;--proto-neutral-600:#456789;--proto-teal-700:#0a665c;--proto-teal-400:#44bbcc;--proto-neutral-100:#eeeeee;}";
 		document.head.append(css);
 	}
 	const { createRoot } = await import("react-dom/client");
@@ -233,7 +233,7 @@ test("plan placement uses a roof click and the applied array remains draggable",
 	await click("Add module array");
 	assert.equal(button("Plan").getAttribute("aria-pressed"), "true");
 	assert.equal(button("Map").disabled, true);
-	const svg = document.querySelector(".lp-plan-svg");
+	const svg = document.querySelector(".sc-plan-svg");
 	svg.getScreenCTM = () => ({
 		a: 1,
 		d: 1,
@@ -252,11 +252,11 @@ test("plan placement uses a roof click and the applied array remains draggable",
 	const roof = svg.querySelector('[data-object="roof"]');
 	await pointer("pointerdown", roof, 2, -3);
 	await pointer("pointerup", roof, 2, -3);
-	await until(() => svg.querySelectorAll(".lp-panel-shape").length === 1);
+	await until(() => svg.querySelectorAll(".sc-panel-shape").length === 1);
 	assert.equal(app.edits, 0);
 	await click("Apply properties");
 	assert.deepEqual(app.current.arrays[0].origin_uv, [2, 3]);
-	const panel = svg.querySelector(".lp-panel-shape");
+	const panel = svg.querySelector(".sc-panel-shape");
 	await pointer("pointerdown", panel, 2, -3);
 	await pointer("pointermove", panel, 5, -4);
 	await pointer("pointerup", panel, 5, -4);
@@ -279,7 +279,7 @@ test("keyboard numeric placement previews a concave roof position without a map 
 	await click("Add module array");
 	assert.equal(button("Plan").getAttribute("aria-pressed"), "true");
 	assert.equal(button("Map").disabled, true);
-	const positions = document.querySelector(".lp-plan-position");
+	const positions = document.querySelector(".sc-plan-position");
 	assert.equal(positions.open, false, "coordinate entry stays optional");
 	await act(async () => positions.querySelector("summary").click());
 	const [u, v] = positions.querySelectorAll("input");
@@ -287,7 +287,7 @@ test("keyboard numeric placement previews a concave roof position without a map 
 	await enter(u, "0,5");
 	await enter(v, "3,5");
 	await click("Preview position");
-	await until(() => document.querySelectorAll(".lp-panel-shape").length === 1);
+	await until(() => document.querySelectorAll(".sc-panel-shape").length === 1);
 	assert.equal(app.edits, 0);
 	assert.equal(app.current.arrays.length, 0);
 	await enter(u, "invalid");
@@ -446,7 +446,7 @@ test("an existing array can change rows and mounting values while preserving its
 		2,
 		"preview edits are not project edits",
 	);
-	assert.equal(document.querySelectorAll(".lp-panel-shape").length, 3);
+	assert.equal(document.querySelectorAll(".sc-panel-shape").length, 3);
 	await click("Apply properties");
 	assert.equal(app.edits, 1);
 	assert.equal(app.current.arrays[0].id, flat.arrays[0].id);
@@ -485,7 +485,7 @@ test("module exclusion updates the same plan, object selection and derived quant
 	const app = await mount(t, { initial: flat });
 	await click(flat.arrays[0].name);
 	await act(async () =>
-		document.querySelector(".lp-module-table summary").click(),
+		document.querySelector(".sc-module-table summary").click(),
 	);
 	const select = [...document.querySelectorAll("button")].find(
 		(button) => button.textContent.trim() === "Select module",
@@ -495,7 +495,7 @@ test("module exclusion updates the same plan, object selection and derived quant
 	assert.equal(app.edits, 1);
 	assert.equal(moduleSummary(app.current).count, 4);
 	assert.equal(
-		document.querySelectorAll('.lp-panel-shape[data-excluded="true"]').length,
+		document.querySelectorAll('.sc-panel-shape[data-excluded="true"]').length,
 		2,
 	);
 	await click("Restore module");

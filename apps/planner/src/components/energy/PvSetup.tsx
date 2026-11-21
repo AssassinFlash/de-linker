@@ -98,7 +98,7 @@ export function PvSetup({
 					)}
 				</p>
 				{openDesign && (
-					<button type="button" className="lp-text-button" onClick={openDesign}>
+					<button type="button" className="sc-text-button" onClick={openDesign}>
 						{__("Review roof design", "linker-tools")}
 					</button>
 				)}
@@ -122,7 +122,7 @@ export function PvSetup({
 					onError(null);
 				}}
 			/>
-			<div className="lp-scenario-sources">
+			<div className="sc-scenario-sources">
 				<h3>{__("Weather for this PV calculation", "linker-tools")}</h3>
 				<p>
 					{weatherSelected
@@ -136,7 +136,7 @@ export function PvSetup({
 							)}
 				</p>
 			</div>
-			<div className="lp-energy-submit">
+			<div className="sc-energy-submit">
 				<div>
 					<strong>
 						{prepared
@@ -160,7 +160,7 @@ export function PvSetup({
 				</div>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={actionsDisabled || !valid}
 					onClick={() => {
 						try {
@@ -177,7 +177,7 @@ export function PvSetup({
 				</button>
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					onClick={start}
 					disabled={
 						actionsDisabled ||

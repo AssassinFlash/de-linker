@@ -50,7 +50,7 @@ export function PvOperatingSetup({
 			change({ ...plan, operating_conditions: { ...conditions, ...patch } });
 	};
 	return (
-		<details className="lp-comparison">
+		<details className="sc-disclosure">
 			<summary>{__("Electrical operating conditions", "linker-tools")}</summary>
 			<p>
 				{__(
@@ -61,7 +61,7 @@ export function PvOperatingSetup({
 			{!conditions ? (
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={disabled}
 					onClick={() =>
 						change({
@@ -132,7 +132,7 @@ export function PvOperatingSetup({
 						onChange={(v) => update({ cold_cell_c: v })}
 						onValidity={callbacks.cold_cell_c!}
 					/>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{__(
 								"Operating-condition source and mounting basis",
@@ -155,7 +155,7 @@ export function PvOperatingSetup({
 							}
 						/>
 					</label>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"These values need a project-specific basis, including mounting and ventilation. No local design extremes are filled in automatically. Model estimates do not establish manufacturer performance or the complete design current.",
 							"linker-tools",
@@ -163,7 +163,7 @@ export function PvOperatingSetup({
 					</p>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={() => change({ ...plan, operating_conditions: null })}
 					>
 						{__("Remove operating conditions", "linker-tools")}

@@ -23,8 +23,10 @@ import {
 } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
-import { readBrief } from "../../domain/brief.ts";
+import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
+import { EvidenceCard } from "../shared/EvidenceCard.tsx";
+import { Icon } from "../Icon.tsx";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
 
@@ -43,13 +45,14 @@ function ReportContent({ section }: { section: ReportSection }) {
 			{section.rows.length > 0 && (
 				<dl>
 					{section.rows.map((row, index) => (
-						<div className="sc-summary" key={index}>
+						<div
+							className={row.href ? "sc-report-citation" : "sc-summary"}
+							key={index}
+						>
 							<dt>{row.label}</dt>
 							<dd>
 								{row.href ? (
-									<a href={row.href} target="_blank" rel="noreferrer">
-										{row.value}
-									</a>
+									<EvidenceCard title={row.value} url={row.href} />
 								) : (
 									row.value
 								)}
@@ -112,14 +115,21 @@ function ReportContent({ section }: { section: ReportSection }) {
 function ReportItemSections({
 	report,
 	heading: Heading = "h2",
+	materials,
 }: {
 	report: PlanningReport;
 	heading?: "h2" | "h4";
+	materials: ReactNode;
 }) {
-	return report.sections.filter(isReportItemSection).map((section) => (
-		<section key={section.id} className="sc-card" lang={report.locale}>
-			<Heading>{section.title}</Heading>
-			<ReportContent section={section} />
+	return report.sections.filter(isReportItemSection).map((section, index) => (
+		<section key={section.id} className="sc-card sc-report-items">
+			<header className="sc-report-items-head">
+				<Heading lang={report.locale}>{section.title}</Heading>
+				{index === 0 && materials}
+			</header>
+			<div lang={report.locale}>
+				<ReportContent section={section} />
+			</div>
 		</section>
 	));
 }
@@ -138,6 +148,7 @@ function ReportPreview({
 	const objectUrl = useRef<string | null>(null);
 	const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 	const [pdfFailed, setPdfFailed] = useState(false);
+	const [open, setOpen] = useState(false);
 	const name = useId();
 
 	const releasePdf = useCallback(() => {
@@ -172,10 +183,11 @@ function ReportPreview({
 		<>
 			<button
 				type="button"
-				className="sc-button"
+				className="sc-button sc-report-preview-button"
 				disabled={!allowed}
 				onClick={() => {
 					dialog.current?.showModal();
+					setOpen(true);
 					void preparePdf();
 				}}
 			>
@@ -187,6 +199,7 @@ function ReportPreview({
 				aria-labelledby={name}
 				onClose={() => {
 					releasePdf();
+					setOpen(false);
 					setPdfUrl(null);
 					setPdfFailed(false);
 				}}
@@ -240,15 +253,21 @@ function ReportPreview({
 						<p role="status">{__("Preparing PDF…", "linker-tools")}</p>
 					)}
 				</div>
-				<div className="sc-report-preview" lang={report.locale}>
-					<p className="sc-muted">{report.subtitle}</p>
-					{report.sections.map((section) => (
-						<section key={section.id}>
-							<h3>{section.title}</h3>
-							<ReportContent section={section} />
-						</section>
-					))}
-				</div>
+				<section
+					className="sc-report-readable"
+					aria-label={__("Report details", "linker-tools")}
+				>
+					<div className="sc-report-preview" lang={report.locale}>
+						<p className="sc-muted">{report.subtitle}</p>
+						{open &&
+							report.sections.map((section) => (
+								<section key={section.id}>
+									<h3>{section.title}</h3>
+									<ReportContent section={section} />
+								</section>
+							))}
+					</div>
+				</section>
 			</dialog>
 		</>
 	);
@@ -520,7 +539,7 @@ export function ReviewProposal({
 	const selected = history?.selected != null;
 	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
-	const [logo, setLogo] = useState<string | null>(null),
+	const [logo, setLogo] = useState<{ name: string; data: string } | null>(null),
 		[logoError, setLogoError] = useState(false),
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
@@ -553,40 +572,52 @@ export function ReviewProposal({
 		<div className="sc-report-logo">
 			<label className="sc-field">
 				<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-				<input
-					ref={logoInput}
-					type="file"
-					accept="image/png,image/jpeg"
-					disabled={blocked || operations.busy}
-					onChange={(event) => {
-						resetLogo();
-						const file = event.currentTarget.files?.[0];
-						if (!file) return;
-						if (
-							file.size > 500000 ||
-							!["image/png", "image/jpeg"].includes(file.type)
-						) {
-							setLogoError(true);
-							return;
-						}
-						const next = new FileReader();
-						reader.current = next;
-						setReading(true);
-						next.onload = () => {
-							if (reader.current === next && typeof next.result === "string") {
-								setLogo(next.result);
-								setReading(false);
-							}
-						};
-						next.onerror = () => {
-							if (reader.current === next) {
+				<span className="sc-file-picker">
+					<span className="sc-file-button" aria-hidden="true">
+						{__("Choose logo", "linker-tools")}
+					</span>
+					<span className="sc-file-name" aria-hidden="true">
+						{logo?.name ?? __("No file chosen", "linker-tools")}
+					</span>
+					<input
+						ref={logoInput}
+						aria-label={__("Your logo on the PDF (optional)", "linker-tools")}
+						type="file"
+						accept="image/png,image/jpeg"
+						disabled={blocked || operations.busy}
+						onChange={(event) => {
+							resetLogo();
+							const file = event.currentTarget.files?.[0];
+							if (!file) return;
+							if (
+								file.size > 500000 ||
+								!["image/png", "image/jpeg"].includes(file.type)
+							) {
 								setLogoError(true);
-								setReading(false);
+								return;
 							}
-						};
-						next.readAsDataURL(file);
-					}}
-				/>
+							const next = new FileReader();
+							reader.current = next;
+							setReading(true);
+							next.onload = () => {
+								if (
+									reader.current === next &&
+									typeof next.result === "string"
+								) {
+									setLogo({ name: file.name, data: next.result });
+									setReading(false);
+								}
+							};
+							next.onerror = () => {
+								if (reader.current === next) {
+									setLogoError(true);
+									setReading(false);
+								}
+							};
+							next.readAsDataURL(file);
+						}}
+					/>
+				</span>
 				<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
 				{logoError && (
 					<small role="alert">
@@ -599,7 +630,9 @@ export function ReviewProposal({
 			</label>
 			{(logo || logoError || reading) && (
 				<div className="sc-actions">
-					{logo && <img src={logo} alt={__("Report logo", "linker-tools")} />}
+					{logo && (
+						<img src={logo.data} alt={__("Report logo", "linker-tools")} />
+					)}
 					<button
 						type="button"
 						className="sc-button"
@@ -621,15 +654,20 @@ export function ReviewProposal({
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable = reportCanTransfer(run, report);
 
-	const brief = inputs.brief === undefined ? null : readBrief(inputs.brief);
-	const country = brief?.site.country_code;
-	const location = [
-		brief?.site.location_label,
-		country && new Intl.DisplayNames([locale], { type: "region" }).of(country),
-	]
-		.filter(Boolean)
-		.join(" · ");
-	const annualLoad = brief?.annual_load.kwh;
+	const facts = projectFacts(inputs, locale);
+	const overviewSections =
+		current && report
+			? report.sections.filter(
+					(section) =>
+						[
+							"pv",
+							"energy",
+							"existing-system",
+							"retained-energy-baseline",
+						].includes(section.id) ||
+						section.id.startsWith("declared-equipment-demand"),
+				)
+			: [];
 	const reportDescription = __(
 		"Project inputs, layout, equipment and selection basis.",
 		"linker-tools",
@@ -671,13 +709,17 @@ export function ReviewProposal({
 		</section>
 	);
 	const historyPanel = history &&
-		(selected || history.items.length > 0 || history.hasMore) && (
+		(selected ||
+			history.items.length > 0 ||
+			history.hasMore ||
+			history.loading ||
+			history.loadFailed) && (
 			<section
-				className="sc-card"
+				className="sc-card sc-report-history"
 				aria-label={__("Calculation history", "linker-tools")}
 			>
 				<h2>{__("Calculation history", "linker-tools")}</h2>
-				<div className="sc-actions">
+				<div className="sc-report-versions">
 					{history.items.map((item) => (
 						<button
 							type="button"
@@ -689,12 +731,15 @@ export function ReviewProposal({
 								history.select(history.selected === item.id ? null : item.id)
 							}
 						>
-							{sprintf(__("Revision %d", "linker-tools"), item.revision)}
-							{" · "}
-							{new Intl.DateTimeFormat(locale, {
-								dateStyle: "short",
-								timeStyle: "short",
-							}).format(item.created_at * 1000)}
+							<strong>
+								{sprintf(__("Revision %d", "linker-tools"), item.revision)}
+							</strong>
+							<time dateTime={new Date(item.created_at * 1000).toISOString()}>
+								{new Intl.DateTimeFormat(locale, {
+									dateStyle: "short",
+									timeStyle: "short",
+								}).format(item.created_at * 1000)}
+							</time>
 						</button>
 					))}
 					{selected && (
@@ -707,7 +752,7 @@ export function ReviewProposal({
 							{__("Close", "linker-tools")}
 						</button>
 					)}
-					{history.hasMore && (
+					{history.hasMore && !history.loadFailed && (
 						<button
 							type="button"
 							className="sc-button"
@@ -718,13 +763,28 @@ export function ReviewProposal({
 						</button>
 					)}
 				</div>
-				{history.loadFailed && (
-					<p role="alert">
-						{__(
-							"Saved calculation history could not be refreshed.",
-							"linker-tools",
-						)}
+				{history.loading && (
+					<p role="status">
+						{__("Reading saved calculation results…", "linker-tools")}
 					</p>
+				)}
+				{history.loadFailed && (
+					<div role="alert">
+						<p>
+							{__(
+								"Saved calculation history could not be refreshed.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="sc-button"
+							disabled={history.loading || !client.isCurrentScope(scope)}
+							onClick={history.loadMore}
+						>
+							{__("Try again", "linker-tools")}
+						</button>
+					</div>
 				)}
 				{history.reading && (
 					<p role="status">
@@ -760,7 +820,9 @@ export function ReviewProposal({
 				{earlierRun && earlierReport && (
 					<>
 						<h3 lang={earlierReport.locale}>{earlierReport.title}</h3>
-						<ReportItemSections report={earlierReport} heading="h4" />
+						<p className="sc-report-meta">
+							{sprintf(__("Revision %d", "linker-tools"), earlierRun.revision)}
+						</p>
 						<ReportDownloads
 							run={earlierRun}
 							report={earlierReport}
@@ -768,13 +830,32 @@ export function ReviewProposal({
 							scope={scope}
 							recheck={recheck}
 							askGenie={() => askGenie(earlierRun)}
-						/>
+						>
+							{({ actions, materials, error }) => (
+								<>
+									<ReportItemSections
+										report={earlierReport}
+										heading="h4"
+										materials={materials}
+									/>
+									<div className="sc-actions">
+										{actions}
+										{!earlierReport.sections.some(isReportItemSection) &&
+											materials}
+									</div>
+									{error}
+								</>
+							)}
+						</ReportDownloads>
 					</>
 				)}
 			</section>
 		);
 	return (
-		<article className="sc-review">
+		<article
+			className="sc-review sc-report-workspace"
+			aria-label={project.title}
+		>
 			<header className="sc-section-head">
 				<div>
 					<h1>{__("Ready to discuss", "linker-tools")}</h1>
@@ -786,38 +867,18 @@ export function ReviewProposal({
 					</p>
 				</div>
 			</header>
-			{!selected && (
-				<section className="sc-card">
+			{!selected && (facts.length > 0 || overviewSections.length > 0) && (
+				<section className="sc-card sc-report-overview">
 					<h2>{__("Project overview", "linker-tools")}</h2>
-					<p>{project.title}</p>
-					{location && <p className="sc-muted">{location}</p>}
-					{annualLoad != null && (
-						<dl>
-							<div className="sc-summary">
-								<dt>{__("Annual electricity use", "linker-tools")}</dt>
-								<dd>{new Intl.NumberFormat(locale).format(annualLoad)} kWh</dd>
-							</div>
-						</dl>
-					)}
-					{current && report && (
-						<div lang={report.locale}>
-							{report.sections
-								.filter(
-									(section) =>
-										[
-											"pv",
-											"energy",
-											"existing-system",
-											"retained-energy-baseline",
-										].includes(section.id) ||
-										section.id.startsWith("declared-equipment-demand"),
-								)
-								.map((section) => (
-									<details key={section.id}>
-										<summary>{section.title}</summary>
-										<ReportContent section={section} />
-									</details>
-								))}
+					{facts.length > 0 && <ProjectFacts facts={facts} />}
+					{overviewSections.length > 0 && (
+						<div lang={report?.locale}>
+							{overviewSections.map((section) => (
+								<details key={section.id} className="sc-review-details">
+									<summary>{section.title}</summary>
+									<ReportContent section={section} />
+								</details>
+							))}
 						</div>
 					)}
 				</section>
@@ -831,8 +892,11 @@ export function ReviewProposal({
 				</p>
 			)}
 			{!selected && (!report || !run) && (
-				<section className="sc-card">
-					<h2>{__("Project report", "linker-tools")}</h2>
+				<section className="sc-card sc-report-create">
+					<h2>
+						<Icon name="report" />
+						{__("Project report", "linker-tools")}
+					</h2>
 					<p className="sc-muted">{reportDescription}</p>
 					{run && <p role="status">{runStateLabel(run.state, REPORT_TASK)}</p>}
 					{run?.error && (
@@ -849,7 +913,7 @@ export function ReviewProposal({
 							type="button"
 							className="sc-button sc-primary"
 							disabled={disabled}
-							onClick={() => generate(logo)}
+							onClick={() => generate(logo?.data ?? null)}
 						>
 							{__("Generate project report", "linker-tools")}
 						</button>
@@ -869,34 +933,64 @@ export function ReviewProposal({
 				>
 					{({ actions, materials, error }) => (
 						<>
-							{!selected && <ReportItemSections report={report} />}
+							{!selected && (
+								<ReportItemSections report={report} materials={materials} />
+							)}
 							{(!selected || draftTransfer) && (
 								<div
 									className={selected ? "sc-card" : "sc-card sc-report-actions"}
 								>
 									{!selected && (
-										<section>
-											<h2>{__("Project report", "linker-tools")}</h2>
+										<section className="sc-report-files">
+											<h2>
+												<Icon name="report" />
+												{__("Project report", "linker-tools")}
+											</h2>
 											<p className="sc-muted">{reportDescription}</p>
-											<p lang={report.locale}>{report.title}</p>
-											{reportLanguageDiffers(report.locale, locale) && (
-												<p className="sc-muted">
-													{report.locale === "de"
-														? __("Report language: German", "linker-tools")
-														: __("Report language: English", "linker-tools")}
-												</p>
-											)}
-											<time className="sc-muted" dateTime={report.generated_at}>
-												{new Intl.DateTimeFormat(locale, {
-													dateStyle: "medium",
-													timeStyle: "short",
-													timeZone: "UTC",
-												}).format(new Date(report.generated_at))}{" "}
-												UTC
-											</time>
+											<div className="sc-report-file-info">
+												<span className="sc-report-filetype" aria-hidden="true">
+													PDF
+												</span>
+												<div>
+													<p
+														lang={report.locale}
+														className="sc-report-filename"
+													>
+														{report.title}
+													</p>
+													<p className="sc-report-meta">
+														{sprintf(
+															__("Revision %d", "linker-tools"),
+															run.revision,
+														)}
+													</p>
+													{reportLanguageDiffers(report.locale, locale) && (
+														<p className="sc-muted">
+															{report.locale === "de"
+																? __("Report language: German", "linker-tools")
+																: __(
+																		"Report language: English",
+																		"linker-tools",
+																	)}
+														</p>
+													)}
+													<time
+														className="sc-muted"
+														dateTime={report.generated_at}
+													>
+														{new Intl.DateTimeFormat(locale, {
+															dateStyle: "medium",
+															timeStyle: "short",
+															timeZone: "UTC",
+														}).format(new Date(report.generated_at))}{" "}
+														UTC
+													</time>
+												</div>
+											</div>
 											<div className="sc-actions">
 												{actions}
-												{materials}
+												{!report.sections.some(isReportItemSection) &&
+													materials}
 											</div>
 											{error}
 											{logoField}
@@ -904,7 +998,7 @@ export function ReviewProposal({
 												type="button"
 												className="sc-button"
 												disabled={disabled}
-												onClick={() => generate(logo)}
+												onClick={() => generate(logo?.data ?? null)}
 											>
 												{reportLanguageDiffers(report.locale, locale)
 													? locale.startsWith("de")

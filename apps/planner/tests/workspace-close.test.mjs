@@ -11,7 +11,7 @@ test("a deferred close completes across a same-scope revalidation without being 
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 	// Prepare the lazy editor before timing close/revalidation behavior; module
 	// compilation on concurrent CI workers is part of fixture setup.
-	await import("../src/components/configurator/Configurator.tsx");
+	await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const session = {
@@ -156,10 +156,10 @@ test("a deferred close completes across a same-scope revalidation without being 
 		() =>
 			client.isCurrentScope(session.query_scope) &&
 			document.querySelector(".sc-configurator") &&
-			document.querySelector("#lp-projects-heading"),
+			document.querySelector("#sc-projects-heading"),
 	);
 	assert.equal(
-		document.querySelector("#lp-projects-heading").textContent,
+		document.querySelector("#sc-projects-heading").textContent,
 		"Saved projects",
 	);
 	assert.equal(location.search, "");

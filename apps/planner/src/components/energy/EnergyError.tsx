@@ -434,7 +434,7 @@ export function EnergyError({
 			{issue && (
 				<details>
 					<summary>{__("Source details", "linker-tools")}</summary>
-					<dl className="lp-field-summary">
+					<dl className="sc-field-summary">
 						{Object.entries(issue).map(([key, value]) => (
 							<div key={key}>
 								<dt>

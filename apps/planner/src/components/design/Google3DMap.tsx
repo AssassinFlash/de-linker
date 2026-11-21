@@ -485,10 +485,10 @@ export function Google3DMap({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={() => {
 							// The failed state above unmounts the host div, so the
 							// reload effect would find no host and return early.
@@ -500,11 +500,7 @@ export function Google3DMap({
 						{__("Retry 3D", "linker-tools")}
 					</button>
 					{onSwitchToMap && (
-						<button
-							type="button"
-							className="lp-button lp-button-secondary"
-							onClick={onSwitchToMap}
-						>
+						<button type="button" className="sc-button" onClick={onSwitchToMap}>
 							{__("Open aerial map", "linker-tools")}
 						</button>
 					)}
@@ -516,25 +512,21 @@ export function Google3DMap({
 	return (
 		<div
 			className={
-				compact ? "lp-google3d-view lp-google3d-compact" : "lp-google3d-view"
+				compact ? "sc-google3d-view sc-google3d-compact" : "sc-google3d-view"
 			}
 			data-google3d-status={status}
 		>
 			<div
-				className="lp-map-toolbar"
+				className="sc-map-toolbar"
 				role="group"
 				aria-label={__("3D satellite controls", "linker-tools")}
 			>
-				<button
-					type="button"
-					className="lp-button lp-button-secondary"
-					onClick={resetCamera}
-				>
+				<button type="button" className="sc-button" onClick={resetCamera}>
 					{__("Reset 3D view", "linker-tools")}
 				</button>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					aria-pressed={topDown}
 					onClick={() => setTopDown((value) => !value)}
 				>
@@ -544,7 +536,7 @@ export function Google3DMap({
 				</button>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					aria-pressed={mapMode === "HYBRID"}
 					onClick={() =>
 						setMapMode((mode) =>
@@ -557,20 +549,12 @@ export function Google3DMap({
 						: __("Show street labels", "linker-tools")}
 				</button>
 				{onSwitchToMap && (
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						onClick={onSwitchToMap}
-					>
+					<button type="button" className="sc-button" onClick={onSwitchToMap}>
 						{__("Draw or adopt on aerial map", "linker-tools")}
 					</button>
 				)}
 				{onSwitchToCad && (
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						onClick={onSwitchToCad}
-					>
+					<button type="button" className="sc-button" onClick={onSwitchToCad}>
 						{__("CAD 3D (Edit panels)", "linker-tools")}
 					</button>
 				)}
@@ -581,7 +565,7 @@ export function Google3DMap({
 				</p>
 			)}
 			<div
-				className="lp-google3d-host"
+				className="sc-google3d-host"
 				ref={hostRef}
 				role="img"
 				aria-label={__("3D satellite view of the site", "linker-tools")}

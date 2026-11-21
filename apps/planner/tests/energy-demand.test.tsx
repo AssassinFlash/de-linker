@@ -222,6 +222,12 @@ test("a real typical profile is imported and selected for the same project", asy
 	try {
 		await act(async () => render());
 		await enter(field("Annual electricity use"), "6000");
+		assert.ok(!dom.element.querySelector('select[name="load-pattern"]'));
+		await act(async () =>
+			[...dom.element.querySelectorAll("button")]
+				.find((x) => x.textContent === "Use a typical profile")
+				.click(),
+		);
 		await enter(field("Time zone"), "Europe/Berlin");
 		const select = dom.element.querySelector('select[name="load-pattern"]');
 		await act(async () => {
@@ -243,7 +249,17 @@ test("a real typical profile is imported and selected for the same project", asy
 		);
 		assert.ok(curve, "the selected load source has a visible demand chart");
 		assert.match(curve.textContent, /3 kW/);
-		assert.match(dom.element.querySelector("table").textContent, /23:15:00Z3/);
+		const interval = dom.element.querySelector(
+			'time[datetime="2019-12-31T23:15:00Z"]',
+		);
+		assert.ok(interval);
+		assert.match(interval.textContent, /23:15/);
+		assert.doesNotMatch(interval.textContent, /T23/);
+		assert.match(interval.closest("tr").textContent, /3$/);
+		assert.match(
+			dom.element.querySelector("figure").textContent,
+			/23:00.+23:30.*UTC/,
+		);
 		assert.equal(calls[0].body.year, 2020);
 		assert.equal(
 			inputs.energy_scenario.schedule[0].start_utc,
@@ -356,6 +372,7 @@ test("CSV uses customer mapping and a refused import can be corrected", async ()
 					query_scope: "scope",
 					runtime: { limits: { max_csv_bytes: 10000, max_page_size: 20 } },
 				}}
+				coordinatesInvalid
 				recheck={() => {}}
 				edit={(operation) => {
 					inputs = operation(inputs);

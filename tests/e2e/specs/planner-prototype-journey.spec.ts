@@ -1,4 +1,6 @@
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { expect, test, type Page } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { seedConsentCookies } from '../lib/consent';
 import { instance } from '../lib/instance';
@@ -15,7 +17,7 @@ const labels = {
 		knownModules: 'Use module details',
 		home: '/',
 		enterDetails: 'Enter project details',
-		start: 'New project',
+		start: 'Compare project options',
 		title: 'Project name',
 		town: 'Town or site',
 		use: 'Site use',
@@ -23,7 +25,6 @@ const labels = {
 		existingName: 'Existing system name',
 		existingPower: 'Existing inverter power (kW)',
 		keep: 'Keep the existing inverter',
-		solar: 'Continue with solar',
 		energy: 'Continue with energy use',
 		grid: 'Grid connection',
 		backup: 'Backup load',
@@ -33,6 +34,10 @@ const labels = {
 		report: 'Generate project report',
 		preview: 'Preview report',
 		download: 'Download PDF',
+		materials: 'Download bill of materials (CSV)',
+		removeLogo: 'Remove logo',
+		updateReport: 'Update project report',
+		history: 'Calculation history',
 		logo: 'Your logo on the PDF (optional)',
 		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
@@ -51,7 +56,7 @@ const labels = {
 		knownModules: 'Moduldaten verwenden',
 		home: '/de/',
 		enterDetails: 'Projektdaten eingeben',
-		start: 'Neues Projekt',
+		start: 'Projektoptionen vergleichen',
 		title: 'Projektname',
 		town: 'Ort oder Standort',
 		use: 'Nutzung des Standorts',
@@ -59,7 +64,6 @@ const labels = {
 		existingName: 'Bezeichnung der vorhandenen Anlage',
 		existingPower: 'Leistung des vorhandenen Wechselrichters (kW)',
 		keep: 'Vorhandenen Wechselrichter beibehalten',
-		solar: 'Weiter zur PV-Anlage',
 		energy: 'Weiter zum Energiebedarf',
 		grid: 'Netzanschluss',
 		backup: 'Ersatzstromlast',
@@ -69,6 +73,10 @@ const labels = {
 		report: 'Projektbericht erstellen',
 		preview: 'Berichtsvorschau',
 		download: 'PDF herunterladen',
+		materials: 'Stückliste herunterladen (CSV)',
+		removeLogo: 'Logo entfernen',
+		updateReport: 'Projektbericht aktualisieren',
+		history: 'Bisherige Berechnungen',
 		logo: 'Ihr Logo im PDF (optional)',
 		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
@@ -244,10 +252,14 @@ for (const lang of ['en', 'de'] as const) {
 			await start.getByLabel(words.keep).check();
 			await screen(page, 'project-intake');
 
-			await start.getByRole('button', { name: words.solar }).click();
-			const navigation = workspace.getByRole('navigation', {
-				name: words.navigation,
-			});
+			await start
+				.getByRole('button', { name: words.compare, exact: true })
+				.click();
+			await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+			const navigation = await resumePlannerProject(page, lang, title);
+			await navigation
+				.getByRole('button', { name: words.solarChapter })
+				.click();
 			const next = workspace.getByRole('button', {
 				name: words.energy,
 				exact: true,
@@ -309,10 +321,21 @@ for (const lang of ['en', 'de'] as const) {
 				exact: true,
 			});
 			await expect(preview).toBeVisible({ timeout: 90_000 });
+			const logoPicker = workspace.locator(
+				'.sc-report-logo .sc-file-picker'
+			);
+			await expect(logoPicker.locator('.sc-file-button')).toHaveText(
+				lang === 'de' ? 'Logo auswählen' : 'Choose logo'
+			);
+			await expect(logoPicker.locator('.sc-file-name')).toHaveText(
+				'test-logo.png'
+			);
 			await page.evaluate(() =>
 				window.scrollTo({ top: 0, behavior: 'instant' })
 			);
 			await screen(page, 'report-and-inquiry');
+			await preview.scrollIntoViewIfNeeded();
+			await screen(page, 'report-files');
 			await preview.click();
 			const dialog = workspace.getByRole('dialog');
 			await expect(dialog).toBeVisible();
@@ -338,17 +361,81 @@ for (const lang of ['en', 'de'] as const) {
 			await workspace
 				.getByRole('button', { name: words.download, exact: true })
 				.click();
-			const path = await (await file).path();
-			expect(path).toBeTruthy();
-			const downloaded = readFileSync(path!);
+			const pdf = await file;
+			const basename = pdf.suggestedFilename().replace(/\.pdf$/, '');
+			const version = basename.match(
+				new RegExp(`^linker-planning-${project}-r([0-9]+)-${lang}$`)
+			);
+			expect(version).toBeTruthy();
+			const revision = version![1];
+			const pdfPath = test.info().outputPath('report.pdf');
+			await pdf.saveAs(pdfPath);
+			const downloaded = readFileSync(pdfPath);
 			expect(downloaded.subarray(0, 5).toString()).toBe('%PDF-');
 			expect(downloaded.equals(Buffer.from(originalBytes))).toBe(true);
+			const text = execFileSync('pdftotext', ['-layout', pdfPath, '-'], {
+				encoding: 'utf8',
+			});
+			expect(text).toContain(title);
+			expect(text).toContain(project);
+			expect(text).toMatch(
+				new RegExp(
+					`(?:Input revision|Eingabeversion)\\s+${revision}\\b`
+				)
+			);
+			const images = execFileSync('pdfimages', ['-list', pdfPath], {
+				encoding: 'utf8',
+			});
+			expect(images).toMatch(/^\s*1\s+\d+\s+image\s+12\s+8\s+rgb\b/m);
+
+			const materialFile = page.waitForEvent('download');
+			await workspace
+				.getByRole('button', { name: words.materials, exact: true })
+				.click();
+			const csv = await materialFile;
+			expect(csv.suggestedFilename()).toBe(basename + '.csv');
+			const csvPath = test.info().outputPath('materials.csv');
+			await csv.saveAs(csvPath);
+			const rows = readFileSync(csvPath, 'utf8')
+				.trim()
+				.split(/\r?\n/)
+				.slice(1);
+			expect(rows.length).toBeGreaterThan(0);
+			for (const row of rows)
+				expect(row.startsWith(`${project},${revision},`)).toBe(true);
 			expect(new URL(page.url()).searchParams.get('project')).toBe(
 				project
 			);
 			expect(
 				await page.evaluate(() => document.documentElement.scrollWidth)
 			).toBe(width);
+			await workspace
+				.getByRole('button', { name: words.removeLogo, exact: true })
+				.click();
+			await workspace
+				.getByRole('button', { name: words.updateReport, exact: true })
+				.click();
+			const history = workspace.getByRole('region', {
+				name: words.history,
+				exact: true,
+			});
+			const earlier = history.getByRole('button', {
+				name: new RegExp(`^(?:Revision|Version) ${revision}\\b`),
+			});
+			await earlier.click({ timeout: 90_000 });
+			await expect(page).toHaveURL(/[?&]run=[a-f0-9]{32}/);
+			await page.reload();
+			const historicalFile = page.waitForEvent('download');
+			await history
+				.getByRole('button', { name: words.download, exact: true })
+				.click();
+			const historicalPdf = await historicalFile;
+			expect(historicalPdf.suggestedFilename()).toBe(
+				pdf.suggestedFilename()
+			);
+			expect(readFileSync((await historicalPdf.path())!)).toEqual(
+				downloaded
+			);
 			await navigation
 				.getByRole('button', { name: words.solarChapter })
 				.click();

@@ -13,6 +13,7 @@ import binascii
 import io
 import os
 import re
+from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
 
@@ -285,18 +286,24 @@ def render(
     # The frame of SimpleDocTemplate keeps 6 pt of padding on either side.
     padding = 6
     width = document.width - 2 * padding
+    generated_at = report.generated_at
+    if "T" in generated_at:
+        instant = datetime.fromisoformat(generated_at).astimezone(UTC)
+        generated_at = instant.strftime(
+            "%d.%m.%Y %H:%M UTC" if report.locale == "de" else "%Y-%m-%d %H:%M UTC"
+        )
     heading: list[Flowable] = [
         Paragraph(_text(report.title), styles["title"]),
         Paragraph(_text(report.subtitle), styles["subtitle"]),
-        Paragraph(
-            _text(report.generated_at.replace("T", " ").replace("Z", " UTC")),
-            styles["small"],
-        ),
+        Paragraph(_text(generated_at), styles["small"]),
     ]
     # The Linker mark is on every report; an uploaded installer logo sits below it.
-    marks = [
-        mark for mark in (brand_image(), logo_image(logo) if logo else None) if mark
-    ]
+    brand = brand_image()
+    marks: list[Flowable] = [brand] if brand is not None else []
+    if logo:
+        if marks:
+            marks.append(Spacer(1, 3 * mm))
+        marks.append(logo_image(logo))
     if marks:
         top = Table(
             [[heading, marks]],

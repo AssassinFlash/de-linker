@@ -498,7 +498,7 @@ test("an earlier upload is explicitly reviewed before its actual fixture roof ca
 	assert.equal(fixture.attachments.length, 0);
 	assert.equal(
 		document
-			.querySelector(".lp-import-review svg")
+			.querySelector(".sc-import-review svg")
 			.getAttribute("aria-label")
 			.includes(asset.metadata.geometry_import_options.roof_name),
 		true,

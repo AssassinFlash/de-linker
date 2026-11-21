@@ -102,7 +102,7 @@ final class GenieContext {
 		} elseif ( 2 === count( $reference['planning_run_ids'] ) ) {
 			$query['compare'] = implode( ',', $reference['planning_run_ids'] );
 		}
-		$reply['workspace_url'] = add_query_arg( $query, $url ) . ( array() === $reference['planning_run_ids'] ? '#lp-overview' : '#lp-calculations' );
+		$reply['workspace_url'] = add_query_arg( $query, $url ) . ( array() === $reference['planning_run_ids'] ? '#sc-project' : '#sc-review' );
 		return $reply;
 	}
 }

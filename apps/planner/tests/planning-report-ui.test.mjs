@@ -47,7 +47,7 @@ for (const locale of ["en-GB", "de-DE"]) {
 		);
 		assert.ok(
 			notice.compareDocumentPosition(
-				document.querySelector(".lp-run-heading"),
+				document.querySelector(".sc-run-heading"),
 			) & window.Node.DOCUMENT_POSITION_FOLLOWING,
 		);
 		assert.equal(

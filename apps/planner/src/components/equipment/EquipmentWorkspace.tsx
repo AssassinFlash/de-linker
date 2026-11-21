@@ -92,24 +92,24 @@ export function EquipmentWorkspace(props: Props) {
 		}
 	}
 	return (
-		<div ref={target} className="lp-equipment-workspace">
-			<div className="lp-work-toolbar lp-equipment-heading">
+		<div ref={target} className="sc-equipment-workspace">
+			<div className="sc-work-toolbar sc-equipment-heading">
 				{props.standalone ? (
-					<div className="lp-section-heading">
-						<span className="lp-index">08</span>
-						<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
+					<div className="sc-section-heading">
+						<span className="sc-index">08</span>
+						<h2 id="sc-equipment-title">{__("Equipment", "linker-tools")}</h2>
 					</div>
 				) : (
-					<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
+					<h3 id="sc-equipment-title">{__("Equipment", "linker-tools")}</h3>
 				)}
 				<div
-					className="lp-plant-toolbar"
+					className="sc-plant-toolbar"
 					role="group"
 					aria-label={__("System arrangement", "linker-tools")}
 				>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						aria-pressed={!multi}
 						disabled={disabled || !valid || (multi && !canReturn)}
 						onClick={() => {
@@ -120,7 +120,7 @@ export function EquipmentWorkspace(props: Props) {
 					</button>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						aria-pressed={multi}
 						disabled={disabled || !valid}
 						onClick={() => {

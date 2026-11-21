@@ -336,7 +336,7 @@ export function useProjectDraft(
 			try {
 				await persist(snapshot);
 			} catch {
-				return false;
+				return !snapshot.pending && !isDirty(snapshot);
 			}
 			if (latest.current === snapshot) return true;
 		}

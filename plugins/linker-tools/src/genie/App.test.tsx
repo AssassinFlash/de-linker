@@ -170,7 +170,7 @@ afterEach( () => {
 test( 'fresh report URLs carry only the exact saved project and run', () => {
 	const project = 'a'.repeat( 32 );
 	const run = 'b'.repeat( 32 );
-	const href = `${ window.location.origin }/configurator/?project=${ project }&run=${ run }&nonce=private&question=private#lp-calculations`;
+	const href = `${ window.location.origin }/configurator/?project=${ project }&run=${ run }&nonce=private&question=private#sc-review`;
 	const page = {
 		type: 'other' as const,
 		url: href,
@@ -180,7 +180,7 @@ test( 'fresh report URLs carry only the exact saved project and run', () => {
 		planning_unsaved: false,
 	};
 	expect( reportRecoveryUrl( page, page, href ) ).toBe(
-		`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#lp-calculations`
+		`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#sc-review`
 	);
 	const doubled = href.replace( '/configurator/', '//outside.example/' );
 	const doubledPage = { ...page, url: doubled };
@@ -346,7 +346,7 @@ test( 'a refused saved-report question can be copied and opened in a fresh repor
 	window.history.replaceState(
 		{},
 		'',
-		`/configurator/?project=${ project }&run=${ run }&nonce=private#lp-calculations`
+		`/configurator/?project=${ project }&run=${ run }&nonce=private#sc-review`
 	);
 	const page = {
 		type: 'other' as const,
@@ -389,7 +389,7 @@ test( 'a refused saved-report question can be copied and opened in a fresh repor
 		} );
 		expect( link ).toHaveAttribute(
 			'href',
-			`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#lp-calculations`
+			`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#sc-review`
 		);
 		expect( link ).toHaveAttribute( 'target', '_blank' );
 		expect( link ).toHaveAttribute( 'rel', 'noopener noreferrer' );
@@ -445,7 +445,7 @@ test( 'a selection changed while verification waits cannot open the wrong report
 	window.history.replaceState(
 		{},
 		'',
-		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+		`/configurator/?project=${ project }&run=${ run }#sc-review`
 	);
 	const page = {
 		type: 'other' as const,
@@ -517,7 +517,7 @@ test( 'recovery keeps attachments in the original tab and copies only the questi
 	window.history.replaceState(
 		{},
 		'',
-		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+		`/configurator/?project=${ project }&run=${ run }#sc-review`
 	);
 	const page = {
 		type: 'other' as const,
@@ -598,7 +598,7 @@ test.each( [
 		window.history.replaceState(
 			{},
 			'',
-			`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+			`/configurator/?project=${ project }&run=${ run }#sc-review`
 		);
 		const page = {
 			type: 'other' as const,
@@ -651,7 +651,7 @@ test( 'German recovery uses the generated German script catalog', async () => {
 	window.history.replaceState(
 		{},
 		'',
-		`/de/konfigurator/?project=${ project }&run=${ run }#lp-calculations`
+		`/de/konfigurator/?project=${ project }&run=${ run }#sc-review`
 	);
 	const page = {
 		type: 'other' as const,
@@ -768,7 +768,7 @@ test( 'saved source card shows exact UTC ranges without private bindings or sizi
 				],
 			},
 		],
-		url: `https://de-linker.test/solution-configurator/?project=${ project }&run=${ run }#lp-calculations`,
+		url: `https://de-linker.test/solution-configurator/?project=${ project }&run=${ run }#sc-review`,
 	};
 	block.results[ 0 ].groups.splice( 1, 0, {
 		...block.results[ 0 ].groups[ 0 ],

@@ -178,7 +178,7 @@ export function GeometryForm({
 		<form
 			ref={formRef}
 			id={id}
-			className="lp-geometry-form"
+			className="sc-geometry-form"
 			onInvalid={(event) => {
 				const details = (event.target as HTMLElement).closest("details");
 				if (details) details.open = true;
@@ -203,7 +203,7 @@ export function GeometryForm({
 		>
 			<h3>{title}</h3>
 			{measurementHelp && (
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{decimalSeparator(locale) === ","
 						? __(
 								"Lengths are in metres. Decimal comma; no thousands separators.",
@@ -217,12 +217,16 @@ export function GeometryForm({
 			)}
 			{children}
 			{error && <Notice error>{error}</Notice>}
-			<div className="lp-inline-actions">
-				<button className="lp-button" type="submit" disabled={submitDisabled}>
+			<div className="sc-actions">
+				<button
+					className="sc-button sc-primary"
+					type="submit"
+					disabled={submitDisabled}
+				>
 					{__("Apply properties", "linker-tools")}
 				</button>
 				<button
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					type="button"
 					onClick={() => {
 						onValidity(true);
@@ -255,7 +259,7 @@ export function GeometryText({
 }) {
 	const id = useId();
 	return (
-		<label className="lp-field" htmlFor={id}>
+		<label className="sc-field" htmlFor={id}>
 			<span>{label}</span>
 			{multiline ? (
 				<textarea
@@ -300,7 +304,7 @@ export function GeometryNumber({
 }) {
 	const id = useId();
 	return (
-		<label className="lp-field" htmlFor={id}>
+		<label className="sc-field" htmlFor={id}>
 			<span>
 				{label}
 				<small>{unit}</small>
@@ -328,7 +332,7 @@ export function GeometryExportPermission({
 	disabled?: boolean;
 }) {
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{__("Permission to export geometry", "linker-tools")}</span>
 			<select
 				name="export"

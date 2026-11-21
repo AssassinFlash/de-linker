@@ -24,7 +24,7 @@ export function MapRingSelector({
 	if (!target && geometry.roofs.length === 0) return null;
 	if (!target)
 		return (
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Select a roof face, obstacle or keep-out area on the map or in the object list. For a roof face, choose its outer boundary or an existing opening.",
 					"linker-tools",
@@ -32,10 +32,10 @@ export function MapRingSelector({
 			</p>
 		);
 	return (
-		<div className="lp-map-ring-selector">
+		<div className="sc-map-ring-selector">
 			<p>{mapRingMetadata(geometry, target).name}</p>
-			<div className="lp-inline-actions">
-				<label className="lp-field">
+			<div className="sc-actions">
+				<label className="sc-field">
 					<span>{__("Boundary to edit", "linker-tools")}</span>
 					<select
 						value={String(options.indexOf(target))}
@@ -56,7 +56,7 @@ export function MapRingSelector({
 				</label>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={disabled}
 					onClick={() => begin(target)}
 				>

@@ -30,12 +30,12 @@ export function MapFeatureSelector({
 	if (!geometry.roofs.length) return null;
 	return (
 		<section
-			className="lp-map-ring-selector"
+			className="sc-map-ring-selector"
 			aria-label={__("Add a roof feature", "linker-tools")}
 		>
 			<h4>{__("Add a roof feature", "linker-tools")}</h4>
-			<div className="lp-inline-actions">
-				<label className="lp-field">
+			<div className="sc-actions">
+				<label className="sc-field">
 					<span>{__("Roof face", "linker-tools")}</span>
 					<select
 						value={roofId}
@@ -52,7 +52,7 @@ export function MapFeatureSelector({
 						))}
 					</select>
 				</label>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Feature type", "linker-tools")}</span>
 					<select
 						value={kind}
@@ -73,7 +73,7 @@ export function MapFeatureSelector({
 				</label>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={
 						disabled ||
 						!kind ||

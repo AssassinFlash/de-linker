@@ -10,7 +10,7 @@ import {
 
 function fixture(hash) {
 	const dom = new JSDOM(
-		`<!doctype html><html><body><div data-linker-planner><section id="lp-design"></section></div></body></html>`,
+		`<!doctype html><html><body><div data-linker-planner><section id="sc-solar"></section></div></body></html>`,
 		{ url: `https://fixture.invalid/workspace/${hash}` },
 	);
 	disarmHashReveal();
@@ -21,7 +21,7 @@ function fixture(hash) {
 		CSS: { escape: (value) => value },
 	});
 	const root = dom.window.document.querySelector("[data-linker-planner]");
-	const target = dom.window.document.getElementById("lp-design");
+	const target = dom.window.document.getElementById("sc-solar");
 	const calls = [];
 	dom.window.scrollTo = (to) => calls.push(to.top);
 	const computeStub = () => ({ scrollMarginTop: "260px" });
@@ -36,7 +36,7 @@ function fixture(hash) {
 }
 
 test("revealHashTarget re-scrolls the armed hash below the measured sticky chrome", () => {
-	const { root, calls } = fixture("#lp-design");
+	const { root, calls } = fixture("#sc-solar");
 	armHashReveal();
 	revealHashTarget(root);
 	// 500 + 100 - 260: the landing the browser made with 0px fallbacks lacked
@@ -45,7 +45,7 @@ test("revealHashTarget re-scrolls the armed hash below the measured sticky chrom
 });
 
 test("revealHashTarget stays armed while measurements keep shifting the layout", () => {
-	const { root, calls } = fixture("#lp-design");
+	const { root, calls } = fixture("#sc-solar");
 	armHashReveal();
 	revealHashTarget(root);
 	revealHashTarget(root);
@@ -53,7 +53,7 @@ test("revealHashTarget stays armed while measurements keep shifting the layout",
 });
 
 test("an already-correct landing or a disarmed reveal never scrolls", () => {
-	const { dom, root, target, calls } = fixture("#lp-design");
+	const { dom, root, target, calls } = fixture("#sc-solar");
 	armHashReveal();
 	// A correct landing leaves the target exactly one scroll-margin below the top.
 	target.getBoundingClientRect = () => ({ top: 260 });
@@ -73,9 +73,9 @@ test("an already-correct landing or a disarmed reveal never scrolls", () => {
 });
 
 test("arming keeps the hash of the first landing and ignores later hash changes", () => {
-	const { dom, root, calls } = fixture("#lp-design");
+	const { dom, root, calls } = fixture("#sc-solar");
 	armHashReveal();
-	dom.window.location.hash = "#lp-equipment";
+	dom.window.location.hash = "#sc-system";
 	armHashReveal();
 	revealHashTarget(root);
 	assert.deepEqual(calls, [340]);
@@ -95,18 +95,18 @@ test("measurePlannerChrome publishes both bar heights as CSS variables", () => {
 	Object.defineProperty(header, "offsetHeight", { value: 81 });
 	dom.window.document.body.append(header);
 	const bar = dom.window.document.createElement("div");
-	bar.className = "lp-project-bar";
+	bar.className = "sc-project-navigation";
 	Object.defineProperty(bar, "offsetHeight", { value: 163 });
 	root.append(bar);
 	measurePlannerChrome(root);
-	assert.equal(root.style.getPropertyValue("--lp-site-header-height"), "81px");
-	assert.equal(root.style.getPropertyValue("--lp-project-bar-height"), "163px");
+	assert.equal(root.style.getPropertyValue("--sc-header-height"), "81px");
+	assert.equal(root.style.getPropertyValue("--sc-navigation-height"), "163px");
 });
 
 test("the vertical project sidebar never contributes to top scroll clearance", () => {
 	const { dom, root } = fixture("");
 	const navigation = dom.window.document.createElement("aside");
-	navigation.className = "lp-project-aside";
+	navigation.className = "sc-project-aside";
 	navigation.style.position = "sticky";
 	Object.defineProperty(navigation, "offsetHeight", { value: 640 });
 	root.append(navigation);

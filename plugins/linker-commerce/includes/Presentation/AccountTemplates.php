@@ -205,7 +205,7 @@ final class AccountTemplates {
 		} elseif ( 'configurator-url' === $key ) {
 			$value = $this->translated_page_url( 'solution-configurator' );
 			if ( isset( $this->row['project-id'] ) ) {
-				$value = add_query_arg( array( 'project' => $this->row['project-id'] ), $value ) . '#lp-overview';
+				$value = add_query_arg( array( 'project' => $this->row['project-id'] ), $value ) . '#sc-project';
 			} elseif ( isset( $this->row['id'] ) && (int) $this->row['id'] > 0 ) {
 				$value = add_query_arg( array( 'saved_solution' => (int) $this->row['id'] ), $value );
 			}

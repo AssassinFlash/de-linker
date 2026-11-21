@@ -20,7 +20,7 @@ export function PvModuleParameters({
 }) {
 	const expected = resolveModuleParameters(specification);
 	return (
-		<section className="lp-scenario-block lp-pv-parameters">
+		<section className="sc-scenario-block sc-pv-parameters">
 			<h4>
 				{specification
 					? panelLabel(specification, locale)

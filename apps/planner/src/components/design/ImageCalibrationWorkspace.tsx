@@ -26,7 +26,7 @@ import {
 import type { ImageCalibration } from "../../domain/imageCalibration.ts";
 import { GeometryValues } from "./GeometryForm.tsx";
 import { roofPlane } from "../../domain/geometryEditing.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { formatComputedDecimal, formatDecimal } from "../../domain/decimal.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -431,7 +431,9 @@ export function ImageCalibrationWorkspace({
 							"The second span differs by %s %%. The drawing stays a reference and cannot measure the roof until the points or the length are corrected.",
 							"linker-tools",
 						),
-						(calibration.check!.residual_ratio * 100).toFixed(1),
+						new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
+							calibration.check!.residual_ratio * 100,
+						),
 					),
 				);
 		}
@@ -558,9 +560,9 @@ export function ImageCalibrationWorkspace({
 	const markSurface = (
 		<>
 			{drawing && (
-				<div className="lp-plan-view">
+				<div className="sc-plan-view">
 					<svg
-						className="lp-plan-svg"
+						className="sc-plan-svg"
 						viewBox={`0 0 ${drawing.pixel_width} ${drawing.pixel_height}`}
 						role="group"
 						tabIndex={0}
@@ -617,7 +619,7 @@ export function ImageCalibrationWorkspace({
 				</div>
 			)}
 			<div
-				className="lp-view-switch"
+				className="sc-view-switch"
 				role="group"
 				aria-label={__("Calibration entry", "linker-tools")}
 			>
@@ -653,10 +655,10 @@ export function ImageCalibrationWorkspace({
 					)}
 				</button>
 			</div>
-			<div className="lp-inline-actions">
+			<div className="sc-actions">
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={() => {
 						if (mode === "scale") setScalePoints([]);
 						else if (mode === "check") setCheckPoints([]);
@@ -669,7 +671,7 @@ export function ImageCalibrationWorkspace({
 				</button>
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					onClick={() => {
 						setScalePoints([]);
 						setCheckPoints([]);
@@ -688,11 +690,11 @@ export function ImageCalibrationWorkspace({
 		__("Outline", "linker-tools"),
 	];
 	return (
-		<div className="lp-geometry-intake">
-			<div className="lp-inline-actions">
+		<div className="sc-geometry-intake">
+			<div className="sc-actions">
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					ref={trigger}
 					disabled={disabled || open || reading}
 					onClick={start}
@@ -707,8 +709,8 @@ export function ImageCalibrationWorkspace({
 				</span>
 			</div>
 			{open && (
-				<div className="lp-import-panel">
-					<div className="lp-section-heading">
+				<div className="sc-import-panel">
+					<div className="sc-section-heading">
 						<div>
 							<h3 ref={heading} tabIndex={-1}>
 								{stepNames[step]}
@@ -721,7 +723,7 @@ export function ImageCalibrationWorkspace({
 							</p>
 						</div>
 					</div>
-					<ol className="lp-import-steps">
+					<ol className="sc-import-steps">
 						{stepNames.map((name, index) => (
 							<li key={name} aria-current={index === step ? "step" : undefined}>
 								<span>{String(index + 1).padStart(2, "0")}</span>
@@ -738,10 +740,10 @@ export function ImageCalibrationWorkspace({
 					>
 						{step > 0 && markSurface}
 						<div data-calibration-step="0" hidden={step !== 0}>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Drawing or photo", "linker-tools")}</span>
-								<span className="lp-file-picker">
-									<span className="lp-file-button">
+								<span className="sc-file-picker">
+									<span className="sc-file-button">
 										{__("Choose a file", "linker-tools")}
 									</span>
 									<input
@@ -752,7 +754,7 @@ export function ImageCalibrationWorkspace({
 											void choose(event.currentTarget.files?.[0])
 										}
 									/>
-									<span className="lp-file-name">
+									<span className="sc-file-name">
 										{drawing
 											? drawing.name
 											: __("No file selected", "linker-tools")}
@@ -771,8 +773,8 @@ export function ImageCalibrationWorkspace({
 											)}
 								</small>
 							</label>
-							<div className="lp-geometry-fields">
-								<label className="lp-field">
+							<div className="sc-geometry-fields">
+								<label className="sc-field">
 									<span>{__("Drawing type", "linker-tools")}</span>
 									<select
 										name="view"
@@ -792,7 +794,7 @@ export function ImageCalibrationWorkspace({
 										</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Roof face", "linker-tools")}</span>
 									<select
 										name="target"
@@ -814,7 +816,7 @@ export function ImageCalibrationWorkspace({
 								</label>
 							</div>
 							{target === "new" && (
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Roof face name", "linker-tools")}</span>
 									<input
 										name="roof"
@@ -826,8 +828,8 @@ export function ImageCalibrationWorkspace({
 							)}
 						</div>
 						<div data-calibration-step="1" hidden={step !== 1}>
-							<div className="lp-geometry-fields">
-								<label className="lp-field">
+							<div className="sc-geometry-fields">
+								<label className="sc-field">
 									<span>
 										{__("Real length of the scale span", "linker-tools")}
 										<small>m</small>
@@ -839,7 +841,7 @@ export function ImageCalibrationWorkspace({
 										required
 									/>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__("Down-slope bearing as drawn", "linker-tools")}
 										<small>°</small>
@@ -858,7 +860,7 @@ export function ImageCalibrationWorkspace({
 										)}
 									</small>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__("Roof pitch", "linker-tools")}
 										<small>°</small>
@@ -878,7 +880,7 @@ export function ImageCalibrationWorkspace({
 									</small>
 								</label>
 							</div>
-							<label className="lp-geometry-check">
+							<label className="sc-geometry-check">
 								<input
 									name="withCheck"
 									type="checkbox"
@@ -894,8 +896,8 @@ export function ImageCalibrationWorkspace({
 								)}
 							</label>
 							{withCheck && (
-								<div className="lp-geometry-fields">
-									<label className="lp-field">
+								<div className="sc-geometry-fields">
+									<label className="sc-field">
 										<span>
 											{__("Real length of the check span", "linker-tools")}
 											<small>m</small>
@@ -907,7 +909,7 @@ export function ImageCalibrationWorkspace({
 											required
 										/>
 									</label>
-									<label className="lp-field">
+									<label className="sc-field">
 										<span>{__("Permitted difference", "linker-tools")}</span>
 										<input
 											name="tolerance"
@@ -926,13 +928,13 @@ export function ImageCalibrationWorkspace({
 								</div>
 							)}
 							{calibration && (
-								<dl className="lp-field-summary">
+								<dl className="sc-field-summary">
 									<div>
 										<dt>{__("Recorded scale", "linker-tools")}</dt>
 										<dd>
 											{sprintf(
 												__("%s m per pixel", "linker-tools"),
-												calibration.m_per_pixel.toPrecision(6),
+												formatComputedDecimal(calibration.m_per_pixel, locale),
 											)}
 										</dd>
 									</div>
@@ -950,9 +952,9 @@ export function ImageCalibrationWorkspace({
 											<dd>
 												{sprintf(
 													__("%s %%", "linker-tools"),
-													(calibration.check.residual_ratio * 100).toPrecision(
-														3,
-													),
+													new Intl.NumberFormat(locale, {
+														maximumSignificantDigits: 3,
+													}).format(calibration.check.residual_ratio * 100),
 												)}
 											</dd>
 										</div>
@@ -965,7 +967,7 @@ export function ImageCalibrationWorkspace({
 							data-calibration-step="2"
 							hidden={step !== 2}
 						>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									{__("Measurement or drawing reference", "linker-tools")}
 								</span>
@@ -977,7 +979,7 @@ export function ImageCalibrationWorkspace({
 									defaultValue={DEFAULT_NOTE}
 								/>
 							</label>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Source reference", "linker-tools")}</span>
 								<textarea
 									name="source"
@@ -987,11 +989,11 @@ export function ImageCalibrationWorkspace({
 									defaultValue={drawing?.name ?? ""}
 								/>
 							</label>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Permission or licence basis", "linker-tools")}</span>
 								<textarea name="rights" rows={3} maxLength={4096} required />
 							</label>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									{__("Declared spatial precision", "linker-tools")}
 									<small>m</small>
@@ -1008,7 +1010,7 @@ export function ImageCalibrationWorkspace({
 									)}
 								</small>
 							</label>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									{__("Permission to export geometry", "linker-tools")}
 								</span>
@@ -1024,7 +1026,7 @@ export function ImageCalibrationWorkspace({
 									</option>
 								</select>
 							</label>
-							<label className="lp-geometry-check">
+							<label className="sc-geometry-check">
 								<input name="retention" type="checkbox" required />
 								{__(
 									"I have permission to use this drawing, derive the roof outline from it and keep the calibration with the project.",
@@ -1032,7 +1034,7 @@ export function ImageCalibrationWorkspace({
 								)}
 							</label>
 							{calibration && (
-								<dl className="lp-field-summary lp-import-review">
+								<dl className="sc-field-summary sc-import-review">
 									<div>
 										<dt>{__("Roof face", "linker-tools")}</dt>
 										<dd>{targetRoof ? targetRoof.name : roofName}</dd>
@@ -1044,9 +1046,13 @@ export function ImageCalibrationWorkspace({
 									<div>
 										<dt>{__("Roof-plane area", "linker-tools")}</dt>
 										<dd>
-											{ringArea(
-												trace.map((point) => pixelToUv(point, calibration)),
-											).toFixed(2)}{" "}
+											{new Intl.NumberFormat(locale, {
+												maximumFractionDigits: 2,
+											}).format(
+												ringArea(
+													trace.map((point) => pixelToUv(point, calibration)),
+												),
+											)}{" "}
 											<small>m²</small>
 										</dd>
 									</div>
@@ -1060,29 +1066,33 @@ export function ImageCalibrationWorkspace({
 									</div>
 								</dl>
 							)}
-							<p className="lp-profile-help">
+							<p className="sc-field-help">
 								{__(
 									"Adding the drawing records its calibration with this roof face and replaces the outline with the marks above. Openings remain editable in roof properties.",
 									"linker-tools",
 								)}
 							</p>
 						</div>
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							{step > 0 && (
 								<button
 									type="button"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									onClick={() => setStep(step - 1)}
 								>
 									{__("Back", "linker-tools")}
 								</button>
 							)}
-							<button className="lp-button" type="submit" disabled={reading}>
+							<button
+								className="sc-button sc-primary"
+								type="submit"
+								disabled={reading}
+							>
 								{step < 2
 									? __("Continue", "linker-tools")
 									: __("Add roof to current design", "linker-tools")}
 							</button>
-							<button type="button" className="lp-text-button" onClick={close}>
+							<button type="button" className="sc-text-button" onClick={close}>
 								{__("Cancel", "linker-tools")}
 							</button>
 						</div>

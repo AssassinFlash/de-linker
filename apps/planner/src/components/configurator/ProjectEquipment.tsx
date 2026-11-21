@@ -1,3 +1,7 @@
+import { ProductPicker } from "../shared/ProductPicker.tsx";
+import { ProductCard } from "../shared/ProductCard.tsx";
+import { CatalogStatus } from "../shared/CatalogStatus.tsx";
+import { useProductCards } from "../../data/productCards.ts";
 import { useState } from "react";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../../contracts/existing-system.schema.json" with { type: "json" };
@@ -90,6 +94,9 @@ export function retainsUnverifiedInverter(inputs: JsonObject): boolean {
 }
 
 function EquipmentDeclarations({
+	client,
+	scope,
+	locale,
 	source,
 	products,
 	assemblies,
@@ -97,6 +104,9 @@ function EquipmentDeclarations({
 	solarOnly,
 	change,
 }: {
+	client: PlannerClient;
+	scope: string;
+	locale: string;
 	source: JsonObject;
 	products: readonly EquipmentProduct[];
 	assemblies: BatteryAssemblies;
@@ -149,40 +159,53 @@ function EquipmentDeclarations({
 		const selected =
 			use[part] === "retain" ? setup[field] : comparisonModels(setup)[field];
 		const current = options.some((product) => product.id === selected);
+		const chooseModel = (id: number | null) =>
+			change({
+				[field]: id,
+				...(id === null ? { equipment_use: partUse(part, "new") } : {}),
+				...(part === "battery"
+					? { modules_per_stack: null, parallel_stacks: null }
+					: {}),
+			});
 		return (
 			<>
-				<label className="sc-field">
-					<span>{label}</span>
-					<select
-						value={String(selected ?? "")}
+				<div className="sc-model-field">
+					<label className="sc-field">
+						<span>{label}</span>
+						<select
+							value={String(selected ?? "")}
+							disabled={disabled}
+							onChange={(event) =>
+								chooseModel(
+									options.find(
+										(p) => String(p.id) === event.currentTarget.value,
+									)?.id ?? null,
+								)
+							}
+						>
+							<option value="">{__("Not specified", "linker-tools")}</option>
+							{selected != null && !current && (
+								<option value={String(selected)}>
+									{__("Saved product unavailable", "linker-tools")}
+								</option>
+							)}
+							{options.map((product) => (
+								<option key={product.id} value={product.id}>
+									{`${product.brand} ${product.model}`.trim()}
+								</option>
+							))}
+						</select>
+					</label>
+					<ProductPicker
+						options={options}
+						client={client}
+						scope={scope}
+						locale={locale}
 						disabled={disabled}
-						onChange={(event) => {
-							const id =
-								options.find(
-									(product) => String(product.id) === event.currentTarget.value,
-								)?.id ?? null;
-							change({
-								[field]: id,
-								...(id === null ? { equipment_use: partUse(part, "new") } : {}),
-								...(part === "battery"
-									? { modules_per_stack: null, parallel_stacks: null }
-									: {}),
-							});
-						}}
-					>
-						<option value="">{__("Not specified", "linker-tools")}</option>
-						{selected != null && !current && (
-							<option value={String(selected)}>
-								{__("Saved product unavailable", "linker-tools")}
-							</option>
-						)}
-						{options.map((product) => (
-							<option key={product.id} value={product.id}>
-								{`${product.brand} ${product.model}`.trim()}
-							</option>
-						))}
-					</select>
-				</label>
+						selected={selected}
+						onSelect={chooseModel}
+					/>
+				</div>
 				<label className="sc-field">
 					<span>{useLabel}</span>
 					<select
@@ -279,6 +302,7 @@ export function ProjectEquipment({
 	disabled,
 	edit,
 	intake = false,
+	initiallyOpen = false,
 }: {
 	inputs: JsonObject;
 	client: PlannerClient;
@@ -286,6 +310,7 @@ export function ProjectEquipment({
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	intake?: boolean;
+	initiallyOpen?: boolean;
 }) {
 	const authorized = client.isCurrentScope(scope);
 	const catalog = useEquipmentProducts(client, scope, authorized);
@@ -321,6 +346,8 @@ export function ProjectEquipment({
 			...(setup.accessory_product_ids as number[]),
 		].filter((id): id is number => typeof id === "number");
 	});
+	const locale = document.documentElement.lang || "en";
+	const cards = useProductCards(client, scope, locale, productIds);
 	const primary = equipmentDraft(plant?.units[0]?.inputs ?? inputs);
 	const primaryUse = primary.equipment_use as EquipmentUse | null | undefined;
 	const retainedModel =
@@ -415,6 +442,9 @@ export function ProjectEquipment({
 		change: (patch: JsonObject) => void,
 	) => (
 		<EquipmentDeclarations
+			client={client}
+			scope={scope}
+			locale={locale}
 			source={source}
 			products={productData?.products ?? []}
 			assemblies={productData?.assemblies ?? {}}
@@ -490,29 +520,39 @@ export function ProjectEquipment({
 				</p>
 			)}
 			{productIds.length > 0 && (
-				<div>
+				<section className="sc-selected-products" data-selected-equipment>
 					<h3>{__("Selected products", "linker-tools")}</h3>
-					<ul>
+					<CatalogStatus
+						pending={cards.isPending}
+						failed={cards.isError}
+						retry={() => void cards.refetch()}
+					/>
+					<div className="linker-product-list">
 						{[...new Set(productIds)].map((id) => {
-							const product = productData?.products.find(
+							const card = cards.isSuccess ? cards.data.get(id) : undefined;
+							const known = productData?.products.find(
 								(item) => item.id === id,
 							);
+							if (!known && !card && !cards.isSuccess) return null;
+							const label =
+								card?.label ||
+								(known
+									? [known.brand, known.model].filter(Boolean).join(" ")
+									: __("Saved product unavailable", "linker-tools"));
 							return (
-								<li key={id}>
-									{product
-										? `${product.brand} ${product.model}`.trim()
-										: catalog.isPending
-											? __("Loading product data…", "linker-tools")
-											: __("Saved product unavailable", "linker-tools")}
-								</li>
+								<ProductCard key={id} {...card} label={label}>
+									{cards.isSuccess && !card && known
+										? __("Saved product unavailable", "linker-tools")
+										: null}
+								</ProductCard>
 							);
 						})}
-					</ul>
-				</div>
+					</div>
+				</section>
 			)}
 			<details
 				className="sc-project-equipment"
-				open={plant || intake ? true : undefined}
+				open={plant || intake || initiallyOpen ? true : undefined}
 			>
 				<summary>
 					{__("Equipment and system arrangement", "linker-tools")}

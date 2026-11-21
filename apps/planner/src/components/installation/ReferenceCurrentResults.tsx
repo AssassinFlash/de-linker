@@ -82,7 +82,7 @@ export function ReferenceCurrentResults({
 			),
 		};
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>
 				{t(
 					"Conductor current compared with the manufacturer's table",

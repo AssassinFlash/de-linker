@@ -36,7 +36,7 @@ test('a commercial quick start downloads its planning report PDF', async ({
 	// the index and leaves with the first saved project).
 	const start = page.getByRole('button', { name: 'Start a solution' });
 	if (await start.count()) await start.first().click();
-	const form = page.locator('.lp-quickstart-form');
+	const form = page.locator('.sc-quickstart-form');
 	await expect(form).toBeVisible({ timeout: 120_000 });
 
 	// The production walk's own commercial inputs: 100 kWp, a commercial annual

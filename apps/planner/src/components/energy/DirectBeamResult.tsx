@@ -86,8 +86,8 @@ export function DirectBeamResult({
 			</Notice>
 		);
 	return (
-		<section className="lp-run-result">
-			<div className="lp-run-heading">
+		<section className="sc-run-result">
+			<div className="sc-run-heading">
 				<h3 tabIndex={-1}>{taskLabel(DIRECT_BEAM_TASK)}</h3>
 				<span role="status">{runStateLabel(run.state, DIRECT_BEAM_TASK)}</span>
 			</div>
@@ -150,7 +150,7 @@ export function DirectBeamResult({
 			)}
 			{parsed && row && (
 				<>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>
 							{__("Selected source irradiance timestamp (UTC)", "linker-tools")}
 						</span>
@@ -168,7 +168,7 @@ export function DirectBeamResult({
 							))}
 						</select>
 					</label>
-					<dl className="lp-run-facts">
+					<dl className="sc-run-facts">
 						<dt>{__("Synthetic interval (UTC)", "linker-tools")}</dt>
 						<dd>
 							<time>{row.interval_start_utc}</time> →{" "}
@@ -187,7 +187,7 @@ export function DirectBeamResult({
 					</dl>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						aria-expanded={scene}
 						onClick={() => setScene(!scene)}
 					>
@@ -221,8 +221,8 @@ export function DirectBeamResult({
 							"linker-tools",
 						)}
 					</p>
-					<div className="lp-table-scroll">
-						<table className="lp-data-table">
+					<div className="sc-table-scroll">
+						<table className="sc-data-table">
 							<thead>
 								<tr>
 									<th>{__("Module", "linker-tools")}</th>
@@ -246,7 +246,7 @@ export function DirectBeamResult({
 										<td>
 											<button
 												type="button"
-												className="lp-text-button"
+												className="sc-text-button"
 												onClick={() => select(m.module_id)}
 											>
 												{moduleName(m.module_id)}
@@ -275,7 +275,7 @@ export function DirectBeamResult({
 						<summary>
 							{__("Sampling cost and blockers", "linker-tools")}
 						</summary>
-						<dl className="lp-run-facts">
+						<dl className="sc-run-facts">
 							<dt>{__("Coarse grid cells per module edge", "linker-tools")}</dt>
 							<dd>{parsed.sampling.coarse_cells_per_edge}</dd>
 							<dt>{__("Fine grid cells per module edge", "linker-tools")}</dt>

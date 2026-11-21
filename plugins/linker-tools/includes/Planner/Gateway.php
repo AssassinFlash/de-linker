@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'inquiry/form|projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
+	private const PATHS = 'inquiry/form|projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|inputs|compare|cancel|energy|calculate|find-equipment|check-equipment|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|standard|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/(?:current|cards)|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial|places/(?:lookup|outline)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -401,6 +401,17 @@ final class Gateway {
 		}
 		if ( 'inquiry/form' === $path ) {
 			return $this->inquiry_form( $principal, $command );
+		}
+		if ( 'products/cards' === $path ) {
+			$ids = $command['product_ids'] ?? null;
+			if ( 1 !== ( $command['schema_version'] ?? null ) || ! in_array( $command['lang'] ?? null, array( 'en', 'de' ), true ) || ! is_array( $ids ) || ! array_is_list( $ids ) || array_filter( $ids, static fn ( $id ) => ! is_int( $id ) || $id < 1 ) ) {
+				return Failure::make( 'input', 422 );
+			}
+			$cards = array();
+			foreach ( \Linker\Commerce\Planning\Module::product_cards( $ids, $command['lang'] ) as $id => $card ) {
+				$cards[] = array( 'id' => $id ) + $card;
+			}
+			return new WP_REST_Response( array( 'cards' => $cards ) );
 		}
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );

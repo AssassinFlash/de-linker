@@ -82,7 +82,7 @@ export function ArrayForm({
 	// zero offsets describe the preview, not a specified mounting system.
 	return (
 		<GeometryForm
-			id="lp-array-properties"
+			id="sc-array-properties"
 			title={
 				array
 					? __("Array properties", "linker-tools")
@@ -98,8 +98,8 @@ export function ArrayForm({
 				commit({ type: "put_array", before: array, value: readArray(values) })
 			}
 		>
-			<p className="lp-profile-help">{roof.name}</p>
-			<label className="lp-field">
+			<p className="sc-field-help">{roof.name}</p>
+			<label className="sc-field">
 				<span>{__("Module specification", "linker-tools")}</span>
 				<select
 					name="module"
@@ -115,7 +115,7 @@ export function ArrayForm({
 					))}
 				</select>
 			</label>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				<GeometryNumber
 					locale={locale}
 					name="rows"
@@ -131,7 +131,7 @@ export function ArrayForm({
 					unit=""
 				/>
 			</div>
-			<p className="lp-profile-help" role="status">
+			<p className="sc-field-help" role="status">
 				{position
 					? __(
 							"Preview the panels on your roof. Click another position to move them before applying.",
@@ -142,18 +142,14 @@ export function ArrayForm({
 							"linker-tools",
 						)}
 			</p>
-			<button
-				type="button"
-				className="lp-button lp-button-secondary"
-				onClick={choosePosition}
-			>
+			<button type="button" className="sc-button" onClick={choosePosition}>
 				{position
 					? __("Change position on roof", "linker-tools")
 					: __("Choose position on roof", "linker-tools")}
 			</button>
-			<details className="lp-array-settings">
+			<details className="sc-array-settings">
 				<summary>{__("Layout and mounting settings", "linker-tools")}</summary>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"The initial layout follows the roof with no extra spacing or mounting height. Adjust these values for your layout.",
 						"linker-tools",
@@ -170,7 +166,7 @@ export function ArrayForm({
 						)
 					}
 				/>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					<GeometryNumber
 						locale={locale}
 						name="rotation"

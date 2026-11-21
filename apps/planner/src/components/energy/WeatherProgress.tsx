@@ -82,7 +82,7 @@ export function WeatherProgress({
 	});
 	return (
 		<section
-			className="lp-comparison"
+			className="sc-disclosure"
 			aria-label={__("Weather request status", "linker-tools")}
 		>
 			<h4>{__("Weather request status", "linker-tools")}</h4>
@@ -119,7 +119,7 @@ export function WeatherProgress({
 
 			<button
 				type="button"
-				className="lp-text-button"
+				className="sc-text-button"
 				disabled={
 					status.isFetching ||
 					!active ||

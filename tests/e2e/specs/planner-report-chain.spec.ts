@@ -378,37 +378,37 @@ for (const lang of ['en', 'de'] as const) {
 	}) => {
 		test.setTimeout(900_000);
 		page.setDefaultTimeout(15_000);
-		const calculation = page.locator('#lp-calculations');
-		const result = calculation.locator('.lp-run-content');
+		const calculation = page.locator('#sc-review');
+		const result = calculation.locator('.sc-run-content');
 		const chapter = async (
 			hash:
-				| 'lp-site'
-				| 'lp-design'
-				| 'lp-load'
-				| 'lp-equipment'
-				| 'lp-calculations'
+				| 'sc-project'
+				| 'sc-solar'
+				| 'sc-energy'
+				| 'sc-system'
+				| 'sc-review'
 		) => {
 			const section = {
-				'lp-site': 'site',
-				'lp-design': 'design',
-				'lp-load': 'energy',
-				'lp-equipment': 'equipment',
-				'lp-calculations': 'calculations',
+				'sc-project': 'site',
+				'sc-solar': 'design',
+				'sc-energy': 'energy',
+				'sc-system': 'equipment',
+				'sc-review': 'calculations',
 			}[hash];
-			const mobile = page.locator('.lp-mobile-workspace');
+			const mobile = page.locator('.sc-mobile-workspace');
 			if (await mobile.isVisible()) await mobile.selectOption(section);
 			else
 				await page
-					.locator(`.lp-project-aside a[href="#${hash}"]`)
+					.locator(`.sc-project-aside a[href="#${hash}"]`)
 					.click();
-			await expect(page.locator('.lp-project')).toHaveAttribute(
+			await expect(page.locator('.sc-project')).toHaveAttribute(
 				'data-workspace',
 				section
 			);
 		};
 		const switchTab = async (name: string) => {
 			const tab = calculation
-				.locator('.lp-energy-switch')
+				.locator('.sc-energy-switch')
 				.getByRole('button', { name, exact: true });
 			await tab.click();
 			await expect(tab).toHaveAttribute('aria-pressed', 'true');
@@ -420,7 +420,7 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			await expect(save).toBeEnabled();
 			await save.click();
-			await expect(page.locator('.lp-save-state')).toContainText(
+			await expect(page.locator('.sc-save-state')).toContainText(
 				words.saved,
 				{ timeout: 90_000 }
 			);
@@ -429,7 +429,7 @@ for (const lang of ['en', 'de'] as const) {
 
 		await page.goto(instance().url + words.configurator);
 		await expect(
-			page.locator('.lp-index-heading button[aria-label]')
+			page.locator('.sc-index-heading button[aria-label]')
 		).toBeEnabled();
 		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
 			await page
@@ -444,8 +444,8 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
 		const chainProject = new URL(page.url()).searchParams.get('project')!;
 
-		await chapter('lp-site');
-		const site = page.locator('#lp-site');
+		await chapter('sc-project');
+		const site = page.locator('#sc-project');
 		await site
 			.getByRole('combobox', { name: words.country, exact: true })
 			.selectOption('DE');
@@ -458,18 +458,18 @@ for (const lang of ['en', 'de'] as const) {
 		await site.getByLabel(words.latitude).fill(num(lang, '48.1689'));
 		await site.getByLabel(words.longitude).fill(num(lang, '11.5844'));
 		await page
-			.locator('#lp-notes textarea')
+			.locator('#sc-project textarea')
 			.fill('8 kWp roof with battery, Munich, south-facing');
 
-		await chapter('lp-design');
+		await chapter('sc-solar');
 		await openDetails(
-			page.locator('#lp-design .lp-design-imports > summary')
+			page.locator('#sc-solar .sc-design-imports > summary')
 		);
 		await page
-			.locator('#lp-design button.lp-button')
+			.locator('#sc-solar button.sc-button')
 			.getByText(words.addRoofFace, { exact: true })
 			.click();
-		const faceForm = page.locator('#lp-design form');
+		const faceForm = page.locator('#sc-solar form');
 		await faceForm.locator('[name="name"]').fill('Main roof');
 		await faceForm.locator('[name="width"]').fill('10');
 		await faceForm.locator('[name="length"]').fill('6');
@@ -485,13 +485,13 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(faceForm).toBeHidden();
 
 		await page
-			.locator('#lp-design')
+			.locator('#sc-solar')
 			.getByRole('button', {
 				name: words.coordinateReferences,
 				exact: true,
 			})
 			.click();
-		const coordForm = page.locator('#lp-design form');
+		const coordForm = page.locator('#sc-solar form');
 		await coordForm
 			.locator('select[name="north"]')
 			.selectOption('true_north');
@@ -508,13 +508,13 @@ for (const lang of ['en', 'de'] as const) {
 		await coordForm.locator('button[type="submit"]').click();
 
 		await page
-			.locator('#lp-design')
+			.locator('#sc-solar')
 			.getByRole('button', {
 				name: words.addModuleSpecification,
 				exact: true,
 			})
 			.click();
-		const moduleForm = page.locator('#lp-design form');
+		const moduleForm = page.locator('#sc-solar form');
 		await moduleForm.locator('[name="panel_length_mm"]').fill('1800');
 		await moduleForm.locator('[name="panel_width_mm"]').fill('1100');
 		await moduleForm.locator('[name="panel_thickness_mm"]').fill('30');
@@ -541,18 +541,18 @@ for (const lang of ['en', 'de'] as const) {
 			.selectOption('monocrystalline');
 		await moduleForm.locator('button[type="submit"]').click();
 		await page
-			.locator('#lp-design')
+			.locator('#sc-solar')
 			.getByRole('button', { name: words.addModuleArray, exact: true })
 			.click();
-		const arrayForm = page.locator('#lp-design form');
-		await page.locator('#lp-design .lp-view-switch button').last().click();
+		const arrayForm = page.locator('#sc-solar form');
+		await page.locator('#sc-solar .sc-view-switch button').last().click();
 		const position = await openDetails(
-			page.locator('.lp-plan-position > summary')
+			page.locator('.sc-plan-position > summary')
 		);
 		await position.locator('input').nth(0).fill('1');
 		await position.locator('input').nth(1).fill('1');
 		await position.getByRole('button').click();
-		await openDetails(arrayForm.locator('.lp-array-settings > summary'));
+		await openDetails(arrayForm.locator('.sc-array-settings > summary'));
 		await arrayForm.locator('[name="name"]').fill('Main array');
 		await arrayForm.locator('[name="module"]').selectOption({ index: 0 });
 		await arrayForm.locator('[name="rows"]').fill('2');
@@ -566,7 +566,7 @@ for (const lang of ['en', 'de'] as const) {
 			'aria-invalid',
 			'true'
 		);
-		await expect(page.locator('#lp-design')).not.toContainText(
+		await expect(page.locator('#sc-solar')).not.toContainText(
 			`${words.includedModules}8`
 		);
 		await arrayForm.locator('[name="tilt"]').fill('0');
@@ -579,14 +579,14 @@ for (const lang of ['en', 'de'] as const) {
 		await arrayForm
 			.getByRole('button', { name: words.applyProperties, exact: true })
 			.click();
-		await expect(page.locator('#lp-design')).toContainText(
+		await expect(page.locator('#sc-solar')).toContainText(
 			`${words.includedModules}8`
 		);
 		await saveProject();
 
 		// Import three declared synthetic sources through the real mapping and review.
-		await chapter('lp-load');
-		const profiles = page.locator('#lp-profiles');
+		await chapter('sc-energy');
+		const profiles = page.locator('#sc-energy');
 		const importProfile = async (measurement: string, label: string) => {
 			const rows = ['timestamp,power'];
 			const start = Date.UTC(2026, 0, 1);
@@ -694,7 +694,7 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			await expect(
 				profiles
-					.locator('.lp-selected-profile')
+					.locator('.sc-selected-profile')
 					.filter({ hasText: label })
 			).toBeVisible();
 		};
@@ -703,7 +703,7 @@ for (const lang of ['en', 'de'] as const) {
 		await importProfile(words.externalAuxAc, 'E2E synthetic aux');
 
 		// Weather acquisition and source selection remain separate customer choices.
-		await chapter('lp-calculations');
+		await chapter('sc-review');
 		await switchTab(words.weatherSource);
 		await calculation
 			.getByRole('button', {
@@ -740,7 +740,7 @@ for (const lang of ['en', 'de'] as const) {
 			})
 			.click();
 		await expect(
-			result.locator('.lp-run-heading [role="status"]')
+			result.locator('.sc-run-heading [role="status"]')
 		).toHaveText(words.sourceReady, { timeout: 240_000 });
 		const useWeather = result.getByRole('button', {
 			name: words.useThisWeatherSource,
@@ -759,10 +759,10 @@ for (const lang of ['en', 'de'] as const) {
 			})
 			.click();
 		await calculation
-			.locator('.lp-scenario-steps')
+			.locator('.sc-scenario-steps')
 			.getByRole('button', { name: words.arrayModels })
 			.click();
-		const arrayModel = calculation.locator('.lp-pv-parameters').filter({
+		const arrayModel = calculation.locator('.sc-pv-parameters').filter({
 			has: page.getByRole('heading', {
 				name: 'Main array',
 				exact: true,
@@ -805,7 +805,7 @@ for (const lang of ['en', 'de'] as const) {
 				'Synthetic engineering reference for the E2E chain; no manufacturer performance claim.'
 			);
 		await calculation
-			.locator('.lp-scenario-steps')
+			.locator('.sc-scenario-steps')
 			.getByRole('button', { name: words.powerConversion })
 			.click();
 		await calculation
@@ -814,7 +814,7 @@ for (const lang of ['en', 'de'] as const) {
 				exact: true,
 			})
 			.click();
-		const converter = calculation.locator('.lp-pv-parameters').filter({
+		const converter = calculation.locator('.sc-pv-parameters').filter({
 			has: page.getByRole('heading', {
 				name: words.conversionGroup,
 				exact: true,
@@ -841,7 +841,7 @@ for (const lang of ['en', 'de'] as const) {
 			})
 			.click();
 		await expect(
-			result.locator('.lp-run-heading [role="status"]')
+			result.locator('.sc-run-heading [role="status"]')
 		).toHaveText(words.sourceReady, { timeout: 240_000 });
 
 		// Use the generated source in the energy calculation as well as its report.
@@ -857,8 +857,8 @@ for (const lang of ['en', 'de'] as const) {
 
 		// Keep the fixture's first real converter and its intentionally insufficient
 		// storage selection. The result must name that selection and its failed checks.
-		await chapter('lp-equipment');
-		const equipment = calculation.locator('#lp-equipment');
+		await chapter('sc-system');
+		const equipment = calculation.locator('#sc-system');
 		await equipment
 			.getByRole('button', { name: words.singleSystem, exact: true })
 			.click();
@@ -899,7 +899,7 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(result).toContainText(words.searchFinished, {
 			timeout: 180_000,
 		});
-		await chapter('lp-equipment');
+		await chapter('sc-system');
 		await openDetails(
 			equipment.getByText(words.knownPowerCapacity, { exact: true })
 		);
@@ -993,7 +993,7 @@ for (const lang of ['en', 'de'] as const) {
 
 		// The compact form authors explicit independent-AC simulation assumptions.
 		await switchTab(words.scenarioSettings);
-		const scenario = calculation.locator('fieldset.lp-brief-fields');
+		const scenario = calculation.locator('fieldset.sc-brief-fields');
 		await expect(scenario).toBeVisible();
 		await scenario
 			.getByRole('combobox', { name: words.operatingGoal, exact: true })
@@ -1035,7 +1035,7 @@ for (const lang of ['en', 'de'] as const) {
 				exact: true,
 			})
 			.click();
-		const period = scenario.locator('fieldset.lp-scenario-period');
+		const period = scenario.locator('fieldset.sc-scenario-period');
 		await expect(
 			period.getByLabel(words.startWithUtc, { exact: true })
 		).toHaveValue(/^2026-01-01T00:00:00(?:\.0+)?(?:Z|\+00:00)$/);
@@ -1088,7 +1088,7 @@ for (const lang of ['en', 'de'] as const) {
 			})
 		).toHaveValue(simulationNote);
 		await page.unroute('**/rpc/runs/calculate');
-		const recovery = calculation.locator('.lp-energy-recovery-row').filter({
+		const recovery = calculation.locator('.sc-energy-recovery-row').filter({
 			hasNot: page.getByRole('button', {
 				name: words.dismissConfirmed,
 				exact: true,
@@ -1109,7 +1109,7 @@ for (const lang of ['en', 'de'] as const) {
 		).toBeVisible({ timeout: 300_000 });
 
 		// The report's wiring check must belong to the current saved inputs.
-		await chapter('lp-equipment');
+		await chapter('sc-system');
 		await manual
 			.getByRole('button', { name: words.checkEquipment, exact: true })
 			.click();
@@ -1118,9 +1118,9 @@ for (const lang of ['en', 'de'] as const) {
 		});
 		await expect(result).toContainText(words.requirementsNotMet);
 		await expect(result).toContainText(selectedInverter);
-		await chapter('lp-calculations');
+		await chapter('sc-review');
 		await expect(page).toHaveURL(/energy_view=reports/);
-		const report = calculation.locator('section.lp-scenario-block').filter({
+		const report = calculation.locator('section.sc-scenario-block').filter({
 			has: page.getByRole('heading', {
 				name: words.planningReport,
 				exact: true,
@@ -1286,11 +1286,11 @@ for (const lang of ['en', 'de'] as const) {
 		await page.goto(
 			instance().url + `${words.configurator}?project=${chainProject}`
 		);
-		await expect(page.locator('.lp-project')).toBeVisible();
-		await chapter('lp-equipment');
+		await expect(page.locator('.sc-project')).toBeVisible();
+		await chapter('sc-system');
 		await expect(equipment.getByLabel(words.pvArrayKwp)).toHaveValue('8');
 		await expect(inverterSelect).toHaveValue(selectedInverterId);
-		await chapter('lp-calculations');
+		await chapter('sc-review');
 		await expect(page).toHaveURL(/energy_view=reports/);
 		await expect(
 			report.getByRole('button', {

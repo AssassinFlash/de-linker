@@ -14,7 +14,7 @@ export function GeometryImportSettings({
 		number = (value: number) => formatDecimal(value, locale),
 		vector = (value: readonly number[]) => value.map(number).join(" · ");
 	return (
-		<details className="lp-comparison">
+		<details className="sc-disclosure">
 			<summary>{__("Original import settings", "linker-tools")}</summary>
 			<p>
 				{__(
@@ -22,7 +22,7 @@ export function GeometryImportSettings({
 					"linker-tools",
 				)}
 			</p>
-			<dl className="lp-field-summary">
+			<dl className="sc-field-summary">
 				<div>
 					<dt>{__("Roof face name", "linker-tools")}</dt>
 					<dd>{options.roof_name}</dd>

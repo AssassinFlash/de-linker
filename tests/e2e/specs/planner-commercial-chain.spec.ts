@@ -54,23 +54,20 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 
 	// The site's use is what offers the commercial sizing panel; it lives in
 	// the brief's own section, not the project-location section beside it.
-	await page
-		.locator('#lp-brief-use select')
-		.first()
-		.selectOption('commercial');
+	await page.locator('#sc-project select').first().selectOption('commercial');
 	// The annual consumption is the brief's declared load.
-	const annual = page.locator('#lp-brief-use input[inputmode="decimal"]');
+	const annual = page.locator('#sc-project input[inputmode="decimal"]');
 	if (await annual.count()) await annual.first().fill('380000');
 	// The postcode travels in the location label, which is where the panel
-	// reads it from. In `#lp-site` the first input is the address; the two
+	// reads it from. In `#sc-project` the first input is the address; the two
 	// decimal fields beside it are the coordinates. Empty coordinates are a
 	// declared "not provided" basis, so they stay empty here: the project is
 	// saveable with an address alone.
-	await page.locator('#lp-site input').nth(0).fill('80331 München');
+	await page.locator('#sc-project input').nth(0).fill('80331 München');
 	// The brief edits stay in the open draft until the project is saved, and
 	// the commercial panel's gate reads the saved brief.
 	await page.getByRole('button', { name: /^Save project$/i }).click();
-	await expect(page.locator('.lp-save-state')).toContainText(/^Saved/i, {
+	await expect(page.locator('.sc-save-state')).toContainText(/^Saved/i, {
 		timeout: 120_000,
 	});
 	// The commercial panel lives in the equipment workspace. The workspace is
@@ -79,10 +76,10 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 	// this works at both widths, where the narrow layout's navigation is
 	// collapsed.
 	const url = new URL(page.url());
-	url.hash = 'lp-equipment';
+	url.hash = 'sc-system';
 	await page.goto(url.toString());
 	await page.reload({ waitUntil: 'networkidle' });
-	await expect(page.locator('#lp-commercial-title')).toBeVisible({
+	await expect(page.locator('#sc-commercial-title')).toBeVisible({
 		timeout: 120_000,
 	});
 	return id;
@@ -95,7 +92,7 @@ test('a commercial project with a load profile and a target peak is sized from b
 	const profile = loadProfile(30);
 	await commercialProject(page, 'K-line commercial sized');
 
-	const panel = page.locator('#lp-commercial-title');
+	const panel = page.locator('#sc-commercial-title');
 	await expect(panel).toBeVisible({ timeout: 120_000 });
 	const section = panel.locator('xpath=ancestor::section[1]');
 	await expect(
@@ -139,7 +136,7 @@ test('the panel stays usable at the phone width the site is judged on', async ({
 	const profile = loadProfile(7);
 	await commercialProject(page, 'K-line commercial 390');
 
-	const panel = page.locator('#lp-commercial-title');
+	const panel = page.locator('#sc-commercial-title');
 	await expect(panel).toBeVisible({ timeout: 120_000 });
 	const section = panel.locator('xpath=ancestor::section[1]');
 	await expect(

@@ -202,11 +202,7 @@
   --proto-ink-deep: #15352f;         /* journal ink · deep photo green */
   --proto-ink-muted-deep: #596e67;   /* journal muted text */
   --proto-paper-journal: #f6f8fa;    /* journal page background */
-  --sc-paper: #f5f8f6;
-  --sc-muted: #52655f;
-  --sc-line: #dce5e1;
-  --sc-input-line: #bacbc3;
-  --sc-soft: #e8f3ee;
+
   --proto-paper-mist: #edf1f5;       /* marketing pale cool-grey background */
   --proto-paper-mist-deep: #e1e7ee;  /* same family, one step deeper */
   --proto-line-journal: #d7dde4;     /* journal hairline */

@@ -23,7 +23,7 @@ export function ProfileError({
 	return (
 		<div
 			ref={notice}
-			className="lp-focus-target"
+			className="sc-focus-target"
 			tabIndex={focus ? -1 : undefined}
 		>
 			<Notice error>

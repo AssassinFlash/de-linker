@@ -262,7 +262,7 @@ export function CountryRuleResult({
 					"linker-tools",
 				)}
 			</p>
-			<dl className="lp-profile-facts">
+			<dl className="sc-profile-facts">
 				<div>
 					<dt>
 						{__("Date for this rule reading (YYYY-MM-DD)", "linker-tools")}

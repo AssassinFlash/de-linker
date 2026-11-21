@@ -17,10 +17,10 @@ export function DcParameterSources({
 			value,
 		);
 	return (
-		<details className="lp-comparison">
+		<details className="sc-disclosure">
 			<summary>{__("Product data used", "linker-tools")}</summary>
 			<CapacityReferenceBasis parameters={parameters} locale={locale} />
-			<dl className="lp-field-summary">
+			<dl className="sc-field-summary">
 				{Object.entries(facts)
 					.filter(
 						([, raw]) =>

@@ -91,7 +91,7 @@ export function CountryRuleForm({
 		onChange({ ...value, [field]: next });
 	}
 	return (
-		<section className="lp-section" aria-labelledby={id + "-title"}>
+		<section className="sc-section" aria-labelledby={id + "-title"}>
 			<h3 id={id + "-title"}>{__("National rule inputs", "linker-tools")}</h3>
 			<p>
 				{__(
@@ -99,7 +99,7 @@ export function CountryRuleForm({
 					"linker-tools",
 				)}
 			</p>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Rule scope and power basis", "linker-tools")}</span>
 				<select
 					value={value?.basis ?? ""}
@@ -213,7 +213,7 @@ export function CountryRuleForm({
 					</p>
 					<button
 						type="button"
-						className="lp-button"
+						className="sc-button sc-primary"
 						onClick={() => changeDate(CHECKED_SOURCE_DATES[value.basis])}
 					>
 						{sprintf(
@@ -222,7 +222,7 @@ export function CountryRuleForm({
 						)}
 					</button>
 					<div className="grid gap-5 md:grid-cols-2">
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{__("Date for this rule reading (YYYY-MM-DD)", "linker-tools")}
 							</span>
@@ -300,7 +300,7 @@ export function CountryRuleForm({
 									report={report}
 									onChange={(next) => number("net_active_power_kw", next)}
 								/>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"Is this a change to an existing installation?",
@@ -352,7 +352,7 @@ export function CountryRuleForm({
 										}
 									/>
 								)}
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"Which conformity evidence is available?",
@@ -431,7 +431,7 @@ export function CountryRuleForm({
 									report={report}
 									onChange={(next) => number("se_export_power_kw", next)}
 								/>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"Is this a change to an existing module?",
@@ -475,7 +475,7 @@ export function CountryRuleForm({
 							</>
 						)}
 						{value.basis === "fr_generation_pmax" && (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>
 									{__(
 										"Will all PV generation be consumed on site without any public-grid injection?",
@@ -514,7 +514,7 @@ export function CountryRuleForm({
 						)}
 						{value.basis === "de_pv_installed" && (
 							<>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"Is the smart meter or control equipment not yet installed, or is the first successful operator control test still pending?",
@@ -544,7 +544,7 @@ export function CountryRuleForm({
 										<option value="false">{__("No", "linker-tools")}</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"EEG remuneration for this installation",
@@ -575,7 +575,7 @@ export function CountryRuleForm({
 										</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>
 										{__(
 											"Does the complete plug-in solar exception apply?",

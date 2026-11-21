@@ -144,11 +144,11 @@ async function equipmentProject(page: Page, lang: Lang): Promise<void> {
 	// A German site is what makes the pair reachable: the country decides which
 	// grid rules apply, and the address is the only declared location a
 	// characterisation needs before saving.
-	const site = page.locator('#lp-site');
+	const site = page.locator('#sc-project');
 	await site.getByLabel(words.country).selectOption('DE');
 	await site.getByLabel(words.location).fill('80331 München');
 	await page.getByRole('button', { name: words.saveProject }).click();
-	await expect(page.locator('.lp-save-state')).toContainText(words.saved, {
+	await expect(page.locator('.sc-save-state')).toContainText(words.saved, {
 		timeout: 120_000,
 	});
 
@@ -156,10 +156,10 @@ async function equipmentProject(page: Page, lang: Lang): Promise<void> {
 	// fragment-only navigation does not remount it (the same reason
 	// `planner-commercial-chain` reloads here).
 	const url = new URL(page.url());
-	url.hash = 'lp-equipment';
+	url.hash = 'sc-system';
 	await page.goto(url.toString());
 	await page.reload({ waitUntil: 'networkidle' });
-	await expect(page.locator('#lp-equipment-title')).toBeVisible({
+	await expect(page.locator('#sc-equipment-title')).toBeVisible({
 		timeout: 120_000,
 	});
 }
@@ -182,12 +182,12 @@ async function checkedPair(
 	}
 ): Promise<Assessment> {
 	const words = WORDS[lang];
-	const calculation = page.locator('#lp-calculations');
+	const calculation = page.locator('#sc-review');
 
 	// One system, grid-connected, three-phase: the configuration the pairs
 	// below are released for.
 	await page
-		.locator('#lp-calculations button', { hasText: words.singleSystem })
+		.locator('#sc-review button', { hasText: words.singleSystem })
 		.first()
 		.click();
 	await calculation
@@ -200,11 +200,11 @@ async function checkedPair(
 	await calculation.getByLabel(words.usableEnergy).fill(pair.usableKwh);
 	await calculation.getByLabel(words.dischargePower).fill(pair.dischargeKw);
 	await page
-		.locator('#lp-calculations button', { hasText: words.reloadProducts })
+		.locator('#sc-review button', { hasText: words.reloadProducts })
 		.first()
 		.click();
 	await page
-		.locator('#lp-calculations summary', { hasText: words.manualPicker })
+		.locator('#sc-review summary', { hasText: words.manualPicker })
 		.first()
 		.click({ force: true, noWaitAfter: true });
 	// The picker lists what the published product record carries. Waiting for a
@@ -225,7 +225,7 @@ async function checkedPair(
 	// product leaves it open (the picker shows the field then).
 	if (pair.modulesPerStack) {
 		await calculation
-			.locator('label.lp-field', { hasText: words.modulesPerStack })
+			.locator('label.sc-field', { hasText: words.modulesPerStack })
 			.locator('input')
 			.first()
 			.fill(pair.modulesPerStack);
@@ -233,19 +233,19 @@ async function checkedPair(
 	// Any numeric field the customer has not touched would keep the selection
 	// unprepared; the engine's own defaults are not written for them.
 	for (const field of await page
-		.locator('#lp-calculations input:visible:not([type="checkbox"])')
+		.locator('#sc-review input:visible:not([type="checkbox"])')
 		.all()) {
 		const mode = await field.getAttribute('inputmode');
 		if (mode !== 'decimal' && mode !== 'numeric') continue;
 		if (!(await field.inputValue())) await field.fill('1');
 	}
 	await page.getByRole('button', { name: words.saveProject }).click();
-	await expect(page.locator('.lp-save-state')).toContainText(words.saved, {
+	await expect(page.locator('.sc-save-state')).toContainText(words.saved, {
 		timeout: 120_000,
 	});
 
 	const prepare = page
-		.locator('#lp-calculations button:visible', {
+		.locator('#sc-review button:visible', {
 			hasText: words.prepareSelection,
 		})
 		.first();
@@ -253,7 +253,7 @@ async function checkedPair(
 	await prepare.click();
 	await page.waitForTimeout(1500);
 	await page.getByRole('button', { name: words.saveProject }).click();
-	await expect(page.locator('.lp-save-state')).toContainText(words.saved, {
+	await expect(page.locator('.sc-save-state')).toContainText(words.saved, {
 		timeout: 120_000,
 	});
 
@@ -271,7 +271,7 @@ async function checkedPair(
 		await route.fulfill({ response, body: JSON.stringify(body) });
 	});
 	await page
-		.locator('#lp-calculations button:visible', {
+		.locator('#sc-review button:visible', {
 			hasText: words.checkSelection,
 		})
 		.first()
@@ -286,7 +286,7 @@ async function checkedPair(
 /** The details block whose summary names `text`, opened. */
 async function openedDetails(page: Page, text: string): Promise<Locator> {
 	const details = page
-		.locator('#lp-calculations details', { hasText: text })
+		.locator('#sc-review details', { hasText: text })
 		.last();
 	await expect(details).toBeVisible({ timeout: 60_000 });
 	await details.locator('summary').first().click({ force: true });
@@ -320,7 +320,7 @@ for (const lang of ['en', 'de'] as const) {
 		// The check line: the screen names the pairing and reports what the
 		// contract said, not a stricter or looser verdict of its own.
 		const pairingLine = page
-			.locator('#lp-calculations summary', { hasText: words.pairing })
+			.locator('#sc-review summary', { hasText: words.pairing })
 			.first();
 		await expect(pairingLine).toBeVisible({ timeout: 60_000 });
 		await expect(pairingLine).toContainText(words.met);
@@ -418,7 +418,7 @@ for (const lang of ['en', 'de'] as const) {
 		expect(pairing.verdict).toBe('not_released');
 
 		const pairingLine = page
-			.locator('#lp-calculations summary', { hasText: words.pairing })
+			.locator('#sc-review summary', { hasText: words.pairing })
 			.first();
 		await expect(pairingLine).toBeVisible({ timeout: 60_000 });
 		await expect(
@@ -466,7 +466,7 @@ for (const lang of ['en', 'de'] as const) {
 		expect(paged.length, 'this pair cites pages').toBeGreaterThan(0);
 
 		const pairingLine = page
-			.locator('#lp-calculations summary', { hasText: words.pairing })
+			.locator('#sc-review summary', { hasText: words.pairing })
 			.first();
 		await expect(pairingLine).toContainText(words.met);
 
@@ -522,7 +522,7 @@ for (const lang of ['en', 'de'] as const) {
 		);
 
 		const pairingLine = page
-			.locator('#lp-calculations summary', { hasText: words.pairing })
+			.locator('#sc-review summary', { hasText: words.pairing })
 			.first();
 		await expect(pairingLine).toBeVisible({ timeout: 60_000 });
 		await expect(

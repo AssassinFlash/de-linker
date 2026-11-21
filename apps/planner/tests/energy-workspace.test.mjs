@@ -171,7 +171,7 @@ for (const kind of ["single", "plant", "pv_only"]) {
 			),
 		);
 		await act(async () => document.querySelector("summary").click());
-		await until(() => document.querySelector(".lp-run-source-list"));
+		await until(() => document.querySelector(".sc-run-source-list"));
 		assert.equal(requests[0].path, "runs/inputs");
 		assert.deepEqual(requests[0].command, {
 			schema_version: 1,
@@ -637,9 +637,9 @@ for (const joint of [false, true]) {
 			!scenarioField("Start with UTC or offset"),
 			"Operating periods belong to the Operation chapter",
 		);
-		assert.equal(document.querySelectorAll(".lp-scenario-steps").length, 1);
+		assert.equal(document.querySelectorAll(".sc-scenario-steps").length, 1);
 		assert.equal(
-			document.querySelector(".lp-scenario-steps").closest("details"),
+			document.querySelector(".sc-scenario-steps").closest("details"),
 			null,
 		);
 		await click("03Operation");
@@ -831,7 +831,7 @@ for (const joint of [false, true]) {
 				/energy_scenario\.schedule|energy_plant_setup\.schedule/,
 			);
 			assert.equal(rig.draft.baseline.revision, 1);
-			assert.equal(document.querySelector(".lp-run-result"), null);
+			assert.equal(document.querySelector(".sc-run-result"), null);
 			await click("Planning report");
 			assert.equal(
 				button("Planning report").getAttribute("aria-pressed"),
@@ -856,7 +856,7 @@ test("a new PV-only plant with positive PV starts at the AC source and its first
 		undefined,
 		"no AC coupling was seeded into this project",
 	);
-	const sources = document.querySelector(".lp-scenario-sources");
+	const sources = document.querySelector(".sc-scenario-sources");
 	assert.match(sources.textContent, /Available PV output · AC/);
 	assert.doesNotMatch(sources.textContent, /Roof PV source/);
 	const field = (label) =>
@@ -912,7 +912,7 @@ for (const joint of [false, true])
 				select.value = "pv_only";
 				select.dispatchEvent(new window.Event("change", { bubbles: true }));
 			});
-			const sources = document.querySelector(".lp-scenario-sources");
+			const sources = document.querySelector(".sc-scenario-sources");
 			assert.match(sources.textContent, /Available PV output · AC/);
 			assert.doesNotMatch(sources.textContent, /Roof PV source/);
 			if (editDates) {

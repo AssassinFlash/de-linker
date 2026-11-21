@@ -79,6 +79,7 @@ export function ProjectDetails({
 	next,
 	creation,
 	existingEquipment,
+	equipmentFirst = false,
 	demand,
 	roofAction,
 	profile,
@@ -100,6 +101,7 @@ export function ProjectDetails({
 		comparisonDisabled?: boolean;
 	};
 	existingEquipment?: ReactNode;
+	equipmentFirst?: boolean;
 	demand?: ReactNode;
 	roofAction?: ReactNode;
 	profile?: ReactNode;
@@ -259,6 +261,7 @@ export function ProjectDetails({
 				</header>
 			)}
 			<fieldset className="sc-card" disabled={fieldsDisabled}>
+				{equipmentFirst && existingEquipment}
 				<div className="sc-fields">
 					{creation && (
 						<label className="sc-field">
@@ -456,7 +459,7 @@ export function ProjectDetails({
 						</div>
 					</div>
 				)}
-				{existingEquipment}
+				{!equipmentFirst && existingEquipment}
 			</fieldset>
 			{profile}
 			<footer className="sc-footer">

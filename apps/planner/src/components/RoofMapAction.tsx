@@ -100,7 +100,7 @@ export function RoofMapAction({
 				)}
 			</p>
 			{source && (
-				<label className="lp-checkbox">
+				<label className="sc-checkbox">
 					<input
 						type="checkbox"
 						name="roof_imagery_consent"

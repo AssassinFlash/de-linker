@@ -50,6 +50,7 @@ export function NumberField({
 	name,
 	error,
 	disabled = false,
+	required = false,
 }: {
 	label: string;
 	value: number | null;
@@ -64,6 +65,7 @@ export function NumberField({
 	name?: string;
 	error?: string | null;
 	disabled?: boolean;
+	required?: boolean;
 }) {
 	const id = useId();
 	const [text, setText] = useState(formatDecimal(value, locale));
@@ -106,7 +108,7 @@ export function NumberField({
 		}
 	}
 	return (
-		<label className="lp-field" htmlFor={id}>
+		<label className="sc-field" htmlFor={id}>
 			<span id={id + "-label"}>
 				{label} <small>{unit}</small>
 			</span>
@@ -114,15 +116,14 @@ export function NumberField({
 				id={id}
 				name={name}
 				disabled={disabled}
+				required={required}
 				type="text"
 				inputMode={integer ? "numeric" : "decimal"}
 				autoComplete="off"
 				value={text}
 				aria-invalid={!valid || Boolean(error)}
 				aria-labelledby={id + "-label"}
-				aria-describedby={
-					id + "-format" + (!valid || error ? " " + id + "-error" : "")
-				}
+				aria-describedby={!valid || error ? id + "-error" : undefined}
 				onChange={(event) => update(event.currentTarget.value)}
 				onKeyDown={(event) => {
 					if (event.key !== "Escape") return;
@@ -131,21 +132,31 @@ export function NumberField({
 					onValidity(true);
 				}}
 			/>
-			<small id={id + "-format"}>
-				{integer
-					? __("Whole numbers; no thousands separators.", "linker-tools")
-					: notation === "point-or-comma"
-						? __(
-								"Decimal point or comma; no thousands separators.",
-								"linker-tools",
-							)
-						: decimalSeparator(locale) === ","
-							? __("Decimal comma; no thousands separators.", "linker-tools")
-							: __("Decimal point; no thousands separators.", "linker-tools")}
-			</small>
 			{(!valid || error) && (
-				<small className="lp-field-error" id={id + "-error"}>
-					{!valid ? invalidNumberText(integer, min, max, locale) : error}
+				<small className="sc-field-error" id={id + "-error"}>
+					{!valid ? (
+						<>
+							{invalidNumberText(integer, min, max, locale)}{" "}
+							{integer
+								? __("Whole numbers; no thousands separators.", "linker-tools")
+								: notation === "point-or-comma"
+									? __(
+											"Decimal point or comma; no thousands separators.",
+											"linker-tools",
+										)
+									: decimalSeparator(locale) === ","
+										? __(
+												"Decimal comma; no thousands separators.",
+												"linker-tools",
+											)
+										: __(
+												"Decimal point; no thousands separators.",
+												"linker-tools",
+											)}
+						</>
+					) : (
+						error
+					)}
 				</small>
 			)}
 		</label>

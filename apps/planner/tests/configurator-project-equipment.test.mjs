@@ -54,7 +54,7 @@ async function choose(label, value, root) {
 		select.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 }
-async function mount(t, initial) {
+async function mount(t, initial, readCards) {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { ProjectEquipment } =
@@ -67,6 +67,8 @@ async function mount(t, initial) {
 	const client = {
 		isCurrentScope: (value) => value === scope,
 		async query(path, body, receivedScope) {
+			if (path === "products/cards")
+				return readCards ? readCards(body) : { cards: [] };
 			assert.equal(path, "products/current");
 			assert.equal(receivedScope, scope);
 			return catalog;
@@ -290,4 +292,99 @@ test("the declaration survives discovery and the model is only needed for compat
 	);
 	await act(async () => check("There is an existing system").click());
 	assert.equal(current().existing_system, undefined);
+});
+
+test("a selected Woo product can be inspected after a failed card read while a withdrawn model stays in the project", async (t) => {
+	let attempts = 0;
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	const initial = {
+		equipment_setup: {
+			...equipmentDraft({}),
+			inverter_product_id: 101,
+			battery_product_id: 201,
+		},
+	};
+	await mount(t, initial, (body) => {
+		assert.equal(body.lang, "en");
+		if (++attempts === 1) throw new Error("catalog unavailable");
+		return {
+			cards: [
+				{
+					id: 101,
+					label: "Existing 10K",
+					product_url: "https://fixture.invalid/product/existing",
+					image_url: "https://fixture.invalid/media/inverter.webp",
+					highlight: "Nominal output · 10 kW",
+				},
+			],
+		};
+	});
+	await until(() =>
+		document.querySelector("[data-selected-equipment] [role=alert]"),
+	);
+	const group = document.querySelector("[data-selected-equipment]");
+	await act(async () => button("Try again", group).click());
+	await until(() => group.querySelector("img"));
+	assert.match(group.textContent, /Nominal output · 10 kW/);
+	assert.equal(
+		group.querySelector("a").href,
+		"https://fixture.invalid/product/existing",
+	);
+	assert.match(group.textContent, /Existing Pack/);
+	assert.match(group.textContent, /Saved product unavailable/);
+	assert.equal(group.querySelectorAll("a").length, 1);
+});
+
+test("a visitor chooses a model from its photograph, verified fact and shop detail link", async (t) => {
+	const current = await mount(t, {}, (body) => ({
+		cards: body.product_ids.includes(101)
+			? [
+					{
+						id: 101,
+						label: "Existing 10K",
+						product_url: "https://fixture.invalid/product/inverter",
+						image_url: "https://fixture.invalid/inverter.webp",
+						highlight: "Nominal output · 10 kW",
+					},
+				]
+			: [],
+	}));
+	await until(() =>
+		field("Inverter or integrated storage system")?.querySelector(
+			'option[value="101"]',
+		),
+	);
+	await act(async () =>
+		document.querySelector(".sc-project-equipment > summary").click(),
+	);
+	const picker = document.querySelector(".sc-product-picker");
+	await act(async () => picker.querySelector("summary").click());
+	await until(() => picker.querySelector("img"));
+	assert.equal(
+		picker.querySelector("a").href,
+		"https://fixture.invalid/product/inverter",
+	);
+	assert.match(picker.textContent, /Nominal output · 10 kW/);
+	await act(async () => button("Choose this product", picker).click());
+	assert.equal(current().equipment_setup.inverter_product_id, 101);
+	assert.equal(picker.open, false);
+	await until(() => document.querySelector("[data-selected-equipment] img"));
+});
+
+test("a saved model is only labelled unavailable after Woo answers", async (t) => {
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
+	let complete;
+	const read = new Promise((resolve) => {
+		complete = resolve;
+	});
+	await mount(
+		t,
+		{ equipment_setup: { ...equipmentDraft({}), inverter_product_id: 999 } },
+		() => read,
+	);
+	const group = document.querySelector("[data-selected-equipment]");
+	assert.ok(group.querySelector('[role="status"]'));
+	assert.doesNotMatch(group.textContent, /unavailable/);
+	await act(async () => complete({ cards: [] }));
+	await until(() => group.textContent.includes("Saved product unavailable"));
 });

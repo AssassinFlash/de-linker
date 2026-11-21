@@ -58,7 +58,7 @@ export function SavedSolutionStart({
 				</p>
 				{source.isError && (
 					<button
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={() => {
 							if (
 								source.error instanceof ApiError &&
@@ -71,7 +71,7 @@ export function SavedSolutionStart({
 						{__("Try again", "linker-tools")}
 					</button>
 				)}
-				<button className="lp-text-button" onClick={dismiss}>
+				<button className="sc-text-button" onClick={dismiss}>
 					{__("Continue without these inputs", "linker-tools")}
 				</button>
 			</Notice>

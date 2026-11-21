@@ -123,7 +123,7 @@ async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
 	await page.locator('input[maxlength="256"]').first().fill(title);
 	await page.getByRole('button', { name: words.create }).click();
 	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-	await expect(page.locator('.lp-save-state')).toBeVisible({
+	await expect(page.locator('.sc-save-state')).toBeVisible({
 		timeout: 30_000,
 	});
 	const overviewLink = page.getByRole('link', { name: words.overview });
@@ -132,8 +132,8 @@ async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
 		await page
 			.getByRole('combobox', { name: words.sections })
 			.selectOption('overview');
-	await page.locator('.lp-overview-empty .lp-button').click();
-	await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
+	await page.locator('.sc-overview-empty .sc-button').click();
+	await expect(page).toHaveURL(/#sc-solar/, { timeout: 15_000 });
 }
 
 /**
@@ -143,7 +143,7 @@ async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
  * the longer German layout.
  */
 async function mark(page: Page, x: number, y: number) {
-	const surface = page.locator('.lp-plan-svg');
+	const surface = page.locator('.sc-plan-svg');
 	await surface.scrollIntoViewIfNeeded();
 	const box = await surface.boundingBox();
 	if (!box) throw new Error('calibration surface has no box');
@@ -177,7 +177,7 @@ test.describe('native image calibration', () => {
 				await page
 					.getByRole('button', { name: words.calibrate, exact: true })
 					.click();
-				const panel = page.locator('.lp-import-panel');
+				const panel = page.locator('.sc-import-panel');
 				await expect(panel).toBeVisible();
 				await expect(panel.getByRole('heading')).toHaveText(
 					words.stepImage
@@ -254,10 +254,10 @@ test.describe('native image calibration', () => {
 					.fill(num(lang, '0.05'));
 				await panel.locator('[name="retention"]').check();
 				// 600 x 600 px at 0.02 m/px is a 144 m2 roof-plane outline.
-				await expect(panel.locator('.lp-import-review')).toContainText(
+				await expect(panel.locator('.sc-import-review')).toContainText(
 					words.area
 				);
-				await expect(panel.locator('.lp-import-review')).toContainText(
+				await expect(panel.locator('.sc-import-review')).toContainText(
 					'144'
 				);
 				await panel
@@ -266,7 +266,7 @@ test.describe('native image calibration', () => {
 				await page
 					.getByRole('button', { name: words.saveProject })
 					.click();
-				await expect(page.locator('.lp-save-state')).toContainText(
+				await expect(page.locator('.sc-save-state')).toContainText(
 					words.savedState,
 					{ timeout: 120_000 }
 				);
@@ -274,14 +274,14 @@ test.describe('native image calibration', () => {
 				// Reopen from the server: the drawing-derived roof and the source
 				// declarations it was measured from survive the round trip.
 				await page.reload({ waitUntil: 'networkidle' });
-				await expect(page.locator('#lp-design')).toContainText(
+				await expect(page.locator('#sc-solar')).toContainText(
 					'Calibrated drawing roof',
 					{ timeout: 120_000 }
 				);
 				// The roof carries the calibrated source: select it, then open
 				// that source's properties and read the stored calibration back.
 				await page
-					.locator('.lp-object-tree')
+					.locator('.sc-object-tree')
 					.getByRole('button', {
 						name: 'Calibrated drawing roof',
 						exact: true,
@@ -293,7 +293,7 @@ test.describe('native image calibration', () => {
 						exact: true,
 					})
 					.click();
-				const properties = page.locator('.lp-geometry-form');
+				const properties = page.locator('.sc-geometry-form');
 				await expect(properties).toContainText(
 					'Synthetic calibration fixture; not a survey',
 					{ timeout: 15_000 }
@@ -306,10 +306,10 @@ test.describe('native image calibration', () => {
 				await page.goto(instance().url + words.configurator, {
 					waitUntil: 'networkidle',
 				});
-				const row = page.locator('.lp-project-entry', {
+				const row = page.locator('.sc-project-entry', {
 					hasText: title,
 				});
-				await row.locator('.lp-project-delete').click();
+				await row.locator('.sc-project-delete').click();
 				await page
 					.getByRole('button', {
 						name: words.deleteProject,

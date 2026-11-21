@@ -22,7 +22,12 @@ export interface RecoveryCandidate {
 	readonly updatedAt: number;
 }
 export type CreationDestination =
-	"design" | "roof" | "equipment" | "preliminary-review" | "guided-comparison";
+	| "design"
+	| "roof"
+	| "roof-plan"
+	| "equipment"
+	| "preliminary-review"
+	| "guided-comparison";
 
 export interface CreationIntent {
 	readonly key: string;
@@ -184,6 +189,7 @@ export class DraftStore {
 			destination !== null &&
 			destination !== "design" &&
 			destination !== "roof" &&
+			destination !== "roof-plan" &&
 			destination !== "equipment" &&
 			destination !== "preliminary-review" &&
 			destination !== "guided-comparison"
@@ -272,6 +278,7 @@ export class DraftStore {
 			destination !== null &&
 			destination !== "design" &&
 			destination !== "roof" &&
+			destination !== "roof-plan" &&
 			destination !== "equipment" &&
 			destination !== "preliminary-review" &&
 			destination !== "guided-comparison"
@@ -699,6 +706,7 @@ function scanCreations(
 				destination !== null &&
 				destination !== "design" &&
 				destination !== "roof" &&
+				destination !== "roof-plan" &&
 				destination !== "equipment" &&
 				destination !== "preliminary-review" &&
 				destination !== "guided-comparison"

@@ -215,7 +215,7 @@ async function prepareSavedRoof(
 	await controls.getByLabel(text.gap).fill('0');
 	await button(controls, text.place).click();
 	await expect(
-		workspace.locator('.sc-roof-board .lp-panel-shape')
+		workspace.locator('.sc-roof-board .sc-panel-shape')
 	).toHaveCount(4);
 	await button(workspace, text.useLayout).click();
 	await workspace.getByText(text.properties, { exact: true }).click();
@@ -632,7 +632,7 @@ for (const [lang, width] of matrix) {
 				}
 			}
 			await workspace
-				.locator('#lp-calculations [data-linker-genie-planning]')
+				.locator('#sc-review [data-linker-genie-planning]')
 				.click();
 			const panel = page.locator('.linker-genie-app__panel');
 			const input = panel.locator('.linker-genie-app__input');

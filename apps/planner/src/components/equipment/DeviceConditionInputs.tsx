@@ -114,7 +114,7 @@ export function DeviceConditionInputs({
 	const remove = (device: DeviceConditionInput) =>
 		change((current) => removeDeviceCondition(current, device));
 	return (
-		<details className="lp-comparison" open={enabled}>
+		<details className="sc-disclosure" open={enabled}>
 			<summary>{__("Device model and firmware", "linker-tools")}</summary>
 			<p>
 				{__(
@@ -122,7 +122,7 @@ export function DeviceConditionInputs({
 					"linker-tools",
 				)}
 			</p>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>
 					<input
 						type="checkbox"
@@ -155,7 +155,7 @@ export function DeviceConditionInputs({
 			</label>
 			{enabled && (
 				<>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"Save project records these entries. A new equipment check or report compares them with labelled fields in each linked certificate file. Version strings are kept exactly, including leading zeros. Removing this option removes the entries from this draft; Undo can restore them.",
 							"linker-tools",
@@ -181,13 +181,13 @@ export function DeviceConditionInputs({
 					)}
 					{stale.map((device) => (
 						<section
-							className="lp-result-section"
+							className="sc-result-section"
 							key={conditionDeviceKey(device)}
 						>
 							<h4>
 								{__("Entry needs a current device reference", "linker-tools")}
 							</h4>
-							<dl className="lp-run-records">
+							<dl className="sc-run-records">
 								<div>
 									<dt>{__("Device reference", "linker-tools")}</dt>
 									<dd>{referenceLabel(device.selection_ref)}</dd>
@@ -217,7 +217,7 @@ export function DeviceConditionInputs({
 							</dl>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={disabled}
 								onClick={() => remove(device)}
 							>
@@ -250,7 +250,7 @@ export function DeviceConditionInputs({
 							(!!existing && !bound);
 						return (
 							<fieldset
-								className="lp-scenario-fields lp-scenario-block"
+								className="sc-scenario-fields sc-scenario-block"
 								key={conditionDeviceKey(target)}
 								disabled={blocked}
 							>
@@ -260,7 +260,7 @@ export function DeviceConditionInputs({
 									{target.model ??
 										__("Current product data unavailable", "linker-tools")}
 								</p>
-								<div className="lp-geometry-fields">
+								<div className="sc-geometry-fields">
 									{(
 										[
 											["declared_model", __("Declared model", "linker-tools")],
@@ -271,7 +271,7 @@ export function DeviceConditionInputs({
 											["source_note", __("Source note", "linker-tools")],
 										] as const
 									).map(([field, label]) => (
-										<label className="lp-field" key={field}>
+										<label className="sc-field" key={field}>
 											<span>{label}</span>
 											{field === "source_note" ? (
 												<textarea
@@ -314,7 +314,7 @@ export function DeviceConditionInputs({
 										</label>
 									))}
 								</div>
-								<p className="lp-profile-help">
+								<p className="sc-field-help">
 									{__(
 										"The source note can name a device label, commissioning record or planned configuration. It is saved with this device entry.",
 										"linker-tools",
@@ -323,7 +323,7 @@ export function DeviceConditionInputs({
 								{bound && (
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={() => remove(bound)}
 									>
 										{__("Remove entry", "linker-tools")}

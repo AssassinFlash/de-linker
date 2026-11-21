@@ -79,7 +79,7 @@ export function ProfileImportSettings({
 	];
 	return (
 		<>
-			<dl className="lp-profile-facts">
+			<dl className="sc-profile-facts">
 				{facts.map(([label, value]) => (
 					<div key={label}>
 						<dt>{label}</dt>

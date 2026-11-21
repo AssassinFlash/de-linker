@@ -19,7 +19,7 @@ export function ElectricalChoice({
 	onChange?: () => void;
 }) {
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{label}</span>
 			<select
 				name={name}

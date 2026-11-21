@@ -421,7 +421,7 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const scope = "3".repeat(64);
 	const cache = new QueryClient();
@@ -509,7 +509,7 @@ test("a roof layout edit advances the saved project and reopens without a separa
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const cache = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
@@ -641,7 +641,7 @@ test("a storage project continues from its location directly to energy use", asy
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const scope = "3".repeat(64);
 	const session = {
@@ -759,7 +759,7 @@ async function compareKnownPv(guided) {
 	const { QueryClient, QueryClientProvider } =
 		await import("@tanstack/react-query");
 	const { default: Configurator } =
-		await import("../src/components/configurator/Configurator.tsx");
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyScenario } = await import("../src/domain/energyScenario.ts");
 	const { equipmentDraft } = await import("../src/domain/equipment.ts");
 	const scope = "3".repeat(64),
@@ -951,7 +951,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		{ QueryClient, QueryClientProvider } =
 			await import("@tanstack/react-query"),
 		{ default: Configurator } =
-			await import("../src/components/configurator/Configurator.tsx"),
+			await import("../src/components/configurator/ProjectWorkbench.tsx"),
 		{ emptyBrief } = await import("../src/domain/brief.ts"),
 		current = structuredClone(preparation.geometric_pv.report_run),
 		earlier = structuredClone(preparation.direct_beam.report_run);
@@ -973,7 +973,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		input_sha256: current.manifest.input_sha256,
 		inputs: { brief: emptyBrief() },
 	};
-	const deepLink = `?project=${project.id}&run=${earlier.id}#lp-calculations`;
+	const deepLink = `?project=${project.id}&run=${earlier.id}#sc-review`;
 	window.history.replaceState(null, "", deepLink);
 	globalThis.indexedDB = new IDBFactory();
 	const summary = ({
@@ -1172,7 +1172,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 			document.querySelector(`header a[hreflang="${lang}"]`);
 		await ask(history(), 2, [earlier.id]);
 		assert.equal(
-			document.getElementById("lp-calculations").contains(history()),
+			document.getElementById("sc-review").contains(history()),
 			true,
 		);
 		assert.equal(
@@ -1407,7 +1407,7 @@ for (const scenario of [
 		const { QueryClient, QueryClientProvider } =
 			await import("@tanstack/react-query");
 		const { default: Configurator } =
-			await import("../src/components/configurator/Configurator.tsx");
+			await import("../src/components/configurator/ProjectWorkbench.tsx");
 		const scope = "3".repeat(64);
 		const session = {
 			kind: "guest",

@@ -164,10 +164,10 @@ function SetupFixture() {
 		[valid, setValid] = useState(true);
 	return (
 		<>
-			<main className="lp-editor-main">
+			<main className="sc-editor-main">
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					disabled={!valid || !isDirty(draft)}
 					onClick={() =>
 						setDraft((current) => {
@@ -234,7 +234,7 @@ function Fixture() {
 	const [value, setValue] = useState(inputs);
 	return (
 		<>
-			<main className="lp-editor-main">
+			<main className="sc-editor-main">
 				<PreparationResult
 					run={run}
 					inputs={value}

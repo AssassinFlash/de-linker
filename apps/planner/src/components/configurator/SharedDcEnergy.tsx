@@ -34,6 +34,7 @@ import {
 } from "../../domain/plantEnergy.ts";
 import { sharedProfileRange } from "../../domain/profileCoverage.ts";
 import {
+	MEASUREMENTS,
 	matchesProfileRole,
 	readAsset,
 	readPreview,
@@ -304,6 +305,10 @@ export function SharedDcEnergy({
 			? ["critical_load" as const]
 			: []),
 	];
+	const displayedRoles = [
+		...roles,
+		...MEASUREMENTS.filter((role) => selected[role] && !roles.includes(role)),
+	];
 	async function useRange() {
 		if (rangeRequest.current || blocked) return;
 		const request = new AbortController();
@@ -405,7 +410,7 @@ export function SharedDcEnergy({
 		(!requiresRoof || selected.pv_reference) &&
 		(!roles.includes("critical_load") || selected.critical_load);
 	return (
-		<section className="sc-card">
+		<section className="sc-card sc-shared-energy">
 			<h2>{__("Shared DC energy flows", "linker-tools")}</h2>
 			{!supported && (
 				<Notice>
@@ -434,7 +439,7 @@ export function SharedDcEnergy({
 			) : (
 				<>
 					<div
-						className="sc-actions"
+						className="sc-energy-sections"
 						role="group"
 						aria-label={__("Shared DC energy flows", "linker-tools")}
 					>
@@ -463,8 +468,8 @@ export function SharedDcEnergy({
 					</div>
 					{Boolean(actionError) && <EnergyError error={actionError} />}
 					{section === "sources" && (
-						<div className="lp-work-main">
-							{roles.map((role) =>
+						<div className="sc-energy-work">
+							{displayedRoles.map((role) =>
 								selected[role] ? (
 									<details key={role}>
 										<summary>{measurementLabel(role)}</summary>
@@ -642,9 +647,9 @@ export function SharedDcEnergy({
 						/>
 					)}
 					{section === "results" ? (
-						<div className="lp-work-main">
+						<div className="sc-energy-work">
 							{dcRuns.length > 0 && (
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Saved calculation", "linker-tools")}</span>
 									<select
 										value={runId ?? ""}

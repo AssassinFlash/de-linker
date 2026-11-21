@@ -234,7 +234,7 @@ export function DirectBeamSetup({
 			</Notice>
 		);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{__("Geometric direct-beam visibility", "linker-tools")}</h3>
 			<p>
 				{__(
@@ -258,7 +258,7 @@ export function DirectBeamSetup({
 							"linker-tools",
 						)}
 					</p>
-					<button type="button" className="lp-text-button" onClick={openDesign}>
+					<button type="button" className="sc-text-button" onClick={openDesign}>
 						{__("Open roof design", "linker-tools")}
 					</button>
 				</Notice>
@@ -273,7 +273,7 @@ export function DirectBeamSetup({
 					</p>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={() => void sources.refetch()}
 					>
 						{__("Try again", "linker-tools")}
@@ -295,7 +295,7 @@ export function DirectBeamSetup({
 					</p>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={openWeather}
 					>
 						{__("Open weather preparation", "linker-tools")}
@@ -314,7 +314,7 @@ export function DirectBeamSetup({
 						</p>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={openWeather}
 						>
 							{__("Open weather preparation", "linker-tools")}
@@ -331,12 +331,12 @@ export function DirectBeamSetup({
 					</p>
 					<button
 						type="button"
-						className="lp-text-button"
+						className="sc-text-button"
 						onClick={openWeather}
 					>
 						{__("Open weather preparation", "linker-tools")}
 					</button>
-					<button type="button" className="lp-text-button" onClick={openDesign}>
+					<button type="button" className="sc-text-button" onClick={openDesign}>
 						{__("Open roof design", "linker-tools")}
 					</button>
 				</Notice>
@@ -358,7 +358,7 @@ export function DirectBeamSetup({
 				</Notice>
 			) : (
 				<fieldset disabled={disabled || !owned}>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Project weather source", "linker-tools")}</span>
 						<select
 							value={parsed.weather_asset_id ?? ""}
@@ -395,17 +395,17 @@ export function DirectBeamSetup({
 					{sources.hasNextPage && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={sources.isFetchingNextPage}
 							onClick={() => void sources.fetchNextPage()}
 						>
 							{__("More weather sources", "linker-tools")}
 						</button>
 					)}
-					<div className="lp-geometry-fields">
+					<div className="sc-geometry-fields">
 						{(["coarse_cells_per_edge", "fine_cells_per_edge"] as const).map(
 							(key) => (
-								<label className="lp-field" key={key}>
+								<label className="sc-field" key={key}>
 									<span>
 										{key === "coarse_cells_per_edge"
 											? __("Coarse grid cells per module edge", "linker-tools")
@@ -441,8 +441,8 @@ export function DirectBeamSetup({
 						)}
 					</p>
 					{selected && preview.data && (
-						<div className="lp-geometry-fields">
-							<label className="lp-field">
+						<div className="sc-geometry-fields">
+							<label className="sc-field">
 								<span>
 									{__("Go to synthetic interval (UTC)", "linker-tools")}
 								</span>
@@ -454,7 +454,7 @@ export function DirectBeamSetup({
 							</label>
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={!jump || preview.isFetching}
 								onClick={jumpToDate}
 							>
@@ -471,7 +471,7 @@ export function DirectBeamSetup({
 						</Notice>
 					)}
 					{selected && (
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{__("First source interval on this page", "linker-tools")}
 							</span>
@@ -506,7 +506,7 @@ export function DirectBeamSetup({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => void preview.refetch()}
 							>
 								{__("Try again", "linker-tools")}
@@ -517,7 +517,7 @@ export function DirectBeamSetup({
 						<>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={
 									jumpMismatch ||
 									!limits ||
@@ -540,8 +540,8 @@ export function DirectBeamSetup({
 									"linker-tools",
 								)}
 							</p>
-							<div className="lp-table-scroll">
-								<table className="lp-data-table">
+							<div className="sc-table-scroll">
+								<table className="sc-data-table">
 									<thead>
 										<tr>
 											<th>{__("Select", "linker-tools")}</th>
@@ -600,10 +600,10 @@ export function DirectBeamSetup({
 									</tbody>
 								</table>
 							</div>
-							<div className="lp-actions">
+							<div className="sc-actions">
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									disabled={offset === 0}
 									onClick={() => {
 										setRequestedUtc(null);
@@ -615,7 +615,7 @@ export function DirectBeamSetup({
 								</button>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									disabled={preview.data.next === null}
 									onClick={() => {
 										setRequestedUtc(null);
@@ -638,7 +638,7 @@ export function DirectBeamSetup({
 					{rows.length > 0 && (
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							onClick={() => change({ ...parsed, row_indices: [] })}
 						>
 							{__("Clear selected intervals", "linker-tools")}
@@ -649,7 +649,7 @@ export function DirectBeamSetup({
 			{inputs.direct_beam_visibility !== undefined && (
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={disabled || !owned}
 					onClick={remove}
 				>
@@ -691,7 +691,7 @@ export function DirectBeamSetup({
 			)}
 			<button
 				type="button"
-				className="lp-button"
+				className="sc-button sc-primary"
 				disabled={
 					actionsDisabled ||
 					disabled ||

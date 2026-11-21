@@ -67,7 +67,7 @@ export function CableReferenceFacts({
 		t = (en: string, de: string) => electricalText(locale, en, de),
 		n = (v: number) => formatDecimal(v, locale);
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h4>{cableReferenceLabel(reference, locale)}</h4>
 			<p>
 				{n(f.cross_section_mm2)} mm² · {f.core_count}{" "}

@@ -61,10 +61,10 @@ export function ScenarioForm({
 	);
 	const dc = value.coupling === "shared_dc";
 	return (
-		<fieldset className="lp-scenario-fields lp-work-main" disabled={disabled}>
-			<div className="lp-work-main" hidden={section !== "storage"}>
-				<section className="lp-work-panel">
-					<label className="lp-field">
+		<fieldset className="sc-scenario-fields sc-work-main" disabled={disabled}>
+			<div className="sc-work-main" hidden={section !== "storage"}>
+				<section className="sc-work-panel">
+					<label className="sc-field">
 						<span>{__("System connection", "linker-tools")}</span>
 						<select
 							value={value.coupling ?? "independent_ac"}
@@ -115,19 +115,19 @@ export function ScenarioForm({
 				)}
 			</div>
 			<section
-				className="lp-scenario-block lp-work-panel"
+				className="sc-scenario-block sc-work-panel"
 				hidden={section !== "storage" || dc}
 			>
-				<h3 className="lp-work-panel-heading">
+				<h3 className="sc-work-panel-heading">
 					{__("Storage parameters", "linker-tools")}
 				</h3>
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"These values define a storage scenario at one AC connection. This calculation does not assess product suitability.",
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{BATTERY_FIELDS.map((field) => {
 						const presentation = batteryPresentation(field),
 							number = value.battery[field];
@@ -160,7 +160,7 @@ export function ScenarioForm({
 						);
 					})}
 				</div>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>
 						{__("Source or assumption for storage parameters", "linker-tools")}
 					</span>
@@ -176,7 +176,7 @@ export function ScenarioForm({
 						}
 					/>
 				</label>
-				<details className="lp-comparison">
+				<details className="sc-disclosure">
 					<summary>{__("Storage model and units", "linker-tools")}</summary>
 					<p>
 						{__(
@@ -198,7 +198,7 @@ export function ScenarioForm({
 					</p>
 				</details>
 			</section>
-			<div className="lp-work-panel" hidden={section !== "initial"}>
+			<div className="sc-work-panel" hidden={section !== "initial"}>
 				<InitialInventoryForm
 					value={value.initial_inventory}
 					onChange={(initial_inventory) =>
@@ -209,11 +209,11 @@ export function ScenarioForm({
 				/>
 			</div>
 			<section
-				className="lp-scenario-block lp-work-main"
+				className="sc-scenario-block sc-work-main"
 				hidden={section !== "operation"}
 			>
 				{!dc && (
-					<section className="lp-work-panel">
+					<section className="sc-work-panel">
 						{value.schedule.length === 1 ? (
 							<SimpleEnergySetup
 								value={value}
@@ -224,7 +224,7 @@ export function ScenarioForm({
 								onChange={onChange}
 							/>
 						) : (
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Operating strategy", "linker-tools")}</span>
 								<select
 									value={value.controller ?? "self_consumption_with_reserve_v1"}
@@ -259,7 +259,7 @@ export function ScenarioForm({
 								"linker-tools",
 							)}
 						</p>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								<input
 									type="checkbox"
@@ -299,8 +299,8 @@ export function ScenarioForm({
 					useProfileRange={useProfileRange}
 					rangeBusy={rangeBusy}
 				/>
-				<section className="lp-work-panel">
-					<label className="lp-field">
+				<section className="sc-work-panel">
+					<label className="sc-field">
 						<span>
 							{__(
 								"Stored energy at the end of the calculation",
@@ -340,7 +340,7 @@ export function ScenarioForm({
 						/>
 					)}
 				</section>
-				<details className="lp-comparison lp-work-panel">
+				<details className="sc-disclosure sc-work-panel">
 					<summary>{__("How storage is operated", "linker-tools")}</summary>
 					<p>
 						{dc

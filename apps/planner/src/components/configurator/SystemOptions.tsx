@@ -17,6 +17,10 @@ import {
 	equipmentReason,
 	equipmentStatus,
 } from "../equipment/equipmentLabels.ts";
+import { ProductCard } from "../shared/ProductCard.tsx";
+import { CatalogStatus } from "../shared/CatalogStatus.tsx";
+import { useProductCards } from "../../data/productCards.ts";
+import { AssessmentSources } from "../equipment/AssessmentSources.tsx";
 import { Icon } from "../Icon.tsx";
 import { __, sprintf } from "../../i18n.ts";
 
@@ -73,10 +77,14 @@ export function useCandidateAssessment(
 }
 
 export function CandidateMaterials({
+	client,
+	scope,
 	candidate,
 	assessment,
 	locale,
 }: {
+	client: PlannerClient;
+	scope: string;
 	candidate: EquipmentCandidate;
 	assessment: JsonObject;
 	locale: string;
@@ -96,77 +104,99 @@ export function CandidateMaterials({
 				: __("New equipment", "linker-tools");
 	const selection = isPlantCandidate(candidate) ? null : candidate.selection;
 	const part = assessment;
-	return (part.provisional_bill_of_materials as JsonObject[]).map(
-		(line, index) => {
-			let use = "new";
-			if (selection) {
-				if (line.product_id === selection.inverter_product_id)
-					use = selection.equipment_use?.inverter ?? "new";
-				else if (line.product_id === selection.battery_product_id)
-					use = selection.equipment_use?.battery ?? "new";
-			}
-			const controllerGroups =
-				candidate && isPlantCandidate(candidate)
-					? candidate.plant.parallel_groups.filter(
-							(group) => group.controller_product_id === line.product_id,
-						)
-					: [];
-			const allocations =
-				!selection && Array.isArray(part.systems)
-					? (part.systems as JsonObject[]).flatMap((system) => {
-							const unitSelection = readObject(
-								system.selection,
-							) as EquipmentSelection;
-							const unitBill = readObject(system.assessment)
-								.provisional_bill_of_materials as JsonObject[];
-							return unitBill
-								.filter((unitLine) => unitLine.product_id === line.product_id)
-								.map((unitLine) => ({
-									name: String(system.name),
-									quantity: unitLine.quantity,
-									use:
-										line.product_id === unitSelection.inverter_product_id
-											? (unitSelection.equipment_use?.inverter ?? "new")
-											: line.product_id === unitSelection.battery_product_id
-												? (unitSelection.equipment_use?.battery ?? "new")
-												: "new",
-								}));
-						})
-					: [];
-			const product = { ...selectedProducts.get(line.product_id), ...line };
-			return (
-				<div className="sc-equipment" key={index}>
-					<div>
-						<h3>{productName(product)}</h3>
-						{typeof product.sku === "string" && (
-							<p className="sc-muted">{product.sku}</p>
-						)}
-						{allocations.map((allocation, i) => (
-							<p key={i}>
-								{allocation.name} · {useLabel(allocation.use)} ·{" "}
-								{allocation.quantity === null
+	const lines = part.provisional_bill_of_materials as JsonObject[];
+	const cards = useProductCards(
+		client,
+		scope,
+		locale,
+		lines.map((row) => Number(row.product_id)),
+	);
+	return (
+		<>
+			<CatalogStatus
+				pending={cards.isPending && lines.length > 0}
+				failed={cards.isError}
+				retry={() => void cards.refetch()}
+			/>
+			{lines.map((line, index) => {
+				let use = "new";
+				if (selection) {
+					if (line.product_id === selection.inverter_product_id)
+						use = selection.equipment_use?.inverter ?? "new";
+					else if (line.product_id === selection.battery_product_id)
+						use = selection.equipment_use?.battery ?? "new";
+				}
+				const controllerGroups =
+					candidate && isPlantCandidate(candidate)
+						? candidate.plant.parallel_groups.filter(
+								(group) => group.controller_product_id === line.product_id,
+							)
+						: [];
+				const allocations =
+					!selection && Array.isArray(part.systems)
+						? (part.systems as JsonObject[]).flatMap((system) => {
+								const unitSelection = readObject(
+									system.selection,
+								) as EquipmentSelection;
+								const unitBill = readObject(system.assessment)
+									.provisional_bill_of_materials as JsonObject[];
+								return unitBill
+									.filter((unitLine) => unitLine.product_id === line.product_id)
+									.map((unitLine) => ({
+										name: String(system.name),
+										quantity: unitLine.quantity,
+										use:
+											line.product_id === unitSelection.inverter_product_id
+												? (unitSelection.equipment_use?.inverter ?? "new")
+												: line.product_id === unitSelection.battery_product_id
+													? (unitSelection.equipment_use?.battery ?? "new")
+													: "new",
+									}));
+							})
+						: [];
+				const product = { ...selectedProducts.get(line.product_id), ...line };
+				const card = cards.isSuccess
+					? cards.data.get(Number(line.product_id))
+					: undefined;
+				return (
+					<div className="sc-equipment sc-material-row" key={index}>
+						<ProductCard
+							{...card}
+							label={productName(product)}
+							quantity={
+								line.quantity === null
 									? __("Quantity to confirm", "linker-tools")
-									: `× ${format(Number(allocation.quantity))}`}
-							</p>
-						))}
-						{controllerGroups.map((group) => (
-							<p key={group.id}>
-								{__("Shared controller", "linker-tools")} ·{" "}
-								{useLabel(group.controller_use ?? "new")}
-							</p>
-						))}
-						{!allocations.length && !controllerGroups.length && (
-							<p>{useLabel(use)}</p>
-						)}
+									: `× ${format(Number(line.quantity))}`
+							}
+						>
+							{cards.isSuccess && !card && (
+								<small>{__("Saved product unavailable", "linker-tools")}</small>
+							)}
+							{typeof product.sku === "string" && (
+								<p className="sc-muted">{product.sku}</p>
+							)}
+							{allocations.map((allocation, i) => (
+								<p key={i}>
+									{allocation.name} · {useLabel(allocation.use)} ·{" "}
+									{allocation.quantity === null
+										? __("Quantity to confirm", "linker-tools")
+										: `× ${format(Number(allocation.quantity))}`}
+								</p>
+							))}
+							{controllerGroups.map((group) => (
+								<p key={group.id}>
+									{__("Shared controller", "linker-tools")} ·{" "}
+									{useLabel(group.controller_use ?? "new")}
+								</p>
+							))}
+							{!allocations.length && !controllerGroups.length && (
+								<p>{useLabel(use)}</p>
+							)}
+						</ProductCard>
 					</div>
-					<strong>
-						{line.quantity === null
-							? __("Quantity to confirm", "linker-tools")
-							: `× ${format(Number(line.quantity))}`}
-					</strong>
-				</div>
-			);
-		},
+				);
+			})}
+		</>
 	);
 }
 
@@ -309,6 +339,7 @@ export function SystemOptions({
 	} | null>(null);
 	const [filter, setFilter] = useState("all");
 	const [term, setTerm] = useState("");
+	const [showSources, setShowSources] = useState(false);
 	const [page, setPage] = useState(0);
 	const [order, setOrder] = useState("fit");
 	const cache = useQueryClient();
@@ -415,6 +446,16 @@ export function SystemOptions({
 		shownPage * pageSize,
 		(shownPage + 1) * pageSize,
 	);
+	const optionIds = (item: EquipmentCandidate) => [
+		...new Set(
+			systems(item).flatMap(({ selection }) =>
+				[selection.inverter_product_id, selection.battery_product_id].filter(
+					(id): id is number => typeof id === "number",
+				),
+			),
+		),
+	];
+	const shop = useProductCards(client, scope, locale, shown.flatMap(optionIds));
 	const checks = (part: JsonObject, key: string) =>
 		(part.checks as JsonObject[]).map((check, index) => {
 			const documents = [
@@ -458,8 +499,9 @@ export function SystemOptions({
 							? __("Whole-site backup", "linker-tools")
 							: equipmentCheckLabel(String(check.semantic_id ?? check.id))}
 					</strong>
-					{" · "}
-					{equipmentStatus(String(check.status))}
+					<span className="sc-check-status" data-status={String(check.status)}>
+						{equipmentStatus(String(check.status))}
+					</span>
 					{plantBackup ? (
 						<>
 							<dl className="sc-fields">
@@ -491,23 +533,6 @@ export function SystemOptions({
 							{__("Panel parameters entered for this project", "linker-tools")}
 						</p>
 					)}
-					{documents
-						.filter((source) => typeof source.url === "string")
-						.map((source, sourceIndex) => (
-							<a
-								key={sourceIndex}
-								href={String(source.url)}
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								{source.page
-									? sprintf(
-											__("Source, page %d", "linker-tools"),
-											Number(source.page),
-										)
-									: __("Source document", "linker-tools")}
-							</a>
-						))}
 				</li>
 			);
 		});
@@ -870,6 +895,11 @@ export function SystemOptions({
 					</div>
 				</details>
 			)}
+			<CatalogStatus
+				pending={shown.length > 0 && shop.isPending}
+				failed={shop.isError}
+				retry={() => void shop.refetch()}
+			/>
 			<div className="sc-comparison">
 				{shown.map((item) => (
 					<article
@@ -877,7 +907,27 @@ export function SystemOptions({
 						data-selected={item.id === selectedId ? "true" : undefined}
 						key={item.id}
 					>
-						<h3>{title(item)}</h3>
+						<div className="sc-option-products" aria-label={title(item)}>
+							{optionIds(item).map((id) => {
+								const card = shop.isSuccess ? shop.data.get(id) : undefined;
+								return (
+									<ProductCard
+										key={id}
+										{...card}
+										label={productName(products.get(id))}
+									>
+										{shop.isSuccess && !card && (
+											<small>
+												{__("Saved product unavailable", "linker-tools")}
+											</small>
+										)}
+									</ProductCard>
+								);
+							})}
+						</div>
+						{isPlantCandidate(item) && (
+							<p>{item.plant.units.map((unit) => unit.name).join(" · ")}</p>
+						)}
 						{!solarOnly && (
 							<div className="sc-package-capacity">
 								<strong>{capacity(item)}</strong>
@@ -1137,12 +1187,17 @@ export function SystemOptions({
 							<h3>{__("Bill of materials", "linker-tools")}</h3>
 							<div className="sc-system-equipment">
 								<CandidateMaterials
+									client={client}
+									scope={scope}
 									candidate={candidate}
 									assessment={assessment}
 									locale={locale}
 								/>
 							</div>
-							<details>
+							<details
+								className="sc-selection-evidence"
+								onToggle={(event) => setShowSources(event.currentTarget.open)}
+							>
 								<summary>
 									{__("Selection basis and documents", "linker-tools")}
 								</summary>
@@ -1151,12 +1206,21 @@ export function SystemOptions({
 								{typeof candidate.demand?.reason === "string" && !bounded && (
 									<p>{equipmentReason(candidate.demand.reason)}</p>
 								)}
-								<ul>{checks(assessment, "project")}</ul>
+								<ul className="sc-check-list">
+									{checks(assessment, "project")}
+								</ul>
+								{showSources && (
+									<AssessmentSources
+										assessment={assessment}
+										client={client}
+										scope={scope}
+									/>
+								)}
 								{Array.isArray(assessment.systems) &&
 									(assessment.systems as JsonObject[]).map((system) => (
 										<section key={String(system.id)}>
 											<h3>{String(system.name)}</h3>
-											<ul>
+											<ul className="sc-check-list">
 												{checks(
 													readObject(system.assessment),
 													String(system.id),
@@ -1186,7 +1250,7 @@ export function SystemOptions({
 			{saved && selected && (
 				<section className="sc-card">
 					<h3>{__("Compare with the saved version", "linker-tools")}</h3>
-					<div className="lp-table-scroll">
+					<div className="sc-table-scroll">
 						<table>
 							<thead>
 								<tr>

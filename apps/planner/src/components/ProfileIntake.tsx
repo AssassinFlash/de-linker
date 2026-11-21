@@ -545,7 +545,7 @@ export function ProfileIntake({
 		return (
 			<>
 				{selected && selectedInDraft && (
-					<div ref={selectionNotice} tabIndex={-1} className="lp-focus-target">
+					<div ref={selectionNotice} tabIndex={-1} className="sc-focus-target">
 						<Notice>
 							{confirmedAssetIds.includes(selected)
 								? __(
@@ -561,7 +561,7 @@ export function ProfileIntake({
 				)}
 				<button
 					ref={importTrigger}
-					className="lp-button lp-button-secondary lp-focus-target"
+					className="sc-button sc-focus-target"
 					type="button"
 					disabled={checking || recoveryChecking}
 					onClick={() => {
@@ -572,7 +572,7 @@ export function ProfileIntake({
 					{__("Import interval data", "linker-tools")}
 				</button>
 				<button
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					type="button"
 					disabled={checking || recoveryChecking}
 					onClick={() => {
@@ -587,9 +587,9 @@ export function ProfileIntake({
 			</>
 		);
 	return (
-		<div className="lp-profile-intake" ref={form}>
+		<div className="sc-profile-intake" ref={form}>
 			{requests.length > 0 && (
-				<label className="lp-field">
+				<label className="sc-field">
 					<span id={id + "-requests"}>
 						{__("Imports to review", "linker-tools")}
 					</span>
@@ -645,7 +645,7 @@ export function ProfileIntake({
 									"linker-tools",
 								)}
 					</p>
-					<details className="lp-comparison">
+					<details className="sc-disclosure">
 						<summary>{__("Original import settings", "linker-tools")}</summary>
 						{isStandardProfile(readProfileImport(JSON.parse(pending))) ? (
 							<p>
@@ -661,7 +661,7 @@ export function ProfileIntake({
 					</details>
 					{!asset && (
 						<button
-							className="lp-button"
+							className="sc-button sc-primary"
 							type="button"
 							disabled={busy}
 							onClick={() => {
@@ -675,7 +675,7 @@ export function ProfileIntake({
 			) : (
 				<>
 					{standard ? (
-						<fieldset disabled={busy} className="lp-brief-fields">
+						<fieldset disabled={busy} className="sc-brief-fields">
 							<h3>
 								{__("Annual consumption and daily pattern", "linker-tools")}
 							</h3>
@@ -707,7 +707,7 @@ export function ProfileIntake({
 									onChange={setYear}
 									report={reportStandard}
 								/>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Typical usage pattern", "linker-tools")}</span>
 									<select
 										value={pattern}
@@ -748,7 +748,7 @@ export function ProfileIntake({
 										</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Time zone", "linker-tools")}</span>
 									<input
 										value={standardZone}
@@ -757,10 +757,10 @@ export function ProfileIntake({
 									/>
 								</label>
 							</div>
-							<div className="lp-inline-actions">
+							<div className="sc-actions">
 								<button
 									type="button"
-									className="lp-button"
+									className="sc-button sc-primary"
 									disabled={!standardValid}
 									onClick={() => void importSource()}
 								>
@@ -768,7 +768,7 @@ export function ProfileIntake({
 								</button>
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={() => {
 										feedback.current = "cancel";
 										setOpen(false);
@@ -783,7 +783,7 @@ export function ProfileIntake({
 						</fieldset>
 					) : (
 						<>
-							<fieldset disabled={busy} className="lp-brief-fields">
+							<fieldset disabled={busy} className="sc-brief-fields">
 								<h3>{__("1 · Preview source columns", "linker-tools")}</h3>
 								<p>
 									{__(
@@ -792,16 +792,16 @@ export function ProfileIntake({
 									)}
 								</p>
 								<div className="grid gap-5 md:grid-cols-2">
-									<label className="lp-field">
+									<label className="sc-field">
 										<span id={id + "-file"}>
 											{__("Source file", "linker-tools")}
 										</span>
-										<div className="lp-file-picker">
-											<span className="lp-file-button" aria-hidden="true">
+										<div className="sc-file-picker">
+											<span className="sc-file-button" aria-hidden="true">
 												{__("Choose CSV file", "linker-tools")}
 											</span>
 											<span
-												className="lp-file-name"
+												className="sc-file-name"
 												id={id + "-file-name"}
 												aria-live="polite"
 											>
@@ -822,7 +822,7 @@ export function ProfileIntake({
 											/>
 										</div>
 									</label>
-									<label className="lp-field">
+									<label className="sc-field">
 										<span id={id + "-delimiter"}>
 											{__("Column delimiter", "linker-tools")}
 										</span>
@@ -854,9 +854,9 @@ export function ProfileIntake({
 										</select>
 									</label>
 								</div>
-								<div className="lp-inline-actions">
+								<div className="sc-actions">
 									<button
-										className="lp-button lp-button-secondary"
+										className="sc-button"
 										type="button"
 										disabled={!content || !delimiter}
 										onClick={() => {
@@ -866,7 +866,7 @@ export function ProfileIntake({
 										{__("Preview columns", "linker-tools")}
 									</button>
 									<button
-										className="lp-text-button"
+										className="sc-text-button"
 										type="button"
 										onClick={() => {
 											feedback.current = "cancel";
@@ -885,12 +885,12 @@ export function ProfileIntake({
 							{inspection && (
 								<>
 									<div
-										className="lp-table-scroll"
+										className="sc-table-scroll"
 										role="region"
 										aria-label={__("Original file preview", "linker-tools")}
 										tabIndex={0}
 									>
-										<table className="lp-data-table">
+										<table className="sc-data-table">
 											<caption>
 												{__("Original cells · preview only", "linker-tools")}
 											</caption>
@@ -935,7 +935,7 @@ export function ProfileIntake({
 											void importSource();
 										}}
 									>
-										<fieldset disabled={busy} className="lp-brief-fields">
+										<fieldset disabled={busy} className="sc-brief-fields">
 											<h3>
 												{__("2 · Define values and source", "linker-tools")}
 											</h3>
@@ -947,7 +947,7 @@ export function ProfileIntake({
 												onValidity={numberValidity}
 											/>
 											<div className="grid gap-5 md:grid-cols-2">
-												<label className="lp-field">
+												<label className="sc-field">
 													<span id={id + "-source-label"}>
 														{__("Source label", "linker-tools")}
 													</span>
@@ -968,7 +968,7 @@ export function ProfileIntake({
 														)}
 													</small>
 												</label>
-												<label className="lp-field">
+												<label className="sc-field">
 													<span id={id + "-rights"}>
 														{__(
 															"Source and permission for permanent private storage",
@@ -994,20 +994,20 @@ export function ProfileIntake({
 													</small>
 												</label>
 											</div>
-											<p className="lp-profile-help">
+											<p className="sc-field-help">
 												{__(
 													"Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved.",
 													"linker-tools",
 												)}
 											</p>
-											<p className="lp-profile-help">
+											<p className="sc-field-help">
 												{__(
 													"Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps.",
 													"linker-tools",
 												)}
 											</p>
 											<button
-												className="lp-button"
+												className="sc-button sc-primary"
 												disabled={
 													!mappedProfile(fields, delimiter) ||
 													(fields.durationMode === "fixed" && !numberValid) ||

@@ -81,7 +81,7 @@ export function ShapeForm({
 				label={__("Object name", "linker-tools")}
 				value={object?.name ?? ""}
 			/>
-			<label className="lp-field">
+			<label className="sc-field">
 				<span>{__("Source reference", "linker-tools")}</span>
 				<select
 					name="source"
@@ -106,7 +106,7 @@ export function ShapeForm({
 					)}
 				/>
 			) : (
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					<GeometryNumber
 						locale={locale}
 						name="u"
@@ -143,7 +143,7 @@ export function ShapeForm({
 							"linker-tools",
 						)}
 					/>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("Extrusion direction", "linker-tools")}</span>
 						<select
 							name="axis"

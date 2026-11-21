@@ -172,7 +172,7 @@ export function EquipmentSetup({
 	});
 	const feedback = (key: string) =>
 		message(key) ? (
-			<small className="lp-field-error" id={inputPath + "." + key + "-error"}>
+			<small className="sc-field-error" id={inputPath + "." + key + "-error"}>
 				{message(key)}
 			</small>
 		) : null;
@@ -193,7 +193,7 @@ export function EquipmentSetup({
 		return plan.inverter === "new" && plan.battery === "new" ? null : plan;
 	};
 	const choice = (key: string, label: string, options = products) => (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{label}</span>
 			<select
 				{...fieldProps(key)}
@@ -226,7 +226,7 @@ export function EquipmentSetup({
 		</label>
 	);
 	const useChoice = (part: "inverter" | "battery", label: string) => (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{label}</span>
 			<select
 				value={
@@ -287,12 +287,12 @@ export function EquipmentSetup({
 	const requirementFields = (
 		<fieldset
 			disabled={disabled}
-			className="lp-scenario-fields lp-scenario-block"
+			className="sc-scenario-fields sc-scenario-block"
 		>
-			<div className="lp-geometry-fields">
+			<div className="sc-geometry-fields">
 				{!embedded && (
 					<>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Choose an operating mode", "linker-tools")}</span>
 							<select
 								{...fieldProps("operating_mode")}
@@ -319,7 +319,7 @@ export function EquipmentSetup({
 							</select>
 							{feedback("operating_mode")}
 						</label>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Grid connection", "linker-tools")}</span>
 							<select
 								{...fieldProps("grid_phase")}
@@ -344,7 +344,7 @@ export function EquipmentSetup({
 						</label>
 					</>
 				)}
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Application", "linker-tools")}</span>
 					<select
 						{...fieldProps("application")}
@@ -369,7 +369,7 @@ export function EquipmentSetup({
 					number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
 			</div>
 			<details
-				className="lp-comparison"
+				className="sc-disclosure"
 				open={
 					typeof setup.required_usable_kwh === "number" ||
 					typeof setup.required_discharge_ac_kw === "number"
@@ -384,7 +384,7 @@ export function EquipmentSetup({
 						"linker-tools",
 					)}
 				</p>
-				<div className="lp-geometry-fields">
+				<div className="sc-geometry-fields">
 					{number(
 						"required_usable_kwh",
 						__("Required usable energy", "linker-tools"),
@@ -404,26 +404,26 @@ export function EquipmentSetup({
 			{heading &&
 				!embedded &&
 				(standalone ? (
-					<div className="lp-section-heading">
-						<span className="lp-index">08</span>
-						<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
+					<div className="sc-section-heading">
+						<span className="sc-index">08</span>
+						<h2 id="sc-equipment-title">{__("Equipment", "linker-tools")}</h2>
 					</div>
 				) : (
-					<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
+					<h3 id="sc-equipment-title">{__("Equipment", "linker-tools")}</h3>
 				))}
 			<div
 				className={
 					embedded
-						? "lp-equipment-embedded"
-						: "lp-work-grid lp-equipment-layout"
+						? "sc-equipment-embedded"
+						: "sc-work-grid sc-equipment-layout"
 				}
 			>
 				{!embedded && (
-					<section className="lp-work-panel lp-work-main lp-equipment-requirements">
-						<header className="lp-work-panel-heading">
+					<section className="sc-work-panel sc-work-main sc-equipment-requirements">
+						<header className="sc-work-panel-heading">
 							<h3>{__("Project requirements", "linker-tools")}</h3>
 							<button
-								className="lp-text-button"
+								className="sc-text-button"
 								type="button"
 								disabled={catalog.isFetching || disabled}
 								onClick={() => void catalog.refetch()}
@@ -431,8 +431,8 @@ export function EquipmentSetup({
 								{__("Reload product data", "linker-tools")}
 							</button>
 						</header>
-						<div className="lp-work-panel-body">
-							<p className="lp-profile-help">
+						<div className="sc-work-panel-body">
+							<p className="sc-field-help">
 								{__(
 									"Product properties come from Linker's product data. Each result records the product data and documents used.",
 									"linker-tools",
@@ -477,15 +477,15 @@ export function EquipmentSetup({
 							)}
 						</div>
 						{searchEnabled && (
-							<footer className="lp-work-toolbar">
-								<p className="lp-profile-help">
+							<footer className="sc-work-toolbar">
+								<p className="sc-field-help">
 									{__(
 										"Compare equipment configurations, then choose one for your project. Known requirements narrow the choices.",
 										"linker-tools",
 									)}
 								</p>
 								<button
-									className="lp-button"
+									className="sc-button sc-primary"
 									type="button"
 									disabled={actionsDisabled || blocked || !valid}
 									onClick={search}
@@ -496,16 +496,16 @@ export function EquipmentSetup({
 						)}
 					</section>
 				)}
-				<div className={embedded ? undefined : "lp-work-aside"}>
+				<div className={embedded ? undefined : "sc-work-aside"}>
 					<details
-						className="lp-comparison lp-work-panel lp-equipment-manual"
+						className="sc-disclosure sc-work-panel sc-equipment-manual"
 						open={embedded || typeof setup.inverter_product_id === "number"}
 					>
-						<summary className="lp-work-panel-heading">
+						<summary className="sc-work-panel-heading">
 							{__("Choose equipment manually", "linker-tools")}
 						</summary>
-						<div className="lp-work-panel-body">
-							<p className="lp-profile-help">
+						<div className="sc-work-panel-body">
+							<p className="sc-field-help">
 								{__(
 									"Choose products to check their combination against the requirements entered here.",
 									"linker-tools",
@@ -513,9 +513,9 @@ export function EquipmentSetup({
 							</p>
 							<fieldset
 								disabled={disabled}
-								className="lp-scenario-fields lp-scenario-block"
+								className="sc-scenario-fields sc-scenario-block"
 							>
-								<div className="lp-geometry-fields">
+								<div className="sc-geometry-fields">
 									{choice(
 										"inverter_product_id",
 										__("Inverter or integrated storage system", "linker-tools"),
@@ -530,7 +530,7 @@ export function EquipmentSetup({
 									{typeof setup.battery_product_id === "number" &&
 										useChoice("battery", __("Battery", "linker-tools"))}
 									{fixedCount != null ? (
-										<div className="lp-field">
+										<div className="sc-field">
 											<span>
 												{__("Fixed internal module count", "linker-tools")}
 											</span>
@@ -545,7 +545,7 @@ export function EquipmentSetup({
 											</p>
 											{assembly?.documents.map((doc) => (
 												<a
-													className="lp-text-button"
+													className="sc-text-button"
 													key={`${doc.url}:${doc.page}`}
 													href={`${doc.url}#page=${doc.page}`}
 													target="_blank"
@@ -577,9 +577,9 @@ export function EquipmentSetup({
 								</div>
 							</fieldset>
 							{embedded && requirementFields}
-							<details className="lp-comparison">
+							<details className="sc-disclosure">
 								<summary>{__("Additional products", "linker-tools")}</summary>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Choose a product", "linker-tools")}</span>
 									<select
 										{...fieldProps("accessory_product_ids")}
@@ -612,7 +612,7 @@ export function EquipmentSetup({
 									{feedback("accessory_product_ids")}
 								</label>
 								{selectedAccessories.map((id, index) => (
-									<label className="lp-field" key={id}>
+									<label className="sc-field" key={id}>
 										<span>
 											<input
 												{...fieldProps(`accessory_product_ids[${index}]`)}
@@ -636,10 +636,10 @@ export function EquipmentSetup({
 							</details>
 						</div>
 						{!embedded && (
-							<div className="lp-work-toolbar">
+							<div className="sc-work-toolbar">
 								<button
 									type="button"
-									className="lp-button"
+									className="sc-button sc-primary"
 									disabled={actionsDisabled || blocked || !valid}
 									onClick={check}
 								>
@@ -651,7 +651,7 @@ export function EquipmentSetup({
 				</div>
 			</div>
 			{!embedded && !storageOnly && (
-				<div className="lp-work-panel lp-equipment-wiring">
+				<div className="sc-work-panel sc-equipment-wiring">
 					<PvStringSetup
 						draft={draft}
 						edit={edit}

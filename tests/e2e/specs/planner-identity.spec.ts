@@ -10,7 +10,7 @@
  * one-screen quick start (2026-11-06), the generic module tiers (2026-11-08)
  * and the report work (2026-11-09) rebuilt the workspace around that footer
  * without touching it — `ToolIdentity.tsx`, `CreditText.tsx` and the
- * `lp-tool-*` rules of the planner stylesheet still carry only their
+ * `sc-tool-*` rules of the planner stylesheet still carry only their
  * introducing commit — so the block is read here from the shipped bundle on a
  * real instance. The wording below is that contract, not a snapshot of
  * whatever the current build happens to say.
@@ -137,12 +137,12 @@ async function savedProject(page: Page, lang: Lang): Promise<void> {
 /** Expands the disclosure the way a customer does. */
 async function openIdentity(page: Page, lang: Lang): Promise<void> {
 	const words = CONTRACT[lang];
-	await expect(page.locator('.lp-tool-identity')).toHaveCount(1);
-	await expect(page.locator('.lp-tool-about summary')).toHaveText(
+	await expect(page.locator('.sc-tool-identity')).toHaveCount(1);
+	await expect(page.locator('.sc-tool-about summary')).toHaveText(
 		words.summary
 	);
-	await page.locator('.lp-tool-about summary').click();
-	await expect(page.locator('.lp-tool-about')).toHaveAttribute('open', '');
+	await page.locator('.sc-tool-about summary').click();
+	await expect(page.locator('.sc-tool-about')).toHaveAttribute('open', '');
 	// Nothing around the block pushes the page sideways at either width.
 	const overflow = await page.evaluate(
 		() =>
@@ -150,7 +150,7 @@ async function openIdentity(page: Page, lang: Lang): Promise<void> {
 			document.documentElement.clientWidth
 	);
 	expect(overflow, 'no horizontal page overflow').toBe(0);
-	const box = await page.locator('.lp-tool-identity').boundingBox();
+	const box = await page.locator('.sc-tool-identity').boundingBox();
 	expect(box, 'the identity block has a laid-out box').toBeTruthy();
 	expect(box!.width).toBeGreaterThan(0);
 	expect(box!.height).toBeGreaterThan(0);
@@ -169,19 +169,19 @@ for (const lang of ['en', 'de'] as const) {
 			await savedProject(page, lang);
 			await openIdentity(page, lang);
 
-			const identity = page.locator('.lp-tool-identity');
+			const identity = page.locator('.sc-tool-identity');
 			await expect(
-				identity.locator('.lp-tool-product strong')
+				identity.locator('.sc-tool-product strong')
 			).toHaveText(words.product);
-			await expect(identity.locator('.lp-tool-product span')).toHaveText(
+			await expect(identity.locator('.sc-tool-product span')).toHaveText(
 				words.owner
 			);
 			await expect(
-				identity.locator('.lp-tool-about > div')
+				identity.locator('.sc-tool-about > div')
 			).toContainText(words.role);
 			// The boundary sentence is the contract's core: a displayed model
 			// is not an engineering approval.
-			await expect(identity.locator('.lp-tool-boundary')).toHaveText(
+			await expect(identity.locator('.sc-tool-boundary')).toHaveText(
 				words.boundary
 			);
 			await expect(

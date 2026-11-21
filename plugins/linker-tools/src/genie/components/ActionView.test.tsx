@@ -46,7 +46,7 @@ test( 'a grounded configurator link opens in the same tab', () => {
 	expect( link.getAttribute( 'href' ) ).toBe( CONFIGURATOR );
 	expect( link.hasAttribute( 'target' ) ).toBe( false );
 	const historical =
-		CONFIGURATOR + '&project=abc&compare=one%2Ctwo#lp-calculations';
+		CONFIGURATOR + '&project=abc&compare=one%2Ctwo#sc-review';
 	const { unmount } = view( { url: historical }, true );
 	expect( screen.getAllByRole( 'link' )[ 1 ].getAttribute( 'href' ) ).toBe(
 		historical.replace(

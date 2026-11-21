@@ -98,7 +98,7 @@ async function rig(t, options = {}) {
 	globalThis.cancelAnimationFrame = clearTimeout;
 	const style = document.createElement("style");
 	style.textContent =
-		".lp-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#123456;--proto-neutral-600:#456789;--proto-teal-700:#0a665c;--proto-teal-400:#44bbcc;--proto-neutral-100:#eeeeee;}";
+		".sc-map-host{--proto-neutral-300:#cccccc;--proto-teal-900:#123456;--proto-neutral-600:#456789;--proto-teal-700:#0a665c;--proto-teal-400:#44bbcc;--proto-neutral-100:#eeeeee;}";
 	document.head.append(style);
 	const { createRoot } = await import("react-dom/client"),
 		{ maps } = await import("./map-library-fixture.mjs");
@@ -306,7 +306,7 @@ async function selectNative(node, value) {
 const submitFeature = async () =>
 	act(async () =>
 		document
-			.querySelector("#lp-map-feature-properties")
+			.querySelector("#sc-map-feature-properties")
 			.dispatchEvent(
 				new window.Event("submit", { bubbles: true, cancelable: true }),
 			),
@@ -334,7 +334,7 @@ for (const kind of ["hole", "obstacle", "keepout"])
 		}[kind];
 		const context = ringGeometry.roofs[0].name + " · " + featureLabel;
 		assert.ok(
-			document.querySelector(".lp-map-drawing").textContent.includes(context),
+			document.querySelector(".sc-map-drawing").textContent.includes(context),
 			"The collecting controls identify the selected parent and feature type",
 		);
 		const corners = bindMapRing(ringGeometry, {
@@ -363,14 +363,14 @@ for (const kind of ["hole", "obstacle", "keepout"])
 			() => r.active && document.querySelector('[data-map-status="ready"]'),
 		);
 		assert.ok(
-			document.querySelector(".lp-map-drawing").textContent.includes(context),
+			document.querySelector(".sc-map-drawing").textContent.includes(context),
 			"The restored collecting controls retain the same context",
 		);
 		for (const point of points.slice(1)) await r.point(...point);
 		assert.equal((await r.records())[0].drawing.vertices.length, 5);
 		assert.equal(r.commits.length, 0);
 		await r.click("Close outline and review");
-		await until(() => document.querySelector("#lp-map-feature-properties"));
+		await until(() => document.querySelector("#sc-map-feature-properties"));
 		await submitFeature();
 		await until(() =>
 			document.querySelector('[name="source_confirmed"][aria-invalid="true"]'),
@@ -469,7 +469,7 @@ for (const kind of ["hole", "obstacle", "keepout"])
 			} else assert.match(feature.reason, /Synthetic local check/);
 		}
 		assert.match(
-			document.querySelector(".lp-drawing-status").textContent,
+			document.querySelector(".sc-drawing-status").textContent,
 			/Feature added/,
 		);
 		assert.equal((await r.records()).length, 1);
@@ -509,14 +509,14 @@ test("an address-centred empty project can trace its first roof and show it on t
 	await r.point(6.9601, 50.9401);
 	assert.equal(r.geometry.coordinate_system.anchor, null);
 	await r.click("Close outline and review");
-	await until(() => document.querySelector(".lp-drawing-properties"));
+	await until(() => document.querySelector(".sc-drawing-properties"));
 	assert.equal(document.querySelector('[name="height"]').value, "0");
 	assert.equal(
 		document.querySelector('[name="source"]').value,
 		"Bayerische Vermessungsverwaltung",
 	);
 	assert.equal(
-		document.querySelector(".lp-drawing-properties details").open,
+		document.querySelector(".sc-drawing-properties details").open,
 		false,
 	);
 	assert.equal((await r.records())[0].drawing.fields.permission, true);
@@ -525,7 +525,7 @@ test("an address-centred empty project can trace its first roof and show it on t
 	await enter(document.querySelector('[name="source"]'), "");
 	await act(async () => {
 		assert.equal(
-			document.querySelector(".lp-drawing-properties").checkValidity(),
+			document.querySelector(".sc-drawing-properties").checkValidity(),
 			false,
 		);
 	});
@@ -538,19 +538,19 @@ test("an address-centred empty project can trace its first roof and show it on t
 		"Bayerische Vermessungsverwaltung",
 	);
 	assert.equal(
-		document.querySelector('.lp-drawing-properties input[type="checkbox"]')
+		document.querySelector('.sc-drawing-properties input[type="checkbox"]')
 			.checked,
 		false,
 		"editing source details clears the automatic source permission",
 	);
 	await act(async () =>
 		document
-			.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.querySelector('.sc-drawing-properties input[type="checkbox"]')
 			.click(),
 	);
 	await act(async () =>
 		document
-			.querySelector(".lp-drawing-properties")
+			.querySelector(".sc-drawing-properties")
 			.dispatchEvent(
 				new window.Event("submit", { bubbles: true, cancelable: true }),
 			),
@@ -588,18 +588,18 @@ test("a closed roof keeps its properties open through anchor navigation and idle
 	await until(() => !r.active);
 	await r.click("Resume drawing");
 	await r.click("Close outline and review");
-	await until(() => document.querySelector("#lp-map-roof-properties"));
+	await until(() => document.querySelector("#sc-map-roof-properties"));
 	await act(async () =>
-		document.querySelector('a[href="#lp-map-roof-properties"]').click(),
+		document.querySelector('a[href="#sc-map-roof-properties"]').click(),
 	);
-	await until(() => location.hash === "#lp-map-roof-properties");
+	await until(() => location.hash === "#sc-map-roof-properties");
 	assert.equal(r.active, true, "a property anchor does not pause the drawing");
 	await act(async () => window.dispatchEvent(new window.Event("blur")));
 	await until(
 		() => !document.body.textContent.includes("Saving drawing in this browser"),
 	);
 	assert.ok(
-		document.querySelector("#lp-map-roof-properties"),
+		document.querySelector("#sc-map-roof-properties"),
 		"idle focus changes keep the roof properties available",
 	);
 	await act(async () => {
@@ -618,7 +618,7 @@ test("a closed roof keeps its properties open through anchor navigation and idle
 		() => !document.body.textContent.includes("Saving drawing in this browser"),
 	);
 	assert.ok(
-		document.querySelector("#lp-map-roof-properties"),
+		document.querySelector("#sc-map-roof-properties"),
 		"returning to an idle drawing keeps its review open",
 	);
 	assert.equal(r.active, true);
@@ -647,7 +647,7 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	await r.point(6.9601, 50.9401);
 	assert.equal((await r.records())[0].drawing.vertices.length, 3);
 	await r.click("Close outline and review");
-	await until(() => document.querySelector(".lp-drawing-properties"));
+	await until(() => document.querySelector(".sc-drawing-properties"));
 	assert.ok(
 		[...r.map().sources.keys()].some((id) => id.startsWith("linker-draw-")),
 		"actual Terra adapter has mounted its staged sources",
@@ -664,13 +664,13 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 		await enter(document.querySelector(`[name="${name}"]`), value);
 	await act(async () =>
 		document
-			.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.querySelector('.sc-drawing-properties input[type="checkbox"]')
 			.click(),
 	);
 	const submit = async () =>
 		act(async () =>
 			document
-				.querySelector(".lp-drawing-properties")
+				.querySelector(".sc-drawing-properties")
 				.dispatchEvent(
 					new window.Event("submit", { bubbles: true, cancelable: true }),
 				),
@@ -698,7 +698,7 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	assert.equal(r.commits.length, 0);
 	assert.equal((await r.records())[0].drawing.phase, "staged");
 	assert.match(document.activeElement.textContent, /geometry check/);
-	assert.ok(document.activeElement.closest(".lp-drawing-properties"));
+	assert.ok(document.activeElement.closest(".sc-drawing-properties"));
 	r.invalidReview = false;
 	await submit();
 	await until(() => !r.active && r.commits.length === 1);
@@ -706,26 +706,26 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	assert.equal(r.geometry.roofs.length, geometry.roofs.length + 1);
 	assert.equal(r.geometry.roofs.at(-1).origin_enu[2], 8.125);
 	assert.equal(r.geometry.sources.at(-1).spatial_precision_m, null);
-	assert.ok(document.activeElement.classList.contains("lp-map-drawing"));
+	assert.ok(document.activeElement.classList.contains("sc-map-drawing"));
 	assert.match(
-		document.querySelector(".lp-drawing-status").textContent,
+		document.querySelector(".sc-drawing-status").textContent,
 		/Roof added to the project draft/,
 	);
 	const appliedGeometry = r.geometry;
 	await r.replaceGeometry(geometry);
 	assert.match(
-		document.querySelector(".lp-drawing-status").textContent,
+		document.querySelector(".sc-drawing-status").textContent,
 		/Drawing paused and retained/,
 	);
 	await r.click("Resume drawing");
 	await submit();
 	await until(() => !r.active && r.commits.length === 2);
-	assert.ok(document.activeElement.classList.contains("lp-map-drawing"));
+	assert.ok(document.activeElement.classList.contains("sc-map-drawing"));
 	assert.deepEqual(r.geometry, appliedGeometry);
 	await r.replaceGeometry(geometry);
 	await r.replaceGeometry(appliedGeometry);
 	assert.match(
-		document.querySelector(".lp-drawing-status").textContent,
+		document.querySelector(".sc-drawing-status").textContent,
 		/Roof added to the project draft/,
 	);
 	assert.equal(
@@ -822,7 +822,7 @@ const ringCases = [
 const submitRing = async () =>
 	act(async () =>
 		document
-			.querySelector("#lp-map-ring-properties")
+			.querySelector("#sc-map-ring-properties")
 			.dispatchEvent(
 				new window.Event("submit", { bubbles: true, cancelable: true }),
 			),
@@ -832,14 +832,14 @@ const confirmSource = async () =>
 async function openRing(r, target) {
 	if (target.kind === "roof_hole")
 		await act(async () => {
-			const select = document.querySelector(".lp-map-ring-selector select");
+			const select = document.querySelector(".sc-map-ring-selector select");
 			select.value = "1";
 			select.dispatchEvent(new window.Event("change", { bubbles: true }));
 		});
 	await r.click("Edit boundary on map");
 	await until(
 		() =>
-			document.querySelector("#lp-map-ring-properties") &&
+			document.querySelector("#sc-map-ring-properties") &&
 			!document.body.textContent.includes("Saving drawing in this browser"),
 	);
 	assert.deepEqual((await r.records())[0].drawing.target, target);
@@ -932,15 +932,15 @@ for (const target of ringCases)
 		assert.equal(r.geometry.obstacles[0].height_m, 1.25);
 		assert.deepEqual(r.geometry.obstacles[0].extrusion_axis_enu, [0, 0, 1]);
 		assert.equal(r.geometry.keepouts[0].reason, "Synthetic exclusion");
-		assert.ok(document.activeElement.classList.contains("lp-map-drawing"));
+		assert.ok(document.activeElement.classList.contains("sc-map-drawing"));
 		assert.match(
-			document.querySelector(".lp-drawing-status").textContent,
+			document.querySelector(".sc-drawing-status").textContent,
 			/Boundary changes applied/,
 		);
 		await r.confirm(r.geometry);
 		await until(
 			() =>
-				!document.querySelector("#lp-map-ring-properties") &&
+				!document.querySelector("#sc-map-ring-properties") &&
 				button("Edit boundary on map"),
 		);
 		assert.equal((await r.records()).length, 0);
@@ -957,11 +957,11 @@ test("unchanged source-reviewed boundary adds no project command or calculation 
 	assert.equal(r.queries.length, 0);
 	assert.equal((await r.records()).length, 0);
 	assert.match(
-		document.querySelector(".lp-drawing-status").textContent,
+		document.querySelector(".sc-drawing-status").textContent,
 		/boundary is unchanged/,
 	);
 	await r.select("synthetic_obstacle");
-	assert.equal(document.querySelector(".lp-drawing-status"), null);
+	assert.equal(document.querySelector(".sc-drawing-status"), null);
 });
 
 for (const target of ringCases.slice(2))

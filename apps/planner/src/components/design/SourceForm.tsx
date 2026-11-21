@@ -48,7 +48,7 @@ export function SourceForm({
 				})
 			}
 		>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Source statements are retained with the geometry. They describe the supplied evidence and permissions; they do not certify measurement accuracy or licence compliance.",
 					"linker-tools",

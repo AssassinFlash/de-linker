@@ -729,14 +729,14 @@ export function MapDrawingWorkspace({
 				);
 	}
 	return (
-		<div className="lp-map-workspace">
+		<div className="sc-map-workspace">
 			<section
 				ref={result}
 				tabIndex={-1}
-				className="lp-map-drawing lp-focus-target"
+				className="sc-map-drawing sc-focus-target"
 				aria-label={__("Map drawing", "linker-tools")}
 			>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					<h3>
 						{drawing?.schema_version === 2
 							? __("Edit an existing boundary", "linker-tools")
@@ -748,7 +748,7 @@ export function MapDrawingWorkspace({
 					</h3>
 					{!active && !drawing && (
 						<button
-							className="lp-button"
+							className="sc-button sc-primary"
 							type="button"
 							disabled={!canStartDrawing}
 							onClick={() => begin({ kind: "new_roof" })}
@@ -758,9 +758,9 @@ export function MapDrawingWorkspace({
 					)}
 				</div>
 				{drawing?.schema_version === 3 && (
-					<p className="lp-profile-help">{mapFeatureContext(drawing)}</p>
+					<p className="sc-field-help">{mapFeatureContext(drawing)}</p>
 				)}
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{drawing?.schema_version === 3
 						? __(
 								"The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft.",
@@ -774,16 +774,16 @@ export function MapDrawingWorkspace({
 							: __("Draw one roof face at a time.", "linker-tools")}
 				</p>
 				{!drawing && mapProps.siteOutline && !mapProps.disabled && (
-					<div className="lp-site-outline-card">
-						<p className="lp-profile-help">
+					<div className="sc-site-outline-card">
+						<p className="sc-field-help">
 							{sprintf(
 								__("Detected building: %s", "linker-tools"),
 								mapProps.siteOutline.source,
 							)}
 						</p>
 						{outlinePlanes.length > 0 ? (
-							<div className="lp-inline-actions">
-								<label className="lp-field">
+							<div className="sc-actions">
+								<label className="sc-field">
 									<span>{__("Measured roof plane", "linker-tools")}</span>
 									<select
 										value={selectedPlane?.id ?? ""}
@@ -810,7 +810,7 @@ export function MapDrawingWorkspace({
 								</label>
 								<button
 									type="button"
-									className="lp-button"
+									className="sc-button sc-primary"
 									disabled={busy || !selectedPlane}
 									onClick={() => void adoptSiteOutline()}
 								>
@@ -819,8 +819,8 @@ export function MapDrawingWorkspace({
 							</div>
 						) : (
 							<>
-								<div className="lp-geometry-fields">
-									<label className="lp-field">
+								<div className="sc-geometry-fields">
+									<label className="sc-field">
 										<span>{__("Roof pitch (°)", "linker-tools")}</span>
 										<input
 											name="outline_pitch"
@@ -832,7 +832,7 @@ export function MapDrawingWorkspace({
 											}
 										/>
 									</label>
-									<label className="lp-field">
+									<label className="sc-field">
 										<span>{__("Down-slope bearing (°)", "linker-tools")}</span>
 										<input
 											name="outline_bearing"
@@ -845,10 +845,10 @@ export function MapDrawingWorkspace({
 										/>
 									</label>
 								</div>
-								<div className="lp-inline-actions">
+								<div className="sc-actions">
 									<button
 										type="button"
-										className="lp-button"
+										className="sc-button sc-primary"
 										disabled={busy}
 										onClick={() => void adoptSiteOutline()}
 									>
@@ -862,7 +862,7 @@ export function MapDrawingWorkspace({
 				)}
 				{!drawing && geometry.roofs.length > 0 && (
 					<details
-						className="lp-map-edit-tools"
+						className="sc-map-edit-tools"
 						open={Boolean(mapProps.selected)}
 					>
 						<summary>
@@ -883,7 +883,7 @@ export function MapDrawingWorkspace({
 					</details>
 				)}
 				{!drawing && unchanged && (
-					<p className="lp-drawing-status" role="status">
+					<p className="sc-drawing-status" role="status">
 						{__(
 							"The boundary is unchanged. No project change was made.",
 							"linker-tools",
@@ -907,9 +907,9 @@ export function MapDrawingWorkspace({
 									)}
 						</p>
 						{drawing && (
-							<div className="lp-inline-actions">
+							<div className="sc-actions">
 								<button
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									type="button"
 									disabled={journal.writing || busy}
 									onClick={() => void journal.retry()}
@@ -917,7 +917,7 @@ export function MapDrawingWorkspace({
 									{__("Retry local save", "linker-tools")}
 								</button>
 								<button
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									type="button"
 									disabled={journal.writing || busy}
 									onClick={journal.fork}
@@ -929,7 +929,7 @@ export function MapDrawingWorkspace({
 						{!drawing && (
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={journal.checking}
 								onClick={journal.reload}
 							>
@@ -939,7 +939,7 @@ export function MapDrawingWorkspace({
 					</Notice>
 				)}
 				{!active && !drawing && journal.records.length > 0 && (
-					<ul className="lp-drawing-recoveries">
+					<ul className="sc-drawing-recoveries">
 						{journal.records.map((record) => (
 							<li key={record.scope + record.drawing.key}>
 								<span>
@@ -953,7 +953,7 @@ export function MapDrawingWorkspace({
 								</span>
 								<button
 									type="button"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									disabled={mapProps.disabled || journal.checking}
 									onClick={() => begin({ kind: "restore", record })}
 								>
@@ -965,7 +965,7 @@ export function MapDrawingWorkspace({
 				)}
 				{drawing && (
 					<>
-						<p className="lp-drawing-status" role="status">
+						<p className="sc-drawing-status" role="status">
 							{drawingStatus()}
 						</p>
 						{stale && !protectedResult && (
@@ -984,10 +984,10 @@ export function MapDrawingWorkspace({
 										"linker-tools",
 									)}
 								</p>
-								<div className="lp-inline-actions">
+								<div className="sc-actions">
 									<button
 										type="button"
-										className="lp-button"
+										className="sc-button sc-primary"
 										disabled={drawing.vertices.length < 3 || busy}
 										onClick={() => {
 											try {
@@ -1002,7 +1002,7 @@ export function MapDrawingWorkspace({
 									</button>
 									<button
 										type="button"
-										className="lp-button lp-button-secondary"
+										className="sc-button"
 										disabled={!drawing.vertices.length || busy}
 										onClick={() =>
 											change(
@@ -1019,16 +1019,16 @@ export function MapDrawingWorkspace({
 							</>
 						)}
 
-						<div className="lp-inline-actions">
+						<div className="sc-actions">
 							{active && drawing.phase === "staged" && !stale && (
 								<a
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									href={
 										drawing.schema_version === 1
-											? "#lp-map-roof-properties"
+											? "#sc-map-roof-properties"
 											: drawing.schema_version === 3
-												? "#lp-map-feature-properties"
-												: "#lp-map-ring-properties"
+												? "#sc-map-feature-properties"
+												: "#sc-map-ring-properties"
 									}
 								>
 									{drawing.schema_version === 1
@@ -1041,7 +1041,7 @@ export function MapDrawingWorkspace({
 							{active ? (
 								<button
 									type="button"
-									className="lp-button lp-button-secondary"
+									className="sc-button"
 									disabled={busy || journal.writing}
 									onClick={() => void journal.pause()}
 								>
@@ -1051,7 +1051,7 @@ export function MapDrawingWorkspace({
 								!protectedResult && (
 									<button
 										type="button"
-										className="lp-button lp-button-secondary"
+										className="sc-button"
 										disabled={busy || stale || mapProps.disabled}
 										onClick={journal.resume}
 									>
@@ -1061,7 +1061,7 @@ export function MapDrawingWorkspace({
 							)}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={busy || journal.writing}
 								onClick={() =>
 									protectedResult ? journal.hide() : void journal.discard()

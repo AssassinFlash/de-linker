@@ -1,26 +1,26 @@
 {
-  "_planner-core-DSn3Sdng.js": {
-    "file": "assets/planner-core-DSn3Sdng.js",
+  "_planner-core-JEoij-Xs.js": {
+    "file": "assets/planner-core-JEoij-Xs.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
     ],
     "dynamicImports": [
-      "src/components/configurator/Configurator.tsx"
+      "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "_rolldown-runtime-BWaJ3C7D.js": {
     "file": "assets/rolldown-runtime-BWaJ3C7D.js",
     "name": "rolldown-runtime"
   },
-  "src/components/configurator/Configurator.tsx": {
-    "file": "assets/Configurator-BCt-BAtc.js",
-    "name": "Configurator",
-    "src": "src/components/configurator/Configurator.tsx",
+  "src/components/configurator/ProjectWorkbench.tsx": {
+    "file": "assets/ProjectWorkbench-BZ7KuC9y.js",
+    "name": "ProjectWorkbench",
+    "src": "src/components/configurator/ProjectWorkbench.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-DSn3Sdng.js"
+      "_planner-core-JEoij-Xs.js"
     ],
     "dynamicImports": [
       "src/components/design/SceneViewport.tsx",
@@ -28,25 +28,25 @@
     ]
   },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-_WTmJzyp.js",
+    "file": "assets/MapViewport-YTkU__M2.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-DSn3Sdng.js",
-      "src/components/configurator/Configurator.tsx"
+      "_planner-core-JEoij-Xs.js",
+      "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-BiNhK95n.js",
+    "file": "assets/SceneViewport-DlfaXrFC.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-DSn3Sdng.js",
-      "src/components/configurator/Configurator.tsx"
+      "_planner-core-JEoij-Xs.js",
+      "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "src/main.tsx": {
@@ -56,7 +56,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-DSn3Sdng.js"
+      "_planner-core-JEoij-Xs.js"
     ]
   }
 }

@@ -30,8 +30,8 @@ export function MapRingProperties({
 	return (
 		<form
 			ref={form}
-			className="lp-drawing-properties lp-focus-target"
-			id="lp-map-ring-properties"
+			className="sc-drawing-properties sc-focus-target"
+			id="sc-map-ring-properties"
 			onSubmit={(event) => {
 				event.preventDefault();
 				submit();
@@ -49,7 +49,7 @@ export function MapRingProperties({
 			</p>
 			<MapSourceDetails source={source} locale={locale} />
 			<fieldset disabled={busy}>
-				<label className="lp-geometry-check">
+				<label className="sc-geometry-check">
 					<input
 						name="source_confirmed"
 						type="checkbox"
@@ -67,22 +67,22 @@ export function MapRingProperties({
 					)}
 				</label>
 				{invalidField && error && (
-					<small id={errorId} className="lp-field-error" role="alert">
+					<small id={errorId} className="sc-field-error" role="alert">
 						{error}
 					</small>
 				)}
 				{!invalidField && error && (
-					<div ref={result} tabIndex={-1} className="lp-focus-target">
+					<div ref={result} tabIndex={-1} className="sc-focus-target">
 						<Notice error>{error}</Notice>
 					</div>
 				)}
-				<div className="lp-inline-actions">
-					<button type="submit" className="lp-button">
+				<div className="sc-actions">
+					<button type="submit" className="sc-button sc-primary">
 						{__("Check and apply changes", "linker-tools")}
 					</button>
 				</div>
 			</fieldset>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"The geometry check does not verify measurements or source permissions. Your confirmation does not change the recorded export permission. If the source or permissions do not cover your changes, pause the drawing and review the project's source details.",
 					"linker-tools",

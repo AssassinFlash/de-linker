@@ -2,13 +2,13 @@
  * React effects and ResizeObserver callbacks can run after a child needs focus. */
 export function measurePlannerChrome(root: HTMLElement): void {
 	const header = document.getElementById("lc-header"),
-		bar = root.querySelector<HTMLElement>(".lp-project-bar");
+		bar = root.querySelector<HTMLElement>(".sc-project-navigation");
 	root.style.setProperty(
-		"--lp-site-header-height",
+		"--sc-header-height",
 		`${header?.offsetHeight ?? 0}px`,
 	);
 	root.style.setProperty(
-		"--lp-project-bar-height",
+		"--sc-navigation-height",
 		`${bar?.offsetHeight ?? 0}px`,
 	);
 }

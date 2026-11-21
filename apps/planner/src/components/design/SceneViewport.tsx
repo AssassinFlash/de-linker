@@ -600,7 +600,7 @@ export default function SceneViewport(props: SceneProps) {
 	);
 	if (canUseGoogle3D && !cadMode && props.googleMapsApiKey && googleCenter) {
 		return (
-			<div className="lp-scene-view" ref={host}>
+			<div className="sc-scene-view" ref={host}>
 				{!hidden && (
 					<Google3DMap
 						apiKey={props.googleMapsApiKey}
@@ -622,7 +622,7 @@ export default function SceneViewport(props: SceneProps) {
 					/>
 				)}
 				{!props.disabled && (
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{props.document.roofs.length > 0
 							? __(
 									"Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane.",
@@ -638,7 +638,7 @@ export default function SceneViewport(props: SceneProps) {
 		);
 	}
 	return (
-		<div className="lp-scene-view" ref={host}>
+		<div className="sc-scene-view" ref={host}>
 			{failed ? (
 				<Notice error>
 					<p>
@@ -649,7 +649,7 @@ export default function SceneViewport(props: SceneProps) {
 					</p>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={() => {
 							generation.current++;
 							setBackend("");
@@ -790,11 +790,11 @@ export default function SceneViewport(props: SceneProps) {
 				)
 			)}
 			{!failed && !hidden && bounds && reference && (
-				<div className="lp-canvas-caption">
-					<div className="lp-inline-actions">
+				<div className="sc-canvas-caption">
+					<div className="sc-actions">
 						<button
 							type="button"
-							className="lp-tool-button"
+							className="sc-tool-button"
 							disabled={!backend}
 							onClick={() => {
 								setFitRequest((value) => value + 1);
@@ -805,7 +805,7 @@ export default function SceneViewport(props: SceneProps) {
 						{canUseGoogle3D && (
 							<button
 								type="button"
-								className="lp-tool-button"
+								className="sc-tool-button"
 								onClick={() => setCadMode(false)}
 							>
 								{__("Photorealistic 3D (Google)", "linker-tools")}
@@ -817,9 +817,9 @@ export default function SceneViewport(props: SceneProps) {
 					</span>
 				</div>
 			)}
-			<details className="lp-comparison">
+			<details className="sc-disclosure">
 				<summary>{__("View options", "linker-tools")}</summary>
-				<label className="lp-geometry-check">
+				<label className="sc-geometry-check">
 					<input
 						type="checkbox"
 						aria-describedby={compatibilityHelp}
@@ -833,7 +833,7 @@ export default function SceneViewport(props: SceneProps) {
 					/>
 					<span>{__("Compatibility mode", "linker-tools")}</span>
 				</label>
-				<p id={compatibilityHelp} className="lp-profile-help">
+				<p id={compatibilityHelp} className="sc-field-help">
 					{__(
 						"Use this if the 3D view does not display correctly.",
 						"linker-tools",
@@ -841,7 +841,7 @@ export default function SceneViewport(props: SceneProps) {
 				</p>
 			</details>
 			{!props.disabled && (
-				<p className="lp-profile-help">
+				<p className="sc-field-help">
 					{__(
 						"Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",
 						"linker-tools",

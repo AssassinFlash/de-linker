@@ -29,10 +29,14 @@ function demands(inputs: JsonObject) {
 	return { equipment, backup, goal: energyGoal(inputs) };
 }
 
-export function needsPhaseConfirmation(inputs: JsonObject) {
+export function needsPreliminaryComparison(inputs: JsonObject) {
+	const { equipment, backup } = demands(inputs);
+	const demandReady =
+		!!inputs.brief && hasComparisonDemand(inputs, readBrief(inputs.brief));
+	if (backup && !demandReady) return true;
 	return (
-		demands(inputs).equipment.grid_phase === null &&
-		!retainsUnverifiedInverter(inputs)
+		equipment.grid_phase === null &&
+		!(retainsUnverifiedInverter(inputs) && demandReady)
 	);
 }
 
@@ -149,6 +153,10 @@ export function HomepageDemand({
 			? null
 			: (readScenarioDraft(inputs.energy_scenario).schedule[0]?.import_cap_kw ??
 				null);
+	const coordinateValidity = useCallback(
+		(valid: boolean) => validity("coordinates", valid),
+		[validity],
+	);
 	const pvValid = useCallback(
 		(valid: boolean) => validity("pv", valid),
 		[validity],
@@ -215,6 +223,8 @@ export function HomepageDemand({
 				)}
 			{homepagePvReferenceAvailable(inputs, brief) && (
 				<HomepagePvReference
+					locale={locale}
+					onCoordinateValidity={coordinateValidity}
 					inputs={inputs}
 					brief={brief}
 					addressLookup={addressLookup}

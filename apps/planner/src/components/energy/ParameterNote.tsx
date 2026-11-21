@@ -10,7 +10,7 @@ export function ParameterNote({
 	onChange: (value: string) => void;
 }) {
 	return (
-		<label className="lp-field">
+		<label className="sc-field">
 			<span>{label}</span>
 			<textarea
 				rows={2}

@@ -137,7 +137,7 @@ const confirmButton = () =>
 		...document.querySelectorAll(
 			'[role="group"][aria-label="Delete this project"] button',
 		),
-	].find((button) => button.className.includes("lp-button-danger"));
+	].find((button) => button.className.includes("sc-button-danger"));
 
 test("the account search opens directly at the older project list", async (t) => {
 	const listRequests = [];
@@ -166,6 +166,12 @@ test("the account search opens directly at the older project list", async (t) =>
 	);
 	t.after(() => mounted.dispose());
 
+	const compare = document.querySelector("[role=listitem] a");
+	assert.equal(compare?.textContent, "Compare options");
+	const destination = new URL(compare.href);
+	assert.equal(destination.searchParams.get("project"), historical.id);
+	assert.equal(destination.searchParams.get("guided"), "inquiry");
+	assert.equal(destination.hash, "#sc-system");
 	assert.equal(listRequests[0].title_query, "Straße");
 	assert.equal(
 		document.querySelector('[role="listitem"] h3').textContent,

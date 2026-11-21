@@ -177,7 +177,7 @@ export function PlanViewport({
 			tool === "select" &&
 			array &&
 			!svg.current
-				?.querySelector<SVGGeometryElement>(".lp-roof-shape")
+				?.querySelector<SVGGeometryElement>(".sc-roof-shape")
 				?.isPointInFill(new DOMPoint(point[0], -point[1]))
 		)
 			return;
@@ -274,12 +274,12 @@ export function PlanViewport({
 	}
 	return (
 		<div
-			className="lp-plan-view"
+			className="sc-plan-view"
 			data-array-placement={placement ? true : undefined}
 		>
 			{placement && (
-				<div className="lp-canvas-tools">
-					<p className="lp-profile-help">
+				<div className="sc-canvas-tools">
+					<p className="sc-field-help">
 						{__(
 							"Click inside the roof to position the panels.",
 							"linker-tools",
@@ -287,14 +287,14 @@ export function PlanViewport({
 					</p>
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={placement.review}
 					>
 						{__("Review panel layout", "linker-tools")}
 					</button>
-					<details className="lp-plan-position">
+					<details className="sc-plan-position">
 						<summary>{__("Enter panel position", "linker-tools")}</summary>
-						<div className="lp-geometry-fields">
+						<div className="sc-geometry-fields">
 							<NumberField
 								label={__("Anchor U", "linker-tools")}
 								unit="m"
@@ -314,7 +314,7 @@ export function PlanViewport({
 						</div>
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={
 								disabled ||
 								positionU === null ||
@@ -334,13 +334,13 @@ export function PlanViewport({
 			)}
 			{!previewOnly && (
 				<div
-					className="lp-canvas-tools"
+					className="sc-canvas-tools"
 					role="group"
 					aria-label={__("Plan view controls", "linker-tools")}
 				>
 					<button
 						type="button"
-						className="lp-tool-button"
+						className="sc-tool-button"
 						aria-pressed={tool === "select"}
 						onClick={() => setTool("select")}
 					>
@@ -350,7 +350,7 @@ export function PlanViewport({
 					</button>
 					<button
 						type="button"
-						className="lp-tool-button"
+						className="sc-tool-button"
 						aria-pressed={tool === "pan"}
 						onClick={() => setTool("pan")}
 					>
@@ -358,7 +358,7 @@ export function PlanViewport({
 					</button>
 					<button
 						type="button"
-						className="lp-tool-button"
+						className="sc-tool-button"
 						onClick={() => zoom(0.8)}
 						aria-label={__("Zoom in", "linker-tools")}
 					>
@@ -366,7 +366,7 @@ export function PlanViewport({
 					</button>
 					<button
 						type="button"
-						className="lp-tool-button"
+						className="sc-tool-button"
 						onClick={() => zoom(1.25)}
 						aria-label={__("Zoom out", "linker-tools")}
 					>
@@ -374,7 +374,7 @@ export function PlanViewport({
 					</button>
 					<button
 						type="button"
-						className="lp-tool-button"
+						className="sc-tool-button"
 						onClick={() => {
 							abort();
 							setView(null);
@@ -386,7 +386,7 @@ export function PlanViewport({
 			)}
 			<svg
 				ref={svg}
-				className="lp-plan-svg"
+				className="sc-plan-svg"
 				viewBox={`${current.x} ${current.y} ${current.width} ${current.height}`}
 				role="img"
 				aria-label={sprintf(
@@ -410,7 +410,7 @@ export function PlanViewport({
 						" ",
 					)}
 					fillRule="evenodd"
-					className="lp-roof-shape"
+					className="sc-roof-shape"
 					data-object={roof.id}
 					data-selected={selected === roof.id || undefined}
 				/>
@@ -430,7 +430,7 @@ export function PlanViewport({
 								<polygon
 									key={pose.id}
 									points={points(pose.footprint_uv)}
-									className="lp-panel-shape"
+									className="sc-panel-shape"
 									data-object={pose.id}
 									data-array={array.id}
 									data-excluded={!pose.included || undefined}
@@ -446,7 +446,7 @@ export function PlanViewport({
 					<polygon
 						key={object.id}
 						points={points(object.footprint_uv)}
-						className="lp-keepout-shape"
+						className="sc-keepout-shape"
 						data-object={object.id}
 						data-selected={selected === object.id || undefined}
 					/>
@@ -454,7 +454,7 @@ export function PlanViewport({
 				{obstacles.map((object) => (
 					<g
 						key={object.id}
-						className="lp-obstacle-shape"
+						className="sc-obstacle-shape"
 						data-object={object.id}
 						data-selected={selected === object.id || undefined}
 					>
@@ -478,11 +478,11 @@ export function PlanViewport({
 			</svg>
 			{!previewOnly && (
 				<>
-					<div className="lp-canvas-caption">
+					<div className="sc-canvas-caption">
 						<span>{__("Roof plane · metres", "linker-tools")}</span>
 						<span>U → · V ↑</span>
 					</div>
-					<p className="lp-profile-help">
+					<p className="sc-field-help">
 						{__(
 							"Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view.",
 							"linker-tools",

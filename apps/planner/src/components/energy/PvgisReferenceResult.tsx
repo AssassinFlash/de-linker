@@ -136,8 +136,8 @@ export function PvgisReferenceResult({
 		? panelPoses(sourceData.roof.geometry).filter((p) => p.included)
 		: [];
 	return (
-		<div className="lp-run-result">
-			<div className="lp-run-heading">
+		<div className="sc-run-result">
+			<div className="sc-run-heading">
 				<h3 tabIndex={-1}>{taskLabel(PVGIS_REFERENCE_TASK)}</h3>
 				<span role="status">
 					{runStateLabel(run.state, PVGIS_REFERENCE_TASK)}
@@ -162,7 +162,7 @@ export function PvgisReferenceResult({
 			)}
 			{summary && (
 				<>
-					<dl className="lp-run-facts">
+					<dl className="sc-run-facts">
 						<dt>{__("Modelled annual AC generation", "linker-tools")}</dt>
 						<dd>{format(summary.energy_kwh)} kWh</dd>
 						<dt>{__("Calculation period (UTC)", "linker-tools")}</dt>
@@ -197,7 +197,7 @@ export function PvgisReferenceResult({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() => void source.refetch()}
 							>
 								{__("Try again", "linker-tools")}
@@ -205,7 +205,7 @@ export function PvgisReferenceResult({
 						</Notice>
 					)}
 					{parameters && (
-						<dl className="lp-run-facts">
+						<dl className="sc-run-facts">
 							<dt>{__("Calendar year", "linker-tools")}</dt>
 							<dd>{parameters.year}</dd>
 							<dt>{__("Radiation database", "linker-tools")}</dt>
@@ -317,7 +317,7 @@ export function PvgisReferenceResult({
 					</p>
 					<button
 						type="button"
-						className="lp-button"
+						className="sc-button sc-primary"
 						disabled={
 							blocked ||
 							!active ||
@@ -358,11 +358,11 @@ export function PvgisReferenceResult({
 							: __("Use as AC profile", "linker-tools")}
 					</button>
 					{sourceData && (
-						<details className="lp-comparison">
+						<details className="sc-disclosure">
 							<summary>
 								{__("Source and task checksums", "linker-tools")}
 							</summary>
-							<dl className="lp-run-facts">
+							<dl className="sc-run-facts">
 								<dt>{__("Input SHA-256", "linker-tools")}</dt>
 								<dd>{String(run.manifest.input_sha256)}</dd>
 								<dt>{__("Result SHA-256", "linker-tools")}</dt>

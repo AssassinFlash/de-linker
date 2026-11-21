@@ -80,13 +80,13 @@ test.beforeEach(async ({ context }) => {
 });
 
 async function openSection(page: Page, section: 'site' | 'energy') {
-	const mobile = page.locator('.lp-mobile-workspace');
+	const mobile = page.locator('.sc-mobile-workspace');
 	if (await mobile.isVisible()) await mobile.selectOption(section);
 	else {
-		const hash = section === 'site' ? 'lp-site' : 'lp-load';
-		await page.locator(`.lp-project-aside a[href="#${hash}"]`).click();
+		const hash = section === 'site' ? 'sc-project' : 'sc-energy';
+		await page.locator(`.sc-project-aside a[href="#${hash}"]`).click();
 	}
-	await expect(page.locator('.lp-project')).toHaveAttribute(
+	await expect(page.locator('.sc-project')).toHaveAttribute(
 		'data-workspace',
 		section
 	);
@@ -125,7 +125,7 @@ for (const lang of ['en', 'de'] as const) {
 		// says plainly that the note is not a calculation input.
 		const note = page.getByRole('textbox', { name: words.noteLabel });
 		await expect(note).toHaveValue(NOTE);
-		await expect(page.locator('.lp-project-brief-start')).toContainText(
+		await expect(page.locator('.sc-project-brief-start')).toContainText(
 			words.notUsed
 		);
 
@@ -137,7 +137,7 @@ for (const lang of ['en', 'de'] as const) {
 			.getByRole('button', { name: words.save, exact: true })
 			.click();
 		await expect(
-			page.locator('.lp-project-brief-start [role="status"]')
+			page.locator('.sc-project-brief-start [role="status"]')
 		).toContainText(words.saved);
 
 		// The scope boundary: without URL hints there is nothing to confirm,
@@ -194,13 +194,15 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
 		await openSection(page, 'energy');
 		await expect(
-			page.locator('#lp-load').getByLabel(words.annualConsumption)
+			page.locator('#sc-energy').getByLabel(words.annualConsumption)
 		).toHaveValue('');
 		await openSection(page, 'site');
 		await expect(
-			page.locator('#lp-site').getByLabel(words.address, { exact: true })
+			page
+				.locator('#sc-project')
+				.getByLabel(words.address, { exact: true })
 		).toHaveValue('');
-		await expect(page.locator('#lp-notes textarea')).toHaveValue(
+		await expect(page.locator('#sc-project textarea')).toHaveValue(
 			'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
 		);
 	});
@@ -222,7 +224,7 @@ for (const lang of ['en', 'de'] as const) {
 			.getByRole('button', { name: words.save, exact: true })
 			.click();
 		await expect(
-			page.locator('.lp-project-brief-start .lp-notice')
+			page.locator('.sc-project-brief-start .sc-notice')
 		).toContainText(words.carryFailed);
 		await expect(note).toHaveValue(edited);
 
@@ -233,7 +235,7 @@ for (const lang of ['en', 'de'] as const) {
 			.getByRole('button', { name: words.save, exact: true })
 			.click();
 		await expect(
-			page.locator('.lp-project-brief-start [role="status"]')
+			page.locator('.sc-project-brief-start [role="status"]')
 		).toContainText(words.saved);
 	});
 
@@ -245,7 +247,7 @@ for (const lang of ['en', 'de'] as const) {
 			await p.goto(instance().url + words.configurator);
 			// The first successful index read opens the form for an empty workspace.
 			await expect(
-				p.locator('.lp-index-heading button[aria-label]')
+				p.locator('.sc-index-heading button[aria-label]')
 			).toBeEnabled();
 			if (!(await p.locator('select[name="system_scope"]').isVisible())) {
 				await p
@@ -272,11 +274,11 @@ for (const lang of ['en', 'de'] as const) {
 		const other = await context.newPage();
 		await other.goto(first.url());
 		const address = other
-			.locator('#lp-site')
+			.locator('#sc-project')
 			.getByLabel(words.address, { exact: true });
 		await address.fill('Triftstrasse 15');
 		await other.getByRole('button', { name: words.saveProject }).click();
-		await expect(other.locator('.lp-save-state')).toContainText(
+		await expect(other.locator('.sc-save-state')).toContainText(
 			words.savedState,
 			{ timeout: 30_000 }
 		);
@@ -284,7 +286,7 @@ for (const lang of ['en', 'de'] as const) {
 		// The stale tab edits the same field and saves into a conflict: the
 		// revision it knew is gone, its change is kept alongside it.
 		const stale = first
-			.locator('#lp-site')
+			.locator('#sc-project')
 			.getByLabel(words.address, { exact: true });
 		await stale.fill('Triftstrasse 25');
 		await first.getByRole('button', { name: words.saveProject }).click();
@@ -332,7 +334,7 @@ for (const lang of ['en', 'de'] as const) {
 		// The guest plans a project of their own.
 		await page.goto(instance().url + words.configurator);
 		await expect(
-			page.locator('.lp-index-heading button[aria-label]')
+			page.locator('.sc-index-heading button[aria-label]')
 		).toBeEnabled();
 		if (!(await page.locator('select[name="system_scope"]').isVisible())) {
 			await page
@@ -364,15 +366,17 @@ for (const lang of ['en', 'de'] as const) {
 		// The claimed project stays reachable under the account, and the
 		// projects screen lists it there.
 		await page.goto(projectUrl);
-		await expect(page.locator('.lp-project-bar')).toContainText(
+		await expect(page.locator('.sc-project-navigation')).toContainText(
 			'Guest to claim',
 			{ timeout: 60_000 }
 		);
 		await page
-			.locator('.lp-project-bar button', { hasText: words.projects })
+			.locator('.sc-project-navigation button', {
+				hasText: words.projects,
+			})
 			.click();
-		await expect(page.locator('.lp-workspace')).toBeVisible();
-		await expect(page.locator('.lp-project-rows')).toContainText(
+		await expect(page.locator('.sc-workspace')).toBeVisible();
+		await expect(page.locator('.sc-project-rows')).toContainText(
 			'Guest to claim',
 			{
 				timeout: 30_000,
@@ -391,7 +395,7 @@ test('the staged brief survives refresh and the language switch (English root)',
 		.getByRole('button', { name: WORDS.en.save, exact: true })
 		.click();
 	await expect(
-		page.locator('.lp-project-brief-start [role="status"]')
+		page.locator('.sc-project-brief-start [role="status"]')
 	).toContainText(WORDS.en.saved);
 
 	// A cold reload re-reads the staged source by its id: the edited note,
@@ -408,10 +412,10 @@ test('the staged brief survives refresh and the language switch (English root)',
 		/de\/loesungskonfigurator\/\?.*brief=[a-f0-9]{32}/,
 		{ timeout: 30_000 }
 	);
-	const germanNote = page.locator('.lp-project-brief-start textarea');
+	const germanNote = page.locator('.sc-project-brief-start textarea');
 	await expect(germanNote).toHaveValue(edited);
 	await expect(
-		page.locator('.lp-project-brief-start a', {
+		page.locator('.sc-project-brief-start a', {
 			hasText: 'Zurück zur Eingabe',
 		})
 	).toHaveAttribute('href', /\/de\/fuer-installateur\/$/);

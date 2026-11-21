@@ -179,7 +179,7 @@ for (const lang of ['en', 'de'] as const) {
 			`Country rules e2e ${lang} ${Date.now()}`
 		);
 
-		const brief = page.locator('#lp-site');
+		const brief = page.locator('#sc-project');
 		await brief.getByLabel(words.country).selectOption('DE');
 		await brief.getByLabel(words.location).fill('Triftstrasse 5');
 		await brief.getByLabel(words.latitude).fill(num(lang, '48.1689'));
@@ -245,7 +245,7 @@ for (const lang of ['en', 'de'] as const) {
 		await rule.locator('input').nth(1).fill(num(lang, '120'));
 
 		await page.getByRole('button', { name: words.saveProject }).click();
-		await expect(page.locator('.lp-save-state')).toContainText(
+		await expect(page.locator('.sc-save-state')).toContainText(
 			words.saved,
 			{
 				timeout: 90_000,
@@ -255,7 +255,7 @@ for (const lang of ['en', 'de'] as const) {
 		// The saved revision reads back through the gateway and the engine: the
 		// form is rebuilt from `country_rule_inputs`, not from local state.
 		await page.goto(
-			`${instance().url}${words.configurator}?project=${project}#lp-site`,
+			`${instance().url}${words.configurator}?project=${project}#sc-project`,
 			{ waitUntil: 'domcontentloaded' }
 		);
 		const reopened = ruleForm(page, words.ruleHeading);

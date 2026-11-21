@@ -163,3 +163,15 @@ test("equipment without a valid product is not a route, and a stray product is r
 	assert.equal(zero.equipment, false);
 	assert.equal(zero.invalid, true);
 });
+
+test("retrofit links bring the project scope without inventing equipment or consumption", () => {
+	const hints = readEntryHints(new URLSearchParams("scope=storage_addition"));
+	assert.ok(hints);
+	assert.equal(hints.invalid, false);
+	const inputs = entryInputs(hints, "", "");
+	assert.equal(
+		(inputs.brief as { system_scope: string }).system_scope,
+		"storage_addition",
+	);
+	assert.equal(inputs.equipment_setup, undefined);
+});

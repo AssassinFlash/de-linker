@@ -36,6 +36,7 @@ test("a point-or-comma field accepts the point a map shows, and still refuses tw
 	const input = document.querySelector("input"),
 		save = document.querySelector("button");
 
+	assert.equal(input.getAttribute("aria-describedby"), null);
 	// The map link the customer copies carries a point; the German interface
 	// must not report a format error for it.
 	await enter(input, "48.1689");
@@ -52,13 +53,15 @@ test("a point-or-comma field accepts the point a map shows, and still refuses tw
 	await enter(input, "1.234,5");
 	assert.equal(save.disabled, true);
 	assert.equal(input.getAttribute("aria-invalid"), "true");
+	const help = document.getElementById(input.getAttribute("aria-describedby"));
+	assert.match(help.textContent, /Decimal point or comma/);
 
 	// Empty means "not provided", which the brief stores as null.
 	await enter(input, "48.1689");
 	await enter(input, "");
 	assert.equal(number, null);
 	assert.equal(save.disabled, false);
-	assert.equal(document.querySelector(".lp-field-error"), null);
+	assert.equal(document.querySelector(".sc-field-error"), null);
 });
 
 test("a locale field keeps its own declared mark, so the fix stays scoped to coordinates", async (t) => {

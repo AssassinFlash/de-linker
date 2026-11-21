@@ -73,13 +73,16 @@ export function ProjectBriefStart({
 						? __("The project note could not be opened.", "linker-tools")
 						: __("Opening your workspace…", "linker-tools")}
 				</p>
-				<div className="lp-inline-actions">
-					<a className="lp-button" href={installerEntryHref(null, locale)}>
+				<div className="sc-actions">
+					<a
+						className="sc-button sc-primary"
+						href={installerEntryHref(null, locale)}
+					>
 						{__("Back to your entry", "linker-tools")}
 					</a>
 					{source.isError && briefId !== "" && (
 						<button
-							className="lp-text-button"
+							className="sc-text-button"
 							type="button"
 							onClick={() => {
 								if (
@@ -93,7 +96,7 @@ export function ProjectBriefStart({
 							{__("Try again", "linker-tools")}
 						</button>
 					)}
-					<button className="lp-text-button" type="button" onClick={dismiss}>
+					<button className="sc-text-button" type="button" onClick={dismiss}>
 						{__("Continue without these inputs", "linker-tools")}
 					</button>
 				</div>
@@ -170,13 +173,13 @@ export function ProjectBriefStart({
 		: __("Carried over", "linker-tools");
 
 	return (
-		<div className="lp-project-brief-start">
-			<section className="lp-section" aria-labelledby="lp-project-note-heading">
-				<h2 id="lp-project-note-heading">
+		<div className="sc-project-brief-start">
+			<section className="sc-section" aria-labelledby="sc-project-note-heading">
+				<h2 id="sc-project-note-heading">
 					{__("Your project note", "linker-tools")}
 				</h2>
 				<p>{__("This note is not used in the calculation.", "linker-tools")}</p>
-				<label className="lp-field">
+				<label className="sc-field">
 					<span>{__("Your project note", "linker-tools")}</span>
 					<textarea
 						rows={4}
@@ -189,17 +192,17 @@ export function ProjectBriefStart({
 						}}
 					/>
 				</label>
-				<div className="lp-inline-actions">
+				<div className="sc-actions">
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						disabled={savingNote || !currentNote.trim()}
 						onClick={() => void saveNote()}
 					>
 						{__("Save", "linker-tools")}
 					</button>
 					<a
-						className="lp-text-button"
+						className="sc-text-button"
 						href={installerEntryHref(record.source_path, locale)}
 					>
 						{__("Back to your entry", "linker-tools")}
@@ -220,7 +223,7 @@ export function ProjectBriefStart({
 					{__("Sizing uses the planning inputs shown below.", "linker-tools")}
 				</p>
 				<h3>{__("Details to confirm", "linker-tools")}</h3>
-				<dl className="lp-field-summary">
+				<dl className="sc-field-summary">
 					<div>
 						<dt>{__("Postal code", "linker-tools")}</dt>
 						<dd>
@@ -273,7 +276,7 @@ export function ProjectBriefStart({
 				{hasStructuredHints && !confirmed && (
 					<button
 						type="button"
-						className="lp-button lp-button-secondary"
+						className="sc-button"
 						onClick={() => setConfirmed(true)}
 					>
 						{__("Use these values", "linker-tools")}

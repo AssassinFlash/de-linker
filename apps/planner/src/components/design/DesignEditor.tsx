@@ -174,7 +174,7 @@ export function DesignEditor({
 						review: () =>
 							revealActionResult(
 								document.querySelector<HTMLElement>(
-									"#lp-array-properties input, #lp-array-properties select",
+									"#sc-array-properties input, #sc-array-properties select",
 								),
 							),
 					}
@@ -291,15 +291,15 @@ export function DesignEditor({
 		currentPage = Math.min(page, totalPages - 1);
 	return (
 		<section
-			className="lp-section lp-design-section"
-			id="lp-design"
+			className="sc-section sc-design-section"
+			id="sc-solar"
 			tabIndex={-1}
-			aria-labelledby="lp-design-heading"
+			aria-labelledby="sc-design-heading"
 		>
-			<div className="lp-section-heading">
-				<span className="lp-index">06</span>
+			<div className="sc-section-heading">
+				<span className="sc-index">06</span>
 				<div>
-					<h2 id="lp-design-heading">{__("Roof design", "linker-tools")}</h2>
+					<h2 id="sc-design-heading">{__("Roof design", "linker-tools")}</h2>
 					<p>
 						{__(
 							"Draw your roof on the aerial map, then place your panels.",
@@ -308,12 +308,12 @@ export function DesignEditor({
 					</p>
 				</div>
 			</div>
-			<div className="lp-design-toolbar">
-				<div className="lp-inline-actions">
+			<div className="sc-design-toolbar">
+				<div className="sc-actions">
 					{roof && (
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={!!form || importOpen || drawingOpen}
 							onClick={() => open("module")}
 						>
@@ -322,7 +322,7 @@ export function DesignEditor({
 					)}
 				</div>
 				<div
-					className="lp-view-switch"
+					className="sc-view-switch"
 					role="group"
 					aria-label={__("Design view", "linker-tools")}
 				>
@@ -374,13 +374,13 @@ export function DesignEditor({
 					)}
 				</Notice>
 			)}
-			<details className="lp-design-imports">
+			<details className="sc-design-imports">
 				<summary>
 					{__("Use measurements or import a roof plan", "linker-tools")}
 				</summary>
 				<button
 					type="button"
-					className="lp-button lp-button-secondary"
+					className="sc-button"
 					disabled={!!form || importOpen || drawingOpen}
 					onClick={() => open("roof")}
 				>
@@ -417,8 +417,8 @@ export function DesignEditor({
 					commit={edit}
 				/>
 			</details>
-			<div className="lp-design-workspace">
-				<div className="lp-design-canvas" id="lp-array-canvas" tabIndex={-1}>
+			<div className="sc-design-workspace">
+				<div className="sc-design-canvas" id="sc-array-canvas" tabIndex={-1}>
 					{view === "map" ? (
 						<MapDrawingWorkspace
 							imagery={imagery}
@@ -448,7 +448,7 @@ export function DesignEditor({
 					) : view === "3d" && (roof || canShowGoogle3D) ? (
 						<>
 							{roof && (
-								<div className="lp-roof-picker">
+								<div className="sc-roof-picker">
 									<label>
 										{__("Active roof face", "linker-tools")}
 										<select
@@ -466,7 +466,7 @@ export function DesignEditor({
 											))}
 										</select>
 									</label>
-									<span className="lp-eyebrow">
+									<span className="sc-eyebrow">
 										{geometry.coordinate_system.north_reference ===
 										"unreferenced"
 											? __("North unreferenced", "linker-tools")
@@ -494,7 +494,7 @@ export function DesignEditor({
 						</>
 					) : roof ? (
 						<>
-							<div className="lp-roof-picker">
+							<div className="sc-roof-picker">
 								<label>
 									{__("Active roof face", "linker-tools")}
 									<select
@@ -512,7 +512,7 @@ export function DesignEditor({
 										))}
 									</select>
 								</label>
-								<span className="lp-eyebrow">
+								<span className="sc-eyebrow">
 									{geometry.coordinate_system.north_reference === "unreferenced"
 										? __("North unreferenced", "linker-tools")
 										: __("North reference recorded", "linker-tools")}
@@ -534,7 +534,7 @@ export function DesignEditor({
 							/>
 						</>
 					) : (
-						<div className="lp-design-empty">
+						<div className="sc-design-empty">
 							<Icon name="layers" width={42} height={42} />
 							<h3>
 								{__(
@@ -550,7 +550,7 @@ export function DesignEditor({
 							</p>
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={!!form || importOpen || drawingOpen}
 								onClick={() => open("roof")}
 							>
@@ -559,7 +559,7 @@ export function DesignEditor({
 							</button>
 						</div>
 					)}
-					<dl className="lp-design-quantities">
+					<dl className="sc-design-quantities">
 						<div>
 							<dt>{__("Included modules", "linker-tools")}</dt>
 							<dd>{summary.count}</dd>
@@ -577,7 +577,7 @@ export function DesignEditor({
 					</dl>
 				</div>
 				<aside
-					className="lp-design-properties"
+					className="sc-design-properties"
 					inert={drawingOpen}
 					aria-label={__("Design objects and properties", "linker-tools")}
 				>
@@ -605,7 +605,7 @@ export function DesignEditor({
 									preview={setArrayPreview}
 									choosePosition={() =>
 										revealActionResult(
-											globalThis.document.getElementById("lp-array-canvas"),
+											globalThis.document.getElementById("sc-array-canvas"),
 										)
 									}
 								/>
@@ -661,10 +661,10 @@ export function DesignEditor({
 											roofDependents(model!, formRoof.id).length,
 										)}
 									</p>
-									<div className="lp-inline-actions">
+									<div className="sc-actions">
 										<button
 											type="button"
-											className="lp-button"
+											className="sc-button sc-primary"
 											onClick={() => {
 												if (
 													edit({
@@ -683,7 +683,7 @@ export function DesignEditor({
 										</button>
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											onClick={closeForm}
 										>
 											{__("Cancel", "linker-tools")}
@@ -696,12 +696,12 @@ export function DesignEditor({
 						<>
 							<h3>{__("Design objects", "linker-tools")}</h3>
 							<div
-								className="lp-object-tree"
+								className="sc-object-tree"
 								role="group"
 								aria-label={__("Select a design object", "linker-tools")}
 							>
 								{geometry.roofs.map((face) => (
-									<div key={face.id} className="lp-object-branch">
+									<div key={face.id} className="sc-object-branch">
 										<button
 											type="button"
 											aria-pressed={selected === face.id}
@@ -719,7 +719,7 @@ export function DesignEditor({
 											.map((object) => (
 												<button
 													type="button"
-													className="lp-object-child"
+													className="sc-object-child"
 													key={object.id}
 													aria-pressed={
 														selected === object.id ||
@@ -744,10 +744,10 @@ export function DesignEditor({
 								))}
 							</div>
 							{roof && (
-								<div className="lp-object-actions">
+								<div className="sc-object-actions">
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										disabled={!geometry.module_specs.length}
 										onClick={() => open("array")}
 									>
@@ -756,7 +756,7 @@ export function DesignEditor({
 									</button>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={() => open("obstacle")}
 									>
 										{__("Add obstacle", "linker-tools")}
@@ -764,7 +764,7 @@ export function DesignEditor({
 									</button>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={() => open("keepout")}
 									>
 										{__("Add keep-out area", "linker-tools")}
@@ -772,13 +772,13 @@ export function DesignEditor({
 									</button>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										onClick={() => open("rules")}
 									>
 										{__("Layout clearances", "linker-tools")}
 									</button>
 									{!geometry.module_specs.length && (
-										<p className="lp-profile-help">
+										<p className="sc-field-help">
 											{__(
 												"A module specification is needed before an array can be placed.",
 												"linker-tools",
@@ -788,7 +788,7 @@ export function DesignEditor({
 								</div>
 							)}
 							{(object || module || source || array) && (
-								<div className="lp-object-inspector">
+								<div className="sc-object-inspector">
 									<h3>
 										{object?.name ??
 											(module ? panelLabel(module, locale) : null) ??
@@ -811,7 +811,7 @@ export function DesignEditor({
 									{panel && (
 										<button
 											type="button"
-											className="lp-button lp-button-secondary"
+											className="sc-button"
 											onClick={() =>
 												edit({
 													type: "toggle_panel",
@@ -826,10 +826,10 @@ export function DesignEditor({
 												: __("Restore module", "linker-tools")}
 										</button>
 									)}
-									<div className="lp-inline-actions">
+									<div className="sc-actions">
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											onClick={() => {
 												if (array) open("array", array.id, array.roof_id);
 												else if (module) open("module", module.id);
@@ -851,7 +851,7 @@ export function DesignEditor({
 										{object && (
 											<button
 												type="button"
-												className="lp-text-button"
+												className="sc-text-button"
 												onClick={() =>
 													"boundary_uv" in object
 														? open("delete_roof", object.id, object.id)
@@ -865,7 +865,7 @@ export function DesignEditor({
 									{object && (
 										<button
 											type="button"
-											className="lp-text-button"
+											className="sc-text-button"
 											onClick={() => open("source", object.source_id)}
 										>
 											{__("Source properties", "linker-tools")}
@@ -875,18 +875,18 @@ export function DesignEditor({
 							)}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={!geometry.sources.length}
 								onClick={() => open("coordinates")}
 							>
 								{__("Coordinate references", "linker-tools")}
 							</button>
-							<details className="lp-comparison">
+							<details className="sc-disclosure">
 								<summary>{__("Sources", "linker-tools")}</summary>
 								{geometry.sources.map((source) => (
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										key={source.id}
 										onClick={() => open("source", source.id)}
 									>
@@ -899,12 +899,12 @@ export function DesignEditor({
 				</aside>
 			</div>
 			{array && !form && (
-				<details className="lp-comparison lp-module-table">
+				<details className="sc-disclosure sc-module-table">
 					<summary>
 						{sprintf(__("Module slots in %s", "linker-tools"), array.name)}
 					</summary>
-					<div className="lp-table-scroll">
-						<table className="lp-data-table">
+					<div className="sc-table-scroll">
+						<table className="sc-data-table">
 							<thead>
 								<tr>
 									<th>{__("Row / column", "linker-tools")}</th>
@@ -928,14 +928,14 @@ export function DesignEditor({
 											<td>
 												<button
 													type="button"
-													className="lp-text-button"
+													className="sc-text-button"
 													onClick={() => choose(pose.id)}
 												>
 													{__("Select module", "linker-tools")}
 												</button>
 												<button
 													type="button"
-													className="lp-text-button"
+													className="sc-text-button"
 													onClick={() =>
 														edit({
 															type: "toggle_panel",
@@ -955,10 +955,10 @@ export function DesignEditor({
 							</tbody>
 						</table>
 					</div>
-					<div className="lp-inline-actions">
+					<div className="sc-actions">
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={currentPage === 0}
 							onClick={() => setPage(currentPage - 1)}
 						>
@@ -973,7 +973,7 @@ export function DesignEditor({
 						</span>
 						<button
 							type="button"
-							className="lp-text-button"
+							className="sc-text-button"
 							disabled={currentPage + 1 >= totalPages}
 							onClick={() => setPage(currentPage + 1)}
 						>

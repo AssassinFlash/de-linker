@@ -29,14 +29,17 @@ class ApplicationBoundary extends Component<
 	override render() {
 		if (this.state.failed)
 			return (
-				<div className="lp-session-state" role="alert">
+				<div className="sc-session-state" role="alert">
 					<p>
 						{__(
 							"The workspace could not be displayed. Saved projects are unchanged.",
 							"linker-tools",
 						)}
 					</p>
-					<button className="lp-button" onClick={() => location.reload()}>
+					<button
+						className="sc-button sc-primary"
+						onClick={() => location.reload()}
+					>
 						{__("Reload workspace", "linker-tools")}
 					</button>
 				</div>

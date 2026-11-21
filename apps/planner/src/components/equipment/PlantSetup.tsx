@@ -187,7 +187,7 @@ export function PlantSetup(props: Props) {
 	});
 	const feedback = (key: string) =>
 		message(key) ? (
-			<small className="lp-field-error" id={pathFor(key) + "-error"}>
+			<small className="sc-field-error" id={pathFor(key) + "-error"}>
 				{message(key)}
 			</small>
 		) : null;
@@ -218,13 +218,13 @@ export function PlantSetup(props: Props) {
 	);
 	return (
 		<>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"Each system has its own equipment selection. Battery equipment may be separate, integrated or absent. Coordination groups record systems planned to share a controller.",
 					"linker-tools",
 				)}
 			</p>
-			<p className="lp-profile-help">
+			<p className="sc-field-help">
 				{__(
 					"To return to single-system planning, keep one system, remove coordination groups, then choose Single system. Undo can reverse changes still available in the current editing history.",
 					"linker-tools",
@@ -240,27 +240,27 @@ export function PlantSetup(props: Props) {
 					{__("Current product data is being prepared.", "linker-tools")}
 				</p>
 			)}
-			<div className="lp-work-toolbar lp-equipment-data">
+			<div className="sc-work-toolbar sc-equipment-data">
 				<button
 					type="button"
-					className="lp-text-button"
+					className="sc-text-button"
 					disabled={catalog.isFetching || disabled}
 					onClick={() => void catalog.refetch()}
 				>
 					{__("Reload product data", "linker-tools")}
 				</button>
 			</div>
-			<div className="lp-work-grid lp-equipment-plant-layout">
-				<div className="lp-work-aside">
+			<div className="sc-work-grid sc-equipment-plant-layout">
+				<div className="sc-work-aside">
 					<fieldset
 						disabled={disabled}
-						className="lp-scenario-fields lp-scenario-block lp-work-panel lp-equipment-requirements"
+						className="sc-scenario-fields sc-scenario-block sc-work-panel sc-equipment-requirements"
 					>
-						<legend className="lp-work-panel-heading">
+						<legend className="sc-work-panel-heading">
 							{__("Project requirements", "linker-tools")}
 						</legend>
-						<div className="lp-geometry-fields">
-							<label className="lp-field">
+						<div className="sc-geometry-fields">
+							<label className="sc-field">
 								<span>{__("Choose an operating mode", "linker-tools")}</span>
 								<select
 									{...fieldProps("operating_mode")}
@@ -295,7 +295,7 @@ export function PlantSetup(props: Props) {
 								</select>
 								{feedback("operating_mode")}
 							</label>
-							<label className="lp-field">
+							<label className="sc-field">
 								<span>{__("Grid connection", "linker-tools")}</span>
 								<select
 									{...fieldProps("grid_phase")}
@@ -336,7 +336,7 @@ export function PlantSetup(props: Props) {
 								)}
 						</div>
 						<details
-							className="lp-comparison"
+							className="sc-disclosure"
 							open={
 								typeof setup.requirements.required_usable_kwh === "number" ||
 								typeof setup.requirements.required_discharge_ac_kw === "number"
@@ -351,7 +351,7 @@ export function PlantSetup(props: Props) {
 									"linker-tools",
 								)}
 							</p>
-							<div className="lp-geometry-fields">
+							<div className="sc-geometry-fields">
 								{requirementNumber(
 									"required_usable_kwh",
 									__("Total required usable energy", "linker-tools"),
@@ -369,8 +369,8 @@ export function PlantSetup(props: Props) {
 						</details>
 					</fieldset>
 					{props.searchEnabled && (
-						<div className="lp-work-panel lp-equipment-search">
-							<div className="lp-work-panel-heading">
+						<div className="sc-work-panel sc-equipment-search">
+							<div className="sc-work-panel-heading">
 								<h3>{__("Multi-system combination", "linker-tools")}</h3>
 							</div>
 							<p>
@@ -379,7 +379,7 @@ export function PlantSetup(props: Props) {
 									"linker-tools",
 								)}
 							</p>
-							<details className="lp-comparison">
+							<details className="sc-disclosure">
 								<summary>{__("Search scope", "linker-tools")}</summary>
 								<p>
 									{__(
@@ -388,10 +388,10 @@ export function PlantSetup(props: Props) {
 									)}
 								</p>
 							</details>
-							<div className="lp-work-toolbar">
+							<div className="sc-work-toolbar">
 								<button
 									type="button"
-									className="lp-button"
+									className="sc-button sc-primary"
 									disabled={
 										blocked ||
 										actionsDisabled ||
@@ -406,12 +406,12 @@ export function PlantSetup(props: Props) {
 							</div>
 						</div>
 					)}
-					<section className="lp-work-panel lp-equipment-coordination">
-						<div className="lp-plant-toolbar lp-work-panel-heading">
+					<section className="sc-work-panel sc-equipment-coordination">
+						<div className="sc-plant-toolbar sc-work-panel-heading">
 							<h3>{__("Coordination groups", "linker-tools")}</h3>
 							<button
 								type="button"
-								className="lp-button lp-button-secondary"
+								className="sc-button"
 								disabled={
 									disabled ||
 									setup.units.filter(
@@ -450,7 +450,7 @@ export function PlantSetup(props: Props) {
 							<fieldset
 								key={group.id}
 								disabled={disabled}
-								className="lp-scenario-fields lp-scenario-block"
+								className="sc-scenario-fields sc-scenario-block"
 							>
 								<legend>
 									{sprintf(
@@ -464,9 +464,9 @@ export function PlantSetup(props: Props) {
 										"linker-tools",
 									)}
 								</p>
-								<div className="lp-geometry-fields">
+								<div className="sc-geometry-fields">
 									{setup.units.map((unit) => (
-										<label className="lp-field" key={unit.id}>
+										<label className="sc-field" key={unit.id}>
 											<span>
 												<input
 													type="checkbox"
@@ -504,7 +504,7 @@ export function PlantSetup(props: Props) {
 										</label>
 									))}
 								</div>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Controller communication", "linker-tools")}</span>
 									<select
 										value={group.control_network ?? ""}
@@ -530,7 +530,7 @@ export function PlantSetup(props: Props) {
 										<option value="rs485">RS485</option>
 									</select>
 								</label>
-								<label className="lp-field">
+								<label className="sc-field">
 									<span>{__("Shared controller", "linker-tools")}</span>
 									<select
 										value={group.controller_product_id ?? ""}
@@ -587,7 +587,7 @@ export function PlantSetup(props: Props) {
 									</select>
 								</label>
 								{group.controller_product_id !== null && (
-									<label className="lp-field">
+									<label className="sc-field">
 										<span>{__("Controller", "linker-tools")}</span>
 										<select
 											value={group.controller_use ?? "new"}
@@ -620,7 +620,7 @@ export function PlantSetup(props: Props) {
 								)}
 								<button
 									type="button"
-									className="lp-text-button"
+									className="sc-text-button"
 									onClick={() =>
 										change((current) => ({
 											...current,
@@ -634,10 +634,10 @@ export function PlantSetup(props: Props) {
 								</button>
 							</fieldset>
 						))}
-						<div className="lp-work-toolbar">
+						<div className="sc-work-toolbar">
 							<button
 								type="button"
-								className="lp-button"
+								className="sc-button sc-primary"
 								disabled={actionsDisabled || blocked || !valid}
 								onClick={props.check}
 							>
@@ -646,12 +646,12 @@ export function PlantSetup(props: Props) {
 						</div>
 					</section>
 				</div>
-				<section className="lp-work-panel lp-work-main lp-equipment-systems">
-					<div className="lp-plant-toolbar lp-work-panel-heading">
+				<section className="sc-work-panel sc-work-main sc-equipment-systems">
+					<div className="sc-plant-toolbar sc-work-panel-heading">
 						<h3>{__("Systems in this project", "linker-tools")}</h3>
 						<button
 							type="button"
-							className="lp-button lp-button-secondary"
+							className="sc-button"
 							disabled={disabled}
 							onClick={() => {
 								const id = newId("system");
@@ -684,7 +684,7 @@ export function PlantSetup(props: Props) {
 							{unit.unit_id}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								disabled={disabled}
 								onClick={() =>
 									edit((inputs) =>
@@ -697,14 +697,14 @@ export function PlantSetup(props: Props) {
 						</Notice>
 					))}
 					<nav
-						className="lp-plant-switcher"
+						className="sc-plant-switcher"
 						aria-label={__("Systems in this project", "linker-tools")}
 					>
 						{setup.units.map((unit, index) => (
 							<button
 								key={unit.id}
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								aria-pressed={unit.id === selected}
 								onClick={() => select(unit.id)}
 							>
@@ -729,8 +729,8 @@ export function PlantSetup(props: Props) {
 								hidden={unit.id !== selected}
 								aria-label={unit.name.trim() || __("System", "linker-tools")}
 							>
-								<div className="lp-plant-toolbar">
-									<label className="lp-field">
+								<div className="sc-plant-toolbar">
+									<label className="sc-field">
 										<span>{__("System name", "linker-tools")}</span>
 										<input
 											value={unit.name}
@@ -750,7 +750,7 @@ export function PlantSetup(props: Props) {
 									</label>
 									<button
 										type="button"
-										className="lp-text-button"
+										className="sc-text-button"
 										disabled={disabled || setup.units.length === 1}
 										onClick={() =>
 											change((current) => {

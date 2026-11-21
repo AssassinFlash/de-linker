@@ -25,7 +25,7 @@ function destination(
 			! allowed ||
 			url.username ||
 			url.password ||
-			url.hash !== '#lp-calculations' ||
+			url.hash !== '#sc-review' ||
 			[ ...url.searchParams.keys() ].some(
 				( key ) =>
 					! [ 'project', 'run', 'compare' ].includes( key ) ||

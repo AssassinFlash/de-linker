@@ -83,6 +83,7 @@ import {
 	PLANNER_NAVIGATION,
 	replacePlannerLocation,
 } from "../../data/plannerLocation.ts";
+import { needsPreliminaryComparison } from "./HomepageDemand.tsx";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
 import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
@@ -108,26 +109,15 @@ import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
 
-type Step = "project" | "solar" | "energy" | "system" | "review";
-const steps: Step[] = ["project", "solar", "energy", "system", "review"];
-const roofMapLinks = new Set([
-	"#sc-roof",
-	"#lp-map-roof-properties",
-	"#lp-map-ring-properties",
-	"#lp-map-feature-properties",
-]);
+import {
+	ProjectNavigation,
+	isRoofLocation,
+	projectChapter,
+	type ProjectChapter as Step,
+} from "./ProjectNavigation.tsx";
+
 function initialStep(): Step {
-	const hash = location.hash.slice(1);
-	if (
-		hash === "sc-solar" ||
-		hash === "lp-design" ||
-		roofMapLinks.has(location.hash)
-	)
-		return "solar";
-	if (hash === "sc-energy" || hash === "lp-load") return "energy";
-	if (hash === "sc-system" || hash === "lp-equipment") return "system";
-	if (hash === "sc-review" || hash === "lp-calculations") return "review";
-	return "project";
+	return projectChapter(new URL(location.href));
 }
 
 function useProjectResult(
@@ -161,7 +151,34 @@ function useProjectResult(
 	});
 }
 
-export default function Configurator({
+function useSearchInputs(
+	client: PlannerClient,
+	scope: string,
+	projectId: string,
+	run: PlanningRun | null,
+) {
+	return useQuery({
+		queryKey: [
+			scope,
+			"configurator-comparison-models",
+			projectId,
+			run?.id ?? null,
+		],
+		enabled: !!run && client.isCurrentScope(scope),
+		queryFn: async ({ signal }) =>
+			readRunInputs(
+				await client.query(
+					"runs/inputs",
+					{ schema_version: 1, project_id: projectId, run_id: run!.id },
+					scope,
+					signal,
+				),
+				run!,
+			),
+	});
+}
+
+export default function ProjectWorkbench({
 	project,
 	session,
 	client,
@@ -169,6 +186,7 @@ export default function Configurator({
 	config,
 	recheck,
 	close,
+	comparePreliminary,
 	recoveryScopes,
 	recoveryChecking = false,
 	recoveryFailed = false,
@@ -180,6 +198,7 @@ export default function Configurator({
 	config: Configuration;
 	recheck: () => void;
 	close: () => boolean;
+	comparePreliminary?: (project: Project) => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryFailed?: boolean;
@@ -190,11 +209,18 @@ export default function Configurator({
 	const guided =
 		params.get("guided") === "inquiry" && params.get("project") === project.id;
 	const [step, setStep] = useState<Step>(initialStep);
+	const [systemRequest, setSystemRequest] = useState<
+		"existing" | "navigation" | null
+	>(() => (step === "system" ? "existing" : null));
+	const checkingSystem = systemRequest !== null;
 	useEffect(() => {
 		if (!guided) return;
 		const restore = () => {
-			if (new URL(location.href).searchParams.get("project") === project.id)
-				setStep(initialStep());
+			if (new URL(location.href).searchParams.get("project") === project.id) {
+				const restored = initialStep();
+				setSystemRequest(restored === "system" ? "existing" : null);
+				setStep(restored);
+			}
 		};
 		window.addEventListener("popstate", restore);
 		return () => window.removeEventListener("popstate", restore);
@@ -203,6 +229,7 @@ export default function Configurator({
 	const workbench = useRef<HTMLDivElement>(null);
 	const [assessmentPending, setAssessmentPending] = useState(false);
 	const [energyValid, setEnergyValid] = useState(true);
+	const [coordinatesValid, setCoordinatesValid] = useState(true);
 	const [energyOpened, setEnergyOpened] = useState(() =>
 		["energy", "solar"].includes(initialStep()),
 	);
@@ -287,6 +314,7 @@ export default function Configurator({
 	const [selecting, setSelecting] = useState(false);
 	const reportPreparation = useRef<AbortController | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
+	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
@@ -441,7 +469,10 @@ export default function Configurator({
 		url.searchParams.delete("energy_view");
 		replacePlannerLocation(url);
 	}
-	const searchRun = search.data ?? null,
+	const searchRun =
+			checkingSystem || search.data?.id === replacedSearch
+				? null
+				: (search.data ?? null),
 		reportRun = report.data ?? null;
 	const reviewedReportId =
 		guided &&
@@ -488,28 +519,25 @@ export default function Configurator({
 	const legacyModels = draft
 		? needsComparisonModels(draft.history.current)
 		: false;
-	const comparisonSource = useQuery({
-		queryKey: [
-			session.query_scope,
-			"configurator-comparison-models",
-			project.id,
-			selectedSearch,
-		],
-		enabled:
-			legacyModels &&
-			adoptedRun !== null &&
-			client.isCurrentScope(session.query_scope),
-		queryFn: async ({ signal }) =>
-			readRunInputs(
-				await client.query(
-					"runs/inputs",
-					{ schema_version: 1, project_id: project.id, run_id: adoptedRun!.id },
-					session.query_scope,
-					signal,
-				),
-				adoptedRun!,
-			),
-	});
+	const comparisonSource = useSearchInputs(
+		client,
+		session.query_scope,
+		project.id,
+		legacyModels ? adoptedRun : null,
+	);
+	const oldRevision =
+		checkingSystem &&
+		search.data &&
+		search.data.revision !== draft?.baseline.revision
+			? search.data
+			: null;
+	const recordedInputs = useSearchInputs(
+		client,
+		session.query_scope,
+		project.id,
+		oldRevision,
+	);
+
 	const comparisonInputs = legacyModels ? comparisonSource.data : undefined;
 	const frozenSearch = adoptedRun?.result?.search
 		? readObject(adoptedRun.result.search)
@@ -542,8 +570,10 @@ export default function Configurator({
 			[session.query_scope, "configurator-result", project.id, task, run.id],
 			run,
 		);
-		if (task === SEARCH_TASK) setSubmittedSearch(run.id);
-		else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		if (task === SEARCH_TASK) {
+			setReplacedSearch(null);
+			setSubmittedSearch(run.id);
+		} else if (task === REPORT_TASK) setSubmittedReport(run.id);
 		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
@@ -638,8 +668,7 @@ export default function Configurator({
 			step === "solar" &&
 			before &&
 			after &&
-			!sameJson(before.geometry, after.geometry) &&
-			sameJson(before.geometry_imports, after.geometry_imports)
+			!sameJson(before.geometry, after.geometry)
 		)
 			requestedRoofSave.current = after;
 	}
@@ -654,7 +683,86 @@ export default function Configurator({
 		if (!mayLeave()) return;
 		showStep(next);
 	}
+	async function closeProject() {
+		if (mayLeave() && (await controller.flush())) close();
+	}
+	function openChapter(next: Step) {
+		const current = latest.current;
+		if (!current || !mayLeave()) return;
+		if (next === "system" && !coordinatesValid) {
+			showStep("solar");
+			return;
+		}
+		showStep(next);
+	}
+	const checkCurrentComparison = useEffectEvent(async () => {
+		const current = latest.current;
+		if (!current) return;
+		const run = search.data;
+		const frozen = oldRevision ? recordedInputs.data : current.baseline.inputs;
+		if (run && !frozen) return;
+		setSystemRequest(null);
+		if (!run && systemRequest === "existing") return;
+		const inputs = current.history.current;
+		if (run) {
+			if (run.revision === current.baseline.revision && !isDirty(current)) {
+				setReplacedSearch(null);
+				return;
+			}
+			const saved = frozen!;
+			const authored =
+				comparisonInputs && needsComparisonModels(inputs)
+					? restoreComparisonModels(inputs, comparisonInputs)
+					: inputs;
+			const settingsChanged =
+				!authored.equipment_candidate &&
+				["equipment_setup", "equipment_plant_setup"].some(
+					(key) => !sameJson(authored[key] ?? null, saved[key] ?? null),
+				);
+			if (!settingsChanged && sameEquipmentDemand(authored, saved)) {
+				setReplacedSearch(null);
+				return;
+			}
+			setReplacedSearch(run.id);
+		}
+		if (comparePreliminary && needsPreliminaryComparison(inputs)) {
+			const instance = lifetime.current;
+			const saved = await controller.save();
+			if (
+				saved &&
+				instance === lifetime.current &&
+				location.hash === "#sc-system" &&
+				client.isCurrentScope(session.query_scope)
+			)
+				comparePreliminary(saved);
+		} else if (run) await compare();
+	});
+	useEffect(() => {
+		if (
+			step === "system" &&
+			checkingSystem &&
+			history.isSuccess &&
+			(!searchId || search.isSuccess) &&
+			(!oldRevision || recordedInputs.isSuccess) &&
+			!modelsUnavailable &&
+			!blocked
+		)
+			void checkCurrentComparison();
+	}, [
+		step,
+		checkingSystem,
+		history.isSuccess,
+		searchId,
+		search.isSuccess,
+		oldRevision,
+		recordedInputs.isSuccess,
+		modelsUnavailable,
+		blocked,
+	]);
+
 	function showStep(next: Step) {
+		if (next !== step)
+			setSystemRequest(next === "system" ? "navigation" : null);
 		setGenieReportId(null);
 		const url = new URL(location.href);
 		const previous = url.hash;
@@ -733,7 +841,8 @@ export default function Configurator({
 		}
 	}
 	async function compare() {
-		if (blocked || modelsUnavailable || !latest.current) return;
+		if (blocked || modelsUnavailable || !latest.current || !coordinatesValid)
+			return;
 		setError(null);
 		const instance = lifetime.current;
 		const reply = await operations.start("runs/find-equipment", {
@@ -1008,19 +1117,11 @@ export default function Configurator({
 	const inputs = draft.history.current;
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
-	const visible = steps.filter(
-		(s) => s !== "solar" || brief.system_scope !== "storage_only",
-	);
-	const labels: Record<Step, string> = {
-		project: __("Project", "linker-tools"),
-		solar: __("Solar", "linker-tools"),
-		energy: __("Energy use", "linker-tools"),
-		system: __("System", "linker-tools"),
-		review: __("Report & inquiry", "linker-tools"),
-	};
 	const failedRead = [
 		...(legacyModels ? [adoptedSearch, comparisonSource] : []),
-		...(step === "system" ? [systemRead] : []),
+		...(step === "system"
+			? [systemRead, ...(oldRevision ? [recordedInputs] : [])]
+			: []),
 	].find((query) => query.isError);
 	const confirmedIntent = operations.intent?.resultId
 		? operations.intent
@@ -1209,9 +1310,7 @@ export default function Configurator({
 								className="sc-button"
 								onClick={() => {
 									if (!mayLeave()) return;
-									void controller.flush().then((ok) => {
-										if (ok) close();
-									});
+									void closeProject();
 								}}
 							>
 								{__("Projects", "linker-tools")}
@@ -1223,21 +1322,11 @@ export default function Configurator({
 			{guidedView ? (
 				<InquiryStages guided reviewing={guidedReview} />
 			) : (
-				<nav
-					className="sc-nav"
-					aria-label={__("Project navigation", "linker-tools")}
-				>
-					{visible.map((s, i) => (
-						<button
-							key={s}
-							aria-current={activeStep === s ? "step" : undefined}
-							onClick={() => navigate(s)}
-						>
-							<span className="sc-step-number">{i + 1}</span>
-							{labels[s]}
-						</button>
-					))}
-				</nav>
+				<ProjectNavigation
+					current={activeStep}
+					storageOnly={brief.system_scope === "storage_only"}
+					open={openChapter}
+				/>
 			)}
 			{navigationRefused &&
 				navigationBlocked &&
@@ -1395,9 +1484,9 @@ export default function Configurator({
 					</button>
 				</div>
 			))}
-			<div className={guidedReview ? undefined : "sc-layout"}>
+			<div className={activeStep === "review" ? undefined : "sc-layout"}>
 				<main
-					id={activeStep === "review" ? "lp-calculations" : undefined}
+					id={"sc-" + activeStep}
 					ref={main}
 					tabIndex={-1}
 					className="sc-main"
@@ -1428,87 +1517,93 @@ export default function Configurator({
 							}
 						/>
 					)}
-					{activeStep === "solar" && (
-						<SolarInstallation
-							inputs={inputs}
-							config={config}
-							client={client}
-							session={session}
-							disabled={blocked || modelsUnavailable}
-							edit={edit}
-							onLayoutChange={() => {
-								requestedRoofSave.current =
-									latest.current?.history.current ?? null;
-							}}
-							next={() => navigate("energy")}
-							wiring={
-								wiringPlant
-									? wiringPlant.units.map((unit, index) => {
-											const hasPlan = plantWiring.some(
-												(row) => row.unit_id === unit.id,
-											);
-											if (
-												!hasPlan &&
-												(!hasRoofModules ||
-													typeof equipmentDraft(unit.inputs)
-														.inverter_product_id !== "number")
+					{(activeStep === "solar" || !coordinatesValid) && (
+						<div hidden={activeStep !== "solar"}>
+							<SolarInstallation
+								active={activeStep === "solar"}
+								onCoordinateValidity={setCoordinatesValid}
+								inputs={inputs}
+								config={config}
+								client={client}
+								session={session}
+								disabled={blocked || modelsUnavailable}
+								edit={edit}
+								onLayoutChange={() => {
+									requestedRoofSave.current =
+										latest.current?.history.current ?? null;
+								}}
+								next={() => navigate("energy")}
+								wiring={
+									wiringPlant
+										? wiringPlant.units.map((unit, index) => {
+												const hasPlan = plantWiring.some(
+													(row) => row.unit_id === unit.id,
+												);
+												if (
+													!hasPlan &&
+													(!hasRoofModules ||
+														typeof equipmentDraft(unit.inputs)
+															.inverter_product_id !== "number")
+												)
+													return null;
+												return (
+													<fieldset className="sc-card" key={unit.id}>
+														<legend>
+															{unit.name ||
+																sprintf(
+																	__("System %d", "linker-tools"),
+																	index + 1,
+																)}
+														</legend>
+														<PlantPvStringSetup
+															draft={draft}
+															unit={unit}
+															units={wiringPlant.units}
+															edit={editWiring}
+															locale={config.locale}
+															disabled={blocked || modelsUnavailable}
+															onValidity={wiringCallbacks[unit.id]!}
+															checkedInReport
+														/>
+													</fieldset>
+												);
+											})
+										: (typeof inverterId === "number" ||
+												inputs.pv_string_plan != null) && (
+												<PvStringSetup
+													draft={draft}
+													edit={editWiring}
+													inverterId={
+														typeof inverterId === "number" ? inverterId : null
+													}
+													locale={config.locale}
+													disabled={blocked || modelsUnavailable}
+													onValidity={wiringCallbacks[""]!}
+													checkedInReport
+												/>
 											)
-												return null;
-											return (
-												<fieldset className="sc-card" key={unit.id}>
-													<legend>
-														{unit.name ||
-															sprintf(
-																__("System %d", "linker-tools"),
-																index + 1,
-															)}
-													</legend>
-													<PlantPvStringSetup
-														draft={draft}
-														unit={unit}
-														units={wiringPlant.units}
-														edit={editWiring}
-														locale={config.locale}
-														disabled={blocked || modelsUnavailable}
-														onValidity={wiringCallbacks[unit.id]!}
-														checkedInReport
-													/>
-												</fieldset>
-											);
-										})
-									: (typeof inverterId === "number" ||
-											inputs.pv_string_plan != null) && (
-											<PvStringSetup
-												draft={draft}
-												edit={editWiring}
-												inverterId={
-													typeof inverterId === "number" ? inverterId : null
-												}
-												locale={config.locale}
-												disabled={blocked || modelsUnavailable}
-												onValidity={wiringCallbacks[""]!}
-												checkedInReport
-											/>
-										)
-							}
-							initialMap={roofMapLinks.has(location.hash)}
-							takeImageryConsent={(source) =>
-								takeRoofImageryConsent(project.id, source)
-							}
-							onEditing={setRoofEditing}
-							geometryImport={{
-								projectId: project.id,
-								recheck,
-								confirmedInputs: draft.baseline.inputs,
-								onActivity: setImportOpen,
-								recoveryScopes,
-								recoveryChecking,
-							}}
-						/>
+								}
+								initialMap={isRoofLocation(location.hash)}
+								initialPlan={location.hash === "#sc-roof-plan"}
+								takeImageryConsent={(source) =>
+									takeRoofImageryConsent(project.id, source)
+								}
+								onEditing={setRoofEditing}
+								geometryImport={{
+									projectId: project.id,
+									recheck,
+									confirmedInputs: draft.baseline.inputs,
+									onActivity: setImportOpen,
+									recoveryScopes,
+									recoveryChecking,
+								}}
+							/>
+						</div>
 					)}
 					{(energyOpened || activeStep === "energy") && (
 						<div hidden={activeStep !== "energy"}>
 							<EnergyDemand
+								coordinatesInvalid={!coordinatesValid}
 								projectId={project.id}
 								inputs={inputs}
 								locale={config.locale}
@@ -1609,11 +1704,13 @@ export default function Configurator({
 									onSelectionPending={setAssessmentPending}
 									onSelect={select}
 								/>
-							) : !searchRun && systemRead.isPending ? (
+							) : !searchRun &&
+							  !failedRead &&
+							  (checkingSystem || systemRead.isPending) ? (
 								<p className="sc-card" role="status">
 									{__("Reading saved calculation results…", "linker-tools")}
 								</p>
-							) : !searchRun && systemRead.isError ? null : (
+							) : !searchRun && failedRead ? null : (
 								<section className="sc-card">
 									{searchRun && runPending(searchRun.state) ? (
 										<p role="status">
@@ -1653,13 +1750,17 @@ export default function Configurator({
 																"linker-tools",
 															)}
 											</p>
-											{guided &&
+											{(guided || replacedSearch) &&
 												((searchRun && !runPending(searchRun.state)) ||
 													Boolean(error ?? operations.error)) && (
 													<button
 														className="sc-button sc-primary"
 														disabled={blocked || modelsUnavailable}
-														onClick={() => void compare()}
+														onClick={() =>
+															replacedSearch
+																? setSystemRequest("navigation")
+																: void compare()
+														}
 													>
 														{__("Try again", "linker-tools")}
 													</button>
@@ -1797,9 +1898,11 @@ export default function Configurator({
 								hasMore: olderHistory.data
 									? olderHistory.hasNextPage
 									: firstCursor !== null,
-								loading: olderHistory.isFetching,
-								loadFailed: olderHistory.isError,
-								loadMore: () => void olderHistory.fetchNextPage(),
+								loading: history.isPending || olderHistory.isFetching,
+								loadFailed: history.isError || olderHistory.isError,
+								loadMore: history.isError
+									? () => void history.refetch()
+									: () => void olderHistory.fetchNextPage(),
 							}}
 							client={client}
 							session={session}
@@ -1814,7 +1917,7 @@ export default function Configurator({
 						/>
 					)}
 				</main>
-				{!guidedReview && (
+				{activeStep !== "review" && (
 					<aside className="sc-sidebar">
 						<section className="sc-card">
 							<p className="sc-muted">
@@ -1850,6 +1953,8 @@ export default function Configurator({
 								<details>
 									<summary>{__("View parts list", "linker-tools")}</summary>
 									<CandidateMaterials
+										client={client}
+										scope={session.query_scope}
 										candidate={selectedCandidate}
 										assessment={assessment}
 										locale={config.locale}

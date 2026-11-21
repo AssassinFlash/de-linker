@@ -100,7 +100,7 @@ export function PvgisReferenceSetup({
 			);
 	};
 	return (
-		<section className="lp-scenario-block">
+		<section className="sc-scenario-block">
 			<h3>{__("PVGIS annual AC reference", "linker-tools")}</h3>
 			<p>
 				{__(
@@ -137,7 +137,7 @@ export function PvgisReferenceSetup({
 				</Notice>
 			) : (
 				<fieldset disabled={disabled}>
-					<label className="lp-field">
+					<label className="sc-field">
 						<span>{__("PV details source", "linker-tools")}</span>
 						<select
 							value={known ? "known" : "roof"}
@@ -205,11 +205,11 @@ export function PvgisReferenceSetup({
 										});
 									});
 								return (
-									<fieldset key={array.id} className="lp-scenario-block">
+									<fieldset key={array.id} className="sc-scenario-block">
 										<legend>
 											{sprintf(__("PV plane %d", "linker-tools"), index + 1)}
 										</legend>
-										<div className="lp-geometry-fields">
+										<div className="sc-geometry-fields">
 											<ScenarioNumber
 												field={array.id + "-power"}
 												label={__("Declared PV power", "linker-tools")}
@@ -246,7 +246,7 @@ export function PvgisReferenceSetup({
 													update({ azimuth_north_clockwise_deg })
 												}
 											/>
-											<label className="lp-field">
+											<label className="sc-field">
 												<span>
 													{__("PV details source note", "linker-tools")}
 												</span>
@@ -262,7 +262,7 @@ export function PvgisReferenceSetup({
 										{parsed.arrays!.length > 1 && (
 											<button
 												type="button"
-												className="lp-text-button"
+												className="sc-text-button"
 												onClick={() => {
 													edit((current) => {
 														const value = referenceDraft(current);
@@ -288,7 +288,7 @@ export function PvgisReferenceSetup({
 							})}
 							<button
 								type="button"
-								className="lp-text-button"
+								className="sc-text-button"
 								onClick={() =>
 									edit((current) => {
 										const value = referenceDraft(current);
@@ -313,8 +313,8 @@ export function PvgisReferenceSetup({
 							</button>
 						</>
 					)}
-					<div className="lp-geometry-fields">
-						<label className="lp-field">
+					<div className="sc-geometry-fields">
+						<label className="sc-field">
 							<span>{__("Radiation database", "linker-tools")}</span>
 							<select
 								value={parsed.radiation_database ?? ""}
@@ -349,7 +349,7 @@ export function PvgisReferenceSetup({
 							onChange={(year) => change({ year })}
 							report={report}
 						/>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("PV reference technology", "linker-tools")}</span>
 							<select
 								value={parsed.pv_technology ?? ""}
@@ -371,7 +371,7 @@ export function PvgisReferenceSetup({
 								))}
 							</select>
 						</label>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("PVGIS mounting type", "linker-tools")}</span>
 							<select
 								value={parsed.mounting_place ?? ""}
@@ -408,7 +408,7 @@ export function PvgisReferenceSetup({
 							}
 							report={report}
 						/>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>{__("Terrain horizon", "linker-tools")}</span>
 							<select
 								value={
@@ -436,7 +436,7 @@ export function PvgisReferenceSetup({
 								</option>
 							</select>
 						</label>
-						<label className="lp-field">
+						<label className="sc-field">
 							<span>
 								{known
 									? __(
@@ -463,7 +463,7 @@ export function PvgisReferenceSetup({
 			)}
 			{!known &&
 				(roof ? (
-					<div className="lp-scenario-sources">
+					<div className="sc-scenario-sources">
 						<PvgisRoofFacts geometry={roof.geometry} locale={locale} />
 						<p>
 							{__(
@@ -481,11 +481,11 @@ export function PvgisReferenceSetup({
 					</Notice>
 				))}
 			{openDesign && !known && (
-				<button type="button" className="lp-text-button" onClick={openDesign}>
+				<button type="button" className="sc-text-button" onClick={openDesign}>
 					{__("Review roof design", "linker-tools")}
 				</button>
 			)}
-			<div className="lp-energy-submit">
+			<div className="sc-energy-submit">
 				<p>
 					{isDirty(draft) || draft.pending
 						? __(
@@ -502,7 +502,7 @@ export function PvgisReferenceSetup({
 				</p>
 				<button
 					type="button"
-					className="lp-button"
+					className="sc-button sc-primary"
 					onClick={start}
 					disabled={
 						actionsDisabled ||
