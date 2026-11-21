@@ -15,7 +15,7 @@
     "src/components/NumberField.tsx": "de5dd3a7d33e9415e935be5aad1855138fa141c94e2670ec28c343efdfd35e1c",
     "src/components/OwnedProfile.tsx": "c2f401f74dffd1bd18b2a70428d448007732e3094526ec00afe941a3d6db529e",
     "src/components/PanelMeasurementFields.tsx": "a0f552cf330cb4f714023bee0871c4f98d9bcd283f68db4c8d158083da7b50b2",
-    "src/components/ProfileCurve.tsx": "572fdf48c9b6ecdca5eec3889e10650205ae02741692b0bc5419a0af10383b8c",
+    "src/components/ProfileCurve.tsx": "b12301dfcd15dcbfea08265a182dec3b70c0396436b747b5721a07c18267bd09",
     "src/components/ProfileError.tsx": "bcca26205c73a8c870f2ee69b0f87b462efe6f0b81f4690b5b6933555dabac67",
     "src/components/ProfileImportSettings.tsx": "cc77b90add4b3d838e78e5cea1d3509886262f284cde33719fb4f7e0bd2d27b3",
     "src/components/ProfileIntake.tsx": "c2229ab69d4b16c04137935a10da3a5712c9b1d1ba5605aea19196aa420316ea",
@@ -31,7 +31,7 @@
     "src/components/ToolIdentity.tsx": "bee77f0cb9ed66bd67d7c9e15acc41568997bf56c997a2e099a5c87be2efa63d",
     "src/components/Workspace.tsx": "cbbf058ce38d654cc599d97027dad8de2f1fc06f106c693e41c4d178912dcc2b",
     "src/components/commercial/CommercialSizing.tsx": "c14182abc338dc391f2db1f51de3200fc809f5903bf7f68949a07466025e9ea1",
-    "src/components/configurator/EnergyDemand.tsx": "60f3b394c25202851bc8811faadb9185510aeb044c45c946cbc81591413494e9",
+    "src/components/configurator/EnergyDemand.tsx": "a72a30f4230096e9113498c8dda79ffd1d57381b55a1cd3c1611b00c31ea9fcd",
     "src/components/configurator/HomepageDemand.tsx": "a65b6817c7ce0f4b2303bc4adfc419e208b4d9599c84ad0ac90a505b2ec9a137",
     "src/components/configurator/HomepageLoadProfile.tsx": "db32abf0052dded2d209743e25926c88afa76dcc4c1c1809592a88ea37a6de21",
     "src/components/configurator/HomepagePvReference.tsx": "df42bc51845b36121bcd3c5f5716f61b046f3fe0aac71aa5a4479c9f7941f05d",
@@ -344,13 +344,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-B5-oqeEg.js": "0692c384a7443f0e138421c7dcbc2090209da76694143b06a249c22395675cc8",
-    "assets/ProjectWorkbench-CzxyQh_b.js": "b727413c90077f8aa9b59b69a0ec84bcbbdb84198b975d91546a78fc302400f8",
-    "assets/SceneViewport-n2iRF5a6.js": "c7016ae622fa03dedbabc2fdd0f05c0615beef31da57362ba3837bcecf60c552",
-    "assets/planner-core-DZtJZZuA.js": "60f4caa09122fe6d8a44b6045e386f6cc31fe012e796147eee3719494e1c3635",
-    "assets/planner.js": "4f39b122e3dd84844e4358c3015b708702d8299414f5d09e1b1ae9b7354789fe",
+    "assets/MapViewport-gS04pAts.js": "f8796adff10d924fb517a4a9b91868d966a0d1cc0d438200bac59c585646aa25",
+    "assets/ProjectWorkbench-BfzTiMIJ.js": "2f6f5db81d9de1f08ceca808f7ea4b9188df65b7a51ba85cf5b25be08112d9ad",
+    "assets/SceneViewport-4FdPr27t.js": "6eb35964bb41a6e1ba27f91ebb5e786a8a4560efe091ae1fe049a2199a47ecd6",
+    "assets/planner-core-C-_IKl6y.js": "e3ebeeb6750faed66a0c432685feef3669b39d13b7099514a7d5c8ea3252096c",
+    "assets/planner.js": "b30ef44b2820c82a41d3b7234a3918951d577b13e9fdecde0172493fbcbf60eb",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "45e368b600c807c08428c375bcc3802d3c31150a72cbf111733829ae158366f0",
+    "vite-manifest.json": "bc81e9ef6d5724a444d97f67ef434648c00838e25062fb36fceefe0cfe575916",
     "windpress.scan.txt": "396da1029e50efbce0aeb733fad0226c070b87dd259a2a76996221c31fbb993b"
   },
   "project_input_contracts": [
