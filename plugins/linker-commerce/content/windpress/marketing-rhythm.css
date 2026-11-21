@@ -191,6 +191,23 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 	min-height: var(--proto-control-height);
 }
 
+@media (max-width: 800px) {
+	#tv-utility-page-v1 .lk-advisor-headline-row .lk-runway-actions {
+		justify-content: center;
+	}
+
+	#tv-utility-page-v1 .lk-advisor-headline-row a.lk-btn-secondary {
+		background: var(--proto-neutral-0);
+		border-color: var(--proto-neutral-0);
+		color: var(--proto-teal-900);
+	}
+
+	#tv-utility-page-v1 .lk-advisor-headline-row a.lk-btn-secondary:is(:hover, :focus-visible) {
+		background: var(--proto-teal-100);
+		border-color: var(--proto-teal-100);
+	}
+}
+
 #installer-journal #tools .lk-tool-slide-controls .lk-tool-prev {
 	min-width: var(--proto-control-height);
 }
