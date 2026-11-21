@@ -238,4 +238,17 @@ def test_manual_services_pair_keeps_its_prior_translation_review_on_write(
         ],
     )
     standards.main()
-    assert list(tmp_path.glob("industry-standards-before-*.json"))
+    import json
+
+    backup = next(tmp_path.glob("industry-standards-before-*.json"))
+    saved = json.loads(backup.read_text())
+    assert saved["published_metadata"] == source["metadata"]
+    state["metadata"] = {"2748": {"_linker_i18n_status": ["synced"]}}
+    monkeypatch.setattr(
+        standards.pair, "invoke", lambda *_: pytest.fail("late review overwritten")
+    )
+    monkeypatch.setattr(
+        sys, "argv", ["industry-standards.py", "--wp", "wp", "--rollback", str(backup)]
+    )
+    with pytest.raises(RuntimeError, match="translation metadata"):
+        standards.main()

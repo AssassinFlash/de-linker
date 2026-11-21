@@ -300,7 +300,7 @@ REVISIONS = {
 
 
 def _plan_pair(
-    ids: tuple[int, int], snapshot: dict[str, Any]
+    ids: tuple[int, int], snapshot: dict[str, Any], *, require_current: bool = True
 ) -> tuple[dict[str, Any] | None, list[tuple[int, str, str]]]:
     changes = []
     diff = []
@@ -329,7 +329,7 @@ def _plan_pair(
     if not states:
         raise ValueError(f"Pair {ids} contains a partial revision of the reviewed copy")
     if "final" in states:
-        if not snapshot["current"]:
+        if require_current and not snapshot["current"]:
             raise ValueError(
                 f"Pair {ids} has final copy but a stale translation baseline. Recover the native baseline before retrying."
             )
@@ -341,9 +341,11 @@ def _plan_pair(
     }, diff
 
 
-def plan_pair(ids: tuple[int, int], snapshot: dict[str, Any]) -> dict[str, Any] | None:
+def plan_pair(
+    ids: tuple[int, int], snapshot: dict[str, Any], *, require_current: bool = True
+) -> dict[str, Any] | None:
     """Return a native adopt payload or None for final copy with a current baseline."""
-    payload, _ = _plan_pair(ids, snapshot)
+    payload, _ = _plan_pair(ids, snapshot, require_current=require_current)
     return payload
 
 

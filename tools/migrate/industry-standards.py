@@ -261,6 +261,8 @@ def main() -> None:
             str(change["id"]): change["after"] for change in changes
         }:
             raise RuntimeError("The reviewed pages changed after the backup was made")
+        if current["metadata"] != backup.get("published_metadata"):
+            raise RuntimeError("The translation metadata differs from the release receipt")
         pair.invoke(
             args.wp,
             {
@@ -339,6 +341,7 @@ def main() -> None:
     ):
         raise RuntimeError(f"Paired readback differs; backup: {backup_path}")
     saved = json.loads(backup_path.read_text())
+    saved["published_metadata"] = readback["metadata"]
     saved["readback_verified"] = True
     backup_path.write_text(json.dumps(saved, indent=2))
     removed = prune_page_backups(args.backup_dir)

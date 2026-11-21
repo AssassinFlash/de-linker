@@ -6,10 +6,10 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Any
 from urllib.parse import urlsplit
 
 import reviewed_page_pair as wp
+from reviewed_page_pair import changes, verify_published, write
 
 TEMPLATES = (
     Path(__file__).resolve().parents[2]
@@ -59,53 +59,6 @@ def planned(pages: dict[str, str], ids: tuple[int, int]) -> dict[str, str]:
         )
         for post, lang in zip(ids, ("en", "de"), strict=True)
     }
-
-
-def changes(
-    ids: tuple[int, int], before: dict[str, str], after: dict[str, str]
-) -> list[dict[str, Any]]:
-    return [
-        {"id": post, "before": before[str(post)], "after": after[str(post)]}
-        for post in ids
-    ]
-
-
-def write(
-    prefix: str,
-    ids: tuple[int, int],
-    before: dict[str, Any],
-    after: dict[str, str],
-    metadata: dict[str, Any],
-    *,
-    adopt: bool = False,
-) -> dict[str, Any]:
-    wp.invoke(
-        prefix,
-        {
-            "mode": "adopt" if adopt else "restore",
-            "changes": changes(ids, before["pages"], after),
-            "metadata_before": before["metadata"],
-            "require_current": before["current"],
-            "expected_metadata" if adopt else "metadata_restore": metadata,
-        },
-    )
-    saved = wp.read(prefix, *ids)
-    if saved["pages"] != after or saved["metadata"] != metadata:
-        raise RuntimeError(
-            "The paired homepage content or translation did not read back"
-        )
-    return saved
-
-
-def verify_published(backup: dict[str, Any], current: dict[str, Any]) -> None:
-    if (
-        current["home"] != backup["before"]["home"]
-        or (backup["before"]["current"] and not current["current"])
-        or current["pages"] != backup["published_pages"]
-        or current["metadata"]
-        != backup.get("published_metadata", backup["before"]["metadata"])
-    ):
-        raise ValueError("The homepage pair changed since the showcase was published")
 
 
 def main() -> None:
