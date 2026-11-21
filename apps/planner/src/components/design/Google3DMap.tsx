@@ -500,11 +500,7 @@ export function Google3DMap({
 						{__("Retry 3D", "linker-tools")}
 					</button>
 					{onSwitchToMap && (
-						<button
-							type="button"
-							className="sc-button"
-							onClick={onSwitchToMap}
-						>
+						<button type="button" className="sc-button" onClick={onSwitchToMap}>
 							{__("Open aerial map", "linker-tools")}
 						</button>
 					)}
@@ -525,11 +521,7 @@ export function Google3DMap({
 				role="group"
 				aria-label={__("3D satellite controls", "linker-tools")}
 			>
-				<button
-					type="button"
-					className="sc-button"
-					onClick={resetCamera}
-				>
+				<button type="button" className="sc-button" onClick={resetCamera}>
 					{__("Reset 3D view", "linker-tools")}
 				</button>
 				<button
@@ -557,20 +549,12 @@ export function Google3DMap({
 						: __("Show street labels", "linker-tools")}
 				</button>
 				{onSwitchToMap && (
-					<button
-						type="button"
-						className="sc-button"
-						onClick={onSwitchToMap}
-					>
+					<button type="button" className="sc-button" onClick={onSwitchToMap}>
 						{__("Draw or adopt on aerial map", "linker-tools")}
 					</button>
 				)}
 				{onSwitchToCad && (
-					<button
-						type="button"
-						className="sc-button"
-						onClick={onSwitchToCad}
-					>
+					<button type="button" className="sc-button" onClick={onSwitchToCad}>
 						{__("CAD 3D (Edit panels)", "linker-tools")}
 					</button>
 				)}

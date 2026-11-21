@@ -209,7 +209,6 @@ sc-report-create
 sc-report-detail
 sc-report-detail-layout
 sc-report-dialog
-sc-report-document
 sc-report-downloads
 sc-report-file-info
 sc-report-filename

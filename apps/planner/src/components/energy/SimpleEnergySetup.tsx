@@ -84,7 +84,11 @@ export function SimpleEnergySetup({
 					)}
 				</p>
 				{!hasEquipment && (
-					<button type="button" className="sc-button sc-primary" onClick={chooseEquipment}>
+					<button
+						type="button"
+						className="sc-button sc-primary"
+						onClick={chooseEquipment}
+					>
 						{__("Choose equipment", "linker-tools")}
 					</button>
 				)}

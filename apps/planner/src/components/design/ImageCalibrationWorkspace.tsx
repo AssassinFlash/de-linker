@@ -1083,7 +1083,11 @@ export function ImageCalibrationWorkspace({
 									{__("Back", "linker-tools")}
 								</button>
 							)}
-							<button className="sc-button sc-primary" type="submit" disabled={reading}>
+							<button
+								className="sc-button sc-primary"
+								type="submit"
+								disabled={reading}
+							>
 								{step < 2
 									? __("Continue", "linker-tools")
 									: __("Add roof to current design", "linker-tools")}

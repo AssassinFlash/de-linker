@@ -38,7 +38,9 @@ import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
-const ProjectWorkbench = lazy(() => import("./configurator/ProjectWorkbench.tsx"));
+const ProjectWorkbench = lazy(
+	() => import("./configurator/ProjectWorkbench.tsx"),
+);
 import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
 import {
 	InquiryStages,

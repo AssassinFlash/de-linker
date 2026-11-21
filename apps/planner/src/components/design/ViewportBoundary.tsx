@@ -20,11 +20,7 @@ export class ViewportBoundary extends Component<
 		return this.state.failed ? (
 			<Notice error>
 				<p>{this.props.failure}</p>
-				<button
-					type="button"
-					className="sc-button"
-					onClick={this.props.retry}
-				>
+				<button type="button" className="sc-button" onClick={this.props.retry}>
 					{this.props.retryLabel}
 				</button>
 			</Notice>

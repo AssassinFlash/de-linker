@@ -216,11 +216,7 @@ export function MapRoofProperties({
 					<button type="submit" className="sc-button sc-primary">
 						{__("Check and add roof face", "linker-tools")}
 					</button>
-					<button
-						type="button"
-						className="sc-button"
-						onClick={continueDrawing}
-					>
+					<button type="button" className="sc-button" onClick={continueDrawing}>
 						{__("Continue adding corners", "linker-tools")}
 					</button>
 				</div>

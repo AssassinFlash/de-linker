@@ -58,7 +58,8 @@ test("a lazy built chunk never executes the versioned WordPress entry again", as
 		await readFile(new URL("vite-manifest.json", directory), "utf8"),
 	);
 	assert.ok(
-		manifest["src/components/configurator/ProjectWorkbench.tsx"]?.isDynamicEntry,
+		manifest["src/components/configurator/ProjectWorkbench.tsx"]
+			?.isDynamicEntry,
 	);
 	assert.ok(manifest["src/components/design/MapViewport.tsx"]?.isDynamicEntry);
 	await import(

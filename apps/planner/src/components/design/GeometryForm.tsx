@@ -218,7 +218,11 @@ export function GeometryForm({
 			{children}
 			{error && <Notice error>{error}</Notice>}
 			<div className="sc-actions">
-				<button className="sc-button sc-primary" type="submit" disabled={submitDisabled}>
+				<button
+					className="sc-button sc-primary"
+					type="submit"
+					disabled={submitDisabled}
+				>
 					{__("Apply properties", "linker-tools")}
 				</button>
 				<button

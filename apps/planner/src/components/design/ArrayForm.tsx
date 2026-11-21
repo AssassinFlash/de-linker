@@ -142,11 +142,7 @@ export function ArrayForm({
 							"linker-tools",
 						)}
 			</p>
-			<button
-				type="button"
-				className="sc-button"
-				onClick={choosePosition}
-			>
+			<button type="button" className="sc-button" onClick={choosePosition}>
 				{position
 					? __("Change position on roof", "linker-tools")
 					: __("Choose position on roof", "linker-tools")}

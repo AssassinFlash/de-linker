@@ -36,7 +36,10 @@ class ApplicationBoundary extends Component<
 							"linker-tools",
 						)}
 					</p>
-					<button className="sc-button sc-primary" onClick={() => location.reload()}>
+					<button
+						className="sc-button sc-primary"
+						onClick={() => location.reload()}
+					>
 						{__("Reload workspace", "linker-tools")}
 					</button>
 				</div>

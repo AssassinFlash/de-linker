@@ -224,7 +224,10 @@ export function SessionBoundary({
 								"linker-tools",
 							)}
 						</p>
-						<button className="sc-button sc-primary" onClick={() => verify("probe")}>
+						<button
+							className="sc-button sc-primary"
+							onClick={() => verify("probe")}
+						>
 							{__("Try again", "linker-tools")}
 						</button>
 					</Notice>

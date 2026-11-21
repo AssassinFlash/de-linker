@@ -74,7 +74,10 @@ export function ProjectBriefStart({
 						: __("Opening your workspace…", "linker-tools")}
 				</p>
 				<div className="sc-actions">
-					<a className="sc-button sc-primary" href={installerEntryHref(null, locale)}>
+					<a
+						className="sc-button sc-primary"
+						href={installerEntryHref(null, locale)}
+					>
 						{__("Back to your entry", "linker-tools")}
 					</a>
 					{source.isError && briefId !== "" && (
