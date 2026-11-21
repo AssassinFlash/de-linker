@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -19,6 +20,11 @@ CAPABILITIES = '<section class="home-trust" id="capabilities">'
 SERVICES = '<section id="services">'
 TESTIMONIALS = '<section id="testimonials">'
 SHOWCASE = 'id="configurator-showcase"'
+HERO_LINK = re.compile(
+    r'(data-linker-planner-entry="home-hero"[^>]*>\s*<a\b[^>]*?\bhref="'
+    r"(?:/solution-configurator/|/de/loesungskonfigurator/))"
+    r'(?:#sc-preliminary-options|\?compare=preliminary)"'
+)
 
 
 def place(content: str, markup: str) -> str:
@@ -35,6 +41,9 @@ def place(content: str, markup: str) -> str:
         content = content.replace(MOUNT, "", 1)
     if "[linker_planner" in content:
         raise ValueError("Unrecognized planner mount on the homepage")
+    content, links = HERO_LINK.subn(r'\g<1>?compare=preliminary"', content)
+    if links != 1:
+        raise ValueError("Expected the existing homepage hero comparison link")
     placement = markup + "\n" + TESTIMONIALS
     if SHOWCASE in content:
         if content.count(SHOWCASE) == 1 and placement in content:

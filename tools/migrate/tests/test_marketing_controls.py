@@ -36,7 +36,7 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
         + roof,
         hero + de + '#sc-preliminary-options">Lösungskonfigurator öffnen</a></div>',
     )
-    expected = (
+    previous = (
         published[0].replace(
             "Open the Solution Configurator", "Compare system options"
         ),
@@ -44,10 +44,14 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
             "Lösungskonfigurator öffnen", "Anlagenvarianten vergleichen"
         ),
     )
+    expected = tuple(
+        page.replace("#sc-preliminary-options", "?compare=preliminary", 1)
+        for page in previous
+    )
     review = tuple(
         page.replace('#sc-preliminary-options"', '"', 1) for page in published
     )
-    for stage in (before, review, published, expected):
+    for stage in (before, review, published, previous, expected):
         assert controls.plan_pair("home_configurator", *stage) == expected
 
 

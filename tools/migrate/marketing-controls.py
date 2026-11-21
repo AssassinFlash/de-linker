@@ -921,7 +921,10 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
 def plan_home_configurator(english: str, german: str) -> tuple[str, str]:
     def update(page: str, path: str, old_label: str, label: str) -> tuple[str, str]:
         hero = f'data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}'
-        target = f'{hero}#sc-preliminary-options">{label}</a>'
+        target = f'{hero}?compare=preliminary">{label}</a>'
+        previous = f'{hero}#sc-preliminary-options">{label}</a>'
+        if previous in page:
+            return _apply_edits(page, ((previous, target),), "Home configurator")
         for suffix in ("?step=roof", "", "#sc-preliminary-options"):
             old = f'{hero}{suffix}">{old_label}</a>'
             if old in page:

@@ -24,16 +24,31 @@ SERVICES = '<section id="services"><div>Services</div></section>'
 TESTIMONIALS = '<section id="testimonials">Stories</section>'
 
 
+def hero(path: str, label: str) -> str:
+    return f'<div data-linker-planner-entry="home-hero"><a class="home-btn home-btn-primary" href="{path}#sc-preliminary-options">{label}</a></div>'
+
+
 def test_pair_preserves_the_existing_livecanvas_bytes_and_repeats_without_changes() -> (
     None
 ):
-    for name in ("Compare", "Vergleichen"):
+    for name, path in (
+        ("Compare", "/solution-configurator/"),
+        ("Vergleichen", "/de/loesungskonfigurator/"),
+    ):
         markup = f'<section id="configurator-showcase"><h2>{name}</h2></section>'
-        beginning = f"<section>{name}</section>\n"
+        beginning = (
+            hero(path, name) + f'<a href="{path}#sc-preliminary-options">Other</a>\n'
+        )
         middle = f"{CAPABILITIES}\n{SERVICES}\n<style>/* local */</style>\n"
         ending = TESTIMONIALS + "\n[linker_contact]"
         before = beginning + MOUNT + middle + ending
-        expected = beginning + middle + markup + "\n" + ending
+        expected = (
+            beginning.replace("#sc-preliminary-options", "?compare=preliminary", 1)
+            + middle
+            + markup
+            + "\n"
+            + ending
+        )
         assert showcase.place(before, markup) == expected
         assert showcase.place(expected, markup) == expected
 
@@ -56,8 +71,11 @@ def test_publish_and_restore_use_the_same_native_page_pair(
     state: dict[str, Any] = {
         "home": "http://review.test",
         "pages": {
-            str(i): f"<p>{i}</p>\n" + MOUNT + CAPABILITIES + SERVICES + TESTIMONIALS
-            for i in (13, 6913)
+            str(i): hero(path, str(i)) + MOUNT + CAPABILITIES + SERVICES + TESTIMONIALS
+            for i, path in (
+                (13, "/solution-configurator/"),
+                (6913, "/de/loesungskonfigurator/"),
+            )
         },
         "metadata": {"13": {"status": ["synced" if synced else "pending"]}},
         "current": synced,
