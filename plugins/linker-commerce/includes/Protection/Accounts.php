@@ -49,6 +49,7 @@ final class Accounts {
 	 */
 	public function register(): void {
 		add_action( 'woocommerce_register_form', array( $this, 'registration_fields' ) );
+		add_action( 'woocommerce_save_account_details_errors', array( \Linker\Commerce\Registration\PendingProfileCapacity::class, 'account_errors' ), PHP_INT_MAX, 2 );
 		add_filter( 'woocommerce_process_registration_errors', array( $this, 'woocommerce_registration' ), 30, 4 );
 		add_action( 'woocommerce_created_customer', array( $this, 'created' ), 1 );
 		add_action( 'register_form', array( $this, 'registration_fields' ) );
@@ -163,6 +164,9 @@ final class Accounts {
 		if ( is_wp_error( $verified ) ) {
 			$errors->add( $verified->get_error_code(), $verified->get_error_message() );
 			return $this->registration_errors( $errors, $core );
+		}
+		if ( email_exists( $email ) ) {
+			return $errors; // Woo and WordPress report their native duplicate-account error.
 		}
 		try {
 			$transaction = new NativeTransaction();

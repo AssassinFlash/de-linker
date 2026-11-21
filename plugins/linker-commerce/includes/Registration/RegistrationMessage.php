@@ -79,6 +79,9 @@ final class RegistrationMessage {
 	 * @return array<string,mixed>|WP_Error Rendered, identity-bound mail plan.
 	 */
 	public static function render( array $pending, NewCustomerEmail|RegistrationReceivedEmail $producer ): array|WP_Error {
+		if ( ! self::valid( $pending ) || 'bound' !== $pending['binding']['stage'] ) {
+			return self::problem();
+		}
 		$binding = $pending['binding'];
 		$source  = $pending['source'];
 		$plan    = self::prepare( $producer, new WP_User( (object) $source['user'] ), $source['values'], $source['locale'], $binding['operation'] );
@@ -330,21 +333,6 @@ final class RegistrationMessage {
 	}
 
 
-	/** Bind only the existing native reservation to its authenticated preview.
-	 *
-	 * @param array<string,mixed> $plan Frozen native producer.
-	 * @param string              $reservation Actual count-one reservation HMAC.
-	 * @return array<string,mixed>|WP_Error Bound source.
-	 */
-	public static function reserved( array $plan, string $reservation ): array|WP_Error {
-		if ( ! self::valid( $plan ) || 'prepared' !== $plan['binding']['stage'] || 1 !== preg_match( '/^[a-f0-9]{64}$/', $reservation ) ) {
-			return self::problem(); }
-		$plan['reservation']      = $reservation;
-		$plan['binding']['stage'] = 'reserved';
-		$plan['witness']          = self::signature( $plan );
-		return $plan;
-	}
-
 	/**
 	 * Attach a mail slot once the registered customer's notice is ready for delivery.
 	 *
@@ -360,35 +348,6 @@ final class RegistrationMessage {
 		$plan['reservation'] = $reservation;
 		$plan['witness']     = self::signature( $plan );
 		return $plan;
-	}
-
-	/** Earliest native insert binds the final identity before the first meta write.
-	 *
-	 * @param array<string,mixed> $plan Reserved native producer.
-	 * @param int                 $id Actual new account.
-	 * @param string              $slot Current server registration slot.
-	 * @return array<string,mixed>|WP_Error Identity-bound source.
-	 */
-	public static function bind( array $plan, int $id, string $slot ): array|WP_Error {
-		if ( ! self::valid( $plan ) || ! in_array( $plan['binding']['stage'], array( 'prepared', 'reserved' ), true ) || $id < 1 || 1 !== preg_match( '/^[a-f0-9]{64}$/', $slot ) ) {
-			return self::problem(); }
-		clean_user_cache( $id );
-		$user = get_userdata( $id );
-		if ( ! $user instanceof WP_User || Identity::recipient( $user->user_email ) !== $plan['binding']['owner'] ) {
-			return self::problem(); }
-		$plan['binding']['account'] = $id;
-		$plan['binding']['slot']    = $slot;
-		$plan['binding']['stage']   = 'bound';
-		$plan['witness']            = self::signature( $plan );
-		return $plan;
-	}
-
-	/** Only this authenticated preview's never-started native reservation may be canceled.
-	 *
-	 * @param array<string,mixed> $plan Private pre-account source.
-	 */
-	public static function uncreated( array $plan ): bool {
-		return self::valid( $plan ) && 'reserved' === $plan['binding']['stage'] && 0 === $plan['binding']['account'] && '' === $plan['binding']['slot'] && is_string( $plan['reservation'] ?? null ) && 1 === preg_match( '/^[a-f0-9]{64}$/D', $plan['reservation'] );
 	}
 
 	/** An explicit native policy skip keeps a verifiable owner until its scope cancellation ACK.
