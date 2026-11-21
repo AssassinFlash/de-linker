@@ -896,7 +896,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				add_filter( 'query', $fault, 998 );
 			}
 			global $wpdb;
-			$previous    = $wpdb->suppress_errors( true );
+			$previous = $wpdb->suppress_errors( true );
 			try {
 				self::assertFalse( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
 				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
