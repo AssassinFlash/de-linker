@@ -167,14 +167,14 @@ final class InquirySummaryTest extends TestCase {
 			),
 			array_slice( $products, -13 )
 		);
-		$messages   = array_map(
-			static fn ( array $ids ): array => array(
+		$messages   = array();
+		foreach ( array_chunk( $products, 6 ) as $ids ) {
+			$messages[] = array(
 				'role'     => 'assistant',
 				'content'  => 'Available products',
 				'products' => $ids,
-			),
-			array_chunk( $products, 6 )
-		);
+			);
+		}
 		$messages[] = array(
 			'role'    => 'user',
 			'content' => 'Four units each of the last thirteen models, please.',
@@ -188,6 +188,7 @@ final class InquirySummaryTest extends TestCase {
 			);
 		};
 		$summary    = ( new InquirySummary( self::conversations(), self::thread( $messages ), $fetch ) )->answer( null, 5 );
+		$this->assertIsArray( $summary );
 		$this->assertSame( $products, $seen );
 		$this->assertSame( $quantities, $summary['quantities'] );
 	}

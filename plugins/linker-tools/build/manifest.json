@@ -75,7 +75,7 @@
 		"src/genie/config.ts": "eae287f1839f9926a083d5b0904f2a917abb5e2f05ec70bc401e943271bce8e9",
 		"src/genie/genie.css": "f9efbfe6ee7aae22975216b790982a4564a2c25de16958c404bbec9a03b3a5c2",
 		"src/genie/index.tsx": "4ea81be0b05ebc9d56a6a396e22b8fea6fd3e7625954ba0733c4a0986f947f86",
-		"src/genie/shared/blocks.ts": "b0c4e67ad2f5ec105b15365123b23894bdd24490f5e0759061227b05ab13e5c0",
+		"src/genie/shared/blocks.ts": "7a054c807fc046273dddd5d5066127c7a2553eb7ce73fc19386976c58ebba126",
 		"src/genie/shared/cardActions.ts": "a130054b117651b8ef7535a7f82133aa1d4fee779c52ac3be76eec9db0f57bef",
 		"src/genie/shared/completedRequest.ts": "0f0d046a5a1d769d9907cb3cfe2b367fe56fde0654efbc81e7889e5d38aa168f",
 		"src/genie/shared/conversation.ts": "109f76b108233cfaf4041386c03d0cef81af1eed9bc4e208e995170478c1cf2b",

@@ -125,8 +125,9 @@ final class DraftProofTest extends TestCase {
 	public function test_product_card_signs_and_displays_the_same_quantity_as_its_action(): void {
 		$proof  = $this->proof();
 		$stream = $proof->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6]}\n\nevent: block\ndata: {\"type\":\"action\",\"name\":\"add_to_draft\",\"args\":{\"product_id\":5,\"quantity\":2}}\n\nevent: block\ndata: {\"type\":\"action\",\"name\":\"save_solution\",\"args\":{}}\n\n", $this->dependencies() );
-		$this->assertIsString( $stream );
-		preg_match( '/^data: (.+)$/m', $stream, $data );
+		if ( ! is_string( $stream ) || 1 !== preg_match( '/^data: (.+)$/m', $stream, $data ) ) {
+			$this->fail( 'The live turn did not return its card.' );
+		}
 		$block = json_decode( $data[1], true );
 		foreach ( array(
 			5 => 2,
@@ -142,8 +143,9 @@ final class DraftProofTest extends TestCase {
 	/** A conflicting customer count leaves the other product card usable. */
 	public function test_unresolved_card_quantity_cannot_be_saved_as_one(): void {
 		$stream = $this->proof()->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6],\"quantities\":{\"5\":0}}\n\n", $this->dependencies() );
-		$this->assertIsString( $stream );
-		preg_match( '/^data: (.+)$/m', $stream, $data );
+		if ( ! is_string( $stream ) || 1 !== preg_match( '/^data: (.+)$/m', $stream, $data ) ) {
+			$this->fail( 'The live turn did not return its card.' );
+		}
 		$block = json_decode( $data[1], true );
 		$this->assertArrayNotHasKey( 5, $block['draft_proofs'] );
 		$this->assertArrayNotHasKey( 5, $block['quantities'] );
