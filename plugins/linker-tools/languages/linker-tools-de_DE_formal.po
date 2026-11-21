@@ -2626,15 +2626,6 @@ msgstr ""
 "Dieser Browser kann HEIC-Fotos nicht öffnen. Bitte hängen Sie das Foto als "
 "JPEG an."
 
-#. translators: %d is how many emails one connection may ask for per hour (ConversationMail::LIMIT).
-#: build/genie.js:10 build/hero.js
-msgid ""
-"This connection has reached the limit of %d emails per hour. Please try "
-"again later."
-msgstr ""
-"Über diese Verbindung wurde das Limit von %d E-Mails pro Stunde erreicht. "
-"Bitte versuchen Sie es später erneut."
-
 #: includes/Genie/QualityPage.php
 msgid "This conversation no longer exists."
 msgstr "Diese Unterhaltung gibt es nicht mehr."
@@ -2691,12 +2682,6 @@ msgstr "Dreiphasig"
 #: src/configurator/roof/RoofStep.tsx:537 build/configurator.js build/planner/assets/planner.js:1
 msgid "Tilt"
 msgstr "Neigung"
-
-#: build/genie.js:10 build/hero.js
-msgid "Today's email limit has been reached. Please try again tomorrow."
-msgstr ""
-"Das E-Mail-Limit für heute ist erreicht. Bitte versuchen Sie es morgen "
-"erneut."
 
 #: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 #: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
