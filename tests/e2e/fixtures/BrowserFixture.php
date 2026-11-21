@@ -48,15 +48,15 @@ final class BrowserFixture {
 		}
 		global $wpdb;
 		$state = array(
-			'email'     => $email,
-			'options'   => array(
+			'email'    => $email,
+			'options'  => array(
 				Throttle::OPTION           => get_option( Throttle::OPTION ),
 				OptionBudgetLedger::OPTION => get_option( OptionBudgetLedger::OPTION ),
 				TestMode::OPTION           => get_option( TestMode::OPTION ),
 			),
-			'marker'    => (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" ),
-			'products'  => array(),
-			'time'      => time(),
+			'marker'   => (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" ),
+			'products' => array(),
+			'time'     => time(),
 		);
 		update_option( $this->key, $state, false );
 		( new TestMode() )->enable( $this->tester );

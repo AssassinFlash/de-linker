@@ -21,8 +21,8 @@ final class NativeTransfer {
 	/**
 	 * Identifies the exact stored turn, including conversations at the history limit.
 	 *
-	 * @param int                  $conversation Owned conversation.
-	 * @param array<string, mixed> $thread Read from that conversation.
+	 * @param int                            $conversation Owned conversation.
+	 * @param array<string, mixed>           $thread Read from that conversation.
 	 * @param array<int,array<string,mixed>> $draft  Contact handoff’s current draft lines.
 	 */
 	public static function source( int $conversation, array $thread, array $draft = array() ): string {

@@ -34,6 +34,7 @@ final class FormTest extends TestCase {
 	/** Represent a form rendered after its template redirect. */
 	public function setUp(): void {
 		parent::setUp();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Restore the PHPUnit process cookie byte-for-byte in tearDown.
 		$this->original_browser                                  = $_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] ?? null;
 		$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = str_repeat( 'a', 32 );
 	}

@@ -125,9 +125,9 @@ final class Sender {
 	 * @param bool                              $lock_refused New order stopped at its pre-save project lock check.
 	 */
 	private function create( Submission $details, array $data, array|false|null $summary, array $context, array $references, array $projects, bool &$lock_refused ): WC_Order|WP_Error {
-		$expected = array();
-		$transaction  = null;
-		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, $projects, &$lock_refused, &$expected, &$transaction ): void {
+		$expected    = array();
+		$transaction = null;
+		$prepare     = function ( WC_Order $order ) use ( $details, $summary, $context, $projects, &$lock_refused, &$expected, &$transaction ): void {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
 			if ( array() !== $projects ) {
@@ -290,7 +290,7 @@ final class Sender {
 	 * @param string               $source inquiry or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 */
-	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array(), bool $summary_awaited = false ): void {
+	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
 		$order->set_payment_method_title( '' );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
@@ -352,7 +352,7 @@ final class Sender {
 		$legacy   = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
 		$expected = array();
 		foreach ( $order->get_meta_data() as $meta ) {
-			$value                          = $legacy && is_array( $meta->value ) ? wp_unslash( $meta->value ) : $meta->value;
+			$value                           = $legacy && is_array( $meta->value ) ? wp_unslash( $meta->value ) : $meta->value;
 			$expected[ (string) $meta->key ] = is_scalar( $value ) ? (string) $value : $value;
 		}
 		return $expected;
@@ -371,7 +371,8 @@ final class Sender {
 		}
 		foreach ( $expected as $name => $value ) {
 			$actual = $fresh->get_meta( $name );
-			if ( $value !== ( is_scalar( $actual ) ? (string) $actual : $actual ) ) {
+			$actual = is_scalar( $actual ) ? (string) $actual : $actual;
+			if ( $value !== $actual ) {
 				return $this->unknown();
 			}
 		}

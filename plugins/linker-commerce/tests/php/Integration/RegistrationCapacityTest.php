@@ -166,7 +166,11 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	private function historical_slot( int $bytes, string $owner = '' ): string {
 		$key           = hash_hmac( 'sha256', 'registration|' . wp_generate_uuid4(), wp_salt( 'auth' ) );
 		$slots         = get_option( RegistrationSlots::OPTION, array() );
-		$slots[ $key ] = array( 'at' => time(), 'bytes' => $bytes, 'owner' => $owner );
+		$slots[ $key ] = array(
+			'at'    => time(),
+			'bytes' => $bytes,
+			'owner' => $owner,
+		);
 		update_option( RegistrationSlots::OPTION, $slots, false );
 		return $key;
 	}
@@ -217,8 +221,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$_COOKIE[ Identity::COOKIE ] = md5( 'registration-capacity-' . $number );
 		$_SERVER['REMOTE_ADDR']      = '192.0.2.' . $number;
 		return array(
-			'linker_request_id'       => wp_generate_uuid4(),
-			'cf-turnstile-response'   => 'XXXX.DUMMY.TOKEN.XXXX',
+			'linker_request_id'     => wp_generate_uuid4(),
+			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
 		);
 	}
 
@@ -401,29 +405,29 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$other  = $this->customer()->get_id();
 			$ledger = get_option( Ledger::OPTION );
 			$jobs   = self::mail_jobs_after( $this->mail_marker );
-			foreach ( $state as $plan ) {
-				$this->assertSame( 'pending', $plan['state'] );
-				$this->assertLessThanOrEqual( $plan['max_bytes'], strlen( (string) wp_json_encode( $plan ) ) );
-				$message = RegistrationMessage::complete( $plan, $id, VatProfile::NONE );
-				$this->assertInstanceOf( Message::class, $message );
-				$this->assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $message ) );
-				$this->assertNull( RegistrationMessage::complete( $plan, $other, VatProfile::NONE ) );
-				foreach ( array( 'policy', 'operation', 'owner', 'kind', 'account', 'slot' ) as $field ) {
-					$changed                      = $plan;
-					$changed['binding'][ $field ] = 'account' === $field ? $other : 'changed';
-					$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
-				}
-				foreach ( array( 'reservation', 'witness', 'max_bytes', 'parts', 'message' ) as $field ) {
-					$changed           = $plan;
-					$changed[ $field ] = match ( $field ) {
-						'max_bytes' => PHP_INT_MAX,
-						'parts' => array( array( 'text' => 'Changed complete prose' ) ),
-						'message' => array_replace( $plan['message'], array( 'to' => array( 'other@example.test' ) ) ),
-						default => str_repeat( 'b', 64 ),
-					};
-					$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
-				}
+		foreach ( $state as $plan ) {
+			$this->assertSame( 'pending', $plan['state'] );
+			$this->assertLessThanOrEqual( $plan['max_bytes'], strlen( (string) wp_json_encode( $plan ) ) );
+			$message = RegistrationMessage::complete( $plan, $id, VatProfile::NONE );
+			$this->assertInstanceOf( Message::class, $message );
+			$this->assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $message ) );
+			$this->assertNull( RegistrationMessage::complete( $plan, $other, VatProfile::NONE ) );
+			foreach ( array( 'policy', 'operation', 'owner', 'kind', 'account', 'slot' ) as $field ) {
+				$changed                      = $plan;
+				$changed['binding'][ $field ] = 'account' === $field ? $other : 'changed';
+				$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
 			}
+			foreach ( array( 'reservation', 'witness', 'max_bytes', 'parts', 'message' ) as $field ) {
+				$changed           = $plan;
+				$changed[ $field ] = match ( $field ) {
+					'max_bytes' => PHP_INT_MAX,
+					'parts' => array( array( 'text' => 'Changed complete prose' ) ),
+					'message' => array_replace( $plan['message'], array( 'to' => array( 'other@example.test' ) ) ),
+					default => str_repeat( 'b', 64 ),
+				};
+					$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
+			}
+		}
 			$this->assertSame( $jobs, self::mail_jobs_after( $this->mail_marker ) );
 			$this->assertSame( $ledger, get_option( Ledger::OPTION ) );
 	}
@@ -730,7 +734,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$id       = $customer->get_id();
 		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $id );
-		$slot = $this->historical_slot( 2048 );
+		$slot  = $this->historical_slot( 2048 );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -769,7 +773,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		} catch ( \Throwable $error ) {
 			$accepted = false; } finally {
 			remove_filter( 'query', $fault );
-		}
+			}
 			$actual   = $observer->get_var( $observer->prepare( 'SELECT display_name FROM %i WHERE ID=%d', $wpdb->users, $id ) );
 			$sentinel = $observer->get_var( $observer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
 			$this->assertTrue( $wpdb->db_connect( false ) );
@@ -995,7 +999,12 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$customer = $this->customer();
 		$this->as_user( $customer->get_id() );
 		update_user_meta( $customer->get_id(), Approval::STATUS_META, Approval::PENDING );
-		$old = array( str_repeat( 'f', 64 ) => array( 'at' => time(), 'bytes' => RegistrationSlots::MAX_BYTES ) );
+		$old = array(
+			str_repeat( 'f', 64 ) => array(
+				'at'    => time(),
+				'bytes' => RegistrationSlots::MAX_BYTES,
+			),
+		);
 		update_option( RegistrationSlots::OPTION, $old, false );
 		$customer->set_billing_company( 'Updated business name' );
 		$customer->save();
@@ -1118,7 +1127,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				}
 			}
 		);
-		$slot = $this->historical_slot( 2048 );
+		$slot  = $this->historical_slot( 2048 );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -1420,15 +1429,15 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 *
 	 * @testWith [false]
 	 *           [true]
-	 * @param bool   $partial Kill after a first uncommitted native write.
+	 * @param bool $partial Kill after a first uncommitted native write.
 	 */
 	public function test_real_connection_loss_cannot_partially_commit_native_registration( bool $partial ): void {
 		global $wpdb;
-		$observer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
-		$retries    = $wpdb->__get( 'reconnect_retries' );
-		$report     = ( new \mysqli_driver() )->report_mode;
-		$post   = $this->public_post( $partial ? 54 : 53 );
-		$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] );
+		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$retries  = $wpdb->__get( 'reconnect_retries' );
+		$report   = ( new \mysqli_driver() )->report_mode;
+		$post     = $this->public_post( $partial ? 54 : 53 );
+		$errors   = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] );
 		$this->assertFalse( $errors->has_errors(), implode( ' ', $errors->get_error_messages() ) );
 		$native_id = 0;
 		$capture   = static function ( array $meta, \WP_User $user ) use ( &$native_id ): array {
@@ -1465,8 +1474,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			}
 			}
 
-		$found  = (int) $observer->get_var( $observer->prepare( 'SELECT ID FROM %i WHERE user_email = %s', $wpdb->users, $post['email'] ) );
-		$orphan = $native_id ? (int) $observer->get_var( $observer->prepare( 'SELECT COUNT(*) FROM %i WHERE user_id = %d', $wpdb->usermeta, $native_id ) ) : 0;
+			$found  = (int) $observer->get_var( $observer->prepare( 'SELECT ID FROM %i WHERE user_email = %s', $wpdb->users, $post['email'] ) );
+			$orphan = $native_id ? (int) $observer->get_var( $observer->prepare( 'SELECT COUNT(*) FROM %i WHERE user_id = %d', $wpdb->usermeta, $native_id ) ) : 0;
 			// Only the fixture reconnects its dead local test client after observing native state.
 			$this->assertTrue( $wpdb->db_connect( false ) );
 			$observer->close();
@@ -1476,8 +1485,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$this->assertTrue( $caught, 'A lost original transaction cannot be acknowledged as success.' );
 			$this->assertSame( $retries, $wpdb->__get( 'reconnect_retries' ) );
 			$this->assertSame( $report, ( new \mysqli_driver() )->report_mode );
-		$this->assertSame( 0, $found );
-		$this->assertSame( 0, $orphan );
+			$this->assertSame( 0, $found );
+			$this->assertSame( 0, $orphan );
 	}
 
 	/**
@@ -1501,7 +1510,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$this->own_user( $id );
 			$before = $this->notices( $id );
 		} else {
-			$slot = $this->historical_slot( 2048 );
+			$slot  = $this->historical_slot( 2048 );
 			$staff = get_users(
 				array(
 					'role'   => 'administrator',
@@ -1775,11 +1784,11 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	/** Multi-recipient charges and replays use the same normalized addresses as wp_mail. */
 	public function test_review_receipt_policy_multi_target_is_atomic(): void {
 		$policy = \Linker\Commerce\Protection\ReceiptBudget::class;
-		$tag = self::tag();
-		$one = "one-{$tag}@example.test";
-		$two = "two-{$tag}@example.test";
-		$fresh = "fresh-{$tag}@example.test";
-		$id = wp_generate_uuid4();
+		$tag    = self::tag();
+		$one    = "one-{$tag}@example.test";
+		$two    = "two-{$tag}@example.test";
+		$fresh  = "fresh-{$tag}@example.test";
+		$id     = wp_generate_uuid4();
 		$this->assertSame( '', $policy::reason( array( $two, $one, strtoupper( $one ) ), $id, 'registration' ) );
 		$this->assertSame( '', $policy::reason( array( "Fixture <{$one}>", $two ), $id, 'registration' ) );
 		$this->assertSame( '', $policy::reason( $one, wp_generate_uuid4(), 'inquiry' ) );
@@ -2189,16 +2198,16 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	private function public_post( int $number ): array {
 
 		$_POST = $this->request( $number ) + array(
-			'billing_company'      => 'Capacity Fixture GmbH',
-			'billing_first_name'   => 'Maria',
-			'billing_last_name'    => 'Beispiel',
-			'billing_country'      => 'DE',
-			CustomerRole::META     => 'installer',
-			Website::META          => 'example.test',
-			VatProfile::VAT_META   => '',
-			'email'                => 'capacity-' . self::tag() . '@example.test',
-			'password'             => 'Native-fixture-2026!',
-			'register'             => 'Register',
+			'billing_company'    => 'Capacity Fixture GmbH',
+			'billing_first_name' => 'Maria',
+			'billing_last_name'  => 'Beispiel',
+			'billing_country'    => 'DE',
+			CustomerRole::META   => 'installer',
+			Website::META        => 'example.test',
+			VatProfile::VAT_META => '',
+			'email'              => 'capacity-' . self::tag() . '@example.test',
+			'password'           => 'Native-fixture-2026!',
+			'register'           => 'Register',
 		);
 		return $_POST;
 	}

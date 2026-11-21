@@ -578,7 +578,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$first  = $this->send( $params );
 		delete_post_meta( $this->conversation, InquiryRequest::NOTE );
 		$params['cf-turnstile-response'] = ''; // Recover the saved Woo inquiry after the original cart was emptied.
-		$second = $this->send( $params );
+		$second                          = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		$this->assertSame( $first->get_data()['inquiry'], $second->get_data()['inquiry'] );
 		$this->authorization->drain();
@@ -656,7 +656,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 */
 	private function send( array $params ): WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/inquiry' );
-		$source = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/inquiry' ) );
+		$source  = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/inquiry' ) );
 		$params += array( 'source' => $source->get_data()['source'] ?? '' );
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );
@@ -729,7 +729,12 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'content' => $text,
 			);
 		}
-		$stream = "event: block\ndata: " . wp_json_encode( array( 'type' => 'text', 'text' => 'An answer.' ) ) . "\n\nevent: done\ndata: {}\n\n";
+		$stream = "event: block\ndata: " . wp_json_encode(
+			array(
+				'type' => 'text',
+				'text' => 'An answer.',
+			)
+		) . "\n\nevent: done\ndata: {}\n\n";
 		$this->assertTrue( ( new Thread() )->record( $this->conversation, $messages, $stream ) );
 	}
 
@@ -752,7 +757,11 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 * @return array<string,string>
 	 */
 	private static function fields(): array {
-		return array( 'website' => '', 'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX', 'consent' => '1' );
+		return array(
+			'website'               => '',
+			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
+			'consent'               => '1',
+		);
 	}
 
 	/**

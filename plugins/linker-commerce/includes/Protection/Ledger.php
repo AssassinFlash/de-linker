@@ -517,7 +517,7 @@ final class Ledger {
 			return self::error( 'input' );
 		}
 		return $this->edit(
-			static function ( array &$state, int $now ) use ( $id, $fingerprint, $operation, $outcome ): array|WP_Error {
+			static function ( array &$state ) use ( $id, $fingerprint, $operation, $outcome ): array|WP_Error {
 				$receipt = $state['receipts'][ $id ] ?? null;
 				if ( ! is_array( $receipt ) || ! hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ) {
 					return self::error( 'unknown_receipt' );

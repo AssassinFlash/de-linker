@@ -22,7 +22,11 @@ use WC_Order;
  * @coversNothing
  */
 final class PreSendAuthorizationTest extends IntegrationTestCase {
-	/** Each case owns the delivery history of a different customer. */
+	/**
+	 * The recipient whose delivery history belongs to this case.
+	 *
+	 * @var string
+	 */
 	private string $recipient;
 	/** Preserve native options and isolate the local provider configuration. */
 	protected function setUp(): void {
@@ -112,6 +116,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$order->set_billing_email( $email );
 		$order->set_customer_id( $customer->get_id() );
 		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce fires its own password-reset hook after verification.
 		do_action( 'woocommerce_customer_reset_password', $user );
 		self::assertSame( '', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
 		$order->set_customer_id( 0 );
@@ -1436,8 +1441,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		);
 		self::assertSame( 'enforce', \Linker\Commerce\Protection\Configuration::active_mode() );
 		$this->provider( $decision );
-		$email = 'assessment-receipt-' . self::tag() . '@example.test';
-		$order = $this->submit( $email );
+		$email    = 'assessment-receipt-' . self::tag() . '@example.test';
+		$order    = $this->submit( $email );
 		$admitted = $this->permissions( $order->get_id() );
 		self::assertSame( array( 'receipt' ), array_keys( $admitted['jobs'] ) );
 		$charged = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false );
@@ -1484,7 +1489,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $usage );
 		self::assertArrayNotHasKey( 'customer_receipt', $usage['counts'] );
 		$this->provider( 'normal' );
-		$email = 'receipt-' . self::tag() . '@example.test';
+		$email  = 'receipt-' . self::tag() . '@example.test';
 		$orders = array( $this->submit( $email ), $this->submit( $email ), $this->submit( $email ) );
 		update_option( $ledger, 'unrelated_tools_journal_unavailable', false );
 		foreach ( $orders as $index => $order ) {

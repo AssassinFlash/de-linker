@@ -178,7 +178,11 @@ final class OperationsHealthTest extends TestCase {
 
 	/** Total native inquiries alone are not an operations alert. */
 	public function test_unhandled_records_do_not_trip_a_site_admission_limit(): void {
-		$intake = array( 'unhandled' => 200, 'bytes' => 1000000, 'quarantined' => 0 );
+		$intake = array(
+			'unhandled'   => 200,
+			'bytes'       => 1000000,
+			'quarantined' => 0,
+		);
 		$health = $this->block( $this->queue(), $this->mail(), $intake, $this->publication() );
 		$this->assertSame( array(), $health->entries() );
 	}

@@ -13,7 +13,11 @@ namespace Linker\Commerce\Protection;
 final class HealthPage {
 	public const PAGE = 'linker-public-protection';
 
-	/** Supply the current server-side configuration. */
+	/**
+	 * Show the current server-side configuration.
+	 *
+	 * @param Configuration $configuration Native public form settings.
+	 */
 	public function __construct( private readonly Configuration $configuration ) {}
 
 	/** Add under the existing WooCommerce staff menu. */

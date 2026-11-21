@@ -86,7 +86,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 */
 	private function post( bool $verified = false ): array {
 
-		$post    = array(
+		$post = array(
 			'name'                  => 'Safe intake fixture',
 			'email'                 => 'intake-' . self::tag() . '@example.test',
 			'company'               => '',

@@ -233,7 +233,7 @@ final class AuthTemplates {
 				$session->set_customer_session_cookie( true );
 			}
 		}
-		$args     = AccountLink::request_args();
+		$args = AccountLink::request_args();
 		if ( ( ! $register && ( ! $args || ! is_account_page() || is_wc_endpoint_url() ) ) || ! is_user_logged_in() ) {
 			return;
 		}

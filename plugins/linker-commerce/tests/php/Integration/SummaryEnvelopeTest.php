@@ -91,7 +91,11 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 	public function test_historical_business_occupancy_leaves_the_native_inquiry_available(): void {
 		IntakeStore::edit(
 			static function ( array &$state ): array {
-				$state['business']['historical'] = array( 'id' => 42, 'pool' => 'ordinary', 'bytes' => 40 * MB_IN_BYTES );
+				$state['business']['historical'] = array(
+					'id'    => 42,
+					'pool'  => 'ordinary',
+					'bytes' => 40 * MB_IN_BYTES,
+				);
 				IntakeStore::save( $state );
 				return array();
 			},

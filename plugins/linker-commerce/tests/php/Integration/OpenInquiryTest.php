@@ -656,7 +656,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertNotSame( $reviewed, WC()->cart->get_cart_hash() );
 		$project = str_repeat( 'c', 32 ) . ':9';
 
-		$post    = array(
+		$post = array(
 			'linker_preliminary_project' => $project,
 			'linker_inquiry_nonce'       => wp_create_nonce( 'linker_inquiry:' . $project ),
 			'linker_draft_hash'          => $reviewed,
@@ -926,7 +926,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		$marker = self::newest_mail_job();
 
-		$post   = array(
+		$post = array(
 			'name'                 => 'Maria Weber',
 			'email'                => 'bot-' . self::tag() . '@example.test',
 			'message'              => 'A question.',

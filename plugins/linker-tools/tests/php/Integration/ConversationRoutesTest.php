@@ -28,7 +28,11 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class ConversationRoutesTest extends TestCase {
-	/** Private recipient for this test's confirmation and transcript. */
+	/**
+	 * The recipient of this case’s confirmation and transcript.
+	 *
+	 * @var string
+	 */
 	private string $recipient;
 
 

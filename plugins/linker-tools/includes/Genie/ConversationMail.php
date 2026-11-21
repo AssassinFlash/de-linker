@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
-
 /**
  * A visitor can have any of their conversations emailed to themselves
  * (docs/specs/13-genie.md, goal 7; acceptance A12).

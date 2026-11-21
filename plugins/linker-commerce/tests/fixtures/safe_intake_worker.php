@@ -35,7 +35,7 @@ $_SERVER['REMOTE_ADDR']                                  = '127.0.0.245';
 wc_load_cart();
 WC()->cart->empty_cart();
 
-$linker_commerce_post    = array(
+$linker_commerce_post  = array(
 	'name'                 => 'Concurrent fixture',
 	'email'                => $linker_commerce_email,
 	'message'              => 'Please advise on a battery.',
@@ -45,7 +45,7 @@ $linker_commerce_post    = array(
 	'linker_proof'         => '',
 	'linker_draft_hash'    => WC()->cart->get_cart_hash(),
 );
-$linker_commerce_until   = microtime( true ) + 5;
+$linker_commerce_until = microtime( true ) + 5;
 while ( 'go' !== file_get_contents( $linker_commerce_barrier ) && microtime( true ) < $linker_commerce_until ) {
 	usleep( 10000 );
 }

@@ -137,8 +137,8 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 			'orders' => array_map(
 				static fn( $order ) => array(
 					'id'            => $order->get_id(),
-				'number'        => $order->get_order_number(),
-				'status'        => $order->get_status(),
+					'number'        => $order->get_order_number(),
+					'status'        => $order->get_status(),
 					'customer'      => $order->get_customer_id(),
 					'source'        => $order->get_meta( '_linker_inquiry_source' ),
 					'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),

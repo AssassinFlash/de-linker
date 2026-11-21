@@ -122,7 +122,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
 
-		$post    = array(
+		$post = array(
 			'name'                          => 'Context Fixture',
 			'email'                         => 'context-' . self::tag() . '@example.test',
 			'message'                       => "My unchanged message.\nCustomer's second line.",

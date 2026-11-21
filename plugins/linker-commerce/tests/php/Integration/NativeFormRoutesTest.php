@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 /**
+ * Checks WordPress route registration for the native submission forms.
+ *
  * @coversNothing
  */
 final class NativeFormRoutesTest extends IntegrationTestCase {

@@ -143,8 +143,8 @@ final class Handler {
 			if ( '' !== $project ) {
 				$payload['preliminary_project'] = $project;
 			}
-			$sender      = new Sender();
-			$current     = hash_equals( WC()->cart->get_cart_hash(), $draft );
+			$sender  = new Sender();
+			$current = hash_equals( WC()->cart->get_cart_hash(), $draft );
 			if ( isset( $post['linker_planner_handoff_id'] ) || isset( $post['linker_planner_draft_sha256'] ) ) {
 				$id                 = $post['linker_planner_handoff_id'] ?? '';
 				$fingerprint        = $post['linker_planner_draft_sha256'] ?? '';

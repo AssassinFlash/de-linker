@@ -90,7 +90,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$started  = gmdate( 'Y-m-d H:i:s', time() - 1 );
 		// Every test starts with fresh limits; the instance's own counts come back afterwards.
 		self::clear_limits();
-		$address       = '192.0.2.' . wp_rand( 1, 254 );
+		$address = '192.0.2.' . wp_rand( 1, 254 );
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput -- kept as they are, to be put back as they were.
 		$cookie  = $_COOKIE[ Conversations::COOKIE ] ?? null;
 		$browser = $_COOKIE[ Conversations::BROWSER_COOKIE ] ?? null;
@@ -330,8 +330,13 @@ final class GenieContactTest extends IntegrationTestCase {
 	/** An anonymous transfer without a widget response cannot send mail or create an inquiry. */
 	public function test_transfer_requires_the_native_widget_response(): void {
 		$this->thread( 'Can the team help me choose a battery?' );
-		$marker = self::newest_mail_job();
-		$response = $this->send( array( 'email' => 'linker-it-' . self::tag() . '@example.test', 'consent' => '1' ) );
+		$marker   = self::newest_mail_job();
+		$response = $this->send(
+			array(
+				'email'   => 'linker-it-' . self::tag() . '@example.test',
+				'consent' => '1',
+			)
+		);
 		$this->assertSame( 400, $response->get_status() );
 		$this->assertSame( array(), $this->jobs_after( $marker ) );
 	}
@@ -369,7 +374,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$first  = $this->send( $params );
 		delete_post_meta( $this->conversation, ContactRequest::NOTE );
 		$params['cf-turnstile-response'] = ''; // The first submission already redeemed its single-use token.
-		$second = $this->send( $params );
+		$second                          = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		// Once: one team mail and one receipt.
 		$this->authorization->drain();
@@ -392,14 +397,17 @@ final class GenieContactTest extends IntegrationTestCase {
 	public function test_recover_original_contact_after_a_new_turn(): void {
 		$this->thread( 'Can I talk to a person?' );
 		$state  = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
-		$params = array( 'email' => 'linker-it-' . self::tag() . '@example.test', 'source' => $state['source'] ) + self::fields();
+		$params = array(
+			'email'  => 'linker-it-' . self::tag() . '@example.test',
+			'source' => $state['source'],
+		) + self::fields();
 		$first  = $this->send( $params );
 		$this->assertSame( 200, $first->get_status(), (string) ( $first->get_data()['code'] ?? '' ) );
 		$original = $this->record( $params['email'] );
 		$this->thread( 'Can I talk to a person?', 'Tell me about storage.' );
 		delete_post_meta( $this->conversation, ContactRequest::NOTE );
 		$params['cf-turnstile-response'] = '';
-		$recovered = $this->send( $params );
+		$recovered                       = $this->send( $params );
 		$this->assertSame( 200, $recovered->get_status(), (string) ( $recovered->get_data()['code'] ?? '' ) );
 		$notes = get_post_meta( $this->conversation, ContactRequest::NOTE, false );
 		$this->assertCount( 1, $notes );
@@ -518,7 +526,11 @@ final class GenieContactTest extends IntegrationTestCase {
 	 * @return array<string,string>
 	 */
 	private static function fields(): array {
-		return array( 'website' => '', 'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX', 'consent' => '1' );
+		return array(
+			'website'               => '',
+			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
+			'consent'               => '1',
+		);
 	}
 
 	/**
@@ -575,7 +587,12 @@ final class GenieContactTest extends IntegrationTestCase {
 				'content' => $text,
 			);
 		}
-		$stream = "event: block\ndata: " . wp_json_encode( array( 'type' => 'text', 'text' => 'An answer.' ) ) . "\n\nevent: done\ndata: {}\n\n";
+		$stream = "event: block\ndata: " . wp_json_encode(
+			array(
+				'type' => 'text',
+				'text' => 'An answer.',
+			)
+		) . "\n\nevent: done\ndata: {}\n\n";
 		$this->assertTrue( ( new Thread() )->record( $this->conversation, $messages, $stream ) );
 	}
 
@@ -586,7 +603,7 @@ final class GenieContactTest extends IntegrationTestCase {
 	 */
 	private function send( array $params ): WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/contact' );
-		$source = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
+		$source  = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
 		$params += array( 'source' => $source->get_data()['source'] ?? '' );
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );

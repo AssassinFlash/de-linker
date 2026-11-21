@@ -415,7 +415,11 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
 			$this->assertIsArray( $ledger->complete( $id, $fp ) );
 
-			$command   = array( 'key' => wp_generate_uuid4(), 'title' => 'Owned project', 'inputs' => array() );
+			$command   = array(
+				'key'    => wp_generate_uuid4(),
+				'title'  => 'Owned project',
+				'inputs' => array(),
+			);
 			$body      = (string) wp_json_encode( $command );
 			$principal = new \Linker\Tools\Planner\Principal( 'user', 'wp:1:user:' . $user );
 			$transport = new \Linker\Tools\Planner\Transport(
@@ -423,12 +427,21 @@ final class ResourceAdmissionTest extends TestCase {
 					$this->assertSame( $principal->subject, $args['headers']['X-Linker-Planner-Principal-Subject'] );
 					$this->assertSame( $body, $args['body'] );
 					$reply = str_contains( $url, '/operations/replay/' )
-						? array( 'schema_version' => 1, 'status' => 'absent', 'command_sha256' => hash( 'sha256', $body ), 'command_scope' => 'create' )
+						? array(
+							'schema_version' => 1,
+							'status'         => 'absent',
+							'command_sha256' => hash( 'sha256', $body ),
+							'command_scope'  => 'create',
+						)
 						: array( 'revision' => 1 );
-					return array( 'response' => array( 'code' => 200 ), 'headers' => array( 'content-type' => 'application/json' ), 'body' => wp_json_encode( $reply ) );
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array( 'content-type' => 'application/json' ),
+						'body'     => wp_json_encode( $reply ),
+					);
 				}
 			);
-			$result = ( new \Linker\Tools\Planner\Admission() )->send( $principal, 'projects/create', $command, $body, $transport );
+			$result    = ( new \Linker\Tools\Planner\Admission() )->send( $principal, 'projects/create', $command, $body, $transport );
 			$this->assertIsArray( $result );
 			$this->assertSame( '{"revision":1}', $result['body'] );
 		} finally {

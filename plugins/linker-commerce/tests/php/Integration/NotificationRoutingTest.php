@@ -217,11 +217,11 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			'receipt_pending',
 			( new Handler() )->process(
 				array(
-					'name'                 => 'Maria Beispiel',
-					'email'                => $contact_email,
-					'message'              => 'A question about a storage system.',
-					'consent'              => '1',
-					Form::NONCE_FIELD      => wp_create_nonce( Form::NONCE_ACTION ),
+					'name'            => 'Maria Beispiel',
+					'email'           => $contact_email,
+					'message'         => 'A question about a storage system.',
+					'consent'         => '1',
+					Form::NONCE_FIELD => wp_create_nonce( Form::NONCE_ACTION ),
 				)
 			)
 		);
