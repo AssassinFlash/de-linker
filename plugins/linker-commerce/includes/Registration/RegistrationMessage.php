@@ -1,6 +1,6 @@
 <?php
 /**
- * Freeze native registration mail before creation, with two typed template holes.
+ * Render native registration mail from the original registered identity.
  *
  * @package Linker\Commerce
  */
@@ -26,6 +26,72 @@ use WP_User;
 final class RegistrationMessage {
 	public const POLICY      = 'registration-native-plan-v1';
 	private const ACK_POLICY = 'registration-native-ack-v1';
+
+	/**
+	 * Store just the original registration fields on the new native account.
+	 *
+	 * @param WP_User              $user Created account.
+	 * @param array<string,string> $values Validated business fields.
+	 * @param string               $locale Original language.
+	 * @param string               $operation Native registration identifier.
+	 * @param string               $slot Native account marker.
+	 * @return array<string,mixed> Pending notices for the two native producers.
+	 */
+	public static function pending( WP_User $user, array $values, string $locale, string $operation, string $slot ): array {
+		$original = array(
+			'ID'              => $user->ID,
+			'user_email'      => $user->user_email,
+			'user_login'      => $user->user_login,
+			'display_name'    => $user->display_name,
+			'user_registered' => $user->user_registered,
+		);
+		$plans    = array();
+		foreach ( array( 'team', 'received' ) as $kind ) {
+			$plan            = array(
+				'state'       => 'pending',
+				'reservation' => '',
+				'binding'     => array(
+					'policy'    => self::POLICY,
+					'operation' => $operation,
+					'owner'     => Identity::recipient( $user->user_email ),
+					'kind'      => $kind,
+					'account'   => $user->ID,
+					'slot'      => $slot,
+					'stage'     => 'bound',
+				),
+				'source'      => array(
+					'user'   => $original,
+					'values' => 'team' === $kind ? $values : array(),
+					'locale' => $locale,
+				),
+			);
+			$plan['witness'] = self::signature( $plan );
+			$plans[ $kind ]  = $plan;
+		}
+		return $plans;
+	}
+
+	/**
+	 * Render from the stored original account, even if its address has since changed.
+	 *
+	 * @param array<string,mixed>                        $pending Authenticated pending source.
+	 * @param NewCustomerEmail|RegistrationReceivedEmail $producer Configured native email.
+	 * @return array<string,mixed>|WP_Error Rendered, identity-bound mail plan.
+	 */
+	public static function render( array $pending, NewCustomerEmail|RegistrationReceivedEmail $producer ): array|WP_Error {
+		$binding = $pending['binding'];
+		$source  = $pending['source'];
+		$plan    = self::prepare( $producer, new WP_User( (object) $source['user'] ), $source['values'], $source['locale'], $binding['operation'] );
+		if ( is_wp_error( $plan ) ) {
+			return $plan;
+		}
+		if ( $plan['binding']['kind'] !== $binding['kind'] || $plan['binding']['owner'] !== $binding['owner'] ) {
+			return self::problem();
+		}
+		$plan['binding'] = $binding;
+		$plan['witness'] = self::signature( $plan );
+		return $plan;
+	}
 
 	/**
 	 * Capture the actual configured native notification without user/VIES/mail writes.

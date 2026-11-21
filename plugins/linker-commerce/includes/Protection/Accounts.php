@@ -11,12 +11,14 @@ namespace Linker\Commerce\Protection;
 
 use WP_Error;
 use WP_User;
+use Linker\Commerce\Registration\BotGuard;
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\Website;
 use Linker\Commerce\Registration\RegistrationNotices;
 use Linker\Commerce\Inquiry\OrderLocale;
-use Linker\Commerce\Mail\Capacity;
+use Linker\Commerce\Registration\RegistrationMessage;
+use Linker\Commerce\Mail\NativeTransaction;
 
 /**
  * Core authentication, password checks and customer approval stay unchanged.
@@ -50,6 +52,7 @@ final class Accounts {
 		add_filter( 'woocommerce_process_registration_errors', array( $this, 'woocommerce_registration' ), 30, 4 );
 		add_action( 'woocommerce_created_customer', array( $this, 'created' ), 1 );
 		add_action( 'register_form', array( $this, 'registration_fields' ) );
+		add_action( 'register_form', array( new BotGuard(), 'fields' ) );
 		add_filter( 'registration_errors', array( $this, 'native_registration' ), 30, 3 );
 		add_action( 'user_register', array( $this, 'created' ), 1 );
 		add_filter( 'wp_pre_insert_user_data', array( $this, 'before_create' ), PHP_INT_MAX, 4 );
@@ -112,11 +115,11 @@ final class Accounts {
 	 * @param string   $email    Validated native email.
 	 */
 	public function native_registration( WP_Error $errors, string $username, string $email ): WP_Error {
-		return $this->registration( $errors, $username, $email, true );
+		return $this->registration( ( new BotGuard() )->validate( $errors ), $username, $email, true );
 	}
 
 	/**
-	 * Use only business fields, never password or reset tokens in a fingerprint.
+	 * Capture the validated registration fields for the native account and its notices.
 	 *
 	 * @param WP_Error $errors   Native errors.
 	 * @param string   $username Native login.
@@ -126,6 +129,11 @@ final class Accounts {
 	private function registration( WP_Error $errors, string $username, string $email, bool $core ): WP_Error {
 		if ( $errors->has_errors() ) {
 			return $this->registration_errors( $errors, $core );
+		}
+		if ( is_user_logged_in() && ! current_user_can( 'create_users' ) ) {
+			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Reuse WordPress’s native permission message and translation.
+			$errors->add( 'registration_forbidden', __( 'Sorry, you are not allowed to create users.' ) );
+			return $errors;
 		}
 		$post = self::post();
 		if ( ! is_email( $email ) ) {
@@ -156,48 +164,27 @@ final class Accounts {
 			$errors->add( $verified->get_error_code(), $verified->get_error_message() );
 			return $this->registration_errors( $errors, $core );
 		}
-		$result = Operation::begin( 'registration', $payload );
-		if ( is_wp_error( $result ) ) {
-			$errors->add( $result->get_error_code(), $result->get_error_message() );
-		} elseif ( ! empty( $result['enforced'] ) ) {
-			$locale = OrderLocale::current();
-			$values = $payload;
-			unset( $values['email'], $values['username'], $values['locale'] );
-			global $wpdb;
-			try {
-				$transaction = new \Linker\Commerce\Mail\NativeTransaction();
-			} catch ( \Throwable $error ) {
-				$errors->add( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
-				return $this->registration_errors( $errors, $core );
-			}
-			$this->registration = array(
-				'permit'      => $result,
-				'slot'        => '',
-				'notices'     => array(),
-				'email'       => $email,
-				'username'    => $username,
-				'values'      => $values,
-				'locale'      => $locale,
-				'core'        => $core,
-				'id'          => 0,
-				'started'     => false,
-				'transaction' => $transaction,
-			);
-			$this->registration['slot'] = hash_hmac( 'sha256', 'registration|' . $result['id'], wp_salt( 'auth' ) );
-			try {
-				$notices = RegistrationNotices::prepare( $values, $email, $username, $locale, $result['id'] );
-			} catch ( \Throwable $error ) {
-				$notices = new WP_Error( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
-			}
-			if ( is_wp_error( $notices ) ) {
-				$this->unfinished();
-				$errors->add( $notices->get_error_code(), $notices->get_error_message() );
-				return $this->registration_errors( $errors, $core );
-			}
-			$this->registration['notices'] = $notices;
-		} else {
-			$this->registration = array( 'permit' => $result );
+		try {
+			$transaction = new NativeTransaction();
+		} catch ( \Throwable $error ) {
+			$errors->add( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+			return $this->registration_errors( $errors, $core );
 		}
+		$values    = $payload;
+		$operation = wp_generate_uuid4();
+		unset( $values['email'], $values['username'], $values['locale'] );
+		$this->registration = array(
+			'operation'   => $operation,
+			'slot'        => hash_hmac( 'sha256', 'registration|' . $operation, wp_salt( 'auth' ) ),
+			'email'       => $email,
+			'username'    => $username,
+			'values'      => $values,
+			'locale'      => $payload['locale'],
+			'core'        => $core,
+			'id'          => 0,
+			'started'     => false,
+			'transaction' => $transaction,
+		);
 		return $this->registration_errors( $errors, $core );
 	}
 
@@ -225,18 +212,12 @@ final class Accounts {
 		if ( null === $this->registration ) {
 			return;
 		}
-		if ( empty( $this->registration['permit']['enforced'] ) ) {
-			Operation::finish( $this->registration['permit'], $id );
-			$this->registration = null;
-			return;
-		}
 		if ( $id !== $this->registration['id'] ) {
 			return;
 		}
 		$active = $this->registration;
 		try {
-			$profile    = RegistrationSlots::native_profile( $id );
-			$profile_ok = ! is_wp_error( $profile ) && $profile['bytes'] <= RegistrationSlots::profile_bytes( $active['values'], $active['email'], $active['locale'] );
+			$profile_ok = true;
 			wp_cache_delete( $id, 'user_meta' );
 			foreach ( RegistrationSlots::profile_fields( $active['values'], $active['email'], $active['locale'] ) as $key => $value ) {
 				if ( get_user_meta( $id, $key, true ) !== $value ) {
@@ -247,10 +228,6 @@ final class Accounts {
 			if ( ! $profile_ok || get_user_meta( $id, RegistrationNotices::PENDING, true ) !== 'yes' || get_user_meta( $id, RegistrationSlots::META, true ) !== $active['slot'] || RegistrationNotices::read( $id ) !== $active['notices'] ) {
 				$this->unfinished();
 				throw new \RuntimeException( esc_html__( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ) );
-			}
-			$completed = ( new Ledger() )->complete( $active['permit']['id'], $active['permit']['fingerprint'], $id );
-			if ( is_wp_error( $completed ) ) {
-				throw new \RuntimeException( 'registration_completion_unconfirmed' );
 			}
 			$active['transaction']->commit();
 			$this->registration = null;
@@ -287,7 +264,6 @@ final class Accounts {
 	 * @param  bool                $update   Native update flag.
 	 * @param  array<string,mixed> $userdata Native caller; no password retained.
 	 * @return array<string,mixed> Native fields plus trusted association and notices.
-	 * @throws \RuntimeException A frozen notification cannot bind to this created account.
 	 */
 	public function stamp( array $meta, WP_User $user, bool $update, array $userdata ): array {
 		unset( $userdata );
@@ -300,12 +276,7 @@ final class Accounts {
 		) {
 			return $meta;
 		}
-		foreach ( $this->registration['notices'] as $kind => $plan ) {
-			$bound = \Linker\Commerce\Registration\RegistrationMessage::bind( $plan, $user->ID, $this->registration['slot'] );
-			if ( is_wp_error( $bound ) ) {
-				throw new \RuntimeException( 'registration_native_notice_binding_failed' ); }
-			$this->registration['notices'][ $kind ] = $bound;
-		}
+		$this->registration['notices']             = RegistrationMessage::pending( $user, $this->registration['values'], $this->registration['locale'], $this->registration['operation'], $this->registration['slot'] );
 		$this->registration['id']                  = $user->ID;
 		$values                                    = $this->registration['values'];
 		$meta[ RegistrationSlots::META ]           = $this->registration['slot'];
@@ -326,11 +297,11 @@ final class Accounts {
 	 * @param array<string,mixed> $data Native sanitized columns.
 	 */
 	private function matches( array $data ): bool {
-		return null !== $this->registration && ! empty( $this->registration['permit']['enforced'] ) && strtolower( (string) ( $data['user_email'] ?? '' ) ) === strtolower( $this->registration['email'] ) && ( '' === $this->registration['username'] || ( $data['user_login'] ?? '' ) === $this->registration['username'] );
+		return null !== $this->registration && strtolower( (string) ( $data['user_email'] ?? '' ) ) === strtolower( $this->registration['email'] ) && ( '' === $this->registration['username'] || ( $data['user_login'] ?? '' ) === $this->registration['username'] );
 	}
 
 	/**
-	 * Core public door uses the same two prepared project notices.
+	 * Recover the two notices for the public WordPress registration form.
 	 *
 	 * @param int $id Native user.
 	 */
@@ -342,7 +313,7 @@ final class Accounts {
 	}
 
 	/**
-	 * The optional core door uses the two bounded pending-account notices too.
+	 * The public WordPress form uses the same pending-account notices.
 	 * Existing/admin-created users retain WordPress's native notification behavior.
 	 *
 	 * @param bool    $send Native notification policy.
@@ -353,10 +324,10 @@ final class Accounts {
 	}
 
 	/**
-	 * Known failed native inserts roll back; unknown crashes never time-refund.
+	 * Roll back an unfinished native account insert.
 	 */
 	public function unfinished(): void {
-		if ( null === $this->registration || empty( $this->registration['permit']['enforced'] ) ) {
+		if ( null === $this->registration ) {
 			return;
 		}
 		$active             = $this->registration;
@@ -367,8 +338,6 @@ final class Accounts {
 			// Unknown original connection/commit: never replay or compensate on a new one.
 			return;
 		} finally {
-			foreach ( array( RegistrationSlots::OPTION, IntakeStore::OPTION, 'alloptions', 'notoptions' ) as $key ) {
-				wp_cache_delete( $key, 'options' ); }
 			if ( $active['id'] > 0 ) {
 				clean_user_cache( $active['id'] );
 				wp_cache_delete( $active['id'], 'user_meta' ); }
@@ -390,7 +359,7 @@ final class Accounts {
 			$errors->add( 'linker_reset_verification', __( 'Please verify your request and try again.', 'linker-commerce' ) );
 			return;
 		}
-		$result = Operation::begin( 'password_reset', array( 'email' => strtolower( $user->user_email ) ) );
+		$result = Operation::password_reset( array( 'email' => strtolower( $user->user_email ) ) );
 		if ( is_wp_error( $result ) ) {
 			$errors->add( $result->get_error_code(), $result->get_error_message() );
 		} else {

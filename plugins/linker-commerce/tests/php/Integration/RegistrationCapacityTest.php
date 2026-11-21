@@ -15,7 +15,6 @@ use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Protection\Ledger;
-use Linker\Commerce\Protection\Operation;
 use Linker\Commerce\Protection\RegistrationSlots;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\CustomerRole;
@@ -209,55 +208,24 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		);
 	}
 
-	/**
-	 * Actual public Woo validation must refuse before user/VIES/mail side effects.
-	 */
-	public function test_public_woo_gate_refuses_full_pending_capacity_before_creation(): void {
-		wc_load_cart();
-		$previous_cart = WC()->cart;
-		WC()->cart     = new \WC_Cart();
-		$this->later(
-			static function () use ( $previous_cart ): void {
-				WC()->cart = $previous_cart;
-			}
+	/** Historical pending profiles and unrelated ledger traffic do not prevent registration. */
+	public function test_verified_registration_creates_its_native_account_with_legacy_capacity_occupied(): void {
+		$full = array(
+			'bytes'     => RegistrationSlots::MAX_BYTES,
+			'created'   => time(),
+			'completed' => 0,
 		);
-		$product = $this->product( '125' );
-		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 2 ) );
-		$draft   = WC()->cart->get_cart_hash();
-		$initial = $this->summary();
-		for ( $i = $initial['pending_users']; $i < RegistrationSlots::MAX_PENDING; ++$i ) {
-			$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), 2048 ) );
-		}
-		$post   = $this->public_post( 31 );
-		$before = count_users()['total_users'];
-		$jobs   = self::mail_jobs_after( 0 );
-		$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), 'capacity-full', $post['password'], $post['email'] );
-		$this->assertContains( 'linker_registration_capacity', $errors->get_error_codes() );
-		$this->assertSame( $post, $_POST, 'Keep all native inputs; never persist the password for recovery.' );
-		$this->assertSame( $before, count_users()['total_users'] );
-		$this->assertSame( $jobs, self::mail_jobs_after( 0 ) );
-		$this->assertSame( $draft, WC()->cart->get_cart_hash(), 'A registration refusal must retain the real solution draft.' );
-		$stamp   = (string) ( time() - 5 );
-		$inquiry = $this->request( 31, 'inquiry' ) + array(
-			'name'                 => 'Maria Example',
-			'email'                => self::TESTER,
-			'company'              => 'Synthetic pending-capacity fixture',
-			'message'              => 'Synthetic inquiry remains available while registration is full.',
-			'consent'              => '1',
-			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			'linker_started'       => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
-			'linker_draft_hash'    => $draft,
-		);
-		$order   = ( new \Linker\Commerce\Inquiry\Handler() )->process( $inquiry );
-		$this->assertInstanceOf( \WC_Order::class, $order );
-		$this->later(
-			static function () use ( $order ): void {
-				$order->delete( true );
-			}
-		);
-		$this->assertSame( 0, $order->get_customer_id() );
-		$this->assertSame( 2, $order->get_item_count() );
+		update_option( RegistrationSlots::OPTION, array( wp_generate_uuid4() => $full ), false );
+		$legacy = array( 'historical' => 'unrelated traffic' );
+		update_option( Ledger::OPTION, $legacy, false );
+		$post = $this->public_post( 31 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$this->assertSame( $post['email'], $this->native_user( $id )->user_email );
+		$this->assertSame( Approval::PENDING, get_user_meta( $id, Approval::STATUS_META, true ) );
+		$this->assertSame( $legacy, get_option( Ledger::OPTION ) );
 	}
 
 	/**
@@ -282,17 +250,25 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertArrayHasKey( 'received', $notice );
 	}
 
+	/** Start this fixture with its own queue allocation. setUp/tearDown restore the native option. */
+	private function isolate_registration_mail_capacity(): void {
+		$isolated = IntakeStore::edit(
+			static function ( array &$state ): array {
+				$state['mail_capacity'] = array(
+					'entries'      => array(),
+					'reservations' => array(),
+				);
+				IntakeStore::save( $state );
+				return array();
+			}
+		);
+		$this->assertIsArray( $isolated );
+	}
+
 	/** A customer can register while the native worker is waiting for mail capacity. */
 	public function test_registration_keeps_pending_notices_until_the_mail_worker_can_accept_them(): void {
-		$store = new \Linker\Commerce\Mail\JobStore();
-		$used  = 0;
-		foreach ( self::mail_jobs_after( 0 ) as $job ) {
-			$native = $store->load( $job );
-			if ( $native && ( $native['message']->critical || $store->critical( $job ) ) ) {
-				++$used;
-			}
-		}
-		$held = Capacity::reserve_critical( 'fixture-busy-registration-mail', Capacity::LIMITS['critical']['count'] - $used, 1 );
+		$this->isolate_registration_mail_capacity();
+		$held = Capacity::reserve_critical( 'fixture-busy-registration-mail', Capacity::LIMITS['critical']['count'], 1 );
 		$this->assertIsArray( $held );
 		$post   = $this->public_post( 33 );
 		$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] );
@@ -945,21 +921,32 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$this->assertSame( 1, $this->summary()['interrupted'] ); }
 	}
 
-	/**
-	 * An override losing the actual anchor cannot masquerade as a proven bound.
-	 */
-	public function test_template_override_without_controlled_link_is_refused_before_creation(): void {
+	/** A broken team template leaves the account and its independently deliverable receipt intact. */
+	public function test_registration_keeps_native_account_while_team_mail_template_recovers(): void {
+		$this->isolate_registration_mail_capacity();
 		$rewrite = static fn ( string $body ): string => str_replace( 'https://registration.invalid/', 'https://override.invalid/', $body );
 		add_filter( 'woocommerce_mail_content', $rewrite );
 		try {
 			$post   = $this->public_post( 35 );
 			$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] );
-			$this->assertContains( 'linker_registration_capacity', $errors->get_error_codes() );
-			$this->assertFalse( email_exists( $post['email'] ) );
-			$this->assertSame( 0, $this->summary()['interrupted'] );
+			$this->assertFalse( $errors->has_errors(), implode( ' ', $errors->get_error_messages() ) );
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+			$this->assertIsInt( $id );
+			$this->own_user( $id );
+			$this->assertSame( $id, (int) email_exists( $post['email'] ) );
+			$this->assertSame( Approval::PENDING, get_user_meta( $id, Approval::STATUS_META, true ) );
+			$pending = $this->notices( $id );
+			$this->assertSame( 'pending', $pending['team']['state'] );
+			$this->assertSame( $post['email'], $pending['team']['source']['user']['user_email'] );
+			$this->assertSame( 'accepted', $pending['received']['state'] );
 		} finally {
 			remove_filter( 'woocommerce_mail_content', $rewrite );
 		}
+		RegistrationNotices::deliver( $id, 'team' );
+		$delivered = $this->notices( $id );
+		$this->assertSame( 'accepted', $delivered['team']['state'] );
+		RegistrationNotices::deliver( $id, 'team' );
+		$this->assertSame( $delivered, $this->notices( $id ) );
 	}
 
 	/**
@@ -2865,51 +2852,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $start ),
 		);
 		return $_POST;
-	}
-
-	/**
-	 * Changing all cheap identities must retain the site's registration window.
-	 */
-	public function test_registration_has_one_shared_site_hour_and_day(): void {
-		$post   = $this->request( 1 );
-		$permit = Operation::begin(
-			'registration',
-			$post,
-			array(
-				'email'    => 'first@example.test',
-				'username' => 'first',
-			)
-		);
-		$this->assertIsArray( $permit );
-		$summary = ( new Ledger() )->summary();
-		$this->assertIsArray( $summary );
-		$this->assertArrayHasKey( 'registration_site_hour', $summary['windows'], 'Subject/connection limits do not cap public account creation across cheap identities.' );
-		$this->assertArrayHasKey( 'registration_site_day', $summary['windows'] );
-		$this->assertSame( 15, $summary['windows']['registration_site_hour']['minimum_remaining'] );
-		$this->assertSame( 31, $summary['windows']['registration_site_day']['minimum_remaining'] );
-		for ( $i = 2; $i <= 16; ++$i ) {
-			$this->assertIsArray(
-				Operation::begin(
-					'registration',
-					$this->request( $i ),
-					array(
-						'email'    => 'customer-' . $i . '@example.test',
-						'username' => 'customer-' . $i,
-					)
-				)
-			);
-		}
-		$result = Operation::begin(
-			'registration',
-			$this->request( 17 ),
-			array(
-				'email'    => 'last@example.test',
-				'username' => 'last',
-			)
-		);
-		$this->assertInstanceOf( WP_Error::class, $result );
-		$this->assertSame( 'linker_admission_quota', $result->get_error_code() );
-		$this->assertFalse( email_exists( 'last@example.test' ) );
 	}
 
 	/**
