@@ -36,6 +36,7 @@ use Linker\I18n\Woo\Projection;
 	if ( $en === $de || 'en' !== pll_get_post_language( $en ) || 'de' !== pll_get_post_language( $de ) || (int) pll_get_post( $en, 'de' ) !== $de ) {
 		throw new RuntimeException( 'Expected the explicit English/German pair.' );
 	}
+	$posts    = array();
 	$pages    = array();
 	$excerpts = array();
 	foreach ( array( $en, $de ) as $id ) {
@@ -44,6 +45,7 @@ use Linker\I18n\Woo\Projection;
 		if ( ! $post instanceof WP_Post || $post_type !== $post->post_type ) {
 			throw new RuntimeException( 'The reviewed object does not have the expected post type.' );
 		}
+		$posts[ $id ]    = $post;
 		$pages[ $id ]    = $post->post_content;
 		$excerpts[ $id ] = $post->post_excerpt;
 	}
@@ -108,7 +110,7 @@ use Linker\I18n\Woo\Projection;
 		}
 		$texts = array();
 		foreach ( $pair['changes'] as $change ) {
-			$post               = clone get_post( $change['id'] );
+			$post               = clone $posts[ (int) $change['id'] ];
 			$post->post_content = $change['after'];
 			$texts[]            = $fields->of_post( $post, $de === $post->ID );
 		}
@@ -125,6 +127,11 @@ use Linker\I18n\Woo\Projection;
 			$parts[]         = $field . "\0" . $value;
 		}
 		// The paired writer checks this preview against native adopt_current() before COMMIT.
+		/**
+		 * Native metadata keyed by post ID and translation field.
+		 *
+		 * @var array<int,array<string,array<int,mixed>>> $expected
+		 */
 		$expected = $read();
 		$updates  = array(
 			array( $en, State::STATUS, State::SYNCED ),

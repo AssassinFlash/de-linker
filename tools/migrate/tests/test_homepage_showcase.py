@@ -85,7 +85,7 @@ def test_publish_and_restore_use_the_same_native_page_pair(
         "current": synced,
     }
     original = copy.deepcopy(state)
-    calls = []
+    calls: list[str] = []
     backup = tmp_path / "homepages.json"
 
     adopted_metadata = {"13": {"status": ["reviewed"]}}
