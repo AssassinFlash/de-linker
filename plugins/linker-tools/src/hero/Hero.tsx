@@ -72,7 +72,7 @@ import { newEntryId, updateEntryRecovery } from '../genie/shared/entryDraft';
 import { useDraftContext } from '../genie/shared/useDraftContext';
 import type { DraftContext, DraftLease } from '../genie/shared/draftContext';
 import { useFailure } from '../genie/shared/useFailure';
-import { useVerificationStage } from '../genie/shared/useVerificationStage';
+import { useTurnOwner } from '../genie/shared/useTurnOwner';
 import { HeroSession } from './session';
 
 const emptyPrompt = () => ( { text: '', version: 0 } );
@@ -131,12 +131,7 @@ export function HeroConversation( {
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
-	const {
-		slot: verificationSlot,
-		pending: verificationPending,
-		cancel: cancelVerification,
-		begin: beginVerification,
-	} = useVerificationStage( phase === 'waiting' );
+	const { begin: beginTurn } = useTurnOwner();
 	const [ refused, setRefused ] = useState( '' );
 	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
 	// The context changes underneath this subtree: the cold identity lookup
@@ -651,7 +646,7 @@ export function HeroConversation( {
 			setRefused( '' );
 			setConflict( '' );
 			setLive( '' );
-			const turnVerification = beginVerification( {
+			const turnOwner = beginTurn( {
 				owns: () => draftContext.owns( lease ),
 				settle: () => draftContext.settle( lease ),
 				valid: () => draftContext.valid( lease ),
@@ -670,7 +665,7 @@ export function HeroConversation( {
 					picked,
 					lease.scope,
 					{
-						verification: turnVerification,
+						owner: turnOwner,
 						authorize: () => draftContext.authorize( lease ),
 						settle: () => draftContext.settle( lease ),
 					}
@@ -721,7 +716,7 @@ export function HeroConversation( {
 			placeChips,
 			draftContext,
 			retainUnverifiedTurn,
-			beginVerification,
+			beginTurn,
 		]
 	);
 	sendRef.current = send;
@@ -752,7 +747,7 @@ export function HeroConversation( {
 				setPrompt( 'upstream' === kind ? draft.text : '' );
 				return;
 			}
-			const turnVerification = beginVerification( {
+			const turnOwner = beginTurn( {
 				owns: () => draftContext.owns( lease ),
 				settle: () => draftContext.settle( lease ),
 				valid: () => draftContext.valid( lease ),
@@ -762,7 +757,7 @@ export function HeroConversation( {
 				payload.uploads,
 				lease.scope,
 				{
-					verification: turnVerification,
+					owner: turnOwner,
 					authorize: () => draftContext.authorize( lease ),
 					settle: () => draftContext.settle( lease ),
 				}
@@ -821,7 +816,7 @@ export function HeroConversation( {
 		placeChips,
 		draftContext,
 		retainUnverifiedTurn,
-		beginVerification,
+		beginTurn,
 	] );
 
 	const updateMissing = useCallback(
@@ -1057,12 +1052,7 @@ export function HeroConversation( {
 									: null }
 							</li>
 						) ) }
-						{ 'waiting' === phase ? (
-							<TurnProgress
-								verificationPending={ verificationPending }
-								onCancel={ cancelVerification }
-							/>
-						) : null }
+						{ 'waiting' === phase ? <TurnProgress /> : null }
 					</ol>
 					{ conflict ? (
 						<p role="alert" className="linker-genie-app__error">
@@ -1159,12 +1149,6 @@ export function HeroConversation( {
 					void restoreOwnedFailure();
 				} }
 				busy={ phase === 'waiting' || files.busy }
-			/>
-			<div
-				ref={ verificationSlot }
-				data-linker-resource-verification-slot
-				className="linker-genie-app__status"
-				hidden
 			/>
 			<AttachmentChips
 				picked={ draftContext.phase === 'ready' ? files.picked : [] }

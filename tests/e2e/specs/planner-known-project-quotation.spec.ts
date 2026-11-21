@@ -18,7 +18,7 @@ import {
 	applyTurnstileProfile,
 	instance,
 	instanceName,
-	isolateVisitorBudgets,
+	isolateMailBudgets,
 	wp,
 } from '../lib/instance';
 
@@ -245,7 +245,7 @@ async function sendInquiry(page: Page, language: Language, email: string) {
 let restoreProtection: (() => void) | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
-	restoreProtection = applyTurnstileProfile(instanceName(), 'optional');
+	restoreProtection = applyTurnstileProfile(instanceName());
 });
 test.afterAll(() => restoreProtection?.());
 
@@ -267,7 +267,7 @@ for (const { language, width, branch } of journeys) {
 		const outsider = email.replace('@', '-other@');
 		const started = Date.now();
 		const password = 'Solar-' + randomUUID();
-		const restoreBudgets = isolateVisitorBudgets();
+		const restoreBudgets = isolateMailBudgets();
 		try {
 			await page.setViewportSize({
 				width,
@@ -449,7 +449,7 @@ test('an account-owned quotation survives native password recovery and a later p
 }) => {
 	test.setTimeout(360_000);
 	const email = 'e2e-known-' + randomUUID() + '@example.test';
-	const restore = isolateVisitorBudgets();
+	const restore = isolateMailBudgets();
 	try {
 		const owner = fixture('account', email, 'Solar-' + randomUUID());
 		fixture('owned-inquiry', email);

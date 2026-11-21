@@ -15,15 +15,9 @@
 import type { Locale } from '../../configurator/types';
 import type { ContactReason, PageContext } from './turn';
 
-import { resourceFetch } from '../../protection/request';
-
 type Fetch = typeof fetch;
 
 export interface ContactState {
-	/** The signed start time the request sends back (FormGuard). */
-	started: string;
-	/** Its signature. */
-	startedNonce: string;
 	/** The signed-in customer's address; null for a guest. */
 	email: string | null;
 	/** The request already with the team, when nothing was said since. */
@@ -53,7 +47,7 @@ export async function readContact(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ContactState | null > {
 	try {
-		const response = await resourceFetch( fetcher, url, {
+		const response = await fetcher( url, {
 			credentials: 'same-origin',
 			cache: 'no-store',
 			headers: { 'X-WP-Nonce': nonce },
@@ -65,11 +59,6 @@ export async function readContact(
 			started_nonce?: unknown;
 		};
 		return {
-			started: typeof body.started === 'string' ? body.started : '',
-			startedNonce:
-				typeof body.started_nonce === 'string'
-					? body.started_nonce
-					: '',
 			email: typeof body.email === 'string' ? body.email : null,
 			sent:
 				body.sent && typeof body.sent.email === 'string'
@@ -96,8 +85,6 @@ export async function readContact(
  * @param request               What the card sends.
  * @param request.email         A guest's address; omitted for a signed-in customer.
  * @param request.website       The honeypot's value (empty for a person).
- * @param request.started       The signed start time readContact() returned.
- * @param request.started_nonce Its signature.
  * @param request.consent       A guest's consent, the site's public doors' own.
  * @param request.reason        Why Genie offered the contact.
  * @param request.locale        The page's language.
@@ -108,10 +95,9 @@ export async function sendContact(
 	url: string,
 	nonce: string,
 	request: {
+		'cf-turnstile-response'?: string;
 		email?: string;
 		website: string;
-		started: string;
-		started_nonce: string;
 		consent?: '1';
 		reason: ContactReason;
 		locale: Locale;
@@ -120,7 +106,7 @@ export async function sendContact(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ContactResult > {
 	try {
-		const response = await resourceFetch( fetcher, url, {
+		const response = await fetcher( url, {
 			method: 'POST',
 			credentials: 'same-origin',
 			cache: 'no-store',

@@ -103,12 +103,12 @@ final class FormGuard {
 	 */
 	public function passes( array $guard, ?int $now = null ): bool {
 		if ( \Linker\Tools\Protection\Resources::verified() ) {
-			return ! $this->trapped( $guard );
+			return ! self::trapped( $guard );
 		}
 		$started = $guard['started'] ?? '';
 		$nonce   = $guard['started_nonce'] ?? '';
 		$age     = ( $now ?? time() ) - (int) $started;
-		return ! $this->trapped( $guard )
+		return ! self::trapped( $guard )
 			&& is_string( $started ) && ctype_digit( $started )
 			&& is_string( $nonce )
 			&& $age >= self::MIN_SECONDS
@@ -121,7 +121,7 @@ final class FormGuard {
 	 *
 	 * @param array<string, mixed> $guard `website`.
 	 */
-	public function trapped( array $guard ): bool {
+	public static function trapped( array $guard ): bool {
 		$trap = $guard['website'] ?? '';
 		return ! is_string( $trap ) || '' !== trim( $trap );
 	}

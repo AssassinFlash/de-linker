@@ -1,5 +1,7 @@
 # Refuse confirmed activity before creating another inquiry
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Owner ruling, 2026-10-23; strict production base `b29a979a16c39651fdbfb265413621f9d96f599f`. This supersedes the confirmed-campaign sample/grouped/individual acceptance rows of the safe-intake specification. Saved evidence remains; new matching submissions are refused, including individual-review requests.
 
 The private six-row snapshot shows the confirmed activity in the name field while the message contains unrelated text. Native190-character name truncation removes most URLs. A message-only check or an exact-host requirement alone cannot identify these records.

@@ -64,22 +64,16 @@ test('an in-flight submit stays blocked until the browser restores the document'
  assert.equal(submit(form).defaultPrevented,false,'the restored form can submit again');
 });
 
-test('protected inquiry/account marks busy only on the verified native resubmit',()=>{
+test('a prevented native submit leaves the account form ready for a retry',()=>{
  const win=account();
  const form=win.document.getElementById('signin');
  form.querySelector('[name="username"]').value='fixture@example.test';
- const marker=win.document.createElement('input');
- marker.type='hidden';
- marker.dataset.linkerProtectedAction='registration';
- form.append(marker);
- win.linkerPublicProtectionConfig={mode:'enforce'};
- const pending=submit(form);
- assert.equal(pending.defaultPrevented,false,'the protection layer may wait before actual submission');
- assert.equal(form.dataset.accountState,undefined,'verification is not an account submission');
- form.dataset.linkerProtectionVerified='true';
- const verified=submit(form);
- assert.equal(verified.defaultPrevented,false,'verified native submit must not be mistaken for a duplicate');
+ win.addEventListener('submit', event=>event.preventDefault(), {capture:true,once:true});
+ assert.equal(submit(form).defaultPrevented,true);
+ assert.equal(form.dataset.accountState,undefined);
+ assert.equal(submit(form).defaultPrevented,false);
  assert.equal(form.dataset.accountState,'submitting');
+ win.close();
 });
 
 test('a native Woo novalidate form reports missing fields and stays on the page',()=>{
@@ -319,10 +313,8 @@ test('reverting a quantity while verification is pending still waits for Woo rea
  win.close();
 });
 
-test('optional inquiry verification marks the final native submission in flight', () => {
+test('the final native inquiry submission is marked in flight', () => {
  const {win, form} = inquiryDraft();
- form.insertAdjacentHTML('beforeend', '<input type="hidden" data-linker-protected-action="inquiry">');
- win.linkerPublicProtectionConfig = {mode:'enforce', businessVerification:'optional'};
  assert.equal(submit(form).defaultPrevented, false);
  assert.equal(submit(form).defaultPrevented, true);
  win.close();
@@ -632,3 +624,34 @@ test('a pasted password triggers the strength meter before the field is left',()
 });
 
 
+
+test('a rejected native registration keeps the entered password and reopens verification', async () => {
+ const html=registerMarkup().replace('<button type="submit" name="register">','<input type="password" name="password"><div data-linker-turnstile="registration"></div><input name="cf-turnstile-response" value="test-token"><p data-registration-error data-failure="Retry" hidden></p><button type="submit" name="register" value="Register">');
+ const dom=new JSDOM(html,{runScripts:'outside-only',url:'https://shop.example.test/register/'});
+ const win=dom.window;
+ let submitted;
+ let refreshes=0;
+ win.fetch=async(url,options)=>{
+  submitted=options.body;
+  return {ok:true,redirected:false,text:async()=>'<div data-registration-notices><ul class="woocommerce-error"><li>Verification unavailable</li></ul></div>'};
+ };
+ win.linkerTurnstile={refresh:()=>{refreshes++;}};
+ win.eval(script);
+ const form=win.document.querySelector('form');
+ completeCompany(form);
+ form.querySelector('[data-next]').click();
+ form.elements.email.value='installer@example.test';
+ form.elements.password.value='Local-only draft';
+ const button=form.querySelector('[name="register"]');
+ const ev=new win.SubmitEvent('submit',{bubbles:true,cancelable:true,submitter:button});
+ form.dispatchEvent(ev);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(ev.defaultPrevented,true);
+ assert.equal(submitted.get('register'),'Register');
+ assert.equal(submitted.get('cf-turnstile-response'),'test-token');
+ assert.equal(form.elements.password.value,'Local-only draft');
+ assert.equal(form.dataset.activeStep,'2');
+ assert.equal(form.querySelector('[data-registration-error]').textContent,'Verification unavailable');
+ assert.equal(button.hasAttribute('aria-busy'),false);
+ assert.equal(refreshes,1);
+});

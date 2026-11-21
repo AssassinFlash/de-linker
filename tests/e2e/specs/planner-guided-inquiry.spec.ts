@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const words = {
 	en: {
@@ -271,7 +271,7 @@ for (const scenario of scenarios) {
 			}) => {
 				const { url } = instance();
 				expect(await context.cookies()).toEqual([]);
-				const restoreBudgets = isolateVisitorBudgets();
+				const restoreBudgets = isolateMailBudgets();
 				try {
 					const text = words[locale];
 					const tag = randomUUID();
@@ -648,7 +648,7 @@ for (const [locale, width] of [
 		context,
 	}) => {
 		const { url } = instance();
-		const restoreBudgets = isolateVisitorBudgets();
+		const restoreBudgets = isolateMailBudgets();
 		try {
 			const text = words[locale];
 			const tag = randomUUID();

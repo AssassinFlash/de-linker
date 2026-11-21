@@ -1,5 +1,7 @@
 # Pre-send content verdict contract
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Owner policy, 2026-10-23; source base `97ef132f176066c25812c8093a1b5106c443b3fc`. Supersedes observation-only inquiry notification decisions. Persist complete customer input first without waiting for a model. Model results are evidence for a native sending permit, never an authorization supplied by the customer. Unknown, expired, provider/budget failure and malformed response are not normal. Keep records and use bounded native recovery; no substitute review-reminder mail.
 
 ## Authenticated existing service wire

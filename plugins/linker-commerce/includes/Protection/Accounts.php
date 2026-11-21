@@ -61,7 +61,6 @@ final class Accounts {
 		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( RegistrationNotices::class, 'maintain' ) );
 		( new \Linker\Commerce\Registration\RegistrationCapacityAdmin() )->register();
 		( new \Linker\Commerce\Registration\RegistrationPrivacy() )->register();
-		( new \Linker\Commerce\Registration\PendingProfileCapacity() )->register();
 		register_shutdown_function( array( $this, 'unfinished' ) );
 		add_action( 'woocommerce_lostpassword_form', array( $this, 'reset_fields' ) );
 		add_action( 'lostpassword_form', array( $this, 'reset_fields' ) );
@@ -73,7 +72,7 @@ final class Accounts {
 	 * Registration fields are appended within the existing native form.
 	 */
 	public function registration_fields(): void {
-		if ( Business::enabled() ) {
+		if ( ! is_user_logged_in() ) {
 			wp_nonce_field( 'linker_native_registration', 'linker_native_registration_nonce' );
          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- FormFields escapes every variable.
 			echo FormFields::render( 'registration' );
@@ -84,11 +83,7 @@ final class Accounts {
 	 * Reset verification does not alter password or reset token semantics.
 	 */
 	public function reset_fields(): void {
-		if ( Business::enabled() ) {
-			wp_nonce_field( 'linker_password_reset', 'linker_password_reset_nonce' );
-         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- FormFields escapes every variable.
-			echo FormFields::render( 'password_reset' );
-		}
+		wp_nonce_field( 'linker_password_reset', 'linker_password_reset_nonce' );
 	}
 
 	/**
@@ -129,7 +124,7 @@ final class Accounts {
 	 * @param bool     $core     Core registration requires an additional CSRF nonce.
 	 */
 	private function registration( WP_Error $errors, string $username, string $email, bool $core ): WP_Error {
-		if ( ! Business::enabled() || $errors->has_errors() ) {
+		if ( $errors->has_errors() ) {
 			return $this->registration_errors( $errors, $core );
 		}
 		$post = self::post();
@@ -138,7 +133,7 @@ final class Accounts {
 			$errors->add( 'registration-error-invalid-email', __( 'Please provide a valid email address.', 'woocommerce' ) );
 			return $this->registration_errors( $errors, $core );
 		}
-		if ( 'enforce' === Configuration::current()->mode && $core && ! wp_verify_nonce( self::text( $post, 'linker_native_registration_nonce' ), 'linker_native_registration' ) ) {
+		if ( $core && ! wp_verify_nonce( self::text( $post, 'linker_native_registration_nonce' ), 'linker_native_registration' ) ) {
 			$errors->add( 'linker_registration_verification', __( 'Please verify your registration and try again.', 'linker-commerce' ) );
 			return $this->registration_errors( $errors, $core );
 		}
@@ -152,11 +147,16 @@ final class Accounts {
 		}
 		// WordPress's native display_name column is varchar(250); Fields saves
 		// the complete joined personal name there after creation, without trimming.
-		if ( 'enforce' === Configuration::active_mode() && mb_strlen( trim( $payload['billing_first_name'] . ' ' . $payload['billing_last_name'] ), 'UTF-8' ) > 250 ) {
+		if ( mb_strlen( trim( $payload['billing_first_name'] . ' ' . $payload['billing_last_name'] ), 'UTF-8' ) > 250 ) {
 			$errors->add( 'billing_first_name', __( 'Please use no more than 250 characters for your first and last name together. Your account has not been created; your entries are still here.', 'linker-commerce' ) );
 			return $this->registration_errors( $errors, $core );
 		}
-		$result = Operation::begin( 'registration', $post, $payload );
+		$verified = Turnstile::check( 'registration', $post );
+		if ( is_wp_error( $verified ) ) {
+			$errors->add( $verified->get_error_code(), $verified->get_error_message() );
+			return $this->registration_errors( $errors, $core );
+		}
+		$result = Operation::begin( 'registration', $payload );
 		if ( is_wp_error( $result ) ) {
 			$errors->add( $result->get_error_code(), $result->get_error_message() );
 		} elseif ( ! empty( $result['enforced'] ) ) {
@@ -183,18 +183,7 @@ final class Accounts {
 				'started'     => false,
 				'transaction' => $transaction,
 			);
-			$slot               = RegistrationSlots::reserve( $result['id'], RegistrationSlots::profile_bytes( $values, $email, $locale ), Identity::recipient( $email ) );
-			if ( is_wp_error( $slot ) ) {
-				$this->unfinished();
-				$errors->add( $slot->get_error_code(), $slot->get_error_message() );
-				return $this->registration_errors( $errors, $core );
-			}
-			$this->registration['slot'] = $slot['key'];
-			if ( ! RegistrationSlots::hold( $slot['key'] ) ) {
-				$this->unfinished();
-				$errors->add( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
-				return $this->registration_errors( $errors, $core );
-			}
+			$this->registration['slot'] = hash_hmac( 'sha256', 'registration|' . $result['id'], wp_salt( 'auth' ) );
 			try {
 				$notices = RegistrationNotices::prepare( $values, $email, $username, $locale, $result['id'] );
 			} catch ( \Throwable $error ) {
@@ -255,16 +244,15 @@ final class Accounts {
 					break;
 				}
 			}
-			if ( ! $profile_ok || get_user_meta( $id, RegistrationNotices::PENDING, true ) !== 'yes' || get_user_meta( $id, RegistrationSlots::META, true ) !== $active['slot'] || RegistrationNotices::read( $id ) !== $active['notices'] || is_wp_error( RegistrationSlots::bind( $active['slot'], $id ) ) ) {
+			if ( ! $profile_ok || get_user_meta( $id, RegistrationNotices::PENDING, true ) !== 'yes' || get_user_meta( $id, RegistrationSlots::META, true ) !== $active['slot'] || RegistrationNotices::read( $id ) !== $active['notices'] ) {
 				$this->unfinished();
 				throw new \RuntimeException( esc_html__( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ) );
 			}
-			$completed = ( new Admission( Configuration::current() ) )->complete( $active['permit'], $id );
+			$completed = ( new Ledger() )->complete( $active['permit']['id'], $active['permit']['fingerprint'], $id );
 			if ( is_wp_error( $completed ) ) {
 				throw new \RuntimeException( 'registration_completion_unconfirmed' );
 			}
 			$active['transaction']->commit();
-			RegistrationSlots::release( $active['slot'] );
 			$this->registration = null;
 		} catch ( \Throwable $error ) {
 			$this->unfinished();
@@ -375,8 +363,6 @@ final class Accounts {
 		$this->registration = null;
 		try {
 			$active['transaction']->rollback();
-			if ( '' !== $active['slot'] ) {
-				RegistrationSlots::release( $active['slot'] ); }
 		} catch ( \Throwable $error ) {
 			// Unknown original connection/commit: never replay or compensate on a new one.
 			return;
@@ -396,15 +382,15 @@ final class Accounts {
 	 * @param WP_User|false $user   Resolved native user, never exposed in public output.
 	 */
 	public function password_reset( WP_Error $errors, WP_User|false $user ): void {
-		if ( ! Business::enabled() || $errors->has_errors() || ! $user instanceof WP_User ) {
+		if ( $errors->has_errors() || ! $user instanceof WP_User ) {
 			return;
 		}
 		$post = self::post();
-		if ( 'enforce' === Configuration::current()->mode && ! wp_verify_nonce( self::text( $post, 'linker_password_reset_nonce' ), 'linker_password_reset' ) ) {
+		if ( ! wp_verify_nonce( self::text( $post, 'linker_password_reset_nonce' ), 'linker_password_reset' ) ) {
 			$errors->add( 'linker_reset_verification', __( 'Please verify your request and try again.', 'linker-commerce' ) );
 			return;
 		}
-		$result = Operation::begin( 'password_reset', $post, array( 'email' => strtolower( $user->user_email ) ) );
+		$result = Operation::begin( 'password_reset', array( 'email' => strtolower( $user->user_email ) ) );
 		if ( is_wp_error( $result ) ) {
 			$errors->add( $result->get_error_code(), $result->get_error_message() );
 		} else {

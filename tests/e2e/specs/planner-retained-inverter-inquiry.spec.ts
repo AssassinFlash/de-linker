@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const local = /^http:\/\/127\.0\.0\.1:\d+$/;
 
 let restoreBudgets: (() => void) | undefined;
 test.beforeEach(() => {
-	restoreBudgets = isolateVisitorBudgets();
+	restoreBudgets = isolateMailBudgets();
 });
 test.afterEach(() => {
 	restoreBudgets?.();

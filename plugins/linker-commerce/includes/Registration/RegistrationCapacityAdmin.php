@@ -51,7 +51,6 @@ final class RegistrationCapacityAdmin {
 			foreach ( array(
 				'pending_users'  => __( 'Pending accounts', 'linker-commerce' ),
 				'interrupted'    => __( 'Interrupted registrations', 'linker-commerce' ),
-				'capacity'       => __( 'Account capacity', 'linker-commerce' ),
 				'business_bytes' => __( 'Business profile bytes', 'linker-commerce' ),
 				'reserved_bytes' => __( 'Reserved profile bytes', 'linker-commerce' ),
 				'byte_capacity'  => __( 'Profile byte capacity', 'linker-commerce' ),

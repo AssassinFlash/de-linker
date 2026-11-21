@@ -28,6 +28,9 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class ConversationRoutesTest extends TestCase {
+	/** Private recipient for this test's confirmation and transcript. */
+	private string $recipient;
+
 
 	/**
 	 * A stream as the service writes it: meta, one text block, done.
@@ -81,6 +84,7 @@ final class ConversationRoutesTest extends TestCase {
 	 * Holds the cookie writers, records and stops mail, starts as a guest.
 	 */
 	protected function setUp(): void {
+		$this->recipient = wp_generate_uuid4() . '@example.test';
 		parent::setUp();
 		$this->mail    = array();
 		$this->created = array(
@@ -238,15 +242,15 @@ final class ConversationRoutesTest extends TestCase {
 			$id,
 			'/email',
 			array(
-				'email'  => 'tester@example.test',
+				'email'  => $this->recipient,
 				'locale' => 'en',
 			) + self::guard()
 		);
 
 		$this->assertSame( 202, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
-		$this->assertSame( array( 'status' => 'confirm', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the whole answer.
+		$this->assertSame( array( 'status' => 'confirm', 'to' => $this->recipient ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the whole answer.
 		$this->assertCount( 1, $this->mail, 'Only the confirmation.' );
-		$this->assertSame( array( 'tester@example.test' ), (array) $this->mail[0]['to'] );
+		$this->assertSame( array( $this->recipient ), (array) $this->mail[0]['to'] );
 		$this->assertSame( 'Conversation with Genie requested for this email address', $this->mail[0]['subject'] );
 		$confirmation = (string) $this->mail[0]['message'];
 		$this->assertStringNotContainsString( 'Which hybrid inverter fits a home?', $confirmation, 'No conversation text before the address is confirmed.' );
@@ -256,14 +260,14 @@ final class ConversationRoutesTest extends TestCase {
 		$mail = new ConversationMail( new Conversations(), new Thread() );
 		$this->assertSame( 'pending', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
 		$this->assertCount( 2, $this->mail );
-		$this->assertSame( array( 'tester@example.test' ), (array) $this->mail[1]['to'] );
+		$this->assertSame( array( $this->recipient ), (array) $this->mail[1]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[1]['subject'] );
 		$body = (string) $this->mail[1]['message'];
 		$this->assertStringContainsString( 'Which hybrid inverter fits a home?', $body );
 		$this->assertStringContainsString( 'The SAJ H2-10K-T3 is a three-phase hybrid inverter.', $body, 'The last answer, from its stream.' );
 		$this->assertStringContainsString( esc_html( get_the_title( 4107 ) ), $body, 'The product the answer showed.' );
 		$this->assertStringNotContainsString( 'Bcc', implode( "\n", (array) $this->mail[1]['headers'] ), 'Nobody else is copied.' );
-		$this->assert_pending_copy( $id, 'tester@example.test', $body );
+		$this->assert_pending_copy( $id, $this->recipient, $body );
 
 		$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'], 'The link works once.' );
 		$this->assertCount( 2, $this->mail );
@@ -282,7 +286,7 @@ final class ConversationRoutesTest extends TestCase {
 				$id,
 				'/email',
 				array(
-					'email'  => 'tester@example.test',
+					'email'  => $this->recipient,
 					'locale' => 'de',
 				) + self::guard()
 			)->get_status()
@@ -317,7 +321,7 @@ final class ConversationRoutesTest extends TestCase {
 				array(),
 			) as $guard
 		) {
-			$response = $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + $guard );
+			$response = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + $guard );
 			$this->assertSame( 202, $response->get_status() );
 		}
 		$this->assertSame( array(), $this->mail );
@@ -366,7 +370,7 @@ final class ConversationRoutesTest extends TestCase {
 		$user = wp_insert_user(
 			array(
 				'user_login' => 'linker-it-pending-' . wp_generate_password( 8, false ),
-				'user_email' => 'tester@example.test',
+				'user_email' => $this->recipient,
 				'user_pass'  => wp_generate_password( 24 ),
 				'role'       => 'customer',
 			)
@@ -407,7 +411,7 @@ final class ConversationRoutesTest extends TestCase {
 				}
 				$response = rest_ensure_response( rest_do_request( $request ) );
 				$this->assertSame( 202, $response->get_status() );
-				$this->assertSame( array( 'status' => 'pending', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
+				$this->assertSame( array( 'status' => 'pending', 'to' => $this->recipient ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
 				$this->assertSame( $id, $captured['conversation_id'] );
 				$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
 			}
@@ -425,7 +429,7 @@ final class ConversationRoutesTest extends TestCase {
 	/** A confirmed guest link saves a real ACK-owned pending copy from another browser. */
 	public function test_a_guest_confirmation_preserves_pending_in_another_browser(): void {
 		$id = $this->answered( 'Please email this complete conversation.' );
-		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
 		$this->assertCount( 1, $this->mail, 'Only the fixed address confirmation may go first.' );
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
 		$_COOKIE  = array();
@@ -443,11 +447,11 @@ final class ConversationRoutesTest extends TestCase {
 			$mail = new ConversationMail( new Conversations(), new Thread() );
 			$this->assertSame( array( 'status' => 'pending', 'locale' => 'en' ), $mail->confirm( (string) ( $token[1] ?? '' ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- Complete native response.
 			$this->assertSame( $id, $captured['conversation_id'] );
-			$this->assertSame( 'tester@example.test', $captured['to'] );
+			$this->assertSame( $this->recipient, $captured['to'] );
 			$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
 			$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
 			$this->assertCount( 2, $this->mail, 'The content is captured once into its native pending job, without transport.' );
-			$this->assert_pending_copy( $id, 'tester@example.test', (string) $this->mail[1]['message'] );
+			$this->assert_pending_copy( $id, $this->recipient, (string) $this->mail[1]['message'] );
 			$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
 			$this->assertCount( 2, $this->mail );
 		} finally {
@@ -459,7 +463,7 @@ final class ConversationRoutesTest extends TestCase {
 	/** An unacknowledged producer cannot consume the capability; a real retry saves once. */
 	public function test_unacknowledged_pending_retains_the_capability_for_one_native_retry(): void {
 		$id = $this->answered( 'Please keep this conversation.' );
-		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
 		$secret  = (string) ( $token[1] ?? '' );
 		$pending = get_post_meta( $id, ConversationMail::PENDING, true );
@@ -490,7 +494,7 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array() );
 		$this->assertSame( 'pending', $mail->confirm( $secret )['status'] );
 		$this->assertCount( 2, $this->mail );
-		$this->assert_pending_copy( $id, 'tester@example.test', (string) $this->mail[1]['message'] );
+		$this->assert_pending_copy( $id, $this->recipient, (string) $this->mail[1]['message'] );
 		$this->assertSame( 'expired', $mail->confirm( $secret )['status'] );
 		$this->assertCount( 2, $this->mail, 'Reusing a consumed capability cannot create another native copy.' );
 	}
@@ -528,17 +532,17 @@ final class ConversationRoutesTest extends TestCase {
 
 		$empty                    = ( new Conversations() )->open();
 		$this->created['posts'][] = $empty;
-		$this->assertSame( 409, $this->call( 'POST', $empty, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status(), 'Nothing answered yet, nothing to send.' );
+		$this->assertSame( 409, $this->call( 'POST', $empty, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status(), 'Nothing answered yet, nothing to send.' );
 
 		$jar     = $_COOKIE;
 		$_COOKIE = array();
-		$this->assertSame( 404, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertSame( 404, $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() )->get_status() );
 		$_COOKIE = $jar;
 
 		for ( $sent = 0; $sent < ConversationMail::LIMIT; ++$sent ) {
-			$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+			$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => $sent . '-' . $this->recipient ) + self::guard() )->get_status() );
 		}
-		$refused = $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() );
+		$refused = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() );
 		$this->assertSame( 429, $refused->get_status() );
 		$this->assertSame( 'linker_genie_email_throttled', $refused->get_data()['code'] );
 		$this->assertSame( ConversationMail::LIMIT, $refused->get_data()['data']['limit'], 'The refusal names the limit the panel shows.' );
@@ -556,7 +560,7 @@ final class ConversationRoutesTest extends TestCase {
 			$this->assertTrue( $site->take( '' ) );
 		}
 
-		$refused = $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() );
+		$refused = $this->call( 'POST', $id, '/email', array( 'email' => $this->recipient ) + self::guard() );
 
 		$this->assertSame( 429, $refused->get_status() );
 		$this->assertSame( 'linker_genie_email_capped', $refused->get_data()['code'] );

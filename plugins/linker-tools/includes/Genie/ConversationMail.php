@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
-use Linker\Tools\Protection\Resources;
 
 /**
  * A visitor can have any of their conversations emailed to themselves
@@ -405,25 +404,14 @@ class ConversationMail {
 	 * @return array{status: string, to: string}
 	 */
 	private function ask_to_confirm( int $id, string $to, string $locale ): array {
-		if ( Resources::verified() ) {
-			/**
-			 * Native server-only admission context.
-			 *
-			 * @since 0.2.0
-			 */
-			$context = apply_filters( 'linker_commerce_public_business_context', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the shared trusted callback seam.
-
-			$reference = is_array( $context ) ? (string) ( $context['id'] ?? '' ) : '';
-			/**
-			 * The shared Commerce optional-receipt budget owns recipient/site limits.
-			 * A missing dependency fails closed before any secret or email is made.
-			 *
-			 * @since 0.2.0
-			 */
-			$reason = '' === $reference ? null : apply_filters( 'linker_commerce_receipt_budget_reason', null, $to, $reference, 'conversation_confirmation' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the optional receipt policy.
-			if ( '' !== $reason ) {
-				return self::outcome( self::UNAVAILABLE );
-			}
+		/**
+		 * Charge the unverified recipient before generating or dispatching a new confirmation link.
+		 *
+		 * @since 0.2.0
+		 */
+		$reason = apply_filters( 'linker_commerce_receipt_budget_reason', null, $to, wp_generate_uuid4(), 'conversation_confirmation' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns recipient-level mail protection.
+		if ( '' !== $reason ) {
+			return self::outcome( self::UNAVAILABLE );
 		}
 		$secret = bin2hex( random_bytes( 32 ) );
 		update_post_meta(

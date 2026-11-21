@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use WP_Error;
+
 /** Siteverify's result never grants account, conversation or private-data access. */
 final class Turnstile {
 	// Official server-side validation, fixed research #506, captured 2026-10-21.
@@ -29,24 +31,24 @@ final class Turnstile {
 	 *
 	 * @param string              $action Server-selected form action.
 	 * @param array<string,mixed> $submitted Native form or REST fields.
-	 * @return true|\WP_Error
+	 * @return true|WP_Error
 	 */
-	public static function check( string $action, array $submitted ): true|\WP_Error {
+	public static function check( string $action, array $submitted ): true|WP_Error {
 		if ( ! Configuration::verification_required( $action ) ) {
-			return new \WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) );
+			return new WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) );
 		}
 		if ( is_user_logged_in() ) {
 			return true;
 		}
 		$token = $submitted['cf-turnstile-response'] ?? '';
 		if ( ! is_string( $token ) || '' === $token ) {
-			return new \WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) );
+			return new WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) );
 		}
 		$result = ( new self( Configuration::current() ) )->verify( $token, $action );
 		return match ( $result->status ) {
 			'valid' => true,
-			'unavailable' => new \WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) ),
-			default => new \WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) ),
+			'unavailable' => new WP_Error( 'linker_admission_configuration', Business::verification_message( 'unavailable' ), array( 'status' => 503 ) ),
+			default => new WP_Error( 'linker_admission_proof', Business::verification_message( 'failed' ), array( 'status' => 400 ) ),
 		};
 	}
 

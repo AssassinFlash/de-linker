@@ -65,10 +65,12 @@ $active_step     = Fields::active_step();
 					<p><?php esc_html_e( 'You can access your account straight away. Net prices are available after approval.', 'linker-commerce' ); ?></p>
 				</header>
 
+				<div data-registration-notices>
 				<?php
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's notice markup, kept intact beside the form it belongs to.
 				echo $auth_notices;
 				?>
+				</div>
 				<form method="post" class="woocommerce-form woocommerce-form-register register linker-auth-register-form" data-linker-register data-active-step="<?php echo esc_attr( (string) $active_step ); ?>" <?php do_action( 'woocommerce_register_form_tag' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php. ?> >
 
 					<?php $register_blocks = AuthTemplates::register_field_blocks(); ?>
@@ -144,6 +146,12 @@ $active_step     = Fields::active_step();
 								<a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'linker-commerce' ); ?></a>
 							<?php endif; ?>
 						</p>
+						<?php
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php.
+						do_action( 'woocommerce_register_form' );
+						?>
+
+						<p class="linker-auth-error" role="alert" data-registration-error data-failure="<?php esc_attr_e( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ); ?>" hidden></p>
 						<p class="woocommerce-form-row form-row linker-auth-submit">
 							<?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
 							<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>
@@ -151,14 +159,6 @@ $active_step     = Fields::active_step();
 						</p>
 						<button type="button" class="linker-auth-btn is-ghost" data-back hidden><span><?php esc_html_e( 'Back', 'linker-commerce' ); ?></span></button>
 					</div>
-
-					<?php
-					// The public form's bot traps sit outside the panes: the step
-					// script disables the hidden pane's controls, and these fields
-					// must reach WooCommerce on every attempt.
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php.
-					do_action( 'woocommerce_register_form' );
-					?>
 
 					<?php
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php.

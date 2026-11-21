@@ -279,6 +279,23 @@ final class RegistrationMessage {
 		return $plan;
 	}
 
+	/**
+	 * Attach a mail slot once the registered customer's notice is ready for delivery.
+	 *
+	 * @param array<string,mixed> $plan Stored notice.
+	 * @param int                 $id Registered account.
+	 * @param string              $reservation Native mail reservation.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public static function reserve_delivery( array $plan, int $id, string $reservation ): array|WP_Error {
+		if ( ! self::owned( $plan, $id ) || '' !== $plan['reservation'] || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $reservation ) ) {
+			return self::problem();
+		}
+		$plan['reservation'] = $reservation;
+		$plan['witness']     = self::signature( $plan );
+		return $plan;
+	}
+
 	/** Earliest native insert binds the final identity before the first meta write.
 	 *
 	 * @param array<string,mixed> $plan Reserved native producer.
@@ -287,7 +304,7 @@ final class RegistrationMessage {
 	 * @return array<string,mixed>|WP_Error Identity-bound source.
 	 */
 	public static function bind( array $plan, int $id, string $slot ): array|WP_Error {
-		if ( ! self::valid( $plan ) || 'reserved' !== $plan['binding']['stage'] || $id < 1 || 1 !== preg_match( '/^[a-f0-9]{64}$/', $slot ) ) {
+		if ( ! self::valid( $plan ) || ! in_array( $plan['binding']['stage'], array( 'prepared', 'reserved' ), true ) || $id < 1 || 1 !== preg_match( '/^[a-f0-9]{64}$/', $slot ) ) {
 			return self::problem(); }
 		clean_user_cache( $id );
 		$user = get_userdata( $id );

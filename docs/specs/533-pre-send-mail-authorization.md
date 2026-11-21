@@ -1,5 +1,7 @@
 # Durable pre-send authorization
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Owner requirement 2026-10-23; strict runtime base `97ef132f176066c25812c8093a1b5106c443b3fc`. This supersedes the old observation-only notification policy. This source candidate requires independent review and combined acceptance before deployment.
 
 Native Woo stores complete inquiries before background work. [Fixed customer acknowledgements](https://github.com/AssassinFlash/de-linker/issues/1170#issuecomment-7036165453) follow a saved inquiry and the native receipt allowance. The fixed email carries the inquiry number, reply commitment and a local account link. The content verdict governs the team notification, which includes the original inquiry. The existing Queue, Action Scheduler and minute recovery retry unresolved content work independently. Exhausted work stays visible to staff; existing incident holds retain their original disposition.

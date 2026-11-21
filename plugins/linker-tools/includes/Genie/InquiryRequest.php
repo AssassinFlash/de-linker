@@ -56,21 +56,7 @@ class InquiryRequest {
 	 */
 	public const PAGE_FILTER = 'linker_genie_inquiry_page';
 
-	/**
-	 * Sends one connection may make per hour: the request page's own limit
-	 * (Inquiry\PublicGuard::LIMIT, three an hour, both public doors share it).
-	 */
-	public const LIMIT = 3;
 
-	/**
-	 * Inquiries the whole site takes through the card per day: each is a team
-	 * mail and a receipt (two of Mail\Throttle's 80 a day). Genie's card keeps
-	 * to 10 (20 mails), beside the contact door's 20 (40) and the conversation
-	 * mail's 10, so Genie's share stays at 70 and registrations and approvals
-	 * keep their room. On 2026-10-17, the busiest day the live mail log holds,
-	 * the site sent 7.
-	 */
-	public const DAILY = 10;
 
 	/**
 	 * Meta key of the sent inquiries on the conversation post: one row per send,
@@ -91,23 +77,12 @@ class InquiryRequest {
 	 * @param Conversations  $conversations The visitor's conversation.
 	 * @param Thread         $thread        Its stored messages.
 	 * @param PageContext    $pages         The page context the card sends.
-	 * @param FormGuard|null $guard         The public form's protections; this door's when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
 		private readonly Thread $thread,
-		private readonly PageContext $pages,
-		?FormGuard $guard = null
-	) {
-		$this->guard = $guard ?? new FormGuard( 'genie_inquiry', self::LIMIT, self::DAILY );
-	}
-
-	/**
-	 * The public form's protections (FormGuard).
-	 *
-	 * @var FormGuard
-	 */
-	private readonly FormGuard $guard;
+		private readonly PageContext $pages
+	) {}
 
 	/**
 	 * Registers the route; runs on rest_api_init.
@@ -137,8 +112,6 @@ class InquiryRequest {
 						'email'          => array( 'type' => 'string' ),
 						'company'        => array( 'type' => 'string' ),
 						'website'        => array( 'type' => 'string' ),
-						'started'        => array( 'type' => 'string' ),
-						'started_nonce'  => array( 'type' => 'string' ),
 						'consent'        => array( 'type' => 'string' ),
 						'message'        => array( 'type' => 'string' ),
 						'attach_summary' => array( 'type' => 'string' ),
@@ -164,15 +137,12 @@ class InquiryRequest {
 	public function state( WP_REST_Request $request ): WP_REST_Response {
 		$locale       = 'de' === $request->get_param( 'locale' ) ? 'de' : 'en';
 		$conversation = $this->conversations->existing_id();
-		$stamp        = $this->guard->stamp();
 		$draft        = $conversation > 0 ? $this->draft( $locale ) : $this->nothing();
 		$summary      = $conversation > 0 ? $this->summary( $conversation, $locale ) : null;
 		$message      = null !== $summary ? (string) ( $summary['note'] ?? '' ) : '';
 		$reply        = new WP_REST_Response(
 			array(
 				'conversation'  => $conversation,
-				'started'       => $stamp['started'],
-				'started_nonce' => $stamp['nonce'],
 				'account'       => $this->customer(),
 				'lines'         => $draft['lines'],
 				'lines_digest'  => $draft['digest'],
@@ -204,8 +174,6 @@ class InquiryRequest {
 		if ( null === $customer ) {
 			$guard    = array(
 				'website'       => $request->get_param( 'website' ) ?? '',
-				'started'       => $request->get_param( 'started' ),
-				'started_nonce' => $request->get_param( 'started_nonce' ),
 			);
 			$customer = array(
 				'user_id' => 0,
@@ -213,12 +181,9 @@ class InquiryRequest {
 				'name'    => sanitize_text_field( (string) $request->get_param( 'name' ) ),
 				'company' => sanitize_text_field( (string) $request->get_param( 'company' ) ),
 			);
-			if ( $this->guard->trapped( $guard ) ) {
+			if ( FormGuard::trapped( $guard ) ) {
 				// A bot: answered 200 and sent nowhere (the request page's rule).
 				return $this->reply( $customer['email'], null );
-			}
-			if ( ! $this->guard->passes( $guard ) ) {
-				return $this->error( 'linker_genie_inquiry_retry', 400 );
 			}
 			if ( ! is_email( $customer['email'] ) ) {
 				return $this->error( 'linker_genie_inquiry_email', 400 );
@@ -247,8 +212,14 @@ class InquiryRequest {
 		if ( ! has_filter( self::SEND_FILTER ) ) {
 			return $this->error( 'linker_genie_inquiry_unavailable', 503 );
 		}
-		if ( '' !== $this->guard->take() ) {
-			return $this->error( 'linker_genie_inquiry_limited', 429 );
+		if ( ! is_user_logged_in() ) {
+			if ( ! class_exists( \Linker\Commerce\Protection\Turnstile::class ) ) {
+				return $this->error( 'linker_genie_inquiry_unavailable', 503 );
+			}
+			$checked = \Linker\Commerce\Protection\Turnstile::check( 'genie_inquiry', array( 'cf-turnstile-response' => $request->get_param( 'cf-turnstile-response' ) ) );
+			if ( is_wp_error( $checked ) ) {
+				return $checked;
+			}
 		}
 		$summary = '1' === (string) $request->get_param( 'attach_summary' ) ? $this->summary( $conversation, $locale ) : null;
 		$page    = $this->pages->sanitize( $request->get_param( 'page' ) );

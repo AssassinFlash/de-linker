@@ -67,9 +67,15 @@ it( 'keeps an incomplete protected form on screen and allows native submission o
 	await vi.waitFor( () =>
 		expect( window.turnstile!.render ).toHaveBeenCalledOnce()
 	);
+	const resume = vi
+		.spyOn( form, 'requestSubmit' )
+		.mockImplementation( () => {} );
 	expect( submit() ).toBe( false );
 	expect( new FormData( form ).get( 'message' ) ).toBe( 'My battery' );
 	options!.callback( 'response-token' );
+	await vi.waitFor( () => expect( resume ).toHaveBeenCalledTimes( 1 ) );
+	options!.callback( 'next-token' );
+	expect( resume ).toHaveBeenCalledTimes( 1 );
 	expect( submit() ).toBe( true );
 	options![ 'expired-callback' ]();
 	expect( submit() ).toBe( false );

@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { seedConsentCookies } from '../lib/consent';
-import { instance, isolateVisitorBudgets, wp } from '../lib/instance';
+import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const PASSWORD = 'e2e-Report-Account-2026!';
 
@@ -67,7 +67,7 @@ for (const locale of ['en', 'de'] as const) {
 			const login = `e2e-report-account-${locale}-${width}-${Date.now()}`;
 			const email = `${login}@example.test`;
 			const title = `E2E report ${locale} ${width} ${Date.now()}`;
-			const restoreBudgets = isolateVisitorBudgets();
+			const restoreBudgets = isolateMailBudgets();
 			let customer = 0;
 			try {
 				customer = Number(

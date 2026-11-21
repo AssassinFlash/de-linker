@@ -65,19 +65,11 @@ final class BotGuard {
 				$post[ $key ] = $value;
 			}
 		}
-		$protected = \Linker\Commerce\Protection\Business::enabled();
-		$refusal   = $guard->refusal( $post, ! $protected );
+		$refusal = $guard->refusal( $post, false );
 		if ( '' !== $refusal ) {
 			BlockedRegistrations::record( $refusal );
 			$errors->add( self::ERROR, __( 'We could not process this registration. Please check your entries and try again.', 'linker-commerce' ) );
 			return $errors;
-		}
-		if ( $errors->has_errors() ) {
-			return $errors;
-		}
-		if ( ! $protected && ! $guard->take() ) {
-			BlockedRegistrations::record( self::LIMIT );
-			$errors->add( self::ERROR, __( 'We received several registrations from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
 		}
 		return $errors;
 	}

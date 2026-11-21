@@ -24,7 +24,7 @@ final class RegistrationSlots {
 	public const OPTION = 'linker_public_registration_slots';
 	public const META   = '_linker_public_registration_operation';
 	// Operating allocation, not a customer-traffic measurement: specification 569.
-	public const MAX_PENDING = 128;
+	private const AUDIT_HISTORY = 128;
 	public const MAX_BYTES   = 8388608;
 	private const MUTEX      = 'registration-capacity';
 
@@ -47,7 +47,7 @@ final class RegistrationSlots {
 					return new WP_Error( 'linker_registration_pending', __( 'This request has already been processed. Please check the result before sending it again.', 'linker-commerce' ) );
 				}
 				$pending = self::pending_users();
-				if ( $pending['count'] + count( $state ) >= self::MAX_PENDING || $pending['bytes'] + array_sum( array_column( $state, 'bytes' ) ) + $bytes > self::MAX_BYTES ) {
+				if ( $pending['bytes'] + array_sum( array_column( $state, 'bytes' ) ) + $bytes > self::MAX_BYTES ) {
 					return self::unavailable();
 				}
 				$state[ $key ] = array(
@@ -213,7 +213,7 @@ final class RegistrationSlots {
 								'reason' => $reason,
 								'owner'  => $state[ $key ]['owner'] ?? '',
 							);
-							$audit   = array_slice( $audit, -self::MAX_PENDING );
+							$audit   = array_slice( $audit, -self::AUDIT_HISTORY );
 							update_option( 'linker_registration_dispositions', $audit, false );
 							if ( self::audit() !== $audit ) {
 								return self::unavailable();
@@ -565,7 +565,6 @@ final class RegistrationSlots {
 				return array(
 					'pending_users'  => $pending['count'],
 					'interrupted'    => count( $state ),
-					'capacity'       => self::MAX_PENDING,
 					'business_bytes' => $pending['bytes'],
 					'reserved_bytes' => array_sum( array_column( $state, 'bytes' ) ),
 					'byte_capacity'  => self::MAX_BYTES,
@@ -603,7 +602,7 @@ final class RegistrationSlots {
 				try {
 					$raw   = self::read();
 					$state = null === $raw ? array() : maybe_unserialize( $raw );
-					if ( ! is_array( $state ) || count( $state ) > self::MAX_PENDING ) {
+					if ( ! is_array( $state ) ) {
 						return;
 					}
 					foreach ( $state as $key => $entry ) {
@@ -669,7 +668,7 @@ final class RegistrationSlots {
 			throw new \RuntimeException( 'registration_audit_read_failed' );
 		}
 		$audit = null === $row['value'] ? array() : maybe_unserialize( $row['value'] );
-		if ( ! is_array( $audit ) || count( $audit ) > self::MAX_PENDING || count( array_filter( $audit, 'is_array' ) ) !== count( $audit ) ) {
+		if ( ! is_array( $audit ) || count( $audit ) > self::AUDIT_HISTORY || count( array_filter( $audit, 'is_array' ) ) !== count( $audit ) ) {
 			throw new \RuntimeException( 'registration_audit_invalid' );
 		}
 		return array_values( $audit );

@@ -12,7 +12,6 @@ namespace Linker\Commerce\Health;
 
 use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Mail\Throttle;
-use Linker\Commerce\Protection\BusinessCapacity;
 use WP_Error;
 
 /**
@@ -54,15 +53,6 @@ final class OperationsHealth implements Block {
 	public const MAIL_ORDINARY_PHP  = Throttle::PER_DAY - Throttle::PHP_RESERVE;
 	public const MAIL_ORDINARY_SMTP = Throttle::SMTP_PER_DAY - Throttle::SMTP_RESERVE;
 
-	/**
-	 * Share of the ordinary inquiry envelope that raises the backlog line.
-	 *
-	 * Three quarters of BusinessCapacity::LIMITS['ordinary']['count'] (128).
-	 * #568 measured the 2026-10-22 wave at 102 unhandled inquiries — 80 % of
-	 * the envelope — and at 128 the site refuses a genuine new submission
-	 * (docs/specs/568-global-business-intake.md, the occupancy table).
-	 */
-	public const BACKLOG_SHARE = 0.75;
 
 	/**
 	 * Share of the verification lane that raises the quarantine line.
@@ -156,21 +146,6 @@ final class OperationsHealth implements Block {
 					: __( 'The unhandled inquiry envelope could not be read.', 'linker-commerce' )
 			);
 		} else {
-			$limit = (int) floor( BusinessCapacity::LIMITS['ordinary']['count'] * self::BACKLOG_SHARE );
-			if ( $intake['unhandled'] >= $limit ) {
-				$entries[] = array(
-					/* translators: 1: unhandled inquiries, 2: the site envelope. */
-					'label'     => sprintf( __( '%1$d unhandled inquiries are near the site envelope of %2$d.', 'linker-commerce' ), $intake['unhandled'], BusinessCapacity::LIMITS['ordinary']['count'] ),
-					'url'       => '',
-					'link_text' => '',
-					'detail'    => sprintf(
-						/* translators: 1: logical megabytes, 2: the byte envelope. */
-						__( 'Occupied logical data: %1$s of %2$s. At the envelope the site refuses a genuine new submission.', 'linker-commerce' ),
-						size_format( $intake['bytes'] ),
-						size_format( BusinessCapacity::LIMITS['ordinary']['bytes'] )
-					),
-				);
-			}
 			$lane = \Linker\Commerce\Protection\IntakeStore::CAPACITY['verification'];
 			if ( $intake['quarantined'] >= (int) floor( $lane * self::QUARANTINE_SHARE ) ) {
 				$entries[] = array(
@@ -234,10 +209,9 @@ final class OperationsHealth implements Block {
 		$parts[] = $intake instanceof WP_Error
 			? __( 'intake unreadable', 'linker-commerce' )
 			: sprintf(
-				/* translators: 1: unhandled inquiries, 2: the site envelope, 3: quarantined inquiries. */
-				__( 'intake %1$d/%2$d unhandled, %3$d quarantined', 'linker-commerce' ),
+				/* translators: 1: unhandled inquiries, 2: quarantined inquiries. */
+				__( 'intake %1$d unhandled, %2$d quarantined', 'linker-commerce' ),
 				$intake['unhandled'],
-				BusinessCapacity::LIMITS['ordinary']['count'],
 				$intake['quarantined']
 			);
 

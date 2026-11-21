@@ -1,5 +1,7 @@
 # Preserve conversation-mail pending state
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Owner-authorized pre-send protection, strict deployed entry-block base `97ef132f`. The content-mail producer in Commerce must not be bypassed by Genie conversation sharing. Commerce owns its durable job, classifier and final Message permit. This Tools change supplies the native conversation ID with the complete transcript and consumes the producer's three distinct answers: true means permitted Outbox acceptance, `{status: pending}` means a durable request still awaiting automatic checks, false means not accepted. It does not classify or grant permission itself.
 
 Return HTTP202/pending for an accepted automatic check. The existing feedback position says the request is saved and asks the visitor not to repeat it; it does not claim an email was dispatched. Disable the repeated request button for that state. A guest's original confirmation link retains its one-use token capability and may be opened from another browser. Session ownership still governs the initial request and signed-in account address. Both admission and the producer use the native URL capture for the conversation ID, so JSON or query id parameters cannot substitute another source. Conditional deletion of the exact guest token value permits only one concurrent confirmation producer.

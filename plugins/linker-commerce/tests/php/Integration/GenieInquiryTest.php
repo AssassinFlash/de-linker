@@ -23,13 +23,11 @@ use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Inquiry\OrderLocale;
-use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Settings\Options;
 use Linker\Tools\Genie\Conversations;
-use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\RateLimit;
@@ -632,39 +630,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'a message alone is an inquiry' );
 	}
 
-	/**
-	 * Over the site's receipt cap the inquiry still reaches the team; the
-	 * receipt alone is held back, and the card is told.
-	 */
-	public function test_over_the_receipt_cap_the_card_reports_no_receipt(): void {
-		$receipts = new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS );
-		while ( $receipts->take( '' ) ) {
-			continue;
-		}
-		$product = $this->product( '1000' );
-		$this->thread( 'Please send an inquiry.' );
-		$this->cart( array( array( $product, 1 ) ) );
-		$state    = $this->state();
-		$marker   = self::newest_mail_job();
-		$guest    = 'linker-it-' . self::tag() . '@example.test';
-		$response = $this->send(
-			array(
-				'name'           => 'Maria Weber',
-				'email'          => $guest,
-				'message'        => 'Please send a Proforma invoice.',
-				'attach_summary' => '1',
-				'lines'          => $state['lines_digest'],
-			) + self::fields()
-		);
-		$this->assertSame( 200, $response->get_status() );
-		$this->assertFalse( $response->get_data()['inquiry']['receipt'] );
-		$this->authorization->drain();
-		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows, 'the team mail only' );
-		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
-		$this->assertSame( 'daily_cap', $this->record( $guest )->get_meta( ReceiptLimit::SKIPPED_META ) );
-		$this->assertFalse( $this->state()['sent']['receipt'] );
-	}
+
 
 	/**
 	 * The card's state, read through the REST server.
@@ -776,19 +742,12 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		WC()->cart->calculate_totals();
 	}
 
-	/**
-	 * A person's guard fields: a stamp of this door from ten seconds ago.
+	/** Native anonymous form fields with Cloudflare's official integration-test response.
 	 *
-	 * @return array{website: string, started: string, started_nonce: string, consent: string}
+	 * @return array<string,string>
 	 */
 	private static function fields(): array {
-		$stamp = ( new FormGuard( 'genie_inquiry', InquiryRequest::LIMIT, InquiryRequest::DAILY ) )->stamp( time() - 10 );
-		return array(
-			'website'       => '',
-			'started'       => $stamp['started'],
-			'started_nonce' => $stamp['nonce'],
-			'consent'       => '1',
-		);
+		return array( 'website' => '', 'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX', 'consent' => '1' );
 	}
 
 	/**

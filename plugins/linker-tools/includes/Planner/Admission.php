@@ -35,7 +35,7 @@ final class Admission {
 		}
 		$policy = $this->policy( $path );
 		if ( null === $policy ) {
-			return $transport->call( $principal, $path, $body );
+			return 'projects/delete' === $path ? ProjectDelete::checked( $principal, $command, $transport ) : $transport->call( $principal, $path, $body );
 		}
 		// The engine's immutable command receipt outlives the native journal's
 		// one-day resource receipt. Recover it before reserving another unit.
@@ -103,18 +103,7 @@ final class Admission {
 		}
 		// An uncertain/repeated request reuses the same private command key.
 		// The native journal does not infer that an upstream timeout did no work.
-		$reply = 'projects/delete' === $path
-			? ProjectDelete::checked( $principal, $command, $transport )
-			: $transport->call( $principal, $path, $body );
-		if ( 'projects/delete' === $path && ! is_wp_error( $reply ) ) {
-			if ( 400 <= $reply['status'] ) {
-				return $reply;
-			}
-			$result = json_decode( $reply['body'], true );
-			if ( 200 !== $reply['status'] || ! str_starts_with( $reply['type'], 'application/json' ) || true !== ( $result['deleted'] ?? null ) || ( $result['project_id'] ?? null ) !== $command['project_id'] || ( $result['revision'] ?? null ) !== $command['expected_revision'] ) {
-				return Failure::make( 'invalid_reply', 502 );
-			}
-		}
+		$reply = $transport->call( $principal, $path, $body );
 		if ( ! is_wp_error( $reply ) ) {
 			$completed = $ledger->complete( $id, $fingerprint );
 			if ( is_wp_error( $completed ) ) {
@@ -263,7 +252,7 @@ final class Admission {
 	private function policy( string $path ): ?array {
 		return match ( $path ) {
 			'projects/create' => array( 'planner_projects', 10, 100, DAY_IN_SECONDS, 500 ),
-			'projects/revise', 'projects/delete', 'battery/scenario', 'handoffs/prepare' => array( 'planner_edits', 240, 1200, HOUR_IN_SECONDS, 5000 ),
+			'projects/revise', 'battery/scenario' => array( 'planner_edits', 240, 1200, HOUR_IN_SECONDS, 5000 ),
 			'profiles/csv', 'profiles/standard', 'geometry/import' => array( 'planner_uploads', 20, 100, DAY_IN_SECONDS, 500 ),
 			'runs/energy', 'runs/calculate', 'runs/find-equipment', 'runs/check-equipment', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/weather', 'runs/equipment', 'runs/equipment-search', 'runs/report' => array( 'planner_calculations', 30, 120, HOUR_IN_SECONDS, 500 ),
 			default => null,

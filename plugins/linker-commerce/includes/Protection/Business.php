@@ -28,26 +28,17 @@ final class Business {
 	 */
 	public static function run( string $action, array $post, array $payload, callable $work, bool $current = true, ?callable $preflight = null ): WC_Order|WP_Error {
 		$receipt_only = 'inquiry' === $action && '1' === ( $post['linker_inquiry_receipt_only'] ?? '' );
-		$mode         = Configuration::active_mode();
-		if ( $receipt_only && 'enforce' !== $mode ) {
-			return self::unconfirmed_receipt();
-		}
-		if ( 'off' === $mode ) {
-			return $work();
-		}
-		$config   = Configuration::current();
 		$identity = Identity::current();
 		if ( is_wp_error( $identity ) ) {
-			return 'observe' === $config->mode ? $work() : $identity;
+			return $identity;
 		}
-		$id    = isset( $post['linker_request_id'] ) && is_string( $post['linker_request_id'] ) ? $post['linker_request_id'] : '';
-		$proof = isset( $post['linker_proof'] ) && is_string( $post['linker_proof'] ) ? $post['linker_proof'] : '';
+		$id = isset( $post['linker_request_id'] ) && is_string( $post['linker_request_id'] ) ? $post['linker_request_id'] : '';
 		$fp    = Fingerprint::make( $identity, $action, $payload );
 		if ( is_wp_error( $fp ) ) {
 			return $fp;
 		}
 		$ledger = new Ledger();
-		if ( 'enforce' === $config->mode && wp_is_uuid( $id, 4 ) ) {
+		if ( wp_is_uuid( $id, 4 ) ) {
 			$old = $ledger->lookup( $id, $fp );
 			if ( is_wp_error( $old ) && 'linker_admission_unknown_receipt' !== $old->get_error_code() ) {
 				// A failed lookup cannot establish that the original write is absent.
@@ -73,7 +64,7 @@ final class Business {
 		if ( $receipt_only ) {
 			return self::unconfirmed_receipt();
 		}
-		if ( 'enforce' === $config->mode && ! $current ) {
+		if ( ! $current ) {
 			return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
 		}
 		if ( null !== $preflight ) {
@@ -82,55 +73,37 @@ final class Business {
 				return $error;
 			}
 		}
-		$limits = apply_filters( 'linker_commerce_public_business_limits', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Trusted business policy dimensions; BusinessPolicy owns the numeric policy.
-		$carry  = apply_filters( 'linker_commerce_public_business_carry', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Trusted account carry links, never browser values.
-		$gate   = new Admission( $config, $ledger );
-		// Initial native-write lease: bounded by the shared journal's 300-second ceiling (#519).
-		$email  = $payload['email'] ?? ( $payload['details']['email'] ?? '' );
-		$owners = is_string( $email ) && is_email( $email ) ? array( Allowance::owner_for( Identity::recipient( $email ) ) ) : array();
-		if ( 'enforce' === $config->mode && in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
-			$required = Configuration::verification_required( $action );
-			if ( $required && ! $config->ready() ) {
-				return new WP_Error( 'linker_admission_configuration', self::verification_message( 'unavailable' ), array( 'status' => 503 ) );
-			}
-			$verified = $config->ready() && Intake::verified( $proof, $action, $identity, $id );
-			if ( $required && ! $verified ) {
-				return new WP_Error( 'linker_admission_proof', self::verification_message( 'failed' ), array( 'status' => 400 ) );
-			}
-			if ( Campaign::submitted( $payload ) ) {
-				return new WP_Error( 'linker_admission_input', self::verification_message( 'failed' ), array( 'status' => 400 ) );
-			}
-			if ( ! $verified ) {
-				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, BusinessPolicy::review_limits( $limits ), $carry, $owners, $work );
-			}
+		$check = Turnstile::check( $action, $post );
+		if ( is_wp_error( $check ) ) {
+			return $check;
 		}
-		$capacity = BusinessCapacity::preflight();
-		if ( $capacity instanceof WP_Error ) {
-			return $capacity;
+		if ( Campaign::submitted( $payload ) ) {
+			return new WP_Error( 'linker_admission_input', self::verification_message( 'failed' ), array( 'status' => 400 ) );
 		}
-		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
+		$limits  = apply_filters( 'linker_commerce_public_business_limits', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Current native customer and connection.
+		$carry   = apply_filters( 'linker_commerce_public_business_carry', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Preserve customer's native login association.
+		$email   = $payload['email'] ?? ( $payload['details']['email'] ?? '' );
+		$owners  = is_string( $email ) && is_email( $email ) ? array( Allowance::owner_for( Identity::recipient( $email ) ) ) : array();
+		$permit  = $ledger->reserve( $id, $fp, $limits, 120, $carry, $action, $identity->binding(), array_merge( $identity->owners(), $owners ) );
 		if ( is_wp_error( $permit ) ) {
 			return $permit;
 		}
-		if ( ! empty( $permit['reused'] ) ) {
-			return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
-		}
-		$sent = $gate->dispatch( $permit );
+		$sent = $ledger->dispatch( $id, $fp );
 		if ( is_wp_error( $sent ) ) {
-			return $sent;
+			return self::unconfirmed_receipt();
 		}
-		$context = static fn (): array => array_merge(
-			$permit,
-			array(
-				'action'  => $action,
-				'binding' => $identity->binding(),
-			)
+		$context = static fn (): array => array(
+			'enforced'    => true,
+			'id'          => $id,
+			'fingerprint' => $fp,
+			'action'      => $action,
+			'binding'     => $identity->binding(),
 		);
 		add_filter( 'linker_commerce_public_business_context', $context );
 		try {
 			$result = $work();
 			if ( $result instanceof WC_Order ) {
-				$gate->complete( $permit, $result->get_id() );
+				$ledger->complete( $id, $fp, $result->get_id() );
 			}
 			return $result;
 		} finally {

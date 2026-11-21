@@ -1,6 +1,6 @@
 <?php
 /**
- * Site-wide allowance for automated public-door customer receipts.
+ * Delivery state and recipient protection of inquiry acknowledgements.
  *
  * @package Linker\Commerce
  */
@@ -16,14 +16,6 @@ use WC_Order;
 
 /** Only receipts consume this allowance; inquiries and team notifications continue. */
 final class ReceiptLimit {
-
-	/**
-	 * PR #290 round 2: a tenth of Hostinger's shared 100/24h allowance
-	 * (AGENTS.md §4; docs/research/2026-10-09/mail-root-cause.md §3, §9).
-	 * Same small allocation as #235. This is a fixed UTC-day window, as in
-	 * #235's RateLimit, not a claim to measure the host's rolling usage.
-	 */
-	public const DAILY_CAP = 10;
 
 	/** The saved reason a public-door receipt was omitted. */
 	public const SKIPPED_META = '_linker_receipt_skipped';
@@ -62,25 +54,6 @@ final class ReceiptLimit {
 	 * @param bool     $spend Charge at dispatch, or check current availability at handoff.
 	 */
 	public static function reason( WC_Order $order, bool $spend ): string {
-		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
-			return \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id(), 'inquiry', $spend );
-		}
-		$limit = new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS );
-		$used  = $limit->spent( '' );
-		if ( null === $used ) {
-			return 'unavailable';
-		}
-		if ( $used >= self::DAILY_CAP ) {
-			return 'daily_cap';
-		}
-		if ( ! $spend || $limit->take( '' ) ) {
-			return '';
-		}
-		return ( $limit->spent( '' ) ?? 0 ) >= self::DAILY_CAP ? 'daily_cap' : 'unavailable';
-	}
-
-	/** Reserve a receipt atomically, independently of the connection address. */
-	public function take(): bool {
-		return ( new RateLimit( 'public_receipts', self::DAILY_CAP, DAY_IN_SECONDS ) )->take( '' );
+		return \Linker\Commerce\Protection\ReceiptBudget::reason( $order->get_billing_email(), $order->get_id(), 'inquiry', $spend );
 	}
 }

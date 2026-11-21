@@ -149,9 +149,35 @@ export function connectForms( root: ParentNode, widgets: Widgets ): void {
 		}
 		mounted.add( marker );
 		let ready = false;
+		let pending: HTMLElement | null | undefined;
+		const clearPending = ( event: Event ) => {
+			if (
+				event.target instanceof HTMLElement &&
+				! marker.contains( event.target )
+			) {
+				pending = undefined;
+			}
+		};
+		form.addEventListener( 'input', clearPending );
+		form.addEventListener( 'change', clearPending );
 		const start = () =>
 			widgets.mount( marker, action, ( token ) => {
 				ready = Boolean( token );
+				if ( ready && pending !== undefined ) {
+					const submitter = pending;
+					pending = undefined;
+					queueMicrotask( () => {
+						if (
+							form.isConnected &&
+							form.contains( marker ) &&
+							! form.matches(
+								'[data-linker-register].is-split[data-active-step="1"]'
+							)
+						) {
+							form.requestSubmit( submitter ?? undefined );
+						}
+					} );
+				}
 			} );
 		if (
 			marker.getClientRects().length === 0 &&
@@ -181,6 +207,7 @@ export function connectForms( root: ParentNode, widgets: Widgets ): void {
 				) {
 					return;
 				}
+				pending = event.submitter ?? null;
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				const status =

@@ -11,7 +11,7 @@ namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Planning\DraftTransfer;
-use Linker\Commerce\Protection\FormRecovery;
+use Linker\Commerce\Protection\Ledger;
 
 /** An opaque handle addresses one Woo session's retained form. */
 final class CheckoutRetry {
@@ -93,7 +93,7 @@ final class CheckoutRetry {
 		$id             = isset( $entries[ $previous ] ) && $entries[ $previous ]['actor'] === $actor ? $previous : wp_generate_uuid4();
 		$entries[ $id ] = array(
 			'actor' => $actor,
-			'until' => time() + FormRecovery::RETENTION_SECONDS,
+			'until' => time() + Ledger::RECEIPT_SECONDS,
 			'flash' => $flash,
 		);
 		WC()->session->set( self::SESSION, $entries );

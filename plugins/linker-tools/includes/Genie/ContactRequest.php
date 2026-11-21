@@ -53,23 +53,7 @@ class ContactRequest {
 	 */
 	public const MAILBOX_FILTER = 'linker_genie_team_mailbox';
 
-	/**
-	 * Requests one connection may send per hour: the contact form's limit
-	 * (Linker\Commerce\Contact\Handler::LIMIT, three an hour), the site's
-	 * other public door to the team.
-	 */
-	public const LIMIT = 3;
 
-	/**
-	 * Requests the whole site passes on per day. Every request is one team
-	 * mail; the site takes at most 80 of the host's 100 mails a day
-	 * (Linker\Commerce\Mail\Throttle::PER_DAY). With Genie's own
-	 * conversation mail (ConversationMail::DAILY_CAP, 10) Genie takes at most
-	 * 30 of them, which leaves 50 for registrations, inquiries and their
-	 * receipts. On 2026-10-17, the busiest day the live mail log holds (the
-	 * owner's test of the account chain), the site sent 7.
-	 */
-	public const DAILY = 20;
 
 	/**
 	 * Meta key of the hand-off notes on the conversation post.
@@ -94,23 +78,12 @@ class ContactRequest {
 	 * @param Conversations  $conversations The visitor's conversation.
 	 * @param Thread         $thread        Its stored messages.
 	 * @param PageContext    $pages         The page context the card sends.
-	 * @param FormGuard|null $guard The public form's protections; this door's when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
 		private readonly Thread $thread,
-		private readonly PageContext $pages,
-		?FormGuard $guard = null
-	) {
-		$this->guard = $guard ?? new FormGuard( 'genie_contact', self::LIMIT, self::DAILY );
-	}
-
-	/**
-	 * The public form's protections (FormGuard).
-	 *
-	 * @var FormGuard
-	 */
-	private readonly FormGuard $guard;
+		private readonly PageContext $pages
+	) {}
 
 	/**
 	 * Why Genie offered the contact, in words: the one place the reasons
@@ -149,8 +122,6 @@ class ContactRequest {
 					'args'                => array(
 						'email'         => array( 'type' => 'string' ),
 						'website'       => array( 'type' => 'string' ),
-						'started'       => array( 'type' => 'string' ),
-						'started_nonce' => array( 'type' => 'string' ),
 						'consent'       => array( 'type' => 'string' ),
 						'reason'        => array(
 							'type' => 'string',
@@ -173,11 +144,8 @@ class ContactRequest {
 	public function state(): WP_REST_Response {
 		$conversation = $this->conversations->existing_id();
 		$sent         = $conversation > 0 ? $this->sent( $conversation ) : null;
-		$stamp        = $this->guard->stamp();
 		$reply        = new WP_REST_Response(
 			array(
-				'started'       => $stamp['started'],
-				'started_nonce' => $stamp['nonce'],
 				'email'         => $this->customer()['email'] ?? null,
 				'sent'          => $sent,
 				'mailbox'       => $this->mailbox(),
@@ -202,16 +170,11 @@ class ContactRequest {
 		if ( null === $customer ) {
 			$guard = array(
 				'website'       => $request->get_param( 'website' ) ?? '',
-				'started'       => $request->get_param( 'started' ),
-				'started_nonce' => $request->get_param( 'started_nonce' ),
 			);
 			$email = sanitize_email( (string) $request->get_param( 'email' ) );
-			if ( $this->guard->trapped( $guard ) ) {
+			if ( FormGuard::trapped( $guard ) ) {
 				// A bot: answered like a delivery, sent nowhere (the contact form's rule).
 				return $this->reply( $email );
-			}
-			if ( ! $this->guard->passes( $guard ) ) {
-				return $this->error( 'linker_genie_contact_retry', 400 );
 			}
 			if ( ! is_email( $email ) ) {
 				return $this->error( 'linker_genie_contact_email', 400 );
@@ -235,8 +198,14 @@ class ContactRequest {
 		if ( ! has_filter( self::CONTACT_FILTER ) ) {
 			return $this->error( 'linker_genie_contact_unavailable', 503 );
 		}
-		if ( '' !== $this->guard->take() ) {
-			return $this->error( 'linker_genie_contact_limited', 429 );
+		if ( ! is_user_logged_in() ) {
+			if ( ! class_exists( \Linker\Commerce\Protection\Turnstile::class ) ) {
+				return $this->error( 'linker_genie_contact_unavailable', 503 );
+			}
+			$checked = \Linker\Commerce\Protection\Turnstile::check( 'genie_contact', array( 'cf-turnstile-response' => $request->get_param( 'cf-turnstile-response' ) ) );
+			if ( is_wp_error( $checked ) ) {
+				return $checked;
+			}
 		}
 		$handoff = $this->handoff( $conversation, $customer, $request );
 		/**

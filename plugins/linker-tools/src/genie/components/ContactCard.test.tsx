@@ -8,7 +8,7 @@
  * External dependencies
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -65,6 +65,27 @@ function card( fetcher: typeof fetch, reason: ContactReason = 'asked' ) {
 	);
 }
 
+afterEach( () => {
+	delete window.linkerTurnstile;
+} );
+
+test( 'an anonymous contact submits its widget answer with the native request', async () => {
+	const { calls, fetcher } = route( { email: null }, { sent: true } );
+	const mount = vi.fn( ( _node, _action, ready ) => {
+		ready( 'widget-answer' );
+		return () => {};
+	} );
+	window.linkerTurnstile = { mount, refresh: vi.fn() };
+	card( fetcher );
+	await waitFor( () => expect( mount ).toHaveBeenCalledOnce() );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Contact me' } ) );
+	await waitFor( () =>
+		expect( calls.at( -1 )?.body?.[ 'cf-turnstile-response' ] ).toBe(
+			'widget-answer'
+		)
+	);
+} );
+
 test( 'a guest leaves an address and reads the one-business-day promise', async () => {
 	const { calls, fetcher } = route(
 		{
@@ -105,10 +126,9 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 	).toBeTruthy();
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body ).toEqual( {
+		'cf-turnstile-response': '',
 		email: 'maria@example.test',
 		website: '',
-		started: '100',
-		started_nonce: 'sig',
 		consent: '1',
 		reason: 'asked',
 		locale: 'en',
@@ -156,8 +176,6 @@ test( 'a received contact has no mail omission while delivery is pending', async
 
 test( 'a request already with the team shows as sent', async () => {
 	const { fetcher } = route( {
-		started: '100',
-		started_nonce: 'sig',
 		email: null,
 		sent: { email: 'maria@example.test', receipt: false },
 	} );

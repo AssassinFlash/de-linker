@@ -32,12 +32,12 @@ final class OutcomeTest extends TestCase {
 		'includes/Inquiry/Handler.php'             => array(),
 		'includes/Inquiry/Sender.php'              => array(),
 		'includes/Planning/Context.php'            => array(),
-		'includes/Protection/Admission.php'        => array(),
+		'includes/Protection/Turnstile.php'        => array( 'check' ),
 		'includes/Protection/Business.php'         => array(),
-		'includes/Protection/BusinessCapacity.php' => array( 'preflight', 'prepare', 'finalize', 'verify', 'problem' ),
+		'includes/Protection/BusinessCapacity.php' => array( 'problem' ),
 		'includes/Protection/Fingerprint.php'      => array(),
 		'includes/Protection/Identity.php'         => array(),
-		'includes/Protection/Intake.php'           => array( 'verified', 'run', 'begin', 'write', 'problem', 'full', 'grouped' ),
+		'includes/Protection/Intake.php'           => array( 'run', 'begin', 'write', 'problem', 'full', 'grouped' ),
 		'includes/Protection/IntakeStore.php'      => array( 'edit', 'edit_native', 'save', 'read' ),
 		'includes/Protection/Ledger.php'           => array(),
 	);
@@ -273,7 +273,6 @@ final class OutcomeTest extends TestCase {
 		return array(
 			'no site key' => array( 'linker_admission_configuration', 'verification_unavailable' ),
 			'no proof'    => array( 'linker_admission_proof', 'verification_failed' ),
-			'used proof'  => array( 'linker_admission_proof_reused', 'verification_failed' ),
 			'new input'   => array( 'linker_admission_payload_changed', 'verification_failed' ),
 			'oversized'   => array( 'linker_admission_input', 'verification_failed' ),
 		);

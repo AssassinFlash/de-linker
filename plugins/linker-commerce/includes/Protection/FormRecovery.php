@@ -13,9 +13,6 @@ use WP_Error;
 
 /** No password, proof, nonce or full transport body is kept. */
 final class FormRecovery {
-	/** The shared native form recovery window follows the proof window. */
-	public const RETENTION_SECONDS = 300;
-
 	/**
 	 * Known native pre-dispatch refusals need a fresh check; every other outcome
 	 * keeps the original UUID recoverable.
@@ -82,15 +79,7 @@ final class FormRecovery {
 			$fields['linker_request_id'] = '';
 		}
 		wc_load_cart();
-		// The shared proof window bounds how long the retry may be read. An
-		// unconsumed session value remains until Woo cleans up its session.
-		WC()->session->set(
-			'linker_form_recovery_' . $action,
-			array(
-				'until'  => time() + self::RETENTION_SECONDS,
-				'fields' => $fields,
-			)
-		);
+		WC()->session->set( 'linker_form_recovery_' . $action, array( 'fields' => $fields ) );
 		if ( WC()->session instanceof \WC_Session_Handler ) {
 			WC()->session->set_customer_session_cookie( true );
 		}
@@ -116,6 +105,6 @@ final class FormRecovery {
 			return array(); }
 		$value = WC()->session->get( 'linker_form_recovery_' . $action );
 		WC()->session->set( 'linker_form_recovery_' . $action, null );
-		return is_array( $value ) && (int) ( $value['until'] ?? 0 ) > time() && is_array( $value['fields'] ?? null ) ? $value['fields'] : array();
+		return is_array( $value ) && ( ! isset( $value['until'] ) || (int) $value['until'] > time() ) && is_array( $value['fields'] ?? null ) ? $value['fields'] : array();
 	}
 }

@@ -1,5 +1,7 @@
 # Required business verification must gate durable reception
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 Owner emergency correction2026-10-23, strict base deployed b29a979a. In enforce mode with the existing private business-verification policy required, contact and inquiry must reject missing, forged, wrong-scope or unsigned-by-successful-verification-receipt proofs before any review/grouping capacity or new native inquiry, model snapshot or mail job. Configuration outages return the existing retryable failure with retained input rather than saving another unverified record. No new threshold or setting.
 
 The current defect is Business selecting the verification/campaign/individual Intake path before Admission's proof gate. Intake previously dispatched its business receipt without a proof reference. The former unconditional missing-proof review rule in542 is superseded in required mode; optional mode keeps its bounded review contract. Normal successful proof keeps native Sender behavior, full fields, single-use permission and same-UUID bound result recovery. Changed payload/scope or a different UUID cannot reuse a completed proof.

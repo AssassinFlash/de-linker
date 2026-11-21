@@ -1,5 +1,7 @@
 # 公开注册的站级与待处理账号容量
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 状态：本地实现及验收，等待固定 head 的全量 Spec / Standards 复审；未合并、未部署。
 
 依据：[公开注册容量 #569](https://github.com/AssassinFlash/de-linker/issues/569)、[全站安全地图 #533](https://github.com/AssassinFlash/de-linker/issues/533)及本票中业主授权的 pending profile、完整通知预留和数据库断线收窄。未发现公开注册攻击已经发生，本票不计入已确认联系表单攻击规模。

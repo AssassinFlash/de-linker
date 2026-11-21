@@ -1,5 +1,7 @@
 # Sending permission after automated abuse assessment
 
+> 本文件涉及客户入口、交互验证及业务限额的旧规则，已由[2026-11-21 业主极简防刷裁定](1184-native-customer-forms.md)取代。匿名发送询盘、联系与注册在原表单验证；已登录客户和日常浏览、编辑、使用工具沿用原生流程。
+
 The October 2026 decision covers mail that forwards customer content. [Fixed customer acknowledgements](https://github.com/AssassinFlash/de-linker/issues/1170#issuecomment-7036165453) records the November decision governing confirmation of a saved inquiry.
 
 ## Owner decision

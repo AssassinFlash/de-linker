@@ -125,7 +125,6 @@ final class Form {
 	 */
 	private function form( string $state ): string {
 		$previous   = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
-		$individual = isset( $previous['linker_individual_review'] ) && '1' === $previous['linker_individual_review'];
 		$field      = 'linker-form-input';
 		$label      = 'linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
@@ -145,10 +144,6 @@ final class Form {
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
 		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
-
-		$recover = ! isset( $previous['linker_recovery_available'] ) || '1' === $previous['linker_recovery_available'];
-
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual, $recover );
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -195,6 +190,7 @@ final class Form {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
 			. '<p class="linker-form-note">' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';

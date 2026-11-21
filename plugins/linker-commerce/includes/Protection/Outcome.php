@@ -34,7 +34,6 @@ final class Outcome {
 		// Verification itself refused the request before any native write.
 		'linker_admission_configuration'      => array( self::REFUSED, 'verification_unavailable' ),
 		'linker_admission_proof'              => array( self::REFUSED, 'verification_failed' ),
-		'linker_admission_proof_reused'       => array( self::REFUSED, 'verification_failed' ),
 		'linker_admission_payload_changed'    => array( self::REFUSED, 'verification_failed' ),
 		'linker_admission_input'              => array( self::REFUSED, 'verification_failed' ),
 		// The journal refuses the new receipt, so no work was dispatched.
@@ -46,7 +45,6 @@ final class Outcome {
 		// Field, nonce, honeypot and draft validation precede every native write.
 		'linker_inquiry_invalid'              => array( self::REFUSED, 'invalid' ),
 		'linker_inquiry_empty'                => array( self::REFUSED, 'invalid' ),
-		'linker_inquiry_throttled'            => array( self::REFUSED, 'throttled' ),
 		'linker_draft_changed'                => array( self::REFUSED, 'invalid' ),
 		// The inquiry door's read-only draft check, before admission reserves.
 		'planning_context_unavailable'        => array( self::REFUSED, 'invalid' ),
@@ -60,7 +58,6 @@ final class Outcome {
 		// The reviewed project notes drifted before the admission reserved a write.
 		'linker_project_notes_changed'        => array( self::REFUSED, 'invalid' ),
 		'linker_contact_invalid'              => array( self::REFUSED, 'invalid' ),
-		'linker_contact_throttled'            => array( self::REFUSED, 'throttled' ),
 		'linker_contact_name'                 => array( self::REFUSED, 'invalid' ),
 		'linker_contact_email'                => array( self::REFUSED, 'invalid' ),
 		'linker_contact_message'              => array( self::REFUSED, 'invalid' ),
@@ -73,7 +70,6 @@ final class Outcome {
 		'linker_intake_grouped'               => array( self::REFUSED, 'grouped' ),
 		// A receipt exists and its native result is reserved/dispatched/unverified,
 		// or the journal itself could not be read. Neither proves absence.
-		'linker_admission_pending'            => array( self::UNCONFIRMED, 'pending' ),
 		'linker_admission_already_reserved'   => array( self::UNCONFIRMED, 'pending' ),
 		'linker_admission_already_dispatched' => array( self::UNCONFIRMED, 'pending' ),
 		'linker_admission_already_unresolved' => array( self::UNCONFIRMED, 'pending' ),
@@ -85,7 +81,6 @@ final class Outcome {
 		'linker_admission_erased'             => array( self::UNCONFIRMED, 'pending' ),
 		'linker_admission_storage'            => array( self::UNCONFIRMED, 'pending' ),
 		'linker_admission_busy'               => array( self::UNCONFIRMED, 'pending' ),
-		'linker_admission_unavailable'        => array( self::UNCONFIRMED, 'pending' ),
 		'linker_inquiry_pending'              => array( self::UNCONFIRMED, 'pending' ),
 		// The native writer created its checkout order but could not prove it.
 		'linker_inquiry_create'               => array( self::UNCONFIRMED, 'pending' ),

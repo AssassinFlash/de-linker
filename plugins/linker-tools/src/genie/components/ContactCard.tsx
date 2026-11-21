@@ -20,6 +20,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useTransferWidget } from '../shared/useTransferWidget';
 import type { Locale } from '../../configurator/types';
 import {
 	readContact,
@@ -183,6 +184,10 @@ export function ContactCard( {
 	}, [ contactUrl, nonce, fetcher ] );
 
 	const account = state?.email ?? null;
+	const widget = useTransferWidget(
+		'genie_contact',
+		!! state && ! account && 'sent' !== phase
+	);
 	const proactive =
 		'dissatisfied' === block.reason || 'repeat' === block.reason;
 
@@ -200,12 +205,11 @@ export function ContactCard( {
 				...( account
 					? {}
 					: {
+							'cf-turnstile-response': widget.token.current,
 							email: email.trim(),
 							...( consent ? { consent: '1' as const } : {} ),
 						} ),
 				website: trap,
-				started: state?.started ?? '',
-				started_nonce: state?.startedNonce ?? '',
 				reason: block.reason,
 				locale,
 				page,
@@ -219,6 +223,7 @@ export function ContactCard( {
 			onSent?.( result.email, result.receipt );
 			return;
 		}
+		widget.refresh();
 		setFailure( result.failure );
 		setPhase( 'ready' );
 	}
@@ -292,6 +297,7 @@ export function ContactCard( {
 							/>
 							{ /* The consent the site's public doors ask a guest
 							 * for (#246); an account's customer gave it. */ }
+							{ state && <div ref={ widget.container } /> }
 							<div className="linker-genie-contact__consent">
 								<input
 									id={ consentField }

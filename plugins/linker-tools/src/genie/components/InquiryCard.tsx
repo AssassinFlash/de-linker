@@ -24,6 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useTransferWidget } from '../shared/useTransferWidget';
 import type { Locale } from '../../configurator/types';
 import type { PageContext } from '../api/turn';
 import {
@@ -249,6 +250,10 @@ export function InquiryCard( {
 	}, [ inquiryUrl, nonce, locale, fetcher ] );
 
 	const account = state?.account ?? null;
+	const widget = useTransferWidget(
+		'genie_inquiry',
+		!! state && ! account && ! sent
+	);
 	const lines = state?.lines ?? [];
 	const empty = 0 === lines.length && '' === message.trim();
 
@@ -285,6 +290,7 @@ export function InquiryCard( {
 					? {}
 					: {
 							name: name.trim(),
+							'cf-turnstile-response': widget.token.current,
 							email: email.trim(),
 							company: company.trim(),
 							...( consent ? { consent: '1' as const } : {} ),
@@ -293,8 +299,6 @@ export function InquiryCard( {
 				attachSummary: attach && '' !== state.summary,
 				lines: state.linesDigest,
 				website: trap,
-				started: state.started,
-				started_nonce: state.startedNonce,
 				locale,
 				...( page ? { page } : {} ),
 			},
@@ -306,6 +310,7 @@ export function InquiryCard( {
 			notify.current?.( result.inquiry );
 			return;
 		}
+		widget.refresh();
 		setFailure( result.failure );
 		setPhase( 'ready' );
 		if ( 'changed' === result.failure ) {
@@ -494,6 +499,7 @@ export function InquiryCard( {
 							}
 						/>
 					</label>
+					{ state && <div ref={ widget.container } /> }
 					<div className="linker-genie-inquiry__consent">
 						<input
 							id={ consentField }

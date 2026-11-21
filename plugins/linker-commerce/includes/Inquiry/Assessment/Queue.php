@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry\Assessment;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use Linker\Commerce\Protection\BusinessCapacity;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
@@ -165,8 +164,8 @@ final class Queue {
 		// Cron loads WC email base classes lazily, before invoking native rebuilders.
 		WC()->mailer();
 		\Linker\Commerce\Registration\VatNotice::recover();
-		// Reuse the approved complete native intake envelope, not a new quota.
-		$limit  = array_sum( array_column( BusinessCapacity::LIMITS, 'count' ) );
+		// Page through pending records in the same bounded recovery batches.
+		$limit  = 192;
 		$offset = max( 0, (int) get_option( self::RECOVERY_OFFSET, 0 ) );
 		$ids    = self::pending_ids( $offset, $limit );
 		if ( array() === $ids && $offset > 0 ) {

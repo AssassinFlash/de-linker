@@ -9,14 +9,10 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Protection;
 
-use Linker\Commerce\Protection\Admission;
-use Linker\Commerce\Protection\Allowance;
-use Linker\Commerce\Protection\Configuration;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Fingerprint;
 use Linker\Tools\Genie\Attachments;
-use Linker\Tools\Genie\Conversations;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -83,7 +79,7 @@ final class Resources {
 	 * @param string $fingerprint Internal native input fingerprint.
 	 */
 	public static function completed_genie_operation( string $id, string $fingerprint ): bool {
-		if ( ! class_exists( Configuration::class ) || 'enforce' !== Configuration::active_mode() || '' === $id || '' === $fingerprint ) {
+		if ( ! class_exists( Ledger::class ) || '' === $id || '' === $fingerprint ) {
 			return false;
 		}
 		$receipt = ( new Ledger() )->lookup( $id, $fingerprint );
@@ -114,11 +110,13 @@ final class Resources {
 		if ( ! is_admin() ) {
 			wp_enqueue_script( 'linker-tools-inquiry-handoff' );
 			/**
-			 * Shared first-party code; the global dock loads Cloudflare on interaction.
+			 * The global Genie dock mounts the widget only on an anonymous transfer card.
 			 *
 			 * @since 0.1.0
 			 */
-			do_action( 'linker_commerce_public_protection_assets' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns this public integration seam.
+			if ( ! is_user_logged_in() ) {
+				do_action( 'linker_commerce_public_protection_assets' );
+			} // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns this public integration seam.
 		}
 	}
 
@@ -138,19 +136,14 @@ final class Resources {
 		if ( null !== $result || '' === $action ) {
 			return $result;
 		}
-		if ( ! class_exists( Configuration::class ) ) {
-			$mode = defined( 'LINKER_PUBLIC_PROTECTION_MODE' ) ? constant( 'LINKER_PUBLIC_PROTECTION_MODE' ) : ( is_string( getenv( 'LINKER_PUBLIC_PROTECTION_MODE' ) ) ? getenv( 'LINKER_PUBLIC_PROTECTION_MODE' ) : 'off' );
-			return in_array( $mode, array( 'off', 'observe' ), true ) ? $result : self::error( 'configuration', 503 );
-		}
-		$configuration = Configuration::current();
-		if ( 'off' === $configuration->mode ) {
-			return $result;
+		if ( ! class_exists( Ledger::class ) ) {
+			return self::error( 'configuration', 503 );
 		}
 		// Encoded 20 MiB files need <28 MiB JSON. Two MiB of metadata is
 		// ample for the bounded native history (schema.MAX_REQUEST_BYTES).
 		$ceiling = 'genie' === $action ? 30 * 1024 * 1024 : 6 * 1024 * 1024;
 		if ( strlen( (string) $request->get_body() ) > $ceiling ) {
-			return 'observe' === $configuration->mode ? $result : self::error( 'body', 413 );
+			return self::error( 'body', 413 );
 		}
 		$engineering        = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
 		$publication_action = $engineering || in_array( $action, array( 'solution_save', 'draft_write' ), true );
@@ -162,27 +155,16 @@ final class Resources {
 		}
 		$payload['_route']  = strtolower( $request->get_route() );
 		$payload['_method'] = $request->get_method();
-		$url                = $request->get_url_params();
-		$id                 = 'conversation_mail' === $action ? (int) ( $url['id'] ?? 0 ) : (int) $request->get_param( 'id' );
-		if ( 'conversation_mail' === $action ) {
-			// Match the native producer's URL source, never JSON/query ID overrides.
-			$payload['id'] = $id;
-		}
 		$identity = Identity::current();
 		if ( is_wp_error( $identity ) ) {
-			return 'observe' === $configuration->mode ? $result : $identity;
-		}
-		// Native ownership is retained; reject an explicitly foreign conversation
-		// before reserving any quota or exposing a previous receipt.
-		if ( 'enforce' === $configuration->mode && in_array( $action, array( 'conversation_write', 'conversation_mail' ), true ) && $id > 0 && ! ( new Conversations() )->may_use( $id ) ) {
-			return self::error( 'conversation', 404 );
+			return $identity;
 		}
 		$raw_files = $request->get_param( 'attachments' );
-		if ( 'enforce' === $configuration->mode && 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
+		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
 			return self::error( 'files', 400 );
 		}
 		$plan = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) && count( $raw_files ) <= Attachments::MAX_FILES ? count( $raw_files ) : 0 );
-		if ( 'enforce' === $configuration->mode && array() === $plan['limits'] ) {
+		if ( array() === $plan['limits'] ) {
 			// The shared Commerce business policy is a required dependency.
 			return self::error( 'configuration', 503 );
 		}
@@ -197,14 +179,18 @@ final class Resources {
 			// Identical input/version/subject/day cannot spend another unit.
 			$semantic = Fingerprint::make( $identity, $action, $payload );
 			if ( is_wp_error( $semantic ) ) {
-				return 'observe' === $configuration->mode ? $result : self::error( 'input', 400 );
+				return self::error( 'input', 400 );
 			}
 			$hash      = hash_hmac( 'sha256', (string) wp_json_encode( array( $identity->binding(), $version, $semantic, intdiv( time(), DAY_IN_SECONDS ) ) ), wp_salt( 'nonce' ) );
 			$operation = substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-a' . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
 		}
-		$admission = new Admission( $configuration );
-		$business  = in_array( $action, array( 'genie_contact', 'genie_inquiry', 'conversation_mail' ), true );
-		$permit    = $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $operation, $payload, $plan['limits'], 90, $business, $plan['carry'], $business && is_email( (string) $request->get_param( 'email' ) ) ? array( Allowance::owner_for( Identity::recipient( (string) $request->get_param( 'email' ) ) ) ) : array() );
+		$ledger      = new Ledger();
+		$fingerprint = Fingerprint::make( $identity, $action, $payload );
+		if ( is_wp_error( $fingerprint ) ) {
+			return self::error( 'input', 400 );
+		}
+		$permit = $this->reserve( $ledger, $identity, $action, $operation, $fingerprint, $plan );
+
 		if ( is_wp_error( $permit ) ) {
 			return $permit;
 		}
@@ -215,7 +201,7 @@ final class Resources {
 		// advances this operation to a successor journal entry. Bounded: every
 		// step is a distinct id, and a step that is not reused is dispatched.
 		for ( $step = 0, $unrecorded = self::unrecorded_reply( $permit, $this->replies, $action, $identity->binding() ); $step < self::MAX_UNRECORDED_CHAIN && false !== $unrecorded; ++$step ) {
-			$permit = $this->successor( $admission, $action, $permit, $payload, $plan, $request, $business );
+			$permit = $this->reserve( $ledger, $identity, $action, self::successor( (string) $permit['id'] ), $fingerprint, $plan );
 			if ( is_wp_error( $permit ) ) {
 				return $permit;
 			}
@@ -230,7 +216,7 @@ final class Resources {
 				$canonical_reply = (int) $permit['receipt']['outcome'];
 				$retry           = hash( 'sha256', $operation . '|' . $request->get_header( 'X-Linker-Operation' ) );
 				$operation       = substr( $retry, 0, 8 ) . '-' . substr( $retry, 8, 4 ) . '-4' . substr( $retry, 13, 3 ) . '-a' . substr( $retry, 17, 3 ) . '-' . substr( $retry, 20, 12 );
-				$permit          = $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $operation, $payload, $plan['limits'], 90, false, $plan['carry'] );
+				$permit          = $this->reserve( $ledger, $identity, $action, $operation, $fingerprint, $plan );
 				if ( is_wp_error( $permit ) ) {
 					return $permit;
 				}
@@ -243,29 +229,24 @@ final class Resources {
 			}
 		}
 
-		$valid = $admission->validate( $permit );
-		if ( is_wp_error( $valid ) ) {
-			$admission->cancel( $permit );
-			return $valid;
-		}
-		if ( 'enforce' === $configuration->mode && '' !== (string) $request->get_param( 'website' ) ) {
-			$admission->cancel( $permit );
+		if ( '' !== (string) $request->get_param( 'website' ) ) {
+			$ledger->cancel( $permit['id'], $fingerprint );
 			return self::error( 'form', 400 );
 		}
-		if ( 'genie' === $action && 'enforce' === $configuration->mode ) {
+		if ( 'genie' === $action ) {
 			// A verified reservation exists before decoding; invalid bytes can
 			// return it before dispatch. No parsing/model/conversation write yet.
 			$checked = ( $this->attachments ?? new Attachments( static fn ( string $who, int $units ): bool => '' !== $who || $units > 0 ) )->check( $raw_files );
 			if ( is_wp_error( $checked ) ) {
-				$admission->cancel( $permit );
+				$ledger->cancel( $permit['id'], $fingerprint );
 				return $checked;
 			}
 		}
-		$sent = $admission->dispatch( $permit );
+		$sent = $ledger->dispatch( $permit['id'], $fingerprint );
 		if ( is_wp_error( $sent ) ) {
 			return $sent;
 		}
-		$reply_id      = ! empty( $permit['enforced'] ) ? $this->replies->open( $identity->binding(), (string) $request->get_param( 'email' ) ) : 0;
+		$reply_id      = $this->replies->open( $identity->binding(), (string) $request->get_param( 'email' ) );
 		$previous      = self::$context;
 		self::$context = array_merge(
 			$permit,
@@ -303,7 +284,7 @@ final class Resources {
 				$this->replies->finish( $canonical_reply, $response );
 			}
 			$outcome   = $reply_id > 0 ? $this->replies->finish( $reply_id, $response ) : 0;
-			$completed = $admission->complete( $permit, $outcome );
+			$completed = $ledger->complete( $permit['id'], $fingerprint, $outcome );
 			if ( is_wp_error( $completed ) && $outcome > 0 ) {
 				wp_delete_post( $outcome, true );
 			}
@@ -330,26 +311,47 @@ final class Resources {
 		return ! is_wp_error( $old ) && 'failed' === ( $old->get_headers()['X-Linker-Resource-Outcome'] ?? '' ) ? $old : false;
 	}
 
-	/**
-	 * Reserve this operation's successor, past an attempt that stored nothing.
+	/** Key for an explicit retry of a turn that stored no answer.
 	 *
-	 * The successor is a function of the reused id, so a repeated Try again
-	 * advances the same chain instead of re-reserving one entry.
-	 *
-	 * @param Admission           $admission Shared admission.
-	 * @param string              $action Server action.
-	 * @param array<string,mixed> $permit Reused permit whose reply stored nothing.
-	 * @param array<string,mixed> $payload Validated semantic input.
-	 * @param array<string,mixed> $plan Dimensions and carry.
-	 * @param WP_REST_Request     $request Native request.
-	 * @param bool                $business Business single-use policy.
-	 * @return array<string,mixed>|WP_Error Successor permit, or explicit refusal.
+	 * @param string $id Current operation.
 	 */
-	private function successor( Admission $admission, string $action, array $permit, array $payload, array $plan, WP_REST_Request $request, bool $business ): array|WP_Error {
-		$seed   = hash( 'sha256', 'linker-genie-unrecorded|' . (string) $permit['id'] );
-		$retry  = substr( $seed, 0, 8 ) . '-' . substr( $seed, 8, 4 ) . '-4' . substr( $seed, 13, 3 ) . '-a' . substr( $seed, 17, 3 ) . '-' . substr( $seed, 20, 12 );
-		$owners = $business && is_email( (string) $request->get_param( 'email' ) ) ? array( Allowance::owner_for( Identity::recipient( (string) $request->get_param( 'email' ) ) ) ) : array();
-		return $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $retry, $payload, $plan['limits'], 90, $business, $plan['carry'], $owners );
+	private static function successor( string $id ): string {
+		$seed = hash( 'sha256', 'linker-genie-unrecorded|' . $id );
+		return substr( $seed, 0, 8 ) . '-' . substr( $seed, 8, 4 ) . '-4' . substr( $seed, 13, 3 ) . '-a' . substr( $seed, 17, 3 ) . '-' . substr( $seed, 20, 12 );
+	}
+
+	/**
+	 * Associate a tool operation with its native owner and replay only a completed reply.
+	 *
+	 * @param Ledger              $ledger Private journal.
+	 * @param Identity            $identity Native session.
+	 * @param string              $action Server-selected operation.
+	 * @param string              $id Operation identifier.
+	 * @param string              $fingerprint Canonical request.
+	 * @param array<string,mixed> $plan Resource dimensions.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	private function reserve( Ledger $ledger, Identity $identity, string $action, string $id, string $fingerprint, array $plan ): array|WP_Error {
+		$receipt = $ledger->reserve( $id, $fingerprint, $plan['limits'], 90, $plan['carry'], $action, $identity->binding(), $identity->owners() );
+		if ( is_wp_error( $receipt ) ) {
+			$status = match ( $receipt->get_error_code() ) {
+				'linker_admission_quota' => 429,
+				'linker_admission_payload_changed', 'linker_admission_input' => 409,
+				default => 503,
+			};
+			$receipt->add_data( array_merge( (array) $receipt->get_error_data(), array( 'status' => $status ) ) );
+			return $receipt;
+		}
+		if ( ! in_array( $receipt['status'], array( 'completed', 'reserved' ), true ) ) {
+			return self::error( 'pending', 409 );
+		}
+		return array(
+			'enforced'    => true,
+			'reused'      => 'completed' === $receipt['status'],
+			'receipt'     => $receipt,
+			'id'          => $id,
+			'fingerprint' => $fingerprint,
+		);
 	}
 
 	/**

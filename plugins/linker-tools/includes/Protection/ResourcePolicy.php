@@ -29,38 +29,10 @@ final class ResourcePolicy {
 		$route = strtolower( $route );
 		return match ( true ) {
 			'/linker-ai/v1/genie/turn' === $route => 'genie',
-			'/linker-ai/v1/genie/contact' === $route => 'genie_contact',
-			'/linker-ai/v1/genie/inquiry' === $route => 'genie_inquiry',
-			'/linker-ai/v1/genie/draft' === $route => 'draft_write',
 			'/linker-ai/v1/genie/solution' === $route => 'solution_save',
-			self::matches( '#\A/linker-ai/v1/genie/conversations/\d+/email\z#', $route ) => 'conversation_mail',
-			self::matches( '#\A/linker-ai/v1/genie/turn/\d+/vote\z#', $route ) => 'vote',
-			'/linker-ai/v1/genie/conversations' === $route => self::conversation_action( $select ),
-			self::matches( '#\A/linker-ai/v1/genie/conversations/\d+\z#', $route ) => 'conversation_write',
+			'/linker-ai/v1/genie/conversations' === $route => $select ? '' : 'conversation_create',
 			default => '',
 		};
-	}
-
-	/**
-	 * Match a server-owned route pattern.
-	 *
-	 * @param string $pattern Fixed route regex.
-	 * @param string $route Native route.
-	 */
-	private static function matches( string $pattern, string $route ): bool {
-		return 1 === preg_match( $pattern, $route );
-	}
-
-	/**
-	 * Existing history selection has no model or creation cost.
-	 *
-	 * @param bool $select Existing native conversation ID.
-	 */
-	private static function conversation_action( bool $select ): string {
-		if ( $select ) {
-			return 'conversation_write';
-		}
-		return 'conversation_create';
 	}
 
 	/**
@@ -89,28 +61,13 @@ final class ResourcePolicy {
 				}
 			}
 		};
-		if ( in_array( $action, array( 'genie_contact', 'genie_inquiry', 'conversation_mail' ), true ) ) {
-			/**
-			 * Commerce owns one cross-entrance business policy.
-			 *
-			 * @since 0.1.0
-			 */
-			$limits = apply_filters( 'linker_commerce_public_business_limits', array(), $action, $identity ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce contract.
-			/**
-			 * Account carry is the same shared policy.
-			 *
-			 * @since 0.1.0
-			 */
-			$carry = apply_filters( 'linker_commerce_public_business_carry', array(), $action, $identity ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce contract.
-		} elseif ( 'genie' === $action ) {
+		if ( 'genie' === $action ) {
 			$add( 'genie_day', 30, 120, DAY_IN_SECONDS );
 			$add( 'genie_burst', 10, 30, 10 * MINUTE_IN_SECONDS );
 			$add( 'genie_busy', 1, 1, 0 );
-			$limits[] = new Allowance( 'genie_site_day', 'site', 500, DAY_IN_SECONDS );
 			$limits[] = new Allowance( 'genie_site_busy', 'site', 2, 0 );
 			if ( $files > 0 ) {
 				$add( 'genie_files_day', 10, 40, DAY_IN_SECONDS, $files );
-				$limits[] = new Allowance( 'genie_site_files_day', 'site', 100, DAY_IN_SECONDS, $files );
 			}
 		} elseif ( in_array( $action, array( 'design', 'roof' ), true ) ) {
 			// Roof and sizing share this allowance: changing the entrance is

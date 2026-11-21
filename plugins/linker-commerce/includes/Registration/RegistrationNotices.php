@@ -66,18 +66,7 @@ final class RegistrationNotices {
 				self::cancel_uncreated( $result );
 				return $plan;
 			}
-			$scope = Capacity::reserve_critical( 'registration|' . $operation . '|' . $kind, 1, $plan['max_bytes'] );
-			if ( is_wp_error( $scope ) ) {
-				self::cancel_uncreated( $result );
-				return self::problem();
-			}
-			$bound = RegistrationMessage::reserved( $plan, $scope['key'] );
-			if ( is_wp_error( $bound ) ) {
-				Capacity::cancel_before_side_effect( $scope['key'] );
-				self::cancel_uncreated( $result );
-				return $bound;
-			}
-			$result[ $kind ] = $bound;
+			$result[ $kind ] = $plan;
 		}
 		return $result;
 	}
@@ -158,6 +147,29 @@ final class RegistrationNotices {
 					if ( '' !== $reason ) {
 						return; // Unknown receipt policy never becomes an explicit policy skip.
 					}
+					if ( '' === $plan['reservation'] ) {
+						$ready = self::transition(
+							$id,
+							$state,
+							static function () use ( $id, $kind, &$state, &$plan ): bool {
+								$scope = Capacity::reserve_critical( 'registration|' . $plan['binding']['operation'] . '|' . $kind, 1, $plan['max_bytes'] );
+								if ( is_wp_error( $scope ) ) {
+									return false;
+								}
+								$bound = RegistrationMessage::reserve_delivery( $plan, $id, $scope['key'] );
+								if ( is_wp_error( $bound ) ) {
+									return false;
+								}
+								$plan           = $bound;
+								$state[ $kind ] = $bound;
+								self::write( $id, $state );
+								return true;
+							}
+						);
+						if ( ! $ready ) {
+							return;
+						}
+					}
 					$vat = (string) get_user_meta( $id, VatProfile::STATUS_META, true );
 					if ( '' === $vat ) {
 						// A crash before Fields::save/VIES left the native business values intact.
@@ -215,14 +227,14 @@ final class RegistrationNotices {
 	 */
 	private static function cancel_skipped( int $id, string $kind, array $state ): void {
 		$scope = $state[ $kind ]['reservation'] ?? '';
-		if ( ! is_string( $scope ) || '' === $scope ) {
+		if ( ! is_string( $scope ) ) {
 			return;
 		}
 		self::transition(
 			$id,
 			$state,
 			static function () use ( $id, $kind, $state, $scope ): bool {
-				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ! Capacity::cancel_before_side_effect( $scope ) ) {
+				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ( '' !== $scope && ! Capacity::cancel_before_side_effect( $scope ) ) ) {
 					return false;
 				}
 				$state[ $kind ] = RegistrationMessage::terminal( $state[ $kind ], $id, $kind, 'skipped' );
@@ -337,7 +349,7 @@ final class RegistrationNotices {
 														return false;
 													}
 													$state[ $kind ] = RegistrationMessage::terminal( $plan, $id, $kind, 'erased' );
-													if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
+													if ( ! empty( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
 														return false;
 													}
 												}

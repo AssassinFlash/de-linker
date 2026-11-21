@@ -15,12 +15,10 @@ use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
-use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Settings\Options;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
-use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Thread;
 use WC_Order;
@@ -70,13 +68,6 @@ final class GenieContactTest extends IntegrationTestCase {
 	private int $conversation = 0;
 
 	/**
-	 * The test's connection: a TEST-NET address (RFC 5737), its own counters.
-	 *
-	 * @var string
-	 */
-	private string $address = '';
-
-	/**
 	 * Settings as live has them, the minute quota full, a connection of its own.
 	 */
 	protected function setUp(): void {
@@ -100,7 +91,6 @@ final class GenieContactTest extends IntegrationTestCase {
 		// Every test starts with fresh limits; the instance's own counts come back afterwards.
 		self::clear_limits();
 		$address       = '192.0.2.' . wp_rand( 1, 254 );
-		$this->address = $address;
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput -- kept as they are, to be put back as they were.
 		$cookie  = $_COOKIE[ Conversations::COOKIE ] ?? null;
 		$browser = $_COOKIE[ Conversations::BROWSER_COOKIE ] ?? null;
@@ -270,30 +260,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertNull( $notes[0]['receipt'] );
 	}
 
-	/**
-	 * Over the site's receipt cap the request still reaches the team; the
-	 * receipt alone is held back, and the card and the history say so.
-	 */
-	public function test_over_the_receipt_cap_the_team_gets_it_and_the_card_says_no_receipt(): void {
-		$receipts = new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS );
-		while ( $receipts->take( '' ) ) {
-			// Fill today's receipts; setUp() puts their count back afterwards.
-			continue;
-		}
-		$this->thread( 'Can I talk to a person?' );
-		$guest    = 'linker-it-' . self::tag() . '@example.test';
-		$marker   = self::newest_mail_job();
-		$response = $this->send( array( 'email' => $guest ) + self::fields() );
-		$this->assertSame( 200, $response->get_status() );
-		$this->assertFalse( $response->get_data()['receipt'] );
-		$this->authorization->drain();
-		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows, 'the team mail only' );
-		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
-		$this->assertSame( 'daily_cap', $this->record( $guest )->get_meta( ReceiptLimit::SKIPPED_META ) );
-		$stored = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) )->get_data();
-		$this->assertFalse( $stored['contacts'][0]['receipt'] );
-	}
+
 
 	/**
 	 * A guest who did not give the consent the site's public doors ask for is
@@ -360,74 +327,18 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( array(), get_post_meta( $this->conversation, ContactRequest::NOTE, false ) );
 	}
 
-	/**
-	 * A start time this site did not sign, or a request sooner than the
-	 * floor, is refused and sends nothing.
-	 *
-	 * @testWith ["forged"]
-	 *           ["early"]
-	 *
-	 * @param string $kind Which start time.
-	 */
-	public function test_a_request_without_a_valid_start_time_is_refused( string $kind ): void {
-		$this->thread( 'Can I talk to a person?' );
-		$marker   = self::newest_mail_job();
-		$response = $this->send(
-			array(
-				'email' => 'linker-it-' . self::tag() . '@example.test',
-				...( 'forged' === $kind ? array(
-					'started'       => (string) ( time() - 10 ),
-					'started_nonce' => 'forged',
-				) : self::fields( 0 ) ),
-			)
-		);
+	/** An anonymous transfer without a widget response cannot send mail or create an inquiry. */
+	public function test_transfer_requires_the_native_widget_response(): void {
+		$this->thread( 'Can the team help me choose a battery?' );
+		$marker = self::newest_mail_job();
+		$response = $this->send( array( 'email' => 'linker-it-' . self::tag() . '@example.test', 'consent' => '1' ) );
 		$this->assertSame( 400, $response->get_status() );
 		$this->assertSame( array(), $this->jobs_after( $marker ) );
 	}
 
-	/**
-	 * One connection gets LIMIT requests an hour; the next is refused, not queued.
-	 */
-	public function test_the_connection_limit_refuses_the_next_request(): void {
-		$marker = self::newest_mail_job();
-		for ( $i = 1; $i <= ContactRequest::LIMIT + 1; $i++ ) {
-			$this->thread( "Question {$i}: can someone call me back?" );
-			$response = $this->send(
-				array(
-					'email' => "linker-it-{$i}-" . self::tag() . '@example.test',
-					...self::fields(),
-				)
-			);
-			$this->assertSame( $i <= ContactRequest::LIMIT ? 200 : 429, $response->get_status(), "request {$i}" );
-			wp_delete_post( $this->conversation, true );
-			$this->conversation = 0;
-			unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
-		}
-		// Each accepted request is a team mail and a receipt.
-		$this->authorization->drain();
-		$this->assertCount( 2 * ContactRequest::LIMIT, $this->jobs_after( $marker ) );
-	}
 
-	/**
-	 * When the site's day is full, the request is refused and nothing is queued.
-	 */
-	public function test_the_daily_cap_refuses_and_queues_nothing(): void {
-		$day = new RateLimit( 'genie_contact_day', ContactRequest::DAILY, DAY_IN_SECONDS );
-		while ( $day->take( '' ) ) {
-			// Fill the site's day; setUp() puts its count back afterwards.
-			continue;
-		}
-		$this->thread( 'Can I talk to a person?' );
-		$marker   = self::newest_mail_job();
-		$response = $this->send(
-			array(
-				'email' => 'linker-it-' . self::tag() . '@example.test',
-				...self::fields(),
-			)
-		);
-		$this->assertSame( 429, $response->get_status() );
-		$this->assertSame( array(), $this->jobs_after( $marker ) );
-	}
+
+
 
 	/**
 	 * The same request twice, with nothing said in between, reaches the team
@@ -515,43 +426,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertTrue( $current['sent']['receipt'] );
 	}
 
-	/**
-	 * Requests at the same moment cannot share the last place: ten processes
-	 * take one connection's places at once, and exactly LIMIT get one.
-	 */
-	public function test_the_connection_limit_holds_under_concurrent_requests(): void {
-		$address   = $this->address;
-		$root      = (string) getenv( 'LINKER_WP_ROOT' );
-		$script    = sprintf(
-			'define("WP_USE_THEMES", false); $_SERVER["HTTP_HOST"]="localhost"; $_SERVER["REQUEST_URI"]="/"; $_SERVER["REMOTE_ADDR"]=%s; require %s; echo "" === ( new Linker\Tools\Genie\FormGuard( "genie_contact", %d, %d ) )->take() ? "taken" : "full";',
-			var_export( $address, true ), // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the child's PHP source.
-			var_export( $root . '/wp-load.php', true ), // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the child's PHP source.
-			ContactRequest::LIMIT,
-			ContactRequest::DAILY
-		);
-		$ini       = php_ini_loaded_file();
-		$processes = array();
-		for ( $i = 0; $i < 10; $i++ ) {
-			$command = array( PHP_BINARY );
-			if ( is_string( $ini ) ) {
-				array_push( $command, '-c', $ini );
-			}
-			array_push( $command, '-r', $script );
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- the concurrency is the point of the test.
-			$process = proc_open( $command, array( 1 => array( 'pipe', 'w' ) ), $pipes );
-			$this->assertIsResource( $process );
-			$processes[] = array( $process, $pipes[1] );
-		}
-		$answers = array();
-		foreach ( $processes as [ $process, $out ] ) {
-			$answers[] = trim( (string) stream_get_contents( $out ) );
-			fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- a process pipe.
-			proc_close( $process );
-		}
-		// Each process took one place of the site's day too: setUp() puts the count back.
-		$this->assertSame( ContactRequest::LIMIT, count( array_keys( $answers, 'taken', true ) ), implode( ',', $answers ) );
-		$this->assertSame( 10 - ContactRequest::LIMIT, count( array_keys( $answers, 'full', true ) ) );
-	}
+
 
 	/**
 	 * The one queue row to an address.
@@ -601,20 +476,12 @@ final class GenieContactTest extends IntegrationTestCase {
 		return array_values( array_filter( is_array( $found ) ? $found : array(), static fn ( WC_Order $order ): bool => is_array( $order->get_meta( Module::HANDOFF_META ) ) ) );
 	}
 
-	/**
-	 * A person's guard fields: a stamp of this door from ten seconds ago.
+	/** Native anonymous form fields with Cloudflare's official integration-test response.
 	 *
-	 * @param int $age Seconds since the card appeared.
-	 * @return array{website: string, started: string, started_nonce: string, consent: string}
+	 * @return array<string,string>
 	 */
-	private static function fields( int $age = 10 ): array {
-		$stamp = ( new FormGuard( 'genie_contact', ContactRequest::LIMIT, ContactRequest::DAILY ) )->stamp( time() - $age );
-		return array(
-			'website'       => '',
-			'started'       => $stamp['started'],
-			'started_nonce' => $stamp['nonce'],
-			'consent'       => '1',
-		);
+	private static function fields(): array {
+		return array( 'website' => '', 'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX', 'consent' => '1' );
 	}
 
 	/**

@@ -15,10 +15,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Integration;
 
-use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
-use Linker\Commerce\Protection\Proof;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Thread;
@@ -134,23 +132,6 @@ final class GenieTurnRetryTest extends TestCase {
 	}
 
 	/**
-	 * Mint the trusted synthetic verification parent; no Cloudflare request.
-	 *
-	 * @param string $action Exact native scope.
-	 */
-	private function proof( string $action ): string {
-		$identity = Identity::current();
-		$this->assertInstanceOf( Identity::class, $identity );
-		$id     = wp_generate_uuid4();
-		$ledger = new Ledger();
-		$fp     = hash( 'sha256', $id );
-		$this->assertIsArray( $ledger->reserve( $id, $fp, array( new Allowance( 'fixture_verify', 'site', 1000, DAY_IN_SECONDS ) ), 90, array(), 'verification_' . $action, $identity->binding() ) );
-		$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
-		$this->assertIsArray( $ledger->complete( $id, $fp, 1 ) );
-		return ( new Proof() )->issue( 'verified', $action, $identity, $id );
-	}
-
-	/**
 	 * One native turn, one stable logical UUID.
 	 *
 	 * @param array<string,mixed> $input Synthetic turn fields.
@@ -160,7 +141,6 @@ final class GenieTurnRetryTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_header( 'X-Linker-Operation', '' === $operation ? wp_generate_uuid4() : $operation );
-		$request->set_header( 'X-Linker-Proof', $this->proof( 'genie' ) );
 		$request->set_body( (string) wp_json_encode( $input ) );
 		$request->set_param( 'locale', $input['locale'] );
 		$request->set_param( 'messages', $input['messages'] );
