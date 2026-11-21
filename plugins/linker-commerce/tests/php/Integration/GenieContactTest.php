@@ -204,7 +204,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$this->assertSame(
 			array(
 				'sent'    => true,
@@ -295,7 +295,7 @@ final class GenieContactTest extends IntegrationTestCase {
 
 		$response = $this->send( array( 'reason' => 'dissatisfied' ) );
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $customer->get_billing_email() );
 		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
 		$this->authorization->drain();
@@ -322,7 +322,7 @@ final class GenieContactTest extends IntegrationTestCase {
 				'website' => 'https://spam.example',
 			)
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$this->assertSame( array(), $this->jobs_after( $marker ) );
 		$this->assertSame( array(), get_post_meta( $this->conversation, ContactRequest::NOTE, false ) );
 	}
@@ -341,6 +341,8 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->thread( 'Can I talk to a person?' );
 		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
 		$this->thread( 'Can I talk to a person?', 'I need storage for another site.' );
+		$latest = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
+		$this->assertNotSame( $state['source'], $latest['source'] );
 		$marker = self::newest_mail_job();
 		$result = $this->send(
 			array(
@@ -386,6 +388,26 @@ final class GenieContactTest extends IntegrationTestCase {
 		);
 	}
 
+	/** A lost acknowledgement can be recovered after another tab opens a newer turn. */
+	public function test_recover_original_contact_after_a_new_turn(): void {
+		$this->thread( 'Can I talk to a person?' );
+		$state  = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
+		$params = array( 'email' => 'linker-it-' . self::tag() . '@example.test', 'source' => $state['source'] ) + self::fields();
+		$first  = $this->send( $params );
+		$this->assertSame( 200, $first->get_status(), (string) ( $first->get_data()['code'] ?? '' ) );
+		$original = $this->record( $params['email'] );
+		$this->thread( 'Can I talk to a person?', 'Tell me about storage.' );
+		delete_post_meta( $this->conversation, ContactRequest::NOTE );
+		$params['cf-turnstile-response'] = '';
+		$recovered = $this->send( $params );
+		$this->assertSame( 200, $recovered->get_status(), (string) ( $recovered->get_data()['code'] ?? '' ) );
+		$notes = get_post_meta( $this->conversation, ContactRequest::NOTE, false );
+		$this->assertCount( 1, $notes );
+		$this->assertSame( $original->get_id(), $notes[0]['order'] );
+		$this->assertSame( $state['source'], $notes[0]['source'] );
+		$this->assertSame( 1, $notes[0]['messages'] );
+	}
+
 	/**
 	 * The reason's label is the staff's, in the site's language, whatever page
 	 * the customer asked from (review round 1 of #243: one place for the labels).
@@ -405,7 +427,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		} finally {
 			restore_previous_locale();
 		}
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$this->authorization->drain();
 		$team = $this->row_to( $this->jobs_after( $marker ), self::INTERNAL );
 		$this->assertStringContainsString( 'Asked to talk to a person', html_entity_decode( $team['body'] ) );
@@ -553,7 +575,8 @@ final class GenieContactTest extends IntegrationTestCase {
 				'content' => $text,
 			);
 		}
-		( new Thread() )->record( $this->conversation, $messages, '' );
+		$stream = "event: block\ndata: " . wp_json_encode( array( 'type' => 'text', 'text' => 'An answer.' ) ) . "\n\nevent: done\ndata: {}\n\n";
+		$this->assertTrue( ( new Thread() )->record( $this->conversation, $messages, $stream ) );
 	}
 
 	/**

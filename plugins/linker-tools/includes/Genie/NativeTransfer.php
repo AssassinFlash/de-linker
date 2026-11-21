@@ -23,10 +23,12 @@ final class NativeTransfer {
 	 *
 	 * @param int                  $conversation Owned conversation.
 	 * @param array<string, mixed> $thread Read from that conversation.
+	 * @param array                $draft  Contact handoff’s current draft lines.
 	 */
-	public static function source( int $conversation, array $thread ): string {
-		$turn = $thread['operation_id'] ?? hash( 'sha256', (string) wp_json_encode( array( $thread['messages'], $thread['stream'] ) ) );
-		return $conversation . ':' . $turn;
+	public static function source( int $conversation, array $thread, array $draft = array() ): string {
+		$turn     = $thread['operation_id'] ?? hash( 'sha256', (string) wp_json_encode( array( $thread['messages'], $thread['stream'] ) ) );
+		$revision = $conversation . ':' . count( $thread['messages'] ) . ':' . $turn;
+		return array() === $draft ? $revision : $revision . ':' . hash( 'sha256', (string) wp_json_encode( $draft ) );
 	}
 
 	/**
@@ -47,9 +49,9 @@ final class NativeTransfer {
 		if ( ! class_exists( Business::class ) ) {
 			return self::unavailable( $action );
 		}
-		$source = $note['source'];
-		if ( $source !== $request->get_param( 'source' ) ) {
-			return new WP_Error( 'linker_genie_' . ( 'genie_contact' === $action ? 'contact_retry' : 'inquiry_changed' ), '', array( 'status' => 409 ) );
+		$source = $request->get_param( 'source' );
+		if ( ! is_string( $source ) || ! str_starts_with( $source, $conversation . ':' ) ) {
+			return self::stale( $action );
 		}
 		// This reference locates a retry. The private owner and exact input are
 		// independently matched on the native Woo record before returning it.
@@ -72,7 +74,10 @@ final class NativeTransfer {
 				$order = is_array( $sent ) && ! empty( $sent['order'] ) ? wc_get_order( (int) $sent['order'] ) : false;
 				return $order instanceof WC_Order ? $order : self::unavailable( $action );
 			},
-			static function () use ( $preflight, $request, $action ) {
+			static function () use ( $preflight, $request, $action, $note, $source ) {
+				if ( $note['source'] !== $source ) {
+					return self::stale( $action );
+				}
 				if ( null !== $preflight ) {
 					$failure = $preflight();
 					if ( is_wp_error( $failure ) ) {
@@ -82,13 +87,15 @@ final class NativeTransfer {
 				return Turnstile::check( $action, array( 'cf-turnstile-response' => $request->get_param( 'cf-turnstile-response' ) ) );
 			},
 			$owner,
-			static function ( WC_Order $order ) use ( $conversation, $meta, $note, $action ) {
+			static function ( WC_Order $order ) use ( $conversation, $meta, $note, $source, $action ) {
 				foreach ( get_post_meta( $conversation, $meta, false ) as $previous ) {
 					if ( is_array( $previous ) && $order->get_id() === (int) ( $previous['order'] ?? 0 ) ) {
 						return true;
 					}
 				}
-				$history = $note + array(
+				$note['source']   = $source;
+				$note['messages'] = (int) explode( ':', $source )[1];
+				$history          = $note + array(
 					'at'      => time(),
 					'order'   => $order->get_id(),
 					'receipt' => \Linker\Commerce\Genie\Module::receipt_sent( $order ),
@@ -96,6 +103,15 @@ final class NativeTransfer {
 				return false !== add_post_meta( $conversation, $meta, wp_slash( $history ) ) ? true : self::unavailable( $action );
 			}
 		);
+	}
+
+	/**
+	 * A newer turn or draft needs a fresh confirmation.
+	 *
+	 * @param string $action Native transfer action.
+	 */
+	private static function stale( string $action ): WP_Error {
+		return new WP_Error( 'genie_contact' === $action ? 'linker_genie_contact_retry' : 'linker_genie_inquiry_changed', '', array( 'status' => 409 ) );
 	}
 
 	/**

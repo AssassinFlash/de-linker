@@ -259,7 +259,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			) + self::fields()
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$data = $response->get_data();
 		$this->assertTrue( $data['sent'] );
 		$this->assertSame( $guest, $data['email'] );
@@ -353,7 +353,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'locale'         => 'en',
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $guest );
 		$this->assertSame( '', $record->get_meta( Sender::SUMMARY_META ) );
 		$this->authorization->drain();
@@ -425,7 +425,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'lines'          => $again['lines_digest'],
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $guest );
 		$items  = array_values( $record->get_items() );
 		$this->assertCount( 2, $items );
@@ -548,7 +548,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$record = $this->record( $customer->get_billing_email() );
 		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
 		$this->assertSame( $customer->get_billing_company(), $record->get_billing_company() );
@@ -627,7 +627,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'lines'          => $state['lines_digest'],
 			) + self::fields()
 		);
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'a message alone is an inquiry' );
 	}
@@ -645,7 +645,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$request->set_param( 'locale', $locale );
 		$response = rest_do_request( $request );
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 200, $response->get_status(), (string) ( $response->get_data()['code'] ?? '' ) );
 		return $response->get_data();
 	}
 
@@ -729,7 +729,8 @@ final class GenieInquiryTest extends IntegrationTestCase {
 				'content' => $text,
 			);
 		}
-		( new Thread() )->record( $this->conversation, $messages, '' );
+		$stream = "event: block\ndata: " . wp_json_encode( array( 'type' => 'text', 'text' => 'An answer.' ) ) . "\n\nevent: done\ndata: {}\n\n";
+		$this->assertTrue( ( new Thread() )->record( $this->conversation, $messages, $stream ) );
 	}
 
 	/**

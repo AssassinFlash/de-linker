@@ -150,7 +150,7 @@ class ContactRequest {
 		$sent         = $conversation > 0 ? $this->sent( $conversation ) : null;
 		$reply        = new WP_REST_Response(
 			array(
-				'source'  => NativeTransfer::source( $conversation, $this->thread->read( $conversation ) ),
+				'source'  => NativeTransfer::source( $conversation, $this->thread->read( $conversation ), $this->draft() ),
 				'email'   => $this->customer()['email'] ?? null,
 				'sent'    => $sent,
 				'mailbox' => $this->mailbox(),
@@ -214,11 +214,9 @@ class ContactRequest {
 			self::NOTE,
 			$note,
 			array(
-				'reason'  => $handoff['reason'],
-				'locale'  => $handoff['locale'],
-				'summary' => $handoff['summary'],
-				'draft'   => $handoff['draft'],
-				'page'    => $handoff['page'],
+				'reason' => $handoff['reason'],
+				'locale' => $handoff['locale'],
+				'page'   => $handoff['page'],
 			),
 			$request,
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native contact handoff to Commerce.
@@ -239,6 +237,7 @@ class ContactRequest {
 		$thread   = $this->thread->read( $conversation );
 		$messages = $thread['messages'];
 		$asked    = array();
+		$draft    = $this->draft();
 		foreach ( array_reverse( $messages ) as $message ) {
 			if ( 'user' === ( $message['role'] ?? '' ) && '' !== trim( (string) ( $message['content'] ?? '' ) ) ) {
 				$asked[] = trim( (string) $message['content'] );
@@ -252,7 +251,7 @@ class ContactRequest {
 				'id'       => $conversation,
 				'url'      => add_query_arg( 'conversation', $conversation, admin_url( 'admin.php?page=' . QualityPage::SLUG ) ),
 				'messages' => count( $messages ),
-				'source'   => NativeTransfer::source( $conversation, $thread ),
+				'source'   => NativeTransfer::source( $conversation, $thread, $draft ),
 			),
 			'reason'       => $reason,
 			// The staff's words for it, in the site's language: the team
@@ -266,7 +265,7 @@ class ContactRequest {
 				'url'   => $this->own_url( $page['url'] ?? '' ),
 				'title' => $page['title'] ?? '',
 			),
-			'draft'        => $this->draft(),
+			'draft'        => $draft,
 		);
 	}
 
@@ -388,7 +387,7 @@ class ContactRequest {
 			return null;
 		}
 		$thread = $this->thread->read( $conversation );
-		if ( isset( $last['source'] ) ? NativeTransfer::source( $conversation, $thread ) !== $last['source'] : (int) ( $last['messages'] ?? -1 ) !== count( $thread['messages'] ) ) {
+		if ( isset( $last['source'] ) ? NativeTransfer::source( $conversation, $thread, $this->draft() ) !== $last['source'] : (int) ( $last['messages'] ?? -1 ) !== count( $thread['messages'] ) ) {
 			return null;
 		}
 		return array(
