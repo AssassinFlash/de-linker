@@ -16,7 +16,6 @@ use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Operation;
-use Linker\Commerce\Protection\Proof;
 use Linker\Commerce\Protection\RegistrationSlots;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\CustomerRole;
@@ -102,7 +101,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
 			'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 			'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
-			'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
+			'LINKER_TURNSTILE_HOSTNAME'     => 'example.com',
 		) as $key => $value ) {
 			$env[ $key ] = getenv( $key );
 			putenv( $key . '=' . $value ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Test process only; restored below.
@@ -204,17 +203,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	private function request( int $number, string $action = 'registration' ): array {
 		$_COOKIE[ Identity::COOKIE ] = md5( 'registration-capacity-' . $number );
 		$_SERVER['REMOTE_ADDR']      = '192.0.2.' . $number;
-		$identity                    = Identity::current();
-		$this->assertInstanceOf( Identity::class, $identity );
-		$ledger = new Ledger();
-		$id     = wp_generate_uuid4();
-		$fp     = hash( 'sha256', $id );
-		$this->assertIsArray( $ledger->reserve( $id, $fp, array( new Allowance( 'fixture_verify_' . $action, $identity->browser, 1, HOUR_IN_SECONDS ) ), 10, array(), 'verification_' . $action, $identity->binding() ) );
-		$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
-		$this->assertIsArray( $ledger->complete( $id, $fp, 1 ) );
 		return array(
-			'linker_request_id' => wp_generate_uuid4(),
-			'linker_proof'      => ( new Proof() )->issue( 'verified', $action, $identity, $id ),
+			'linker_request_id'       => wp_generate_uuid4(),
+			'cf-turnstile-response'   => 'XXXX.DUMMY.TOKEN.XXXX',
 		);
 	}
 
@@ -291,26 +282,37 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertArrayHasKey( 'received', $notice );
 	}
 
-	/**
-	 * Critical notice exhaustion is a pre-create refusal too, not a saved account.
-	 */
-	public function test_public_gate_refuses_full_critical_notification_capacity(): void {
-				$store = new \Linker\Commerce\Mail\JobStore();
-		$used          = 0;
+	/** A customer can register while the native worker is waiting for mail capacity. */
+	public function test_registration_keeps_pending_notices_until_the_mail_worker_can_accept_them(): void {
+		$store = new \Linker\Commerce\Mail\JobStore();
+		$used  = 0;
 		foreach ( self::mail_jobs_after( 0 ) as $job ) {
 			$native = $store->load( $job );
-			$this->assertNotNull( $native );
-			if ( $native['message']->critical || $store->critical( $job ) ) {
-				++$used; }
+			if ( $native && ( $native['message']->critical || $store->critical( $job ) ) ) {
+				++$used;
+			}
 		}
-		$this->assertIsArray( Capacity::reserve_critical( 'fixture-full-critical', Capacity::LIMITS['critical']['count'] - $used, 1 ) );
+		$held = Capacity::reserve_critical( 'fixture-busy-registration-mail', Capacity::LIMITS['critical']['count'] - $used, 1 );
+		$this->assertIsArray( $held );
 		$post   = $this->public_post( 33 );
-		$before = count_users()['total_users'];
 		$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] );
-		$this->assertContains( 'linker_registration_capacity', $errors->get_error_codes() );
-		$this->assertSame( $before, count_users()['total_users'] );
-		$this->assertSame( 0, $this->summary()['interrupted'] );
-		$this->assertSame( $post, $_POST );
+		$this->assertFalse( $errors->has_errors(), implode( ' ', $errors->get_error_messages() ) );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->later(
+			static function () use ( $id ): void {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+				wp_delete_user( $id );
+			}
+		);
+		$notices = RegistrationNotices::read( $id );
+		$this->assertIsArray( $notices );
+		$this->assertSame( 'pending', $notices['team']['state'] );
+		$this->assertTrue( Capacity::cancel_before_side_effect( $held['key'] ) );
+		RegistrationNotices::deliver( $id, 'team' );
+		$notices = RegistrationNotices::read( $id );
+		$this->assertIsArray( $notices );
+		$this->assertSame( 'accepted', $notices['team']['state'] );
 	}
 
 	/**

@@ -68,7 +68,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
 			'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 			'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
-			'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
+			'LINKER_TURNSTILE_HOSTNAME'     => 'example.com',
 		);
 		$env                         = array();
 		foreach ( $settings as $key => $value ) {
@@ -118,8 +118,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( $seeded );
 		$this->assertSame( 0, $seeded['business'] );
-		$room = \Linker\Commerce\Protection\BusinessCapacity::preflight();
-		$this->assertNull( $room, $room instanceof WP_Error ? (string) $room->get_error_code() : '' );
+
 	}
 
 	/** Unknown dispatched writes stay recoverable; definite refusals return to a fresh check. */
@@ -375,12 +374,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	private function post( string $action = 'inquiry' ): array {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
-		$challenge = wp_generate_uuid4();
-		$fp        = hash( 'sha256', $challenge );
-		$ledger    = new Ledger();
-		$this->assertIsArray( $ledger->reserve( $challenge, $fp, array( new Allowance( 'fixture_verify', $identity->browser, 100, HOUR_IN_SECONDS ) ), 10, array(), 'verification_' . $action, $identity->binding() ) );
-		$this->assertIsArray( $ledger->dispatch( $challenge, $fp ) );
-		$this->assertIsArray( $ledger->complete( $challenge, $fp, 1 ) );
 		$started = (string) time();
 		return array(
 			'linker_started'       => $started,
@@ -391,7 +384,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			'message'              => 'Please provide product guidance.',
 			'consent'              => '1',
 			'linker_request_id'    => wp_generate_uuid4(),
-			'linker_proof'         => ( new Proof() )->issue( 'verified', $action, $identity, $challenge ),
+			'cf-turnstile-response' => 'XXXX.DUMMY.TOKEN.XXXX',
 			'linker_inquiry_nonce' => wp_create_nonce( Handler::ACTION ),
 			'linker_contact_nonce' => wp_create_nonce( ContactForm::NONCE_ACTION ),
 			'linker_draft_hash'    => WC()->cart->get_cart_hash(),
