@@ -129,3 +129,79 @@ for (const lang of ['en', 'de'] as const) {
 		}
 	}
 }
+
+for (const lang of ['en', 'de'] as const) {
+	for (const width of [1440, 390]) {
+		test(`${lang} ${width}: keep the actual Woo draft when Genie cannot answer`, async ({
+			page,
+			customer,
+		}) => {
+			const base = instance().url;
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			await page.goto(base + paths[lang].product);
+			await page
+				.locator('a[href*="add-to-cart="]:visible')
+				.first()
+				.click();
+			const qty = page.locator('.woocommerce-cart-form input.qty');
+			await qty.fill('2');
+			await qty.press('Tab');
+			await page.locator('button[name="update_cart"]').click();
+			await expect(
+				page.locator('button[name="update_cart"]')
+			).toBeDisabled();
+			await page.goto(base + (lang === 'de' ? '/de/genie/' : '/genie/'));
+			const handoff = {
+				type: 'handoff',
+				summary:
+					lang === 'de'
+						? 'Ihre Anfrage konnte gerade nicht beantwortet werden.'
+						: 'I could not answer this time.',
+			};
+			const stream =
+				'event: meta\ndata: ' +
+				JSON.stringify({
+					grounded: false,
+					fallback: true,
+					attempts: 1,
+					failures: ['model unavailable'],
+					language: lang,
+				}) +
+				'\n\nevent: block\ndata: ' +
+				JSON.stringify(handoff) +
+				'\n\nevent: done\ndata: {"ok":true}\n\n';
+			await page.route(
+				'**/wp-json/linker-ai/v1/genie/turn',
+				(route) => route.fulfill({ json: { stream } }),
+				{ times: 1 }
+			);
+			await page
+				.locator('#linker-genie-input:visible')
+				.fill(
+					lang === 'de'
+						? 'Ich möchte eine Anfrage senden.'
+						: 'Please send an inquiry.'
+				);
+			await page.locator('.linker-genie-app__send:visible').click();
+			const link = page
+				.locator('.linker-genie-app__prompt:visible')
+				.filter({
+					hasText:
+						lang === 'de' ? 'Anfrage senden' : 'Send an inquiry',
+				});
+			await link.click();
+			const form = page.locator('form.linker-inquiry-form');
+			await expect(form).toBeVisible();
+			await expect(page.locator('.linker-inquiry-line')).toContainText(
+				'BU2-5.0-HV1'
+			);
+			await expect(
+				page.locator('.linker-inquiry-line input.qty')
+			).toHaveValue('2');
+			expect(customer.read()).toEqual([]);
+		});
+	}
+}

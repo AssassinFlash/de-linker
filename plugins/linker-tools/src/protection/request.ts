@@ -7,22 +7,40 @@ const operations = new Map< string, string >();
  * @param method
  * @param body
  */
-export function resourceAction(url:string,method='GET',body?:BodyInit|null): string {
-	if(method.toUpperCase() !== 'POST') return '';
-	const parsed=new URL(url,window.location.href);
-	const route=(parsed.searchParams.get('rest_route') ?? parsed.pathname.replace(/^.*\/wp-json/i,'')).toLowerCase();
-	if(route==='/linker-ai/v1/genie/turn') return 'genie';
-	if(route==='/linker-ai/v1/genie/solution') return 'solution_save';
-	if(route==='/linker-ai/v1/genie/conversations' && !JSON.parse(String(body??'{}')).id) return 'conversation_create';
+export function resourceAction(
+	url: string,
+	method = 'GET',
+	body?: BodyInit | null
+): string {
+	if ( method.toUpperCase() !== 'POST' ) {
+		return '';
+	}
+	const parsed = new URL( url, window.location.href );
+	const route = (
+		parsed.searchParams.get( 'rest_route' ) ??
+		parsed.pathname.replace( /^.*\/wp-json/i, '' )
+	).toLowerCase();
+	if ( route === '/linker-ai/v1/genie/turn' ) {
+		return 'genie';
+	}
+	if ( route === '/linker-ai/v1/genie/solution' ) {
+		return 'solution_save';
+	}
+	if (
+		route === '/linker-ai/v1/genie/conversations' &&
+		! JSON.parse( String( body ?? '{}' ) ).id
+	) {
+		return 'conversation_create';
+	}
 	return '';
 }
 
 /**
  * Send the business request once. An explicit retry of an uncertain write uses its original operation.
  *
- * @param fetcher Native transport.
- * @param input Route.
- * @param init Request data and native WordPress nonce.
+ * @param fetcher     Native transport.
+ * @param input       Route.
+ * @param init        Request data and native WordPress nonce.
  * @param onOperation Notifies the composer which persisted turn to recover.
  */
 export async function resourceFetch(
@@ -31,15 +49,17 @@ export async function resourceFetch(
 	init?: RequestInit,
 	onOperation?: ( id: string ) => void
 ): Promise< Response > {
-	if(typeof window==='undefined') return fetcher(input,init);
+	if ( typeof window === 'undefined' ) {
+		return fetcher( input, init );
+	}
 	const url =
-		typeof input === 'string'
-			? input
-			: input instanceof URL
-				? input.href
-				: input.url;
+		typeof input === 'string' || input instanceof URL
+			? String( input )
+			: input.url;
 	const action = resourceAction( url, init?.method, init?.body );
-	if ( ! action ) return fetcher( input, init );
+	if ( ! action ) {
+		return fetcher( input, init );
+	}
 	init?.signal?.throwIfAborted();
 	// Keep just the digest of potentially large uploaded files in browser memory.
 	const digest = await crypto.subtle.digest(
@@ -53,8 +73,9 @@ export async function resourceFetch(
 	).join( '' );
 	const id = operations.get( key ) ?? crypto.randomUUID();
 	if ( ! operations.has( key ) ) {
-		if ( operations.size >= 8 )
+		if ( operations.size >= 8 ) {
 			operations.delete( operations.keys().next().value as string );
+		}
 		operations.set( key, id );
 	}
 	const headers = new Headers( init?.headers );
@@ -70,7 +91,9 @@ export async function resourceFetch(
 		response.ok ||
 		response.headers.get( 'X-Linker-Resource-Outcome' ) === 'failed'
 	) {
-		if ( operations.get( key ) === id ) operations.delete( key );
+		if ( operations.get( key ) === id ) {
+			operations.delete( key );
+		}
 	}
 	return response;
 }

@@ -180,6 +180,7 @@ export async function readInquiry(
  * @param url                   The inquiry route.
  * @param nonce                 wp_rest nonce.
  * @param request               What the card sends.
+ * @param request.source        The stored conversation revision the customer reviewed.
  * @param request.name          A guest's name; omitted for a signed-in customer.
  * @param request.email         A guest's reply address.
  * @param request.company       A guest's company, optional.

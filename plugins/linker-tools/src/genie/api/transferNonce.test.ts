@@ -6,9 +6,8 @@ describe.each( [ '', 'wp-account-nonce' ] )(
 	'native transfer identity %s',
 	( nonce ) => {
 		it( 'keeps REST cookie authentication exclusive to signed-in reads and submissions', async () => {
-			const fetcher = vi.fn(
-				async ( _url: RequestInfo | URL, _init?: RequestInit ) =>
-					new Response( '{}', { status: 200 } )
+			const fetcher = vi.fn< typeof fetch >(
+				async () => new Response( '{}', { status: 200 } )
 			);
 			await readContact( '/contact', nonce, fetcher );
 			await readInquiry( '/inquiry', nonce, 'en', fetcher );

@@ -64,9 +64,7 @@ function key(scope: string, project: ProjectVersion): string {
 }
 
 function identityField(form: HTMLFormElement): HTMLInputElement | null {
-	return form.querySelector(
-		`input[type="hidden"][name="${requestField}"]`,
-	);
+	return form.querySelector(`input[type="hidden"][name="${requestField}"]`);
 }
 
 export function replayWindow(form: HTMLFormElement): number {

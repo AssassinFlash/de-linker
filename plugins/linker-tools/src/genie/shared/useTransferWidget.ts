@@ -15,7 +15,12 @@ declare global {
 	}
 }
 
-/** Mount the shared widget only while an anonymous customer's transfer card is visible. */
+/**
+ * Mount the shared widget only while an anonymous customer's transfer card is visible.
+ * @param action
+ * @param visible
+ * @param source
+ */
 export function useTransferWidget(
 	action: Action,
 	visible: boolean,
@@ -51,7 +56,9 @@ export function useTransferWidget(
 		container,
 		token,
 		wait: ( send: () => void ) => {
-			if ( ! window.linkerTurnstile ) return false;
+			if ( ! window.linkerTurnstile ) {
+				return false;
+			}
 			pending.current = send;
 			container.current?.scrollIntoView( { block: 'nearest' } );
 			return true;

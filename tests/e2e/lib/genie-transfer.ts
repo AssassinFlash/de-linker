@@ -6,7 +6,13 @@ import {
 } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-import { applyTurnstileProfile, isolateMailBudgets, loginLink, REPO_ROOT, wp } from './instance';
+import {
+	applyTurnstileProfile,
+	isolateMailBudgets,
+	loginLink,
+	REPO_ROOT,
+	wp,
+} from './instance';
 import { seedConsentCookies } from './consent';
 import { since } from './mail';
 import { waitForTurnstile } from './turnstile';

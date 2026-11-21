@@ -80,16 +80,17 @@ export async function readContact(
 /**
  * Sends the request to the team.
  *
- * @param url                   The contact route.
- * @param nonce                 wp_rest nonce.
- * @param request               What the card sends.
- * @param request.email         A guest's address; omitted for a signed-in customer.
- * @param request.website       The honeypot's value (empty for a person).
- * @param request.consent       A guest's consent, the site's public doors' own.
- * @param request.reason        Why Genie offered the contact.
- * @param request.locale        The page's language.
- * @param request.page          The page context the turn carried.
- * @param fetcher               Fetch for tests.
+ * @param url             The contact route.
+ * @param nonce           wp_rest nonce.
+ * @param request         What the card sends.
+ * @param request.source  The stored conversation revision the customer reviewed.
+ * @param request.email   A guest's address; omitted for a signed-in customer.
+ * @param request.website The honeypot's value (empty for a person).
+ * @param request.consent A guest's consent, the site's public doors' own.
+ * @param request.reason  Why Genie offered the contact.
+ * @param request.locale  The page's language.
+ * @param request.page    The page context the turn carried.
+ * @param fetcher         Fetch for tests.
  */
 export async function sendContact(
 	url: string,

@@ -306,9 +306,7 @@ export class HeroSession {
 		this.requestWitness = null;
 		const page = this.config.page;
 		const answer = await this.send( {
-			...( current?.owner
-				? { owner: current.owner }
-				: {} ),
+			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,

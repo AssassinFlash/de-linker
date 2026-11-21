@@ -1102,8 +1102,6 @@ body:has(.linker-genie-workspace)
 	margin: 0;
 }
 
-
-
 /* What Genie read from a file (#236): a card in the answer, like a product
  * card's frame; its buttons are the opening prompts' pills. */
 .linker-genie-attachment {

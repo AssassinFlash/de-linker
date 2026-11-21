@@ -3953,11 +3953,7 @@ test.each( [
 		);
 		expect( screen.getByText( summary ) ).toBeVisible();
 		const link = screen.queryByRole( 'link', { name: 'Send an inquiry' } );
-		if ( failed ) {
-			expect( link ).toHaveAttribute( 'href', url );
-		} else {
-			expect( link ).toBeNull();
-		}
+		expect( link?.getAttribute( 'href' ) ).toBe( failed ? url : undefined );
 		expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 	}
 );

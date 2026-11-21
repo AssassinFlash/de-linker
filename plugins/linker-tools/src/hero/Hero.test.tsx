@@ -16,7 +16,6 @@ import {
  */
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { webcrypto } from 'node:crypto';
 
 /**
  * Internal dependencies

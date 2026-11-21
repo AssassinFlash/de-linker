@@ -283,8 +283,9 @@ export function InquiryCard( {
 			}
 		}
 		if ( ! account && ! widget.token.current ) {
-			if ( ! widget.wait( () => void submit() ) )
+			if ( ! widget.wait( () => void submit() ) ) {
 				setFailure( 'unavailable' );
+			}
 			return;
 		}
 		setPhase( 'sending' );

@@ -187,11 +187,24 @@ export function applyTurnstileProfile(
 	name: string = instanceName(),
 	outcome: 'pass' | 'fail' | 'spent' = 'pass'
 ): () => void {
-	const isolated = wp(['eval', "echo defined('LINKER_LOCAL_MAIL_DIR') && 'local' === wp_get_environment_type() && '127.0.0.1' === wp_parse_url(home_url(), PHP_URL_HOST) ? 'local' : '';"], name);
-	if (isolated.trim() !== 'local') throw new Error('The Turnstile test profile requires a loopback WordPress instance with a file mail sink.');
+	const isolated = wp(
+		[
+			'eval',
+			"echo defined('LINKER_LOCAL_MAIL_DIR') && 'local' === wp_get_environment_type() && '127.0.0.1' === wp_parse_url(home_url(), PHP_URL_HOST) ? 'local' : '';",
+		],
+		name
+	);
+	if (isolated.trim() !== 'local')
+		throw new Error(
+			'The Turnstile test profile requires a loopback WordPress instance with a file mail sink.'
+		);
 	const profile = { ...TURNSTILE_PROFILE };
-	if (outcome === 'fail') profile.LINKER_TURNSTILE_SECRET_KEY = '2x0000000000000000000000000000000AA';
-	if (outcome === 'spent') profile.LINKER_TURNSTILE_SECRET_KEY = '3x0000000000000000000000000000000AA';
+	if (outcome === 'fail')
+		profile.LINKER_TURNSTILE_SECRET_KEY =
+			'2x0000000000000000000000000000000AA';
+	if (outcome === 'spent')
+		profile.LINKER_TURNSTILE_SECRET_KEY =
+			'3x0000000000000000000000000000000AA';
 	const prior = Object.keys(profile).map((constant) => {
 		const current = runJustRaw([
 			'wp',
@@ -238,44 +251,64 @@ export function applyTurnstileProfile(
 	};
 
 	try {
-	for (const [constant, value] of Object.entries(profile)) {
-		wp(
-			['config', 'set', constant, value, '--type=constant', '--quiet'],
-			name
-		);
-		changed.add(constant);
-		if (
-			wp(['config', 'get', constant, '--type=constant'], name).trim() !==
-			value
-		) {
-			throw new Error(
-				`turnstile profile: ${constant} did not read back as applied`
+		for (const [constant, value] of Object.entries(profile)) {
+			wp(
+				[
+					'config',
+					'set',
+					constant,
+					value,
+					'--type=constant',
+					'--quiet',
+				],
+				name
 			);
+			changed.add(constant);
+			if (
+				wp(
+					['config', 'get', constant, '--type=constant'],
+					name
+				).trim() !== value
+			) {
+				throw new Error(
+					`turnstile profile: ${constant} did not read back as applied`
+				);
+			}
 		}
-	}
 	} catch (error) {
 		restore();
 		throw error;
 	}
-	return restore;}
+	return restore;
+}
 
 /** Isolate actual mail transport budgets for a capture on the local mail sink. */
 export function isolateMailBudgets(): () => void {
-	const check = "if ( ! defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST) ) throw new RuntimeException('A local mail sink is required.');";
-	const snapshot = wp(['eval', check + String.raw`
+	const check =
+		"if ( ! defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST) ) throw new RuntimeException('A local mail sink is required.');";
+	const snapshot = wp([
+		'eval',
+		check +
+			String.raw`
 		$prior = array();
 		foreach (array(\Linker\Commerce\Mail\Throttle::OPTION, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION) as $name) {
 			wp_cache_delete($name, 'options');
 			$prior[$name] = get_option($name, null);
 			delete_option($name);
 		}
-		echo base64_encode(serialize($prior));`]);
-	return () => wp(['eval', check + `
+		echo base64_encode(serialize($prior));`,
+	]);
+	return () =>
+		wp([
+			'eval',
+			check +
+				`
 		foreach (unserialize(base64_decode('${snapshot}'), array('allowed_classes' => false)) as $name => $value) {
 			wp_cache_delete($name, 'options');
 			if (null === $value) delete_option($name);
 			else update_option($name, $value, false);
-		}`]);
+		}`,
+		]);
 }
 
 /** Runs `just` from the repository root; throws with the captured output. */

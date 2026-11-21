@@ -8,7 +8,9 @@ test( 'a normal turn makes one native request and keeps its identity after a los
 		const headers = new Headers( init?.headers );
 		expect( headers.get( 'X-Linker-Proof' ) ).toBeNull();
 		ids.push( headers.get( 'X-Linker-Operation' ) ?? '' );
-		if ( ids.length === 1 ) throw new TypeError( 'Lost reply' );
+		if ( ids.length === 1 ) {
+			throw new TypeError( 'Lost reply' );
+		}
 		return new Response( '{}' );
 	} );
 	const init = { method: 'POST', body: '{"message":"Saved selection"}' };

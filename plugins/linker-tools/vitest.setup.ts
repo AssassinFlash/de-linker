@@ -6,11 +6,12 @@ import { cleanup } from '@testing-library/react';
 import { afterEach, beforeEach } from 'vitest';
 import { webcrypto } from 'node:crypto';
 
-if ( ! globalThis.crypto.subtle )
+if ( ! globalThis.crypto.subtle ) {
 	Object.defineProperty( globalThis.crypto, 'subtle', {
 		value: webcrypto.subtle,
 		configurable: true,
 	} );
+}
 
 // Simulate the commerce widget's callback at the cross-bundle boundary.
 beforeEach( () => {
