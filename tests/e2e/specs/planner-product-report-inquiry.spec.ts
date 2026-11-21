@@ -1,14 +1,14 @@
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { expect, test } from '@playwright/test';
 import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
 const de = {
 	'Reject all': 'Alle ablehnen',
 	'Enter project details': 'Projektdaten eingeben',
-	'New project': 'Neues Projekt',
+	'Compare project options': 'Projektoptionen vergleichen',
 	'Project name': 'Projektname',
 	'Town or site': 'Ort oder Standort',
 	'Site use': 'Nutzung des Standorts',
-	'Continue with storage': 'Weiter zum Speicher',
 	'Grid connection': 'Netzanschluss',
 	'Backup load': 'Ersatzstromlast',
 	'Required duration': 'Gewünschte Dauer',
@@ -67,7 +67,7 @@ for (const locale of ['en', 'de'] as const) {
 					})
 					.click();
 				const project = workspace.getByRole('form', {
-					name: name('New project'),
+					name: name('Compare project options'),
 				});
 				await project.getByLabel(name('Project name')).fill(title);
 				await project
@@ -85,7 +85,19 @@ for (const locale of ['en', 'de'] as const) {
 					.selectOption('backup');
 				await project
 					.getByRole('button', {
-						name: name('Continue with storage'),
+						name: name('Compare systems'),
+						exact: true,
+					})
+					.click();
+				await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+				const navigation = await resumePlannerProject(
+					page,
+					locale,
+					title
+				);
+				await navigation
+					.getByRole('button', {
+						name: locale === 'de' ? /Strombedarf$/ : /Energy use$/,
 					})
 					.click();
 				await workspace

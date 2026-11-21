@@ -1,3 +1,4 @@
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { expect, test } from '@playwright/test';
 import { instance, isolateMailBudgets, wp } from '../lib/instance';
 
@@ -14,7 +15,7 @@ test.afterEach(() => {
 const de = {
 	'Reject all': 'Alle ablehnen',
 	'Enter project details': 'Projektdaten eingeben',
-	'New project': 'Neues Projekt',
+	'Compare project options': 'Projektoptionen vergleichen',
 	'Project name': 'Projektname',
 	'Town or site': 'Ort oder Standort',
 	'Site use': 'Nutzung des Standorts',
@@ -23,8 +24,6 @@ const de = {
 	'Existing inverter power (kW)':
 		'Leistung des vorhandenen Wechselrichters (kW)',
 	'Keep the existing inverter': 'Vorhandenen Wechselrichter beibehalten',
-	'Continue with solar': 'Weiter zur PV-Anlage',
-	'Continue with energy use': 'Weiter zum Energiebedarf',
 	'Grid connection': 'Netzanschluss',
 	'Backup load': 'Ersatzstromlast',
 	'Required duration': 'Gewünschte Dauer',
@@ -79,7 +78,7 @@ for (const locale of ['en', 'de'] as const) {
 				})
 				.click();
 			const project = page.getByRole('form', {
-				name: name('New project'),
+				name: name('Compare project options'),
 			});
 			await project.getByLabel(name('Project name')).fill(title);
 			await project.locator('select[name=country]').selectOption('DE');
@@ -106,10 +105,17 @@ for (const locale of ['en', 'de'] as const) {
 				.getByLabel(name('Keep the existing inverter'))
 				.check();
 			await project
-				.getByRole('button', { name: name('Continue with solar') })
+				.getByRole('button', {
+					name: name('Compare systems'),
+					exact: true,
+				})
 				.click();
-			await workspace
-				.getByRole('button', { name: name('Continue with energy use') })
+			await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+			const navigation = await resumePlannerProject(page, locale, title);
+			await navigation
+				.getByRole('button', {
+					name: locale === 'de' ? /Strombedarf$/ : /Energy use$/,
+				})
 				.click();
 			await workspace
 				.getByLabel(name('Grid connection'))

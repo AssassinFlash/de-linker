@@ -1,3 +1,4 @@
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { expect, test, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -16,7 +17,7 @@ const labels = {
 		knownModules: 'Use module details',
 		home: '/',
 		enterDetails: 'Enter project details',
-		start: 'New project',
+		start: 'Compare project options',
 		title: 'Project name',
 		town: 'Town or site',
 		use: 'Site use',
@@ -24,7 +25,6 @@ const labels = {
 		existingName: 'Existing system name',
 		existingPower: 'Existing inverter power (kW)',
 		keep: 'Keep the existing inverter',
-		solar: 'Continue with solar',
 		energy: 'Continue with energy use',
 		grid: 'Grid connection',
 		backup: 'Backup load',
@@ -56,7 +56,7 @@ const labels = {
 		knownModules: 'Moduldaten verwenden',
 		home: '/de/',
 		enterDetails: 'Projektdaten eingeben',
-		start: 'Neues Projekt',
+		start: 'Projektoptionen vergleichen',
 		title: 'Projektname',
 		town: 'Ort oder Standort',
 		use: 'Nutzung des Standorts',
@@ -64,7 +64,6 @@ const labels = {
 		existingName: 'Bezeichnung der vorhandenen Anlage',
 		existingPower: 'Leistung des vorhandenen Wechselrichters (kW)',
 		keep: 'Vorhandenen Wechselrichter beibehalten',
-		solar: 'Weiter zur PV-Anlage',
 		energy: 'Weiter zum Energiebedarf',
 		grid: 'Netzanschluss',
 		backup: 'Ersatzstromlast',
@@ -253,10 +252,14 @@ for (const lang of ['en', 'de'] as const) {
 			await start.getByLabel(words.keep).check();
 			await screen(page, 'project-intake');
 
-			await start.getByRole('button', { name: words.solar }).click();
-			const navigation = workspace.getByRole('navigation', {
-				name: words.navigation,
-			});
+			await start
+				.getByRole('button', { name: words.compare, exact: true })
+				.click();
+			await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+			const navigation = await resumePlannerProject(page, lang, title);
+			await navigation
+				.getByRole('button', { name: words.solarChapter })
+				.click();
 			const next = workspace.getByRole('button', {
 				name: words.energy,
 				exact: true,
@@ -322,6 +325,8 @@ for (const lang of ['en', 'de'] as const) {
 				window.scrollTo({ top: 0, behavior: 'instant' })
 			);
 			await screen(page, 'report-and-inquiry');
+			await preview.scrollIntoViewIfNeeded();
+			await screen(page, 'report-files');
 			await preview.click();
 			const dialog = workspace.getByRole('dialog');
 			await expect(dialog).toBeVisible();
