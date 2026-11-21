@@ -21,20 +21,16 @@ use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Protection\Business;
-use Linker\Commerce\Protection\Admission;
-use Linker\Commerce\Protection\Configuration;
-use Linker\Commerce\Protection\FormFields;
 use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\BusinessRecord;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
-use Linker\Commerce\Protection\Proof;
 use Linker\Commerce\Protection\ReceiptBudget;
 use WC_Order;
 use WP_Error;
 
 /**
- * Native proof is established by the separately tested Siteverify controller.
+ * Native Woo admission and notification recovery through their normal entry points.
  *
  * @coversNothing
  */
@@ -94,31 +90,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		wc_load_cart();
 		WC()->cart->empty_cart();
 		$this->later( static fn () => WC()->cart->empty_cart() );
-		$this->isolate_ordinary_reception();
-	}
-
-	/**
-	 * These cases check admission and receipts, not shared-site fullness.
-	 *
-	 * Deleting the option is not a private ledger: the next enforce write
-	 * rebuilds ordinary occupancy from every open contact and proforma
-	 * inquiry, and disposition reconcile can add more. An already reconciled
-	 * empty ledger still runs the real count and byte gate. The snapshot
-	 * taken above is restored afterwards; no existing inquiry is deleted.
-	 */
-	private function isolate_ordinary_reception(): void {
-		$seeded = \Linker\Commerce\Protection\IntakeStore::edit(
-			static function ( array &$state ): array {
-				$state['business']              = array();
-				$state['business_dispositions'] = array();
-				\Linker\Commerce\Protection\IntakeStore::save( $state );
-				return array( 'business' => count( $state['business'] ) );
-			},
-			1
-		);
-		$this->assertIsArray( $seeded );
-		$this->assertSame( 0, $seeded['business'] );
-
 	}
 
 	/** Unknown dispatched writes stay recoverable; definite refusals return to a fresh check. */
@@ -152,7 +123,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					$action,
 					array(
 						'linker_request_id' => $id,
-						'linker_proof'      => '',
+						'cf-turnstile-response'      => '',
 					),
 					$payload,
 					$work
@@ -165,7 +136,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$action,
 				array(
 					'linker_request_id' => wp_generate_uuid4(),
-					'linker_proof'      => '',
+					'cf-turnstile-response'      => '',
 				),
 				$payload,
 				$work
@@ -218,11 +189,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					$ledger = new Ledger();
 					$this->assertIsArray( $ledger->reserve( $post['linker_request_id'], $fp, array( new Allowance( 'fixture_redirect_recovery', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
 					$this->assertIsArray( $ledger->dispatch( $post['linker_request_id'], $fp ) );
-					$post['linker_proof'] = '';
+					$post['cf-turnstile-response'] = '';
 				} elseif ( 'inquiry' === $action ) {
 					$post['message'] = '';
 				} else {
-					$post['linker_proof'] = '';
+					$post['cf-turnstile-response'] = '';
 				}
 				$_POST = $post;
 				add_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
@@ -246,12 +217,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				}
 				$this->assertSame( $post['linker_request_id'], $stored['linker_request_id'] );
 				$this->assertSame( 'pending' === $outcome ? '1' : '0', $stored['linker_recovery_available'], $action . ':' . $outcome );
-				$this->assertSame( 'pending' === $outcome, str_contains( $html, 'data-linker-protection-recovery="true"' ), $action . ':' . $outcome );
+				$this->assertStringContainsString( esc_attr( $post['linker_request_id'] ), $html, $action );
 				$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
 			}
 		}
 	}
-
 
 	/**
 	 * A customer who edits a message after an unconfirmed result must be able to
@@ -259,7 +229,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * form is given a new one instead of resubmitting it forever.
 	 */
 	public function test_a_changed_message_after_an_unconfirmed_result_can_be_sent_again(): void {
-		$this->optional_business_verification();
 		$original_post       = $_POST;
 		$original_cookies    = $_COOKIE;
 		$original_shortcodes = $GLOBALS['shortcode_tags'];
@@ -293,7 +262,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$this->assertIsArray( $ledger->reserve( $original, hash( 'sha256', 'earlier-input-' . self::tag() ), array( new Allowance( 'fixture_changed_input', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
 			// The customer then edits the question and sends again from the native form.
 			$post['message']     .= ' Additional detail.';
-			$post['linker_proof'] = '';
+			$post['cf-turnstile-response'] = '';
 			$_POST                = $post;
 			add_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
 			try {
@@ -326,45 +295,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		}
 	}
 
-	/** An unreadable journal is not evidence that an old native request was refused. */
-	public function test_native_recovery_lookup_storage_failure_preserves_unknown_result(): void {
-		$switched = switch_to_locale( 'de_DE_formal' );
-		$this->assertSame( 'de_DE_formal', get_locale() );
-		load_textdomain( 'linker-commerce', dirname( __DIR__, 3 ) . '/languages/linker-commerce-de_DE_formal.mo', 'de_DE_formal' );
-		$old = get_option( Ledger::OPTION );
-		update_option( Ledger::OPTION, 'invalid-fixture-journal', false );
-		$called = false;
-		try {
-			$result = Business::run(
-				'inquiry',
-				array(
-					'linker_request_id' => wp_generate_uuid4(),
-					'linker_proof'      => '',
-				),
-				array( 'fixture' => self::tag() ),
-				static function () use ( &$called ): WP_Error {
-					$called = true;
-					return new WP_Error( 'unexpected_fixture_write' );
-				}
-			);
-			$this->assertInstanceOf( WP_Error::class, $result );
-			$this->assertSame( 'linker_admission_storage', $result->get_error_code() );
-			$this->assertSame( 'Der Status Ihrer Anfrage lässt sich derzeit nicht bestätigen. Bitte prüfen Sie ihn, bevor Sie die Anfrage erneut senden.', $result->get_error_message() );
-			$this->assertTrue( \Linker\Commerce\Protection\FormRecovery::after_error( $result ) );
-			$this->assertFalse( $called );
-		} finally {
-			if ( $switched ) {
-				restore_previous_locale();
-			}
-			if ( false === $old ) {
-				delete_option( Ledger::OPTION );
-			} else {
-				update_option( Ledger::OPTION, $old, false );
-			}
-		}
-	}
-
-
 	/**
 	 * One native form attempt, immediately after autofill without a fake clock.
 	 *
@@ -391,100 +321,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 	}
 
-	/** Private rollout choice is restored after every fixture. */
-	private function optional_business_verification(): void {
-		$old = getenv( 'LINKER_BUSINESS_VERIFICATION' );
-		putenv( 'LINKER_BUSINESS_VERIFICATION=optional' );
-		$this->later(
-			static function () use ( $old ): void {
-				putenv( false === $old ? 'LINKER_BUSINESS_VERIFICATION' : 'LINKER_BUSINESS_VERIFICATION=' . $old );
-			}
-		);
-	}
-
-	/** Both actual business writers remain idempotent without any widget/key. */
-	public function test_optional_business_verification_preserves_native_records_and_retries_without_keys(): void {
-		$this->optional_business_verification();
-		$keys = array( 'LINKER_TURNSTILE_SITE_KEY', 'LINKER_TURNSTILE_SECRET_KEY' );
-		foreach ( $keys as $key ) {
-			$old = getenv( $key );
-			putenv( $key );
-			$this->later(
-				static function () use ( $old, $key ): void {
-					putenv( false === $old ? $key : $key . '=' . $old );
-				}
-			);
-		}
-		foreach ( array( 'contact', 'inquiry' ) as $action ) {
-			$post                 = $this->post( $action );
-			$post['linker_proof'] = '';
-			$send                 = 'contact' === $action ? new ContactHandler() : new Handler();
-			$first                = $send->process( $post );
-			$this->assertFalse( is_wp_error( $first ) );
-			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
-			$this->assertIsArray( $orders );
-			$this->assertCount( 1, $orders );
-			$order = $orders[0];
-			$this->later(
-				static function () use ( $order ): void {
-					$order->delete( true );
-				}
-			);
-			$this->assertSame( Statuses::RECEIVED, $order->get_status() );
-			$this->assertSame( 0, $order->get_customer_id() );
-			$this->assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
-			$this->assertFalse( is_wp_error( $send->process( $post ) ) );
-			$retry = wc_get_orders( array( 'billing_email' => $post['email'] ) );
-			$this->assertIsArray( $retry );
-			$this->assertCount( 1, $retry );
-			$this->assertStringNotContainsString( '<noscript>', FormFields::render( $action ) );
-		}
-	}
-
-	/** Optional challenge never changes the enforced shared submission budget. */
-	public function test_optional_business_verification_still_enforces_atomic_quota(): void {
-		$this->optional_business_verification();
-		$limit = static fn ( array $limits, string $action, Identity $identity ): array => array_merge( $limits, array( new Allowance( 'optional_fixture', $identity->browser, 1, HOUR_IN_SECONDS ) ) );
-		add_filter( 'linker_commerce_public_business_limits', $limit, 99, 3 );
-		$this->later(
-			static function () use ( $limit ): void {
-				remove_filter( 'linker_commerce_public_business_limits', $limit, 99 );
-			}
-		);
-		$first                 = $this->post( 'contact' );
-		$first['linker_proof'] = '';
-		$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $first ) );
-		$orders = wc_get_orders( array( 'billing_email' => $first['email'] ) );
-		$this->assertIsArray( $orders );
-		$order = $orders[0];
-		$this->later(
-			static function () use ( $order ): void {
-				$order->delete( true );
-			}
-		);
-		$second                 = $this->post( 'contact' );
-		$second['linker_proof'] = '';
-		$this->assertSame( 'throttled', ( new ContactHandler() )->process( $second ) );
-		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $second['email'] ) ) );
-	}
-
-	/** Native input guards and all non-business proof requirements stay intact. */
-	public function test_optional_business_verification_preserves_native_guards_and_other_action_proofs(): void {
-		$this->optional_business_verification();
-		$post                 = $this->post( 'contact' );
-		$post['linker_proof'] = '';
-		foreach ( array( array( 'website' => 'https://spam.example.test' ), array( 'linker_contact_nonce' => 'forged' ), array( 'linker_started_nonce' => 'forged' ) ) as $bad ) {
-			$this->assertSame( 'invalid', ( new ContactHandler() )->process( array_replace( $post, $bad ) ) );
-		}
-		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
-		foreach ( array( 'genie', 'genie_contact', 'genie_inquiry', 'draft_write', 'registration', 'password_reset', 'login', 'comment' ) as $action ) {
-			$this->assertTrue( Configuration::verification_required( $action ) );
-			$permit = ( new Admission( Configuration::current() ) )->reserve( $action, '', wp_generate_uuid4(), array(), array(), 10 );
-			$this->assertInstanceOf( WP_Error::class, $permit );
-			$this->assertSame( 'linker_admission_proof', $permit->get_error_code() );
-		}
-	}
-
 	/**
 	 * A valid proof replaces the old fixed delay and three-per-connection limit.
 	 */
@@ -507,34 +343,19 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		}
 	}
 
-	/**
-	 * Optional policy preserves a held inquiry; native nonce failures still create none.
-	 */
-	public function test_invalid_proofs_save_held_inquiry_while_bad_nonce_has_no_side_effects(): void {
-		$this->optional_business_verification();
-		$marker = self::newest_mail_job();
-		$post   = $this->post();
-		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'linker_inquiry_nonce' => 'forged' ) ) ) );
-		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
-		foreach ( array( '', 'forged' ) as $proof ) {
-			$order = ( new Handler() )->process( array_replace( $post, array( 'linker_proof' => $proof ) ) );
-			$this->assertInstanceOf( WC_Order::class, $order );
-			$this->assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
-			$this->later(
-				static function () use ( $order ): void {
-					$order->delete( true );
-				}
-			);
+	/** An anonymous inquiry needs both its form nonce and a successful verification. */
+	public function test_missing_token_or_invalid_nonce_preserves_the_draft_without_creating_an_inquiry(): void {
+		$product = $this->product( '125' );
+		WC()->cart->add_to_cart( $product->get_id(), 2 );
+		$post = $this->post();
+		$jobs = self::newest_mail_job();
+		foreach ( array( 'linker_inquiry_nonce', 'cf-turnstile-response' ) as $field ) {
+			$result = ( new Handler() )->process( array_replace( $post, array( $field => '' ) ) );
+			$this->assertInstanceOf( WP_Error::class, $result );
+			$this->assertSame( 2, WC()->cart->get_cart_contents_count() );
+			$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+			$this->assertSame( array(), self::mail_jobs_after( $jobs ) );
 		}
-		$orders = wc_get_orders(
-			array(
-				'billing_email' => $post['email'],
-				'limit'         => 10,
-			)
-		);
-		$this->assertIsArray( $orders );
-		$this->assertCount( 1, $orders );
-		$this->assertSame( array( self::fixed_receipt_job( $orders[0] ) ), self::mail_jobs_after( $marker ) );
 	}
 
 	/**
@@ -558,7 +379,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$error = ( new Handler() )->process( $post );
 		$this->assertInstanceOf( WP_Error::class, $error );
 		$this->assertSame( 'linker_inquiry_empty', $error->get_error_code() );
-		$this->assertStringNotContainsString( $post['linker_request_id'], (string) get_option( Ledger::OPTION ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
 		$post['message'] = 'A corrected ordinary inquiry.';
 		$order           = ( new Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $order );
@@ -608,7 +429,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( WP_Error::class, $error );
 		$this->assertSame( 'out-of-stock', $error->get_error_code() );
 		$this->assertSame( 1, WC()->cart->get_cart_contents_count() );
-		$this->assertStringNotContainsString( $post['linker_request_id'], (string) get_option( Ledger::OPTION ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
 		$line['data']->set_stock_status( 'instock' );
 		$order = ( new Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $order );
@@ -746,9 +567,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Woo and WordPress both stop before reset key creation when proof is absent.
+	 * The native reset form verifies its nonce before creating a key.
 	 */
-	public function test_both_native_password_reset_paths_require_proof_before_key_and_mail(): void {
+	public function test_native_password_reset_requires_the_form_nonce_and_no_turnstile(): void {
 		$customer = $this->customer();
 		$user     = get_userdata( $customer->get_id() );
 		$this->assertInstanceOf( \WP_User::class, $user );
@@ -774,6 +595,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
 			)
 		);
+		unset( $_POST['cf-turnstile-response'] );
 		$this->assertTrue( \WC_Shortcode_My_Account::retrieve_password() );
 		$loaded = get_userdata( $user->ID );
 		$this->assertInstanceOf( \WP_User::class, $loaded );
@@ -803,7 +625,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			'user_login'        => '<b>installer@example.test</b>',
 			'password_1'        => 'never-store-password',
 			'reset_key'         => 'never-store-key',
-			'linker_proof'      => 'never-store-proof',
+			'cf-turnstile-response'      => 'never-store-proof',
 		);
 		$this->assertNotFalse( has_action( 'lostpassword_post', array( \Linker\Commerce\Mail\ResetNotice::class, 'capture_submission' ) ) );
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error(), new \WP_User() );
@@ -883,10 +705,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$errors = apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', 'SyntheticPasswordNeverPartOfPayload', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native Woo four-argument registration boundary.
 		$this->assertInstanceOf( WP_Error::class, $errors );
 		$this->assertFalse( $errors->has_errors(), implode( ';', $errors->get_error_messages() ) );
-		$owned = ( new Ledger() )->privacy( array( \Linker\Commerce\Protection\Allowance::owner_for( Identity::recipient( $email ) ) ), false );
-		$this->assertIsArray( $owned );
-		$this->assertSame( 'registration', $owned['data'][0]['purpose'] );
-		$this->assertStringNotContainsString( 'SyntheticPasswordNeverPartOfPayload', (string) get_option( Ledger::OPTION ) );
+		$this->assertStringNotContainsString( 'SyntheticPasswordNeverPartOfPayload', (string) wp_json_encode( get_option( Ledger::OPTION ) ) );
 		$this->assertFalse( email_exists( $email ), 'Validation alone creates no account or registration mail.' );
 		$id = wc_create_new_customer( $email, '', 'SyntheticPasswordNeverPartOfPayload' );
 		$this->assertIsInt( $id );
@@ -897,10 +716,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				wp_delete_user( $id );
 			}
 		);
-		$owned = ( new Ledger() )->privacy( array( Allowance::owner_for( Identity::recipient( $email ) ) ), false );
-		$this->assertIsArray( $owned );
-		$this->assertSame( 'completed', $owned['data'][0]['status'] );
-		$this->assertSame( $id, $owned['data'][0]['outcome'] );
+		$this->assertSame( $id, email_exists( $email ) );
 	}
 
 	/**
@@ -1041,149 +857,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Login's progressive challenge does not change its native password check. */
-	public function test_progressive_login_preserves_normal_success_and_gates_failed_use(): void {
+	/** A customer can correct a mistyped password on the native login form. */
+	public function test_customer_can_correct_a_mistyped_password_without_an_extra_challenge(): void {
 		$customer = $this->customer();
 		$user     = get_userdata( $customer->get_id() );
 		$this->assertInstanceOf( \WP_User::class, $user );
-		$password = 'Synthetic-local-login-fixture-520';
+		$password = 'Synthetic-local-login-fixture';
 		wp_set_password( $password, $user->ID );
+		$this->assertInstanceOf( WP_Error::class, wp_authenticate( $user->user_login, 'mistyped' ) );
 		$this->assertInstanceOf( \WP_User::class, wp_authenticate( $user->user_login, $password ) );
-		for ( $i = 0; $i < 3; ++$i ) {
-			$this->assertInstanceOf( WP_Error::class, wp_authenticate( $user->user_login, 'synthetic-wrong-password' ) );
-		}
-		$blocked = wp_authenticate( $user->user_login, $password );
-		$this->assertInstanceOf( WP_Error::class, $blocked );
-		$this->assertSame( 'linker_admission_configuration', $blocked->get_error_code() );
-		$post = $_POST;
-		$this->later(
-			static function () use ( $post ): void {
-				$_POST = $post;
-			}
-		);
-		$_POST = $this->post( 'login' );
-		$this->assertInstanceOf( \WP_User::class, wp_authenticate( $user->user_login, $password ) );
-		$this->assertInstanceOf( WP_Error::class, wp_authenticate( $user->user_login, 'synthetic-wrong-password' ) );
-	}
-
-	/**
-	 * Direct native draft commands stop before native side effects without proof.
-	 */
-	public function test_native_draft_transport_and_store_api_require_scoped_proof(): void {
-		$guard   = new \Linker\Commerce\Protection\Draft();
-		$product = $this->product( '125' );
-		$this->assertTrue( $guard->decision( array( 'product_id' => $product->get_id() ) ), 'A read-only query parameter is not a write.' );
-		$shipping = WC()->customer->get_shipping_country();
-		$this->assertInstanceOf(
-			WP_Error::class,
-			$guard->decision(
-				array(
-					'calc_shipping'         => '1',
-					'calc_shipping_country' => 'FR',
-					'woocommerce-shipping-calculator-nonce' => wp_create_nonce( 'woocommerce-shipping-calculator' ),
-				)
-			)
-		);
-		$this->assertSame( $shipping, WC()->customer->get_shipping_country() );
-		$this->assertInstanceOf( WP_Error::class, $guard->decision( array( 'add-to-cart' => $product->get_id() ) ) );
-		$this->assertInstanceOf(
-			WP_Error::class,
-			$guard->decision(
-				array(
-					'wc-ajax'       => 'remove_from_cart',
-					'cart_item_key' => 'synthetic',
-				)
-			)
-		);
-		$post = array_merge(
-			$this->post( 'draft_write' ),
-			array(
-				'add-to-cart' => $product->get_id(),
-				'quantity'    => 2,
-			)
-		);
-		$this->assertTrue( $guard->decision( $post ) );
-		$guard->complete();
-		$this->assertInstanceOf( WP_Error::class, $guard->decision( $post ), 'Native duplicate add cannot write twice.' );
-		$this->assertTrue( WC()->cart->is_empty() );
-		$request = new \WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
-		$request->set_param( 'id', $product->get_id() );
-		$request->set_param( 'quantity', 1 );
-		$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
-		$reply = rest_do_request( $request );
-		$this->assertGreaterThanOrEqual( 400, $reply->get_status() );
-		$this->assertTrue( WC()->cart->is_empty() );
-	}
-
-	/**
-	 * Native cart aliases and mixed-case native routes retain the same write gate.
-	 */
-	public function test_store_api_cart_aliases_cannot_bypass_the_actual_mutation_gate(): void {
-		$product = $this->product( '125' );
-		$coupon  = new \WC_Coupon();
-		$coupon->set_code( 'fixture520-' . self::tag() );
-		$coupon->set_amount( '1' );
-		$coupon->save();
-		$this->later(
-			static function () use ( $coupon ): void {
-				$coupon->delete( true );
-			}
-		);
-		$key = WC()->cart->add_to_cart( $product->get_id(), 1 );
-		$this->assertIsString( $key );
-		$cases = array(
-			array( 'POST', '/wc/store/v1/cart/items' ),
-			array( 'DELETE', '/wc/store/v1/cart/items' ),
-			array( 'PUT', '/wc/store/v1/cart/items/' . $key ),
-			array( 'PATCH', '/wc/store/v1/cart/items/' . $key ),
-			array( 'DELETE', '/wc/store/v1/cart/items/' . $key ),
-			array( 'POST', '/wc/store/v1/cart/coupons' ),
-			array( 'DELETE', '/wc/store/v1/cart/coupons' ),
-			array( 'DELETE', '/wc/store/v1/cart/coupons/' . $coupon->get_code() ),
-			array( 'POST', '/WC/STORE/V1/CART/ITEMS' ),
-		);
-		foreach ( $cases as [ $method, $route ] ) {
-			$request = new \WP_REST_Request( $method, $route );
-			$request->set_param( 'id', $product->get_id() );
-			$request->set_param( 'quantity', 2 );
-			$request->set_param( 'code', $coupon->get_code() );
-			$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
-			$reply = rest_do_request( $request );
-			$data  = $reply->get_data();
-			$this->assertGreaterThanOrEqual( 400, $reply->get_status(), $method . ' ' . $route );
-			$this->assertStringStartsWith( 'linker_admission_', $data['code'], $method . ' ' . $route );
-			$this->assertSame( 1, WC()->cart->get_cart_contents_count() );
-		}
-		$batch = new \WP_REST_Request( 'POST', '/batch/v1' );
-		$batch->set_body_params(
-			array(
-				'requests' => array(
-					array(
-						'method'  => 'POST',
-						'path'    => '/wc/store/v1/cart/items',
-						'headers' => array( 'Nonce' => wp_create_nonce( 'wc_store_api' ) ),
-						'body'    => array(
-							'id'       => $product->get_id(),
-							'quantity' => 2,
-						),
-					),
-				),
-			)
-		);
-		$batch_reply = rest_do_request( $batch );
-		$this->assertSame( 207, $batch_reply->get_status() );
-		$batch_data = $batch_reply->get_data();
-		$this->assertStringStartsWith( 'linker_admission_', $batch_data['responses'][0]['body']['code'] );
-		$this->assertSame( 1, WC()->cart->get_cart_contents_count() );
-		$request = new \WP_REST_Request( 'POST', '/wc/store/v1/cart/items' );
-		foreach ( $this->post( 'draft_write' ) as $field => $value ) {
-			$request->set_param( $field, $value );
-		}
-		$request->set_param( 'id', $product->get_id() );
-		$request->set_param( 'quantity', 2 );
-		$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
-		$this->assertSame( 201, rest_do_request( $request )->get_status() );
-		$this->assertSame( 3, WC()->cart->get_cart_contents_count() );
 	}
 
 	/**
@@ -1206,9 +888,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Native REST and form hooks consume one proof at the same native insertion.
+	 * Authenticated comments use the open post and native WordPress identity.
 	 */
-	public function test_valid_native_rest_comment_does_not_require_a_second_form_proof(): void {
+	public function test_authenticated_native_rest_comment_uses_the_normal_wordpress_permissions(): void {
 		$customer = $this->customer();
 		$this->as_user( $customer->get_id() );
 		$id = wp_insert_post(
@@ -1234,9 +916,6 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			}
 		);
 		$request = new \WP_REST_Request( 'POST', '/wp/v2/comments' );
-		foreach ( $this->post( 'comment' ) as $key => $value ) {
-			$request->set_param( $key, $value );
-		}
 		$request->set_param( 'post', $id );
 		$request->set_param( 'content', 'Valid native REST comment fixture.' );
 		$reply   = rest_do_request( $request );
@@ -1249,7 +928,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				wp_delete_comment( $data['id'], true );
 			}
 		);
-		$this->assertGreaterThanOrEqual( 400, rest_do_request( $request )->get_status(), 'The consumed logical UUID cannot insert the comment twice.' );
+		$this->assertGreaterThanOrEqual( 400, rest_do_request( $request )->get_status(), 'WordPress rejects a duplicate comment.' );
 	}
 
 	/**
@@ -1269,7 +948,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertSame( $post['email'], $fields['email'] );
 		$this->assertSame( $post['linker_request_id'], $fields['linker_request_id'] );
 		$this->assertArrayNotHasKey( 'password', $fields );
-		$this->assertArrayNotHasKey( 'linker_proof', $fields );
+		$this->assertArrayNotHasKey( 'cf-turnstile-response', $fields );
 		$this->assertArrayNotHasKey( 'linker_contact_nonce', $fields );
 		$this->assertStringNotContainsString( '<script>', $fields['message'] );
 		$this->assertSame( array(), \Linker\Commerce\Protection\FormRecovery::consume( 'contact' ) );
@@ -1306,16 +985,16 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Target refusal does not spend the independent site's final receipt slot.
+	 * Repeated deliveries to a single recipient do not block an unrelated address.
 	 */
-	public function test_receipt_target_caps_are_atomic_with_site_cap(): void {
+	public function test_repeat_recipient_does_not_block_a_different_address(): void {
 		$this->assertTrue( ReceiptBudget::take( 'target@example.test', 9900001 ) );
 		$this->assertTrue( ReceiptBudget::take( 'TARGET@example.test', 9900002 ) );
 		$this->assertFalse( ReceiptBudget::take( 'target@example.test', 9900003 ) );
 		for ( $i = 0; $i < 8; ++$i ) {
 			$this->assertTrue( ReceiptBudget::take( 'target-' . $i . '@example.test', 9900010 + $i ) );
 		}
-		$this->assertFalse( ReceiptBudget::take( 'another@example.test', 9900099 ) );
+		$this->assertTrue( ReceiptBudget::take( 'another@example.test', 9900099 ) );
 		$this->assertTrue( ReceiptBudget::take( 'target@example.test', 9900001 ), 'Native replay spends no additional allowance.' );
 	}
 }

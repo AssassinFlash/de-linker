@@ -68,11 +68,11 @@ final class Business {
 	 * @param string                          $action Server-selected business action.
 	 * @param array<string,mixed>             $payload Verified customer input.
 	 * @param callable(): (WC_Order|WP_Error) $write Native writer.
-	 * @param callable|null                   $before_write Validation before a new write; returns true, null or WP_Error.
+	 * @param callable                        $before_write Validation before a new write; returns true, null or WP_Error.
 	 * @param Identity|null                   $owner Verified identity from the native customer or conversation.
 	 * @param callable(WC_Order):mixed|null   $on_order Idempotently associate the confirmed native order with the originating customer action.
 	 */
-	public static function write_once( string $id, string $action, array $payload, callable $write, ?callable $before_write = null, ?Identity $owner = null, ?callable $on_order = null ): WC_Order|WP_Error {
+	public static function write_once( string $id, string $action, array $payload, callable $write, callable $before_write, ?Identity $owner = null, ?callable $on_order = null ): WC_Order|WP_Error {
 		$id = strtolower( $id );
 		if ( ! wp_is_uuid( $id, 4 ) || ! in_array( $action, array( 'contact', 'inquiry', 'genie_contact', 'genie_inquiry' ), true ) ) {
 			return new WP_Error( 'linker_admission_input', self::verification_message( 'failed' ) );
@@ -96,14 +96,12 @@ final class Business {
 				return $order;
 			}
 			if ( null === $order ) {
-				if ( null !== $before_write ) {
-					$valid = $before_write();
-					if ( is_wp_error( $valid ) ) {
-						return $valid;
-					}
-					if ( true !== $valid && null !== $valid ) {
-						return self::unconfirmed_receipt();
-					}
+				$valid = $before_write();
+				if ( is_wp_error( $valid ) ) {
+					return $valid;
+				}
+				if ( true !== $valid && null !== $valid ) {
+					return self::unconfirmed_receipt();
 				}
 				$context = static fn (): array => array(
 					'enforced'    => true,

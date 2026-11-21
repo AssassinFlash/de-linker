@@ -105,17 +105,31 @@ final class BusinessRecord {
 		if ( array() === $ids ) {
 			// A pre-cutover in-flight or erased request may lack a recoverable Woo
 			// record. Read only its existing association; new writes do not use a pool.
-			$old = get_option( Ledger::OPTION, array() )['receipts'][ $id ] ?? null;
-			return is_array( $old ) && (int) ( $old['retry_until'] ?? 0 ) > time() ? self::unconfirmed() : null;
+			$journal = get_option( Ledger::OPTION );
+			$old     = is_string( $journal ) ? ( json_decode( $journal, true )['receipts'][ $id ] ?? null ) : null;
+			if ( ! is_array( $old ) || (int) ( $old['retry_until'] ?? 0 ) <= time() ) {
+				return null;
+			}
+			if ( $binding === ( $old['binding'] ?? '' ) && $fingerprint !== ( $old['fingerprint'] ?? '' ) && 'erased' !== ( $old['status'] ?? '' ) ) {
+				return self::changed();
+			}
+			return self::unconfirmed();
 		}
 		$order = wc_get_order( (int) $ids[0] );
 		if ( ! $order instanceof WC_Order || $erased === $order->get_meta( self::ERASED ) ) {
 			return self::unconfirmed();
 		}
-		if ( $binding !== $order->get_meta( self::SUBJECT ) || $fingerprint !== $order->get_meta( self::INPUT ) ) {
-			return new WP_Error( 'linker_admission_payload_changed', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
+		if ( $binding !== $order->get_meta( self::SUBJECT ) ) {
+			return self::unconfirmed();
+		}
+		if ( $fingerprint !== $order->get_meta( self::INPUT ) ) {
+			return self::changed();
 		}
 		return self::matches( $order, $id, $fingerprint, $binding ) ? $order : self::unconfirmed();
+	}
+
+	private static function changed(): WP_Error {
+		return new WP_Error( 'linker_admission_payload_changed', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 	}
 
 	private static function unconfirmed(): WP_Error {
