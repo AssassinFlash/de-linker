@@ -25,7 +25,8 @@ function destination(
 			! allowed ||
 			url.username ||
 			url.password ||
-			url.hash !== '#sc-review' ||
+			( url.hash !== '#sc-energy' &&
+				( runs.length !== 1 || url.hash !== '#sc-review' ) ) ||
 			[ ...url.searchParams.keys() ].some(
 				( key ) =>
 					! [ 'project', 'run', 'compare' ].includes( key ) ||
@@ -75,6 +76,13 @@ export function PlanningSourcesCard( {
 		'linker-tools'
 	);
 	const href = destination( block, configuratorLinks );
+	let title: string = __( 'Calculation sources and periods', 'linker-tools' );
+	if ( block.results.every( ( result ) => result.groups.length === 0 ) ) {
+		title =
+			block.binding.planning_run_ids.length === 2
+				? __( 'Saved calculation comparison', 'linker-tools' )
+				: __( 'Saved calculation', 'linker-tools' );
+	}
 	const previousContext =
 		currentPage?.planning_project_id !== undefined &&
 		( currentPage.planning_project_id !==
@@ -83,16 +91,8 @@ export function PlanningSourcesCard( {
 			JSON.stringify( currentPage.planning_run_ids ?? [] ) !==
 				JSON.stringify( block.binding.planning_run_ids ) );
 	return (
-		<section
-			className="linker-genie-attachment"
-			aria-label={ __(
-				'Calculation sources and periods',
-				'linker-tools'
-			) }
-		>
-			<p className="linker-genie-attachment__title">
-				{ __( 'Calculation sources and periods', 'linker-tools' ) }
-			</p>
+		<section className="linker-genie-attachment" aria-label={ title }>
+			<p className="linker-genie-attachment__title">{ title }</p>
 			<p>{ __( 'From the selected saved result.', 'linker-tools' ) }</p>
 			{ previousContext && (
 				<p>

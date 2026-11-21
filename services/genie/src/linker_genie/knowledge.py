@@ -131,6 +131,7 @@ class KnowledgeSearch:
                 "document_id": hit.document_id,
                 "document_revision": hit.document_revision,
                 "product_ids": list(hit.product_ids),
+                "evidence_product_id": hit.evidence_product_id,
                 "doc_url": hit.doc_url,
                 "title": hit.title,
                 "doc_type": hit.doc_type,

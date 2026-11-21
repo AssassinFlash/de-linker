@@ -76,8 +76,6 @@ final class InquirySummary {
 	private const MAX_CONDITION  = 120;
 	private const MAX_NOTE       = 500;
 	private const MAX_CONDITIONS = 6;
-	private const MAX_QUANTITIES = 12;
-	private const MAX_PRODUCTS   = 40;
 
 	/**
 	 * Sets up the summary builder.
@@ -249,7 +247,7 @@ final class InquirySummary {
 
 	/**
 	 * The products the conversation's answers showed, as the service's request
-	 * schema wants them (id and name, bounded).
+	 * schema wants them (id and name).
 	 *
 	 * @param list<array<string, mixed>> $messages Thread::transcript().
 	 * @return list<array{id: int, name: string}>
@@ -265,7 +263,7 @@ final class InquirySummary {
 			}
 		}
 		$out = array();
-		foreach ( array_slice( array_keys( $ids ), 0, self::MAX_PRODUCTS ) as $id ) {
+		foreach ( array_keys( $ids ) as $id ) {
 			$out[] = array(
 				'id'   => $id,
 				'name' => mb_substr( wp_strip_all_tags( (string) get_the_title( $id ) ), 0, 300 ),
@@ -293,9 +291,6 @@ final class InquirySummary {
 					'product_id' => $product,
 					'quantity'   => $quantity,
 				);
-			}
-			if ( count( $out ) >= self::MAX_QUANTITIES ) {
-				break;
 			}
 		}
 		return $out;

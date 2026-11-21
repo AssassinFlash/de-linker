@@ -393,8 +393,8 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertSame( self::PUBLIC, ( new Options() )->contact()['email'] );
 
 		$handoff = ( new HandoffTeam() )->execute();
-		$this->assertSame( 'Our team will answer that at ' . self::PUBLIC . '.', $handoff['sentence_en'] );
-		$this->assertSame( 'Unser Team beantwortet das unter ' . self::PUBLIC . '.', $handoff['sentence_de'] );
+		$this->assertSame( 'Email ' . self::PUBLIC . ' and our team will reply within one working day.', $handoff['sentence_en'] );
+		$this->assertSame( 'Schreiben Sie an ' . self::PUBLIC . ', und unser Team antwortet Ihnen innerhalb eines Werktags.', $handoff['sentence_de'] );
 		$this->assertSame( 'mailto:' . self::PUBLIC, $handoff['mailto'] );
 
 		// The shortcodes' own callbacks: PHPUnit loads WordPress inside a

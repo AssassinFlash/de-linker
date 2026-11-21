@@ -20,12 +20,15 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { parseStream } from '../lib/genie';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { seedConsentCookies } from '../lib/consent';
 
 /** The question whose live answer is proven to carry a product card. */
 const QUESTIONS = {
 	en: {
-		ask: 'What does the SAJ H2-10K-T3 cost?',
+		ask: 'Please show me 3 SAJ H2-10K-T3 inverters.',
 		products: '/products/',
 		save: 'Save solution',
 		saved: 'Saved to your account.',
@@ -34,7 +37,7 @@ const QUESTIONS = {
 		notice: 'The products of the saved solution are in your solution draft.',
 	},
 	de: {
-		ask: 'Was kostet der SAJ H2-10K-T3?',
+		ask: 'Bitte zeigen Sie mir 3 Wechselrichter SAJ H2-10K-T3.',
 		products: '/de/produkte/',
 		save: 'L\u00f6sung speichern',
 		saved: 'Im Konto gespeichert.',
@@ -65,8 +68,7 @@ test.afterAll(() => {
 });
 
 /**
- * Asks Genie through the dock loader's own event (the entry the product
- * page's ask button uses) and waits for the answer's first product card.
+ * Opens Genie from the visible catalogue entry and waits for the selected product.
  *
  * @param page   The page.
  * @param launch The question to send.
@@ -76,12 +78,41 @@ async function askGenie(
 	launch: string,
 	saveLabel: string
 ): Promise<void> {
-	await page.evaluate((message) => {
-		window.dispatchEvent(
-			new CustomEvent('linker-genie-ask', { detail: { message } })
-		);
-	}, launch);
-	const card = page.locator('.linker-genie-app article.linker-card').first();
+	await page
+		.getByRole('button', { name: /^(Ask Genie|Genie fragen)$/ })
+		.filter({ visible: true })
+		.first()
+		.click();
+	const votes = page.locator('.linker-genie-app__votes');
+	const previous = await votes.count();
+	await page.locator('#linker-genie-input').fill(launch);
+	const result = page.waitForResponse(
+		(r) =>
+			r.url().includes('/genie/turn') && r.request().method() === 'POST',
+		{ timeout: 180_000 }
+	);
+	await page.locator('.linker-genie-app__send').click();
+	const answer = await result;
+	expect(
+		answer.ok(),
+		'the newly requested quantities have an answered turn: ' +
+			answer.status()
+	).toBe(true);
+	const { blocks } = parseStream((await answer.json()).stream);
+	const savedCard = blocks.find((block) => block.type === 'cards');
+	expect(savedCard?.product_ids).toHaveLength(1);
+	expect(
+		savedCard?.quantities?.[savedCard.product_ids[0]!],
+		'requested units in the new answer'
+	).toBe(3);
+	await expect(votes).toHaveCount(previous + 1);
+	const card = page
+		.locator('.linker-genie-app article.linker-card')
+		.filter({ hasText: 'H2-10K-T3' })
+		.last();
+	await expect(card.locator('.linker-card__quantity')).toHaveText('× 3', {
+		timeout: 35_000,
+	});
 	await expect(card).toBeVisible({ timeout: 180_000 });
 	// The card is complete once its model line has come in too.
 	await expect(card.locator('.linker-card__model')).toBeVisible({
@@ -113,7 +144,8 @@ for (const locale of ['en', 'de'] as const) {
 			await askGenie(page, words.ask, words.save);
 			const card = page
 				.locator('.linker-genie-app article.linker-card')
-				.first();
+				.filter({ hasText: 'H2-10K-T3' })
+				.last();
 
 			// The save posts the live card's proof; the account store answers
 			// with the saved solution's own id and address.
@@ -142,7 +174,50 @@ for (const locale of ['en', 'de'] as const) {
 			const row = page.locator(`#linker-solution-${payload.id}`);
 			await expect(row).toBeVisible();
 			await expect(row).toContainText('H2-10K-T3');
-			await expect(row).toContainText('1 × ');
+			await expect(row).toContainText('3 × ');
+
+			const configurator = row.getByRole('link', {
+				name:
+					locale === 'de'
+						? 'Lösungskonfigurator öffnen'
+						: 'Open the Solution Configurator',
+			});
+			await expect(configurator).toBeVisible();
+			await expect(configurator).toHaveAttribute(
+				'href',
+				new RegExp(`[?&]saved_solution=${payload.id}(?:&|$)`)
+			);
+
+			await configurator.click();
+			await expect(page).toHaveURL(
+				new RegExp(
+					(locale === 'de'
+						? '/de/loesungskonfigurator/'
+						: '/solution-configurator/') +
+						'\\?saved_solution=' +
+						payload.id
+				)
+			);
+			const selected = page
+				.locator('.linker-product-card')
+				.filter({ hasText: 'H2-10K-T3' });
+			await expect(selected).toContainText('× 3');
+			await expect(selected.getByRole('link')).toHaveAttribute(
+				'href',
+				/h2-10k-t3/i
+			);
+			if (process.env.LINKER_E2E_SHOTS) {
+				mkdirSync(process.env.LINKER_E2E_SHOTS, { recursive: true });
+				await selected.scrollIntoViewIfNeeded();
+				await page.screenshot({
+					path: join(
+						process.env.LINKER_E2E_SHOTS,
+						`saved-equipment-${locale}-${width}.png`
+					),
+					animations: 'disabled',
+				});
+			}
+			await page.goto(instance().url + words.account);
 
 			// And returns it to the solution draft.
 			await row.getByRole('button', { name: words.addToDraft }).click();

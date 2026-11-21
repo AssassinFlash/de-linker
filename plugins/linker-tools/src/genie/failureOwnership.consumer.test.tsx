@@ -286,6 +286,11 @@ for ( const target of [ 'workspace', 'home' ] as const ) {
 					{ target: { files: [ file ] } }
 				)
 			);
+			await screen.findByText( filename );
+			expect( captures ).toHaveLength( 0 );
+			await act( async () =>
+				fireEvent.click( document.querySelector( '.hero-send' )! )
+			);
 			await screen.findByText(
 				'Genie did not answer. Please try again.'
 			);

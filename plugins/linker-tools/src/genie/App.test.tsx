@@ -182,6 +182,10 @@ test( 'fresh report URLs carry only the exact saved project and run', () => {
 	expect( reportRecoveryUrl( page, page, href ) ).toBe(
 		`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#sc-review`
 	);
+	const energyHref = href.replace( '#sc-review', '#sc-energy' );
+	expect( reportRecoveryUrl( page, page, energyHref ) ).toBe(
+		`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#sc-energy`
+	);
 	const doubled = href.replace( '/configurator/', '//outside.example/' );
 	const doubledPage = { ...page, url: doubled };
 	expect(
@@ -208,6 +212,10 @@ test( 'fresh report URLs carry only the exact saved project and run', () => {
 		url: compareHref,
 		planning_run_ids: [ run, secondRun ],
 	};
+	expect(
+		new URL( reportRecoveryUrl( comparison, comparison, compareHref )! )
+			.hash
+	).toBe( '#sc-energy' );
 	expect(
 		new URL(
 			reportRecoveryUrl( comparison, comparison, compareHref )!

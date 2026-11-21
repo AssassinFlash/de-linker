@@ -350,6 +350,8 @@ def _add_category(vocabulary: Vocabulary, name: str, slug: str, device: str) -> 
     entry = Entry("category", label, device)
     vocabulary.add(normalize(label), entry)
     vocabulary.add(normalize(slug), entry)
+    if device == "inverters" and label.casefold() == "wechselrichter":
+        vocabulary.add("hybridwechselrichter", entry)
     if "&" in label:
         for side in label.split("&"):
             vocabulary.add(normalize(side), entry)

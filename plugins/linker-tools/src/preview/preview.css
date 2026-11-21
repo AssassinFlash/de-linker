@@ -23,12 +23,12 @@
 	box-sizing: border-box;
 	width: 320px;
 	max-width: calc(100vw - 40px);
-	padding: 12px 14px;
+	padding: var(--proto-space-3) var(--proto-space-4);
 	border: 1px solid var(--proto-color-line);
 	border-radius: var(--proto-radius-card);
 	background: var(--proto-color-surface);
 	color: var(--proto-color-ink);
-	font-family: inherit;
+	font-family: var(--proto-font-sans);
 	box-shadow: var(--proto-shadow-3), var(--proto-shadow-1);
 	opacity: 0;
 	transform: translateY(8px);
@@ -57,9 +57,9 @@
 .linker-genie-peek__head {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--proto-space-2);
 	color: var(--proto-color-ink);
-	font-size: 12px;
+	font-size: var(--proto-size-xs);
 	font-weight: 650;
 }
 

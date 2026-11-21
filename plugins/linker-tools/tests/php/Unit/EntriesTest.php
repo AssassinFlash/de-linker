@@ -627,6 +627,10 @@ JS
 		$this->assertSame( 3, substr_count( $html, 'linker-genie-chip' ) );
 		$this->assertSame( 3, substr_count( $html, 'data-page-type="product"' ) );
 
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->chips_shortcode( array( 'page_type' => 'faq' ) );
+		$this->assertStringContainsString( 'data-page-type="faq">Ask Genie</button>', $html );
+		$this->assertStringNotContainsString( 'data-ask-message', $html );
+
 		// No attribute: the current query decides.
 		$this->frontend( 'en', array( 'type' => 'category' ) );
 		$html = ( new Entries( '/plugin/linker-tools.php' ) )->chips_shortcode( array( 'page_type' => '' ) );

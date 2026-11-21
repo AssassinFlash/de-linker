@@ -348,6 +348,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * @param string $status Account state.
 	 */
 	public function test_nav_groups_the_account_menu_for_a_signed_in_account( string $status ): void {
+		require_once dirname( __DIR__, 4 ) . '/includes/Presentation/template-functions.php';
 		$this->plain_text();
 		$this->approval_meta( array( Approval::STATUS_META => $status ) );
 		WP_Mock::userFunction(
@@ -367,6 +368,13 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => static fn ( string $endpoint ): string => 'https://example.test/my-account/' . $endpoint . '/' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction(
+			'wc_get_endpoint_url',
+			array(
+				'args'   => array( 'edit-address', 'billing', 'https://example.test/my-account/' ),
+				'return' => 'https://example.test/my-account/company/billing/',
+			)
+		);
+		WP_Mock::userFunction(
 			'add_query_arg',
 			array(
 				/* Both shapes in use: (array, url) and (key, value, url). */
@@ -384,6 +392,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( '<nav class="linker-account-nav"', $html );
 		$this->assertSame( 2, substr_count( $html, 'linker-account-nav-group' ) );
 		$this->assertStringContainsString( 'Workplace', $html );
+		$this->assertStringContainsString( 'https://example.test/my-account/company/billing/', $html );
 		$this->assertStringContainsString( 'https://example.test/my-account/orders/', $html );
 		// Sign-out is the nonce-carrying one-click URL, back on the account page
 		// with the state the sign-in card reads. The plain endpoint URL would

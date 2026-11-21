@@ -38,6 +38,7 @@ from itertools import islice
 from typing import Any, Literal
 from xml.etree import ElementTree
 
+from linker_genie.figures import tag
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.schema import (
     AttachmentReading,
@@ -51,6 +52,7 @@ from linker_genie.schema import (
     TurnMessage,
     TurnOutput,
 )
+from linker_genie.source_models import model_pattern
 
 # Rows read of one list. The largest list in the research is 61 items (Taobao's
 # 61-item bill of materials in 10 minutes, docs/research/2026-10-17-ai-assistants/
@@ -136,6 +138,26 @@ _ADD_TARGET = re.compile(
 #   "2x", "2 x", "2×", "2 pcs", "2 Stk.", "2 Stück", "qty 2", "menge: 2"
 # and the same after the product ("SAJ H2-10K-T3 x2", "... - 2").
 _QTY_UNIT = r"(?:x|×|\*|pcs?|pieces?|stk|st(?:ü|ue)ck|units?|qty|quantity|anzahl|menge)"
+# Customer quantity words used by both product actions and conversation summaries.
+COUNT_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "dozen": 12,
+    "ein": 1, "eine": 1, "einen": 1, "einem": 1, "einer": 1, "eins": 1,
+    "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7,
+    "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12,
+}  # fmt: skip
+_COUNT_TOKEN = rf"(?:[0-9]+|{'|'.join(COUNT_WORDS)})"
+_RANGE = r"(?:\s+(?:or|oder|to|bis)\s+|\s*[-–—]\s*)"
+_CARD_COUNT = rf"({_COUNT_TOKEN})(?:{_RANGE}({_COUNT_TOKEN}))?"
+_CARD_COUNT_AFTER = re.compile(
+    rf"\s*(?:,\s*)?(?:[×x*]\s*{_CARD_COUNT}(?![\w-]|[.,]\d)|{_CARD_COUNT}\s*{_QTY_UNIT}\b)",
+    re.I,
+)
+_CARD_COUNT_BEFORE = re.compile(
+    rf"(?<![\w.,+/-]){_CARD_COUNT}"
+    rf"(?:\s*{_QTY_UNIT}\.?)?(?:\s+(?:of(?:\s+the)?|vom|von\s+(?:der|dem|den)))?\s+$",
+    re.I,
+)
 _LEAD_QTY = re.compile(
     rf"^(?P<qty>\d{{1,6}})\s*{_QTY_UNIT}\.?(?![A-Za-z0-9])\s*", re.IGNORECASE
 )
@@ -257,6 +279,141 @@ def _quantity(value: str) -> int | None:
         number = int(found.group("qty"))
         return min(number, MAX_QUANTITY) if number > 0 else None
     return None
+
+
+def _card_count(token: str, alternative: str | None = None) -> int:
+    if alternative is not None and _card_count(token) != _card_count(alternative):
+        return 0
+    if token.casefold() in COUNT_WORDS:
+        return COUNT_WORDS[token.casefold()]
+    digits = token.lstrip("0")
+    count = int(digits) if 0 < len(digits) <= len(str(MAX_QUANTITY)) else 0
+    return count if count <= MAX_QUANTITY else 0
+
+
+# A standalone selection or quantity reply can reuse only the cards actually shown.
+_CARD_REPLY = re.compile(
+    rf"(?:(?:please|bitte)\s+)?(?:(?:save|add|take|I(?:'d like| want| need)|ich möchte)\s+)?"
+    rf"(?:(?P<count>{_COUNT_TOKEN})(?:{_RANGE}(?P<other>{_COUNT_TOKEN}))?"
+    rf"(?:\s+{_QTY_UNIT})?\s+(?:of\s+(?:those|these|them|that one|this one)|davon)"
+    r"|that one|this one|den hier|diesen|das hier)"
+    r"(?:\s+(?:speichern|hinzufügen))?(?:,?\s+(?:please|bitte))?[.!]?",
+    re.I,
+)
+
+
+def previous_card_selection(
+    message: str, options: dict[int, int], vocabulary: Vocabulary | None
+) -> dict[int, int]:
+    message = message.strip()
+    classes = (
+        {vocabulary.device_class.get(pid) for pid in options} if vocabulary else set()
+    )
+    alternatives = len(options) == 1 or (len(classes) == 1 and None not in classes)
+    if 0 in options.values():
+        count_reply = re.fullmatch(
+            rf"{_CARD_COUNT}(?:\s+{_QTY_UNIT})?[.!]?", message, re.I
+        )
+        if count_reply:
+            return dict.fromkeys(
+                options, _card_count(*count_reply.groups()) if alternatives else 0
+            )
+    reply = _CARD_REPLY.fullmatch(message)
+    if not options or not reply:
+        return {}
+    if reply["count"] is None:
+        return options
+    count = _card_count(reply["count"], reply["other"])
+    return dict.fromkeys(options, count if alternatives else 0)
+
+
+def card_quantities(
+    message: str, matches: list[Match], vocabulary: Vocabulary
+) -> dict[int, int]:
+    """Use the adjacent count for each model named this turn, defaulting to one."""
+    named_ids: set[int] = set()
+    counts: dict[int, int] = {}
+    for match in matches:
+        if match.kind != "model" or len(match.product_ids) != 1:
+            continue
+        product_id = next(iter(match.product_ids))
+        named_ids.add(product_id)
+        words = re.findall(r"[\w.]+", match.words)
+        if not words:
+            continue
+        model = r"[\s-]+".join(re.escape(word) for word in words)
+        series = {
+            re.escape(entry.words)
+            for entry in matches
+            if entry.kind == "series"
+            and entry.value in vocabulary.series_of.get(product_id, ())
+        }
+        if series:
+            model = rf"(?:(?:{'|'.join(sorted(series))})\s+)?{model}"
+        brands = [
+            vocabulary.brand_names.get(slug, slug)
+            for slug in vocabulary.brand_of.get(product_id, ())
+        ]
+        if brands:
+            brand = "|".join(re.escape(name) for name in brands)
+            model = rf"(?:(?:{brand})\s+)?{model}"
+        nouns = {
+            re.escape(entry.words)
+            for entry in matches
+            if entry.kind == "category"
+            and entry.value == vocabulary.device_class.get(product_id)
+        }
+        if nouns:
+            model = rf"(?:(?:{'|'.join(sorted(nouns))})\s+)?{model}"
+        for named in re.finditer(rf"(?<![\w-]){model}(?![\w-])", message, re.I):
+            before = _CARD_COUNT_BEFORE.search(message[: named.start()])
+            after = _CARD_COUNT_AFTER.match(message[named.end() :])
+            for adjacent in (before, after):
+                if adjacent:
+                    stated = [token for token in adjacent.groups() if token is not None]
+                    count = _card_count(*stated)
+                    # Zero keeps a conflicting or out-of-range request unsigned.
+                    counts[product_id] = (
+                        count
+                        if count <= MAX_QUANTITY
+                        and counts.get(product_id, count) == count
+                        else 0
+                    )
+    if named_ids:
+        return {pid: counts.get(pid, 1) for pid in named_ids}
+
+    # Each matching candidate offers the requested count as a separate choice.
+    category_counts: dict[str, int] = {}
+    category_message = message
+    for phrase in {m.words for m in matches if m.kind in ("brand", "series")}:
+        name = r"[\s-]+".join(re.escape(word) for word in phrase.split())
+        category_message = re.sub(rf"\b{name}\b", " ", category_message, flags=re.I)
+    for match in matches:
+        if match.kind != "category":
+            continue
+        noun = re.escape(match.words)
+        for mention in re.finditer(
+            rf"\b(?:hybrid[ -]?)?{noun}\b", category_message, re.I
+        ):
+            before = _CARD_COUNT_BEFORE.search(category_message[: mention.start()])
+            if before:
+                count = _card_count(*before.groups())
+                category_counts[match.value] = (
+                    count if category_counts.get(match.value, count) == count else 0
+                )
+    return {
+        pid: category_counts[device]
+        for pid, device in vocabulary.device_class.items()
+        if device in category_counts
+    }
+
+
+def has_rating(text: str) -> bool:
+    """A measured value in a transcribed row, separate from an item's quantity."""
+    return any(
+        any(character.isalpha() or character in "%°℃" for character in value)
+        for value in tag("row", text).figures.values()
+    )
 
 
 def _without_quantity(value: str) -> str:
@@ -600,6 +757,7 @@ def find(
     fresh: list[AttachmentReading],
     readings: list[AttachmentReading],
     vocabulary: Vocabulary | None,
+    supplied_models: tuple[str, ...] = (),
 ) -> Source | None:
     """The list this turn is working on, None when the turn is no list turn.
 
@@ -625,17 +783,30 @@ def find(
             continue
         if reading.kind == "list":
             rows = parse_table(rows_of_reading(reading))
-            since = _carried_at(messages, reading)
+            since = len(messages) - 1
             candidates.append(
                 Source("table", tuple(rows), since, reading.id, reading.truncated)
             )
         elif reading.kind in ("document", "photo") and (
             list_noun or ("?" not in latest and _photo_list(reading, vocabulary))
         ):
-            rows = parse_text(reading.text)
+            text = "\n".join(
+                line
+                for line in reading.text.splitlines()
+                if not line.startswith(("--- page ", "--- pages not read:"))
+            )
+            rows = parse_text(text)
             if len(rows) >= 2:
-                since = _carried_at(messages, reading)
-                candidates.append(Source("photo", tuple(rows), since, reading.id))
+                since = len(messages) - 1
+                candidates.append(
+                    Source(
+                        "photo",
+                        tuple(rows),
+                        since,
+                        reading.id,
+                        rows_truncated(text, rows),
+                    )
+                )
     if not candidates:
         for reading in reversed(readings):
             if reading.failed or reading.kind != "list":
@@ -656,7 +827,7 @@ def find(
         return candidates[-1]
     if not messages or not messages[-1].role == "user":
         return None
-    if looks_like_list(latest, vocabulary):
+    if looks_like_list(latest, vocabulary, supplied_models):
         parsed = parse_text(latest)
         return Source(
             "text",
@@ -687,6 +858,14 @@ def _continues(
     latest = messages[-1].content if messages else ""
     if not latest.strip():
         return False
+    listing = _LIST_NOUNS.search(latest)
+    if listing and re.search(
+        r"\b(?:show(?: me)?|reopen|zeig(?:en|e)?(?: Sie)?(?: mir)?|öffnen(?: Sie)?)\s+"
+        r"(?:(?:my|the|that|meine|unsere|die)\s+)?$",
+        latest[: listing.start()],
+        re.I,
+    ):
+        return True
     if _row_number(latest) is not None or skip(latest):
         return True
     if _add_request(latest):
@@ -763,7 +942,9 @@ def _carried_at(messages: list[TurnMessage], reading: AttachmentReading) -> int:
     return 0
 
 
-def looks_like_list(text: str, vocabulary: Vocabulary) -> bool:
+def looks_like_list(
+    text: str, vocabulary: Vocabulary, supplied_models: tuple[str, ...] = ()
+) -> bool:
     """Whether a pasted message is a parts list, not a question about products.
 
     Two product-bearing lines (or one line that states a quantity and names a
@@ -774,7 +955,13 @@ def looks_like_list(text: str, vocabulary: Vocabulary) -> bool:
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     if not lines:
         return False
-    product_lines = sum(1 for line in lines if _product_words(line, vocabulary))
+    labels = [model_pattern(label) for label in supplied_models]
+    product_lines = sum(
+        1
+        for line in lines
+        if _product_words(line, vocabulary)
+        or any(label.search(line) for label in labels)
+    )
     quantities = sum(1 for line in lines if _quantity(line) is not None)
     if len(lines) >= 2 and product_lines >= 2:
         return quantities >= 1 or bool(_LIST_WORDS.search(text))
@@ -850,11 +1037,17 @@ class PartsList:
 
 
 def build(
-    source: Source, messages: list[TurnMessage], vocabulary: Vocabulary
+    source: Source,
+    messages: list[TurnMessage],
+    vocabulary: Vocabulary,
+    *,
+    unavailable_rows: set[str] | None = None,
 ) -> PartsList:
     """The list's rows with the customer's answers applied (module docstring)."""
     rows = [
-        _row(number, parsed, vocabulary)
+        Row(number, parsed.text, parsed.quantity, "missing")
+        if unavailable_rows and parsed.text in unavailable_rows
+        else _row(number, parsed, vocabulary)
         for number, parsed in enumerate(source.parsed, start=1)
     ]
     for message in messages[source.since + 1 :]:

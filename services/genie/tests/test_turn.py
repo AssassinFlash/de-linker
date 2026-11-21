@@ -8,13 +8,23 @@ from typing import Any
 import pytest
 from conftest import SHELL
 from fastapi.testclient import TestClient
+from test_turn_abilities import clients, manifest
 
 import linker_genie.app as app_module
 from linker_genie.app import app
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, TurnFacts, collect, merge
 from linker_genie.log import TurnLog
-from linker_genie.schema import CardsBlock, TextBlock, TurnOutput, TurnRequest
-from linker_genie.understand import nothing
+from linker_genie.route import NamedModel, Route
+from linker_genie.schema import (
+    ActionBlock,
+    CardsBlock,
+    DocumentBlock,
+    Locale,
+    TextBlock,
+    TurnOutput,
+    TurnRequest,
+)
+from linker_genie.understand import Prepared, nothing
 
 
 @pytest.fixture(autouse=True)
@@ -69,10 +79,494 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
     body = response.text
-    assert "event: meta" in body
+    assert _meta(body)["accepts_previous_card_quantities"] is True
     assert "event: block" in body
     assert "event: done" in body
     assert "10 kW" in body
+
+
+@pytest.mark.parametrize(
+    ("case", "locale", "question"),
+    [
+        (
+            "parameter",
+            "de",
+            "Welche AC-Nennleistung hat der SAJ HS2-8K-T2-X laut Datenblatt?",
+        ),
+        ("parameter", "de", "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X?"),
+        ("parameter", "en", "What’s the rated AC output of the SAJ HS2-8K-T2-X?"),
+        (
+            "parameter",
+            "en",
+            "What is the AC rated power of the SAJ HS2-8K-T2-X according to the datasheet?",
+        ),
+        (
+            "also-requests-pdf",
+            "de",
+            "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X? Bitte geben Sie mir auch das vollständige Datenblatt.",
+        ),
+        (
+            "mixed-metric",
+            "en",
+            "What’s the rated AC output of the SAJ HS2-8K-T2-X and its maximum apparent power?",
+        ),
+        ("backup-only", "de", "Wie hoch ist die AC-Nennleistung des SAJ HS2-8K-T2-X?"),
+    ],
+)
+def test_named_ac_rated_power_turn_cites_only_its_source_page(
+    log: TurnLog,
+    monkeypatch: pytest.MonkeyPatch,
+    case: str,
+    locale: Locale,
+    question: str,
+) -> None:
+    on_grid = "AC Output [Backup]" if case == "backup-only" else "AC Output [On-grid]"
+    # Turn 3 on e437a21ab: the EN projection has the rated-power row;
+    # the DE projection supplied only the other AC figure the draft used.
+    en = "0abea746ac33-p2-model-48c66ddb910103c5"
+    de = "b00de688082b-p2-model-ad95898e2b017006"
+    url = "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
+    german = "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf"
+    generic = "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+    product_id = 1184
+    facts = merge(
+        [
+            collect(
+                "linker/search-knowledge",
+                {
+                    "hits": [
+                        {
+                            "chunk_id": ref,
+                            "product_ids": [product_id],
+                            "evidence_product_id": product_id,
+                            "document_id": f"doc-{ref}",
+                            "document_revision": f"revision-{ref}",
+                            "title": title,
+                            "doc_url": pdf,
+                            "doc_type": "datasheet",
+                            "page": 2,
+                            "text": text,
+                            "figures": figures,
+                        }
+                        for ref, title, pdf, text, figures in [
+                            (
+                                de,
+                                "SAJ HS2 Dreiphasige Komplettlösung",
+                                german,
+                                "| Modell | HS2-8K-T2-X |\n"
+                                "| AC-Ausgang [Netzgekoppelt] |  |\n"
+                                "| Max. Scheinleistung [VA] | [n14=8800 VA] |\n"
+                                "| AC-Ausgang [Backup] |  |\n"
+                                "| Max. Ausgangsleistung [VA] | [n27=8000 VA] |",
+                                {f"{de}.n14": "8800 VA", f"{de}.n27": "8000 VA"},
+                            ),
+                            (
+                                en,
+                                "SAJ HS2 Three-Phase All-in-One Datasheet (EN)",
+                                url,
+                                "| MODEL | HS2-8K-T2-X |\n"
+                                f"| {on_grid} |  |\n"
+                                "| Rated AC Power [W] | [n10=8000 W] |\n"
+                                "| Max. Apparent Power [VA] | [n11=8800 VA] |",
+                                {f"{en}.n10": "8000 W", f"{en}.n11": "8800 VA"},
+                            ),
+                        ]
+                    ]
+                },
+                "de",
+            ),
+            collect(
+                "linker/get-product",
+                {
+                    "product_id": product_id,
+                    "documents": [
+                        {"url": "https://de-linker.com/other.pdf"},
+                        {"url": generic, "title": "SAJ HS2 series datasheet (EN)"},
+                    ],
+                },
+                "de",
+            ),
+        ]
+    )
+    route = Route(
+        "documents",
+        no_handoff=True,
+        named_models=(NamedModel("HS2-8K-T2-X", (product_id,)),),
+    )
+    # The stored turn contains hydrated prose, not the raw model draft.
+    # Reconstruct its fact placeholders and explicit blocks before hydration.
+    draft = TurnOutput(
+        language=locale,
+        blocks=[
+            TextBlock(
+                text=(
+                    f"Its rated AC output is {{fact:{en}.n10}} and its maximum apparent power is {{fact:{de}.n14}}."
+                    if locale == "en"
+                    else "Der SAJ HS2-8K-T2-X ist ein dreiphasiger Wechselrichter für Wohngebäude. "
+                    "Laut Datenblatt im Abschnitt „HS2/AS2 Three Phase All-in-One Solution“ "
+                    f"liegt die **AC-Nennleistung** im netzgekoppelten Betrieb bei {{fact:{en}.n10}}. "
+                    "Die **maximale Scheinleistung** nennt das deutsche Datenblatt im Abschnitt "
+                    f"„HS2 Dreiphasige Komplettlösung“ mit {{fact:{de}.n14}}."
+                ),
+                refs=[en, de, str(product_id)],
+            ),
+            CardsBlock(product_ids=[product_id]),
+            DocumentBlock(ref=f"p{product_id}.document.1"),
+        ],
+    )
+    if case == "backup-only":
+        draft = TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(
+                    text="Die Unterlagen nennen keine AC-Nennleistung für den Netzbetrieb.",
+                    refs=[en],
+                )
+            ],
+        )
+    raw = manifest(product_id)
+    raw["documents"] = [
+        {
+            "document_id": f"doc-{ref}",
+            "document_revision": f"revision-{ref}",
+            "blob_sha256": "a" * 64,
+            "url": pdf,
+            "product_ids": [product_id],
+        }
+        for ref, pdf in [(en, url), (de, german), ("generic", generic)]
+    ]
+    monkeypatch.setattr(app.state, "prepare", lambda _: Prepared(route, facts))
+    monkeypatch.setattr(
+        app.state, "generate", lambda *_: (draft, TurnFacts()), raising=False
+    )
+    with clients(raw, {"product_id": product_id}) as (abilities, authority, _):
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(app_module, "ability_client", lambda: abilities)
+        sse = _post("observed-rated-power", question, locale=locale)
+    blocks = _blocks(sse)
+    assert _meta(sse)["grounded"] and not _meta(sse)["fallback"]
+    if case == "also-requests-pdf":
+        assert any(block.get("url") == generic for block in blocks)
+        return
+    if case == "mixed-metric":
+        assert "8000 W and its maximum apparent power is 8800 VA" in blocks[0]["text"]
+        assert {en, de} <= {block.get("ref") for block in blocks}
+        return
+    if case == "backup-only":
+        assert "keine AC-Nennleistung für den Netzbetrieb" in blocks[0]["text"]
+        assert "8000 W" not in blocks[0]["text"]
+        return
+    assert [block["type"] for block in blocks] == ["text", "document"]
+    assert blocks[0]["text"] == (
+        "The rated AC power of the HS2-8K-T2-X is 8000 W in grid-connected operation."
+        if locale == "en"
+        else "Die AC-Nennleistung des HS2-8K-T2-X beträgt im Netzbetrieb 8000 W."
+    )
+    assert blocks[0]["refs"] == [en]
+    assert blocks[1]["ref"] == en
+    assert blocks[1]["url"] == f"{url}#page=2"
+    assert blocks[1]["evidence_product_id"] == product_id
+
+
+@pytest.mark.parametrize("unbound", [False, True])
+def test_product_list_keeps_grounded_power_not_bare_model_numbers(
+    log: TurnLog, monkeypatch: pytest.MonkeyPatch, unbound: bool
+) -> None:
+    ids = [6527, 6528]
+    facts = collect(
+        "linker/search-products",
+        {
+            "qualified": [
+                {"product_id": 6527, "facts": {"ac_power_kw": 8}},
+                {"product_id": 6528, "facts": {"ac_power_kw": 10}},
+            ]
+        },
+        "en",
+    )
+    draft = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "The two closest to the output you named are rated at "
+                    "{fact:p6527.ac_power_kw} and {fact:p6528.ac_power_kw}."
+                    + (" The price class is 93." if unbound else "")
+                ),
+                refs=[str(pid) for pid in ids],
+            ),
+            CardsBlock(product_ids=ids),
+        ],
+    )
+    monkeypatch.setattr(
+        app.state,
+        "prepare",
+        lambda _: Prepared(Route("products", show_products=True), facts),
+    )
+    monkeypatch.setattr(
+        app.state, "generate", lambda *_: (draft, TurnFacts()), raising=False
+    )
+    raw = manifest(ids[0])
+    raw["products"].extend(manifest(ids[1])["products"])
+    with clients(raw) as (abilities, authority, _):
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(app_module, "ability_client", lambda: abilities)
+        sse = _post(
+            "observed-product-list-power",
+            "Please prepare a product list with 2 hybrid inverters around 10 kW. I want to save the list to my account.",
+        )
+    blocks = _blocks(sse)
+    assert not _meta(sse)["fallback"]
+    assert "rated at 8 kW and 10 kW." in blocks[0]["text"]
+    assert "93" not in blocks[0]["text"]
+    assert blocks[1]["product_ids"] == ids
+
+
+@pytest.mark.parametrize("model_count", [None, 1, 2])
+def test_card_and_action_carry_the_requested_count(
+    log: TurnLog, model_count: int | None
+) -> None:
+    def prepare(request: TurnRequest) -> Prepared:
+        prepared = nothing(request)
+        prepared.card_quantities = {4107: 2}
+        return prepared
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        output, facts = _generate(request, retry)
+        args = {"product_id": 4107}
+        if model_count is not None:
+            args["quantity"] = model_count
+        output.blocks.append(ActionBlock(name="add_to_draft", args=args))
+        facts.product_ids.add(4106)
+        facts.qualified_ids.add(4106)
+        output.blocks.append(
+            ActionBlock(name="add_to_draft", args={"product_id": 4106, "quantity": 2})
+        )
+        output.blocks.append(
+            ActionBlock(name="save_solution", args={"product_id": 4107, "quantity": 1})
+        )
+        return output, facts
+
+    app.state.prepare = prepare
+    app.state.generate = generate
+    response = TestClient(app, headers=SHELL).post(
+        "/assistant/turn",
+        json={
+            "conversation_id": "c1",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Please prepare a product list with 2 SAJ H2-10K-T3 inverters. I want to save the list to my account.",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200
+    blocks = [
+        json.loads(event.split("data: ", 1)[1])
+        for event in response.text.split("\n\n")
+        if event.startswith("event: block\n")
+    ]
+    assert next(block for block in blocks if block["type"] == "cards")[
+        "quantities"
+    ] == {"4107": 2}
+    assert next(block for block in blocks if block.get("name") == "add_to_draft")[
+        "args"
+    ] == {"product_id": 4107, "quantity": 2}
+    assert (
+        next(
+            block
+            for block in blocks
+            if block.get("name") == "add_to_draft"
+            and block["args"]["product_id"] == 4106
+        )["args"]["quantity"]
+        == 1
+    )
+    assert (
+        next(block for block in blocks if block.get("name") == "save_solution")["args"][
+            "quantity"
+        ]
+        == 2
+    )
+
+
+@pytest.fixture()
+def catalog_turn(vocabulary: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    from test_nameplate import _abilities
+
+    from linker_genie.understand import Understander
+
+    understander = Understander(lambda: vocabulary, None)
+    client = _abilities([])
+    monkeypatch.setattr(app_module, "_client", client)
+    app.state.prepare = lambda body: understander.prepare(body, client)
+
+
+@pytest.mark.parametrize(
+    ("current", "expected"),
+    [
+        ("Show me a SAJ inverter.", 1),
+        ("Please save that one.", 1),
+        ("Please show me the SAJ H2-10K-T3 inverter.", 1),
+        ("Please prepare 2 SAJ H2-10K-T3 inverters.", 2),
+        ("I'd take 2 of the H2-10K-T3 for this project.", 2),
+        ("I would like two units of the SAJ H2-10K-T3.", 2),
+        ("Save 2 SAJ H2-10K-T3 or 3 SAJ H2-10K-T3.", 0),
+        ("Save 2-3 SAJ H2-10K-T3.", 0),
+        ("Save 2 to 3 SAJ H2-10K-T3.", 0),
+        ("Bitte 2 bis 3 SAJ H2-10K-T3 speichern.", 0),
+        ("Bitte SAJ H2-10K-T3, 4 Stück, speichern.", 4),
+        ("Bitte zeigen Sie mir 3 Wechselrichter SAJ H2-10K-T3.", 3),
+        ("Please show me 3 inverters SAJ H2-10K-T3.", 3),
+        ("Bitte zeigen Sie mir 2 bis 3 Hybridwechselrichter SAJ H2-10K-T3.", 0),
+        ("Please add SAJ H2-10K-T3, 2 to 3 units.", 0),
+        ("Please add SAJ H2-10K-T3 x4.", 4),
+        ("Save 12000 SAJ H2-10K-T3 inverters to my account.", 0),
+    ],
+)
+def test_product_card_and_actions_use_the_current_request(
+    log: TurnLog, catalog_turn: None, current: str, expected: int
+) -> None:
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        output, facts = _generate(request, retry)
+        if request.locale == "de":
+            output.blocks[0] = TextBlock(
+                text="Dieser Wechselrichter hat {fact:p4107.ac_power_kw} kW.",
+                refs=["4107"],
+            )
+        for name in ("add_to_draft", "save_solution"):
+            output.blocks.append(
+                ActionBlock(name=name, args={"product_id": 4107, "quantity": 4})
+            )
+        return output, facts
+
+    app.state.generate = generate
+    blocks = _blocks(
+        _post(
+            "c1",
+            "We considered 4 SAJ H2-10K-T3 inverters.",
+            current,
+            locale="de" if current.startswith("Bitte") else "en",
+        )
+    )
+    assert {
+        block["name"]: block["args"] for block in blocks if block["type"] == "action"
+    } == {
+        "add_to_draft": {"product_id": 4107, "quantity": expected},
+        "save_solution": {"product_id": 4107, "quantity": expected},
+    }
+    card = next(block for block in blocks if block["type"] == "cards")
+    assert card["product_ids"] == [4107]
+    assert card["quantities"] == {"4107": expected}
+
+
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [
+        ("2 hybrid inverters", 2),
+        ("2 or 3 hybrid inverters", 0),
+        ("2 bis 3 Hybridwechselrichter", 0),
+        ("2 Hybridwechselrichter", 2),
+    ],
+)
+def test_customer_can_choose_either_inverter_at_the_requested_count(
+    log: TurnLog, catalog_turn: None, description: str, expected: int
+) -> None:
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        ids = [6527, 6528]
+        return TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="Choose a hybrid inverter.", refs=[str(i) for i in ids]),
+                CardsBlock(product_ids=ids),
+            ],
+        ), TurnFacts(product_ids=set(ids), qualified_ids=set(ids))
+
+    app.state.generate = generate
+    blocks = _blocks(
+        _post(
+            "choices",
+            f"Please prepare a product list with {description} around 10 kW. I want to save the list to my account.",
+        )
+    )
+    assert [b["type"] for b in blocks] == ["text", "cards"]
+    assert blocks[1]["quantities"] == {"6527": expected, "6528": expected}
+
+
+@pytest.mark.parametrize(
+    ("language", "message", "previous", "expected"),
+    [
+        ("en", "2", {6527: 0}, {6527: 2}),
+        ("de", "Zwei", {6528: 0}, {6528: 2}),
+        ("en", "2 units", {6527: 0}, {6527: 2}),
+        ("de", "2 Stück", {6528: 0}, {6528: 2}),
+        ("en", "2 units", {6527: 0, 6528: 0}, {6527: 2, 6528: 2}),
+        ("de", "2 Stück", {6527: 0, 6528: 0}, {6527: 2, 6528: 2}),
+        ("en", "2 units", {6527: 0, 3582: 0}, {6527: 0, 3582: 0}),
+        ("de", "2 davon", {6527: 0, 3582: 0}, {6527: 0, 3582: 0}),
+        ("en", "2 of those", {6527: 1}, {6527: 2}),
+        ("en", "Add 2 of those", {6527: 1}, {6527: 2}),
+        ("en", "2 or 3 of those", {6527: 1}, {6527: 0}),
+        ("de", "Zwei davon, bitte.", {6528: 1}, {6528: 2}),
+        ("en", "Save that one.", {6527: 2, 6528: 2}, {6527: 2, 6528: 2}),
+    ],
+)
+def test_follow_up_uses_the_options_actually_shown(
+    log: TurnLog,
+    catalog_turn: None,
+    language: str,
+    message: str,
+    previous: dict[int, int],
+    expected: dict[int, int],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(app.state, "generate", _generate, raising=False)
+    response = TestClient(app, headers=SHELL).post(
+        "/assistant/turn",
+        json={
+            "conversation_id": "choices",
+            "locale": language,
+            "previous_card_quantities": previous,
+            "messages": [
+                {"role": "user", "content": "Inverters"},
+                {"role": "assistant", "content": "Options"},
+                {"role": "user", "content": message},
+            ],
+        },
+    )
+    assert response.status_code == 200
+    blocks = _blocks(response.text)
+    [card] = [b for b in blocks if b["type"] == "cards"]
+    assert card["product_ids"] == list(expected)
+    assert card["quantities"] == {str(pid): count for pid, count in expected.items()}
+    assert not any(b["type"] == "parts" for b in blocks)
+    if len(expected) > 1 and 0 in expected.values():
+        assert blocks[0]["text"] == (
+            "Welches Modell meinen Sie und wie viele Stück möchten Sie?"
+            if language == "de"
+            else "Which model do you mean, and how many units would you like?"
+        )
+    elif 0 in expected.values():
+        assert blocks[0]["text"] == "How many units would you like?"
+    elif language == "en":
+        assert "solution draft" in blocks[0]["text"]
+    else:
+        assert "Lösungsentwurf" in blocks[0]["text"]
+
+
+def test_explicitly_adding_an_earlier_parts_list_keeps_its_quantities(
+    log: TurnLog, catalog_turn: None
+) -> None:
+    blocks = _blocks(
+        _post("c1", "4x SAJ H2-10K-T3", "Please add these to my solution draft.")
+    )
+    parts = next(block for block in blocks if block["type"] == "parts")
+    assert parts["add"]["items"] == [{"product_id": 4107, "quantity": 4}]
 
 
 def test_turn_alias_is_the_same_handler(log: TurnLog) -> None:

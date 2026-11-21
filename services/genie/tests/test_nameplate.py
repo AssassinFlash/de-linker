@@ -323,6 +323,371 @@ def test_the_stream_carries_the_card_and_the_reading(
     log.close()
 
 
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "published",
+        "unknown-file",
+        "withdrawn-history",
+        "withdrawn-file",
+        "unresolved-variant",
+        "contact-filename",
+        "withdrawn-filename",
+        "typed-contact",
+        "de-filename",
+        "published-history-unknown-file",
+        "recover-after-refusal",
+        "parts-filename",
+        "inquiry-filename",
+        "typed-inquiry",
+        "mixed-list",
+        "photo-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
+        "pasted-mixed-list",
+        "continued-mixed-list",
+        "after-mixed-list",
+        "withdrawn-manual-as-list",
+        "reopen-mixed-upload",
+    ],
+)
+def test_pdf_text_is_authorized_by_its_own_current_model(
+    vocabulary: Vocabulary,
+    tmp_path: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    scenario: str,
+) -> None:
+    from contextlib import closing
+    from types import SimpleNamespace
+
+    from test_attachments import PROBE_PDF
+    from test_turn_abilities import manifest
+
+    from linker_genie.publication import PublicationClient
+
+    raw = PROBE_PDF.read_bytes()
+
+    def upload(data: bytes) -> dict[str, str]:
+        return {
+            "name": "datasheet.pdf",
+            "type": "application/pdf",
+            "data": base64.b64encode(data).decode(),
+        }
+
+    def woo(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=manifest(4107))
+        if request.url.path.endswith("/validate"):
+            return httpx.Response(200, json={"valid": True})
+        assert request.url.path.endswith("/identify")
+        query = json.loads(request.content)
+        supplied = query.get("text", " ".join(query.get("models", []))).lower()
+        return httpx.Response(
+            200,
+            json={
+                "models": [
+                    {"model": model, "status": status}
+                    for model, status in [
+                        ("H2-10K-T3", "published"),
+                        ("ZZ-90K-T4", "unavailable"),
+                    ]
+                    if model.lower() in supplied
+                ]
+            },
+        )
+
+    uploads = [upload(raw)]
+    history = []
+    if scenario in {"unknown-file", "withdrawn-file"}:
+        label = b"YY-90K-T4" if scenario == "unknown-file" else b"ZZ-90K-T4"
+        uploads.append(upload(raw.replace(b"H2-10K-T3", label)))
+    elif scenario == "withdrawn-history":
+        history = [
+            {
+                "id": "att1",
+                "name": "older.pdf",
+                "kind": "document",
+                "model": "ZZ-90K-T4",
+                "text": "ZZ-90K-T4: 9250 W",
+            }
+        ]
+    elif scenario == "unresolved-variant":
+        uploads = [upload(raw.replace(b" datasheet", b"-X manual "))]
+
+    elif scenario == "published-history-unknown-file":
+        history = [
+            {
+                "id": "att1",
+                "name": "older.pdf",
+                "kind": "document",
+                "text": "SAJ H2-10K-T3 rated power 9250 W",
+            }
+        ]
+        uploads = [upload(raw.replace(b"H2-10K-T3", b"YY-90K-T4"))]
+    typed = "What rated power does this datasheet give for the SAJ H2-10K-T3?"
+    if scenario in {"contact-filename", "de-filename"}:
+        uploads[0]["name"] = "Call me.pdf"
+        typed = ""
+    elif scenario == "withdrawn-filename":
+        uploads[0]["name"] = "ZZ-90K-T4.pdf"
+    elif scenario == "typed-contact":
+        typed = "Call me"
+    elif scenario == "parts-filename":
+        uploads[0]["name"] = "parts list.pdf"
+    elif scenario == "inquiry-filename":
+        uploads[0]["name"] = "Send an inquiry.pdf"
+    elif scenario == "typed-inquiry":
+        typed = "Send an inquiry"
+    elif scenario == "withdrawn-manual-as-list":
+        typed = "Here is my parts list."
+        manual = raw.replace(
+            b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)",
+            b"SAJ H2-10K-T3".ljust(46),
+        ).replace(b"Battery voltage 180-750 V", b"SAJ ZZ-90K-T4".ljust(25))
+        uploads = [upload(manual)]
+    elif scenario == "photo-mixed-list":
+        typed = "Here is my parts list."
+        uploads = [{"name": "list.jpg", "type": "image/jpeg", "data": _photo()}]
+    elif scenario == "pasted-mixed-list":
+        typed = "2 x H2-10K-T3\n1 x ZZ-90K-T4\nSMA Sunny Boy 5.0"
+        uploads = []
+    elif scenario in {
+        "mixed-list",
+        "continued-mixed-list",
+        "after-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
+    }:
+        typed = "Here is my parts list."
+        list_bytes = raw
+        for old, row in [
+            (
+                b"SAJ H2-10K-T3 datasheet excerpt (probe fixture)",
+                b"Item | Qty) Tj T* (SAJ H2-10K-T3 | 2",
+            ),
+            (b"Rated power 10000 W", b"SAJ ZZ-90K-T4 | 1"),
+            (b"Battery voltage 180-750 V", b"SMA Sunny Boy 5.0"),
+        ]:
+            list_bytes = list_bytes.replace(old, row.ljust(len(old)))
+        uploads = [upload(list_bytes)]
+    prefix = "Anhang" if scenario == "de-filename" else "Attached"
+    message = "\n".join(
+        s for s in [typed, *(f"{prefix}: {u['name']}" for u in uploads)] if s
+    )
+
+    # The turn uses its publication-scoped Store API vocabulary.
+    with (
+        closing(
+            PublicationClient("https://wp.test", httpx.MockTransport(woo))
+        ) as authority,
+        closing(TurnLog(tmp_path / "turns.sqlite")) as log,
+        closing(_abilities([])) as tools,
+    ):
+        monkeypatch.setattr(app_module, "_client", tools)
+        monkeypatch.setattr(app.state, "publication", authority)
+        monkeypatch.setattr(
+            app_module,
+            "_understander",
+            Understander(
+                lambda: vocabulary,
+                None,
+                publication=authority,
+                see=See(
+                    {
+                        "kind": "photo",
+                        "text": "Item | Qty\nSAJ H2-10K-T3 | 2\nSAJ ZZ-90K-T4 | 1\nSMA Sunny Boy 5.0 | 4",
+                    }
+                )
+                if scenario == "photo-mixed-list"
+                else None,
+            ),
+        )
+        monkeypatch.setattr(
+            app_module,
+            "store_vocabulary",
+            lambda: SimpleNamespace(get=lambda _: vocabulary),
+        )
+        monkeypatch.setattr(app_module, "_log", log)
+        monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "work.sqlite"))
+        origin = (
+            "att2"
+            if scenario in {"recover-after-refusal", "after-mixed-list"}
+            else "att1"
+        )
+        monkeypatch.setattr(
+            app.state,
+            "generate",
+            lambda *_: (
+                TurnOutput(
+                    language="en",
+                    blocks=[
+                        TextBlock(
+                            text=f"The rated power is {{fact:{origin}.n2}}.",
+                            refs=[origin],
+                        )
+                    ],
+                ),
+                TurnFacts(),
+            ),
+            raising=False,
+        )
+        client = TestClient(app, headers=SHELL)
+        messages = []
+        if scenario in {"recover-after-refusal", "reopen-mixed-upload"}:
+            unknown = upload(
+                raw.replace(b"H2-10K-T3", b"YY-90K-T4").replace(b"10000 W", b"23456 W")
+            )
+            unknown["name"] = "unknown.pdf"
+            first_uploads = (
+                [upload(raw)] if scenario == "reopen-mixed-upload" else []
+            ) + [unknown]
+            messages.append(
+                {
+                    "role": "user",
+                    "content": "\n".join(
+                        f"Attached: {u['name']}" for u in first_uploads
+                    ),
+                }
+            )
+            first = client.post(
+                "/assistant/turn",
+                json={
+                    "conversation_id": "pdf-publication",
+                    "messages": messages,
+                    "attachments": first_uploads,
+                },
+            )
+            assert first.status_code == 200 and "23456 W" not in first.text
+            history = [
+                json.loads(event.splitlines()[1][6:])
+                for event in first.text.split("\n\n")
+                if event.startswith("event: reading\n")
+            ]
+            refused = history[-1]
+            assert not refused["text"] and not refused["ratings"]
+            if scenario == "reopen-mixed-upload":
+                uploads = []
+                message = "What rated power does datasheet.pdf give?"
+            else:
+                assert refused["id"] == "att1"
+        if scenario in {
+            "continued-mixed-list",
+            "after-mixed-list",
+            "reopen-list",
+            "reopen-list-de",
+        }:
+            messages.append({"role": "user", "content": message})
+            first = client.post(
+                "/assistant/turn",
+                json={
+                    "conversation_id": "pdf-publication",
+                    "messages": messages,
+                    "attachments": uploads,
+                },
+            )
+            assert first.status_code == 200 and '"route": "parts"' in first.text
+            history = [
+                json.loads(event.splitlines()[1][6:])
+                for event in first.text.split("\n\n")
+                if event.startswith("event: reading\n")
+            ]
+            if scenario == "after-mixed-list":
+                message = "What is the rated power?\nAttached: new.pdf"
+                uploads = [{**upload(raw), "name": "new.pdf"}]
+            else:
+                message = {
+                    "reopen-list": "Show me my parts list again.",
+                    "reopen-list-de": "Zeigen Sie mir meine Stückliste noch einmal.",
+                }.get(scenario, "Add these to my draft")
+                uploads = []
+        messages.append({"role": "user", "content": message})
+        response = client.post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "pdf-publication",
+                "messages": messages,
+                "attachments": uploads,
+                "readings": history,
+            },
+        )
+    assert response.status_code == 200, response.text
+    events = [
+        (part.splitlines()[0], json.loads(part.splitlines()[1][6:]))
+        for part in response.text.strip().split("\n\n")
+    ]
+    read = [record for kind, record in events if kind == "event: reading"]
+    texts = [
+        record["text"]
+        for kind, record in events
+        if kind == "event: block" and record.get("type") == "text"
+    ]
+    if scenario in {
+        "mixed-list",
+        "pasted-mixed-list",
+        "continued-mixed-list",
+        "photo-mixed-list",
+        "reopen-list",
+        "reopen-list-de",
+    }:
+        assert events[0][1]["route"] == "parts", texts
+        [card] = [record for _, record in events if record.get("type") == "parts"]
+        assert [
+            (row["product_id"], row["quantity"])
+            for row in card["rows"]
+            if row["status"] == "matched"
+        ] == [(4107, 2)]
+        assert len(card["rows"]) == 3
+        assert (
+            card["rows"][2]["status"] == "missing"
+            and "Sunny Boy" in card["rows"][2]["text"]
+        )
+        assert any(
+            row["status"] == "missing" and "ZZ-90K-T4" in row["text"]
+            for row in card["rows"]
+        )
+        assert card["add"]["items"] == [{"product_id": 4107, "quantity": 2}]
+    elif scenario == "reopen-mixed-upload":
+        assert not read and any("10000 W" in text for text in texts)
+        assert "23456 W" not in response.text
+    elif scenario == "typed-inquiry":
+        assert any(record.get("name") == "send_inquiry" for _, record in events)
+    elif scenario == "typed-contact":
+        assert events[0][1]["route"] == "person"
+        assert any(record.get("type") == "contact" for _, record in events)
+    elif scenario in {
+        "published",
+        "contact-filename",
+        "de-filename",
+        "withdrawn-filename",
+        "recover-after-refusal",
+        "after-mixed-list",
+        "parts-filename",
+        "inquiry-filename",
+    }:
+        assert not any(
+            record.get("type") in {"contact", "parts"}
+            or record.get("name") == "send_inquiry"
+            for _, record in events
+        )
+        assert any("10000 W" in text for text in texts), response.text
+        assert "Rated power 10000 W" in read[0]["text"]
+    else:
+        assert events[0][1]["route"] == "scripted"
+        if scenario in {"unknown-file", "withdrawn-file", "withdrawn-history"}:
+            assert "Rated power 10000 W" in read[0]["text"]
+            read = read[1:]
+        assert all(not r["text"] and not r["ratings"] for r in read)
+        assert all("10000 W" not in text and "9250 W" not in text for text in texts)
+        if scenario in {
+            "withdrawn-file",
+            "withdrawn-history",
+            "withdrawn-manual-as-list",
+        }:
+            assert any("outside our current product range" in text for text in texts)
+        else:
+            assert any("could not verify a current product" in text for text in texts)
+
+
 # --- review round 1 of PR #309 -------------------------------------------------
 
 

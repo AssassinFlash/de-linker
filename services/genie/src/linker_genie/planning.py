@@ -57,6 +57,12 @@ RULE = (
 
 # Model-input budget only, not an engineering or project-size limit.
 MAX_TEXT_CHARS = 24_000
+_ENERGY_RUN_KINDS = {
+    "single_ac_energy_replay_v1",
+    "shared_dc_energy_replay_v1",
+    "plant_ac_energy_replay_v1",
+    "plant_shared_dc_energy_replay_v1",
+}
 _MATERIAL_HANDLING = frozenset(
     {
         "customer_supplied_required",
@@ -620,11 +626,15 @@ def source_card(raw: Any, page: PageContext) -> dict[str, Any] | None:
         if run.get("state") != "succeeded":
             return None
         summary = run.get("calculation_sources")
+        groups: object
         if summary is None:
-            continue  # Legacy/non-report sources remain compatible.
-        if not isinstance(summary, dict) or summary.get("schema_version") != 1:
+            if run.get("kind") not in _ENERGY_RUN_KINDS:
+                continue
+            groups = []
+        elif isinstance(summary, dict) and summary.get("schema_version") == 1:
+            groups = summary.get("groups")
+        else:
             return None
-        groups = summary.get("groups")
         if not isinstance(groups, list) or not all(_source_group(g) for g in groups):
             return None
         binding = {
@@ -737,8 +747,10 @@ def add_source_card(
                 }
             )
         return
-    if not any(result["groups"] for result in card["results"]):
-        return  # The verified report has no PV or energy sources to display.
+    if not any(result["groups"] for result in card["results"]) and not any(
+        run.get("kind") in _ENERGY_RUN_KINDS for run in raw["runs"]
+    ):
+        return
     # A recorded-result explanation already has its own relevant next step.
     # A sizing route, or a message asking for new selection/sizing work, keeps
     # the existing follow-up policy. This is never a browser-side filter.

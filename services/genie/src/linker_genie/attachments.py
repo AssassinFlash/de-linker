@@ -493,6 +493,14 @@ def _list_reading(item: _File, raw: bytes) -> AttachmentReading:
         return AttachmentReading(
             id=item.id, name=item.upload.name, kind="list", failed="unreadable_list"
         )
+    text, truncated = list_text(table, truncated)
+    return AttachmentReading(
+        id=item.id, name=item.upload.name, kind="list", text=text, truncated=truncated
+    )
+
+
+def list_text(table: Sequence[Sequence[str]], truncated: bool) -> tuple[str, bool]:
+    """Serialize the rows retained by the proxy within its reading limit."""
     text = "\n".join("\t".join(_cell(value) for value in row) for row in table)
     if truncated or len(text) > MAX_READING_CHARS:
         # A cut inside one long line must still end with the marker, and the
@@ -500,13 +508,7 @@ def _list_reading(item: _File, raw: bytes) -> AttachmentReading:
         # silent loss when 200 rows hold more than 60 000 characters.
         text = text[: MAX_READING_CHARS - len(LIST_CUT)] + LIST_CUT
         truncated = True
-    return AttachmentReading(
-        id=item.id,
-        name=item.upload.name,
-        kind="list",
-        text=text,
-        truncated=truncated,
-    )
+    return text, truncated
 
 
 def _cell(value: str) -> str:
@@ -524,7 +526,9 @@ def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
         if seen and (job.answer or {}).get("truncated"):
             seen += "\n[the rest of this page was not read]"
         if seen:
-            pages[job.page] = (pages.get(job.page, "") + "\n" + seen).strip()
+            embedded = pages.get(job.page, "")
+            if embedded.split() != seen.split():
+                pages[job.page] = (embedded + "\n" + seen).strip()
         elif job.answer is None:
             failed_pages.append(job.page)
     parts = [f"--- page {number} ---\n{pages[number]}" for number in sorted(pages)]

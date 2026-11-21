@@ -69,7 +69,7 @@ export function ProductCard( {
 	const state = status?.state ?? 'idle';
 	return (
 		<article
-			className="linker-card"
+			className="linker-product-card linker-card"
 			aria-labelledby={ titleId }
 			data-state={ state }
 		>

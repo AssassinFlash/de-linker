@@ -79,6 +79,8 @@ test("old inputs remain traceable without inferring gross load, location or curr
 		).project_use,
 		"industrial",
 	);
+	const parts = { ...source, kind: "genie", input: {} };
+	assert.equal(savedSolutionHints(parts).invalid, false);
 	const unknown = savedSolutionHints({ ...complete, kind: "unknown" });
 	assert.equal(unknown.annualKwh, null);
 	assert.equal(unknown.pvKw, null);

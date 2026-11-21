@@ -17,6 +17,7 @@ an answer without the documents it needed must not ship (#257).
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
@@ -33,7 +34,11 @@ from linker_genie import (
     timing,
 )
 from linker_genie.abilities import Abilities, AbilityError
-from linker_genie.conversation import customer_messages, last_customer_message
+from linker_genie.conversation import (
+    customer_messages,
+    last_customer_message,
+    without_upload_footer,
+)
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import note
@@ -57,10 +62,21 @@ from linker_genie.schema import (
     PageContext,
     TurnRequest,
 )
+from linker_genie.source_models import model_pattern, unknown_models
 from linker_genie.storeapi import VocabularyError
 from linker_genie.vision import See
 
 logger = logging.getLogger("linker_genie")
+
+# The ordinary pairing tool can discover another product when the customer
+# actually asks for a partner, even if Jev did not classify the turn.
+_PAIRING_ASK = re.compile(
+    r"\b(?:which|what)\s+(?:batter(?:y|ies)|inverters?)\s+"
+    r"(?:fits?|pairs?\s+with|works?\s+with|(?:is|are)\s+compatible\s+with)\b"
+    r"|\bwelch\w*\s+(?:Batterie\w*|Speicher\w*|Wechselrichter)\s+"
+    r"(?:passt|passen|(?:ist|sind)\s+kompatibel)\b",
+    re.IGNORECASE,
+)
 
 
 class Reader(Protocol):
@@ -97,9 +113,12 @@ class Prepared:
     # add-to-draft action. The turn is the service's own (parts.answer), no model
     # writes it, so nothing here can be invented.
     parts_list: parts.PartsList | None = None
+    card_quantities: dict[int, int] = field(default_factory=dict)
     # This layer's own phase timings (#336, timing.py); the app adopts them into
     # the turn's clock. None when the layer did not time itself.
     timing: timing.Timing | None = None
+    product_scope: tuple[int, ...] = ()
+    discover_pairings: bool = False
 
     @property
     def calls_made(self) -> int:
@@ -142,6 +161,7 @@ class Understander:
         *,
         get_vocabulary: Callable[[], Vocabulary] | None = None,
     ) -> Prepared:
+        request = without_upload_footer(request)
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
         # Route calls, fact collection and attachment decimals follow the
@@ -159,20 +179,6 @@ class Understander:
             route = person([f"person phrase: {phrase}"])
             log.update(route.as_log())
             return Prepared(route=route, log=log, timing=clock)
-        if (
-            self._publication is not None
-            and "unavailable" in self._publication.identify_text(message).values()
-            and not self._names_carried_models(message)
-        ):
-            from linker_genie.publication_copy import upload_unavailable
-
-            return Prepared(
-                route=Route(
-                    "scripted", no_cards=True, answer=upload_unavailable(language)
-                ),
-                log={"publication": "supplied_model_unavailable"},
-                timing=clock,
-            )
         with timing.phase(clock, timing.VOCABULARY):
             vocabulary = self._load_vocabulary(log, get_vocabulary)
         matches = vocabulary.match(message) if vocabulary else []
@@ -190,31 +196,118 @@ class Understander:
                     else []
                 )
             ]
+        if self._publication and request.readings:
+            # Empty documents retained by the proxy reserve their IDs but supply no facts.
+            request = request.model_copy(
+                update={
+                    "readings": [
+                        item
+                        for item in request.readings
+                        if item.kind != "document"
+                        or item.text
+                        or item.ratings
+                        or item.product_type
+                    ]
+                }
+            )
+        plate = _first_nameplate(fresh, vocabulary)
+        typed_statuses = (
+            _text_statuses(message, self._publication)
+            if self._publication and message
+            else {}
+        )
+        source = (
+            None
+            if plate is not None or vocabulary is None
+            else parts.find(
+                request.messages,
+                fresh,
+                request.readings,
+                vocabulary,
+                tuple(typed_statuses),
+            )
+        )
+        unavailable_rows: set[str] = set()
         if self._publication is not None:
+            from linker_genie.publication_copy import upload_unavailable
+
+            pasted = (
+                source is not None
+                and source.kind == "text"
+                and source.since == len(request.messages) - 1
+            )
+            if "unavailable" in typed_statuses.values() and not (
+                pasted and "published" in typed_statuses.values()
+            ):
+                return Prepared(
+                    route=Route(
+                        "scripted", no_cards=True, answer=upload_unavailable(language)
+                    ),
+                    log={"publication": "supplied_model_unavailable"},
+                    timing=clock,
+                )
+            if source and source.kind in {"text", "table"}:
+                labels = (
+                    typed_statuses
+                    if pasted
+                    else _text_statuses(
+                        "\n".join(row.text for row in source.parsed), self._publication
+                    )
+                )
+                unavailable_rows = _withdrawn_rows(source, labels)
             # Stored attachment readings are historical too. Recheck their supplied
             # model before adding any text or ratings to this turn's facts.
             readings = [*request.readings, *fresh]
             statuses = self._publication.identify(
                 [r.model for r in readings if r.model]
             )
-            blocked = [
-                r
-                for r in readings
-                # A document without a model can still be an unavailable
-                # product's datasheet, so it keeps the script. A nameplate
-                # without a model identifies nothing: its flow asks the
-                # customer to type the model, and the message branch of
-                # this gate answers what they then type (#236 UX, 2026-11-09).
-                if (r.model or r.kind == "document")
-                and (not r.model or statuses.get(r.model.casefold()) != "published")
-            ]
-            if blocked and not self._readings_carried_models(readings):
-                from linker_genie.publication_copy import upload_unavailable
-
+            blocked: dict[str, str] = {}
+            for item in readings:
+                if item.model and statuses.get(item.model.casefold()) != "published":
+                    blocked[item.id] = statuses.get(item.model.casefold(), "unknown")
+                elif item.kind == "document" or (
+                    item.kind == "photo" and source and source.reading_id == item.id
+                ):
+                    # A transcribed parts list may use the row-matching route,
+                    # never the technical-answer route or another file's identity.
+                    if source and source.reading_id == item.id and vocabulary:
+                        row_statuses = _model_list_rows(
+                            source, self._publication, vocabulary
+                        )
+                        if row_statuses:
+                            unavailable_rows = _withdrawn_rows(source, row_statuses)
+                            # Keep only parsed rows in the proxy's existing list format.
+                            # A later technical question must not reuse the raw document.
+                            table, truncated = attachments.list_text(
+                                [
+                                    (str(row.quantity), row.text)
+                                    for row in source.parsed
+                                ],
+                                source.truncated,
+                            )
+                            fresh = [
+                                r.model_copy(
+                                    update={
+                                        "kind": "list",
+                                        "text": table,
+                                        "truncated": truncated,
+                                    }
+                                )
+                                if r.id == item.id
+                                else r
+                                for r in fresh
+                            ]
+                            continue
+                    status = _document_status(item, self._publication, vocabulary)
+                    if status != "published":
+                        blocked[item.id] = status
+            if blocked:
                 safe = [
                     r.model_copy(
                         update={"text": "", "ratings": [], "product_type": None}
                     )
+                    if r.id in blocked
+                    else r
                     for r in fresh
                 ]
                 route = Route(
@@ -222,11 +315,7 @@ class Understander:
                     no_cards=True,
                     answer=upload_unavailable(
                         language,
-                        identified=any(
-                            r.model
-                            and statuses.get(r.model.casefold()) == "unavailable"
-                            for r in blocked
-                        ),
+                        identified="unavailable" in blocked.values(),
                     ),
                 )
                 return Prepared(
@@ -235,19 +324,18 @@ class Understander:
                     log={"publication": "upload_identification_only"},
                     timing=clock,
                 )
-        plate = _first_nameplate(fresh, vocabulary)
-        source = (
-            None
-            if plate is not None or vocabulary is None
-            else parts.find(request.messages, fresh, request.readings, vocabulary)
-        )
         if source is not None:
             # A parts list is code's whole turn (#251): the rows are matched here,
             # the answer and the card are parts.answer's, and the model does not
             # run. Jev is not asked, as for a nameplate: the list decides.
             assert vocabulary is not None  # parts.find requires it
             with timing.phase(clock, timing.PARTS):
-                result = parts.build(source, list(request.messages), vocabulary)
+                result = parts.build(
+                    source,
+                    list(request.messages),
+                    vocabulary,
+                    unavailable_rows=unavailable_rows,
+                )
             log["parts"] = {
                 "kind": source.kind,
                 "reading": source.reading_id,
@@ -276,11 +364,23 @@ class Understander:
                 language,
             )
             return prepared
+        selection = parts.previous_card_selection(
+            message, request.previous_card_quantities, vocabulary
+        )
+        if selection and not request.attachments:
+            route = Route("card_selection", no_handoff=True)
+            log.update(route.as_log())
+            return Prepared(
+                route=route, log=log, timing=clock, card_quantities=selection
+            )
         reading: Reading | None = None
         if plate is not None:
             # A nameplate is confirmed before anything else is answered about it, so
             # Jev is not asked: the route is the nameplate's (route.nameplate).
             route = nameplate(plate, language, subject, [])
+        elif fresh and all(item.kind == "document" for item in fresh) and not message:
+            # These are the upload labels the shell appends, not a catalogue query.
+            route = Route("model", no_handoff=True)
         else:
             reading = self._read(request, message, vocabulary, log, clock)
             # Jev's yes/no answers count from 0.5, the cut the measurement scored
@@ -342,53 +442,49 @@ class Understander:
                     reasons=("verified saved material explanation",),
                 )
         log.update(route.as_log())
-        prepared = Prepared(
-            route=route, log=log, reading=reading, readings=fresh, timing=clock
+        # A catalog-wide recommendation or a pairing can discover products that
+        # were not named. A model lookup and a technical comparison use the
+        # resolved subject, including a current page the question refers to.
+        scoped = route.name in ("documents", "compare") or (
+            route.name == "products"
+            and any(model.product_ids for model in route.named_models)
+            and (
+                reading is None
+                or reading.intent not in ("find_products", "pairing_compatibility")
+            )
+            and not any(call.arguments.get("extreme") for call in route.calls)
         )
+        prepared = Prepared(
+            route=route,
+            log=log,
+            reading=reading,
+            readings=fresh,
+            timing=clock,
+            product_scope=subject.ids if scoped else (),
+            discover_pairings=route.name == "products"
+            and bool(_PAIRING_ASK.search(message)),
+        )
+        if vocabulary is not None:
+            prepared.card_quantities = parts.card_quantities(
+                message, matches, vocabulary
+            )
         _run_calls(prepared, request, client, self._search, self._pages, clock)
+        # PDF parts rows are saved for list continuation. They do not provide
+        # a manual's technical facts on a later, unrelated question.
+        historical = [
+            item
+            for item in request.readings
+            if not (item.kind == "list" and item.pages is not None)
+        ]
         _add_readings(
             prepared,
-            [*request.readings, *fresh],
+            [*historical, *fresh],
             fresh,
             plate,
             vocabulary,
             language,
         )
         return prepared
-
-    def _names_carried_models(self, message: str) -> bool:
-        """Whether the message names at least two carried models.
-
-        The unavailable-model script is for a customer asking about one model
-        we do not carry. A pasted parts list names many models - most of them
-        carried - and the parts flow itself marks the unavailable rows
-        missing. Only the single-model inquiry takes the scripted answer
-        (a 20-row list answered as one out-of-range model, 2026-11-08).
-        """
-        vocabulary = self._load_vocabulary({})
-        if vocabulary is None:
-            return False
-        return len({m.value for m in vocabulary.match(message)}) >= 2
-
-    def _readings_carried_models(self, readings: list[AttachmentReading]) -> bool:
-        """Whether the uploads' transcriptions name at least two carried models.
-
-        The same principle as the message branch: a photographed or scanned
-        parts list names many models - most of them carried - and the parts
-        flow marks the unavailable rows missing itself (2026-11-08: a
-        handwritten list was sanitized to an empty reading and answered with
-        the single-model script). A nameplate names one model at most and
-        keeps the script.
-        """
-        vocabulary = self._load_vocabulary({})
-        if vocabulary is None:
-            return False
-        names = {
-            match.value
-            for reading in readings
-            for match in vocabulary.match(reading.text or "")
-        }
-        return len(names) >= 2
 
     def _load_vocabulary(
         self,
@@ -466,6 +562,79 @@ def _first_nameplate(
         if found is not None:
             return found
     return None
+
+
+def _withdrawn_rows(source: parts.Source, labels: dict[str, str]) -> set[str]:
+    withdrawn = [
+        model_pattern(label)
+        for label, status in labels.items()
+        if status == "unavailable"
+    ]
+    return {
+        row.text
+        for row in source.parsed
+        if any(pattern.search(row.text) for pattern in withdrawn)
+    }
+
+
+def _model_list_rows(
+    source: parts.Source, authority: PublicationClient, vocabulary: Vocabulary
+) -> dict[str, str]:
+    """Recognize product-only rows without releasing a manual as a parts list."""
+    labels = _text_statuses("\n".join(row.text for row in source.parsed), authority)
+    names = {label.casefold(): status for label, status in labels.items()}
+    for brand in vocabulary.brand_names.values():
+        names.update(
+            {f"{brand} {label}".casefold(): status for label, status in labels.items()}
+        )
+    rows = {
+        row.text: names.get(row.text.casefold(), "unknown") for row in source.parsed
+    }
+    # Only item descriptions go into a parts card. Physical ratings in an
+    # unidentified row belong to the document permission check instead.
+    for row, status in rows.items():
+        if status == "unknown" and parts.has_rating(row):
+            return {}
+    if "published" in rows.values():
+        return labels
+    return {}
+
+
+def _text_statuses(text: str, authority: PublicationClient) -> dict[str, str]:
+    # The Woo text oracle accepts 16,000 bytes; model labels are at most 200
+    # bytes. Four bytes per character keeps UTF-8 intact, including the overlap.
+    statuses: dict[str, str] = {}
+    for start in range(0, len(text), 3800):
+        statuses.update(authority.identify_text(text[start : start + 4000]))
+        if start + 4000 >= len(text):
+            break
+    return statuses
+
+
+def _document_status(
+    item: AttachmentReading, authority: PublicationClient, vocabulary: Vocabulary | None
+) -> str:
+    """Only this file's own model and current Woo status can release its text."""
+    if not item.text.strip():
+        return "unknown"
+    statuses = _text_statuses(item.text, authority)
+    if any(
+        status == "unavailable" and model_pattern(label).search(item.text)
+        for label, status in statuses.items()
+    ):
+        return "unavailable"
+    if vocabulary is None or set(statuses.values()) != {"published"}:
+        return "unknown"
+    labels = set(statuses)
+    ids: set[int] = set()
+    for label in labels:
+        matches = [m for m in vocabulary.match(label) if m.kind == "model"]
+        if not model_pattern(label).search(item.text) or not matches:
+            return "unknown"
+        ids.update(pid for m in matches for pid in m.product_ids)
+    if len(ids) == 1 and not unknown_models(item.text, labels, set(), section=True):
+        return "published"
+    return "unknown"
 
 
 def _add_readings(

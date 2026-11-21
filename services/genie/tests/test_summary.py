@@ -72,6 +72,24 @@ def test_a_checked_answer_is_the_summary() -> None:
     assert result.dropped == []
 
 
+def test_summary_retains_quantities_from_every_product_in_a_long_thread() -> None:
+    products = [{"id": n, "name": f"Model {n}"} for n in range(1, 43)]
+    quantities = [{"product_id": p["id"], "quantity": 2} for p in products]
+    request = _request(("user", "I need two of each."), products=products)
+    result = summarise(
+        request,
+        _model(
+            {
+                "summary": "Two units of each model.",
+                "quantities": quantities,
+                "conditions": [],
+                "note": "",
+            }
+        ),
+    )
+    assert [q.model_dump() for q in result.quantities] == quantities
+
+
 def test_the_model_reads_the_conversation_and_the_products_only() -> None:
     seen: list[tuple[str, str]] = []
     summarise(EN, _model(GOOD, seen))

@@ -10,6 +10,30 @@ from __future__ import annotations
 from linker_genie.schema import TurnRequest
 
 
+def without_upload_footer(request: TurnRequest) -> TurnRequest:
+    """Keep the native shell's current upload names out of the customer's instructions."""
+    if (
+        not request.attachments
+        or not request.messages
+        or request.messages[-1].role != "user"
+    ):
+        return request
+    last = request.messages[-1]
+    for prefix in ("Attached", "Anhang"):
+        footer = "\n".join(f"{prefix}: {item.name}" for item in request.attachments)
+        if last.content == footer or last.content.endswith("\n" + footer):
+            typed = last.content.removesuffix(footer).removesuffix("\n")
+            return request.model_copy(
+                update={
+                    "messages": [
+                        *request.messages[:-1],
+                        last.model_copy(update={"content": typed}),
+                    ]
+                }
+            )
+    return request
+
+
 def customer_messages(request: TurnRequest) -> list[str]:
     """User-message texts in conversation order. Assistant text is not included."""
     return [message.content for message in request.messages if message.role == "user"]

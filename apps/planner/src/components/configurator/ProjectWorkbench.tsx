@@ -20,6 +20,10 @@ import {
 	hasReportWiring,
 	sharedDcReportRun,
 } from "../../data/configuratorReportSources.ts";
+import {
+	measurePlannerChrome,
+	revealHashTarget,
+} from "../../data/measurePlannerChrome.ts";
 import { useGenieContext } from "../../data/useGenieContext.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
@@ -103,6 +107,11 @@ import {
 	PvStringSetup,
 	type StringEditBlock,
 } from "../equipment/PvStringSetup.tsx";
+import { EnergyComparison } from "../energy/EnergyComparison.tsx";
+import { RunResult } from "../energy/RunResult.tsx";
+import { RunBasis } from "../energy/RunBasis.tsx";
+import { isEnergyTask } from "../../data/readEnergyResult.ts";
+import { comparisonPair } from "../../data/energyComparison.ts";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
@@ -124,7 +133,7 @@ function useProjectResult(
 	client: PlannerClient,
 	session: Session,
 	projectId: string,
-	task: TaskKind,
+	task: TaskKind | undefined,
 	id: string | null,
 ) {
 	return useQuery({
@@ -226,6 +235,15 @@ export default function ProjectWorkbench({
 		return () => window.removeEventListener("popstate", restore);
 	}, [guided, project.id]);
 	const main = useRef<HTMLElement>(null);
+	const energyReady = Boolean(draft && step === "energy");
+	useEffect(() => {
+		if (!energyReady || location.hash !== "#sc-energy") return;
+		const root = main.current?.closest<HTMLElement>("[data-linker-planner]");
+		if (root) {
+			measurePlannerChrome(root);
+			revealHashTarget(root);
+		}
+	}, [energyReady]);
 	const workbench = useRef<HTMLDivElement>(null);
 	const [assessmentPending, setAssessmentPending] = useState(false);
 	const [energyValid, setEnergyValid] = useState(true);
@@ -318,9 +336,19 @@ export default function ProjectWorkbench({
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
 	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
+	const [savedEnergy, setSavedEnergy] = useState<"run" | "comparison" | null>(
+		() => {
+			if (step !== "energy" || params.get("project") !== project.id)
+				return null;
+			if (comparisonPair(params.get("compare"))) return "comparison";
+			return /^[a-f0-9]{32}$/.test(params.get("run") ?? "") ? "run" : null;
+		},
+	);
 	const [viewedReport, setViewedReport] = useState(() => {
 		const params = new URL(location.href).searchParams;
-		return params.get("project") === project.id ? params.get("run") : null;
+		return step === "review" && params.get("project") === project.id
+			? params.get("run")
+			: null;
 	});
 	const [genieReportId, setGenieReportId] = useState<string | null>(null);
 	const cache = useQueryClient();
@@ -454,10 +482,45 @@ export default function ProjectWorkbench({
 		client,
 		session,
 		project.id,
-		REPORT_TASK,
+		undefined,
 		step === "review" ? viewedReportId : null,
 	);
-	const viewedRun = admitted ? (historicalRunQuery.data ?? null) : null;
+	const energyRun = useProjectResult(
+		client,
+		session,
+		project.id,
+		undefined,
+		step === "energy" && savedEnergy === "run" ? params.get("run") : null,
+	);
+	function openEnergyRun(id: string) {
+		const url = new URL(location.href);
+		url.searchParams.delete("compare");
+		url.searchParams.set("run", id);
+		replacePlannerLocation(url);
+		setSavedEnergy("run");
+	}
+	const historical = admitted ? historicalRunQuery.data : undefined;
+	const viewedRun =
+		historical && runTask(historical) === REPORT_TASK ? historical : null;
+	useEffect(() => {
+		const oldSingle =
+			step === "review" && historical && isEnergyTask(runTask(historical));
+		const oldPair = step === "energy" && savedEnergy === "comparison";
+		if (!oldSingle && !oldPair) return;
+		const url = new URL(location.href);
+		if (
+			url.searchParams.get("project") !== project.id ||
+			url.hash === "#sc-energy"
+		)
+			return;
+		url.hash = "sc-energy";
+		if (oldSingle) {
+			setViewedReport(null);
+			setSavedEnergy("run");
+			setStep("energy");
+		}
+		replacePlannerLocation(url);
+	}, [historical, step, savedEnergy, project.id]);
 	function selectReport(id: string | null) {
 		const url = new URL(location.href);
 		if (!admitted || url.searchParams.get("project") !== project.id) return;
@@ -508,7 +571,14 @@ export default function ProjectWorkbench({
 		!draft || isDirty(draft) || Boolean(draft.pending || draft.conflict),
 		{
 			client,
-			report: genieRun ?? null,
+			report:
+				step === "energy" &&
+				savedEnergy === "run" &&
+				energyRun.data &&
+				isEnergyTask(energyRun.data.result?.kind)
+					? energyRun.data
+					: (genieRun ?? null),
+			energyComparison: step === "energy" && savedEnergy === "comparison",
 			openReport:
 				step === "review" && openReport?.state === "succeeded"
 					? openReport
@@ -767,6 +837,11 @@ export default function ProjectWorkbench({
 		const url = new URL(location.href);
 		const previous = url.hash;
 		url.hash = "sc-" + next;
+		if (savedEnergy !== null && previous === "#sc-energy") {
+			url.searchParams.delete("run");
+			url.searchParams.delete("compare");
+			setSavedEnergy(null);
+		}
 		if (guided && previous === "#sc-review" && next !== "review") {
 			url.searchParams.delete("run");
 			url.searchParams.delete("retry_revision");
@@ -775,7 +850,7 @@ export default function ProjectWorkbench({
 		if (guided && previous === "#sc-system" && next === "review") {
 			window.history.pushState(null, "", url);
 			window.dispatchEvent(new Event(PLANNER_NAVIGATION));
-		} else if (previous !== url.hash) replacePlannerLocation(url);
+		} else if (url.href !== location.href) replacePlannerLocation(url);
 		if (next === "energy") setEnergyOpened(true);
 		setStep(next);
 		setNavigationRefused(false);
@@ -1600,63 +1675,113 @@ export default function ProjectWorkbench({
 							/>
 						</div>
 					)}
-					{(energyOpened || activeStep === "energy") && (
-						<div hidden={activeStep !== "energy"}>
-							<EnergyDemand
-								coordinatesInvalid={!coordinatesValid}
-								projectId={project.id}
-								inputs={inputs}
-								locale={config.locale}
-								client={client}
-								session={session}
-								recheck={recheck}
-								disabled={blocked}
-								edit={edit}
-								modelsUnavailable={modelsUnavailable}
-								compare={() => void compare()}
-								onValidity={setEnergyValid}
-							/>
-							{hasPlant(inputs) &&
-								brief.system_scope !== "storage_only" &&
-								brief.system_scope !== "pv_only" && (
-									<SharedDcEnergy
-										draft={draft}
-										locale={config.locale}
-										client={client}
-										session={session}
-										store={store}
-										disabled={blocked || modelsUnavailable || !energyValid}
-										active={activeStep === "energy"}
-										edit={edit}
-										save={controller.save}
-										openEquipment={() => navigate("project")}
-										openDesign={() => navigate("solar")}
-										onValidity={setSharedDcValid}
-										registerProfileGuard={registerProfileGuard}
-										recoveryScopes={recoveryScopes}
-										recoveryChecking={recoveryChecking}
-										recheck={recheck}
-										runs={[
-											...(latestRuns ?? []),
-											...(olderHistory.data?.pages.flatMap(
-												(page) => page.items,
-											) ?? []),
-										]}
-										moreRuns={
-											(olderHistory.data
-												? olderHistory.hasNextPage
-												: firstCursor) && !olderHistory.isFetching
-												? () => void olderHistory.fetchNextPage()
-												: undefined
-										}
-										submitted={submittedDc}
-										start={(path) => void startSharedDc(path)}
-										generateComparison={generateComparison}
-										operationError={error ?? operations.error}
-									/>
-								)}
-						</div>
+					{activeStep === "energy" && savedEnergy === "comparison" && (
+						<EnergyComparison
+							projectId={project.id}
+							runs={latestRuns ?? []}
+							client={client}
+							session={session}
+							active={admitted}
+							locale={config.locale}
+							recheck={recheck}
+							reportDisabled={blocked || isDirty(draft)}
+							generateReport={generateComparison}
+							openRun={openEnergyRun}
+						/>
 					)}
+					{activeStep === "energy" &&
+						savedEnergy === "run" &&
+						admitted &&
+						(energyRun.data && isEnergyTask(energyRun.data.result?.kind) ? (
+							<section className="sc-work-panel">
+								<RunResult
+									run={energyRun.data}
+									locale={config.locale}
+									dirty={isDirty(draft)}
+									confirmedRevision={draft.baseline.revision}
+								/>
+								<RunBasis
+									run={energyRun.data}
+									locale={config.locale}
+									client={client}
+									session={session}
+									recheck={recheck}
+								/>
+							</section>
+						) : energyRun.isPending ? (
+							<p role="status">
+								{__("Reading the saved calculation…", "linker-tools")}
+							</p>
+						) : (
+							<div role="alert">
+								<p>{energyErrorText(energyRun.error)}</p>
+								<button
+									type="button"
+									className="sc-button"
+									onClick={() => void energyRun.refetch()}
+								>
+									{__("Try again", "linker-tools")}
+								</button>
+							</div>
+						))}
+					{savedEnergy === null &&
+						(energyOpened || activeStep === "energy") && (
+							<div hidden={activeStep !== "energy"}>
+								<EnergyDemand
+									coordinatesInvalid={!coordinatesValid}
+									projectId={project.id}
+									inputs={inputs}
+									locale={config.locale}
+									client={client}
+									session={session}
+									recheck={recheck}
+									disabled={blocked}
+									edit={edit}
+									modelsUnavailable={modelsUnavailable}
+									compare={() => void compare()}
+									onValidity={setEnergyValid}
+								/>
+								{hasPlant(inputs) &&
+									brief.system_scope !== "storage_only" &&
+									brief.system_scope !== "pv_only" && (
+										<SharedDcEnergy
+											draft={draft}
+											locale={config.locale}
+											client={client}
+											session={session}
+											store={store}
+											disabled={blocked || modelsUnavailable || !energyValid}
+											active={activeStep === "energy"}
+											edit={edit}
+											save={controller.save}
+											openEquipment={() => navigate("project")}
+											openDesign={() => navigate("solar")}
+											onValidity={setSharedDcValid}
+											registerProfileGuard={registerProfileGuard}
+											recoveryScopes={recoveryScopes}
+											recoveryChecking={recoveryChecking}
+											recheck={recheck}
+											runs={[
+												...(latestRuns ?? []),
+												...(olderHistory.data?.pages.flatMap(
+													(page) => page.items,
+												) ?? []),
+											]}
+											moreRuns={
+												(olderHistory.data
+													? olderHistory.hasNextPage
+													: firstCursor) && !olderHistory.isFetching
+													? () => void olderHistory.fetchNextPage()
+													: undefined
+											}
+											submitted={submittedDc}
+											start={(path) => void startSharedDc(path)}
+											generateComparison={generateComparison}
+											operationError={error ?? operations.error}
+										/>
+									)}
+							</div>
+						)}
 					{activeStep === "system" && (
 						<>
 							{guidedChoiceNeedsSave && (
@@ -1886,7 +2011,9 @@ export default function ProjectWorkbench({
 								reading:
 									historicalRunQuery.isLoading ||
 									Boolean(viewedRun && runPending(viewedRun.state)),
-								readFailed: historicalRunQuery.isError,
+								readFailed:
+									historicalRunQuery.isError ||
+									Boolean(historical && !viewedRun),
 								unavailable:
 									viewedReportId === null ||
 									Boolean(

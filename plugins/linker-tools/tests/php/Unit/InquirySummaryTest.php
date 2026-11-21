@@ -154,6 +154,47 @@ final class InquirySummaryTest extends TestCase {
 
 
 	/**
+	 * A customer can request quantities for products shown late in a conversation.
+	 */
+	public function test_summary_keeps_all_discussed_products_and_requested_quantities(): void {
+		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
+		WP_Mock::userFunction( 'set_transient', array( 'return' => true ) );
+		$products   = range( 101, 142 );
+		$quantities = array_map(
+			static fn ( int $id ): array => array(
+				'product_id' => $id,
+				'quantity'   => 4,
+			),
+			array_slice( $products, -13 )
+		);
+		$messages   = array();
+		foreach ( array_chunk( $products, 6 ) as $ids ) {
+			$messages[] = array(
+				'role'     => 'assistant',
+				'content'  => 'Available products',
+				'products' => $ids,
+			);
+		}
+		$messages[] = array(
+			'role'    => 'user',
+			'content' => 'Four units each of the last thirteen models, please.',
+		);
+		$seen       = array();
+		$fetch      = static function ( string $url, array $body ) use ( &$seen, $quantities ): array {
+			$seen = array_column( $body['products'], 'id' );
+			return array(
+				'summary'    => 'Four units of each requested model.',
+				'quantities' => $quantities,
+			);
+		};
+		$summary    = ( new InquirySummary( self::conversations(), self::thread( $messages ), $fetch ) )->answer( null, 5 );
+		$this->assertIsArray( $summary );
+		$this->assertSame( $products, $seen );
+		$this->assertSame( $quantities, $summary['quantities'] );
+	}
+
+
+	/**
 	 * The model's empty note does not leave the form blank: A7 starts the
 	 * message from the customer's last sentence.
 	 */

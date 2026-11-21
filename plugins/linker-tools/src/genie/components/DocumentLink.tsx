@@ -16,7 +16,7 @@ export function DocumentLink( { block }: { block: DocumentBlock } ) {
 	return (
 		<p className="linker-genie-document-row">
 			<a
-				className="linker-genie-app__document"
+				className="linker-source-card linker-genie-app__document"
 				href={ block.url }
 				title={ block.sourceTitle }
 				target="_blank"

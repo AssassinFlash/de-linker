@@ -63,6 +63,7 @@ const permission = {
 		{
 			document_id: 'doc',
 			document_revision: 'revision-1',
+			product_ids: [ 1, 2, 3573 ],
 			url: PDF.split( '#' )[ 0 ],
 		},
 	],
@@ -471,6 +472,144 @@ test.each( [ undefined, 'false', true ] )(
 		expect( restored.turn?.blocks[ 1 ] ).toMatchObject( { prices: [] } );
 	}
 );
+
+test( 'reopening a shared PDF checks the cited product, including translated product and figure refs', async () => {
+	const document = {
+		type: 'document' as const,
+		document_id: 'doc',
+		document_revision: 'revision-1',
+		url: PDF.replace( '#page=1', '#page=38' ),
+		label: 'Historical manual · p. 38',
+	};
+	const refs = [
+		'p1179.max_battery_charge_a.source',
+		'p1179.battery.charge.source.1',
+		'p1179.document.0',
+		'p91179.max_battery_charge_a.source',
+		'p91181.battery.charge.source.1',
+		'p1181.document.0',
+		'p91181.max_battery_charge_a.source',
+		'p8181.max_battery_charge_a.source',
+		'c99',
+		'compat.document.1179.0',
+		'compat.document.0',
+	];
+	const manifest = {
+		...permission,
+		products: [
+			{ product_id: 1179, published_locale_ids: [ 1179, 91179 ] },
+			{ product_id: 1181, published_locale_ids: [ 1181, 91181 ] },
+		],
+		documents: [ { ...permission.documents[ 0 ], product_ids: [ 1181 ] } ],
+	};
+	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => ( {
+		ok: true,
+		json: async () =>
+			String( url ).endsWith( '/publication/manifest' )
+				? manifest
+				: {
+						...product,
+						product_id: Number(
+							new URL( String( url ), PDF ).searchParams.get(
+								'input[product_id]'
+							)
+						),
+						model: 'Current model',
+					},
+	} ) ) as unknown as typeof fetch;
+	const restored = await restoreArtifacts(
+		{ meta: null, blocks: refs.map( ( ref ) => ( { ...document, ref } ) ) },
+		{ ...context, locale: 'de' },
+		'n',
+		fetcher
+	);
+	expect( restored.blocks ).toMatchObject( [
+		...Array( 4 ).fill( { url: null, label: document.label } ),
+		...Array( 3 ).fill( {
+			url: document.url,
+			label: 'Current model · Datasheet (EN) · S. 38',
+		} ),
+		{ url: null, label: document.label },
+		{ url: document.url },
+		...Array( 2 ).fill( { url: null, label: document.label } ),
+	] );
+} );
+
+test( 'reopened evidence uses its emitted owner, not the pairing ref or card', async () => {
+	const text = { type: 'text', text: 'Historical answer', refs: [] };
+	const doc = {
+		type: 'document',
+		url: PDF,
+		label: 'Historical evidence · p. 1',
+		document_id: 'doc',
+		document_revision: 'revision-1',
+	};
+	const events = [
+		[ 'block', text ],
+		[ 'block', { type: 'cards', product_ids: [ 2 ] } ],
+		[
+			'block',
+			{ ...doc, ref: 'compat.document.2.0', evidence_product_id: 1 },
+		],
+		[
+			'block',
+			{ ...doc, ref: 'compat.document.1', evidence_product_id: 2 },
+		],
+		[ 'block', { ...doc, ref: '770ccafa080c-p38-model-6360f4a8d9a0e6ce' } ],
+		[
+			'block',
+			{
+				...doc,
+				ref: '770ccafa080c-p43-model-6360f4a8d9a0e6ce',
+				evidence_product_id: 2,
+			},
+		],
+		[
+			'block',
+			{
+				...doc,
+				ref: '770ccafa080c-p2-model-6360f4a8d9a0e6ce',
+				evidence_product_id: 1,
+			},
+		],
+		[ 'done', {} ],
+	]
+		.map(
+			( [ event, data ] ) =>
+				`event: ${ event }\ndata: ${ JSON.stringify( data ) }\n\n`
+		)
+		.join( '' );
+	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => ( {
+		ok: true,
+		json: async () =>
+			String( url ).endsWith( '/publication/manifest' )
+				? {
+						...permission,
+						documents: [
+							{
+								...permission.documents[ 0 ],
+								product_ids: [ 2 ],
+							},
+						],
+					}
+				: product,
+	} ) ) as unknown as typeof fetch;
+	const restored = await restoreArtifacts(
+		parseStream( events ),
+		context,
+		'n',
+		fetcher
+	);
+	expect( restored.blocks ).toMatchObject( [
+		text,
+		{ type: 'cards', product_ids: [ 2 ] },
+		{ url: null, label: doc.label },
+		{ url: PDF },
+		{ url: null, label: doc.label },
+		{ url: PDF },
+		{ url: null, label: doc.label },
+	] );
+} );
 
 test( 'a shared series PDF is attributed to the document ref product rather than the first card', async () => {
 	const turn = {

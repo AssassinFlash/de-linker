@@ -45,8 +45,11 @@ class DraftProof {
 		if ( $owner instanceof WP_Error || true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
 			return $stream;
 		}
-		$events = explode( "\n\n", $stream );
-		foreach ( $events as &$event ) {
+		$events     = explode( "\n\n", $stream );
+		$blocks     = array();
+		$quantities = array();
+		// The quantity-bearing action can follow its product card in the stream.
+		foreach ( $events as $index => $event ) {
 			if ( 1 !== preg_match( '/^event: block$/m', $event ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
 				continue;
 			}
@@ -54,15 +57,33 @@ class DraftProof {
 			if ( ! is_array( $block ) ) {
 				continue;
 			}
+			$blocks[ $index ] = $block;
+			if ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
+				$args = $block['args'] ?? array();
+				$id   = $args['product_id'] ?? null;
+				if ( is_int( $id ) && is_array( $args ) && array_key_exists( 'quantity', $args ) ) {
+					$count = $args['quantity'];
+					// Conflicting or invalid counts cannot authorize a write.
+					$quantities[ $id ] = is_int( $count ) && ( $quantities[ $id ] ?? $count ) === $count ? $count : 0;
+				}
+			}
+		}
+		foreach ( $blocks as $index => $block ) {
 			if ( 'cards' === ( $block['type'] ?? '' ) ) {
+				$requested             = (array) ( $block['quantities'] ?? array() );
 				$block['draft_proofs'] = array();
+				$block['quantities']   = array();
 				foreach ( (array) ( $block['product_ids'] ?? array() ) as $id ) {
 					if ( is_int( $id ) ) {
+						$count = $requested[ $id ] ?? $quantities[ $id ] ?? 1;
+						if ( isset( $quantities[ $id ] ) && $count !== $quantities[ $id ] ) {
+							continue;
+						}
 						$token = $this->mint(
 							array(
 								array(
 									'product_id' => $id,
-									'quantity'   => 1,
+									'quantity'   => $count,
 								),
 							),
 							$dependencies,
@@ -71,6 +92,7 @@ class DraftProof {
 						);
 						if ( '' !== $token ) {
 							$block['draft_proofs'][ (string) $id ] = $token;
+							$block['quantities'][ (string) $id ]   = $count;
 						}
 					}
 				}
@@ -79,9 +101,8 @@ class DraftProof {
 			} else {
 				continue;
 			}
-			$event = str_replace( $data[0], 'data: ' . (string) wp_json_encode( $block ), $event );
+			$events[ $index ] = "event: block\ndata: " . (string) wp_json_encode( $block );
 		}
-		unset( $event );
 		return implode( "\n\n", $events );
 	}
 

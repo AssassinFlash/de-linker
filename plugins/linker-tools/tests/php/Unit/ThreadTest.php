@@ -264,6 +264,59 @@ final class ThreadTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** Server-recorded source cards stay with their answers when a later turn is committed. */
+	public function test_prior_planning_source_stays_with_its_answer(): void {
+		$source   = array(
+			'type'           => 'planning_sources',
+			'schema_version' => 1,
+			'status'         => 'available',
+			'binding'        => array( 'planning_run_ids' => array( 'stored-run' ) ),
+		);
+		$question = array(
+			'role'    => 'user',
+			'content' => 'Open my run',
+		);
+		$answer   = array(
+			'role'    => 'assistant',
+			'content' => 'Your run.',
+		);
+		$store    = array(
+			Thread::MESSAGES => array( $question ),
+			Thread::STREAM   => "event: block\ndata: " . '{"type":"text","text":"Your run."}' . "\n\nevent: block\ndata: " . '{"type":"planning_sources","schema_version":1,"status":"available","binding":{"planning_run_ids":["stored-run"]}}' . "\n\nevent: done\ndata: {}\n\n",
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( $id, $key ) use ( &$store ) {
+					return $store[ $key ] ?? '';
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'return' => static function ( $id, $key, $value ) use ( &$store ): bool {
+					$store[ $key ] = $value;
+					return true;
+				},
+			)
+		);
+		$next   = array(
+			'role'    => 'user',
+			'content' => 'Now compare two runs',
+		);
+		$spoof  = array(
+			'planning_sources' => array(
+				'type'   => 'planning_sources',
+				'status' => 'unavailable',
+			),
+		);
+		$thread = new Thread();
+		$this->assertTrue( $thread->record( 25, array( $question, $answer + $spoof, $next + $spoof ), "event: done\ndata: {}\n\n" ) );
+		$this->assertSame( $source, $thread->read( 25 )['messages'][1]['planning_sources'] ?? null );
+		$this->assertArrayNotHasKey( 'planning_sources', $thread->read( 25 )['messages'][2] );
+	}
+
 	/**
 	 * Only message-shaped entries are kept, and the newest ones at the cap.
 	 */

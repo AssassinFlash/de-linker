@@ -109,6 +109,18 @@ test( 'one guest click waits for verification and an edit cancels that intent', 
 	expect( calls.at( -1 )?.body?.email ).toBe( 'ellen@example.test' );
 } );
 
+test( 'a logistics answer loads no challenge until the guest accepts the contact offer', async () => {
+	const { fetcher } = route( { email: null }, { sent: true } );
+	const mount = vi.fn( () => () => {} );
+	window.linkerTurnstile = { mount, refresh: vi.fn() };
+	card( fetcher, 'service' );
+	const email = await screen.findByRole( 'textbox', { name: /email/i } );
+	expect( mount ).not.toHaveBeenCalled();
+	fireEvent.change( email, { target: { value: 'maria@example.test' } } );
+	fireEvent.click( screen.getByRole( 'checkbox' ) );
+	await waitFor( () => expect( mount ).toHaveBeenCalledOnce() );
+} );
+
 test( 'an anonymous contact submits its widget answer with the native request', async () => {
 	const { calls, fetcher } = route( { email: null }, { sent: true } );
 	const mount = vi.fn( ( _node, _action, ready ) => {

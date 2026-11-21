@@ -16,7 +16,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { storeClient } from '../configurator/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
-import { idsOf, pricesOf, proofsOf } from './shared/blocks';
+import { idsOf, pricesOf, proofsOf, quantitiesOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
@@ -226,7 +226,10 @@ export function reportRecoveryUrl(
 			runs.length === 1 ? 'run' : 'compare',
 			runs.length === 1 ? runs[ 0 ] : runs.join( ',' )
 		);
-		target.hash = 'sc-review';
+		target.hash =
+			runs.length === 2 || now.hash === '#sc-energy'
+				? 'sc-energy'
+				: 'sc-review';
 		return target.href;
 	} catch {
 		return null;
@@ -278,11 +281,16 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( rememberSource ) {
 					savedSourceRead.current =
 						stored.conversationId &&
-						stored.turn?.blocks.some(
-							( block ) =>
-								block.type === 'planning_sources' &&
-								block.status === 'unavailable'
-						)
+						( stored.messages.some(
+							( message ) =>
+								message.planning_sources?.status ===
+								'unavailable'
+						) ||
+							stored.turn?.blocks.some(
+								( block ) =>
+									block.type === 'planning_sources' &&
+									block.status === 'unavailable'
+							) )
 							? stored
 							: null;
 				}
@@ -923,6 +931,15 @@ export function App( { config }: { config: GenieConfig } ) {
 		if ( words( refreshed.messages ) !== words( snapshot ) ) {
 			return;
 		}
+		const messages = snapshot.map( ( message, index ) => {
+			if ( ! message.planning_sources ) {
+				return message;
+			}
+			const verified = refreshed.messages[ index ]?.planning_sources;
+			return { ...message, planning_sources: verified };
+		} );
+		currentThread.current = messages;
+		setThread( messages );
 		const prior = saved.turn.blocks.filter(
 			( block ) => block.type === 'planning_sources'
 		);
@@ -930,6 +947,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			( block ) => block.type === 'planning_sources'
 		);
 		if ( prior.length !== 1 || next.length !== 1 ) {
+			savedSourceRead.current = messages.some(
+				( message ) =>
+					message.planning_sources?.status === 'unavailable'
+			)
+				? { ...saved, messages }
+				: null;
 			return;
 		}
 		// Refresh this server-owned block only. Reapplying ordinary history or
@@ -942,8 +965,12 @@ export function App( { config }: { config: GenieConfig } ) {
 		};
 		setTurn( updated );
 		savedSourceRead.current =
-			next[ 0 ].status === 'unavailable'
-				? { ...saved, turn: updated }
+			next[ 0 ].status === 'unavailable' ||
+			messages.some(
+				( message ) =>
+					message.planning_sources?.status === 'unavailable'
+			)
+				? { ...saved, turn: updated, messages }
 				: null;
 	}, [ loadThread, draftContext ] );
 
@@ -1932,6 +1959,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
 	const cardProofs = proofsOf( turn?.blocks ?? [] );
+	const cardQuantities = quantitiesOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	// A failed initial owner lookup also interrupted the first history load.
@@ -2543,6 +2571,18 @@ export function App( { config }: { config: GenieConfig } ) {
 													/>
 												</div>
 											) : null }
+											{ index !== turnAt.current &&
+											message.planning_sources ? (
+												<PlanningSourcesCard
+													block={
+														message.planning_sources
+													}
+													configuratorLinks={
+														config.configuratorLinks
+													}
+													currentPage={ page }
+												/>
+											) : null }
 											{ index === turnAt.current &&
 											message.role === 'assistant'
 												? turn?.blocks.map(
@@ -2712,6 +2752,9 @@ export function App( { config }: { config: GenieConfig } ) {
 											<GenieCard
 												key={ productId }
 												productId={ productId }
+												quantity={
+													cardQuantities[ productId ]
+												}
 												restUrl={ config.restUrl }
 												store={ store }
 												locale={ config.locale }
@@ -2723,10 +2766,11 @@ export function App( { config }: { config: GenieConfig } ) {
 														line.product_id ===
 														productId
 												) }
-												onAdd={ ( id ) =>
+												onAdd={ ( id, quantity ) =>
 													addCardToDraft(
 														id,
-														cardProofs[ id ]
+														cardProofs[ id ],
+														quantity
 													)
 												}
 												onSave={ ( id, title ) =>

@@ -63,6 +63,36 @@ def source() -> tuple[dict[str, Any], PageContext]:
     }, page
 
 
+@pytest.mark.parametrize("paired", [False, True])
+def test_saved_energy_run_links_reopen_the_selected_calculations(paired: bool) -> None:
+    raw, page = source()
+    run = raw["runs"][0]
+    run.update(manifest_sha256="c" * 64, result_sha256="d" * 64)
+    if paired:
+        other = {**run, "id": "e" * 32, "revision": 3, "result_sha256": "f" * 64}
+        raw["runs"].append(other)
+        page = page.model_copy(update={"planning_run_ids": [RUN, other["id"]]})
+        raw["workspace_url"] = (
+            f"/solution-configurator/?project={PROJECT}&compare={RUN},{other['id']}"
+        )
+    shipped: dict[str, Any] = {"blocks": []}
+    planning.add_source_card(shipped, raw, page, "Explain these results", "model")
+    [card] = shipped["blocks"]
+    assert card["status"] == "available"
+    assert card["url"] == raw["workspace_url"]
+    assert card["binding"]["planning_run_ids"] == page.planning_run_ids
+    assert card["binding"]["runs"] == [
+        {
+            key: row[key]
+            for key in ("id", "revision", "manifest_sha256", "result_sha256")
+        }
+        for row in raw["runs"]
+    ]
+    assert card["results"] == [
+        {"revision": row["revision"], "groups": []} for row in raw["runs"]
+    ]
+
+
 def test_private_material_label_and_report_without_pv_sources_are_not_denied() -> None:
     raw, page = source()
     raw["truncated"] = True

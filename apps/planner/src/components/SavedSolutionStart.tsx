@@ -89,7 +89,13 @@ export function SavedSolutionStart({
 	return (
 		<div>
 			<h2>{__("Start a new project from a saved solution", "linker-tools")}</h2>
-			<SavedSolutionReference value={inputs.saved_solution_reference} />
+			<SavedSolutionReference
+				value={inputs.saved_solution_reference}
+				items={source.data.recorded_items}
+				client={props.client}
+				scope={props.session.query_scope}
+				locale={props.locale ?? "en"}
+			/>
 			<NewProject
 				{...props}
 				entryHints={hints}

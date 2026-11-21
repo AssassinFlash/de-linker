@@ -103,6 +103,7 @@ final class QuotationPriceGateTest extends IntegrationTestCase {
 		$pdf = (string) file_get_contents( $path );
 		$this->assertStringStartsWith( '%PDF-', $pdf );
 		$proof = self::pdf_text( $pdf );
+		$this->assertStringNotContainsString( 'div>', $proof, 'The issued PDF footer has no visible HTML markup.' );
 		$this->assertMatchesRegularExpression( self::AMOUNT, $proof, 'The issued PDF contains the 1680 price. ' . substr( $proof, 0, 500 ) );
 
 		$this->as_user( $customer->get_id() );

@@ -1169,9 +1169,11 @@ def _degraded(language: Locale) -> TurnOutput:
 
 def _document_refs(facts: TurnFacts) -> list[str]:
     """Document links the fallback shows, search order, capped at three."""
-    refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
-        facts.documents
-    )
+    refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or [
+        ref
+        for ref, document in facts.documents.items()
+        if document.figure_product_id is None
+    ]
     return refs[:FALLBACK_DOCUMENTS]
 
 
@@ -1344,6 +1346,106 @@ def _shaped(
             AskBlock(field="application", options=_ask_options("application", language))
         )
     return TurnOutput(language=language, blocks=blocks)
+
+
+_RATED_AC_METRIC = re.compile(
+    r"\b(?:rated ac (?:output(?: power)?|power)|ac rated (?:output(?: power)?|power)|"
+    r"ac[- ]nennleistung)\b"
+)
+_RATED_AC_QUESTION_OPENING = re.compile(r"^(?:what(?: is|'s)|welche|wie hoch ist)\b")
+
+
+def _asks_only_rated_ac_power(question: str, model: str) -> bool:
+    """Recognize a single metric and model; leave extra requests to the model."""
+    text = " ".join(question.casefold().replace("’", "'").split()).removesuffix("?")
+    opening = _RATED_AC_QUESTION_OPENING.match(text)
+    metric = _RATED_AC_METRIC.search(text)
+    if opening is None or metric is None:
+        return False
+    # The remaining words may identify the product or the source, not a second
+    # measurement, condition or action. Match the metric independently from
+    # the wording that introduces it.
+    return (
+        text[opening.end() : metric.start()].strip() in {"", "the", "die"}
+        and re.fullmatch(
+            rf"(?:of (?:the )?|hat (?:der |die |das )?|des )?(?:[\w-]+ )?"
+            rf"{re.escape(model.casefold())}(?: laut datenblatt| according to the datasheet)?",
+            text[metric.end() :].strip(),
+        )
+        is not None
+    )
+
+
+def rated_ac_power_answer(
+    facts: TurnFacts, route: Route | None, question: str, language: Locale
+) -> TurnOutput | None:
+    """Answer a standalone rated-AC question from an unambiguous on-grid row."""
+    if route is None or route.name != "documents" or route.show_products:
+        return None
+    if len(route.named_models) != 1:
+        return None
+    model = route.named_models[0]
+    if not model.searched_known or model.is_conflict or len(model.product_ids) != 1:
+        return None
+    if not _asks_only_rated_ac_power(question, model.code):
+        return None
+
+    candidates: dict[str, tuple[str, str]] = {}
+    for ref, products in facts.knowledge_products.items():
+        if (
+            products != model.product_ids
+            or ref not in facts.technical_chunks
+            or ref in facts.qualifications
+        ):
+            continue
+        document = facts.documents.get(ref)
+        source = facts.facts.get(f"{ref}.text")
+        if document is None or document.page is None or source is None:
+            continue
+        rows = re.findall(
+            r"^\|\s*([^|\n]+?)\s*\|[ \t]*([^|\n]*?)\s*\|[ \t]*$", source.value, re.M
+        )
+        if not any(
+            label.casefold() in {"model", "modell"}
+            and cell.casefold() == model.code.casefold()
+            for label, cell in rows
+        ):
+            continue
+        on_grid = False
+        for label, cell in rows:
+            if not cell:
+                on_grid = label.casefold() in {
+                    "ac output [on-grid]",
+                    "ac-ausgang [netzgekoppelt]",
+                }
+                continue
+            if not on_grid or label.casefold() not in {
+                "rated ac power [w]",
+                "nennleistung ac [w]",
+            }:
+                continue
+            tagged = re.fullmatch(r"\[(n[1-9]\d*)=(\d+(?:[.,]\d+)? W)\]", cell)
+            if tagged is None:
+                continue
+            key = f"{ref}.{tagged[1]}"
+            fact = facts.facts.get(key)
+            if (
+                fact is not None
+                and fact.source == "search-knowledge"
+                and fact.value == tagged[2]
+            ):
+                candidates[key] = (ref, fact.value)
+
+    if not candidates or len({value for _, value in candidates.values()}) != 1:
+        return None
+    key, (ref, _) = next(iter(candidates.items()))
+    value = f"{{fact:{key}}}"
+    text = (
+        f"Die AC-Nennleistung des {model.code} beträgt im Netzbetrieb {value}."
+        if language == "de"
+        else f"The rated AC power of the {model.code} is {value} in grid-connected operation."
+    )
+    return TurnOutput(language=language, blocks=[TextBlock(text=text, refs=[ref])])
 
 
 def finish(
@@ -1745,9 +1847,7 @@ def seal(
     requires. A number that appears in the document text only as the tail of a
     digit-free hyphenated code is removed unless the answer keeps that code
     immediately before it. A figure fact that is only the number does not
-    license it. A decimal point splits the clause the acceptance check uses,
-    so a model code already on that line is repeated after the decimal before
-    a later figure. That repeat is not a new sentence. Only a clearance question is stripped, and only against the
+    license it. Only a clearance question is stripped, and only against the
     installation figures in the document facts: energy, power and percent on
     the same sheet do not stay. A stock question that also asks something
     else is not stripped: that other half is a figure the question names and
@@ -1803,21 +1903,20 @@ def seal(
         stripped = grounding.strip_detached_code_tails(
             output, grounding.code_tail_blob(facts)
         )
-        rebound = grounding.rebind_figures_past_decimal(stripped)
         support_sources = (
             _seal_sources(original or output, facts, route, include_qualified=True)
             if _support_question(question)
             else scoped
         )
         return _append_document_sentences(
-            rebound, scoped, blob, question, support_sources
+            stripped, scoped, blob, question, support_sources
         )
     if (
         route.name in _STRIP_ROUTES
         and not route.stock_beside
         and "solution" not in facts.facts
     ):
-        return _seal_attachment_figures(output, facts, question)
+        return _seal_attachment_figures(output, facts, question, original)
     return output
 
 
@@ -1907,7 +2006,7 @@ def _seal_sources(
 
 
 def _seal_attachment_figures(
-    output: TurnOutput, facts: TurnFacts, question: str
+    output: TurnOutput, facts: TurnFacts, question: str, original: TurnOutput | None
 ) -> TurnOutput:
     """Keep question numbers and each text block's cited reading figures.
 
@@ -1922,15 +2021,33 @@ def _seal_attachment_figures(
     the same way: grounding verified the placeholder against exactly these
     facts before hydration (turn 732, production 2026-11-04: a stacking-count
     answer on a model route lost every number because only attachment and
-    planning readings were licensed).
+    planning readings were licensed). A product figure must have been used
+    as a placeholder and the product cited in that same text block.
     """
     from linker_genie import ground as grounding
 
     question_numbers = grounding.question_allowance(question)
+    original_text = (
+        iter(block for block in original.blocks if isinstance(block, TextBlock))
+        if original is not None
+        else iter(())
+    )
     blocks: list[Block] = []
     for block in output.blocks:
         allowed = set(question_numbers)
         if isinstance(block, TextBlock):
+            draft = next(original_text, None)
+            if draft is not None:
+                for ref in PLACEHOLDER.findall(draft.text):
+                    key = ref if ref.startswith("p") else f"p{ref}"
+                    fact = facts.facts.get(key)
+                    product = key.split(".", 1)[0]
+                    if (
+                        fact is not None
+                        and fact.source == "selection-facts"
+                        and {key, product, product[1:]} & set(block.refs)
+                    ):
+                        allowed.update(grounding.question_allowance(fact.value))
             for fact_id, fact in facts.facts.items():
                 match = re.fullmatch(
                     r"(att[1-9][0-9]{0,5}|planning)\.n[1-9][0-9]*", fact_id

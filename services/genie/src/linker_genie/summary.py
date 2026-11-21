@@ -35,6 +35,7 @@ import httpx
 from pydantic import Field, ValidationError
 
 from linker_genie.agent import deepseek_access, model_name
+from linker_genie.parts import COUNT_WORDS
 from linker_genie.provider_budget import Transport
 from linker_genie.schema import Locale, Strict, TurnMessage
 
@@ -49,19 +50,12 @@ MAX_SUMMARY = 800
 MAX_CONDITIONS = 6
 MAX_CONDITION = 120
 MAX_NOTE = 500
-# One line per product of the conversation, which shows at most six cards an answer
-# (route.SEARCH_LIMIT); twelve covers two answers' worth.
-MAX_QUANTITIES = 12
 # The largest quantity a request field takes: Woo's own quantity input has no upper
 # bound, so this only keeps a runaway number out of the prefill.
 MAX_QUANTITY = 9999
 # The conversation the summary may read: the thread WordPress keeps
 # (Linker\Tools\Genie\Thread::LIMIT, 60) plus its last answer.
 MAX_MESSAGES = 61
-# The products the conversation's cards showed: at most six a card block
-# (route.SEARCH_LIMIT) over the answers of a kept thread; forty is far above any
-# conversation in the live turn log and only bounds the request.
-MAX_PRODUCTS = 40
 # The completion budget: measured completions (reasoning included) stayed under 550
 # tokens on the eval set; 2000 leaves room without letting a runaway answer run on.
 MAX_TOKENS = 2000
@@ -78,15 +72,6 @@ _PRICE = re.compile(
     r"[€$£]|\b(?:eur|usd|gbp|chf|euros?|dollars?)\b|\d\s*,-", re.IGNORECASE
 )
 _NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
-# Number words a customer writes a quantity with (EN/DE, one to twelve). "a"/"an"
-# are left out: they are in nearly every sentence and would vouch for any "1".
-_WORDS = {
-    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
-    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "dozen": 12,
-    "ein": 1, "eine": 1, "einen": 1, "einem": 1, "einer": 1, "eins": 1,
-    "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7,
-    "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12,
-}  # fmt: skip
 _WORD = re.compile(r"[^\W\d_]+")
 
 
@@ -100,9 +85,7 @@ class SummaryRequest(Strict):
 
     locale: Locale = "en"
     messages: list[TurnMessage] = Field(max_length=MAX_MESSAGES)
-    products: list[SummaryProduct] = Field(
-        default_factory=list, max_length=MAX_PRODUCTS
-    )
+    products: list[SummaryProduct] = Field(default_factory=list)
 
 
 class Quantity(Strict):
@@ -114,7 +97,7 @@ class Answer(Strict):
     """The model's answer, as the prompt asks for it."""
 
     summary: str = Field(max_length=MAX_SUMMARY)
-    quantities: list[Quantity] = Field(max_length=MAX_QUANTITIES)
+    quantities: list[Quantity]
     conditions: list[Annotated[str, Field(max_length=MAX_CONDITION)]] = Field(
         max_length=MAX_CONDITIONS
     )
@@ -207,8 +190,8 @@ def _figures(text: str, words: bool) -> set[str]:
         found.add(re.sub(r"[.,]", "", figure))
         found.update(re.split(r"[.,]", figure))
     for word in _WORD.findall(text.lower()) if words else []:
-        if word in _WORDS:
-            found.add(str(_WORDS[word]))
+        if word in COUNT_WORDS:
+            found.add(str(COUNT_WORDS[word]))
     return {f.lstrip("0") or "0" for f in found}
 
 

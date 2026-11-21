@@ -25,7 +25,11 @@ async function configurator(t, callbacks = {}) {
 	const project = structuredClone(fixture.project);
 	delete project.inputs.energy_plant;
 	callbacks.setup?.(project);
-	window.history.replaceState(null, "", `?project=${project.id}#sc-energy`);
+	window.history.replaceState(
+		null,
+		"",
+		`?project=${project.id}${callbacks.search ?? ""}#sc-${callbacks.chapter ?? "energy"}`,
+	);
 	const scope = "3".repeat(64);
 	const session = {
 		kind: "guest",
@@ -204,6 +208,52 @@ function comparisonReply(run, other) {
 		})),
 	};
 }
+
+for (const chapter of ["review", "energy"])
+	for (const comparison of [false, true]) {
+		test(`a saved Genie ${comparison ? "comparison" : "calculation"} opens the referenced runs from ${chapter} regardless of the current project inputs`, async (t) => {
+			const run = fixture.run;
+			const other = "1".repeat(32);
+			const reads = [];
+			const ui = await configurator(t, {
+				chapter,
+				search: comparison ? `&compare=${run.id},${other}` : `&run=${run.id}`,
+				setup(project) {
+					project.revision = run.revision + 1;
+					delete project.inputs.equipment_plant;
+				},
+				query(path, body) {
+					if (path === "projects/runs") return { items: [], next: null };
+					reads.push([path, body]);
+					if (path === "runs/compare") return comparisonReply(run, other);
+					if (path === "runs/read") return run;
+					throw Error(path);
+				},
+			});
+			await until(() =>
+				reads.some(
+					([path]) => path === (comparison ? "runs/compare" : "runs/read"),
+				),
+			);
+			const [, requested] = reads.find(
+				([path]) => path === (comparison ? "runs/compare" : "runs/read"),
+			);
+			if (comparison) {
+				assert.equal(requested.baseline_run_id, run.id);
+				assert.equal(requested.candidate_run_id, other);
+				await until(() =>
+					ui.dom.element.textContent.includes("Fixture converter"),
+				);
+			} else {
+				assert.equal(requested.run_id, run.id);
+				await until(
+					() =>
+						ui.dom.element.querySelector(".sc-run-revision")?.textContent ===
+						`Input revision ${run.revision}`,
+				);
+			}
+		});
+	}
 
 test("an installer calculates the declared ports, adopts the frozen result, and reopens it", async (t) => {
 	let original, saved, run, report;

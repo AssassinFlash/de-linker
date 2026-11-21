@@ -185,7 +185,10 @@ export function ContactCard( {
 	const account = state?.email ?? null;
 	const widget = useTransferWidget(
 		'genie_contact',
-		!! state && ! account && 'sent' !== phase,
+		!! state &&
+			! account &&
+			'sent' !== phase &&
+			( block.reason === 'asked' || consent ),
 		nonce + '|' + ( state?.source ?? '' )
 	);
 	const proactive =
@@ -197,6 +200,10 @@ export function ContactCard( {
 			return;
 		}
 		setFailure( null );
+		if ( ! account && ! consent && block.reason !== 'asked' ) {
+			setFailure( 'consent' );
+			return;
+		}
 		if ( ! account && ! widget.token.current ) {
 			if ( ! widget.wait( () => void submit() ) ) {
 				setFailure( 'unavailable' );

@@ -1,5 +1,7 @@
 import { __ } from "../../i18n.ts";
 
+import { comparisonPair } from "../../data/energyComparison.ts";
+
 const chapters = ["project", "solar", "energy", "system", "review"] as const;
 export type ProjectChapter = (typeof chapters)[number];
 
@@ -13,6 +15,11 @@ export function isRoofLocation(hash: string) {
 }
 
 export function projectChapter(url: URL): ProjectChapter {
+	if (
+		(!url.hash || url.hash === "#sc-review") &&
+		comparisonPair(url.searchParams.get("compare"))
+	)
+		return "energy";
 	const chapter = chapters.find((value) => url.hash === "#sc-" + value);
 	if (chapter) return chapter;
 	if (

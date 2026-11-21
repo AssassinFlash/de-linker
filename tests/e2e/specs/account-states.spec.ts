@@ -64,7 +64,7 @@ interface Language {
 	statusReceived: string;
 	productCount: string;
 	invalidOrder: string;
-	newProject: string;
+	compareProjects: string;
 }
 
 const LANGUAGES: Language[] = [
@@ -94,7 +94,7 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Inquiry received',
 		productCount: '1 product',
 		invalidOrder: 'Invalid order.',
-		newProject: 'New project',
+		compareProjects: 'Compare project options',
 	},
 	{
 		lang: 'de',
@@ -123,7 +123,7 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Anfrage eingegangen',
 		productCount: '1 Produkt',
 		invalidOrder: 'Ungültige Bestellung.',
-		newProject: 'Neues Projekt',
+		compareProjects: 'Projektoptionen vergleichen',
 	},
 ];
 
@@ -360,6 +360,89 @@ for (const language of LANGUAGES) {
 	for (const width of [1440, 390]) {
 		const tag = `${language.lang}-${width}`;
 
+		test(`${tag}: the account keeps inquiry access while product prices follow its approval`, async ({
+			page,
+			context,
+		}) => {
+			const customer = makeCustomer('pending', `price-${tag}`);
+			const reason =
+				language.lang === 'de'
+					? 'Bitte prüfen Sie Ihre Firmendaten.'
+					: 'Please check your company details.';
+			try {
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				await seedConsentCookies(context);
+				await signIn(page, customer, language.account);
+				const product = wp([
+					'eval',
+					`echo get_permalink(pll_get_post(${PRODUCT}, '${language.lang}'));`,
+				]).trim();
+				for (const state of ['pending', 'approved', 'restricted']) {
+					if (state !== 'pending') {
+						wp([
+							'user',
+							'meta',
+							'update',
+							String(customer.id),
+							'linker_approval_status',
+							state,
+						]);
+					}
+					if (state === 'restricted') {
+						wp([
+							'user',
+							'meta',
+							'update',
+							String(customer.id),
+							'linker_approval_reason',
+							reason,
+						]);
+					}
+					await page.goto(product);
+					const price = page.locator(
+						width === 390
+							? '.pdp-mobile-action .pdp-price'
+							: '.pdp-purchase .pdp-price'
+					);
+					await expect(price).toBeVisible();
+					const amount = price.locator('.woocommerce-Price-amount');
+					if (state === 'approved') {
+						await expect(amount.first()).toBeVisible();
+					} else {
+						await expect(amount).toHaveCount(0);
+						await expect(price).toContainText(/\S/);
+					}
+					await page.goto(base() + language.account);
+					const status = page.locator('.linker-account-status');
+					if (state === 'restricted')
+						await expect(status).toContainText(reason);
+					if (state === 'pending')
+						await expect(status).toContainText(
+							language.pendingTitle
+						);
+					await expect(
+						page.locator('.linker-account-mast a.is-primary')
+					).toBeVisible();
+					await shot(page, `${tag}-${state}-workspace`);
+					await page
+						.locator('.linker-account-mast a.is-primary')
+						.click();
+					await expect(
+						page.locator('form.linker-inquiry-form')
+					).toBeVisible();
+					if (state === 'restricted')
+						await expect(
+							page.locator('.linker-inquiry-restriction')
+						).toContainText(reason);
+				}
+			} finally {
+				remove([customer]);
+			}
+		});
+
 		test(`${tag}: the empty account endpoints read their designed empty states`, async ({
 			browser,
 		}) => {
@@ -546,7 +629,7 @@ for (const language of LANGUAGES) {
 				// private index - never from a second store.
 				await page.goto(base() + language.configuratorPath);
 				const creation = page.getByRole('form', {
-					name: language.newProject,
+					name: language.compareProjects,
 				});
 				await expect(creation).toBeVisible();
 
@@ -623,7 +706,29 @@ for (const language of LANGUAGES) {
 				await shot(page, `${language.lang}-${width}-solutions-search`);
 				await found.click();
 				await expect(page).toHaveURL(
-					new RegExp(`project=${projectId}`)
+					(url) => url.searchParams.get('project') === projectId
+				);
+				await expect(
+					page.getByRole('heading', {
+						level: 1,
+						name: title,
+						exact: true,
+					})
+				).toBeVisible();
+
+				await page.goto(base() + language.solutions);
+				const accountProject = page.getByRole('link', {
+					name: new RegExp(title),
+				});
+				await expect(accountProject).toHaveAttribute(
+					'href',
+					new RegExp(`project=${projectId}#sc-project$`)
+				);
+				await accountProject.click();
+				await expect(page).toHaveURL(
+					(url) =>
+						url.searchParams.get('project') === projectId &&
+						url.hash === '#sc-project'
 				);
 				await expect(
 					page.getByRole('heading', {
@@ -684,6 +789,31 @@ for (const language of LANGUAGES) {
 				expect((await shortcuts.boundingBox())!.y).toBeLessThan(
 					(await contact.boundingBox())!.y
 				);
+
+				await page
+					.locator(
+						'.linker-account-tile[data-status="inquiry-received"]'
+					)
+					.click();
+				const otherLanguage = LANGUAGES.find(
+					(entry) => entry.lang !== language.lang
+				)!;
+				await page
+					.locator(
+						`header a[data-linker-language-choice="${otherLanguage.lang}"]:visible`
+					)
+					.first()
+					.click();
+				await expect(page).toHaveURL(
+					(url) =>
+						url.pathname === otherLanguage.inquiries &&
+						url.searchParams.get('inquiry-status') ===
+							'inquiry-received'
+				);
+				await expect(
+					page.locator(`[data-inquiry="${owner.order}"]`)
+				).toBeVisible();
+				await page.goto(base() + language.account);
 
 				const inquiries = base() + language.inquiries;
 				await shortcuts
@@ -859,7 +989,20 @@ for (const language of LANGUAGES) {
 				await seedConsentCookies(context);
 				const page = await context.newPage();
 				await signIn(page, customer, language.account);
-				await page.goto(base() + language.company);
+				const workspace = page.locator('.linker-account-content');
+				if (width === 390) {
+					await workspace
+						.locator('.linker-account-mobile-menu summary')
+						.click();
+				}
+				await workspace
+					.getByRole('link', {
+						name:
+							language.lang === 'en' ? 'Company' : 'Unternehmen',
+						exact: true,
+					})
+					.click();
+				await expect(page).toHaveURL(base() + language.company);
 
 				const save = page.locator('button[name="save_address"]');
 				await expect(save).toBeVisible();
@@ -900,6 +1043,19 @@ for (const language of LANGUAGES) {
 					page,
 					`${language.lang}-${width}-company-validation`
 				);
+
+				await page.locator('#billing_first_name').fill('Erika');
+				await page.locator('#billing_last_name').fill('Mustermann');
+				await page.locator('#billing_country').selectOption('DE');
+				await page.locator('#billing_address_1').fill('Triftstraße 5');
+				await page.locator('#billing_postcode').fill('80538');
+				await page.locator('#billing_city').fill('München');
+				await save.click();
+				await expect(
+					page.locator('.woocommerce-message').first()
+				).toBeVisible();
+				await page.goto(base() + language.company);
+				await expect(company).toHaveValue('E2E States GmbH');
 			} finally {
 				await context.close();
 				remove([customer]);

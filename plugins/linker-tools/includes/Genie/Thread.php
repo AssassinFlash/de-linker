@@ -198,7 +198,7 @@ class Thread {
 	 *
 	 * @param int                     $conversation Conversation post ID.
 	 * @param array<array-key, mixed> $messages     The browser's snapshot.
-	 * @return list<array{role: 'user'|'assistant', content: string}>|null
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>|null
 	 */
 	private function plan( int $conversation, array $messages ): ?array {
 		wp_cache_delete( $conversation, 'post_meta' );
@@ -231,7 +231,7 @@ class Thread {
 	 * @param list<array<string, mixed>> $stored_messages Messages already stored.
 	 * @param string                     $stored_stream   The previous turn's stream.
 	 * @param array<array-key, mixed>    $request_messages The browser's snapshot, including its new user turn.
-	 * @return list<array{role: 'user'|'assistant', content: string}>|null
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>|null
 	 */
 	private static function committed( array $stored_messages, string $stored_stream, array $request_messages ): ?array {
 		$history = self::history( $stored_messages, $stored_stream );
@@ -288,11 +288,12 @@ class Thread {
 	 *
 	 * @param array<array-key, mixed> $stored_messages Stored messages.
 	 * @param string                  $stored_stream   Stored stream.
-	 * @return list<array{role: 'user'|'assistant', content: string}>
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>
 	 */
 	private static function history( array $stored_messages, string $stored_stream ): array {
-		$history = self::normalize( $stored_messages );
-		$text    = self::answer( $stored_stream )['text'];
+		$history = self::normalize( $stored_messages, true );
+		$answer  = self::answer( $stored_stream );
+		$text    = $answer['text'];
 		if ( '' === $text ) {
 			return $history;
 		}
@@ -305,6 +306,7 @@ class Thread {
 		$history[] = array(
 			'role'    => 'assistant',
 			'content' => $text,
+			...( isset( $answer['planning_sources'] ) ? array( 'planning_sources' => $answer['planning_sources'] ) : array() ),
 		);
 		return $history;
 	}
@@ -313,9 +315,10 @@ class Thread {
 	 * Message entries the thread keeps: a role and a non-empty content.
 	 *
 	 * @param array<array-key, mixed> $messages Entries as sent, or as stored.
-	 * @return list<array{role: 'user'|'assistant', content: string}>
+	 * @param bool                    $from_store Whether these are committed server records.
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>
 	 */
-	private static function normalize( array $messages ): array {
+	private static function normalize( array $messages, bool $from_store = false ): array {
 		$kept = array();
 		foreach ( $messages as $message ) {
 			if ( ! is_array( $message ) ) {
@@ -325,9 +328,12 @@ class Thread {
 			if ( '' === $content ) {
 				continue;
 			}
+			$role   = self::role( $message['role'] ?? '' );
+			$source = $from_store && 'assistant' === $role && is_array( $message['planning_sources'] ?? null ) ? $message['planning_sources'] : null;
 			$kept[] = array(
-				'role'    => self::role( $message['role'] ?? '' ),
+				'role'    => $role,
 				'content' => $content,
+				...( null !== $source ? array( 'planning_sources' => $source ) : array() ),
 			);
 		}
 		return $kept;
@@ -337,8 +343,8 @@ class Thread {
 	 * Where `$span` sits in `$request`, preferring the rightmost match so
 	 * the stored tail lines up with the end of the snapshot.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $request Snapshot.
-	 * @param list<array{role: 'user'|'assistant', content: string}> $span    Stored history.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $request Snapshot.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $span    Stored history.
 	 */
 	private static function find_span( array $request, array $span ): ?int {
 		$width = count( $span );
@@ -364,8 +370,8 @@ class Thread {
 	/**
 	 * How far the two lists are the same from the start.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $history Stored history.
-	 * @param list<array{role: 'user'|'assistant', content: string}> $request Snapshot.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $history Stored history.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $request Snapshot.
 	 */
 	private static function prefix_length( array $history, array $request ): int {
 		$width = min( count( $history ), count( $request ) );
@@ -384,8 +390,8 @@ class Thread {
 	 * spaces still means that answer. Byte equality made any such gap a
 	 * permanent 409 until reload (#373).
 	 *
-	 * @param array{role: 'user'|'assistant', content: string} $left  One message.
-	 * @param array{role: 'user'|'assistant', content: string} $right The other.
+	 * @param array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>} $left  One message.
+	 * @param array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>} $right The other.
 	 */
 	private static function same_message( array $left, array $right ): bool {
 		return $left['role'] === $right['role'] && self::flat( $left['content'] ) === self::flat( $right['content'] );
@@ -404,7 +410,7 @@ class Thread {
 	/**
 	 * True when the only unseen stored entry is the answer in the stream.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $messages Entries.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $messages Entries.
 	 */
 	private static function answer_only( array $messages ): bool {
 		return 1 === count( $messages ) && 'assistant' === $messages[0]['role'];
@@ -417,8 +423,8 @@ class Thread {
 	 * it again, so the tail is the question twice and neither was
 	 * answered. One of them is the turn (#373).
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $messages Entries.
-	 * @return list<array{role: 'user'|'assistant', content: string}>
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $messages Entries.
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>
 	 */
 	private static function collapse_users( array $messages ): array {
 		$out = array();
@@ -436,9 +442,9 @@ class Thread {
 	 * True when every new entry repeats the user message the matched
 	 * prefix already ends with.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $history   Stored history.
-	 * @param int                                                    $shared    How far the prefix matched.
-	 * @param list<array{role: 'user'|'assistant', content: string}> $collapsed The request's new entries.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $history   Stored history.
+	 * @param int                                                                                             $shared    How far the prefix matched.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $collapsed The request's new entries.
 	 */
 	private static function repeats_stored_user( array $history, int $shared, array $collapsed ): bool {
 		if ( $shared < 1 || array() === $collapsed ) {
@@ -463,9 +469,9 @@ class Thread {
 	 * Null when an assistant entry is not in the stored history, or when
 	 * nothing new was asked. The caller appends the list it returns.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $history Stored history.
-	 * @param list<array{role: 'user'|'assistant', content: string}> $request Snapshot.
-	 * @return list<array{role: 'user'|'assistant', content: string}>|null
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $history Stored history.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $request Snapshot.
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>|null
 	 */
 	private static function merged_tail( array $history, array $request ): ?array {
 		$cursor  = 0;
@@ -501,7 +507,7 @@ class Thread {
 	 * True when every entry is a user message. An assistant entry means
 	 * the snapshot carries an answer the store does not have in that place.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $messages Entries.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $messages Entries.
 	 */
 	private static function users_only( array $messages ): bool {
 		foreach ( $messages as $message ) {
@@ -515,8 +521,8 @@ class Thread {
 	/**
 	 * The newest messages, within LIMIT.
 	 *
-	 * @param list<array{role: 'user'|'assistant', content: string}> $messages Entries.
-	 * @return list<array{role: 'user'|'assistant', content: string}>
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $messages Entries.
+	 * @return list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}>
 	 */
 	private static function cap( array $messages ): array {
 		if ( count( $messages ) > self::LIMIT ) {
@@ -626,12 +632,12 @@ class Thread {
 	 * around post meta, so a crash between the writes can still leave a
 	 * gap. A returned success means every key was checked.
 	 *
-	 * @param int                                                    $conversation Conversation post ID.
-	 * @param list<array{role: 'user'|'assistant', content: string}> $kept         Messages to store.
-	 * @param string                                                 $stream       The turn's stream.
-	 * @param list<array<string, mixed>>                             $readings     Readings to append.
-	 * @param string                                                 $operation    Trusted completed operation UUID.
-	 * @param string                                                 $fingerprint  Internal input fingerprint.
+	 * @param int                                                                                             $conversation Conversation post ID.
+	 * @param list<array{role: 'user'|'assistant', content: string, planning_sources?: array<string, mixed>}> $kept         Messages to store.
+	 * @param string                                                                                          $stream       The turn's stream.
+	 * @param list<array<string, mixed>>                                                                      $readings     Readings to append.
+	 * @param string                                                                                          $operation    Trusted completed operation UUID.
+	 * @param string                                                                                          $fingerprint  Internal input fingerprint.
 	 */
 	private function write( int $conversation, array $kept, string $stream, array $readings, string $operation, string $fingerprint ): bool {
 		$answer   = self::answer( $stream );
@@ -837,6 +843,35 @@ class Thread {
 	}
 
 	/**
+	 * Cards in the finished native answer immediately before the new user message.
+	 *
+	 * @param int                     $conversation Current conversation post ID.
+	 * @param array<array-key, mixed> $messages     Submitted messages.
+	 * @return array<int, int> Canonical product ID to offered quantity (0 if unresolved).
+	 */
+	public function previous_card_quantities( int $conversation, array $messages ): array {
+		$previous = $messages[ count( $messages ) - 2 ] ?? null;
+		$last     = $messages[ count( $messages ) - 1 ] ?? null;
+		if ( 'user' !== ( $last['role'] ?? null ) || 'assistant' !== ( $previous['role'] ?? null ) || ! is_string( $previous['content'] ?? null ) ) {
+			return array();
+		}
+		$stored = $this->read( $conversation );
+		$answer = self::answer( $stored['stream'] );
+		if ( array() === $stored['messages'] || '' === $answer['text'] || self::flat( $previous['content'] ) !== self::flat( $answer['text'] ) ) {
+			return array();
+		}
+		// A stale tab can show the same wording for an earlier set of cards.
+		$history = self::normalize( $stored['messages'] );
+		if ( null !== self::find_span( $history, self::normalize( array( $previous ) ) ) ) {
+			$prefix = self::normalize( array_slice( $messages, 0, -2 ) );
+			if ( self::prefix_length( $history, array_slice( $prefix, -count( $history ) ) ) !== count( $history ) ) {
+				return array();
+			}
+		}
+		return $answer['quantities'];
+	}
+
+	/**
 	 * The stored products by answer.
 	 *
 	 * @param int $conversation Conversation post ID.
@@ -867,12 +902,17 @@ class Thread {
 	 * empty when it did not finish.
 	 *
 	 * @param string $stream SSE text.
-	 * @return array{text: string, products: list<int>}
+	 * @return array{text: string, products: list<int>, quantities: array<int, int>, planning_sources?: array<string, mixed>}
 	 */
 	private static function answer( string $stream ): array {
-		$texts    = array();
-		$products = array();
-		$done     = false;
+		$texts      = array();
+		$products   = array();
+		$cards      = null;
+		$source     = null;
+		$actions    = array();
+		$quantities = array();
+		$done       = false;
+		$accepts    = false;
 		foreach ( explode( "\n\n", $stream ) as $event ) {
 			if ( 1 !== preg_match( '/^event: (.+)$/m', $event, $name ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
 				continue;
@@ -882,24 +922,46 @@ class Thread {
 				continue;
 			}
 			$block = json_decode( $data[1], true );
+			if ( 'meta' === $name[1] ) {
+				$accepts = true === ( $block['accepts_previous_card_quantities'] ?? false );
+				continue;
+			}
 			if ( 'block' !== $name[1] || ! is_array( $block ) ) {
 				continue;
+			}
+			if ( 'planning_sources' === ( $block['type'] ?? '' ) ) {
+				$source = $block;
 			}
 			if ( 'text' === ( $block['type'] ?? '' ) && is_string( $block['text'] ?? null ) ) {
 				$texts[] = $block['text'];
 			}
 			if ( 'cards' === ( $block['type'] ?? '' ) && is_array( $block['product_ids'] ?? null ) ) {
+				$cards ??= $block; // The dock and hero display the first cards block.
 				foreach ( $block['product_ids'] as $id ) {
 					$products[] = (int) $id;
 				}
+			} elseif ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
+				$id = $block['args']['product_id'] ?? null;
+				if ( is_int( $id ) ) {
+					$actions[ $id ] = $block['args']['quantity'] ?? 1;
+				}
+			}
+		}
+		foreach ( $cards['product_ids'] ?? array() as $id ) {
+			if ( is_int( $id ) && $id > 0 ) {
+				$quantity          = $cards['quantities'][ $id ] ?? $actions[ $id ] ?? 1;
+				$quantities[ $id ] = is_int( $quantity ) && $quantity >= 0 ? $quantity : 0;
 			}
 		}
 		return $done ? array(
-			'text'     => implode( ' ', $texts ),
-			'products' => array_values( array_unique( array_filter( $products ) ) ),
+			'text'       => implode( ' ', $texts ),
+			'products'   => array_values( array_unique( array_filter( $products ) ) ),
+			'quantities' => $accepts ? $quantities : array(),
+			...( null === $source ? array() : array( 'planning_sources' => $source ) ),
 		) : array(
-			'text'     => '',
-			'products' => array(),
+			'text'       => '',
+			'products'   => array(),
+			'quantities' => array(),
 		);
 	}
 }

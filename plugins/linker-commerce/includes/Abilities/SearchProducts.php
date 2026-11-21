@@ -1045,7 +1045,7 @@ final class SearchProducts {
 	 * @param int    $id            Inverter ID.
 	 * @param string $device_class  Device class.
 	 * @param int[]  $batteries     Published battery IDs.
-	 * @return list<array{product_id: int, verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>}>
+	 * @return list<array{product_id: int, verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>}>
 	 */
 	private function pairings( int $id, string $device_class, array $batteries ): array {
 		if ( ! in_array( $device_class, self::INVERTER_CLASSES, true ) ) {

@@ -110,7 +110,7 @@ final class DraftActions {
 		$title    = implode( ', ', $labels );
 		$design   = array(
 			'kind'                  => 'genie',
-			'input'                 => array(),
+			'input'                 => new \stdClass(),
 			'selection_fingerprint' => $result['selection_fingerprint'],
 			'snapshot'              => $result,
 		);

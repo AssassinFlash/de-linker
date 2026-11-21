@@ -36,6 +36,25 @@ for (const locale of ['en', 'de'] as const) {
 						? `${originalReply}\n\nA second preserved paragraph.\n\n## Source details\n\n- First source item\n- Second source item`
 						: originalReply;
 				const pdf = `${instance().url}/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf#page=1`;
+				const manifest = await page.request.get(
+					instance().url + '/wp-json/linker/v1/publication/manifest'
+				);
+				expect(manifest.ok()).toBeTruthy();
+				const documents = (await manifest.json()).documents as {
+					document_id: string;
+					document_revision: string;
+					url: string;
+					product_ids: number[];
+				}[];
+				const source = documents.find(
+					(item) =>
+						item.product_ids.includes(PRODUCT) &&
+						item.url === pdf.split('#')[0]
+				);
+				if (!source)
+					throw new Error(
+						'The reviewed product has no published datasheet.'
+					);
 				const oldLabel = german
 					? 'SAJ eSolar AIO3 Datasheet (EN) · p. 1'
 					: 'SAJ eSolar AIO3 Datenblatt (EN), Seite 1';
@@ -68,10 +87,8 @@ for (const locale of ['en', 'de'] as const) {
 							ref: `p${PRODUCT}.document.0`,
 							label: oldLabel,
 							url: pdf,
-							document_id:
-								'doc-f0681559f735c3ff1331400c2c9a76482fe28a40c1f7eb86bb40d788fc9cb84f',
-							document_revision:
-								'd9604dd2408f140406278423557de0c3c20580e88a6df6df9505789496eb06b6',
+							document_id: source.document_id,
+							document_revision: source.document_revision,
 						},
 					],
 					['done', { ok: true }],
@@ -137,10 +154,8 @@ for (const locale of ['en', 'de'] as const) {
 									ref: `p${PRODUCT}.document.0`,
 									label: 'SAJ eSolar AIO3 Datasheet (EN) · p. 1',
 									url: pdf,
-									document_id:
-										'doc-f0681559f735c3ff1331400c2c9a76482fe28a40c1f7eb86bb40d788fc9cb84f',
-									document_revision:
-										'd9604dd2408f140406278423557de0c3c20580e88a6df6df9505789496eb06b6',
+									document_id: source.document_id,
+									document_revision: source.document_revision,
 								},
 							],
 							['done', { ok: true }],

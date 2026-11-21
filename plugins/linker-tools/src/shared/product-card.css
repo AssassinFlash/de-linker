@@ -1,17 +1,8 @@
-/*
- * Product card. Colours, type and radii are the site's own tokens (--proto-*),
- * with the live values as fallbacks so the card also renders outside the site.
- */
+/* Genie lays out its actions inside the shared product card. */
 .linker-card {
-	display: grid;
 	grid-template-columns: 7.5rem minmax(0, 1fr);
-	gap: var(--proto-space-4, 1rem);
-	padding: var(--proto-space-4, 1rem);
-	background: var(--proto-color-surface, #fff);
-	border: 1px solid var(--proto-color-line, #e2e5e5);
-	border-radius: var(--proto-radius-lg, 12px);
-	color: var(--proto-color-ink, #0c0f0f);
-	min-width: 0;
+	align-items: start;
+	color: var(--proto-color-ink);
 }
 
 .linker-card__media {
@@ -173,6 +164,5 @@
 	.linker-card {
 		grid-template-columns: 4.5rem minmax(0, 1fr);
 		gap: var(--proto-space-3, 0.75rem);
-		padding: var(--proto-space-3, 0.75rem);
 	}
 }
