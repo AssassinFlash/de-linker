@@ -390,7 +390,7 @@
   .sc-intake .sc-entry-toolbar .sc-button { background: transparent; border-color: transparent; }
   .sc-intake .sc-entry-toolbar .sc-button:hover { background: var(--proto-teal-50); }
   .sc-intake .sc-project-heading:has(+ .sc-intake-layout) { padding-bottom: 20px; margin-bottom: 28px; border-bottom: 1px solid var(--proto-color-line); }
-  .sc-intake .sc-intake-layout > .sc-main > .sc-section-head h2, .sc-home-comparison > .sc-section-head h2, .sc-intake .sc-system-options > .sc-section-head h2, .sc-intake .sc-direction-comparison .sc-section-head h2 { font-size: clamp(25px, 3vw, 36px); line-height: 1.2; letter-spacing: -1px; font-weight: 650; }
+  .sc-intake .sc-intake-layout > .sc-main > .sc-section-head h2, .sc-intake .sc-system-options > .sc-section-head h2, .sc-intake .sc-direction-comparison .sc-section-head h2 { font-size: clamp(25px, 3vw, 36px); line-height: 1.2; letter-spacing: -1px; font-weight: 650; }
   .sc-intake .sc-project-summary .sc-eyebrow { margin-bottom: 8px; color: var(--proto-ink-muted-deep); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
   .sc-intake .sc-project-summary h3 { font-weight: 700; }
   .sc-intake .sc-project-summary dd { font-weight: 650; }
@@ -408,8 +408,6 @@
   .sc-intake .sc-saved-projects { margin-block-start: 36px; }
   .sc-intake .sc-direction-action .sc-button { border-color: var(--proto-input-line); color: var(--proto-teal-800); }
   .sc-intake .sc-direction-action .sc-button:hover { background: var(--proto-teal-50); }
-  .sc-configurator.sc-home-comparison { padding-block: 32px; }
-  .sc-home-comparison .sc-main > fieldset > .sc-fields + .sc-fields { margin-block-start: 20px; }
   .sc-configurator *, .sc-configurator *::before, .sc-configurator *::after { box-sizing: border-box; }
   .sc-configurator :is(h1, h2, h3, p) { margin: 0; color: inherit; }
   .sc-configurator :is(h1, h2, h3) { font-family: inherit; font-weight: 600; }
@@ -728,5 +726,3 @@
   }
   .sc-configurator .sc-solar svg.sc-roof-preview { min-height: 0; max-height: 180px; margin-block: 16px; }
 }
-
-#home-a .sc-home-comparison button.sc-primary { color: var(--proto-accent-on); }

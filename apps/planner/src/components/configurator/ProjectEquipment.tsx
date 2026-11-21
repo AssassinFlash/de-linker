@@ -301,7 +301,6 @@ export function ProjectEquipment({
 	scope,
 	disabled,
 	edit,
-	intake = false,
 	initiallyOpen = false,
 }: {
 	inputs: JsonObject;
@@ -309,7 +308,6 @@ export function ProjectEquipment({
 	scope: string;
 	disabled: boolean;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
-	intake?: boolean;
 	initiallyOpen?: boolean;
 }) {
 	const authorized = client.isCurrentScope(scope);
@@ -552,52 +550,31 @@ export function ProjectEquipment({
 			)}
 			<details
 				className="sc-project-equipment"
-				open={plant || intake || initiallyOpen ? true : undefined}
+				open={plant || initiallyOpen ? true : undefined}
 			>
 				<summary>
 					{__("Equipment and system arrangement", "linker-tools")}
 				</summary>
-				{intake ? (
-					<label className="sc-field">
-						<span>{__("System arrangement", "linker-tools")}</span>
-						<select
-							name="system_arrangement"
-							value={plant ? "multiple" : "single"}
-							disabled={disabled || !authorized}
-							onChange={(event) =>
-								changeArrangement(event.currentTarget.value === "multiple")
-							}
-						>
-							<option value="single" disabled={Boolean(plant && !canReturn)}>
-								{__("Single system", "linker-tools")}
-							</option>
-							<option value="multiple">
-								{__("Multiple systems", "linker-tools")}
-							</option>
-						</select>
-					</label>
-				) : (
-					<div className="sc-actions">
-						<button
-							type="button"
-							className="sc-button"
-							aria-pressed={!plant}
-							disabled={disabled || !authorized || Boolean(plant && !canReturn)}
-							onClick={() => changeArrangement(false)}
-						>
-							{__("Single system", "linker-tools")}
-						</button>
-						<button
-							type="button"
-							className="sc-button"
-							aria-pressed={Boolean(plant)}
-							disabled={disabled || !authorized}
-							onClick={() => changeArrangement(true)}
-						>
-							{__("Multiple systems", "linker-tools")}
-						</button>
-					</div>
-				)}
+				<div className="sc-actions">
+					<button
+						type="button"
+						className="sc-button"
+						aria-pressed={!plant}
+						disabled={disabled || !authorized || Boolean(plant && !canReturn)}
+						onClick={() => changeArrangement(false)}
+					>
+						{__("Single system", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="sc-button"
+						aria-pressed={Boolean(plant)}
+						disabled={disabled || !authorized}
+						onClick={() => changeArrangement(true)}
+					>
+						{__("Multiple systems", "linker-tools")}
+					</button>
+				</div>
 				{plant && !canReturn && (
 					<p className="sc-muted">
 						{__(

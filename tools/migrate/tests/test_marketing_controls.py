@@ -36,7 +36,7 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
         + roof,
         hero + de + '#sc-preliminary-options">Lösungskonfigurator öffnen</a></div>',
     )
-    expected = (
+    previous = (
         published[0].replace(
             "Open the Solution Configurator", "Compare system options"
         ),
@@ -44,30 +44,15 @@ def test_home_configurator_opens_without_selecting_a_roof_project() -> None:
             "Lösungskonfigurator öffnen", "Anlagenvarianten vergleichen"
         ),
     )
+    expected = tuple(
+        page.replace("#sc-preliminary-options", "?compare=preliminary", 1)
+        for page in previous
+    )
     review = tuple(
         page.replace('#sc-preliminary-options"', '"', 1) for page in published
     )
-    for stage in (before, review, published, expected):
+    for stage in (before, review, published, previous, expected):
         assert controls.plan_pair("home_configurator", *stage) == expected
-
-
-def test_home_project_comparison_preserves_the_hero_and_other_content() -> None:
-    anchor = '<section class="home-trust" id="capabilities">'
-    shortcode = '[linker_planner mode="home"]'
-    before = tuple(
-        f'<section class="hero-cinematic">{label}</section>\n{anchor}'
-        + UNCHANGED
-        + "</section>"
-        for label in ("Open the Solution Configurator", "Lösungskonfigurator öffnen")
-    )
-    after = controls.plan_pair("home_project_comparison", *before)
-    for original, updated in zip(before, after, strict=True):
-        assert updated.index(shortcode) > updated.index("</section>")
-        assert updated.index(shortcode) < updated.index(anchor)
-        assert updated.replace(shortcode + "\n", "", 1) == original
-    assert controls.plan_pair("home_project_comparison", *after) == after
-    with pytest.raises(ValueError, match="Partially changed homepage"):
-        controls.plan_pair("home_project_comparison", before[0], after[1])
 
 
 def test_home_account_adds_one_registration_entry_per_visible_layout() -> None:

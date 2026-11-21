@@ -20,7 +20,7 @@ const button = (label) =>
 	);
 const field = (name) => document.querySelector(`[name="${name}"]`);
 
-async function fixture(t, search = "", locale = "en", home = false) {
+async function fixture(t, search = "", locale = "en", comparison = false) {
 	const dom = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
@@ -83,7 +83,10 @@ async function fixture(t, search = "", locale = "en", home = false) {
 		async send(path, body, scope) {
 			assert.equal(path, "projects/create");
 			assert.equal(scope, session.query_scope);
-			assert.equal(records[0].body, body, "persist recovery before sending");
+			assert.ok(
+				records.some((record) => record.body === body),
+				"persist recovery before sending",
+			);
 			requests.push(body);
 			if (createFailure) throw new Error("response_lost");
 			const command = JSON.parse(body);
@@ -132,13 +135,7 @@ async function fixture(t, search = "", locale = "en", home = false) {
 						client,
 						store,
 						openOnLoad: true,
-						...(home && {
-							homeComparison: {
-								picker: null,
-								savedProject: "",
-								compareSaved: () => assert.fail(),
-							},
-						}),
+						directComparison: comparison,
 						config: {
 							locale,
 							countries: { DE: "Germany" },
@@ -171,7 +168,7 @@ async function fixture(t, search = "", locale = "en", home = false) {
 			await until(
 				() => field("country") && !field("country").matches(":disabled"),
 			);
-			if (!home && field("project_title"))
+			if (!comparison && field("project_title"))
 				await enter(field("project_title"), "Munich PV");
 			await act(async () => {
 				const country = field("country");
@@ -183,7 +180,9 @@ async function fixture(t, search = "", locale = "en", home = false) {
 		async click(label) {
 			await act(async () => button(label).click());
 		},
-		async reload() {
+		async reload(nextSearch = search, nextComparison = comparison) {
+			search = nextSearch;
+			comparison = nextComparison;
 			await act(async () => root.render(null));
 			await render();
 		},
@@ -215,6 +214,31 @@ test("a roof starts from its country and address and opens directly on the locat
 	assert.equal(project.inputs.brief.system_scope, null);
 });
 
+test("a roof visitor can compare options without a drawing, address or map consent", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await until(() => button("Use a roof plan or measurements"));
+	const compare = document.querySelector('a[href="?compare=preliminary"]');
+	assert.equal(compare?.textContent.trim(), "Compare options");
+	assert.equal(page.searches.length, 0);
+	assert.equal(page.opened.length, 0);
+});
+
+test("comparing from the roof entry keeps the declared site without looking up its address", async (t) => {
+	const page = await fixture(t, "step=roof");
+	await page.fill("Bergstraße 7, Berlin");
+	await act(async () =>
+		document.querySelector('a[href="?compare=preliminary"]').click(),
+	);
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].destination, "guided-comparison");
+	assert.equal(page.opened[0].project.inputs.brief.site.country_code, "DE");
+	assert.equal(
+		page.opened[0].project.inputs.brief.site.location_label,
+		"Bergstraße 7, Berlin",
+	);
+	assert.equal(page.searches.length, 0);
+});
+
 test("a local roof plan opens without an address, a map lookup or imagery consent", async (t) => {
 	const page = await fixture(t, "step=roof");
 	await until(() => button("Use a roof plan or measurements"));
@@ -227,7 +251,7 @@ test("a local roof plan opens without an address, a map lookup or imagery consen
 	assert.equal(page.opened[0].project.inputs.brief.site.latitude, null);
 });
 
-test("from the homepage a country, street address and provider choice open the roof without a comparison", async (t) => {
+test("from project details a country, street address and provider choice open the roof without a comparison", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	assert.equal(field("project_title").value, "");
@@ -254,7 +278,7 @@ test("from the homepage a country, street address and provider choice open the r
 	);
 });
 
-test("changing privacy settings withdraws a roof permission before the homepage submission", async (t) => {
+test("changing privacy settings withdraws a roof permission before submitting the project details", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	await until(() => field("roof_imagery_consent"));
@@ -273,7 +297,7 @@ test("changing privacy settings withdraws a roof permission before the homepage 
 	);
 });
 
-test("a different imagery source cannot consume the homepage choice as its own permission", async (t) => {
+test("a different imagery source cannot consume the project’s choice as its own permission", async (t) => {
 	const page = await fixture(t, "", "en", true);
 	await page.fill("Platz der Republik 1, 11011 Berlin");
 	await until(() => field("roof_imagery_consent"));
@@ -374,4 +398,40 @@ test("a lost creation reply is retried using the original request after reload",
 	assert.equal(page.opened[0].destination, "roof");
 	assert.equal(page.searches.length, 1);
 	assert.equal(page.records.length, 0);
+});
+
+test("a roof comparison restores its own site and retries the same command after a lost reply", async (t) => {
+	const page = await fixture(t, "", "en", true);
+	page.loseReceipt(true);
+	await page.fill("Hamburg");
+	await page.click("Compare systems");
+	await until(() => button("Try again"));
+	const ordinaryRequest = page.requests[0];
+
+	await page.reload("step=roof", false);
+	await page.fill("Bergstraße 7, Berlin");
+	await act(async () =>
+		document.querySelector('a[href="?compare=preliminary"]').click(),
+	);
+	await until(() => button("Retry project creation"));
+	const roofRequest = page.requests[1];
+	await page.reload();
+	await until(
+		() =>
+			button("Retry project creation") &&
+			!button("Retry project creation").disabled,
+	);
+	assert.equal(field("country").value, "DE");
+	assert.equal(field("location_label").value, "Bergstraße 7, Berlin");
+
+	page.loseReceipt(false);
+	await page.click("Retry project creation");
+	await until(() => page.opened.length === 1);
+	assert.deepEqual(page.requests, [ordinaryRequest, roofRequest, roofRequest]);
+	assert.equal(page.opened[0].destination, "guided-comparison");
+	assert.equal(page.searches.length, 0);
+	assert.deepEqual(
+		page.records.map((record) => record.body),
+		[ordinaryRequest],
+	);
 });

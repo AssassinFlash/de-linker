@@ -3,7 +3,6 @@ import {
 	writeComparisonDraft,
 	forgetComparisonDraft,
 	type ComparisonDraft,
-	type ProjectPickerDraft,
 } from "../data/comparisonDraft.ts";
 import {
 	useCallback,
@@ -13,7 +12,6 @@ import {
 	useState,
 } from "react";
 import { flushSync } from "react-dom";
-import type { ReactNode } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -66,7 +64,6 @@ import {
 import {
 	AnnualElectricityUse,
 	HomepageDemand,
-	hasComparisonDemand,
 } from "./configurator/HomepageDemand.tsx";
 import {
 	isHomepagePvReferenceReady,
@@ -105,7 +102,6 @@ export function NewProject({
 	returnToComparison,
 	creationPending = false,
 	beginCreation,
-	homeComparison,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -134,20 +130,13 @@ export function NewProject({
 	returnToComparison?: () => void;
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
-	homeComparison?: {
-		picker: ReactNode;
-		projectPicker: ProjectPickerDraft;
-		savedProject: string;
-		compareSaved: (projectId: string) => void;
-	};
 }) {
-	const compareOnSubmit = directComparison || Boolean(homeComparison);
 	const roofPermission = useRef<PlaceImagery | null>(null);
 	const roofEntry = Boolean(
 		config &&
 		entryHints?.roof &&
 		!initialProject &&
-		!compareOnSubmit &&
+		!directComparison &&
 		!compareOnLoad,
 	);
 	const [open, setOpen] = useState(
@@ -155,8 +144,8 @@ export function NewProject({
 	);
 	const openedOnLoad = useRef(openOnLoad);
 	const draftEntry =
-		compareOnSubmit || compareOnLoad || Boolean(returnToComparison);
-	const source = homeComparison ? "homepage" : JSON.stringify(entryHints);
+		directComparison || compareOnLoad || Boolean(returnToComparison);
+	const source = JSON.stringify(entryHints);
 	const [restored] = useState(() =>
 		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
 	);
@@ -167,7 +156,7 @@ export function NewProject({
 		null,
 	);
 	const languageNotice = useRef<HTMLDivElement>(null);
-	const homeForm = useRef<HTMLFormElement>(null);
+	const projectForm = useRef<HTMLFormElement>(null);
 	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
 	const [title, setTitle] = useState(
 		restored?.title ?? initialProject?.title ?? "",
@@ -247,7 +236,7 @@ export function NewProject({
 		brief: {
 			...seedBrief,
 			system_scope:
-				compareOnLoad || returnToComparison || compareOnSubmit || roofEntry
+				compareOnLoad || returnToComparison || directComparison || roofEntry
 					? seedBrief.system_scope
 					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
@@ -293,8 +282,7 @@ export function NewProject({
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
-	const projectPicker = homeComparison?.projectPicker;
-	const currentHomeInputs = useEffectEvent(() => inputs);
+	const currentInputs = useEffectEvent(() => inputs);
 	useEffect(() => {
 		if (
 			!draftEntry ||
@@ -304,8 +292,6 @@ export function NewProject({
 				!title &&
 				useHints &&
 				!draftId.current &&
-				!projectPicker?.search &&
-				!projectPicker?.projectId &&
 				!profileForm.file &&
 				!invalidDemand.size &&
 				!entryHints)
@@ -318,8 +304,7 @@ export function NewProject({
 					scope: session.query_scope,
 					source,
 					title,
-					inputs: compareOnSubmit ? currentHomeInputs() : draft,
-					...(projectPicker && { projectPicker }),
+					inputs: directComparison ? currentInputs() : draft,
 					useHints,
 					carriedProduct,
 				};
@@ -351,9 +336,9 @@ export function NewProject({
 			if (!link || new URL(link.href).origin !== location.origin) return;
 			try {
 				if (
-					compareOnSubmit &&
+					directComparison &&
 					(profileForm.file ||
-						homeForm.current?.querySelector(
+						projectForm.current?.querySelector(
 							'[aria-invalid="true"], input:out-of-range',
 						))
 				) {
@@ -361,7 +346,7 @@ export function NewProject({
 					return;
 				}
 				const usePvAddress =
-					homeForm.current?.querySelector<HTMLInputElement>(
+					projectForm.current?.querySelector<HTMLInputElement>(
 						'input[name="pvgis_use_address"]',
 					)?.checked ?? false;
 				if (record)
@@ -375,10 +360,9 @@ export function NewProject({
 	}, [
 		draftEntry,
 		compareOnLoad,
-		compareOnSubmit,
+		directComparison,
 		carriedProduct,
 		entryHints,
-		projectPicker,
 		profileForm.file,
 		profileCorrection,
 		editedCorrection,
@@ -391,9 +375,9 @@ export function NewProject({
 		source,
 	]);
 	useEffect(() => {
-		if (compareOnSubmit && restored?.languageUrl === location.href)
-			homeForm.current?.scrollIntoView({ block: "start" });
-	}, [compareOnSubmit, restored]);
+		if (directComparison && restored?.languageUrl === location.href)
+			projectForm.current?.scrollIntoView({ block: "start" });
+	}, [directComparison, restored]);
 
 	const waitingForProduct = Boolean(
 		!intent.current && useHints && entryHints?.productId && catalog.isPending,
@@ -428,13 +412,13 @@ export function NewProject({
 			.then((records) => {
 				if (!active || !client.isCurrentScope(session.query_scope)) return;
 				const matching = records.filter((record) => {
+					if (record.destination === "roof-comparison") return roofEntry;
 					if (
-						compareOnSubmit &&
+						directComparison &&
 						(record.destination === "guided-comparison" ||
 							record.destination === "roof")
 					)
 						return true;
-					if (compareOnSubmit && !directComparison) return false;
 					if (roofEntry)
 						return (
 							!record.profile &&
@@ -457,11 +441,7 @@ export function NewProject({
 				// Earlier roof entries and the regular project form both stored "design".
 				// Offer those receipts by title until the customer chooses one.
 				const resume = roofEntry
-					? matching.find(
-							(record) =>
-								record.destination === "roof" ||
-								record.destination === "roof-plan",
-						)
+					? matching.find((record) => record.destination !== "design")
 					: matching[0];
 				if (resume) restoreCreation(resume);
 			})
@@ -482,7 +462,6 @@ export function NewProject({
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
-		compareOnSubmit,
 		directComparison,
 		roofEntry,
 	]);
@@ -514,17 +493,21 @@ export function NewProject({
 			useAddress = false,
 			openRoof = false,
 			useRoofPlan = false,
+			compareRoofSite = false,
 			keepInverter,
 		}: {
 			discardProfile?: boolean;
 			useAddress?: boolean;
 			openRoof?: boolean;
 			useRoofPlan?: boolean;
+			compareRoofSite?: boolean;
 			keepInverter?: boolean;
 		} = {},
 	) {
 		const roofPlan = useRoofPlan || destination.current === "roof-plan";
-		const roof = roofEntry || openRoof || destination.current === "roof";
+		const roof =
+			!compareRoofSite &&
+			(roofEntry || openRoof || destination.current === "roof");
 		if (
 			sending.current ||
 			creationPending ||
@@ -535,13 +518,14 @@ export function NewProject({
 			!client.isCurrentScope(session.query_scope) ||
 			(!intent.current &&
 				!direction &&
+				!compareRoofSite &&
 				(roof
 					? !roofPlan &&
 						(!brief.site.country_code || !brief.site.location_label.trim())
 					: !directComparison && (!title.trim() || !brief.system_scope)))
 		)
 			return;
-		if (compareOnSubmit && !roof && !intent.current) {
+		if (directComparison && !roof && !intent.current) {
 			const goal = energyGoal(inputs);
 			const invalidVisible =
 				invalidDemand.has("annual") ||
@@ -551,10 +535,7 @@ export function NewProject({
 				(goal === "backup" &&
 					(invalidDemand.has("load") || invalidDemand.has("duration"))) ||
 				(goal === "peak" && invalidDemand.has("peak"));
-			if (
-				(!directComparison && !hasComparisonDemand(inputs, brief)) ||
-				invalidVisible
-			) {
+			if (invalidVisible) {
 				setDemandError(true);
 				return;
 			}
@@ -572,7 +553,7 @@ export function NewProject({
 			}
 		}
 		const editableProfile =
-			compareOnSubmit && (!intent.current || profileCorrection);
+			directComparison && (!intent.current || profileCorrection);
 		const file =
 			editableProfile && !discardProfile
 				? homepageProfileFile(profileForm)
@@ -649,7 +630,7 @@ export function NewProject({
 					keepInverter === undefined
 						? inputs
 						: changeExistingSystem(inputs, { keep_inverter: keepInverter });
-				if ((roof && !roofPlan) || (compareOnSubmit && useAddress)) {
+				if ((roof && !roofPlan) || (directComparison && useAddress)) {
 					try {
 						if (roof && config) {
 							if (!config.googleMapsApiKey) {
@@ -704,17 +685,19 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
-				destination.current = roofPlan
-					? "roof-plan"
-					: roof
-						? "roof"
-						: compareOnSubmit
-							? "guided-comparison"
-							: direction
-								? "preliminary-review"
-								: brief.system_scope === "storage_only"
-									? null
-									: "design";
+				destination.current = compareRoofSite
+					? "roof-comparison"
+					: roofPlan
+						? "roof-plan"
+						: roof
+							? "roof"
+							: directComparison
+								? "guided-comparison"
+								: direction
+									? "preliminary-review"
+									: brief.system_scope === "storage_only"
+										? null
+										: "design";
 			}
 			await store
 				.writeCreation(
@@ -725,7 +708,7 @@ export function NewProject({
 					previousProfile ? { previous: previousProfile } : undefined,
 				)
 				.then(() => {
-					if (compareOnSubmit && savedDraft.current) {
+					if (directComparison && savedDraft.current) {
 						forgetComparisonDraft(savedDraft.current);
 						savedDraft.current = null;
 						draftId.current = undefined;
@@ -799,10 +782,12 @@ export function NewProject({
 			if (
 				!created(
 					project,
-					destination.current ??
-						(createdBrief?.system_scope === "storage_only"
-							? "energy"
-							: undefined),
+					destination.current === "roof-comparison"
+						? "guided-comparison"
+						: (destination.current ??
+								(createdBrief?.system_scope === "storage_only"
+									? "energy"
+									: undefined)),
 					location.href === submittedFrom,
 				)
 			) {
@@ -967,9 +952,10 @@ export function NewProject({
 								setProfileForm(emptyHomepageProfile());
 								setProfileError("");
 								setLanguageIssue(null);
-								const field = homeForm.current?.querySelector<HTMLInputElement>(
-									'input[name="load_profile"]',
-								);
+								const field =
+									projectForm.current?.querySelector<HTMLInputElement>(
+										'input[name="load_profile"]',
+									);
 								if (field) field.value = "";
 							}}
 						>
@@ -1080,32 +1066,9 @@ export function NewProject({
 					{__("New project", "linker-tools")}
 				</button>
 			);
-		const compareLabel = compareOnSubmit
+		const compareLabel = directComparison
 			? __("Compare project options", "linker-tools")
 			: __("New project", "linker-tools");
-		const showSavedPicker =
-			!busy &&
-			!checking &&
-			!recoveryChecking &&
-			!recoveryDiscoveryFailed &&
-			!intent.current;
-		if (homeComparison?.savedProject && showSavedPicker) {
-			return (
-				<form
-					className="sc-main"
-					aria-label={compareLabel}
-					onSubmit={(event) => {
-						event.preventDefault();
-						homeComparison.compareSaved(homeComparison.savedProject);
-					}}
-				>
-					{homeComparison.picker}
-					<button className="sc-button sc-primary" type="submit">
-						{__("Compare systems", "linker-tools")}
-					</button>
-				</form>
-			);
-		}
 		const addressForm =
 			roofEntry ||
 			(failed && destination.current === "roof" && !profileCorrection);
@@ -1118,7 +1081,7 @@ export function NewProject({
 			!admitted;
 		const mapAction = config &&
 			(addressForm ||
-				(compareOnSubmit &&
+				(directComparison &&
 					brief.system_scope !== "storage_only" &&
 					(!intent.current || destination.current === "roof"))) && (
 				<RoofMapAction
@@ -1135,7 +1098,7 @@ export function NewProject({
 					})}
 				/>
 			);
-		const showSummary = !addressForm && (compareOnSubmit || workspaceHeading);
+		const showSummary = !addressForm && (directComparison || workspaceHeading);
 		const projectName = title.trim() || __("New project", "linker-tools");
 		const site = [
 			brief.site.location_label.trim(),
@@ -1145,7 +1108,7 @@ export function NewProject({
 			.join(" · ");
 		const form = (
 			<form
-				ref={homeForm}
+				ref={projectForm}
 				className={
 					directComparison ? "sc-main sc-comparison-intake" : "sc-main"
 				}
@@ -1159,7 +1122,6 @@ export function NewProject({
 					void submit(undefined, { useAddress });
 				}}
 			>
-				{showSavedPicker && homeComparison?.picker}
 				{entryHints &&
 					!intent.current &&
 					(hasCarriedValues || entryHints.invalid) && (
@@ -1341,6 +1303,9 @@ export function NewProject({
 						disabled={editingDisabled || inputContractRequired}
 						locked={Boolean(intent.current)}
 						action={mapAction}
+						compareSite={() =>
+							void submit(undefined, { compareRoofSite: true })
+						}
 						openPlan={() => {
 							roofPermission.current = null;
 							void submit(undefined, { useRoofPlan: true });
@@ -1367,26 +1332,26 @@ export function NewProject({
 							changeTitle: setTitle,
 							locked: Boolean(intent.current),
 							submitDisabled: waitingForProduct,
-							comparison: compareOnSubmit,
+							comparison: directComparison,
 							preliminary: directComparison,
 							...(busy
 								? {
-										submitLabel: compareOnSubmit
+										submitLabel: directComparison
 											? __("Preparing comparison…", "linker-tools")
 											: __("Creating…", "linker-tools"),
 									}
 								: failed
 									? {
-											submitLabel: compareOnSubmit
+											submitLabel: directComparison
 												? __("Try again", "linker-tools")
 												: __("Retry project creation", "linker-tools"),
 										}
-									: compareOnSubmit
+									: directComparison
 										? { submitLabel: __("Compare systems", "linker-tools") }
 										: {}),
 						}}
 						demand={
-							compareOnSubmit ? (
+							directComparison ? (
 								<HomepageDemand
 									inputs={inputs}
 									brief={brief}
@@ -1408,7 +1373,7 @@ export function NewProject({
 							) : undefined
 						}
 						profile={
-							compareOnSubmit &&
+							directComparison &&
 							(!intent.current || profileCorrection) && (
 								<HomepageLoadProfile
 									form={profileForm}
@@ -1432,7 +1397,6 @@ export function NewProject({
 									disabled={busy || Boolean(intent.current)}
 									edit={edit}
 									initiallyOpen={equipmentFirst}
-									intake={Boolean(homeComparison)}
 								/>
 							)
 						}

@@ -1,3 +1,8 @@
+import {
+	launchHomepageConfigurator,
+	compareSavedFromHome,
+} from '../lib/home-configurator';
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -134,12 +139,6 @@ function post(page: Page, endpoint: string) {
 	);
 }
 
-function homeForm(page: Page, text: Text) {
-	return page
-		.locator('[data-linker-planner][data-planner-home-url]')
-		.getByRole('form', { name: text.intake });
-}
-
 async function enterProject(
 	form: Locator,
 	text: Text,
@@ -169,10 +168,9 @@ async function prepareSavedRoof(
 	title: string
 ) {
 	await page.goto(url + text.home);
-	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
+	const lang = text === words.en ? 'en' : 'de';
 	const workspace = page.locator('[data-linker-planner]');
-	await button(workspace, text.enter).click();
-	const project = workspace.getByRole('form', { name: text.newProject });
+	const project = await launchHomepageConfigurator(page, lang);
 	await enterProject(project, text, {
 		title,
 		town: 'Rotterdam',
@@ -181,7 +179,14 @@ async function prepareSavedRoof(
 		scope: 'pv_only',
 		purpose: 'self',
 	});
-	await button(project, text.solar).click();
+	await button(project, text.compare).click();
+	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+	const nav = await resumePlannerProject(page, lang, title);
+	await nav
+		.getByRole('button', {
+			name: lang === 'en' ? /Solar$/ : /Photovoltaik$|Solar$/,
+		})
+		.click();
 	await button(workspace, text.roofChoice).click();
 	for (const [field, value] of Object.entries({
 		panel_length_mm: '1800',
@@ -411,11 +416,7 @@ for (const [lang, width] of matrix) {
 					prepareSavedRoof(page, url, text, title));
 			await page.goto(url + text.home);
 			await test.step('1. Bring the rooftop project and compare', async () => {
-				const form = homeForm(page, text);
-				await form
-					.getByLabel(text.saved)
-					.selectOption({ label: title });
-				await button(form, text.compare).click();
+				await compareSavedFromHome(page, lang, previous.projectId);
 				await expect(page).toHaveURL(
 					new RegExp(`[?&]project=${previous.projectId}`)
 				);
@@ -450,7 +451,7 @@ for (const [lang, width] of matrix) {
 			const tag = randomUUID();
 			const projectId =
 				await test.step('1. Supply site measurements and compare', async () => {
-					const form = homeForm(page, text);
+					const form = await launchHomepageConfigurator(page, lang);
 					await enterProject(form, text, {
 						title: `Measured Konstanz load ${tag}`,
 						town: 'Konstanz',

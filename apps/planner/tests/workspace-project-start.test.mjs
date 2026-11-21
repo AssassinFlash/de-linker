@@ -28,168 +28,19 @@ const session = {
 	},
 };
 
-test("the home form creates a comparison with the supplied data in a single submit", (t) =>
-	runHomeComparison(t));
+test("the configurator form creates a comparison with the supplied data in a single submit", (t) =>
+	runProjectComparison(t));
 
-test("a rejected CSV mapping remains editable on the same project after reopening the homepage", (t) =>
-	runHomeComparison(t, "correct"));
+test("a rejected CSV mapping remains editable on the same project after reopening the configurator", (t) =>
+	runProjectComparison(t, "correct"));
 
 test("a customer can explicitly discard the rejected load profile and compare the same project", (t) =>
-	runHomeComparison(t, "discard"));
+	runProjectComparison(t, "discard"));
 
-test("the home form carries an unknown grid connection through project creation", (t) =>
-	runHomeComparison(t, undefined, true));
+test("the configurator form carries an unknown grid connection through project creation", (t) =>
+	runProjectComparison(t, undefined, true));
 
-test("a new-project CSV remains actionable when the homepage picker shows a saved project", async (t) => {
-	const fixture = setupDom();
-	const { createRoot } = await import("react-dom/client");
-	const { QueryClient, QueryClientProvider } =
-		await import("@tanstack/react-query");
-	const { HomepageComparison } =
-		await import("../src/components/HomepageComparison.tsx");
-	let root = createRoot(fixture.element);
-	const cache = new QueryClient();
-	t.after(async () => {
-		await fixture.dispose(root);
-		cache.clear();
-	});
-	const project = {
-		id: projectId,
-		title: "Saved rooftop",
-		revision: 1,
-		input_sha256: "2".repeat(64),
-		updated_at: 1763200000,
-	};
-	const client = {
-		isCurrentScope: () => true,
-		async query(path, command) {
-			if (path === "products/current")
-				return { schema_version: 1, provider: "woocommerce", products: [] };
-			assert.equal(path, "projects/list");
-			if (command.title_query === "Saved roof")
-				return { schema_version: 1, items: [project], next: null };
-			const first = {
-				...project,
-				id: "8".repeat(32),
-				title: "Another project",
-			};
-			return {
-				schema_version: 1,
-				items: [first],
-				next: { id: first.id, updated_at: first.updated_at },
-			};
-		},
-	};
-	const mount = (locale) =>
-		act(async () =>
-			root.render(
-				React.createElement(
-					QueryClientProvider,
-					{ client: cache },
-					React.createElement(HomepageComparison, {
-						session,
-						client,
-						config: { locale, countries: {} },
-						store: {
-							async readCreations() {
-								return [];
-							},
-						},
-						target: new URL("/workspace/", location.href),
-						recheck() {},
-					}),
-				),
-			),
-		);
-	await mount("en");
-	await until(() => document.querySelector('input[type="search"]'));
-	await enter(document.querySelector('input[type="search"]'), "Saved roof");
-	await until(() =>
-		document.querySelector('option[value="' + projectId + '"]'),
-	);
-	const csv = document.querySelector('[name="load_profile"]');
-	await act(async () => {
-		Object.defineProperty(csv, "files", {
-			value: [new File(["timestamp,load"], "load.csv")],
-		});
-		csv.dispatchEvent(new Event("change", { bubbles: true }));
-	});
-	await act(async () => {
-		const picker = document.querySelector(
-			'option[value="' + projectId + '"]',
-		).parentElement;
-		picker.value = projectId;
-		picker.dispatchEvent(new Event("change", { bubbles: true }));
-	});
-	assert.equal(document.querySelector('[name="load_profile"]'), null);
-	const link = document.createElement("a");
-	link.href = "/de/";
-	link.lang = "de";
-	link.hreflang = "de";
-	document.querySelector("header").append(link);
-	async function blocked() {
-		let result;
-		document.addEventListener(
-			"click",
-			(event) => {
-				result = event.defaultPrevented;
-				event.preventDefault();
-			},
-			{ once: true },
-		);
-		await act(async () =>
-			link.dispatchEvent(
-				new window.MouseEvent("click", { bubbles: true, cancelable: true }),
-			),
-		);
-		return result;
-	}
-	assert.equal(await blocked(), true);
-	assert.match(document.activeElement.textContent, /Your CSV is still here/);
-	const remove = document.activeElement.querySelector("button");
-	assert.equal(remove.textContent, "Remove CSV");
-	await act(async () => remove.click());
-	assert.equal(document.querySelector("option:checked").value, projectId);
-	async function switchLanguage(lang, path) {
-		link.href = path;
-		link.hreflang = lang;
-		link.lang = lang;
-		assert.equal(await blocked(), false);
-		await act(async () => root.unmount());
-		cache.clear();
-		history.pushState(null, "", link.href);
-		root = createRoot(fixture.element);
-		await mount(lang);
-		await until(() => document.querySelector('input[type="search"]'));
-		assert.equal(location.pathname, path);
-		assert.equal(location.search, "");
-		assert.equal(
-			document.querySelector('input[type="search"]').value,
-			"Saved roof",
-		);
-		await until(() =>
-			document.querySelector('option[value="' + projectId + '"]'),
-		);
-	}
-	await switchLanguage("de", "/de/");
-	const picker = document.querySelector(
-		'option[value="' + projectId + '"]',
-	).parentElement;
-	assert.equal(picker.value, projectId);
-	await act(async () => {
-		picker.value = "";
-		picker.dispatchEvent(new Event("change", { bubbles: true }));
-	});
-	await switchLanguage("en", "/");
-	assert.equal(
-		document.querySelector('option[value="' + projectId + '"]').parentElement
-			.value,
-		"",
-	);
-	assert.ok(document.querySelector('input[name="project_title"]'));
-});
-
-async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
+async function runProjectComparison(t, rejectedProfile, unknownPhase = false) {
 	const rejectFirstMapping = Boolean(rejectedProfile);
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
@@ -309,7 +160,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
 		else Reflect.deleteProperty(globalThis, "indexedDB");
 	});
-	const mountHome = (locale = "en") =>
+	const mountProject = (locale = "en") =>
 		act(async () =>
 			root.render(
 				React.createElement(SessionBoundary, { client }, (value, recheck) =>
@@ -321,11 +172,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 						openOnLoad: true,
 						locale,
 						config: { locale, countries: { DE: "Germany" } },
-						homeComparison: {
-							picker: null,
-							savedProject: "",
-							compareSaved() {},
-						},
+						directComparison: true,
 						created: (project, destination) => {
 							opened.push([project, destination]);
 							return true;
@@ -336,7 +183,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 		);
 	const findForm = () =>
 		document.querySelector('form[aria-label="Compare project options"]');
-	await mountHome();
+	await mountProject();
 	await until(findForm);
 	let form = findForm();
 	const title = form.querySelector('[name="project_title"]');
@@ -402,19 +249,19 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 			await act(async () => root.unmount());
 			history.pushState(null, "", language.href);
 			root = createRoot(fixture.element);
-			await mountHome(lang);
+			await mountProject(lang);
 			await until(findForm);
 			form = findForm();
 			return true;
 		}
-		assert.equal(await switchLanguage("de", "/de/"), true);
+		assert.equal(await switchLanguage("de", "/de/loesungskonfigurator/"), true);
 		assert.equal(field("project_title").value, "Berlin workshop");
 		assert.equal(field("annual_load_kwh").value, "7200");
 		assert.equal(field("annual_load_basis").value, "bill_total");
 		assert.equal(field("pv_dc_kw").value, "8");
 		await enter(field("pv_dc_kw"), "");
 		await select("project_purpose", "");
-		assert.equal(await switchLanguage("en", "/"), true);
+		assert.equal(await switchLanguage("en", "/solution-configurator/"), true);
 		assert.equal(field("pv_dc_kw").value, "");
 		assert.equal(field("project_purpose").value, "");
 		await select("project_purpose", "peak");
@@ -499,7 +346,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);
 		assert.equal(opened.length, 0);
 		const language = document.createElement("a");
-		language.href = "/de/";
+		language.href = "/de/loesungskonfigurator/";
 		language.hreflang = "de";
 		language.lang = "de";
 		document.querySelector("header").append(language);
@@ -556,7 +403,7 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 		assert.equal(editedField.value, editedText);
 		await act(async () => root.unmount());
 		root = createRoot(fixture.element);
-		await mountHome();
+		await mountProject();
 		await until(() =>
 			findForm()?.querySelector('[name="load_profile_source"]'),
 		);

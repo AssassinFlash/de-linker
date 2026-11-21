@@ -20,6 +20,21 @@ use WP_Mock\Tools\TestCase;
  */
 final class PlannerApplicationTest extends TestCase {
 
+	/** A restored homepage revision containing the old shortcode cannot enqueue the workspace. */
+	public function test_retired_homepage_shortcode_outputs_nothing_and_enqueues_no_planner(): void {
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/includes/Presentation/PageUrls.php';
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_front_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => new \WP_Post( (object) array( 'ID' => 73 ) ) ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://fixture.invalid/solution-configurator/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wp_enqueue_script_module', array( 'times' => 0 ) );
+		$app = new Application( dirname( __DIR__, 3 ) . '/linker-tools.php' );
+		$this->assertSame( '', $app->mount( array( 'mode' => 'home' ) ) );
+		$this->assertConditionsMet();
+	}
+
 	/**
 	 * Both visitor states the mount has to serve.
 	 *

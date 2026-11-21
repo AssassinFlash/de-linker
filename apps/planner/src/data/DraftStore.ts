@@ -21,13 +21,23 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
-export type CreationDestination =
-	| "design"
-	| "roof"
-	| "roof-plan"
-	| "equipment"
-	| "preliminary-review"
-	| "guided-comparison";
+const creationDestinations = [
+	"design",
+	"roof",
+	"roof-plan",
+	"roof-comparison",
+	"equipment",
+	"preliminary-review",
+	"guided-comparison",
+] as const;
+export type CreationDestination = (typeof creationDestinations)[number];
+
+function validDestination(value: unknown): value is CreationDestination | null {
+	return (
+		value === null ||
+		creationDestinations.some((destination) => destination === value)
+	);
+}
 
 export interface CreationIntent {
 	readonly key: string;
@@ -185,15 +195,7 @@ export class DraftStore {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
 		const profileBytes = creationProfileBytes(profile);
-		if (
-			destination !== null &&
-			destination !== "design" &&
-			destination !== "roof" &&
-			destination !== "roof-plan" &&
-			destination !== "equipment" &&
-			destination !== "preliminary-review" &&
-			destination !== "guided-comparison"
-		)
+		if (!validDestination(destination))
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
 		const transaction = db.transaction(CREATION_INTENTS, "readwrite");
@@ -274,15 +276,7 @@ export class DraftStore {
 		const command = validateCreation(body);
 		if (oldCommand.key === command.key)
 			throw new Error("creation_intent_conflict");
-		if (
-			destination !== null &&
-			destination !== "design" &&
-			destination !== "roof" &&
-			destination !== "roof-plan" &&
-			destination !== "equipment" &&
-			destination !== "preliminary-review" &&
-			destination !== "guided-comparison"
-		)
+		if (!validDestination(destination))
 			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
 		const transaction = db.transaction(
@@ -702,15 +696,7 @@ function scanCreations(
 				value.destination === undefined || value.destination === null
 					? null
 					: value.destination;
-			if (
-				destination !== null &&
-				destination !== "design" &&
-				destination !== "roof" &&
-				destination !== "roof-plan" &&
-				destination !== "equipment" &&
-				destination !== "preliminary-review" &&
-				destination !== "guided-comparison"
-			)
+			if (!validDestination(destination))
 				throw new Error("invalid_creation_recovery");
 
 			const profile =

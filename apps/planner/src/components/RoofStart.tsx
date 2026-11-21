@@ -10,6 +10,7 @@ export function RoofStart({
 	locked,
 	action,
 	openPlan,
+	compareSite,
 	change,
 }: {
 	config: Configuration;
@@ -18,18 +19,35 @@ export function RoofStart({
 	locked: boolean;
 	action: ReactNode;
 	openPlan: () => void;
+	compareSite: () => void;
 	change: (site: Brief["site"]) => void;
 }) {
 	return (
 		<>
-			<button
-				className="sc-button sc-roof-plan-entry"
-				type="button"
-				disabled={disabled || locked}
-				onClick={openPlan}
-			>
-				{__("Use a roof plan or measurements", "linker-tools")}
-			</button>
+			<div className="sc-actions sc-roof-plan-entry">
+				<button
+					className="sc-button"
+					type="button"
+					disabled={disabled || locked}
+					onClick={openPlan}
+				>
+					{__("Use a roof plan or measurements", "linker-tools")}
+				</button>
+				{!locked && !disabled && (
+					<a
+						className="sc-button"
+						href="?compare=preliminary"
+						onClick={(event) => {
+							if (site.country_code || site.location_label.trim()) {
+								event.preventDefault();
+								compareSite();
+							}
+						}}
+					>
+						{__("Compare options", "linker-tools")}
+					</a>
+				)}
+			</div>
 			<section className="sc-card">
 				<header className="sc-section-head">
 					<div>

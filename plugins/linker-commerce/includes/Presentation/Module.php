@@ -112,6 +112,9 @@ final class Module {
 		// carries. This runs unconditionally: the guard is inside the script,
 		// which only carries a hash the target page actually has.
 		wp_enqueue_script( 'linker-language-hash', $base . 'language-hash.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/language-hash.js' ), true );
+		if ( is_front_page() ) {
+			wp_enqueue_script( 'linker-home-configurator', $base . 'home-configurator.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/home-configurator.js' ), true );
+		}
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
 			// The catalogue's family cards: the model picker switches the
 			// article a card shows (spec: the live shop's family grid).

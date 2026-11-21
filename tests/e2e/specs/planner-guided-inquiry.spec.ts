@@ -1,3 +1,8 @@
+import {
+	launchHomepageConfigurator,
+	compareSavedFromHome,
+} from '../lib/home-configurator';
+import { resumePlannerProject } from '../lib/resume-planner-project';
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { instance, isolateMailBudgets, wp } from '../lib/instance';
@@ -178,14 +183,25 @@ async function enterProject(
 			.fill(scenario.retainedInverter.power);
 		await intake.getByLabel(text.keep).check();
 	}
+	if (scenario.selectedInverter || scenario.systems) {
+		const equipment = intake.locator('details.sc-project-equipment');
+		if (
+			!(await equipment.evaluate(
+				(section: HTMLDetailsElement) => section.open
+			))
+		)
+			await equipment.locator('summary').first().click();
+	}
 	if (scenario.selectedInverter)
 		await intake
 			.getByLabel(text.inverter)
 			.selectOption({ label: scenario.selectedInverter });
 	if (scenario.systems) {
 		await intake
-			.locator('select[name=system_arrangement]')
-			.selectOption('multiple');
+			.getByRole('button', {
+				name: /^Multiple systems$|^Mehrere Systeme$/,
+			})
+			.click();
 		const names = intake.getByLabel(text.systemName, { exact: true });
 		await expect(names).toHaveCount(scenario.systems.length);
 		for (const [index, name] of scenario.systems.entries()) {
@@ -285,12 +301,10 @@ for (const scenario of scenarios) {
 						height: width === 390 ? 844 : 900,
 					});
 					await page.goto(url + text.home);
-					const home = page.locator(
-						'[data-linker-planner][data-planner-home-url]'
+					const intake = await launchHomepageConfigurator(
+						page,
+						locale
 					);
-					const intake = home.getByRole('form', {
-						name: text.intake,
-					});
 
 					let carriedProjectId: string | undefined;
 					if (scenario.carried) {
@@ -326,12 +340,15 @@ for (const scenario of scenarios) {
 					}
 
 					await test.step('1. Bring or enter project details and compare', async () => {
-						await expect(intake).toBeVisible();
-						if (carriedProjectId)
-							await intake
-								.getByLabel(text.saved)
-								.selectOption({ label: title });
-						else await enterProject(intake, scenario, title, text);
+						if (carriedProjectId) {
+							await compareSavedFromHome(
+								page,
+								locale,
+								carriedProjectId
+							);
+							return;
+						}
+						await enterProject(intake, scenario, title, text);
 						const compare = intake.getByRole('button', {
 							name: text.compare,
 							exact: true,
@@ -344,11 +361,8 @@ for (const scenario of scenarios) {
 								? 'homepage-project'
 								: undefined
 						);
-						const runReply = carriedProjectId
-							? undefined
-							: reply(page, 'runs/find-equipment');
+						const runReply = reply(page, 'runs/find-equipment');
 						await compare.click();
-						if (!runReply) return;
 						const run = await runReply;
 						expect(run.ok()).toBe(true);
 						expect(run.request().postDataJSON()).toMatchObject({
@@ -598,13 +612,8 @@ async function keepEarlierProjectInDraft(
 	await page.goto(url + text.home);
 	const decline = exactButton(page, draftText.decline);
 	if (await decline.isVisible()) await decline.click();
-	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
 	const workspace = page.locator('[data-linker-planner]');
-	await exactButton(workspace, draftText.enter).click();
-	const project = workspace.getByRole('form', {
-		name: draftText.newProject,
-		exact: true,
-	});
+	const project = await launchHomepageConfigurator(page, locale);
 	await project.getByLabel(text.title).fill(title);
 	await project.locator('select[name=country]').selectOption('DE');
 	await project.getByLabel(text.location).fill('Berlin');
@@ -615,7 +624,14 @@ async function keepEarlierProjectInDraft(
 	await project
 		.locator('select[name=project_purpose]')
 		.selectOption('backup');
-	await exactButton(project, draftText.storage).click();
+	await exactButton(project, text.compare).click();
+	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+	const navigation = await resumePlannerProject(page, locale, title);
+	await navigation
+		.getByRole('button', {
+			name: locale === 'en' ? /Energy use$/ : /Strombedarf$/,
+		})
+		.click();
 	await workspace.getByLabel(text.phase).selectOption('3');
 	await workspace.getByLabel(text.load).fill('3');
 	await workspace.getByLabel(text.duration).fill('2');
@@ -709,9 +725,7 @@ for (const [locale, width] of [
 
 			await page.goto(url + text.home);
 			await test.step('1. Enter a different project and compare', async () => {
-				const intake = page
-					.locator('[data-linker-planner][data-planner-home-url]')
-					.getByRole('form', { name: text.intake });
+				const intake = await launchHomepageConfigurator(page, locale);
 				await enterProject(intake, scenarios[0]!, title, text);
 				const pending = reply(page, 'runs/find-equipment');
 				await exactButton(intake, text.compare).click();

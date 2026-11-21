@@ -1,3 +1,4 @@
+import { launchHomepageConfigurator } from '../lib/home-configurator';
 import { randomUUID } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import { approveCustomer } from '../lib/approval';
@@ -41,9 +42,9 @@ const labels = {
 	},
 } as const;
 type Language = keyof typeof labels;
-const home = (page: Page) =>
+const projectForm = (page: Page) =>
 	page
-		.locator('[data-planner-home-url] form')
+		.locator('[data-linker-planner] form')
 		.filter({ has: page.locator('select[name=system_scope]') });
 const field = (form: Locator, name: string) =>
 	form.locator('[name="' + name + '"]');
@@ -51,7 +52,7 @@ const unknown =
 	/unknown|not sure|don.t know|not yet known|unbekannt|nicht (bekannt|sicher)|weiß.*nicht/i;
 
 async function fillProject(page: Page, language: Language, phaseKnown = false) {
-	const form = home(page);
+	const form = await launchHomepageConfigurator(page, language);
 	await field(form, 'project_title').fill('Bodensee');
 	await field(form, 'country').selectOption('DE');
 	await field(form, 'location_label').fill('Konstanz');
@@ -109,8 +110,10 @@ async function changeLanguage(page: Page, to: Language) {
 		'lang',
 		to === 'de' ? /^de/ : /^en/
 	);
-	expect(new URL(page.url()).pathname).toBe(to === 'de' ? '/de/' : '/');
-	await expect(home(page)).toBeInViewport();
+	expect(new URL(page.url()).pathname).toBe(
+		to === 'de' ? '/de/loesungskonfigurator/' : '/solution-configurator/'
+	);
+	await expect(projectForm(page)).toBeInViewport();
 	expect(new URL(page.url()).href).not.toMatch(/Konstanz|Bodensee|6200/i);
 }
 
@@ -138,20 +141,20 @@ async function enterAndSwitchLanguage(page: Page, language: Language) {
 	await page.goto(instance().url + (language === 'de' ? '/de/' : '/'));
 	await page.locator('[data-cky-tag="reject-button"]').click();
 	await fillProject(page, language);
-	await field(home(page), 'project_title').fill('');
+	await field(projectForm(page), 'project_title').fill('');
 	await changeLanguage(page, language === 'de' ? 'en' : 'de');
-	await checkFacts(home(page));
-	await expect(field(home(page), 'project_title')).toHaveValue('');
+	await checkFacts(projectForm(page));
+	await expect(field(projectForm(page), 'project_title')).toHaveValue('');
 	await changeLanguage(page, language);
-	await checkFacts(home(page));
-	await expect(field(home(page), 'project_title')).toHaveValue('');
+	await checkFacts(projectForm(page));
+	await expect(field(projectForm(page), 'project_title')).toHaveValue('');
 	expect(projectWrites).toEqual([]);
-	await field(home(page), 'project_title').fill('Bodensee');
-	await shot(page, 'homepage');
+	await field(projectForm(page), 'project_title').fill('Bodensee');
+	await shot(page, 'project-details');
 }
 
 async function sendInquiry(page: Page, language: Language, email: string) {
-	await home(page)
+	await projectForm(page)
 		.getByRole('button', {
 			name: labels[language].compare,
 			exact: true,
@@ -427,7 +430,7 @@ test('a known three-phase connection opens equipment comparison for Konstanz', a
 			new URL(response.url()).pathname.endsWith('/runs/find-equipment'),
 		{ timeout: 120_000 }
 	);
-	await home(page)
+	await projectForm(page)
 		.getByRole('button', { name: labels.en.compare, exact: true })
 		.click();
 	const response = await run;
@@ -507,7 +510,7 @@ test('an unfinished CSV mapping stays in place until the customer removes it', a
 	await page.goto(instance().url + '/');
 	await page.locator('[data-cky-tag="reject-button"]').click();
 	await fillProject(page, 'en');
-	const form = home(page);
+	const form = projectForm(page);
 	const filename = 'cossmic-konstanz-load-2017-06-19.csv';
 	await field(form, 'load_profile').setInputFiles('fixtures/' + filename);
 	await field(form, 'load_profile_delimiter').selectOption(';');
@@ -521,11 +524,17 @@ test('an unfinished CSV mapping stays in place until the customer removes it', a
 	await expect(field(form, 'load_profile_source')).toHaveValue(
 		'Konstanz meter reading'
 	);
-	await expect(form.getByText(/your CSV is still here/i)).toBeVisible();
+	const csvNotice = page
+		.locator('[data-linker-planner]')
+		.getByRole('alert')
+		.filter({ hasText: /your CSV is still here/i });
+	await expect(csvNotice).toBeVisible();
 	await shot(page, 'csv-language-recovery');
-	await form.getByRole('button', { name: 'Remove CSV', exact: true }).click();
+	await csvNotice
+		.getByRole('button', { name: 'Remove CSV', exact: true })
+		.click();
 	await changeLanguage(page, 'de');
-	await checkFacts(home(page));
+	await checkFacts(projectForm(page));
 });
 
 test('changing the preliminary selection keeps the project and inquiry edits', async ({
@@ -534,7 +543,7 @@ test('changing the preliminary selection keeps the project and inquiry edits', a
 	await page.goto(instance().url + '/');
 	await page.locator('[data-cky-tag="reject-button"]').click();
 	await fillProject(page, 'en');
-	await home(page)
+	await projectForm(page)
 		.getByRole('button', { name: labels.en.compare, exact: true })
 		.click();
 	const select = (name: string) =>

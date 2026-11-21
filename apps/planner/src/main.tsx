@@ -11,7 +11,6 @@ import { PlannerClient } from "./data/PlannerClient.ts";
 import { DraftStore } from "./data/DraftStore.ts";
 import { SessionBoundary } from "./components/SessionBoundary.tsx";
 import { Workspace } from "./components/Workspace.tsx";
-import { HomepageComparison } from "./components/HomepageComparison.tsx";
 import { ToolIdentity } from "./components/ToolIdentity.tsx";
 import { __ } from "./i18n.ts";
 
@@ -47,13 +46,7 @@ class ApplicationBoundary extends Component<
 		return this.props.children;
 	}
 }
-function Application({
-	config,
-	homepage,
-}: {
-	config: Configuration;
-	homepage: URL | null;
-}) {
+function Application({ config }: { config: Configuration }) {
 	const client = useMemo(
 		() => new PlannerClient({ ...config, origin: location.origin }),
 		[config],
@@ -61,31 +54,19 @@ function Application({
 	const store = useMemo(() => new DraftStore(), []);
 	return (
 		<SessionBoundary client={client}>
-			{(session, recheck) =>
-				homepage ? (
-					<HomepageComparison
+			{(session, recheck) => (
+				<>
+					<Workspace
 						key={session.query_scope}
 						client={client}
 						store={store}
 						config={config}
 						session={session}
-						target={homepage}
 						recheck={recheck}
 					/>
-				) : (
-					<>
-						<Workspace
-							key={session.query_scope}
-							client={client}
-							store={store}
-							config={config}
-							session={session}
-							recheck={recheck}
-						/>
-						<ToolIdentity />
-					</>
-				)
-			}
+					<ToolIdentity />
+				</>
+			)}
 		</SessionBoundary>
 	);
 }
@@ -100,20 +81,10 @@ async function mount(): Promise<void> {
 	)) {
 		try {
 			const config = readConfiguration(element, import.meta.url);
-			const homepage = element.dataset.plannerHomeUrl
-				? new URL(element.dataset.plannerHomeUrl, element.baseURI)
-				: null;
-			if (
-				homepage &&
-				(homepage.origin !== location.origin ||
-					homepage.username ||
-					homepage.password)
-			)
-				throw new Error("invalid_homepage_comparison_target");
 			createRoot(element).render(
 				<StrictMode>
 					<ApplicationBoundary>
-						<Application config={config} homepage={homepage} />
+						<Application config={config} />
 					</ApplicationBoundary>
 				</StrictMode>,
 			);

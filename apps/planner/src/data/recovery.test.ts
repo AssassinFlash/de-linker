@@ -104,7 +104,7 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			key: crypto.randomUUID(),
 			input_contract: "pv_string_links_direct_beam_geometric_pv_v1",
 		});
-		await store.writeCreation(scope, geometricBody);
+		await store.writeCreation(scope, geometricBody, "roof-comparison");
 		const restoredCreations = await new DraftStore().readCreations(scope);
 		assert.deepEqual(
 			new Set(restoredCreations.map((value) => value.body)),
@@ -117,6 +117,11 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 		assert.equal(
 			restoredCreations.find((value) => value.body === legacyBody)?.destination,
 			null,
+		);
+		assert.equal(
+			restoredCreations.find((value) => value.body === geometricBody)
+				?.destination,
+			"roof-comparison",
 		);
 		const profile = await prepareHomepageProfile(
 			{
