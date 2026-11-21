@@ -259,7 +259,7 @@ function ReportPreview({
 						<p role="status">{__("Preparing PDF…", "linker-tools")}</p>
 					)}
 				</div>
-				<details className="sc-report-readable" open={!pdfUrl || !allowed}>
+				<details className="sc-report-readable" open>
 					<summary>{__("Report details", "linker-tools")}</summary>
 					<div className="sc-report-preview" lang={report.locale}>
 						<p className="sc-muted">{report.subtitle}</p>
