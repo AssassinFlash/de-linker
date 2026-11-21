@@ -76,7 +76,7 @@ export function PlanningSourcesCard( {
 		'linker-tools'
 	);
 	const href = destination( block, configuratorLinks );
-	let title = __( 'Calculation sources and periods', 'linker-tools' );
+	let title: string = __( 'Calculation sources and periods', 'linker-tools' );
 	if ( block.results.every( ( result ) => result.groups.length === 0 ) ) {
 		title =
 			block.binding.planning_run_ids.length === 2
