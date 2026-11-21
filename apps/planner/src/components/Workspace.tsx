@@ -721,6 +721,14 @@ export function Workspace({
 						)}
 					</div>
 					<div className="sc-actions">
+						{projectIndex && (
+							<a
+								className="sc-button sc-primary"
+								href="?compare=preliminary"
+							>
+								{__("New project", "linker-tools")}
+							</a>
+						)}
 						{!entryHints && !projectIndex && !savedSource && !briefSource && (
 							<a className="sc-button" href="?step=roof">
 								{__("Start with your roof", "linker-tools")}

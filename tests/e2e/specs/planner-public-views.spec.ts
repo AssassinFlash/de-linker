@@ -75,6 +75,12 @@ for (const [lang, routes] of Object.entries(pages)) {
 			await page.goto(entry + '?projects=1');
 			await expect(page.locator('.sc-saved-projects')).toBeVisible();
 			await expect(page.locator('[name=project_title]')).toHaveCount(0);
+			await page
+				.locator('.sc-project-heading a[href="?compare=preliminary"]')
+				.click({ timeout: 15000 });
+			await expect(
+				page.locator('.sc-direction-comparison tbody tr')
+			).toHaveCount(4);
 			const tiles: string[] = [];
 			page.on('request', (request) => {
 				if (
