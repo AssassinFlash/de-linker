@@ -98,11 +98,9 @@ async function reviewFromEntry(
 		const project = new URL(page.url()).searchParams.get('project');
 		if (project) {
 			await page.goto(target.origin + target.pathname + '?projects=1');
-			const row = page
-				.getByRole('listitem')
-				.filter({
-					has: page.locator('[id="sc-project-' + project + '"]'),
-				});
+			const row = page.getByRole('listitem').filter({
+				has: page.locator('[id="sc-project-' + project + '"]'),
+			});
 			await row
 				.getByRole('button', {
 					name:
