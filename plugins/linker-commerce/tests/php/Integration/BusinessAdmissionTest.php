@@ -994,13 +994,29 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * Repeated deliveries to a single recipient do not block an unrelated address.
 	 */
 	public function test_repeat_recipient_does_not_block_a_different_address(): void {
-		$this->assertTrue( ReceiptBudget::take( 'target@example.test', 9900001 ) );
-		$this->assertTrue( ReceiptBudget::take( 'TARGET@example.test', 9900002 ) );
-		$this->assertFalse( ReceiptBudget::take( 'target@example.test', 9900003 ) );
-		for ( $i = 0; $i < 8; ++$i ) {
-			$this->assertTrue( ReceiptBudget::take( 'target-' . $i . '@example.test', 9900010 + $i ) );
-		}
-		$this->assertTrue( ReceiptBudget::take( 'another@example.test', 9900099 ) );
-		$this->assertTrue( ReceiptBudget::take( 'target@example.test', 9900001 ), 'Native replay spends no additional allowance.' );
+		$tag = self::tag();
+		$target = "target-{$tag}@example.test";
+		$first = wp_generate_uuid4();
+		$this->assertTrue( ReceiptBudget::take( $target, $first ) );
+		$this->assertTrue( ReceiptBudget::take( strtoupper( $target ), wp_generate_uuid4() ) );
+		$this->assertFalse( ReceiptBudget::take( $target, wp_generate_uuid4() ) );
+		$this->assertTrue( ReceiptBudget::take( "other-{$tag}@example.test", wp_generate_uuid4() ) );
+		$this->assertTrue( ReceiptBudget::take( $target, $first ), 'Native replay spends no additional allowance.' );
+
 	}
+	/** Verified erasure removes only this address and preserves the original transport's tombstone. */
+	public function test_erasure_of_one_receipt_recipient_leaves_the_other_address_available(): void {
+		$email = 'erased-receipt-' . self::tag() . '@example.test';
+		$peer = 'retained-receipt-' . self::tag() . '@example.test';
+		$id = wp_generate_uuid4();
+		$this->assertSame( '', ReceiptBudget::reason( array( $email, $peer ), $id, 'registration' ) );
+		$privacy = new \Linker\Commerce\Protection\Privacy();
+		$this->assertNotEmpty( $privacy->export( $email )['data'] );
+		$this->assertTrue( $privacy->erase( $email )['items_removed'] );
+		$this->assertEmpty( \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false ) );
+		$this->assertCount( 1, \Linker\Commerce\Protection\ReceiptRecipients::privacy( $peer, false ) );
+		$this->assertSame( 'unavailable', ReceiptBudget::reason( array( $email, $peer ), $id, 'registration' ) );
+		$this->assertSame( '', ReceiptBudget::reason( $peer, wp_generate_uuid4() ) );
+	}
+
 }

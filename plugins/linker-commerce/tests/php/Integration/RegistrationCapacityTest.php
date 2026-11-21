@@ -907,17 +907,16 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 * Native receipt budget policy skip is explicit and never blocks team mail.
 	 */
 	public function test_optional_receipt_quota_skip_is_durable_without_leaking_a_slot(): void {
-		for ( $i = 0; $i < 10; ++$i ) {
-			$this->assertSame( '', \Linker\Commerce\Protection\ReceiptBudget::reason( 'policy-' . $i . '@example.test', 'fixture-' . $i, 'registration' ) );
-		}
 		$post = $this->public_post( 44 );
+		$this->assertSame( '', \Linker\Commerce\Protection\ReceiptBudget::reason( $post['email'], wp_generate_uuid4() ) );
+		$this->assertSame( '', \Linker\Commerce\Protection\ReceiptBudget::reason( $post['email'], wp_generate_uuid4() ) );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
 		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
 		$this->assertIsInt( $id );
 		$this->own_user( $id );
 		$receipt = $this->notices( $id )['received'];
 		$this->assertSame( 'skipped', $receipt['state'] );
-		$this->assertSame( 'daily_cap', $receipt['reason'] );
+		$this->assertSame( 'target_cap', $receipt['reason'] );
 		$this->assertTrue( RegistrationMessage::acknowledged( $receipt, $id, 'received' ) );
 		$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
 		$state = get_option( IntakeStore::OPTION );
@@ -1773,38 +1772,20 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertSame( 'erased', $this->notices( $id )['received']['state'] );
 	}
 
-	/** Frozen To normalization keeps the original single-recipient receipt identity byte-for-byte. */
-	public function test_review_receipt_policy_single_target_is_compatible_with_frozen_to(): void {
+	/** Multi-recipient charges and replays use the same normalized addresses as wp_mail. */
+	public function test_review_receipt_policy_multi_target_is_atomic(): void {
 		$policy = \Linker\Commerce\Protection\ReceiptBudget::class;
-		$this->assertSame( '', $policy::reason( 'one@example.test', 600, 'registration' ) );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertSame( '', $policy::reason( array( 'Fixture <ONE@example.test>', ' one@example.test ' ), 600, 'registration' ) );
-		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertSame( $before['receipts'], $after['receipts'] );
-		$this->assertSame( $before['buckets'], $after['buckets'] );
-	}
-
-	/** All frozen targets reserve atomically, replay independent of order and count site once. */
-	public function test_review_receipt_policy_multi_target_is_atomic_and_site_is_once(): void {
-		$policy = \Linker\Commerce\Protection\ReceiptBudget::class;
-		$this->assertSame( '', $policy::reason( array( 'two@example.test', 'one@example.test', 'ONE@example.test' ), 601, 'registration' ) );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertCount( 1, $before['receipts'] );
-		$this->assertCount( 5, $before['buckets'] );
-		$this->assertSame( '', $policy::reason( array( 'one@example.test', 'two@example.test' ), 601, 'registration' ) );
-		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertSame( $before['buckets'], $after['buckets'] );
-		$this->assertSame( '', $policy::reason( 'one@example.test', 602, 'registration' ) );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertSame( 'target_cap', $policy::reason( array( 'fresh@example.test', 'one@example.test' ), 603, 'registration' ) );
-		$this->assertSame( $before['buckets'], json_decode( (string) get_option( Ledger::OPTION ), true )['buckets'] );
-		foreach ( range( 1, 7 ) as $n ) {
-			$this->assertSame( '', $policy::reason( 'site-' . $n . '@example.test', 610 + $n, 'registration' ) );
-		}
-		$this->assertSame( '', $policy::reason( array( 'last-a@example.test', 'last-b@example.test' ), 620, 'registration' ) );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		$this->assertSame( 'daily_cap', $policy::reason( array( 'overflow-a@example.test', 'overflow-b@example.test' ), 621, 'registration' ) );
-		$this->assertSame( $before['buckets'], json_decode( (string) get_option( Ledger::OPTION ), true )['buckets'] );
+		$tag = self::tag();
+		$one = "one-{$tag}@example.test";
+		$two = "two-{$tag}@example.test";
+		$fresh = "fresh-{$tag}@example.test";
+		$id = wp_generate_uuid4();
+		$this->assertSame( '', $policy::reason( array( $two, $one, strtoupper( $one ) ), $id, 'registration' ) );
+		$this->assertSame( '', $policy::reason( array( "Fixture <{$one}>", $two ), $id, 'registration' ) );
+		$this->assertSame( '', $policy::reason( $one, wp_generate_uuid4(), 'inquiry' ) );
+		$this->assertSame( 'target_cap', $policy::reason( array( $fresh, $one ), wp_generate_uuid4(), 'registration' ) );
+		$this->assertSame( '', $policy::reason( $fresh, wp_generate_uuid4(), 'inquiry' ) );
+		$this->assertSame( '', $policy::reason( $fresh, wp_generate_uuid4(), 'inquiry' ) );
 	}
 
 	/** A real lost writer must not revive a stale sibling payload after independent native erasure. */

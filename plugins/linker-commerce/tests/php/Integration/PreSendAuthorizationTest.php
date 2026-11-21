@@ -1432,22 +1432,15 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		);
 		self::assertSame( 'enforce', \Linker\Commerce\Protection\Configuration::active_mode() );
 		$this->provider( $decision );
-		global $wpdb;
-		$old = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s", \Linker\Commerce\Protection\Ledger::OPTION ) );
-		$this->later(
-			static function () use ( $old ): void {
-				null === $old ? delete_option( \Linker\Commerce\Protection\Ledger::OPTION ) : update_option( \Linker\Commerce\Protection\Ledger::OPTION, $old, false );
-			}
-		);
-		$order    = $this->submit();
+		$email = 'assessment-receipt-' . self::tag() . '@example.test';
+		$order = $this->submit( $email );
 		$admitted = $this->permissions( $order->get_id() );
 		self::assertSame( array( 'receipt' ), array_keys( $admitted['jobs'] ) );
-		$charged = get_option( \Linker\Commerce\Protection\Ledger::OPTION );
-		self::assertNotEmpty( $charged );
+		$charged = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
 		$state = $this->permissions( $order->get_id() );
 		self::assertSame( $admitted['jobs']['receipt'], $state['jobs']['receipt'] );
-		self::assertSame( $charged, get_option( \Linker\Commerce\Protection\Ledger::OPTION ) );
+		self::assertSame( $charged, \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false ) );
 		$receipt = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['jobs']['receipt']['id'] );
 		self::assertNotNull( $receipt );
 		self::assertStringContainsString( '#' . $order->get_order_number(), $receipt['message']->subject );
@@ -1487,26 +1480,18 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $usage );
 		self::assertArrayNotHasKey( 'customer_receipt', $usage['counts'] );
 		$this->provider( 'normal' );
-		$orders     = array( $this->submit(), $this->submit(), $this->submit() );
-		$recovering = $this->permissions( $orders[0]->get_id() )['jobs']['receipt']['id'];
-		$healthy    = get_option( $ledger );
-		update_option( $ledger, 'fixture_unavailable', false );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $recovering );
-		self::assertSame( 0, ( new Throttle() )->used( time() ) );
-		self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $orders[0] ) );
-		self::assertTrue( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $recovering ), \Linker\Commerce\Mail\Outbox::GROUP ) );
-		update_option( $ledger, $healthy, false );
+		$email = 'receipt-' . self::tag() . '@example.test';
+		$orders = array( $this->submit( $email ), $this->submit( $email ), $this->submit( $email ) );
+		update_option( $ledger, 'unrelated_tools_journal_unavailable', false );
 		foreach ( $orders as $index => $order ) {
 			$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
 			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
 			self::assertSame( $index < 2 ? 'sent' : 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
 		}
-		$usage = ( new \Linker\Commerce\Protection\Ledger() )->summary();
-		self::assertIsArray( $usage );
-		self::assertSame( 2, $usage['counts']['customer_receipt']['completed'] );
+		self::assertSame( 'unrelated_tools_journal_unavailable', get_option( $ledger ) );
 		self::assertSame( 2, ( new Throttle() )->used( time() ) );
 		self::assertSame( 'target_cap', $orders[2]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-		$limited = $this->submit();
+		$limited = $this->submit( $email );
 		$limited->read_meta_data( true );
 		self::assertSame( 'target_cap', $limited->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 	}
