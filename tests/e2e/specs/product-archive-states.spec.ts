@@ -806,7 +806,8 @@ test('the pinned label leaves the German model and SKU visible on a phone', asyn
 			.querySelector('thead th')!
 			.getBoundingClientRect().right;
 		const name = el
-			.querySelectorAll('.linker-compare-name')[1]
+			.querySelectorAll('.linker-compare-name')
+			.item(1)
 			.getBoundingClientRect();
 		const sku = el.querySelector('tbody tr td:last-child')!;
 		const range = document.createRange();
