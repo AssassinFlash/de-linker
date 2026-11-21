@@ -122,7 +122,7 @@ export function GenieCard( {
 	if ( 'unavailable' === load.phase ) {
 		return (
 			<p className="linker-product-card">
-				{ __( 'Saved product unavailable', 'linker-tools' ) }
+				{ __( 'Currently unavailable', 'linker-tools' ) }
 			</p>
 		);
 	}

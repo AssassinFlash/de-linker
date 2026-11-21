@@ -16667,7 +16667,7 @@ msgstr "Wechselrichterleistung"
 msgid "Check the profile columns, units and time interval, then try again."
 msgstr "Prüfen Sie die Spalten, Einheiten und Intervalllänge des Lastprofils und versuchen Sie es erneut."
 
-#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1 build/genie.js:1 build/hero.js
+#: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
 msgid "Saved product unavailable"
 msgstr "Gespeichertes Produkt nicht verfügbar"
 

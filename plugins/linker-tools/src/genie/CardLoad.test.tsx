@@ -69,9 +69,7 @@ test( 'a refused Store API read is a failure the card announces', async () => {
 test( 'a product removed from the shop retains its unavailable state', async () => {
 	card( async () => [] );
 
-	expect(
-		await screen.findByText( 'Saved product unavailable' )
-	).toBeVisible();
+	expect( await screen.findByText( 'Currently unavailable' ) ).toBeVisible();
 	expect( screen.queryByRole( 'button', { name: 'Try again' } ) ).toBeNull();
 } );
 
