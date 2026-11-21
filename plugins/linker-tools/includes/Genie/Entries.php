@@ -742,6 +742,9 @@ JS,
 			'category' => array(
 				array( __( 'Ask Genie', 'linker-tools' ), 'category' ),
 			),
+			'faq'      => array(
+				array( __( 'Ask Genie', 'linker-tools' ), 'faq' ),
+			),
 			'product'  => array(
 				array(
 					__( 'What pairs with this model?', 'linker-tools' ),
