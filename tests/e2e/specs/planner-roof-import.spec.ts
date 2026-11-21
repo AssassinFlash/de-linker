@@ -1,17 +1,3 @@
-/**
- * Native roof import: the guided GeoJSON wizard in the real browser, in both
- * page languages and both viewports the owner required
- * (docs/specs/548-roof-import-workflow.md §Interruption and evidence:
- * "Native EN/DE × 1440/390 evidence must exercise file selection,
- * invalid/corrected input, actual preview/attach/save/reopen, retained holes").
- *
- * The import runs against the deployed engine through the page's own RPC, and
- * every assertion reads the saved project back from the server, so a green
- * run means the roof is in the project — not that the form accepted a click.
- */
-/**
- * External dependencies
- */
 import { join } from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
@@ -33,69 +19,45 @@ type Lang = 'en' | 'de';
 /** The wizard's own words, each language's page as it ships. */
 const WORDS = {
 	en: {
+		home: '/',
 		configurator: '/solution-configurator/',
+		details: 'Enter project details',
 		newProject: 'New project',
-		create: 'Create project',
-		overview: 'Project overview',
-		sections: 'Project sections',
-		openRoof: 'Open roof workspace',
+		solar: 'Continue with solar',
+		roofChoice: 'Place modules on the roof',
+		openRoof: 'Open roof layout',
 		importRoof: 'Import roof geometry',
-		stepFile: 'File and roof',
 		roofFile: 'Roof file',
-		roofInFile: 'Roof in this file',
-		roofFaceName: 'Roof face name',
-		continue: 'Continue',
 		stepPlane: 'Roof plane',
-		pitch: 'Roof pitch',
-		bearing: 'Downslope direction from true north',
-		height: 'Relative height at the first outline point',
-		basis: 'Measurement or drawing reference',
+		continue: 'Continue',
 		stepSource: 'Source',
-		sourceRef: 'Source reference',
-		rights: 'Permission or licence basis',
-		exportPermission: 'Permission to export geometry',
-		retention:
-			'I have permission to upload this original file, derive roof geometry from it and retain both privately with this project.',
 		prepare: 'Prepare roof preview',
 		review: 'Review imported roof',
 		area: 'Roof-plane area',
 		openings: 'Openings retained',
 		attach: 'Add roof to current design',
-		saveProject: 'Save project',
-		savedState: 'Saved',
+		saved: 'The roof import is included in the saved project.',
 		deleteProject: 'Delete project',
 	},
 	de: {
+		home: '/de/',
 		configurator: '/de/loesungskonfigurator/',
+		details: 'Projektdaten eingeben',
 		newProject: 'Neues Projekt',
-		create: 'Projekt anlegen',
-		overview: 'Projektübersicht',
-		sections: 'Projektbereiche',
-		openRoof: 'Dachplanung öffnen',
+		solar: 'Weiter zur PV-Anlage',
+		roofChoice: 'Module auf dem Dach platzieren',
+		openRoof: 'Dachbelegung öffnen',
 		importRoof: 'Dachgeometrie importieren',
-		stepFile: 'Datei und Dach',
 		roofFile: 'Dachdatei',
-		roofInFile: 'Dachfläche in dieser Datei',
-		roofFaceName: 'Name der Dachfläche',
-		continue: 'Weiter',
 		stepPlane: 'Dachebene',
-		pitch: 'Dachneigung',
-		bearing: 'Gefällerichtung ab geografisch Nord',
-		height: 'Relative Höhe am ersten Umrisspunkt',
-		basis: 'Aufmaß- oder Zeichnungsreferenz',
+		continue: 'Weiter',
 		stepSource: 'Quelle',
-		sourceRef: 'Quellenreferenz',
-		rights: 'Berechtigungs- oder Lizenzgrundlage',
-		exportPermission: 'Berechtigung zum Export der Geometrie',
-		retention:
-			'Ich habe die Berechtigung, diese Originaldatei hochzuladen, daraus Dachgeometrie abzuleiten und beides privat mit diesem Projekt aufzubewahren.',
 		prepare: 'Dachvorschau vorbereiten',
 		review: 'Importierte Dachfläche prüfen',
 		area: 'Fläche in der Dachebene',
 		openings: 'Übernommene Aussparungen',
 		attach: 'Dachfläche in den Entwurf übernehmen',
-		saveProject: 'Projekt speichern',
-		savedState: 'Gespeichert',
+		saved: 'Der Dachimport ist im gespeicherten Projekt enthalten.',
 		deleteProject: 'Projekt löschen',
 	},
 } as const;
@@ -108,31 +70,35 @@ function num(lang: Lang, value: string): string {
 /** The repository's own WGS 84 fixture: a 3-4-5 roof carrying one opening. */
 const SOURCE = join(REPO_ROOT, 'fixtures/planning/source-roof-wgs84.geojson');
 
-/**
- * Create an empty project and open its roof workspace. The empty roof
- * workspace is what makes this project eligible to adopt the import's own
- * geographic origin (a nonempty frame must be aligned first).
- */
 async function emptyRoofWorkspace(page: Page, lang: Lang, title: string) {
 	const words = WORDS[lang];
-	await page.goto(instance().url + words.configurator, {
-		waitUntil: 'networkidle',
+	await page.goto(instance().url + words.home);
+	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
+	const workspace = page.locator('[data-linker-planner]');
+	await workspace
+		.getByRole('button', { name: words.details, exact: true })
+		.click();
+	const project = workspace.getByRole('form', {
+		name: words.newProject,
+		exact: true,
 	});
-	await page.getByRole('button', { name: words.newProject }).first().click();
-	await page.locator('input[maxlength="256"]').first().fill(title);
-	await page.getByRole('button', { name: words.create }).click();
-	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
-	await expect(page.locator('.lp-save-state')).toBeVisible({
-		timeout: 30_000,
+	await project.locator('[name="project_title"]').fill(title);
+	await project.locator('[name="country"]').selectOption('DE');
+	await project
+		.locator('[name="system_scope"]')
+		.selectOption('new_pv_storage');
+	await project
+		.getByRole('button', { name: words.solar, exact: true })
+		.click();
+	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/, {
+		timeout: 60_000,
 	});
-	const overviewLink = page.getByRole('link', { name: words.overview });
-	if (await overviewLink.isVisible()) await overviewLink.click();
-	else
-		await page
-			.getByRole('combobox', { name: words.sections })
-			.selectOption('overview');
-	await page.locator('.lp-overview-empty .lp-button').click();
-	await expect(page).toHaveURL(/#lp-design/, { timeout: 15_000 });
+	await workspace
+		.getByRole('button', { name: words.roofChoice, exact: true })
+		.click();
+	await workspace
+		.getByRole('button', { name: words.openRoof, exact: true })
+		.click();
 }
 
 /** Fill the three wizard steps and prepare the server preview. */
@@ -141,45 +107,63 @@ async function fillWizard(page: Page, lang: Lang) {
 	await page
 		.getByRole('button', { name: words.importRoof, exact: true })
 		.click();
-	const panel = page.locator('.lp-import-panel');
+	const panel = page.locator('[data-linker-planner]');
+	const form = panel
+		.locator('form')
+		.filter({ has: page.getByLabel(words.roofFile, { exact: true }) });
 	await expect(panel).toBeVisible();
 
-	// Step 1 - the original file. A single Feature is the only choice, so it
-	// is already selected; the name still has to be typed.
-	await panel.locator('input[type="file"]').setInputFiles(SOURCE);
-	await expect(panel.locator('.lp-file-name')).not.toHaveText(
-		/No file selected|Keine Datei/
-	);
-	await panel.locator('[name="roof"]').fill('Imported 3-4-5 roof');
-	await panel
+	await form
+		.getByLabel(words.roofFile, { exact: true })
+		.setInputFiles(SOURCE);
+	await expect(
+		form.getByText('source-roof-wgs84.geojson', { exact: true })
+	).toBeVisible();
+	await form.locator('[name="roof"]').fill('Imported 3-4-5 roof');
+	await form
 		.getByRole('button', { name: words.continue, exact: true })
 		.click();
 
 	// Step 2 - the plane the customer measured. No default is supplied, so
 	// the empty field is a required-input state, not a zero.
-	await expect(panel.getByRole('heading')).toHaveText(words.stepPlane);
-	await panel.locator('[name="pitch"]').fill(num(lang, '36.87'));
-	await panel.locator('[name="bearing"]').fill(num(lang, '180'));
-	await panel.locator('[name="height"]').fill(num(lang, '5'));
-	await panel
+	await expect(
+		panel.getByRole('heading', { name: words.stepPlane, exact: true })
+	).toBeVisible();
+	await form.locator('[name="pitch"]').fill('91');
+	await form.locator('[name="bearing"]').fill(num(lang, '180'));
+	await form.locator('[name="height"]').fill(num(lang, '5'));
+	await form
 		.locator('[name="basis"]')
 		.fill('Synthetic 3-4-5 fixture; not a survey');
-	await panel
+	await form
+		.getByRole('button', { name: words.continue, exact: true })
+		.click();
+
+	await expect(form.locator('[name="pitch"]')).toHaveAttribute(
+		'aria-invalid',
+		'true'
+	);
+	await form.locator('[name="pitch"]').fill(num(lang, '36.87'));
+	await form
 		.getByRole('button', { name: words.continue, exact: true })
 		.click();
 
 	// Step 3 - the source declaration and the right to retain the original.
-	await expect(panel.getByRole('heading')).toHaveText(words.stepSource);
-	await panel.locator('[name="source"]').fill('Own fixture file');
-	await panel
+	await expect(
+		panel.getByRole('heading', { name: words.stepSource, exact: true })
+	).toBeVisible();
+	await form.locator('[name="source"]').fill('Own fixture file');
+	await form
 		.locator('[name="rights"]')
 		.fill('Own synthetic fixture; retaining and deriving is permitted');
 	await panel.locator('select[name="export"]').selectOption('permitted');
-	await panel.locator('[name="retention"]').check();
+	await form.locator('[name="retention"]').check();
 	await panel
 		.getByRole('button', { name: words.prepare, exact: true })
 		.click();
-	await expect(panel.getByRole('heading')).toHaveText(words.review, {
+	await expect(
+		panel.getByRole('heading', { name: words.review, exact: true })
+	).toBeVisible({
 		timeout: 120_000,
 	});
 	return panel;
@@ -201,51 +185,79 @@ test.describe('native roof import', () => {
 
 				const panel = await fillWizard(page, lang);
 
-				// The preview reports the accepted roof, its plane area and the
-				// opening it kept — read from the prepared manifest, not typed.
-				const review = panel.locator('.lp-import-review');
-				await expect(review).toContainText(words.area);
-				await expect(review).toContainText(words.openings);
 				await expect(
-					review.locator('.lp-field-summary dd').nth(1)
+					panel.getByText(words.area, { exact: true })
+				).toBeVisible();
+				await expect(
+					panel
+						.getByText(words.openings, { exact: true })
+						.locator('..')
+						.locator('dd')
 				).toHaveText('1');
-
+				const revised = page.waitForResponse(
+					(r) =>
+						new URL(r.url()).pathname.endsWith(
+							'/projects/revise'
+						) &&
+						r.request().postDataJSON()?.inputs?.geometry?.roofs
+							?.length === 1
+				);
 				await panel
 					.getByRole('button', { name: words.attach, exact: true })
 					.click();
-				// Attachment is one history step; the project then has to be
-				// saved before the roof belongs to it.
-				await page
-					.getByRole('button', { name: words.saveProject })
+				expect((await revised).ok()).toBe(true);
+				await expect(
+					panel.getByText(words.saved, { exact: true })
+				).toBeVisible();
+
+				const read = page.waitForResponse((r) =>
+					new URL(r.url()).pathname.endsWith('/projects/read')
+				);
+				await page.reload();
+				const saved = await (await read).json();
+				expect(saved.title).toBe(title);
+				expect(saved.inputs.geometry.roofs).toHaveLength(1);
+				expect(saved.inputs.geometry.roofs[0].holes_uv).toHaveLength(1);
+				const outline = panel.locator(
+					'.sc-roof-preview path[fill-rule="evenodd"]'
+				);
+				await expect(outline).toBeVisible();
+				expect(
+					(await outline.getAttribute('d'))?.match(/M/g)
+				).toHaveLength(2);
+				await outline.scrollIntoViewIfNeeded();
+				await page.screenshot({
+					path: test.info().outputPath('saved-roof.png'),
+					animations: 'disabled',
+				});
+
+				await page.goto(
+					instance().url + words.configurator + '?projects=1'
+				);
+				const row = page
+					.getByRole('listitem')
+					.filter({
+						has: page.getByRole('heading', {
+							name: title,
+							exact: true,
+						}),
+					});
+				await row
+					.getByRole('button', {
+						name: new RegExp(
+							lang === 'en'
+								? '^Delete project '
+								: '^Projekt .* löschen$'
+						),
+					})
 					.click();
-				await expect(page.locator('.lp-save-state')).toContainText(
-					words.savedState,
-					{ timeout: 120_000 }
-				);
-
-				// Reopen from the server: the roof and its opening survive.
-				await page.reload({ waitUntil: 'networkidle' });
-				await expect(page.locator('#lp-design')).toContainText(
-					/Imported 3-4-5 roof/,
-					{ timeout: 120_000 }
-				);
-
-				// Leave the instance as it was found: the test project and its
-				// revisions are removed through the app's own delete command.
-				await page.goto(instance().url + words.configurator, {
-					waitUntil: 'networkidle',
-				});
-				const row = page.locator('.lp-project-entry', {
-					hasText: title,
-				});
-				await row.locator('.lp-project-delete').click();
-				await page
+				await row
 					.getByRole('button', {
 						name: words.deleteProject,
 						exact: true,
 					})
 					.click();
-				await expect(row).toHaveCount(0, { timeout: 60_000 });
+				await expect(row).toHaveCount(0);
 			});
 		}
 	}

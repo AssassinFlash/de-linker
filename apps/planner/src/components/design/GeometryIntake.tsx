@@ -378,10 +378,7 @@ export function GeometryIntake({
 									"The roof import is included in the saved project.",
 									"linker-tools",
 								)
-							: __(
-									"Imported roof is in the current design. Save the project to record it.",
-									"linker-tools",
-								)}
+							: __("Save not confirmed", "linker-tools")}
 					</span>
 				)}
 			</div>

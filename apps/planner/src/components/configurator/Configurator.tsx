@@ -630,8 +630,7 @@ export default function Configurator({
 			step === "solar" &&
 			before &&
 			after &&
-			!sameJson(before.geometry, after.geometry) &&
-			sameJson(before.geometry_imports, after.geometry_imports)
+			!sameJson(before.geometry, after.geometry)
 		)
 			requestedRoofSave.current = after;
 	}

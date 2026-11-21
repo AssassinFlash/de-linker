@@ -313,7 +313,7 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	assert.equal(retry(), null);
 });
 
-test("import joins one project history step, guards navigation, and a confirmed save clears its exact original", async (t) => {
+test("import and history changes save their roof revision and release the exact original", async (t) => {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
@@ -404,7 +404,7 @@ test("import joins one project history step, guards navigation, and a confirmed 
 				const command = JSON.parse(init.body);
 				saved = {
 					...project,
-					revision: 2,
+					revision: command.expected_revision + 1,
 					input_sha256: "5".repeat(64),
 					inputs: command.inputs,
 				};
@@ -492,10 +492,25 @@ test("import joins one project history step, guards navigation, and a confirmed 
 		],
 		asset.id,
 	);
+	await until(() => saved?.revision === 2 && local?.baseline.revision === 2);
+	assert.deepEqual(
+		saved.inputs.geometry.roofs[0].holes_uv,
+		asset.metadata.geometry_import.geometry.roofs[0].holes_uv,
+	);
+	await until(() => !document.querySelector(".lp-geometry-intake details"));
+	assert.deepEqual(
+		await geometryImportStore.list([session.query_scope], project.id),
+		[],
+	);
 	await click("Undo");
-	await until(() => local?.history.current.geometry === undefined);
+	await until(() => local?.baseline.revision === 3);
+	assert.equal(saved.inputs.geometry, undefined);
 	await click("Redo");
-	await until(() => local?.history.current.geometry?.roofs.length === 1);
+	await until(() => local?.baseline.revision === 4);
+	assert.deepEqual(
+		saved.inputs.geometry.roofs[0].holes_uv,
+		asset.metadata.geometry_import.geometry.roofs[0].holes_uv,
+	);
 	await click("Use module details");
 	await until(
 		() => local?.history.current.pvgis_reference_setup?.arrays?.length,
@@ -507,19 +522,4 @@ test("import joins one project history step, guards navigation, and a confirmed 
 	await click("Place modules on the roof");
 	await click("Open roof layout");
 	assert.equal(local.history.current.pvgis_reference_setup.arrays, undefined);
-	await click("Save snapshot");
-	await until(
-		() =>
-			saved &&
-			document.body.textContent.includes(
-				"The roof import is included in the saved project.",
-			),
-	);
-	await until(() => local?.baseline.revision === 2);
-	assert.deepEqual(saved.inputs, local.history.current);
-	await until(() => !document.querySelector(".lp-geometry-intake details"));
-	assert.deepEqual(
-		await geometryImportStore.list([session.query_scope], project.id),
-		[],
-	);
 });

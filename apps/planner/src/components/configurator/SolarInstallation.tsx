@@ -2301,6 +2301,7 @@ export function SolarInstallation({
 							} catch {
 								return false;
 							}
+							onLayoutChange?.();
 							setMode("roof");
 							select(asset.geometry.roofs[0]!.id);
 							return true;
