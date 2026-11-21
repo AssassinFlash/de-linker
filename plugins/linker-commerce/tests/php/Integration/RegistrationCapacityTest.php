@@ -162,14 +162,13 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 *
 	 * @param int    $bytes Original stored byte count.
 	 * @param string $owner Original recipient identifier.
-	 * @return array{key:string}
 	 */
-	private function historical_slot( int $bytes, string $owner = '' ): array {
+	private function historical_slot( int $bytes, string $owner = '' ): string {
 		$key           = hash_hmac( 'sha256', 'registration|' . wp_generate_uuid4(), wp_salt( 'auth' ) );
 		$slots         = get_option( RegistrationSlots::OPTION, array() );
 		$slots[ $key ] = array( 'at' => time(), 'bytes' => $bytes, 'owner' => $owner );
 		update_option( RegistrationSlots::OPTION, $slots, false );
-		return array( 'key' => $key );
+		return $key;
 	}
 
 	/**
@@ -732,7 +731,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $id );
 		$slot = $this->historical_slot( 2048 );
-		$this->assertIsArray( $slot );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -767,7 +765,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		add_filter( 'query', $fault );
 		$accepted = false;
 		try {
-			$accepted = RegistrationSlots::resolve_interrupted( $slot['key'], 'Original registration record.' );
+			$accepted = RegistrationSlots::resolve_interrupted( $slot, 'Original registration record.' );
 		} catch ( \Throwable $error ) {
 			$accepted = false; } finally {
 			remove_filter( 'query', $fault );
@@ -964,8 +962,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			}
 		);
 		$slot = $this->historical_slot( 2048 );
-		$this->assertIsArray( $slot );
-		$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot['key'], 'No native account exists.' ) );
+		$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot, 'No native account exists.' ) );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -974,10 +971,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			)
 		);
 		$this->as_user( (int) $staff[0] );
-		$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot['key'], '' ) );
-		$this->assertTrue( RegistrationSlots::resolve_interrupted( $slot['key'], 'Native account lookup completed; interrupted pre-create placeholder.' ) );
+		$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot, '' ) );
+		$this->assertTrue( RegistrationSlots::resolve_interrupted( $slot, 'Native account lookup completed; interrupted pre-create placeholder.' ) );
 		$this->assertSame( 0, $this->summary()['interrupted'] );
-		$this->assertSame( $slot['key'], array_slice( get_option( 'linker_registration_dispositions' ), -1 )[0]['key'] );
+		$this->assertSame( $slot, array_slice( get_option( 'linker_registration_dispositions' ), -1 )[0]['key'] );
 		$this->assertSame( (int) $staff[0], array_slice( get_option( 'linker_registration_dispositions' ), -1 )[0]['by'] );
 	}
 
@@ -1015,7 +1012,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		update_user_meta( $customer->get_id(), Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
 		$before = $this->summary();
-		$this->assertIsArray( $this->historical_slot( RegistrationSlots::MAX_BYTES - $before['business_bytes'] ) );
+		$this->historical_slot( RegistrationSlots::MAX_BYTES - $before['business_bytes'] );
 		$name    = $this->native_user( $customer->get_id() )->display_name;
 		$guarded = rest_do_request( new \WP_REST_Request( 'POST', '/wp/v2/users/me' ) );
 		$this->assertSame( 403, $guarded->get_status(), 'Current site baseline closes this route for ordinary customers.' );
@@ -1032,8 +1029,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 */
 	public function test_staff_cannot_resolve_a_live_creator_on_the_same_connection(): void {
 		$slot = $this->historical_slot( 2048 );
-		$this->assertIsArray( $slot );
-		$this->assertTrue( RegistrationSlots::hold( $slot['key'] ) );
+		$this->assertTrue( RegistrationSlots::hold( $slot ) );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -1043,9 +1039,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		);
 		$this->as_user( (int) $staff[0] );
 		try {
-			$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot['key'], 'A still-running creator is not an orphan.' ) );
+			$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot, 'A still-running creator is not an orphan.' ) );
 		} finally {
-				RegistrationSlots::release( $slot['key'] );
+				RegistrationSlots::release( $slot );
 		}
 		$this->assertSame( 1, $this->summary()['interrupted'] );
 	}
@@ -1124,7 +1120,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			}
 		);
 		$slot = $this->historical_slot( 2048 );
-		$this->assertIsArray( $slot );
 		$staff = get_users(
 			array(
 				'role'   => 'administrator',
@@ -1136,7 +1131,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$fail = static fn ( string $query ): string => str_starts_with( $query, 'UPDATE ' ) && str_contains( $query, RegistrationSlots::OPTION ) ? 'DO 0' : $query;
 		add_filter( 'query', $fail );
 		try {
-			$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot['key'], 'This must not be committed without its release.' ) );
+			$this->assertFalse( RegistrationSlots::resolve_interrupted( $slot, 'This must not be committed without its release.' ) );
 		} finally {
 				remove_filter( 'query', $fail );
 		}
@@ -1498,7 +1493,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
 		$before   = array();
 		$id       = 0;
-		$slot     = array();
+		$slot     = '';
 		if ( 'privacy' === $writer ) {
 			$post = $this->public_post( 57 );
 			$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
@@ -1508,7 +1503,6 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$before = $this->notices( $id );
 		} else {
 			$slot = $this->historical_slot( 2048 );
-			$this->assertIsArray( $slot );
 			$staff = get_users(
 				array(
 					'role'   => 'administrator',
@@ -1532,7 +1526,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		};
 		add_filter( 'query', $kill );
 		try {
-			$result = 'privacy' === $writer ? RegistrationNotices::erase( $id ) : RegistrationSlots::resolve_interrupted( $slot['key'], 'Synthetic killed audit cannot release this slot.' ); } finally {
+			$result = 'privacy' === $writer ? RegistrationNotices::erase( $id ) : RegistrationSlots::resolve_interrupted( $slot, 'Synthetic killed audit cannot release this slot.' ); } finally {
 			remove_filter( 'query', $kill ); }
 			$this->assertTrue( $wpdb->db_connect( false ) );
 			$this->assertTrue( $killed );
@@ -2086,8 +2080,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			),
 		);
 		update_option( 'linker_registration_dispositions', $audit, false );
-		$slot = $this->historical_slot( 1, $owner );
-		$this->assertIsArray( $slot );
+		$this->historical_slot( 1, $owner );
 		$before = get_option( RegistrationSlots::OPTION );
 		foreach ( array( 'linker_registration_dispositions', 'alloptions', 'notoptions' ) as $key ) {
 			wp_cache_delete( $key, 'options' );
@@ -2152,7 +2145,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			),
 		);
 		update_option( 'linker_registration_dispositions', $audit, false );
-		$this->assertIsArray( $this->historical_slot( 1, $owner ) );
+		$this->historical_slot( 1, $owner );
 		$before = get_option( RegistrationSlots::OPTION );
 		global $wpdb;
 		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
