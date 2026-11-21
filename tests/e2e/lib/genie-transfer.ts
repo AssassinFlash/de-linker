@@ -6,7 +6,7 @@ import {
 } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-import { applyTurnstileProfile, loginLink, REPO_ROOT, wp } from './instance';
+import { applyTurnstileProfile, isolateMailBudgets, loginLink, REPO_ROOT, wp } from './instance';
 import { seedConsentCookies } from './consent';
 import { since } from './mail';
 import { waitForTurnstile } from './turnstile';
@@ -44,6 +44,7 @@ export const test = base.extend<{ customer: Customer }, { officialKeys: void }>(
 			{ scope: 'worker', auto: true },
 		],
 		customer: async ({ page }, use) => {
+			const restoreMailBudget = isolateMailBudgets();
 			const email = `e2e-transfer-${randomUUID()}@example.test`;
 			const fixture = (command: string, ...args: string[]) =>
 				wp([
@@ -98,7 +99,11 @@ export const test = base.extend<{ customer: Customer }, { officialKeys: void }>(
 					},
 				});
 			} finally {
-				fixture('cleanup', String([...turns][0] ?? 0));
+				try {
+					fixture('cleanup', String([...turns][0] ?? 0));
+				} finally {
+					restoreMailBudget();
+				}
 			}
 		},
 	}
