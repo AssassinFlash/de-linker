@@ -2692,6 +2692,23 @@ export function App( { config }: { config: GenieConfig } ) {
 											} }
 										/>
 									) ) }
+								{ config.requestPageUrl &&
+								turn?.meta?.fallback &&
+								turn.blocks.some(
+									( block ) => block.type === 'handoff'
+								) &&
+								! offersInquiry &&
+								! currentInquiry ? (
+									<a
+										className="linker-genie-app__prompt"
+										href={ config.requestPageUrl }
+									>
+										{ __(
+											'Send an inquiry',
+											'linker-tools'
+										) }
+									</a>
+								) : null }
 								{ turn?.blocks.some(
 									( block ) => 'cards' === block.type
 								) ? (

@@ -3922,6 +3922,46 @@ test( 'a delayed explicit refresh cannot overwrite a newer ask outside the share
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
 
+test.each( [
+	[ 'en', '/inquiry/', true ],
+	[ 'de', '/de/anfrage/', true ],
+	[ 'en', '/inquiry/', false ],
+] as const )(
+	'a handoff on %s offers %s only when the assistant failed (%s)',
+	async ( locale, url, failed ) => {
+		const summary = failed
+			? 'The assistant could not answer.'
+			: 'Contact our team.';
+		vi.mocked( sendTurn ).mockResolvedValue( {
+			meta: {
+				grounded: ! failed,
+				fallback: failed,
+				attempts: 1,
+				failures: failed ? [ 'model failure' ] : [],
+				language: locale,
+			},
+			blocks: [ { type: 'handoff', summary } ],
+		} );
+		await renderOwned(
+			<App config={ { ...config( locale ), requestPageUrl: url } } />
+		);
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Ask Genie' } )
+			)
+		);
+		expect( screen.getByText( summary ) ).toBeVisible();
+		const link = screen.queryByRole( 'link', { name: 'Send an inquiry' } );
+		if ( failed ) {
+			expect( link ).toHaveAttribute( 'href', url );
+		} else {
+			expect( link ).toBeNull();
+		}
+		expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+	}
+);
+
 test( 'a resource refusal retains the question and file and offers native inquiry', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockRejectedValue(
