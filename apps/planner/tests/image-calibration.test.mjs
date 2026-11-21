@@ -292,7 +292,7 @@ test("a perspective photo never becomes engineering geometry", async (t) => {
 	assert.equal(harness.geometry().roofs.length, 0);
 });
 
-test("the declared tolerance default follows the page language", async (t) => {
+test("German calibration uses the local decimal mark for tolerance, scale and outlined area", async (t) => {
 	const harness = await mount({ locale: "de-DE" });
 	t.after(async () => {
 		await act(async () => harness.root.unmount());
@@ -311,6 +311,24 @@ test("the declared tolerance default follows the page language", async (t) => {
 	const tolerance = document.querySelector('[name="tolerance"]');
 	assert.ok(tolerance);
 	assert.equal(tolerance.defaultValue, "0,01");
+	await mark(100, 700);
+	await mark(400, 700);
+	await typeInto("length", "6");
+	assert.match(document.body.textContent, /0,02 m per pixel/);
+	await clickText("Check span (0 of 2)");
+	await mark(100, 100);
+	await mark(700, 100);
+	await typeInto("check_length", "12");
+	await submit();
+	await clickText("Roof outline (0 points)");
+	await mark(100, 100);
+	await mark(701, 100);
+	await mark(701, 700);
+	await mark(100, 700);
+	assert.match(
+		document.querySelector(".lp-import-review").textContent,
+		/144,24\s*m²/,
+	);
 });
 
 test("the scale needs two distinct points and a positive length", async (t) => {

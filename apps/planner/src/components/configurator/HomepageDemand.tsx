@@ -149,6 +149,10 @@ export function HomepageDemand({
 			? null
 			: (readScenarioDraft(inputs.energy_scenario).schedule[0]?.import_cap_kw ??
 				null);
+	const coordinateValidity = useCallback(
+		(valid: boolean) => validity("coordinates", valid),
+		[validity],
+	);
 	const pvValid = useCallback(
 		(valid: boolean) => validity("pv", valid),
 		[validity],
@@ -215,6 +219,8 @@ export function HomepageDemand({
 				)}
 			{homepagePvReferenceAvailable(inputs, brief) && (
 				<HomepagePvReference
+					locale={locale}
+					onCoordinateValidity={coordinateValidity}
 					inputs={inputs}
 					brief={brief}
 					addressLookup={addressLookup}

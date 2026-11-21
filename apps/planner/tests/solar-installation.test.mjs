@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
+import { buildCalibration } from "../src/domain/imageCalibration.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -131,6 +132,87 @@ function input(label) {
 	assert.ok(el, `Missing ${label}`);
 	return el.querySelector("input");
 }
+test("reopened roof source shows its declared precision, measurement note and recorded image scale", async (t) => {
+	const geometry = structuredClone(flat);
+	Object.assign(geometry.sources[0], {
+		kind: "user_drawing",
+		rights_basis: "user_attestation",
+		note: "roof-plan.png",
+		spatial_precision_m: 0.05,
+		calibration_note: "Installer checked the second span.",
+		calibration: buildCalibration({
+			view: "horizontal_plan",
+			image: { media_type: "image/png", pixel_width: 800, pixel_height: 800 },
+			controlPoints: { first: [100, 100], second: [400, 100] },
+			knownLength: 6,
+			downslopeBearingDeg: 0,
+			checkPoints: { first: [100, 200], second: [700, 200] },
+			checkLength: 12,
+			checkToleranceRatio: 0.01,
+			pitchDeg: 0,
+			note: "Drawing scale verified.",
+		}),
+	});
+	await mount(t, { brief: emptyBrief(), geometry }, aerial, null, "de");
+	const properties = [...document.querySelectorAll("fieldset")].find(
+		(field) =>
+			field.querySelector(":scope > legend")?.textContent === "roof-plan.png",
+	);
+	assert.ok(properties);
+	assert.match(properties.textContent, /0,05/);
+	assert.match(properties.textContent, /Installer checked the second span\./);
+	assert.match(properties.textContent, /0,02 m je Pixel/);
+});
+test("saved roof openings survive preview, editing and reopening the same layout", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.roofs[0].holes_uv = [
+		[
+			[9, 9],
+			[11, 9],
+			[11, 11],
+			[9, 11],
+		],
+	];
+	const app = await mount(t, { brief: emptyBrief(), geometry });
+	function checkOpening(label) {
+		const outline = document.querySelector(
+			`svg[aria-label="${label}"] path[fill-rule="evenodd"]`,
+		);
+		assert.ok(outline, label);
+		assert.equal(
+			outline.getAttribute("d"),
+			"M0,0 L20,0 L20,20 L0,20Z M9,9 L11,9 L11,11 L9,11Z",
+		);
+	}
+	checkOpening("Roof layout preview");
+	await click("Open roof layout");
+	checkOpening("Editable roof plan");
+	await click("Use this layout");
+	checkOpening("Roof layout preview");
+	assert.deepEqual(app.inputs.geometry, geometry);
+});
+test("site coordinates retain an invalid edit and accept a corrected decimal comma", async (t) => {
+	const validation = [];
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry: structuredClone(flat) },
+		aerial,
+		null,
+		"en",
+		{},
+		{ onCoordinateValidity: (valid) => validation.push(valid) },
+	);
+	await click("Use module details");
+	await enter(input("Latitude"), "91,7");
+	assert.equal(input("Latitude").value, "91,7");
+	assert.equal(input("Latitude").getAttribute("aria-invalid"), "true");
+	assert.equal(validation.at(-1), false);
+	await enter(input("Latitude"), "51,72");
+	await enter(input("Longitude"), "9.17");
+	assert.equal(validation.at(-1), true);
+	assert.equal(app.inputs.brief.site.latitude, 51.72);
+	assert.equal(app.inputs.brief.site.longitude, 9.17);
+});
 test("German panel choices save the cell technology expected by the electrical calculation", async (t) => {
 	const inputs = { brief: emptyBrief(), geometry: structuredClone(flat) };
 	const app = await mount(t, inputs, aerial, null, "de");

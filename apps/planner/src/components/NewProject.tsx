@@ -529,7 +529,10 @@ export function NewProject({
 				setDemandError(true);
 				return;
 			}
-			if (!isHomepagePvReferenceReady(inputs, brief, useAddress)) {
+			if (
+				invalidDemand.has("coordinates") ||
+				!isHomepagePvReferenceReady(inputs, brief, useAddress)
+			) {
 				setReferenceError(
 					useAddress &&
 						(!brief.site.country_code || !brief.site.location_label.trim())

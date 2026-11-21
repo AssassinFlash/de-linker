@@ -26,7 +26,7 @@ import {
 import type { ImageCalibration } from "../../domain/imageCalibration.ts";
 import { GeometryValues } from "./GeometryForm.tsx";
 import { roofPlane } from "../../domain/geometryEditing.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { formatComputedDecimal, formatDecimal } from "../../domain/decimal.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -431,7 +431,9 @@ export function ImageCalibrationWorkspace({
 							"The second span differs by %s %%. The drawing stays a reference and cannot measure the roof until the points or the length are corrected.",
 							"linker-tools",
 						),
-						(calibration.check!.residual_ratio * 100).toFixed(1),
+						new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
+							calibration.check!.residual_ratio * 100,
+						),
 					),
 				);
 		}
@@ -932,7 +934,7 @@ export function ImageCalibrationWorkspace({
 										<dd>
 											{sprintf(
 												__("%s m per pixel", "linker-tools"),
-												calibration.m_per_pixel.toPrecision(6),
+												formatComputedDecimal(calibration.m_per_pixel, locale),
 											)}
 										</dd>
 									</div>
@@ -950,9 +952,9 @@ export function ImageCalibrationWorkspace({
 											<dd>
 												{sprintf(
 													__("%s %%", "linker-tools"),
-													(calibration.check.residual_ratio * 100).toPrecision(
-														3,
-													),
+													new Intl.NumberFormat(locale, {
+														maximumSignificantDigits: 3,
+													}).format(calibration.check.residual_ratio * 100),
 												)}
 											</dd>
 										</div>
@@ -1044,9 +1046,13 @@ export function ImageCalibrationWorkspace({
 									<div>
 										<dt>{__("Roof-plane area", "linker-tools")}</dt>
 										<dd>
-											{ringArea(
-												trace.map((point) => pixelToUv(point, calibration)),
-											).toFixed(2)}{" "}
+											{new Intl.NumberFormat(locale, {
+												maximumFractionDigits: 2,
+											}).format(
+												ringArea(
+													trace.map((point) => pixelToUv(point, calibration)),
+												),
+											)}{" "}
 											<small>m²</small>
 										</dd>
 									</div>

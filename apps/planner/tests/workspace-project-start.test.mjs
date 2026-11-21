@@ -486,6 +486,14 @@ async function runHomeComparison(t, rejectedProfile, unknownPhase = false) {
 	assert.equal(external.mock.callCount(), 0);
 	const submit = form.querySelector('button[type="submit"]');
 	assert.equal(submit.textContent.trim(), "Compare systems");
+	if (!rejectFirstMapping && !unknownPhase) {
+		await enter(field("latitude"), "91,8");
+		assert.equal(field("latitude").value, "91,8");
+		await act(async () => submit.click());
+		assert.deepEqual(calls, []);
+		assert.equal(field("load_profile_source").value, "workshop-meter.csv");
+		await enter(field("latitude"), "47,66");
+	}
 	await act(async () => submit.click());
 	if (rejectFirstMapping) {
 		await until(() => calls.includes("profiles/csv") && !submit.disabled);

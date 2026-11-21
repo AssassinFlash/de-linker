@@ -155,6 +155,7 @@ export function EnergyDemand({
 	edit,
 	compare,
 	modelsUnavailable = false,
+	coordinatesInvalid = false,
 	client,
 	session,
 	recheck,
@@ -167,6 +168,7 @@ export function EnergyDemand({
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
 	compare: () => void;
 	modelsUnavailable?: boolean;
+	coordinatesInvalid?: boolean;
 	client: PlannerClient;
 	session: Session;
 	recheck: () => void;
@@ -423,6 +425,7 @@ export function EnergyDemand({
 		inputs.equipment_demand === undefined &&
 		scenario.schedule.some((period) => period.import_cap_kw === null);
 	const canCompare =
+		!coordinatesInvalid &&
 		Boolean(goal) &&
 		(!solarOnly || goal !== "backup") &&
 		!needsGridPhase &&
@@ -1098,6 +1101,11 @@ export function EnergyDemand({
 				</details>
 			)}
 			<footer className="sc-footer">
+				{coordinatesInvalid && (
+					<p className="sc-muted">
+						{__("Check the project coordinates.", "linker-tools")}
+					</p>
+				)}
 				{goal && needsGridPhase && (
 					<p className="sc-muted">
 						{__(
