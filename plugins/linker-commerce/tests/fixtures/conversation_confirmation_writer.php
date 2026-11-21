@@ -21,5 +21,5 @@ while ( ! is_file( $argv[3] ) && microtime( true ) < $linker_commerce_deadline )
 if ( ! is_file( $argv[3] ) ) {
 	exit( 2 );
 }
-$linker_commerce_mail = new Linker\Tools\Genie\ConversationMail( new Linker\Tools\Genie\Conversations(), new Linker\Tools\Genie\Thread(), null, new Linker\Tools\Genie\RateLimit( 'synthetic568confirmation', 100, DAY_IN_SECONDS ) );
+$linker_commerce_mail = new Linker\Tools\Genie\ConversationMail( new Linker\Tools\Genie\Conversations(), new Linker\Tools\Genie\Thread() );
 file_put_contents( $argv[2], (string) wp_json_encode( $linker_commerce_mail->confirm( $argv[4] ) ) );

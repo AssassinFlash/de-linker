@@ -15,7 +15,6 @@ use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
-use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Thread;
 
 /** Native acceptance contract.
@@ -293,7 +292,7 @@ final class ConversationConfirmationCapacityTest extends IntegrationTestCase {
 
 	/** Native limiter stays separate from the persistent-job assertion. */
 	private function mailer(): ConversationMail {
-		return new ConversationMail( new Conversations(), new Thread(), null, new RateLimit( 'synthetic568confirmation' . self::tag(), 100, DAY_IN_SECONDS ) );
+		return new ConversationMail( new Conversations(), new Thread() );
 	}
 
 	/** Native fixture input.
