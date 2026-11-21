@@ -564,3 +564,31 @@ def test_imprint_labels_identify_the_operator_in_english_and_keep_registry_value
     assert english.count("<dd>") == 5 and "<dd>Amtsgericht Stendal</dd>" in english
     assert german == contact
     assert controls.plan_pair("imprint_operator", english, german) == (english, german)
+
+
+def test_home_delivery_documents_preserve_german_and_the_showcase() -> None:
+    en = UNCHANGED + "<p>Commercial invoice and Proforma confirmation</p>"
+    de = UNCHANGED + "<p>Handelsrechnung und Auftragsbestätigung</p>"
+    corrected = controls.plan_home_delivery_documents(en, de)
+    assert corrected == (en.replace("Proforma confirmation", "order confirmation"), de)
+    assert controls.plan_home_delivery_documents(*corrected) == corrected
+
+
+def test_warranty_references_match_the_document_library_and_preserve_support_links() -> (
+    None
+):
+    en = UNCHANGED + "<p>Contact us with your invoice or proforma reference.</p>"
+    de = UNCHANGED + "<p>Nennen Sie Ihre Rechnungs- oder Proforma-Referenz.</p>"
+    corrected = controls.plan_faq_warranty_reference(en, de)
+    assert corrected == (
+        en.replace("invoice or proforma reference", "invoice or order reference"),
+        de.replace(
+            "Rechnungs- oder Proforma-Referenz", "Rechnungs- oder Bestellreferenz"
+        ),
+    )
+    assert controls.plan_faq_warranty_reference(*corrected) == corrected
+    source = Path(__file__).parents[3] / "plugins/linker-commerce/data/faq-trade.json"
+    content = source.read_text()
+    assert "invoice or order reference" in content
+    assert "Rechnungs- oder Bestellreferenz" in content
+    assert "proforma" not in content.lower()

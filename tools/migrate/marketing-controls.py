@@ -887,6 +887,33 @@ def plan_installer_ordering(english: str, german: str) -> tuple[str, str]:
     return en_after, de_after
 
 
+_FAQ_REFERENCE_EN = ("invoice or proforma reference", "invoice or order reference")
+_FAQ_REFERENCE_DE = (
+    "Rechnungs- oder Proforma-Referenz",
+    "Rechnungs- oder Bestellreferenz",
+)
+
+
+def plan_home_delivery_documents(english: str, german: str) -> tuple[str, str]:
+    revised, _ = _apply_edits(
+        english,
+        (
+            (
+                "Commercial invoice and Proforma confirmation",
+                "Commercial invoice and order confirmation",
+            ),
+        ),
+        "Home delivery documents",
+    )
+    return revised, german
+
+
+def plan_faq_warranty_reference(english: str, german: str) -> tuple[str, str]:
+    revised_en, _ = _apply_edits(english, (_FAQ_REFERENCE_EN,), "FAQ warranty EN")
+    revised_de, _ = _apply_edits(german, (_FAQ_REFERENCE_DE,), "FAQ warranty DE")
+    return revised_en, revised_de
+
+
 def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
     """Align FAQ & Documents page body ordering/Bestellung wording to the inquiry workflow."""
     en_edits = (
@@ -916,7 +943,7 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
         ),
         (
             'Open Warranty &amp; Replacements from your order. The signed-in account confirms the order, and the form keeps the serial number, model, and fault description with that order. Linker handles the diagnostic exchange with the manufacturer\'s technical desk. <a href="/contact/?intent=support&amp;source=https%3A%2F%2Fde-linker.com%2Ffaq-download%2F&amp;kind=document&amp;source_id=932" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/faq-download/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:932}">Open Warranty &amp; Replacements</a>.',
-            'For a warranty claim, contact us with your invoice or proforma reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer\'s technical desk. <a href="/contact/?intent=support&amp;source=https%3A%2F%2Fde-linker.com%2Ffaq-download%2F&amp;kind=document&amp;source_id=932" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/faq-download/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:932}">Contact us about Warranty &amp; Replacements</a>.',
+            'For a warranty claim, contact us with your invoice or order reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer\'s technical desk. <a href="/contact/?intent=support&amp;source=https%3A%2F%2Fde-linker.com%2Ffaq-download%2F&amp;kind=document&amp;source_id=932" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/faq-download/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:932}">Contact us about Warranty &amp; Replacements</a>.',
         ),
         (
             '<summary>What technical support is included with an order?<span class="pm" aria-hidden="true"></span></summary><div class="rd-fa"><p>Linker provides sizing tools and wiring references before the order, and live commissioning troubleshooting from the engineering desk in Germany.</p></div>',
@@ -962,7 +989,7 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
         ),
         (
             'Öffnen Sie Garantie & Ersatz aus Ihrer Bestellung. Das angemeldete Konto bestätigt die Bestellung, und das Formular hält Seriennummer, Modell und Fehlerbeschreibung bei dieser Bestellung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href="/de/kontakt/?intent=support&#038;source=https%3A%2F%2Fde-linker.com%2Fde%2Ffaq-dokumente%2F&#038;kind=document&#038;source_id=6863" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/de/faq-dokumente/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:6863}">Garantie & Ersatz öffnen</a>.',
-            'Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungs- oder Proforma-Referenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href="/de/kontakt/?intent=support&#038;source=https%3A%2F%2Fde-linker.com%2Fde%2Ffaq-dokumente%2F&#038;kind=document&#038;source_id=6863" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/de/faq-dokumente/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:6863}">Kontakt zu Garantie & Ersatz</a>.',
+            'Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungs- oder Bestellreferenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href="/de/kontakt/?intent=support&#038;source=https%3A%2F%2Fde-linker.com%2Fde%2Ffaq-dokumente%2F&#038;kind=document&#038;source_id=6863" data-linker-contact="{&quot;url&quot;:&quot;https://de-linker.com/de/faq-dokumente/&quot;,&quot;kind&quot;:&quot;document&quot;,&quot;intent&quot;:&quot;support&quot;,&quot;source_id&quot;:6863}">Kontakt zu Garantie & Ersatz</a>.',
         ),
         (
             '<summary>Welcher technische Support ist bei einer Bestellung enthalten?<span class="pm" aria-hidden="true"></span></summary><div class="rd-fa"><p>Linker stellt vor der Bestellung Auslegungswerkzeuge und Verdrahtungsunterlagen bereit und unterstützt bei der Inbetriebnahme mit Live-Fehlersuche durch das technische Team in Deutschland.</p></div>',
@@ -982,6 +1009,8 @@ def plan_faq_ordering(english: str, german: str) -> tuple[str, str]:
         or len(re.findall(r'\bid="rd-general"', german)) != 1
     ):
         raise ValueError("Expected one existing FAQ & Documents general section")
+    english = english.replace(*_FAQ_REFERENCE_EN)
+    german = german.replace(*_FAQ_REFERENCE_DE)
     en_after, en_state = _apply_edits(english, en_edits, "FAQ ordering EN")
     de_after, de_state = _apply_edits(german, de_edits, "FAQ ordering DE")
     if en_state != de_state:
