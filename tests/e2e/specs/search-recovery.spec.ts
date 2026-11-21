@@ -17,6 +17,17 @@ for (const [locale, path, label, heading] of [
 	}) => {
 		const response = await page.goto(`${instance().url}${path}?s=SAJ`);
 		expect(response?.status()).toBe(404);
+		const downloads = page.locator('.lk-e4-card').filter({
+			hasText:
+				locale === 'en'
+					? 'Open the document library'
+					: 'Dokumentenbibliothek öffnen',
+		});
+		await downloads.click();
+		await expect(
+			page.getByRole('tab', { name: /Documents|Dokumente/i })
+		).toHaveAttribute('aria-selected', 'true');
+		await page.goBack();
 		const search = page.getByRole('searchbox', { name: label });
 		await expect(search).toHaveValue('SAJ');
 		await search.press('Enter');

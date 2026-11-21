@@ -41,9 +41,15 @@
 }
 
 @media (max-width: 560px) {
+	#home-a .hero-ops-mobile {
+		flex-wrap: wrap;
+		gap: var(--proto-space-1);
+		padding-inline: var(--proto-space-3);
+	}
+
 	#home-a .hero-ops-mobile .hero-ops-info {
-		flex: 1 1 0;
-		min-width: 0;
+		flex: 1 0 min-content;
+		min-width: min-content;
 	}
 
 	#home-a .hero-ops-mobile summary {
@@ -51,7 +57,9 @@
 	}
 
 	#home-a .hero-ops-mobile summary > span:not([aria-hidden]) {
-		min-width: 0;
+		min-width: min-content;
+		hyphens: none;
+		overflow-wrap: normal;
 	}
 
 	#home-a .hero-ops-mobile .hero-ops-chevron {
@@ -61,6 +69,7 @@
 	}
 
 	#home-a .hero-ops-mobile .hero-ops-actions {
+		gap: var(--proto-space-1);
 		flex: 0 0 auto;
 	}
 
