@@ -204,27 +204,27 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			$order->save_meta_data();
 		}
 		if ( 'budget_unavailable' === $disposition ) {
-			$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
-			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
-			$this->later(
-				static function () use ( $mode ): void {
-					putenv( false === $mode ? 'LINKER_PUBLIC_PROTECTION_MODE' : 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode );
+			global $wpdb;
+			self::assertSame( 0, $order->get_customer_id() );
+			$attempted   = false;
+			$unavailable = static function ( string $sql ) use ( &$attempted ): string {
+				if ( str_starts_with( $sql, 'SELECT option_value FROM' ) && str_contains( $sql, 'linker_mail_target_v1.' ) ) {
+					$attempted = true;
+					return 'SELECT unavailable_native_recipient_store';
 				}
-			);
-			$ledger  = \Linker\Commerce\Protection\Ledger::OPTION;
-			$prior   = get_option( $ledger );
-			$restore = static function () use ( $ledger, $prior ): void {
-				delete_option( $ledger );
-				if ( false !== $prior ) {
-					update_option( $ledger, $prior, false );
-				}
+				return $sql;
 			};
-			$this->later( $restore );
-			update_option( $ledger, 'fixture_unavailable', false );
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			$previous    = $wpdb->suppress_errors( true );
+			add_filter( 'query', $unavailable );
+			try {
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			} finally {
+				remove_filter( 'query', $unavailable );
+				$wpdb->suppress_errors( $previous );
+			}
+			self::assertTrue( $attempted, 'The unverified address requires its own recipient history.' );
 			self::assertSame( array(), $this->permissions( $id )['jobs'] );
 			self::assertSame( 'pending', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
-			$restore();
 		}
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
 		$after = $this->permissions( $id );
@@ -896,7 +896,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				add_filter( 'query', $fault, 998 );
 			}
 			global $wpdb;
-			$previous = $wpdb->suppress_errors( true );
+			$previous    = $wpdb->suppress_errors( true );
 			try {
 				self::assertFalse( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
 				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );

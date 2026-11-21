@@ -326,7 +326,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$pending = $this->notices( $id );
 		$this->assertSame( 'pending', $pending['team']['state'] );
 		$this->assertSame( 'pending', $pending['received']['state'] );
-		$this->assertArrayHasKey( 'parts', $pending['team'] );
+		$this->assertSame( $post['email'], $pending['team']['source']['user']['user_email'] );
 		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
 		RegistrationNotices::recover();
 		$accepted = $this->notices( $id );
@@ -435,7 +435,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	/** Unauthenticated pending plans cannot spend quota or cancel scope before witness validation.
 	 *
 	 * @testWith ["to"]
-	 *           ["parts"]
+	 *           ["locale"]
 	 *           ["witness"]
 	 *           ["skipped"]
 	 *           ["reservation"]
@@ -449,10 +449,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$original = $state;
 		switch ( $field ) {
 			case 'to':
-				$state['received']['message']['to'] = array( 'tampered-recipient@example.test' );
+				$state['received']['source']['user']['user_email'] = 'changed-recipient@example.test';
 				break;
-			case 'parts':
-				$state['received']['parts'] = array( array( 'text' => 'Changed prose' ) );
+			case 'locale':
+				$state['received']['source']['locale'] = 'changed-locale';
 				break;
 			case 'skipped':
 				$state['received']['state'] = 'skipped';
@@ -460,16 +460,19 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			default:
 				$state['received'][ $field ] = str_repeat( 'b', 64 );
 		}
-		update_user_meta( $id, RegistrationNotices::META, wp_slash( $state ) );
-		$this->assertSame( array(), array_values( array_filter( json_decode( (string) get_option( Ledger::OPTION ), true )['receipts'], static fn ( array $r ): bool => 'customer_receipt' === $r['purpose'] ) ) );
-		$ledger   = get_option( Ledger::OPTION );
 		$capacity = get_option( IntakeStore::OPTION );
-		RegistrationNotices::deliver( $id, 'received' );
-		$this->assertSame( $ledger, get_option( Ledger::OPTION ), 'Plan authentication precedes any optional receipt quota side effect.' );
-		$this->assertSame( $capacity, get_option( IntakeStore::OPTION ) );
-		$this->assertSame( $state, $this->notices( $id ) );
-		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
-		update_user_meta( $id, RegistrationNotices::META, wp_slash( $original ) );
+		$history  = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $post['email'], false );
+		$this->assertSame( array(), $history );
+		update_user_meta( $id, RegistrationNotices::META, wp_slash( $state ) );
+		try {
+			RegistrationNotices::deliver( $id, 'received' );
+			$this->assertSame( $history, \Linker\Commerce\Protection\ReceiptRecipients::privacy( $post['email'], false ) );
+			$this->assertSame( $capacity, get_option( IntakeStore::OPTION ) );
+			$this->assertSame( $state, $this->notices( $id ) );
+			$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		} finally {
+			update_user_meta( $id, RegistrationNotices::META, wp_slash( $original ) );
+		}
 	}
 
 	/** The restored notice consumer refuses its very first lock loss before any ACK, policy or new job. */
@@ -520,10 +523,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	public function test_erasure_cannot_refund_another_registration_reservation(): void {
 		$post = $this->public_post( 72 );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
-		$first = $this->committed_pending_registration( $post );
+		$first = $this->waiting_for_mail_handoff( $post );
 		$post  = $this->public_post( 73 );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
-		$second                            = $this->committed_pending_registration( $post );
+		$second                            = $this->waiting_for_mail_handoff( $post );
 		$original                          = $this->notices( $first );
 		$other                             = $this->notices( $second );
 		$forged                            = $original;
@@ -541,6 +544,31 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		} finally {
 			update_user_meta( $first, RegistrationNotices::META, wp_slash( $original ) ); }
 		$this->assertTrue( RegistrationNotices::erase( $first ) );
+	}
+
+	/** Create the account and hold both mail jobs after their worker reservations.
+	 *
+	 * @param array<string,string> $post Native registration input.
+	 */
+	private function waiting_for_mail_handoff( array $post ): int {
+		$unavailable = static function ( int $id, \WP_Post $job ): void {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $job->post_type ) {
+				throw new \RuntimeException( 'fixture_mail_job_unavailable' );
+			}
+		};
+		add_action( 'wp_insert_post', $unavailable, 10, 2 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_action( 'wp_insert_post', $unavailable, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		foreach ( $this->notices( $id ) as $plan ) {
+			$this->assertSame( 'pending', $plan['state'] );
+			$this->assertNotEmpty( $plan['reservation'] );
+		}
+		return $id;
 	}
 
 	/** A malformed accepted pointer cannot erase its still-retained original Message. */
@@ -872,12 +900,14 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		}
 		$this->assertStringNotContainsString( $post['password'], (string) wp_json_encode( $privacy->export( $post['email'] ) ) );
 		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
+		$owned_jobs = fn (): array => array_filter( self::mail_jobs_after( $this->mail_marker ), static fn ( int $job ): bool => (int) get_post_meta( $job, '_linker_registration_user', true ) === $id );
+		$this->assertCount( 2, $owned_jobs() );
 		$this->assertTrue( $privacy->erase( $post['email'] )['items_removed'] );
-		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		$this->assertSame( array(), $owned_jobs() );
 		$this->assertSame( 'erased', $this->notices( $id )['team']['state'] );
 		$this->assertTrue( RegistrationMessage::acknowledged( $this->notices( $id )['team'], $id, 'team' ) );
 		RegistrationNotices::recover();
-		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		$this->assertSame( array(), $owned_jobs() );
 	}
 
 	/**
@@ -1109,7 +1139,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
 			$this->assertIsInt( $id );
 			$this->own_user( $id );
-			$this->assertSame( '', get_user_meta( $id, RegistrationSlots::META, true ) );
+			$this->assertSame( $post['email'], $this->native_user( $id )->user_email );
+			$this->assertSame( Approval::PENDING, ( new Approval() )->status( $id ) );
+			$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
 			delete_option( RegistrationSlots::OPTION );
 		}
 	}
@@ -1282,6 +1314,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 
 	/** A skipped notice's cancellation and source acknowledgement must roll back together. */
 	public function test_skipped_notice_ack_failure_retains_its_native_reservation_until_recovery(): void {
+		$post = $this->public_post( 53 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id               = $this->waiting_for_mail_handoff( $post );
 		$receipt          = WC()->mailer()->get_emails()[ RegistrationReceivedEmail::class ];
 		$enabled          = $receipt->enabled;
 		$receipt->enabled = 'no';
@@ -1290,24 +1325,23 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$receipt->enabled = $enabled;
 			}
 		);
-		$post = $this->public_post( 53 );
-		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+
 		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
 		add_filter( 'update_user_metadata', $fail, 10, 3 );
 		try {
-			$id = wc_create_new_customer( $post['email'], '', $post['password'] ); } finally {
-			remove_filter( 'update_user_metadata', $fail, 10 ); }
-			$this->assertIsInt( $id );
-			$this->own_user( $id );
-			$state = $this->notices( $id );
-			$scope = $state['received']['reservation'];
-			wp_cache_delete( IntakeStore::OPTION, 'options' );
-			$this->assertArrayHasKey( $scope, get_option( IntakeStore::OPTION )['mail_capacity']['reservations'] );
-			RegistrationNotices::recover();
-			$this->assertArrayNotHasKey( 'reservation', $this->notices( $id )['received'] );
-			$this->assertSame( 'skipped', $this->notices( $id )['received']['state'] );
-			$this->assertSame( '', get_user_meta( $id, RegistrationNotices::PENDING, true ) );
-			$this->assertCount( 1, self::mail_jobs_after( $this->mail_marker ) );
+			RegistrationNotices::deliver( $id, 'received' );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$state = $this->notices( $id );
+		$scope = $state['received']['reservation'];
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		$this->assertArrayHasKey( $scope, get_option( IntakeStore::OPTION )['mail_capacity']['reservations'] );
+		RegistrationNotices::recover();
+		$this->assertArrayNotHasKey( 'reservation', $this->notices( $id )['received'] );
+		$this->assertSame( 'skipped', $this->notices( $id )['received']['state'] );
+		$this->assertSame( '', get_user_meta( $id, RegistrationNotices::PENDING, true ) );
+		$this->assertCount( 1, self::mail_jobs_after( $this->mail_marker ) );
 	}
 
 	/** Privacy cannot delete owned jobs/free capacity if the durable source cannot acknowledge erasure. */
@@ -1810,7 +1844,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		}
 		$this->assertIsInt( $id );
 		$this->own_user( $id );
-		$this->assertArrayHasKey( 'parts', $this->notices( $id )['received'] );
+		$this->assertSame( $post['email'], $this->notices( $id )['received']['source']['user']['user_email'] );
 		$email          = WC()->mailer()->get_emails()[ NewCustomerEmail::class ];
 		$enabled        = $email->enabled;
 		$email->enabled = 'no';
@@ -1984,15 +2018,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	public function test_eraser_cancel_failure_retains_source_owner_and_capacity(): void {
 		$post = $this->public_post( 65 );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
-		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
-		add_filter( 'update_user_metadata', $fail, 10, 3 );
-		try {
-			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
-		} finally {
-			remove_filter( 'update_user_metadata', $fail, 10 );
-		}
-		$this->assertIsInt( $id );
-		$this->own_user( $id );
+		$id       = $this->waiting_for_mail_handoff( $post );
 		$before   = $this->notices( $id );
 		$capacity = get_option( IntakeStore::OPTION );
 		$failed   = false;
