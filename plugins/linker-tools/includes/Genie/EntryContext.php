@@ -126,13 +126,14 @@ final class EntryContext {
 		if ( ! Origin::allows( $request ) ) {
 			return Failure::make( 'origin', 403 );
 		}
-		$conversations = new Conversations();
-		if ( $conversations->needs_browser_claim() ) {
-			if ( ! $this->connection->take( FormGuard::address() ) || ! $this->site->take( '' ) ) {
-				return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
-			}
+		$scope = ( new Conversations() )->entry_scope(
+			(string) $request->get_param( 'tab' ),
+			fn (): bool => $this->connection->take( FormGuard::address() ) && $this->site->take( '' )
+		);
+		if ( '' === $scope ) {
+			return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
 		}
-		$response = new WP_REST_Response( array( 'scope' => $conversations->entry_scope( (string) $request->get_param( 'tab' ) ) ) );
+		$response = new WP_REST_Response( array( 'scope' => $scope ) );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		$response->header( 'Vary', 'Cookie' );
 		return $response;

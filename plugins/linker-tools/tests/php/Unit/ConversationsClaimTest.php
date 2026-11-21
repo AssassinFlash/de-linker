@@ -127,6 +127,28 @@ final class ConversationsClaimTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** A sibling request can reuse the tab's first claim even when new allocations are busy. */
+	public function test_sibling_first_request_reuses_the_existing_claim_without_spending_write_capacity(): void {
+		$_COOKIE = array();
+		$key     = str_repeat( 'a', 32 );
+		$this->db->set(
+			$this->name,
+			array(
+				'key'   => $key,
+				'until' => time() + 20,
+			)
+		);
+		WP_Mock::expectAction( Conversations::BROWSER_ACTION, $key, 1000000, '/', '', false );
+		$scope = $this->conversations()->entry_scope(
+			self::TAB,
+			function (): bool {
+				$this->fail( 'The existing claim must be read without allocating another row.' );
+			}
+		);
+		$this->assertNotSame( '', $scope );
+		$this->assertSame( array(), $this->db->queries );
+	}
+
 	/**
 	 * A concurrent loser's insert is ignored, not applied: the first writer
 	 * keeps its key and the loser adopts it. add_option()'s ON DUPLICATE KEY

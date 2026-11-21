@@ -717,9 +717,11 @@ class Conversations {
 	 * An irreversible current-identity comparison for same-tab entry recovery.
 	 * No conversation or account data is returned and this grants no authority.
 	 *
-	 * @param string $tab Random tab identity, not a credential.
+	 * @param string                 $tab Random tab identity.
+	 * @param (callable():bool)|null $may_create Check new anonymous claim storage when supplied.
+	 * @return string Opaque scope or an empty string when a new claim cannot be allocated.
 	 */
-	public function entry_scope( string $tab ): string {
+	public function entry_scope( string $tab, ?callable $may_create = null ): string {
 		$user = get_current_user_id();
 		if ( $user > 0 ) {
 			$principal = 'user:' . $user . ':' . wp_get_session_token();
@@ -732,7 +734,11 @@ class Conversations {
 			// first requests that both arrive without the cookie still
 			// share one claimed key.
 			if ( '' === $browser ) {
-				$browser = $this->write_browser_key( $this->claimed_browser_key( $tab ) );
+				$claim = $this->claimed_browser_key( $tab, $may_create );
+				if ( '' === $claim ) {
+					return '';
+				}
+				$browser = $this->write_browser_key( $claim );
 			} else {
 				$this->close_browser_claim( $tab );
 			}
@@ -802,9 +808,10 @@ class Conversations {
 	 * cannot present the key. The claim is the shared read. An existing
 	 * cookie is never passed here.
 	 *
-	 * @param string $tab Client tab identity, the only correlator the two requests share.
+	 * @param string                 $tab Client tab shared by the two requests.
+	 * @param (callable():bool)|null $may_create Check before a new storage write.
 	 */
-	private function claimed_browser_key( string $tab ): string {
+	private function claimed_browser_key( string $tab, ?callable $may_create ): string {
 		$existing = $this->read_browser_claim( $tab );
 		if ( '' !== $existing ) {
 			return $existing;
@@ -812,7 +819,7 @@ class Conversations {
 		if ( ! $this->lock_browser_claim( $tab ) ) {
 			$this->forget_browser_claim_cache( $tab );
 			$existing = $this->read_browser_claim( $tab );
-			return '' !== $existing ? $existing : $this->publish_browser_claim( $tab, $this->new_browser_key() );
+			return '' !== $existing ? $existing : $this->publish_browser_claim( $tab, $may_create );
 		}
 		try {
 			$this->forget_browser_claim_cache( $tab );
@@ -820,7 +827,7 @@ class Conversations {
 			if ( '' !== $existing ) {
 				return $existing;
 			}
-			return $this->publish_browser_claim( $tab, $this->new_browser_key() );
+			return $this->publish_browser_claim( $tab, $may_create );
 		} finally {
 			$this->unlock_browser_claim( $tab );
 		}
@@ -859,11 +866,15 @@ class Conversations {
 	 * read-back cannot serve — one already expired or damaged, never a
 	 * live winner.
 	 *
-	 * @param string $tab Client tab identity.
-	 * @param string $key 32 hex characters.
+	 * @param string                 $tab Client tab identity.
+	 * @param (callable():bool)|null $may_create Check before a new storage write.
 	 */
-	private function publish_browser_claim( string $tab, string $key ): string {
+	private function publish_browser_claim( string $tab, ?callable $may_create ): string {
+		if ( null !== $may_create && ! $may_create() ) {
+			return '';
+		}
 		global $wpdb;
+		$key   = $this->new_browser_key();
 		$name  = $this->browser_claim_option( $tab );
 		$value = array(
 			'key'   => $key,
@@ -952,11 +963,6 @@ class Conversations {
 		}
 		$prefix = isset( $wpdb->prefix ) && is_string( $wpdb->prefix ) ? $wpdb->prefix : '';
 		return hash( 'sha256', $database . '/' . $prefix . self::BROWSER_CLAIM_PREFIX . $tab );
-	}
-
-	/** Only a cookieless guest needs the shared first-request claim. */
-	public function needs_browser_claim(): bool {
-		return 0 === get_current_user_id() && '' === $this->browser_key();
 	}
 
 	/**
