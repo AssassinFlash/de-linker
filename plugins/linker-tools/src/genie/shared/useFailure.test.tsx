@@ -66,7 +66,7 @@ function files( uploads: Upload[] ) {
 
 test( 'a truncated failure offers one retry and leaves the record on the composer', () => {
 	const { result } = renderHook( () =>
-		useFailure( files( [ PDF ] ), context )
+		useFailure( files( [ PDF ] ), context.panelEditor )
 	);
 
 	act( () => {
@@ -93,7 +93,9 @@ test( 'a truncated failure offers one retry and leaves the record on the compose
 } );
 
 test( 'an upstream retry with no words left puts the failure back', () => {
-	const { result } = renderHook( () => useFailure( files( [] ), context ) );
+	const { result } = renderHook( () =>
+		useFailure( files( [] ), context.panelEditor )
+	);
 	const draft: FailureDraft = {
 		text: '',
 		question: 'Attached: datasheet.pdf',
@@ -127,11 +129,15 @@ test( 'an older entry completion or file edit cannot erase a newer failure owner
 		text: 'Current owner B',
 		question: 'Current owner B',
 	};
-	const older = renderHook( () => useFailure( files( [ PDF ] ), context ) );
+	const older = renderHook( () =>
+		useFailure( files( [ PDF ] ), context.panelEditor )
+	);
 	act( () =>
 		older.result.current.commitFailure( { type: 'send', draft: prior } )
 	);
-	const newer = renderHook( () => useFailure( files( [] ), context ) );
+	const newer = renderHook( () =>
+		useFailure( files( [] ), context.panelEditor )
+	);
 	act( () =>
 		newer.result.current.commitFailure( { type: 'send', draft: current } )
 	);

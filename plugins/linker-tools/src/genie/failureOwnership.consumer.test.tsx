@@ -1844,3 +1844,90 @@ for ( const changed of [ false, true ] ) {
 		expect( sessions[ 3 ]!.stop ).toHaveBeenCalledTimes( 1 );
 	} );
 }
+
+for ( const first of [ 'homepage', 'dock' ] as const ) {
+	test( `a resting homepage and its dock preserve the dock's text and PDF on pagehide when ${ first } mounts first`, async () => {
+		document.body.innerHTML = HERO;
+		const startHome = () =>
+			startHero(
+				document.querySelector< HTMLElement >( '.hero-cinematic' )!,
+				{ config: CONFIG }
+			);
+		const startDock = () => render( <App config={ CONFIG } /> );
+		let stopHome: () => void;
+		let panel: ReturnType< typeof startDock >;
+		if ( first === 'homepage' ) {
+			stopHome = startHome();
+			panel = startDock();
+		} else {
+			panel = startDock();
+			stopHome = startHome();
+		}
+		stop = () => {
+			panel.unmount();
+			stopHome();
+		};
+		await finishImmediateConsumerWork();
+		await act( async () =>
+			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
+		);
+		const field = screen.getByRole< HTMLTextAreaElement >( 'textbox', {
+			name: 'Ask Genie',
+		} );
+		fireEvent.input( field, { target: { value: text } } );
+		const picker =
+			panel.container.querySelector< HTMLInputElement >(
+				'input[type=file]'
+			)!;
+		await act( async () =>
+			fireEvent.change( picker, {
+				target: {
+					files: [
+						new File( [ fileText ], filename, {
+							type: 'application/pdf',
+						} ),
+					],
+				},
+			} )
+		);
+		await screen.findByText( filename );
+		await act( async () =>
+			window.dispatchEvent( new Event( 'pagehide' ) )
+		);
+		const row = new FailureJournal( sessionStorage, {
+			scope: 'a'.repeat( 64 ),
+			persistent: true,
+		} ).candidate()?.record;
+		expect( row?.text ).toBe( text );
+		expect( row?.uploads[ 0 ]?.name ).toBe( filename );
+		expect( atob( row!.uploads[ 0 ]!.data ) ).toBe( fileText );
+		const native =
+			document.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		fireEvent.input( native, {
+			target: { value: 'Unsent homepage note' },
+		} );
+		await act( async () =>
+			window.dispatchEvent( new Event( 'pagehide' ) )
+		);
+		const readNotes = () =>
+			Object.values(
+				JSON.parse(
+					sessionStorage.getItem(
+						failureBucketKey( 'a'.repeat( 64 ) )
+					)!
+				).records
+			).map(
+				( entry ) =>
+					( entry as { record: { text: string } } ).record.text
+			);
+		expect( readNotes() ).toEqual(
+			expect.arrayContaining( [ text, 'Unsent homepage note' ] )
+		);
+		fireEvent.input( native, { target: { value: '' } } );
+		await act( async () =>
+			window.dispatchEvent( new Event( 'pagehide' ) )
+		);
+		expect( readNotes() ).toEqual( [ text ] );
+		expect( sendTurn ).not.toHaveBeenCalled();
+	} );
+}

@@ -199,7 +199,7 @@ export function HeroConversation( {
 	const [ retainedMode, setRetainedMode ] = useState<
 		'attach' | 'nameplate' | 'voice' | null
 	>( null );
-	const files = useAttachments( draftContext );
+	const files = useAttachments( draftContext.homeEditor );
 	// The bridge is registered once; the refs keep it calling the latest
 	// render's send and file state.
 	const filesRef = useRef( files );
@@ -224,7 +224,7 @@ export function HeroConversation( {
 		placeChips,
 		openRetry,
 		payloadOrRestore,
-	} = useFailure( files, draftContext );
+	} = useFailure( files, draftContext.homeEditor );
 	ownerCleanup.current = () => {
 		session.invalidate();
 		detachFailure();
@@ -248,7 +248,7 @@ export function HeroConversation( {
 	omittedRef.current = omitted;
 	useEffect(
 		() =>
-			draftContext.beforeLeave( () => {
+			draftContext.homeEditor.beforeLeave( () => {
 				preserveEditor( {
 					text: readPrompt().text,
 					uploads: filesRef.current.uploads,
@@ -308,7 +308,7 @@ export function HeroConversation( {
 				const checked = await verifiedEntryFailure(
 					config,
 					pageFailureStore(),
-					draftContext
+					draftContext.homeEditor
 				);
 				if ( ! checked && ! cancelled ) {
 					setRecoveryBlocked( true );
@@ -333,7 +333,7 @@ export function HeroConversation( {
 				if (
 					checked.candidate &&
 					checked.record?.editing &&
-					draftContext.editor?.attempt ===
+					draftContext.homeEditor.owner?.attempt ===
 						checked.record.owner?.attempt &&
 					now.text === checked.record.text &&
 					JSON.stringify( filesRef.current.uploads ) ===
@@ -605,7 +605,7 @@ export function HeroConversation( {
 				return;
 			}
 			commitFailure( { type: settled.kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -644,7 +644,7 @@ export function HeroConversation( {
 				return;
 			}
 			commitFailure( { type: kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -725,7 +725,7 @@ export function HeroConversation( {
 					retainUnverifiedTurn( lease, draft );
 					return;
 				}
-				if ( ! draftContext.editor ) {
+				if ( ! draftContext.homeEditor.owner ) {
 					filesRef.current.clear();
 				}
 				draftContext.checkpoint();
@@ -819,7 +819,7 @@ export function HeroConversation( {
 				retainUnverifiedTurn( lease, draft );
 				return;
 			}
-			if ( ! draftContext.editor ) {
+			if ( ! draftContext.homeEditor.owner ) {
 				filesRef.current.clear();
 			}
 			draftContext.checkpoint();
@@ -898,7 +898,7 @@ export function HeroConversation( {
 				return;
 			}
 			setOmitted( names );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				preserveEditor( {
 					text: readPrompt().text,
 					uploads: files.uploads,
@@ -932,7 +932,7 @@ export function HeroConversation( {
 	const bridgeAsk = useCallback(
 		( text: string, picked?: ArrayLike< File > ) => {
 			if ( picked?.length || filesRef.current.busy ) {
-				if ( ! draftContext.acceptEditor() ) {
+				if ( ! draftContext.homeEditor.accept() ) {
 					return;
 				}
 				// A file accepted during an earlier turn belongs to the next editor.
@@ -958,7 +958,7 @@ export function HeroConversation( {
 		[ bridgeAsk ]
 	);
 	const typeModelCard = useCallback( () => {
-		if ( ! draftContext.acceptEditor() ) {
+		if ( ! draftContext.homeEditor.accept() ) {
 			return;
 		}
 		setPrompt( typeModelPrompt() );
@@ -1344,11 +1344,12 @@ export function HeroConversation( {
 								onClick={ () => {
 									// The hero field lives outside React. Read its
 									// current bytes with its accepted editor.
-									const owner = draftContext.editor;
+									const owner = draftContext.homeEditor.owner;
 									const prompt = readPrompt();
 									if (
 										owner &&
-										draftContext.editor === owner &&
+										draftContext.homeEditor.owner ===
+											owner &&
 										draftContext.capture()?.scope ===
 											owner.scope
 									) {

@@ -1,5 +1,5 @@
 /** Preserve accepted ordinary editor bytes before a verified surface is quarantined or left. */
-import type { DraftContext } from './draftContext';
+import type { DraftEditor } from './draftContext';
 import type { NativeScope } from './nativeScope';
 import type { FailureOwner } from './failure';
 import type { Upload } from '../attachments/prepare';
@@ -24,16 +24,17 @@ export interface EditingAuthority {
 }
 /**
  * Never assigns the freshly returned B principal to A's already accepted bytes.
- * @param context  The mounted surface identity and epoch.
+ * @param composer The owner of the input being saved.
  * @param snapshot Accepted text, prepared files, and explicit reselection names.
  * @param accepted Original authority for bytes already accepted by an ongoing operation.
  */
 export function preserveEditing(
-	context: DraftContext,
+	composer: DraftEditor,
 	snapshot: EditingSnapshot,
 	accepted?: EditingAuthority
 ): FailureWrite | null {
-	const owner = accepted?.owner ?? context.editor;
+	const context = composer.context;
+	const owner = accepted?.owner ?? composer.owner;
 	const identity = accepted?.identity ?? context.identity;
 	if (
 		! owner ||
@@ -86,8 +87,8 @@ export function preserveEditing(
 			candidate.cursor.owner.attempt === owner.attempt
 		) {
 			const removed = journal.consume( candidate.cursor, true );
-			if ( removed && context.editor === owner ) {
-				context.releaseEditor();
+			if ( removed && composer.owner === owner ) {
+				composer.release();
 			}
 			return {
 				state: { phase: 'clear', draft: null, kind: null },
@@ -97,8 +98,8 @@ export function preserveEditing(
 			};
 		}
 		// No accepted bytes remain; a later keystroke must get a new attempt.
-		if ( ! candidate && context.editor === owner ) {
-			context.releaseEditor();
+		if ( ! candidate && composer.owner === owner ) {
+			composer.release();
 		}
 		return null;
 	}

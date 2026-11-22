@@ -459,7 +459,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const draftContext = useDraftContext( config, () =>
 		ownerCleanup.current()
 	);
-	const files = useAttachments( draftContext );
+	const files = useAttachments( draftContext.panelEditor );
 	const filesRef = useRef( files );
 	filesRef.current = files;
 	// Why the last turn's files were refused by the proxy, if they were.
@@ -510,7 +510,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		placeChips,
 		openRetry,
 		payloadOrRestore,
-	} = useFailure( files, draftContext );
+	} = useFailure( files, draftContext.panelEditor );
 	const stopDictation = useCallback(
 		( cancel = true ) => {
 			const voice = dictationOwner.current;
@@ -537,9 +537,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				);
 				if (
 					canceled?.conflict &&
-					draftContext.editor === voice.owner
+					draftContext.panelEditor.owner === voice.owner
 				) {
-					draftContext.releaseEditor();
+					draftContext.panelEditor.release();
 				}
 			}
 			const session = dictation.current;
@@ -578,11 +578,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	editingMissing.current = omitted;
 	useEffect(
 		() =>
-			draftContext.beforeLeave( () => {
+			draftContext.panelEditor.beforeLeave( () => {
 				const pendingVoice = dictationOwner.current;
 				if (
 					pendingVoice &&
-					draftContext.editor === pendingVoice.owner &&
+					draftContext.panelEditor.owner === pendingVoice.owner &&
 					( pendingVoice.pending > 0 ||
 						( ! pendingVoice.ended &&
 							! inputRef.current &&
@@ -614,7 +614,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				if (
 					voice &&
 					( ! draftContext.owns( voice.lease ) ||
-						draftContext.editor !== voice.owner )
+						draftContext.panelEditor.owner !== voice.owner )
 				) {
 					stopDictation( false );
 				}
@@ -755,7 +755,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			const checked = await verifiedEntryFailure(
 				config,
 				pageFailureStore(),
-				draftContext
+				draftContext.panelEditor
 			);
 			if ( ! checked || ! checked.unchanged() || hasPendingOwner() ) {
 				if ( ! checked ) {
@@ -780,7 +780,8 @@ export function App( { config }: { config: GenieConfig } ) {
 			if (
 				checked.candidate &&
 				record?.editing &&
-				draftContext.editor?.attempt === record.owner?.attempt &&
+				draftContext.panelEditor.owner?.attempt ===
+					record.owner?.attempt &&
 				inputRef.current === record.text &&
 				JSON.stringify( filesRef.current.uploads ) ===
 					JSON.stringify( record.uploads ) &&
@@ -794,7 +795,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			const sameCurrent =
 				failureState.current.draft?.owner?.attempt ===
 					checked.candidate?.cursor.owner.attempt &&
-				! draftContext.editor &&
+				! draftContext.panelEditor.owner &&
 				inputRef.current ===
 					( reconciled.kind
 						? composerFor( reconciled.kind, reconciled.draft! )
@@ -874,7 +875,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				return;
 			}
 			setOmitted( names );
-			if ( draftContext.editor ) {
+			if ( draftContext.panelEditor.owner ) {
 				preserveEditor( {
 					text: inputRef.current,
 					uploads: filesRef.current.uploads,
@@ -1198,7 +1199,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				return;
 			}
 			commitFailure( { type: settled.kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.panelEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -1239,7 +1240,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				return;
 			}
 			commitFailure( { type: kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.panelEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -1417,7 +1418,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						sending.current = false;
 						return;
 					}
-					if ( ! entryId && ! draftContext.editor ) {
+					if ( ! entryId && ! draftContext.panelEditor.owner ) {
 						filesRef.current.clear();
 					}
 					draftContext.checkpoint();
@@ -1549,7 +1550,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					// done. Restore that result instead of paying for a new turn.
 					currentThread.current = stored.messages;
 					setThread( stored.messages );
-					if ( ! draftContext.editor ) {
+					if ( ! draftContext.panelEditor.owner ) {
 						filesRef.current.clear();
 					}
 					draftContext.checkpoint();
@@ -1603,7 +1604,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					sending.current = false;
 					return;
 				}
-				if ( ! draftContext.editor ) {
+				if ( ! draftContext.panelEditor.owner ) {
 					filesRef.current.clear();
 				}
 				draftContext.checkpoint();
@@ -1660,7 +1661,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const typeModel = useCallback( () => {
 		// The model goes where the placeholder stands; the field opens with
 		// the words before it, ready for the customer to type the name.
-		if ( ! draftContext.acceptEditor() ) {
+		if ( ! draftContext.panelEditor.accept() ) {
 			return;
 		}
 		setInput( typeModelPrompt() );
@@ -1943,7 +1944,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		if ( dictationOwner.current ) {
 			stopDictation();
 		}
-		const owner = draftContext.acceptEditor();
+		const owner = draftContext.panelEditor.accept();
 		if ( ! owner ) {
 			return;
 		}
@@ -1965,7 +1966,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				if (
 					dictationOwner.current !== voice ||
 					! draftContext.owns( lease ) ||
-					draftContext.editor !== owner
+					draftContext.panelEditor.owner !== owner
 				) {
 					return;
 				}
@@ -2008,8 +2009,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						// A newer accepted revision has superseded this token. Neither
 						// its next phrase nor a later blank checkpoint may replace it.
 						stopDictation( false );
-						if ( draftContext.editor === owner ) {
-							draftContext.releaseEditor();
+						if ( draftContext.panelEditor.owner === owner ) {
+							draftContext.panelEditor.release();
 						}
 						return;
 					}
@@ -2023,7 +2024,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						! permitted ||
 						dictationOwner.current !== voice ||
 						! draftContext.valid( lease ) ||
-						draftContext.editor !== owner
+						draftContext.panelEditor.owner !== owner
 					) {
 						return;
 					}
@@ -2364,7 +2365,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 	// The rendered text and its accepted editor belong together. An old link
 	// must not bind that text to a principal verified before React commits.
-	const inquiryEditor = draftContext.editor;
+	const inquiryEditor = draftContext.panelEditor.owner;
 	const recoveryVisible =
 		! historyView &&
 		phase === 'ask' &&
@@ -3286,7 +3287,8 @@ export function App( { config }: { config: GenieConfig } ) {
 											onClick={ () => {
 												if (
 													inquiryEditor &&
-													draftContext.editor ===
+													draftContext.panelEditor
+														.owner ===
 														inquiryEditor &&
 													draftContext.capture()
 														?.scope ===
@@ -3539,7 +3541,9 @@ export function App( { config }: { config: GenieConfig } ) {
 										if ( ! event.target.value ) {
 											stopDictation();
 										}
-										if ( draftContext.acceptEditor() ) {
+										if (
+											draftContext.panelEditor.accept()
+										) {
 											inputRef.current =
 												event.target.value;
 											setInput( event.target.value );

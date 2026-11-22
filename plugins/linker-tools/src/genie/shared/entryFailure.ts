@@ -1,6 +1,6 @@
 /** The single verified failed-draft selector used by both surfaces and their controller. */
 import type { GenieConfig } from '../config';
-import type { DraftContext } from './draftContext';
+import type { DraftEditor } from './draftContext';
 import { nativeScope } from './nativeScope';
 import { FAILURE_KEY, type FailureStore } from './failure';
 import { FailureJournal, hasOwnedRecovery } from './ownedFailure';
@@ -34,15 +34,16 @@ export async function assertEntryScope(
 }
 /**
  * Never return private bytes before authority; unknown v1 and foreign scopes stay untouched.
- * @param config  The currently mounted native routes and REST nonce.
- * @param store   The underlying tab storage adapter.
- * @param context The mounted surface identity and epoch.
+ * @param config   The currently mounted native routes and REST nonce.
+ * @param store    The underlying tab storage adapter.
+ * @param composer The editor reopening its accepted input.
  */
 export async function verifiedEntryFailure(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 	store: FailureStore,
-	context?: DraftContext
+	composer?: DraftEditor
 ) {
+	const context = composer?.context;
 	let legacyRaw: string | null = null;
 	let legacyReadable = false;
 	try {
@@ -66,7 +67,7 @@ export async function verifiedEntryFailure(
 		const candidate =
 			previousScope && previousScope !== identity.scope
 				? null
-				: journal.candidate( context?.editor?.attempt );
+				: journal.candidate( composer?.owner?.attempt );
 		return {
 			identity,
 			journal,

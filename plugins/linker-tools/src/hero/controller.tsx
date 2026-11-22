@@ -166,9 +166,9 @@ export function startHero(
 	let quarantinedPrompt: string | null = null;
 	let retainedMode: 'attach' | 'nameplate' | 'voice' | null = null;
 	const context = pageDraftContext( options.config );
-	const stopPreserving = context.beforeLeave( () => {
+	const stopPreserving = context.homeEditor.beforeLeave( () => {
 		if ( ! root ) {
-			preserveEditing( context, {
+			preserveEditing( context.homeEditor, {
 				text: prompt!.value,
 				uploads: [],
 				missing: [],
@@ -209,7 +209,7 @@ export function startHero(
 	const releaseContext = mountPageDraftContext( context );
 	let promptVersion = 0;
 	const onPromptInput = () => {
-		if ( ! context.acceptEditor() ) {
+		if ( ! context.homeEditor.accept() ) {
 			prompt!.value = '';
 			return;
 		}
@@ -413,7 +413,7 @@ export function startHero(
 			recognition = null;
 			return;
 		}
-		context.acceptEditor();
+		context.homeEditor.accept();
 		let ended = false;
 		let session: DictationSession | null = null;
 		session = startDictation(

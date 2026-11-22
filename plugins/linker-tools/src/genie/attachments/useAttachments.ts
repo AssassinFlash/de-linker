@@ -22,7 +22,7 @@ import {
 	type Refusal,
 	type Upload,
 } from './prepare';
-import type { DraftContext } from '../shared/draftContext';
+import type { DraftEditor } from '../shared/draftContext';
 
 /** Why a pick is not sent: a file's refusal, or the turn's own limits. */
 export type PickRefusal = Refusal | 'count' | 'turn_size';
@@ -51,7 +51,8 @@ export interface Attachments {
 
 let nextKey = 1;
 
-export function useAttachments( context?: DraftContext ): Attachments {
+export function useAttachments( composer?: DraftEditor ): Attachments {
+	const context = composer?.context;
 	const [ picked, setPicked ] = useState< Picked[] >( [] );
 	// The picks as of the last change, for a burst of picks in one render.
 	const current = useRef< Picked[] >( [] );
@@ -79,7 +80,7 @@ export function useAttachments( context?: DraftContext ): Attachments {
 					}
 				}
 				const lease = context?.capture();
-				if ( context && ( ! lease || ! context.acceptEditor() ) ) {
+				if ( composer && ( ! lease || ! composer.accept() ) ) {
 					return;
 				}
 				for ( const file of pickedFiles ) {
@@ -136,7 +137,7 @@ export function useAttachments( context?: DraftContext ): Attachments {
 				}
 			} )();
 		},
-		[ update, context ]
+		[ update, context, composer ]
 	);
 
 	const remove = useCallback(

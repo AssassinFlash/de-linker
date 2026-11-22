@@ -8,6 +8,48 @@ export interface DraftLease {
 	epoch: number;
 }
 export type ContextPhase = 'loading' | 'ready' | 'unavailable';
+export class DraftEditor {
+	private ownerValue: FailureOwner | null = null;
+	private readonly leaveListeners = new Set< () => void >();
+	constructor(
+		readonly context: DraftContext,
+		private readonly changed: () => void
+	) {}
+	get owner(): FailureOwner | null {
+		return this.ownerValue;
+	}
+	accept(): FailureOwner | null {
+		const lease = this.context.capture();
+		if ( ! lease ) {
+			return null;
+		}
+		if ( ! this.ownerValue ) {
+			this.ownerValue = {
+				scope: lease.scope,
+				attempt: crypto.randomUUID(),
+			};
+			this.changed();
+		}
+		return this.ownerValue;
+	}
+	adopt( owner: FailureOwner ): void {
+		if ( this.context.capture()?.scope === owner.scope ) {
+			this.ownerValue = owner;
+		}
+	}
+	release(): void {
+		this.ownerValue = null;
+	}
+	beforeLeave( listener: () => void ): () => void {
+		this.leaveListeners.add( listener );
+		return () => this.leaveListeners.delete( listener );
+	}
+	checkpoint(): void {
+		if ( this.ownerValue && this.context.phase === 'ready' ) {
+			this.leaveListeners.forEach( ( listener ) => listener() );
+		}
+	}
+}
 export class DraftContext {
 	private identityValue: NativeScope | null = null;
 	private epoch = 0;
@@ -15,8 +57,8 @@ export class DraftContext {
 	private alive = true;
 	private pending: Promise< NativeScope > | null = null;
 	private listeners = new Set< () => void >();
-	private leaveListeners = new Set< () => void >();
-	private editorValue: FailureOwner | null = null;
+	readonly homeEditor = new DraftEditor( this, () => this.notify() );
+	readonly panelEditor = new DraftEditor( this, () => this.notify() );
 	phase: ContextPhase = 'loading';
 	conversationId?: number;
 	constructor(
@@ -26,43 +68,9 @@ export class DraftContext {
 	get identity(): NativeScope | null {
 		return this.identityValue;
 	}
-	get editor(): FailureOwner | null {
-		return this.editorValue;
-	}
-	/** Called synchronously before accepting text/file/dictation bytes. */
-	acceptEditor(): FailureOwner | null {
-		const lease = this.capture();
-		if ( ! lease ) {
-			return null;
-		}
-		if ( ! this.editorValue ) {
-			this.editorValue = {
-				scope: lease.scope,
-				attempt: crypto.randomUUID(),
-			};
-			this.notify();
-		}
-		return this.editorValue;
-	}
-	adoptEditor( owner: FailureOwner ): void {
-		if ( this.capture()?.scope === owner.scope ) {
-			this.editorValue = owner;
-		}
-	}
-	releaseEditor(): void {
-		this.editorValue = null;
-	}
-	beforeLeave( listener: () => void ): () => void {
-		this.leaveListeners.add( listener );
-		return () => this.leaveListeners.delete( listener );
-	}
 	checkpoint(): void {
-		this.preserveEditor();
-	}
-	private preserveEditor(): void {
-		if ( this.phase === 'ready' && this.editorValue ) {
-			this.leaveListeners.forEach( ( listener ) => listener() );
-		}
+		this.homeEditor.checkpoint();
+		this.panelEditor.checkpoint();
 	}
 
 	subscribe( listener: () => void ): () => void {
@@ -134,7 +142,7 @@ export class DraftContext {
 		if ( ! fresh && this.pending ) {
 			return this.pending;
 		}
-		this.preserveEditor();
+		this.checkpoint();
 		const generation = ++this.generation;
 		if ( ! this.identityValue ) {
 			this.phase = 'loading';
@@ -152,7 +160,8 @@ export class DraftContext {
 					) {
 						this.epoch += 1;
 						this.conversationId = undefined;
-						this.editorValue = null;
+						this.homeEditor.release();
+						this.panelEditor.release();
 						this.changed();
 					}
 					this.identityValue = identity;
@@ -230,20 +239,21 @@ export class DraftContext {
 	}
 	/** New/Select/Delete invalidates old callbacks even under the same native account. */
 	invalidate(): void {
-		this.preserveEditor();
-		this.editorValue = null;
+		this.checkpoint();
+		this.homeEditor.release();
+		this.panelEditor.release();
 		this.epoch += 1;
 		this.notify();
 	}
 	dispose(): void {
-		this.preserveEditor();
-		this.editorValue = null;
+		this.checkpoint();
+		this.homeEditor.release();
+		this.panelEditor.release();
 		this.alive = false;
 		this.epoch += 1;
 		this.generation += 1;
 		this.notify();
 		this.listeners.clear();
-		this.leaveListeners.clear();
 	}
 }
 
