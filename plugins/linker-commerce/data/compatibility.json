@@ -867,8 +867,8 @@
    "verdict": "released_with_accessory",
    "conditions": [
     {
-     "en": "The single-phase PowerOcean datasheet (p. 1) names the battery tower as EF BD-5.1-S1 x N with EF BD-B-S1 x 1: every tower takes one battery base article, which the battery article itself does not include.",
-     "de": "Das einphasige PowerOcean-Datenblatt (S. 1) nennt den Batterieturm als EF BD-5.1-S1 x N mit EF BD-B-S1 x 1: Jeder Turm benötigt einen Batterie-Basissockel als eigenen Artikel, den der Batterie-Artikel selbst nicht enthält."
+     "en": "The single-phase PowerOcean datasheet (p. 1) names the battery tower as EF BD-5.1-S1 x N with EF BD-B-S1 x 1: every tower takes one battery base, supplied separately from the battery.",
+     "de": "Das einphasige PowerOcean-Datenblatt (S. 1) nennt den Batterieturm als EF BD-5.1-S1 x N mit EF BD-B-S1 x 1: Jeder Turm benötigt einen separaten Batterie-Basissockel, der nicht zum Lieferumfang der Batterie gehört."
     },
     {
      "en": "EcoFlow's PowerOcean datasheets name this battery in the PowerOcean system component list; the list describes the system configuration, not the contents of a Linker sales package.",
@@ -5127,8 +5127,8 @@
    "verdict": "released_with_accessory",
    "conditions": [
     {
-     "en": "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is an article of its own.",
-     "de": "SAJs B2-Datenblatt nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das B2-Handbuch (V1.2, PDF-S. 5) gibt an, dass die B2 nur als solches Set eingesetzt werden kann: Das Steuermodul ist ein eigener Artikel."
+     "en": "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is a separate product.",
+     "de": "SAJs B2-Datenblatt nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das B2-Handbuch (V1.2, PDF-S. 5) gibt an, dass die B2 nur als solches Set eingesetzt werden kann: Das Steuermodul ist ein eigenes Produkt."
     },
     {
      "en": "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range.",

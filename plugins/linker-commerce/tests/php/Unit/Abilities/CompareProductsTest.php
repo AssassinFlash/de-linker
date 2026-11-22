@@ -51,8 +51,19 @@ final class CompareProductsTest extends TestCase {
 		$this->assertTrue( ( new CompareProducts( null, $this->publication_data() ) )->can_execute() );
 	}
 
-	/** The customer view carries document identity and no hidden numeric price. */
-	public function test_customer_comparison_includes_the_public_datasheet_and_model(): void {
+	/** Both storefront languages expose the same checked documents. */
+	public static function storefront_languages(): array {
+		return array( array( 'en' ), array( 'de' ) );
+	}
+
+	/**
+	 * The customer view carries document identity and no hidden numeric price.
+	 *
+	 * @dataProvider storefront_languages
+	 * @param string $lang Storefront language.
+	 */
+	public function test_customer_comparison_includes_the_public_datasheet_and_model( string $lang ): void {
+		WP_Mock::userFunction( 'determine_locale' )->andReturn( 'de' === $lang ? 'de_DE_formal' : 'en_US' );
 		$this->mock_live_products( array( 4107, 3556, 1832, 2067, 2092 ), true );
 		WP_Mock::userFunction( 'wc_load_cart' );
 		$cart = \Mockery::mock();
@@ -68,7 +79,7 @@ final class CompareProductsTest extends TestCase {
 		$result = ( new CompareProducts( null, $this->publication_data() ) )->execute(
 			array(
 				'product_ids'  => array( 4107, 3556 ),
-				'lang'         => 'en',
+				'lang'         => $lang,
 				'presentation' => true,
 			)
 		);
@@ -79,7 +90,16 @@ final class CompareProductsTest extends TestCase {
 		$this->assertTrue( $column['in_draft'] );
 		$storage = array_column( $column['storage'], null, 'model' );
 		$this->assertArrayHasKey( 'B2-10.0-HV1', $storage, implode( ', ', array_keys( $storage ) ) );
-		$this->assertSame( array( 'BC2-HV1' ), $storage['B2-10.0-HV1']['accessories'] );
+		$pair = $storage['B2-10.0-HV1'];
+		$this->assertSame( array( 'BC2-HV1' ), $pair['accessories'] );
+		$this->assertDoesNotMatchRegularExpression( '/\barticles?\b|artikel/iu', implode( ' ', $pair['conditions'] ) );
+		$this->assertNotEmpty( $pair['documents'] ?? array() );
+		foreach ( $pair['documents'] as $document ) {
+			$this->assertNotEmpty( $document['title'] );
+			$this->assertStringStartsWith( 'https://de-linker.com/', $document['url'] );
+		}
+		$this->assertContains( 2, array_column( $pair['documents'], 'page' ) );
+		$this->assertContains( 37, array_column( $pair['documents'], 'page' ) );
 		$this->assertArrayNotHasKey( 'BC2-HV1', $storage );
 		$this->assertArrayNotHasKey( 'price', $column );
 	}

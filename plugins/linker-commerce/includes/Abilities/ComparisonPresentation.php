@@ -28,6 +28,7 @@ final class ComparisonPresentation {
 		$related    = array();
 		$candidates = array();
 		$models     = array_column( $manifest['products'], 'model', 'product_id' );
+		$documents  = array_column( $manifest['documents'], null, 'document_id' );
 		foreach ( $publication->pairs( $manifest ) as $pair ) {
 			$candidates[ $pair['inverter_product_id'] ][ $pair['battery_product_id'] ] = true;
 		}
@@ -72,8 +73,18 @@ final class ComparisonPresentation {
 				if ( null === $model ) {
 					continue;
 				}
+				$sources = array();
+				foreach ( $release['documents'] as $reference ) {
+					$doc       = $documents[ $reference['document_id'] ];
+					$sources[] = array(
+						'title' => 'de' === $lang && ! empty( $doc['title_de'] ) ? $doc['title_de'] : $doc['title'],
+						'url'   => $reference['url'],
+						...( isset( $reference['page'] ) ? array( 'page' => $reference['page'] ) : array() ),
+					);
+				}
 				$storage[] = array(
 					'model'       => $model,
+					'documents'   => $sources,
 					'conditions'  => array_column( $release['conditions'], $lang ),
 					'accessories' => array_values( array_filter( array_map( static fn( int $part ): string => (string) ( $models[ $part ] ?? '' ), $parts ) ) ),
 					'verdict'     => $release['verdict'],

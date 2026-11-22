@@ -1,0 +1,223 @@
+{
+  "description": "Bind the existing SAJ CB2 cabinet energy measurements to their published manufacturer datasheet. Apply via 615-dc-figures.py --plan on the canonical Woo products.",
+  "reviewed_sources": [
+    {
+      "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+      "blob_sha256": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+      "pages": [
+        3
+      ]
+    }
+  ],
+  "products": {
+    "4103": {
+      "model": "CB2-57.3-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "rated_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "57.3"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        },
+        "usable_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "51.5"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        }
+      }
+    },
+    "4104": {
+      "model": "CB2-71.6-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "rated_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "71.6"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        },
+        "usable_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "64.4"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        }
+      }
+    },
+    "4105": {
+      "model": "CB2-85.9-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "rated_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "85.9"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        },
+        "usable_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "77.3"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        }
+      }
+    },
+    "4106": {
+      "model": "CB2-100.3-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "rated_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "100.3"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        },
+        "usable_energy": {
+          "expect": {
+            "citation": {
+              "doc": "saj_chs2_datasheet_eu_en.pdf",
+              "page": 4
+            },
+            "evidence_refs": [
+              "saj_chs2_datasheet_eu_en.pdf:p4"
+            ],
+            "unit": "kWh",
+            "value": "90.2"
+          },
+          "set": {
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            },
+            "evidence_refs": [
+              "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d:p3"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
