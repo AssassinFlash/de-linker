@@ -959,13 +959,12 @@ def test_unlisted_pair_with_a_second_question_fetches_model_facts_and_documents(
     route = plan(question, [_model(model, 7)], _reading("find_products"), subject, lang)
     assert not route.catalog_only
     assert [c.ability for c in route.calls] == [
-        "linker/search-knowledge",
         "linker/get-product",
         "linker/search-products",
     ]
     assert (
         route.calls[-1].arguments["text"] == "HD-P3-15K"
-        and route.calls[1].arguments["product_id"] == 7
+        and route.calls[0].arguments["product_id"] == 7
     )
 
 

@@ -1008,11 +1008,23 @@ def _plan_turn(
                     hint="Check each named model. A missing catalogue model cannot confirm this pairing.",
                     reasons=tuple(reasons),
                 )
-            intent = "documents_specs"
+            model_calls, notes = _documents_calls(
+                calls, notes, message, matches, subject, lang, prefetch_knowledge=False
+            )
+            return Route(
+                "documents",
+                model_calls,
+                no_handoff=True,
+                named_models=notes,
+                hint="Explain the missing pairing separately. Answer the other request from the known product's verified figures and link its manufacturer source. Search the documents if the product facts do not answer it.",
+                reasons=tuple(reasons),
+            )
     explicit_compare = re.match(
         r"\s*(?:compare|vergleiche|vergleichen Sie)\b", message, re.I
     )
-    if (intent == "compare" or explicit_compare) and len(subject.ids) >= 2:
+    if (intent == "compare" or (intent is None and explicit_compare)) and len(
+        subject.ids
+    ) >= 2:
         ids = subject.ids[:4]
         compare = Call(
             "linker/compare-products", {"product_ids": list(ids), "lang": lang}
@@ -2200,6 +2212,8 @@ def _documents_calls(
     matches: list[Match],
     subject: Subject,
     lang: str,
+    *,
+    prefetch_knowledge: bool = True,
 ) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
     """Knowledge, then get-product for known ids, then searches that are still needed.
 
@@ -2211,11 +2225,14 @@ def _documents_calls(
     turn; one stays for the model's follow-up, trial question 10). A model
     that does not fit is searched=False.
     """
-    knowledge = Call(
-        "linker/search-knowledge",
-        _knowledge_input(message, matches, subject, lang),
-    )
     body: list[Call] = []
+    if prefetch_knowledge:
+        body.append(
+            Call(
+                "linker/search-knowledge",
+                _knowledge_input(message, matches, subject, lang),
+            )
+        )
     fetched: set[int] = set()
     for product_id in subject.ids:
         body.append(
@@ -2233,7 +2250,7 @@ def _documents_calls(
             continue
         body.append(call)
     return _limit_route_calls(
-        (knowledge, *body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
+        tuple(body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
     )
 
 
