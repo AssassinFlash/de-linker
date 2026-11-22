@@ -404,3 +404,127 @@
 		border-radius: 16px 16px 0 0;
 	}
 }
+
+.linker-genie-home-modal {
+	box-sizing: border-box;
+	inset: 0;
+	width: min(1160px, calc(100vw - 40px));
+	height: min(860px, calc(100dvh - 40px));
+	max-width: none;
+	max-height: none;
+	margin: auto;
+	padding: 0;
+	overflow: hidden;
+	border: 0;
+	border-radius: 18px;
+	background: var(--proto-color-surface);
+	color: var(--proto-color-ink);
+}
+.linker-genie-home-modal::backdrop {
+	background: rgb(10 30 29 / 45%);
+}
+#home-a
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-home-modal
+	.hero-dialog {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr) auto auto;
+	width: 100%;
+	height: 100%;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: inherit;
+}
+#home-a .linker-genie-home-modal .hero-dialog:has(.linker-genie-rail.is-open) {
+	grid-template-columns: 232px minmax(0, 1fr);
+}
+.linker-genie-home-history {
+	grid-column: 1;
+	grid-row: 1 / -1;
+	min-height: 0;
+}
+.linker-genie-home-history .linker-genie-rail.is-open {
+	width: 100%;
+	height: 100%;
+}
+.linker-genie-home-history > .linker-genie-app__rail-toggle {
+	width: 44px;
+	height: 44px;
+}
+#home-a .linker-genie-home-modal .linker-genie-hero__host,
+#home-a .linker-genie-home-modal .hero-dialog .hero-prompt,
+#home-a .linker-genie-home-modal .hero-dialog .hero-dialog-footer {
+	grid-column: 2;
+	width: auto;
+	min-width: 0;
+	margin-inline: 18px;
+}
+#home-a .linker-genie-home-modal .linker-genie-hero__host {
+	grid-row: 1;
+}
+#home-a .linker-genie-home-modal .hero-dialog .hero-prompt {
+	grid-row: 2;
+}
+#home-a .linker-genie-home-modal .hero-dialog .hero-dialog-footer {
+	grid-row: 3;
+	margin-block: 0;
+	padding-block: 0;
+}
+#home-a
+	.linker-genie-home-modal
+	.linker-genie-hero__host
+	.linker-genie-hero__bar {
+	min-height: 44px;
+}
+#home-a .linker-genie-home-modal .linker-genie-hero__cards {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 860px) {
+	.linker-genie-home-modal {
+		width: 100vw;
+		height: 100dvh;
+		border-radius: 0;
+	}
+	#home-a
+		.hero-cinematic.linker-genie-hero--open
+		.linker-genie-home-modal
+		.hero-dialog {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	#home-a .linker-genie-home-modal .linker-genie-hero__host,
+	#home-a .linker-genie-home-modal .hero-dialog .hero-prompt,
+	#home-a .linker-genie-home-modal .hero-dialog .hero-dialog-footer {
+		grid-column: 1;
+		margin-inline: 12px;
+	}
+	.linker-genie-home-history {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+	.linker-genie-home-history > * {
+		pointer-events: auto;
+	}
+	.linker-genie-home-history > .linker-genie-app__rail-toggle {
+		position: absolute;
+		inset: 0 auto auto 0;
+		z-index: 3;
+	}
+	.linker-genie-home-history .linker-genie-rail.is-open {
+		width: min(232px, 84vw);
+		z-index: 5;
+	}
+	.linker-genie-home-history .linker-genie-rail-mask {
+		position: absolute;
+		z-index: 4;
+	}
+	#home-a .linker-genie-home-modal .linker-genie-hero__bar {
+		padding-inline-start: 34px;
+	}
+	#home-a .linker-genie-home-modal .linker-genie-hero__cards {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

@@ -244,7 +244,7 @@ export function startHero(
 				onExpand={ () =>
 					setHeroView(
 						dialog!.dataset.genieView === 'expanded'
-							? null
+							? 'side'
 							: 'expanded'
 					)
 				}
@@ -268,20 +268,47 @@ export function startHero(
 		);
 	}
 
+	let nativeModal: HTMLDialogElement | null = null;
+	let historyHost: HTMLDivElement | null = null;
 	function setHeroView( view: 'side' | 'expanded' | null ): void {
-		if ( view ) {
-			dialog!.dataset.genieView = view;
-			dialog!.setAttribute( 'popover', 'manual' );
-			dialog!.setAttribute( 'role', 'dialog' );
-			dialog!.setAttribute( 'aria-label', 'Genie' );
-			dialog!.showPopover?.();
-		} else if ( dialog!.hasAttribute( 'popover' ) ) {
+		if ( nativeModal && view !== 'expanded' ) {
+			historyHost?.removeAttribute( 'data-genie-hero-history' );
+			win.dispatchEvent( new Event( 'linker-genie-hero-view' ) );
+			nativeModal.close?.();
+			nativeModal.replaceWith( dialog! );
+			nativeModal = null;
+			historyHost?.remove();
+			historyHost = null;
+		}
+		if ( dialog!.hasAttribute( 'popover' ) ) {
 			dialog!.hidePopover?.();
 			dialog!.removeAttribute( 'popover' );
-			dialog!.removeAttribute( 'role' );
-			dialog!.removeAttribute( 'aria-label' );
+		}
+		if ( view ) {
+			dialog!.dataset.genieView = view;
+		} else {
 			delete dialog!.dataset.genieView;
 		}
+		if ( view === 'expanded' && ! nativeModal ) {
+			nativeModal = doc.createElement( 'dialog' );
+			nativeModal.className = 'linker-genie-home-modal';
+			nativeModal.setAttribute( 'aria-label', 'Genie' );
+			dialog!.before( nativeModal );
+			nativeModal.append( dialog! );
+			historyHost = doc.createElement( 'div' );
+			historyHost.className = 'linker-genie-home-history';
+			historyHost.setAttribute( 'data-genie-hero-history', '' );
+			dialog!.prepend( historyHost );
+			nativeModal.addEventListener( 'cancel', ( event ) => {
+				event.preventDefault();
+				setHeroView( 'side' );
+			} );
+			nativeModal.showModal?.();
+		} else if ( view === 'side' ) {
+			dialog!.setAttribute( 'popover', 'manual' );
+			dialog!.showPopover?.();
+		}
+		win.dispatchEvent( new Event( 'linker-genie-hero-view' ) );
 	}
 
 	function unmount(): void {
@@ -584,6 +611,7 @@ export function startHero(
 	win.addEventListener( 'scroll', onScroll, { passive: true } );
 	win.addEventListener( 'resize', onScroll );
 	win.addEventListener( 'linker-genie-state', onDockState );
+	win.addEventListener( 'linker-genie-hero-leave', close );
 	capsules.forEach( ( { capsule, listener } ) =>
 		capsule.addEventListener( 'click', listener )
 	);
@@ -607,6 +635,7 @@ export function startHero(
 		win.removeEventListener( 'scroll', onScroll );
 		win.removeEventListener( 'resize', onScroll );
 		win.removeEventListener( 'linker-genie-state', onDockState );
+		win.removeEventListener( 'linker-genie-hero-leave', close );
 		capsules.forEach( ( { capsule, listener } ) =>
 			capsule.removeEventListener( 'click', listener )
 		);

@@ -974,9 +974,7 @@ test( 'expanding a pending homepage question and moving it to the side keeps the
 	);
 	expect( dialog.dataset.genieView ).toBe( 'expanded' );
 	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Continue in the side panel' } )
-		)
+		fireEvent.click( screen.getByText( 'Return to side dock' ) )
 	);
 	expect( dialog.dataset.genieView ).toBe( 'side' );
 	await act( async () => finish() );

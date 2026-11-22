@@ -1025,24 +1025,51 @@ export function HeroConversation( {
 		/>
 	);
 
+	const [ wide, setWide ] = useState( false );
+	useEffect( () => {
+		const read = () =>
+			setWide(
+				!! closeRef.current?.closest( '[data-genie-view="expanded"]' )
+			);
+		window.addEventListener( 'linker-genie-hero-view', read );
+		return () =>
+			window.removeEventListener( 'linker-genie-hero-view', read );
+	}, [] );
+	useEffect( () => {
+		if (
+			turn &&
+			closeRef.current?.closest( '[data-genie-view="expanded"]' )
+		) {
+			window.dispatchEvent( new Event( 'linker-genie-hero-answer' ) );
+		}
+	}, [ turn ] );
 	const viewActions = (
 		<div className="linker-genie-hero__view-actions">
+			{ wide && ! opening && phase === 'ask' && config.workspaceUrl ? (
+				<a href={ config.workspaceUrl }>
+					{ __( 'Open full page', 'linker-tools' ) } ↗
+				</a>
+			) : null }
 			{ onExpand ? (
 				<button
 					type="button"
 					className="linker-genie-hero__continue"
 					onClick={ onExpand }
 				>
-					{ __( 'Expand full view', 'linker-tools' ) }
+					{ wide
+						? __( 'Return to side dock', 'linker-tools' )
+						: __( 'Expand full view', 'linker-tools' ) }
 				</button>
 			) : null }
-			<button
-				type="button"
-				className="linker-genie-hero__continue"
-				onClick={ onContinue }
-			>
-				{ __( 'Continue in the side panel', 'linker-tools' ) }
-			</button>
+			{ ! wide ? (
+				<button
+					type="button"
+					className="linker-genie-hero__continue"
+					onClick={ onContinue }
+				>
+					{ __( 'Continue in the side panel', 'linker-tools' ) }
+				</button>
+			) : null }
 		</div>
 	);
 
@@ -1056,11 +1083,12 @@ export function HeroConversation( {
 					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">
-					{ footer
+					{ footer && ! wide
 						? createPortal( viewActions, footer )
 						: viewActions }
 					<button
 						ref={ closeRef }
+						hidden={ wide }
 						type="button"
 						className="linker-genie-hero__close"
 						aria-label={ __( 'Close', 'linker-tools' ) }

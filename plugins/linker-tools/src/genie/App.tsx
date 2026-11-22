@@ -8,6 +8,7 @@
  * WordPress dependencies
  */
 import {
+	createPortal,
 	useCallback,
 	useEffect,
 	useMemo,
@@ -133,7 +134,7 @@ type MailPhase = 'idle' | 'form' | 'sending' | EmailOutcome;
  * (the prototype's mobile rule, genie.css `@media (max-width: 767px)`), so
  * picking a conversation folds it; wider, it is docked and stays.
  */
-const OVERLAY_WIDTH = 768;
+const OVERLAY_WIDTH = 861;
 
 /**
  * One lane for restore, switch and ask. It lives outside the component:
@@ -256,6 +257,23 @@ export function reportRecoveryUrl(
 export function App( { config }: { config: GenieConfig } ) {
 	const [ open, setOpen ] = useState( false );
 	const [ expanded, setExpanded ] = useState( false );
+	const [ heroHistoryHost, setHeroHistoryHost ] =
+		useState< HTMLElement | null >( null );
+	useEffect( () => {
+		if ( config.surface === 'workspace' ) {
+			return;
+		}
+		const read = () =>
+			setHeroHistoryHost(
+				document.querySelector< HTMLElement >(
+					'[data-genie-hero-history]'
+				)
+			);
+		read();
+		window.addEventListener( 'linker-genie-hero-view', read );
+		return () =>
+			window.removeEventListener( 'linker-genie-hero-view', read );
+	}, [ config.surface ] );
 	// The page context every turn carries (#234). The mount sets it, and the
 	// design report's "Ask Genie" adds the saved solution's id (#496): it is
 	// the solution the customer asked about, for the rest of this conversation.
@@ -656,6 +674,35 @@ export function App( { config }: { config: GenieConfig } ) {
 			}
 		} );
 	}, [ config.conversationsUrl, config.restNonce, show, draftContext ] );
+
+	useEffect( () => {
+		if ( ! heroHistoryHost ) {
+			return;
+		}
+		setRailOpen( window.innerWidth >= OVERLAY_WIDTH );
+	}, [ heroHistoryHost ] );
+	useEffect( () => {
+		if ( ! heroHistoryHost || draftContext.phase !== 'ready' ) {
+			return;
+		}
+		const read = () => void refreshHistory();
+		read();
+		window.addEventListener( 'linker-genie-hero-answer', read );
+		return () =>
+			window.removeEventListener( 'linker-genie-hero-answer', read );
+	}, [ heroHistoryHost, draftContext.phase, refreshHistory ] );
+	useEffect( () => {
+		let desktop = window.innerWidth >= OVERLAY_WIDTH;
+		const resize = () => {
+			const now = window.innerWidth >= OVERLAY_WIDTH;
+			if ( desktop && ! now ) {
+				setRailOpen( false );
+			}
+			desktop = now;
+		};
+		window.addEventListener( 'resize', resize );
+		return () => window.removeEventListener( 'resize', resize );
+	}, [] );
 
 	// A request is with the team: its card stays after the shown turn's answer.
 	const sent = useCallback( ( email: string, receipt: boolean | null ) => {
@@ -2312,6 +2359,44 @@ export function App( { config }: { config: GenieConfig } ) {
 	const recoveryUrl = recoveryVisible
 		? reportRecoveryUrl( reportRecovery!.page, page, window.location.href )
 		: null;
+	function showHistorySelection(): void {
+		if ( ! heroHistoryHost ) {
+			return;
+		}
+		draftContext.checkpoint();
+		window.dispatchEvent( new Event( 'linker-genie-hero-leave' ) );
+		setExpanded( true );
+		setOpen( true );
+	}
+	const historyRail = (
+		<HistoryRail
+			guestLinks={ guestLinks }
+			open={ railOpen }
+			docked
+			items={ draftContext.phase === 'ready' ? history : [] }
+			currentId={ currentId }
+			onOpen={ () => setRailOpen( true ) }
+			onClose={ () => setRailOpen( false ) }
+			phase={ historyPhase }
+			onSelect={ ( id ) => {
+				showHistorySelection();
+				void continueConversation( id );
+			} }
+			onNew={ () => {
+				showHistorySelection();
+				void continueConversation();
+			} }
+			onRetry={ () => void refreshHistory() }
+			onDelete={ ( id ) => {
+				if ( heroHistoryHost && id === currentId ) {
+					showHistorySelection();
+				}
+				return removeConversation( id );
+			} }
+			note={ historyNote }
+		/>
+	);
+
 	return (
 		<section
 			ref={ helperDialog.panel }
@@ -2344,25 +2429,41 @@ export function App( { config }: { config: GenieConfig } ) {
 					</span>
 				</button>
 			) : null }
+			{ heroHistoryHost
+				? createPortal(
+						<>
+							{ historyRail }
+							{ ! railOpen ? (
+								<button
+									type="button"
+									className="linker-genie-app__rail-toggle"
+									onClick={ () => setRailOpen( true ) }
+									aria-label={ __(
+										'Conversations',
+										'linker-tools'
+									) }
+								>
+									<PanelIcon />
+								</button>
+							) : null }
+							{ railOpen ? (
+								<button
+									type="button"
+									className="linker-genie-rail-mask"
+									aria-label={ __(
+										'Close sidebar',
+										'linker-tools'
+									) }
+									onClick={ () => setRailOpen( false ) }
+								/>
+							) : null }
+						</>,
+						heroHistoryHost
+					)
+				: null }
 			{ /* The rail is the workspace's history; the dock's is the
 			 * header's history view, so a helper mount carries no rail. */ }
-			{ visible && workspace ? (
-				<HistoryRail
-					guestLinks={ guestLinks }
-					open={ railOpen }
-					docked={ workspace }
-					items={ draftContext.phase === 'ready' ? history : [] }
-					currentId={ currentId }
-					onOpen={ () => setRailOpen( true ) }
-					onClose={ () => setRailOpen( false ) }
-					phase={ historyPhase }
-					onSelect={ ( id ) => void continueConversation( id ) }
-					onNew={ () => void continueConversation() }
-					onRetry={ () => void refreshHistory() }
-					onDelete={ removeConversation }
-					note={ historyNote }
-				/>
-			) : null }
+			{ visible && workspace ? historyRail : null }
 			{ /*
 			 * The rail's scrim, under 768px only, where the rail is an overlay
 			 * (prototype `.gp-rail-mask`): the stylesheet shows it, so a wide

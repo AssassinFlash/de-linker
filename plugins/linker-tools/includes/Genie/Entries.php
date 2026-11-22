@@ -556,6 +556,9 @@ class Entries {
 	window.addEventListener('linker-genie-entry-state', function (event) {
 		if (event.detail && event.detail.phase === 'accepted') { delete pendingEntries[event.detail.id]; }
 	});
+	window.addEventListener('linker-genie-hero-view', function () {
+		if (document.querySelector('[data-genie-hero-history]')) boot();
+	});
 	window.addEventListener('linker-genie-ask', function (event) {
 		var detail = event.detail;
 		pendingOpener = detail && detail.opener instanceof HTMLElement ? detail.opener : document.activeElement;
