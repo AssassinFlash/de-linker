@@ -63,7 +63,7 @@ final class CompareProducts {
 			'input_schema'        => array(
 				'type'                 => 'object',
 				'properties'           => array(
-					'product_ids' => array(
+					'product_ids'  => array(
 						'type'     => 'array',
 						'minItems' => 2,
 						'maxItems' => 4,
@@ -72,7 +72,8 @@ final class CompareProducts {
 							'minimum' => 1,
 						),
 					),
-					'lang'        => array(
+					'presentation' => array( 'type' => 'boolean' ),
+					'lang'         => array(
 						'type' => 'string',
 						'enum' => array( 'en', 'de' ),
 					),
@@ -88,10 +89,11 @@ final class CompareProducts {
 						'items' => array(
 							'type'                 => 'object',
 							'properties'           => array(
-								'product_id' => array( 'type' => 'integer' ),
-								'title'      => array( 'type' => 'string' ),
-								'url'        => array( 'type' => 'string' ),
-								'facts'      => array( 'type' => 'object' ),
+								'product_id'   => array( 'type' => 'integer' ),
+								'title'        => array( 'type' => 'string' ),
+								'url'          => array( 'type' => 'string' ),
+								'facts'        => array( 'type' => 'object' ),
+								'presentation' => array( 'type' => 'object' ),
 							),
 							'required'             => array( 'product_id', 'title', 'url', 'facts' ),
 							'additionalProperties' => false,
@@ -149,13 +151,21 @@ final class CompareProducts {
 		}
 		$dependencies = $this->publication->dependencies( $ids, $this->publication_snapshot );
 		$comparison   = $this->comparison->of( $ids, $lang );
-		$products     = array();
+		$details      = array();
+		if ( true === ( $input['presentation'] ?? false ) ) {
+			$display      = ComparisonPresentation::read( $comparison['products'], $this->publication_snapshot, $this->publication, $lang );
+			$details      = $display['details'];
+			$dependencies = $this->publication->dependencies( array_merge( $ids, $display['dependencies'] ), $this->publication_snapshot );
+		}
+
+		$products = array();
 		foreach ( $comparison['products'] as $column ) {
 			$products[] = array(
 				'product_id' => $column['product_id'],
 				'title'      => $column['title'],
 				'url'        => $column['url'],
 				'facts'      => $column['facts'],
+				...( isset( $details[ $column['product_id'] ] ) ? array( 'presentation' => $details[ $column['product_id'] ] ) : array() ),
 			);
 		}
 

@@ -51,6 +51,23 @@ final class CompareProductsTest extends TestCase {
 		$this->assertTrue( ( new CompareProducts( null, $this->publication_data() ) )->can_execute() );
 	}
 
+	/** The customer view carries document identity and no hidden numeric price. */
+	public function test_customer_comparison_includes_the_public_datasheet_and_model(): void {
+		$this->mock_live_products( array( 4107, 3556 ) );
+		$result = ( new CompareProducts( null, $this->publication_data() ) )->execute(
+			array(
+				'product_ids'  => array( 4107, 3556 ),
+				'lang'         => 'en',
+				'presentation' => true,
+			)
+		);
+		$column = $result['products'][0]['presentation'];
+		$this->assertSame( 'H2-10K-T3', $column['model'] );
+		$this->assertNotEmpty( $column['datasheet']['url'] );
+		$this->assertArrayHasKey( 'in_stock', $column );
+		$this->assertArrayNotHasKey( 'price', $column );
+	}
+
 	/**
 	 * An inverter and a battery: both families of rows, never one mixed "power" field.
 	 */
