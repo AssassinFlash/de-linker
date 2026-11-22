@@ -45,6 +45,7 @@ export interface HeroSessionConfig {
 
 /** The stored thread, in the shapes the rest of the app uses. */
 export interface HeroStoredThread {
+	conversationId?: number;
 	messages: TurnMessage[];
 	turn: Turn | null;
 	/** The cards the dock (or an earlier hero turn) already sent (#243/#250). */
@@ -71,6 +72,7 @@ export class HeroSession {
 	private loading: Promise< void > | null = null;
 	private generation = 0;
 	private conversationId: number | undefined;
+	get currentConversation(): number | undefined { return this.conversationId; }
 	private requestWitness: RequestWitness | null = null;
 	private operationId?: string;
 
@@ -168,6 +170,7 @@ export class HeroSession {
 
 	private snapshot(): HeroStoredThread {
 		return {
+			conversationId: this.conversationId,
 			messages: this.messagesValue,
 			turn: this.turnValue,
 			contacts: this.contactsValue,

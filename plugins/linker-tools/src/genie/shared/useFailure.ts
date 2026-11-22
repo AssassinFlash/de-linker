@@ -703,6 +703,13 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 		detachFailure,
 		unsaved,
 		deferredFailure,
+		clearDeferred: useCallback( () => setDeferredFailure( null ), [] ),
+		dismissDeferred: useCallback( () => {
+			if ( deferredFailure ) {
+				abandonCaptured( deferredFailure.cursor );
+				setDeferredFailure( null );
+			}
+		}, [ deferredFailure, abandonCaptured ] ),
 		deferFailure: useCallback( ( candidate: FailureCandidate ) => {
 			setDeferredFailure( candidate );
 			setUnsaved( !! candidate.cursor.memory );

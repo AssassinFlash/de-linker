@@ -121,7 +121,7 @@
  * follow-up field out of the dialog (the dock's own rule; the prototype's
  * `.hp-hero-thread .hp-thread` caps at 52vh). */
 .linker-genie-hero__surface .linker-genie-app__transcript {
-	max-height: 52vh;
+	min-height: 0;
 	padding: 4px 2px;
 	overflow: auto;
 	scrollbar-width: thin;
@@ -299,3 +299,15 @@
 		max-width: calc(100vw - 24px);
 	}
 }
+
+#home-a .hero-cinematic.linker-genie-hero--open { padding-block: 12px; }
+#home-a .hero-cinematic.linker-genie-hero--open .hero-stage { padding-block: 8px; }
+#home-a .hero-cinematic.linker-genie-hero--open .hero-dialog {
+	display: flex; flex-direction: column; width: min(1080px, 94vw); height: min(760px, calc(100dvh - 129px)); max-height: min(760px, calc(100dvh - 129px)); min-height: 0; max-width: none;
+}
+#home-a .hero-cinematic.linker-genie-hero--open .linker-genie-hero__host,
+#home-a .hero-cinematic.linker-genie-hero--open .linker-genie-hero__surface { display: flex; flex: 1 1 0; flex-direction: column; min-height: 0; overflow: hidden; }
+#home-a .linker-genie-hero__surface .linker-genie-reading { flex: 1 1 0; min-height: 0; }
+#home-a .linker-genie-hero__surface .linker-genie-app__transcript { flex: 1 1 0; max-height: none; overflow-y: auto; }
+#home-a .hero-cinematic.linker-genie-hero--open .hero-dialog:popover-open { position: fixed; inset: 0; margin: auto; width: min(1160px, calc(100vw - 40px)); height: min(860px, calc(100dvh - 40px)); max-height: none; background: var(--proto-color-surface); }
+#home-a .hero-dialog::backdrop { background: rgb(10 30 29 / 45%); }

@@ -24,10 +24,12 @@ function usable( node: HTMLElement ): boolean {
 export function useHelperDialog( {
 	open,
 	workspace,
+	expanded = false,
 	close,
 }: {
 	open: boolean;
 	workspace: boolean;
+	expanded?: boolean;
 	close: () => void;
 } ) {
 	const panel = useRef< HTMLElement >( null );
@@ -71,17 +73,17 @@ export function useHelperDialog( {
 			'aria-label',
 			content?.getAttribute( 'aria-label' ) ?? 'Genie'
 		);
-		if ( mobile ) {
+		if ( mobile || expanded ) {
 			root.setAttribute( 'aria-modal', 'true' );
 		} else {
 			root.removeAttribute( 'aria-modal' );
 		}
 		const overflow = document.body.style.overflow;
-		if ( mobile ) {
+		if ( mobile || expanded ) {
 			document.body.style.overflow = 'hidden';
 		}
 		const background: { node: HTMLElement; inert: boolean }[] = [];
-		if ( mobile ) {
+		if ( mobile || expanded ) {
 			let branch: HTMLElement = root;
 			while ( branch.parentElement ) {
 				for ( const sibling of branch.parentElement.children ) {
@@ -157,7 +159,7 @@ export function useHelperDialog( {
 				closing.current();
 				return;
 			}
-			if ( ! mobile || event.key !== 'Tab' ) {
+			if ( ( ! mobile && ! expanded ) || event.key !== 'Tab' ) {
 				return;
 			}
 			const items = controls();
@@ -194,7 +196,7 @@ export function useHelperDialog( {
 					item.node.inert = item.inert;
 				}
 			} );
-			if ( mobile && document.body.style.overflow === 'hidden' ) {
+			if ( ( mobile || expanded ) && document.body.style.overflow === 'hidden' ) {
 				document.body.style.overflow = overflow;
 			}
 			attributes.forEach( ( item ) => {
@@ -224,6 +226,6 @@ export function useHelperDialog( {
 				target.focus( { preventScroll: true } );
 			}
 		};
-	}, [ open, workspace, mobile ] );
+	}, [ open, workspace, mobile, expanded ] );
 	return { panel, remember, mobile };
 }

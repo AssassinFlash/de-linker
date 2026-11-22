@@ -53,6 +53,7 @@ export interface GenieConfig {
 	restNonce: string;
 	disclosure: string;
 	accountUrl: string;
+	registerUrl?: string;
 	configuratorLinks?: { en: string; de: string; current: string };
 	workspaceUrl: string;
 	prompts: string[];
@@ -108,6 +109,7 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		restNonce: data.restNonce ?? '',
 		disclosure: data.disclosure ?? '',
 		accountUrl: data.accountUrl ?? '',
+		registerUrl: data.registerUrl,
 		configuratorLinks: {
 			en: data.configuratorEnUrl ?? '',
 			de: data.configuratorDeUrl ?? '',

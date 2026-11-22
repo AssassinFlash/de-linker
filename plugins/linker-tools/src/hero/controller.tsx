@@ -28,8 +28,7 @@ import {
 } from '../genie/shared/dictation';
 import { pageFailureStore } from '../genie/shared/failure';
 import { preserveEditing } from '../genie/shared/editingDraft';
-import { hasOwnedRecovery } from '../genie/shared/ownedFailure';
-import { DraftContext } from '../genie/shared/draftContext';
+import { pageDraftContext, mountPageDraftContext } from '../genie/shared/draftContext';
 import { verifiedEntryFailure } from '../genie/shared/entryFailure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
@@ -152,14 +151,7 @@ export function startHero(
 
 	let quarantinedPrompt: string | null = null;
 	let retainedMode: 'attach' | 'nameplate' | 'voice' | null = null;
-	const context = new DraftContext( options.config, () => {
-		quarantinedPrompt = null;
-		prompt!.value = '';
-		recognition?.stop();
-		recognition = null;
-		pending = null;
-		pendingFiles = [];
-	} );
+	const context = pageDraftContext( options.config );
 	const stopPreserving = context.beforeLeave( () => {
 		if ( ! root ) {
 			preserveEditing( context, {
@@ -181,6 +173,12 @@ export function startHero(
 			const scope = context.identity?.scope;
 			const lease = context.capture();
 			if ( verifiedScope && scope && scope !== verifiedScope ) {
+				quarantinedPrompt = null;
+		prompt!.value = '';
+		recognition?.stop();
+		recognition = null;
+		pending = null;
+		pendingFiles = [];
 				void verifiedEntryFailure(
 					options.config,
 					pageFailureStore()
@@ -208,23 +206,7 @@ export function startHero(
 		}
 	} );
 	prompt.disabled = true;
-	void context.verify( false ).catch( () => undefined );
-	const revalidate = () => {
-		void context.verify().catch( () => undefined );
-	};
-	win.addEventListener( 'focus', revalidate );
-	win.addEventListener( 'pageshow', revalidate );
-	const checkpoint = () => context.checkpoint();
-	win.addEventListener( 'pagehide', checkpoint );
-	const onVisibility = () => {
-		if ( doc.visibilityState === 'hidden' ) {
-			checkpoint();
-		} else {
-			revalidate();
-		}
-	};
-	doc.addEventListener( 'visibilitychange', onVisibility );
-	win.addEventListener( 'linker-genie-identity-change', revalidate );
+	const releaseContext = mountPageDraftContext( context );
 	let promptVersion = 0;
 	const onPromptInput = () => {
 		if ( ! context.acceptEditor() ) {
@@ -254,6 +236,15 @@ export function startHero(
 				config={ options.config }
 				session={ session }
 				onReady={ onReady }
+				openingQuestion={ pending ?? '' }
+				onExpand={ () => {
+					if ( dialog!.matches( ':popover-open' ) ) {
+						dialog!.hidePopover();
+					} else {
+						dialog!.setAttribute( 'popover', 'manual' );
+						dialog!.showPopover();
+					}
+				} }
 				onContinue={ continueToPanel }
 				onClose={ close }
 				onConversation={ ( has ) =>
@@ -275,6 +266,7 @@ export function startHero(
 	}
 
 	function unmount(): void {
+		if ( dialog!.hasAttribute( 'popover' ) ) { dialog!.hidePopover(); dialog!.removeAttribute( 'popover' ); }
 		context.invalidate();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();
@@ -310,12 +302,9 @@ export function startHero(
 			return;
 		}
 		lastTrigger = trigger;
+		if ( ! bridge ) pending = text;
 		update( { type: 'ask' } );
-		if ( bridge ) {
-			bridge.ask( text );
-		} else {
-			pending = text;
-		}
+		if ( bridge ) bridge.ask( text );
 	}
 
 	/** Folds the conversation back to the resting hero. */
@@ -574,38 +563,12 @@ export function startHero(
 	// The suite's readiness signal: the controls are bound (no visual change).
 	hero.setAttribute( 'data-linker-genie-hero', 'ready' );
 	onScroll();
-	// A failed turn from before this load unfolds the conversation, so the
-	// error is on the page without another click (ticket #411).
-	void context
-		.initialized()
-		.then( () =>
-			verifiedEntryFailure( options.config, pageFailureStore(), context )
-		)
-		.then( ( checked ) => {
-			if (
-				! stopped &&
-				( ( checked?.record && checked.unchanged() ) ||
-					( ! checked && hasOwnedRecovery( pageFailureStore() ) ) )
-			) {
-				update( { type: 'ask' } );
-			}
-		} )
-		.catch( () => {
-			if ( ! stopped && hasOwnedRecovery( pageFailureStore() ) ) {
-				update( { type: 'ask' } );
-			}
-		} );
 
 	return () => {
 		stopped = true;
-		context.dispose();
 		stopPreserving();
 		unsubscribeContext();
-		win.removeEventListener( 'focus', revalidate );
-		win.removeEventListener( 'pageshow', revalidate );
-		win.removeEventListener( 'pagehide', checkpoint );
-		doc.removeEventListener( 'visibilitychange', onVisibility );
-		win.removeEventListener( 'linker-genie-identity-change', revalidate );
+		releaseContext();
 		prompt.disabled = originalDisabled;
 		prompt.removeEventListener( 'input', onPromptInput );
 		dialog.removeEventListener( 'pointerdown', onUnownedPointer );

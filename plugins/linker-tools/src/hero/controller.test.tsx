@@ -286,7 +286,7 @@ test( 'typing and Enter unfolds the conversation in place', async () => {
 		content: 'saj',
 	} );
 	expect(
-		screen.getByText( "Genie - Linker's AI assistant" )
+		screen.getByText( "Genie – Linker's AI assistant" )
 	).toBeInTheDocument();
 	// Focus moves into the surface and every trigger says it is expanded.
 	const close = document.querySelector( '.linker-genie-hero__close' )!;

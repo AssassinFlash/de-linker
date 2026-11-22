@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
+use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Presentation\PageUrls;
 
 /**
@@ -245,6 +246,11 @@ class Entries {
 			'retry'              => __( 'Try again', 'linker-tools' ),
 		);
 		echo '<div class="linker-genie">';
+		echo '<div class="linker-genie-peek">';
+		foreach ( array_slice( $this->prompts( $this->page_context() ), 0, 2 ) as $prompt ) {
+			printf( '<button type="button" class="linker-genie-peek__prompt" data-linker-genie-open data-ask-message="%1$s" aria-controls="%2$s">%3$s</button>', esc_attr( $prompt ), esc_attr( $mount ), esc_html( $prompt ) );
+		}
+		echo '</div>';
 		printf(
 			'<button type="button" class="linker-genie-open" data-linker-genie-open aria-expanded="false" aria-controls="%1$s" aria-label="%2$s"><span class="linker-genie-open-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17" stroke-width="3.1"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5" stroke-width="1.5" opacity="0.62"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="linker-genie-open-label">%2$s</span></button>',
 			esc_attr( $mount ),
@@ -278,7 +284,8 @@ class Entries {
 			'translations'       => $this->script_translations(),
 			'error'              => __( 'Genie could not load.', 'linker-tools' ),
 			'retry'              => __( 'Try again', 'linker-tools' ),
-			'title'              => __( "Genie - Linker's AI assistant", 'linker-tools' ),
+			'title'              => __( "Genie – Linker's AI assistant", 'linker-tools' ),
+			'waiting'            => __( 'Genie is thinking…', 'linker-tools' ),
 			'close'              => __( 'Close', 'linker-tools' ),
 			'open'               => $open,
 		);
@@ -392,6 +399,7 @@ class Entries {
 			}
 		}
 			function showFailure() {
+				removePreview();
                 if (dismissed && !payload.open) { return; }
 				clearFailure();
 				var panel = document.querySelector('[data-linker-genie-mount]');
@@ -473,6 +481,43 @@ class Entries {
 			}
 		}));
 	}
+	var preview = null;
+	function showPendingQuestion(message) {
+		if (!message || ready || preview) return;
+		var panel = document.querySelector('[data-linker-genie-mount]');
+		if (!panel) return;
+		preview = document.createElement('div');
+		preview.className = 'linker-genie-loading-preview';
+		var title = document.createElement('strong');
+		title.textContent = payload.title;
+		var bubble = document.createElement('p');
+		bubble.className = 'linker-genie-app__message linker-genie-app__message--user';
+		bubble.textContent = message;
+		var status = document.createElement('p');
+		status.setAttribute('role', 'status');
+		status.textContent = payload.waiting;
+		preview.append(title, bubble, status);
+		panel.appendChild(preview);
+		shell(true);
+	}
+	function removePreview() {
+		if (preview) { preview.remove(); preview = null; }
+	}
+	var warmed = false;
+	function warmBundle() {
+		if (warmed || ready || loaded) return;
+		warmed = true;
+		var link = document.createElement('link');
+		link.rel = 'preload';
+		link.as = 'script';
+		link.href = payload.src;
+		document.head.appendChild(link);
+	}
+	document.addEventListener('pointerover', function(event) {
+		if (event.target.closest && event.target.closest('[data-linker-genie-open]')) warmBundle();
+	}, { passive: true });
+	if (window.requestIdleCallback) window.requestIdleCallback(warmBundle);
+	else window.addEventListener('load', warmBundle, { once: true });
 	function open(message, refresh, fromHome, solution) {
         dismissed = false;
 		pendingOpen = true;
@@ -493,10 +538,12 @@ class Entries {
 			pendingSolution = solution;
 		}
 		boot();
+		showPendingQuestion(pendingAsk);
 		deliver();
 	}
 				window.addEventListener('linker-genie-ready', function () {
 					ready = true;
+					removePreview();
 					clearFailure();
 					if (payload.open) {
 						pendingOpen = true;
@@ -548,7 +595,7 @@ class Entries {
 				// The workspace has no bubble to reopen a hidden page. Keep it
 				// visible while the app loads; ready then delivers open.
 				// A helper stays closed until the visitor's click is delivered.
-				shell(!!payload.open);
+				shell(!!payload.open || !!preview);
 		var failed = false;
 		var inserted = [];
 		function fail() {
@@ -667,9 +714,8 @@ JS,
 	private function mount_markup( string $surface ): string {
 		$locale      = $this->locale();
 		$page        = $this->page_context();
-		$guest_links = shortcode_exists( 'linker_guest_account_links' ) ? do_shortcode( '[linker_guest_account_links]' ) : '';
-		return $guest_links . sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s"></div>',
+		return sprintf(
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -694,7 +740,8 @@ JS,
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . InquiryRequest::ROUTE ) ) ),
 			esc_attr( esc_url_raw( (string) apply_filters( 'linker_genie_inquiry_page', '', $locale ) ) ), // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Existing native inquiry-page seam owned by InquiryRequest.
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'en' ) : '' ) ),
-			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) )
+			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) ),
+			esc_url( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' )
 		);
 	}
 

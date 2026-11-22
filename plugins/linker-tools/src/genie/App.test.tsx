@@ -3952,3 +3952,26 @@ test( 'a resource refusal retains the question and file and offers native inquir
 	).toHaveAttribute( 'href', '/proforma-request/' );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
+
+test( 'the dock displays the selected prompt while the thread loads and expands without interrupting it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	let resume!: () => void;
+	vi.mocked( readThread ).mockImplementationOnce( () => new Promise( resolve => {
+		resume = () => resolve( { messages: [], turn: null } );
+	} ) );
+	vi.mocked( sendTurn ).mockClear().mockResolvedValue( { meta: null, blocks: [ { type: 'text', text: 'A verified answer.', refs: [] } ] } );
+	const label = 'I need a three-phase hybrid inverter for a home.';
+	fireEvent.click( screen.getByRole( 'button', { name: label } ) );
+	expect( screen.getByText( label ).closest( 'li' ) ).toHaveClass( 'linker-genie-app__message--user' );
+	expect( screen.queryByText( 'Where should we begin?' ) ).not.toBeInTheDocument();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Expand full view' } ) );
+	expect( screen.getByRole( 'dialog' ) ).toHaveAttribute( 'aria-modal', 'true' );
+	expect( screen.queryByRole( 'link', { name: 'Open full page' } ) ).not.toBeInTheDocument();
+	await waitFor( () => expect( resume ).toBeTypeOf( 'function' ) );
+	await act( async () => resume() );
+	expect( await screen.findByText( 'A verified answer.' ) ).toBeVisible();
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );

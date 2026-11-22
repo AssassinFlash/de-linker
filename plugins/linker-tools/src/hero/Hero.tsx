@@ -117,6 +117,8 @@ export interface HeroConversationProps {
 	requestPicker: () => void;
 	requestVoice?: () => void;
 	context?: DraftContext;
+	openingQuestion?: string;
+	onExpand?: () => void;
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
@@ -134,7 +136,9 @@ export function HeroConversation( {
 	requestPicker,
 	requestVoice,
 	context,
+	openingQuestion = '', onExpand,
 }: HeroConversationProps ) {
+	const [ opening, setOpening ] = useState( openingQuestion );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
@@ -193,6 +197,7 @@ export function HeroConversation( {
 		detachFailure,
 		unsaved,
 		deferredFailure,
+		clearDeferred, dismissDeferred,
 		deferFailure,
 		exchangeFailure,
 		returnToEditing,
@@ -325,11 +330,14 @@ export function HeroConversation( {
 					setRecoveryBlocked( false );
 					return;
 				}
+				if ( checked.record?.conversationId && stored.conversationId && checked.record.conversationId !== stored.conversationId ) {
+					return;
+				}
 				const reconciled = reconcile( checked.record, stored.messages );
 				if (
 					checked.candidate &&
 					reconciled.phase !== 'clear' &&
-					( ! checked.record?.entryId || occupied )
+					occupied
 				) {
 					deferFailure( checked.candidate );
 					setRecoveryBlocked( false );
@@ -615,6 +623,7 @@ export function HeroConversation( {
 
 	const send = useCallback(
 		async ( text: string ) => {
+			setOpening( '' );
 			const lease = draftContext.capture();
 			if ( ! lease ) {
 				return;
@@ -631,6 +640,7 @@ export function HeroConversation( {
 				return;
 			}
 			const draft: FailureDraft = {
+				conversationId: session.currentConversation,
 				text,
 				question,
 				uploads: picked,
@@ -686,6 +696,7 @@ export function HeroConversation( {
 				}
 				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
+				clearDeferred();
 				setThread( result.messages );
 				setTurn( result.answer );
 				setContacts( result.contacts ?? [] );
@@ -778,6 +789,7 @@ export function HeroConversation( {
 			}
 			draftContext.checkpoint();
 			commitFailure( { type: 'answered' } );
+				clearDeferred();
 			setThread( result.messages );
 			setTurn( result.answer );
 			setContacts( result.contacts ?? [] );
@@ -967,9 +979,10 @@ export function HeroConversation( {
 		<div className="linker-genie-hero__surface" lang={ locale }>
 			<header className="linker-genie-hero__bar">
 				<p className="linker-genie-hero__title">
-					{ __( "Genie - Linker's AI assistant", 'linker-tools' ) }
+					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">
+					{ onExpand ? <button type="button" className="linker-genie-hero__continue" onClick={ onExpand }>{ __( 'Expand full view', 'linker-tools' ) }</button> : null }
 					<button
 						type="button"
 						className="linker-genie-hero__continue"
@@ -1000,7 +1013,12 @@ export function HeroConversation( {
 			<p className="screen-reader-text" role="status" aria-live="polite">
 				{ draftContext.phase === 'ready' ? live : '' }
 			</p>
-			{ thread.length > 0 && draftContext.phase === 'ready' ? (
+			{ opening ? (
+				<Transcript followKey={ 1 }>
+					<ol className="linker-genie-app__thread"><li className="linker-genie-app__message linker-genie-app__message--user">{ opening }</li></ol>
+					<TurnProgress />
+				</Transcript>
+			) : thread.length > 0 && draftContext.phase === 'ready' ? (
 				<Transcript
 					followKey={
 						'waiting' === phase
@@ -1167,6 +1185,7 @@ export function HeroConversation( {
 				</Transcript>
 			) : null }
 			<OwnedRecovery
+				dismiss={ dismissDeferred }
 				candidate={
 					draftContext.phase === 'ready' ? deferredFailure : null
 				}

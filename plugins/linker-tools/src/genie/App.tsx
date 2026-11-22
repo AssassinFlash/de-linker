@@ -243,6 +243,7 @@ export function reportRecoveryUrl(
  */
 export function App( { config }: { config: GenieConfig } ) {
 	const [ open, setOpen ] = useState( false );
+	const [ expanded, setExpanded ] = useState( false );
 	// The page context every turn carries (#234). The mount sets it, and the
 	// design report's "Ask Genie" adds the saved solution's id (#496): it is
 	// the solution the customer asked about, for the rest of this conversation.
@@ -455,6 +456,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		detachFailure,
 		unsaved,
 		deferredFailure,
+		clearDeferred, dismissDeferred,
 		deferFailure,
 		exchangeFailure,
 		returnToEditing,
@@ -604,7 +606,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		locale: config.locale,
 		store,
 	} );
-	const workspace = config.surface === 'workspace';
+	const standalone = config.surface === 'workspace';
 
 	const refreshHistory = useCallback( () => {
 		const epoch = historyEpoch;
@@ -657,7 +659,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// A reload, or the hero handing the thread over, shows a failed turn
 	// again: the error, and for a 502 the question back in the field.
 	const applyRecord = useCallback(
-		async ( messages: TurnMessage[], resetField = false ) => {
+		async ( messages: TurnMessage[], conversationId?: number, resetField = false ) => {
 			// A send that is already in flight owns the record. The mount's
 			// read can resolve after that send started; reconciling it here
 			// would show a failure for a turn that has not failed.
@@ -689,6 +691,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			}
 			const record = checked.record;
 			resolveEntryRecovery.current();
+			if ( record?.conversationId && conversationId && record.conversationId !== conversationId ) {
+				return;
+			}
 			if (
 				checked.candidate &&
 				record?.editing &&
@@ -717,7 +722,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			if (
 				checked.candidate &&
 				reconciled.phase !== 'clear' &&
-				( ! record?.entryId || occupied ) &&
+				occupied &&
 				! sameCurrent
 			) {
 				deferFailure( checked.candidate );
@@ -878,7 +883,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 			setContacts( stored.contacts ?? [] );
 			setInquiries( stored.inquiries ?? [] );
-			await applyRecord( stored.messages, true );
+			await applyRecord( stored.messages, stored.conversationId, true );
 			setMail( 'idle' );
 		},
 		[ loadThread, applyRecord, draftContext ]
@@ -1148,17 +1153,6 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const ask = useCallback(
 		async ( text: string, entryId?: string, entryScope?: string ) => {
-			let lease = draftContext.capture();
-			if ( ! lease ) {
-				// A send that arrives while a cold verification is still in
-				// flight waits it out once; a silent no-op swallowed the
-				// visitor's Enter (production 2026-11-07).
-				lease = await draftContext.ready();
-			}
-			if ( ! lease ) {
-				setRefused( failureText() );
-				return false;
-			}
 			const uploads = entryId ? [] : files.uploads;
 			const question = buildQuestion( text, uploads, listPrompt );
 			if (
@@ -1172,7 +1166,25 @@ export function App( { config }: { config: GenieConfig } ) {
 			) {
 				return false;
 			}
+			sending.current = true;
+			setOpen( true );
+			setDockHistory( false );
+			setPhase( 'waiting' );
+			setThread( [ ...currentThread.current, { role: 'user', content: question } ] );
+			let lease = draftContext.capture();
+			if ( ! lease ) {
+				lease = await draftContext.ready();
+			}
+			if ( ! lease ) {
+				sending.current = false;
+				setThread( currentThread.current );
+				setPhase( 'ask' );
+				setInput( text );
+				setRefused( failureText() );
+				return false;
+			}
 			const draft: FailureDraft = {
+				conversationId: shownId.current,
 				text,
 				question,
 				uploads,
@@ -1185,8 +1197,6 @@ export function App( { config }: { config: GenieConfig } ) {
 						}
 					: {} ),
 			};
-			// Reserve synchronously before entering the shared lane.
-			sending.current = true;
 			// Before the request leaves: a reload while it is in flight can
 			// still put the question back.
 			const pending = commitFailure( { type: 'send', draft } );
@@ -1195,6 +1205,8 @@ export function App( { config }: { config: GenieConfig } ) {
 				pending.draft?.question !== question
 			) {
 				sending.current = false;
+				setThread( currentThread.current );
+				setPhase( 'ask' );
 				return false;
 			}
 			requestWitness.current = null;
@@ -1234,7 +1246,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
 					currentThread.current = stored.messages;
-					setThread( stored.messages );
+					setThread( [ ...before, { role: 'user', content: question } ] );
 					setTurn( stored.turn );
 					turnAt.current = stored.turn
 						? stored.messages.length - 1
@@ -1305,6 +1317,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					}
 					draftContext.checkpoint();
 					commitFailure( { type: 'answered' } );
+					clearDeferred();
 					requestWitness.current = null;
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
@@ -1435,6 +1448,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					}
 					draftContext.checkpoint();
 					commitFailure( { type: 'answered' } );
+					clearDeferred();
 					requestWitness.current = null;
 					setPhase( 'ask' );
 					void refreshHistory();
@@ -1488,6 +1502,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
+					clearDeferred();
 				requestWitness.current = null;
 				const assistant = assistantMessage( answer );
 				currentThread.current = next.concat( assistant );
@@ -1555,7 +1570,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		const onWorkspaceVisible = () => {
 			if (
 				cancelled ||
-				! workspace ||
+				! standalone ||
 				! restored ||
 				sourceRefreshRequested ||
 				document.visibilityState !== 'visible'
@@ -1569,7 +1584,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			);
 			void enqueue( refreshSavedSource ).catch( () => undefined );
 		};
-		if ( workspace ) {
+		if ( standalone ) {
 			document.addEventListener( 'visibilitychange', onWorkspaceVisible );
 		}
 		const pending = deferred< {
@@ -1601,7 +1616,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
-			await applyRecord( stored.messages );
+			await applyRecord( stored.messages, 'conversationId' in stored ? stored.conversationId : undefined );
 			restored = true;
 		} )
 			.then( () => {
@@ -1632,7 +1647,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		refreshHistory,
 		applyRecord,
 		draftContext,
-		workspace,
+		standalone,
 		refreshSavedSource,
 	] );
 
@@ -1645,6 +1660,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			cancelTurn();
 			draftContext.invalidate();
 			const departedFailure = captureFailure();
+			clearDeferred();
 			setInput( '' );
 			setOmitted( [] );
 			filesRef.current.clear();
@@ -1965,7 +1981,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// A failed initial owner lookup also interrupted the first history load.
 	const recoverWorkspace = async () => {
 		await showStored();
-		if ( workspace && historyPhase === 'loading' ) {
+		if ( standalone && historyPhase === 'loading' ) {
 			await refreshHistory();
 		}
 	};
@@ -2019,9 +2035,13 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const helperDialog = useHelperDialog( {
 		open,
-		workspace,
+		workspace: standalone,
+		expanded,
 		close: () => {
-			if ( dockHistory ) {
+			if ( expanded ) {
+				setExpanded( false );
+				setRailOpen( false );
+			} else if ( dockHistory ) {
 				setDockHistory( false );
 				requestAnimationFrame( () =>
 					field.current?.focus( { preventScroll: true } )
@@ -2146,6 +2166,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		window.dispatchEvent( new CustomEvent( 'linker-genie-ready' ) );
 	}, [] );
 
+	const workspace = standalone || expanded;
 	const historyView = ! workspace && dockHistory;
 	// A conversation with an answer can be emailed; one still waiting for
 	// its first answer has nothing to send yet.
@@ -2174,6 +2195,18 @@ export function App( { config }: { config: GenieConfig } ) {
 		window.SpeechRecognition ?? window.webkitSpeechRecognition
 	);
 	const visible = workspace || open;
+	const expand = () => {
+		setExpanded( true );
+		setDockHistory( false );
+		setRailOpen( window.innerWidth >= OVERLAY_WIDTH );
+	};
+	const guestLinks = ! config.signedIn && config.accountUrl ? (
+		<p className="linker-genie-guest-links">
+			<span>{ __( 'Net prices & history sync:', 'linker-tools' ) }</span>{ ' ' }
+			<a href={ config.accountUrl }>{ __( 'Sign in', 'linker-tools' ) }</a>
+			{ config.registerUrl ? <>{ ' · ' }<a href={ config.registerUrl }>{ __( 'Register', 'linker-tools' ) }</a></> : null }
+		</p>
+	) : null;
 	// The inquiry confirmation card's turn (#250): the action the model or the
 	// service asked for, and the inquiry it may already have sent.
 	const offersInquiry = Boolean(
@@ -2214,7 +2247,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			tabIndex={ -1 }
 			className={ `linker-genie-app${
 				workspace ? ' linker-genie-app--workspace' : ''
-			}` }
+			}${ expanded ? ' linker-genie-app--expanded' : '' }` }
 			lang={ config.locale }
 			aria-label={ appName() }
 		>
@@ -2244,6 +2277,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			 * header's history view, so a helper mount carries no rail. */ }
 			{ visible && workspace ? (
 				<HistoryRail
+					guestLinks={ guestLinks }
 					open={ railOpen }
 					docked={ workspace }
 					items={ draftContext.phase === 'ready' ? history : [] }
@@ -2299,6 +2333,12 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						<p className="linker-genie-app__title">{ appName() }</p>
 					</div>
+					{ expanded ? (
+						<div className="linker-genie-app__bar-actions">
+							{ phase !== 'waiting' && config.workspaceUrl ? <a href={ config.workspaceUrl }>{ __( 'Open full page', 'linker-tools' ) } ↗</a> : null }
+							<button type="button" className="linker-genie-app__icon" onClick={ () => { setExpanded( false ); setRailOpen( false ); } } aria-label={ __( 'Return to side dock', 'linker-tools' ) }><CloseIcon /></button>
+						</div>
+					) : null }
 					{ ! workspace ? (
 						<div className="linker-genie-app__bar-actions">
 							{ open ? (
@@ -2324,18 +2364,10 @@ export function App( { config }: { config: GenieConfig } ) {
 									>
 										<PlusIcon />
 									</button>
-									{ config.workspaceUrl ? (
-										<a
-											className="linker-genie-app__icon"
-											href={ config.workspaceUrl }
-											aria-label={ __(
-												'Open full page',
-												'linker-tools'
-											) }
-										>
-											<ExpandIcon />
-										</a>
-									) : null }
+									<button type="button" className="linker-genie-app__icon" onClick={ expand }
+										aria-label={ __( 'Expand full view', 'linker-tools' ) }>
+										<ExpandIcon />
+									</button>
 									<button
 										type="button"
 										className="linker-genie-app__icon"
@@ -2424,7 +2456,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * the only change; the rule that paints this line
 						 * names the class, so nothing moves.
 						 */ }
-						{ workspace && thread.length === 0 ? (
+						{ workspace && phase !== 'waiting' && thread.length === 0 ? (
 							<h2 className="linker-genie-app__welcome-title">
 								{ __(
 									'Where should we begin?',
@@ -2459,7 +2491,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * the page's own example questions.
 						 */ }
 						{ ! workspace &&
-						! historyView &&
+						! historyView && phase !== 'waiting' &&
 						thread.length === 0 ? (
 							<div className="linker-genie-app__welcome">
 								<p className="linker-genie-app__welcome-greeting">
@@ -2503,8 +2535,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * its history view stand in its place instead.
 						 */ }
 						{ ! historyView &&
-						( workspace || thread.length > 0 ) &&
-						draftContext.phase === 'ready' ? (
+						( workspace || phase === 'waiting' || thread.length > 0 ) &&
+						( draftContext.phase === 'ready' || phase === 'waiting' ) ? (
 							<Transcript
 								followKey={
 									phase === 'waiting'
@@ -2916,6 +2948,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									/>
 								) : null }
 								<OwnedRecovery
+									dismiss={ dismissDeferred }
 									candidate={
 										draftContext.phase === 'ready'
 											? deferredFailure
@@ -3328,7 +3361,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * composer in the prototype's welcome; the dock carries
 						 * them in its own welcome above. */ }
 						{ workspace &&
-						thread.length === 0 &&
+						phase !== 'waiting' && thread.length === 0 &&
 						config.prompts.length > 0 ? (
 							<div className="linker-genie-app__prompts">
 								{ config.prompts.map( ( prompt ) => (
@@ -3346,6 +3379,7 @@ export function App( { config }: { config: GenieConfig } ) {
 								) ) }
 							</div>
 						) : null }
+						{ ! workspace && ! historyView ? guestLinks : null }
 						{ ! workspace && ! historyView ? (
 							<HelperFooter
 								german={ german }
@@ -3359,11 +3393,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 
 	function appName(): string {
-		return __( "Genie - Linker's AI assistant", 'linker-tools' );
+		return __( "Genie – Linker's AI assistant", 'linker-tools' );
 	}
 }
 
 function HistoryRail( {
+	guestLinks,
 	open,
 	docked,
 	items,
@@ -3377,6 +3412,7 @@ function HistoryRail( {
 	onRetry,
 	onDelete,
 }: {
+	guestLinks: React.ReactNode;
 	open: boolean;
 	docked: boolean;
 	items: ConversationSummary[];
@@ -3437,6 +3473,7 @@ function HistoryRail( {
 					onDelete={ onDelete }
 				/>
 			</div>
+		{ guestLinks }
 		</aside>
 	);
 }

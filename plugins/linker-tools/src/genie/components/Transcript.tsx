@@ -11,12 +11,13 @@ export function Transcript( {
 	followKey: number;
 } ) {
 	const scroll = useRef< HTMLDivElement >( null );
-	const content = useRef< HTMLDivElement >( null );
+	const previousTop = useRef( 0 );
 	const [ latest, setLatest ] = useState( false );
 	const jump = ( settle = false ) => {
 		setLatest( false );
 		if ( scroll.current ) {
 			scroll.current.scrollTop = scroll.current.scrollHeight;
+			previousTop.current = scroll.current.scrollTop;
 		}
 		// The button disappears on activation; settle the explicit jump after
 		// that layout update too. Incoming answer growth never calls this.
@@ -26,6 +27,7 @@ export function Transcript( {
 		requestAnimationFrame( () => {
 			if ( scroll.current ) {
 				scroll.current.scrollTop = scroll.current.scrollHeight;
+			previousTop.current = scroll.current.scrollTop;
 			}
 		} );
 	};
@@ -34,25 +36,7 @@ export function Transcript( {
 			jump();
 		}
 	}, [ followKey ] );
-	useLayoutEffect( () => {
-		const reveal = () => {
-			if ( scroll.current ) {
-				setLatest(
-					scroll.current.scrollHeight -
-						scroll.current.clientHeight -
-						scroll.current.scrollTop >=
-						48
-				);
-			}
-		};
-		reveal();
-		if ( ! content.current || typeof ResizeObserver === 'undefined' ) {
-			return;
-		}
-		const observer = new ResizeObserver( reveal );
-		observer.observe( content.current );
-		return () => observer.disconnect();
-	} );
+
 	return (
 		<div className="linker-genie-reading">
 			<div
@@ -60,20 +44,17 @@ export function Transcript( {
 				ref={ scroll }
 				tabIndex={ 0 }
 				onScroll={ () => {
-					if ( scroll.current ) {
-						// Local 48px affordance: tolerate one line/touch movement.
-						setLatest(
-							scroll.current.scrollHeight -
-								scroll.current.clientHeight -
-								scroll.current.scrollTop >=
-								48
-						);
-					}
+					const el = scroll.current;
+					if ( ! el ) return;
+					const gap = el.scrollHeight - el.clientHeight - el.scrollTop;
+					if ( gap <= 160 ) setLatest( false );
+					else if ( el.scrollTop < previousTop.current ) setLatest( true );
+					previousTop.current = el.scrollTop;
 				} }
 			>
 				<div
 					className="linker-genie-transcript-content"
-					ref={ content }
+					
 				>
 					{ children }
 				</div>

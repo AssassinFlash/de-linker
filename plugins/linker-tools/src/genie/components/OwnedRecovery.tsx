@@ -4,10 +4,12 @@ import type { FailureCandidate } from '../shared/ownedFailure';
 export function OwnedRecovery( {
 	candidate,
 	restore,
+	dismiss,
 	busy,
 }: {
 	candidate: FailureCandidate | null;
 	restore: () => void;
+	dismiss: () => void;
 	busy: boolean;
 } ) {
 	return candidate ? (
@@ -35,6 +37,7 @@ export function OwnedRecovery( {
 			>
 				{ __( 'Restore unsent draft', 'linker-tools' ) }
 			</button>
+			<button type="button" className="linker-genie-app__prompt" disabled={ busy } onClick={ dismiss }>{ __( 'Dismiss', 'linker-tools' ) }</button>
 		</section>
 	) : null;
 }

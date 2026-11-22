@@ -3,7 +3,7 @@ import type { GenieConfig } from '../config';
 import type { DraftContext } from './draftContext';
 import { nativeScope } from './nativeScope';
 import { FAILURE_KEY, type FailureStore } from './failure';
-import { FailureJournal } from './ownedFailure';
+import { FailureJournal, hasOwnedRecovery } from './ownedFailure';
 
 export class EntryScopeError extends Error {
 	constructor( public readonly changed: boolean ) {
@@ -54,7 +54,7 @@ export async function verifiedEntryFailure(
 	const previousScope = context?.identity?.scope;
 	try {
 		const identity = context
-			? await context.verify( true )
+			? await ( legacyRaw || hasOwnedRecovery( store ) ? context.verify( true ) : context.initialized() )
 			: await nativeScope( config, true );
 		if ( legacyReadable && store.getItem( FAILURE_KEY ) !== legacyRaw ) {
 			return null;
