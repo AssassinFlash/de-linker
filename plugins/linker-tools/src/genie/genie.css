@@ -1627,6 +1627,8 @@ body:has(.pdp-buy-inner)
 	text-align: start;
 }
 .linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+	> .linker-genie-open,
+.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
 	.linker-genie-peek {
 	display: none;
 }
@@ -1642,8 +1644,8 @@ body:has(.linker-genie-hero--open)
 }
 .linker-genie-loading-preview .linker-genie-app__message {
 	justify-self: end;
-	background: var(--proto-neutral-50);
-	color: var(--proto-color-ink);
+	background: var(--proto-color-ink);
+	color: var(--proto-color-surface);
 	padding: 9px 14px;
 	border-radius: 18px;
 }
@@ -1688,14 +1690,14 @@ body:has(.linker-genie-hero--open)
 	outline-offset: 2px;
 }
 
-/* The panel the app renders into, above the bubble. */
+/* The panel replaces the launcher in the same viewport corner. */
 .linker-genie-panel {
 	position: fixed;
 	right: 20px;
-	bottom: 84px;
+	bottom: 20px;
 	z-index: 10000;
 	width: min(440px, calc(100vw - 40px));
-	height: min(680px, calc(100dvh - 120px));
+	height: min(680px, calc(100dvh - 40px));
 	overflow: auto;
 	border-radius: 16px;
 	background: var(--proto-color-surface);
