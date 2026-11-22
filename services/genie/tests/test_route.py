@@ -831,3 +831,66 @@ def test_only_a_plain_product_price_request_is_answered_by_the_current_woo_card(
         plan(question, matches, _reading("find_products"), subject, "en").catalog_only
         == plain
     )
+
+
+@pytest.mark.parametrize(
+    "message,lang",
+    [
+        (
+            "Compare SAJ and GoodWe three-phase commercial hybrid systems 30-80 kW.",
+            "en",
+        ),
+        (
+            "Vergleichen Sie dreiphasige gewerbliche Hybridsysteme von SAJ und GoodWe zwischen 30 und 80 kW.",
+            "de",
+        ),
+    ],
+)
+def test_commercial_hybrid_range_filters_both_brands(message: str, lang: str) -> None:
+    matches = [
+        Match("brand", name, name.lower(), frozenset(), name)
+        for name in ("SAJ", "GoodWe")
+    ]
+    route = plan(message, matches, _reading("compare"), NONE, lang)
+    assert route.catalog_only
+    for call in route.calls:
+        assert call.arguments["device_classes"] == ["inverters", "all-in-one-systems"]
+        assert call.arguments["ac_power_min"] == 30
+        assert call.arguments["ac_power_max"] == 80
+        assert call.arguments["phase"] == 3
+        assert call.arguments["application"] == "commercial"
+
+
+def test_battery_pairing_searches_the_documented_reverse_direction() -> None:
+    model = "GW9.0-BAT-D-G20"
+    match = Match("model", model, model, frozenset({7}), "GW9.0 BAT D G20")
+    subject = Subject((7,), {7: "home-storage"}, {7: model})
+    route = plan(
+        f"Mit welchen Wechselrichtern funktioniert die Batterie {model}?",
+        [match],
+        _reading("pairing_compatibility"),
+        subject,
+        "de",
+    )
+    assert route.catalog_only
+    assert route.calls[0].arguments["with_pairings"] is True
+    assert route.calls[0].arguments["text"] == model
+
+
+def test_a_named_inverter_outside_the_catalogue_is_searched_separately_from_its_battery() -> (
+    None
+):
+    model = "GW9.0-BAT-D-G20"
+    match = Match("model", model, model, frozenset({7}), "GW9.0 BAT D G20")
+    subject = Subject((7,), {7: "home-storage"}, {7: model}, catalog_models=(model,))
+    route = plan(
+        f"Kann ich den EcoFlow-Wechselrichter OCEAN 2 HD-P3-15K mit einer GoodWe-Batterie {model} kombinieren?",
+        [match],
+        _reading("find_products"),
+        subject,
+        "de",
+    )
+    assert route.name == "pairing"
+    assert {call.arguments["text"] for call in route.calls} == {model, "HD-P3-15K"}
+    assert all("with_pairings" not in call.arguments for call in route.calls)
+    assert route.catalog_only

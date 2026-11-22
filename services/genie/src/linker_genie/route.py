@@ -954,6 +954,44 @@ def _plan_turn(
     family = _family_hint(matches)
     calls, notes = _search_plan(matches, lang, subject, message)
     reasons.extend(_note_reasons(notes))
+    pairing_question = intent == "pairing_compatibility" or (
+        bool(subject.ids) and bool(_PAIRING_CUE.search(message))
+    )
+    if pairing_question and len(subject.ids) == 1 and notes:
+        known_codes = {normalize(note.code) for note in notes}
+        # A second model explicitly attached to an equipment name also needs its
+        # own lookup when its brand and family have left the catalogue.
+        missing = list(
+            dict.fromkeys(
+                match.group(0)
+                for match in _ASKED_CODE.finditer(message)
+                if normalize(match.group(0)) not in known_codes
+                and any(ch.isdigit() for ch in match.group(0))
+                and _EQUIPMENT_PREFIX.search(message[: match.start()])
+            )
+        )
+        if missing:
+            extra = tuple(
+                Call(
+                    "linker/search-products",
+                    {"text": code, "lang": lang, "limit": SEARCH_LIMIT},
+                )
+                for code in missing[: MAX_TOOL_CALLS - len(calls)]
+            )
+            return Route(
+                "pairing",
+                calls + extra,
+                show_products=True,
+                no_handoff=True,
+                catalog_only=not earlier and len(extra) == len(missing),
+                named_models=notes
+                + tuple(
+                    NamedModel(code, searched=i < len(extra), unknown=True)
+                    for i, code in enumerate(missing)
+                ),
+                hint="Check each named model. A missing catalogue model cannot confirm this pairing.",
+                reasons=tuple(reasons),
+            )
     if intent == "documents_specs":
         # Known products are fetched with get-product; a code with no product
         # id is searched. Either call counts as searched. What does not fit
@@ -971,7 +1009,7 @@ def _plan_turn(
             reasons=tuple(reasons),
             named_models=notes,
         )
-    if intent == "pairing_compatibility":
+    if pairing_question:
         pairing = _pairing(subject, lang)
         if pairing is not None:
             return Route(
@@ -1043,10 +1081,26 @@ def _plan_turn(
             "lang": lang,
             "limit": SEARCH_LIMIT,
         }
+        catalog_message = message
+        hybrid = _HYBRID_SYSTEM.search(message)
+        if hybrid:
+            filters.pop("device_class", None)
+            filters["device_classes"] = list(_INVERTERS)
+            catalog_message = _HYBRID_SYSTEM.sub(" ", catalog_message)
+        phase = _COMPARE_PHASE.search(catalog_message)
+        if phase:
+            filters["phase"] = 3 if phase.group("three") else 1
+            catalog_message = _COMPARE_PHASE.sub(" ", catalog_message)
+        power = _AC_RANGE.search(catalog_message)
+        if power and hybrid:
+            filters["ac_power_min"], filters["ac_power_max"] = (
+                float(value.replace(",", ".")) for value in power.groups()
+            )
+            catalog_message = _AC_RANGE.sub(" ", catalog_message)
         application = application_word(message)
         if application:
             filters["application"] = application
-        if "device_class" not in filters:
+        if "device_class" not in filters and "device_classes" not in filters:
             if _STORAGE_WORD.search(message):
                 filters["device_classes"] = [*_BATTERIES, "all-in-one-systems"]
             elif _BATTERY_WORD.search(message):
@@ -1093,7 +1147,7 @@ def _plan_turn(
             catalog_only=scoped
             and len(brands) <= MAX_TOOL_CALLS
             and not earlier
-            and _catalog_request(message, matches, _CATALOG_COMPARISON_WORDS),
+            and _catalog_request(catalog_message, matches, _CATALOG_COMPARISON_WORDS),
             hint=(
                 "Candidates from each requested brand were fetched separately. Compare matching "
                 "models from each brand, with a compare block using only qualified product IDs. "
@@ -1580,6 +1634,19 @@ def extreme_input(
     return found
 
 
+_HYBRID_SYSTEM = re.compile(
+    r"\bhybrid(?:[- ]?(?:systems?|inverters?|systeme[n]?|wechselrichter[n]?))?\b", re.I
+)
+_COMPARE_PHASE = re.compile(
+    r"\b(?:(?P<three>(?:three|3)[- ]phase|(?:drei|3)[- ]?phasig\w*)|(?:single|1)[- ]phase|(?:ein|1)[- ]?phasig\w*)\b",
+    re.I,
+)
+_AC_RANGE = re.compile(
+    r"(?<![\w.-])(?:(?:between|zwischen)\s+)?(\d+(?:[.,]\d+)?)\s*(?:kW\s*)?"
+    r"(?:[-–—]|to|bis|and|und)\s*(\d+(?:[.,]\d+)?)\s*kW\b",
+    re.I,
+)
+
 # An ordinary side-by-side catalogue request. A remaining word, number or unit
 # describes a criterion the model must investigate rather than omit.
 _CATALOG_COMPARISON_WORDS = frozenset(
@@ -1587,7 +1654,7 @@ _CATALOG_COMPARISON_WORDS = frozenset(
     "commercial industrial residential home household c i project projects storage battery batteries inverter inverters "
     "vergleich vergleichen vergleiche bitte sie von und oder für fuer einen ein eine einem den die das "
     "im am an standort einsatz optionen produkte modelle gewerbe gewerbespeicher heimspeicher "
-    "gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
+    "gewerblich gewerbliche gewerblichen gewerblicher gewerbliches gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
 )
 
 
@@ -1599,11 +1666,19 @@ _PRICE_WORDS = frozenset(
     "was ist der die das den dem dieses modell produkt für fuer von preis preise wie viel kostet kosten".split()
 )
 
+_PAIRING_CUE = re.compile(
+    r"\b(?:compatib\w*|kompatib\w*|kombinier\w*|funktionier\w*|work(?:s)? with|fit(?:s)? (?:with|my)|pair(?:ed)? with)\b",
+    re.I,
+)
+_EQUIPMENT_PREFIX = re.compile(
+    r"\b(?:inverter|battery|wechselrichter|batterie)\b(?:[ -]+[\w.]+)*\s+$", re.I
+)
+
 _PAIRING_WORDS = frozenset(
     "which what is are the a an can does with for my this and battery batteries inverter inverters "
     "fits fit works work compatible support supported pairing pair "
     "welche welcher welches welchen ist sind der die das den dem ein eine mit zu zum für und "
-    "batterie batterien speicher wechselrichter passt passen kompatibel".split()
+    "batterie batterien speicher wechselrichter wechselrichtern passt passen funktioniert funktionieren kompatibel".split()
 )
 
 
@@ -2192,7 +2267,7 @@ def _knowledge_input(
 
 
 def _pairing(subject: Subject, lang: str) -> Call | None:
-    """check-compatibility for two products, the inverter's pairings for one."""
+    """Check two products or list a single product’s documented partners."""
     if len(subject.ids) >= 2:
         return Call(
             "linker/check-compatibility", {"product_ids": list(subject.ids[:2])}
@@ -2201,9 +2276,7 @@ def _pairing(subject: Subject, lang: str) -> Call | None:
         product_id = subject.ids[0]
         device = subject.device_class.get(product_id)
         label = subject.labels.get(product_id)
-        if device in ("inverters", "all-in-one-systems") and label:
-            # The pairing search of the system prompt: the inverter by its model,
-            # with the documented batteries and their verdicts.
+        if device in (*_INVERTERS, *_BATTERIES) and label:
             return Call(
                 "linker/search-products",
                 {
