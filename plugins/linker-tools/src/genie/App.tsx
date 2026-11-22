@@ -738,7 +738,18 @@ export function App( { config }: { config: GenieConfig } ) {
 				setOpen( true );
 				return;
 			}
-			const restored = adoptFailure( checked.candidate, reconciled );
+			const restored =
+				checked.candidate && reconciled.phase !== 'clear'
+					? exchangeFailure( checked.candidate, null, messages )
+					: adoptFailure( checked.candidate, reconciled );
+			if ( ! restored ) return;
+			if ( restored.phase === 'editing' && restored.draft ) {
+				setInput( restored.draft.text );
+				placeChips( restored.draft.uploads );
+				setOmitted( restored.draft.omitted );
+				setPhase( 'ask' );
+				return;
+			}
 			failureState.current = restored;
 			if (
 				'failed' === restored.phase &&
@@ -2937,7 +2948,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						{ ! historyView ? (
 							<>
-								{ draftContext.phase !== 'ready' ? (
+								{ draftContext.phase !== 'ready' &&
+								phase !== 'waiting' ? (
 									<div
 										className={
 											draftContext.phase === 'loading'
@@ -3451,9 +3463,10 @@ export function App( { config }: { config: GenieConfig } ) {
 								) ) }
 							</div>
 						) : null }
-						{ ! workspace && ! historyView ? guestLinks : null }
+
 						{ ! workspace && ! historyView ? (
 							<HelperFooter
+								guestLinks={ guestLinks }
 								german={ german }
 								disclosure={ config.disclosure }
 							/>

@@ -54,7 +54,9 @@ export async function verifiedEntryFailure(
 	const previousScope = context?.identity?.scope;
 	try {
 		const identity = context
-			? await ( legacyRaw || hasOwnedRecovery( store ) ? context.verify( true ) : context.initialized() )
+			? await ( legacyRaw || hasOwnedRecovery( store )
+					? context.verify( true )
+					: context.initialized() )
 			: await nativeScope( config, true );
 		if ( legacyReadable && store.getItem( FAILURE_KEY ) !== legacyRaw ) {
 			return null;

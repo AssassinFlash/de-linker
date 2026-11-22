@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import type { GenieConfig } from '../config';
-import { type DraftContext, pageDraftContext, mountPageDraftContext } from './draftContext';
+import {
+	type DraftContext,
+	pageDraftContext,
+	mountPageDraftContext,
+} from './draftContext';
 
 /**
  * One context per mounted surface, with the native cold lookup shared by both bundles.
@@ -30,7 +34,10 @@ export function useDraftContext(
 			render( ( value ) => value + 1 );
 		} );
 		const release = provided ? undefined : mountPageDraftContext( context );
-		return () => { unsubscribe(); release?.(); };
+		return () => {
+			unsubscribe();
+			release?.();
+		};
 	}, [ context, provided ] );
 	return context;
 }

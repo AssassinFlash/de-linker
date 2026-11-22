@@ -183,6 +183,7 @@ function home() {
 	const end = startHero( hero, {
 		config: { ...CONFIG, restNonce: 'nonce-' + principal },
 	} );
+	fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! );
 	return {
 		field: () =>
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!,
@@ -190,7 +191,21 @@ function home() {
 	};
 }
 
-async function restoreRetainedDraft() {
+async function restoreRetainedDraft( expected?: string ) {
+	const field = document.querySelector< HTMLTextAreaElement >(
+		'textarea:not([hidden])'
+	);
+	if ( expected ) {
+		await waitFor( () =>
+			expect(
+				field?.value === expected ||
+					!! screen.queryByRole( 'button', {
+						name: 'Restore unsent draft',
+					} )
+			).toBe( true )
+		);
+		if ( field?.value === expected ) return;
+	}
 	const button = await screen.findByRole( 'button', {
 		name: 'Restore unsent draft',
 	} );
@@ -199,9 +214,9 @@ async function restoreRetainedDraft() {
 async function verifyReturnedEditorExchange(
 	field: () => HTMLTextAreaElement
 ) {
-	await restoreRetainedDraft();
+	await restoreRetainedDraft( 'A1 submitted original' );
 	expect( field().value ).toBe( 'A1 submitted original' );
-	await restoreRetainedDraft();
+	await restoreRetainedDraft( 'A2 newly accepted question' );
 	expect( field().value ).toBe( 'A2 newly accepted question' );
 	expect(
 		document.querySelector( '.linker-genie-app__attachment' )?.textContent
@@ -350,14 +365,7 @@ test( 'ordinary same-owner failure has an explicit verified Restore; no marketin
 	resetTurnLane();
 	ui = workspace();
 	stop = ui.stop;
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	expect( ui.field().value ).toBe( '' );
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
-	);
-	expect( ui.field().value ).toBe( text );
+	await waitFor( () => expect( ui.field().value ).toBe( text ) );
 	expect( captures ).toHaveLength( 1 );
 	const buckets = Object.keys( sessionStorage ).filter( ( key ) =>
 		key.startsWith( 'linker-genie-turn-failure:v2:' )
@@ -385,16 +393,9 @@ test( 'A1 survives A2 failure then successful retry, fresh mount can explicitly 
 	resetTurnLane();
 	ui = workspace();
 	stop = ui.stop;
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	expect(
-		document.querySelector( '[data-genie-owned-recovery]' )?.textContent
-	).toContain( 'A1 separate engineering question' );
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
+	await waitFor( () =>
+		expect( ui.field().value ).toBe( 'A1 separate engineering question' )
 	);
-	expect( ui.field().value ).toBe( 'A1 separate engineering question' );
 } );
 
 test( 'unknown ownerless v1 is byte-identical and inactive beside a new ordinary failure', async () => {
@@ -631,13 +632,9 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		);
 		principal = 'A';
 		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-		await act( async () =>
-			fireEvent.click(
-				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-			)
+		await waitFor( () =>
+			expect( ui.field().value ).toBe( 'A unsent design brief' )
 		);
-		expect( ui.field().value ).toBe( 'A unsent design brief' );
 		expect( document.body.textContent ).not.toContain(
 			'Genie did not answer.'
 		);
@@ -711,13 +708,9 @@ test( 'unsent ordinary PDF and text survive helper Close/open as editing, then A
 	expect( document.body.textContent ).not.toContain( filename );
 	principal = 'A';
 	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
+	await waitFor( () =>
+		expect( field().value ).toBe( 'Unsent PDF context A' )
 	);
-	expect( field().value ).toBe( 'Unsent PDF context A' );
 	await screen.findByRole( 'button', {
 		name: 'Remove attachment ' + filename,
 	} );
@@ -744,13 +737,9 @@ test( 'failed editing persistence keeps an A-scoped window copy, shows warning o
 	);
 	principal = 'A';
 	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
+	await waitFor( () =>
+		expect( ui.field().value ).toBe( 'Private memory editing A' )
 	);
-	expect( ui.field().value ).toBe( 'Private memory editing A' );
 	await screen.findByText(
 		'This question could not be saved. It may be lost if you refresh or leave this page.'
 	);
@@ -818,15 +807,9 @@ test( 'ordinary unsent text survives New conversation as explicit editing recove
 			screen.getByRole( 'button', { name: 'New conversation' } )
 		)
 	);
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	expect( ui.field().value ).toBe( '' );
-	expect( sendTurn ).not.toHaveBeenCalled();
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
+	await waitFor( () =>
+		expect( ui.field().value ).toBe( 'A accepted project note before New' )
 	);
-	expect( ui.field().value ).toBe( 'A accepted project note before New' );
 	expect( document.body.textContent ).not.toContain(
 		'Genie did not answer.'
 	);
@@ -872,13 +855,9 @@ test( 'ordinary editing missing-file recovery requires reselect or explicit Remo
 	} );
 	ui = workspace();
 	stop = ui.stop;
-	await screen.findByRole( 'button', { name: 'Restore unsent draft' } );
-	await act( async () =>
-		fireEvent.click(
-			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
-		)
+	await waitFor( () =>
+		expect( ui.field().value ).toBe( 'A preparing PDF context' )
 	);
-	expect( ui.field().value ).toBe( 'A preparing PDF context' );
 	expect(
 		screen.getByText( `Select ${ filename } again before sending.` )
 	).toBeTruthy();
@@ -1188,7 +1167,7 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 			await act( async () =>
 				window.dispatchEvent( new Event( 'focus' ) )
 			);
-			await restoreRetainedDraft();
+			await restoreRetainedDraft( 'Original accepted returned question' );
 			expect( ui.field().value ).toBe(
 				'Original accepted returned question'
 			);
@@ -1235,7 +1214,7 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		await act( async () => resolve( answer ) );
 		principal = 'A';
 		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		await restoreRetainedDraft();
+		await restoreRetainedDraft( 'A2 accepted while waiting' );
 		expect( ui.field().value ).toBe( 'A2 accepted while waiting' );
 	} );
 	test( `review repair: ${ surface } missing-only editor exchanges both retained attempts without corrupting storage`, async () => {
@@ -1266,7 +1245,6 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		} );
 		const ui = surface === 'home' ? home() : workspace();
 		stop = ui.stop;
-		await restoreRetainedDraft();
 		await screen.findByText( 'Select pending.pdf again before sending.' );
 		if ( surface === 'workspace' ) {
 			await act( async () =>
@@ -1292,7 +1270,6 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		await restoreRetainedDraft();
 		expect( () => journal.candidate() ).not.toThrow();
 		expect( ui.field().value ).toBe( 'Earlier retained question' );
-		await restoreRetainedDraft();
 		await screen.findByText( 'Select pending.pdf again before sending.' );
 	} );
 	test( `review repair: ${ surface } visibility-only resume revalidates and hidden checkpoints accepted text`, async () => {
@@ -1354,7 +1331,7 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		expect( ui.field().value ).toBe( '' );
 		principal = 'A';
 		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		await restoreRetainedDraft();
+		await restoreRetainedDraft( 'Second original owner note' );
 		expect( ui.field().value ).toBe( 'Second original owner note' );
 		expect(
 			new FailureJournal( sessionStorage, {
@@ -1577,7 +1554,6 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		expect( journal.candidate()?.record.question ).toBe( '' );
 		const ui = surface === 'home' ? home() : workspace();
 		stop = ui.stop;
-		await restoreRetainedDraft();
 		expect( ui.field().value ).toBe( '' );
 		await screen.findByText(
 			/Attach missing\.pdf again\. It could not be kept for another try\./
@@ -1695,7 +1671,7 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		} );
 		ui = surface === 'home' ? home() : workspace();
 		stop = ui.stop;
-		await restoreRetainedDraft();
+		await restoreRetainedDraft( 'Accepted replacement A2 before Retry' );
 		expect( ui.field().value ).toBe(
 			'Accepted replacement A2 before Retry'
 		);
@@ -1749,7 +1725,7 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
 		principal = 'A';
 		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		await restoreRetainedDraft();
+		await restoreRetainedDraft( 'A3 accepted after removal' );
 		expect( ui.field().value ).toBe( 'A3 accepted after removal' );
 	} );
 }
@@ -1776,7 +1752,9 @@ test( 'review get fallback: actual App read-failure editing recovery consumed af
 	get.mockRestore();
 	principal = 'A';
 	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-	await restoreRetainedDraft();
+	await restoreRetainedDraft(
+		'Latest accepted editor while storage read fails'
+	);
 	expect( ui.field().value ).toBe(
 		'Latest accepted editor while storage read fails'
 	);

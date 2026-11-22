@@ -1387,13 +1387,9 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 			} )
 	);
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1447,13 +1443,9 @@ test( 'a cut stream keeps the question, hides the partial answer, and retries th
 		blocks: [ { type: 'text', text: 'A hybrid covers that.', refs: [] } ],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1623,13 +1615,9 @@ test( 'a 502 keeps an attached file across a reload', async () => {
 	first.unmount();
 	resetTurnLane();
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect(
 		await screen.findByText( 'gw10k-et-datenblatt.pdf' )
 	).toBeInTheDocument();
@@ -2216,8 +2204,8 @@ test( 'the open dock head carries the icon group', async () => {
 		screen.getByRole( 'button', { name: 'Conversations' } )
 	).toBeVisible();
 	expect(
-		screen.getByRole( 'link', { name: 'Open full page' } )
-	).toHaveAttribute( 'href', '/genie/' );
+		screen.getByRole( 'button', { name: 'Expand full view' } )
+	).toBeVisible();
 	expect( screen.getByRole( 'button', { name: 'Close' } ) ).toBeVisible();
 } );
 
@@ -3028,13 +3016,9 @@ test( 'a new conversation clears the stored failure and its alert', async () => 
 		conversations: [],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -3077,13 +3061,9 @@ test( 'deleting the conversation on screen clears the stored failure too', async
 		conversations: [],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -3959,17 +3939,36 @@ test( 'the dock displays the selected prompt while the thread loads and expands 
 	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	let resume!: () => void;
-	vi.mocked( readThread ).mockImplementationOnce( () => new Promise( resolve => {
-		resume = () => resolve( { messages: [], turn: null } );
-	} ) );
-	vi.mocked( sendTurn ).mockClear().mockResolvedValue( { meta: null, blocks: [ { type: 'text', text: 'A verified answer.', refs: [] } ] } );
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				resume = () => resolve( { messages: [], turn: null } );
+			} )
+	);
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'A verified answer.', refs: [] } ],
+		} );
 	const label = 'I need a three-phase hybrid inverter for a home.';
 	fireEvent.click( screen.getByRole( 'button', { name: label } ) );
-	expect( screen.getByText( label ).closest( 'li' ) ).toHaveClass( 'linker-genie-app__message--user' );
-	expect( screen.queryByText( 'Where should we begin?' ) ).not.toBeInTheDocument();
-	fireEvent.click( screen.getByRole( 'button', { name: 'Expand full view' } ) );
-	expect( screen.getByRole( 'dialog' ) ).toHaveAttribute( 'aria-modal', 'true' );
-	expect( screen.queryByRole( 'link', { name: 'Open full page' } ) ).not.toBeInTheDocument();
+	expect( screen.getByText( label ).closest( 'li' ) ).toHaveClass(
+		'linker-genie-app__message--user'
+	);
+	expect(
+		screen.queryByText( 'Where should we begin?' )
+	).not.toBeInTheDocument();
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'Expand full view' } )
+	);
+	expect( screen.getByRole( 'dialog' ) ).toHaveAttribute(
+		'aria-modal',
+		'true'
+	);
+	expect(
+		screen.queryByRole( 'link', { name: 'Open full page' } )
+	).not.toBeInTheDocument();
 	await waitFor( () => expect( resume ).toBeTypeOf( 'function' ) );
 	await act( async () => resume() );
 	expect( await screen.findByText( 'A verified answer.' ) ).toBeVisible();

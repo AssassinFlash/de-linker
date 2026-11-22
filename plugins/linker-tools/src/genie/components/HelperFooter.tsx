@@ -1,13 +1,16 @@
 /** A compact AI note and native support disclosure for the helper sheet. */
+import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef } from '@wordpress/element';
 
 export function HelperFooter( {
 	german,
 	disclosure,
+	guestLinks,
 }: {
 	german: boolean;
 	disclosure: string;
+	guestLinks?: ReactNode;
 } ) {
 	const details = useRef< HTMLDetailsElement >( null );
 	useEffect( () => {
@@ -25,7 +28,11 @@ export function HelperFooter( {
 	}, [] );
 	return (
 		<footer className="linker-genie-footnote">
-			<span>{ __( 'Genie is an AI assistant.', 'linker-tools' ) }</span>
+			{ guestLinks ?? (
+				<span>
+					{ __( 'Genie is an AI assistant.', 'linker-tools' ) }
+				</span>
+			) }
 			<details className="linker-genie-help" ref={ details }>
 				<summary>
 					{ __( 'Help & privacy', 'linker-tools' ) }

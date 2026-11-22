@@ -137,11 +137,13 @@ export function nativeScope(
 	if ( pending ) {
 		return pending;
 	}
-	const read = lookup( config, state.generation ).finally( () => {
+	const read = lookup( config, state.generation );
+	const settled = () => {
 		if ( state.pending.get( key ) === read ) {
 			state.pending.delete( key );
 		}
-	} );
+	};
+	void read.then( settled, settled );
 	state.pending.set( key, read );
 	return read;
 }

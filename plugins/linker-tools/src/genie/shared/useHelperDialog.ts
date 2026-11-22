@@ -196,7 +196,10 @@ export function useHelperDialog( {
 					item.node.inert = item.inert;
 				}
 			} );
-			if ( ( mobile || expanded ) && document.body.style.overflow === 'hidden' ) {
+			if (
+				( mobile || expanded ) &&
+				document.body.style.overflow === 'hidden'
+			) {
 				document.body.style.overflow = overflow;
 			}
 			attributes.forEach( ( item ) => {

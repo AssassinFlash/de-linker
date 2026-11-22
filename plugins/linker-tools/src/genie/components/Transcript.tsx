@@ -27,7 +27,7 @@ export function Transcript( {
 		requestAnimationFrame( () => {
 			if ( scroll.current ) {
 				scroll.current.scrollTop = scroll.current.scrollHeight;
-			previousTop.current = scroll.current.scrollTop;
+				previousTop.current = scroll.current.scrollTop;
 			}
 		} );
 	};
@@ -46,16 +46,15 @@ export function Transcript( {
 				onScroll={ () => {
 					const el = scroll.current;
 					if ( ! el ) return;
-					const gap = el.scrollHeight - el.clientHeight - el.scrollTop;
+					const gap =
+						el.scrollHeight - el.clientHeight - el.scrollTop;
 					if ( gap <= 160 ) setLatest( false );
-					else if ( el.scrollTop < previousTop.current ) setLatest( true );
+					else if ( el.scrollTop < previousTop.current )
+						setLatest( true );
 					previousTop.current = el.scrollTop;
 				} }
 			>
-				<div
-					className="linker-genie-transcript-content"
-					
-				>
+				<div className="linker-genie-transcript-content">
 					{ children }
 				</div>
 			</div>

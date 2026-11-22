@@ -352,10 +352,22 @@ export function HeroConversation( {
 				setRecoveryBlocked( false );
 				entryOwnerScope.current = checked.record?.entryScope;
 				recoveryPending.current = false;
-				const restored = adoptFailure(
-					checked.candidate,
-					reconcile( checked.record, stored.messages )
-				);
+				const restored =
+					checked.candidate && reconciled.phase !== 'clear'
+						? exchangeFailure(
+								checked.candidate,
+								null,
+								stored.messages
+							)
+						: adoptFailure( checked.candidate, reconciled );
+				if ( ! restored ) return;
+				if ( restored.phase === 'editing' && restored.draft ) {
+					setPrompt( restored.draft.text );
+					placeChips( restored.draft.uploads );
+					setOmitted( restored.draft.omitted );
+					setPhase( 'ask' );
+					return;
+				}
 				failureState.current = restored;
 				if (
 					'failed' === restored.phase &&
@@ -1015,15 +1027,20 @@ export function HeroConversation( {
 					</button>
 				</div>
 			</header>
-			<p className="linker-genie-hero__intro">
-				<strong>
-					{ __( "Genie is Linker's AI assistant.", 'linker-tools' ) }
-				</strong>{ ' ' }
-				{ __(
-					'Answers come from our product data and documents, and can still be wrong.',
-					'linker-tools'
-				) }
-			</p>
+			{ ! opening && thread.length === 0 && phase === 'ask' ? (
+				<p className="linker-genie-hero__intro">
+					<strong>
+						{ __(
+							"Genie is Linker's AI assistant.",
+							'linker-tools'
+						) }
+					</strong>{ ' ' }
+					{ __(
+						'Answers come from our product data and documents, and can still be wrong.',
+						'linker-tools'
+					) }
+				</p>
+			) : null }
 			<p className="screen-reader-text" role="status" aria-live="polite">
 				{ draftContext.phase === 'ready' ? live : '' }
 			</p>

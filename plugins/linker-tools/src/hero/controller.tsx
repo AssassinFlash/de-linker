@@ -28,8 +28,11 @@ import {
 } from '../genie/shared/dictation';
 import { pageFailureStore } from '../genie/shared/failure';
 import { preserveEditing } from '../genie/shared/editingDraft';
-import { pageDraftContext, mountPageDraftContext } from '../genie/shared/draftContext';
-import { verifiedEntryFailure } from '../genie/shared/entryFailure';
+import {
+	pageDraftContext,
+	mountPageDraftContext,
+} from '../genie/shared/draftContext';
+import { hasOwnedRecovery } from '../genie/shared/ownedFailure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
 import {
@@ -140,6 +143,15 @@ export function startHero(
 			if ( expanded ) {
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
+				requestAnimationFrame( () => {
+					if ( ! expandedNow ) return;
+					const clipped =
+						dialog!.getBoundingClientRect().bottom +
+						8 -
+						win.innerHeight;
+					if ( clipped > 0 )
+						win.scrollBy( { top: clipped, behavior: 'instant' } );
+				} );
 			} else {
 				prompt!.placeholder = originalPlaceholder;
 				prompt!.value = '';
@@ -171,27 +183,13 @@ export function startHero(
 			prompt!.disabled = true;
 		} else {
 			const scope = context.identity?.scope;
-			const lease = context.capture();
 			if ( verifiedScope && scope && scope !== verifiedScope ) {
 				quarantinedPrompt = null;
-		prompt!.value = '';
-		recognition?.stop();
-		recognition = null;
-		pending = null;
-		pendingFiles = [];
-				void verifiedEntryFailure(
-					options.config,
-					pageFailureStore()
-				).then( ( checked ) => {
-					if (
-						! stopped &&
-						context.valid( lease ) &&
-						checked?.record &&
-						checked.unchanged()
-					) {
-						update( { type: 'ask' } );
-					}
-				} );
+				prompt!.value = '';
+				recognition?.stop();
+				recognition = null;
+				pending = null;
+				pendingFiles = [];
 			}
 			verifiedScope = scope;
 			prompt!.disabled = false;
@@ -217,7 +215,10 @@ export function startHero(
 	};
 	prompt.addEventListener( 'input', onPromptInput );
 	const onUnownedPointer = ( event: PointerEvent ) => {
-		if ( event.target === prompt && ! context.capture() ) {
+		if (
+			event.target === prompt &&
+			( ! context.capture() || hasOwnedRecovery( pageFailureStore() ) )
+		) {
 			lastTrigger = prompt;
 			update( { type: 'ask' } );
 		}
@@ -266,7 +267,10 @@ export function startHero(
 	}
 
 	function unmount(): void {
-		if ( dialog!.hasAttribute( 'popover' ) ) { dialog!.hidePopover(); dialog!.removeAttribute( 'popover' ); }
+		if ( dialog!.hasAttribute( 'popover' ) ) {
+			dialog!.hidePopover();
+			dialog!.removeAttribute( 'popover' );
+		}
 		context.invalidate();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();

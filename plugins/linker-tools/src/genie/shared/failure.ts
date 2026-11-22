@@ -542,7 +542,9 @@ export function reconcile(
 		...( stored.entryId
 			? { entryId: stored.entryId, entryScope: stored.entryScope }
 			: {} ),
-		...( typeof stored.conversationId === 'number' ? { conversationId: stored.conversationId } : {} ),
+		...( typeof stored.conversationId === 'number'
+			? { conversationId: stored.conversationId }
+			: {} ),
 		text: stored.text,
 		question: stored.question,
 		uploads: stored.uploads,
@@ -742,7 +744,9 @@ export function parseFailure( value: unknown ): StoredFailure | null {
 			? { entryId: record.entryId, entryScope: record.entryScope }
 			: {} ),
 		...( record.editing === true ? { editing: true } : {} ),
-		...( typeof record.conversationId === 'number' ? { conversationId: record.conversationId } : {} ),
+		...( typeof record.conversationId === 'number'
+			? { conversationId: record.conversationId }
+			: {} ),
 		text: record.text,
 		question: record.question,
 		uploads: uploads as Upload[],
@@ -788,7 +792,9 @@ export function recordOf( state: FailureState ): StoredFailure {
 			? { entryId: draft.entryId, entryScope: draft.entryScope }
 			: {} ),
 		...( draft.editing ? { editing: true } : {} ),
-		...( typeof draft.conversationId === 'number' ? { conversationId: draft.conversationId } : {} ),
+		...( typeof draft.conversationId === 'number'
+			? { conversationId: draft.conversationId }
+			: {} ),
 		text: draft.text,
 		question: draft.question,
 		uploads: draft.uploads,

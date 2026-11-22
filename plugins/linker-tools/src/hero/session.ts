@@ -72,7 +72,9 @@ export class HeroSession {
 	private loading: Promise< void > | null = null;
 	private generation = 0;
 	private conversationId: number | undefined;
-	get currentConversation(): number | undefined { return this.conversationId; }
+	get currentConversation(): number | undefined {
+		return this.conversationId;
+	}
 	private requestWitness: RequestWitness | null = null;
 	private operationId?: string;
 

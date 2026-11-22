@@ -37,7 +37,14 @@ export function OwnedRecovery( {
 			>
 				{ __( 'Restore unsent draft', 'linker-tools' ) }
 			</button>
-			<button type="button" className="linker-genie-app__prompt" disabled={ busy } onClick={ dismiss }>{ __( 'Dismiss', 'linker-tools' ) }</button>
+			<button
+				type="button"
+				className="linker-genie-app__prompt"
+				disabled={ busy }
+				onClick={ dismiss }
+			>
+				{ __( 'Dismiss', 'linker-tools' ) }
+			</button>
 		</section>
 	) : null;
 }

@@ -130,7 +130,9 @@ export class DraftContext {
 	 * @param fresh Always request a new native identity when true.
 	 */
 	verify( fresh = true ): Promise< NativeScope > {
-		if ( ! fresh && this.pending ) { return this.pending; }
+		if ( ! fresh && this.pending ) {
+			return this.pending;
+		}
 		this.preserveEditor();
 		const generation = ++this.generation;
 		if ( ! this.identityValue ) {
@@ -251,10 +253,16 @@ type PageContextSlot = {
 type DraftWindow = Window & { __linkerGenieDraftAuthority?: PageContextSlot };
 
 /** Both separately loaded entry bundles use the same page owner and lifecycle. */
-export function pageDraftContext( config: Pick< GenieConfig, 'restUrl' | 'restNonce' > ): DraftContext {
+export function pageDraftContext(
+	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >
+): DraftContext {
 	const page = window as DraftWindow;
 	if ( ! page.__linkerGenieDraftAuthority ) {
-		page.__linkerGenieDraftAuthority = { context: new DraftContext( config, () => undefined ), clients: 0, release: () => undefined };
+		page.__linkerGenieDraftAuthority = {
+			context: new DraftContext( config, () => undefined ),
+			clients: 0,
+			release: () => undefined,
+		};
 	}
 	return page.__linkerGenieDraftAuthority.context;
 }
@@ -263,10 +271,17 @@ export function mountPageDraftContext( context: DraftContext ): () => void {
 	const page = window as DraftWindow;
 	const slot = page.__linkerGenieDraftAuthority!;
 	if ( slot.clients++ === 0 ) {
-		const check = () => { void context.verify( false ).catch( () => undefined ); };
-		const newIdentity = () => { void context.verify( true ).catch( () => undefined ); };
+		const check = () => {
+			void context.verify( false ).catch( () => undefined );
+		};
+		const newIdentity = () => {
+			void context.verify( true ).catch( () => undefined );
+		};
 		const checkpoint = () => context.checkpoint();
-		const visibility = () => { if ( document.visibilityState === 'hidden' ) checkpoint(); else check(); };
+		const visibility = () => {
+			if ( document.visibilityState === 'hidden' ) checkpoint();
+			else check();
+		};
 		check();
 		window.addEventListener( 'focus', check );
 		window.addEventListener( 'pageshow', check );
@@ -277,11 +292,16 @@ export function mountPageDraftContext( context: DraftContext ): () => void {
 			window.removeEventListener( 'focus', check );
 			window.removeEventListener( 'pageshow', check );
 			window.removeEventListener( 'pagehide', checkpoint );
-			window.removeEventListener( 'linker-genie-identity-change', newIdentity );
+			window.removeEventListener(
+				'linker-genie-identity-change',
+				newIdentity
+			);
 			document.removeEventListener( 'visibilitychange', visibility );
 			context.dispose();
 			delete page.__linkerGenieDraftAuthority;
 		};
 	}
-	return () => { if ( --slot.clients === 0 ) slot.release(); };
+	return () => {
+		if ( --slot.clients === 0 ) slot.release();
+	};
 }

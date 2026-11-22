@@ -207,13 +207,7 @@ test( 'B voice accepted before React commits remains owned after showStored reva
 	await act( async () => stop() );
 	stop = () => {};
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	await waitFor( () => expect( field().value ).not.toBe( '' ) );
 	expect( field() ).toHaveValue( words );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
@@ -413,13 +407,7 @@ for ( const ended of [ false, true ] ) {
 		stop = () => {};
 		await release();
 		await mount();
-		await act( async () =>
-			fireEvent.click(
-				await screen.findByRole( 'button', {
-					name: 'Restore unsent draft',
-				} )
-			)
-		);
+		await waitFor( () => expect( field().value ).not.toBe( '' ) );
 		expect( field() ).toHaveValue( words );
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
@@ -442,13 +430,7 @@ test( 'delivered A words remain quarantined from B and are explicitly restorable
 	stop = () => {};
 	principal = 'A';
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	await waitFor( () => expect( field().value ).not.toBe( '' ) );
 	expect( field() ).toHaveValue( words );
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
@@ -526,13 +508,7 @@ test( 'pagehide retains prepared PDF and displayed text together with delivered 
 	stop = () => {};
 	await release();
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	await waitFor( () => expect( field().value ).not.toBe( '' ) );
 	expect( field().value ).toContain( 'Displayed project text' );
 	expect( field().value ).toContain( 'Pending site requirement' );
 	await screen.findByText( 'voice-project.pdf' );
@@ -624,13 +600,7 @@ test( 'explicit Stop preserves an existing reselection name without keeping the 
 		},
 	} );
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+
 	await screen.findByText(
 		'Select missing-schematic.pdf again before sending.'
 	);
@@ -680,13 +650,7 @@ test( 'a pending voice storage failure retains only original A memory ownership 
 	stop = () => {};
 	principal = 'A';
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	await waitFor( () => expect( field().value ).not.toBe( '' ) );
 	expect( field() ).toHaveValue( words );
 	await screen.findByText(
 		'This question could not be saved. It may be lost if you refresh or leave this page.'
@@ -999,13 +963,7 @@ test( 'a temporarily unreadable checkpoint retains the next heard phrase under o
 	stop = () => {};
 	principal = 'A';
 	await mount();
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	await waitFor( () => expect( field().value ).not.toBe( '' ) );
 	expect( field() ).toHaveValue(
 		'First accepted phrase Second accepted phrase'
 	);
@@ -1107,7 +1065,8 @@ test( 'a newer durable revision remains intact and reachable beside the unsaved 
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
-async function restoreOwned() {
+async function restoreOwned( expected?: string ) {
+	if ( expected && field().value === expected ) return;
 	await act( async () =>
 		fireEvent.click(
 			await screen.findByRole( 'button', {
@@ -1124,7 +1083,7 @@ async function unmountCurrent() {
 test( 'both existing variants restore with their files and missing names, then memory success leaves durable reachable', async () => {
 	const { voice } = await divergentVoiceCopies();
 	await screen.findByText( 'Later durable project revision' );
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	await hear(
 		voice,
@@ -1135,7 +1094,7 @@ test( 'both existing variants restore with their files and missing names, then m
 		'Select later-schematic.pdf again before sending.'
 	);
 	await screen.findByText( 'First accepted phrase Second accepted phrase' );
-	await restoreOwned();
+	await restoreOwned( 'First accepted phrase Second accepted phrase' );
 	expect( field() ).toHaveValue(
 		'First accepted phrase Second accepted phrase'
 	);
@@ -1163,7 +1122,7 @@ test( 'both existing variants restore with their files and missing names, then m
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 	await unmountCurrent();
 	await mount();
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	await screen.findByText(
 		'Select later-schematic.pdf again before sending.'
@@ -1178,7 +1137,7 @@ test( 'both existing variants restore with their files and missing names, then m
 
 test( 'selected durable success preserves the unsaved memory version for fresh A and exposes neither to B', async () => {
 	await divergentVoiceCopies();
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	await act( async () =>
 		fireEvent.click( screen.getByRole( 'button', { name: 'Remove' } ) )
@@ -1211,7 +1170,7 @@ test( 'selected durable success preserves the unsaved memory version for fresh A
 	await unmountCurrent();
 	principal = 'A';
 	await mount();
-	await restoreOwned();
+	await restoreOwned( 'First accepted phrase Second accepted phrase' );
 	expect( field() ).toHaveValue(
 		'First accepted phrase Second accepted phrase'
 	);
@@ -1239,7 +1198,7 @@ test( 'clearing the selected memory text and file consumes only it, leaving the 
 	await checkpoint();
 	await unmountCurrent();
 	await mount();
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	await screen.findByText(
 		'Select later-schematic.pdf again before sending.'
@@ -1254,7 +1213,7 @@ test( 'clearing the selected memory text and file consumes only it, leaving the 
 
 test( 'clearing selected durable text, missing name and file leaves the unsaved memory version restorable', async () => {
 	await divergentVoiceCopies();
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	await act( async () =>
 		fireEvent.click( screen.getByRole( 'button', { name: 'Remove' } ) )
@@ -1270,7 +1229,7 @@ test( 'clearing selected durable text, missing name and file leaves the unsaved 
 	await checkpoint();
 	await unmountCurrent();
 	await mount();
-	await restoreOwned();
+	await restoreOwned( 'First accepted phrase Second accepted phrase' );
 	expect( field() ).toHaveValue(
 		'First accepted phrase Second accepted phrase'
 	);
@@ -1302,12 +1261,12 @@ test( 'Restore cannot replace a newer memory revision with the stale mounted edi
 		old.cursor
 	);
 	expect( newer.conflict ).toBe( false );
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	const other = journal.alternative( journal.candidate()!.cursor );
 	expect( other?.record.text ).toBe( 'Newer accepted memory revision' );
 	expect( other?.record.omitted ).toEqual( [ 'newer-memory-schematic.pdf' ] );
-	await restoreOwned();
+	await restoreOwned( 'Newer accepted memory revision' );
 	expect( field() ).toHaveValue( 'Newer accepted memory revision' );
 	await screen.findByText(
 		'Select newer-memory-schematic.pdf again before sending.'
@@ -1317,7 +1276,7 @@ test( 'Restore cannot replace a newer memory revision with the stale mounted edi
 
 test( 'quota fallback from a restored durable editor retains the other actual memory copy', async () => {
 	const { journal } = await divergentVoiceCopies();
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	const original = Storage.prototype.setItem;
 	const unavailable = vi
@@ -1401,7 +1360,7 @@ test( 'stale empty editor cannot consume a newer memory revision on pagehide', a
 	).toBe( true );
 	await unmountCurrent();
 	await mount();
-	await restoreOwned();
+	await restoreOwned( 'Newer accepted memory revision' );
 	expect( field() ).toHaveValue( 'Newer accepted memory revision' );
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
@@ -1427,7 +1386,7 @@ test( 'an additionally edited stale UI and the newer memory revision both remain
 	fireEvent.input( field(), {
 		target: { value: 'Additional accepted UI words' },
 	} );
-	await restoreOwned();
+	await restoreOwned( 'Later durable project revision' );
 	expect( field() ).toHaveValue( 'Later durable project revision' );
 	const seen = new Set< string >();
 	for ( let i = 0; i < 4; i++ ) {
@@ -1496,9 +1455,9 @@ test( 'success consumes only the selected retained copy, leaving the other actua
 		target: { value: 'Additional accepted UI words' },
 	} );
 	await restoreOwned();
-	await restoreOwned();
+	await restoreOwned( 'Newer accepted memory revision' );
 	expect( field() ).toHaveValue( 'Newer accepted memory revision' );
-	await restoreOwned();
+	await restoreOwned( 'Additional accepted UI words' );
 	expect( field() ).toHaveValue( 'Additional accepted UI words' );
 	expect( journal.candidate()?.cursor.retained ).toBe( true );
 	vi.mocked( sendTurn ).mockResolvedValueOnce( {
@@ -1566,7 +1525,7 @@ test( 'clearing stale retained UI cannot delete a later retained revision or its
 	} );
 	await restoreOwned();
 	await restoreOwned();
-	await restoreOwned();
+	await restoreOwned( 'Additional accepted UI words' );
 	expect( field() ).toHaveValue( 'Additional accepted UI words' );
 	const retained = journal.candidate()!;
 	expect( retained.cursor.retained ).toBe( true );
@@ -1594,7 +1553,7 @@ test( 'clearing stale retained UI cannot delete a later retained revision or its
 		)
 	);
 	await checkpoint();
-	await restoreOwned();
+	await restoreOwned( 'Newer retained project revision' );
 	expect( field() ).toHaveValue( 'Newer retained project revision' );
 	await screen.findByText(
 		'Select retained-schematic.pdf again before sending.'

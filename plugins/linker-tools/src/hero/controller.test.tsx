@@ -112,13 +112,19 @@ function session( stored: TurnMessage[] = [] ) {
 	};
 }
 
+const controllers = new Set< () => void >();
+
 async function start( heroSession: HeroSession ) {
 	const hero = document.querySelector< HTMLElement >( '.hero-cinematic' )!;
 	let stop!: () => void;
 	await act( async () => {
 		stop = startHero( hero, { config: CONFIG, session: heroSession } );
 	} );
-	return { hero, stop };
+	const release = () => {
+		if ( controllers.delete( release ) ) stop();
+	};
+	controllers.add( release );
+	return { hero, stop: release };
 }
 
 // A file input's list empties when its value is cleared. The static object
@@ -172,6 +178,7 @@ beforeEach( () => {
 } );
 
 afterEach( () => {
+	controllers.forEach( ( stop ) => stop() );
 	sessionStorage.clear();
 	document.body.innerHTML = '';
 } );
@@ -187,11 +194,7 @@ test( 'a stored failure unfolds the hero and restores the question', async () =>
 	} );
 	const { hero } = await start( session().session );
 	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
+		fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
 	);
 
 	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
@@ -215,11 +218,7 @@ test( 'a stored truncated stream unfolds the question in the thread with an empt
 		session( [ { role: 'user', content: 'backup for 10 kW' } ] ).session
 	);
 	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
+		fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
 	);
 
 	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
@@ -769,6 +768,10 @@ test( 'actual Hero controller offers hidden scoped outage recovery and fresh ret
 	const model = session();
 	const { hero, stop } = await start( model.session );
 	try {
+		expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+		await act( async () =>
+			fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
+		);
 		await screen.findByRole( 'button', { name: 'Try again' } );
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
@@ -807,6 +810,10 @@ test( 'delayed Hero failure is retained without replacing a verified new prompt'
 	);
 	const { hero, stop } = await start( model.session );
 	try {
+		expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+		await act( async () =>
+			fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
+		);
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
 		await waitFor( () => expect( prompt.disabled ).toBe( false ) );
@@ -836,13 +843,25 @@ test( 'Hero restored pair retains missing attachments through a second swap', as
 		omitted: [ 'missing-schematic.pdf' ],
 	} );
 	const model = session();
+	let release!: ( stored: { messages: never[]; turn: null } ) => void;
+	model.read.mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
+	);
 	const { hero, stop } = await start( model.session );
 	try {
-		await screen.findByText( old );
+		expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+		await act( async () =>
+			fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
+		);
+		await waitFor( () => expect( release ).toBeTypeOf( 'function' ) );
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
 		await waitFor( () => expect( prompt.disabled ).toBe( false ) );
 		fireEvent.input( prompt, { target: { value: 'New current draft' } } );
+		await act( async () => release( { messages: [], turn: null } ) );
 		await act( async () =>
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
@@ -892,6 +911,10 @@ test( 'Hero rejects unowned editing during an outage and retains the older owner
 	const model = session();
 	const { hero, stop } = await start( model.session );
 	try {
+		expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+		await act( async () =>
+			fireEvent.pointerDown( hero.querySelector( '.hero-prompt' )! )
+		);
 		await screen.findByRole( 'button', { name: 'Try again' } );
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
