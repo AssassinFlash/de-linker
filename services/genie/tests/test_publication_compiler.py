@@ -2558,16 +2558,16 @@ def test_repeated_family_search_rechecks_models_only_on_catalogue_change(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     from linker_genie import publication_scope
+    from linker_genie.family_scope import valid_family_scope
 
     prefix, pid = "770ccafa080c", 1179
     raw = manifest()
     loaded = compiled_index(tmp_path, prefix, manual_chunks(prefix))
     checks: list[str] = []
-    validate = publication_scope.valid_family_scope
 
     def tracked(*args: Any, **kwargs: Any) -> bool:
         checks.append(kwargs["chunk_id"])
-        return validate(*args, **kwargs)
+        return valid_family_scope(*args, **kwargs)
 
     monkeypatch.setattr(publication_scope, "valid_family_scope", tracked)
     try:

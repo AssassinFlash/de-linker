@@ -76,7 +76,7 @@
 		"src/genie/genie.css": "a68346b234f7bf75453c16d3bbdc39fe45c3cf1577a1f8ab85bdfe456bfc68f3",
 		"src/genie/index.tsx": "4ea81be0b05ebc9d56a6a396e22b8fea6fd3e7625954ba0733c4a0986f947f86",
 		"src/genie/shared/blocks.ts": "fef70aa2b2806d5b5007380ccc68ca2e83962b4f6022e57020df0c5e6e72107b",
-		"src/genie/shared/brandSeries.ts": "2c1df3c55e43281c9580225d0215efaa83889d45275c5b9d0e89ead32a82503a",
+		"src/genie/shared/brandSeries.ts": "c22bc0ed763fce586f7cb09d27c7271ee62244677eb6427eaff9a9671bbc9aa8",
 		"src/genie/shared/cardActions.ts": "a130054b117651b8ef7535a7f82133aa1d4fee779c52ac3be76eec9db0f57bef",
 		"src/genie/shared/completedRequest.ts": "0f0d046a5a1d769d9907cb3cfe2b367fe56fde0654efbc81e7889e5d38aa168f",
 		"src/genie/shared/conversation.ts": "109f76b108233cfaf4041386c03d0cef81af1eed9bc4e208e995170478c1cf2b",

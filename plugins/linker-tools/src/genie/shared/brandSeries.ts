@@ -1,4 +1,9 @@
-/** The catalogue may include the manufacturer in its series name. */
+/**
+ * Display the manufacturer once when the catalogue includes it in the series name.
+ *
+ * @param brand  Manufacturer name from the catalogue.
+ * @param series Published series name.
+ */
 export function brandSeries(
 	brand: string | null,
 	series: string | null
