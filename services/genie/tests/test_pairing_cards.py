@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from linker_genie.cycle import run
 from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.route import SEARCH_LIMIT, Route
@@ -967,20 +969,34 @@ def _pair_facts(verdict: str, product_ids: list[int]) -> TurnFacts:
     return gathered
 
 
-def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_filled() -> (
-    None
-):
+@pytest.mark.parametrize(
+    ("lang", "condition"),
+    [
+        (
+            "en",
+            "The B2 datasheet gives 179.2 to 230.4 V for B2-10.0; the H2 T3 manual's battery voltage range begins at 180 V.",
+        ),
+        (
+            "de",
+            "Das Datenblatt nennt für die B2-10.0 einen Bereich von 179,2 bis 230,4 V; der Batteriespannungsbereich des Wechselrichters beginnt bei 180 V.",
+        ),
+    ],
+)
+def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_filled(
+    lang: Locale,
+    condition: str,
+) -> None:
     from linker_genie.schema import DocumentBlock
     from linker_genie.template import prepared_answer
 
     payload = _payload()
     payload["qualified"][0]["pairings"][0].update(
         {
-            "conditions": ["Use 2 battery modules."],
+            "conditions": [{lang: condition}],
             "documents": [{"url": "https://de-linker.com/manual.pdf", "page": 2}],
         }
     )
-    facts = collect("linker/search-products", payload, "en")
+    facts = collect("linker/search-products", payload, lang)
     facts.tool_calls.append(
         {
             "name": "linker/search-products",
@@ -990,10 +1006,21 @@ def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_fi
         }
     )
     route = Route("pairing", catalog_only=True)
-    answer = prepared_answer(facts, route, "en")
+    answer = prepared_answer(facts, route, lang)
     assert answer is not None
     assert any(isinstance(b, TextBlock) and "{fact:" in b.text for b in answer.blocks)
     assert all(not b.url for b in answer.blocks if isinstance(b, DocumentBlock))
-    result = run(_request("en"), lambda *_: (answer, TurnFacts()), route, facts)
+    result = run(_request(lang), lambda *_: (answer, TurnFacts()), route, facts)
     assert result.grounded and result.attempts == 1
     assert any(isinstance(b, DocumentBlock) and b.url for b in result.output.blocks)
+    assert any(
+        isinstance(block, TextBlock) and condition in block.text
+        for block in result.output.blocks
+    )
+
+    # A figure from the same condition cannot license a bare claim elsewhere.
+    from linker_genie.ground import check
+
+    invented = TextBlock(text="Limit 230.4 V.")
+    extra = answer.model_copy(update={"blocks": [*answer.blocks, invented]})
+    assert not check(extra, facts, route).ok

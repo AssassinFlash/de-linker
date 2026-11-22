@@ -508,6 +508,13 @@ def fill(
             if unit and after and after.strip() == unit.group(1):
                 return value
             return value + after
+        if (
+            qualified_mask is not None
+            and fact.source in {"search-products", "check-compatibility"}
+            and fact.id.startswith("compat.condition.")
+        ):
+            # Only this complete condition from the checked pairing is protected.
+            return qualified_mask(fact.value) + after
         if fact.source == "datasheet-figures":
             value = _qualified_woo_value(fact, locale, len(facts.product_ids) > 1)
             if qualified_mask is not None and fact.id in facts.supporting_documents:
