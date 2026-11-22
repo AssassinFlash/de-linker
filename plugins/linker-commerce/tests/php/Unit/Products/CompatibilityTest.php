@@ -176,13 +176,13 @@ final class CompatibilityTest extends TestCase {
 		}
 		unset( $document );
 		$live = CompatibilityClaims::projection( $this->manifest['products'], $documents, true );
-		$this->assertNotEmpty( $live['pairs'] );
+		$this->assertNotEmpty( $live['pairs'] ?? array() );
 		$ref = $live['pairs'][0]['documents'][0];
 		$this->assertSame( array_column( $documents, 'url', 'document_id' )[ $ref['document_id'] ], $ref['url'] );
-		$this->assertSame(
-			CompatibilityClaims::projection( $this->manifest['products'], $this->manifest['documents'] )['version'],
-			CompatibilityClaims::projection( $this->manifest['products'], $documents )['version']
-		);
+		$original = CompatibilityClaims::projection( $this->manifest['products'], $this->manifest['documents'] );
+		$copy     = CompatibilityClaims::projection( $this->manifest['products'], $documents );
+		$this->assertIsString( $original['version'] ?? null );
+		$this->assertSame( $original['version'], $copy['version'] ?? null );
 	}
 
 	/**
