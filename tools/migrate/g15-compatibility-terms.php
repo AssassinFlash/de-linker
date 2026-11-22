@@ -43,7 +43,7 @@ defined( 'ABSPATH' ) || exit;
 		}
 		$changed[ $owner ] = $count;
 	}
-	WP_CLI::line(
+	WP_CLI::log(
 		wp_json_encode(
 			array(
 				'written'            => $write,

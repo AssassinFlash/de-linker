@@ -51,7 +51,11 @@ final class CompareProductsTest extends TestCase {
 		$this->assertTrue( ( new CompareProducts( null, $this->publication_data() ) )->can_execute() );
 	}
 
-	/** Both storefront languages expose the same checked documents. */
+	/**
+	 * Both storefront languages expose the same checked documents.
+	 *
+	 * @return list<array{string}>
+	 */
 	public static function storefront_languages(): array {
 		return array( array( 'en' ), array( 'de' ) );
 	}
