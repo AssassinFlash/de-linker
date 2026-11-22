@@ -135,8 +135,8 @@ final class GetProduct {
 
 		$result = array(
 			'product_id' => $id,
-			'title'      => ProductText::title( $id, $lang ),
-			'url'        => ProductText::url( $id, $lang ),
+			'title'      => ProductText::title( $id, $lang, $manifest ),
+			'url'        => ProductText::url( $id, $lang, $manifest ),
 			'sku'        => $product instanceof WC_Product ? (string) $product->get_sku() : '',
 			'model'      => ProductText::term_name( $id, 'pa_model' ),
 			'brand'      => ProductText::term_name( $id, 'pa_brand' ),

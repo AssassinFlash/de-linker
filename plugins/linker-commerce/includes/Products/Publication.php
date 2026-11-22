@@ -108,6 +108,21 @@ final class Publication {
 	}
 
 	/**
+	 * A locale ID already authorized in a manifest being projected for this response.
+	 *
+	 * @param int                 $id Product or translated product ID.
+	 * @param array<string,mixed> $manifest Current authority assembly.
+	 */
+	public static function published_in_manifest( int $id, array $manifest ): bool {
+		foreach ( $manifest['products'] as $product ) {
+			if ( in_array( $id, $product['published_locale_ids'], true ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * One fresh native permission read for a batch, without document bytes.
 	 *
 	 * A candidate reader executes after refresh, so native category/visibility
@@ -847,6 +862,17 @@ final class Publication {
 		$id         = self::canonical_id( $id );
 		$manifest ??= self::manifest();
 		return self::figures_in_current_read( $id, $manifest );
+	}
+
+	/**
+	 * Read only figures belonging to a product in the caller's checked manifest.
+	 *
+	 * @param int                 $id Product or translated ID.
+	 * @param array<string,mixed> $manifest Authority revalidated by the ability before release.
+	 * @return array<string,array<string,mixed>>
+	 */
+	public static function figures_in_manifest( int $id, array $manifest ): array {
+		return self::published_in_manifest( $id, $manifest ) ? self::figures_in_current_read( self::canonical_id( $id ), $manifest ) : array();
 	}
 
 	/**

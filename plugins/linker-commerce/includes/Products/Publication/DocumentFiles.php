@@ -38,6 +38,12 @@ final class DocumentFiles {
 	 */
 	private static array $verified = array();
 
+	/** Exact attachment URLs for one full read. Ambiguous paths use WordPress's native resolver.
+	 *
+	 * @var array<string,int|null>|null
+	 */
+	private static ?array $attachment_ids = null;
+
 	/**
 	 * Stable hashes loaded for this manifest.
 	 *
@@ -80,6 +86,7 @@ final class DocumentFiles {
 		self::$reading        = true;
 		self::$cache_manifest = $cache_manifest;
 		self::$partial        = $partial;
+		self::$attachment_ids = null;
 		self::$seen           = array();
 		$cached               = $cache_manifest ? get_option( self::HASH_CACHE_OPTION, array() ) : array();
 		self::$cached         = is_array( $cached ) ? $cached : array();
@@ -100,6 +107,7 @@ final class DocumentFiles {
 		self::$hashes         = array();
 		self::$cached         = array();
 		self::$seen           = array();
+		self::$attachment_ids = null;
 		self::$cache_manifest = false;
 		self::$partial        = false;
 		self::$reading        = false;
@@ -174,6 +182,32 @@ final class DocumentFiles {
 			self::$hashes[ $path ] = $sha;
 		}
 		return $sha;
+	}
+
+	/**
+	 * Batch WordPress's exact _wp_attached_file matches when reading all catalog PDFs.
+	 * Non-exact paths and custom lookup filters retain WordPress resolution.
+	 *
+	 * @param mixed  $existing Earlier attachment resolution.
+	 * @param string $url Public file URL.
+	 * @return mixed Attachment ID or the existing filter result.
+	 */
+	public static function manifest_attachment_id( mixed $existing, string $url ): mixed {
+		if ( null !== $existing || ! self::$reading || ! self::$cache_manifest || self::$partial || has_filter( 'attachment_url_to_postid' ) ) {
+			return $existing;
+		}
+		if ( null === self::$attachment_ids ) {
+			global $wpdb;
+			$base                 = rtrim( wp_get_upload_dir()['baseurl'], '/' ) . '/';
+			self::$attachment_ids = array();
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Same rows as the native attachment resolver, bulk-read once for the current authority assembly.
+			$rows = $wpdb->get_results( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value LIKE '%.pdf'" );
+			foreach ( $rows as $row ) {
+				$key                          = $base . $row->meta_value;
+				self::$attachment_ids[ $key ] = array_key_exists( $key, self::$attachment_ids ) ? null : (int) $row->post_id;
+			}
+		}
+		return self::$attachment_ids[ $url ] ?? $existing;
 	}
 
 	/**

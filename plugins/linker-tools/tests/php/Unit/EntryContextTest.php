@@ -33,6 +33,13 @@ final class EntryContextTest extends TestCase {
 	private ClaimOptionsDouble $db;
 
 	/**
+	 * Runtime cache keys invalidated by one established browser read.
+	 *
+	 * @var int
+	 */
+	private int $cache_deletions = 0;
+
+	/**
 	 * An address to limit by, and a database behind the allowance.
 	 */
 	public function setUp(): void {
@@ -46,7 +53,15 @@ final class EntryContextTest extends TestCase {
 		// A browser cookie makes entry_scope() try to close this tab's claim;
 		// with no row stored that is a quiet no-op, whichever mocks an earlier
 		// test has already defined process-wide.
-		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'wp_cache_delete',
+			array(
+				'return' => function (): bool {
+					++$this->cache_deletions;
+					return true;
+				},
+			)
+		);
 		WP_Mock::userFunction( 'get_option', array( 'return' => false ) );
 		WP_Mock::userFunction( 'delete_option', array( 'return' => true ) );
 		// Same-origin admission: the site, and a URL parser behind it.
@@ -166,6 +181,7 @@ final class EntryContextTest extends TestCase {
 			$response = ( new EntryContext() )->read( $this->request() );
 			$this->assertInstanceOf( WP_REST_Response::class, $response );
 			$this->assertSame( array(), $this->db->queries );
+			$this->assertSame( 0, $this->cache_deletions );
 		} finally {
 			unset( $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		}

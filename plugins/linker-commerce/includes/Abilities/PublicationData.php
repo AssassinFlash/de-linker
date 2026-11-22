@@ -51,7 +51,7 @@ final class PublicationData {
 	public function published( array $ids, array $manifest, ?string $lang = null ): array {
 		$out = array();
 		foreach ( $ids as $id ) {
-			if ( ! Publication::is_published( $id ) || ( null !== $lang && 0 === ProductText::translated_id( $id, $lang ) ) ) {
+			if ( null !== $lang && 0 === ProductText::translated_id( $id, $lang, $manifest ) ) {
 				continue;
 			}
 			foreach ( $manifest['products'] as $product ) {
@@ -74,7 +74,7 @@ final class PublicationData {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public function figures( int $id, array $manifest ): array {
-		return Publication::figures_for( $id, $manifest );
+		return Publication::figures_in_manifest( $id, $manifest );
 	}
 
 	/**

@@ -768,7 +768,7 @@ final class SearchProducts {
 			$hit['field'] = $measure['field'];
 			$hit['value'] = $measure['value'];
 		}
-		$model = $this->model_code( ProductText::title( $row['id'], $lang ) );
+		$model = $this->model_code( ProductText::title( $row['id'], $lang, $this->publication_snapshot ) );
 		if ( null !== $model ) {
 			$hit['model'] = $model;
 		}
@@ -968,8 +968,8 @@ final class SearchProducts {
 		$id   = $row['id'];
 		$card = array(
 			'product_id' => $id,
-			'title'      => ProductText::title( $id, $lang ),
-			'url'        => ProductText::url( $id, $lang ),
+			'title'      => ProductText::title( $id, $lang, $this->publication_snapshot ),
+			'url'        => ProductText::url( $id, $lang, $this->publication_snapshot ),
 			'why'        => $this->why( $row['facts'], $id, $input, $want_future, $batteries ),
 			'facts'      => $row['facts']->to_array(),
 			'commerce'   => ProductCommerce::of( $id, $row['product'], $lang ),

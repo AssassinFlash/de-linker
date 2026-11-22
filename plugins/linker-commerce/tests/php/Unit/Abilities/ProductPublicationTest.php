@@ -33,6 +33,13 @@ final class ProductPublicationTest extends TestCase {
 		$this->mock_live_products( array( 4107, 1832, 3556, 6519 ) );
 	}
 
+	/** Reading more candidates must not reset native caches per product or displayed field. */
+	public function test_search_uses_its_publication_snapshot_for_candidates_and_cards(): void {
+		$result = ( new SearchProducts( $this->publication_data() ) )->select( array( 4107, 1832, 3556 ), array(), 'en', 12 );
+		$this->assertCount( 3, $result['qualified'] );
+		$this->assertSame( 0, $this->runtime_flushes, 'The injected manifest supplies both authority reads.' );
+	}
+
 	/** Removing the association removes both figures and derived scalar facts. */
 	public function test_removed_evidence_cannot_leak_through_scalar_facts(): void {
 		$manifest              = $this->publication_data()->manifest();

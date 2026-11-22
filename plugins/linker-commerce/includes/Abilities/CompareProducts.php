@@ -150,7 +150,7 @@ final class CompareProducts {
 			);
 		}
 		$dependencies = $this->publication->dependencies( $ids, $this->publication_snapshot );
-		$comparison   = $this->comparison->of( $ids, $lang );
+		$comparison   = $this->comparison->project( $ids, $lang, $this->publication_snapshot );
 		$details      = array();
 		if ( true === ( $input['presentation'] ?? false ) ) {
 			$display      = ComparisonPresentation::read( $comparison['products'], $this->publication_snapshot, $this->publication, $lang );

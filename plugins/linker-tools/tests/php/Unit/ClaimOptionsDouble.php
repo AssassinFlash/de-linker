@@ -131,7 +131,11 @@ final class ClaimOptionsDouble {
 	 *
 	 * @param string $query SQL text.
 	 */
-	public function get_var( string $query ): string {
+	public function get_var( string $query ): ?string {
+		if ( str_contains( $query, 'WHERE option_name IN' ) ) {
+			preg_match_all( "/'([^']+)'/", $query, $matches );
+			return array_intersect( $matches[1], array_keys( $this->rows ) ) ? '1' : null;
+		}
 		if ( str_contains( $query, 'GET_LOCK' ) ) {
 			return (string) ( array_shift( $this->lock_answers ) ?? '0' );
 		}
