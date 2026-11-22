@@ -15,7 +15,23 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 		price_reason: 'login',
 		price_line: '',
 		datasheet: { url: '/manual.pdf', title: 'H2 technical data' },
-		storage: [],
+		storage: [
+			{
+				model: 'Battery A',
+				verdict: 'released_with_accessory',
+				accessories: [ 'Control unit' ],
+				conditions: [
+					'Install the controller.',
+					'Keep the matching cable.',
+				],
+			},
+			{
+				model: 'Battery B',
+				verdict: 'released_with_accessory',
+				accessories: [ 'Control unit' ],
+				conditions: [ 'Install the controller.' ],
+			},
+		],
 	};
 	const fetcher = vi.fn( async () => ( {
 		ok: true,
@@ -71,6 +87,15 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 	);
 	const tables = await screen.findAllByRole( 'table' );
 	expect( tables ).toHaveLength( 2 );
+	const batteries = within( tables[ 0 ] );
+	expect(
+		batteries.getAllByText( 'Install the controller.', { exact: false } )
+	).toHaveLength( 1 );
+	expect(
+		batteries
+			.getByText( 'Keep the matching cable.', { exact: false } )
+			.closest( 'li' )
+	).toHaveTextContent( 'Battery A' );
 	expect( within( tables[ 0 ] ).getByText( 'SAJ · H2' ) ).toBeVisible();
 	expect( within( tables[ 0 ] ).getByText( '10' ) ).toBeVisible();
 	expect(

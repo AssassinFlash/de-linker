@@ -309,26 +309,39 @@ function storageList( items: Pairing[] ) {
 	if ( ! items.length ) {
 		return '—';
 	}
+	const models = items.map( ( item ) => item.model );
+	const conditions = new Map< string, Set< string > >();
+	for ( const item of items ) {
+		const notes = [ ...item.conditions ];
+		if ( item.verdict === 'released_with_accessory' ) {
+			const parts = item.accessories.join( ', ' );
+			const required = __( 'Accessory required', 'linker-tools' );
+			notes.unshift( parts ? required + ' · ' + parts : required );
+		}
+		for ( const note of notes ) {
+			const applicable = conditions.get( note ) ?? new Set< string >();
+			applicable.add( item.model );
+			conditions.set( note, applicable );
+		}
+	}
 	return (
-		<ul>
-			{ items.map( ( item ) => (
-				<li key={ item.model }>
-					{ item.model }
-					{ item.verdict === 'released_with_accessory' && (
-						<span>
-							{ ' ' }
-							· { __( 'Accessory required', 'linker-tools' ) }
-							{ item.accessories.length
-								? ' (' + item.accessories.join( ', ' ) + ')'
-								: '' }
-						</span>
-					) }
-					{ item.conditions.map( ( note ) => (
-						<small key={ note }>{ note }</small>
+		<>
+			<span>{ models.join( ', ' ) }</span>
+			{ conditions.size > 0 && (
+				<ul>
+					{ Array.from( conditions, ( [ note, applicable ] ) => (
+						<li key={ note }>
+							{ applicable.size < models.length && (
+								<strong>
+									{ [ ...applicable ].join( ', ' ) } ·{ ' ' }
+								</strong>
+							) }
+							{ note }
+						</li>
 					) ) }
-				</li>
-			) ) }
-		</ul>
+				</ul>
+			) }
+		</>
 	);
 }
 

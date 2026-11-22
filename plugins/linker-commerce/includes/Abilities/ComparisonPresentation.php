@@ -27,6 +27,7 @@ final class ComparisonPresentation {
 		$details    = array();
 		$related    = array();
 		$candidates = array();
+		$models     = array_column( $manifest['products'], 'model', 'product_id' );
 		foreach ( $publication->pairs( $manifest ) as $pair ) {
 			$candidates[ $pair['inverter_product_id'] ][ $pair['battery_product_id'] ] = true;
 		}
@@ -63,6 +64,10 @@ final class ComparisonPresentation {
 				if ( null === $release || 'not_released' === $release['verdict'] ) {
 					continue;
 				}
+				$parts = array_column( $release['accessories'], 'product_id' );
+				if ( in_array( $battery, $parts, true ) ) {
+					continue;
+				}
 				$model = ProductText::term_name( (int) $battery, 'pa_model' );
 				if ( null === $model ) {
 					continue;
@@ -70,11 +75,11 @@ final class ComparisonPresentation {
 				$storage[] = array(
 					'model'       => $model,
 					'conditions'  => array_column( $release['conditions'], $lang ),
-					'accessories' => array_column( $release['accessories'], 'model' ),
+					'accessories' => array_values( array_filter( array_map( static fn( int $part ): string => (string) ( $models[ $part ] ?? '' ), $parts ) ) ),
 					'verdict'     => $release['verdict'],
 				);
 				$related[] = (int) $battery;
-				array_push( $related, ...array_column( $release['accessories'], 'product_id' ), ...array_column( $release['documents'], 'product_id' ) );
+				array_push( $related, ...$parts, ...array_column( $release['documents'], 'product_id' ) );
 			}
 			$details[ $id ] = array(
 				'model'        => $product['model'],
