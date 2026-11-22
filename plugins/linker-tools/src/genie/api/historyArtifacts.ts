@@ -281,6 +281,10 @@ export async function restoreArtifacts(
 	return {
 		...turn,
 		blocks: turn.blocks.map( ( block ) => {
+			if ( block.type === 'compare' && ! manifest ) {
+				// The comparison endpoint rechecks these IDs when it returns current details.
+				return { ...block, draft_proofs: {} };
+			}
 			if ( block.type === 'cards' || block.type === 'compare' ) {
 				const visible = block.product_ids.filter( ( id ) =>
 					allowed.has( id )

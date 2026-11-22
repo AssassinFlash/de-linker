@@ -719,3 +719,18 @@ test( 'one remaining published product in a past comparison opens as a read-only
 		prices: [ { product_id: 3573, reason: 'login' } ],
 	} );
 } );
+
+test( 'a failed historical permission read lets the live comparison retry with no saved write access', async () => {
+	const original = {
+		type: 'compare' as const,
+		product_ids: [ 1, 2 ],
+		draft_proofs: { 1: 'expired' },
+	};
+	const restored = await restoreArtifacts(
+		{ meta: null, blocks: [ original ] },
+		context,
+		'n',
+		fetchWith( product, false )
+	);
+	expect( restored.blocks ).toEqual( [ { ...original, draft_proofs: {} } ] );
+} );
