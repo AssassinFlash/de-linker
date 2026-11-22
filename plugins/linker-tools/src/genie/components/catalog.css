@@ -72,6 +72,10 @@
 .genie-comparison__model,
 .genie-comparison__sku {
 	display: block;
+}
+.genie-comparison__model,
+.genie-comparison__sku,
+.genie-comparison__identifier {
 	white-space: nowrap;
 	word-break: normal;
 }
