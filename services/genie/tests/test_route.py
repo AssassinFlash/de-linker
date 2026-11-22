@@ -768,3 +768,46 @@ def test_plain_brand_comparison_requests_only_the_native_table(
         for brand in ("GoodWe", "SAJ")
     ]
     assert plan(message, matches, _reading("compare"), NONE, lang).catalog_only
+
+
+def test_published_hyphenated_model_is_a_simple_battery_pairing() -> None:
+    matches = [
+        Match("brand", "SAJ", "saj", frozenset(), "SAJ"),
+        Match("model", "H2-10K-T3", "H2-10K-T3", frozenset({1}), "H2 10K T3"),
+    ]
+    subject = Subject((1,), {1: "inverters"}, {1: "H2-10K-T3"}, brand_of={1: {"saj"}})
+    assert plan(
+        "Which battery works with the SAJ H2-10K-T3?",
+        matches,
+        _reading("pairing_compatibility"),
+        subject,
+        "en",
+    ).catalog_only
+
+
+@pytest.mark.parametrize("known", [True, False])
+def test_families_in_brand_comparisons_keep_their_native_brand(known: bool) -> None:
+    matches = [
+        Match("brand", val, val.lower(), frozenset(), val) for val in ("GoodWe", "SAJ")
+    ]
+    matches += [
+        Match("series", slug, slug, frozenset(), "ESA")
+        for slug in ("goodwe-esa-low", "goodwe-esa-high")
+    ]
+    subject = Subject(
+        (),
+        {},
+        series_members={"goodwe-esa-low": {1}, "goodwe-esa-high": {2}},
+        brand_of={1: {"goodwe"}, 2: {"goodwe"}} if known else {},
+    )
+    result = plan(
+        "Compare GoodWe ESA vs SAJ for residential use",
+        matches,
+        _reading("compare"),
+        subject,
+        "en",
+    )
+    first, second = result.calls
+    assert first.arguments.get("text") == ("ESA" if known else None)
+    assert "text" not in second.arguments and "series" not in second.arguments
+    assert result.catalog_only == known

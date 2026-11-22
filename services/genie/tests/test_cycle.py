@@ -1384,3 +1384,16 @@ def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
     assert any(
         isinstance(b, CardsBlock) and b.product_ids == [1] for b in result.blocks
     )
+
+
+def test_bare_catalogue_results_reference_published_product_ids_before_hydration() -> (
+    None
+):
+    from linker_genie.template import catalog_answer
+
+    facts = TurnFacts(qualified_ids={12, 34}, product_ids={12, 34})
+    route = Route("products", show_products=True, catalog_only=True)
+    answer = catalog_answer(facts, route, "en")
+    assert answer is not None
+    ready = run(_request(), lambda *_: (answer, TurnFacts()), route, facts)
+    assert ready.grounded and ready.attempts == 1

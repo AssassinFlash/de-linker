@@ -1033,8 +1033,16 @@ def _plan_turn(
     comparing = intent == "compare" or re.search(
         r"\b(?:compar(?:e|ison)|vs|versus|vergleich\w*)\b", message, re.I
     )
-    if comparing and len(brands) >= 2 and not notes:
-        filters = _search_input(matches, lang) or {"lang": lang, "limit": SEARCH_LIMIT}
+    if (
+        comparing
+        and len(brands) >= 2
+        and not any(note.unknown or note.is_conflict for note in notes)
+    ):
+        categories = [m for m in matches if m.kind == "category"]
+        filters = _search_input(categories, lang) or {
+            "lang": lang,
+            "limit": SEARCH_LIMIT,
+        }
         application = application_word(message)
         if application:
             filters["application"] = application
@@ -1045,14 +1053,45 @@ def _plan_turn(
                 filters["device_classes"] = list(_BATTERIES)
             elif _INVERTER_WORD.search(message):
                 filters["device_classes"] = list(_INVERTERS)
+        members: dict[str, list[Match]] = {brand: [] for brand in brands}
+        scoped = True
+        for match in matches:
+            if match.kind not in ("model", "series"):
+                continue
+            product_ids = (
+                match.product_ids
+                if match.kind == "model"
+                else subject.series_members.get(match.value, set())
+            )
+            owners = {
+                owner
+                for pid in product_ids
+                for owner in subject.brand_of.get(pid, set())
+            }
+            if len(owners) == 1 and (owner := next(iter(owners))) in members:
+                members[owner].append(match)
+            else:
+                scoped = False
+        searches = []
+        for brand in brands[:MAX_TOOL_CALLS]:
+            own = members[brand]
+            # A single Store query can express aliases of one family, but not
+            # several independently named families with an implicit OR.
+            if len({normalize(item.words) for item in own}) > 1:
+                scoped = False
+                own = []
+            own_filters = _search_input(own, lang) or {}
+            searches.append(
+                Call(
+                    "linker/search-products", {**filters, **own_filters, "brand": brand}
+                )
+            )
         return Route(
             "compare",
-            tuple(
-                Call("linker/search-products", {**filters, "brand": brand})
-                for brand in brands[:MAX_TOOL_CALLS]
-            ),
+            tuple(searches),
             no_handoff=True,
-            catalog_only=len(brands) <= MAX_TOOL_CALLS
+            catalog_only=scoped
+            and len(brands) <= MAX_TOOL_CALLS
             and not earlier
             and _catalog_request(message, matches, _CATALOG_COMPARISON_WORDS),
             hint=(
@@ -1549,7 +1588,7 @@ _PAIRING_WORDS = frozenset(
 
 
 def _catalog_request(message: str, matches: list[Match], words: frozenset[str]) -> bool:
-    remaining = message.casefold()
+    remaining = " ".join(_words(message.casefold()))
     for match in matches:
         if match.kind in ("brand", "model", "series"):
             remaining = re.sub(
