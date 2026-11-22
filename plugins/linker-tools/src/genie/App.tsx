@@ -1387,7 +1387,6 @@ export function App( { config }: { config: GenieConfig } ) {
 					const answer = await sendTurn( {
 						owner: turnOwner,
 						turnUrl: config.turnUrl,
-						restUrl: config.restUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
@@ -1573,7 +1572,6 @@ export function App( { config }: { config: GenieConfig } ) {
 				const answer = await sendTurn( {
 					owner: turnOwner,
 					turnUrl: config.turnUrl,
-					restUrl: config.restUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,

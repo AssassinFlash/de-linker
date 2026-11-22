@@ -738,7 +738,6 @@ test( 'a complete answer near its connection deadline uses the verified stream w
 	try {
 		const result = sendTurn( {
 			turnUrl: '/turn',
-			restUrl: '/wp-json/',
 			nonce: 'n',
 			locale: 'en',
 			messages: [],

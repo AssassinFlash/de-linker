@@ -390,8 +390,6 @@ export interface TurnRequest {
 	owner?: TurnOwner;
 	/** Existing planner guest CSRF proof; never part of page data or logs. */
 	plannerNonce?: string;
-	/** Current REST root for document presentation from existing product metadata. */
-	restUrl?: string;
 	/** Proxy route URL. */
 	turnUrl: string;
 	/** wp_rest nonce. */

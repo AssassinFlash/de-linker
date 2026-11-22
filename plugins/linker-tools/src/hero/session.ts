@@ -313,7 +313,6 @@ export class HeroSession {
 		const answer = await this.send( {
 			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
-			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,
 			locale: this.config.locale,
 			messages: next,
