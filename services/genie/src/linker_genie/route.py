@@ -981,53 +981,38 @@ def _plan_turn(
                 )
                 for code in missing[: MAX_TOOL_CALLS - len(calls)]
             )
-            return Route(
-                "pairing",
-                calls + extra,
-                show_products=True,
-                no_handoff=True,
-                catalog_only=not earlier and len(extra) == len(missing),
-                named_models=notes
-                + tuple(
-                    NamedModel(code, searched=i < len(extra), unknown=True)
-                    for i, code in enumerate(missing)
-                ),
-                hint="Check each named model. A missing catalogue model cannot confirm this pairing.",
-                reasons=tuple(reasons),
+            calls += extra
+            notes += tuple(
+                NamedModel(code, searched=i < len(extra), unknown=True)
+                for i, code in enumerate(missing)
             )
-    if intent == "documents_specs":
-        # Known products are fetched with get-product; a code with no product
-        # id is searched. Either call counts as searched. What does not fit
-        # the four-call budget is searched=False — never reported absent.
-        # Dossier 2026-10-19 §1.11: no competitor publishes this aggregation.
-        doc_calls, notes = _documents_calls(
-            calls, notes, message, matches, subject, lang
-        )
-        return Route(
-            "documents",
-            doc_calls,
-            show_products=_show_product_with_documents(message),
-            no_handoff=True,
-            hint=DOCUMENTS_HINT + family + _model_hint(notes),
-            reasons=tuple(reasons),
-            named_models=notes,
-        )
-    if pairing_question:
-        pairing = _pairing(subject, lang)
-        if pairing is not None:
-            return Route(
-                "pairing",
-                (pairing,),
-                no_handoff=True,
-                catalog_only=not earlier
-                and _catalog_request(message, matches, _PAIRING_WORDS),
-                hint="The pairing result is fetched; answer from it.",
-                reasons=tuple(reasons),
-            )
-    explicit_compare = re.match(r"\s*(?:compare|vergleichen Sie)\b", message, re.I)
-    if (intent == "compare" or (intent is None and explicit_compare)) and len(
-        subject.ids
-    ) >= 2:
+            # Remove the product designations before testing the rest of the
+            # sentence. An extra specification or question still needs evidence.
+            question = message
+            for note in notes:
+                question = re.sub(
+                    r"(?<!\w)(?:[A-Z][\w.-]*\s+|\d+\s+)*(?i:"
+                    + re.escape(note.code)
+                    + r")(?!\w)",
+                    " ",
+                    question,
+                )
+            if _catalog_request(question, matches, _PAIRING_WORDS):
+                return Route(
+                    "pairing",
+                    calls,
+                    show_products=True,
+                    no_handoff=True,
+                    catalog_only=not earlier and len(extra) == len(missing),
+                    named_models=notes,
+                    hint="Check each named model. A missing catalogue model cannot confirm this pairing.",
+                    reasons=tuple(reasons),
+                )
+            intent = "documents_specs"
+    explicit_compare = re.match(
+        r"\s*(?:compare|vergleiche|vergleichen Sie)\b", message, re.I
+    )
+    if (intent == "compare" or explicit_compare) and len(subject.ids) >= 2:
         ids = subject.ids[:4]
         compare = Call(
             "linker/compare-products", {"product_ids": list(ids), "lang": lang}
@@ -1070,6 +1055,35 @@ def _plan_turn(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
+    if intent == "documents_specs":
+        # Known products are fetched with get-product; a code with no product
+        # id is searched. Either call counts as searched. What does not fit
+        # the four-call budget is searched=False — never reported absent.
+        # Dossier 2026-10-19 §1.11: no competitor publishes this aggregation.
+        doc_calls, notes = _documents_calls(
+            calls, notes, message, matches, subject, lang
+        )
+        return Route(
+            "documents",
+            doc_calls,
+            show_products=_show_product_with_documents(message),
+            no_handoff=True,
+            hint=DOCUMENTS_HINT + family + _model_hint(notes),
+            reasons=tuple(reasons),
+            named_models=notes,
+        )
+    if pairing_question:
+        pairing = _pairing(subject, lang)
+        if pairing is not None:
+            return Route(
+                "pairing",
+                (pairing,),
+                no_handoff=True,
+                catalog_only=not earlier
+                and _catalog_request(message, matches, _PAIRING_WORDS),
+                hint="The pairing result is fetched; answer from it.",
+                reasons=tuple(reasons),
+            )
     brands = list(dict.fromkeys(m.value for m in matches if m.kind == "brand"))
     comparing = intent == "compare" or re.search(
         r"\b(?:compar(?:e|ison)|vs|versus|vergleich\w*)\b", message, re.I
@@ -1090,16 +1104,39 @@ def _plan_turn(
             filters.pop("device_class", None)
             filters["device_classes"] = list(_INVERTERS)
             catalog_message = _HYBRID_SYSTEM.sub(" ", catalog_message)
-        phase = _COMPARE_PHASE.search(catalog_message)
-        if phase:
-            filters["phase"] = 3 if phase.group("three") else 1
-            catalog_message = _COMPARE_PHASE.sub(" ", catalog_message)
-        power = _AC_RANGE.search(catalog_message)
-        if power and hybrid:
-            filters["ac_power_min"], filters["ac_power_max"] = (
-                float(value.replace(",", ".")) for value in power.groups()
+        phases = list(
+            dict.fromkeys(
+                3 if part.group("three") else 1
+                for part in _COMPARE_PHASE.finditer(catalog_message)
             )
+        )
+        ranges = list(
+            dict.fromkeys(
+                (float(part[1].replace(",", ".")), float(part[2].replace(",", ".")))
+                for part in _AC_RANGE.finditer(catalog_message)
+                if hybrid
+            )
+        )
+        if phases:
+            catalog_message = _COMPARE_PHASE.sub(" ", catalog_message)
+        if ranges:
             catalog_message = _AC_RANGE.sub(" ", catalog_message)
+        # A native comparison table serves one scope. Distinct scopes require
+        # evidence for each choice, then a model answer that distinguishes them.
+        variants: list[dict[str, Any]] = [{}]
+        if phases:
+            variants = [{"phase": phase} for phase in phases]
+        if ranges:
+            variants = [
+                {**variant, "ac_power_min": low, "ac_power_max": high}
+                for variant in variants
+                for low, high in ranges
+            ]
+        several_scopes = len(variants) > 1
+        if len(variants) * len(brands) > MAX_TOOL_CALLS:
+            # Keep every brand in view. The broader calls leave the full
+            # original criteria to the model, without claiming complete coverage.
+            variants = [{}]
         application = application_word(message)
         if application:
             filters["application"] = application
@@ -1129,7 +1166,7 @@ def _plan_turn(
                 members[owner].append(match)
             else:
                 scoped = False
-        searches = []
+        searches: list[Call] = []
         for brand in brands[:MAX_TOOL_CALLS]:
             own = members[brand]
             # A single Store query can express aliases of one family, but not
@@ -1138,16 +1175,19 @@ def _plan_turn(
                 scoped = False
                 own = []
             own_filters = _search_input(own, lang) or {}
-            searches.append(
+            searches.extend(
                 Call(
-                    "linker/search-products", {**filters, **own_filters, "brand": brand}
+                    "linker/search-products",
+                    {**filters, **own_filters, **variant, "brand": brand},
                 )
+                for variant in variants
             )
         return Route(
             "compare",
             tuple(searches),
             no_handoff=True,
             catalog_only=scoped
+            and not several_scopes
             and len(brands) <= MAX_TOOL_CALLS
             and not earlier
             and _catalog_request(catalog_message, matches, _CATALOG_COMPARISON_WORDS),
@@ -1683,9 +1723,9 @@ _EQUIPMENT_SUFFIX = re.compile(
 
 _PAIRING_WORDS = frozenset(
     "which what is are the a an can does with for my this and battery batteries inverter inverters "
-    "fits fit works work compatible support supported pairing pair "
+    "fits fit works work compatible support supported pairing pair i combine together use my "
     "welche welcher welches welchen ist sind der die das den dem ein eine mit zu zum für und "
-    "batterie batterien speicher wechselrichter wechselrichtern passt passen funktioniert funktionieren kompatibel".split()
+    "batterie batterien speicher wechselrichter wechselrichtern ich kann einer einem kombinieren passt passen funktioniert funktionieren kompatibel".split()
 )
 
 
