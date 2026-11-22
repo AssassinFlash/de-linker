@@ -1674,3 +1674,30 @@ def test_native_text_proofs_reuse_but_revoked_document_never_returns(
         assert len(reads) > len(first)
     finally:
         index.close()
+
+
+def test_product_search_reads_only_its_current_passage_proofs(
+    path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json
+
+    snapshot = Snapshot.read(manifest())
+    index = DocumentIndex(path)
+    try:
+        all_permits = index.permissions(snapshot, None)
+        expected = {row: p for row, p in all_permits.items() if 1 in p["product_ids"]}
+        assert expected and len(all_permits) > len(expected)
+        loaded: list[list[int]] = []
+        decode = json.loads
+
+        def track(value: str) -> Any:
+            result = decode(value)
+            if isinstance(result, dict) and "basis" in result:
+                loaded.append(result["product_ids"])
+            return result
+
+        monkeypatch.setattr(json, "loads", track)
+        assert index.permissions(snapshot, [101]) == expected
+        assert all(1 in ids for ids in loaded)
+    finally:
+        index.close()

@@ -2552,3 +2552,39 @@ def test_table_axis_survives_foreign_boundaries(
         for pid in p["product_ids"]
     }
     assert projected == expected
+
+
+def test_repeated_family_search_rechecks_models_only_on_catalogue_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_genie import publication_scope
+
+    prefix, pid = "770ccafa080c", 1179
+    raw = manifest()
+    loaded = compiled_index(tmp_path, prefix, manual_chunks(prefix))
+    checks: list[str] = []
+    validate = publication_scope.valid_family_scope
+
+    def tracked(*args: Any, **kwargs: Any) -> bool:
+        checks.append(kwargs["chunk_id"])
+        return validate(*args, **kwargs)
+
+    monkeypatch.setattr(publication_scope, "valid_family_scope", tracked)
+    try:
+
+        def search() -> set[str]:
+            hits = loaded.search(
+                "Installationsumgebung", "de", [pid], publication=Snapshot.read(raw)
+            )
+            return {h.chunk_id for h in hits if "frei von brennbaren" in h.text}
+
+        first = search()
+        assert first and first.issubset(checks)
+        original_checks = checks.copy()
+        assert search() == first
+        assert checks == original_checks
+        next(p for p in raw["products"] if p["product_id"] == pid)["model"] = "Changed"
+        assert not search()
+        assert first.issubset(checks[len(original_checks) :])
+    finally:
+        loaded.close()

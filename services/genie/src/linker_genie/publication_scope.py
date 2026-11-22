@@ -107,6 +107,33 @@ def author_scope_allows(
     return True
 
 
+def valid_model_scope(
+    scope: Mapping[str, Any],
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]] | None,
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+) -> bool:
+    """Check the immutable passage and its source models against the current catalogue."""
+    for basis, field, validate in (
+        ("family_manual", "family_scope", valid_family_scope),
+        ("table_projection", "table_projection", valid_projection),
+        (
+            "table_single_model",
+            "single_model_projection",
+            valid_single_model_projection,
+        ),
+    ):
+        if scope.get("basis") == basis or field in scope:
+            if products is None or not validate(
+                scope, product_ids, products, sha=sha, chunk_id=chunk_id, text=text
+            ):
+                return False
+    return True
+
+
 def _authorize_core(
     sha: str,
     product_ids: Sequence[int],
@@ -119,7 +146,7 @@ def _authorize_core(
     text: str = "",
     external_axis_anchors: Mapping[str, Any] | None = None,
     require_table_anchor: bool = False,
-    projection_check: Callable[..., bool] = valid_projection,
+    model_scope_check: Callable[..., bool] = valid_model_scope,
 ) -> list[dict[str, Any]]:
     """Authorize the complete model set with its explicit association group.
 
@@ -212,18 +239,10 @@ def _authorize_core(
             scope, product_ids, products, sha=sha, chunk_id=chunk_id, text=text
         ):
             return []
-    if scope is not None and (
-        scope.get("basis") == "family_manual" or "family_scope" in scope
+    if scope is not None and not model_scope_check(
+        scope, product_ids, products, sha=sha, chunk_id=chunk_id, text=text
     ):
-        if products is None or not valid_family_scope(
-            scope,
-            product_ids,
-            products,
-            sha=sha,
-            chunk_id=chunk_id,
-            text=text,
-        ):
-            return []
+        return []
     if scope is not None and (
         scope.get("basis") == "compatibility_series" or "compatibility_series" in scope
     ):
@@ -360,31 +379,8 @@ def _authorize_core(
     if scope is not None and (
         scope.get("basis") == "table_projection" or "table_projection" in scope
     ):
-        if (
-            products is None
-            or not projection_check(
-                scope,
-                product_ids,
-                products,
-                sha=sha,
-                chunk_id=chunk_id,
-                text=text,
-            )
-            or not external_axis_anchored(
-                scope, external_axis_anchors, required=require_table_anchor
-            )
-        ):
-            return []
-    if scope is not None and (
-        scope.get("basis") == "table_single_model" or "single_model_projection" in scope
-    ):
-        if products is None or not valid_single_model_projection(
-            scope,
-            product_ids,
-            products,
-            sha=sha,
-            chunk_id=chunk_id,
-            text=text,
+        if not external_axis_anchored(
+            scope, external_axis_anchors, required=require_table_anchor
         ):
             return []
     if scope is not None and (
@@ -461,7 +457,7 @@ def authorize_chunk(
     text: str = "",
     external_axis_anchors: Mapping[str, Any] | None = None,
     require_table_anchor: bool = False,
-    projection_check: Callable[..., bool] = valid_projection,
+    model_scope_check: Callable[..., bool] = valid_model_scope,
 ) -> list[dict[str, Any]]:
     """Only verified subject or safe projections may use a certificate grant."""
     if documents is None:
@@ -471,7 +467,7 @@ def authorize_chunk(
         "documents": documents,
         "external_axis_anchors": external_axis_anchors,
         "require_table_anchor": require_table_anchor,
-        "projection_check": projection_check,
+        "model_scope_check": model_scope_check,
     }
     basis = scope.get("basis") if scope is not None else None
     if basis == "certificate_fragment":
@@ -536,13 +532,14 @@ def table_header(
     *,
     chunk_id: str = "",
     text: str = "",
+    projection_check: Callable[..., bool] = valid_projection,
 ) -> str | None:
     """Restore the proven original table columns in order, or refuse invalid proof."""
     if scope is None:
         return ""
     if scope.get("basis") == "table_projection" or "table_projection" in scope:
         projection = scope.get("table_projection")
-        if not isinstance(projection, dict) or not valid_projection(
+        if not isinstance(projection, dict) or not projection_check(
             scope,
             product_ids,
             products,
