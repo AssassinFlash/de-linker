@@ -86,9 +86,9 @@
  * `--wp-admin--admin-bar--height` is WordPress's own variable: it is 0 on the
  * customer's pages and 32px on a login the admin bar rides.
  */
-html:has(.linker-genie-workspace .linker-genie-app--workspace),
 body:has(.linker-genie-workspace .linker-genie-app--workspace) {
-	height: 100dvh;
+	position: fixed;
+	inset: 0;
 	overflow: clip;
 }
 body:has(.linker-genie-workspace) {
