@@ -10,6 +10,7 @@
 	background: var(--proto-neutral-50, #f7f8f8);
 	border-radius: var(--proto-radius-md, 8px);
 	display: grid;
+	grid-template: minmax(0, 1fr) / minmax(0, 1fr);
 	place-items: center;
 	overflow: hidden;
 }
