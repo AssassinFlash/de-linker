@@ -42,11 +42,12 @@ class DraftProof {
 		if ( true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
 			return PublicationGuard::refused();
 		}
-		$owner      = null;
-		$shown      = array();
-		$events     = explode( "\n\n", $stream );
-		$blocks     = array();
-		$quantities = array();
+		$owner               = null;
+		$dependency_revision = null;
+		$shown               = array();
+		$events              = explode( "\n\n", $stream );
+		$blocks              = array();
+		$quantities          = array();
 		// The quantity-bearing action can follow its product card in the stream.
 		foreach ( $events as $index => $event ) {
 			if ( 1 !== preg_match( '/^event: block$/m', $event ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
@@ -86,6 +87,7 @@ class DraftProof {
 					if ( $owner instanceof WP_Error ) {
 						continue;
 					}
+					$dependency_revision ??= Publication::revision( $dependencies );
 					$requested             = (array) ( $block['quantities'] ?? array() );
 					$block['draft_proofs'] = array();
 					$block['quantities']   = array();
@@ -103,6 +105,7 @@ class DraftProof {
 									),
 								),
 								$dependencies,
+								$dependency_revision,
 								$manifest,
 								$owner
 							);
@@ -117,7 +120,8 @@ class DraftProof {
 					if ( $owner instanceof WP_Error ) {
 						continue;
 					}
-					$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $manifest, $owner );
+					$dependency_revision ??= Publication::revision( $dependencies );
+					$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $dependency_revision, $manifest, $owner );
 				} else {
 					continue;
 				}
@@ -183,10 +187,11 @@ class DraftProof {
 	 *
 	 * @param array<array-key,mixed> $items Service-normalized list.
 	 * @param array<string,mixed>    $dependencies Complete turn dependencies.
+	 * @param string                 $dependency_revision Revision shared by all proofs in this turn.
 	 * @param array<string,mixed>    $manifest Current Woo source.
 	 * @param string                 $owner Private identity binding.
 	 */
-	private function mint( array $items, array $dependencies, array $manifest, string $owner ): string {
+	private function mint( array $items, array $dependencies, string $dependency_revision, array $manifest, string $owner ): string {
 		$lines = array();
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) || ! is_int( $item['product_id'] ?? null ) || ! is_int( $item['quantity'] ?? null ) || $item['quantity'] < 1 ) {
@@ -229,7 +234,7 @@ class DraftProof {
 			'selected'    => array( 'lines' => $lines ),
 			'publication' => array(
 				'v'                 => 2,
-				'manifest_revision' => Publication::revision( $dependencies ),
+				'manifest_revision' => $dependency_revision,
 			),
 		);
 		$result['selection_fingerprint'] = Publication::revision( $result );
