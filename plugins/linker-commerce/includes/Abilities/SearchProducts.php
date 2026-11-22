@@ -318,8 +318,17 @@ final class SearchProducts {
 		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
 		$excluded                   = array();
 		$qualified                  = array();
+		$want_pairings              = ! empty( $input['with_pairings'] );
+		$want_future                = in_array( 'battery', (array) ( $input['future'] ?? array() ), true );
+		$batteries                  = array();
+		$inverters                  = array();
 		foreach ( $ids as $id ) {
-			$facts  = $this->publication->facts( $id, $this->publication_snapshot );
+			$facts = $this->publication->facts( $id, $this->publication_snapshot );
+			if ( ( $want_pairings || $want_future ) && in_array( $facts->device_class, self::BATTERY_CLASSES, true ) ) {
+				$batteries[] = $id;
+			} elseif ( $want_pairings && in_array( $facts->device_class, self::INVERTER_CLASSES, true ) ) {
+				$inverters[] = $id;
+			}
 			$reason = $this->exclusion( $facts, $id, $input );
 			if ( null !== $reason ) {
 				$excluded[ $reason ] = ( $excluded[ $reason ] ?? 0 ) + 1;
@@ -375,10 +384,6 @@ final class SearchProducts {
 		}
 		$extreme        = $this->extreme_result( $qualified, $input, $lang, $kind, $prices_open, $state );
 		$unknown_fields = $this->unknown_fields( $qualified, $input );
-		$want_pairings  = ! empty( $input['with_pairings'] );
-		$want_future    = in_array( 'battery', (array) ( $input['future'] ?? array() ), true );
-		$batteries      = ( $want_pairings || $want_future ) ? $this->device_ids( $ids, self::BATTERY_CLASSES ) : array();
-		$inverters      = $want_pairings ? $this->device_ids( $ids, self::INVERTER_CLASSES ) : array();
 		$shown          = ( null !== $extreme && true === $extreme['applied'] ) ? 1 : $limit;
 		$out            = array();
 		foreach ( array_slice( $qualified, 0, $shown ) as $row ) {
@@ -1088,25 +1093,6 @@ final class SearchProducts {
 			$answer = $this->publication->pairing( $id, $battery_id, $this->publication_snapshot );
 			if ( is_array( $answer ) && 'not_released' !== $answer['verdict'] ) {
 				$found[] = $battery_id;
-			}
-		}
-
-		return $found;
-	}
-
-	/**
-	 * Published products of the requested equipment classes.
-	 *
-	 * @param int[]    $ids Catalogue.
-	 * @param string[] $classes Equipment classes.
-	 * @return int[]
-	 */
-	private function device_ids( array $ids, array $classes ): array {
-		$found = array();
-		foreach ( $ids as $id ) {
-			$class = $this->publication->facts( $id, $this->publication_snapshot )->device_class;
-			if ( in_array( $class, $classes, true ) ) {
-				$found[] = $id;
 			}
 		}
 
