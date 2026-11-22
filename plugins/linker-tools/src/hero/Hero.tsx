@@ -55,6 +55,7 @@ import { MissingFiles } from '../genie/components/MissingFiles';
 import { OwnedRecovery } from '../genie/components/OwnedRecovery';
 import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
+import { ExpandIcon } from '../genie/components/Icons';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
 import {
@@ -1046,8 +1047,12 @@ export function HeroConversation( {
 	const viewActions = (
 		<div className="linker-genie-hero__view-actions">
 			{ wide && ! opening && phase === 'ask' && config.workspaceUrl ? (
-				<a href={ config.workspaceUrl }>
-					{ __( 'Open full page', 'linker-tools' ) } ↗
+				<a
+					className="linker-genie-workspace-link"
+					href={ config.workspaceUrl }
+					aria-label={ __( 'Open full page', 'linker-tools' ) }
+				>
+					<span>{ __( 'Open full page', 'linker-tools' ) }</span> ↗
 				</a>
 			) : null }
 			{ onExpand ? (
@@ -1055,10 +1060,22 @@ export function HeroConversation( {
 					type="button"
 					className="linker-genie-hero__continue"
 					onClick={ onExpand }
+					aria-label={
+						wide
+							? __( 'Return to side dock', 'linker-tools' )
+							: undefined
+					}
 				>
-					{ wide
-						? __( 'Return to side dock', 'linker-tools' )
-						: __( 'Expand full view', 'linker-tools' ) }
+					{ wide ? (
+						<>
+							<ExpandIcon inward />
+							<span>
+								{ __( 'Return to side dock', 'linker-tools' ) }
+							</span>
+						</>
+					) : (
+						__( 'Expand full view', 'linker-tools' )
+					) }
 				</button>
 			) : null }
 			{ ! wide ? (
