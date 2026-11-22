@@ -217,6 +217,44 @@ final class SearchProductsTest extends TestCase {
 		}
 	}
 
+	/** A battery returns released inverters in the current catalogue, with manufacturer proof. */
+	public function test_documented_partners_can_be_read_from_the_battery(): void {
+		$ids = array( 3556, 6519, 1182 );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
+			$ids,
+			array(
+				'device_classes' => array( 'home-storage', 'battery-systems' ),
+				'with_pairings'  => true,
+			),
+			'en',
+			12
+		);
+		$this->assertSame( 6519, $result['qualified'][0]['product_id'] );
+		$pairs = $result['qualified'][0]['pairings'];
+		$this->assertSame( array( 3556 ), array_column( $pairs, 'product_id' ) );
+		$this->assertSame( 'released', $pairs[0]['verdict'] );
+		$this->assertNotEmpty( $pairs[0]['conditions'] );
+		$this->assertNotEmpty( $pairs[0]['documents'] );
+	}
+
+	/** Both ends of an AC range use the published AC power. */
+	public function test_ac_range_includes_its_bounds_and_excludes_larger_inverters(): void {
+		$ids = array( 4107, 2064 );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
+			$ids,
+			array(
+				'device_class' => 'inverters',
+				'ac_power_min' => 10,
+				'ac_power_max' => 10,
+			),
+			'en',
+			12
+		);
+		$this->assertSame( array( 4107 ), array_column( $result['qualified'], 'product_id' ) );
+	}
+
 	/**
 	 * Uncited stored 30 kW values do not qualify or determine the minimum.
 	 */
