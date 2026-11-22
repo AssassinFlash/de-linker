@@ -3971,3 +3971,23 @@ test( 'the dock displays the selected prompt while the thread loads and expands 
 	expect( await screen.findByText( 'A verified answer.' ) ).toBeVisible();
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
+
+test( 'opening the homepage history rail leaves its active question with the homepage until the dock is requested', async () => {
+	const host = document.createElement( 'div' );
+	host.dataset.genieHeroHistory = '';
+	document.body.append( host );
+	try {
+		const c = { ...config(), surface: 'helper' as const };
+		await renderOwned( <App config={ c } /> );
+		await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
+		expect( readThread ).not.toHaveBeenCalled();
+		await act( async () => {
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-open', { detail: {} } )
+			);
+		} );
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 1 ) );
+	} finally {
+		host.remove();
+	}
+} );

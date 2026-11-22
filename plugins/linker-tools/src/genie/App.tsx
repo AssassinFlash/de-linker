@@ -258,7 +258,15 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ open, setOpen ] = useState( false );
 	const [ expanded, setExpanded ] = useState( false );
 	const [ heroHistoryHost, setHeroHistoryHost ] =
-		useState< HTMLElement | null >( null );
+		useState< HTMLElement | null >( () =>
+			config.surface === 'helper'
+				? document.querySelector< HTMLElement >(
+						'[data-genie-hero-history]'
+					)
+				: null
+		);
+	const historyOnlyBoot = useRef( !! heroHistoryHost );
+
 	useEffect( () => {
 		if ( config.surface === 'workspace' ) {
 			return;
@@ -1663,6 +1671,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	// or opening Genie on another page of the site, shows the thread instead
 	// of an empty panel (docs/specs/13-genie.md).
 	useEffect( () => {
+		if ( historyOnlyBoot.current ) {
+			return;
+		}
 		let cancelled = false;
 		let restored = false;
 		let sourceRefreshRequested = false;
@@ -2179,6 +2190,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					solution?: unknown;
 				} >
 			 ).detail;
+			const resumeFromHero = historyOnlyBoot.current;
+			historyOnlyBoot.current = false;
 			rememberOpener( detail?.opener );
 			if ( detail?.opener instanceof Element ) {
 				planningEntry.current = detail.opener.hasAttribute(
@@ -2202,7 +2215,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				! detail?.message &&
 				! detail?.refresh
 			) {
-				void enqueue( refreshSavedSource ).catch( () => undefined );
+				void enqueue(
+					resumeFromHero ? showStored : refreshSavedSource
+				).catch( () => undefined );
 			}
 			if ( detail?.entry ) {
 				receiveEntry( detail.entry );
@@ -2364,6 +2379,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			return;
 		}
 		draftContext.checkpoint();
+		historyOnlyBoot.current = false;
 		window.dispatchEvent( new Event( 'linker-genie-hero-leave' ) );
 		setExpanded( true );
 		setOpen( true );
