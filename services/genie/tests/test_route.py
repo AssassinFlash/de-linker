@@ -909,7 +909,10 @@ def test_a_named_inverter_outside_the_catalogue_is_searched_separately_from_its_
     assert route.catalog_only
 
 
-@pytest.mark.parametrize("intent", ["compare", None])
+@pytest.mark.parametrize(
+    "intent",
+    ["compare", "pairing_compatibility", "find_products", "documents_specs", None],
+)
 @pytest.mark.parametrize(
     "question,lang",
     [

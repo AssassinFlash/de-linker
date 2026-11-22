@@ -1022,9 +1022,17 @@ def _plan_turn(
     explicit_compare = re.match(
         r"\s*(?:compare|vergleiche|vergleichen Sie)\b", message, re.I
     )
-    if (intent == "compare" or (intent is None and explicit_compare)) and len(
-        subject.ids
-    ) >= 2:
+    compare_inverter_storage = (
+        explicit_compare
+        and _PAIRING_CUE.search(message)
+        and (_BATTERY_WORD.search(message) or _STORAGE_WORD.search(message))
+        and all(subject.device_class.get(pid) in _INVERTERS for pid in subject.ids)
+    )
+    if len(subject.ids) >= 2 and (
+        intent == "compare"
+        or (intent is None and explicit_compare)
+        or compare_inverter_storage
+    ):
         ids = subject.ids[:4]
         compare = Call(
             "linker/compare-products", {"product_ids": list(ids), "lang": lang}
