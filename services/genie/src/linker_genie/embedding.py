@@ -30,6 +30,7 @@ import threading
 import time
 import urllib.error
 import urllib.request
+from collections import OrderedDict
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -338,6 +339,9 @@ GEMINI_BATCH = 100
 QUERY_TIMEOUT = 10.0
 QUERY_ATTEMPTS = 2
 QUERY_BACKOFF = 0.5
+# Reuse repeated questions within a conversation; never cache provider failures.
+QUERY_CACHE_SECONDS = 120.0
+QUERY_CACHE_SIZE = 128
 # A corpus build waits for big batches: one request of 100 chunks takes about 4 s
 # through AIHubMix (measured 2026-10-09) and the build has no customer waiting, so a
 # request may take minutes; one retry has covered every endpoint blip of a build.
@@ -382,6 +386,7 @@ class GeminiEmbedder:
         self._urlopen = urlopen
         self._sleep = sleep
         self._lock = threading.Lock()
+        self._queries: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
         self.tokens = 0
 
     def _embed(
@@ -472,13 +477,24 @@ class GeminiEmbedder:
 
     def embed_query(self, text: str) -> bytes:
         """One query, on the customer's clock: QUERY_TIMEOUT, QUERY_ATTEMPTS."""
-        return self._embed(
+        with self._lock:
+            cached = self._queries.get(text)
+            if cached is not None and time.monotonic() < cached[0]:
+                self._queries.move_to_end(text)
+                return cached[1]
+        value = self._embed(
             [f"task: question answering | query: {text}"],
             timeout=QUERY_TIMEOUT,
             attempts=QUERY_ATTEMPTS,
             backoff=QUERY_BACKOFF,
             runtime=True,
         )[0]
+        with self._lock:
+            self._queries[text] = (time.monotonic() + QUERY_CACHE_SECONDS, value)
+            self._queries.move_to_end(text)
+            if len(self._queries) > QUERY_CACHE_SIZE:
+                self._queries.popitem(last=False)
+        return value
 
 
 _OPENROUTER_FILE = Path("~/.config/terravolt-builder/openrouter.env").expanduser()

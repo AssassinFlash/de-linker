@@ -5,6 +5,7 @@ import json
 import pathlib
 import struct
 import sys
+import time
 import types
 import urllib.error
 from collections.abc import Iterator
@@ -389,3 +390,18 @@ def test_credentials_read_the_owner_file_when_the_env_has_none(
     )
 
     assert found == ("https://api.deepseek.com", "file-key")
+
+
+def test_repeated_queries_reuse_only_successful_vectors_until_expiry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = [1.0]
+    monkeypatch.setattr(time, "monotonic", lambda: now[0])
+    api = FakeApi()
+    encoder = GeminiEmbedder("key", "https://example.test", urlopen=api)
+    first = encoder.embed_query("same question")
+    assert encoder.embed_query("same question") == first
+    assert len(api.requests) == 1
+    now[0] += embedding.QUERY_CACHE_SECONDS + 1
+    assert encoder.embed_query("same question") == first
+    assert len(api.requests) == 2

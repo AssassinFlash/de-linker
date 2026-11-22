@@ -32,7 +32,7 @@ from linker_genie.language import LANGUAGE_RETRY_PREFIX, turn_language, with_too
 from linker_genie.prefill import stated_size_hint
 from linker_genie.publication import Snapshot, product_ids
 from linker_genie.route import NAMED_MODEL_RULE
-from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
+from linker_genie.schema import TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
 from linker_genie.understand import Prepared
 
@@ -337,6 +337,7 @@ def make_generate(
             # endpoint honors the same response_format — see
             # docs/acceptance/2026-10-11/13/ for the direct-connection checks.
             "extra_body": {"response_format": {"type": "json_object"}},
+            "openai_reasoning_effort": "low",
         }
         chosen_model: Any = model or build_model()
         agent: Agent[None, TurnOutput] = Agent(
@@ -859,102 +860,20 @@ def _user_prompt(
     for message in request.messages:
         lines.append(f"{message.role}: {message.content}")
     lines.append(
-        "Reminder: answer as strict TurnOutput JSON. No number in text in "
-        "any form — no digits (10), no spelled-out words (ten, forty-eight, "
-        "zehn, achtundvierzig), no model name spelled letter by letter; "
-        "the terms single-phase, three-phase, einphasig and dreiphasig are "
-        "words, not numbers, and are written as such; "
+        "Reminder: answer as strict TurnOutput JSON. No number in text in any form — no digits (10) "
+        "or spelled-out quantities. Model codes and single-/three-phase are allowed; "
         "a code word or identifier from an attached file (for example "
         "ZEPHYR-C334) is not a number in text and is written literally, as "
-        "the file writes it; a numeric value from that file still goes in "
-        "{fact:attN.nK}; "
-        "numbers go in {fact:PRODUCTID.FIELD} placeholders naming exactly "
-        "the fact keys the tools returned (device_class, application, "
-        "phase, ac_power_kw, pv_input_kw, usable_kwh, nominal_kwh, "
-        "kwh_range, compat.verdict, compat.verdict.BATTERYID, "
-        "compat.condition.N, handoff.sentence, inquiry.login); never a "
-        "subfield like kwh_range.min. A range "
-        "placeholder renders the whole range. A figure from a document chunk "
-        "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
-        "put the chunk IDs you rely on in refs, the service links their "
-        "documents. Use each get-product figure with its qualifier and its "
-        "product-fact placeholder. The service adds the figure's Woo evidence "
-        "pages. For a maximum charge or discharge current with scope "
-        "per_battery_port, place the complete {fact:PRODUCTID.FIELD} on its own "
-        "text line, with no other words or punctuation on that line. The service "
-        "writes the full sentence with the direction and per-input limit. "
-        "Do not restate or reinterpret that limit elsewhere in the answer. "
-        "For a qualified product figure, use its Woo evidence pages as its source. "
-        "Include a retrieved chunk in refs only when its passage supports a "
-        "separate claim you actually make, including prose without numbers. "
-        "Only add a separate document block for a document the customer asked "
-        "for or that you cite for another claim. A matching number in a "
-        "passage does not establish the figure's qualifier. "
-        "Or leave the number unsaid. A price is never written in "
-        "text, not even as a placeholder: show the product as a card, whose "
-        "price line the service fills for this account; with partner=True say "
-        "the card shows the net price, otherwise say once that approved partner "
-        "accounts see net prices. "
-        + page.RULE
-        + " "
-        + solution.RULE
-        + " "
-        + planning.RULE
-        + " "
-        "A document (a search-knowledge chunk ID, compat.document.N, "
-        "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
-        "get-product listed this turn — such a ref exists only after get-product "
-        "returned it) is never a placeholder and never a URL in "
-        'the text: add a block {"type":"document","ref":"<that ID>"}. '
-        "Cite only a ref that appears in this turn's tool results. "
-        "A document, a chunk and a product the tools did not return are not cited. "
-        "When check-compatibility returned not_released, the text is only "
-        "{fact:compat.condition.N} for each condition, in order (the first "
-        "condition is compat.condition.0; use no index the check did not "
-        "return), and document "
-        "blocks for that check's compat.document.N. No cards and no other "
-        "sentence. When search-products for inverters, with the battery model "
-        "as text, returned no qualified product, the next call is "
-        "search-products with with_pairings true and text set to the one "
-        "family word in the datasheet title. Do not call search-knowledge "
-        "instead. "
-        "Never write article, catalogue, cart or basket (Artikel, Katalog, "
-        "Warenkorb): say product, product category, solution draft. "
-        "Every ID of a cards block must appear in the text block's refs. "
-        "Out-of-scope turns: call handoff-team, then one handoff block "
-        "summarized as {fact:handoff.sentence}. The service fills that "
-        "placeholder with the mailbox sentence in the answer language. "
-        "A guest inquiry (inquiry-status returned login_required, "
-        "logged_in=false) is not out of scope: do not call handoff-team; "
-        "answer with exactly one text block whose text is exactly "
-        "{fact:inquiry.login}, and nothing else. "
-        "When a released pairing condition names a partner model code, write "
-        "that code in the text as the condition writes it. Cards do not "
-        "replace the code. "
-        + NAMED_MODEL_RULE
-        # TALK, PROMISE, REPLY_PROMISE and PARTNER in template.py own the
-        # customer sentences this reminder repeats. The system prompts and
-        # route._SHAPE_HINT repeat them too; change the sentence there first.
-        + " Every answer needs one clickable next step. Cards, a compare "
-        "block, a document, an action, an ask, or the handoff block already "
-        "count. A short clarification or plain text with none of those blocks "
-        "asks which product category, field application, options home and "
-        "commercial (German: Wohngebäude and Gewerbe). "
-        "A greeting or an identity question says you are Linker's AI "
-        "assistant, names products, compatibility, documents and sizing, and "
-        "asks which product category, field application, options home and "
-        "commercial (German: Wohngebäude and Gewerbe). "
-        "What happens after an inquiry is sent: the team replies within one "
-        "working day (German: das Linker-Team antwortet innerhalb eines "
-        "Werktags), with view_inquiry and empty args, and without a handoff. "
-        "Partner net prices with no product named: approved partner accounts "
-        'see net prices. A guest sees "Net price after partner sign-in" on '
-        'the product card. An account under review sees "Account under '
-        'review. Prices after approval." No price number, and one '
-        "application ask. "
-        "A company question is the handoff block only; the service adds the "
-        "contact card and the one-working-day reply. "
-        "Ask at most one "
-        f"question and only with field in {'|'.join(ASK_FIELDS)}."
+        "the file writes it; a numeric value from that file still goes in {fact:attN.nK}. "
+        "Product numbers go in {fact:PRODUCTID.FIELD}; use a fact only for a verified value with the requested model, unit and qualifier. "
+        "Keep qualifications with their figures. Cite another passage only for a separate claim you actually make. "
+        "Use refs for each product in cards or comparisons. "
+        "Prices belong on server-filled cards. Cite only a ref that appears in this turn's tool results. "
+        "Cite documents with a document block; use exactly the compatibility conditions returned. "
+        "When inquiry-status says login_required, do not call handoff-team; use {fact:inquiry.login}. "
+        "For company, service and delivery use one handoff with {fact:handoff.sentence}. "
+        "Offer one clickable next step; plain text can end with one clarification. "
+        "After an inquiry: within one working day / innerhalb eines Werktags. "
+        "Guest price line: Net price after partner sign-in. " + NAMED_MODEL_RULE
     )
     return "\n".join(lines)

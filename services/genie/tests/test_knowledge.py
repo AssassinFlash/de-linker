@@ -444,3 +444,28 @@ def test_hca_filtered_rows_do_not_reappear_in_knowledge_facts(tmp_path: Path) ->
             assert ordinary in text
     finally:
         loaded.close()
+
+
+def test_publication_reads_can_overlap_without_sharing_the_sqlite_cursor() -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    permissions = authority(manifest())
+    both = Barrier(2)
+    original = permissions.identify_text
+
+    def identify(text: str) -> dict[str, str]:
+        both.wait(timeout=2)
+        return original(text)
+
+    from unittest.mock import patch
+
+    index = FakeIndex()
+    search = KnowledgeSearch(lambda: index, permissions)  # type: ignore[arg-type,return-value]
+    with (
+        patch.object(permissions, "identify_text", side_effect=identify),
+        ThreadPoolExecutor(max_workers=2) as pool,
+    ):
+        results = list(pool.map(search, [{"query": "battery"}, {"query": "inverter"}]))
+    assert all(result["hits"] for result in results)
+    assert {query for query, _, _ in index.calls} == {"battery", "inverter"}

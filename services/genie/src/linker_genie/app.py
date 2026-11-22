@@ -86,7 +86,7 @@ from linker_genie.schema import (
     TurnRequest,
     VoteRequest,
 )
-from linker_genie.storeapi import StoreVocabulary
+from linker_genie.storeapi import TTL_SECONDS, StoreVocabulary, VocabularyError
 from linker_genie.template import (
     fallback,
     finish,
@@ -99,6 +99,19 @@ from linker_genie.vision import Vision
 from linker_genie.work import WorkError, hold
 
 
+async def refresh_vocabulary(stop: asyncio.Event) -> None:
+    """Start at service boot and refresh halfway through the foreground cache lifetime."""
+    while not stop.is_set():
+        try:
+            await asyncio.to_thread(store_vocabulary().refresh)
+        except VocabularyError as error:
+            logger.warning("genie vocabulary refresh failed: %s", error)
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=TTL_SECONDS / 2)
+        except TimeoutError:
+            pass
+
+
 @asynccontextmanager
 async def lifespan(application: FastAPI) -> AsyncIterator[None]:
     path = _log_path()
@@ -107,11 +120,12 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         retention.run(path, retention.judgments_path(path), stop),
         name="genie-log-retention",
     )
+    prewarm = asyncio.create_task(refresh_vocabulary(stop), name="genie-vocabulary")
     try:
         yield
     finally:
         stop.set()
-        await task
+        await asyncio.gather(task, prewarm)
 
 
 app = FastAPI(

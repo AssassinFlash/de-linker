@@ -370,19 +370,6 @@ def test_compare_of_two_models_compares_them() -> None:
     assert route.calls[0].arguments == {"product_ids": [4107, 3555], "lang": "de"}
 
 
-def test_a_brand_comparison_without_models_is_left_to_the_model() -> None:
-    matches = [
-        Match("brand", "SAJ", "saj", frozenset(), "SAJ"),
-        Match("brand", "GoodWe", "goodwe", frozenset(), "GoodWe"),
-    ]
-    route = plan(
-        "SAJ vs GoodWe for commercial storage", matches, _reading("compare"), NONE, "en"
-    )
-    assert route.name == "model"
-    assert route.calls == ()
-    assert route.no_handoff
-
-
 def test_inquiry_status_is_fetched_by_code() -> None:
     route = plan("where is my proforma?", [], _reading("inquiry_status"), NONE, "en")
     assert [c.ability for c in route.calls] == ["linker/inquiry-status"]
@@ -702,3 +689,36 @@ def test_a_person_or_inquiry_question_is_not_an_extreme_search() -> None:
     assert person.name == "person" and person.calls == ()
     assert inquiry.name == "inquiry"
     assert inquiry.calls[0].ability == "linker/inquiry-status"
+
+
+@pytest.mark.parametrize(
+    ("question", "lang", "application"),
+    [
+        ("Compare SAJ vs GoodWe for commercial storage", "en", "commercial"),
+        ("SAJ vs GoodWe for a C&I site", "en", "commercial"),
+        (
+            "Vergleichen Sie SAJ und GoodWe für einen Gewerbespeicher",
+            "de",
+            "commercial",
+        ),
+        ("Compare SAJ and GoodWe for residential use", "en", "home"),
+        ("SAJ oder GoodWe für ein Wohngebäude?", "de", "home"),
+    ],
+)
+def test_prefetches_each_compared_brand_for_the_requested_application(
+    question: str, lang: str, application: str
+) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("SAJ", "GoodWe")
+    ]
+    route = plan(question, matches, _reading("compare"), NONE, lang)
+    assert [call.arguments for call in route.calls] == [
+        {
+            "brand": brand,
+            "application": application,
+            "lang": lang,
+            "limit": SEARCH_LIMIT,
+        }
+        for brand in ("saj", "goodwe")
+    ]

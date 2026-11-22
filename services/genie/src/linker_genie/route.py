@@ -25,7 +25,14 @@ from linker_genie import page as page_tool
 from linker_genie import planning as planning_tool
 from linker_genie import solution as solution_tool
 from linker_genie.jev import Reading
-from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
+from linker_genie.lexicon import (
+    MAX_WORDS,
+    MIN_CODE,
+    Match,
+    _words,
+    application_word,
+    normalize,
+)
 from linker_genie.nameplate import Identified
 from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import PageContext
@@ -1014,6 +1021,29 @@ def _plan_turn(
             (compare,),
             no_handoff=True,
             hint="The comparison is fetched; answer with a compare block.",
+            reasons=tuple(reasons),
+        )
+    brands = list(dict.fromkeys(m.value for m in matches if m.kind == "brand"))
+    comparing = intent == "compare" or re.search(
+        r"\b(?:compar(?:e|ison)|vs|versus|vergleich\w*)\b", message, re.I
+    )
+    if comparing and len(brands) >= 2 and not notes:
+        filters = _search_input(matches, lang) or {"lang": lang, "limit": SEARCH_LIMIT}
+        application = application_word(message)
+        if application:
+            filters["application"] = application
+        return Route(
+            "compare",
+            tuple(
+                Call("linker/search-products", {**filters, "brand": brand})
+                for brand in brands[:MAX_TOOL_CALLS]
+            ),
+            no_handoff=True,
+            hint=(
+                "Candidates from each requested brand were fetched separately. Compare matching "
+                "models from each brand, with a compare block using only qualified product IDs. "
+                "If one brand has no match for the requested use, say so."
+            ),
             reasons=tuple(reasons),
         )
     hint_extra = _model_hint(notes)

@@ -88,32 +88,32 @@ class KnowledgeSearch:
             query, lang, product_ids = validate(arguments or {})
         except ValueError as error:
             return {"error": str(error)}
-        with self._lock:
-            try:
+        try:
+            authority = self._publication or current()
+            snapshot = authority.snapshot()
+            if "unavailable" in authority.identify_text(query).values():
+                raise PublicationChanged("supplied model is no longer published")
+            if product_ids:
+                snapshot.require_products(product_ids)
+            with self._lock:
                 index = self._index()
-                authority = self._publication or current()
-                snapshot = authority.snapshot()
-                if "unavailable" in authority.identify_text(query).values():
-                    raise PublicationChanged("supplied model is no longer published")
-                if product_ids:
-                    snapshot.require_products(product_ids)
                 hits = index.search(
                     query,
                     lang,
                     product_ids if product_ids else None,
                     publication=snapshot,
                 )
-                authority.validate(snapshot)
-            except PublicationChanged:
-                raise
-            except PublicationUnavailable as error:
-                raise KnowledgeUnavailable(str(error)) from error
-            except EmbeddingError as error:
-                log.error("document search failed: %s", error)
-                raise
-            except (sqlite3.Error, OSError, ServingMismatch) as error:
-                log.error("document index unavailable: %s", error)
-                raise KnowledgeUnavailable(f"{INDEX_UNAVAILABLE}: {error}") from error
+            authority.validate(snapshot)
+        except PublicationChanged:
+            raise
+        except PublicationUnavailable as error:
+            raise KnowledgeUnavailable(str(error)) from error
+        except EmbeddingError as error:
+            log.error("document search failed: %s", error)
+            raise
+        except (sqlite3.Error, OSError, ServingMismatch) as error:
+            log.error("document index unavailable: %s", error)
+            raise KnowledgeUnavailable(f"{INDEX_UNAVAILABLE}: {error}") from error
         encoder = index.encoder.model if index.encoder is not None else None
         log.info(
             "document search ranking=%s encoder=%s index=%s hits=%d",

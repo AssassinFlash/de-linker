@@ -1297,3 +1297,37 @@ def test_a_validation_error_that_recovers_is_a_normal_answer() -> None:
             assert german_is_clean(block.text)
         shapes.append(_block_types(result.output))
     assert shapes[0] == shapes[1] == ["text"]
+
+
+def test_chat_sends_low_effort_and_the_structured_output_contract() -> None:
+    def answer(_messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        settings = info.model_settings or {}
+        assert settings.get("openai_reasoning_effort") == "low"
+        assert settings.get("extra_body") == {
+            "response_format": {"type": "json_object"}
+        }
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name="final_result",
+                    args={
+                        "language": "en",
+                        "blocks": [{"type": "text", "text": "Which system?"}],
+                    },
+                )
+            ]
+        )
+
+    client = AbilityClient("http://127.0.0.1:9")
+    try:
+        with _event_loop():
+            result, _ = make_generate(client, model=FunctionModel(answer))(
+                TurnRequest(
+                    conversation_id="research",
+                    messages=[TurnMessage(role="user", content="Compare systems")],
+                ),
+                None,
+            )
+        assert result.language == "en"
+    finally:
+        client.close()
