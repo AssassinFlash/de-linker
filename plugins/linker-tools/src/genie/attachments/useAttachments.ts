@@ -79,7 +79,7 @@ export function useAttachments( composer?: DraftEditor ): Attachments {
 						return;
 					}
 				}
-				const lease = context?.capture();
+				const lease = composer?.capture();
 				if ( composer && ( ! lease || ! composer.accept() ) ) {
 					return;
 				}

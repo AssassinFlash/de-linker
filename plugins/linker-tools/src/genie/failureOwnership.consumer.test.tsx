@@ -1931,3 +1931,31 @@ for ( const first of [ 'homepage', 'dock' ] as const ) {
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
+
+test( 'a helper opening beside an occupied homepage input leaves that mounted editing attempt in place', async () => {
+	document.body.innerHTML = HERO;
+	const end = startHero(
+		document.querySelector< HTMLElement >( '.hero-cinematic' )!,
+		{ config: CONFIG }
+	);
+	stop = end;
+	await finishImmediateConsumerWork();
+	fireEvent.input( document.querySelector( '.hero-prompt' )!, {
+		target: { value: 'Note still visible on the homepage' },
+	} );
+	await act( async () => window.dispatchEvent( new Event( 'pagehide' ) ) );
+	const helper = render( <App config={ CONFIG } /> );
+	await act( async () =>
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
+	);
+	await finishImmediateConsumerWork();
+	expect(
+		screen.getByRole< HTMLTextAreaElement >( 'textbox', {
+			name: 'Ask Genie',
+		} ).value
+	).toBe( '' );
+	expect(
+		document.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!.value
+	).toBe( 'Note still visible on the homepage' );
+	helper.unmount();
+} );

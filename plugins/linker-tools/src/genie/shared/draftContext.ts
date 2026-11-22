@@ -6,15 +6,30 @@ import { nativeScope, type NativeScope } from './nativeScope';
 export interface DraftLease {
 	scope: string;
 	epoch: number;
+	currentEditor?: () => boolean;
 }
 export type ContextPhase = 'loading' | 'ready' | 'unavailable';
 export class DraftEditor {
+	private generation = 0;
 	private ownerValue: FailureOwner | null = null;
 	private readonly leaveListeners = new Set< () => void >();
 	constructor(
 		readonly context: DraftContext,
 		private readonly changed: () => void
 	) {}
+	capture(): DraftLease | null {
+		const lease = this.context.capture();
+		const generation = this.generation;
+		return lease
+			? { ...lease, currentEditor: () => generation === this.generation }
+			: null;
+	}
+	close(): void {
+		this.checkpoint();
+		this.ownerValue = null;
+		this.generation++;
+		this.changed();
+	}
 	get owner(): FailureOwner | null {
 		return this.ownerValue;
 	}
@@ -90,7 +105,8 @@ export class DraftContext {
 			!! lease &&
 			this.alive &&
 			lease.scope === this.identityValue?.scope &&
-			lease.epoch === this.epoch
+			lease.epoch === this.epoch &&
+			( lease.currentEditor?.() ?? true )
 		);
 	}
 	valid( lease: DraftLease | null ): boolean {

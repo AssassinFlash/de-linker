@@ -156,8 +156,8 @@ export function startHero(
 				} );
 			} else {
 				prompt!.placeholder = originalPlaceholder;
-				prompt!.value = '';
 				unmount();
+				prompt!.value = '';
 			}
 		}
 		syncPill();
@@ -219,7 +219,8 @@ export function startHero(
 	const onUnownedPointer = ( event: PointerEvent ) => {
 		if (
 			event.target === prompt &&
-			( ! context.capture() || hasOwnedRecovery( pageFailureStore() ) )
+			( ! context.homeEditor.capture() ||
+				hasOwnedRecovery( pageFailureStore() ) )
 		) {
 			lastTrigger = prompt;
 			update( { type: 'ask' } );
@@ -313,7 +314,7 @@ export function startHero(
 
 	function unmount(): void {
 		setHeroView( null );
-		context.invalidate();
+		context.homeEditor.close();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();
 		recognition = null;
@@ -359,7 +360,6 @@ export function startHero(
 
 	/** Folds the conversation back to the resting hero. */
 	function close(): void {
-		context.invalidate();
 		pending = null;
 		pendingFiles = [];
 		retainedMode = null;
@@ -402,7 +402,7 @@ export function startHero(
 	}
 
 	function dictate(): void {
-		const lease = context.capture();
+		const lease = context.homeEditor.capture();
 		if ( ! lease ) {
 			retainedMode = 'voice';
 			update( { type: 'ask' } );
@@ -486,7 +486,7 @@ export function startHero(
 		// The live anchor is the no-JavaScript fallback; with the script the
 		// conversation opens in place instead of leaving the page.
 		event.preventDefault();
-		if ( ! context.capture() ) {
+		if ( ! context.homeEditor.capture() ) {
 			lastTrigger = sendButton!;
 			update( { type: 'ask' } );
 			return;
@@ -520,7 +520,7 @@ export function startHero(
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
-		if ( ! context.capture() ) {
+		if ( ! context.homeEditor.capture() ) {
 			retainedMode = 'nameplate';
 			return;
 		}

@@ -286,7 +286,7 @@ export function HeroConversation( {
 		}
 		let cancelled = false;
 		const hasPendingOwner = () => failureState.current.phase === 'pending';
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		void session
 			.load()
 			.then( async ( stored ) => {
@@ -424,7 +424,7 @@ export function HeroConversation( {
 
 	const restoreOwnedFailure = async () => {
 		const candidate = deferredFailure;
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		if (
 			! candidate ||
 			! lease ||
@@ -658,7 +658,7 @@ export function HeroConversation( {
 	const send = useCallback(
 		async ( text: string ) => {
 			setOpening( '' );
-			const lease = draftContext.capture();
+			const lease = draftContext.homeEditor.capture();
 			if ( ! lease ) {
 				return;
 			}
@@ -777,7 +777,7 @@ export function HeroConversation( {
 	// One resend. The machine leaves `failed` before the request, so a
 	// second click does not send.
 	const retry = useCallback( async () => {
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		if ( ! lease || sending.current || recoveryPending.current ) {
 			return;
 		}
@@ -876,7 +876,7 @@ export function HeroConversation( {
 
 	const updateMissing = useCallback(
 		( names: string[] ) => {
-			if ( ! draftContext.capture() ) {
+			if ( ! draftContext.homeEditor.capture() ) {
 				return;
 			}
 			if (
@@ -970,7 +970,7 @@ export function HeroConversation( {
 			onReady( {
 				ask: bridgeAsk,
 				attach: ( picked ) => {
-					if ( draftContext.capture() ) {
+					if ( draftContext.homeEditor.capture() ) {
 						filesRef.current.add( picked );
 					}
 				},
@@ -1350,8 +1350,8 @@ export function HeroConversation( {
 										owner &&
 										draftContext.homeEditor.owner ===
 											owner &&
-										draftContext.capture()?.scope ===
-											owner.scope
+										draftContext.homeEditor.capture()
+											?.scope === owner.scope
 									) {
 										rememberInquiry(
 											config.requestPageUrl!,

@@ -64,10 +64,20 @@ export async function verifiedEntryFailure(
 		}
 		const journal = new FailureJournal( store, identity );
 		// An old reader can invalidate its surface, but cannot migrate/select the next owner's record.
-		const candidate =
+		const selected =
 			previousScope && previousScope !== identity.scope
 				? null
 				: journal.candidate( composer?.owner?.attempt );
+		const other =
+			composer === context?.homeEditor
+				? context?.panelEditor.owner
+				: context?.homeEditor.owner;
+		const candidate =
+			selected?.record.editing &&
+			other?.attempt === selected.cursor.owner.attempt
+				? null
+				: selected;
+
 		return {
 			identity,
 			journal,
