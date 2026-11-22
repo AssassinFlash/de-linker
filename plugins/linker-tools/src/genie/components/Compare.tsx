@@ -25,6 +25,7 @@ interface Column {
 		sku: string;
 		storage: Pairing[];
 		in_stock: boolean;
+		in_draft: boolean;
 		price_line: string;
 		price_reason: string | null;
 		datasheet: { title: string; url: string } | null;
@@ -53,15 +54,24 @@ function valueText(
 	value: Spec[ 'values' ][ string ] | undefined,
 	locale: Locale
 ): string {
-	if ( value === undefined || value === 'unknown' ) return '—';
+	if ( value === undefined || value === 'unknown' ) {
+		return '—';
+	}
 	const format = new Intl.NumberFormat( locale, {
 		maximumFractionDigits: 6,
 	} );
-	if ( typeof value === 'number' ) return format.format( value );
-	if ( typeof value === 'object' )
+	if ( typeof value === 'number' ) {
+		return format.format( value );
+	}
+	if ( typeof value === 'object' ) {
 		return format.format( value.min ) + '–' + format.format( value.max );
-	if ( value === 'home' ) return __( 'Residential', 'linker-tools' );
-	if ( value === 'commercial' ) return __( 'Commercial', 'linker-tools' );
+	}
+	if ( value === 'home' ) {
+		return __( 'Residential', 'linker-tools' );
+	}
+	if ( value === 'commercial' ) {
+		return __( 'Commercial', 'linker-tools' );
+	}
 	return value;
 }
 
@@ -103,13 +113,17 @@ export function Compare( {
 					headers: { 'X-WP-Nonce': nonce },
 					signal: controller.signal,
 				} );
-				if ( ! response.ok ) throw Error( String( response.status ) );
+				if ( ! response.ok ) {
+					throw Error( String( response.status ) );
+				}
 				const data: Comparison = await response.json();
-				if ( ! controller.signal.aborted )
+				if ( ! controller.signal.aborted ) {
 					setResult( { url, nonce, attempt, data } );
+				}
 			} catch {
-				if ( ! controller.signal.aborted )
+				if ( ! controller.signal.aborted ) {
 					setResult( { url, nonce, attempt, data: null } );
+				}
 			}
 		}
 		void load();
@@ -119,9 +133,10 @@ export function Compare( {
 		result?.url !== url ||
 		result.nonce !== nonce ||
 		result.attempt !== attempt
-	)
+	) {
 		return <p>{ __( 'Loading comparison…', 'linker-tools' ) }</p>;
-	if ( ! result.data )
+	}
+	if ( ! result.data ) {
 		return (
 			<p role="alert">
 				{ __( 'Could not load this comparison.', 'linker-tools' ) }{ ' ' }
@@ -130,7 +145,8 @@ export function Compare( {
 				</button>
 			</p>
 		);
-	if ( ! result.data.products.length )
+	}
+	if ( ! result.data.products.length ) {
 		return (
 			<p>
 				{ __(
@@ -139,6 +155,7 @@ export function Compare( {
 				) }
 			</p>
 		);
+	}
 	const { products: columns, rows } = result.data;
 	const groups = [
 		{
@@ -181,333 +198,255 @@ export function Compare( {
 	return (
 		<div className="genie-comparisons">
 			{ groups
-				.filter( ( group ) => group.columns.length )
-				.map( ( group ) => {
-					const row = (
-						key: string,
-						title: string,
-						render: ( c: Column ) => ReactNode
-					) => (
-						<tr key={ key }>
-							<th scope="row">{ title }</th>
-							{ group.columns.map( ( c ) => (
-								<td key={ c.product_id }>{ render( c ) }</td>
+				.filter( ( group ) => group.columns.length > 0 )
+				.map( ( group ) => (
+					<SpecTable
+						key={ group.name }
+						group={ group }
+						rows={ rows }
+						locale={ locale }
+						draftAction={ ( c ) => (
+							<DraftButton
+								column={ c }
+								proof={ proofs[ c.product_id ] }
+								quantity={ quantities[ c.product_id ] }
+								status={ statusFor( c.product_id ) }
+								onAdd={ onAdd }
+							/>
+						) }
+					/>
+				) ) }
+		</div>
+	);
+}
+
+function DraftButton( {
+	column,
+	proof,
+	quantity,
+	status,
+	onAdd,
+}: {
+	column: Column;
+	proof?: string;
+	quantity?: number;
+	status: ReturnType< Props[ 'statusFor' ] >;
+	onAdd: Props[ 'onAdd' ];
+} ) {
+	const added =
+		column.presentation.in_draft ||
+		( status.state === 'added' &&
+			status.text === __( 'In your solution draft.', 'linker-tools' ) );
+	if ( ! added && ( ! quantity || ! proof ) ) {
+		return (
+			<a href={ column.url }>{ __( 'View product', 'linker-tools' ) }</a>
+		);
+	}
+	return (
+		<>
+			<button
+				type="button"
+				className="genie-comparison__add"
+				disabled={ added || status.state === 'pending' }
+				onClick={ () => {
+					if ( quantity && proof ) {
+						onAdd( column.product_id, quantity );
+					}
+				} }
+			>
+				{ added
+					? __( '✓ In draft', 'linker-tools' )
+					: __( '+ Add to draft', 'linker-tools' ) }
+			</button>
+			{ status.text && ! added && (
+				<small role="status">{ status.text }</small>
+			) }
+		</>
+	);
+}
+
+function ModelHeading( { product }: { product: Column } ) {
+	const { presentation: item } = product;
+	return (
+		<th scope="col">
+			<a href={ product.url }>
+				<span className="genie-comparison__brand">
+					{ item.image && (
+						<img
+							alt=""
+							src={ item.image }
+							width={ 32 }
+							height={ 32 }
+						/>
+					) }
+					{ item.brand }
+				</span>
+				<strong className="genie-comparison__model">
+					{ item.model || product.title }
+				</strong>
+				{ item.sku && (
+					<span className="genie-comparison__sku">{ item.sku }</span>
+				) }
+			</a>
+		</th>
+	);
+}
+
+function storageList( items: Pairing[] ) {
+	if ( ! items.length ) {
+		return '—';
+	}
+	return (
+		<ul>
+			{ items.map( ( item ) => (
+				<li key={ item.model }>
+					{ item.model }
+					{ item.verdict === 'released_with_accessory' && (
+						<span>
+							{ ' ' }
+							· { __( 'Accessory required', 'linker-tools' ) }
+							{ item.accessories.length
+								? ' (' + item.accessories.join( ', ' ) + ')'
+								: '' }
+						</span>
+					) }
+					{ item.conditions.map( ( note ) => (
+						<small key={ note }>{ note }</small>
+					) ) }
+				</li>
+			) ) }
+		</ul>
+	);
+}
+
+interface Group {
+	name: string;
+	columns: Column[];
+	keys: string[];
+	storage: boolean;
+}
+function SpecTable( {
+	group,
+	rows,
+	locale,
+	draftAction,
+}: {
+	group: Group;
+	rows: Spec[];
+	locale: Locale;
+	draftAction: ( c: Column ) => ReactNode;
+} ) {
+	const { columns, name } = group;
+	const row = (
+		key: string,
+		label: string,
+		cell: ( c: Column ) => ReactNode
+	) => (
+		<tr key={ key }>
+			<th scope="row">{ label }</th>
+			{ columns.map( ( c ) => (
+				<td key={ c.product_id }>{ cell( c ) }</td>
+			) ) }
+		</tr>
+	);
+	const brand = row(
+		'brand',
+		__( 'Brand / Series', 'linker-tools' ),
+		( { presentation: p } ) =>
+			[ p.brand, p.series ].filter( Boolean ).join( ' · ' ) || '—'
+	);
+	const specs = rows
+		.filter( ( r ) => group.keys.includes( r.field ) )
+		.map( ( r ) =>
+			row( r.field, r.label, ( c ) =>
+				valueText( r.values[ c.product_id ], locale )
+			)
+		);
+	const storage =
+		group.storage &&
+		row( 'storage', __( 'Compatible storage', 'linker-tools' ), ( c ) =>
+			storageList( c.presentation.storage )
+		);
+	const availability = row(
+		'availability',
+		__( 'Availability', 'linker-tools' ),
+		( { presentation: p } ) => (
+			<span
+				className="genie-comparison__stock"
+				data-available={ p.in_stock }
+			>
+				{ p.in_stock
+					? __( 'In stock', 'linker-tools' )
+					: __( 'Currently unavailable', 'linker-tools' ) }
+			</span>
+		)
+	);
+	const price = row(
+		'price',
+		__( 'Partner pricing', 'linker-tools' ),
+		( { presentation: p } ) =>
+			p.price_reason === 'login'
+				? __( 'Net price after sign-in', 'linker-tools' )
+				: p.price_line || '—'
+	);
+	const pdf = row(
+		'pdf',
+		__( 'Datasheet', 'linker-tools' ),
+		( { presentation: { datasheet } } ) =>
+			datasheet ? (
+				<a
+					className="genie-comparison__pdf"
+					href={ datasheet.url }
+					title={ datasheet.title }
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{ __( 'Datasheet', 'linker-tools' ) } ↗
+				</a>
+			) : (
+				'—'
+			)
+	);
+	return (
+		<section className="genie-comparison">
+			<h3>
+				{ __( 'Product comparison', 'linker-tools' ) } · { name }
+			</h3>
+			<div
+				className="genie-comparison__scroll"
+				role="region"
+				aria-label={ name }
+				tabIndex={ 0 }
+			>
+				<table aria-label={ name }>
+					<thead>
+						<tr>
+							<th scope="col">
+								{ __( 'Specification', 'linker-tools' ) }
+							</th>
+							{ columns.map( ( c ) => (
+								<ModelHeading
+									key={ c.product_id }
+									product={ c }
+								/>
 							) ) }
 						</tr>
-					);
-					return (
-						<section
-							key={ group.name }
-							className="genie-comparison"
-						>
-							<h3>
-								{ __( 'Product comparison', 'linker-tools' ) } ·{ ' ' }
-								{ group.name }
-							</h3>
-							<div
-								className="genie-comparison__scroll"
-								role="region"
-								aria-label={ group.name }
-								tabIndex={ 0 }
-							>
-								<table aria-label={ group.name }>
-									<colgroup>
-										<col className="genie-comparison__label" />
-										{ group.columns.map( ( c ) => (
-											<col key={ c.product_id } />
-										) ) }
-									</colgroup>
-									<thead>
-										<tr>
-											<th scope="col">
-												{ __(
-													'Specification',
-													'linker-tools'
-												) }
-											</th>
-											{ group.columns.map( ( c ) => (
-												<th
-													scope="col"
-													key={ c.product_id }
-												>
-													<a href={ c.url }>
-														<span className="genie-comparison__brand">
-															{ c.presentation
-																.image && (
-																<img
-																	alt=""
-																	src={
-																		c
-																			.presentation
-																			.image
-																	}
-																	width={ 32 }
-																	height={
-																		32
-																	}
-																/>
-															) }
-															{
-																c.presentation
-																	.brand
-															}
-														</span>
-														<strong className="genie-comparison__model">
-															{ c.presentation
-																.model ||
-																c.title }
-														</strong>
-														{ c.presentation
-															.sku && (
-															<span className="genie-comparison__sku">
-																{
-																	c
-																		.presentation
-																		.sku
-																}
-															</span>
-														) }
-													</a>
-												</th>
-											) ) }
-										</tr>
-									</thead>
-									<tbody>
-										{ row(
-											'brand',
-											__(
-												'Brand / Series',
-												'linker-tools'
-											),
-											( c ) =>
-												[
-													c.presentation.brand,
-													c.presentation.series,
-												]
-													.filter( Boolean )
-													.join( ' · ' ) || '—'
-										) }
-										{ rows
-											.filter( ( r ) =>
-												group.keys.includes( r.field )
-											)
-											.map( ( r ) =>
-												row( r.field, r.label, ( c ) =>
-													valueText(
-														r.values[
-															c.product_id
-														],
-														locale
-													)
-												)
-											) }
-										{ group.storage &&
-											row(
-												'storage',
-												__(
-													'Compatible storage',
-													'linker-tools'
-												),
-												( c ) =>
-													c.presentation.storage
-														.length ? (
-														<ul>
-															{ c.presentation.storage.map(
-																( item ) => (
-																	<li
-																		key={
-																			item.model
-																		}
-																	>
-																		{
-																			item.model
-																		}
-																		{ item.verdict ===
-																			'released_with_accessory' && (
-																			<span>
-																				{ ' ' }
-																				·{ ' ' }
-																				{ __(
-																					'Accessory required',
-																					'linker-tools'
-																				) }
-																				{ item
-																					.accessories
-																					.length
-																					? ' (' +
-																						item.accessories.join(
-																							', '
-																						) +
-																						')'
-																					: '' }
-																			</span>
-																		) }
-																		{ item.conditions.map(
-																			(
-																				note
-																			) => (
-																				<small
-																					key={
-																						note
-																					}
-																				>
-																					{
-																						note
-																					}
-																				</small>
-																			)
-																		) }
-																	</li>
-																)
-															) }
-														</ul>
-													) : (
-														'—'
-													)
-											) }
-										{ row(
-											'availability',
-											__(
-												'Availability',
-												'linker-tools'
-											),
-											( c ) => (
-												<span
-													className="genie-comparison__stock"
-													data-available={
-														c.presentation.in_stock
-													}
-												>
-													{ c.presentation.in_stock
-														? __(
-																'In stock',
-																'linker-tools'
-															)
-														: __(
-																'Currently unavailable',
-																'linker-tools'
-															) }
-												</span>
-											)
-										) }
-										{ row(
-											'price',
-											__(
-												'Partner pricing',
-												'linker-tools'
-											),
-											( c ) =>
-												c.presentation.price_reason ===
-												'login'
-													? __(
-															'Net price after sign-in',
-															'linker-tools'
-														)
-													: c.presentation
-															.price_line || '—'
-										) }
-										{ row(
-											'pdf',
-											__( 'Datasheet', 'linker-tools' ),
-											( c ) =>
-												c.presentation.datasheet ? (
-													<a
-														className="genie-comparison__pdf"
-														href={
-															c.presentation
-																.datasheet.url
-														}
-														title={
-															c.presentation
-																.datasheet.title
-														}
-														target="_blank"
-														rel="noopener noreferrer"
-													>
-														{ __(
-															'Datasheet',
-															'linker-tools'
-														) }{ ' ' }
-														↗
-													</a>
-												) : (
-													'—'
-												)
-										) }
-										{ row(
-											'draft',
-											__(
-												'Solution draft',
-												'linker-tools'
-											),
-											( c ) => {
-												const id = c.product_id,
-													status = statusFor( id ),
-													quantity = quantities[ id ];
-												const added =
-													status.state === 'added' &&
-													status.text ===
-														__(
-															'In your solution draft.',
-															'linker-tools'
-														);
-												if (
-													! proofs[ id ] ||
-													! quantity
-												)
-													return (
-														<a href={ c.url }>
-															{ __(
-																'View product',
-																'linker-tools'
-															) }
-														</a>
-													);
-												return (
-													<>
-														<button
-															type="button"
-															className="genie-comparison__add"
-															disabled={
-																added ||
-																status.state ===
-																	'pending'
-															}
-															onClick={ () =>
-																onAdd(
-																	id,
-																	quantity
-																)
-															}
-														>
-															{ added
-																? __(
-																		'✓ In draft',
-																		'linker-tools'
-																	)
-																: __(
-																		'+ Add to draft',
-																		'linker-tools'
-																	) }
-														</button>
-														{ status.text &&
-															! added && (
-																<small role="status">
-																	{
-																		status.text
-																	}
-																</small>
-															) }
-													</>
-												);
-											}
-										) }
-									</tbody>
-								</table>
-							</div>
-						</section>
-					);
-				} ) }
-		</div>
+					</thead>
+					<tbody>
+						{ brand }
+						{ specs }
+						{ storage }
+						{ availability }
+						{ price }
+						{ pdf }
+						{ row(
+							'draft',
+							__( 'Solution draft', 'linker-tools' ),
+							draftAction
+						) }
+					</tbody>
+				</table>
+			</div>
+		</section>
 	);
 }

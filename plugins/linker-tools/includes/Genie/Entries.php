@@ -712,8 +712,8 @@ JS,
 	 * @param string $surface `helper` on every page, `workspace` on the advisor page.
 	 */
 	private function mount_markup( string $surface ): string {
-		$locale      = $this->locale();
-		$page        = $this->page_context();
+		$locale = $this->locale();
+		$page   = $this->page_context();
 		return sprintf(
 			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s"></div>',
 			esc_attr( $surface ),

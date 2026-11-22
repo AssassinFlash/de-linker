@@ -54,6 +54,17 @@ final class CompareProductsTest extends TestCase {
 	/** The customer view carries document identity and no hidden numeric price. */
 	public function test_customer_comparison_includes_the_public_datasheet_and_model(): void {
 		$this->mock_live_products( array( 4107, 3556 ) );
+		WP_Mock::userFunction( 'wc_load_cart' );
+		$cart = \Mockery::mock();
+		$cart->shouldReceive( 'get_cart' )->andReturn(
+			array(
+				array(
+					'product_id' => 4107,
+					'quantity'   => 2,
+				),
+			)
+		);
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'cart' => $cart ) );
 		$result = ( new CompareProducts( null, $this->publication_data() ) )->execute(
 			array(
 				'product_ids'  => array( 4107, 3556 ),
@@ -65,6 +76,7 @@ final class CompareProductsTest extends TestCase {
 		$this->assertSame( 'H2-10K-T3', $column['model'] );
 		$this->assertNotEmpty( $column['datasheet']['url'] );
 		$this->assertArrayHasKey( 'in_stock', $column );
+		$this->assertTrue( $column['in_draft'] );
 		$this->assertArrayNotHasKey( 'price', $column );
 	}
 

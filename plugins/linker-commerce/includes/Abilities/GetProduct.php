@@ -138,17 +138,32 @@ final class GetProduct {
 			'title'      => ProductText::title( $id, $lang, $manifest ),
 			'url'        => ProductText::url( $id, $lang, $manifest ),
 			'sku'        => $product instanceof WC_Product ? (string) $product->get_sku() : '',
-			'model'      => ProductText::term_name( $id, 'pa_model' ),
-			'brand'      => ProductText::term_name( $id, 'pa_brand' ),
-			'series'     => ProductText::term_name( $id, 'pa_series' ),
 			'facts'      => $facts->to_array(),
 			'figures'    => (object) $this->publication->figures( $id, $manifest ),
 			'attributes' => (object) $this->attributes( $id ),
-			'documents'  => $this->publication->documents( $id, $manifest ),
 			'faq'        => $this->faq( $id, $lang, $manifest ),
-			'commerce'   => ProductCommerce::of( $id, $product instanceof WC_Product ? $product : null, $lang ),
+			...$this->customer_fields( $id, $lang, $manifest, $product instanceof WC_Product ? $product : null ),
 		);
 		return $this->publication->unchanged( $dependencies ) ? $result : $this->empty( $id, $lang );
+	}
+
+	/**
+	 * Public product details shared by get-product and the interactive comparison.
+	 *
+	 * @param int                 $id Source product ID.
+	 * @param 'en'|'de'           $lang Customer language.
+	 * @param array<string,mixed> $manifest Validated publication snapshot.
+	 * @param WC_Product|null     $product Already loaded source product.
+	 * @return array{model:?string,brand:?string,series:?string,documents:list<array<string,mixed>>,commerce:array<string,mixed>}
+	 */
+	public function customer_fields( int $id, string $lang, array $manifest, ?WC_Product $product = null ): array {
+		return array(
+			'model'     => ProductText::term_name( $id, 'pa_model' ),
+			'brand'     => ProductText::term_name( $id, 'pa_brand' ),
+			'series'    => ProductText::term_name( $id, 'pa_series' ),
+			'documents' => $this->publication->documents( $id, $manifest ),
+			'commerce'  => ProductCommerce::of( $id, $product, $lang ),
+		);
 	}
 
 	/**

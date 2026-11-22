@@ -71,11 +71,14 @@ export function GenieCards( {
 		let active = true;
 		store.products( products, locale ).then(
 			( rows ) => {
-				if ( active ) setResult( { products, locale, attempt, rows } );
+				if ( active ) {
+					setResult( { products, locale, attempt, rows } );
+				}
 			},
 			() => {
-				if ( active )
+				if ( active ) {
 					setResult( { products, locale, attempt, rows: null } );
+				}
 			}
 		);
 		return () => {
@@ -86,9 +89,10 @@ export function GenieCards( {
 		result?.products !== products ||
 		result.locale !== locale ||
 		result.attempt !== attempt
-	)
+	) {
 		return null;
-	if ( result.rows === null )
+	}
+	if ( result.rows === null ) {
 		return (
 			<div className="linker-product-card" role="alert">
 				<span>
@@ -106,6 +110,7 @@ export function GenieCards( {
 				</button>
 			</div>
 		);
+	}
 	const rows = new Map(
 		result.rows.map( ( product ) => [ product.id, product ] )
 	);
@@ -113,12 +118,13 @@ export function GenieCards( {
 		<>
 			{ products.map( ( id ) => {
 				const product = rows.get( id );
-				if ( ! product )
+				if ( ! product ) {
 					return (
 						<p key={ id } className="linker-product-card">
 							{ __( 'Currently unavailable', 'linker-tools' ) }
 						</p>
 					);
+				}
 				return (
 					<GenieCard
 						key={ id }

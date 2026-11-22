@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\Publication;
 
 /** Assemble compared models and their current, documented storage pairings. */
@@ -24,27 +23,37 @@ final class ComparisonPresentation {
 	 * @return array{details:array<int,array<string,mixed>>,dependencies:list<int>}
 	 */
 	public static function read( array $columns, array $manifest, PublicationData $publication, string $lang ): array {
+		$catalog    = new GetProduct( $publication );
 		$details    = array();
 		$related    = array();
 		$candidates = array();
-		foreach ( Compatibility::pairs( $manifest ) as $pair ) {
+		foreach ( $publication->pairs( $manifest ) as $pair ) {
 			$candidates[ $pair['inverter_product_id'] ][ $pair['battery_product_id'] ] = true;
 		}
+		wc_load_cart();
+		$draft = array();
+		foreach ( WC()->cart->get_cart() as $line ) {
+			if ( (int) $line['quantity'] > 0 ) {
+				$draft[ Publication::canonical_id( (int) $line['product_id'] ) ] = true;
+			}
+		}
+
 		foreach ( $columns as $column ) {
 			$id       = (int) $column['product_id'];
-			$commerce = ProductCommerce::of( $id, null, $lang );
+			$product  = $catalog->customer_fields( $id, $lang, $manifest );
+			$commerce = $product['commerce'];
 			$file     = null;
-			foreach ( $publication->documents( $id, $manifest ) as $doc ) {
+			foreach ( $product['documents'] as $doc ) {
 				if ( 'datasheet' !== $doc['type'] ) {
 					continue;
 				}
-				if ( null === $file || $lang === strtolower( $doc['lang'] ) ) {
+				if ( null === $file || strtolower( $doc['lang'] ) === $lang ) {
 					$file = array(
 						'title' => $doc['title'],
 						'url'   => $doc['url'],
 					);
 				}
-				if ( $lang === strtolower( $doc['lang'] ) ) {
+				if ( strtolower( $doc['lang'] ) === $lang ) {
 					break;
 				}
 			}
@@ -68,12 +77,13 @@ final class ComparisonPresentation {
 				array_push( $related, ...array_column( $release['accessories'], 'product_id' ), ...array_column( $release['documents'], 'product_id' ) );
 			}
 			$details[ $id ] = array(
-				'model'        => ProductText::term_name( $id, 'pa_model' ),
-				'brand'        => ProductText::term_name( $id, 'pa_brand' ),
-				'series'       => ProductText::term_name( $id, 'pa_series' ),
+				'model'        => $product['model'],
+				'brand'        => $product['brand'],
+				'series'       => $product['series'],
 				'sku'          => $column['sku'],
 				'image'        => $column['image'],
 				'in_stock'     => $commerce['in_stock'],
+				'in_draft'     => isset( $draft[ Publication::canonical_id( $id ) ] ),
 				'price_line'   => $commerce['price_line'] ?? '',
 				'price_reason' => $commerce['price_reason'] ?? null,
 				'datasheet'    => $file,
