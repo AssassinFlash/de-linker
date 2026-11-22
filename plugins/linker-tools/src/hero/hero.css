@@ -165,7 +165,8 @@
 
 .linker-genie-hero__cards .linker-card__media {
 	width: 100%;
-	aspect-ratio: 4 / 3;
+	height: 82px;
+	aspect-ratio: auto;
 }
 
 .linker-genie-hero__cards .linker-card__title {

@@ -1315,10 +1315,35 @@ body:has(.linker-genie-workspace)
 	margin-left: auto;
 }
 
+.linker-genie-app__transcript {
+	container: genie-reading / inline-size;
+}
 .linker-genie-app__cards {
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
+}
+.linker-genie-app__cards .linker-card {
+	grid-template-columns: 72px minmax(0, 1fr);
+}
+:is(.linker-genie-app__cards, .linker-genie-hero__cards) .linker-card__title {
+	word-break: normal;
+	overflow-wrap: normal;
+	hyphens: none;
+}
+@container genie-reading (min-width: 740px) {
+	.linker-genie-app__cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.linker-genie-app__cards .linker-card {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.linker-genie-app__cards .linker-card__media {
+		height: 82px;
+		aspect-ratio: auto;
+	}
 }
 
 /* Answer actions use the approved contact/send pill: 44px touch target,
