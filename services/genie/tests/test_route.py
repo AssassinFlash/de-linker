@@ -692,21 +692,33 @@ def test_a_person_or_inquiry_question_is_not_an_extreme_search() -> None:
 
 
 @pytest.mark.parametrize(
-    ("question", "lang", "application"),
+    ("question", "lang", "application", "classes"),
     [
-        ("Compare SAJ vs GoodWe for commercial storage", "en", "commercial"),
-        ("SAJ vs GoodWe for a C&I site", "en", "commercial"),
+        (
+            "Compare SAJ vs GoodWe for commercial storage",
+            "en",
+            "commercial",
+            ["home-storage", "battery-systems", "all-in-one-systems"],
+        ),
+        ("SAJ vs GoodWe for a C&I site", "en", "commercial", []),
         (
             "Vergleichen Sie SAJ und GoodWe für einen Gewerbespeicher",
             "de",
             "commercial",
+            ["home-storage", "battery-systems", "all-in-one-systems"],
         ),
-        ("Compare SAJ and GoodWe for residential use", "en", "home"),
-        ("SAJ oder GoodWe für ein Wohngebäude?", "de", "home"),
+        ("Compare SAJ and GoodWe for residential use", "en", "home", []),
+        (
+            "Compare SAJ and GoodWe commercial inverters",
+            "en",
+            "commercial",
+            ["inverters", "all-in-one-systems"],
+        ),
+        ("SAJ oder GoodWe für ein Wohngebäude?", "de", "home", []),
     ],
 )
 def test_prefetches_each_compared_brand_for_the_requested_application(
-    question: str, lang: str, application: str
+    question: str, lang: str, application: str, classes: list[str]
 ) -> None:
     matches = [
         Match("brand", brand, brand.lower(), frozenset(), brand)
@@ -717,8 +729,42 @@ def test_prefetches_each_compared_brand_for_the_requested_application(
         {
             "brand": brand,
             "application": application,
+            **({"device_classes": classes} if classes else {}),
             "lang": lang,
             "limit": SEARCH_LIMIT,
         }
         for brand in ("saj", "goodwe")
     ]
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Compare SAJ and GoodWe storage efficiency for a commercial site",
+        "Compare warranty conditions for GoodWe and SAJ batteries",
+        "Vergleichen Sie SAJ und GoodWe für 15 kWh",
+    ],
+)
+def test_specialist_comparisons_still_get_a_model_answer(message: str) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("SAJ", "GoodWe")
+    ]
+    assert not plan(message, matches, _reading("compare"), NONE, "en").catalog_only
+
+
+@pytest.mark.parametrize(
+    "message,lang",
+    [
+        ("Compare GoodWe and SAJ storage options for a commercial site.", "en"),
+        ("Vergleichen Sie Speicher von GoodWe und SAJ für ein Gewerbeprojekt.", "de"),
+    ],
+)
+def test_plain_brand_comparison_requests_only_the_native_table(
+    message: str, lang: str
+) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("GoodWe", "SAJ")
+    ]
+    assert plan(message, matches, _reading("compare"), NONE, lang).catalog_only

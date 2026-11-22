@@ -63,6 +63,7 @@ Three shapes, each inside the protocol set by construction
 from __future__ import annotations
 
 import re
+from itertools import zip_longest
 
 from linker_genie.facts import (
     RELEASED_VERDICTS,
@@ -577,6 +578,85 @@ def _named_codes_sentence(codes: list[str], language: Locale) -> str:
     if language == "de":
         return f"Sie haben {shown} genannt."
     return f"You named {shown}."
+
+
+def catalog_answer(
+    facts: TurnFacts, route: Route, language: Locale
+) -> TurnOutput | None:
+    """Answer plain catalogue lookups from their checked native products and pairings."""
+    if not route.catalog_only:
+        return None
+    if route.name == "products" and facts.qualified_ids:
+        return fallback(facts, language, route)
+    if route.name == "pairing":
+        released = _released_pair_fallback(facts, language)
+        if released is not None:
+            return released
+        for call in facts.tool_calls:
+            if call["name"] != "linker/search-products" or not call["arguments"].get(
+                "with_pairings"
+            ):
+                continue
+            rows = call["result"].get("qualified", [])
+            if len(rows) == 1 and rows[0].get("pairings") == []:
+                pid = rows[0]["product_id"]
+                sentence = (
+                    "Für diesen Wechselrichter ist keine Batterie als freigegeben aufgeführt. Welches Batteriemodell möchten Sie prüfen?"
+                    if language == "de"
+                    else "No battery is listed as approved for this inverter. Which battery model would you like to check?"
+                )
+                return TurnOutput(
+                    language=language,
+                    blocks=[
+                        TextBlock(text=sentence, refs=[str(pid)]),
+                        CardsBlock(product_ids=[pid]),
+                    ],
+                )
+        return None
+    if route.name != "compare":
+        return None
+    brands = [
+        call.arguments["brand"]
+        for call in route.calls
+        if call.ability == "linker/search-products"
+    ]
+    groups = {}
+    for call in facts.tool_calls:
+        if call["name"] == "linker/search-products":
+            brand = call["arguments"].get("brand")
+            qualified = [
+                row["product_id"]
+                for row in call["result"].get("qualified", [])
+                if row["product_id"] in facts.qualified_ids
+            ]
+            if brand in brands and qualified:
+                groups[brand] = qualified
+    if len(groups) != len(brands) or len(groups) < 2:
+        return None
+    # The compare component has four columns. Give each brand a column before
+    # filling the remaining columns with the next products in catalogue order.
+    ids: list[int] = []
+    for models in zip_longest(*(groups[brand] for brand in brands)):
+        for product_id in models:
+            if product_id is not None and product_id not in ids:
+                ids.append(product_id)
+        if len(ids) >= 4:
+            break
+    ids = ids[:4]
+    if len(ids) < 2:
+        return None
+    sentence = (
+        "Vergleichen Sie die technischen Daten dieser Modelle."
+        if language == "de"
+        else "Compare the specifications of these models side by side."
+    )
+    return TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(text=sentence, refs=[str(pid) for pid in ids]),
+            CompareBlock(product_ids=ids),
+        ],
+    )
 
 
 def stock_answer(

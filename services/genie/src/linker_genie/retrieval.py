@@ -25,7 +25,8 @@ import logging
 import os
 import re
 import sqlite3
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
@@ -48,6 +49,7 @@ from linker_genie.publication_scope import authorize_chunk, table_header
 from linker_genie.table_projection import (
     native_chunk_id_matches,
     unqualified_table_columns,
+    valid_projection,
 )
 from linker_genie.warranty_scope import (
     CONDITIONAL_CLAIMS_NOTE,
@@ -225,6 +227,10 @@ class DocumentIndex:
 
     def __init__(self, path: Path, encoder: Embedder | None | _Auto = AUTO) -> None:
         self.path = path
+        self._proof_products: dict[int, dict[str, Any]] = {}
+        self._projection_proofs: dict[str, bool] = {}
+        self._table_headers: dict[str, str | None] = {}
+        self._column_texts: dict[str, str] | None = None
         self._db = sqlite3.connect(
             f"file:{path}?mode=ro", uri=True, check_same_thread=False
         )
@@ -760,15 +766,46 @@ class DocumentIndex:
             if "chunk_scopes" in tables
             else {}
         )
-        axis_anchors = self._external_axis_anchors()
-        column_texts = unqualified_table_columns(
-            list(
-                self._db.execute(
-                    "SELECT doc_sha256,page,kind,id,text FROM chunks ORDER BY rowid"
+        # Source text is immutable for this index. Model-dependent table proofs
+        # use every current Woo product, while document grants below are read and
+        # checked independently on every search.
+        if self._proof_products != snapshot.products:
+            self._proof_products = deepcopy(snapshot.products)
+            self._projection_proofs.clear()
+            self._table_headers.clear()
+
+        def checked_projection(
+            proof: Mapping[str, Any],
+            ids: Sequence[int],
+            products: Mapping[int, Mapping[str, Any]],
+            *,
+            sha: str,
+            chunk_id: str,
+            text: str,
+        ) -> bool:
+            # Nested certificate origins carry their own proof, even if they
+            # refer to the same source chunk as an indexed row.
+            if proof is not scopes.get(chunk_id):
+                return valid_projection(
+                    proof, ids, products, sha=sha, chunk_id=chunk_id, text=text
                 )
-            ),
-            scopes,
-        )
+            if chunk_id not in self._projection_proofs:
+                self._projection_proofs[chunk_id] = valid_projection(
+                    proof, ids, products, sha=sha, chunk_id=chunk_id, text=text
+                )
+            return self._projection_proofs[chunk_id]
+
+        axis_anchors = self._external_axis_anchors()
+        if self._column_texts is None:
+            self._column_texts = unqualified_table_columns(
+                list(
+                    self._db.execute(
+                        "SELECT doc_sha256,page,kind,id,text FROM chunks ORDER BY rowid"
+                    )
+                ),
+                scopes,
+            )
+        column_texts = self._column_texts
         for row, sha, raw_ids, cid, text in self._db.execute(
             "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
@@ -791,15 +828,18 @@ class DocumentIndex:
                 text=text,
                 external_axis_anchors=axis_anchors,
                 require_table_anchor=self._table_anchors_required,
+                projection_check=checked_projection,
             )
             if authorized:
-                header = table_header(
-                    scopes.get(cid),
-                    sorted(ids),
-                    snapshot.products,
-                    chunk_id=cid,
-                    text=text,
-                )
+                if cid not in self._table_headers:
+                    self._table_headers[cid] = table_header(
+                        scopes.get(cid),
+                        sorted(ids),
+                        snapshot.products,
+                        chunk_id=cid,
+                        text=text,
+                    )
+                header = self._table_headers[cid]
                 if header is None:
                     continue
                 if cid in column_texts and not column_texts[cid]:

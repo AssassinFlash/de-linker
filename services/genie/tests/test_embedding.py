@@ -1,5 +1,6 @@
 """Embedding models: request formats and vector packing, without network or weights."""
 
+import http.client
 import io
 import json
 import pathlib
@@ -170,7 +171,11 @@ def test_an_answer_without_vectors_fails_at_once() -> None:
     assert EmptyApi.calls == 1
 
 
-def test_gemini_retries_once_on_a_transport_error() -> None:
+@pytest.mark.parametrize(
+    "error",
+    [urllib.error.URLError("proxy 503"), http.client.IncompleteRead(b"partial")],
+)
+def test_gemini_retries_once_on_a_transport_error(error: Exception) -> None:
     class FlakyApi:
         def __init__(self) -> None:
             self.calls = 0
@@ -179,7 +184,7 @@ def test_gemini_retries_once_on_a_transport_error() -> None:
         def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
             self.calls += 1
             if self.calls == 1:
-                raise urllib.error.URLError("proxy 503")
+                raise error
             yield io.BytesIO(
                 json.dumps({"data": [{"index": 0, "embedding": [1.0]}]}).encode()
             )

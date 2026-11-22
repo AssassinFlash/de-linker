@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from functools import lru_cache
 
 CODE = re.compile(r"\b[A-Za-z0-9][A-Za-z0-9./-]*\b")
 MODEL_FIELD = re.compile(
@@ -30,6 +31,7 @@ def codes(text: str) -> list[str]:
     )
 
 
+@lru_cache(maxsize=256)
 def model_pattern(label: str) -> re.Pattern[str]:
     """A shorter model must not match a suffix variant's facts."""
     written = r"\s+".join(re.escape(part) for part in label.split())

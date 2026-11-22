@@ -413,6 +413,9 @@ _INVERTER_WORD = re.compile(r"\b(?:inverters?|wechselrichter(?:n|s)?)\b", re.IGN
 _BATTERY_WORD = re.compile(
     r"\b(?:batter(?:y|ies)|batterie(?:n)?|speicher)\b", re.IGNORECASE
 )
+_STORAGE_WORD = re.compile(
+    r"\b(?:storage|(?:gewerbe|heim|strom|energie|batterie)?speicher)\b", re.I
+)
 _NUMBER = r"(\d+(?:[.,]\d+)?)"
 _FLOOR_MARK = (
     r"(?:at\s+least|minimum|min\.?|>=|≥|over|above|more\s+than|"
@@ -648,6 +651,7 @@ class Route:
     # Which next-step sentence this model turn keeps (#394). None when the
     # route already has its own block (cards, a document, the configurator).
     shape: AnswerShape | None = None
+    catalog_only: bool = False
 
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
@@ -974,6 +978,8 @@ def _plan_turn(
                 "pairing",
                 (pairing,),
                 no_handoff=True,
+                catalog_only=not earlier
+                and _catalog_request(message, matches, _PAIRING_WORDS),
                 hint="The pairing result is fetched; answer from it.",
                 reasons=tuple(reasons),
             )
@@ -1032,6 +1038,13 @@ def _plan_turn(
         application = application_word(message)
         if application:
             filters["application"] = application
+        if "device_class" not in filters:
+            if _STORAGE_WORD.search(message):
+                filters["device_classes"] = [*_BATTERIES, "all-in-one-systems"]
+            elif _BATTERY_WORD.search(message):
+                filters["device_classes"] = list(_BATTERIES)
+            elif _INVERTER_WORD.search(message):
+                filters["device_classes"] = list(_INVERTERS)
         return Route(
             "compare",
             tuple(
@@ -1039,6 +1052,9 @@ def _plan_turn(
                 for brand in brands[:MAX_TOOL_CALLS]
             ),
             no_handoff=True,
+            catalog_only=len(brands) <= MAX_TOOL_CALLS
+            and not earlier
+            and _catalog_request(message, matches, _CATALOG_COMPARISON_WORDS),
             hint=(
                 "Candidates from each requested brand were fetched separately. Compare matching "
                 "models from each brand, with a compare block using only qualified product IDs. "
@@ -1054,6 +1070,7 @@ def _plan_turn(
             calls,
             show_products=True,
             no_handoff=True,
+            catalog_only=bare and not earlier and not unknown and not brand_conflict,
             hint=(
                 "The customer named products; the search result is fetched. Show "
                 "its products as cards, cited in the text refs. A product word is "
@@ -1510,6 +1527,37 @@ def extreme_input(
     ):
         found["series"] = series[0].value
     return found
+
+
+# An ordinary side-by-side catalogue request. A remaining word, number or unit
+# describes a criterion the model must investigate rather than omit.
+_CATALOG_COMPARISON_WORDS = frozenset(
+    "compare comparison versus vs please of and or for the a an site use options products models "
+    "commercial industrial residential home household c i project projects storage battery batteries inverter inverters "
+    "vergleich vergleichen vergleiche bitte sie von und oder für fuer einen ein eine einem den die das "
+    "im am an standort einsatz optionen produkte modelle gewerbe gewerbespeicher heimspeicher "
+    "gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
+)
+
+
+_PAIRING_WORDS = frozenset(
+    "which what is are the a an can does with for my this and battery batteries inverter inverters "
+    "fits fit works work compatible support supported pairing pair "
+    "welche welcher welches welchen ist sind der die das den dem ein eine mit zu zum für und "
+    "batterie batterien speicher wechselrichter passt passen kompatibel".split()
+)
+
+
+def _catalog_request(message: str, matches: list[Match], words: frozenset[str]) -> bool:
+    remaining = message.casefold()
+    for match in matches:
+        if match.kind in ("brand", "model", "series"):
+            remaining = re.sub(
+                r"(?<!\w)" + re.escape(match.words.casefold()) + r"(?!\w)",
+                " ",
+                remaining,
+            )
+    return set(re.findall(r"\w+", remaining)) <= words
 
 
 def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:

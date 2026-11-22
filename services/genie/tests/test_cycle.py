@@ -1331,3 +1331,56 @@ def test_chat_sends_low_effort_and_the_structured_output_contract() -> None:
         assert result.language == "en"
     finally:
         client.close()
+
+
+def test_catalogue_comparison_includes_each_brand_and_needs_a_current_match() -> None:
+    from linker_genie.route import Call
+    from linker_genie.template import catalog_answer
+
+    calls = tuple(
+        Call("linker/search-products", {"brand": b}) for b in ("first", "second")
+    )
+    route = Route("compare", calls, catalog_only=True)
+    facts = TurnFacts()
+    for call, ids in zip(calls, ((1, 2, 3), (4, 5)), strict=True):
+        facts.qualified_ids.update(ids)
+        facts.product_ids.update(ids)
+        facts.tool_calls.append(
+            {
+                "name": call.ability,
+                "arguments": call.arguments,
+                "result": {"qualified": [{"product_id": pid} for pid in ids]},
+            }
+        )
+    table = catalog_answer(facts, route, "en")
+    assert table is not None
+    result = run(_request(), lambda *_: (table, TurnFacts()), route, facts)
+    assert result.grounded and not result.fallback
+    assert result.output.blocks[-1].model_dump() == {
+        "type": "compare",
+        "product_ids": [1, 4, 2, 5],
+    }
+    facts.qualified_ids -= {4, 5}
+    assert catalog_answer(facts, route, "en") is None
+
+
+def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
+    from linker_genie.template import catalog_answer
+
+    facts = TurnFacts(qualified_ids={1}, product_ids={1})
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {"with_pairings": True},
+            "result": {"qualified": [{"product_id": 1, "pairings": []}]},
+        }
+    )
+    result = catalog_answer(facts, Route("pairing", catalog_only=True), "en")
+    assert result is not None
+    assert any(
+        isinstance(b, TextBlock) and "No battery is listed as approved" in b.text
+        for b in result.blocks
+    )
+    assert any(
+        isinstance(b, CardsBlock) and b.product_ids == [1] for b in result.blocks
+    )

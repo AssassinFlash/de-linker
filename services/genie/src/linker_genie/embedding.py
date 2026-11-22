@@ -23,6 +23,7 @@ Vectors travel as float32 little-endian bytes, the form sqlite-vec stores.
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import os
 import struct
@@ -426,7 +427,12 @@ class GeminiEmbedder:
                         f"{self.model}: {_HTTP_ON_ATTEMPT}{error.code}{_ON_ATTEMPT}"
                         f"{attempt} of {attempts}"
                     ) from error
-            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            except (
+                urllib.error.URLError,
+                TimeoutError,
+                ConnectionError,
+                http.client.IncompleteRead,
+            ) as error:
                 if attempt == attempts:
                     raise EmbeddingError(
                         f"{self.model}: {type(error).__name__}{_AFTER_ATTEMPTS}"

@@ -7,7 +7,7 @@ document identity, relation, content revision or product revision for a grant.
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 from linker_genie.certificate_scope import (
@@ -119,6 +119,7 @@ def _authorize_core(
     text: str = "",
     external_axis_anchors: Mapping[str, Any] | None = None,
     require_table_anchor: bool = False,
+    projection_check: Callable[..., bool] = valid_projection,
 ) -> list[dict[str, Any]]:
     """Authorize the complete model set with its explicit association group.
 
@@ -361,7 +362,7 @@ def _authorize_core(
     ):
         if (
             products is None
-            or not valid_projection(
+            or not projection_check(
                 scope,
                 product_ids,
                 products,
@@ -460,6 +461,7 @@ def authorize_chunk(
     text: str = "",
     external_axis_anchors: Mapping[str, Any] | None = None,
     require_table_anchor: bool = False,
+    projection_check: Callable[..., bool] = valid_projection,
 ) -> list[dict[str, Any]]:
     """Only verified subject or safe projections may use a certificate grant."""
     if documents is None:
@@ -469,6 +471,7 @@ def authorize_chunk(
         "documents": documents,
         "external_axis_anchors": external_axis_anchors,
         "require_table_anchor": require_table_anchor,
+        "projection_check": projection_check,
     }
     basis = scope.get("basis") if scope is not None else None
     if basis == "certificate_fragment":
