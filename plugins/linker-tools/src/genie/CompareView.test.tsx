@@ -8,7 +8,7 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 	const presentation = {
 		model: 'H2-10K-T3',
 		brand: 'SAJ',
-		series: 'H2',
+		series: 'SAJ H2',
 		image: '',
 		sku: 'DLK-SAJ-H210KT3',
 		in_stock: true,
@@ -71,6 +71,7 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 	);
 	const tables = await screen.findAllByRole( 'table' );
 	expect( tables ).toHaveLength( 2 );
+	expect( within( tables[ 0 ] ).getByText( 'SAJ · H2' ) ).toBeVisible();
 	expect( within( tables[ 0 ] ).getByText( '10' ) ).toBeVisible();
 	expect(
 		within( tables[ 0 ] ).queryByText( 'Usable energy (kWh)' )

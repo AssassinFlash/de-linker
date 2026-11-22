@@ -18,6 +18,7 @@ import { ProductCard, type CardState } from '../../shared/ProductCard';
 import type { storeClient } from '../../configurator/api/store';
 import type { Locale, StoreProduct } from '../../configurator/types';
 import type { CardPrice } from '../api/turn';
+import { brandSeries } from '../shared/brandSeries';
 
 /**
  * The card's price line (#242), exactly as the service filled it: the product
@@ -167,13 +168,7 @@ function GenieCard( {
 		return terms?.length === 1 ? terms[ 0 ].name : '';
 	};
 	const model = term( 'pa_model' );
-	const brand = term( 'pa_brand' );
-	const series = term( 'pa_series' );
-	const shortSeries =
-		brand && series.startsWith( brand + ' ' )
-			? series.slice( brand.length + 1 )
-			: series;
-	const identity = [ brand, shortSeries ].filter( Boolean ).join( ' · ' );
+	const identity = brandSeries( term( 'pa_brand' ), term( 'pa_series' ) );
 
 	return (
 		<ProductCard

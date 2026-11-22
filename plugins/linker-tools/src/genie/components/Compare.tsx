@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import type { ReactNode } from 'react';
 import type { CardState } from '../../shared/ProductCard';
 import type { Locale } from '../../configurator/types';
+import { brandSeries } from '../shared/brandSeries';
 import './catalog.css';
 
 interface Pairing {
@@ -364,8 +365,7 @@ function SpecTable( {
 	const brand = row(
 		'brand',
 		__( 'Brand / Series', 'linker-tools' ),
-		( { presentation: p } ) =>
-			[ p.brand, p.series ].filter( Boolean ).join( ' · ' ) || '—'
+		( { presentation: p } ) => brandSeries( p.brand, p.series ) || '—'
 	);
 	const specs = rows
 		.filter( ( r ) => group.keys.includes( r.field ) )
