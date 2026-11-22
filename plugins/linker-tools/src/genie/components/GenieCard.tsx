@@ -155,22 +155,28 @@ function GenieCard( {
 	price?: CardPrice;
 } ) {
 	const productId = product.id;
-	const term = ( taxonomy: string ) =>
-		product.attributes?.find( ( a ) => a.taxonomy === taxonomy )?.terms[ 0 ]
-			?.name;
+	const term = ( taxonomy: string ) => {
+		const terms = product.attributes?.find(
+			( attribute ) => attribute.taxonomy === taxonomy
+		)?.terms;
+		return terms?.length === 1 ? terms[ 0 ].name : '';
+	};
 	const model = term( 'pa_model' );
-	const identity = [ term( 'pa_brand' ), term( 'pa_series' ) ]
-		.filter( Boolean )
-		.join( ' · ' );
-	const modelText = model
-		? `${ __( 'Model', 'linker-tools' ) } ${ model }`
-		: '';
+	const brand = term( 'pa_brand' );
+	const series = term( 'pa_series' );
+	const shortSeries =
+		brand && series.startsWith( brand + ' ' )
+			? series.slice( brand.length + 1 )
+			: series;
+	const identity = [ brand, shortSeries ].filter( Boolean ).join( ' · ' );
+
 	return (
 		<ProductCard
 			id={ `linker-genie-card-${ productId }` }
 			role={ identity || __( 'Product', 'linker-tools' ) }
-			title={ product.name }
-			model={ modelText }
+			title={ model || product.name }
+			linkLabel={ model ? product.name : undefined }
+			model=""
 			quantity={
 				quantity
 					? sprintf(

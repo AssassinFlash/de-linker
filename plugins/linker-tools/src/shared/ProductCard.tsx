@@ -31,6 +31,7 @@ export interface ProductCardProps {
 	/** What the item is in the proposal ("Hybrid inverter"). */
 	role: string;
 	title: string;
+	linkLabel?: string;
 	/** Already worded, for example "Model GW10K-ETA-G20"; empty hides the line. */
 	model: string;
 	url?: string;
@@ -54,6 +55,7 @@ export function ProductCard( {
 	id,
 	role,
 	title,
+	linkLabel,
 	model,
 	url,
 	image,
@@ -81,7 +83,17 @@ export function ProductCard( {
 			<div className="linker-card__body">
 				<p className="linker-card__role">{ role }</p>
 				<h3 className="linker-card__title" id={ titleId }>
-					{ url ? <a href={ url }>{ title }</a> : title }
+					{ url ? (
+						<a
+							href={ url }
+							aria-label={ linkLabel }
+							title={ linkLabel }
+						>
+							{ title }
+						</a>
+					) : (
+						title
+					) }
 				</h3>
 				{ model || quantity ? (
 					<p className="linker-card__model">
