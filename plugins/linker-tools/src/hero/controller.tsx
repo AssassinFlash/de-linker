@@ -99,7 +99,6 @@ export function startHero(
 			} ) );
 
 	let state: HeroState = initialHeroState;
-	let stopped = false;
 	let expandedNow = false;
 	let root: ReturnType< typeof createRoot > | null = null;
 	let bridge: HeroBridge | null = null;
@@ -144,13 +143,16 @@ export function startHero(
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
 				requestAnimationFrame( () => {
-					if ( ! expandedNow ) return;
+					if ( ! expandedNow ) {
+						return;
+					}
 					const clipped =
 						dialog!.getBoundingClientRect().bottom +
 						8 -
 						win.innerHeight;
-					if ( clipped > 0 )
+					if ( clipped > 0 ) {
 						win.scrollBy( { top: clipped, behavior: 'instant' } );
+					}
 				} );
 			} else {
 				prompt!.placeholder = originalPlaceholder;
@@ -238,6 +240,7 @@ export function startHero(
 				session={ session }
 				onReady={ onReady }
 				openingQuestion={ pending ?? '' }
+				footer={ dialog!.querySelector( '.hero-dialog-footer' ) }
 				onExpand={ () => {
 					if ( dialog!.matches( ':popover-open' ) ) {
 						dialog!.hidePopover();
@@ -306,9 +309,13 @@ export function startHero(
 			return;
 		}
 		lastTrigger = trigger;
-		if ( ! bridge ) pending = text;
+		if ( ! bridge ) {
+			pending = text;
+		}
 		update( { type: 'ask' } );
-		if ( bridge ) bridge.ask( text );
+		if ( bridge ) {
+			bridge.ask( text );
+		}
 	}
 
 	/** Folds the conversation back to the resting hero. */
@@ -569,7 +576,6 @@ export function startHero(
 	onScroll();
 
 	return () => {
-		stopped = true;
 		stopPreserving();
 		unsubscribeContext();
 		releaseContext();

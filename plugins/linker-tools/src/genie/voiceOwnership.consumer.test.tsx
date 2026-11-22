@@ -1057,7 +1057,7 @@ test( 'a newer durable revision remains intact and reachable beside the unsaved 
 	principal = 'A';
 	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
 	await waitFor( () => expect( field() ).not.toBeDisabled() );
-	await restoreOwned();
+	await restoreOwned( 'First accepted phrase Second accepted phrase' );
 	expect( field() ).toHaveValue(
 		'First accepted phrase Second accepted phrase'
 	);
@@ -1066,7 +1066,9 @@ test( 'a newer durable revision remains intact and reachable beside the unsaved 
 } );
 
 async function restoreOwned( expected?: string ) {
-	if ( expected && field().value === expected ) return;
+	if ( expected && field().value === expected ) {
+		return;
+	}
 	await act( async () =>
 		fireEvent.click(
 			await screen.findByRole( 'button', {

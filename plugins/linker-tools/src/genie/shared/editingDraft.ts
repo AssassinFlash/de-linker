@@ -109,6 +109,7 @@ export function preserveEditing(
 		draft: {
 			owner,
 			editing: true,
+			conversationId: context.conversationId,
 			text: snapshot.text,
 			question:
 				buildQuestion( snapshot.text, snapshot.uploads ) ||

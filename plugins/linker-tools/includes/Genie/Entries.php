@@ -741,7 +741,7 @@ JS,
 			esc_attr( esc_url_raw( (string) apply_filters( 'linker_genie_inquiry_page', '', $locale ) ) ), // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Existing native inquiry-page seam owned by InquiryRequest.
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'en' ) : '' ) ),
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) ),
-			esc_url( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' )
+			esc_attr( esc_url_raw( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' ) )
 		);
 	}
 

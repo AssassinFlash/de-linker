@@ -45,12 +45,16 @@ export function Transcript( {
 				tabIndex={ 0 }
 				onScroll={ () => {
 					const el = scroll.current;
-					if ( ! el ) return;
+					if ( ! el ) {
+						return;
+					}
 					const gap =
 						el.scrollHeight - el.clientHeight - el.scrollTop;
-					if ( gap <= 160 ) setLatest( false );
-					else if ( el.scrollTop < previousTop.current )
+					if ( gap <= 160 ) {
+						setLatest( false );
+					} else if ( el.scrollTop < previousTop.current ) {
 						setLatest( true );
+					}
 					previousTop.current = el.scrollTop;
 				} }
 			>

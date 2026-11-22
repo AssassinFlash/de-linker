@@ -7,7 +7,7 @@ import {
 } from './draftContext';
 
 /**
- * One context per mounted surface, with the native cold lookup shared by both bundles.
+ * The mounted surfaces share the page’s native owner and editor.
  * @param config    The currently mounted native routes and REST nonce.
  * @param onChanged Clear the previous principal's mounted presentation.
  * @param provided  The homepage controller's shared surface context, when present.

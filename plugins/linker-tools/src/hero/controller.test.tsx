@@ -121,7 +121,9 @@ async function start( heroSession: HeroSession ) {
 		stop = startHero( hero, { config: CONFIG, session: heroSession } );
 	} );
 	const release = () => {
-		if ( controllers.delete( release ) ) stop();
+		if ( controllers.delete( release ) ) {
+			stop();
+		}
 	};
 	controllers.add( release );
 	return { hero, stop: release };

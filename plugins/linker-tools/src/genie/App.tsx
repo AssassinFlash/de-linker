@@ -530,6 +530,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setContacts( [] );
 		setInquiries( [] );
 		setHistory( [] );
+		shownId.current = 0;
 		setCurrentId( 0 );
 		setMail( 'idle' );
 		setDictating( false );
@@ -590,10 +591,14 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ mailTo, setMailTo ] = useState( '' );
 	// How a confirmation link this page was opened from ended, if it was.
 	const [ linkResult ] = useState( readLinkResult );
-	const show = useCallback( ( id: number ) => {
-		shownId.current = id;
-		setCurrentId( id );
-	}, [] );
+	const show = useCallback(
+		( id: number ) => {
+			shownId.current = id;
+			draftContext.conversationId = id;
+			setCurrentId( id );
+		},
+		[ draftContext ]
+	);
 
 	const store = storeClient( config.restUrl, undefined, config.restNonce );
 	const {
@@ -697,9 +702,8 @@ export function App( { config }: { config: GenieConfig } ) {
 			const record = checked.record;
 			resolveEntryRecovery.current();
 			if (
-				record?.conversationId &&
-				conversationId &&
-				record.conversationId !== conversationId
+				record?.conversationId !== undefined &&
+				record.conversationId !== ( conversationId ?? shownId.current )
 			) {
 				return;
 			}
@@ -727,7 +731,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								.field
 						: record?.text );
 			const occupied =
-				!! inputRef.current || filesRef.current.picked.length > 0;
+				!! inputRef.current ||
+				filesRef.current.picked.length > 0 ||
+				editingMissing.current.length > 0;
 			if (
 				checked.candidate &&
 				reconciled.phase !== 'clear' &&
@@ -742,7 +748,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				checked.candidate && reconciled.phase !== 'clear'
 					? exchangeFailure( checked.candidate, null, messages )
 					: adoptFailure( checked.candidate, reconciled );
-			if ( ! restored ) return;
+			if ( ! restored ) {
+				return;
+			}
 			if ( restored.phase === 'editing' && restored.draft ) {
 				setInput( restored.draft.text );
 				placeChips( restored.draft.uploads );
@@ -785,6 +793,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			draftContext,
 			adoptFailure,
 			deferFailure,
+			exchangeFailure,
 			ignoreCurrentCandidate,
 		]
 	);
@@ -1390,6 +1399,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			onTurnError,
 			retainUnverifiedTurn,
+			clearDeferred,
 			beginTurn,
 		]
 	);
@@ -1571,6 +1581,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		payloadOrRestore,
 		draftContext,
 		retainUnverifiedTurn,
+		clearDeferred,
 		beginTurn,
 	] );
 
@@ -1739,6 +1750,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			cancelTurn,
 			captureFailure,
 			abandonCaptured,
+			clearDeferred,
 		]
 	);
 
@@ -2425,6 +2437,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									<button
 										type="button"
 										className="linker-genie-app__icon"
+										data-genie-expand
 										onClick={ expand }
 										aria-label={ __(
 											'Expand full view',

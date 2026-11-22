@@ -1511,8 +1511,7 @@ body:has(.pdp-buy-inner)
  * The standing dock: the open button floats in the page's bottom-right corner
  * as the live page's resting Advisor bubble does (50×50 at 20/20, #172636,
  * radius 999, shadow, z 10000 — measured on the live catalogue 2026-10-12),
- * and the dock takes no room in the page flow. The live page hides its bubble
- * under 861px (its own switch sits between 860 and 865).
+ * and the dock takes no room in the page flow.
  */
 .linker-genie {
 	position: fixed;
@@ -1586,11 +1585,11 @@ body:has(.pdp-buy-inner)
 }
 .linker-genie-peek {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
+	flex-wrap: wrap;
+	justify-content: flex-end;
 	gap: 5px;
 	margin-bottom: 8px;
-	max-width: 232px;
+	max-width: min(460px, calc(100vw - 32px));
 }
 .linker-genie-peek__prompt {
 	border: 1px solid var(--proto-neutral-200);
@@ -1605,10 +1604,9 @@ body:has(.pdp-buy-inner)
 	.linker-genie-peek {
 	display: none;
 }
-@media (max-width: 860px) {
-	.linker-genie-peek {
-		display: none;
-	}
+body:has(.linker-genie-hero--open)
+	.linker-genie:not(:has([aria-expanded="true"])) {
+	display: none;
 }
 .linker-genie-loading-preview {
 	display: grid;
@@ -1695,21 +1693,10 @@ body:has(.pdp-buy-inner)
 	box-shadow: none;
 }
 
-/*
- * Mobile. Below 860px the resting tree is hidden (the live page hides its
- * bubble there) but an open conversation must not vanish with it: the chips'
- * Ask Genie boots the app also under this breakpoint. The dock loader marks
- * every open trigger aria-expanded="true", so the open state — and only it —
- * lets the tree out as a bottom conversation card, and the bubble hides while
- * the card is up. Inset 10px, radius 14px, the shadow and the 72vh scroll cap
- * are the measured values of the owner-approved round-2 proposal C2 (panel
- * 350×317 at a 390px viewport,
- * docs/acceptance/2026-10-12/visual-round2/proposals/); specificity carries
- * the open rules over the resting display:none without touching any JS.
- */
 @media (max-width: 860px) {
 	.linker-genie {
-		display: none;
+		right: 12px;
+		bottom: max(12px, env(safe-area-inset-bottom));
 	}
 
 	.linker-genie:has([data-linker-genie-open][aria-expanded="true"]) {
@@ -2301,7 +2288,7 @@ body:has(.pdp-buy-inner)
 	height: 100%;
 	min-height: 0;
 }
-.linker-genie-panel:has(.linker-genie-app--expanded) {
+#linker-genie-mount:has(.linker-genie-app--expanded) {
 	position: fixed;
 	inset: 0;
 	margin: auto;
@@ -2340,7 +2327,7 @@ body:has(.pdp-buy-inner)
 	text-align: start;
 }
 @media (max-width: 767px) {
-	.linker-genie-panel:has(.linker-genie-app--expanded) {
+	#linker-genie-mount:has(.linker-genie-app--expanded) {
 		inset: 0;
 		width: 100vw;
 		height: 100dvh;
@@ -2365,4 +2352,11 @@ body:has(.pdp-buy-inner)
 }
 .linker-genie-footnote .linker-genie-guest-links {
 	padding: 0;
+}
+
+#linker-genie-mount:has(.linker-genie-app--expanded)::before {
+	display: none;
+}
+#linker-genie-mount:popover-open::backdrop {
+	background: rgb(10 30 29 / 45%);
 }

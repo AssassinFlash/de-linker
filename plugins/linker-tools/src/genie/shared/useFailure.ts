@@ -314,6 +314,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 							draft: {
 								owner,
 								editing: true,
+								conversationId: context.conversationId,
 								text: snapshot.text,
 								question:
 									buildQuestion(

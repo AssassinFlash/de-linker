@@ -12,7 +12,13 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	createPortal,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -119,6 +125,7 @@ export interface HeroConversationProps {
 	context?: DraftContext;
 	openingQuestion?: string;
 	onExpand?: () => void;
+	footer?: HTMLElement | null;
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
@@ -138,6 +145,7 @@ export function HeroConversation( {
 	context,
 	openingQuestion = '',
 	onExpand,
+	footer,
 }: HeroConversationProps ) {
 	const [ opening, setOpening ] = useState( openingQuestion );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
@@ -287,6 +295,7 @@ export function HeroConversation( {
 					// the read that started earlier would wipe it.
 					return;
 				}
+				draftContext.conversationId = stored.conversationId;
 				setThread( stored.messages );
 				setTurn( stored.turn );
 				setContacts( stored.contacts ?? [] );
@@ -333,9 +342,9 @@ export function HeroConversation( {
 					return;
 				}
 				if (
-					checked.record?.conversationId &&
-					stored.conversationId &&
-					checked.record.conversationId !== stored.conversationId
+					checked.record?.conversationId !== undefined &&
+					checked.record.conversationId !==
+						( stored.conversationId ?? 0 )
 				) {
 					return;
 				}
@@ -360,7 +369,9 @@ export function HeroConversation( {
 								stored.messages
 							)
 						: adoptFailure( checked.candidate, reconciled );
-				if ( ! restored ) return;
+				if ( ! restored ) {
+					return;
+				}
 				if ( restored.phase === 'editing' && restored.draft ) {
 					setPrompt( restored.draft.text );
 					placeChips( restored.draft.uploads );
@@ -403,6 +414,7 @@ export function HeroConversation( {
 		draftContext.identity?.scope,
 		adoptFailure,
 		deferFailure,
+		exchangeFailure,
 		ignoreCurrentCandidate,
 	] );
 
@@ -753,6 +765,7 @@ export function HeroConversation( {
 			draftContext,
 			retainUnverifiedTurn,
 			beginTurn,
+			clearDeferred,
 		]
 	);
 	sendRef.current = send;
@@ -854,6 +867,7 @@ export function HeroConversation( {
 		draftContext,
 		retainUnverifiedTurn,
 		beginTurn,
+		clearDeferred,
 	] );
 
 	const updateMissing = useCallback(
@@ -993,6 +1007,27 @@ export function HeroConversation( {
 		/>
 	);
 
+	const viewActions = (
+		<div className="linker-genie-hero__view-actions">
+			{ onExpand ? (
+				<button
+					type="button"
+					className="linker-genie-hero__continue"
+					onClick={ onExpand }
+				>
+					{ __( 'Expand full view', 'linker-tools' ) }
+				</button>
+			) : null }
+			<button
+				type="button"
+				className="linker-genie-hero__continue"
+				onClick={ onContinue }
+			>
+				{ __( 'Continue in the side panel', 'linker-tools' ) }
+			</button>
+		</div>
+	);
+
 	return (
 		<div className="linker-genie-hero__surface" lang={ locale }>
 			<header className="linker-genie-hero__bar">
@@ -1000,22 +1035,9 @@ export function HeroConversation( {
 					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">
-					{ onExpand ? (
-						<button
-							type="button"
-							className="linker-genie-hero__continue"
-							onClick={ onExpand }
-						>
-							{ __( 'Expand full view', 'linker-tools' ) }
-						</button>
-					) : null }
-					<button
-						type="button"
-						className="linker-genie-hero__continue"
-						onClick={ onContinue }
-					>
-						{ __( 'Continue in the side panel', 'linker-tools' ) }
-					</button>
+					{ footer
+						? createPortal( viewActions, footer )
+						: viewActions }
 					<button
 						ref={ closeRef }
 						type="button"
@@ -1053,7 +1075,10 @@ export function HeroConversation( {
 					</ol>
 					<TurnProgress />
 				</Transcript>
-			) : thread.length > 0 && draftContext.phase === 'ready' ? (
+			) : null }
+			{ ! opening &&
+			thread.length > 0 &&
+			draftContext.phase === 'ready' ? (
 				<Transcript
 					followKey={
 						'waiting' === phase
@@ -1300,7 +1325,11 @@ export function HeroConversation( {
 					</button>
 				</section>
 			) : null }
-			{ draftContext.phase !== 'ready' || recoveryBlocked ? (
+			{ ( draftContext.phase !== 'ready' || recoveryBlocked ) &&
+			! (
+				draftContext.phase === 'loading' &&
+				( opening || phase === 'waiting' )
+			) ? (
 				<div
 					className={
 						draftContext.phase === 'loading'

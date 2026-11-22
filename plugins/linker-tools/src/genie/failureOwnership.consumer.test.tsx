@@ -204,7 +204,9 @@ async function restoreRetainedDraft( expected?: string ) {
 					} )
 			).toBe( true )
 		);
-		if ( field?.value === expected ) return;
+		if ( field?.value === expected ) {
+			return;
+		}
 	}
 	const button = await screen.findByRole( 'button', {
 		name: 'Restore unsent draft',
@@ -1267,9 +1269,10 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 			);
 		}
 
-		await restoreRetainedDraft();
+		await restoreRetainedDraft( 'Earlier retained question' );
 		expect( () => journal.candidate() ).not.toThrow();
 		expect( ui.field().value ).toBe( 'Earlier retained question' );
+		await restoreRetainedDraft();
 		await screen.findByText( 'Select pending.pdf again before sending.' );
 	} );
 	test( `review repair: ${ surface } visibility-only resume revalidates and hidden checkpoints accepted text`, async () => {

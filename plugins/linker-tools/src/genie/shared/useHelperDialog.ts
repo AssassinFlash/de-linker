@@ -78,6 +78,10 @@ export function useHelperDialog( {
 		} else {
 			root.removeAttribute( 'aria-modal' );
 		}
+		if ( expanded && typeof root.showPopover === 'function' ) {
+			root.setAttribute( 'popover', 'manual' );
+			root.showPopover();
+		}
 		const overflow = document.body.style.overflow;
 		if ( mobile || expanded ) {
 			document.body.style.overflow = 'hidden';
@@ -188,6 +192,15 @@ export function useHelperDialog( {
 		};
 		document.addEventListener( 'keydown', key );
 		return () => {
+			if ( expanded && root.hasAttribute( 'popover' ) ) {
+				root.hidePopover();
+				root.removeAttribute( 'popover' );
+				requestAnimationFrame( () =>
+					root
+						.querySelector< HTMLElement >( '[data-genie-expand]' )
+						?.focus( { preventScroll: true } )
+				);
+			}
 			cancelAnimationFrame( frame );
 			timers.forEach( ( timer ) => window.clearInterval( timer ) );
 			document.removeEventListener( 'keydown', key );

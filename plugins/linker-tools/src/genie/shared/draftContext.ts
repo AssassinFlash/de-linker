@@ -18,6 +18,7 @@ export class DraftContext {
 	private leaveListeners = new Set< () => void >();
 	private editorValue: FailureOwner | null = null;
 	phase: ContextPhase = 'loading';
+	conversationId?: number;
 	constructor(
 		private readonly config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 		private readonly changed: () => void
@@ -150,6 +151,7 @@ export class DraftContext {
 						this.identityValue.scope !== identity.scope
 					) {
 						this.epoch += 1;
+						this.conversationId = undefined;
 						this.editorValue = null;
 						this.changed();
 					}
@@ -252,7 +254,10 @@ type PageContextSlot = {
 };
 type DraftWindow = Window & { __linkerGenieDraftAuthority?: PageContextSlot };
 
-/** Both separately loaded entry bundles use the same page owner and lifecycle. */
+/**
+ * Both entry bundles use the same page owner and lifecycle.
+ * @param config Native REST routes and nonce for this page.
+ */
 export function pageDraftContext(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >
 ): DraftContext {
@@ -279,8 +284,11 @@ export function mountPageDraftContext( context: DraftContext ): () => void {
 		};
 		const checkpoint = () => context.checkpoint();
 		const visibility = () => {
-			if ( document.visibilityState === 'hidden' ) checkpoint();
-			else check();
+			if ( document.visibilityState === 'hidden' ) {
+				checkpoint();
+			} else {
+				check();
+			}
 		};
 		check();
 		window.addEventListener( 'focus', check );
@@ -302,6 +310,8 @@ export function mountPageDraftContext( context: DraftContext ): () => void {
 		};
 	}
 	return () => {
-		if ( --slot.clients === 0 ) slot.release();
+		if ( --slot.clients === 0 ) {
+			slot.release();
+		}
 	};
 }
