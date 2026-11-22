@@ -174,9 +174,9 @@ body:has(.linker-genie-workspace)
 /* `.gp-rail` */
 .linker-genie-rail {
 	display: none;
-	flex: 0 0 260px;
+	flex: 0 0 232px;
 	flex-direction: column;
-	width: 260px;
+	width: 232px;
 	padding: 12px;
 	background: var(--proto-neutral-50);
 	overflow: hidden;
@@ -552,19 +552,10 @@ body:has(.linker-genie-workspace)
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
-	width: min(768px, calc(100% - 48px));
+	width: min(1080px, calc(100% - 48px));
 	min-height: 0;
 	margin: 0 auto;
 	padding: 0;
-}
-
-/* `.gp-thread` — a conversation's column keeps the prototype's 102px under the
- * pinned bar: with the 28px disclosure beneath it, the composer's own bottom
- * edge stands 130px above the frame's. The empty column's own rule below takes
- * the welcome's 110px instead, and the 767px block restates both. */
-.linker-genie-app--workspace
-	.linker-genie-app__panel:has(.linker-genie-app__message) {
-	padding-bottom: 102px;
 }
 
 /* `.gp-messages{overflow:auto;flex:1;padding-top:24px;scrollbar-width:thin}`
@@ -642,9 +633,10 @@ body:has(.linker-genie-workspace)
 	width: fit-content;
 	max-width: 80%;
 	margin-left: auto;
-	padding: 8px 20px;
-	border-radius: 24px;
-	background: var(--proto-neutral-100);
+	padding: 9px 16px;
+	border-radius: 14px 14px 4px 14px;
+	background: var(--proto-color-ink);
+	color: var(--proto-color-surface);
 }
 
 /* `.gp-assistant` */
@@ -1323,10 +1315,35 @@ body:has(.linker-genie-workspace)
 	margin-left: auto;
 }
 
+.linker-genie-app__transcript {
+	container: genie-reading / inline-size;
+}
 .linker-genie-app__cards {
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
+}
+.linker-genie-app__cards .linker-card {
+	grid-template-columns: 72px minmax(0, 1fr);
+}
+:is(.linker-genie-app__cards, .linker-genie-hero__cards) .linker-card__title {
+	word-break: normal;
+	overflow-wrap: normal;
+	hyphens: none;
+}
+@container genie-reading (min-width: 740px) {
+	.linker-genie-app__cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.linker-genie-app__cards .linker-card {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.linker-genie-app__cards .linker-card__media {
+		height: 82px;
+		aspect-ratio: auto;
+	}
 }
 
 /* Answer actions use the approved contact/send pill: 44px touch target,
@@ -1520,8 +1537,7 @@ body:has(.pdp-buy-inner)
  * The standing dock: the open button floats in the page's bottom-right corner
  * as the live page's resting Advisor bubble does (50×50 at 20/20, #172636,
  * radius 999, shadow, z 10000 — measured on the live catalogue 2026-10-12),
- * and the dock takes no room in the page flow. The live page hides its bubble
- * under 861px (its own switch sits between 860 and 865).
+ * and the dock takes no room in the page flow.
  */
 .linker-genie {
 	position: fixed;
@@ -1583,7 +1599,55 @@ body:has(.pdp-buy-inner)
 }
 
 .linker-genie-open-label {
+	font-weight: 600;
+}
+.linker-genie .linker-genie-open {
+	width: auto;
+	min-height: 44px;
+	height: 44px;
+	gap: 8px;
+	padding: 0 16px 0 9px;
+	margin-inline-start: auto;
+}
+.linker-genie-peek {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 5px;
+	margin-bottom: 8px;
+	max-width: min(460px, calc(100vw - 32px));
+}
+.linker-genie-peek__prompt {
+	border: 1px solid var(--proto-neutral-200);
+	border-radius: 12px;
+	background: var(--proto-color-surface);
+	color: var(--proto-color-ink);
+	padding: 5px 10px;
+	font: 500 12px/1.35 var(--proto-font-sans);
+	text-align: start;
+}
+.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+	> .linker-genie-open,
+.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+	.linker-genie-peek {
 	display: none;
+}
+body:has(.linker-genie-hero--open)
+	.linker-genie:not(:has([aria-expanded="true"])) {
+	display: none;
+}
+.linker-genie-loading-preview {
+	display: grid;
+	align-content: start;
+	gap: 16px;
+	padding: 18px;
+}
+.linker-genie-loading-preview .linker-genie-app__message {
+	justify-self: end;
+	background: var(--proto-color-ink);
+	color: var(--proto-color-surface);
+	padding: 9px 14px;
+	border-radius: 18px;
 }
 
 /*
@@ -1626,14 +1690,14 @@ body:has(.pdp-buy-inner)
 	outline-offset: 2px;
 }
 
-/* The panel the app renders into, above the bubble. */
+/* The panel replaces the launcher in the same viewport corner. */
 .linker-genie-panel {
 	position: fixed;
 	right: 20px;
-	bottom: 84px;
+	bottom: 20px;
 	z-index: 10000;
-	width: min(400px, calc(100vw - 40px));
-	height: min(600px, calc(100vh - 120px));
+	width: min(440px, calc(100vw - 40px));
+	height: min(680px, calc(100dvh - 40px));
 	overflow: auto;
 	border-radius: 16px;
 	background: var(--proto-color-surface);
@@ -1657,21 +1721,10 @@ body:has(.pdp-buy-inner)
 	box-shadow: none;
 }
 
-/*
- * Mobile. Below 860px the resting tree is hidden (the live page hides its
- * bubble there) but an open conversation must not vanish with it: the chips'
- * Ask Genie boots the app also under this breakpoint. The dock loader marks
- * every open trigger aria-expanded="true", so the open state — and only it —
- * lets the tree out as a bottom conversation card, and the bubble hides while
- * the card is up. Inset 10px, radius 14px, the shadow and the 72vh scroll cap
- * are the measured values of the owner-approved round-2 proposal C2 (panel
- * 350×317 at a 390px viewport,
- * docs/acceptance/2026-10-12/visual-round2/proposals/); specificity carries
- * the open rules over the resting display:none without touching any JS.
- */
 @media (max-width: 860px) {
 	.linker-genie {
-		display: none;
+		right: 12px;
+		bottom: max(12px, env(safe-area-inset-bottom));
 	}
 
 	.linker-genie:has([data-linker-genie-open][aria-expanded="true"]) {
@@ -1806,7 +1859,7 @@ body:has(.pdp-buy-inner)
 	.linker-genie-app--workspace
 		.linker-genie-app__panel:not(:has(.linker-genie-app__message)) {
 		width: calc(100% - 32px);
-		padding-bottom: 108px;
+		padding-bottom: 0;
 	}
 
 	/* `.gp-welcome h1` at the prototype's 767px. */
@@ -2256,5 +2309,94 @@ body:has(.pdp-buy-inner)
 	.linker-genie-inquiry__price {
 		grid-column: 1 / -1;
 		text-align: left;
+	}
+}
+
+.linker-genie-panel > [data-linker-app="genie"] {
+	height: 100%;
+	min-height: 0;
+}
+#linker-genie-mount:has(.linker-genie-app--expanded) {
+	position: fixed;
+	inset: 0;
+	margin: auto;
+	width: min(1160px, calc(100vw - 40px));
+	height: min(860px, calc(100dvh - 40px));
+	max-width: none;
+	max-height: none;
+	overflow: hidden;
+	border: 0;
+	border-radius: 18px;
+	padding: 0;
+	box-shadow:
+		0 0 0 100vmax rgb(10 30 29 / 45%),
+		0 28px 80px rgb(10 30 29 / 20%);
+}
+.linker-genie-app--expanded .linker-genie-app__bar {
+	justify-content: space-between;
+}
+.linker-genie-app--workspace .linker-genie-message-body {
+	max-width: 72ch;
+}
+.linker-genie-guest-links {
+	margin: 0;
+	padding: 4px 12px;
+	color: var(--proto-color-muted);
+	font-size: 12px;
+	line-height: 18px;
+	text-align: center;
+}
+.linker-genie-guest-links a {
+	color: var(--proto-color-accent);
+	text-underline-offset: 2px;
+}
+.linker-genie-rail > .linker-genie-guest-links {
+	margin-top: auto;
+	text-align: start;
+}
+@media (max-width: 767px) {
+	#linker-genie-mount:has(.linker-genie-app--expanded) {
+		inset: 0;
+		width: 100vw;
+		height: 100dvh;
+		border-radius: 0;
+	}
+}
+
+.linker-genie-panel
+	.linker-genie-app--workspace
+	.linker-genie-app__panel:has(.linker-genie-app__message)
+	.linker-genie-app__composer {
+	margin-top: 0;
+}
+.linker-genie-panel .linker-genie-app--workspace .linker-genie-app__disclosure {
+	padding-block: 2px;
+}
+.linker-genie-app .linker-genie-footnote {
+	flex-wrap: nowrap;
+	min-height: 32px;
+	gap: 8px;
+	padding: 2px 10px;
+}
+.linker-genie-footnote .linker-genie-guest-links {
+	padding: 0;
+}
+
+#linker-genie-mount:has(.linker-genie-app--expanded)::before {
+	display: none;
+}
+#linker-genie-mount:popover-open::backdrop {
+	background: rgb(10 30 29 / 45%);
+}
+
+@media (max-width: 767px) {
+	.linker-genie-workspace-link {
+		display: inline-grid;
+		place-items: center;
+		min-width: 44px;
+		min-height: 44px;
+	}
+	.linker-genie-workspace-link span {
+		display: none;
 	}
 }

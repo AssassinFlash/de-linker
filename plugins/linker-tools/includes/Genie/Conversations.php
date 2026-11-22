@@ -873,8 +873,12 @@ class Conversations {
 		if ( ! $this->claim_store_available() ) {
 			return;
 		}
-		$this->forget_browser_claim_cache( $tab );
-		if ( array() === array_filter( $this->browser_claim_options( $tab ), static fn( string $name ): bool => false !== get_option( $name, false ) ) ) {
+		global $wpdb;
+		$names = $this->browser_claim_options( $tab );
+		// A sibling may have inserted its claim after this request cached an option miss.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- One indexed existence read; ordinary cookie-bearing requests do not evict shared option caches.
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->options} WHERE option_name IN (%s, %s, %s) LIMIT 1", $names[0], $names[1], $names[2] ) );
+		if ( null === $exists ) {
 			return;
 		}
 		if ( ! $this->lock_browser_claim( $tab ) ) {

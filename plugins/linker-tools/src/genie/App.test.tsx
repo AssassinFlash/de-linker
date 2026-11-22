@@ -62,9 +62,6 @@ vi.mock( './api/contact', () => ( {
 	} ) ),
 	sendContact: vi.fn(),
 } ) );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'GW10K-ETA' ),
-} ) );
 vi.mock( './api/inquiry', () => ( {
 	readInquiry: vi.fn( async () => ( {
 		conversation: 5,
@@ -1078,7 +1075,6 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -1387,13 +1383,9 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 			} )
 	);
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1447,13 +1439,9 @@ test( 'a cut stream keeps the question, hides the partial answer, and retries th
 		blocks: [ { type: 'text', text: 'A hybrid covers that.', refs: [] } ],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1623,13 +1611,9 @@ test( 'a 502 keeps an attached file across a reload', async () => {
 	first.unmount();
 	resetTurnLane();
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect(
 		await screen.findByText( 'gw10k-et-datenblatt.pdf' )
 	).toBeInTheDocument();
@@ -1685,7 +1669,6 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
@@ -2216,8 +2199,8 @@ test( 'the open dock head carries the icon group', async () => {
 		screen.getByRole( 'button', { name: 'Conversations' } )
 	).toBeVisible();
 	expect(
-		screen.getByRole( 'link', { name: 'Open full page' } )
-	).toHaveAttribute( 'href', '/genie/' );
+		screen.getByRole( 'button', { name: 'Expand full view' } )
+	).toBeVisible();
 	expect( screen.getByRole( 'button', { name: 'Close' } ) ).toBeVisible();
 } );
 
@@ -3028,13 +3011,9 @@ test( 'a new conversation clears the stored failure and its alert', async () => 
 		conversations: [],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -3077,13 +3056,9 @@ test( 'deleting the conversation on screen clears the stored failure too', async
 		conversations: [],
 	} );
 	await renderOwned( <App config={ config() } /> );
-	await act( async () =>
-		fireEvent.click(
-			await screen.findByRole( 'button', {
-				name: 'Restore unsent draft',
-			} )
-		)
-	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Restore unsent draft' } )
+	).not.toBeInTheDocument();
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -3286,7 +3261,6 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -3951,4 +3925,66 @@ test( 'a resource refusal retains the question and file and offers native inquir
 		screen.getByRole( 'link', { name: 'Send an inquiry' } )
 	).toHaveAttribute( 'href', '/proforma-request/' );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'the dock displays the selected prompt while the thread loads and expands without interrupting it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	let resume!: () => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				resume = () => resolve( { messages: [], turn: null } );
+			} )
+	);
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'A verified answer.', refs: [] } ],
+		} );
+	const label = 'I need a three-phase hybrid inverter for a home.';
+	fireEvent.click( screen.getByRole( 'button', { name: label } ) );
+	expect( screen.getByText( label ).closest( 'li' ) ).toHaveClass(
+		'linker-genie-app__message--user'
+	);
+	expect(
+		screen.queryByText( 'Where should we begin?' )
+	).not.toBeInTheDocument();
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'Expand full view' } )
+	);
+	expect( screen.getByRole( 'dialog' ) ).toHaveAttribute(
+		'aria-modal',
+		'true'
+	);
+	expect(
+		screen.queryByRole( 'link', { name: 'Open full page' } )
+	).not.toBeInTheDocument();
+	await waitFor( () => expect( resume ).toBeTypeOf( 'function' ) );
+	await act( async () => resume() );
+	expect( await screen.findByText( 'A verified answer.' ) ).toBeVisible();
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'opening the homepage history rail leaves its active question with the homepage until the dock is requested', async () => {
+	const host = document.createElement( 'div' );
+	host.dataset.genieHeroHistory = '';
+	document.body.append( host );
+	try {
+		const c = { ...config(), surface: 'helper' as const };
+		await renderOwned( <App config={ c } /> );
+		await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
+		expect( readThread ).not.toHaveBeenCalled();
+		await act( async () => {
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-open', { detail: {} } )
+			);
+		} );
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 1 ) );
+	} finally {
+		host.remove();
+	}
 } );

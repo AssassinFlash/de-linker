@@ -41,17 +41,17 @@ final class Compatibility {
 	/**
 	 * Join every declaration attached to these exact canonical Woo identities.
 	 *
-	 * @param int                 $inverter_id Canonical inverter.
-	 * @param int                 $battery_id Canonical battery.
-	 * @param array<string,mixed> $manifest Current shared authority.
+	 * @param int                       $inverter_id Canonical inverter.
+	 * @param int                       $battery_id Canonical battery.
+	 * @param list<array<string,mixed>> $pairs Current published declarations.
 	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
 	 */
-	private static function answer( int $inverter_id, int $battery_id, array $manifest ): ?array {
+	public static function in_pairs( int $inverter_id, int $battery_id, array $pairs ): ?array {
 		$conditions  = array();
 		$documents   = array();
 		$accessories = array();
 		$verdict     = null;
-		foreach ( self::pairs( $manifest ) as $pair ) {
+		foreach ( $pairs as $pair ) {
 			if ( ( $pair['inverter_product_id'] ?? null ) !== $inverter_id || ( $pair['battery_product_id'] ?? null ) !== $battery_id ) {
 				continue;
 			}
@@ -111,7 +111,7 @@ final class Compatibility {
 	 */
 	public static function for_products( int $inverter_id, int $battery_id, ?array $manifest = null ): ?array {
 		$manifest ??= Publication::manifest();
-		return self::answer( Publication::canonical_id( $inverter_id ), Publication::canonical_id( $battery_id ), $manifest );
+		return self::in_pairs( Publication::canonical_id( $inverter_id ), Publication::canonical_id( $battery_id ), self::pairs( $manifest ) );
 	}
 
 	/**

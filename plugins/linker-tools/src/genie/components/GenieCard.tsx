@@ -1,8 +1,7 @@
 /**
  * A product card of the answer, with its actions inside the card
- * (docs/specs/13-genie.md). Display data comes from the Store API; the model
- * name comes from the get-product ability, so the card names the model and
- * never `#<id>`; the price line comes with the answer, filled by the service
+ * (docs/specs/13-genie.md). Display data and product identity come from one Store API list.
+ * The price line comes with the answer, filled by the service
  * for this customer's account (#242).
  */
 
@@ -17,9 +16,9 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { ProductCard, type CardState } from '../../shared/ProductCard';
 import type { storeClient } from '../../configurator/api/store';
-import type { StoreProduct } from '../../configurator/types';
-import { productModel } from '../api/product';
+import type { Locale, StoreProduct } from '../../configurator/types';
 import type { CardPrice } from '../api/turn';
+import { brandSeries } from '../shared/brandSeries';
 
 /**
  * The card's price line (#242), exactly as the service filled it: the product
@@ -38,95 +37,65 @@ export function priceLine(
 	return { text: price.text, kind: price.reason ? 'note' : 'net' };
 }
 
-/**
- * The card's own content load, separate from the card-action feedback
- * (`CardState`): pending is not loaded-empty is not failed (#901). The same
- * shape as draftContext's phase and RoofStep's Status union. The state is
- * keyed by the requested product id: a re-render that re-runs the effect
- * keeps the loaded card on screen instead of flashing back to pending, the
- * way the former single `StoreProduct | null` did. `loading` carries no live
- * region: a live region would announce the wait, and only a true failure is
- * announced (`role="alert"`).
- */
-type Load =
-	| { id: number; phase: 'loading' }
-	| { id: number; phase: 'ready'; product: StoreProduct }
-	| { id: number; phase: 'unavailable' }
-	| { id: number; phase: 'failed' };
+interface CardActions {
+	onAdd: ( id: number, quantity: number ) => void;
+	onSave: ( id: number, title: string ) => void;
+}
 
-export function GenieCard( {
-	productId,
-	quantity,
-	restUrl,
+interface GenieCardsProps extends CardActions {
+	products: number[];
+	store: ReturnType< typeof storeClient >;
+	locale: Locale;
+	prices?: CardPrice[];
+	quantities?: Record< string, number >;
+	proofs?: Record< string, string >;
+	statusFor: ( id: number ) => { state: CardState; text: string };
+}
+
+export function GenieCards( {
+	products,
 	store,
 	locale,
-	status,
-	price,
+	prices,
+	quantities,
+	proofs,
+	statusFor,
 	onAdd,
 	onSave,
-}: {
-	productId: number;
-	quantity?: number;
-	restUrl: string;
-	store: ReturnType< typeof storeClient >;
-	locale: string;
-	status: { state: CardState; text: string };
-	price?: CardPrice;
-	onAdd: ( productId: number, quantity: number ) => void;
-	onSave: ( productId: number, title: string ) => void;
-} ) {
-	const [ load, setLoad ] = useState< Load >( {
-		id: productId,
-		phase: 'loading',
-	} );
-	const [ model, setModel ] = useState( '' );
+}: GenieCardsProps ) {
 	const [ attempt, setAttempt ] = useState( 0 );
-
+	const [ result, setResult ] = useState< {
+		products: number[];
+		locale: Locale;
+		attempt: number;
+		rows: StoreProduct[] | null;
+	} >();
 	useEffect( () => {
-		let alive = true;
-		store
-			.products( [ productId ], locale as 'en' | 'de' )
-			.then( ( [ first ] ) => {
-				if ( ! alive ) {
-					return;
+		let active = true;
+		store.products( products, locale ).then(
+			( rows ) => {
+				if ( active ) {
+					setResult( { products, locale, attempt, rows } );
 				}
-				setLoad(
-					first
-						? { id: productId, phase: 'ready', product: first }
-						: { id: productId, phase: 'unavailable' }
-				);
-			} )
-			.catch( () => {
-				if ( alive ) {
-					setLoad( { id: productId, phase: 'failed' } );
+			},
+			() => {
+				if ( active ) {
+					setResult( { products, locale, attempt, rows: null } );
 				}
-			} );
-		productModel( restUrl, productId, locale as 'en' | 'de' )
-			.then( ( name ) => {
-				if ( alive ) {
-					setModel( name );
-				}
-			} )
-			.catch( () => {
-				// The model line is optional decoration; a failed read just
-				// leaves it empty, the card still renders.
-			} );
+			}
+		);
 		return () => {
-			alive = false;
+			active = false;
 		};
-	}, [ productId, restUrl, store, locale, attempt ] );
-
-	if ( load.id !== productId || 'loading' === load.phase ) {
+	}, [ products, store, locale, attempt ] );
+	if (
+		result?.products !== products ||
+		result.locale !== locale ||
+		result.attempt !== attempt
+	) {
 		return null;
 	}
-	if ( 'unavailable' === load.phase ) {
-		return (
-			<p className="linker-product-card">
-				{ __( 'Currently unavailable', 'linker-tools' ) }
-			</p>
-		);
-	}
-	if ( 'failed' === load.phase ) {
+	if ( result.rows === null ) {
 		return (
 			<div className="linker-product-card" role="alert">
 				<span>
@@ -138,26 +107,76 @@ export function GenieCard( {
 				<button
 					type="button"
 					className="linker-genie-app__card-action"
-					onClick={ () => {
-						setLoad( { id: productId, phase: 'loading' } );
-						setAttempt( ( previous ) => previous + 1 );
-					} }
+					onClick={ () => setAttempt( ( a ) => a + 1 ) }
 				>
 					{ __( 'Try again', 'linker-tools' ) }
 				</button>
 			</div>
 		);
 	}
-	const product = load.product;
-	const modelText = model
-		? `${ __( 'Model', 'linker-tools' ) } ${ model }`
-		: '';
+	const rows = new Map(
+		result.rows.map( ( product ) => [ product.id, product ] )
+	);
+	return (
+		<>
+			{ products.map( ( id ) => {
+				const product = rows.get( id );
+				if ( ! product ) {
+					return (
+						<p key={ id } className="linker-product-card">
+							{ __( 'Currently unavailable', 'linker-tools' ) }
+						</p>
+					);
+				}
+				return (
+					<GenieCard
+						key={ id }
+						product={ product }
+						quantity={ quantities?.[ id ] }
+						hasProof={ Boolean( proofs?.[ id ] ) }
+						status={ statusFor( id ) }
+						price={ prices?.find( ( p ) => p.product_id === id ) }
+						onAdd={ onAdd }
+						onSave={ onSave }
+					/>
+				);
+			} ) }
+		</>
+	);
+}
+
+function GenieCard( {
+	product,
+	quantity,
+	hasProof,
+	status,
+	price,
+	onAdd,
+	onSave,
+}: CardActions & {
+	product: StoreProduct;
+	quantity?: number;
+	hasProof: boolean;
+	status: { state: CardState; text: string };
+	price?: CardPrice;
+} ) {
+	const productId = product.id;
+	const term = ( taxonomy: string ) => {
+		const terms = product.attributes?.find(
+			( attribute ) => attribute.taxonomy === taxonomy
+		)?.terms;
+		return terms?.length === 1 ? terms[ 0 ].name : '';
+	};
+	const model = term( 'pa_model' );
+	const identity = brandSeries( term( 'pa_brand' ), term( 'pa_series' ) );
+
 	return (
 		<ProductCard
 			id={ `linker-genie-card-${ productId }` }
-			role={ __( 'Product', 'linker-tools' ) }
-			title={ product.name }
-			model={ modelText }
+			role={ identity || __( 'Product', 'linker-tools' ) }
+			title={ model || product.name }
+			linkLabel={ model ? product.name : undefined }
+			model=""
 			quantity={
 				quantity
 					? sprintf(
@@ -183,26 +202,33 @@ export function GenieCard( {
 			] }
 			status={ status }
 			actions={
-				quantity !== 0 && [
-					<button
-						key="draft"
-						type="button"
-						className="linker-genie-app__card-action linker-genie-app__card-action--primary"
-						disabled={ 'pending' === status.state }
-						onClick={ () => onAdd( productId, quantity ?? 1 ) }
-					>
-						{ __( 'Add to solution draft', 'linker-tools' ) }
-					</button>,
-					<button
-						key="save"
-						type="button"
-						className="linker-genie-app__card-action"
-						disabled={ 'pending' === status.state }
-						onClick={ () => onSave( productId, product.name ) }
-					>
-						{ __( 'Save solution', 'linker-tools' ) }
-					</button>,
-				]
+				hasProof && quantity && quantity > 0
+					? [
+							<button
+								key="draft"
+								type="button"
+								className="linker-genie-app__card-action linker-genie-app__card-action--primary"
+								disabled={ 'pending' === status.state }
+								onClick={ () => onAdd( productId, quantity ) }
+							>
+								{ __(
+									'Add to solution draft',
+									'linker-tools'
+								) }
+							</button>,
+							<button
+								key="save"
+								type="button"
+								className="linker-genie-app__card-action"
+								disabled={ 'pending' === status.state }
+								onClick={ () =>
+									onSave( productId, product.name )
+								}
+							>
+								{ __( 'Save solution', 'linker-tools' ) }
+							</button>,
+						]
+					: undefined
 			}
 		/>
 	);

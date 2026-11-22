@@ -25,7 +25,14 @@ from linker_genie import page as page_tool
 from linker_genie import planning as planning_tool
 from linker_genie import solution as solution_tool
 from linker_genie.jev import Reading
-from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
+from linker_genie.lexicon import (
+    MAX_WORDS,
+    MIN_CODE,
+    Match,
+    _words,
+    application_word,
+    normalize,
+)
 from linker_genie.nameplate import Identified
 from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import PageContext
@@ -406,6 +413,9 @@ _INVERTER_WORD = re.compile(r"\b(?:inverters?|wechselrichter(?:n|s)?)\b", re.IGN
 _BATTERY_WORD = re.compile(
     r"\b(?:batter(?:y|ies)|batterie(?:n)?|speicher)\b", re.IGNORECASE
 )
+_STORAGE_WORD = re.compile(
+    r"\b(?:storage|(?:gewerbe|heim|strom|energie|batterie)?speicher)\b", re.I
+)
 _NUMBER = r"(\d+(?:[.,]\d+)?)"
 _FLOOR_MARK = (
     r"(?:at\s+least|minimum|min\.?|>=|≥|over|above|more\s+than|"
@@ -641,6 +651,7 @@ class Route:
     # Which next-step sentence this model turn keeps (#394). None when the
     # route already has its own block (cards, a document, the configurator).
     shape: AnswerShape | None = None
+    catalog_only: bool = False
 
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
@@ -967,6 +978,8 @@ def _plan_turn(
                 "pairing",
                 (pairing,),
                 no_handoff=True,
+                catalog_only=not earlier
+                and _catalog_request(message, matches, _PAIRING_WORDS),
                 hint="The pairing result is fetched; answer from it.",
                 reasons=tuple(reasons),
             )
@@ -1016,14 +1029,99 @@ def _plan_turn(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
+    brands = list(dict.fromkeys(m.value for m in matches if m.kind == "brand"))
+    comparing = intent == "compare" or re.search(
+        r"\b(?:compar(?:e|ison)|vs|versus|vergleich\w*)\b", message, re.I
+    )
+    if (
+        comparing
+        and len(brands) >= 2
+        and not any(note.unknown or note.is_conflict for note in notes)
+    ):
+        categories = [m for m in matches if m.kind == "category"]
+        filters = _search_input(categories, lang) or {
+            "lang": lang,
+            "limit": SEARCH_LIMIT,
+        }
+        application = application_word(message)
+        if application:
+            filters["application"] = application
+        if "device_class" not in filters:
+            if _STORAGE_WORD.search(message):
+                filters["device_classes"] = [*_BATTERIES, "all-in-one-systems"]
+            elif _BATTERY_WORD.search(message):
+                filters["device_classes"] = list(_BATTERIES)
+            elif _INVERTER_WORD.search(message):
+                filters["device_classes"] = list(_INVERTERS)
+        members: dict[str, list[Match]] = {brand: [] for brand in brands}
+        scoped = True
+        for match in matches:
+            if match.kind not in ("model", "series"):
+                continue
+            product_ids = (
+                match.product_ids
+                if match.kind == "model"
+                else subject.series_members.get(match.value, set())
+            )
+            owners = {
+                owner
+                for pid in product_ids
+                for owner in subject.brand_of.get(pid, set())
+            }
+            if len(owners) == 1 and (owner := next(iter(owners))) in members:
+                members[owner].append(match)
+            else:
+                scoped = False
+        searches = []
+        for brand in brands[:MAX_TOOL_CALLS]:
+            own = members[brand]
+            # A single Store query can express aliases of one family, but not
+            # several independently named families with an implicit OR.
+            if len({normalize(item.words) for item in own}) > 1:
+                scoped = False
+                own = []
+            own_filters = _search_input(own, lang) or {}
+            searches.append(
+                Call(
+                    "linker/search-products", {**filters, **own_filters, "brand": brand}
+                )
+            )
+        return Route(
+            "compare",
+            tuple(searches),
+            no_handoff=True,
+            catalog_only=scoped
+            and len(brands) <= MAX_TOOL_CALLS
+            and not earlier
+            and _catalog_request(message, matches, _CATALOG_COMPARISON_WORDS),
+            hint=(
+                "Candidates from each requested brand were fetched separately. Compare matching "
+                "models from each brand, with a compare block using only qualified product IDs. "
+                "If one brand has no match for the requested use, say so."
+            ),
+            reasons=tuple(reasons),
+        )
     hint_extra = _model_hint(notes)
     unknown = any(note.unknown for note in notes)
-    if (calls or notes) and (bare or intent == "find_products" or unknown):
+    plain_price = (
+        len(notes) == 1
+        and notes[0].searched_known
+        and not notes[0].is_conflict
+        and _DIRECT_PRICE.search(message) is not None
+        and _catalog_request(message, matches, _PRICE_WORDS)
+    )
+    if (calls or notes) and (
+        bare or plain_price or intent == "find_products" or unknown
+    ):
         return Route(
             "products",
             calls,
             show_products=True,
             no_handoff=True,
+            catalog_only=(bare or plain_price)
+            and not earlier
+            and not unknown
+            and not brand_conflict,
             hint=(
                 "The customer named products; the search result is fetched. Show "
                 "its products as cards, cited in the text refs. A product word is "
@@ -1480,6 +1578,45 @@ def extreme_input(
     ):
         found["series"] = series[0].value
     return found
+
+
+# An ordinary side-by-side catalogue request. A remaining word, number or unit
+# describes a criterion the model must investigate rather than omit.
+_CATALOG_COMPARISON_WORDS = frozenset(
+    "compare comparison versus vs please of and or for the a an site use options products models "
+    "commercial industrial residential home household c i project projects storage battery batteries inverter inverters "
+    "vergleich vergleichen vergleiche bitte sie von und oder für fuer einen ein eine einem den die das "
+    "im am an standort einsatz optionen produkte modelle gewerbe gewerbespeicher heimspeicher "
+    "gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
+)
+
+
+_DIRECT_PRICE = re.compile(
+    r"\b(?:prices?|costs?|how much|preis(?:e)?|kostet|kosten|wie viel)\b", re.I
+)
+_PRICE_WORDS = frozenset(
+    "what is are the a this model product price prices for of how much do does it cost costs "
+    "was ist der die das den dem dieses modell produkt für fuer von preis preise wie viel kostet kosten".split()
+)
+
+_PAIRING_WORDS = frozenset(
+    "which what is are the a an can does with for my this and battery batteries inverter inverters "
+    "fits fit works work compatible support supported pairing pair "
+    "welche welcher welches welchen ist sind der die das den dem ein eine mit zu zum für und "
+    "batterie batterien speicher wechselrichter passt passen kompatibel".split()
+)
+
+
+def _catalog_request(message: str, matches: list[Match], words: frozenset[str]) -> bool:
+    remaining = " ".join(_words(message.casefold()))
+    for match in matches:
+        if match.kind in ("brand", "model", "series"):
+            remaining = re.sub(
+                r"(?<!\w)" + re.escape(match.words.casefold()) + r"(?!\w)",
+                " ",
+                remaining,
+            )
+    return set(re.findall(r"\w+", remaining)) <= words
 
 
 def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:

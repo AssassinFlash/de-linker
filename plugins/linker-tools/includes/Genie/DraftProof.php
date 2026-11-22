@@ -28,26 +28,26 @@ class DraftProof {
 	/**
 	 * Sign live artifacts only; the unsigned stream remains the stored history.
 	 *
-	 * @param string              $stream Server-normalized SSE.
-	 * @param array<string,mixed> $dependencies Complete turn dependencies.
+	 * @param string                   $stream Server-normalized SSE.
+	 * @param array<string,mixed>      $dependencies Complete turn dependencies.
+	 * @param array<string,mixed>|null $manifest Final source read supplied by the proxy.
+	 * @param string                   $locale Turn language.
 	 */
-	public function stream( string $stream, array $dependencies ): string|WP_Error {
-		$products = $dependencies['products'] ?? array();
-		if ( ! is_array( $products ) || array() === $products ) {
-			return $stream;
-		}
+	public function stream( string $stream, array $dependencies, ?array $manifest = null, string $locale = 'en' ): string|WP_Error {
 		try {
-			$manifest = is_callable( $this->manifest ) ? ( $this->manifest )() : Publication::manifest();
+			$manifest ??= is_callable( $this->manifest ) ? ( $this->manifest )() : Publication::manifest();
 		} catch ( \RuntimeException $error ) {
 			return self::unavailable();
 		}
-		$owner = $this->owner();
-		if ( $owner instanceof WP_Error || true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
-			return $stream;
+		if ( true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
+			return PublicationGuard::refused();
 		}
-		$events     = explode( "\n\n", $stream );
-		$blocks     = array();
-		$quantities = array();
+		$owner               = null;
+		$dependency_revision = null;
+		$shown               = array();
+		$events              = explode( "\n\n", $stream );
+		$blocks              = array();
+		$quantities          = array();
 		// The quantity-bearing action can follow its product card in the stream.
 		foreach ( $events as $index => $event ) {
 			if ( 1 !== preg_match( '/^event: block$/m', $event ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
@@ -58,6 +58,15 @@ class DraftProof {
 				continue;
 			}
 			$blocks[ $index ] = $block;
+			if ( in_array( $block['type'] ?? '', array( 'compare', 'cards' ), true ) ) {
+				$shown = array_merge( $shown, $block['product_ids'] ?? array() );
+			}
+			if ( 'document' === ( $block['type'] ?? '' ) ) {
+				$document_owner = LiveDocuments::owner( $block );
+				if ( null !== $document_owner ) {
+					$shown[] = $document_owner;
+				}
+			}
 			if ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
 				$args = $block['args'] ?? array();
 				$id   = $args['product_id'] ?? null;
@@ -68,40 +77,60 @@ class DraftProof {
 				}
 			}
 		}
-		foreach ( $blocks as $index => $block ) {
-			if ( 'cards' === ( $block['type'] ?? '' ) ) {
-				$requested             = (array) ( $block['quantities'] ?? array() );
-				$block['draft_proofs'] = array();
-				$block['quantities']   = array();
-				foreach ( (array) ( $block['product_ids'] ?? array() ) as $id ) {
-					if ( is_int( $id ) ) {
-						$count = $requested[ $id ] ?? $quantities[ $id ] ?? 1;
-						if ( isset( $quantities[ $id ] ) && $count !== $quantities[ $id ] ) {
-							continue;
-						}
-						$token = $this->mint(
-							array(
+		$switched = in_array( 'document', array_column( $blocks, 'type' ), true ) && switch_to_locale( 'de' === $locale ? 'de_DE_formal' : 'en_US' );
+		try {
+			foreach ( $blocks as $index => $block ) {
+				if ( 'document' === ( $block['type'] ?? '' ) ) {
+					$block = LiveDocuments::present( $block, $manifest, $shown, $locale );
+				} elseif ( in_array( $block['type'] ?? '', array( 'cards', 'compare' ), true ) ) {
+					$owner ??= $this->owner();
+					if ( $owner instanceof WP_Error ) {
+						continue;
+					}
+					$dependency_revision ??= Publication::revision( $dependencies );
+					$requested             = (array) ( $block['quantities'] ?? array() );
+					$block['draft_proofs'] = array();
+					$block['quantities']   = array();
+					foreach ( (array) ( $block['product_ids'] ?? array() ) as $id ) {
+						if ( is_int( $id ) ) {
+							$count = $requested[ $id ] ?? $quantities[ $id ] ?? 1;
+							if ( isset( $quantities[ $id ] ) && $count !== $quantities[ $id ] ) {
+								continue;
+							}
+							$token = $this->mint(
 								array(
-									'product_id' => $id,
-									'quantity'   => $count,
+									array(
+										'product_id' => $id,
+										'quantity'   => $count,
+									),
 								),
-							),
-							$dependencies,
-							$manifest,
-							$owner
-						);
-						if ( '' !== $token ) {
-							$block['draft_proofs'][ (string) $id ] = $token;
-							$block['quantities'][ (string) $id ]   = $count;
+								$dependencies,
+								$dependency_revision,
+								$manifest,
+								$owner
+							);
+							if ( '' !== $token ) {
+								$block['draft_proofs'][ (string) $id ] = $token;
+								$block['quantities'][ (string) $id ]   = $count;
+							}
 						}
 					}
+				} elseif ( 'parts' === ( $block['type'] ?? '' ) && is_array( $block['add']['items'] ?? null ) ) {
+					$owner ??= $this->owner();
+					if ( $owner instanceof WP_Error ) {
+						continue;
+					}
+					$dependency_revision ??= Publication::revision( $dependencies );
+					$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $dependency_revision, $manifest, $owner );
+				} else {
+					continue;
 				}
-			} elseif ( 'parts' === ( $block['type'] ?? '' ) && is_array( $block['add']['items'] ?? null ) ) {
-				$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $manifest, $owner );
-			} else {
-				continue;
+				$events[ $index ] = "event: block\ndata: " . (string) wp_json_encode( $block );
 			}
-			$events[ $index ] = "event: block\ndata: " . (string) wp_json_encode( $block );
+		} finally {
+			if ( $switched ) {
+				restore_previous_locale();
+			}
 		}
 		return implode( "\n\n", $events );
 	}
@@ -158,10 +187,11 @@ class DraftProof {
 	 *
 	 * @param array<array-key,mixed> $items Service-normalized list.
 	 * @param array<string,mixed>    $dependencies Complete turn dependencies.
+	 * @param string                 $dependency_revision Revision shared by all proofs in this turn.
 	 * @param array<string,mixed>    $manifest Current Woo source.
 	 * @param string                 $owner Private identity binding.
 	 */
-	private function mint( array $items, array $dependencies, array $manifest, string $owner ): string {
+	private function mint( array $items, array $dependencies, string $dependency_revision, array $manifest, string $owner ): string {
 		$lines = array();
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) || ! is_int( $item['product_id'] ?? null ) || ! is_int( $item['quantity'] ?? null ) || $item['quantity'] < 1 ) {
@@ -204,7 +234,7 @@ class DraftProof {
 			'selected'    => array( 'lines' => $lines ),
 			'publication' => array(
 				'v'                 => 2,
-				'manifest_revision' => Publication::revision( $dependencies ),
+				'manifest_revision' => $dependency_revision,
 			),
 		);
 		$result['selection_fingerprint'] = Publication::revision( $result );

@@ -1186,10 +1186,6 @@ msgstr "Volllaststunden"
 msgid "Genie"
 msgstr "Genie"
 
-#: build/genie.js:19 build/hero.js
-msgid "Genie - Linker's AI assistant"
-msgstr "Genie – der KI-Assistent von Linker"
-
 #: includes/Genie/Preview.php
 msgid "Genie answers from our product data and the manufacturers' documents."
 msgstr ""
@@ -1699,10 +1695,6 @@ msgstr "Amtliches Gebäudemodell gefunden."
 msgid "Official building model: %s"
 msgstr "Amtliches Gebäudemodell: %s"
 
-#: build/genie.js:1 build/hero.js
-msgid "On request"
-msgstr "Auf Anfrage"
-
 #: src/configurator/commercial/CommercialPanel.tsx:412 build/configurator.js
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid ""
@@ -2166,6 +2158,7 @@ msgstr "E-Mail für die Antwort"
 msgid "Reply with an option"
 msgstr "Antwort auswählen"
 
+#: build/genie.js build/hero.js
 #: src/configurator/App.tsx:56 build/configurator.js
 #: build/planner/assets/planner.js:1
 msgid "Residential"
@@ -2336,6 +2329,7 @@ msgstr "Vollständige Antwort anzeigen"
 msgid "Show the documents for the %s"
 msgstr "%s: Unterlagen anzeigen"
 
+#: build/genie.js
 #: src/configurator/report/ReportView.tsx:173 build/configurator.js
 msgid "Sign in"
 msgstr "Anmelden"
@@ -2865,7 +2859,7 @@ msgstr "Ohne Wärmepumpe und Elektroauto; diese wählen Sie unten aus."
 msgid "Write to our team"
 msgstr "Unserem Team schreiben"
 
-#: build/genie.js:1 build/hero.js build/planner/assets/planner.js:1
+#: build/planner/assets/planner.js:1
 msgid "Yes"
 msgstr "Ja"
 
@@ -4161,6 +4155,7 @@ msgstr "Komma"
 msgid "Comma · 12,5"
 msgstr "Komma · 12,5"
 
+#: build/genie.js build/hero.js
 #: build/planner/assets/planner.js:1
 msgid "Commercial"
 msgstr "Gewerbe"
@@ -5540,6 +5535,7 @@ msgstr "Messpunkt"
 msgid "Met"
 msgstr "Erfüllt"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Meteorological database"
@@ -6483,6 +6479,7 @@ msgstr "Projekte aus der Gastsitzung werden noch Ihrem Konto zugeordnet."
 msgid "Queued"
 msgstr "In der Warteschlange"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Radiation database"
@@ -7673,6 +7670,7 @@ msgid "Surface length, greater than 0; this is not its horizontal projection."
 msgstr ""
 "Oberflächenlänge, größer als 0. Dieser Wert ist keine horizontale Projektion."
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Synthetic calculation year"
@@ -9406,6 +9404,7 @@ msgstr ""
 "werden entfernt. Neue Teilfelder benötigen Modelleinstellungen und eine "
 "Zuordnung zur Leistungsumwandlung."
 
+#: build/genie.js build/hero.js
 #: ../../apps/planner/src/components/ProjectEditor.tsx:325
 #: ../../apps/planner/src/components/ProjectEditor.tsx:481
 #: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:576
@@ -10427,6 +10426,7 @@ msgstr ""
 "Die Werte oder Einheiten der ausgewählten Produkttabelle ließen sich nicht "
 "konsistent zuordnen. Die Berechnung konnte nicht vorbereitet werden."
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Baseline calculation"
@@ -10464,6 +10464,7 @@ msgstr ""
 msgid "Comparison basis"
 msgstr "Vergleichsgrundlage"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Comparison calculation"
@@ -13085,63 +13086,78 @@ msgstr "PV-DC-Stromkreis nicht verfügbar: %s"
 msgid "The saved project changed. Your edits remain open. Reopen the project before reviewing routes or string links."
 msgstr "Das gespeicherte Projekt wurde geändert. Ihre Eingaben bleiben hier geöffnet. Öffnen Sie das Projekt erneut, bevor Sie Leitungswege oder Stringzuordnungen prüfen."
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Calculation sources and periods"
 msgstr "Quellen und Zeiträume der Berechnung"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "From the selected saved result."
 msgstr "Aus dem ausgewählten gespeicherten Ergebnis."
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #, javascript-format
 msgid "Saved revision %d"
 msgstr "Gespeicherter Stand %d"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Weather selection period"
 msgstr "Auswahlzeitraum der Wetterdaten"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "PV calculation period (UTC)"
 msgstr "PV-Berechnungszeitraum (UTC)"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Energy calculation period (UTC)"
 msgstr "Zeitraum der Energieberechnung (UTC)"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Saved project time zone"
 msgstr "Zeitzone des gespeicherten Projekts"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Not recorded in this saved result"
 msgstr "In diesem gespeicherten Ergebnis nicht erfasst"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Open saved result"
 msgstr "Gespeichertes Ergebnis öffnen"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js build/planner/assets/planner.js
 msgid "The saved calculation details could not be verified for this response."
 msgstr "Die Angaben zur gespeicherten Berechnung konnten für diese Antwort nicht geprüft werden."
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "PV input to the calculation"
 msgstr "PV-Eingangsgröße der Berechnung"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "PV source scope"
 msgstr "Umfang der PV-Quelle"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Whole PV reference"
 msgstr "Gesamte PV-Referenz"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Selected DC group"
 msgstr "Ausgewählte DC-Gruppe"
 
+#: build/hero.js
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Not identified in this saved result"
 msgstr "In diesem gespeicherten Ergebnis nicht eindeutig angegeben"
@@ -13798,6 +13814,7 @@ msgstr "Diese Quellen dienen als Hintergrund. Sie belegen weder die für dieses 
 msgid "Evidence snapshot date"
 msgstr "Stand der Quellenprüfung"
 
+#: build/hero.js
 #: build/genie.js:1
 msgid "This source card belongs to an earlier response, not the current request."
 msgstr "Diese Quellenkarte gehört zu einer früheren Antwort und bezieht sich nicht auf die aktuelle Anfrage."
@@ -16918,6 +16935,7 @@ msgstr "Installationsdetails"
 msgid "Inverter model"
 msgstr "Wechselrichtermodell"
 
+#: build/genie.js build/hero.js
 #: build/planner/assets/planner.js:1
 msgid "Inverters"
 msgstr "Wechselrichter"
@@ -17541,3 +17559,91 @@ msgstr "Dieses Produkt auswählen"
 #: ../../apps/planner/src/components/RoofStart.tsx build/planner/assets/planner.js:1
 msgid "Use a roof plan or measurements"
 msgstr "Dachplan oder Aufmaß verwenden"
+
+#: build/genie.js
+msgid "Net prices & history sync:"
+msgstr "Nettopreise und Verlauf:"
+
+#: build/genie.js
+msgid "Register"
+msgstr "Registrieren"
+
+#: build/genie.js
+msgid "Return to side dock"
+msgstr "Zur Seitenansicht"
+
+#: build/genie.js build/hero.js
+msgid "Expand full view"
+msgstr "Großansicht öffnen"
+
+#: build/genie.js build/hero.js
+msgid "Genie – Linker's AI assistant"
+msgstr "Genie – der KI-Assistent von Linker"
+
+#: build/genie.js build/hero.js
+msgid "Dismiss"
+msgstr "Schließen"
+
+#: build/genie.js build/hero.js
+msgid "Loading comparison…"
+msgstr "Vergleich wird geladen…"
+
+#: build/genie.js build/hero.js
+msgid "Could not load this comparison."
+msgstr "Der Vergleich konnte nicht geladen werden."
+
+#: build/genie.js build/hero.js
+msgid "These products are no longer available for comparison."
+msgstr "Diese Produkte stehen für den Vergleich nicht mehr zur Verfügung."
+
+#: build/genie.js build/hero.js
+msgid "Battery storage"
+msgstr "Batteriespeicher"
+
+#: build/genie.js build/hero.js
+msgid "Product comparison"
+msgstr "Produktvergleich"
+
+#: build/genie.js build/hero.js
+msgid "Specification"
+msgstr "Merkmal"
+
+#: build/genie.js build/hero.js
+msgid "Brand / Series"
+msgstr "Marke / Serie"
+
+#: build/genie.js build/hero.js
+msgid "Compatible storage"
+msgstr "Kompatible Speicher"
+
+#: build/genie.js build/hero.js
+msgid "Accessory required"
+msgstr "Zubehör erforderlich"
+
+#: build/genie.js build/hero.js
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+#: build/genie.js build/hero.js
+msgid "Partner pricing"
+msgstr "Partnerpreise"
+
+#: build/genie.js build/hero.js
+msgid "Net price after sign-in"
+msgstr "Nettopreis nach Anmeldung"
+
+#: build/genie.js build/hero.js
+msgid "Solution draft"
+msgstr "Lösungsentwurf"
+
+#: build/genie.js build/hero.js
+msgid "View product"
+msgstr "Produkt ansehen"
+
+#: build/genie.js build/hero.js
+msgid "✓ In draft"
+msgstr "✓ Im Lösungsentwurf"
+
+#: build/genie.js build/hero.js
+msgid "+ Add to draft"
+msgstr "+ Zum Lösungsentwurf hinzufügen"

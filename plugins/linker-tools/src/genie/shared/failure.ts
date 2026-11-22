@@ -54,6 +54,7 @@ export interface FailureOwner {
 export interface FailureDraft {
 	/** Independent native owner. Marketing provenance remains separate. */
 	owner?: FailureOwner;
+	conversationId?: number;
 	/** Accepted editor content, never presented as a failed model turn. */
 	editing?: boolean;
 	/** Marketing ownership retained through retry/reload. */
@@ -541,6 +542,9 @@ export function reconcile(
 		...( stored.entryId
 			? { entryId: stored.entryId, entryScope: stored.entryScope }
 			: {} ),
+		...( typeof stored.conversationId === 'number'
+			? { conversationId: stored.conversationId }
+			: {} ),
 		text: stored.text,
 		question: stored.question,
 		uploads: stored.uploads,
@@ -740,6 +744,9 @@ export function parseFailure( value: unknown ): StoredFailure | null {
 			? { entryId: record.entryId, entryScope: record.entryScope }
 			: {} ),
 		...( record.editing === true ? { editing: true } : {} ),
+		...( typeof record.conversationId === 'number'
+			? { conversationId: record.conversationId }
+			: {} ),
 		text: record.text,
 		question: record.question,
 		uploads: uploads as Upload[],
@@ -785,6 +792,9 @@ export function recordOf( state: FailureState ): StoredFailure {
 			? { entryId: draft.entryId, entryScope: draft.entryScope }
 			: {} ),
 		...( draft.editing ? { editing: true } : {} ),
+		...( typeof draft.conversationId === 'number'
+			? { conversationId: draft.conversationId }
+			: {} ),
 		text: draft.text,
 		question: draft.question,
 		uploads: draft.uploads,

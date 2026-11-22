@@ -32,8 +32,10 @@ final class FreshRest {
 	 */
 	public function response( mixed $response, mixed $server, WP_REST_Request $request ): mixed {
 		unset( $server );
-		$route = rtrim( $request->get_route(), '/' );
-		if ( ! in_array( $route, array( '/linker/v1/publication/manifest', '/linker/v1/publication/validate', '/linker/v1/publication/identify', '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack', '/linker/v1/engineering-feed' ), true ) ) {
+		$route               = rtrim( $request->get_route(), '/' );
+		$input               = '/wp-abilities/v1/abilities/linker/compare-products/run' === $route ? $request->get_param( 'input' ) : null;
+		$personal_comparison = is_array( $input ) && in_array( $input['presentation'] ?? false, array( true, 'true', '1', 1 ), true );
+		if ( ! $personal_comparison && ! in_array( $route, array( '/linker/v1/publication/manifest', '/linker/v1/publication/validate', '/linker/v1/publication/identify', '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack', '/linker/v1/engineering-feed' ), true ) ) {
 			return $response;
 		}
 		// WordPress also runs this filter for REST preloads inside ordinary HTML.

@@ -34,9 +34,6 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'GW10K-ETA' ),
-} ) );
 vi.mock( './api/solution', async ( importOriginal ) => ( {
 	...( await importOriginal< typeof import( './api/solution' ) >() ),
 	saveGenieSolution: vi.fn(),
@@ -92,7 +89,10 @@ function config(): GenieConfig {
 	};
 }
 
-async function openCardTurn( quantities?: Record< string, number > ) {
+async function openCardTurn(
+	quantities: Record< string, number > = { 3556: 1 },
+	proof = quantities[ 3556 ] ? 'signed-two' : ''
+) {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
 			grounded: true,
@@ -105,14 +105,8 @@ async function openCardTurn( quantities?: Record< string, number > ) {
 			{
 				type: 'cards',
 				product_ids: [ 3556 ],
-				...( quantities
-					? {
-							quantities,
-							draft_proofs: quantities[ 3556 ]
-								? { 3556: 'signed-two' }
-								: {},
-						}
-					: {} ),
+				quantities,
+				draft_proofs: proof ? { 3556: proof } : {},
 			},
 		],
 	} );
@@ -217,4 +211,55 @@ test( 'a failed save shows the retry sentence inside the card', async () => {
 	);
 	await within( card ).findByText( 'Not saved. Try again.' );
 	expect( card.getAttribute( 'data-state' ) ).toBe( 'retry' );
+} );
+
+test( 'two recommendation blocks load both brands in one request that survives editing the next question', async () => {
+	const products = vi.fn( async ( ids: number[] ) =>
+		ids.map( ( id ) => ( {
+			id,
+			name: 'Equipment ' + id,
+			permalink: '/product/' + id,
+			images: [],
+			is_in_stock: true,
+		} ) )
+	);
+	storeFactory = () => ( { ...storeDouble(), products } );
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [
+			{
+				type: 'cards',
+				product_ids: [ 3556 ],
+				prices: [ { product_id: 3556, text: 'First price line' } ],
+			},
+			{
+				type: 'cards',
+				product_ids: [ 3556, 4107 ],
+				prices: [ { product_id: 4107, text: 'Second price line' } ],
+			},
+		],
+	} );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const input = await screen.findByLabelText( 'Ask Genie' );
+	fireEvent.change( input, { target: { value: 'compare both brands' } } );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	await screen.findByRole( 'link', { name: 'Equipment 4107' } );
+	expect( screen.getByText( 'Second price line' ) ).toBeVisible();
+	fireEvent.change( input, { target: { value: 'follow up' } } );
+	expect( products ).toHaveBeenCalledExactlyOnceWith( [ 3556, 4107 ], 'en' );
+} );
+
+test( 'historical product cards keep their quantity and details after the write proof is gone', async () => {
+	storeFactory = () => storeDouble();
+	await openCardTurn( { 3556: 2 }, '' );
+	const card = within( screen.getByRole( 'article' ) );
+	expect( card.getByText( '× 2' ) ).toBeVisible();
+	expect( card.getByRole( 'link', { name: PRODUCT.name } ) ).toBeVisible();
+	expect(
+		card.queryByRole( 'button', { name: 'Add to solution draft' } )
+	).toBeNull();
+	expect(
+		card.queryByRole( 'button', { name: 'Save solution' } )
+	).toBeNull();
 } );

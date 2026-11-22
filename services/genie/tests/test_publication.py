@@ -1642,3 +1642,62 @@ def test_draft_only_identity_change_revokes_loaded_scope_without_source_change(
         assert with_index.permissions(Snapshot.read(manifest()), [1]) == {}
     finally:
         with_index.close()
+
+
+def test_native_text_proofs_reuse_but_revoked_document_never_returns(
+    path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_genie import retrieval
+    from linker_genie.publication_scope import table_header as original
+
+    reads = []
+
+    def header(*args: Any, **kwargs: Any) -> str | None:
+        reads.append(kwargs["chunk_id"])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(retrieval, "table_header", header)
+    raw = manifest()
+    index = DocumentIndex(path)
+    try:
+        assert index.permissions(Snapshot.read(raw), None)
+        first = reads.copy()
+        assert first
+        assert index.permissions(Snapshot.read(raw), None)
+        assert reads == first
+        raw["documents"][0]["document_revision"] = "withdrawn"
+        assert not index.permissions(Snapshot.read(raw), None)
+        raw = manifest()
+        raw["products"][0]["model"] = "New model"
+        index.permissions(Snapshot.read(raw), None)
+        assert len(reads) > len(first)
+    finally:
+        index.close()
+
+
+def test_product_search_reads_only_its_current_passage_proofs(
+    path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json
+
+    snapshot = Snapshot.read(manifest())
+    index = DocumentIndex(path)
+    try:
+        all_permits = index.permissions(snapshot, None)
+        expected = {row: p for row, p in all_permits.items() if 1 in p["product_ids"]}
+        assert expected and len(all_permits) > len(expected)
+        loaded: list[list[int]] = []
+        decode = json.loads
+
+        def track(value: str) -> Any:
+            result = decode(value)
+            if isinstance(result, dict) and "basis" in result:
+                loaded.append(result["product_ids"])
+            return result
+
+        monkeypatch.setattr(json, "loads", track)
+        assert index.permissions(snapshot, [101]) == expected
+        assert all(1 in ids for ids in loaded)
+    finally:
+        index.close()

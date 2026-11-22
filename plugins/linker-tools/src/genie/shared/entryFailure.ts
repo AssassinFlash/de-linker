@@ -1,9 +1,9 @@
 /** The single verified failed-draft selector used by both surfaces and their controller. */
 import type { GenieConfig } from '../config';
-import type { DraftContext } from './draftContext';
+import type { DraftEditor } from './draftContext';
 import { nativeScope } from './nativeScope';
 import { FAILURE_KEY, type FailureStore } from './failure';
-import { FailureJournal } from './ownedFailure';
+import { FailureJournal, hasOwnedRecovery } from './ownedFailure';
 
 export class EntryScopeError extends Error {
 	constructor( public readonly changed: boolean ) {
@@ -34,15 +34,16 @@ export async function assertEntryScope(
 }
 /**
  * Never return private bytes before authority; unknown v1 and foreign scopes stay untouched.
- * @param config  The currently mounted native routes and REST nonce.
- * @param store   The underlying tab storage adapter.
- * @param context The mounted surface identity and epoch.
+ * @param config   The currently mounted native routes and REST nonce.
+ * @param store    The underlying tab storage adapter.
+ * @param composer The editor reopening its accepted input.
  */
 export async function verifiedEntryFailure(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 	store: FailureStore,
-	context?: DraftContext
+	composer?: DraftEditor
 ) {
+	const context = composer?.context;
 	let legacyRaw: string | null = null;
 	let legacyReadable = false;
 	try {
@@ -54,17 +55,29 @@ export async function verifiedEntryFailure(
 	const previousScope = context?.identity?.scope;
 	try {
 		const identity = context
-			? await context.verify( true )
+			? await ( legacyRaw || hasOwnedRecovery( store )
+					? context.verify( true )
+					: context.initialized() )
 			: await nativeScope( config, true );
 		if ( legacyReadable && store.getItem( FAILURE_KEY ) !== legacyRaw ) {
 			return null;
 		}
 		const journal = new FailureJournal( store, identity );
 		// An old reader can invalidate its surface, but cannot migrate/select the next owner's record.
-		const candidate =
+		const selected =
 			previousScope && previousScope !== identity.scope
 				? null
-				: journal.candidate( context?.editor?.attempt );
+				: journal.candidate( composer?.owner?.attempt );
+		const other =
+			composer === context?.homeEditor
+				? context?.panelEditor.owner
+				: context?.homeEditor.owner;
+		const candidate =
+			selected?.record.editing &&
+			other?.attempt === selected.cursor.owner.attempt
+				? null
+				: selected;
+
 		return {
 			identity,
 			journal,

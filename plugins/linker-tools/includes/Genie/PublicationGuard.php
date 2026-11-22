@@ -34,7 +34,7 @@ class PublicationGuard {
 			return self::refused( 503 );
 		}
 		try {
-			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::manifest();
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::catalog();
 		} catch ( \RuntimeException $error ) {
 			return self::refused( 503 );
 		}
@@ -81,6 +81,22 @@ class PublicationGuard {
 			return self::refused();
 		}
 		return true;
+	}
+
+	/**
+	 * Validate and present against the same fresh authority after the conversation commit.
+	 *
+	 * @param string              $stream Normalized server stream without private readings.
+	 * @param array<string,mixed> $dependencies Original full dependency set.
+	 * @param string              $locale Turn language.
+	 */
+	public function release( string $stream, array $dependencies, string $locale ): string|WP_Error {
+		try {
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::catalog();
+		} catch ( \RuntimeException $error ) {
+			return self::refused( 503 );
+		}
+		return ( new DraftProof() )->stream( $stream, $dependencies, $manifest, $locale );
 	}
 
 	/**

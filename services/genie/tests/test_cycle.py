@@ -1297,3 +1297,123 @@ def test_a_validation_error_that_recovers_is_a_normal_answer() -> None:
             assert german_is_clean(block.text)
         shapes.append(_block_types(result.output))
     assert shapes[0] == shapes[1] == ["text"]
+
+
+def test_chat_sends_low_effort_and_the_structured_output_contract() -> None:
+    def answer(_messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        settings = info.model_settings or {}
+        assert settings.get("openai_reasoning_effort") == "low"
+        assert settings.get("extra_body") == {
+            "response_format": {"type": "json_object"}
+        }
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name="final_result",
+                    args={
+                        "language": "en",
+                        "blocks": [{"type": "text", "text": "Which system?"}],
+                    },
+                )
+            ]
+        )
+
+    client = AbilityClient("http://127.0.0.1:9")
+    try:
+        with _event_loop():
+            result, _ = make_generate(client, model=FunctionModel(answer))(
+                TurnRequest(
+                    conversation_id="research",
+                    messages=[TurnMessage(role="user", content="Compare systems")],
+                ),
+                None,
+            )
+        assert result.language == "en"
+    finally:
+        client.close()
+
+
+def test_catalogue_comparison_includes_each_brand_and_needs_a_current_match() -> None:
+    from linker_genie.route import Call
+    from linker_genie.template import prepared_answer
+
+    calls = tuple(
+        Call("linker/search-products", {"brand": b}) for b in ("first", "second")
+    )
+    route = Route("compare", calls, catalog_only=True)
+    facts = TurnFacts()
+    for call, ids in zip(calls, ((1, 2, 3), (4, 5)), strict=True):
+        facts.qualified_ids.update(ids)
+        facts.product_ids.update(ids)
+        facts.tool_calls.append(
+            {
+                "name": call.ability,
+                "arguments": call.arguments,
+                "result": {"qualified": [{"product_id": pid} for pid in ids]},
+            }
+        )
+    table = prepared_answer(facts, route, "en")
+    assert table is not None
+    result = run(_request(), lambda *_: (table, TurnFacts()), route, facts)
+    assert result.grounded and not result.fallback
+    assert result.output.blocks[-1].model_dump() == {
+        "type": "compare",
+        "product_ids": [1, 4, 2, 5],
+    }
+    facts.qualified_ids -= {4, 5}
+    assert prepared_answer(facts, route, "en") is None
+
+
+def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
+    from linker_genie.template import prepared_answer
+
+    facts = TurnFacts(qualified_ids={1}, product_ids={1})
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {"with_pairings": True},
+            "result": {"qualified": [{"product_id": 1, "pairings": []}]},
+        }
+    )
+    result = prepared_answer(facts, Route("pairing", catalog_only=True), "en")
+    assert result is not None
+    assert any(
+        isinstance(b, TextBlock) and "No battery is listed as approved" in b.text
+        for b in result.blocks
+    )
+    assert any(
+        isinstance(b, CardsBlock) and b.product_ids == [1] for b in result.blocks
+    )
+
+
+def test_bare_catalogue_results_reference_published_product_ids_before_hydration() -> (
+    None
+):
+    from linker_genie.template import prepared_answer
+
+    facts = TurnFacts(qualified_ids={12, 34}, product_ids={12, 34})
+    route = Route("products", show_products=True, catalog_only=True)
+    answer = prepared_answer(facts, route, "en")
+    assert answer is not None
+    ready = run(_request(), lambda *_: (answer, TurnFacts()), route, facts)
+    assert ready.grounded and ready.attempts == 1
+
+
+def test_team_route_uses_the_verified_handoff_without_model_authored_details() -> None:
+    from linker_genie.template import prepared_answer
+
+    facts = TurnFacts()
+    facts.add(
+        Fact(
+            "handoff.sentence_en", "Please contact sales@de-linker.com.", "handoff-team"
+        )
+    )
+    route = Route("service")
+    out = prepared_answer(facts, route, "en")
+    assert out is not None and out.blocks[0].model_dump() == {
+        "type": "handoff",
+        "summary": "{fact:handoff.sentence_en}",
+    }
+    result = run(_request(), lambda *_: (out, TurnFacts()), route, facts)
+    assert result.grounded and result.attempts == 1
+    assert prepared_answer(TurnFacts(), route, "en") is None

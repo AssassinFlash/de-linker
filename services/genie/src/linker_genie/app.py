@@ -86,10 +86,11 @@ from linker_genie.schema import (
     TurnRequest,
     VoteRequest,
 )
-from linker_genie.storeapi import StoreVocabulary
+from linker_genie.storeapi import TTL_SECONDS, StoreVocabulary, VocabularyError
 from linker_genie.template import (
     fallback,
     finish,
+    prepared_answer,
     roof_answer,
     stock_answer,
     team_sentence,
@@ -97,6 +98,19 @@ from linker_genie.template import (
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 from linker_genie.work import WorkError, hold
+
+
+async def refresh_vocabulary(stop: asyncio.Event) -> None:
+    """Start at service boot and refresh halfway through the foreground cache lifetime."""
+    while not stop.is_set():
+        try:
+            await asyncio.to_thread(store_vocabulary().refresh)
+        except VocabularyError as error:
+            logger.warning("genie vocabulary refresh failed: %s", error)
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=TTL_SECONDS / 2)
+        except TimeoutError:
+            pass
 
 
 @asynccontextmanager
@@ -107,11 +121,12 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         retention.run(path, retention.judgments_path(path), stop),
         name="genie-log-retention",
     )
+    prewarm = asyncio.create_task(refresh_vocabulary(stop), name="genie-vocabulary")
     try:
         yield
     finally:
         stop.set()
-        await task
+        await asyncio.gather(task, prewarm)
 
 
 app = FastAPI(
@@ -418,6 +433,7 @@ def _compute_turn(
         "scripted",
         "roof",
     ) or (simple_stock(prepared.route) and result.attempts == 0)
+    code_made = code_made or prepared.log.get("prepared_answer") is True
     code_made = code_made or prepared.log.get("saved_material_answer") is True
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
@@ -894,6 +910,21 @@ def _answer(
         clock=clock,
         publication=publication,
     )
+    catalog = (
+        prepared_answer(prepared.facts, prepared.route, language)
+        if not prepared.attachments and len(body.messages) == 1
+        else None
+    )
+
+    def write_turn(
+        message: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        if catalog is not None and retry is None:
+            prepared.log["prepared_answer"] = True
+            return catalog, TurnFacts()
+        prepared.log.pop("prepared_answer", None)
+        return generate(message, retry)
+
     # The same list the model tools append to during `generate` (inside
     # `run`). A tuple taken here would miss a search-products 500 the model
     # hit, and the later handoff would ship (#410).
@@ -901,7 +932,7 @@ def _answer(
     try:
         result = run(
             body,
-            generate,
+            write_turn,
             prepared.route,
             prepared.facts,
             commerce,

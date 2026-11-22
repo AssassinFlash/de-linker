@@ -25,7 +25,8 @@ import logging
 import os
 import re
 import sqlite3
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
@@ -44,7 +45,11 @@ from linker_genie.compatibility_physical import (
 from linker_genie.embedding import Embedder, query_encoder
 from linker_genie.hs3_evidence import DATA_MODELS, MANUAL_MODEL, SOURCES, hs3_anchors
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
-from linker_genie.publication_scope import authorize_chunk, table_header
+from linker_genie.publication_scope import (
+    authorize_chunk,
+    table_header,
+    valid_model_scope,
+)
 from linker_genie.table_projection import (
     native_chunk_id_matches,
     unqualified_table_columns,
@@ -225,6 +230,10 @@ class DocumentIndex:
 
     def __init__(self, path: Path, encoder: Embedder | None | _Auto = AUTO) -> None:
         self.path = path
+        self._proof_products: dict[int, dict[str, Any]] = {}
+        self._model_proofs: dict[str, bool] = {}
+        self._table_headers: dict[str, str | None] = {}
+        self._column_texts: dict[str, str] | None = None
         self._db = sqlite3.connect(
             f"file:{path}?mode=ro", uri=True, check_same_thread=False
         )
@@ -708,7 +717,7 @@ class DocumentIndex:
                 "SELECT name FROM sqlite_master WHERE type='table'"
             )
         }
-        if "publication_documents" not in tables:
+        if "publication_documents" not in tables or "chunk_scopes" not in tables:
             return {}
         loaded_products = dict(
             self._db.execute(
@@ -726,6 +735,8 @@ class DocumentIndex:
             if requested is None
             else {snapshot.canonical(pid) for pid in requested}.intersection(allowed)
         )
+        if not wanted:
+            return {}
         associations: dict[str, list[dict[str, Any]]] = {}
         for did, revision, sha, pid in self._db.execute(
             "SELECT document_id, document_revision, blob_sha256, product_id FROM publication_documents"
@@ -750,25 +761,59 @@ class DocumentIndex:
                 }
             )
         output: dict[int, Permit] = {}
-        scopes = (
-            {
-                cid: json.loads(proof)
-                for cid, proof in self._db.execute(
-                    "SELECT chunk_id,proof FROM chunk_scopes"
+        if requested is not None and self._column_texts is not None:
+            proof_rows = self._db.execute(
+                "SELECT s.chunk_id,s.proof FROM chunk_products c "
+                "JOIN chunk_scopes s ON s.chunk_id=c.chunk_id "
+                "WHERE EXISTS (SELECT 1 FROM json_each(c.product_ids) "
+                "WHERE value IN (SELECT value FROM json_each(?)))",
+                (json.dumps(list(wanted)),),
+            )
+        else:
+            # The first search needs the entire library to reconstruct native
+            # table fragments and their footnote conditions across passages.
+            proof_rows = self._db.execute("SELECT chunk_id,proof FROM chunk_scopes")
+        scopes = {cid: json.loads(proof) for cid, proof in proof_rows}
+        # Source text is immutable for this index. Model-dependent proofs
+        # use every current Woo product, while document grants below are read and
+        # checked independently on every search.
+        if self._proof_products != snapshot.products:
+            self._proof_products = deepcopy(snapshot.products)
+            self._model_proofs.clear()
+            self._table_headers.clear()
+
+        def checked_model_scope(
+            proof: Mapping[str, Any],
+            ids: Sequence[int],
+            products: Mapping[int, Mapping[str, Any]],
+            *,
+            sha: str,
+            chunk_id: str,
+            text: str,
+        ) -> bool:
+            # Nested certificate origins carry their own proof, even if they
+            # refer to the same source chunk as an indexed row.
+            if proof is not scopes.get(chunk_id):
+                return valid_model_scope(
+                    proof, ids, products, sha=sha, chunk_id=chunk_id, text=text
                 )
-            }
-            if "chunk_scopes" in tables
-            else {}
-        )
+            if chunk_id not in self._model_proofs:
+                self._model_proofs[chunk_id] = valid_model_scope(
+                    proof, ids, products, sha=sha, chunk_id=chunk_id, text=text
+                )
+            return self._model_proofs[chunk_id]
+
         axis_anchors = self._external_axis_anchors()
-        column_texts = unqualified_table_columns(
-            list(
-                self._db.execute(
-                    "SELECT doc_sha256,page,kind,id,text FROM chunks ORDER BY rowid"
-                )
-            ),
-            scopes,
-        )
+        if self._column_texts is None:
+            self._column_texts = unqualified_table_columns(
+                list(
+                    self._db.execute(
+                        "SELECT doc_sha256,page,kind,id,text FROM chunks ORDER BY rowid"
+                    )
+                ),
+                scopes,
+            )
+        column_texts = self._column_texts
         for row, sha, raw_ids, cid, text in self._db.execute(
             "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
@@ -791,15 +836,19 @@ class DocumentIndex:
                 text=text,
                 external_axis_anchors=axis_anchors,
                 require_table_anchor=self._table_anchors_required,
+                model_scope_check=checked_model_scope,
             )
             if authorized:
-                header = table_header(
-                    scopes.get(cid),
-                    sorted(ids),
-                    snapshot.products,
-                    chunk_id=cid,
-                    text=text,
-                )
+                if cid not in self._table_headers:
+                    self._table_headers[cid] = table_header(
+                        scopes.get(cid),
+                        sorted(ids),
+                        snapshot.products,
+                        chunk_id=cid,
+                        text=text,
+                        projection_check=checked_model_scope,
+                    )
+                header = self._table_headers[cid]
                 if header is None:
                     continue
                 if cid in column_texts and not column_texts[cid]:

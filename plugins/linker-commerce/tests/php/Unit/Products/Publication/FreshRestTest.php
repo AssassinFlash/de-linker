@@ -32,6 +32,14 @@ final class FreshRestTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** Customer-priced compare responses and their errors must not enter a shared cache. */
+	public function test_interactive_comparison_is_private(): void {
+		$request = new WP_REST_Request( 'GET', '/wp-abilities/v1/abilities/linker/compare-products/run' );
+		$request->set_param( 'input', array( 'presentation' => true ) );
+		$response = ( new FreshRest() )->response( new WP_REST_Response(), null, $request );
+		$this->assertSame( 'no-store, private, max-age=0', $response->get_headers()['Cache-Control'] );
+	}
+
 	/**
 	 * Registered controller callbacks that fail their fresh read still reach the
 	 * same policy after WordPress converts their errors to REST responses.

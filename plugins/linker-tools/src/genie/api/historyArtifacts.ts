@@ -205,19 +205,16 @@ async function publicationManifest(
  * Reuse current get-product authority, never translating or trusting a saved
  * price sentence. Failed/missing authority removes that snapshot's price.
  *
- * @param turn                  Parsed turn, left untouched.
- * @param context               Current page REST root and locale.
- * @param nonce                 Current page REST nonce.
- * @param fetcher               Fetch for tests.
- * @param options               Refresh stored prices; live turns retain their service-filled prices.
- * @param options.refreshPrices Whether to replace historical prices with current authority.
+ * @param turn    Parsed turn, left untouched.
+ * @param context Current page REST root and locale.
+ * @param nonce   Current page REST nonce.
+ * @param fetcher Fetch for tests.
  */
 export async function restoreArtifacts(
 	turn: Turn,
 	context: ArtifactContext,
 	nonce: string,
-	fetcher: typeof fetch,
-	options: { refreshPrices: boolean } = { refreshPrices: true }
+	fetcher: typeof fetch
 ): Promise< Turn > {
 	const ids = new Set< number >();
 	for ( const block of turn.blocks ) {
@@ -284,37 +281,26 @@ export async function restoreArtifacts(
 	return {
 		...turn,
 		blocks: turn.blocks.map( ( block ) => {
-			if ( block.type === 'cards' ) {
+			if ( block.type === 'compare' && ! manifest ) {
+				// The comparison endpoint rechecks these IDs when it returns current details.
+				return { ...block, draft_proofs: {} };
+			}
+			if ( block.type === 'cards' || block.type === 'compare' ) {
+				const visible = block.product_ids.filter( ( id ) =>
+					allowed.has( id )
+				);
+				if ( block.type === 'compare' && visible.length !== 1 ) {
+					return { ...block, draft_proofs: {}, product_ids: visible };
+				}
 				return {
 					...block,
-					...( options.refreshPrices ? { draft_proofs: {} } : {} ),
-					product_ids: block.product_ids.filter( ( id ) =>
-						allowed.has( id )
-					),
-					prices: options.refreshPrices
-						? block.product_ids.flatMap( ( id ) =>
-								allowed.has( id ) && prices.has( id )
-									? [ prices.get( id )! ]
-									: []
-							)
-						: block.prices?.filter( ( price ) =>
-								allowed.has( price.product_id )
-							),
+					type: 'cards',
+					draft_proofs: {},
+					product_ids: visible,
+					prices: visible.flatMap( ( id ) => prices.get( id ) ?? [] ),
 				};
 			}
-			if ( block.type === 'compare' ) {
-				return {
-					...block,
-					product_ids: block.product_ids.filter( ( id ) =>
-						allowed.has( id )
-					),
-				};
-			}
-			if (
-				block.type === 'parts' &&
-				options.refreshPrices &&
-				block.add
-			) {
+			if ( block.type === 'parts' && block.add ) {
 				return { ...block, add: { ...block.add, proof: undefined } };
 			}
 			if ( block.type === 'document' ) {

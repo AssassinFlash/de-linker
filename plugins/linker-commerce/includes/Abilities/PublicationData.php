@@ -23,12 +23,26 @@ final class PublicationData {
 	private $read;
 
 	/**
+	 * Authority behind the current manufacturer pairings.
+	 *
+	 * @var array<string,mixed>|null
+	 */
+	private ?array $pair_manifest = null;
+
+	/**
+	 * Manufacturer declarations joined to this snapshot.
+	 *
+	 * @var list<array<string,mixed>>
+	 */
+	private array $pairs = array();
+
+	/**
 	 * Use the native authority or an explicit fixture transport.
 	 *
 	 * @param callable():array<string,mixed>|null $read Current authority reader, injected by fixtures.
 	 */
 	public function __construct( ?callable $read = null ) {
-		$this->read = $read ?? array( Publication::class, 'manifest' );
+		$this->read = $read ?? array( Publication::class, 'catalog' );
 	}
 
 	/**
@@ -37,6 +51,7 @@ final class PublicationData {
 	 * @return array<string,mixed>
 	 */
 	public function manifest(): array {
+		$this->pair_manifest = null;
 		return ( $this->read )();
 	}
 
@@ -51,7 +66,7 @@ final class PublicationData {
 	public function published( array $ids, array $manifest, ?string $lang = null ): array {
 		$out = array();
 		foreach ( $ids as $id ) {
-			if ( ! Publication::is_published( $id ) || ( null !== $lang && 0 === ProductText::translated_id( $id, $lang ) ) ) {
+			if ( null !== $lang && 0 === ProductText::translated_id( $id, $lang, $manifest ) ) {
 				continue;
 			}
 			foreach ( $manifest['products'] as $product ) {
@@ -74,7 +89,7 @@ final class PublicationData {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public function figures( int $id, array $manifest ): array {
-		return Publication::figures_for( $id, $manifest );
+		return Publication::figures_in_manifest( $id, $manifest );
 	}
 
 	/**
@@ -144,6 +159,20 @@ final class PublicationData {
 	}
 
 	/**
+	 * Assemble supported manufacturer declarations once for a projection.
+	 *
+	 * @param array<string,mixed> $manifest Current checked publication.
+	 * @return list<array<string,mixed>>
+	 */
+	public function pairs( array $manifest ): array {
+		if ( $this->pair_manifest !== $manifest ) {
+			$this->pairs         = Compatibility::pairs( $manifest );
+			$this->pair_manifest = $manifest;
+		}
+		return $this->pairs;
+	}
+
+	/**
 	 * A release is usable only while its products and every cited file are current.
 	 *
 	 * @param int                 $inverter Inverter ID.
@@ -155,7 +184,7 @@ final class PublicationData {
 		if ( count( $this->published( array( $inverter, $battery ), $manifest ) ) !== 2 ) {
 			return null;
 		}
-		$answer = Compatibility::for_products( $inverter, $battery, $manifest );
+		$answer = Compatibility::in_pairs( Publication::canonical_id( $inverter ), Publication::canonical_id( $battery ), $this->pairs( $manifest ) );
 		if ( null === $answer || array() === $answer['documents'] ) {
 			return null;
 		}

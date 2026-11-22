@@ -178,7 +178,7 @@ test( 'the unfolded conversation names Genie and offers both exits', async () =>
 	const { onContinue, onClose } = await renderHero( session().session );
 
 	expect(
-		screen.getByText( "Genie - Linker's AI assistant" )
+		screen.getByText( "Genie – Linker's AI assistant" )
 	).toBeInTheDocument();
 	expect(
 		screen.getByText( "Genie is Linker's AI assistant." )

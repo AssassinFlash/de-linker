@@ -12,7 +12,14 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	createPortal,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,16 +49,18 @@ import { PlanningSourcesCard } from '../genie/components/PlanningSourcesCard';
 import { BlockView } from '../genie/components/BlockView';
 import { Compare } from '../genie/components/Compare';
 import { ContactCard, ContactSent } from '../genie/components/ContactCard';
-import { GenieCard } from '../genie/components/GenieCard';
+import { GenieCards } from '../genie/components/GenieCard';
 import { InquiryCard, InquirySent } from '../genie/components/InquiryCard';
 import { MissingFiles } from '../genie/components/MissingFiles';
 import { OwnedRecovery } from '../genie/components/OwnedRecovery';
 import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
+import { ExpandIcon } from '../genie/components/Icons';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
 import {
-	idsOf,
+	cardIdsOf,
+	comparisonsOf,
 	pricesOf,
 	proofsOf,
 	quantitiesOf,
@@ -85,6 +94,7 @@ const emptyPrompt = () => ( { text: '', version: 0 } );
 
 /** The controller's way into the conversation while it is unfolded. */
 export interface HeroBridge {
+	hasUnsentWork: () => boolean;
 	/**
 	 * Asks a question; picked files are prepared first and sent with it.
 	 *
@@ -117,6 +127,9 @@ export interface HeroConversationProps {
 	requestPicker: () => void;
 	requestVoice?: () => void;
 	context?: DraftContext;
+	openingQuestion?: string;
+	onExpand?: () => void;
+	footer?: HTMLElement | null;
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
@@ -134,7 +147,11 @@ export function HeroConversation( {
 	requestPicker,
 	requestVoice,
 	context,
+	openingQuestion = '',
+	onExpand,
+	footer,
 }: HeroConversationProps ) {
+	const [ opening, setOpening ] = useState( openingQuestion );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
@@ -182,7 +199,7 @@ export function HeroConversation( {
 	const [ retainedMode, setRetainedMode ] = useState<
 		'attach' | 'nameplate' | 'voice' | null
 	>( null );
-	const files = useAttachments( draftContext );
+	const files = useAttachments( draftContext.homeEditor );
 	// The bridge is registered once; the refs keep it calling the latest
 	// render's send and file state.
 	const filesRef = useRef( files );
@@ -193,6 +210,8 @@ export function HeroConversation( {
 		detachFailure,
 		unsaved,
 		deferredFailure,
+		clearDeferred,
+		dismissDeferred,
 		deferFailure,
 		exchangeFailure,
 		returnToEditing,
@@ -205,7 +224,7 @@ export function HeroConversation( {
 		placeChips,
 		openRetry,
 		payloadOrRestore,
-	} = useFailure( files, draftContext );
+	} = useFailure( files, draftContext.homeEditor );
 	ownerCleanup.current = () => {
 		session.invalidate();
 		detachFailure();
@@ -229,7 +248,7 @@ export function HeroConversation( {
 	omittedRef.current = omitted;
 	useEffect(
 		() =>
-			draftContext.beforeLeave( () => {
+			draftContext.homeEditor.beforeLeave( () => {
 				preserveEditor( {
 					text: readPrompt().text,
 					uploads: filesRef.current.uploads,
@@ -267,7 +286,7 @@ export function HeroConversation( {
 		}
 		let cancelled = false;
 		const hasPendingOwner = () => failureState.current.phase === 'pending';
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		void session
 			.load()
 			.then( async ( stored ) => {
@@ -280,6 +299,7 @@ export function HeroConversation( {
 					// the read that started earlier would wipe it.
 					return;
 				}
+				draftContext.conversationId = stored.conversationId;
 				setThread( stored.messages );
 				setTurn( stored.turn );
 				setContacts( stored.contacts ?? [] );
@@ -288,7 +308,7 @@ export function HeroConversation( {
 				const checked = await verifiedEntryFailure(
 					config,
 					pageFailureStore(),
-					draftContext
+					draftContext.homeEditor
 				);
 				if ( ! checked && ! cancelled ) {
 					setRecoveryBlocked( true );
@@ -313,7 +333,7 @@ export function HeroConversation( {
 				if (
 					checked.candidate &&
 					checked.record?.editing &&
-					draftContext.editor?.attempt ===
+					draftContext.homeEditor.owner?.attempt ===
 						checked.record.owner?.attempt &&
 					now.text === checked.record.text &&
 					JSON.stringify( filesRef.current.uploads ) ===
@@ -325,11 +345,18 @@ export function HeroConversation( {
 					setRecoveryBlocked( false );
 					return;
 				}
+				if (
+					checked.record?.conversationId !== undefined &&
+					checked.record.conversationId !==
+						( stored.conversationId ?? 0 )
+				) {
+					return;
+				}
 				const reconciled = reconcile( checked.record, stored.messages );
 				if (
 					checked.candidate &&
 					reconciled.phase !== 'clear' &&
-					( ! checked.record?.entryId || occupied )
+					occupied
 				) {
 					deferFailure( checked.candidate );
 					setRecoveryBlocked( false );
@@ -338,10 +365,24 @@ export function HeroConversation( {
 				setRecoveryBlocked( false );
 				entryOwnerScope.current = checked.record?.entryScope;
 				recoveryPending.current = false;
-				const restored = adoptFailure(
-					checked.candidate,
-					reconcile( checked.record, stored.messages )
-				);
+				const restored =
+					checked.candidate && reconciled.phase !== 'clear'
+						? exchangeFailure(
+								checked.candidate,
+								null,
+								stored.messages
+							)
+						: adoptFailure( checked.candidate, reconciled );
+				if ( ! restored ) {
+					return;
+				}
+				if ( restored.phase === 'editing' && restored.draft ) {
+					setPrompt( restored.draft.text );
+					placeChips( restored.draft.uploads );
+					setOmitted( restored.draft.omitted );
+					setPhase( 'ask' );
+					return;
+				}
 				failureState.current = restored;
 				if (
 					'failed' === restored.phase &&
@@ -377,12 +418,13 @@ export function HeroConversation( {
 		draftContext.identity?.scope,
 		adoptFailure,
 		deferFailure,
+		exchangeFailure,
 		ignoreCurrentCandidate,
 	] );
 
 	const restoreOwnedFailure = async () => {
 		const candidate = deferredFailure;
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		if (
 			! candidate ||
 			! lease ||
@@ -563,7 +605,7 @@ export function HeroConversation( {
 				return;
 			}
 			commitFailure( { type: settled.kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -602,7 +644,7 @@ export function HeroConversation( {
 				return;
 			}
 			commitFailure( { type: kind } );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				parkFailure();
 				setPhase( 'ask' );
 				return;
@@ -615,7 +657,8 @@ export function HeroConversation( {
 
 	const send = useCallback(
 		async ( text: string ) => {
-			const lease = draftContext.capture();
+			setOpening( '' );
+			const lease = draftContext.homeEditor.capture();
 			if ( ! lease ) {
 				return;
 			}
@@ -631,6 +674,7 @@ export function HeroConversation( {
 				return;
 			}
 			const draft: FailureDraft = {
+				conversationId: session.currentConversation,
 				text,
 				question,
 				uploads: picked,
@@ -681,11 +725,12 @@ export function HeroConversation( {
 					retainUnverifiedTurn( lease, draft );
 					return;
 				}
-				if ( ! draftContext.editor ) {
+				if ( ! draftContext.homeEditor.owner ) {
 					filesRef.current.clear();
 				}
 				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
+				clearDeferred();
 				setThread( result.messages );
 				setTurn( result.answer );
 				setContacts( result.contacts ?? [] );
@@ -724,6 +769,7 @@ export function HeroConversation( {
 			draftContext,
 			retainUnverifiedTurn,
 			beginTurn,
+			clearDeferred,
 		]
 	);
 	sendRef.current = send;
@@ -731,7 +777,7 @@ export function HeroConversation( {
 	// One resend. The machine leaves `failed` before the request, so a
 	// second click does not send.
 	const retry = useCallback( async () => {
-		const lease = draftContext.capture();
+		const lease = draftContext.homeEditor.capture();
 		if ( ! lease || sending.current || recoveryPending.current ) {
 			return;
 		}
@@ -773,11 +819,12 @@ export function HeroConversation( {
 				retainUnverifiedTurn( lease, draft );
 				return;
 			}
-			if ( ! draftContext.editor ) {
+			if ( ! draftContext.homeEditor.owner ) {
 				filesRef.current.clear();
 			}
 			draftContext.checkpoint();
 			commitFailure( { type: 'answered' } );
+			clearDeferred();
 			setThread( result.messages );
 			setTurn( result.answer );
 			setContacts( result.contacts ?? [] );
@@ -824,11 +871,12 @@ export function HeroConversation( {
 		draftContext,
 		retainUnverifiedTurn,
 		beginTurn,
+		clearDeferred,
 	] );
 
 	const updateMissing = useCallback(
 		( names: string[] ) => {
-			if ( ! draftContext.capture() ) {
+			if ( ! draftContext.homeEditor.capture() ) {
 				return;
 			}
 			if (
@@ -850,7 +898,7 @@ export function HeroConversation( {
 				return;
 			}
 			setOmitted( names );
-			if ( draftContext.editor ) {
+			if ( draftContext.homeEditor.owner ) {
 				preserveEditor( {
 					text: readPrompt().text,
 					uploads: files.uploads,
@@ -884,7 +932,7 @@ export function HeroConversation( {
 	const bridgeAsk = useCallback(
 		( text: string, picked?: ArrayLike< File > ) => {
 			if ( picked?.length || filesRef.current.busy ) {
-				if ( ! draftContext.acceptEditor() ) {
+				if ( ! draftContext.homeEditor.accept() ) {
 					return;
 				}
 				// A file accepted during an earlier turn belongs to the next editor.
@@ -910,7 +958,7 @@ export function HeroConversation( {
 		[ bridgeAsk ]
 	);
 	const typeModelCard = useCallback( () => {
-		if ( ! draftContext.acceptEditor() ) {
+		if ( ! draftContext.homeEditor.accept() ) {
 			return;
 		}
 		setPrompt( typeModelPrompt() );
@@ -922,22 +970,37 @@ export function HeroConversation( {
 			onReady( {
 				ask: bridgeAsk,
 				attach: ( picked ) => {
-					if ( draftContext.capture() ) {
+					if ( draftContext.homeEditor.capture() ) {
 						filesRef.current.add( picked );
 					}
 				},
 				mode: setRetainedMode,
+				hasUnsentWork: () =>
+					sending.current ||
+					filesRef.current.picked.length > 0 ||
+					omittedRef.current.length > 0 ||
+					failureState.current.phase === 'failed',
 			} );
 		}
-	}, [ onReady, bridgeAsk, draftContext, draftContext.phase, hydrated ] );
+	}, [
+		onReady,
+		bridgeAsk,
+		draftContext,
+		draftContext.phase,
+		hydrated,
+		failureState,
+	] );
 
 	const blocks: Block[] = turn?.blocks ?? [];
-	const cardIds = idsOf( blocks, 'cards' );
-	const compareIds = idsOf( blocks, 'compare' );
+	const cardIds = useMemo(
+		() => cardIdsOf( turn?.blocks ?? [] ),
+		[ turn?.blocks ]
+	);
+	const comparisons = comparisonsOf( blocks );
 	const cardPrices = pricesOf( blocks );
 	const cardProofs = proofsOf( blocks );
 	const cardQuantities = quantitiesOf( blocks );
-	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
+
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
 	const offersInquiry = blocks.some(
 		( block ) => 'action' === block.type && 'send_inquiry' === block.name
@@ -963,22 +1026,86 @@ export function HeroConversation( {
 		/>
 	);
 
+	const [ wide, setWide ] = useState( false );
+	useEffect( () => {
+		const read = () =>
+			setWide(
+				!! closeRef.current?.closest( '[data-genie-view="expanded"]' )
+			);
+		window.addEventListener( 'linker-genie-hero-view', read );
+		return () =>
+			window.removeEventListener( 'linker-genie-hero-view', read );
+	}, [] );
+	useEffect( () => {
+		if (
+			turn &&
+			closeRef.current?.closest( '[data-genie-view="expanded"]' )
+		) {
+			window.dispatchEvent( new Event( 'linker-genie-hero-answer' ) );
+		}
+	}, [ turn ] );
+	const viewActions = (
+		<div className="linker-genie-hero__view-actions">
+			{ wide && ! opening && phase === 'ask' && config.workspaceUrl ? (
+				<a
+					className="linker-genie-workspace-link"
+					href={ config.workspaceUrl }
+					aria-label={ __( 'Open full page', 'linker-tools' ) }
+				>
+					<span>{ __( 'Open full page', 'linker-tools' ) }</span> ↗
+				</a>
+			) : null }
+			{ onExpand ? (
+				<button
+					type="button"
+					className="linker-genie-hero__continue"
+					onClick={ onExpand }
+					aria-label={
+						wide
+							? __( 'Return to side dock', 'linker-tools' )
+							: undefined
+					}
+				>
+					{ wide ? (
+						<>
+							<ExpandIcon inward />
+							<span>
+								{ __( 'Return to side dock', 'linker-tools' ) }
+							</span>
+						</>
+					) : (
+						__( 'Expand full view', 'linker-tools' )
+					) }
+				</button>
+			) : null }
+			{ ! wide ? (
+				<button
+					type="button"
+					className="linker-genie-hero__continue"
+					onClick={ onContinue }
+				>
+					{ __( 'Continue in the side panel', 'linker-tools' ) }
+				</button>
+			) : null }
+		</div>
+	);
+
 	return (
 		<div className="linker-genie-hero__surface" lang={ locale }>
 			<header className="linker-genie-hero__bar">
 				<p className="linker-genie-hero__title">
-					{ __( "Genie - Linker's AI assistant", 'linker-tools' ) }
+					<span aria-hidden="true" className="linker-genie-mark">
+						G
+					</span>{ ' ' }
+					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">
-					<button
-						type="button"
-						className="linker-genie-hero__continue"
-						onClick={ onContinue }
-					>
-						{ __( 'Continue in the side panel', 'linker-tools' ) }
-					</button>
+					{ footer && ! wide
+						? createPortal( viewActions, footer )
+						: viewActions }
 					<button
 						ref={ closeRef }
+						hidden={ wide }
 						type="button"
 						className="linker-genie-hero__close"
 						aria-label={ __( 'Close', 'linker-tools' ) }
@@ -988,19 +1115,36 @@ export function HeroConversation( {
 					</button>
 				</div>
 			</header>
-			<p className="linker-genie-hero__intro">
-				<strong>
-					{ __( "Genie is Linker's AI assistant.", 'linker-tools' ) }
-				</strong>{ ' ' }
-				{ __(
-					'Answers come from our product data and documents, and can still be wrong.',
-					'linker-tools'
-				) }
-			</p>
+			{ ! opening && thread.length === 0 && phase === 'ask' ? (
+				<p className="linker-genie-hero__intro">
+					<strong>
+						{ __(
+							"Genie is Linker's AI assistant.",
+							'linker-tools'
+						) }
+					</strong>{ ' ' }
+					{ __(
+						'Answers come from our product data and documents, and can still be wrong.',
+						'linker-tools'
+					) }
+				</p>
+			) : null }
 			<p className="screen-reader-text" role="status" aria-live="polite">
 				{ draftContext.phase === 'ready' ? live : '' }
 			</p>
-			{ thread.length > 0 && draftContext.phase === 'ready' ? (
+			{ opening ? (
+				<Transcript followKey={ 1 }>
+					<ol className="linker-genie-app__thread">
+						<li className="linker-genie-app__message linker-genie-app__message--user">
+							{ opening }
+						</li>
+					</ol>
+					<TurnProgress />
+				</Transcript>
+			) : null }
+			{ ! opening &&
+			thread.length > 0 &&
+			draftContext.phase === 'ready' ? (
 				<Transcript
 					followKey={
 						'waiting' === phase
@@ -1119,44 +1263,46 @@ export function HeroConversation( {
 						) ) }
 					{ hasCards ? (
 						<div className="linker-genie-hero__cards">
-							{ cardIds.map( ( productId ) => (
-								<GenieCard
-									key={ productId }
-									productId={ productId }
-									quantity={ cardQuantities[ productId ] }
-									restUrl={ config.restUrl }
-									store={ store }
-									locale={ locale }
-									status={ statusFor( productId ) }
-									price={ cardPrices.find(
-										( line ) =>
-											line.product_id === productId
-									) }
-									onAdd={ ( id, quantity ) =>
-										addCardToDraft(
-											id,
-											cardProofs[ id ],
-											quantity
-										)
-									}
-									onSave={ ( id, title ) =>
-										saveCardSolution(
-											id,
-											title,
-											cardProofs[ id ]
-										)
-									}
-								/>
-							) ) }
+							<GenieCards
+								products={ cardIds }
+								proofs={ cardProofs }
+								quantities={ cardQuantities }
+								store={ store }
+								locale={ locale }
+								statusFor={ statusFor }
+								prices={ cardPrices }
+								onAdd={ ( id, quantity ) =>
+									addCardToDraft(
+										id,
+										cardProofs[ id ],
+										quantity
+									)
+								}
+								onSave={ ( id, title ) =>
+									saveCardSolution(
+										id,
+										title,
+										cardProofs[ id ]
+									)
+								}
+							/>
 						</div>
 					) : null }
-					{ hasCompare ? (
+					{ comparisons.map( ( comparison, index ) => (
 						<Compare
-							products={ compareIds }
-							store={ store }
+							key={ index }
+							products={ comparison.product_ids }
+							restUrl={ config.restUrl }
+							nonce={ config.restNonce }
 							locale={ locale }
+							proofs={ cardProofs }
+							quantities={ cardQuantities }
+							statusFor={ statusFor }
+							onAdd={ ( id, quantity ) =>
+								addCardToDraft( id, cardProofs[ id ], quantity )
+							}
 						/>
-					) : null }
+					) ) }
 					{ 'waiting' !== phase && contactBlock ? (
 						<ContactCard
 							key={ `${ turn?.meta?.turn_id ?? 0 }-contact` }
@@ -1174,6 +1320,7 @@ export function HeroConversation( {
 				</Transcript>
 			) : null }
 			<OwnedRecovery
+				dismiss={ dismissDeferred }
 				candidate={
 					draftContext.phase === 'ready' ? deferredFailure : null
 				}
@@ -1197,13 +1344,14 @@ export function HeroConversation( {
 								onClick={ () => {
 									// The hero field lives outside React. Read its
 									// current bytes with its accepted editor.
-									const owner = draftContext.editor;
+									const owner = draftContext.homeEditor.owner;
 									const prompt = readPrompt();
 									if (
 										owner &&
-										draftContext.editor === owner &&
-										draftContext.capture()?.scope ===
-											owner.scope
+										draftContext.homeEditor.owner ===
+											owner &&
+										draftContext.homeEditor.capture()
+											?.scope === owner.scope
 									) {
 										rememberInquiry(
 											config.requestPageUrl!,
@@ -1246,7 +1394,11 @@ export function HeroConversation( {
 					</button>
 				</section>
 			) : null }
-			{ draftContext.phase !== 'ready' || recoveryBlocked ? (
+			{ ( draftContext.phase !== 'ready' || recoveryBlocked ) &&
+			! (
+				draftContext.phase === 'loading' &&
+				( opening || phase === 'waiting' )
+			) ? (
 				<div
 					className={
 						draftContext.phase === 'loading'

@@ -16,6 +16,7 @@ from __future__ import annotations
 import threading
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
@@ -36,6 +37,13 @@ MAX_PAGES = 20
 
 class VocabularyError(RuntimeError):
     """The Store API could not be read."""
+
+
+@dataclass(frozen=True)
+class _Loaded:
+    revision: str
+    at: float
+    vocabulary: Vocabulary
 
 
 class StoreVocabulary:
@@ -59,10 +67,8 @@ class StoreVocabulary:
         self._clock = clock
         self._ttl = ttl
         self._lock = threading.Lock()
-        self._cached: Vocabulary | None = None
-        self._loaded_at = 0.0
+        self._loaded: _Loaded | None = None
         self._publication = publication
-        self._source_revision = ""
 
     def close(self) -> None:
         self._client.close()
@@ -73,23 +79,41 @@ class StoreVocabulary:
         Permission stays local to this call. The cache and its revision are
         committed together under the lock only after the native listings load.
         """
+        return self._get(permission, refresh=False)
+
+    def refresh(self) -> None:
+        """Reload from the current Woo generation while a warm caller keeps reading."""
+        self._get(None, refresh=True)
+
+    def _get(self, permission: Snapshot | None, *, refresh: bool) -> Vocabulary:
+        try:
+            source = (
+                self._publication.snapshot()
+                if permission is None and self._publication
+                else permission
+            )
+        except PublicationUnavailable as error:
+            raise VocabularyError(str(error)) from error
+        revision = source.source_revision if source is not None else ""
+
+        def fresh() -> Vocabulary | None:
+            cached = self._loaded
+            if (
+                cached is not None
+                and cached.revision == revision
+                and self._clock() - cached.at < self._ttl
+            ):
+                return cached.vocabulary
+            return None
+
+        if not refresh and (current := fresh()) is not None:
+            return current
         with self._lock:
-            now = self._clock()
-            try:
-                source = (
-                    self._publication.snapshot()
-                    if permission is None and self._publication is not None
-                    else permission
-                )
-            except PublicationUnavailable as error:
-                raise VocabularyError(str(error)) from error
-            revision = source.source_revision if source is not None else ""
-            changed = self._source_revision != revision
-            if self._cached is None or changed or now - self._loaded_at >= self._ttl:
-                self._cached = self._load(source)
-                self._loaded_at = now
-                self._source_revision = revision
-            return self._cached
+            if not refresh and (current := fresh()) is not None:
+                return current
+            vocabulary = self._load(source)
+            self._loaded = _Loaded(revision, self._clock(), vocabulary)
+            return vocabulary
 
     def _load(self, permit: Snapshot | None) -> Vocabulary:
         english = [

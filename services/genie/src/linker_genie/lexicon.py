@@ -75,6 +75,24 @@ DEVICE_CLASSES = (
 # phase filter takes them.
 PHASES = {"single-phase": 1, "three-phase": 3}
 
+_COMMERCIAL = re.compile(
+    r"\b(?:commercial|industrial|c\s*&\s*i|gewerb\w*|industrie\w*)\b", re.I
+)
+_HOME = re.compile(
+    r"\b(?:home|residential|household|wohngebäude\w*|einfamilienhaus|heimspeicher)\b",
+    re.I,
+)
+
+
+def application_word(message: str) -> str | None:
+    """The Woo application filter when the customer names one use."""
+    commercial = bool(_COMMERCIAL.search(message))
+    home = bool(_HOME.search(message))
+    if commercial == home:
+        return None
+    return "commercial" if commercial else "home"
+
+
 _WORD = re.compile(r"[^\s/,;:!?()\[\]\"'„“”‚‘’]+")
 
 

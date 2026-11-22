@@ -28,9 +28,11 @@ import {
 } from '../genie/shared/dictation';
 import { pageFailureStore } from '../genie/shared/failure';
 import { preserveEditing } from '../genie/shared/editingDraft';
+import {
+	pageDraftContext,
+	mountPageDraftContext,
+} from '../genie/shared/draftContext';
 import { hasOwnedRecovery } from '../genie/shared/ownedFailure';
-import { DraftContext } from '../genie/shared/draftContext';
-import { verifiedEntryFailure } from '../genie/shared/entryFailure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
 import {
@@ -97,7 +99,6 @@ export function startHero(
 			} ) );
 
 	let state: HeroState = initialHeroState;
-	let stopped = false;
 	let expandedNow = false;
 	let root: ReturnType< typeof createRoot > | null = null;
 	let bridge: HeroBridge | null = null;
@@ -141,10 +142,22 @@ export function startHero(
 			if ( expanded ) {
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
+				requestAnimationFrame( () => {
+					if ( ! expandedNow ) {
+						return;
+					}
+					const clipped =
+						dialog!.getBoundingClientRect().bottom +
+						8 -
+						win.innerHeight;
+					if ( clipped > 0 ) {
+						win.scrollBy( { top: clipped, behavior: 'instant' } );
+					}
+				} );
 			} else {
 				prompt!.placeholder = originalPlaceholder;
-				prompt!.value = '';
 				unmount();
+				prompt!.value = '';
 			}
 		}
 		syncPill();
@@ -152,17 +165,10 @@ export function startHero(
 
 	let quarantinedPrompt: string | null = null;
 	let retainedMode: 'attach' | 'nameplate' | 'voice' | null = null;
-	const context = new DraftContext( options.config, () => {
-		quarantinedPrompt = null;
-		prompt!.value = '';
-		recognition?.stop();
-		recognition = null;
-		pending = null;
-		pendingFiles = [];
-	} );
-	const stopPreserving = context.beforeLeave( () => {
+	const context = pageDraftContext( options.config );
+	const stopPreserving = context.homeEditor.beforeLeave( () => {
 		if ( ! root ) {
-			preserveEditing( context, {
+			preserveEditing( context.homeEditor, {
 				text: prompt!.value,
 				uploads: [],
 				missing: [],
@@ -179,21 +185,13 @@ export function startHero(
 			prompt!.disabled = true;
 		} else {
 			const scope = context.identity?.scope;
-			const lease = context.capture();
 			if ( verifiedScope && scope && scope !== verifiedScope ) {
-				void verifiedEntryFailure(
-					options.config,
-					pageFailureStore()
-				).then( ( checked ) => {
-					if (
-						! stopped &&
-						context.valid( lease ) &&
-						checked?.record &&
-						checked.unchanged()
-					) {
-						update( { type: 'ask' } );
-					}
-				} );
+				quarantinedPrompt = null;
+				prompt!.value = '';
+				recognition?.stop();
+				recognition = null;
+				pending = null;
+				pendingFiles = [];
 			}
 			verifiedScope = scope;
 			prompt!.disabled = false;
@@ -208,26 +206,10 @@ export function startHero(
 		}
 	} );
 	prompt.disabled = true;
-	void context.verify( false ).catch( () => undefined );
-	const revalidate = () => {
-		void context.verify().catch( () => undefined );
-	};
-	win.addEventListener( 'focus', revalidate );
-	win.addEventListener( 'pageshow', revalidate );
-	const checkpoint = () => context.checkpoint();
-	win.addEventListener( 'pagehide', checkpoint );
-	const onVisibility = () => {
-		if ( doc.visibilityState === 'hidden' ) {
-			checkpoint();
-		} else {
-			revalidate();
-		}
-	};
-	doc.addEventListener( 'visibilitychange', onVisibility );
-	win.addEventListener( 'linker-genie-identity-change', revalidate );
+	const releaseContext = mountPageDraftContext( context );
 	let promptVersion = 0;
 	const onPromptInput = () => {
-		if ( ! context.acceptEditor() ) {
+		if ( ! context.homeEditor.accept() ) {
 			prompt!.value = '';
 			return;
 		}
@@ -235,7 +217,11 @@ export function startHero(
 	};
 	prompt.addEventListener( 'input', onPromptInput );
 	const onUnownedPointer = ( event: PointerEvent ) => {
-		if ( event.target === prompt && ! context.capture() ) {
+		if (
+			event.target === prompt &&
+			( ! context.homeEditor.capture() ||
+				hasOwnedRecovery( pageFailureStore() ) )
+		) {
 			lastTrigger = prompt;
 			update( { type: 'ask' } );
 		}
@@ -254,6 +240,15 @@ export function startHero(
 				config={ options.config }
 				session={ session }
 				onReady={ onReady }
+				openingQuestion={ pending ?? '' }
+				footer={ dialog!.querySelector( '.hero-dialog-footer' ) }
+				onExpand={ () =>
+					setHeroView(
+						dialog!.dataset.genieView === 'expanded'
+							? 'side'
+							: 'expanded'
+					)
+				}
 				onContinue={ continueToPanel }
 				onClose={ close }
 				onConversation={ ( has ) =>
@@ -274,8 +269,52 @@ export function startHero(
 		);
 	}
 
+	let nativeModal: HTMLDialogElement | null = null;
+	let historyHost: HTMLDivElement | null = null;
+	function setHeroView( view: 'side' | 'expanded' | null ): void {
+		if ( nativeModal && view !== 'expanded' ) {
+			historyHost?.removeAttribute( 'data-genie-hero-history' );
+			win.dispatchEvent( new Event( 'linker-genie-hero-view' ) );
+			nativeModal.close?.();
+			nativeModal.replaceWith( dialog! );
+			nativeModal = null;
+			historyHost?.remove();
+			historyHost = null;
+		}
+		if ( dialog!.hasAttribute( 'popover' ) ) {
+			dialog!.hidePopover?.();
+			dialog!.removeAttribute( 'popover' );
+		}
+		if ( view ) {
+			dialog!.dataset.genieView = view;
+		} else {
+			delete dialog!.dataset.genieView;
+		}
+		if ( view === 'expanded' && ! nativeModal ) {
+			nativeModal = doc.createElement( 'dialog' );
+			nativeModal.className = 'linker-genie-home-modal';
+			nativeModal.setAttribute( 'aria-label', 'Genie' );
+			dialog!.before( nativeModal );
+			nativeModal.append( dialog! );
+			historyHost = doc.createElement( 'div' );
+			historyHost.className = 'linker-genie-home-history';
+			historyHost.setAttribute( 'data-genie-hero-history', '' );
+			dialog!.prepend( historyHost );
+			nativeModal.addEventListener( 'cancel', ( event ) => {
+				event.preventDefault();
+				setHeroView( 'side' );
+			} );
+			nativeModal.showModal?.();
+		} else if ( view === 'side' ) {
+			dialog!.setAttribute( 'popover', 'manual' );
+			dialog!.showPopover?.();
+		}
+		win.dispatchEvent( new Event( 'linker-genie-hero-view' ) );
+	}
+
 	function unmount(): void {
-		context.invalidate();
+		setHeroView( null );
+		context.homeEditor.close();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();
 		recognition = null;
@@ -310,17 +349,17 @@ export function startHero(
 			return;
 		}
 		lastTrigger = trigger;
+		if ( ! bridge ) {
+			pending = text;
+		}
 		update( { type: 'ask' } );
 		if ( bridge ) {
 			bridge.ask( text );
-		} else {
-			pending = text;
 		}
 	}
 
 	/** Folds the conversation back to the resting hero. */
 	function close(): void {
-		context.invalidate();
 		pending = null;
 		pendingFiles = [];
 		retainedMode = null;
@@ -338,12 +377,16 @@ export function startHero(
 	 * the thread and marks it as asked from the homepage.
 	 */
 	function continueToPanel(): void {
+		if ( pending !== null || prompt!.value || bridge?.hasUnsentWork() ) {
+			setHeroView( 'side' );
+			return;
+		}
+		close();
 		win.dispatchEvent(
 			new CustomEvent( 'linker-genie-ask', {
 				detail: { refresh: true, fromHome: true },
 			} )
 		);
-		close();
 	}
 
 	function openPicker(): void {
@@ -359,7 +402,7 @@ export function startHero(
 	}
 
 	function dictate(): void {
-		const lease = context.capture();
+		const lease = context.homeEditor.capture();
 		if ( ! lease ) {
 			retainedMode = 'voice';
 			update( { type: 'ask' } );
@@ -370,7 +413,7 @@ export function startHero(
 			recognition = null;
 			return;
 		}
-		context.acceptEditor();
+		context.homeEditor.accept();
 		let ended = false;
 		let session: DictationSession | null = null;
 		session = startDictation(
@@ -443,7 +486,7 @@ export function startHero(
 		// The live anchor is the no-JavaScript fallback; with the script the
 		// conversation opens in place instead of leaving the page.
 		event.preventDefault();
-		if ( ! context.capture() ) {
+		if ( ! context.homeEditor.capture() ) {
 			lastTrigger = sendButton!;
 			update( { type: 'ask' } );
 			return;
@@ -477,7 +520,7 @@ export function startHero(
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
-		if ( ! context.capture() ) {
+		if ( ! context.homeEditor.capture() ) {
 			retainedMode = 'nameplate';
 			return;
 		}
@@ -568,44 +611,18 @@ export function startHero(
 	win.addEventListener( 'scroll', onScroll, { passive: true } );
 	win.addEventListener( 'resize', onScroll );
 	win.addEventListener( 'linker-genie-state', onDockState );
+	win.addEventListener( 'linker-genie-hero-leave', close );
 	capsules.forEach( ( { capsule, listener } ) =>
 		capsule.addEventListener( 'click', listener )
 	);
 	// The suite's readiness signal: the controls are bound (no visual change).
 	hero.setAttribute( 'data-linker-genie-hero', 'ready' );
 	onScroll();
-	// A failed turn from before this load unfolds the conversation, so the
-	// error is on the page without another click (ticket #411).
-	void context
-		.initialized()
-		.then( () =>
-			verifiedEntryFailure( options.config, pageFailureStore(), context )
-		)
-		.then( ( checked ) => {
-			if (
-				! stopped &&
-				( ( checked?.record && checked.unchanged() ) ||
-					( ! checked && hasOwnedRecovery( pageFailureStore() ) ) )
-			) {
-				update( { type: 'ask' } );
-			}
-		} )
-		.catch( () => {
-			if ( ! stopped && hasOwnedRecovery( pageFailureStore() ) ) {
-				update( { type: 'ask' } );
-			}
-		} );
 
 	return () => {
-		stopped = true;
-		context.dispose();
 		stopPreserving();
 		unsubscribeContext();
-		win.removeEventListener( 'focus', revalidate );
-		win.removeEventListener( 'pageshow', revalidate );
-		win.removeEventListener( 'pagehide', checkpoint );
-		doc.removeEventListener( 'visibilitychange', onVisibility );
-		win.removeEventListener( 'linker-genie-identity-change', revalidate );
+		releaseContext();
 		prompt.disabled = originalDisabled;
 		prompt.removeEventListener( 'input', onPromptInput );
 		dialog.removeEventListener( 'pointerdown', onUnownedPointer );
@@ -618,6 +635,7 @@ export function startHero(
 		win.removeEventListener( 'scroll', onScroll );
 		win.removeEventListener( 'resize', onScroll );
 		win.removeEventListener( 'linker-genie-state', onDockState );
+		win.removeEventListener( 'linker-genie-hero-leave', close );
 		capsules.forEach( ( { capsule, listener } ) =>
 			capsule.removeEventListener( 'click', listener )
 		);

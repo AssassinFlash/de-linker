@@ -41,11 +41,12 @@ final class ProductText {
 	/**
 	 * The product shown for `$lang`: the Polylang translation when there is one.
 	 *
-	 * @param int       $product_id Product ID.
-	 * @param 'en'|'de' $lang       Language.
+	 * @param int                      $product_id Product ID.
+	 * @param 'en'|'de'                $lang       Language.
+	 * @param array<string,mixed>|null $manifest Current authority when called inside an ability projection.
 	 */
-	public static function translated_id( int $product_id, string $lang ): int {
-		if ( ! Publication::is_published( $product_id ) ) {
+	public static function translated_id( int $product_id, string $lang, ?array $manifest = null ): int {
+		if ( ! self::published( $product_id, $manifest ) ) {
 			return 0;
 		}
 		if ( ! function_exists( 'pll_get_post' ) ) {
@@ -55,28 +56,40 @@ final class ProductText {
 		if ( $translated < 1 ) {
 			return $product_id;
 		}
-		return Publication::is_published( $translated ) ? $translated : 0;
+		return self::published( $translated, $manifest ) ? $translated : 0;
+	}
+
+	/**
+	 * Resolve a standalone or already scoped product permission.
+	 *
+	 * @param int                      $id Locale product ID.
+	 * @param array<string,mixed>|null $manifest Optional authority projection; standalone callers need a fresh read.
+	 */
+	private static function published( int $id, ?array $manifest ): bool {
+		return null === $manifest ? Publication::is_published( $id ) : Publication::published_in_manifest( $id, $manifest );
 	}
 
 	/**
 	 * Product title in `$lang`.
 	 *
-	 * @param int       $product_id Product ID.
-	 * @param 'en'|'de' $lang       Language.
+	 * @param int                      $product_id Product ID.
+	 * @param 'en'|'de'                $lang       Language.
+	 * @param array<string,mixed>|null $manifest Current authority when called inside an ability projection.
 	 */
-	public static function title( int $product_id, string $lang ): string {
-		$id = self::translated_id( $product_id, $lang );
+	public static function title( int $product_id, string $lang, ?array $manifest = null ): string {
+		$id = self::translated_id( $product_id, $lang, $manifest );
 		return $id > 0 ? (string) get_the_title( $id ) : '';
 	}
 
 	/**
 	 * Permalink of the product in `$lang` when translated, otherwise the stored post.
 	 *
-	 * @param int            $product_id Product ID.
-	 * @param 'en'|'de'|null $lang    Language; omitted uses the stored post.
+	 * @param int                      $product_id Product ID.
+	 * @param 'en'|'de'|null           $lang    Language; omitted uses the stored post.
+	 * @param array<string,mixed>|null $manifest Current authority when called inside an ability projection.
 	 */
-	public static function url( int $product_id, ?string $lang = null ): string {
-		$id = null === $lang ? ( Publication::is_published( $product_id ) ? $product_id : 0 ) : self::translated_id( $product_id, $lang );
+	public static function url( int $product_id, ?string $lang = null, ?array $manifest = null ): string {
+		$id = null === $lang ? ( self::published( $product_id, $manifest ) ? $product_id : 0 ) : self::translated_id( $product_id, $lang, $manifest );
 		if ( $id < 1 ) {
 			return '';
 		}

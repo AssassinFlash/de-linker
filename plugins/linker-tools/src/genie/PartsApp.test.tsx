@@ -33,9 +33,6 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'GW10K-ETA' ),
-} ) );
 vi.mock( '../configurator/api/solutions', () => ( {
 	saveSolution: vi.fn(),
 } ) );

@@ -19,11 +19,7 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
  */
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 import type { storeClient } from '../configurator/api/store';
-import { GenieCard } from './components/GenieCard';
-
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
+import { GenieCards } from './components/GenieCard';
 
 afterEach( () => {
 	resetLocaleData( {}, 'linker-tools' );
@@ -46,12 +42,12 @@ function store( inStock: boolean ): ReturnType< typeof storeClient > {
 async function card( inStock: boolean, locale: 'en' | 'de' ) {
 	await act( async () => {
 		render(
-			<GenieCard
-				productId={ 4107 }
-				restUrl="/wp-json/"
+			<GenieCards
+				products={ [ 4107 ] }
+
 				store={ store( inStock ) }
 				locale={ locale }
-				status={ { state: 'idle', text: '' } }
+				statusFor={ () => ( { state: 'idle', text: '' } ) }
 				onAdd={ () => undefined }
 				onSave={ () => undefined }
 			/>

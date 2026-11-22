@@ -59,7 +59,7 @@ final class Comparison {
 	/**
 	 * Battery-side dimensions, in display order.
 	 */
-	private const BATTERY_FIELDS = array( 'usable_kwh', 'nominal_kwh', 'kwh_range' );
+	private const BATTERY_FIELDS = array( 'application', 'usable_kwh', 'nominal_kwh', 'kwh_range' );
 
 	/**
 	 * Device classes that show the inverter-side rows.
@@ -133,10 +133,29 @@ final class Comparison {
 	 * }
 	 */
 	public function of( array $ids, string $lang = 'en' ): array {
-		$lang                       = ProductText::lang( $lang );
-		$this->publication_snapshot = $this->publication->manifest();
-		$ids                        = $this->publication->published( self::published( $ids ), $this->publication_snapshot, $lang );
-		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
+		$lang         = ProductText::lang( $lang );
+		$manifest     = $this->publication->manifest();
+		$ids          = array_slice( $this->publication->published( $ids, $manifest, $lang ), 0, self::MAX_PRODUCTS );
+		$dependencies = $this->publication->dependencies( $ids, $manifest );
+		$result       = $this->project( $ids, $lang, $manifest );
+		return $this->publication->unchanged( $dependencies ) ? $result : array(
+			'products' => array(),
+			'rows'     => array(),
+			'specs'    => array(),
+		);
+	}
+
+	/**
+	 * Assemble the columns inside the caller's current publication read.
+	 * Both storefront and ability revalidate all dependencies before release.
+	 *
+	 * @param int[]               $ids Authorized product IDs in selection order.
+	 * @param 'en'|'de'           $lang Requested language.
+	 * @param array<string,mixed> $manifest Authority read by the caller.
+	 * @return array{products:list<array{product_id:int,title:string,url:string,facts:array<string,mixed>,sku:string,image:string,price:string,price_visible:bool,availability:string}>,rows:list<array{field:string,label:string,values:array<int,mixed>}>,specs:list<array{label:string,values:array<int,string>}>}
+	 */
+	public function project( array $ids, string $lang, array $manifest ): array {
+		$this->publication_snapshot = $manifest;
 		$products                   = array();
 		$classes                    = array();
 		foreach ( $ids as $id ) {
@@ -145,7 +164,7 @@ final class Comparison {
 			$products[] = $this->column( $id, $lang, $facts );
 		}
 
-		$result = array(
+		return array(
 			'products' => $products,
 			'rows'     => array_values(
 				array_map(
@@ -154,11 +173,6 @@ final class Comparison {
 				)
 			),
 			'specs'    => $this->specs( $products ),
-		);
-		return $this->publication->unchanged( $dependencies ) ? $result : array(
-			'products' => array(),
-			'rows'     => array(),
-			'specs'    => array(),
 		);
 	}
 
@@ -194,24 +208,6 @@ final class Comparison {
 	}
 
 	/**
-	 * The published products among the IDs, in the order given.
-	 *
-	 * @param int[] $ids Product IDs.
-	 * @return list<int>
-	 */
-	private static function published( array $ids ): array {
-		$out = array();
-		foreach ( $ids as $id ) {
-			$id = (int) $id;
-			if ( $id > 0 && ! in_array( $id, $out, true ) && Publication::is_published( $id ) ) {
-				$out[] = $id;
-			}
-		}
-
-		return array_slice( $out, 0, self::MAX_PRODUCTS );
-	}
-
-	/**
 	 * The product's image URL, '' without one.
 	 *
 	 * @param int $id Product ID.
@@ -236,8 +232,8 @@ final class Comparison {
 
 		return array(
 			'product_id'    => $id,
-			'title'         => ProductText::title( $id, $lang ),
-			'url'           => ProductText::url( $id, $lang ),
+			'title'         => ProductText::title( $id, $lang, $this->publication_snapshot ),
+			'url'           => ProductText::url( $id, $lang, $this->publication_snapshot ),
 			'facts'         => $facts->to_array(),
 			'sku'           => $product instanceof WC_Product ? (string) $product->get_sku() : '',
 			'image'         => self::image( $id ),
@@ -273,7 +269,7 @@ final class Comparison {
 			$fields = array( 'device_class', 'application' );
 		}
 
-		return $fields;
+		return array_values( array_unique( $fields ) );
 	}
 
 	/**

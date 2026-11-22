@@ -22,29 +22,21 @@ final class EntriesTest extends TestCase {
 
 	use PageQuery;
 
-	/**
-	 * Whether the commerce account entry shortcode is active.
-	 *
-	 * @var bool
-	 */
-	private bool $account_entries = false;
-
-	/** The LC guest entries sit beside the workspace's React mount. */
-	public function test_workspace_includes_the_native_guest_account_entries(): void {
-		$this->frontend( 'de', array( 'type' => 'other' ) );
-		$this->account_entries = true;
+	/** The adviser receives the storefront's account entry without allocating a header row. */
+	public function test_workspace_exposes_guest_link_destinations_on_the_mount(): void {
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/includes/Account/AuthTemplates.php';
+		$this->frontend( 'de', array( 'type' => 'other' ), registration: true );
 		WP_Mock::userFunction(
-			'do_shortcode',
+			'wc_get_account_endpoint_url',
 			array(
-				'args'   => array( '[linker_guest_account_links]' ),
-				'return' => '<div class="linker-guest-account-links">Anmelden / Konto erstellen</div>',
+				'args'   => array( 'register' ),
+				'return' => 'https://de-linker.test/de/mein-konto/register/',
 			)
 		);
-
 		$html = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode();
-
-		$this->assertStringContainsString( 'linker-guest-account-links', $html );
-		$this->assertStringContainsString( 'Anmelden / Konto erstellen', $html );
+		$this->assertStringContainsString( 'data-register-url="https://de-linker.test/de/mein-konto/register/"', $html );
+		$this->assertStringContainsString( 'data-account-url=', $html );
+		$this->assertStringNotContainsString( 'linker-guest-account-links', $html );
 	}
 
 	/**
@@ -160,7 +152,7 @@ final class EntriesTest extends TestCase {
 		$this->assertTrue( $payload['open'] );
 		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
 			$this->assertStringContainsString( 'if (!panel)', $script );
-			$this->assertStringContainsString( 'shell(!!payload.open)', $script );
+			$this->assertStringContainsString( 'shell(!!payload.open || !!preview)', $script );
 				$this->assertStringContainsString( 'if (payload.open)', $script );
 			$this->assertMatchesRegularExpression( '/if \(payload\.open\) \{\s*pendingOpen = true;\s*boot\(\);/', $script );
 		$this->assertConditionsMet();
@@ -646,10 +638,17 @@ JS
 	 * @param array<string, mixed> $page   Page context answer.
 	 * @param string               $slug     Current page slug, empty off a page.
 	 * @param string               $language Language layer's answer; empty when it has none.
+	 * @param bool                 $registration Whether WooCommerce enables account registration.
 	 */
-	private function frontend( string $locale, array $page, string $slug = '', string $language = '' ): void {
+	private function frontend( string $locale, array $page, string $slug = '', string $language = '', bool $registration = false ): void {
 		WP_Mock::userFunction( 'wp_script_is', array( 'return' => static fn( string $handle, string $state ): bool => 'wp-i18n' === $handle && 'enqueued' === $state ) );
-		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => fn (): bool => $this->account_entries ) );
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'woocommerce_enable_myaccount_registration' ),
+				'return' => $registration ? 'yes' : 'no',
+			)
+		);
 		$kinds = array(
 			'product'  => 'product',
 			'draft'    => 'cart',

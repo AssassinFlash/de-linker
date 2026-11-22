@@ -370,19 +370,6 @@ def test_compare_of_two_models_compares_them() -> None:
     assert route.calls[0].arguments == {"product_ids": [4107, 3555], "lang": "de"}
 
 
-def test_a_brand_comparison_without_models_is_left_to_the_model() -> None:
-    matches = [
-        Match("brand", "SAJ", "saj", frozenset(), "SAJ"),
-        Match("brand", "GoodWe", "goodwe", frozenset(), "GoodWe"),
-    ]
-    route = plan(
-        "SAJ vs GoodWe for commercial storage", matches, _reading("compare"), NONE, "en"
-    )
-    assert route.name == "model"
-    assert route.calls == ()
-    assert route.no_handoff
-
-
 def test_inquiry_status_is_fetched_by_code() -> None:
     route = plan("where is my proforma?", [], _reading("inquiry_status"), NONE, "en")
     assert [c.ability for c in route.calls] == ["linker/inquiry-status"]
@@ -702,3 +689,145 @@ def test_a_person_or_inquiry_question_is_not_an_extreme_search() -> None:
     assert person.name == "person" and person.calls == ()
     assert inquiry.name == "inquiry"
     assert inquiry.calls[0].ability == "linker/inquiry-status"
+
+
+@pytest.mark.parametrize(
+    ("question", "lang", "application", "classes"),
+    [
+        (
+            "Compare SAJ vs GoodWe for commercial storage",
+            "en",
+            "commercial",
+            ["home-storage", "battery-systems", "all-in-one-systems"],
+        ),
+        ("SAJ vs GoodWe for a C&I site", "en", "commercial", []),
+        (
+            "Vergleichen Sie SAJ und GoodWe für einen Gewerbespeicher",
+            "de",
+            "commercial",
+            ["home-storage", "battery-systems", "all-in-one-systems"],
+        ),
+        ("Compare SAJ and GoodWe for residential use", "en", "home", []),
+        (
+            "Compare SAJ and GoodWe commercial inverters",
+            "en",
+            "commercial",
+            ["inverters", "all-in-one-systems"],
+        ),
+        ("SAJ oder GoodWe für ein Wohngebäude?", "de", "home", []),
+    ],
+)
+def test_prefetches_each_compared_brand_for_the_requested_application(
+    question: str, lang: str, application: str, classes: list[str]
+) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("SAJ", "GoodWe")
+    ]
+    route = plan(question, matches, _reading("compare"), NONE, lang)
+    assert [call.arguments for call in route.calls] == [
+        {
+            "brand": brand,
+            "application": application,
+            **({"device_classes": classes} if classes else {}),
+            "lang": lang,
+            "limit": SEARCH_LIMIT,
+        }
+        for brand in ("saj", "goodwe")
+    ]
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Compare SAJ and GoodWe storage efficiency for a commercial site",
+        "Compare warranty conditions for GoodWe and SAJ batteries",
+        "Vergleichen Sie SAJ und GoodWe für 15 kWh",
+    ],
+)
+def test_specialist_comparisons_still_get_a_model_answer(message: str) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("SAJ", "GoodWe")
+    ]
+    assert not plan(message, matches, _reading("compare"), NONE, "en").catalog_only
+
+
+@pytest.mark.parametrize(
+    "message,lang",
+    [
+        ("Compare GoodWe and SAJ storage options for a commercial site.", "en"),
+        ("Vergleichen Sie Speicher von GoodWe und SAJ für ein Gewerbeprojekt.", "de"),
+    ],
+)
+def test_plain_brand_comparison_requests_only_the_native_table(
+    message: str, lang: str
+) -> None:
+    matches = [
+        Match("brand", brand, brand.lower(), frozenset(), brand)
+        for brand in ("GoodWe", "SAJ")
+    ]
+    assert plan(message, matches, _reading("compare"), NONE, lang).catalog_only
+
+
+def test_published_hyphenated_model_is_a_simple_battery_pairing() -> None:
+    matches = [
+        Match("brand", "SAJ", "saj", frozenset(), "SAJ"),
+        Match("model", "H2-10K-T3", "H2-10K-T3", frozenset({1}), "H2 10K T3"),
+    ]
+    subject = Subject((1,), {1: "inverters"}, {1: "H2-10K-T3"}, brand_of={1: {"saj"}})
+    assert plan(
+        "Which battery works with the SAJ H2-10K-T3?",
+        matches,
+        _reading("pairing_compatibility"),
+        subject,
+        "en",
+    ).catalog_only
+
+
+@pytest.mark.parametrize("known", [True, False])
+def test_families_in_brand_comparisons_keep_their_native_brand(known: bool) -> None:
+    matches = [
+        Match("brand", val, val.lower(), frozenset(), val) for val in ("GoodWe", "SAJ")
+    ]
+    matches += [
+        Match("series", slug, slug, frozenset(), "ESA")
+        for slug in ("goodwe-esa-low", "goodwe-esa-high")
+    ]
+    subject = Subject(
+        (),
+        {},
+        series_members={"goodwe-esa-low": {1}, "goodwe-esa-high": {2}},
+        brand_of={1: {"goodwe"}, 2: {"goodwe"}} if known else {},
+    )
+    result = plan(
+        "Compare GoodWe ESA vs SAJ for residential use",
+        matches,
+        _reading("compare"),
+        subject,
+        "en",
+    )
+    first, second = result.calls
+    assert first.arguments.get("text") == ("ESA" if known else None)
+    assert "text" not in second.arguments and "series" not in second.arguments
+    assert result.catalog_only == known
+
+
+@pytest.mark.parametrize(
+    "question, plain",
+    [
+        ("How much does the AX-10X cost?", True),
+        ("Was kostet das Modell AX-10X?", True),
+        ("What does the AX-10X cost including shipping and installation?", False),
+        ("Was kostet das Modell AX-10X mit Lieferung?", False),
+    ],
+)
+def test_only_a_plain_product_price_request_is_answered_by_the_current_woo_card(
+    question: str, plain: bool
+) -> None:
+    matches = [Match("model", "AX-10X", "AX-10X", frozenset({1}), "AX 10X")]
+    subject = Subject((1,), {1: "inverters"}, {1: "AX-10X"})
+    assert (
+        plan(question, matches, _reading("find_products"), subject, "en").catalog_only
+        == plain
+    )

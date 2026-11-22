@@ -323,3 +323,27 @@ def test_actual_http_cold_and_warm_turns_do_not_reread_vocabulary_permission(
     finally:
         client.close()
         log.close()
+
+
+def test_prewarmer_loads_the_next_vocabulary_without_blocking_current_readers(
+    source: tuple[Source, StoreVocabulary, PublicationClient],
+) -> None:
+    state, store, authority = source
+    permit = authority.snapshot()
+    before = store.get(permit)
+    started, release = Event(), Event()
+
+    def pause_listing() -> None:
+        started.set()
+        assert release.wait(3)
+
+    state.before_listing = pause_listing
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        refresh = pool.submit(store.refresh)
+        try:
+            assert started.wait(2)
+            assert pool.submit(store.get, permit).result(timeout=1) is before
+        finally:
+            release.set()
+        refresh.result(timeout=2)
+    assert store.get(permit) is not before

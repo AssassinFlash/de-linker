@@ -601,3 +601,31 @@ def test_the_route_runs_the_document_search_in_process() -> None:
         }
     ]
     assert failed.results == []
+
+
+def test_uncompressed_manufacturer_warranty_rows_get_the_same_verbatim_policy_instructions() -> (
+    None
+):
+    from linker_genie.agent import _user_prompt
+    from linker_genie.facts import TurnFacts
+    from linker_genie.route import Route
+    from linker_genie.schema import TurnRequest
+    from linker_genie.understand import Prepared
+
+    prep = Prepared(
+        route=Route("documents"),
+        facts=TurnFacts(
+            warranty_answers={"doc-id": {"period": "approved source wording"}}
+        ),
+    )
+    message = TurnRequest.model_validate(
+        {
+            "conversation_id": "policy",
+            "messages": [{"role": "user", "content": "What warranty applies?"}],
+        }
+    )
+    prompt = _user_prompt(message, None, prep)
+    assert (
+        "without an introduction or closing summary" in prompt
+        and "one matching warranty_answers value" in prompt
+    )

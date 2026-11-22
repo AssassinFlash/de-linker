@@ -13,11 +13,7 @@ import { expect, test, vi } from 'vitest';
  */
 import type { storeClient } from '../configurator/api/store';
 import type { Locale } from '../configurator/types';
-import { GenieCard } from './components/GenieCard';
-
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
+import { GenieCards } from './components/GenieCard';
 
 const PRODUCT = {
 	id: 4107,
@@ -28,12 +24,13 @@ const PRODUCT = {
 };
 
 function card(
-	products: ( ids: number[], locale: Locale ) => Promise< unknown[] >
+	products: ( ids: number[], locale: Locale ) => Promise< unknown[] >,
+	ids = [ 4107 ]
 ) {
 	render(
-		<GenieCard
-			productId={ 4107 }
-			restUrl="/wp-json/"
+		<GenieCards
+			products={ ids }
+
 			store={
 				{
 					products,
@@ -41,7 +38,7 @@ function card(
 				} as unknown as ReturnType< typeof storeClient >
 			}
 			locale="en"
-			status={ { state: 'idle', text: '' } }
+			statusFor={ () => ( { state: 'idle', text: '' } ) }
 			onAdd={ vi.fn() }
 			onSave={ vi.fn() }
 		/>
@@ -96,4 +93,20 @@ test( 'a resolving read renders the card', async () => {
 	expect(
 		screen.queryByText( 'Genie could not load this product.' )
 	).not.toBeInTheDocument();
+} );
+
+test( 'all twelve cards use one catalog request and display its model terms', async () => {
+	const ids = Array.from( { length: 12 }, ( _, index ) => 4107 + index );
+	const products = vi.fn( async () =>
+		ids.map( ( id ) => ( {
+			...PRODUCT,
+			id,
+			attributes: [
+				{ taxonomy: 'pa_model', terms: [ { name: 'M-' + id } ] },
+			],
+		} ) )
+	);
+	card( products, ids );
+	expect( await screen.findByText( /M-4118/ ) ).toBeVisible();
+	expect( products ).toHaveBeenCalledExactlyOnceWith( ids, 'en' );
 } );

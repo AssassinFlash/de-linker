@@ -14,6 +14,7 @@ final class Module {
 	/** Register native mutation, file and media-library hooks. */
 	public function register(): void {
 		( new FreshRest() )->register();
+		add_filter( 'pre_attachment_url_to_postid', array( DocumentFiles::class, 'manifest_attachment_id' ), PHP_INT_MAX, 2 );
 		( new Visibility() )->register();
 		( new \Linker\Commerce\Products\EngineeringReference() )->register();
 		( new CompatibilityEditor() )->register();

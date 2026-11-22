@@ -13,7 +13,7 @@ import webpackConfig from '../webpack.config.js';
 // mount points, with the titles the test expects; a page script mounts
 // nothing (the preview card's rules, ticket #249, have their own tests).
 const titles: Record< string, string > = {
-	genie: "Genie - Linker's AI assistant",
+	genie: "Genie – Linker's AI assistant",
 	configurator: 'Solution Configurator',
 };
 const scripts: Record< string, string > = {

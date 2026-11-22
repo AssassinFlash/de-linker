@@ -6,8 +6,65 @@ import { nativeScope, type NativeScope } from './nativeScope';
 export interface DraftLease {
 	scope: string;
 	epoch: number;
+	currentEditor?: () => boolean;
 }
 export type ContextPhase = 'loading' | 'ready' | 'unavailable';
+export class DraftEditor {
+	private generation = 0;
+	private ownerValue: FailureOwner | null = null;
+	private readonly leaveListeners = new Set< () => void >();
+	constructor(
+		readonly context: DraftContext,
+		private readonly changed: () => void
+	) {}
+	capture(): DraftLease | null {
+		const lease = this.context.capture();
+		const generation = this.generation;
+		return lease
+			? { ...lease, currentEditor: () => generation === this.generation }
+			: null;
+	}
+	close(): void {
+		this.checkpoint();
+		this.ownerValue = null;
+		this.generation++;
+		this.changed();
+	}
+	get owner(): FailureOwner | null {
+		return this.ownerValue;
+	}
+	accept(): FailureOwner | null {
+		const lease = this.context.capture();
+		if ( ! lease ) {
+			return null;
+		}
+		if ( ! this.ownerValue ) {
+			this.ownerValue = {
+				scope: lease.scope,
+				attempt: crypto.randomUUID(),
+			};
+			this.changed();
+		}
+		return this.ownerValue;
+	}
+	adopt( owner: FailureOwner ): void {
+		if ( this.context.capture()?.scope === owner.scope ) {
+			this.ownerValue = owner;
+		}
+	}
+	release(): void {
+		this.ownerValue = null;
+	}
+	beforeLeave( listener: () => void ): () => void {
+		this.leaveListeners.add( listener );
+		return () => this.leaveListeners.delete( listener );
+	}
+	checkpoint(): void {
+		if ( this.ownerValue && this.context.phase === 'ready' ) {
+			this.leaveListeners.forEach( ( listener ) => listener() );
+		}
+	}
+}
 export class DraftContext {
 	private identityValue: NativeScope | null = null;
 	private epoch = 0;
@@ -15,9 +72,10 @@ export class DraftContext {
 	private alive = true;
 	private pending: Promise< NativeScope > | null = null;
 	private listeners = new Set< () => void >();
-	private leaveListeners = new Set< () => void >();
-	private editorValue: FailureOwner | null = null;
+	readonly homeEditor = new DraftEditor( this, () => this.notify() );
+	readonly panelEditor = new DraftEditor( this, () => this.notify() );
 	phase: ContextPhase = 'loading';
+	conversationId?: number;
 	constructor(
 		private readonly config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 		private readonly changed: () => void
@@ -25,43 +83,9 @@ export class DraftContext {
 	get identity(): NativeScope | null {
 		return this.identityValue;
 	}
-	get editor(): FailureOwner | null {
-		return this.editorValue;
-	}
-	/** Called synchronously before accepting text/file/dictation bytes. */
-	acceptEditor(): FailureOwner | null {
-		const lease = this.capture();
-		if ( ! lease ) {
-			return null;
-		}
-		if ( ! this.editorValue ) {
-			this.editorValue = {
-				scope: lease.scope,
-				attempt: crypto.randomUUID(),
-			};
-			this.notify();
-		}
-		return this.editorValue;
-	}
-	adoptEditor( owner: FailureOwner ): void {
-		if ( this.capture()?.scope === owner.scope ) {
-			this.editorValue = owner;
-		}
-	}
-	releaseEditor(): void {
-		this.editorValue = null;
-	}
-	beforeLeave( listener: () => void ): () => void {
-		this.leaveListeners.add( listener );
-		return () => this.leaveListeners.delete( listener );
-	}
 	checkpoint(): void {
-		this.preserveEditor();
-	}
-	private preserveEditor(): void {
-		if ( this.phase === 'ready' && this.editorValue ) {
-			this.leaveListeners.forEach( ( listener ) => listener() );
-		}
+		this.homeEditor.checkpoint();
+		this.panelEditor.checkpoint();
 	}
 
 	subscribe( listener: () => void ): () => void {
@@ -81,7 +105,8 @@ export class DraftContext {
 			!! lease &&
 			this.alive &&
 			lease.scope === this.identityValue?.scope &&
-			lease.epoch === this.epoch
+			lease.epoch === this.epoch &&
+			( lease.currentEditor?.() ?? true )
 		);
 	}
 	valid( lease: DraftLease | null ): boolean {
@@ -130,7 +155,10 @@ export class DraftContext {
 	 * @param fresh Always request a new native identity when true.
 	 */
 	verify( fresh = true ): Promise< NativeScope > {
-		this.preserveEditor();
+		if ( ! fresh && this.pending ) {
+			return this.pending;
+		}
+		this.checkpoint();
 		const generation = ++this.generation;
 		if ( ! this.identityValue ) {
 			this.phase = 'loading';
@@ -147,7 +175,9 @@ export class DraftContext {
 						this.identityValue.scope !== identity.scope
 					) {
 						this.epoch += 1;
-						this.editorValue = null;
+						this.conversationId = undefined;
+						this.homeEditor.release();
+						this.panelEditor.release();
 						this.changed();
 					}
 					this.identityValue = identity;
@@ -225,19 +255,89 @@ export class DraftContext {
 	}
 	/** New/Select/Delete invalidates old callbacks even under the same native account. */
 	invalidate(): void {
-		this.preserveEditor();
-		this.editorValue = null;
+		this.checkpoint();
+		this.homeEditor.release();
+		this.panelEditor.release();
 		this.epoch += 1;
 		this.notify();
 	}
 	dispose(): void {
-		this.preserveEditor();
-		this.editorValue = null;
+		this.checkpoint();
+		this.homeEditor.release();
+		this.panelEditor.release();
 		this.alive = false;
 		this.epoch += 1;
 		this.generation += 1;
 		this.notify();
 		this.listeners.clear();
-		this.leaveListeners.clear();
 	}
+}
+
+type PageContextSlot = {
+	context: DraftContext;
+	clients: number;
+	release: () => void;
+};
+type DraftWindow = Window & { __linkerGenieDraftAuthority?: PageContextSlot };
+
+/**
+ * Both entry bundles use the same page owner and lifecycle.
+ * @param config Native REST routes and nonce for this page.
+ */
+export function pageDraftContext(
+	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >
+): DraftContext {
+	const page = window as DraftWindow;
+	if ( ! page.__linkerGenieDraftAuthority ) {
+		page.__linkerGenieDraftAuthority = {
+			context: new DraftContext( config, () => undefined ),
+			clients: 0,
+			release: () => undefined,
+		};
+	}
+	return page.__linkerGenieDraftAuthority.context;
+}
+
+export function mountPageDraftContext( context: DraftContext ): () => void {
+	const page = window as DraftWindow;
+	const slot = page.__linkerGenieDraftAuthority!;
+	if ( slot.clients++ === 0 ) {
+		const check = () => {
+			void context.verify( false ).catch( () => undefined );
+		};
+		const newIdentity = () => {
+			void context.verify( true ).catch( () => undefined );
+		};
+		const checkpoint = () => context.checkpoint();
+		const visibility = () => {
+			if ( document.visibilityState === 'hidden' ) {
+				checkpoint();
+			} else {
+				check();
+			}
+		};
+		check();
+		window.addEventListener( 'focus', check );
+		window.addEventListener( 'pageshow', check );
+		window.addEventListener( 'pagehide', checkpoint );
+		window.addEventListener( 'linker-genie-identity-change', newIdentity );
+		document.addEventListener( 'visibilitychange', visibility );
+		slot.release = () => {
+			window.removeEventListener( 'focus', check );
+			window.removeEventListener( 'pageshow', check );
+			window.removeEventListener( 'pagehide', checkpoint );
+			window.removeEventListener(
+				'linker-genie-identity-change',
+				newIdentity
+			);
+			document.removeEventListener( 'visibilitychange', visibility );
+			context.dispose();
+			delete page.__linkerGenieDraftAuthority;
+		};
+	}
+	return () => {
+		if ( --slot.clients === 0 ) {
+			slot.release();
+		}
+	};
 }

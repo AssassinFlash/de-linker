@@ -176,7 +176,9 @@ test( 'a cut stream survives a reload and retries once', async ( { page } ) => {
 	await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue( '' );
 
 	await page.reload();
-	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
+	await expect(
+		page.getByRole( 'button', { name: 'Restore unsent draft' } )
+	).toHaveCount( 0 );
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again.'
 	);
@@ -218,7 +220,9 @@ test( 'a 502 puts the question back and a reload still offers retry', async ( {
 	).toHaveCount( 0 );
 
 	await page.reload();
-	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
+	await expect(
+		page.getByRole( 'button', { name: 'Restore unsent draft' } )
+	).toHaveCount( 0 );
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again.'
 	);
@@ -281,7 +285,9 @@ test( 'a full session store drops the file, says so, and retries without it', as
 	).toHaveCount( 0 );
 
 	await page.reload();
-	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
+	await expect(
+		page.getByRole( 'button', { name: 'Restore unsent draft' } )
+	).toHaveCount( 0 );
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
 	);

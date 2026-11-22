@@ -33,7 +33,7 @@ import {
 	type EditingSnapshot,
 	type EditingAuthority,
 } from './editingDraft';
-import type { DraftContext } from './draftContext';
+import type { DraftEditor } from './draftContext';
 import {
 	FailureJournal,
 	type FailureCandidate,
@@ -56,10 +56,11 @@ export interface OpenRetry {
 /**
  * The shared failure record.
  *
- * @param files   The composer's files.
- * @param context The mounted surface identity and epoch.
+ * @param files    The composer's files.
+ * @param composer The physical editor accepting the input.
  */
-export function useFailure( files: FailureFiles, context: DraftContext ) {
+export function useFailure( files: FailureFiles, composer: DraftEditor ) {
+	const context = composer.context;
 	const failureState = useRef< FailureState >( {
 		phase: 'clear',
 		draft: null,
@@ -99,7 +100,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				}
 				return next;
 			}
-			const editor = context.editor;
+			const editor = composer.owner;
 			const checkpoint = editingCursor.current;
 			const promoting =
 				start &&
@@ -144,7 +145,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				editingCursor.current = result.cursor;
 			}
 			if ( start ) {
-				context.releaseEditor();
+				composer.release();
 			}
 			setUnsaved(
 				! result.durable ||
@@ -152,7 +153,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			);
 			return result.state;
 		},
-		[ context ]
+		[ composer, context ]
 	);
 	const commitFailure = useCallback(
 		( event: FailureEvent ) => {
@@ -225,12 +226,12 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			const stored = candidate ? persist( next ) : next;
 			failureState.current = stored;
 			if ( stored.phase === 'editing' && stored.draft?.owner ) {
-				context.adoptEditor( stored.draft.owner );
+				composer.adopt( stored.draft.owner );
 				editingCursor.current = cursor.current;
 			}
 			return stored;
 		},
-		[ persist, context ]
+		[ composer, persist ]
 	);
 	/** Identity/context invalidation quarantines UI without consuming old durable bytes. */
 	const detachFailure = useCallback( () => {
@@ -249,8 +250,8 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			! current ||
 			context.phase !== 'ready' ||
 			! identity ||
-			context.editor?.scope !== current.owner.scope ||
-			context.editor.attempt !== current.owner.attempt ||
+			composer.owner?.scope !== current.owner.scope ||
+			composer.owner.attempt !== current.owner.attempt ||
 			identity.scope !== current.owner.scope
 		) {
 			return;
@@ -263,7 +264,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			setDeferredFailure( other );
 			setUnsaved( !! current.memory || !! other.cursor.memory );
 		}
-	}, [ context ] );
+	}, [ composer, context ] );
 	useEffect(
 		() => context.subscribe( exposeAlternative ),
 		[ context, exposeAlternative ]
@@ -272,7 +273,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 	const preserveEditor = useCallback(
 		( snapshot: EditingSnapshot, accepted?: EditingAuthority ) => {
 			const identity = accepted?.identity ?? context.identity;
-			const owner = accepted?.owner ?? context.editor;
+			const owner = accepted?.owner ?? composer.owner;
 			const original = editingCursor.current;
 			const authority =
 				accepted ??
@@ -282,7 +283,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				original.owner.attempt === owner.attempt
 					? { owner, identity, cursor: original }
 					: undefined );
-			let result = preserveEditing( context, snapshot, authority );
+			let result = preserveEditing( composer, snapshot, authority );
 			if (
 				result?.conflict &&
 				! accepted &&
@@ -314,6 +315,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 							draft: {
 								owner,
 								editing: true,
+								conversationId: context.conversationId,
 								text: snapshot.text,
 								question:
 									buildQuestion(
@@ -333,8 +335,8 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 					if ( newer ) {
 						setDeferredFailure( newer );
 					}
-					if ( ! occupied && context.editor === owner ) {
-						context.releaseEditor();
+					if ( ! occupied && composer.owner === owner ) {
+						composer.release();
 						editingCursor.current = null;
 					}
 				}
@@ -359,7 +361,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			}
 			return result;
 		},
-		[ context, exposeAlternative ]
+		[ composer, context, exposeAlternative ]
 	);
 
 	/** Keep a settled earlier turn reachable without taking a newly accepted editor. */
@@ -383,8 +385,8 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				return false;
 			}
 			const occupied =
-				!! context.editor &&
-				context.editor.attempt !== previous.draft.owner?.attempt;
+				!! composer.owner &&
+				composer.owner.attempt !== previous.draft.owner?.attempt;
 			const question =
 				buildQuestion( snapshot.text, snapshot.uploads ) ||
 				snapshot.missing.join( '\n' );
@@ -413,12 +415,12 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				parkFailure();
 				return false;
 			}
-			context.adoptEditor( stored.draft.owner );
+			composer.adopt( stored.draft.owner );
 			editingCursor.current = cursor.current;
 			setOmitted( stored.draft.omitted );
 			return true;
 		},
-		[ context, persist, commitFailure, parkFailure ]
+		[ composer, persist, commitFailure, parkFailure ]
 	);
 
 	/** Caller verifies scope and editor epoch before this synchronous durable exchange. */
@@ -450,7 +452,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 					displaced.draft.uploads.length ||
 					displaced.draft.omitted.length )
 			) {
-				const owner = context.editor;
+				const owner = composer.owner;
 				const expected = editingCursor.current;
 				if ( ! owner ) {
 					// An automatically restored failure already has an exact stored
@@ -555,9 +557,9 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				saved.state.phase === 'editing' ? saved.cursor : null;
 			failureState.current = saved.state;
 			if ( saved.state.phase === 'editing' && saved.state.draft?.owner ) {
-				context.adoptEditor( saved.state.draft.owner );
+				composer.adopt( saved.state.draft.owner );
 			} else {
-				context.releaseEditor();
+				composer.release();
 			}
 			// Rebase the parked record over the activation write without consuming either owner.
 			setDeferredFailure(
@@ -566,7 +568,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			);
 			return saved.state;
 		},
-		[ context ]
+		[ composer, context ]
 	);
 
 	const placeChips = useCallback( ( chips: readonly Upload[] ) => {
@@ -639,12 +641,12 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				committed.phase === 'pending' &&
 				committed.draft?.owner?.attempt === opened.draft.owner?.attempt
 			) {
-				context.releaseEditor();
+				composer.release();
 				return opened;
 			}
 			return null;
 		},
-		[ commitFailure, context ]
+		[ composer, commitFailure, context ]
 	);
 
 	/**
@@ -703,6 +705,13 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 		detachFailure,
 		unsaved,
 		deferredFailure,
+		clearDeferred: useCallback( () => setDeferredFailure( null ), [] ),
+		dismissDeferred: useCallback( () => {
+			if ( deferredFailure ) {
+				abandonCaptured( deferredFailure.cursor );
+				setDeferredFailure( null );
+			}
+		}, [ deferredFailure, abandonCaptured ] ),
 		deferFailure: useCallback( ( candidate: FailureCandidate ) => {
 			setDeferredFailure( candidate );
 			setUnsaved( !! candidate.cursor.memory );

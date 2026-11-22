@@ -28,6 +28,13 @@ use WP_Mock;
  * slugs, so a small map restores the names Compatibility matches.
  */
 trait MocksLiveProducts {
+	/**
+	 * Number of full runtime cache resets for this ability request.
+	 *
+	 * @var int
+	 */
+	private int $runtime_flushes = 0;
+
 	/** Whether the cited-facts fixture migration is active.
 	 *
 	 * @var bool
@@ -78,7 +85,15 @@ trait MocksLiveProducts {
 		$this->live_products_mocked = true;
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value, int $flags = 0 ): string|false => json_encode( $value, $flags ) ) );
 		WP_Mock::userFunction( 'wp_cache_supports', array( 'return' => true ) );
-		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'wp_cache_flush_runtime',
+			array(
+				'return' => function (): bool {
+					++$this->runtime_flushes;
+					return true;
+				},
+			)
+		);
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part = -1 ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.com' ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) )->byDefault();

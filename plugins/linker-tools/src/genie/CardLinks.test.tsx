@@ -17,11 +17,7 @@ import { expect, test, vi } from 'vitest';
 import type { storeClient } from '../configurator/api/store';
 import type { Locale } from '../configurator/types';
 import type { CardPrice } from './api/turn';
-import { GenieCard } from './components/GenieCard';
-
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
+import { GenieCards } from './components/GenieCard';
 
 const LINKS = {
 	en: 'https://de-linker.test/product/saj-h2-10k-t3/',
@@ -112,9 +108,9 @@ test.each( ACCOUNTS )(
 			},
 		] );
 		render(
-			<GenieCard
-				productId={ 4107 }
-				restUrl="/wp-json/"
+			<GenieCards
+				products={ [ 4107 ] }
+
 				store={
 					{
 						products,
@@ -122,8 +118,8 @@ test.each( ACCOUNTS )(
 					} as unknown as ReturnType< typeof storeClient >
 				}
 				locale={ locale }
-				status={ { state: 'idle', text: '' } }
-				price={ price }
+				statusFor={ () => ( { state: 'idle', text: '' } ) }
+				prices={ [ price ] }
 				onAdd={ vi.fn() }
 				onSave={ vi.fn() }
 			/>
