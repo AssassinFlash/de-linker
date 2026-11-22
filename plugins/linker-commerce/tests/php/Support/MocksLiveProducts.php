@@ -63,6 +63,7 @@ trait MocksLiveProducts {
 		'gw5-1-bat-d-g20'  => 'GW5.1-BAT-D-G20',
 		'b2-5-0-hv1'       => 'B2-5.0-HV1',
 		'b2-10-0-hv1'      => 'B2-10.0-HV1',
+		'bc2-hv1'          => 'BC2-HV1',
 		'bu2-5-0-hv1'      => 'BU2-5.0-HV1',
 		'hs2-10k-t2-x'     => 'HS2-10K-T2-X',
 		'hs2-5k-t2-x'      => 'HS2-5K-T2-X',

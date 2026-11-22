@@ -154,7 +154,11 @@ def _hydrate_priced(
             replacements[marker] = value
             return marker
 
-        if facts.qualifications or used_figure_sources(completed, facts):
+        if (
+            facts.qualifications
+            or used_figure_sources(completed, facts)
+            or any(ref.startswith("compat.condition.") for ref in facts.facts)
+        ):
             # Protect the exact cited figure occurrence through the final seal.
             protected = hydrate(completed, facts, expected, qualified_mask=token)
             protected, _, _ = fill(protected, priced_facts)

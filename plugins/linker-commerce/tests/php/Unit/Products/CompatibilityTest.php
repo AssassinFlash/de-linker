@@ -168,6 +168,23 @@ final class CompatibilityTest extends TestCase {
 		);
 	}
 
+	/** A copied shop serves checked evidence locally while retaining the portable release identity. */
+	public function test_checked_pairings_link_to_the_current_shops_copy_of_the_manual(): void {
+		$documents = $this->manifest['documents'];
+		foreach ( $documents as &$document ) {
+			$document['url'] = str_replace( 'https://de-linker.com', 'http://localhost:8894', $document['url'] );
+		}
+		unset( $document );
+		$live = CompatibilityClaims::projection( $this->manifest['products'], $documents, true );
+		$this->assertNotEmpty( $live['pairs'] ?? array() );
+		$ref = $live['pairs'][0]['documents'][0];
+		$this->assertSame( array_column( $documents, 'url', 'document_id' )[ $ref['document_id'] ], $ref['url'] );
+		$original = CompatibilityClaims::projection( $this->manifest['products'], $this->manifest['documents'] );
+		$copy     = CompatibilityClaims::projection( $this->manifest['products'], $documents );
+		$this->assertIsString( $original['version'] ?? null );
+		$this->assertSame( $original['version'], $copy['version'] ?? null );
+	}
+
 	/**
 	 * Conditions are bilingual objects (the file folds the old parallel
 	 * arrays), and evidence links preserve the association bound by Woo.

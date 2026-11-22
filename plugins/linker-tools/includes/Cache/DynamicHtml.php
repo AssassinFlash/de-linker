@@ -1,6 +1,6 @@
 <?php
 /**
- * Keeps per-request HTML out of the public page cache.
+ * Keeps per-request pages and private Genie history out of shared caches.
  *
  * @package Linker\Tools
  */
@@ -8,6 +8,10 @@
 declare( strict_types = 1 );
 
 namespace Linker\Tools\Cache;
+
+use Linker\Tools\Genie\Proxy;
+use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Official no-cache controls for HTML that must not be shared.
@@ -35,6 +39,32 @@ final class DynamicHtml {
 	 */
 	public static function register(): void {
 		add_action( 'wp', array( self::class, 'front_request' ), 6 );
+		add_filter( 'rest_post_dispatch', array( self::class, 'history_response' ), 20, 3 );
+	}
+
+	/**
+	 * Genie reads both history routes using the current browser or account.
+	 *
+	 * @param mixed           $response Native REST response.
+	 * @param mixed           $server   Native REST server.
+	 * @param WP_REST_Request $request  Resolved native route.
+	 * @return mixed
+	 */
+	public static function history_response( mixed $response, mixed $server, WP_REST_Request $request ): mixed {
+		unset( $server );
+		$route = rtrim( $request->get_route(), '/' );
+		if ( ! in_array( $route, array( '/' . Proxy::NAMESPACE . Proxy::THREAD_ROUTE, '/' . Proxy::NAMESPACE . Proxy::CONVERSATIONS_ROUTE ), true ) || ! in_array( $request->get_method(), array( 'GET', 'HEAD' ), true ) ) {
+			return $response;
+		}
+		// Preloads can run the native REST controller inside an otherwise cacheable HTML page.
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			self::forbid( 'private Genie history' );
+		}
+		if ( $response instanceof WP_REST_Response ) {
+			$response->header( 'Cache-Control', 'no-store, private, max-age=0' );
+			$response->header( 'X-LiteSpeed-Cache-Control', 'no-cache' );
+		}
+		return $response;
 	}
 
 	/**
