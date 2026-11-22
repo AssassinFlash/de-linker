@@ -811,3 +811,23 @@ def test_families_in_brand_comparisons_keep_their_native_brand(known: bool) -> N
     assert first.arguments.get("text") == ("ESA" if known else None)
     assert "text" not in second.arguments and "series" not in second.arguments
     assert result.catalog_only == known
+
+
+@pytest.mark.parametrize(
+    "question, plain",
+    [
+        ("How much does the AX-10X cost?", True),
+        ("Was kostet das Modell AX-10X?", True),
+        ("What does the AX-10X cost including shipping and installation?", False),
+        ("Was kostet das Modell AX-10X mit Lieferung?", False),
+    ],
+)
+def test_only_a_plain_product_price_request_is_answered_by_the_current_woo_card(
+    question: str, plain: bool
+) -> None:
+    matches = [Match("model", "AX-10X", "AX-10X", frozenset({1}), "AX 10X")]
+    subject = Subject((1,), {1: "inverters"}, {1: "AX-10X"})
+    assert (
+        plan(question, matches, _reading("find_products"), subject, "en").catalog_only
+        == plain
+    )

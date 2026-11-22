@@ -1335,7 +1335,7 @@ def test_chat_sends_low_effort_and_the_structured_output_contract() -> None:
 
 def test_catalogue_comparison_includes_each_brand_and_needs_a_current_match() -> None:
     from linker_genie.route import Call
-    from linker_genie.template import catalog_answer
+    from linker_genie.template import prepared_answer
 
     calls = tuple(
         Call("linker/search-products", {"brand": b}) for b in ("first", "second")
@@ -1352,7 +1352,7 @@ def test_catalogue_comparison_includes_each_brand_and_needs_a_current_match() ->
                 "result": {"qualified": [{"product_id": pid} for pid in ids]},
             }
         )
-    table = catalog_answer(facts, route, "en")
+    table = prepared_answer(facts, route, "en")
     assert table is not None
     result = run(_request(), lambda *_: (table, TurnFacts()), route, facts)
     assert result.grounded and not result.fallback
@@ -1361,11 +1361,11 @@ def test_catalogue_comparison_includes_each_brand_and_needs_a_current_match() ->
         "product_ids": [1, 4, 2, 5],
     }
     facts.qualified_ids -= {4, 5}
-    assert catalog_answer(facts, route, "en") is None
+    assert prepared_answer(facts, route, "en") is None
 
 
 def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
-    from linker_genie.template import catalog_answer
+    from linker_genie.template import prepared_answer
 
     facts = TurnFacts(qualified_ids={1}, product_ids={1})
     facts.tool_calls.append(
@@ -1375,7 +1375,7 @@ def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
             "result": {"qualified": [{"product_id": 1, "pairings": []}]},
         }
     )
-    result = catalog_answer(facts, Route("pairing", catalog_only=True), "en")
+    result = prepared_answer(facts, Route("pairing", catalog_only=True), "en")
     assert result is not None
     assert any(
         isinstance(b, TextBlock) and "No battery is listed as approved" in b.text
@@ -1389,11 +1389,31 @@ def test_pairing_without_a_published_partner_keeps_the_named_inverter() -> None:
 def test_bare_catalogue_results_reference_published_product_ids_before_hydration() -> (
     None
 ):
-    from linker_genie.template import catalog_answer
+    from linker_genie.template import prepared_answer
 
     facts = TurnFacts(qualified_ids={12, 34}, product_ids={12, 34})
     route = Route("products", show_products=True, catalog_only=True)
-    answer = catalog_answer(facts, route, "en")
+    answer = prepared_answer(facts, route, "en")
     assert answer is not None
     ready = run(_request(), lambda *_: (answer, TurnFacts()), route, facts)
     assert ready.grounded and ready.attempts == 1
+
+
+def test_team_route_uses_the_verified_handoff_without_model_authored_details() -> None:
+    from linker_genie.template import prepared_answer
+
+    facts = TurnFacts()
+    facts.add(
+        Fact(
+            "handoff.sentence_en", "Please contact sales@de-linker.com.", "handoff-team"
+        )
+    )
+    route = Route("service")
+    out = prepared_answer(facts, route, "en")
+    assert out is not None and out.blocks[0].model_dump() == {
+        "type": "handoff",
+        "summary": "{fact:handoff.sentence_en}",
+    }
+    result = run(_request(), lambda *_: (out, TurnFacts()), route, facts)
+    assert result.grounded and result.attempts == 1
+    assert prepared_answer(TurnFacts(), route, "en") is None

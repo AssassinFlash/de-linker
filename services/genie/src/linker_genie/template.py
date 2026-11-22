@@ -580,10 +580,17 @@ def _named_codes_sentence(codes: list[str], language: Locale) -> str:
     return f"You named {shown}."
 
 
-def catalog_answer(
+def prepared_answer(
     facts: TurnFacts, route: Route, language: Locale
 ) -> TurnOutput | None:
-    """Answer plain catalogue lookups from their checked native products and pairings."""
+    """Return an unhydrated answer when the native result determines it completely."""
+    if route.name == "service":
+        ref = f"handoff.sentence_{language}"
+        if ref in facts.facts:
+            return TurnOutput(
+                language=language, blocks=[HandoffBlock(summary=f"{{fact:{ref}}}")]
+            )
+        return None
     if not route.catalog_only:
         return None
     if route.name == "products" and facts.qualified_ids:

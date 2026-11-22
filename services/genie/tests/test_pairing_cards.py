@@ -971,7 +971,7 @@ def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_fi
     None
 ):
     from linker_genie.schema import DocumentBlock
-    from linker_genie.template import catalog_answer
+    from linker_genie.template import prepared_answer
 
     payload = _payload()
     payload["qualified"][0]["pairings"][0].update(
@@ -990,7 +990,7 @@ def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_fi
         }
     )
     route = Route("pairing", catalog_only=True)
-    answer = catalog_answer(facts, route, "en")
+    answer = prepared_answer(facts, route, "en")
     assert answer is not None
     assert any(isinstance(b, TextBlock) and "{fact:" in b.text for b in answer.blocks)
     assert all(not b.url for b in answer.blocks if isinstance(b, DocumentBlock))

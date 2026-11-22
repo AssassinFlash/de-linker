@@ -88,9 +88,9 @@ from linker_genie.schema import (
 )
 from linker_genie.storeapi import TTL_SECONDS, StoreVocabulary, VocabularyError
 from linker_genie.template import (
-    catalog_answer,
     fallback,
     finish,
+    prepared_answer,
     roof_answer,
     stock_answer,
     team_sentence,
@@ -433,7 +433,7 @@ def _compute_turn(
         "scripted",
         "roof",
     ) or (simple_stock(prepared.route) and result.attempts == 0)
-    code_made = code_made or prepared.log.get("catalog_answer") is True
+    code_made = code_made or prepared.log.get("prepared_answer") is True
     code_made = code_made or prepared.log.get("saved_material_answer") is True
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
@@ -911,7 +911,7 @@ def _answer(
         publication=publication,
     )
     catalog = (
-        catalog_answer(prepared.facts, prepared.route, language)
+        prepared_answer(prepared.facts, prepared.route, language)
         if not prepared.attachments and len(body.messages) == 1
         else None
     )
@@ -920,9 +920,9 @@ def _answer(
         message: TurnRequest, retry: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
         if catalog is not None and retry is None:
-            prepared.log["catalog_answer"] = True
+            prepared.log["prepared_answer"] = True
             return catalog, TurnFacts()
-        prepared.log.pop("catalog_answer", None)
+        prepared.log.pop("prepared_answer", None)
         return generate(message, retry)
 
     # The same list the model tools append to during `generate` (inside

@@ -804,6 +804,13 @@ def _user_prompt(
         )
     if prepared is not None and prepared.route.hint:
         lines.append("Service routing: " + prepared.route.hint)
+    if prepared is not None and prepared.facts.warranty_answers:
+        lines.append(
+            "Write manufacturer warranty claims without an introduction or closing summary. "
+            "Each policy text block must copy one matching warranty_answers value unchanged, including "
+            "its fact placeholders, and cite its own chunk ID. Link that source's document. "
+            "Use the stated product, market and requested conditions to choose the matching policy."
+        )
     if prepared is not None and prepared.results:
         # A document search reads as the model's own call would: tagged text, no
         # URL, no figure table (knowledge.model_view).
@@ -812,8 +819,7 @@ def _user_prompt(
             lines.append(
                 "For compact warranty hits, warranty_figures maps each short figure "
                 "ID (such as n1) to its original value. Use it to select the matching "
-                "policy row; copy the chosen warranty_answers value unchanged, "
-                "including its fact placeholders. If passages were omitted, search again."
+                "policy row. If passages were omitted, search again."
             )
         lines.append(
             "Tool results the service already fetched for this turn (use them; "

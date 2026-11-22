@@ -1103,13 +1103,25 @@ def _plan_turn(
         )
     hint_extra = _model_hint(notes)
     unknown = any(note.unknown for note in notes)
-    if (calls or notes) and (bare or intent == "find_products" or unknown):
+    plain_price = (
+        len(notes) == 1
+        and notes[0].searched_known
+        and not notes[0].is_conflict
+        and _DIRECT_PRICE.search(message) is not None
+        and _catalog_request(message, matches, _PRICE_WORDS)
+    )
+    if (calls or notes) and (
+        bare or plain_price or intent == "find_products" or unknown
+    ):
         return Route(
             "products",
             calls,
             show_products=True,
             no_handoff=True,
-            catalog_only=bare and not earlier and not unknown and not brand_conflict,
+            catalog_only=(bare or plain_price)
+            and not earlier
+            and not unknown
+            and not brand_conflict,
             hint=(
                 "The customer named products; the search result is fetched. Show "
                 "its products as cards, cited in the text refs. A product word is "
@@ -1578,6 +1590,14 @@ _CATALOG_COMPARISON_WORDS = frozenset(
     "gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
 )
 
+
+_DIRECT_PRICE = re.compile(
+    r"\b(?:prices?|costs?|how much|preis(?:e)?|kostet|kosten|wie viel)\b", re.I
+)
+_PRICE_WORDS = frozenset(
+    "what is are the a this model product price prices for of how much do does it cost costs "
+    "was ist der die das den dem dieses modell produkt für fuer von preis preise wie viel kostet kosten".split()
+)
 
 _PAIRING_WORDS = frozenset(
     "which what is are the a an can does with for my this and battery batteries inverter inverters "
