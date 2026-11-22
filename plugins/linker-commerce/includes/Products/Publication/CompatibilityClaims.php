@@ -36,6 +36,7 @@ final class CompatibilityClaims {
 			'requirements' => array(),
 		);
 		$blocked  = array();
+		$urls     = $include_evidence ? array_column( $documents, 'url', 'document_id' ) : array();
 		foreach ( $index as $owner => $product ) {
 			$claims = get_post_meta( (int) $owner, self::META_KEY, true );
 			if ( '' === $claims || array() === $claims ) {
@@ -59,7 +60,11 @@ final class CompatibilityClaims {
 						if ( 'pairs' === $kind ) {
 							$projected['battery'] = self::pattern( (string) $index[ $target ]['model'] );
 						}
-						if ( ! $include_evidence ) {
+						if ( $include_evidence ) {
+							foreach ( $valid['documents'] as $i => $doc ) {
+								$projected['documents'][ $i ]['url'] = $urls[ $doc['document_id'] ];
+							}
+						} else {
 							$projected['documents'] = array_map(
 								static fn( array $doc ): array => array_intersect_key(
 									$doc,
