@@ -967,7 +967,10 @@ def _plan_turn(
                 for match in _ASKED_CODE.finditer(message)
                 if normalize(match.group(0)) not in known_codes
                 and any(ch.isdigit() for ch in match.group(0))
-                and _EQUIPMENT_PREFIX.search(message[: match.start()])
+                and (
+                    _EQUIPMENT_PREFIX.search(message[: match.start()])
+                    or _EQUIPMENT_SUFFIX.match(message[match.end() :])
+                )
             )
         )
         if missing:
@@ -1667,11 +1670,15 @@ _PRICE_WORDS = frozenset(
 )
 
 _PAIRING_CUE = re.compile(
-    r"\b(?:compatib\w*|kompatib\w*|kombinier\w*|funktionier\w*|work(?:s)? with|fit(?:s)? (?:with|my)|pair(?:ed)? with)\b",
+    r"\b(?:combin(?:e|ing)|compatib\w*|kompatib\w*|kombinier\w*|funktionier\w*|work(?:s)? with|fit(?:s)? (?:with|my)|pair(?:ed)? with)\b",
     re.I,
 )
 _EQUIPMENT_PREFIX = re.compile(
-    r"\b(?:inverter|battery|wechselrichter|batterie)\b(?:[ -]+[\w.]+)*\s+$", re.I
+    r"(?i:\b(?:inverter|battery|wechselrichter|batterie)\b)(?:[ -]+[A-Z\d][A-Z\d.-]*)*\s+$"
+)
+
+_EQUIPMENT_SUFFIX = re.compile(
+    r"\s+(?:inverter|battery|wechselrichter|batterie)\b", re.I
 )
 
 _PAIRING_WORDS = frozenset(

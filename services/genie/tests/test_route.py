@@ -877,18 +877,31 @@ def test_battery_pairing_searches_the_documented_reverse_direction() -> None:
     assert route.calls[0].arguments["text"] == model
 
 
-def test_a_named_inverter_outside_the_catalogue_is_searched_separately_from_its_battery() -> (
-    None
-):
+@pytest.mark.parametrize(
+    "question,lang",
+    [
+        (
+            "Can I combine the EcoFlow OCEAN 2 HD-P3-15K inverter with a GoodWe GW9.0-BAT-D-G20 battery?",
+            "en",
+        ),
+        (
+            "Kann ich den EcoFlow-Wechselrichter OCEAN 2 HD-P3-15K mit einer GoodWe-Batterie GW9.0-BAT-D-G20 kombinieren?",
+            "de",
+        ),
+    ],
+)
+def test_a_named_inverter_outside_the_catalogue_is_searched_separately_from_its_battery(
+    question: str, lang: str
+) -> None:
     model = "GW9.0-BAT-D-G20"
     match = Match("model", model, model, frozenset({7}), "GW9.0 BAT D G20")
     subject = Subject((7,), {7: "home-storage"}, {7: model}, catalog_models=(model,))
     route = plan(
-        f"Kann ich den EcoFlow-Wechselrichter OCEAN 2 HD-P3-15K mit einer GoodWe-Batterie {model} kombinieren?",
+        question,
         [match],
         _reading("find_products"),
         subject,
-        "de",
+        lang,
     )
     assert route.name == "pairing"
     assert {call.arguments["text"] for call in route.calls} == {model, "HD-P3-15K"}
