@@ -44,7 +44,7 @@ defined( 'ABSPATH' ) || exit;
 		$changed[ $owner ] = $count;
 	}
 	WP_CLI::log(
-		wp_json_encode(
+		(string) wp_json_encode(
 			array(
 				'written'            => $write,
 				'changed_conditions' => $changed,
