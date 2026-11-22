@@ -250,10 +250,30 @@ final class Publication {
 	 * @return array<string,mixed>
 	 */
 	public static function manifest(): array {
+		return self::read_manifest( false );
+	}
+
+	/**
+	 * Catalogue and Genie depend on published goods, files and pairings.
+	 * Only the knowledge/preparation manifest needs the separate draft-model inventory.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function catalog(): array {
+		return self::read_manifest( true );
+	}
+
+	/**
+	 * Read fresh native product/term permissions and physical files at each boundary.
+	 *
+	 * @param bool $catalog_only Omit the private model inventory and preparation state.
+	 * @return array<string,mixed>
+	 */
+	private static function read_manifest( bool $catalog_only ): array {
 		self::refresh_runtime();
 		DocumentFiles::begin_read( true );
 		try {
-			return self::assemble();
+			return self::assemble( catalog_only: $catalog_only );
 		} finally {
 			DocumentFiles::end_read();
 		}
@@ -456,9 +476,10 @@ final class Publication {
 	 * @param bool     $library Only library metadata and current cited FAQ bytes.
 	 * @param int|null $product_id Restrict document IO to this current source.
 	 * @param string   $legacy_url Inspect aliases needed to select a legacy document URL.
+	 * @param bool     $catalog_only Build only current customer-facing publication data.
 	 * @return array<string,mixed>
 	 */
-	private static function assemble( bool $library = false, ?int $product_id = null, string $legacy_url = '' ): array {
+	private static function assemble( bool $library = false, ?int $product_id = null, string $legacy_url = '', bool $catalog_only = false ): array {
 		$ids = self::candidate_ids();
 		// WordPress batches the same native posts, metadata and terms after this read's runtime refresh.
 		_prime_post_caches( $ids, true, true );
@@ -549,6 +570,40 @@ final class Publication {
 				'documents' => array_values( $documents ),
 			);
 		}
+		$stored_titles = get_option( Materials::DE_DOCUMENT_TITLES, array() );
+		$stored_titles = is_array( $stored_titles ) ? $stored_titles : array();
+		if ( $catalog_only ) {
+			// These native rows include current file bytes, permissions, locale membership,
+			// product facts and compatibility claims. An unchanged generation already has revisions.
+			static $last_inputs = null;
+			static $last_result = array();
+			$inputs             = array( $products, $documents, $stored_titles );
+			if ( $inputs !== $last_inputs ) {
+				$last_result = self::catalog_revisions( $products, $documents, $stored_titles );
+				$last_inputs = $inputs;
+			}
+			return $last_result;
+		}
+		$manifest = self::catalog_revisions( $products, $documents, $stored_titles );
+		// Knowledge has an additional identity dependency. Draft-only identity
+		// changes must not alter the published source or engineering generation.
+		$manifest['model_identity_revision'] = self::model_identity_revision( self::model_statuses_in_current_read() );
+		foreach ( $manifest['products'] as &$product ) {
+			$product['ready'] = PreparationJobs::readiness( $product['product_id'], $product['product_revision'], $manifest['model_identity_revision'] );
+		}
+		unset( $product );
+		return $manifest;
+	}
+
+	/**
+	 * Derive public revisions from an observed native generation.
+	 *
+	 * @param array<int,array<string,mixed>>    $products Current Woo product records.
+	 * @param array<string,array<string,mixed>> $documents Current managed document records.
+	 * @param array<array-key,mixed>            $stored_titles Native reviewed document titles.
+	 * @return array<string,mixed>
+	 */
+	private static function catalog_revisions( array $products, array $documents, array $stored_titles ): array {
 		foreach ( $documents as &$document ) {
 			$content = $document;
 			unset( $content['product_ids'] );
@@ -573,20 +628,11 @@ final class Publication {
 		$manifest['source_revision'] = self::revision( $manifest );
 		// Display titles are current WordPress metadata, not PDF evidence. A
 		// wording change must not revoke the underlying document's bound facts.
-		$stored_titles = get_option( Materials::DE_DOCUMENT_TITLES, array() );
-		$stored_titles = is_array( $stored_titles ) ? $stored_titles : array();
 		foreach ( $manifest['documents'] as &$document ) {
 			$reviewed             = $stored_titles[ $document['title'] ] ?? '';
 			$document['title_de'] = is_string( $reviewed ) ? trim( $reviewed ) : '';
 		}
 		unset( $document );
-		// Knowledge has an additional identity dependency. Draft-only identity
-		// changes must not alter the published source or engineering generation.
-		$manifest['model_identity_revision'] = self::model_identity_revision( self::model_statuses_in_current_read() );
-		foreach ( $manifest['products'] as &$product ) {
-			$product['ready'] = PreparationJobs::readiness( $product['product_id'], $product['product_revision'], $manifest['model_identity_revision'] );
-		}
-		unset( $product );
 		return $manifest;
 	}
 
@@ -935,7 +981,7 @@ final class Publication {
 	 * @return array<string,mixed>
 	 */
 	public static function validate( array $dependencies ): array {
-		return self::validate_manifest( $dependencies, self::manifest() );
+		return self::validate_manifest( $dependencies, array_key_exists( 'model_identity_revision', $dependencies ) ? self::manifest() : self::catalog() );
 	}
 
 	/**

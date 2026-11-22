@@ -21,6 +21,12 @@ final class DocumentFiles {
 	 */
 	private static array $hashes = array();
 
+	/** The same hosted URL may be cited by many models in one authority read.
+	 *
+	 * @var array<string,array{path:string,url:string,relative:string,blob_sha256:string}|null>
+	 */
+	private static array $resolved = array();
+
 	/**
 	 * Whether the current authority assembly owns the bounded hash cache.
 	 *
@@ -83,6 +89,7 @@ final class DocumentFiles {
 	 */
 	public static function begin_read( bool $cache_manifest = false, bool $partial = false ): void {
 		self::$hashes         = array();
+		self::$resolved       = array();
 		self::$reading        = true;
 		self::$cache_manifest = $cache_manifest;
 		self::$partial        = $partial;
@@ -105,6 +112,7 @@ final class DocumentFiles {
 			}
 		}
 		self::$hashes         = array();
+		self::$resolved       = array();
 		self::$cached         = array();
 		self::$seen           = array();
 		self::$attachment_ids = null;
@@ -120,12 +128,16 @@ final class DocumentFiles {
 	 * @return array{path:string,url:string,relative:string,blob_sha256:string}|null
 	 */
 	public static function resolve( string $url ): ?array {
-		$file = self::locate( $url );
-		if ( null === $file ) {
-			return null;
+		if ( self::$reading && array_key_exists( $url, self::$resolved ) ) {
+			return self::$resolved[ $url ];
 		}
-		$sha = self::checksum( $file['path'] );
-		return false === $sha ? null : $file + array( 'blob_sha256' => $sha );
+		$file   = self::locate( $url );
+		$sha    = null === $file ? false : self::checksum( $file['path'] );
+		$result = null !== $file && false !== $sha ? $file + array( 'blob_sha256' => $sha ) : null;
+		if ( self::$reading ) {
+			self::$resolved[ $url ] = $result;
+		}
+		return $result;
 	}
 
 	/**
@@ -191,6 +203,7 @@ final class DocumentFiles {
 	 * @param mixed  $existing Earlier attachment resolution.
 	 * @param string $url Public file URL.
 	 * @return mixed Attachment ID or the existing filter result.
+	 * @throws \RuntimeException When native attachment permissions cannot be read.
 	 */
 	public static function manifest_attachment_id( mixed $existing, string $url ): mixed {
 		if ( null !== $existing || ! self::$reading || ! self::$cache_manifest || self::$partial || has_filter( 'attachment_url_to_postid' ) ) {
@@ -202,6 +215,9 @@ final class DocumentFiles {
 			self::$attachment_ids = array();
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Same rows as the native attachment resolver, bulk-read once for the current authority assembly.
 			$rows = $wpdb->get_results( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value LIKE '%.pdf'" );
+			if ( '' !== $wpdb->last_error ) {
+				throw new \RuntimeException( 'Current document attachments could not be read.' );
+			}
 			foreach ( $rows as $row ) {
 				$key                          = $base . $row->meta_value;
 				self::$attachment_ids[ $key ] = array_key_exists( $key, self::$attachment_ids ) ? null : (int) $row->post_id;

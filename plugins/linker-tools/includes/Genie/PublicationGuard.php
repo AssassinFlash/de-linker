@@ -34,7 +34,7 @@ class PublicationGuard {
 			return self::refused( 503 );
 		}
 		try {
-			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::manifest();
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::catalog();
 		} catch ( \RuntimeException $error ) {
 			return self::refused( 503 );
 		}
@@ -92,7 +92,7 @@ class PublicationGuard {
 	 */
 	public function release( string $stream, array $dependencies, string $locale ): string|WP_Error {
 		try {
-			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::manifest();
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::catalog();
 		} catch ( \RuntimeException $error ) {
 			return self::refused( 503 );
 		}

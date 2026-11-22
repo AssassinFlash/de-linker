@@ -71,6 +71,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_notices', array( $faqs, 'notice_refused' ) );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $documents, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $documents, 'save' ) );
+		WP_Mock::expectFilterAdded( 'pre_attachment_url_to_postid', array( \Linker\Commerce\Products\Publication\DocumentFiles::class, 'manifest_attachment_id' ), PHP_INT_MAX, 2 );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'box' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'save_post_product', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'save' ), 30 ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'admin_notices', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'notice' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)

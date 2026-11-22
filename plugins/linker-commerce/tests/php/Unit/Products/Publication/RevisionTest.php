@@ -46,6 +46,25 @@ final class RevisionTest extends TestCase {
 		parent::tearDown();
 	}
 
+	/** Genie and the catalogue validate current product and file facts without draft-model preparation. */
+	public function test_catalog_releases_current_evidence_and_rechecks_file_bytes(): void {
+		$full    = Publication::manifest();
+		$current = Publication::catalog();
+		$this->assertSame( $full['source_revision'], $current['source_revision'] );
+		$this->assertSame( $full['compatibility_revision'], $current['compatibility_revision'] );
+		$this->assertSame( $full['documents'], $current['documents'] );
+		$this->assertArrayNotHasKey( 'model_identity_revision', $current );
+		$this->assertArrayNotHasKey( 'ready', $current['products'][0] );
+		$this->assertSame( $current, Publication::catalog() );
+
+		$file = DocumentFiles::locate( $current['documents'][0]['url'] );
+		$this->assertNotNull( $file );
+		file_put_contents( $file['path'], '%PDF-1.4 replaced during the current Genie request' );
+		$changed = Publication::catalog();
+		$this->assertNotSame( $current['source_revision'], $changed['source_revision'] );
+		$this->assertNotSame( $current['documents'][0]['document_revision'], $changed['documents'][0]['document_revision'] );
+	}
+
 	/** Reviewed wording never changes evidence identities. */
 	public function test_reviewed_document_titles_are_current_display_metadata(): void {
 		$english = 'GoodWe EV Charger Limited Warranty (Europe, Rev. 1.2, English)';
