@@ -226,6 +226,7 @@ test( 'a question asked through the hero gets a real answer and counts as a conv
 	await waitFor( () =>
 		expect( screen.getAllByText( 'Answer 1' ).length ).toBeGreaterThan( 0 )
 	);
+	expect( screen.getByText( CONFIG.disclosure ) ).toBeVisible();
 	expect( answers.send ).toHaveBeenCalledTimes( 1 );
 	expect( onConversation ).toHaveBeenCalledWith( true );
 	// The live region carries the new answer (review round 1, item 3).

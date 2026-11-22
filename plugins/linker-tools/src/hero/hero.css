@@ -298,7 +298,7 @@
 #home-a .hero-cinematic.linker-genie-hero--open .hero-dialog {
 	display: flex;
 	flex-direction: column;
-	width: min(1080px, 94vw);
+	width: min(1080px, 94vw, 100%);
 	height: min(760px, calc(100dvh - var(--linker-hero-dialog-top, 0px) - 8px));
 	max-height: none;
 	min-height: 0;

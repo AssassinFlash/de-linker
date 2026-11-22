@@ -1045,6 +1045,9 @@ export function HeroConversation( {
 			window.dispatchEvent( new Event( 'linker-genie-hero-answer' ) );
 		}
 	}, [ turn ] );
+	const firstAnswerIndex = thread.findIndex(
+		( message ) => message.role === 'assistant'
+	);
 	const viewActions = (
 		<div className="linker-genie-hero__view-actions">
 			{ wide && ! opening && phase === 'ask' && config.workspaceUrl ? (
@@ -1167,7 +1170,13 @@ export function HeroConversation( {
 											G
 										</span>
 										<span>
-											{ __( 'Genie', 'linker-tools' ) }
+											{ index === firstAnswerIndex &&
+											config.disclosure
+												? config.disclosure
+												: __(
+														'Genie',
+														'linker-tools'
+													) }
 										</span>
 									</div>
 								) : null }
