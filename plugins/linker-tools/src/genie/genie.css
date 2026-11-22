@@ -633,9 +633,10 @@ body:has(.linker-genie-workspace)
 	width: fit-content;
 	max-width: 80%;
 	margin-left: auto;
-	padding: 8px 20px;
-	border-radius: 24px;
-	background: var(--proto-neutral-100);
+	padding: 9px 16px;
+	border-radius: 14px 14px 4px 14px;
+	background: var(--proto-color-ink);
+	color: var(--proto-color-surface);
 }
 
 /* `.gp-assistant` */

@@ -74,7 +74,7 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
    LC remains the account markup owner; the conversation tree is unchanged. */
 .linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar {gap:8px;padding-inline:16px}
 .linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar-lead {flex:1;overflow:hidden}
-.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__title {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__title {min-width:0;white-space:normal;font-weight:600}
 .linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar-actions {flex-shrink:0;gap:0}
 .linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__panel:has(>.linker-genie-app__welcome) {padding:0;overflow:hidden}
 .linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__welcome {flex:1 1 auto;padding:24px;overflow:auto}
@@ -178,7 +178,7 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 .linker-genie-app--workspace .linker-genie-app__answer-brand{margin-bottom:16px}
 .linker-genie-app--workspace .linker-genie-app__message{margin-bottom:32px}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--assistant{padding:0}
-.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--user{max-width:88%;padding:10px 14px;border-radius:18px 18px 4px 18px;background:#f1f1f1}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--user{max-width:88%;padding:10px 14px;border-radius:14px 14px 4px 14px;background:var(--proto-color-ink);color:var(--proto-color-surface)}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message{font-size:14px;line-height:1.65;margin-bottom:24px}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand{gap:8px;margin-bottom:12px;font-size:12px;color:#686868}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand .linker-genie-app__monogram{width:24px;height:24px;font-size:12px}
@@ -284,3 +284,7 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 	.hero-ops .hero-ops-actions { flex-wrap: wrap; }
 	.hero-ops .hero-ops-register .linker-create-account { min-height: 44px; }
 }
+
+.linker-genie-app__title,
+#home-a .linker-genie-hero__title{display:flex;align-items:center;gap:8px}
+.linker-genie-mark{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:7px;background:var(--proto-color-accent);color:var(--proto-color-surface);font-size:12px;font-weight:700}

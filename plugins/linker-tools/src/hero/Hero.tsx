@@ -91,6 +91,7 @@ const emptyPrompt = () => ( { text: '', version: 0 } );
 
 /** The controller's way into the conversation while it is unfolded. */
 export interface HeroBridge {
+	hasUnsentWork: () => boolean;
 	/**
 	 * Asks a question; picked files are prepared first and sent with it.
 	 *
@@ -971,9 +972,21 @@ export function HeroConversation( {
 					}
 				},
 				mode: setRetainedMode,
+				hasUnsentWork: () =>
+					sending.current ||
+					filesRef.current.picked.length > 0 ||
+					omittedRef.current.length > 0 ||
+					failureState.current.phase === 'failed',
 			} );
 		}
-	}, [ onReady, bridgeAsk, draftContext, draftContext.phase, hydrated ] );
+	}, [
+		onReady,
+		bridgeAsk,
+		draftContext,
+		draftContext.phase,
+		hydrated,
+		failureState,
+	] );
 
 	const blocks: Block[] = turn?.blocks ?? [];
 	const cardIds = idsOf( blocks, 'cards' );
@@ -1032,6 +1045,9 @@ export function HeroConversation( {
 		<div className="linker-genie-hero__surface" lang={ locale }>
 			<header className="linker-genie-hero__bar">
 				<p className="linker-genie-hero__title">
+					<span aria-hidden="true" className="linker-genie-mark">
+						G
+					</span>{ ' ' }
 					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">

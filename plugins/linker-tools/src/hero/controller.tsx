@@ -241,14 +241,13 @@ export function startHero(
 				onReady={ onReady }
 				openingQuestion={ pending ?? '' }
 				footer={ dialog!.querySelector( '.hero-dialog-footer' ) }
-				onExpand={ () => {
-					if ( dialog!.matches( ':popover-open' ) ) {
-						dialog!.hidePopover();
-					} else {
-						dialog!.setAttribute( 'popover', 'manual' );
-						dialog!.showPopover();
-					}
-				} }
+				onExpand={ () =>
+					setHeroView(
+						dialog!.dataset.genieView === 'expanded'
+							? null
+							: 'expanded'
+					)
+				}
 				onContinue={ continueToPanel }
 				onClose={ close }
 				onConversation={ ( has ) =>
@@ -269,11 +268,24 @@ export function startHero(
 		);
 	}
 
-	function unmount(): void {
-		if ( dialog!.hasAttribute( 'popover' ) ) {
-			dialog!.hidePopover();
+	function setHeroView( view: 'side' | 'expanded' | null ): void {
+		if ( view ) {
+			dialog!.dataset.genieView = view;
+			dialog!.setAttribute( 'popover', 'manual' );
+			dialog!.setAttribute( 'role', 'dialog' );
+			dialog!.setAttribute( 'aria-label', 'Genie' );
+			dialog!.showPopover?.();
+		} else if ( dialog!.hasAttribute( 'popover' ) ) {
+			dialog!.hidePopover?.();
 			dialog!.removeAttribute( 'popover' );
+			dialog!.removeAttribute( 'role' );
+			dialog!.removeAttribute( 'aria-label' );
+			delete dialog!.dataset.genieView;
 		}
+	}
+
+	function unmount(): void {
+		setHeroView( null );
 		context.invalidate();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();
@@ -338,12 +350,16 @@ export function startHero(
 	 * the thread and marks it as asked from the homepage.
 	 */
 	function continueToPanel(): void {
+		if ( pending !== null || prompt!.value || bridge?.hasUnsentWork() ) {
+			setHeroView( 'side' );
+			return;
+		}
+		close();
 		win.dispatchEvent(
 			new CustomEvent( 'linker-genie-ask', {
 				detail: { refresh: true, fromHome: true },
 			} )
 		);
-		close();
 	}
 
 	function openPicker(): void {

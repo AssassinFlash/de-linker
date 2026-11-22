@@ -2384,7 +2384,15 @@ export function App( { config }: { config: GenieConfig } ) {
 								</span>
 							</button>
 						) : null }
-						<p className="linker-genie-app__title">{ appName() }</p>
+						<p className="linker-genie-app__title">
+							<span
+								aria-hidden="true"
+								className="linker-genie-mark"
+							>
+								G
+							</span>
+							{ appName() }
+						</p>
 					</div>
 					{ expanded ? (
 						<div className="linker-genie-app__bar-actions">

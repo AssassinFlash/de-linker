@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { DraftContext } from './draftContext';
+import {
+	DraftContext,
+	mountPageDraftContext,
+	pageDraftContext,
+} from './draftContext';
 const A = 'a'.repeat( 64 );
 const B = 'b'.repeat( 64 );
 let scope = A;
@@ -143,4 +147,26 @@ test( 'temporary native outage blocks but retains its owner for a working retry;
 	expect( context.valid( lease ) ).toBe( false );
 	context.dispose();
 	expect( context.capture() ).toBeNull();
+} );
+
+test( 'the homepage and helper share one page lookup and a live owner until the final surface leaves', async () => {
+	const config = { restUrl: '/wp-json/', restNonce: 'native' };
+	const hero = pageDraftContext( config );
+	const dock = pageDraftContext( config );
+	const leaveHero = mountPageDraftContext( hero );
+	const leaveDock = mountPageDraftContext( dock );
+	expect( dock ).toBe( hero );
+	await dock.verify( false );
+	expect( fetch ).toHaveBeenCalledTimes( 1 );
+	hero.conversationId = 42;
+	leaveHero();
+	expect( dock.conversationId ).toBe( 42 );
+	scope = B;
+	window.dispatchEvent( new Event( 'linker-genie-identity-change' ) );
+	await vi.waitFor( () => expect( dock.identity?.scope ).toBe( B ) );
+	expect( dock.conversationId ).toBeUndefined();
+	leaveDock();
+	expect( pageDraftContext( config ) ).not.toBe( hero );
+	const stop = mountPageDraftContext( pageDraftContext( config ) );
+	stop();
 } );

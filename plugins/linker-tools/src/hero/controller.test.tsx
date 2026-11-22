@@ -185,7 +185,7 @@ afterEach( () => {
 	document.body.innerHTML = '';
 } );
 
-test( 'a stored failure unfolds the hero and restores the question', async () => {
+test( 'the homepage stays closed until the visitor opens a saved question', async () => {
 	seedOwnedFailure( {
 		v: 1,
 		kind: 'upstream',
@@ -949,4 +949,41 @@ test( 'Hero rejects unowned editing during an outage and retains the older owner
 		stop();
 		vi.unstubAllGlobals();
 	}
+} );
+
+test( 'expanding a pending homepage question and moving it to the side keeps the same request and result', async () => {
+	const answers = session();
+	let finish!: () => void;
+	const pending = new Promise< void >( ( resolve ) => {
+		finish = resolve;
+	} );
+	answers.send.mockImplementationOnce( async () => {
+		await pending;
+		return reply( 'Retained reply.' );
+	} );
+	await start( answers.session );
+	const capsule =
+		document.querySelector< HTMLAnchorElement >( '.hero-capsule' )!;
+	await act( async () => fireEvent.click( capsule ) );
+	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
+	const dialog = document.querySelector< HTMLElement >( '.hero-dialog' )!;
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Expand full view' } )
+		)
+	);
+	expect( dialog.dataset.genieView ).toBe( 'expanded' );
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Continue in the side panel' } )
+		)
+	);
+	expect( dialog.dataset.genieView ).toBe( 'side' );
+	await act( async () => finish() );
+	await waitFor( () =>
+		expect(
+			screen.getAllByText( 'Retained reply.' ).length
+		).toBeGreaterThan( 0 )
+	);
+	expect( answers.send ).toHaveBeenCalledTimes( 1 );
 } );
