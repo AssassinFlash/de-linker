@@ -274,6 +274,10 @@ export interface CommercialResult {
 
 /** A product as the WooCommerce Store API describes it (wc/store/v1/products). */
 export interface StoreProduct {
+	attributes?: Array< {
+		taxonomy: string;
+		terms: Array< { name: string } >;
+	} >;
 	id: number;
 	name: string;
 	permalink: string;

@@ -42,7 +42,7 @@ import { PlanningSourcesCard } from '../genie/components/PlanningSourcesCard';
 import { BlockView } from '../genie/components/BlockView';
 import { Compare } from '../genie/components/Compare';
 import { ContactCard, ContactSent } from '../genie/components/ContactCard';
-import { GenieCard } from '../genie/components/GenieCard';
+import { GenieCards } from '../genie/components/GenieCard';
 import { InquiryCard, InquirySent } from '../genie/components/InquiryCard';
 import { MissingFiles } from '../genie/components/MissingFiles';
 import { OwnedRecovery } from '../genie/components/OwnedRecovery';
@@ -1119,35 +1119,28 @@ export function HeroConversation( {
 						) ) }
 					{ hasCards ? (
 						<div className="linker-genie-hero__cards">
-							{ cardIds.map( ( productId ) => (
-								<GenieCard
-									key={ productId }
-									productId={ productId }
-									quantity={ cardQuantities[ productId ] }
-									restUrl={ config.restUrl }
-									store={ store }
-									locale={ locale }
-									status={ statusFor( productId ) }
-									price={ cardPrices.find(
-										( line ) =>
-											line.product_id === productId
-									) }
-									onAdd={ ( id, quantity ) =>
-										addCardToDraft(
-											id,
-											cardProofs[ id ],
-											quantity
-										)
-									}
-									onSave={ ( id, title ) =>
-										saveCardSolution(
-											id,
-											title,
-											cardProofs[ id ]
-										)
-									}
-								/>
-							) ) }
+							<GenieCards
+								products={ cardIds }
+								quantities={ cardQuantities }
+								store={ store }
+								locale={ locale }
+								statusFor={ statusFor }
+								prices={ cardPrices }
+								onAdd={ ( id, quantity ) =>
+									addCardToDraft(
+										id,
+										cardProofs[ id ],
+										quantity
+									)
+								}
+								onSave={ ( id, title ) =>
+									saveCardSolution(
+										id,
+										title,
+										cardProofs[ id ]
+									)
+								}
+							/>
 						</div>
 					) : null }
 					{ hasCompare ? (

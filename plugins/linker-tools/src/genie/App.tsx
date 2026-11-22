@@ -70,7 +70,7 @@ import { InquiryCard, InquirySent } from './components/InquiryCard';
 import type { SentInquiry } from './api/inquiry';
 import { CopyReply } from './components/CopyReply';
 import { ContactCard, ContactSent } from './components/ContactCard';
-import { GenieCard } from './components/GenieCard';
+import { GenieCards } from './components/GenieCard';
 import { HelperFooter } from './components/HelperFooter';
 import { Reply } from './components/Reply';
 import { Transcript } from './components/Transcript';
@@ -2743,40 +2743,28 @@ export function App( { config }: { config: GenieConfig } ) {
 									( block ) => 'cards' === block.type
 								) ? (
 									<div className="linker-genie-app__cards">
-										{ cardIds.map( ( productId ) => (
-											<GenieCard
-												key={ productId }
-												productId={ productId }
-												quantity={
-													cardQuantities[ productId ]
-												}
-												restUrl={ config.restUrl }
-												store={ store }
-												locale={ config.locale }
-												status={ cardStatusFor(
-													productId
-												) }
-												price={ cardPrices.find(
-													( line ) =>
-														line.product_id ===
-														productId
-												) }
-												onAdd={ ( id, quantity ) =>
-													addCardToDraft(
-														id,
-														cardProofs[ id ],
-														quantity
-													)
-												}
-												onSave={ ( id, title ) =>
-													saveCardSolution(
-														id,
-														title,
-														cardProofs[ id ]
-													)
-												}
-											/>
-										) ) }
+										<GenieCards
+											products={ cardIds }
+											quantities={ cardQuantities }
+											store={ store }
+											locale={ config.locale }
+											statusFor={ cardStatusFor }
+											prices={ cardPrices }
+											onAdd={ ( id, quantity ) =>
+												addCardToDraft(
+													id,
+													cardProofs[ id ],
+													quantity
+												)
+											}
+											onSave={ ( id, title ) =>
+												saveCardSolution(
+													id,
+													title,
+													cardProofs[ id ]
+												)
+											}
+										/>
 									</div>
 								) : null }
 								{ turn?.blocks.some(

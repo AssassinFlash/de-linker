@@ -427,7 +427,6 @@ export interface TurnOwner {
 export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	const {
 		turnUrl,
-		restUrl,
 		nonce,
 		locale,
 		messages,
@@ -554,16 +553,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 			clearTimeout( timer );
 			timer = undefined;
 		}
-		return restUrl &&
-			turn.blocks.some( ( block ) => block.type === 'document' )
-			? await restoreArtifacts(
-					turn,
-					{ restUrl, locale },
-					nonce,
-					fetcher,
-					{ refreshPrices: false }
-				)
-			: turn;
+		return turn;
 	} finally {
 		external?.removeEventListener( 'abort', cancel );
 		won = true;
