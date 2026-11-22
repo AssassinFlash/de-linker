@@ -158,6 +158,13 @@ test( 'the homepage and helper share one page lookup and a live owner until the 
 	expect( dock ).toBe( hero );
 	await dock.verify( false );
 	expect( fetch ).toHaveBeenCalledTimes( 1 );
+	window.dispatchEvent( new PageTransitionEvent( 'pageshow' ) );
+	expect( fetch ).toHaveBeenCalledTimes( 1 );
+	window.dispatchEvent(
+		new PageTransitionEvent( 'pageshow', { persisted: true } )
+	);
+	await dock.ready();
+	expect( fetch ).toHaveBeenCalledTimes( 2 );
 	hero.conversationId = 42;
 	leaveHero();
 	expect( dock.conversationId ).toBe( 42 );

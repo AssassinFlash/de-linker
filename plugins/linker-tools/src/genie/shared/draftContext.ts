@@ -316,15 +316,20 @@ export function mountPageDraftContext( context: DraftContext ): () => void {
 				check();
 			}
 		};
-		check();
+		const pageShown = ( event: PageTransitionEvent ) => {
+			if ( event.persisted ) {
+				check();
+			}
+		};
+		void context.initialized().catch( () => undefined );
 		window.addEventListener( 'focus', check );
-		window.addEventListener( 'pageshow', check );
+		window.addEventListener( 'pageshow', pageShown );
 		window.addEventListener( 'pagehide', checkpoint );
 		window.addEventListener( 'linker-genie-identity-change', newIdentity );
 		document.addEventListener( 'visibilitychange', visibility );
 		slot.release = () => {
 			window.removeEventListener( 'focus', check );
-			window.removeEventListener( 'pageshow', check );
+			window.removeEventListener( 'pageshow', pageShown );
 			window.removeEventListener( 'pagehide', checkpoint );
 			window.removeEventListener(
 				'linker-genie-identity-change',

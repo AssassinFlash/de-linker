@@ -85,6 +85,7 @@ import { CopyReply } from './components/CopyReply';
 import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCards } from './components/GenieCard';
 import { HelperFooter } from './components/HelperFooter';
+import { GenieTitle } from './components/GenieTitle';
 import { Reply } from './components/Reply';
 import { Transcript } from './components/Transcript';
 import { ActionView } from './components/ActionView';
@@ -655,10 +656,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	} );
 	const standalone = config.surface === 'workspace';
 
-	const refreshHistory = useCallback( () => {
-		const epoch = historyEpoch;
-		const lease = draftContext.capture();
-		return enqueue( async () => {
+	const readHistory = useCallback(
+		async ( epoch: number, lease: DraftLease | null ) => {
 			const listed = await listConversations(
 				config.conversationsUrl,
 				config.restNonce
@@ -680,8 +679,14 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( listed.currentId ) {
 				show( listed.currentId );
 			}
-		} );
-	}, [ config.conversationsUrl, config.restNonce, show, draftContext ] );
+		},
+		[ config.conversationsUrl, config.restNonce, show, draftContext ]
+	);
+	const refreshHistory = useCallback( () => {
+		const epoch = historyEpoch;
+		const lease = draftContext.capture();
+		return enqueue( () => readHistory( epoch, lease ) );
+	}, [ draftContext, readHistory ] );
 
 	useEffect( () => {
 		if ( ! heroHistoryHost ) {
@@ -1702,12 +1707,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			contacts?: SentContact[];
 			inquiries?: SentInquiryCard[];
 		} >();
-		void enqueue( async () => {
-			await draftContext.initialized();
-			if ( cancelled ) {
-				return;
-			}
-			const lease = draftContext.capture();
+		const restoreThread = async ( lease: DraftLease | null ) => {
 			const stored = await Promise.race( [
 				loadThread(),
 				pending.promise,
@@ -1730,13 +1730,22 @@ export function App( { config }: { config: GenieConfig } ) {
 				'conversationId' in stored ? stored.conversationId : undefined
 			);
 			restored = true;
+		};
+		void enqueue( async () => {
+			await draftContext.initialized();
+			if ( cancelled ) {
+				return;
+			}
+			const lease = draftContext.capture();
+			await Promise.all( [
+				readHistory( historyEpoch, lease ),
+				restoreThread( lease ),
+			] );
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
 					onWorkspaceVisible();
-					return refreshHistory();
 				}
-				return undefined;
 			} )
 			.catch( () => undefined );
 		return () => {
@@ -1756,7 +1765,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		};
 	}, [
 		loadThread,
-		refreshHistory,
+		readHistory,
 		applyRecord,
 		draftContext,
 		standalone,
@@ -2326,17 +2335,19 @@ export function App( { config }: { config: GenieConfig } ) {
 				<span>
 					{ __( 'Net prices & history sync:', 'linker-tools' ) }
 				</span>{ ' ' }
-				<a href={ config.accountUrl }>
-					{ __( 'Sign in', 'linker-tools' ) }
-				</a>
-				{ config.registerUrl ? (
-					<>
-						{ ' · ' }
-						<a href={ config.registerUrl }>
-							{ __( 'Register', 'linker-tools' ) }
-						</a>
-					</>
-				) : null }
+				<span className="linker-genie-guest-actions">
+					<a href={ config.accountUrl }>
+						{ __( 'Sign in', 'linker-tools' ) }
+					</a>
+					{ config.registerUrl ? (
+						<>
+							{ ' · ' }
+							<a href={ config.registerUrl }>
+								{ __( 'Register', 'linker-tools' ) }
+							</a>
+						</>
+					) : null }
+				</span>
 			</p>
 		) : null;
 	// The inquiry confirmation card's turn (#250): the action the model or the
@@ -2519,13 +2530,7 @@ export function App( { config }: { config: GenieConfig } ) {
 							</button>
 						) : null }
 						<p className="linker-genie-app__title">
-							<span
-								aria-hidden="true"
-								className="linker-genie-mark"
-							>
-								G
-							</span>
-							{ appName() }
+							<GenieTitle />
 						</p>
 					</div>
 					{ expanded ? (

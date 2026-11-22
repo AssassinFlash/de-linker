@@ -954,36 +954,74 @@ def _plan_turn(
     family = _family_hint(matches)
     calls, notes = _search_plan(matches, lang, subject, message)
     reasons.extend(_note_reasons(notes))
-    if intent == "documents_specs":
-        # Known products are fetched with get-product; a code with no product
-        # id is searched. Either call counts as searched. What does not fit
-        # the four-call budget is searched=False — never reported absent.
-        # Dossier 2026-10-19 §1.11: no competitor publishes this aggregation.
-        doc_calls, notes = _documents_calls(
-            calls, notes, message, matches, subject, lang
+    pairing_question = intent == "pairing_compatibility" or (
+        bool(subject.ids) and bool(_PAIRING_CUE.search(message))
+    )
+    if pairing_question and len(subject.ids) == 1 and notes:
+        known_codes = {normalize(note.code) for note in notes}
+        # A second model explicitly attached to an equipment name also needs its
+        # own lookup when its brand and family have left the catalogue.
+        missing = list(
+            dict.fromkeys(
+                match.group(0)
+                for match in _ASKED_CODE.finditer(message)
+                if normalize(match.group(0)) not in known_codes
+                and any(ch.isdigit() for ch in match.group(0))
+                and (
+                    _EQUIPMENT_PREFIX.search(message[: match.start()])
+                    or _EQUIPMENT_SUFFIX.match(message[match.end() :])
+                )
+            )
         )
-        return Route(
-            "documents",
-            doc_calls,
-            show_products=_show_product_with_documents(message),
-            no_handoff=True,
-            hint=DOCUMENTS_HINT + family + _model_hint(notes),
-            reasons=tuple(reasons),
-            named_models=notes,
-        )
-    if intent == "pairing_compatibility":
-        pairing = _pairing(subject, lang)
-        if pairing is not None:
+        if missing:
+            extra = tuple(
+                Call(
+                    "linker/search-products",
+                    {"text": code, "lang": lang, "limit": SEARCH_LIMIT},
+                )
+                for code in missing[: MAX_TOOL_CALLS - len(calls)]
+            )
+            calls += extra
+            notes += tuple(
+                NamedModel(code, searched=i < len(extra), unknown=True)
+                for i, code in enumerate(missing)
+            )
+            # Remove the product designations before testing the rest of the
+            # sentence. An extra specification or question still needs evidence.
+            question = message
+            for note in notes:
+                question = re.sub(
+                    r"(?<!\w)(?:[A-Z][\w.-]*\s+|\d+\s+)*(?i:"
+                    + re.escape(note.code)
+                    + r")(?!\w)",
+                    " ",
+                    question,
+                )
+            if _catalog_request(question, matches, _PAIRING_WORDS):
+                return Route(
+                    "pairing",
+                    calls,
+                    show_products=True,
+                    no_handoff=True,
+                    catalog_only=not earlier and len(extra) == len(missing),
+                    named_models=notes,
+                    hint="Check each named model. A missing catalogue model cannot confirm this pairing.",
+                    reasons=tuple(reasons),
+                )
+            model_calls, notes = _documents_calls(
+                calls, notes, message, matches, subject, lang, prefetch_knowledge=False
+            )
             return Route(
-                "pairing",
-                (pairing,),
+                "documents",
+                model_calls,
                 no_handoff=True,
-                catalog_only=not earlier
-                and _catalog_request(message, matches, _PAIRING_WORDS),
-                hint="The pairing result is fetched; answer from it.",
+                named_models=notes,
+                hint="Explain the missing pairing separately. Answer the other request from the known product's verified figures and link its manufacturer source. Search the documents if the product facts do not answer it.",
                 reasons=tuple(reasons),
             )
-    explicit_compare = re.match(r"\s*(?:compare|vergleichen Sie)\b", message, re.I)
+    explicit_compare = re.match(
+        r"\s*(?:compare|vergleiche|vergleichen Sie)\b", message, re.I
+    )
     if (intent == "compare" or (intent is None and explicit_compare)) and len(
         subject.ids
     ) >= 2:
@@ -1029,6 +1067,35 @@ def _plan_turn(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
+    if intent == "documents_specs":
+        # Known products are fetched with get-product; a code with no product
+        # id is searched. Either call counts as searched. What does not fit
+        # the four-call budget is searched=False — never reported absent.
+        # Dossier 2026-10-19 §1.11: no competitor publishes this aggregation.
+        doc_calls, notes = _documents_calls(
+            calls, notes, message, matches, subject, lang
+        )
+        return Route(
+            "documents",
+            doc_calls,
+            show_products=_show_product_with_documents(message),
+            no_handoff=True,
+            hint=DOCUMENTS_HINT + family + _model_hint(notes),
+            reasons=tuple(reasons),
+            named_models=notes,
+        )
+    if pairing_question:
+        pairing = _pairing(subject, lang)
+        if pairing is not None:
+            return Route(
+                "pairing",
+                (pairing,),
+                no_handoff=True,
+                catalog_only=not earlier
+                and _catalog_request(message, matches, _PAIRING_WORDS),
+                hint="The pairing result is fetched; answer from it.",
+                reasons=tuple(reasons),
+            )
     brands = list(dict.fromkeys(m.value for m in matches if m.kind == "brand"))
     comparing = intent == "compare" or re.search(
         r"\b(?:compar(?:e|ison)|vs|versus|vergleich\w*)\b", message, re.I
@@ -1043,10 +1110,49 @@ def _plan_turn(
             "lang": lang,
             "limit": SEARCH_LIMIT,
         }
+        catalog_message = message
+        hybrid = _HYBRID_SYSTEM.search(message)
+        if hybrid:
+            filters.pop("device_class", None)
+            filters["device_classes"] = list(_INVERTERS)
+            catalog_message = _HYBRID_SYSTEM.sub(" ", catalog_message)
+        phases = list(
+            dict.fromkeys(
+                3 if part.group("three") else 1
+                for part in _COMPARE_PHASE.finditer(catalog_message)
+            )
+        )
+        ranges = list(
+            dict.fromkeys(
+                (float(part[1].replace(",", ".")), float(part[2].replace(",", ".")))
+                for part in _AC_RANGE.finditer(catalog_message)
+                if hybrid
+            )
+        )
+        if phases:
+            catalog_message = _COMPARE_PHASE.sub(" ", catalog_message)
+        if ranges:
+            catalog_message = _AC_RANGE.sub(" ", catalog_message)
+        # A native comparison table serves one scope. Distinct scopes require
+        # evidence for each choice, then a model answer that distinguishes them.
+        variants: list[dict[str, Any]] = [{}]
+        if phases:
+            variants = [{"phase": phase} for phase in phases]
+        if ranges:
+            variants = [
+                {**variant, "ac_power_min": low, "ac_power_max": high}
+                for variant in variants
+                for low, high in ranges
+            ]
+        several_scopes = len(variants) > 1
+        if len(variants) * len(brands) > MAX_TOOL_CALLS:
+            # Keep every brand in view. The broader calls leave the full
+            # original criteria to the model, without claiming complete coverage.
+            variants = [{}]
         application = application_word(message)
         if application:
             filters["application"] = application
-        if "device_class" not in filters:
+        if "device_class" not in filters and "device_classes" not in filters:
             if _STORAGE_WORD.search(message):
                 filters["device_classes"] = [*_BATTERIES, "all-in-one-systems"]
             elif _BATTERY_WORD.search(message):
@@ -1072,7 +1178,7 @@ def _plan_turn(
                 members[owner].append(match)
             else:
                 scoped = False
-        searches = []
+        searches: list[Call] = []
         for brand in brands[:MAX_TOOL_CALLS]:
             own = members[brand]
             # A single Store query can express aliases of one family, but not
@@ -1081,19 +1187,22 @@ def _plan_turn(
                 scoped = False
                 own = []
             own_filters = _search_input(own, lang) or {}
-            searches.append(
+            searches.extend(
                 Call(
-                    "linker/search-products", {**filters, **own_filters, "brand": brand}
+                    "linker/search-products",
+                    {**filters, **own_filters, **variant, "brand": brand},
                 )
+                for variant in variants
             )
         return Route(
             "compare",
             tuple(searches),
             no_handoff=True,
             catalog_only=scoped
+            and not several_scopes
             and len(brands) <= MAX_TOOL_CALLS
             and not earlier
-            and _catalog_request(message, matches, _CATALOG_COMPARISON_WORDS),
+            and _catalog_request(catalog_message, matches, _CATALOG_COMPARISON_WORDS),
             hint=(
                 "Candidates from each requested brand were fetched separately. Compare matching "
                 "models from each brand, with a compare block using only qualified product IDs. "
@@ -1580,6 +1689,19 @@ def extreme_input(
     return found
 
 
+_HYBRID_SYSTEM = re.compile(
+    r"\bhybrid(?:[- ]?(?:systems?|inverters?|systeme[n]?|wechselrichter[n]?))?\b", re.I
+)
+_COMPARE_PHASE = re.compile(
+    r"\b(?:(?P<three>(?:three|3)[- ]phase|(?:drei|3)[- ]?phasig\w*)|(?:single|1)[- ]phase|(?:ein|1)[- ]?phasig\w*)\b",
+    re.I,
+)
+_AC_RANGE = re.compile(
+    r"(?<![\w.-])(?:(?:between|zwischen)\s+)?(\d+(?:[.,]\d+)?)\s*(?:kW\s*)?"
+    r"(?:[-–—]|to|bis|and|und)\s*(\d+(?:[.,]\d+)?)\s*kW\b",
+    re.I,
+)
+
 # An ordinary side-by-side catalogue request. A remaining word, number or unit
 # describes a criterion the model must investigate rather than omit.
 _CATALOG_COMPARISON_WORDS = frozenset(
@@ -1587,7 +1709,7 @@ _CATALOG_COMPARISON_WORDS = frozenset(
     "commercial industrial residential home household c i project projects storage battery batteries inverter inverters "
     "vergleich vergleichen vergleiche bitte sie von und oder für fuer einen ein eine einem den die das "
     "im am an standort einsatz optionen produkte modelle gewerbe gewerbespeicher heimspeicher "
-    "gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
+    "gewerblich gewerbliche gewerblichen gewerblicher gewerbliches gewerbeprojekt gewerbeprojekte gewerbestandort gewerbebetrieb projekt projekte wohngebäude speicher wechselrichter batterie batterien".split()
 )
 
 
@@ -1599,11 +1721,23 @@ _PRICE_WORDS = frozenset(
     "was ist der die das den dem dieses modell produkt für fuer von preis preise wie viel kostet kosten".split()
 )
 
+_PAIRING_CUE = re.compile(
+    r"\b(?:combin(?:e|ing)|compatib\w*|kompatib\w*|kombinier\w*|funktionier\w*|work(?:s)? with|fit(?:s)? (?:with|my)|pair(?:ed)? with)\b",
+    re.I,
+)
+_EQUIPMENT_PREFIX = re.compile(
+    r"(?i:\b(?:inverter|battery|wechselrichter|batterie)\b)(?:[ -]+[A-Z\d][A-Z\d.-]*)*\s+$"
+)
+
+_EQUIPMENT_SUFFIX = re.compile(
+    r"\s+(?:inverter|battery|wechselrichter|batterie)\b", re.I
+)
+
 _PAIRING_WORDS = frozenset(
     "which what is are the a an can does with for my this and battery batteries inverter inverters "
-    "fits fit works work compatible support supported pairing pair "
+    "fits fit works work compatible support supported pairing pair i combine together use my "
     "welche welcher welches welchen ist sind der die das den dem ein eine mit zu zum für und "
-    "batterie batterien speicher wechselrichter passt passen kompatibel".split()
+    "batterie batterien speicher wechselrichter wechselrichtern ich kann einer einem kombinieren passt passen funktioniert funktionieren kompatibel".split()
 )
 
 
@@ -2078,6 +2212,8 @@ def _documents_calls(
     matches: list[Match],
     subject: Subject,
     lang: str,
+    *,
+    prefetch_knowledge: bool = True,
 ) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
     """Knowledge, then get-product for known ids, then searches that are still needed.
 
@@ -2089,11 +2225,14 @@ def _documents_calls(
     turn; one stays for the model's follow-up, trial question 10). A model
     that does not fit is searched=False.
     """
-    knowledge = Call(
-        "linker/search-knowledge",
-        _knowledge_input(message, matches, subject, lang),
-    )
     body: list[Call] = []
+    if prefetch_knowledge:
+        body.append(
+            Call(
+                "linker/search-knowledge",
+                _knowledge_input(message, matches, subject, lang),
+            )
+        )
     fetched: set[int] = set()
     for product_id in subject.ids:
         body.append(
@@ -2111,7 +2250,7 @@ def _documents_calls(
             continue
         body.append(call)
     return _limit_route_calls(
-        (knowledge, *body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
+        tuple(body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
     )
 
 
@@ -2192,7 +2331,7 @@ def _knowledge_input(
 
 
 def _pairing(subject: Subject, lang: str) -> Call | None:
-    """check-compatibility for two products, the inverter's pairings for one."""
+    """Check two products or list a single product’s documented partners."""
     if len(subject.ids) >= 2:
         return Call(
             "linker/check-compatibility", {"product_ids": list(subject.ids[:2])}
@@ -2201,9 +2340,7 @@ def _pairing(subject: Subject, lang: str) -> Call | None:
         product_id = subject.ids[0]
         device = subject.device_class.get(product_id)
         label = subject.labels.get(product_id)
-        if device in ("inverters", "all-in-one-systems") and label:
-            # The pairing search of the system prompt: the inverter by its model,
-            # with the documented batteries and their verdicts.
+        if device in (*_INVERTERS, *_BATTERIES) and label:
             return Call(
                 "linker/search-products",
                 {

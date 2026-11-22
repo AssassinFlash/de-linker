@@ -157,7 +157,19 @@ export function failureBucketKey( scope: string ): string {
  */
 export function hasOwnedRecovery( store: FailureStore ): boolean {
 	try {
-		if ( store.keys?.().some( ( key ) => key.startsWith( PREFIX ) ) ) {
+		if (
+			store.keys?.().some( ( key ) => {
+				if ( ! key.startsWith( PREFIX ) ) {
+					return false;
+				}
+				const raw = store.getItem( key );
+				return (
+					raw !== null &&
+					raw !==
+						JSON.stringify( empty( key.slice( PREFIX.length ) ) )
+				);
+			} )
+		) {
 			return true;
 		}
 		const legacy = store.getItem( FAILURE_KEY );

@@ -699,6 +699,19 @@ test.each( [ 'headers', 'body' ] )(
 	}
 );
 
+test( 'a restored comparison reads publication once and leaves current figures to the comparison endpoint', async () => {
+	const fetcher = fetchWith();
+	const block = { type: 'compare' as const, product_ids: [ 1, 2 ] };
+	const restored = await restoreArtifacts(
+		{ meta: null, blocks: [ block ] },
+		context,
+		'n',
+		fetcher
+	);
+	expect( restored.blocks[ 0 ] ).toMatchObject( block );
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
+} );
+
 test( 'one remaining published product in a past comparison opens as a read-only product card', async () => {
 	const original = {
 		type: 'compare' as const,

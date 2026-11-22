@@ -68,7 +68,7 @@ INPUT_DOCS: dict[str, str] = {
         "'all-in-one-systems'|'ems-monitoring'|'ev-chargers'|'accessories', "
         "device_classes?: [those slugs], "
         "application?: 'home'|'commercial', "
-        "phase?: 1|3, pv_kwp?: number>=0, ac_power_min?: number>=0, "
+        "phase?: 1|3, pv_kwp?: number>=0, ac_power_min?: number>=0, ac_power_max?: number>=0, "
         "kwh_min?: number, kwh_max?: number, "
         "brand?: string, series?: string, future?: ['battery'], text?: string, "
         "with_pairings?: boolean, "
@@ -435,7 +435,16 @@ _CLASS_TEXT_WORDS = frozenset(
     }
 )
 _SEARCH_NARROWING = frozenset(
-    {"phase", "ac_power_min", "kwh_min", "kwh_max", "brand", "series", "pv_kwp"}
+    {
+        "phase",
+        "ac_power_min",
+        "ac_power_max",
+        "kwh_min",
+        "kwh_max",
+        "brand",
+        "series",
+        "pv_kwp",
+    }
 )
 
 

@@ -77,8 +77,8 @@
 /*
  * `.gp-workspace` — the advisor page fills the first viewport under the site
  * header, so the composer sits at the fold, and the shop's footer stands
- * below the frame: the page scrolls that far (owner ruling 2026-10-13 — the
- * closed frame keeps its footer). The app frame's height is the viewport
+ * below the frame. The open workspace keeps conversation scrolling inside the
+ * transcript. The app frame's height is the viewport
  * minus the site header and, when one rides, WordPress's admin bar. The
  * header's own heights are the site chrome's, measured on the reference
  * instance 2026-10-13: 89px on a desktop, 81px under 768px.
@@ -86,6 +86,11 @@
  * `--wp-admin--admin-bar--height` is WordPress's own variable: it is 0 on the
  * customer's pages and 32px on a login the admin bar rides.
  */
+body:has(.linker-genie-workspace .linker-genie-app--workspace) {
+	position: fixed;
+	inset: 0;
+	overflow: clip;
+}
 body:has(.linker-genie-workspace) {
 	--linker-site-header: 89px;
 }
@@ -561,6 +566,7 @@ body:has(.linker-genie-workspace)
 /* `.gp-messages{overflow:auto;flex:1;padding-top:24px;scrollbar-width:thin}`
  * — the thread, the answer's blocks and its cards all scroll as one. */
 .linker-genie-app--workspace .linker-genie-app__transcript {
+	overscroll-behavior-y: contain;
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
@@ -2398,5 +2404,20 @@ body:has(.linker-genie-hero--open)
 	}
 	.linker-genie-workspace-link span {
 		display: none;
+	}
+}
+
+.linker-genie-guest-actions {
+	white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+	.linker-genie-reading:has(.linker-genie-jump)
+		> .linker-genie-app__transcript {
+		margin-inline-end: 42px;
+	}
+	.linker-genie-reading .linker-genie-reading-controls {
+		inset-inline-end: 0;
+		bottom: max(0.75rem, env(safe-area-inset-bottom));
 	}
 }

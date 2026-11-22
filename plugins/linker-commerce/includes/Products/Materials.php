@@ -954,6 +954,7 @@ final class Materials {
 	 * @var array<string,string>
 	 */
 	private const GERMAN_TERMS = array(
+		'einen Batterie-Basissockel als eigenen Artikel, den der Batterie-Artikel selbst nicht enthält' => 'einen separaten Batterie-Basissockel, der nicht zum Lieferumfang der Batterie gehört',
 		'Batteriespeicher-Katalog'          => 'Batteriespeicher-Produktübersicht',
 		'Katalog der Hybrid-Wechselrichter' => 'Produktübersicht der Hybrid-Wechselrichter',
 		'Katalog Hybrid-Wechselrichter'     => 'Produktübersicht Hybrid-Wechselrichter',
@@ -982,14 +983,22 @@ final class Materials {
 	);
 
 	/**
-	 * A German product text with the site's words for the old data's item and
-	 * catalogue terms. English pages get their text byte for byte.
+	 * Customer product wording for retained English and German descriptions.
 	 *
 	 * @param string    $text   Text.
 	 * @param bool|null $german Whether the page is German; null reads the request.
 	 */
 	public static function apply_terms( string $text, ?bool $german = null ): string {
-		return ( $german ?? self::is_de() ) ? \strtr( $text, self::GERMAN_TERMS ) : $text;
+		if ( $german ?? self::is_de() ) {
+			return \strtr( $text, self::GERMAN_TERMS );
+		}
+		return \strtr(
+			$text,
+			array(
+				'an article of its own' => 'a separate product',
+				'one battery base article, which the battery article itself does not include' => 'one battery base, supplied separately from the battery',
+			)
+		);
 	}
 
 	/**

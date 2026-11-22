@@ -1024,3 +1024,37 @@ def test_simple_released_pairing_is_grounded_before_documents_and_numbers_are_fi
     invented = TextBlock(text="Limit 230.4 V.")
     extra = answer.model_copy(update={"blocks": [*answer.blocks, invented]})
     assert not check(extra, facts, route).ok
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_searching_a_retired_pair_partner_keeps_the_available_battery_grounded(
+    lang: Locale,
+) -> None:
+    from linker_genie.route import NamedModel
+    from linker_genie.template import prepared_answer
+
+    battery, inverter = "GW9.0-BAT-D-G20", "HD-P3-15K"
+    route = Route(
+        "pairing",
+        show_products=True,
+        catalog_only=True,
+        named_models=(NamedModel(battery, (3612,)), NamedModel(inverter, unknown=True)),
+    )
+    facts = TurnFacts(product_ids={3612}, qualified_ids={3612})
+    for code, rows in [(battery, [{"product_id": 3612}]), (inverter, [])]:
+        facts.tool_calls.append(
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": code},
+                "ok": True,
+                "result": {"qualified": rows},
+            }
+        )
+    answer = prepared_answer(facts, route, lang)
+    assert answer is not None
+    result = run(_request(lang), lambda *_: (answer, TurnFacts()), route, facts)
+    assert result.grounded and not result.fallback, result.failures
+    assert any(
+        isinstance(b, CardsBlock) and b.product_ids == [3612]
+        for b in result.output.blocks
+    )

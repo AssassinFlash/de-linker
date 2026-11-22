@@ -151,7 +151,7 @@ final class PageIndexing {
 	 *
 	 * @param WP_Post $post The page post.
 	 */
-	private static function is_workspace_post( WP_Post $post ): bool {
+	public static function is_workspace_post( WP_Post $post ): bool {
 		return 'page' === $post->post_type && self::SLUG === $post->post_name && 0 === (int) $post->post_parent;
 	}
 }

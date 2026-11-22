@@ -164,6 +164,10 @@ final class SearchProducts {
 						'type'    => 'number',
 						'minimum' => 0,
 					),
+					'ac_power_max'   => array(
+						'type'    => 'number',
+						'minimum' => 0,
+					),
 					'device_classes' => array(
 						'type'  => 'array',
 						'items' => array(
@@ -314,8 +318,17 @@ final class SearchProducts {
 		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
 		$excluded                   = array();
 		$qualified                  = array();
+		$want_pairings              = ! empty( $input['with_pairings'] );
+		$want_future                = in_array( 'battery', (array) ( $input['future'] ?? array() ), true );
+		$batteries                  = array();
+		$inverters                  = array();
 		foreach ( $ids as $id ) {
-			$facts  = $this->publication->facts( $id, $this->publication_snapshot );
+			$facts = $this->publication->facts( $id, $this->publication_snapshot );
+			if ( ( $want_pairings || $want_future ) && in_array( $facts->device_class, self::BATTERY_CLASSES, true ) ) {
+				$batteries[] = $id;
+			} elseif ( $want_pairings && in_array( $facts->device_class, self::INVERTER_CLASSES, true ) ) {
+				$inverters[] = $id;
+			}
 			$reason = $this->exclusion( $facts, $id, $input );
 			if ( null !== $reason ) {
 				$excluded[ $reason ] = ( $excluded[ $reason ] ?? 0 ) + 1;
@@ -371,13 +384,10 @@ final class SearchProducts {
 		}
 		$extreme        = $this->extreme_result( $qualified, $input, $lang, $kind, $prices_open, $state );
 		$unknown_fields = $this->unknown_fields( $qualified, $input );
-		$want_pairings  = ! empty( $input['with_pairings'] );
-		$want_future    = in_array( 'battery', (array) ( $input['future'] ?? array() ), true );
-		$batteries      = ( $want_pairings || $want_future ) ? $this->battery_ids( $ids ) : array();
 		$shown          = ( null !== $extreme && true === $extreme['applied'] ) ? 1 : $limit;
 		$out            = array();
 		foreach ( array_slice( $qualified, 0, $shown ) as $row ) {
-			$out[] = $this->card( $row, $input, $lang, $want_pairings, $want_future, $batteries );
+			$out[] = $this->card( $row, $input, $lang, $want_pairings, $want_future, $batteries, $inverters );
 		}
 
 		$result = array(
@@ -428,7 +438,7 @@ final class SearchProducts {
 			'application'  => $this->same_or_unknown( $facts->application, $input['application'] ?? null ),
 			'phase'        => $this->same_or_unknown( $facts->phase, $input['phase'] ?? null ),
 			'pv_input'     => $this->pv_ok( $facts, $input['pv_kwp'] ?? null ),
-			'ac_power'     => $this->ac_ok( $facts, $input['ac_power_min'] ?? null ),
+			'ac_power'     => $this->ac_ok( $facts, $input['ac_power_min'] ?? null, $input['ac_power_max'] ?? null ),
 			'kwh'          => $this->kwh_for( $facts, $input ),
 			'brand'        => $this->term_ok( $id, 'pa_brand', $input['brand'] ?? null ),
 			'series'       => $this->term_ok( $id, 'pa_series', $input['series'] ?? null ),
@@ -483,22 +493,18 @@ final class SearchProducts {
 	}
 
 	/**
-	 * AC power must be at least ac_power_min. Unknown AC power is excluded:
-	 * an extreme answer names one product as meeting the floor, and an unknown
-	 * figure cannot be that claim (#368).
+	 * An explicit AC range requires a verified nominal AC power.
 	 *
 	 * @param SelectionFactSet $facts Facts.
-	 * @param mixed            $min   Requested kW, or null.
+	 * @param mixed            $min   Inclusive lower bound, in kW.
+	 * @param mixed            $max   Inclusive upper bound, in kW.
 	 */
-	private function ac_ok( SelectionFactSet $facts, mixed $min ): bool {
-		if ( ! is_numeric( $min ) ) {
+	private function ac_ok( SelectionFactSet $facts, mixed $min, mixed $max ): bool {
+		if ( ! is_numeric( $min ) && ! is_numeric( $max ) ) {
 			return true;
 		}
-		if ( ! is_float( $facts->ac_power_kw ) ) {
-			return false;
-		}
-
-		return (float) $facts->ac_power_kw >= (float) $min;
+		$power = $facts->ac_power_kw;
+		return is_float( $power ) && ( ! is_numeric( $min ) || $power >= (float) $min ) && ( ! is_numeric( $max ) || $power <= (float) $max );
 	}
 
 	/**
@@ -825,7 +831,7 @@ final class SearchProducts {
 	 * @param array<string, mixed> $input Filters.
 	 */
 	private function measures_ac( array $input ): bool {
-		if ( is_numeric( $input['ac_power_min'] ?? null ) ) {
+		if ( is_numeric( $input['ac_power_min'] ?? null ) || is_numeric( $input['ac_power_max'] ?? null ) ) {
 			return true;
 		}
 		if ( is_numeric( $input['kwh_min'] ?? null ) || is_numeric( $input['kwh_max'] ?? null ) ) {
@@ -962,9 +968,10 @@ final class SearchProducts {
 	 * @param bool                                                              $want_pairings with_pairings.
 	 * @param bool                                                              $want_future  future battery.
 	 * @param int[]                                                             $batteries    Published battery IDs.
+	 * @param int[]                                                             $inverters    Published inverter IDs.
 	 * @return array<string, mixed>
 	 */
-	private function card( array $row, array $input, string $lang, bool $want_pairings, bool $want_future, array $batteries ): array {
+	private function card( array $row, array $input, string $lang, bool $want_pairings, bool $want_future, array $batteries, array $inverters ): array {
 		$id   = $row['id'];
 		$card = array(
 			'product_id' => $id,
@@ -975,7 +982,7 @@ final class SearchProducts {
 			'commerce'   => ProductCommerce::of( $id, $row['product'], $lang ),
 		);
 		if ( $want_pairings ) {
-			$card['pairings'] = $this->pairings( $id, $row['facts']->device_class, $batteries );
+			$card['pairings'] = $this->pairings( $id, $row['facts']->device_class, $batteries, $inverters );
 		}
 
 		return $card;
@@ -1010,7 +1017,7 @@ final class SearchProducts {
 				'match' => SelectionFactSet::UNKNOWN === $value ? SelectionFactSet::UNKNOWN : true,
 			);
 		}
-		if ( is_numeric( $input['ac_power_min'] ?? null ) ) {
+		if ( is_numeric( $input['ac_power_min'] ?? null ) || is_numeric( $input['ac_power_max'] ?? null ) ) {
 			$why[] = array(
 				'field' => 'ac_power_kw',
 				'value' => $facts->ac_power_kw,
@@ -1040,25 +1047,27 @@ final class SearchProducts {
 	}
 
 	/**
-	 * Documented pairings of an inverter (released or released_with_accessory).
+	 * Released partners of a battery or inverter within the published catalogue.
 	 *
-	 * @param int    $id            Inverter ID.
+	 * @param int    $id            Selected product ID.
 	 * @param string $device_class  Device class.
 	 * @param int[]  $batteries     Published battery IDs.
+	 * @param int[]  $inverters     Published inverter IDs.
 	 * @return list<array{product_id: int, verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{document_id: string, document_revision: string, product_id: int, url: string, page?: int}>}>
 	 */
-	private function pairings( int $id, string $device_class, array $batteries ): array {
-		if ( ! in_array( $device_class, self::INVERTER_CLASSES, true ) ) {
+	private function pairings( int $id, string $device_class, array $batteries, array $inverters ): array {
+		$battery = in_array( $device_class, self::BATTERY_CLASSES, true );
+		if ( ! $battery && ! in_array( $device_class, self::INVERTER_CLASSES, true ) ) {
 			return array();
 		}
 		$out = array();
-		foreach ( $batteries as $battery_id ) {
-			$answer = $this->publication->pairing( $id, $battery_id, $this->publication_snapshot );
+		foreach ( $battery ? $inverters : $batteries as $partner ) {
+			$answer = $this->publication->pairing( $battery ? $partner : $id, $battery ? $id : $partner, $this->publication_snapshot );
 			if ( null === $answer || 'not_released' === $answer['verdict'] ) {
 				continue;
 			}
 			$out[] = array(
-				'product_id' => $battery_id,
+				'product_id' => $partner,
 				'verdict'    => $answer['verdict'],
 				'conditions' => $answer['conditions'],
 				// The pairing documents ride along, so one search answers
@@ -1088,23 +1097,5 @@ final class SearchProducts {
 		}
 
 		return $found;
-	}
-
-	/**
-	 * Published battery product IDs among `$ids`.
-	 *
-	 * @param int[] $ids Catalogue.
-	 * @return int[]
-	 */
-	private function battery_ids( array $ids ): array {
-		$batteries = array();
-		foreach ( $ids as $id ) {
-			$class = $this->publication->facts( $id, $this->publication_snapshot )->device_class;
-			if ( in_array( $class, self::BATTERY_CLASSES, true ) ) {
-				$batteries[] = $id;
-			}
-		}
-
-		return $batteries;
 	}
 }

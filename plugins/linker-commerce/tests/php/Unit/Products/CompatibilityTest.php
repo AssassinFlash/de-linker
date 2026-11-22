@@ -185,6 +185,30 @@ final class CompatibilityTest extends TestCase {
 		$this->assertSame( $original['version'], $copy['version'] ?? null );
 	}
 
+	/** Existing Woo declarations use product terminology in both answer languages. */
+	public function test_stored_pair_conditions_use_customer_product_terminology(): void {
+		$answer = Compatibility::in_pairs(
+			1,
+			2,
+			array(
+				array(
+					'inverter_product_id' => 1,
+					'battery_product_id'  => 2,
+					'verdict'             => 'released_with_accessory',
+					'conditions'          => array(
+						array(
+							'en' => 'The control module is an article of its own.',
+							'de' => 'Das Steuermodul ist ein eigener Artikel.',
+						),
+					),
+				),
+			)
+		);
+		$this->assertNotNull( $answer );
+		$this->assertSame( 'The control module is a separate product.', $answer['conditions'][0]['en'] );
+		$this->assertSame( 'Das Steuermodul ist ein eigenes Produkt.', $answer['conditions'][0]['de'] );
+	}
+
 	/**
 	 * Conditions are bilingual objects (the file folds the old parallel
 	 * arrays), and evidence links preserve the association bound by Woo.

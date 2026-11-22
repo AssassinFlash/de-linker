@@ -403,6 +403,7 @@ def _released_pair(facts: TurnFacts, language: Locale) -> TurnOutput | None:
         return None
     partner_ids = [pid for pid in sets[0]]
     conditions: list[str] = []
+    seen_conditions: set[str] = set()
     for partner_id in partner_ids:
         for fact_id in sorted(
             (
@@ -416,12 +417,14 @@ def _released_pair(facts: TurnFacts, language: Locale) -> TurnOutput | None:
             verdict = facts.facts.get(f"compat.verdict.{partner_id}")
             if verdict is None or verdict.value not in RELEASED_VERDICTS:
                 continue
-            if fact.value:
+            if fact.value and str(fact.value) not in seen_conditions:
+                seen_conditions.add(str(fact.value))
                 conditions.append(f"{{fact:{fact_id}}}")
     if not conditions:
         return None
     refs = [str(product_id) for product_id in sets[0]]
     blocks: list[Block] = [TextBlock(text=" ".join(conditions), refs=refs)]
+    seen_documents: set[tuple[str, int | None]] = set()
     for partner_id in partner_ids:
         for fact_id in sorted(
             (
@@ -431,7 +434,11 @@ def _released_pair(facts: TurnFacts, language: Locale) -> TurnOutput | None:
             ),
             key=lambda fid: int(fid.rsplit(".", 1)[1]),
         ):
-            blocks.append(DocumentBlock(ref=fact_id))
+            document = facts.documents[fact_id]
+            page = (document.url, document.page)
+            if page not in seen_documents:
+                seen_documents.add(page)
+                blocks.append(DocumentBlock(ref=fact_id))
     blocks.append(CardsBlock(product_ids=sets[0]))
     return TurnOutput(language=language, blocks=blocks)
 
@@ -597,6 +604,40 @@ def prepared_answer(
         shown = _card_ids(facts, route)[:SEARCH_LIMIT]
         return _catalog_cards(facts, language, shown, [str(pid) for pid in shown])
     if route.name == "pairing":
+        if any(note.unknown for note in route.named_models):
+            looked = lookup_models(
+                route.named_models, facts.tool_calls, facts.qualified_ids
+            )
+            missing = [
+                item.note.code
+                for item in looked
+                if item.note.unknown and item.outcome == "empty"
+            ]
+            verified_empty = {
+                call["arguments"].get("text")
+                for call in facts.tool_calls
+                if call["name"] == "linker/search-products"
+                and call["result"].get("qualified") == []
+            }
+            if (
+                missing
+                and set(missing) <= verified_empty
+                and all(item.outcome in ("empty", "products") for item in looked)
+            ):
+                known_ids = sorted(facts.qualified_ids)
+                sentence = _range_sentence(missing, language)
+                sentence += (
+                    " Für diese Kombination liegt keine Freigabe vor."
+                    if language == "de"
+                    else " There is no documented pairing for this combination."
+                )
+                blocks: list[Block] = [
+                    TextBlock(text=sentence, refs=[str(pid) for pid in known_ids])
+                ]
+                if known_ids:
+                    blocks.append(CardsBlock(product_ids=known_ids))
+                return TurnOutput(language=language, blocks=blocks)
+            return None
         released = _released_pair(facts, language)
         if released is not None:
             return released
@@ -613,6 +654,15 @@ def prepared_answer(
                     if language == "de"
                     else "No battery is listed as approved for this inverter. Which battery model would you like to check?"
                 )
+                if call["arguments"].get("device_class") in (
+                    "home-storage",
+                    "battery-systems",
+                ):
+                    sentence = (
+                        "Für diese Batterie ist kein Wechselrichter als freigegeben aufgeführt. Welches Wechselrichtermodell möchten Sie prüfen?"
+                        if language == "de"
+                        else "No inverter is listed as approved for this battery. Which inverter model would you like to check?"
+                    )
                 return TurnOutput(
                     language=language,
                     blocks=[
@@ -636,6 +686,11 @@ def prepared_answer(
                 row["product_id"]
                 for row in call["result"].get("qualified", [])
                 if row["product_id"] in facts.qualified_ids
+                and all(
+                    row.get("facts", {}).get(key) == value
+                    for key, value in call["arguments"].items()
+                    if key in ("phase", "application")
+                )
             ]
             if brand in brands and qualified:
                 groups[brand] = qualified

@@ -10,7 +10,7 @@ import { createRoot } from '@wordpress/element';
 import { App } from './App';
 import { readConfig } from './config';
 
-domReady( () => {
+function mount() {
 	document
 		.querySelectorAll< HTMLElement >( '[data-linker-app="genie"]' )
 		.forEach( ( element ) =>
@@ -18,4 +18,13 @@ domReady( () => {
 				<App config={ readConfig( element ) } />
 			)
 		);
-} );
+}
+if (
+	document.querySelector(
+		'[data-linker-app="genie"][data-surface="workspace"]'
+	)
+) {
+	mount();
+} else {
+	domReady( mount );
+}

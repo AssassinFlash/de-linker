@@ -58,9 +58,10 @@ final class Compatibility {
 			$verdict = self::most_restrictive( $verdict, (string) ( $pair['verdict'] ?? '' ) );
 			foreach ( (array) ( $pair['conditions'] ?? array() ) as $condition ) {
 				if ( is_array( $condition ) && is_string( $condition['en'] ?? null ) ) {
-					$conditions[ $condition['en'] ] = array(
-						'en' => $condition['en'],
-						'de' => is_string( $condition['de'] ?? null ) ? $condition['de'] : $condition['en'],
+					$en                = Materials::apply_terms( $condition['en'], false );
+					$conditions[ $en ] = array(
+						'en' => $en,
+						'de' => is_string( $condition['de'] ?? null ) ? Materials::apply_terms( $condition['de'], true ) : $en,
 					);
 				}
 			}

@@ -831,3 +831,168 @@ def test_only_a_plain_product_price_request_is_answered_by_the_current_woo_card(
         plan(question, matches, _reading("find_products"), subject, "en").catalog_only
         == plain
     )
+
+
+@pytest.mark.parametrize(
+    "message,lang",
+    [
+        (
+            "Compare SAJ and GoodWe three-phase commercial hybrid systems 30-80 kW.",
+            "en",
+        ),
+        (
+            "Vergleichen Sie dreiphasige gewerbliche Hybridsysteme von SAJ und GoodWe zwischen 30 und 80 kW.",
+            "de",
+        ),
+    ],
+)
+def test_commercial_hybrid_range_filters_both_brands(message: str, lang: str) -> None:
+    matches = [
+        Match("brand", name, name.lower(), frozenset(), name)
+        for name in ("SAJ", "GoodWe")
+    ]
+    route = plan(message, matches, _reading("compare"), NONE, lang)
+    assert route.catalog_only
+    for call in route.calls:
+        assert call.arguments["device_classes"] == ["inverters", "all-in-one-systems"]
+        assert call.arguments["ac_power_min"] == 30
+        assert call.arguments["ac_power_max"] == 80
+        assert call.arguments["phase"] == 3
+        assert call.arguments["application"] == "commercial"
+
+
+def test_battery_pairing_searches_the_documented_reverse_direction() -> None:
+    model = "GW9.0-BAT-D-G20"
+    match = Match("model", model, model, frozenset({7}), "GW9.0 BAT D G20")
+    subject = Subject((7,), {7: "home-storage"}, {7: model})
+    route = plan(
+        f"Mit welchen Wechselrichtern funktioniert die Batterie {model}?",
+        [match],
+        _reading("pairing_compatibility"),
+        subject,
+        "de",
+    )
+    assert route.catalog_only
+    assert route.calls[0].arguments["with_pairings"] is True
+    assert route.calls[0].arguments["text"] == model
+
+
+@pytest.mark.parametrize(
+    "question,lang",
+    [
+        (
+            "Can I combine the EcoFlow OCEAN 2 HD-P3-15K inverter with a GoodWe GW9.0-BAT-D-G20 battery?",
+            "en",
+        ),
+        (
+            "Kann ich den EcoFlow-Wechselrichter OCEAN 2 HD-P3-15K mit einer GoodWe-Batterie GW9.0-BAT-D-G20 kombinieren?",
+            "de",
+        ),
+    ],
+)
+def test_a_named_inverter_outside_the_catalogue_is_searched_separately_from_its_battery(
+    question: str, lang: str
+) -> None:
+    model = "GW9.0-BAT-D-G20"
+    match = Match("model", model, model, frozenset({7}), "GW9.0 BAT D G20")
+    subject = Subject((7,), {7: "home-storage"}, {7: model}, catalog_models=(model,))
+    route = plan(
+        question,
+        [match],
+        _reading("find_products"),
+        subject,
+        lang,
+    )
+    assert route.name == "pairing"
+    assert {call.arguments["text"] for call in route.calls} == {model, "HD-P3-15K"}
+    assert all("with_pairings" not in call.arguments for call in route.calls)
+    assert route.catalog_only
+
+
+@pytest.mark.parametrize("intent", ["compare", None])
+@pytest.mark.parametrize(
+    "question,lang",
+    [
+        ("Compare H2-25K-T3 and H2-10K-T3 for compatible batteries.", "en"),
+        (
+            "Vergleichen Sie H2-25K-T3 und H2-10K-T3 hinsichtlich kompatibler Batterien.",
+            "de",
+        ),
+    ],
+)
+def test_named_inverter_comparison_requests_the_comparison_table(
+    intent: str | None, question: str, lang: str
+) -> None:
+    subject = Subject(
+        (1, 2), {1: "inverters", 2: "inverters"}, {1: "H2-25K-T3", 2: "H2-10K-T3"}
+    )
+    route = plan(
+        question,
+        [_model("H2-25K-T3", 1), _model("H2-10K-T3", 2)],
+        _reading(intent) if intent else None,
+        subject,
+        lang,
+    )
+    assert route.name == "compare"
+    assert route.calls[0].ability == "linker/compare-products"
+    assert route.calls[0].arguments["product_ids"] == [1, 2]
+
+
+@pytest.mark.parametrize(
+    "question,lang",
+    [
+        (
+            "Can I combine the EcoFlow OCEAN 2 HD-P3-15K inverter with a GoodWe GW9.0-BAT-D-G20 battery, and what is its usable capacity?",
+            "en",
+        ),
+        (
+            "Kann ich den EcoFlow-Wechselrichter OCEAN 2 HD-P3-15K mit einer GoodWe-Batterie GW9.0-BAT-D-G20 kombinieren? Wie hoch ist ihre nutzbare Kapazität?",
+            "de",
+        ),
+    ],
+)
+def test_unlisted_pair_with_a_second_question_fetches_model_facts_and_documents(
+    question: str, lang: str
+) -> None:
+    model = "GW9.0-BAT-D-G20"
+    subject = Subject((7,), {7: "home-storage"}, {7: model}, catalog_models=(model,))
+    route = plan(question, [_model(model, 7)], _reading("find_products"), subject, lang)
+    assert not route.catalog_only
+    assert [c.ability for c in route.calls] == [
+        "linker/get-product",
+        "linker/search-products",
+    ]
+    assert (
+        route.calls[-1].arguments["text"] == "HD-P3-15K"
+        and route.calls[0].arguments["product_id"] == 7
+    )
+
+
+@pytest.mark.parametrize(
+    "criteria,key,expected",
+    [
+        ("single-phase and three-phase", "phase", {1, 3}),
+        ("einphasig und dreiphasig", "phase", {1, 3}),
+        ("30–50 kW and 60–80 kW", "ac_power_min", {30, 60}),
+        ("30 bis 50 kW und 60 bis 80 kW", "ac_power_min", {30, 60}),
+    ],
+)
+def test_each_explicit_selection_has_its_own_published_candidates(
+    criteria: str, key: str, expected: set[int]
+) -> None:
+    matches = [
+        Match("brand", name, name.lower(), frozenset(), name)
+        for name in ("SAJ", "GoodWe")
+    ]
+    route = plan(
+        f"Compare SAJ and GoodWe commercial hybrid systems, {criteria}.",
+        matches,
+        _reading("compare"),
+        NONE,
+        "en",
+    )
+    assert not route.catalog_only
+    for brand in ("saj", "goodwe"):
+        assert {
+            c.arguments[key] for c in route.calls if c.arguments["brand"] == brand
+        } == expected
