@@ -218,7 +218,7 @@ export async function restoreArtifacts(
 ): Promise< Turn > {
 	const ids = new Set< number >();
 	for ( const block of turn.blocks ) {
-		if ( block.type === 'cards' || block.type === 'compare' ) {
+		if ( block.type === 'cards' ) {
 			block.product_ids.forEach( ( id ) => ids.add( id ) );
 		} else if ( block.type === 'document' ) {
 			const owner = documentOwner( block );
@@ -227,22 +227,18 @@ export async function restoreArtifacts(
 			}
 		}
 	}
-	const permission = publicationManifest( context, nonce, fetcher );
-	const products = (
-		await Promise.all(
-			[ ...ids ].map( ( id ) =>
-				productPresentation(
-					context.restUrl,
-					id,
-					context.locale,
-					nonce,
-					fetcher
-				)
-			)
-		)
-	).filter( ( product ): product is ProductPresentation => product !== null );
-	// Historical text remains a snapshot; active links require matching content identity.
-	const manifest = await permission;
+	const readProduct = ( id: number ) =>
+		productPresentation(
+			context.restUrl,
+			id,
+			context.locale,
+			nonce,
+			fetcher
+		);
+	const [ manifest, initialProducts ] = await Promise.all( [
+		publicationManifest( context, nonce, fetcher ),
+		Promise.all( [ ...ids ].map( readProduct ) ),
+	] );
 	const documents = manifest?.documents ?? [];
 	const allowed = new Map< number, number >();
 	for ( const product of manifest?.products ?? [] ) {
@@ -251,6 +247,22 @@ export async function restoreArtifacts(
 			allowed.set( id, product.product_id );
 		}
 	}
+	const singletons = new Set< number >();
+	for ( const block of turn.blocks ) {
+		if ( block.type === 'compare' ) {
+			const visible = block.product_ids.filter( ( id ) =>
+				allowed.has( id )
+			);
+			if ( visible.length === 1 && ! ids.has( visible[ 0 ] ) ) {
+				singletons.add( visible[ 0 ] );
+			}
+		}
+	}
+	const products = initialProducts
+		.concat( await Promise.all( [ ...singletons ].map( readProduct ) ) )
+		.filter(
+			( product ): product is ProductPresentation => product !== null
+		);
 	const prices = new Map< number, CardPrice >();
 	for ( const product of products ) {
 		const commerce = product.commerce;

@@ -3988,3 +3988,23 @@ test( 'opening the homepage history rail leaves its active question with the hom
 		host.remove();
 	}
 } );
+
+test( 'workspace reads the history list once while the current thread is still loading', async () => {
+	let finish!: ( result: Awaited< ReturnType< typeof readThread > > ) => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				finish = resolve;
+			} )
+	);
+	const view = await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
+	try {
+		expect( readThread ).toHaveBeenCalledTimes( 1 );
+		expect( listConversations ).toHaveBeenCalledTimes( 1 );
+	} finally {
+		await act( async () => finish( { messages: [], turn: null } ) );
+		view.unmount();
+	}
+} );

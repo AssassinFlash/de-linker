@@ -61,7 +61,7 @@ async function scenario( width, workspace ) {
 		);
 	}
 	if ( doc.readyState === 'loading' ) {
-		assert.equal( scripts.length, 0 );
+		assert.equal( scripts.length, workspace ? 1 : 0 );
 		await new Promise( ( resolve ) =>
 			doc.addEventListener( 'DOMContentLoaded', resolve, { once: true } )
 		);

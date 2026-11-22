@@ -81,6 +81,7 @@ class Entries {
 	 * Hooks the chips and the dock; runs during plugin registration.
 	 */
 	public function register(): void {
+		add_action( 'wp_head', array( $this, 'workspace_scripts' ), 2 );
 		add_action( 'wp_footer', array( $this, 'dock' ) );
 		add_action( 'woocommerce_before_shop_loop', array( $this, 'shop_chip' ) );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
@@ -93,6 +94,24 @@ class Entries {
 		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'marketing_assets' ) );
 		add_action( 'rest_api_init', array( new EntryContext(), 'register' ) );
+	}
+
+	/** Start the visible workspace bundle and its native WordPress dependencies with the document. */
+	public function workspace_scripts(): void {
+		$post = get_queried_object();
+		if ( ! $post instanceof \WP_Post || ! PageIndexing::is_workspace_post( $post ) ) {
+			return;
+		}
+		$src = $this->script_src();
+		if ( '' === $src ) {
+			return;
+		}
+		printf( '<link rel="preload" as="script" href="%s">', esc_url( $src ) );
+		$scripts = wp_scripts();
+		$entry   = $scripts->query( self::HANDLE );
+		if ( $entry && $entry->deps ) {
+			$scripts->do_items( $entry->deps );
+		}
 	}
 
 	/**
@@ -583,10 +602,24 @@ class Entries {
 			open('', true, fromHome, solution);
 		}
 	});
-			function boot() {
+			function missingDependency(url) {
+			var path = (payload.nativeDependencies || {})[url];
+			if (!Array.isArray(path) || path.length === 0) {
+				return true;
+			}
+			var value = window;
+			for (var i = 0; i < path.length; i += 1) {
+				if (value === undefined || value === null) {
+					return true;
+				}
+				value = value[path[i]];
+			}
+			return !value || (typeof value !== 'object' && typeof value !== 'function');
+		}
+	function boot() {
                 // Native enqueued dependencies finish before DOMContentLoaded.
                 // Re-executing them would reset the planner's translations.
-                if (document.readyState === 'loading') {
+                if (document.readyState === 'loading' && (!payload.open || payload.deps.some(missingDependency))) {
                     document.addEventListener('DOMContentLoaded', boot, { once: true });
                     return;
                 }
@@ -634,20 +667,7 @@ class Entries {
 		// WordPress's done list records printed tags, not successful downloads.
 		// Reuse a native dependency only when its exported runtime is present;
 		// retain the original URL/error/retry path for a failed native request.
-		var deps = payload.deps.filter(function (url) {
-			var path = (payload.nativeDependencies || {})[url];
-			if (!Array.isArray(path) || path.length === 0) {
-				return true;
-			}
-			var value = window;
-			for (var i = 0; i < path.length; i += 1) {
-				if (value === undefined || value === null) {
-					return true;
-				}
-				value = value[path[i]];
-			}
-			return !value || (typeof value !== 'object' && typeof value !== 'function');
-		});
+		var deps = payload.deps.filter(missingDependency);
 		// Wait for every dependency, not merely the last one: any failed
 		// dependency aborts this batch before the app can execute broken.
 		var remaining = deps.length;

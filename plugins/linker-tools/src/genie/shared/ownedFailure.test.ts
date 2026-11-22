@@ -1,5 +1,9 @@
 import { beforeEach, expect, test } from 'vitest';
-import { FailureJournal, failureBucketKey } from './ownedFailure';
+import {
+	FailureJournal,
+	failureBucketKey,
+	hasOwnedRecovery,
+} from './ownedFailure';
 import { FAILURE_KEY, type FailureState, type FailureStore } from './failure';
 
 const A = 'a'.repeat( 64 );
@@ -30,6 +34,14 @@ function state( text: string ): FailureState {
 		draft: { text, question: text, uploads: [], omitted: [] },
 	};
 }
+test( 'a completed turn leaves no recovery for the next workspace visit', () => {
+	const tab = { ...store, keys: () => Array.from( data.keys() ) };
+	const pending = journal().begin( state( 'comparison' ) );
+	expect( hasOwnedRecovery( tab ) ).toBe( true );
+	expect( journal().consume( pending.cursor ) ).toBe( true );
+	expect( hasOwnedRecovery( tab ) ).toBe( false );
+} );
+
 test( 'scope buckets preserve A while B writes; returning A chooses only its native bucket', () => {
 	const a = journal().begin( state( 'A private' ) );
 	const before = data.get( failureBucketKey( A ) );

@@ -656,10 +656,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	} );
 	const standalone = config.surface === 'workspace';
 
-	const refreshHistory = useCallback( () => {
-		const epoch = historyEpoch;
-		const lease = draftContext.capture();
-		return enqueue( async () => {
+	const readHistory = useCallback(
+		async ( epoch: number, lease: DraftLease | null ) => {
 			const listed = await listConversations(
 				config.conversationsUrl,
 				config.restNonce
@@ -681,8 +679,14 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( listed.currentId ) {
 				show( listed.currentId );
 			}
-		} );
-	}, [ config.conversationsUrl, config.restNonce, show, draftContext ] );
+		},
+		[ config.conversationsUrl, config.restNonce, show, draftContext ]
+	);
+	const refreshHistory = useCallback( () => {
+		const epoch = historyEpoch;
+		const lease = draftContext.capture();
+		return enqueue( () => readHistory( epoch, lease ) );
+	}, [ draftContext, readHistory ] );
 
 	useEffect( () => {
 		if ( ! heroHistoryHost ) {
@@ -1703,12 +1707,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			contacts?: SentContact[];
 			inquiries?: SentInquiryCard[];
 		} >();
-		void enqueue( async () => {
-			await draftContext.initialized();
-			if ( cancelled ) {
-				return;
-			}
-			const lease = draftContext.capture();
+		const restoreThread = async ( lease: DraftLease | null ) => {
 			const stored = await Promise.race( [
 				loadThread(),
 				pending.promise,
@@ -1731,13 +1730,22 @@ export function App( { config }: { config: GenieConfig } ) {
 				'conversationId' in stored ? stored.conversationId : undefined
 			);
 			restored = true;
+		};
+		void enqueue( async () => {
+			await draftContext.initialized();
+			if ( cancelled ) {
+				return;
+			}
+			const lease = draftContext.capture();
+			await Promise.all( [
+				readHistory( historyEpoch, lease ),
+				restoreThread( lease ),
+			] );
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
 					onWorkspaceVisible();
-					return refreshHistory();
 				}
-				return undefined;
 			} )
 			.catch( () => undefined );
 		return () => {
@@ -1757,7 +1765,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		};
 	}, [
 		loadThread,
-		refreshHistory,
+		readHistory,
 		applyRecord,
 		draftContext,
 		standalone,
